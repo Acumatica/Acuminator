@@ -129,4 +129,10 @@
     <value>Type name contains lowercase letters</value>
     <comment>The title of the diagnostic.</comment>
   </data>
+  <data name="PX1000Fix" xml:space="preserve">
+    <value>Fix PXAction handler signature</value>
+  </data>
+  <data name="PX1000Title" xml:space="preserve">
+    <value>Invalid PXAction handler signature</value>
+  </data>
 </root>
