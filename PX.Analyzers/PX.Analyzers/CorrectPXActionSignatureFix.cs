@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -31,6 +33,7 @@ namespace PX.Analyzers
 				var pxContext = new PXContext(semanticModel.Compilation);
 
 				var oldRoot = await _document.GetSyntaxRootAsync(cancellationToken);
+				var newRoot = oldRoot;
 				var generator = SyntaxGenerator.GetGenerator(_document);
 				var IEnumerableType = (TypeSyntax) generator.TypeExpression(semanticModel.Compilation.GetSpecialType(SpecialType.System_Collections_IEnumerable));
 				var PXAdapterType = generator.TypeExpression(pxContext.PXAdapterType);
@@ -41,7 +44,35 @@ namespace PX.Analyzers
 				var newMethod = _method.WithReturnType(IEnumerableType);
 				newMethod = newMethod.WithParameterList(oldParameters.WithParameters(newParameters));
 
-				var newRoot = oldRoot.ReplaceNode(_method, newMethod);
+				var returnStatement = _method.DescendantNodes().OfType<ReturnStatementSyntax>().Where(
+					rs => !(rs.AncestorsAndSelf().OfType<LambdaExpressionSyntax>().Any())); // TODO: replace with visitors
+				if (!returnStatement.Any())
+				{
+					newMethod = newMethod.AddBodyStatements((StatementSyntax) generator.ReturnStatement(
+						generator.InvocationExpression(
+							generator.MemberAccessExpression(
+								generator.IdentifierName("adapter"), 
+								"Get"))));
+				}
+
+				newRoot = newRoot.ReplaceNode(_method, newMethod);
+
+				var oldUsings = ((CompilationUnitSyntax) newRoot).Usings;
+				var usingCollections = (UsingDirectiveSyntax)generator.NamespaceImportDeclaration(typeof(IEnumerable).Namespace);
+				bool usingFound = false;
+				foreach (var node in oldUsings)
+				{
+					if (SyntaxFactory.AreEquivalent(node, usingCollections))
+					{
+						usingFound = true;
+					}
+				}
+
+				if (!usingFound)
+				{
+					var newUsings = SyntaxFactory.List(oldUsings.Concat(new[] { usingCollections }));
+					newRoot = ((CompilationUnitSyntax)newRoot).WithUsings(newUsings);
+				}
 
 				return _document.WithSyntaxRoot(newRoot);
 			}

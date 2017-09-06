@@ -152,7 +152,9 @@ namespace TestHelper
 				.AddMetadataReference(projectId, CorlibReference)
 				.AddMetadataReference(projectId, SystemCoreReference)
 				.AddMetadataReference(projectId, CSharpSymbolsReference)
-				.AddMetadataReference(projectId, CodeAnalysisReference);
+				.AddMetadataReference(projectId, CodeAnalysisReference)
+				.AddMetadataReference(projectId, MetadataReference.CreateFromFile(@"C:\code\WebSites\Pure\Site\Bin\PX.Common.dll"))
+				.AddMetadataReference(projectId, MetadataReference.CreateFromFile(@"C:\code\WebSites\Pure\Site\Bin\PX.Data.dll"));
 
 			int count = 0;
 			foreach (var source in sources)

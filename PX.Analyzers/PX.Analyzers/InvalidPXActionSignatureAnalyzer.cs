@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace PX.Analyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class InvalidPXActionSignature : PXDiagnosticAnalyzer
+	public class InvalidPXActionSignatureAnalyzer : PXDiagnosticAnalyzer
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1000_InvalidPXActionHandlerSignature);
