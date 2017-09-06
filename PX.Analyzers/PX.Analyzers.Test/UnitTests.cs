@@ -5,15 +5,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using TestHelper;
 using PX.Analyzers;
+using Xunit;
 
 namespace PX.Analyzers.Test
 {
-	[TestClass]
 	public class UnitTest : CodeFixVerifier
 	{
 
 		//No diagnostics expected to show up
-		[TestMethod]
+		[Fact]
 		public void TestMethod1()
 		{
 			var test = @"";
@@ -22,7 +22,7 @@ namespace PX.Analyzers.Test
 		}
 
 		//Diagnostic and CodeFix both triggered and checked for
-		[TestMethod]
+		[Fact]
 		public void TestMethod2()
 		{
 			var test = @"
