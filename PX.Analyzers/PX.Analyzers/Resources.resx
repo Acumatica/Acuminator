@@ -159,4 +159,7 @@
   <data name="PX1005Title" xml:space="preserve">
     <value>Possible typo in view delegate name</value>
   </data>
+  <data name="PX1008Title" xml:space="preserve">
+    <value>This delegate references @this graph which will result in synchronous delegate execution</value>
+  </data>
 </root>

@@ -16,8 +16,7 @@ namespace PX.Analyzers
 	internal static class Descriptors
 	{
 		static readonly ConcurrentDictionary<Category, string> categoryMapping = new ConcurrentDictionary<Category, string>();
-
-		static DiagnosticDescriptor Rule(string id, LocalizableString title, Category category, DiagnosticSeverity defaultSeverity, LocalizableString messageFormat = null, LocalizableString description = null)
+        static DiagnosticDescriptor Rule(string id, LocalizableString title, Category category, DiagnosticSeverity defaultSeverity, LocalizableString messageFormat = null, LocalizableString description = null)
 		{
 			var helpLink = "";
 			var isEnabledByDefault = true;
@@ -31,6 +30,7 @@ namespace PX.Analyzers
 		internal static DiagnosticDescriptor PX1003_NonSpecificPXGraphCreateInstance { get; } = Rule("PX1003", nameof(Resources.PX1003Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
         internal static DiagnosticDescriptor PX1004_ViewDeclarationOrder { get; } = Rule("PX1004", nameof(Resources.PX1004Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
         internal static DiagnosticDescriptor PX1006_ViewDeclarationOrder { get; } = Rule("PX1006", nameof(Resources.PX1006Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
-		internal static DiagnosticDescriptor PX1005_TypoInViewDelegateName { get; } = Rule("PX1005", nameof(Resources.PX1005Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, nameof(Resources.PX1005MessageFormat).GetLocalized());
-	}
+		internal static DiagnosticDescriptor PX1005_TypoInViewDelegateName { get; } = Rule("PX1005", nameof(Resources.PX1005Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+        internal static DiagnosticDescriptor PX1008_LongOperationDelegateClosures { get; } = Rule("PX1008", nameof(Resources.PX1008Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+    }
 }

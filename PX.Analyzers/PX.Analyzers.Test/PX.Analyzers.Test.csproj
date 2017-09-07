@@ -135,6 +135,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Sources\LongOperationDelegateClosuresAnalyzer.cs" />
+    <Compile Include="LongOperationDelegateClosuresTests.cs" />
     <Compile Include="ViewDeclarationOrderTests.cs" />
     <EmbeddedResource Include="Sources\InvalidPXActionSignature.cs" />
     <EmbeddedResource Include="Sources\InvalidPXActionSignature_Expected.cs" />
