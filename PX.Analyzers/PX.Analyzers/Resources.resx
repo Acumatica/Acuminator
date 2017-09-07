@@ -127,7 +127,7 @@
     <value>List attribute {0} should have correspoding type attribute</value>
   </data>
   <data name="PX1002Title" xml:space="preserve">
-    <value>Looks ups list attributes without corresponding type attribute</value>
+    <value>List attribute {0} should have correspoding type attribute</value>
   </data>
   <data name="PX1001Fix" xml:space="preserve">
     <value>Create graph using factory method</value>
@@ -137,5 +137,17 @@
   </data>
   <data name="PX1003Title" xml:space="preserve">
     <value>Consider using specific implementation of PXGraph</value>
+  </data>
+  <data name="PX1004Fix" xml:space="preserve">
+    <value>Consider changing declaration order</value>
+  </data>
+  <data name="PX1004Title" xml:space="preserve">
+    <value>This order of views declaration will result in creation of 2 distinct caches</value>
+  </data>
+  <data name="PX1006Fix" xml:space="preserve">
+    <value>Consider changing declaration order</value>
+  </data>
+  <data name="PX1006Title" xml:space="preserve">
+    <value>This order of views declaration will result in creation of 1 cache for both dacs</value>
   </data>
 </root>
