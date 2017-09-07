@@ -159,4 +159,13 @@
   <data name="PX1005Title" xml:space="preserve">
     <value>Possible typo in view delegate name</value>
   </data>
+  <data name="PX1007Fix" xml:space="preserve">
+    <value>Create DAC instance using factory method</value>
+  </data>
+  <data name="PX1007MessageFormat" xml:space="preserve">
+    <value>'{0}' instance should be created using PXCache&lt;{0}&gt;.CreateInstance() factory method</value>
+  </data>
+  <data name="PX1007Title" xml:space="preserve">
+    <value>DAC instance should be created using PXCache.CreateInstance() factory method</value>
+  </data>
 </root>
