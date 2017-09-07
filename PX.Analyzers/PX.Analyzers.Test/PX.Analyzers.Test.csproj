@@ -141,6 +141,12 @@
     <Compile Include="InvalidPXActionSignatureTests.cs" />
     <Compile Include="MissingTypeListAttributeTests.cs" />
     <EmbeddedResource Include="Sources\TypoInViewDelegateName_Good_DifferentNames.cs" />
+    <Compile Include="BQLFormatterTest.cs" />
+    <Compile Include="Sources\BQL\BadBQL - Copy.cs" />
+    <EmbeddedResource Include="Sources\BQL\BadBQL.cs" />
+    <Compile Include="Sources\BQL\BCBudgetBalance.cs" />
+    <Compile Include="Sources\BQL\BCBudgetLedger.cs" />
+    <EmbeddedResource Include="Sources\BQL\GoodBQL.cs" />
     <Compile Include="TypoInViewDelegateNameTests.cs" />
     <Compile Include="PXGraphCreateInstanceTests.cs" />
     <EmbeddedResource Include="Sources\PXGraphCreateInstanceField.cs" />
