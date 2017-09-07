@@ -96,5 +96,23 @@ namespace PX.Analyzers {
                 return ResourceManager.GetString("PX1001Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to List attribute {0} should have correspoding type attribute.
+        /// </summary>
+        internal static string PX1002Fix {
+            get {
+                return ResourceManager.GetString("PX1002Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Looks ups list attributes without corresponding type attribute.
+        /// </summary>
+        internal static string PX1002Title {
+            get {
+                return ResourceManager.GetString("PX1002Title", resourceCulture);
+            }
+        }
     }
 }
