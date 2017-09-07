@@ -53,10 +53,17 @@ namespace PX.Analyzers.Test
             VerifyCSharpDiagnostic(actual, CreatePX1005DiagnosticResult(16, 22));
         }
 
-		//protected override CodeFixProvider GetCSharpCodeFixProvider()
-		//{
-		//	return new PXGraphCreateInstanceFix();
-		//}
+	    [Theory]
+	    [EmbeddedFileData("TypoInViewDelegateName_Bad.cs", "TypoInViewDelegateName_Bad_Expected.cs")]
+		public void TestCodeFix(string actual, string expected)
+	    {
+		    VerifyCSharpFix(actual, expected);
+	    }
+
+		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		{
+			return new TypoInViewDelegateNameFix();
+		}
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
         {
