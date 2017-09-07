@@ -1,4 +1,5 @@
 using Microsoft.CodeAnalysis;
+using System.Collections.Immutable;
 using PX.Data;
 
 namespace PX.Analyzers
@@ -8,9 +9,12 @@ namespace PX.Analyzers
 		internal PXContext(Compilation compilation)
 		{
 			Compilation = compilation;
+			BQL = new BQLSymbols(Compilation);
 		}
 
 		public Compilation Compilation { get; }
+
+		public BQLSymbols BQL { get; }
 
 		public INamedTypeSymbol PXGraphType => Compilation.GetTypeByMetadataName(typeof(PXGraph).FullName);
         public INamedTypeSymbol PXProcessingBaseType => Compilation.GetTypeByMetadataName(typeof(PXProcessingBase<>).FullName);
@@ -34,5 +38,29 @@ namespace PX.Analyzers
         public INamedTypeSymbol PXDBStringAttributeType => Compilation.GetTypeByMetadataName(typeof(PXDBStringAttribute).FullName);
         public INamedTypeSymbol PXDBByteAttributeType => Compilation.GetTypeByMetadataName(typeof(PXDBByteAttribute).FullName);
 
-    }
+
+		#region BQL Types
+		/// <summary>
+		/// BQL Symbols are stored in separate file.
+		/// </summary>
+		public class BQLSymbols
+		{
+			private readonly Compilation compilation;
+
+			public BQLSymbols(Compilation aCompilation)
+			{
+				compilation = aCompilation;
+			}
+
+			public INamedTypeSymbol PXSelectBase => compilation.GetTypeByMetadataName(typeof(PXSelectBase).FullName);
+
+			public INamedTypeSymbol PXSelect => compilation.GetTypeByMetadataName(typeof(PXSelect<>).FullName);
+
+			public INamedTypeSymbol PXSelectJoin1 => compilation.GetTypeByMetadataName(typeof(PXSelectJoin<,>).FullName);
+
+			public INamedTypeSymbol PXSelectJoin2 => compilation.GetTypeByMetadataName(typeof(PXSelectJoin<,,>).FullName);
+			public INamedTypeSymbol PXSelectJoin3 => compilation.GetTypeByMetadataName(typeof(PXSelectJoin<,,,>).FullName);
+		}
+		#endregion
+	}
 }

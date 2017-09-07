@@ -110,6 +110,8 @@
     <Compile Include="Coloriser\PXColorizerTaggerProvider.cs" />
     <Compile Include="Coloriser\Utils\Constants.cs" />
     <Compile Include="Coloriser\Utils\Extensions.cs" />
+    <Compile Include="Coloriser\Utils\RegExpressions.cs" />
+    <Compile Include="Coloriser\Utils\Utils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
