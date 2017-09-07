@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using PX.Data;
 
 namespace TestHelper
 {
@@ -19,8 +20,10 @@ namespace TestHelper
 		private static readonly MetadataReference SystemCoreReference = MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location);
 		private static readonly MetadataReference CSharpSymbolsReference = MetadataReference.CreateFromFile(typeof(CSharpCompilation).Assembly.Location);
 		private static readonly MetadataReference CodeAnalysisReference = MetadataReference.CreateFromFile(typeof(Compilation).Assembly.Location);
+	    private static readonly MetadataReference PXDataReference = MetadataReference.CreateFromFile(typeof(PXGraph).Assembly.Location);
+	    private static readonly MetadataReference PXCommonReference = MetadataReference.CreateFromFile(typeof(PX.Common.PXContext).Assembly.Location);
 
-		internal static string DefaultFilePathPrefix = "Test";
+        internal static string DefaultFilePathPrefix = "Test";
 		internal static string CSharpDefaultFileExt = "cs";
 		internal static string VisualBasicDefaultExt = "vb";
 		internal static string TestProjectName = "TestProject";
@@ -153,8 +156,8 @@ namespace TestHelper
 				.AddMetadataReference(projectId, SystemCoreReference)
 				.AddMetadataReference(projectId, CSharpSymbolsReference)
 				.AddMetadataReference(projectId, CodeAnalysisReference)
-				.AddMetadataReference(projectId, MetadataReference.CreateFromFile(@"C:\code\WebSites\Pure\Site\Bin\PX.Common.dll"))
-				.AddMetadataReference(projectId, MetadataReference.CreateFromFile(@"C:\code\WebSites\Pure\Site\Bin\PX.Data.dll"));
+				.AddMetadataReference(projectId, PXDataReference)
+				.AddMetadataReference(projectId, PXCommonReference);
 
 			int count = 0;
 			foreach (var source in sources)
