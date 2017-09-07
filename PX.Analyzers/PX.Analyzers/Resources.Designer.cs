@@ -168,24 +168,6 @@ namespace PX.Analyzers {
                 return ResourceManager.GetString("PX1005Title", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Consider changing declaration order.
-        /// </summary>
-        internal static string PX1005MessageFormat {
-            get {
-                return ResourceManager.GetString("PX1005MessageFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Possible typo in view delegate name.
-        /// </summary>
-        internal static string PX1005Title {
-            get {
-                return ResourceManager.GetString("PX1005Title", resourceCulture);
-            }
-        }
 
 	    /// <summary>
 	    ///   Looks up a localized string similar to Consider changing declaration order.
