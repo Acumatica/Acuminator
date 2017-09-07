@@ -225,21 +225,21 @@ namespace PX.Analyzers {
 		    }
 	    }
 
-		/// <summary>
-		///   Looks up a localized string similar to This delegate references @this graph which will result in synchronous delegate execution.
-		/// </summary>
-		internal static string PX1008Title
+	    /// <summary>
+	    ///   Looks up a localized string similar to This delegate references @this graph which will result in synchronous delegate execution.
+	    /// </summary>
+	    internal static string PX1009Title
 	    {
 		    get
 		    {
-			    return ResourceManager.GetString("PX1008Title", resourceCulture);
+			    return ResourceManager.GetString("PX1009Title", resourceCulture);
 		    }
 	    }
 
-	    /// <summary>
-	    ///   Looks up a localized string similar to Change base type to PXCacheExtension overload.
-	    /// </summary>
-	    internal static string PX1009Fix
+		/// <summary>
+		///   Looks up a localized string similar to Change base type to PXCacheExtension overload.
+		/// </summary>
+		internal static string PX1009Fix
 	    {
 		    get
 		    {
