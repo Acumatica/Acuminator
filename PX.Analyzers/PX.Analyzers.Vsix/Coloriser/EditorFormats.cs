@@ -15,8 +15,7 @@ namespace PX.Analyzers.Coloriser
 	{
 		public DACFormat()
 		{
-			DisplayName = Labels.DacFormatLabel;
-			ForegroundColor = Colors.BurlyWood;
+			ForegroundColor = Colors.Maroon;
 			BackgroundColor = Colors.White;
 			DisplayName = Labels.DacFormatLabel; // Human readable version of the name		
 			ForegroundCustomizable = true;
@@ -33,7 +32,6 @@ namespace PX.Analyzers.Coloriser
 	{
 		public DACFieldFormat()
 		{
-			DisplayName = Labels.DacFieldFormatLabel;
 			ForegroundColor = Colors.DarkGreen;
 			BackgroundColor = Colors.White;
 			DisplayName = Labels.DacFieldFormatLabel; // Human readable version of the name		
@@ -51,10 +49,26 @@ namespace PX.Analyzers.Coloriser
 	{
 		public BQLParameterFormat()
 		{
-			DisplayName = Labels.BQLParameterFormatLabel;
 			ForegroundColor = Colors.IndianRed;
 			BackgroundColor = Colors.White;
-			DisplayName = Labels.DacFieldFormatLabel; // Human readable version of the name		
+			DisplayName = Labels.BQLParameterFormatLabel; // Human readable version of the name		
+			ForegroundCustomizable = true;
+			BackgroundCustomizable = true;
+		}
+	}
+
+	[Export(typeof(EditorFormatDefinition))]
+	[ClassificationType(ClassificationTypeNames = Constants.BQLOperatorFormat)]
+	[Name(Constants.BQLOperatorFormat)]
+	[UserVisible(true)]
+	[Order(After = Constants.Priority)]
+	internal sealed class BQLOperatorFormat : ClassificationFormatDefinition
+	{
+		public BQLOperatorFormat()
+		{
+			ForegroundColor = Colors.BlueViolet;
+			BackgroundColor = Colors.White;
+			DisplayName = Labels.BQLOperatorFormatLabel; // Human readable version of the name		
 			ForegroundCustomizable = true;
 			BackgroundCustomizable = true;
 		}

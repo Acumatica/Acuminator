@@ -17,5 +17,9 @@ namespace PX.Analyzers.Coloriser
 		[Export(typeof(ClassificationTypeDefinition))]
 		[Name(Constants.BQLParameterFormat)]
 		internal static ClassificationTypeDefinition BQLParameterType = null;
+
+		[Export(typeof(ClassificationTypeDefinition))]
+		[Name(Constants.BQLOperatorFormat)]
+		internal static ClassificationTypeDefinition BQLOperatorType = null;
 	}
 }
