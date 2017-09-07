@@ -46,6 +46,7 @@
     <Compile Include="FixProviders\CorrectPXActionSignatureFix.cs" />
     <Compile Include="Descriptors.cs" />
     <Compile Include="Analyzers\InvalidPXActionSignatureAnalyzer.cs" />
+    <Compile Include="FixProviders\InheritanceFromPXCacheExtensionMakeSealedFix.cs" />
     <Compile Include="FixProviders\InheritanceFromPXCacheExtensionFix.cs" />
     <Compile Include="FixProviders\DACCreateInstanceFix.cs" />
     <Compile Include="FixProviders\TypoInViewDelegateNameFix.cs" />

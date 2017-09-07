@@ -35,7 +35,8 @@ namespace PX.Analyzers
 		internal static DiagnosticDescriptor PX1007_DACCreateInstance{ get; } = Rule("PX1007", nameof(Resources.PX1007Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, nameof(Resources.PX1007MessageFormat).GetLocalized());
         internal static DiagnosticDescriptor PX1008_LongOperationDelegateClosures { get; } = Rule("PX1008", nameof(Resources.PX1008Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 		internal static DiagnosticDescriptor PX1009_InheritanceFromPXCacheExtension { get; } = Rule("PX1009", nameof(Resources.PX1009Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
-    		
+		internal static DiagnosticDescriptor PX1011_InheritanceFromPXCacheExtension { get; } = Rule("PX1011", nameof(Resources.PX1011Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+
 		internal static DiagnosticDescriptor PXF1001_PXBadBqlDiagnostic { get; } = Rule("PXF1001", nameof(Resources.PXF1001Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 		internal static DiagnosticDescriptor PXF1002_PXBadBqlFormat { get; } = Rule("PXF1002", nameof(Resources.PXF1002Fix).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 	}
