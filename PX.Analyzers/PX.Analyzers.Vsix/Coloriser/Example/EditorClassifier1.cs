@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.Text.Classification;
 using System.Text.RegularExpressions;
 using System.Windows.Media;
 
-namespace VSIXProjectTest
+namespace PX.Analyzers.Coloriser
 {
 	/// <summary>
 	/// Classifier that classifies all text as an instance of the "EditorClassifier1" classification type.

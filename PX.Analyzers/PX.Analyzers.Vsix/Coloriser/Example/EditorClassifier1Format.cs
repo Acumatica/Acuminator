@@ -9,7 +9,7 @@ using System.Windows.Media;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
-namespace VSIXProjectTest
+namespace PX.Analyzers.Coloriser
 {
 	/// <summary>
 	/// Defines an editor format for the EditorClassifier1 type that has a purple background
