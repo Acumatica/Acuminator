@@ -35,10 +35,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CodeFixProvider.cs" />
-    <Compile Include="CorrectPXActionSignatureFix.cs" />
+    <Compile Include="FixProviders\CorrectPXActionSignatureFix.cs" />
     <Compile Include="DiagnosticAnalyzer.cs" />
     <Compile Include="Descriptors.cs" />
-    <Compile Include="InvalidPXActionSignatureAnalyzer.cs" />
+    <Compile Include="Analyzers\InvalidPXActionSignatureAnalyzer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PXContext.cs" />
     <Compile Include="PXDiagnosticAnalyzer.cs" />
@@ -126,6 +126,9 @@
       <HintPath>..\..\packages\System.Reflection.Metadata.1.0.21\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
       <Private>False</Private>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CodeActions\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Target Name="AfterBuild">
