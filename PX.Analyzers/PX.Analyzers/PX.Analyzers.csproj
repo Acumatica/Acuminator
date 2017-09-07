@@ -34,14 +34,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Analyzers\LongOperationDelegateClosuresAnalyzer.cs" />
     <Compile Include="Analyzers\BQL\BQLFormatterAnalyzer.cs" />
     <Compile Include="Analyzers\MissingTypeListAttributeAnalyzer.cs" />
+    <Compile Include="Analyzers\DACCreateInstanceAnalyzer.cs" />
     <Compile Include="Analyzers\TypoInViewDelegateNameAnalyzer.cs" />
     <Compile Include="Analyzers\PXGraphCreateInstanceAnalyzer.cs" />
+    <Compile Include="Analyzers\ViewDeclarationOrderAnalyzer.cs" />
     <Compile Include="FixProviders\BQL\BQLFormatterFixProvider.cs" />
     <Compile Include="FixProviders\CorrectPXActionSignatureFix.cs" />
     <Compile Include="Descriptors.cs" />
     <Compile Include="Analyzers\InvalidPXActionSignatureAnalyzer.cs" />
+    <Compile Include="FixProviders\DACCreateInstanceFix.cs" />
+    <Compile Include="FixProviders\TypoInViewDelegateNameFix.cs" />
     <Compile Include="FixProviders\PXGraphCreateInstanceFix.cs" />
     <Compile Include="RoslynExtensions\ArrayExtensions.cs" />
     <Compile Include="RoslynExtensions\EnumerableExtensions.cs" />

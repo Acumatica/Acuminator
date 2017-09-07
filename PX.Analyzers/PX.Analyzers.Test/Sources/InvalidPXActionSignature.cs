@@ -14,10 +14,11 @@ namespace PX.Objects.SO
 
 		public PXAction<SOOrder> Release;
 
-		public void release(PXAdapter adapter)
-		{
-		}
-	}
+        public void release(PXAdapter adapter)
+        {
+            string s = "blabla";
+        }
+    }
 
 	public class SOOrder : IBqlTable
 	{

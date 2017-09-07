@@ -27,7 +27,7 @@ namespace PX.Analyzers.Test
 				Severity = DiagnosticSeverity.Error,
 				Locations =
 					new[] {
-							new DiagnosticResultLocation("Test0.cs", 17, 15)
+							new DiagnosticResultLocation("Test0.cs", 17, 21)
 						}
 			};
 

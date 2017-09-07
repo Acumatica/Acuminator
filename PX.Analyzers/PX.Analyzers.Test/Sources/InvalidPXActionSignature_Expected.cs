@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PX.Common;
 using PX.Data;
-using System.Collections;
 
 namespace PX.Objects.SO
 {
@@ -15,11 +15,12 @@ namespace PX.Objects.SO
 
 		public PXAction<SOOrder> Release;
 
-		public IEnumerable release(PXAdapter adapter)
-		{
-		    return adapter.Get();
-		}
-	}
+        public IEnumerable release(PXAdapter adapter)
+        {
+            string s = "blabla";
+            return adapter.Get();
+        }
+    }
 
 	public class SOOrder : IBqlTable
 	{
