@@ -146,6 +146,9 @@
     <EmbeddedResource Include="Sources\PXGraphCreateInstanceProperty.cs" />
     <EmbeddedResource Include="Sources\MissingTypeListAttributeBad.cs" />
     <EmbeddedResource Include="Sources\MissingTypeListAttributeGood.cs" />
+    <EmbeddedResource Include="Sources\PXGraphCreateInstanceMethod_Expected.cs" />
+    <EmbeddedResource Include="Sources\PXGraphCreateInstanceField_Expected.cs" />
+    <EmbeddedResource Include="Sources\PXGraphCreateInstanceProperty_Expected.cs" />
     <Compile Include="Verifiers\CodeFixVerifier.cs" />
     <Compile Include="Verifiers\DiagnosticVerifier.cs" />
     <Compile Include="Helpers\CodeFixVerifier.Helper.cs" />

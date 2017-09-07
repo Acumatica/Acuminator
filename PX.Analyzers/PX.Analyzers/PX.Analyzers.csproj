@@ -39,6 +39,7 @@
     <Compile Include="FixProviders\CorrectPXActionSignatureFix.cs" />
     <Compile Include="Descriptors.cs" />
     <Compile Include="Analyzers\InvalidPXActionSignatureAnalyzer.cs" />
+    <Compile Include="FixProviders\PXGraphCreateInstanceFix.cs" />
     <Compile Include="RoslynExtensions\ArrayExtensions.cs" />
     <Compile Include="RoslynExtensions\EnumerableExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
