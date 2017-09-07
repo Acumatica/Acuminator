@@ -172,9 +172,35 @@ namespace PX.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to Consider changing declaration order.
         /// </summary>
-        internal static string PX1006Fix {
+        internal static string PX1005MessageFormat {
             get {
-                return ResourceManager.GetString("PX1006Fix", resourceCulture);
+                return ResourceManager.GetString("PX1005MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Possible typo in view delegate name.
+        /// </summary>
+        internal static string PX1005Title {
+            get {
+                return ResourceManager.GetString("PX1005Title", resourceCulture);
+            }
+        }
+
+	    /// <summary>
+	    ///   Looks up a localized string similar to Consider changing declaration order.
+
+	    internal static string PX1006Fix
+	    {
+		    get { return ResourceManager.GetString("PX1006Fix", resourceCulture); }
+	    }
+
+	    /// <summary>
+		///   Looks up a localized string similar to Create DAC instance using factory method.
+		/// </summary>
+		internal static string PX1007Fix {
+            get {
+                return ResourceManager.GetString("PX1007Fix", resourceCulture);
             }
         }
         
@@ -186,32 +212,36 @@ namespace PX.Analyzers {
                 return ResourceManager.GetString("PX1006Title", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Create DAC instance using factory method.
-        /// </summary>
-        internal static string PX1007Fix {
-            get {
-                return ResourceManager.GetString("PX1007Fix", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &apos;{0}&apos; instance should be created using PXCache&lt;{0}&gt;.CreateInstance() factory method.
-        /// </summary>
-        internal static string PX1007MessageFormat {
-            get {
-                return ResourceManager.GetString("PX1007MessageFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
+
+		/// <summary>
+		///   Looks up a localized string similar to &apos;{0}&apos; instance should be created using PXCache&lt;{0}&gt;.CreateInstance() factory method.
+		/// </summary>
+		internal static string PX1007MessageFormat
+		{
+			get
+			{
+				return ResourceManager.GetString("PX1007MessageFormat", resourceCulture);
+			}
+		}
+
+		/// <summary>
         ///   Looks up a localized string similar to DAC instance should be created using PXCache.CreateInstance() factory method.
-        /// </summary>
+		/// </summary>
         internal static string PX1007Title {
             get {
                 return ResourceManager.GetString("PX1007Title", resourceCulture);
             }
         }
-    }
+
+	    /// <summary>
+	    ///   Looks up a localized string similar to This delegate references @this graph which will result in synchronous delegate execution.
+	    /// </summary>
+	    internal static string PX1008Title
+	    {
+		    get
+		    {
+			    return ResourceManager.GetString("PX1008Title", resourceCulture);
+		    }
+	    }
+	}
 }
