@@ -107,7 +107,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Looks ups list attributes without corresponding type attribute.
+        ///   Looks up a localized string similar to List attribute {0} should have correspoding type attribute.
         /// </summary>
         internal static string PX1002Title {
             get {
@@ -121,6 +121,24 @@ namespace PX.Analyzers {
         internal static string PX1003Title {
             get {
                 return ResourceManager.GetString("PX1003Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Consider changing declaration order.
+        /// </summary>
+        internal static string PX1004Fix {
+            get {
+                return ResourceManager.GetString("PX1004Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This order of views declaration will result in creation of 2 distinct caches.
+        /// </summary>
+        internal static string PX1004Title {
+            get {
+                return ResourceManager.GetString("PX1004Title", resourceCulture);
             }
         }
         
@@ -150,6 +168,63 @@ namespace PX.Analyzers {
                 return ResourceManager.GetString("PX1005Title", resourceCulture);
             }
         }
+
+	    /// <summary>
+	    ///   Looks up a localized string similar to Consider changing declaration order.
+
+	    internal static string PX1006Fix
+	    {
+		    get { return ResourceManager.GetString("PX1006Fix", resourceCulture); }
+	    }
+
+	    /// <summary>
+		///   Looks up a localized string similar to Create DAC instance using factory method.
+		/// </summary>
+		internal static string PX1007Fix {
+            get {
+                return ResourceManager.GetString("PX1007Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This order of views declaration will result in creation of 1 cache for both dacs.
+        /// </summary>
+        internal static string PX1006Title {
+            get {
+                return ResourceManager.GetString("PX1006Title", resourceCulture);
+            }
+        }
+
+		/// <summary>
+		///   Looks up a localized string similar to &apos;{0}&apos; instance should be created using PXCache&lt;{0}&gt;.CreateInstance() factory method.
+		/// </summary>
+		internal static string PX1007MessageFormat
+		{
+			get
+			{
+				return ResourceManager.GetString("PX1007MessageFormat", resourceCulture);
+			}
+		}
+
+		/// <summary>
+        ///   Looks up a localized string similar to DAC instance should be created using PXCache.CreateInstance() factory method.
+		/// </summary>
+        internal static string PX1007Title {
+            get {
+                return ResourceManager.GetString("PX1007Title", resourceCulture);
+            }
+        }
+
+	    /// <summary>
+	    ///   Looks up a localized string similar to This delegate references @this graph which will result in synchronous delegate execution.
+	    /// </summary>
+	    internal static string PX1008Title
+	    {
+		    get
+		    {
+			    return ResourceManager.GetString("PX1008Title", resourceCulture);
+		    }
+	    }
         
         /// <summary>
         ///   Looks up a localized string similar to The BQL statement doesn&apos;t meet the Code Style requirements .
