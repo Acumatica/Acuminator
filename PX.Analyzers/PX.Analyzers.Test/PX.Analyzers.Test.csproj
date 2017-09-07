@@ -138,6 +138,8 @@
     <EmbeddedResource Include="Sources\DACCreateInstance.cs" />
     <EmbeddedResource Include="Sources\DACCreateInstance_Expected.cs" />
     <Compile Include="DACCreateInstanceTests.cs" />
+    <EmbeddedResource Include="Sources\LongOperationDelegateClosuresAnalyzer.cs" />
+    <Compile Include="LongOperationDelegateClosuresTests.cs" />
     <Compile Include="ViewDeclarationOrderTests.cs" />
     <EmbeddedResource Include="Sources\InvalidPXActionSignature.cs" />
     <EmbeddedResource Include="Sources\InvalidPXActionSignature_Expected.cs" />
