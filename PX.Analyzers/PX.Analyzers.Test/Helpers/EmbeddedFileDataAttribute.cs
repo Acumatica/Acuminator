@@ -11,18 +11,16 @@ namespace PX.Analyzers.Test.Helpers
 {
 	public class EmbeddedFileDataAttribute : DataAttribute
 	{
-		private readonly string _inputFileName;
-		private readonly string _expectedFileName;
+	    private readonly string[] _fileNames;
 
-		public EmbeddedFileDataAttribute(string inputFileName, string expectedFileName)
-		{
-			_inputFileName = inputFileName;
-			_expectedFileName = expectedFileName;
-		}
+	    public EmbeddedFileDataAttribute(params string[] fileNames)
+	    {
+	        _fileNames = fileNames;
+	    }
 
 		public override IEnumerable<object[]> GetData(MethodInfo testMethod)
 		{
-			yield return new object[] { ReadFile(_inputFileName), ReadFile(_expectedFileName) };
+		    yield return _fileNames.Select(ReadFile).ToArray<object>();
 		}
 
 		private static string ReadFile(string fileName)
