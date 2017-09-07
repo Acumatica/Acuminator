@@ -32,5 +32,6 @@ namespace PX.Analyzers
         internal static DiagnosticDescriptor PX1006_ViewDeclarationOrder { get; } = Rule("PX1006", nameof(Resources.PX1006Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 		internal static DiagnosticDescriptor PX1005_TypoInViewDelegateName { get; } = Rule("PX1005", nameof(Resources.PX1005Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
         internal static DiagnosticDescriptor PX1008_LongOperationDelegateClosures { get; } = Rule("PX1008", nameof(Resources.PX1008Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+        internal static DiagnosticDescriptor PX1010_StartRowResetForPaging { get; } = Rule("PX1010", nameof(Resources.PX1010Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
     }
 }

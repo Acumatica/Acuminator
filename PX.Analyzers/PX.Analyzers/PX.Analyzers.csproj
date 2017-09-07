@@ -36,6 +36,7 @@
   <ItemGroup>
     <Compile Include="Analyzers\LongOperationDelegateClosuresAnalyzer.cs" />
     <Compile Include="Analyzers\MissingTypeListAttributeAnalyzer.cs" />
+    <Compile Include="Analyzers\StartRowResetForPaging.cs" />
     <Compile Include="Analyzers\TypoInViewDelegateNameAnalyzer.cs" />
     <Compile Include="Analyzers\PXGraphCreateInstanceAnalyzer.cs" />
     <Compile Include="Analyzers\ViewDeclarationOrderAnalyzer.cs" />
