@@ -123,5 +123,32 @@ namespace PX.Analyzers {
                 return ResourceManager.GetString("PX1003Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rename view delegate name to match view name.
+        /// </summary>
+        internal static string PX1005Fix {
+            get {
+                return ResourceManager.GetString("PX1005Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Possible typo in view delegate name. View name for this delegate: &apos;{0}&apos;.
+        /// </summary>
+        internal static string PX1005MessageFormat {
+            get {
+                return ResourceManager.GetString("PX1005MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Possible typo in view delegate name.
+        /// </summary>
+        internal static string PX1005Title {
+            get {
+                return ResourceManager.GetString("PX1005Title", resourceCulture);
+            }
+        }
     }
 }
