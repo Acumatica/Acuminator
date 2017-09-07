@@ -8,7 +8,7 @@ using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
-namespace VSIXProjectTest
+namespace PX.Analyzers.Coloriser
 {
 	/// <summary>
 	/// Classification type definition export for EditorClassifier1

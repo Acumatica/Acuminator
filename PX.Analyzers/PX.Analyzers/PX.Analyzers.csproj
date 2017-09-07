@@ -35,11 +35,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Analyzers\MissingTypeListAttributeAnalyzer.cs" />
+    <Compile Include="Analyzers\TypoInViewDelegateNameAnalyzer.cs" />
     <Compile Include="Analyzers\PXGraphCreateInstanceAnalyzer.cs" />
     <Compile Include="Analyzers\ViewDeclarationOrderAnalyzer.cs" />
     <Compile Include="FixProviders\CorrectPXActionSignatureFix.cs" />
     <Compile Include="Descriptors.cs" />
     <Compile Include="Analyzers\InvalidPXActionSignatureAnalyzer.cs" />
+    <Compile Include="FixProviders\TypoInViewDelegateNameFix.cs" />
     <Compile Include="FixProviders\PXGraphCreateInstanceFix.cs" />
     <Compile Include="RoslynExtensions\ArrayExtensions.cs" />
     <Compile Include="RoslynExtensions\EnumerableExtensions.cs" />
@@ -53,6 +55,7 @@
     </Compile>
     <Compile Include="ResourcesHelper.cs" />
     <Compile Include="RoslynExtensions\ITypeSymbolExtensions.cs" />
+    <Compile Include="StringHelpers.cs" />
     <Compile Include="SymbolHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
