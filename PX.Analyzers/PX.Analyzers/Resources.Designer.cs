@@ -20,7 +20,7 @@ namespace PX.Analyzers {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -62,33 +62,6 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Type names should be all uppercase..
-        /// </summary>
-        internal static string AnalyzerDescription {
-            get {
-                return ResourceManager.GetString("AnalyzerDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Type name &apos;{0}&apos; contains lowercase letters.
-        /// </summary>
-        internal static string AnalyzerMessageFormat {
-            get {
-                return ResourceManager.GetString("AnalyzerMessageFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Type name contains lowercase letters.
-        /// </summary>
-        internal static string AnalyzerTitle {
-            get {
-                return ResourceManager.GetString("AnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Fix PXAction handler signature.
         /// </summary>
         internal static string PX1000Fix {
@@ -103,6 +76,78 @@ namespace PX.Analyzers {
         internal static string PX1000Title {
             get {
                 return ResourceManager.GetString("PX1000Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create graph using factory method.
+        /// </summary>
+        internal static string PX1001Fix {
+            get {
+                return ResourceManager.GetString("PX1001Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXGraph instance should be created using PXGraph.CreateInstance() factory method.
+        /// </summary>
+        internal static string PX1001Title {
+            get {
+                return ResourceManager.GetString("PX1001Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to List attribute {0} should have correspoding type attribute.
+        /// </summary>
+        internal static string PX1002Fix {
+            get {
+                return ResourceManager.GetString("PX1002Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Looks ups list attributes without corresponding type attribute.
+        /// </summary>
+        internal static string PX1002Title {
+            get {
+                return ResourceManager.GetString("PX1002Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Consider using specific implementation of PXGraph.
+        /// </summary>
+        internal static string PX1003Title {
+            get {
+                return ResourceManager.GetString("PX1003Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rename view delegate name to match view name.
+        /// </summary>
+        internal static string PX1005Fix {
+            get {
+                return ResourceManager.GetString("PX1005Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Possible typo in view delegate name. View name for this delegate: &apos;{0}&apos;.
+        /// </summary>
+        internal static string PX1005MessageFormat {
+            get {
+                return ResourceManager.GetString("PX1005MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Possible typo in view delegate name.
+        /// </summary>
+        internal static string PX1005Title {
+            get {
+                return ResourceManager.GetString("PX1005Title", resourceCulture);
             }
         }
     }
