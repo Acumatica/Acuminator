@@ -140,6 +140,7 @@
     <Compile Include="Helpers\EmbeddedFileDataAttribute.cs" />
     <Compile Include="InvalidPXActionSignatureTests.cs" />
     <Compile Include="MissingTypeListAttributeTests.cs" />
+    <Compile Include="TypoInViewDelegateNameTests.cs" />
     <Compile Include="PXGraphCreateInstanceTests.cs" />
     <EmbeddedResource Include="Sources\PXGraphCreateInstanceField.cs" />
     <EmbeddedResource Include="Sources\PXGraphCreateInstanceMethod.cs" />
@@ -150,6 +151,8 @@
     <EmbeddedResource Include="Sources\PXGraphCreateInstanceField_Expected.cs" />
     <EmbeddedResource Include="Sources\PXGraphCreateInstanceProperty_Expected.cs" />
     <EmbeddedResource Include="Sources\NonSpecificPXGraphCreateInstanceMethod.cs" />
+    <EmbeddedResource Include="Sources\TypoInViewDelegateName_Good.cs" />
+    <EmbeddedResource Include="Sources\TypoInViewDelegateName_Bad.cs" />
     <Compile Include="Verifiers\CodeFixVerifier.cs" />
     <Compile Include="Verifiers\DiagnosticVerifier.cs" />
     <Compile Include="Helpers\CodeFixVerifier.Helper.cs" />
