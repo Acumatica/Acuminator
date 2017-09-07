@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -56,12 +58,28 @@ namespace PX.Analyzers.FixProviders
 				}
 
 				newRoot = newRoot.ReplaceNode(_method, newMethod);
+				newRoot = AddCollectionsUsing(newRoot, generator);
 
-				var oldUsings = ((CompilationUnitSyntax) newRoot).Usings;
-				var usingCollections = (UsingDirectiveSyntax)generator.NamespaceImportDeclaration(typeof(IEnumerable).Namespace);
+				return _document.WithSyntaxRoot(newRoot);
+			}
+
+			private SyntaxNode AddCollectionsUsing(SyntaxNode root, SyntaxGenerator generator)
+			{
+				var oldUsings = ((CompilationUnitSyntax) root).Usings;
+				var usingCollections = (UsingDirectiveSyntax) generator.NamespaceImportDeclaration(typeof(IEnumerable).Namespace);
 				bool usingFound = false;
+				bool usingAdded = false;
+				var newUsingsList = new List<SyntaxNode>();
+
 				foreach (var node in oldUsings)
 				{
+					if (!usingAdded && String.CompareOrdinal(node.Name.ToString(), usingCollections.Name.ToString()) > 0)
+					{
+						newUsingsList.Add(usingCollections);
+						usingAdded = true;
+					}
+					newUsingsList.Add(node);
+
 					if (SyntaxFactory.AreEquivalent(node, usingCollections))
 					{
 						usingFound = true;
@@ -70,11 +88,15 @@ namespace PX.Analyzers.FixProviders
 
 				if (!usingFound)
 				{
-					var newUsings = SyntaxFactory.List(oldUsings.Concat(new[] { usingCollections }));
-					newRoot = ((CompilationUnitSyntax)newRoot).WithUsings(newUsings);
+					if (!usingAdded)
+					{
+						newUsingsList.Add(usingCollections);
+					}
+					var newUsings = SyntaxFactory.List(newUsingsList);
+					return ((CompilationUnitSyntax) root).WithUsings(newUsings);
 				}
 
-				return _document.WithSyntaxRoot(newRoot);
+				return root;
 			}
 
 			public ChangeSignatureAction(string title, Document document, MethodDeclarationSyntax method)
