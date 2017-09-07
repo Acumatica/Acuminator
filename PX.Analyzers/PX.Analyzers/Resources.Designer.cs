@@ -195,5 +195,23 @@ namespace PX.Analyzers {
                 return ResourceManager.GetString("PX1008Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset StartRow.
+        /// </summary>
+        internal static string PX1010Fix {
+            get {
+                return ResourceManager.GetString("PX1010Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to StartRow must be reset if delegate returns applies paging in inner select (or paging will be applied twice).
+        /// </summary>
+        internal static string PX1010Title {
+            get {
+                return ResourceManager.GetString("PX1010Title", resourceCulture);
+            }
+        }
     }
 }
