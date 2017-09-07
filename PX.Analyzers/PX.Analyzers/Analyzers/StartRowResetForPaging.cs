@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PX.Analyzers.Utilities;
 using System.Collections.Generic;
+using PX.Data;
 
 namespace PX.Analyzers.Analyzers
 {
@@ -53,7 +54,7 @@ namespace PX.Analyzers.Analyzers
                         DescendantNodes().OfType<MemberAccessExpressionSyntax>().SingleOrDefault()).Symbol;
                     if (symbol != null &&
                         symbol.ContainingType == pxContext.PXViewType &&
-                        symbol.Name == "StartRow")
+                        symbol.Name == nameof(PXView.StartRow))
                     {
                         refStartRow = ls;
                         break;
@@ -95,7 +96,7 @@ namespace PX.Analyzers.Analyzers
             AssignmentExpressionSyntax lastAssigment = null;
             foreach (var memberAccess in declaration.GetSyntax().DescendantNodes().
                 OfType<MemberAccessExpressionSyntax>().
-                Where(m => m.Name is IdentifierNameSyntax i && i.Identifier.ValueText == "StartRow"))
+                Where(m => m.Name is IdentifierNameSyntax i && i.Identifier.ValueText == nameof(PXView.StartRow)))
             {
                 if (memberAccess.Parent is AssignmentExpressionSyntax assigment &&
                     assigment.Right is LiteralExpressionSyntax literalExpression &&
