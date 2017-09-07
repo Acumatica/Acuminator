@@ -150,6 +150,7 @@
     <EmbeddedResource Include="Sources\PXGraphCreateInstanceField_Expected.cs" />
     <EmbeddedResource Include="Sources\PXGraphCreateInstanceProperty_Expected.cs" />
     <EmbeddedResource Include="Sources\NonSpecificPXGraphCreateInstanceMethod.cs" />
+    <Compile Include="Sources\ViewDeclarationOrderGood.cs" />
     <Compile Include="Verifiers\CodeFixVerifier.cs" />
     <Compile Include="Verifiers\DiagnosticVerifier.cs" />
     <Compile Include="Helpers\CodeFixVerifier.Helper.cs" />

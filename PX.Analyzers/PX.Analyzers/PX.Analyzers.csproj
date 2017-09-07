@@ -36,6 +36,7 @@
   <ItemGroup>
     <Compile Include="Analyzers\MissingTypeListAttributeAnalyzer.cs" />
     <Compile Include="Analyzers\PXGraphCreateInstanceAnalyzer.cs" />
+    <Compile Include="Analyzers\ViewDeclarationOrderAnalyzer.cs" />
     <Compile Include="FixProviders\CorrectPXActionSignatureFix.cs" />
     <Compile Include="Descriptors.cs" />
     <Compile Include="Analyzers\InvalidPXActionSignatureAnalyzer.cs" />
