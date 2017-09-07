@@ -14,8 +14,8 @@ namespace PX.Analyzers.Coloriser
 		[Name(Constants.DacFieldFormat)]
 		internal static ClassificationTypeDefinition DACFieldType = null;
 
-		//[Export(typeof(ClassificationTypeDefinition))]
-		//[Name(Constants.ExtensionMethodFormat)]
-		//internal static ClassificationTypeDefinition ExtensionMethodType = null;
+		[Export(typeof(ClassificationTypeDefinition))]
+		[Name(Constants.BQLParameterFormat)]
+		internal static ClassificationTypeDefinition BQLParameterType = null;
 	}
 }
