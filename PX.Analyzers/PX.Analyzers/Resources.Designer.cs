@@ -143,22 +143,6 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Consider changing declaration order.
-        /// </summary>
-        internal static string PX1006Fix {
-            get {
-                return ResourceManager.GetString("PX1006Fix", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This order of views declaration will result in creation of 1 cache for both dacs.
-        /// </summary>
-        internal static string PX1006Title {
-            get {
-                return ResourceManager.GetString("PX1006Title", resourceCulture);
-            }
-        }
         ///   Looks up a localized string similar to Rename view delegate name to match view name.
         /// </summary>
         internal static string PX1005Fix {
@@ -182,6 +166,33 @@ namespace PX.Analyzers {
         internal static string PX1005Title {
             get {
                 return ResourceManager.GetString("PX1005Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Consider changing declaration order.
+        /// </summary>
+        internal static string PX1006Fix {
+            get {
+                return ResourceManager.GetString("PX1006Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This order of views declaration will result in creation of 1 cache for both dacs.
+        /// </summary>
+        internal static string PX1006Title {
+            get {
+                return ResourceManager.GetString("PX1006Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This delegate references @this graph which will result in synchronous delegate execution.
+        /// </summary>
+        internal static string PX1008Title {
+            get {
+                return ResourceManager.GetString("PX1008Title", resourceCulture);
             }
         }
     }
