@@ -24,7 +24,7 @@ namespace PX.Analyzers.Analyzers
                 SymbolKind.NamedType);
         }
 
-        private async void Analyze(SymbolAnalysisContext context, PXContext pxContext)
+        private void Analyze(SymbolAnalysisContext context, PXContext pxContext)
         {
 	        var symbol = (INamedTypeSymbol) context.Symbol;
 	        if (!symbol.InheritsFrom(pxContext.PXCacheExtensionType)
