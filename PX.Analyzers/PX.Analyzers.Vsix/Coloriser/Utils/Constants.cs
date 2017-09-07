@@ -11,12 +11,13 @@ namespace PX.Analyzers
 
 		public const String DacFormat = "DACName";
 		public const String DacFieldFormat = "DACFieldName";
-		//public const String ExtensionMethodFormat = "s.roslyn.extension-method";
+		public const String BQLParameterFormat = "BQLParameter";
 	}
 
 	public static class Labels
 	{
-		public const String DacFormatLabel  = "DAC Format";
-		public const String DacFieldFormatLabel = "DAC Field Format";
+		public const String DacFormatLabel  = "NoBrains - DAC Format";
+		public const String DacFieldFormatLabel = "NoBrains - DAC Field Format";
+		public const String BQLParameterFormatLabel = "NoBrains - BQL parameters";
 	}
 }

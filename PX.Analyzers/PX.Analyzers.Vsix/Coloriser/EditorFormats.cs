@@ -19,7 +19,8 @@ namespace PX.Analyzers.Coloriser
 			ForegroundColor = Colors.BurlyWood;
 			BackgroundColor = Colors.White;
 			DisplayName = Labels.DacFormatLabel; // Human readable version of the name		
-			ForegroundCustomizable = true;			
+			ForegroundCustomizable = true;
+			BackgroundCustomizable = true;
 		}
 	}
 
@@ -27,7 +28,7 @@ namespace PX.Analyzers.Coloriser
 	[ClassificationType(ClassificationTypeNames = Constants.DacFieldFormat)]
 	[Name(Constants.DacFieldFormat)]
 	[UserVisible(true)]
-	[Order(After = Priority.Default)]
+	[Order(After = Constants.Priority)]
 	internal sealed class DACFieldFormat : ClassificationFormatDefinition
 	{
 		public DACFieldFormat()
@@ -37,20 +38,25 @@ namespace PX.Analyzers.Coloriser
 			BackgroundColor = Colors.White;
 			DisplayName = Labels.DacFieldFormatLabel; // Human readable version of the name		
 			ForegroundCustomizable = true;
+			BackgroundCustomizable = true;
 		}
 	}
 
-	//[Export(typeof(EditorFormatDefinition))]
-	//[ClassificationType(ClassificationTypeNames = Constants.ExtensionMethodFormat)]
-	//[Name(Constants.ExtensionMethodFormat)]
-	//[UserVisible(true)]
-	//[Order(After = Priority.Default)]
-	//internal sealed class RoslynExtensionMethodFormat : ClassificationFormatDefinition
-	//{
-	//	public RoslynExtensionMethodFormat()
-	//	{
-	//		this.DisplayName = "Roslyn Extension Method";
-	//		this.IsItalic = true;
-	//	}
-	//}
+	[Export(typeof(EditorFormatDefinition))]
+	[ClassificationType(ClassificationTypeNames = Constants.BQLParameterFormat)]
+	[Name(Constants.BQLParameterFormat)]
+	[UserVisible(true)]
+	[Order(After = Constants.Priority)]
+	internal sealed class BQLParameterFormat : ClassificationFormatDefinition
+	{
+		public BQLParameterFormat()
+		{
+			DisplayName = Labels.BQLParameterFormatLabel;
+			ForegroundColor = Colors.IndianRed;
+			BackgroundColor = Colors.White;
+			DisplayName = Labels.DacFieldFormatLabel; // Human readable version of the name		
+			ForegroundCustomizable = true;
+			BackgroundCustomizable = true;
+		}
+	}
 }
