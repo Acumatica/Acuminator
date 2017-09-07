@@ -10,6 +10,8 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
+using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Simplification;
 
 namespace PX.Analyzers.FixProviders
 {
@@ -50,7 +52,8 @@ namespace PX.Analyzers.FixProviders
 						generator.InvocationExpression(
 							generator.MemberAccessExpression(
 								generator.IdentifierName("adapter"), 
-								"Get"))));
+								"Get")))
+								.WithAdditionalAnnotations(Formatter.Annotation));
 				}
 
 				newRoot = newRoot.ReplaceNode(_method, newMethod);
