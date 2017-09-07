@@ -171,4 +171,10 @@
   <data name="PX1008Title" xml:space="preserve">
     <value>This delegate references @this graph which will result in synchronous delegate execution</value>
   </data>
+  <data name="PX1009Fix" xml:space="preserve">
+    <value>Change base type to PXCacheExtension overload</value>
+  </data>
+  <data name="PX1009Title" xml:space="preserve">
+    <value>Multiple levels of inheritance are not supported for PXCacheExtension</value>
+  </data>
 </root>
