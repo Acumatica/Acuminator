@@ -44,9 +44,8 @@ namespace PX.Analyzers.FixProviders
 				var newMethod = _method.WithReturnType(IEnumerableType);
 				newMethod = newMethod.WithParameterList(oldParameters.WithParameters(newParameters));
 
-				var returnStatement = _method.DescendantNodes().OfType<ReturnStatementSyntax>().Where(
-					rs => !(rs.AncestorsAndSelf().OfType<LambdaExpressionSyntax>().Any())); // TODO: replace with visitors
-				if (!returnStatement.Any())
+				var controlFlow = semanticModel.AnalyzeControlFlow(_method.Body);
+				if (controlFlow.Succeeded && controlFlow.ReturnStatements.IsEmpty)
 				{
 					newMethod = newMethod.AddBodyStatements((StatementSyntax) generator.ReturnStatement(
 						generator.InvocationExpression(
