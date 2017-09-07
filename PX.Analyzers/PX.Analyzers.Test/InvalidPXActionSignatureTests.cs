@@ -17,8 +17,8 @@ namespace PX.Analyzers.Test
 	public class InvalidPXActionSignatureTests : CodeFixVerifier
 	{
 		[Theory]
-		[EmbeddedFileData("InvalidPXActionSignature.cs", "InvalidPXActionSignature_Expected.cs")]
-		public void Test(string actual, string expected)
+		[EmbeddedFileData("InvalidPXActionSignature.cs")]
+		public void TestDiagnostic(string actual)
 		{
 			var diagnostic = new DiagnosticResult
 			{
@@ -32,8 +32,14 @@ namespace PX.Analyzers.Test
 			};
 
 			VerifyCSharpDiagnostic(actual, diagnostic);
-			VerifyCSharpFix(actual, expected);
 		}
+
+	    [Theory]
+	    [EmbeddedFileData("InvalidPXActionSignature.cs", "InvalidPXActionSignature_Expected.cs")]
+        public void TestCodeFix(string actual, string expected)
+	    {
+	        VerifyCSharpFix(actual, expected);
+        }
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider()
 		{
