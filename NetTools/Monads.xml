@@ -1,0 +1,445 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Monads</name>
+    </assembly>
+    <members>
+        <member name="M:System.Monads.ArgumentCheck.CheckNull``1(``0,System.String)">
+            <summary>
+            Allows to check <paramref name="source"/> for null and throw ArgumentNullException if it is
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="argumentName">Name of argument in source code</param>
+            <returns>Source object</returns>
+        </member>
+        <member name="M:System.Monads.ArgumentCheck.CheckNull``1(``0,System.Func{System.Exception})">
+            <summary>
+            Allows to check <paramref name="source"/> for null and throw exception if it is
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="exceptionSource">Action for creation of Exception object</param>
+            <returns>Source object</returns>
+        </member>
+        <member name="M:System.Monads.ArgumentCheck.CheckNullWithDefault``1(``0,``0)">
+            <summary>
+            Allows to check <paramref name="source"/> for null and return <param name="defaultValue"/> if it is
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="defaultValue">Default value</param>
+            <returns>Source object if it is not null, or <paramref name="defaultValue"/> otherwise</returns>
+        </member>
+        <member name="M:System.Monads.ArgumentCheck.Check``1(``0,System.Func{``0,System.Boolean},System.Func{``0,System.Exception})">
+            <summary>
+            Allows to check <paramref name="source"/> for <paramref name="checkCondition"/> condition and throw exception if it is false
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="checkCondition">Condition which should be checked</param>
+            <param name="exceptionSource">Action for creation of Exception object</param>
+            <returns>Source object if it is not null</returns>
+        </member>
+        <member name="M:System.Monads.ArgumentCheck.CheckWithDefault``1(``0,System.Func{``0,System.Boolean},``0)">
+            <summary>
+            Allows to check <paramref name="source"/> for <paramref name="checkCondition"/> condition and retrun <paramref name="defaultValue"/> if it is false
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="checkCondition">Condition which should be checked</param>
+            <param name="defaultValue">Default value</param>
+            <returns><paramref name="source"/> if <paramref name="checkCondition"/> returns true, or <paramref name="defaultValue"/> otherwise</returns>
+        </member>
+        <member name="M:System.Monads.Events.Execute(System.EventHandler,System.Object,System.EventArgs)">
+            <summary>
+            Allows to invoke <paramref name="source"/> event if it is not null
+            </summary>
+            <param name="source">Event which should be fired</param>
+            <param name="sender">Sender param for event</param>
+            <param name="args">Args param for event</param>
+            <returns>Source event</returns>
+        </member>
+        <member name="M:System.Monads.Events.Execute``1(System.EventHandler{``0},System.Object,``0)">
+            <summary>
+            Allows to invoke <paramref name="source"/> event if it is not null
+            </summary>
+            <typeparam name="TArgs">Type of event argument</typeparam>
+            <param name="source">Event which should be fired</param>
+            <param name="sender">Sender param for event</param>
+            <param name="args">Args param for event</param>
+            <returns>Source event</returns>
+        </member>
+        <member name="M:System.Monads.MaybeIDictionary.Do``2(System.Collections.Generic.IDictionary{``0,``1},System.Action{``0,``1})">
+            <summary>
+            Allows to do some <paramref name="action"/> on each element of <paramref name="source"/>
+            </summary>
+            <typeparam name="TKey">Type of keys of dictionary</typeparam>
+            <typeparam name="TValue">Type of values of dictionary</typeparam>
+            <param name="source">Source collection for operating</param>
+            <param name="action">Action which should to do</param>
+            <returns>Source dictionary</returns>
+        </member>
+        <member name="M:System.Monads.MaybeIDictionary.With``2(System.Collections.Generic.IDictionary{``0,``1},``0)">
+            <summary>
+            Allows to extract value from <paramref name="source"/> by <param name="key"/>
+            </summary>
+            <typeparam name="TKey">Type of keys of dictionary</typeparam>
+            <typeparam name="TValue">Type of values of dictionary</typeparam>
+            <param name="source">Source collection for operating</param>
+            <param name="key">Key which should be found</param>
+            <returns>Value from dictionary, which associated with <paramref name="key"/> if it was found, or null otherwise</returns>
+        </member>
+        <member name="M:System.Monads.MaybeIDictionary.Return``2(System.Collections.Generic.IDictionary{``0,``1},``0,``1)">
+            <summary>
+            Allows to extract value from <paramref name="source"/> by <param name="key"/>
+            </summary>
+            <typeparam name="TKey">Type of keys of dictionary</typeparam>
+            <typeparam name="TValue">Type of values of dictionary</typeparam>
+            <param name="source">Source collection for operating</param>
+            <param name="key">Key which should be found</param>
+            <param name="defaultValue">Value which returns if key not found</param>
+            <returns>Value from dictionary, which associated with <paramref name="key"/> if it was found, or <paramref name="defaultValue"/> otherwise</returns>
+        </member>
+        <member name="M:System.Monads.MaybeIEnumerable.Do(System.Collections.IEnumerable,System.Action{System.Object})">
+            <summary>
+            Allows to do some <paramref name="action"/> on each element of <paramref name="source"/>
+            </summary>
+            <param name="source">Source collection for operating</param>
+            <param name="action">Action which should to do</param>
+            <returns>Source collection</returns>
+        </member>
+        <member name="M:System.Monads.MaybeIEnumerable.Do``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0})">
+            <summary>
+            Allows to do some <paramref name="action"/> on each element of <paramref name="source"/>
+            </summary>
+            <typeparam name="TSource">Type of collection elements</typeparam>
+            <param name="source">Source collection for operating</param>
+            <param name="action">Action which should to do</param>
+            <returns>Source collection</returns>
+        </member>
+        <member name="M:System.Monads.MaybeIEnumerable.Do``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0,System.Int32})">
+            <summary>
+            Allows to do some <paramref name="action"/> on each element of <paramref name="source"/>
+            </summary>
+            <typeparam name="TSource">Type of collection elements</typeparam>
+            <param name="source">Source collection for operating</param>
+            <param name="action">Action which should to do (with zero-based index)</param>
+            <returns>Source collection</returns>
+        </member>
+        <member name="M:System.Monads.MaybeIEnumerable.With``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1})">
+            <summary>
+            Allows to do some conversion of <paramref name="source"/> collection elements if its not null
+            </summary>
+            <typeparam name="TSource">Type of collection elements</typeparam>
+            <typeparam name="TResult">Type of result collection elements</typeparam>
+            <param name="source">Source collection for operating</param>
+            <param name="action">Action which should to do</param>
+            <returns>Converted collection</returns>
+        </member>
+        <member name="M:System.Monads.MaybeNullable.Do``1(System.Nullable{``0},System.Action{System.Nullable{``0}})">
+            <summary>
+            Allows to do some <paramref name="action"/> on <paramref name="source"/> if its not null
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="action">Action which should to do</param>
+            <returns><paramref name="source"/> object</returns>
+        </member>
+        <member name="M:System.Monads.MaybeNullable.With``2(System.Nullable{``0},System.Func{System.Nullable{``0},``1})">
+            <summary>
+            Allows to do some conversion of <paramref name="source"/> if its not null
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <typeparam name="TResult">Type of result</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="action">Conversion action which should to do</param>
+            <returns>Converted object which returns action</returns>
+        </member>
+        <member name="M:System.Monads.MaybeNullable.Return``2(System.Nullable{``0},System.Func{System.Nullable{``0},``1},``1)">
+            <summary>
+            Allows to do some conversion of <paramref name="source"/> if its not null or return <paramref name="defaultValue"/> otherwise
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <typeparam name="TResult">Type of result</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="action">Conversion action which should to do</param>
+            <param name="defaultValue">Value which will return if source is null</param>
+            <returns>Converted object which returns action if source is not null or <paramref name="defaultValue"/> otherwise</returns>
+        </member>
+        <member name="M:System.Monads.MaybeNullable.If``1(System.Nullable{``0},System.Func{System.Nullable{``0},System.Boolean})">
+            <summary>
+            Retruns the <paramref name="source"/> if both <paramref name="condition"/> is true and <paramref name="source"/> is not null, or null otherwise
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="condition">Condition which should be checked</param>
+            <returns><paramref name="source"/> if <paramref name="condition"/> is true, or null otherwise</returns>
+        </member>
+        <member name="M:System.Monads.MaybeNullable.IfNot``1(System.Nullable{``0},System.Func{System.Nullable{``0},System.Boolean})">
+            <summary>
+            Retruns the <paramref name="source"/> if both <paramref name="condition"/> is false and <paramref name="source"/> is not null, or null otherwise
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="condition">Condition which should be checked</param>
+            <returns><paramref name="source"/> if <paramref name="condition"/> is true, or null otherwise</returns>
+        </member>
+        <member name="M:System.Monads.MaybeNullable.Recover``1(System.Nullable{``0},System.Func{``0})">
+            <summary>
+            Allows to construct <paramref name="source"/> if its is null
+            </summary>
+            <typeparam name="TInput">Type of source object</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="action">Constructor action</param>
+            <returns><paramref name="source"/> if it is not null, or result of <paramref name="action"/> otherwise</returns>
+        </member>
+        <member name="M:System.Monads.MaybeNullable.TryDo``1(System.Nullable{``0},System.Action{System.Nullable{``0}})">
+            <summary>
+            Allows to do <paramref name="action"/> and catch any exceptions
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="action">Action which should to do</param>
+            <returns>
+            Tuple which contains <paramref name="source"/> and info about exception (if it throws)
+            </returns>
+        </member>
+        <member name="M:System.Monads.MaybeNullable.TryDo``1(System.Nullable{``0},System.Action{System.Nullable{``0}},System.Func{System.Exception,System.Boolean})">
+            <summary>
+            Allows to do <paramref name="action"/> and catch exceptions, which handled by <param name="exceptionChecker"/>
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="action">Action which should to do</param>
+            <param name="exceptionChecker">Predicate to determine if exceptions should be handled</param>
+            <returns>
+            Tuple which contains <paramref name="source"/> and info about exception (if it throws)
+            </returns>
+        </member>
+        <member name="M:System.Monads.MaybeNullable.TryDo``1(System.Nullable{``0},System.Action{System.Nullable{``0}},System.Type[])">
+            <summary>
+            Allows to do <paramref name="action"/> and catch <param name="expectedException"/> exceptions
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="action">Action which should to do</param>
+            <param name="expectedException">Array of exception types, which should be handled</param>
+            <returns>
+            Tuple which contains <paramref name="source"/> and info about exception (if it throws)
+            </returns>
+        </member>
+        <member name="M:System.Monads.MaybeNullable.TryWith``2(System.Nullable{``0},System.Func{System.Nullable{``0},``1})">
+            <summary>
+            Allows to do some conversion of <paramref name="source"/> if its not null and catch any exceptions
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <typeparam name="TResult">Type of result</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="action">Action which should to do</param>
+            <returns>Tuple which contains Converted object and info about exception (if it throws)</returns>
+        </member>
+        <member name="M:System.Monads.MaybeNullable.TryWith``2(System.Nullable{``0},System.Func{System.Nullable{``0},``1},System.Func{System.Exception,System.Boolean})">
+            <summary>
+            Allows to do some conversion of <paramref name="source"/> if its not null and catch exceptions, which handled by <param name="exceptionChecker"/>
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <typeparam name="TResult">Type of result</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="action">Action which should to do</param>
+            <param name="exceptionChecker">Predicate to determine if exceptions should be handled</param>
+            <returns>Tuple which contains Converted object and info about exception (if it throws)</returns>
+        </member>
+        <member name="M:System.Monads.MaybeNullable.TryWith``2(System.Nullable{``0},System.Func{System.Nullable{``0},``1},System.Type[])">
+            <summary>
+            Allows to do some conversion of <paramref name="source"/> if its not null and catch <param name="expectedException"/> exceptions
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <typeparam name="TResult">Type of result</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="action">Action which should to do</param>
+            <param name="expectedException">Array of exception types, which should be handled</param>
+            <returns>Tuple which contains Converted object and info about exception (if it throws)</returns>
+        </member>
+        <member name="M:System.Monads.MaybeNullable.IsNull``1(System.Nullable{``0})">
+            <summary>
+            Allows to check whether <paramref name="source"/> is null
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for checking</param>
+            <returns>true if <paramref name="source"/> is null, or false otherwise</returns>
+        </member>
+        <member name="M:System.Monads.MaybeNullable.IsNotNull``1(System.Nullable{``0})">
+            <summary>
+            Allows to check whether <paramref name="source"/> is not null
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for checking</param>
+            <returns>true if <paramref name="source"/> is not null, or false otherwise</returns>
+        </member>
+        <member name="M:System.Monads.MaybeObjects.Do``1(``0,System.Action{``0})">
+            <summary>
+            Allows to do some <paramref name="action"/> on <paramref name="source"/> if its not null
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="action">Action which should to do</param>
+            <returns><paramref name="source"/> object</returns>
+        </member>
+        <member name="M:System.Monads.MaybeObjects.With``2(``0,System.Func{``0,``1})">
+            <summary>
+            Allows to do some conversion of <paramref name="source"/> if its not null
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <typeparam name="TResult">Type of result</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="action">Conversion action which should to do</param>
+            <returns>Converted object which returns action</returns>
+        </member>
+        <member name="M:System.Monads.MaybeObjects.Return``2(``0,System.Func{``0,``1},``1)">
+            <summary>
+            Allows to do some conversion of <paramref name="source"/> if its not null or return <paramref name="defaultValue"/> otherwise
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <typeparam name="TResult">Type of result</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="action">Conversion action which should to do</param>
+            <param name="defaultValue">Value which will return if source is null</param>
+            <returns>Converted object which returns action if source is not null or <paramref name="defaultValue"/> otherwise</returns>
+        </member>
+        <member name="M:System.Monads.MaybeObjects.If``1(``0,System.Func{``0,System.Boolean})">
+            <summary>
+            Retruns the <paramref name="source"/> if both <paramref name="condition"/> is true and <paramref name="source"/> is not null, or null otherwise
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="condition">Condition which should be checked</param>
+            <returns><paramref name="source"/> if <paramref name="condition"/> is true, or null otherwise</returns>
+        </member>
+        <member name="M:System.Monads.MaybeObjects.IfNot``1(``0,System.Func{``0,System.Boolean})">
+            <summary>
+            Retruns the <paramref name="source"/> if both <paramref name="condition"/> is false and <paramref name="source"/> is not null, or null otherwise
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="condition">Condition which should be checked</param>
+            <returns><paramref name="source"/> if <paramref name="condition"/> is true, or null otherwise</returns>
+        </member>
+        <member name="M:System.Monads.MaybeObjects.Recover``1(``0,System.Func{``0})">
+            <summary>
+            Allows to construct <paramref name="source"/> if its is null
+            </summary>
+            <typeparam name="TInput">Type of source object</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="action">Constructor action</param>
+            <returns><paramref name="source"/> if it is not null, or result of <paramref name="action"/> otherwise</returns>
+        </member>
+        <member name="M:System.Monads.MaybeObjects.OfType``1(System.Object)">
+            <summary>
+            Allows to cast <paramref name="source"/> to <typeparamref name="TResult"/>
+            </summary>
+            <typeparam name="TResult">Type of result</typeparam>
+            <param name="source">Source object for operating</param>
+            <returns><paramref name="source"/> if it possible to cast to <typeparamref name="TResult"/>, or null otherwise</returns>
+        </member>
+        <member name="M:System.Monads.MaybeObjects.TryDo``1(``0,System.Action{``0})">
+            <summary>
+            Allows to do <paramref name="action"/> and catch any exceptions
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="action">Action which should to do</param>
+            <returns>
+            Tuple which contains <paramref name="source"/> and info about exception (if it throws)
+            </returns>
+        </member>
+        <member name="M:System.Monads.MaybeObjects.TryDo``1(``0,System.Action{``0},System.Func{System.Exception,System.Boolean})">
+            <summary>
+            Allows to do <paramref name="action"/> and catch exceptions, which handled by <param name="exceptionChecker"/>
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="action">Action which should to do</param>
+            <param name="exceptionChecker">Predicate to determine if exceptions should be handled</param>
+            <returns>
+            Tuple which contains <paramref name="source"/> and info about exception (if it throws)
+            </returns>
+        </member>
+        <member name="M:System.Monads.MaybeObjects.TryDo``1(``0,System.Action{``0},System.Type[])">
+            <summary>
+            Allows to do <paramref name="action"/> and catch <param name="expectedException"/> exceptions
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="action">Action which should to do</param>
+            <param name="expectedException">Array of exception types, which should be handled</param>
+            <returns>
+            Tuple which contains <paramref name="source"/> and info about exception (if it throws)
+            </returns>
+        </member>
+        <member name="M:System.Monads.MaybeObjects.TryWith``2(``0,System.Func{``0,``1})">
+            <summary>
+            Allows to do some conversion of <paramref name="source"/> if its not null and catch any exceptions
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <typeparam name="TResult">Type of result</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="action">Action which should to do</param>
+            <returns>Tuple which contains Converted object and info about exception (if it throws)</returns>
+        </member>
+        <member name="M:System.Monads.MaybeObjects.TryWith``2(``0,System.Func{``0,``1},System.Func{System.Exception,System.Boolean})">
+            <summary>
+            Allows to do some conversion of <paramref name="source"/> if its not null and catch exceptions, which handled by <param name="exceptionChecker"/>
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <typeparam name="TResult">Type of result</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="action">Action which should to do</param>
+            <param name="exceptionChecker">Predicate to determine if exceptions should be handled</param>
+            <returns>Tuple which contains Converted object and info about exception (if it throws)</returns>
+        </member>
+        <member name="M:System.Monads.MaybeObjects.TryWith``2(``0,System.Func{``0,``1},System.Type[])">
+            <summary>
+            Allows to do some conversion of <paramref name="source"/> if its not null and catch <param name="expectedException"/> exceptions
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <typeparam name="TResult">Type of result</typeparam>
+            <param name="source">Source object for operating</param>
+            <param name="action">Action which should to do</param>
+            <param name="expectedException">Array of exception types, which should be handled</param>
+            <returns>Tuple which contains Converted object and info about exception (if it throws)</returns>
+        </member>
+        <member name="M:System.Monads.MaybeObjects.Catch``1(System.Tuple{``0,System.Exception})">
+            <summary>
+            Handle exception with no actions
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for operating</param>
+            <returns><paramref name="source"/> object</returns>
+        </member>
+        <member name="M:System.Monads.MaybeObjects.Catch``1(System.Tuple{``0,System.Exception},System.Action{System.Exception})">
+            <summary>
+            Handle exception with <param name="handler"/> action
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for operating</param>
+            <returns><paramref name="source"/> object</returns>
+        </member>
+        <member name="M:System.Monads.MaybeObjects.IsNull``1(``0)">
+            <summary>
+            Allows to check whether <paramref name="source"/> is null
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for checking</param>
+            <returns>true if <paramref name="source"/> is null, or false otherwise</returns>
+        </member>
+        <member name="M:System.Monads.MaybeObjects.IsNotNull``1(``0)">
+            <summary>
+            Allows to check whether <paramref name="source"/> is not null
+            </summary>
+            <typeparam name="TSource">Type of source object</typeparam>
+            <param name="source">Source object for checking</param>
+            <returns>true if <paramref name="source"/> is not null, or false otherwise</returns>
+        </member>
+    </members>
+</doc>
