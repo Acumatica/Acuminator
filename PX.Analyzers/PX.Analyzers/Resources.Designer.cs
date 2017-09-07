@@ -143,22 +143,6 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Consider changing declaration order.
-        /// </summary>
-        internal static string PX1006Fix {
-            get {
-                return ResourceManager.GetString("PX1006Fix", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This order of views declaration will result in creation of 1 cache for both dacs.
-        /// </summary>
-        internal static string PX1006Title {
-            get {
-                return ResourceManager.GetString("PX1006Title", resourceCulture);
-            }
-        }
         ///   Looks up a localized string similar to Rename view delegate name to match view name.
         /// </summary>
         internal static string PX1005Fix {
@@ -182,6 +166,51 @@ namespace PX.Analyzers {
         internal static string PX1005Title {
             get {
                 return ResourceManager.GetString("PX1005Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Consider changing declaration order.
+        /// </summary>
+        internal static string PX1006Fix {
+            get {
+                return ResourceManager.GetString("PX1006Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This order of views declaration will result in creation of 1 cache for both dacs.
+        /// </summary>
+        internal static string PX1006Title {
+            get {
+                return ResourceManager.GetString("PX1006Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create DAC instance using factory method.
+        /// </summary>
+        internal static string PX1007Fix {
+            get {
+                return ResourceManager.GetString("PX1007Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; instance should be created using PXCache&lt;{0}&gt;.CreateInstance() factory method.
+        /// </summary>
+        internal static string PX1007MessageFormat {
+            get {
+                return ResourceManager.GetString("PX1007MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DAC instance should be created using PXCache.CreateInstance() factory method.
+        /// </summary>
+        internal static string PX1007Title {
+            get {
+                return ResourceManager.GetString("PX1007Title", resourceCulture);
             }
         }
     }
