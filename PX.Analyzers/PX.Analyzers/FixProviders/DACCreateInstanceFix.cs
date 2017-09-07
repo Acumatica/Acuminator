@@ -24,7 +24,6 @@ namespace PX.Analyzers.FixProviders
 			private readonly PXContext _pxContext;
 			private readonly Document _document;
 			private readonly SemanticModel _semanticModel;
-			private readonly SyntaxNode _parent;
 
 			public Rewriter(PXContext pxContext, Document document, SemanticModel semanticModel)
 			{

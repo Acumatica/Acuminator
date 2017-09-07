@@ -20,7 +20,7 @@ namespace PX.Analyzers {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -168,21 +168,13 @@ namespace PX.Analyzers {
                 return ResourceManager.GetString("PX1005Title", resourceCulture);
             }
         }
-
-	    /// <summary>
-	    ///   Looks up a localized string similar to Consider changing declaration order.
-
-	    internal static string PX1006Fix
-	    {
-		    get { return ResourceManager.GetString("PX1006Fix", resourceCulture); }
-	    }
-
-	    /// <summary>
-		///   Looks up a localized string similar to Create DAC instance using factory method.
-		/// </summary>
-		internal static string PX1007Fix {
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Consider changing declaration order.
+        /// </summary>
+        internal static string PX1006Fix {
             get {
-                return ResourceManager.GetString("PX1007Fix", resourceCulture);
+                return ResourceManager.GetString("PX1006Fix", resourceCulture);
             }
         }
         
@@ -194,21 +186,28 @@ namespace PX.Analyzers {
                 return ResourceManager.GetString("PX1006Title", resourceCulture);
             }
         }
-
-		/// <summary>
-		///   Looks up a localized string similar to &apos;{0}&apos; instance should be created using PXCache&lt;{0}&gt;.CreateInstance() factory method.
-		/// </summary>
-		internal static string PX1007MessageFormat
-		{
-			get
-			{
-				return ResourceManager.GetString("PX1007MessageFormat", resourceCulture);
-			}
-		}
-
-		/// <summary>
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create DAC instance using factory method.
+        /// </summary>
+        internal static string PX1007Fix {
+            get {
+                return ResourceManager.GetString("PX1007Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; instance should be created using PXCache&lt;{0}&gt;.CreateInstance() factory method.
+        /// </summary>
+        internal static string PX1007MessageFormat {
+            get {
+                return ResourceManager.GetString("PX1007MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DAC instance should be created using PXCache.CreateInstance() factory method.
-		/// </summary>
+        /// </summary>
         internal static string PX1007Title {
             get {
                 return ResourceManager.GetString("PX1007Title", resourceCulture);
@@ -225,23 +224,89 @@ namespace PX.Analyzers {
 			    return ResourceManager.GetString("PX1008Title", resourceCulture);
 		    }
 	    }
-        
+
+	    /// <summary>
+	    ///   Looks up a localized string similar to This delegate references @this graph which will result in synchronous delegate execution.
+	    /// </summary>
+	    internal static string PX1009Title
+	    {
+		    get
+		    {
+			    return ResourceManager.GetString("PX1009Title", resourceCulture);
+		    }
+	    }
+
+		/// <summary>
+		///   Looks up a localized string similar to Change base type to PXCacheExtension overload.
+		/// </summary>
+		internal static string PX1009Fix
+	    {
+		    get
+		    {
+			    return ResourceManager.GetString("PX1009Fix", resourceCulture);
+		    }
+	    }
+
+	    /// <summary>
+	    ///   Looks up a localized string similar to The BQL statement doesn&apos;t meet the Code Style requirements .
+	    /// </summary>
+	    internal static string PXF1001Title
+	    {
+		    get
+		    {
+			    return ResourceManager.GetString("PXF1001Title", resourceCulture);
+		    }
+	    }
+
+	    /// <summary>
+	    ///   Looks up a localized string similar to Format the BQL statement to meet the Code Style requirements .
+	    /// </summary>
+	    internal static string PXF1002Fix
+	    {
+		    get
+		    {
+			    return ResourceManager.GetString("PXF1002Fix", resourceCulture);
+		    }
+	    }
+
         /// <summary>
-        ///   Looks up a localized string similar to The BQL statement doesn&apos;t meet the Code Style requirements .
+        ///   Looks up a localized string similar to Reset StartRow.
         /// </summary>
-        internal static string PXF1001Title {
+        internal static string PX1010Fix {
             get {
-                return ResourceManager.GetString("PXF1001Title", resourceCulture);
+                return ResourceManager.GetString("PX1010Fix", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Format the BQL statement to meet the Code Style requirements .
+        ///   Looks up a localized string similar to StartRow must be reset if delegate returns applies paging in inner select (or paging will be applied twice).
         /// </summary>
-        internal static string PXF1002Fix {
+        internal static string PX1010Title {
             get {
-                return ResourceManager.GetString("PXF1002Fix", resourceCulture);
+                return ResourceManager.GetString("PX1010Title", resourceCulture);
             }
         }
-    }
+
+	    /// <summary>
+	    ///   Looks up a localized string similar to Mark type as sealed.
+	    /// </summary>
+	    internal static string PX1011Fix
+	    {
+		    get
+		    {
+			    return ResourceManager.GetString("PX1011Fix", resourceCulture);
+		    }
+	    }
+
+	    /// <summary>
+	    ///   Looks up a localized string similar to Multiple levels of inheritance are not supported for PXCacheExtension, so derived type can be marked as sealed..
+	    /// </summary>
+	    internal static string PX1011Title
+	    {
+		    get
+		    {
+			    return ResourceManager.GetString("PX1011Title", resourceCulture);
+		    }
+	    }
+	}
 }
