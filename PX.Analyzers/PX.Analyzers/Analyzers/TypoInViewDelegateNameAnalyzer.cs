@@ -14,7 +14,8 @@ namespace PX.Analyzers.Analyzers
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class TypoInViewDelegateNameAnalyzer : PXDiagnosticAnalyzer
     {
-	    private const int MaximumDistance = 2;
+	    public const string ViewFieldNameProperty = "field";
+		private const int MaximumDistance = 2;
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
 				Descriptors.PX1005_TypoInViewDelegateName);
@@ -43,7 +44,10 @@ namespace PX.Analyzers.Analyzers
 		        var nearest = FindNearestView(views, method);
 				if (nearest != null)
 				{
-					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1005_TypoInViewDelegateName, method.Locations.First(), nearest.Name));
+					var properties = ImmutableDictionary.CreateBuilder<string, string>();
+					properties.Add(ViewFieldNameProperty, nearest.Name);
+					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1005_TypoInViewDelegateName, 
+						method.Locations.First(), properties.ToImmutable(), nearest.Name));
 		        }
 	        }
 		}

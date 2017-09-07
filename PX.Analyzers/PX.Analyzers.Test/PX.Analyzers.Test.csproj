@@ -141,6 +141,7 @@
     <Compile Include="InvalidPXActionSignatureTests.cs" />
     <Compile Include="MissingTypeListAttributeTests.cs" />
     <EmbeddedResource Include="Sources\TypoInViewDelegateName_Good_DifferentNames.cs" />
+    <EmbeddedResource Include="Sources\TypoInViewDelegateName_Bad_Expected.cs" />
     <Compile Include="TypoInViewDelegateNameTests.cs" />
     <Compile Include="PXGraphCreateInstanceTests.cs" />
     <EmbeddedResource Include="Sources\PXGraphCreateInstanceField.cs" />
