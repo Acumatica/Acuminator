@@ -62,33 +62,6 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Type names should be all uppercase..
-        /// </summary>
-        internal static string AnalyzerDescription {
-            get {
-                return ResourceManager.GetString("AnalyzerDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Type name &apos;{0}&apos; contains lowercase letters.
-        /// </summary>
-        internal static string AnalyzerMessageFormat {
-            get {
-                return ResourceManager.GetString("AnalyzerMessageFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Type name contains lowercase letters.
-        /// </summary>
-        internal static string AnalyzerTitle {
-            get {
-                return ResourceManager.GetString("AnalyzerTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Fix PXAction handler signature.
         /// </summary>
         internal static string PX1000Fix {
@@ -103,6 +76,24 @@ namespace PX.Analyzers {
         internal static string PX1000Title {
             get {
                 return ResourceManager.GetString("PX1000Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create graph using factory method.
+        /// </summary>
+        internal static string PX1001Fix {
+            get {
+                return ResourceManager.GetString("PX1001Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXGraph instance should be created using PXGraph.CreateInstance() factory method.
+        /// </summary>
+        internal static string PX1001Title {
+            get {
+                return ResourceManager.GetString("PX1001Title", resourceCulture);
             }
         }
         
