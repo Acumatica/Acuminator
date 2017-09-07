@@ -20,7 +20,7 @@ namespace PX.Analyzers {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -148,6 +148,24 @@ namespace PX.Analyzers {
         internal static string PX1005Title {
             get {
                 return ResourceManager.GetString("PX1005Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The BQL statement doesn&apos;t meet the Code Style requirements .
+        /// </summary>
+        internal static string PXF1001Title {
+            get {
+                return ResourceManager.GetString("PXF1001Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Format the BQL statement to meet the Code Style requirements .
+        /// </summary>
+        internal static string PXF1002Fix {
+            get {
+                return ResourceManager.GetString("PXF1002Fix", resourceCulture);
             }
         }
     }
