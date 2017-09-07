@@ -32,8 +32,24 @@ namespace PX.Analyzers.Test
 		    return diagnostic;
 	    }
 
+	    private DiagnosticResult CreatePX1011DiagnosticResult(int line, int column)
+	    {
+		    var diagnostic = new DiagnosticResult
+		    {
+			    Id = Descriptors.PX1011_InheritanceFromPXCacheExtension.Id,
+			    Message = Descriptors.PX1011_InheritanceFromPXCacheExtension.Title.ToString(),
+			    Severity = DiagnosticSeverity.Warning,
+			    Locations =
+				    new[] {
+					    new DiagnosticResultLocation("Test0.cs", line, column)
+				    }
+		    };
+
+		    return diagnostic;
+	    }
+
 		[Theory]
-        [EmbeddedFileData("InheritanceFromPXCacheExtension_Bad_Expected.cs")]
+        [EmbeddedFileData("InheritanceFromPXCacheExtension_Good.cs")]
         public void TestDiagnostic_ShouldNotShowDiagnostic(string actual)
         {
             VerifyCSharpDiagnostic(actual);
@@ -43,7 +59,10 @@ namespace PX.Analyzers.Test
 		[EmbeddedFileData("InheritanceFromPXCacheExtension_Bad.cs")]
 		public void TestDiagnostic(string actual)
         {
-            VerifyCSharpDiagnostic(actual, CreatePX1009DiagnosticResult(13, 15));
+            VerifyCSharpDiagnostic(actual,
+	            CreatePX1009DiagnosticResult(10, 15),
+				CreatePX1011DiagnosticResult(12, 15),
+				CreatePX1011DiagnosticResult(13, 15));
         }
 
 	    [Theory]
@@ -63,4 +82,24 @@ namespace PX.Analyzers.Test
             return new InheritanceFromPXCacheExtensionAnalyzer();
         }
     }
+
+	public class InheritanceFromPXCacheExtensionMakeSealedTests : CodeFixVerifier
+	{
+		[Theory]
+		[EmbeddedFileData("InheritanceFromPXCacheExtensionMakeSealed_Bad.cs", "InheritanceFromPXCacheExtensionMakeSealed_Bad_Expected.cs")]
+		public void TestCodeFix(string actual, string expected)
+		{
+			VerifyCSharpFix(actual, expected);
+		}
+
+		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		{
+			return new InheritanceFromPXCacheExtensionMakeSealedFix();
+		}
+
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		{
+			return new InheritanceFromPXCacheExtensionAnalyzer();
+		}
+	}
 }

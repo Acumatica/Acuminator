@@ -183,4 +183,10 @@
   <data name="PXF1002Fix" xml:space="preserve">
     <value>Format the BQL statement to meet the Code Style requirements </value>
   </data>
+  <data name="PX1011Fix" xml:space="preserve">
+    <value>Mark type as sealed</value>
+  </data>
+  <data name="PX1011Title" xml:space="preserve">
+    <value>Multiple levels of inheritance are not supported for PXCacheExtension, so derived type can be marked as sealed.</value>
+  </data>
 </root>

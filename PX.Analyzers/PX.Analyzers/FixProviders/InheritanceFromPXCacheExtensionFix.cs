@@ -55,11 +55,6 @@ namespace PX.Analyzers.FixProviders
 						}
 						
 						var newRoot = await context.Document.GetSyntaxRootAsync(c);
-						//var baseListNode = newRoot.FirstAncestorOrSelf<BaseListSyntax>();
-						//var newBaseNode = SyntaxFactory.SimpleBaseType((TypeSyntax) generator.GenericName(nameof(PXCacheExtension), genericArgs));
-						//var newBaseListNode = baseListNode.WithTypes(
-						//	SyntaxFactory.SeparatedList<BaseTypeSyntax>(baseListNode.Types.Skip(1).Concat<BaseTypeSyntax>(new[] { newBaseNode })));
-						//newRoot = newRoot.ReplaceNode(baseListNode, newBaseListNode);
 						var oldBaseNode = node.BaseList.Types.First();
 						var newBaseNode = SyntaxFactory.SimpleBaseType((TypeSyntax) generator.GenericName(nameof(PXCacheExtension), genericArgs));
 						newRoot = newRoot.ReplaceNode(oldBaseNode, newBaseNode);
