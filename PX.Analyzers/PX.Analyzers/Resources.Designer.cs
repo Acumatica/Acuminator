@@ -114,5 +114,14 @@ namespace PX.Analyzers {
                 return ResourceManager.GetString("PX1002Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Consider using specific implementation of PXGraph.
+        /// </summary>
+        internal static string PX1003Title {
+            get {
+                return ResourceManager.GetString("PX1003Title", resourceCulture);
+            }
+        }
     }
 }
