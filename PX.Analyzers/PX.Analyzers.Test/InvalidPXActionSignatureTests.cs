@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
+using PX.Analyzers.Analyzers;
+using PX.Analyzers.FixProviders;
 using PX.Analyzers.Test.Helpers;
 using TestHelper;
 using Xunit;
