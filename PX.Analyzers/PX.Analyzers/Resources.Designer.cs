@@ -20,7 +20,7 @@ namespace PX.Analyzers {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -103,6 +103,24 @@ namespace PX.Analyzers {
         internal static string PX1000Title {
             get {
                 return ResourceManager.GetString("PX1000Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to List attribute {0} should have correspoding type attribute.
+        /// </summary>
+        internal static string PX1002Fix {
+            get {
+                return ResourceManager.GetString("PX1002Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Looks ups list attributes without corresponding type attribute.
+        /// </summary>
+        internal static string PX1002Title {
+            get {
+                return ResourceManager.GetString("PX1002Title", resourceCulture);
             }
         }
     }
