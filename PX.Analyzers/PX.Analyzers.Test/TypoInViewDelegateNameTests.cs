@@ -33,13 +33,20 @@ namespace PX.Analyzers.Test
 	    }
 
 		[Theory]
-        [EmbeddedFileData("TypoInViewDelegateName_Good.cs")]
-        public void TestDiagnostic_ShouldNotShowDiagnostic(string actual)
+        [EmbeddedFileData("TypoInViewDelegateName_Good_SameName.cs")]
+        public void TestDiagnostic_ShouldNotShowDiagnostic_SameName(string actual)
         {
             VerifyCSharpDiagnostic(actual);
         }
 
-        [Theory]
+	    [Theory]
+	    [EmbeddedFileData("TypoInViewDelegateName_Good_DifferentNames.cs")]
+	    public void TestDiagnostic_ShouldNotShowDiagnostic_DifferentNames(string actual)
+	    {
+		    VerifyCSharpDiagnostic(actual);
+	    }
+
+		[Theory]
         [EmbeddedFileData("TypoInViewDelegateName_Bad.cs")]
         public void TestDiagnostic(string actual)
         {
