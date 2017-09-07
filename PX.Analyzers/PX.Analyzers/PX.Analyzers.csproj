@@ -35,9 +35,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Analyzers\MissingTypeListAttributeAnalyzer.cs" />
-    <Compile Include="CodeFixProvider.cs" />
+    <Compile Include="Analyzers\PXGraphCreateInstanceAnalyzer.cs" />
     <Compile Include="FixProviders\CorrectPXActionSignatureFix.cs" />
-    <Compile Include="DiagnosticAnalyzer.cs" />
     <Compile Include="Descriptors.cs" />
     <Compile Include="Analyzers\InvalidPXActionSignatureAnalyzer.cs" />
     <Compile Include="RoslynExtensions\ArrayExtensions.cs" />
