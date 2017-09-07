@@ -34,11 +34,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Analyzers\MissingTypeListAttributeAnalyzer.cs" />
     <Compile Include="CodeFixProvider.cs" />
     <Compile Include="FixProviders\CorrectPXActionSignatureFix.cs" />
     <Compile Include="DiagnosticAnalyzer.cs" />
     <Compile Include="Descriptors.cs" />
     <Compile Include="Analyzers\InvalidPXActionSignatureAnalyzer.cs" />
+    <Compile Include="RoslynExtensions\ArrayExtensions.cs" />
+    <Compile Include="RoslynExtensions\EnumerableExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PXContext.cs" />
     <Compile Include="PXDiagnosticAnalyzer.cs" />
@@ -48,6 +51,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="ResourcesHelper.cs" />
+    <Compile Include="RoslynExtensions\ITypeSymbolExtensions.cs" />
     <Compile Include="SymbolHelpers.cs" />
   </ItemGroup>
   <ItemGroup>

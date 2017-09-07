@@ -26,5 +26,6 @@ namespace PX.Analyzers
 		}
 
 		internal static DiagnosticDescriptor PX1000_InvalidPXActionHandlerSignature { get; } = Rule("PX1000", nameof(Resources.PX1000Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
-	}
+        internal static DiagnosticDescriptor PX1002_MissingTypeListAttributeAnalyzer { get; } = Rule("PX1002", nameof(Resources.PX1002Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+    }
 }
