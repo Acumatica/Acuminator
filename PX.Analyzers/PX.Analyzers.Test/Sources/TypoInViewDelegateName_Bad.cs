@@ -11,10 +11,16 @@ namespace PX.Analyzers.Test.Sources
 	public class TypoInViewDelegateName_Bad : PXGraph<TypoInViewDelegateName_Bad>
 	{
 		public PXSelect<TypoInViewDelegateName_Bad_DAC> Documents;
+		public PXSelect<TypoInViewDelegateName_Bad_DAC> CurrentDocument;
 
 		public IEnumerable documentss()
 		{
 			yield break;
+		}
+
+		public IEnumerable currentDocument()
+		{
+			return Documents.Current;
 		}
 	}
 

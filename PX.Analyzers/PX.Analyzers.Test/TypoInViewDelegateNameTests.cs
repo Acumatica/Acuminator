@@ -43,7 +43,7 @@ namespace PX.Analyzers.Test
         [EmbeddedFileData("TypoInViewDelegateName_Bad.cs")]
         public void TestDiagnostic(string actual)
         {
-            VerifyCSharpDiagnostic(actual, CreatePX1005DiagnosticResult(15, 22));
+            VerifyCSharpDiagnostic(actual, CreatePX1005DiagnosticResult(16, 22));
         }
 
 		//protected override CodeFixProvider GetCSharpCodeFixProvider()
