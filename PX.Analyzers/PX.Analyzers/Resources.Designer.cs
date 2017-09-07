@@ -107,7 +107,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Looks ups list attributes without corresponding type attribute.
+        ///   Looks up a localized string similar to List attribute {0} should have correspoding type attribute.
         /// </summary>
         internal static string PX1002Title {
             get {
@@ -125,6 +125,40 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Consider changing declaration order.
+        /// </summary>
+        internal static string PX1004Fix {
+            get {
+                return ResourceManager.GetString("PX1004Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This order of views declaration will result in creation of 2 distinct caches.
+        /// </summary>
+        internal static string PX1004Title {
+            get {
+                return ResourceManager.GetString("PX1004Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Consider changing declaration order.
+        /// </summary>
+        internal static string PX1006Fix {
+            get {
+                return ResourceManager.GetString("PX1006Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This order of views declaration will result in creation of 1 cache for both dacs.
+        /// </summary>
+        internal static string PX1006Title {
+            get {
+                return ResourceManager.GetString("PX1006Title", resourceCulture);
+            }
+        }
         ///   Looks up a localized string similar to Rename view delegate name to match view name.
         /// </summary>
         internal static string PX1005Fix {
