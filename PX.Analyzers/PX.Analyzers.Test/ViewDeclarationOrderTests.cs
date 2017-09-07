@@ -22,7 +22,7 @@ namespace PX.Analyzers.Test
                 {
                     Id = Descriptors.PX1006_ViewDeclarationOrder.Id,
                     Message = Descriptors.PX1006_ViewDeclarationOrder.Title.ToString(),
-                    Severity = DiagnosticSeverity.Error,
+                    Severity = DiagnosticSeverity.Warning,
                     Locations =
                         new[] { new DiagnosticResultLocation("Test0.cs", 7, 14) }
                 },
@@ -31,7 +31,7 @@ namespace PX.Analyzers.Test
                 {
                     Id = Descriptors.PX1004_ViewDeclarationOrder.Id,
                     Message = Descriptors.PX1004_ViewDeclarationOrder.Title.ToString(),
-                    Severity = DiagnosticSeverity.Error,
+                    Severity = DiagnosticSeverity.Warning,
                     Locations =
                         new[] { new DiagnosticResultLocation("Test0.cs", 15, 14) }
                 },

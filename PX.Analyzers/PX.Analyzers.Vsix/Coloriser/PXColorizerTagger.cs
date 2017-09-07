@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
@@ -11,16 +12,13 @@ using System.Text.RegularExpressions;
 namespace PX.Analyzers.Coloriser
 {
 	internal class PXColorizerTagger : ITagger<IClassificationTag>
-	{
-		//static PXColorizerTagger()
-		//{
-		//	AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-		//}
+	{	
+		private readonly ConcurrentBag<ITagSpan<IClassificationTag>> tags = new ConcurrentBag<ITagSpan<IClassificationTag>>();
+		private readonly List<ITagSpan<IClassificationTag>> tagsList = new List<ITagSpan<IClassificationTag>>();
 
-		List<ITagSpan<IClassificationTag>> tags = new List<ITagSpan<IClassificationTag>>();
 		private IClassificationType dacType;
 		private IClassificationType fieldType;
-		//private IClassificationType extensionMethodType;
+		private IClassificationType bqlParameterType;
 		private ITextBuffer theBuffer;
 		private ITextSnapshot cache;
 
@@ -33,7 +31,7 @@ namespace PX.Analyzers.Coloriser
 			theBuffer = buffer;
 			dacType = registry.GetClassificationType(Constants.DacFormat);
 			fieldType = registry.GetClassificationType(Constants.DacFieldFormat);
-			//extensionMethodType = registry.GetClassificationType(Constants.ExtensionMethodFormat);
+			bqlParameterType = registry.GetClassificationType(Constants.BQLParameterFormat);
 		}
 
 		public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
@@ -43,67 +41,100 @@ namespace PX.Analyzers.Coloriser
 				return Enumerable.Empty<ITagSpan<IClassificationTag>>();
 			}
 
-			//if (cache != null && cache == spans[0].Snapshot)
-			//	return tags;
+			if (cache != null && cache == spans[0].Snapshot)
+				return tagsList;
 
 			tags.Clear();
+			tagsList.Clear();
 			cache = spans[0].Snapshot;
-			return GetTagsImpl(cache, spans);
+			GetTagsFromSnapShot(cache, spans);
+			tagsList.AddRange(tags);
+			return tagsList;
 		}
 
-		private IEnumerable<ITagSpan<IClassificationTag>> GetTagsImpl(ITextSnapshot newSnapshot, NormalizedSnapshotSpanCollection spans)
+		private void GetTagsFromSnapShot(ITextSnapshot newSnapshot, NormalizedSnapshotSpanCollection spans)
 		{
-			
-			const string pattern = @"<?([A-Z][a-z]*)+\.[\r|\t|\n]*([a-z]+[A-Z]*)+([>|,])?";
-
 			string row = newSnapshot.GetText();
-			var matches = Regex.Matches(row, pattern);
+			var matches = Regex.Matches(row, RegExpressions.BQLSelectCommandPattern, RegexOptions.Singleline)
+							   .OfType<Match>()
+							   .Where(bqlCommandMatch => !string.IsNullOrWhiteSpace(bqlCommandMatch.Value));
 
-			foreach (Match match in matches)
+			Parallel.ForEach(matches,
+							 bqlCommandMatch => GetTagsFromBQLCommand(newSnapshot, bqlCommandMatch.Value, bqlCommandMatch.Index));			
+		}
+
+		private void GetTagsFromBQLCommand(ITextSnapshot newSnapshot, string bqlCommand, int offset)
+		{
+			GetDacWithFieldTags(newSnapshot, bqlCommand, offset);
+			GetSingleDacAndConstantTags(newSnapshot, bqlCommand, offset);
+			GetBqlParameterTags(newSnapshot, bqlCommand, offset);
+		}
+
+		private void GetBqlParameterTags(ITextSnapshot newSnapshot, string bqlCommand, int offset)
+		{
+			var matches = Regex.Matches(bqlCommand, RegExpressions.BQLParametersPattern);
+
+			foreach (Match bqlParamMatch in matches)
 			{
-				string[] dacParts = match.Value.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+				string bqlParam = bqlParamMatch.Value;
+
+				if (bqlParam.IsNullOrWhiteSpace())
+					continue;
+
+				CreateTag(newSnapshot, bqlParamMatch, offset, bqlParam, bqlParameterType);
+			}
+		}
+
+		private void GetSingleDacAndConstantTags(ITextSnapshot newSnapshot, string bqlCommand, int offset)
+		{
+			var matches = Regex.Matches(bqlCommand, RegExpressions.DacOrConstantPattern);
+
+			foreach (Match dacOrConstMatch in matches)
+			{
+				string dacOrConst = dacOrConstMatch.Value.Trim(',', '<', '>');
+
+				if (dacOrConst.IsNullOrWhiteSpace())
+					continue;
+
+				CreateTag(newSnapshot, dacOrConstMatch, offset, dacOrConst, dacType);
+			}
+		}
+
+		private void GetDacWithFieldTags(ITextSnapshot newSnapshot, string bqlCommand, int offset)
+		{
+			var matches = Regex.Matches(bqlCommand, RegExpressions.DacWithFieldPattern);
+
+			foreach (Match dacWithFieldMatch in matches)
+			{
+				string[] dacParts = dacWithFieldMatch.Value.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
 
 				if (dacParts.Length != 2)
 					continue;
 
-				ITagSpan<IClassificationTag> dacTag = GetDacTag(newSnapshot, match, dacParts);
-				ITagSpan<IClassificationTag> fieldTag = GetFieldTag(newSnapshot, match, dacParts);
-				
-				tags.Add(dacTag);
-				tags.Add(fieldTag);
-			}
-
-			return tags;
+				GetDacTag(newSnapshot, dacWithFieldMatch, offset, dacParts);
+				GetFieldTag(newSnapshot, dacWithFieldMatch, offset, dacParts);
+			}	
 		}
 
-		private TagSpan<IClassificationTag> GetDacTag(ITextSnapshot newSnapshot, Match match, string[] dacParts)
+		private void GetDacTag(ITextSnapshot newSnapshot, Match match, int offset, string[] dacParts)
 		{
 			string dacPart = dacParts[0].TrimStart(',', '<');
-			int startIndex = match.Index + match.Value.IndexOf(dacPart);
-			Span dacSpan = new Span(startIndex, dacPart.Length);
-			SnapshotSpan snapshotSpan = new SnapshotSpan(newSnapshot, dacSpan);
-			return new TagSpan<IClassificationTag>(snapshotSpan, new ClassificationTag(dacType));
+			CreateTag(newSnapshot, match, offset, dacPart, dacType);
 		}
 
-		private TagSpan<IClassificationTag> GetFieldTag(ITextSnapshot newSnapshot, Match match, string[] dacParts)
+		private void GetFieldTag(ITextSnapshot newSnapshot, Match match, int offset, string[] dacParts)
 		{
 			string fieldPart = dacParts[1].TrimEnd(',', '>');
-			int startIndex = match.Index + match.Value.IndexOf(fieldPart);
-			Span fieldSpan = new Span(startIndex, fieldPart.Length);
-			SnapshotSpan snapshotSpan = new SnapshotSpan(newSnapshot, fieldSpan);
-			return new TagSpan<IClassificationTag>(snapshotSpan, new ClassificationTag(fieldType));
+			CreateTag(newSnapshot, match, offset, fieldPart, fieldType);
 		}
 
-		private int GetStartIndexFromMatch(Match match)
+		private void CreateTag(ITextSnapshot newSnapshot, Match match, int offset, string tagContent, IClassificationType classType)
 		{
-			for (int i = 0; i < match.Length; i++)
-			{
-				if (char.IsUpper(match.Value[i]))
-					return match.Index + i;
-			}
-
-			return -1;
+			int startIndex = offset + match.Index + match.Value.IndexOf(tagContent);
+			Span span = new Span(startIndex, tagContent.Length);
+			SnapshotSpan snapshotSpan = new SnapshotSpan(newSnapshot, span);
+			var tag = new TagSpan<IClassificationTag>(snapshotSpan, new ClassificationTag(classType));
+			tags.Add(tag);
 		}
-
 	}
 }

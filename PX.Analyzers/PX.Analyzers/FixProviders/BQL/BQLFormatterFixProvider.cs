@@ -16,7 +16,7 @@ using Microsoft.CodeAnalysis.Editing;
 namespace PX.Analyzers.FixProviders
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class PXGraphCreateInstanceFix : CodeFixProvider
+	public class BQLFormatterFixProvider : CodeFixProvider
 	{
 		private class Rewriter : CSharpSyntaxRewriter
 		{
@@ -33,41 +33,42 @@ namespace PX.Analyzers.FixProviders
 
 			public override SyntaxNode VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
 			{
-				var generator = SyntaxGenerator.GetGenerator(_document);
-				var typeSymbol = _semanticModel.GetSymbolInfo(node.Type).Symbol as ITypeSymbol;
-				if (typeSymbol != null)
-				{
-					return generator.InvocationExpression(
-						generator.MemberAccessExpression(
-							generator.TypeExpression(_pxContext.PXGraphType),
-							generator.GenericName(nameof(PX.Data.PXGraph.CreateInstance), typeSymbol)));
-				}
+				//var generator = SyntaxGenerator.GetGenerator(_document);
+				//var typeSymbol = _semanticModel.GetSymbolInfo(node.Type).Symbol as ITypeSymbol;
+
+				//if (typeSymbol != null)
+				//{
+				//	return generator.InvocationExpression(
+				//		generator.MemberAccessExpression(
+				//			generator.TypeExpression(_pxContext.PXGraphType),
+				//			generator.GenericName(nameof(PX.Data.PXGraph.CreateInstance), typeSymbol)));
+				//}
 
 				return base.VisitObjectCreationExpression(node);
 			}
 		}
 
-		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-			ImmutableArray.Create(Descriptors.PX1001_PXGraphCreateInstance.Id);
+		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Descriptors.PXF1002_PXBadBqlFormat.Id);
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			var root = await context.Document.GetSyntaxRootAsync().ConfigureAwait(false);
-			var node = root.FindNode(context.Span);
-			string title = nameof(Resources.PX1001Fix).GetLocalized().ToString();
+			SyntaxNode root = await context.Document.GetSyntaxRootAsync().ConfigureAwait(false);
+			SyntaxNode node = root.FindNode(context.Span);
+			string title = nameof(Resources.PXF1001Title).GetLocalized().ToString();
 
 			if (node != null)
 			{
 				var semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
+
 				context.RegisterCodeFix(CodeAction.Create(title, c =>
-					{
-						var rewriter = new Rewriter(new PXContext(semanticModel.Compilation), context.Document, semanticModel);
-						var newNode = rewriter.Visit(node);
-						return Task.FromResult(context.Document.WithSyntaxRoot(root.ReplaceNode(node, newNode)));
-					}, title),
-					context.Diagnostics);
+				{
+					var rewriter = new Rewriter(new PXContext(semanticModel.Compilation), context.Document, semanticModel);
+					var newNode = rewriter.Visit(node);
+					return Task.FromResult(context.Document.WithSyntaxRoot(root.ReplaceNode(node, newNode)));
+				}, title),
+				context.Diagnostics);
 			}
 		}
 	}

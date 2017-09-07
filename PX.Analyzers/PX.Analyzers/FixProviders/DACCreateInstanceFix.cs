@@ -12,11 +12,12 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
+using PX.Data;
 
 namespace PX.Analyzers.FixProviders
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class PXGraphCreateInstanceFix : CodeFixProvider
+	public class DACCreateInstanceFix : CodeFixProvider
 	{
 		private class Rewriter : CSharpSyntaxRewriter
 		{
@@ -34,13 +35,39 @@ namespace PX.Analyzers.FixProviders
 			public override SyntaxNode VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
 			{
 				var generator = SyntaxGenerator.GetGenerator(_document);
+				
 				var typeSymbol = _semanticModel.GetSymbolInfo(node.Type).Symbol as ITypeSymbol;
 				if (typeSymbol != null)
 				{
+					SyntaxNode cacheNode = generator.IdentifierName("cache");
+
+					SyntaxNode statementNode = node;
+					while (statementNode.Parent != null 
+						&& !(statementNode is BlockSyntax) 
+						&& !(statementNode is AnonymousFunctionExpressionSyntax))
+					{
+						statementNode = statementNode.Parent;
+					}
+
+					if (statementNode != null)
+					{
+						var dataFlow = _semanticModel.AnalyzeDataFlow(statementNode);
+						if (dataFlow.Succeeded)
+						{
+							var thisSymbol = dataFlow.WrittenOutside.OfType<IParameterSymbol>().FirstOrDefault(p => p.IsThis);
+							if (thisSymbol != null && thisSymbol.Type.InheritsFrom(_pxContext.PXGraphType))
+							{
+								cacheNode = generator.ElementAccessExpression(
+									generator.MemberAccessExpression(generator.ThisExpression(), nameof(PXGraph.Caches)),
+									generator.TypeOfExpression(node.Type));
+							}
+						}
+					}
+
 					return generator.InvocationExpression(
 						generator.MemberAccessExpression(
-							generator.TypeExpression(_pxContext.PXGraphType),
-							generator.GenericName(nameof(PX.Data.PXGraph.CreateInstance), typeSymbol)));
+							cacheNode,
+							generator.IdentifierName(nameof(PXCache.CreateInstance))));
 				}
 
 				return base.VisitObjectCreationExpression(node);
@@ -48,7 +75,7 @@ namespace PX.Analyzers.FixProviders
 		}
 
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-			ImmutableArray.Create(Descriptors.PX1001_PXGraphCreateInstance.Id);
+			ImmutableArray.Create(Descriptors.PX1007_DACCreateInstance.Id);
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
@@ -56,7 +83,7 @@ namespace PX.Analyzers.FixProviders
 		{
 			var root = await context.Document.GetSyntaxRootAsync().ConfigureAwait(false);
 			var node = root.FindNode(context.Span);
-			string title = nameof(Resources.PX1001Fix).GetLocalized().ToString();
+			string title = nameof(Resources.PX1007Fix).GetLocalized().ToString();
 
 			if (node != null)
 			{
