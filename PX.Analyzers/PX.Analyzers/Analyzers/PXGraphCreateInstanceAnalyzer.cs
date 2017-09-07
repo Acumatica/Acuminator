@@ -32,17 +32,31 @@ namespace PX.Analyzers.Analyzers
 		        if (node.Type != null)
 		        {
 			        var typeSymbol = _semanticModel.GetSymbolInfo(node.Type).Symbol as ITypeSymbol;
-			        if (typeSymbol != null && typeSymbol.InheritsFrom(_pxContext.PXGraphType))
+			        if (typeSymbol != null)
 			        {
-				        _context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1001_PXGraphCreateInstance, node.GetLocation()));
+				        DiagnosticDescriptor descriptor = null;
+				        if (typeSymbol.InheritsFrom(_pxContext.PXGraphType))
+				        {
+					        descriptor = Descriptors.PX1001_PXGraphCreateInstance;
+				        }
+						else if (typeSymbol.Equals(_pxContext.PXGraphType))
+				        {
+					        descriptor = Descriptors.PX1003_NonSpecificPXGraphCreateInstance;
+				        }
+				        if (descriptor != null)
+				        {
+					        _context.ReportDiagnostic(Diagnostic.Create(descriptor, node.GetLocation()));
+				        }
 			        }
 		        }
+
 		        base.VisitObjectCreationExpression(node);
 	        }
         }
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-            ImmutableArray.Create(Descriptors.PX1001_PXGraphCreateInstance);
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
+				Descriptors.PX1001_PXGraphCreateInstance,
+				Descriptors.PX1003_NonSpecificPXGraphCreateInstance);
         internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
         {
             compilationStartContext.RegisterSymbolAction(c => Analyze(c, pxContext), 
