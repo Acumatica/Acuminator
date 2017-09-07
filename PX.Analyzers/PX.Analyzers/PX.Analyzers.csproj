@@ -35,7 +35,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CodeFixProvider.cs" />
-    <Compile Include="Constants.cs" />
     <Compile Include="CorrectPXActionSignatureFix.cs" />
     <Compile Include="DiagnosticAnalyzer.cs" />
     <Compile Include="Descriptors.cs" />
