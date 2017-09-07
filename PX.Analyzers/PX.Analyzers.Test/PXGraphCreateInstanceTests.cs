@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using PX.Analyzers.Analyzers;
+using PX.Analyzers.FixProviders;
 using PX.Analyzers.Test.Helpers;
 using TestHelper;
 using Xunit;
@@ -51,10 +53,31 @@ namespace PX.Analyzers.Test
 		    VerifyCSharpDiagnostic(actual, CreateDiagnosticResult(14, 17));
 	    }
 
-		//protected override CodeFixProvider GetCSharpCodeFixProvider()
-		//{
-		//    return new CorrectPXActionSignatureFix();
-		//}
+	    [Theory]
+	    [EmbeddedFileData("PXGraphCreateInstanceMethod.cs", "PXGraphCreateInstanceMethod_Expected.cs")]
+	    public void TestCodeFix_Method(string actual, string expected)
+	    {
+		    VerifyCSharpFix(actual, expected);
+	    }
+
+	    [Theory]
+	    [EmbeddedFileData("PXGraphCreateInstanceField.cs", "PXGraphCreateInstanceField_Expected.cs")]
+	    public void TestCodeFix_Field(string actual, string expected)
+	    {
+		    VerifyCSharpFix(actual, expected);
+	    }
+
+	    [Theory]
+	    [EmbeddedFileData("PXGraphCreateInstanceProperty.cs", "PXGraphCreateInstanceProperty_Expected.cs")]
+	    public void TestCodeFix_Property(string actual, string expected)
+	    {
+		    VerifyCSharpFix(actual, expected);
+	    }
+
+		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		{
+			return new PXGraphCreateInstanceFix();
+		}
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
         {
