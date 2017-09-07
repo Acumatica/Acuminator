@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace PX.Analyzers
+namespace PX.Analyzers.Analyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class InvalidPXActionSignatureAnalyzer : PXDiagnosticAnalyzer

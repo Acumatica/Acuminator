@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -11,9 +10,8 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
-using Microsoft.CodeAnalysis.Rename;
 
-namespace PX.Analyzers
+namespace PX.Analyzers.FixProviders
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 	public class CorrectPXActionSignatureFix : CodeFixProvider
