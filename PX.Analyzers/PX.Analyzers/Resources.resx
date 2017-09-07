@@ -150,4 +150,13 @@
   <data name="PX1006Title" xml:space="preserve">
     <value>This order of views declaration will result in creation of 1 cache for both dacs</value>
   </data>
+  <data name="PX1005Fix" xml:space="preserve">
+    <value>Rename view delegate name to match view name</value>
+  </data>
+  <data name="PX1005MessageFormat" xml:space="preserve">
+    <value>Possible typo in view delegate name. View name for this delegate: '{0}'</value>
+  </data>
+  <data name="PX1005Title" xml:space="preserve">
+    <value>Possible typo in view delegate name</value>
+  </data>
 </root>
