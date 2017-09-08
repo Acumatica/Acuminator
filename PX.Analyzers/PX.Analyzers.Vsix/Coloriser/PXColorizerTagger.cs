@@ -13,12 +13,14 @@ namespace PX.Analyzers.Coloriser
 {
 	internal class PXColorizerTagger : ITagger<IClassificationTag>
 	{	
-		private readonly ConcurrentBag<ITagSpan<IClassificationTag>> tags = new ConcurrentBag<ITagSpan<IClassificationTag>>();
-		private readonly List<ITagSpan<IClassificationTag>> tagsList = new List<ITagSpan<IClassificationTag>>();
+		//private readonly ConcurrentBag<ITagSpan<IClassificationTag>> tags = new ConcurrentBag<ITagSpan<IClassificationTag>>();
+		private readonly List<ITagSpan<IClassificationTag>> tags = new List<ITagSpan<IClassificationTag>>();
 
 		private IClassificationType dacType;
 		private IClassificationType fieldType;
 		private IClassificationType bqlParameterType;
+		private IClassificationType bqlOperatorType;
+
 		private ITextBuffer theBuffer;
 		private ITextSnapshot cache;
 
@@ -32,6 +34,7 @@ namespace PX.Analyzers.Coloriser
 			dacType = registry.GetClassificationType(Constants.DacFormat);
 			fieldType = registry.GetClassificationType(Constants.DacFieldFormat);
 			bqlParameterType = registry.GetClassificationType(Constants.BQLParameterFormat);
+			bqlOperatorType = registry.GetClassificationType(Constants.BQLOperatorFormat);
 		}
 
 		public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
@@ -42,14 +45,14 @@ namespace PX.Analyzers.Coloriser
 			}
 
 			if (cache != null && cache == spans[0].Snapshot)
-				return tagsList;
+				return tags;
 
 			tags.Clear();
-			tagsList.Clear();
+			//tagsList.Clear();
 			cache = spans[0].Snapshot;
 			GetTagsFromSnapShot(cache, spans);
-			tagsList.AddRange(tags);
-			return tagsList;
+			//tagsList.AddRange(tags);
+			return tags;
 		}
 
 		private void GetTagsFromSnapShot(ITextSnapshot newSnapshot, NormalizedSnapshotSpanCollection spans)
@@ -59,15 +62,51 @@ namespace PX.Analyzers.Coloriser
 							   .OfType<Match>()
 							   .Where(bqlCommandMatch => !string.IsNullOrWhiteSpace(bqlCommandMatch.Value));
 
-			Parallel.ForEach(matches,
-							 bqlCommandMatch => GetTagsFromBQLCommand(newSnapshot, bqlCommandMatch.Value, bqlCommandMatch.Index));			
+			foreach (Match bqlCommandMatch in matches)
+			{
+				GetTagsFromBQLCommand(newSnapshot, bqlCommandMatch.Value, bqlCommandMatch.Index);
+			}
+
+
+			//Parallel.ForEach(matches,
+			//				 bqlCommandMatch => GetTagsFromBQLCommand(newSnapshot, bqlCommandMatch.Value, bqlCommandMatch.Index));			
 		}
 
 		private void GetTagsFromBQLCommand(ITextSnapshot newSnapshot, string bqlCommand, int offset)
 		{
+			int firstAngleBraceIndex = bqlCommand.IndexOf('<');
+			string selectOp = bqlCommand.Substring(0, firstAngleBraceIndex);
+
+			if (!selectOp.Contains("Select") && !selectOp.Contains("Search"))
+				return;
+
+			int lastAngleBraceIndex = bqlCommand.LastIndexOf('>');
+			bqlCommand = bqlCommand.Substring(0, lastAngleBraceIndex + 1);
+			
+			GetSelectCommandTag(newSnapshot, bqlCommand, offset);
+			GetBQLOperandTags(newSnapshot, bqlCommand, offset);
 			GetDacWithFieldTags(newSnapshot, bqlCommand, offset);
 			GetSingleDacAndConstantTags(newSnapshot, bqlCommand, offset);
 			GetBqlParameterTags(newSnapshot, bqlCommand, offset);
+		}
+
+		private void GetBQLOperandTags(ITextSnapshot newSnapshot, string bqlCommand, int offset)
+		{
+			var matches = Regex.Matches(bqlCommand, RegExpressions.DacOperandPattern);
+
+			foreach (Match bqlOperandMatch in matches.OfType<Match>().Skip(1))
+			{
+				string bqlOperand = bqlOperandMatch.Value.TrimEnd('<');
+				CreateTag(newSnapshot, bqlOperandMatch, offset, bqlOperand, bqlOperatorType);
+			}
+		}
+
+		private void GetSelectCommandTag(ITextSnapshot newSnapshot, string selectOp, int offset)
+		{
+			Span span = new Span(offset, selectOp.Length);
+			SnapshotSpan snapshotSpan = new SnapshotSpan(newSnapshot, span);
+			var tag = new TagSpan<IClassificationTag>(snapshotSpan, new ClassificationTag(bqlOperatorType));
+			tags.Add(tag);
 		}
 
 		private void GetBqlParameterTags(ITextSnapshot newSnapshot, string bqlCommand, int offset)
@@ -77,10 +116,6 @@ namespace PX.Analyzers.Coloriser
 			foreach (Match bqlParamMatch in matches)
 			{
 				string bqlParam = bqlParamMatch.Value;
-
-				if (bqlParam.IsNullOrWhiteSpace())
-					continue;
-
 				CreateTag(newSnapshot, bqlParamMatch, offset, bqlParam, bqlParameterType);
 			}
 		}
@@ -92,10 +127,6 @@ namespace PX.Analyzers.Coloriser
 			foreach (Match dacOrConstMatch in matches)
 			{
 				string dacOrConst = dacOrConstMatch.Value.Trim(',', '<', '>');
-
-				if (dacOrConst.IsNullOrWhiteSpace())
-					continue;
-
 				CreateTag(newSnapshot, dacOrConstMatch, offset, dacOrConst, dacType);
 			}
 		}
