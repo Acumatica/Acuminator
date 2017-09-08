@@ -20,19 +20,32 @@ namespace PX.Analyzers.Test
 		[EmbeddedFileData("BQL.BadBQL.cs")]
 		public void TestDiagnostic(string actual)
 		{
-			var diagnostic = new DiagnosticResult
+			var diagnostics = new[]
 			{
-				Id = Descriptors.PXF1001_PXBadBqlDiagnostic.Id,
-				Message = Descriptors.PXF1001_PXBadBqlDiagnostic.Title.ToString(),
-				Severity = DiagnosticSeverity.Warning,
-				Locations = new[] 
+				new DiagnosticResult
 				{
-					new DiagnosticResultLocation("Test0.cs", line: 13, column: 10),
-					new DiagnosticResultLocation("Test0.cs", line: 23, column: 16),
+					Id = Descriptors.PXF1001_PXBadBqlDiagnostic.Id,
+					Message = Descriptors.PXF1001_PXBadBqlDiagnostic.Title.ToString(),
+					Severity = DiagnosticSeverity.Warning,
+					Locations = new[]
+					{
+						new DiagnosticResultLocation("Test0.cs", line: 13, column: 10)
+					}
+				},
+
+				new DiagnosticResult
+				{
+					Id = Descriptors.PXF1001_PXBadBqlDiagnostic.Id,
+					Message = Descriptors.PXF1001_PXBadBqlDiagnostic.Title.ToString(),
+					Severity = DiagnosticSeverity.Warning,
+					Locations = new[]
+					{
+						new DiagnosticResultLocation("Test0.cs", line: 23, column: 16)
+					}
 				}
 			};
-
-			VerifyCSharpDiagnostic(actual, diagnostic);
+			
+			VerifyCSharpDiagnostic(actual, diagnostics);
 		}
 
 		[Theory]
