@@ -51,6 +51,8 @@
     <Compile Include="FixProviders\InheritanceFromPXCacheExtensionMakeSealedFix.cs" />
     <Compile Include="FixProviders\InheritanceFromPXCacheExtensionFix.cs" />
     <Compile Include="FixProviders\DACCreateInstanceFix.cs" />
+    <Compile Include="FixProviders\MissingTypeListAttributeFix.cs" />
+    <Compile Include="FixProviders\StartRowResetForPagingFix.cs" />
     <Compile Include="FixProviders\TypoInViewDelegateNameFix.cs" />
     <Compile Include="FixProviders\PXGraphCreateInstanceFix.cs" />
     <Compile Include="RoslynExtensions\ArrayExtensions.cs" />
