@@ -16,7 +16,6 @@ namespace PX.Analyzers.Coloriser
 		public DACFormat()
 		{
 			ForegroundColor = Colors.Maroon;
-			BackgroundColor = Colors.White;
 			DisplayName = Labels.DacFormatLabel; // Human readable version of the name		
 			ForegroundCustomizable = true;
 			BackgroundCustomizable = true;
@@ -33,7 +32,6 @@ namespace PX.Analyzers.Coloriser
 		public DACFieldFormat()
 		{
 			ForegroundColor = Colors.DarkGreen;
-			BackgroundColor = Colors.White;
 			DisplayName = Labels.DacFieldFormatLabel; // Human readable version of the name		
 			ForegroundCustomizable = true;
 			BackgroundCustomizable = true;
@@ -50,7 +48,6 @@ namespace PX.Analyzers.Coloriser
 		public BQLParameterFormat()
 		{
 			ForegroundColor = Colors.IndianRed;
-			BackgroundColor = Colors.White;
 			DisplayName = Labels.BQLParameterFormatLabel; // Human readable version of the name		
 			ForegroundCustomizable = true;
 			BackgroundCustomizable = true;
@@ -67,7 +64,6 @@ namespace PX.Analyzers.Coloriser
 		public BQLOperatorFormat()
 		{
 			ForegroundColor = Colors.BlueViolet;
-			BackgroundColor = Colors.White;
 			DisplayName = Labels.BQLOperatorFormatLabel; // Human readable version of the name		
 			ForegroundCustomizable = true;
 			BackgroundCustomizable = true;
