@@ -105,7 +105,6 @@
   <ItemGroup>
     <Compile Include="Coloriser\ClassificationDefinitions.cs" />
     <Compile Include="Coloriser\EditorFormats.cs" />
-    <Compile Include="Coloriser\ParsedDocument.cs" />
     <Compile Include="Coloriser\PXColorizerTagger.cs" />
     <Compile Include="Coloriser\PXColorizerTaggerProvider.cs" />
     <Compile Include="Coloriser\Utils\Constants.cs" />

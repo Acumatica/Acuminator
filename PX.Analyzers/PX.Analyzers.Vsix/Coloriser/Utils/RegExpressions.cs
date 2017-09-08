@@ -10,11 +10,9 @@ namespace PX.Analyzers.Coloriser
 	{
 		private static readonly string[] bqlSelectNames = new[]
 		{
-				"PXSelect",
-				"PXSelectJoin",
-				"PXSelectReadonly",
-				"PXSelectReadonly2",
-				"PXSelectReadonly3",
+				"(PX)?Select(Join)?",
+				"Search",
+				@"PXSelectReadonly\d?",
 				"PXSelectGroupJoin",
 				"PXSelectJoinOrderBy",
 				"PXSelectGroupByOrderBy"
@@ -22,13 +20,30 @@ namespace PX.Analyzers.Coloriser
 
 		private static readonly string[] bqlParameterNames = new[]
 		{
-			"Current",
-			"Optional",
+			"Current2?",
+			"Optional2?",
 			"Required"
 		};
 
-		public const string DacWithFieldPattern = @"<([A-Z][a-z]*)+\.[\r|\t|\n]*([a-z]+[A-Z]*)+([>|,])?";
-		public const string DacOrConstantPattern = @"<([A-Z]\w*)[\r|\n|\t]*(>|\,)";
+		//private static readonly string[] bqlOperatorNames = new[]
+		//{
+		//	"InnerJoin",
+		//	"RightJoin",
+		//	"LeftJoin",
+		//	"Where",
+		//	"On",
+		//	"Equal",
+		//	"OrderBy",
+		//	"Asc",
+		//	"Desc",
+		//	"Equal",
+		//	""
+
+		//};
+
+		public const string DacWithFieldPattern = @"<[\r|\n|\t]*?([A-Z][a-z]*)+\.[\r|\t|\n]*([a-z]+[A-Z]*)+([>|,])?";
+		public const string DacOrConstantPattern = @"<[\r|\n|\t]*?([A-Z]\w*)[\r|\n|\t]*(>|\,)";
+		public const string DacOperandPattern = @"(,|<)?([A-Z][A-Za-z]*[\d]?)<";
 
 		public static string BQLSelectCommandPattern { get; }
 
@@ -36,7 +51,7 @@ namespace PX.Analyzers.Coloriser
 
 		static RegExpressions()
 		{
-			BQLSelectCommandPattern = "(" + string.Join("|", bqlSelectNames) + @")[\r|\t|\n]*\<.*\>.*;";
+			BQLSelectCommandPattern = "(" + string.Join("|", bqlSelectNames) + @")<.*?>[^;]*?;";
 			BQLParametersPattern = "(" + string.Join("|", bqlParameterNames) + ")";
 		}
 	}
