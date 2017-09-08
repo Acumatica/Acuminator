@@ -21,20 +21,9 @@ namespace PX.Analyzers.Analyzers.BQL
 
 		public static bool HasEmptyLineBefore(this SyntaxNode node) => node.GetLeadingTrivia().TriviaHasEmptyLine();
 
-		public static bool HasExactlyOneEOL(this SyntaxNode node)
-		{
-			int eolCount = 0;
+		public static bool HasExactlyOneEOL(this SyntaxNode node) => node.GetTrailingTrivia().HasExactlyOneEOL();
 
-			foreach (var trivia in node.GetTrailingTrivia().Where(tr => tr.Kind() == SyntaxKind.EndOfLineTrivia))
-			{
-				eolCount++;
-
-				if (eolCount > 1)
-					return false;
-			}
-
-			return eolCount == 1;
-		}
+		public static bool HasExactlyOneEOL(this SyntaxToken token) => token.TrailingTrivia.HasExactlyOneEOL();
 
 		public static bool TriviaContainsEOL(this SyntaxTriviaList triviaList) => 
 			triviaList.Any(trivia => trivia.Kind() == SyntaxKind.EndOfLineTrivia);
@@ -50,6 +39,44 @@ namespace PX.Analyzers.Analyzers.BQL
 				if (eolCount > 1)
 					return true;
 			}
+
+			return false;
+		}
+
+		public static bool HasExactlyOneEOL(this SyntaxTriviaList triviaList)
+		{
+			int eolCount = 0;
+
+			foreach (var trivia in triviaList.Where(tr => tr.Kind() == SyntaxKind.EndOfLineTrivia))
+			{
+				eolCount++;
+
+				if (eolCount > 1)
+					return false;
+			}
+
+			return eolCount == 1;
+		}
+
+
+		public static bool CheckGenericNodeParentKind(this GenericNameSyntax genericNode)
+		{
+			if (genericNode?.Parent == null)
+				return false;
+
+			SyntaxKind parentKind = genericNode.Parent.Kind();
+
+			if (parentKind == SyntaxKind.VariableDeclaration)
+				return true;
+
+			if (parentKind == SyntaxKind.SimpleMemberAccessExpression)
+			{
+				SyntaxKind? grandPaKind = genericNode.Parent.Parent?.Kind();
+
+				if (grandPaKind == SyntaxKind.InvocationExpression)
+					return true;
+			}
+
 
 			return false;
 		}
