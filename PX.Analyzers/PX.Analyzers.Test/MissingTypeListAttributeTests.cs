@@ -9,6 +9,7 @@ using PX.Analyzers.Analyzers;
 using PX.Analyzers.Test.Helpers;
 using TestHelper;
 using Xunit;
+using Microsoft.CodeAnalysis.CodeFixes;
 
 namespace PX.Analyzers.Test
 {
@@ -44,9 +45,21 @@ namespace PX.Analyzers.Test
             VerifyCSharpDiagnostic(actual, CreateDiagnosticResult(14, 23));
         }
 
+        [Theory]
+        [EmbeddedFileData("MissingTypeListAttributeBad.cs", "MissingTypeListAttributeBad_Expected.cs")]
+        public void TestCodeFix(string actual, string expected)
+        {
+            VerifyCSharpFix(actual, expected);
+        }
+
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
         {
             return new MissingTypeListAttributeAnalyzer();
+        }
+
+        protected override CodeFixProvider GetCSharpCodeFixProvider()
+        {
+            return new MissingTypeListAttributeFix();
         }
     }
 }

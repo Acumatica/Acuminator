@@ -141,6 +141,8 @@
     <EmbeddedResource Include="Sources\LongOperationDelegateClosuresAnalyzer.cs" />
     <Compile Include="LongOperationDelegateClosuresTests.cs" />
     <EmbeddedResource Include="Sources\StartRowResetForPaging.cs" />
+    <EmbeddedResource Include="Sources\MissingTypeListAttributeBad_Expected.cs" />
+    <EmbeddedResource Include="Sources\StartRowResetForPaging_Expected.cs" />
     <Compile Include="StartRowResetForPagingTests.cs" />
     <Compile Include="InheritanceFromPXCacheExtensionTests.cs" />
     <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtension_Bad.cs" />
