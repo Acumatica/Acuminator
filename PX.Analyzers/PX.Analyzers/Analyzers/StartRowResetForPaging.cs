@@ -87,7 +87,7 @@ namespace PX.Analyzers.Analyzers
                         ies = ies.Parent;
                     } while (!(ies is InvocationExpressionSyntax));
                     var symbol = (IMethodSymbol)semanticModel.GetSymbolInfo(ies).Symbol;
-                    if(symbol.Name == "Select" && 
+                    if(symbol.Name.StartsWith("Select") && 
                        (symbol.ContainingType.InheritsFromOrEquals(pxContext.PXViewType) ||
                         symbol.ContainingType.InheritsFromOrEquals(pxContext.PXSelectBaseType)))
                     {
