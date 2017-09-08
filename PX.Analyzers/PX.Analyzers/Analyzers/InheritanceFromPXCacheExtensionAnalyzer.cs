@@ -28,8 +28,12 @@ namespace PX.Analyzers.Analyzers
         private void Analyze(SymbolAnalysisContext context, PXContext pxContext)
         {
 	        var symbol = (INamedTypeSymbol) context.Symbol;
-	        if (!symbol.InheritsFrom(pxContext.PXCacheExtensionType))
+	        if (!symbol.InheritsFrom(pxContext.PXCacheExtensionType)
+	            || String.Equals(nameof(PXCacheExtension), symbol.Name, StringComparison.Ordinal))
+	        {
 		        return;
+	        }
+
 	        if (String.Equals(nameof(PXCacheExtension), symbol.BaseType.Name, StringComparison.Ordinal))
 	        {
 		        if (!symbol.IsSealed)
