@@ -29,7 +29,8 @@ namespace PX.Analyzers.Analyzers
         {
 			var method = (IMethodSymbol) context.Symbol;
 	        if (method.ReturnType.SpecialType != SpecialType.System_Collections_IEnumerable
-	            || method.IsOverride)
+	            || method.IsOverride
+				|| method.Parameters.Length > 0)
 	        {
 		        return;
 	        }
