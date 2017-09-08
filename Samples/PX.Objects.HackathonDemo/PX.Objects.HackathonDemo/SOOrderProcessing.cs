@@ -18,13 +18,17 @@ namespace PX.Objects.HackathonDemo
 		}
 
 		public PXProcessing<SOSelectedOrder> Orders;
-		public PXSelect<SOOrder> CurrentOrder;
+		public PXSelect<SOOrder, 
+			Where<SOOrder.orderType, Equal<SalesOrder>, 
+				And<SOOrder.status, Equal<Open>>>,
+			OrderBy<Asc<SOOrder.orderNbr>>> 
+			OpenSalesOrders;
 
 		public SOOrderProcessing()
 		{
 			Orders.SetProcessDelegate(item =>
 			{
-				this.PerformRelease(item);
+				PerformRelease(item);
 			});
 		}
 
