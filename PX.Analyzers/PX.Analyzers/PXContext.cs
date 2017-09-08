@@ -60,6 +60,16 @@ namespace PX.Analyzers
 
 			public INamedTypeSymbol PXSelectJoin2 => compilation.GetTypeByMetadataName(typeof(PXSelectJoin<,,>).FullName);
 			public INamedTypeSymbol PXSelectJoin3 => compilation.GetTypeByMetadataName(typeof(PXSelectJoin<,,,>).FullName);
+
+			public INamedTypeSymbol OrderBy => compilation.GetTypeByMetadataName(typeof(OrderBy<>).FullName);
+
+			public INamedTypeSymbol Asc => compilation.GetTypeByMetadataName(typeof(Asc<>).FullName);
+
+			public INamedTypeSymbol AscWithContinuation => compilation.GetTypeByMetadataName(typeof(Asc<,>).FullName);
+
+			public INamedTypeSymbol Desc => compilation.GetTypeByMetadataName(typeof(Desc<>).FullName);
+
+			public INamedTypeSymbol DescWithContinuation => compilation.GetTypeByMetadataName(typeof(Desc<,>).FullName);
 		}
 		#endregion
 	}
