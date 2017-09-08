@@ -21,16 +21,16 @@ namespace PX.Analyzers.Test
                 new DiagnosticResult
                 {
                     Id = Descriptors.PX1006_ViewDeclarationOrder.Id,
-                    Message = Descriptors.PX1006_ViewDeclarationOrder.Title.ToString(),
+                    Message = string.Format(Descriptors.PX1006_ViewDeclarationOrder.Title.ToString(), "Vendor", "BAccount"),
                     Severity = DiagnosticSeverity.Warning,
                     Locations =
-                        new[] { new DiagnosticResultLocation("Test0.cs", 7, 14) }
+                        new[] { new DiagnosticResultLocation("Test0.cs", 7, 14)},
                 },
 
                 new DiagnosticResult
                 {
                     Id = Descriptors.PX1004_ViewDeclarationOrder.Id,
-                    Message = Descriptors.PX1004_ViewDeclarationOrder.Title.ToString(),
+                    Message = string.Format(Descriptors.PX1004_ViewDeclarationOrder.Title.ToString(), "Customer", "BAccount"),
                     Severity = DiagnosticSeverity.Warning,
                     Locations =
                         new[] { new DiagnosticResultLocation("Test0.cs", 15, 14) }

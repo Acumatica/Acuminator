@@ -45,7 +45,10 @@ namespace PX.Analyzers.Analyzers
                     continue;
                 foreach(var parent in type.GetBaseTypes())
                     if(visited.Contains(parent))
-                        context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1004_ViewDeclarationOrder, graph.Locations.First()));
+                        context.ReportDiagnostic(
+                            Diagnostic.Create(Descriptors.PX1004_ViewDeclarationOrder, 
+                                              graph.Locations.First(),
+                                              type.Name, parent.Name));
                 visited.Add(type);
             }
 
@@ -58,7 +61,9 @@ namespace PX.Analyzers.Analyzers
                     continue;
                 foreach (var parent in type.GetBaseTypes())
                     if (visited.Contains(parent))
-                        context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1006_ViewDeclarationOrder, graph.Locations.First()));
+                        context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1006_ViewDeclarationOrder, 
+                                                                   graph.Locations.First(),
+                                                                   type.Name, parent.Name));
                 visited.Add(type);
             }
         }
