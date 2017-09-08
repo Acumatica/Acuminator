@@ -51,7 +51,7 @@ namespace PX.Analyzers.Coloriser
 
 		static RegExpressions()
 		{
-			BQLSelectCommandPattern = "(" + string.Join("|", bqlSelectNames) + @")<.*?>[^;]*?;";
+			BQLSelectCommandPattern = "(" + string.Join("|", bqlSelectNames) + @")<.*?>\.?[^;\.]*?;";
 			BQLParametersPattern = "(" + string.Join("|", bqlParameterNames) + ")";
 		}
 	}
