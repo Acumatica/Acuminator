@@ -143,6 +143,7 @@
     <EmbeddedResource Include="Sources\StartRowResetForPaging.cs" />
     <EmbeddedResource Include="Sources\MissingTypeListAttributeBad_Expected.cs" />
     <EmbeddedResource Include="Sources\StartRowResetForPaging_Expected.cs" />
+    <EmbeddedResource Include="Sources\TypoInViewDelegateName_Good_SameName.cs" />
     <Compile Include="StartRowResetForPagingTests.cs" />
     <Compile Include="InheritanceFromPXCacheExtensionTests.cs" />
     <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtension_Bad.cs" />
@@ -175,7 +176,7 @@
     <EmbeddedResource Include="Sources\PXGraphCreateInstanceProperty_Expected.cs" />
     <EmbeddedResource Include="Sources\NonSpecificPXGraphCreateInstanceMethod.cs" />
     <EmbeddedResource Include="Sources\ViewDeclarationOrder.cs" />
-    <EmbeddedResource Include="Sources\TypoInViewDelegateName_Good_SameName.cs" />
+    <EmbeddedResource Include="Sources\TypoInViewDelegateName_Good_Override.cs" />
     <EmbeddedResource Include="Sources\TypoInViewDelegateName_Bad.cs" />
     <Compile Include="Verifiers\CodeFixVerifier.cs" />
     <Compile Include="Verifiers\DiagnosticVerifier.cs" />

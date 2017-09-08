@@ -46,6 +46,13 @@ namespace PX.Analyzers.Test
 		    VerifyCSharpDiagnostic(actual);
 	    }
 
+	    [Theory]
+	    [EmbeddedFileData("TypoInViewDelegateName_Good_Override.cs")]
+	    public void TestDiagnostic_ShouldNotShowDiagnostic_Override(string actual)
+	    {
+		    VerifyCSharpDiagnostic(actual);
+	    }
+
 		[Theory]
         [EmbeddedFileData("TypoInViewDelegateName_Bad.cs")]
         public void TestDiagnostic(string actual)
