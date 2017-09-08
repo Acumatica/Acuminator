@@ -25,7 +25,7 @@ namespace PX.Analyzers.Analyzers
 		{
 			GenericNameSyntax genericNode = syntaxContext.Node as GenericNameSyntax;
 
-			if (!CheckGenericNodeParentKind(genericNode))
+			if (!genericNode.CheckGenericNodeParentKind())
 				return;
 
 			ITypeSymbol typeSymbol = syntaxContext.SemanticModel.GetSymbolInfo(genericNode).Symbol as ITypeSymbol;
@@ -43,31 +43,9 @@ namespace PX.Analyzers.Analyzers
 			}
 		}
 
-		private static bool CheckGenericNodeParentKind(GenericNameSyntax genericNode)
-		{
-			if (genericNode?.Parent == null)
-				return false;
-
-			SyntaxKind parentKind = genericNode.Parent.Kind();
-
-			if (parentKind == SyntaxKind.VariableDeclaration)
-				return true;
-
-			if (parentKind == SyntaxKind.SimpleMemberAccessExpression)
-			{
-				SyntaxKind? grandPaKind = genericNode.Parent.Parent?.Kind();
-
-				if (grandPaKind == SyntaxKind.InvocationExpression)
-					return true;
-			}
-
-
-			return false;
-		}
-
 		private static bool CheckBQLStatement(GenericNameSyntax genericNode, SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
 		{
-			if (genericNode.TypeArgumentList.Arguments.Count == 0)
+			if (genericNode.TypeArgumentList.Arguments.Count <= 1)
 				return true;
 
 			var typeArgsList = genericNode.TypeArgumentList.Arguments;

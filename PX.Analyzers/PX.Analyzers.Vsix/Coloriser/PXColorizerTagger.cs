@@ -74,6 +74,26 @@ namespace PX.Analyzers.Coloriser
 
 		private void GetTagsFromBQLCommand(ITextSnapshot newSnapshot, string bqlCommand, int offset)
 		{
+			
+			bqlCommand = bqlCommand.TrimStart('{');
+			int firstCurlyBraces = bqlCommand.IndexOf('{');
+
+			if (firstCurlyBraces >= 0)
+			{
+				bqlCommand = bqlCommand.Substring(0, firstCurlyBraces);
+			}
+
+			int firstSquareBrace = bqlCommand.IndexOf('[');
+
+			if (firstSquareBrace >= 0)
+			{
+				bqlCommand = bqlCommand.Substring(0, firstSquareBrace);
+			}
+
+			int lastAngleBraces = bqlCommand.LastIndexOf('>');
+
+			bqlCommand = bqlCommand.Substring(0, lastAngleBraces + 1);
+
 			int firstAngleBraceIndex = bqlCommand.IndexOf('<');
 			string selectOp = bqlCommand.Substring(0, firstAngleBraceIndex);
 
