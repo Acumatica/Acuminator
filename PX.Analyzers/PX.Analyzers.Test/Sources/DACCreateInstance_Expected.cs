@@ -11,7 +11,7 @@ namespace PX.Analyzers.Test.Sources
     {
         public void Release()
         {
-	        var invoice = this.Caches[typeof(APInvoice)].CreateInstance();
+	        var invoice = (APInvoice)this.Caches[typeof(APInvoice)].CreateInstance();
         }
     }
 
