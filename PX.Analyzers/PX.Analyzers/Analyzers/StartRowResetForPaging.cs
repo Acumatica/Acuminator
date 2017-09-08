@@ -40,18 +40,27 @@ namespace PX.Analyzers.Analyzers
                 return;
 
             var declaration = method.DeclaringSyntaxReferences[0];
+            var methodDeclaration = declaration.GetSyntax() as MethodDeclarationSyntax;
+            if (methodDeclaration == null)
+                return;
+
             var semanticModel = context.Compilation.GetSemanticModel(declaration.SyntaxTree);
             DataFlowAnalysis df = semanticModel.AnalyzeDataFlow(
-               declaration.GetSyntax().DescendantNodes().OfType<BlockSyntax>().Single());
+               methodDeclaration.Body);
+
+            if (df == null || !df.Succeeded)
+                return;
 
             ILocalSymbol refStartRow = null;
             foreach (var p in df.WrittenInside)
             {
                 if (p is ILocalSymbol ls)
                 {
-                    var symbol = semanticModel.GetSymbolInfo(
-                        p.DeclaringSyntaxReferences[0].GetSyntax().
-                        DescendantNodes().OfType<MemberAccessExpressionSyntax>().SingleOrDefault()).Symbol;
+                    List<MemberAccessExpressionSyntax> memberAccesses = p.DeclaringSyntaxReferences[0].GetSyntax().
+                        DescendantNodes().OfType<MemberAccessExpressionSyntax>().ToList();
+                    if (memberAccesses.Count != 1)
+                        continue;
+                    var symbol = semanticModel.GetSymbolInfo(memberAccesses[0]).Symbol;
                     if (symbol != null &&
                         symbol.ContainingType == pxContext.PXViewType &&
                         symbol.Name == nameof(PXView.StartRow))
@@ -78,7 +87,7 @@ namespace PX.Analyzers.Analyzers
                         ies = ies.Parent;
                     } while (!(ies is InvocationExpressionSyntax));
                     var symbol = (IMethodSymbol)semanticModel.GetSymbolInfo(ies).Symbol;
-                    if(symbol.Name == "Select" && 
+                    if(symbol.Name.StartsWith("Select") && 
                        (symbol.ContainingType.InheritsFromOrEquals(pxContext.PXViewType) ||
                         symbol.ContainingType.InheritsFromOrEquals(pxContext.PXSelectBaseType)))
                     {
