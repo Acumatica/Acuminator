@@ -27,11 +27,14 @@ namespace PX.Analyzers.Analyzers
 
         private void Analyze(SymbolAnalysisContext context, PXContext pxContext)
         {
-			var method = (IMethodSymbol)context.Symbol;
-	        if (method.ReturnType.SpecialType != SpecialType.System_Collections_IEnumerable)
+			var method = (IMethodSymbol) context.Symbol;
+	        if (method.ReturnType.SpecialType != SpecialType.System_Collections_IEnumerable
+	            || method.IsOverride)
+	        {
 		        return;
+	        }
 
-			var parent = method.ContainingType;
+	        var parent = method.ContainingType;
 	        if (parent != null && parent.InheritsFrom(pxContext.PXGraphType))
 	        {
 		        var views = parent.GetMembers()

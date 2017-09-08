@@ -9,6 +9,7 @@ using PX.Analyzers.Analyzers;
 using PX.Analyzers.Test.Helpers;
 using TestHelper;
 using Xunit;
+using Microsoft.CodeAnalysis.CodeFixes;
 
 namespace PX.Analyzers.Test
 {
@@ -36,9 +37,21 @@ namespace PX.Analyzers.Test
             VerifyCSharpDiagnostic(actual, CreateDiagnosticResults());
         }
 
+        [Theory]
+        [EmbeddedFileData("StartRowResetForPaging.cs", "StartRowResetForPaging_Expected.cs")]
+        public void TestCodeFix(string actual, string expected)
+        {
+            VerifyCSharpFix(actual, expected);
+        }
+
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
         {
             return new StartRowResetForPagingAnalyzer();
+        }
+
+        protected override CodeFixProvider GetCSharpCodeFixProvider()
+        {
+            return new StartRowResetForPagingFix();
         }
     }
 }
