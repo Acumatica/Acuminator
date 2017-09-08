@@ -32,9 +32,9 @@ namespace PX.Analyzers.Analyzers
 
             context.RegisterCodeFix(
                 CodeAction.Create(
-                    Resources.PX1002Title,
+                    Resources.PX1010Fix,
                     c => InsertStartRowAssigment(context.Document, node, c),
-                    Resources.PX1002Title),
+                    Resources.PX1010Fix),
                 context.Diagnostics);
         }
 
