@@ -141,7 +141,6 @@
     <EmbeddedResource Include="Sources\LongOperationDelegateClosuresAnalyzer.cs" />
     <Compile Include="LongOperationDelegateClosuresTests.cs" />
     <EmbeddedResource Include="Sources\StartRowResetForPaging.cs" />
-    <Compile Include="Sources\BQL\GoodBQL - Copy.cs" />
     <Compile Include="StartRowResetForPagingTests.cs" />
     <Compile Include="InheritanceFromPXCacheExtensionTests.cs" />
     <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtension_Bad.cs" />
