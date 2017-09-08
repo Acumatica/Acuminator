@@ -134,7 +134,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This order of views declaration will result in creation of 2 distinct caches.
+        ///   Looks up a localized string similar to This order of views declaration will result in creation of 2 distinct caches {0} {1}.
         /// </summary>
         internal static string PX1004Title {
             get {
@@ -179,7 +179,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This order of views declaration will result in creation of 1 cache for both dacs.
+        ///   Looks up a localized string similar to This order of views declaration will result in creation of 1 cache for both dacs {0} {1}.
         /// </summary>
         internal static string PX1006Title {
             get {
