@@ -64,10 +64,11 @@ namespace PX.Analyzers.FixProviders
 						}
 					}
 
-					return generator.InvocationExpression(
-						generator.MemberAccessExpression(
-							cacheNode,
-							generator.IdentifierName(nameof(PXCache.CreateInstance))));
+					return generator.CastExpression(typeSymbol, 
+						generator.InvocationExpression(
+							generator.MemberAccessExpression(
+								cacheNode,
+								generator.IdentifierName(nameof(PXCache.CreateInstance)))));
 				}
 
 				return base.VisitObjectCreationExpression(node);
