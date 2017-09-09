@@ -21,7 +21,8 @@ namespace PX.Analyzers.Coloriser
 				"PXSelectJoinOrderBy",
 				"PXSelectGroupByOrderBy",
 				"PXProcessingJoin",
-				"PXSelectJoinGroupBy"
+                "PXProcessing",
+                "PXSelectJoinGroupBy"
 		};
 
 		private static readonly string[] bqlParameterNames = new[]
