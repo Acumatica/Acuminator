@@ -10,19 +10,15 @@ namespace PX.Analyzers.Coloriser
 	{
 		private static readonly string[] bqlSelectNames = new[]
 		{
-			      "PXSelect",
-				"PXSelect",
-			     "PXSelectJoin",
+			    "(PX)?Select",			   
 				"Search",
 				"PXSetup",
 				"PXUpdate",
 				@"PXSelectReadonly\d?",
 				"PXSelectGroupJoin",
-				"PXSelectJoinOrderBy",
+				"PXSelectJoin(OrderBy|GroupBy)?",
 				"PXSelectGroupByOrderBy",
-				"PXProcessingJoin",
-                "PXProcessing",
-                "PXSelectJoinGroupBy"
+				"PXProcessing(Join)?"                           
 		};
 
 		private static readonly string[] bqlParameterNames = new[]
@@ -32,25 +28,15 @@ namespace PX.Analyzers.Coloriser
 			"Required"
 		};
 
-		//private static readonly string[] bqlOperatorNames = new[]
-		//{
-		//	"InnerJoin",
-		//	"RightJoin",
-		//	"LeftJoin",
-		//	"Where",
-		//	"On",
-		//	"Equal",
-		//	"OrderBy",
-		//	"Asc",
-		//	"Desc",
-		//	"Equal",
-		//	""
+        public static readonly string[] KeyWords = 
+        {
+            "Select",
+            "Search"
+        };
 
-		//};
-
-		public const string DacWithFieldPattern = @"<[\r|\n|\t]*?([A-Z][a-z]*)+\d?\.[\r|\t|\n]*([a-z]+[A-Z]*)+([>|,])?";
-		public const string DacOrConstantPattern = @"<[\r|\n|\t]*?([A-Z]\w*)[\r|\n|\t]*(>|\,)";
-		public const string DacOperandPattern = @"(,|<)?([A-Z]+[a-z])*\d?<";
+		public const string DacWithFieldPattern = @"<[\r|\n|\t]*?([A-Z]+\w*\.)?([A-Z]+\w*)+\d?\.[\r|\t|\n]*([a-z]+\w*\d*)([>|,])?";
+		public const string DacOrConstantPattern = @"<[\r|\n|\t]*?([A-Z]+\w*\.)?([A-Z]+\w*\d?)[\r|\n|\t]*(>|\,)";
+		public const string DacOperandPattern = @"(,|<)?([A-Z]+\w*)\d?<";
 
 		public static string BQLSelectCommandPattern { get; }
 
@@ -58,9 +44,8 @@ namespace PX.Analyzers.Coloriser
 
 		static RegExpressions()
 		{
-			//var prefix = "(" + string.Join("|", bqlSelectNames) + ")";
-			BQLSelectCommandPattern = "(" + string.Join("|", bqlSelectNames) + ")" + @"<.*?>\.?[^;\.]*?(;{1}|\{{1})";
-			BQLParametersPattern = "(" + string.Join("|", bqlParameterNames) + ")";
+			BQLSelectCommandPattern = "(" + string.Join("|", bqlSelectNames) + ")" + @"<.*?>\.?[^;\{\}]*?(;|\{|\[)";
+            BQLParametersPattern = "(" + string.Join("|", bqlParameterNames) + ")";
 		}
 	}
 }
