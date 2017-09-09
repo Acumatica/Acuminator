@@ -23,22 +23,25 @@ namespace PX.Analyzers.Utilities
             }
 
             // perf optimization. try to not use enumerator if possible
-            var list = source as IList<T>;
-            if (list != null)
-            {
-                for (int i = 0, count = list.Count; i < count; i++)
-                {
-                    action(list[i]);
-                }
-            }
-            else
-            {
-                foreach (var value in source)
-                {
-                    action(value);
-                }
-            }
 
+            switch (source)
+            {
+                case IList<T> list:
+                    for (int i = 0, count = list.Count; i < count; i++)
+                    {
+                        action(list[i]);
+                    }
+
+                    break;
+                default:
+                    foreach (var value in source)
+                    {
+                        action(value);
+                    }
+
+                    break;
+            }
+             
             return source;
         }
 
@@ -59,17 +62,17 @@ namespace PX.Analyzers.Utilities
                 throw new ArgumentNullException(nameof(source));
             }
 
-            return source.ConcatWorker(value);
-        }
+            return ConcatWorker(source, value);
 
-        private static IEnumerable<T> ConcatWorker<T>(this IEnumerable<T> source, T value)
-        {
-            foreach (var v in source)
+            IEnumerable<TVal> ConcatWorker<TVal>(IEnumerable<TVal> src, TVal val)
             {
-                yield return v;
-            }
+                foreach (var v in src)
+                {
+                    yield return v;
+                }
 
-            yield return value;
+                yield return val;
+            }
         }
 
         public static bool SetEquals<T>(this IEnumerable<T> source1, IEnumerable<T> source2, IEqualityComparer<T> comparer)
@@ -165,36 +168,20 @@ namespace PX.Analyzers.Utilities
 
         public static bool IsEmpty<T>(this IEnumerable<T> source)
         {
-            var readOnlyCollection = source as IReadOnlyCollection<T>;
-            if (readOnlyCollection != null)
+            switch (source)
             {
-                return readOnlyCollection.Count == 0;
+                case IReadOnlyCollection<T> readOnlyCollection:
+                    return readOnlyCollection.Count == 0;
+                case ICollection<T> genericCollection:
+                    return genericCollection.Count == 0;
+                case ICollection collection:
+                    return collection.Count == 0;         
+                default:
+                    string str = source as string;
+                    return str != null
+                        ? str.Length == 0
+                        : !source.Any();
             }
-
-            var genericCollection = source as ICollection<T>;
-            if (genericCollection != null)
-            {
-                return genericCollection.Count == 0;
-            }
-
-            var collection = source as ICollection;
-            if (collection != null)
-            {
-                return collection.Count == 0;
-            }
-
-            var str = source as string;
-            if (str != null)
-            {
-                return str.Length == 0;
-            }
-
-            foreach (var t in source)
-            {
-                return false;
-            }
-
-            return true;
         }
 
         public static bool IsEmpty<T>(this IReadOnlyCollection<T> source)
@@ -322,7 +309,7 @@ namespace PX.Analyzers.Utilities
         public static bool SequenceEqual<T>(this IEnumerable<T> first, IEnumerable<T> second, Func<T, T, bool> comparer)
         {
             Debug.Assert(comparer != null);
-
+           
             if (first == second)
             {
                 return true;
@@ -374,6 +361,35 @@ namespace PX.Analyzers.Utilities
         public static IComparer<T> ToComparer<T>(this Comparison<T> comparison)
         {
             return Comparer<T>.Create(comparison);
+        }
+
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T> source) => source == null ? true : source.IsEmpty();
+       
+        public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
+        {
+            source.ThrowOnNull();
+            action.ThrowOnNull();
+            Action<T> copyAction = action; // for thread safety
+
+            switch (source)
+            {
+                case IList<T> list:
+
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        copyAction(list[i]);
+                    }
+
+                    break;
+                default:
+
+                    foreach (T item in source)
+                    {
+                        copyAction(item);
+                    }
+
+                    break;
+            }
         }
     }
 
