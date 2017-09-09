@@ -13,8 +13,8 @@ namespace PX.Analyzers.Coloriser
 {
 	internal class PXColorizerTagger : ITagger<IClassificationTag>
 	{	
-		//private readonly ConcurrentBag<ITagSpan<IClassificationTag>> tags = new ConcurrentBag<ITagSpan<IClassificationTag>>();
-		private readonly List<ITagSpan<IClassificationTag>> tags = new List<ITagSpan<IClassificationTag>>();
+		private readonly ConcurrentBag<ITagSpan<IClassificationTag>> tags = new ConcurrentBag<ITagSpan<IClassificationTag>>();
+		private readonly List<ITagSpan<IClassificationTag>> tagsList = new List<ITagSpan<IClassificationTag>>();
 
 		private IClassificationType dacType;
 		private IClassificationType fieldType;
@@ -48,10 +48,10 @@ namespace PX.Analyzers.Coloriser
 				return tags;
 
 			tags.Clear();
-			//tagsList.Clear();
+			tagsList.Clear();
 			cache = spans[0].Snapshot;
 			GetTagsFromSnapShot(cache, spans);
-			//tagsList.AddRange(tags);
+			tagsList.AddRange(tags);
 			return tags;
 		}
 
@@ -67,43 +67,27 @@ namespace PX.Analyzers.Coloriser
 				GetTagsFromBQLCommand(newSnapshot, bqlCommandMatch.Value, bqlCommandMatch.Index);
 			}
 
-
-			//Parallel.ForEach(matches,
-			//				 bqlCommandMatch => GetTagsFromBQLCommand(newSnapshot, bqlCommandMatch.Value, bqlCommandMatch.Index));			
-		}
+            Parallel.ForEach(matches,
+                             bqlCommandMatch => GetTagsFromBQLCommand(newSnapshot, bqlCommandMatch.Value, bqlCommandMatch.Index));
+        }
 
 		private void GetTagsFromBQLCommand(ITextSnapshot newSnapshot, string bqlCommand, int offset)
-		{
-			
-			bqlCommand = bqlCommand.TrimStart('{');
-			int firstCurlyBraces = bqlCommand.IndexOf('{');
-
-			if (firstCurlyBraces >= 0)
-			{
-				bqlCommand = bqlCommand.Substring(0, firstCurlyBraces);
-			}
-
-			int firstSquareBrace = bqlCommand.IndexOf('[');
-
-			if (firstSquareBrace >= 0)
-			{
-				bqlCommand = bqlCommand.Substring(0, firstSquareBrace);
-			}
-
+		{			
 			int lastAngleBraces = bqlCommand.LastIndexOf('>');
-
-			bqlCommand = bqlCommand.Substring(0, lastAngleBraces + 1);
-
-			int firstAngleBraceIndex = bqlCommand.IndexOf('<');
-			string selectOp = bqlCommand.Substring(0, firstAngleBraceIndex);
-
-			if (!selectOp.Contains("Select") && !selectOp.Contains("Search"))
-				return;
-
+			bqlCommand = bqlCommand.Substring(0, lastAngleBraces + 1);			
 			int lastAngleBraceIndex = bqlCommand.LastIndexOf('>');
-			bqlCommand = bqlCommand.Substring(0, lastAngleBraceIndex + 1);
-			
-			GetSelectCommandTag(newSnapshot, bqlCommand, offset);
+
+            if (lastAngleBraceIndex >= 0)
+                bqlCommand = bqlCommand.Substring(0, lastAngleBraceIndex + 1);
+
+            int firstAngleBraceIndex = bqlCommand.IndexOf('<');
+
+            if (firstAngleBraceIndex < 0)
+                return;
+
+            string selectOp = bqlCommand.Substring(0, firstAngleBraceIndex);
+            GetSelectCommandTag(newSnapshot, bqlCommand, offset);
+
 			GetBQLOperandTags(newSnapshot, bqlCommand, offset);
 			GetDacWithFieldTags(newSnapshot, bqlCommand, offset);
 			GetSingleDacAndConstantTags(newSnapshot, bqlCommand, offset);
