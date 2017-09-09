@@ -31,7 +31,7 @@ namespace PX.Objects.HackathonDemo
 		[PXUIField(DisplayName = "Status")]
 		public string Status { get; set; }
 		#endregion
-	
+	}
 
 	public class SOOrderWithTotal : PXCacheExtension<SOOrder>
 	{
