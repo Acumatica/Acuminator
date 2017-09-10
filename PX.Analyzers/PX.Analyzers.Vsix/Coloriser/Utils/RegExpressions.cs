@@ -10,16 +10,15 @@ namespace PX.Analyzers.Coloriser
 	{
 		private static readonly string[] bqlSelectNames = new[]
 		{
-			    "(PX)?Select",			   
-				"Search",
+               "(PX)?Select(GroupBy)?(OrderBy)?",
+                "Search",
 				"PXSetup",
 				"PXUpdate",
 				@"PXSelectReadonly\d?",
 				"PXSelectGroupJoin",
-				"PXSelectJoin(OrderBy|GroupBy)?",
-				"PXSelectGroupByOrderBy",
-				"PXProcessing(Join)?"                           
-		};
+				"PXSelectJoin(OrderBy|GroupBy)?",				
+                "PX(Filtered)?Processing(Join)?"
+        };
 
 		private static readonly string[] bqlParameterNames = new[]
 		{
@@ -34,8 +33,8 @@ namespace PX.Analyzers.Coloriser
             "Search"
         };
 
-		public const string DacWithFieldPattern = @"<[\r|\n|\t]*?([A-Z]+\w*\.)?([A-Z]+\w*)+\d?\.[\r|\t|\n]*([a-z]+\w*\d*)([>|,])?";
-		public const string DacOrConstantPattern = @"<[\r|\n|\t]*?([A-Z]+\w*\.)?([A-Z]+\w*\d?)[\r|\n|\t]*(>|\,)";
+		public const string DacWithFieldPattern = @"<\W*?([A-Z]+\w*\.)?([A-Z]+\w*)+\d?\.\W*([a-z]+\w*\d*)([>|,])?";
+		public const string DacOrConstantPattern = @"<\W*?([A-Z]+\w*\.)?([A-Z]+\w*\d?)\W*(>|\,)";
 		public const string DacOperandPattern = @"(,|<)?([A-Z]+\w*)\d?<";
 
 		public static string BQLSelectCommandPattern { get; }
