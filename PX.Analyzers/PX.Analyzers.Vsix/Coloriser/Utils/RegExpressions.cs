@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PX.Analyzers.Coloriser
@@ -10,15 +10,15 @@ namespace PX.Analyzers.Coloriser
 	{
 		private static readonly string[] bqlSelectNames = new[]
 		{
-				"(PX)?Select(Join)?",
-				"Search",
+               "(PX)?Select(GroupBy)?(OrderBy)?",
+                "Search",
+				"PXSetup",
+				"PXUpdate",
 				@"PXSelectReadonly\d?",
 				"PXSelectGroupJoin",
-				"PXSelectJoinOrderBy",
-				"PXSelectGroupByOrderBy",
-				"PXProcessing",
-				"PXFilteredProcessing"
-		};
+				"PXSelectJoin(OrderBy|GroupBy)?",				
+                "PX(Filtered)?Processing(Join)?"
+        };
 
 		private static readonly string[] bqlParameterNames = new[]
 		{
@@ -27,34 +27,26 @@ namespace PX.Analyzers.Coloriser
 			"Required"
 		};
 
-		//private static readonly string[] bqlOperatorNames = new[]
-		//{
-		//	"InnerJoin",
-		//	"RightJoin",
-		//	"LeftJoin",
-		//	"Where",
-		//	"On",
-		//	"Equal",
-		//	"OrderBy",
-		//	"Asc",
-		//	"Desc",
-		//	"Equal",
-		//	""
+		private const string DacWithFieldPattern = @"<\W*?([A-Z]+\w*\.)?([A-Z]+\w*)+\d?\.\W*([a-z]+\w*\d*)([>|,])?";
+        private const string DacOrConstantPattern = @"<\W*?([A-Z]+\w*\.)?([A-Z]+\w*\d?)\W*(>|\,)";
+        private const string DacOperandPattern = @"(,|<)?([A-Z]+\w*)\d?<";
 
-		//};
+        public static Regex DacWithFieldRegex { get; } = new Regex(DacWithFieldPattern, RegexOptions.Compiled);
 
-		public const string DacWithFieldPattern = @"<[\r|\n|\t]*?([A-Z][a-z]*)+\.[\r|\t|\n]*([a-z]+[A-Z]*)+([>|,])?";
-		public const string DacOrConstantPattern = @"<[\r|\n|\t]*?([A-Z]\w*)[\r|\n|\t]*(>|\,)";
-		public const string DacOperandPattern = @"(,|<)?([A-Z][A-Za-z]*[\d]?)<";
+        public static Regex DacOrConstantRegex { get; } = new Regex(DacOrConstantPattern, RegexOptions.Compiled);
 
-		public static string BQLSelectCommandPattern { get; }
+        public static Regex DacOperandRegex { get; } = new Regex(DacOperandPattern, RegexOptions.Compiled);
 
-		public static string BQLParametersPattern { get; }
+        public static Regex BQLSelectCommandRegex { get; }
+
+		public static Regex BQLParametersRegex { get; }
 
 		static RegExpressions()
 		{
-			BQLSelectCommandPattern = "(" + string.Join("|", bqlSelectNames) + @")<.*?>\.?[^;\.]*?;";
-			BQLParametersPattern = "(" + string.Join("|", bqlParameterNames) + ")";
-		}
+			string bqlSelectCommandPattern = "(" + string.Join("|", bqlSelectNames) + ")" + @"<.*?>\.?[^;\{\}]*?(;|\{|\[)";
+            string bqlParametersPattern = "(" + string.Join("|", bqlParameterNames) + ")";
+            BQLSelectCommandRegex = new Regex(bqlSelectCommandPattern, RegexOptions.Compiled | RegexOptions.Singleline);
+            BQLParametersRegex = new Regex(bqlParametersPattern, RegexOptions.Compiled);
+        }
 	}
 }

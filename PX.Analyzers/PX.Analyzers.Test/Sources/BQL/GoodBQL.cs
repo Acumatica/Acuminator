@@ -9,7 +9,7 @@ using PX.Data;
 namespace PX.Objects.SO
 {
 	public class GoodBqlGraph : PXGraph<GoodBqlGraph>
-	{
+	{ 
 		public PXSelectJoin<BCBudgetBalance, 
 					LeftJoin<BCBudgetLedger, On<BCBudgetBalance.ledgerID, Equal<BCBudgetLedger.ledgerID>>>,
 			   Where<BCBudgetLedger.summarize, Equal<True>,
