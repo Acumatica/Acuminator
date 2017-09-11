@@ -63,13 +63,8 @@ namespace PX.Analyzers.Coloriser
 							            .OfType<Match>()
 							            .Where(bqlCommandMatch => !string.IsNullOrWhiteSpace(bqlCommandMatch.Value));
 
-			foreach (Match bqlCommandMatch in matches)
-			{
-				GetTagsFromBQLCommand(newSnapshot, bqlCommandMatch.Value, bqlCommandMatch.Index);
-			}
-
-            matches.AsParallel()
-                   .ForAll(bqlCommandMatch => GetTagsFromBQLCommand(newSnapshot, bqlCommandMatch.Value, bqlCommandMatch.Index));
+            Parallel.ForEach(matches, 
+                             bqlCommandMatch => GetTagsFromBQLCommand(newSnapshot, bqlCommandMatch.Value, bqlCommandMatch.Index));
         }
 
 		private void GetTagsFromBQLCommand(ITextSnapshot newSnapshot, string bqlCommand, int offset)
