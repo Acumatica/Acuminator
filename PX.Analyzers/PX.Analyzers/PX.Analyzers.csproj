@@ -34,10 +34,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Analyzers\BQL\BqlRoslynUtil.cs" />
+    <Compile Include="RoslynExtensions\BQL\BqlRoslynUtil.cs" />
     <Compile Include="Analyzers\InheritanceFromPXCacheExtensionAnalyzer.cs" />
     <Compile Include="Analyzers\LongOperationDelegateClosuresAnalyzer.cs" />
-    <Compile Include="Analyzers\BQL\BQLFormatterAnalyzer.cs" />
+    <Compile Include="RoslynExtensions\BQL\BQLFormatterAnalyzer.cs" />
     <Compile Include="Analyzers\MissingTypeListAttributeAnalyzer.cs" />
     <Compile Include="Analyzers\StartRowResetForPaging.cs" />
     <Compile Include="Analyzers\DACCreateInstanceAnalyzer.cs" />
@@ -56,6 +56,7 @@
     <Compile Include="FixProviders\TypoInViewDelegateNameFix.cs" />
     <Compile Include="FixProviders\PXGraphCreateInstanceFix.cs" />
     <Compile Include="RoslynExtensions\ArrayExtensions.cs" />
+    <Compile Include="RoslynExtensions\ExceptionHelper.cs" />
     <Compile Include="RoslynExtensions\EnumerableExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PXContext.cs" />
