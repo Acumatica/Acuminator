@@ -58,17 +58,18 @@ namespace PX.Analyzers.Coloriser
 		private void GetTagsFromSnapShot(ITextSnapshot newSnapshot, NormalizedSnapshotSpanCollection spans)
 		{
 			string row = newSnapshot.GetText();
-			var matches = Regex.Matches(row, RegExpressions.BQLSelectCommandPattern, RegexOptions.Singleline)
-							   .OfType<Match>()
-							   .Where(bqlCommandMatch => !string.IsNullOrWhiteSpace(bqlCommandMatch.Value));
+			var matches = RegExpressions.BQLSelectCommandRegex
+                                        .Matches(row)
+							            .OfType<Match>()
+							            .Where(bqlCommandMatch => !string.IsNullOrWhiteSpace(bqlCommandMatch.Value));
 
 			foreach (Match bqlCommandMatch in matches)
 			{
 				GetTagsFromBQLCommand(newSnapshot, bqlCommandMatch.Value, bqlCommandMatch.Index);
 			}
 
-            Parallel.ForEach(matches,
-                             bqlCommandMatch => GetTagsFromBQLCommand(newSnapshot, bqlCommandMatch.Value, bqlCommandMatch.Index));
+            matches.AsParallel()
+                   .ForAll(bqlCommandMatch => GetTagsFromBQLCommand(newSnapshot, bqlCommandMatch.Value, bqlCommandMatch.Index));
         }
 
 		private void GetTagsFromBQLCommand(ITextSnapshot newSnapshot, string bqlCommand, int offset)
@@ -96,7 +97,7 @@ namespace PX.Analyzers.Coloriser
 
 		private void GetBQLOperandTags(ITextSnapshot newSnapshot, string bqlCommand, int offset)
 		{
-			var matches = Regex.Matches(bqlCommand, RegExpressions.DacOperandPattern);
+			var matches = RegExpressions.DacOperandRegex.Matches(bqlCommand);
 
 			foreach (Match bqlOperandMatch in matches.OfType<Match>().Skip(1))
 			{
@@ -115,7 +116,7 @@ namespace PX.Analyzers.Coloriser
 
 		private void GetBqlParameterTags(ITextSnapshot newSnapshot, string bqlCommand, int offset)
 		{
-			var matches = Regex.Matches(bqlCommand, RegExpressions.BQLParametersPattern);
+			var matches = RegExpressions.BQLParametersRegex.Matches(bqlCommand);
 
 			foreach (Match bqlParamMatch in matches)
 			{
@@ -126,7 +127,7 @@ namespace PX.Analyzers.Coloriser
 
 		private void GetSingleDacAndConstantTags(ITextSnapshot newSnapshot, string bqlCommand, int offset)
 		{
-			var matches = Regex.Matches(bqlCommand, RegExpressions.DacOrConstantPattern);
+			var matches = RegExpressions.DacOrConstantRegex.Matches(bqlCommand);
 
 			foreach (Match dacOrConstMatch in matches)
 			{
@@ -137,7 +138,7 @@ namespace PX.Analyzers.Coloriser
 
 		private void GetDacWithFieldTags(ITextSnapshot newSnapshot, string bqlCommand, int offset)
 		{
-			var matches = Regex.Matches(bqlCommand, RegExpressions.DacWithFieldPattern);
+			var matches = RegExpressions.DacWithFieldRegex.Matches(bqlCommand);
 
 			foreach (Match dacWithFieldMatch in matches)
 			{
