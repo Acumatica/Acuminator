@@ -10,7 +10,7 @@ namespace PX.Analyzers.Coloriser
 	[ClassificationType(ClassificationTypeNames = Constants.DacFormat)]
 	[Name(Constants.DacFormat)]
 	[UserVisible(true)]
-	[Order(After = Constants.Priority)]
+    [Order(Before = Constants.Priority)]
 	internal sealed class DACFormat : ClassificationFormatDefinition
 	{
 		public DACFormat()
@@ -26,8 +26,8 @@ namespace PX.Analyzers.Coloriser
 	[ClassificationType(ClassificationTypeNames = Constants.DacFieldFormat)]
 	[Name(Constants.DacFieldFormat)]
 	[UserVisible(true)]
-	[Order(After = Constants.Priority)]
-	internal sealed class DACFieldFormat : ClassificationFormatDefinition
+    [Order(Before = Constants.Priority)]
+    internal sealed class DACFieldFormat : ClassificationFormatDefinition
 	{
 		public DACFieldFormat()
 		{
@@ -42,8 +42,8 @@ namespace PX.Analyzers.Coloriser
 	[ClassificationType(ClassificationTypeNames = Constants.BQLParameterFormat)]
 	[Name(Constants.BQLParameterFormat)]
 	[UserVisible(true)]
-	[Order(After = Constants.Priority)]
-	internal sealed class BQLParameterFormat : ClassificationFormatDefinition
+    [Order(Before = Constants.Priority)]
+    internal sealed class BQLParameterFormat : ClassificationFormatDefinition
 	{
 		public BQLParameterFormat()
 		{
@@ -58,8 +58,8 @@ namespace PX.Analyzers.Coloriser
 	[ClassificationType(ClassificationTypeNames = Constants.BQLOperatorFormat)]
 	[Name(Constants.BQLOperatorFormat)]
 	[UserVisible(true)]
-	[Order(After = Constants.Priority)]
-	internal sealed class BQLOperatorFormat : ClassificationFormatDefinition
+    [Order(Before = Constants.Priority)]
+    internal sealed class BQLOperatorFormat : ClassificationFormatDefinition
 	{
 		public BQLOperatorFormat()
 		{

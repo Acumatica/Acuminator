@@ -7,7 +7,7 @@ namespace PX.Analyzers
 {
 	public static class Constants
 	{
-		public const string Priority = Microsoft.VisualStudio.Text.Classification.Priority.High;
+		public const string Priority = Microsoft.VisualStudio.Text.Classification.Priority.Default;
 
 		public const string DacFormat = nameof(DacFormat);
 		public const string DacFieldFormat = nameof(DacFieldFormat);
