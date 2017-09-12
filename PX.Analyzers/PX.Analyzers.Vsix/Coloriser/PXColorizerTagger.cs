@@ -19,9 +19,9 @@ namespace PX.Analyzers.Coloriser
 		private IClassificationType dacType;
 		private IClassificationType fieldType;
 		private IClassificationType bqlParameterType;
-		private IClassificationType bqlOperatorType;
+		private IClassificationType bqlOperatorType;      
 
-		private ITextBuffer theBuffer;
+        private ITextBuffer theBuffer;
 		private ITextSnapshot cache;
 
 #pragma warning disable CS0067
@@ -29,13 +29,13 @@ namespace PX.Analyzers.Coloriser
 #pragma warning restore CS0067
 
 		internal PXColorizerTagger(ITextBuffer buffer, IClassificationTypeRegistryService registry)
-		{
-			theBuffer = buffer;
+		{       
+            theBuffer = buffer;
 			dacType = registry.GetClassificationType(Constants.DacFormat);
 			fieldType = registry.GetClassificationType(Constants.DacFieldFormat);
 			bqlParameterType = registry.GetClassificationType(Constants.BQLParameterFormat);
-			bqlOperatorType = registry.GetClassificationType(Constants.BQLOperatorFormat);
-		}
+			bqlOperatorType = registry.GetClassificationType(Constants.BQLOperatorFormat);          
+        }
 
 		public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
 		{
@@ -57,9 +57,9 @@ namespace PX.Analyzers.Coloriser
 
 		private void GetTagsFromSnapShot(ITextSnapshot newSnapshot, NormalizedSnapshotSpanCollection spans)
 		{
-			string row = newSnapshot.GetText();
-			var matches = RegExpressions.BQLSelectCommandRegex
-                                        .Matches(row)
+			string wholeText = newSnapshot.GetText();
+            var matches = RegExpressions.BQLSelectCommandRegex
+                                        .Matches(wholeText)
 							            .OfType<Match>()
 							            .Where(bqlCommandMatch => !string.IsNullOrWhiteSpace(bqlCommandMatch.Value));
 
@@ -159,7 +159,7 @@ namespace PX.Analyzers.Coloriser
 			CreateTag(newSnapshot, match, offset, fieldPart, fieldType);
 		}
 
-		private void CreateTag(ITextSnapshot newSnapshot, Match match, int offset, string tagContent, IClassificationType classType)
+        private void CreateTag(ITextSnapshot newSnapshot, Match match, int offset, string tagContent, IClassificationType classType)
 		{
 			int startIndex = offset + match.Index + match.Value.IndexOf(tagContent);
 			Span span = new Span(startIndex, tagContent.Length);

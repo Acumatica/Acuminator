@@ -444,7 +444,7 @@ namespace PX.Objects.AR
                 GroupBy<ARInvoice.emailed>>>>>>>>>>>>>>>>>,
                 OrderBy<Asc<BalancedARDocument.docType,
                         Asc<BalancedARDocument.refNbr>>>>(this);
-
+                        
             int startRow = PXView.StartRow;
             int totalRows = 0;
 
