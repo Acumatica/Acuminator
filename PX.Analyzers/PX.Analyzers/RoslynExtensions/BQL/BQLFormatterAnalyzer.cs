@@ -14,7 +14,7 @@ namespace PX.Analyzers.Analyzers
 	public class BQLFormatterAnalyzer : PXDiagnosticAnalyzer
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-			ImmutableArray.Create(Descriptors.PXF1001_PXBadBqlDiagnostic);
+			ImmutableArray.Create(Descriptors.PXF1001_PXBadBqlFormat);
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
@@ -38,7 +38,7 @@ namespace PX.Analyzers.Analyzers
 
 			if (!CheckBQLStatement(genericNode, syntaxContext, pxContext))
 			{
-				DiagnosticDescriptor descriptor = Descriptors.PXF1001_PXBadBqlDiagnostic;
+				DiagnosticDescriptor descriptor = Descriptors.PXF1001_PXBadBqlFormat;
 				syntaxContext.ReportDiagnostic(Diagnostic.Create(descriptor, genericNode.GetLocation()));
 			}
 		}

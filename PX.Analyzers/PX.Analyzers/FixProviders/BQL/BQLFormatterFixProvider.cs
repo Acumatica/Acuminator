@@ -21,7 +21,7 @@ namespace PX.Analyzers.FixProviders
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 	public class BQLFormatterFixProvider : CodeFixProvider
 	{
-		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Descriptors.PXF1002_PXBadBqlFormat.Id);
+		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Descriptors.PXF1001_PXBadBqlFormat.Id);
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
@@ -29,7 +29,7 @@ namespace PX.Analyzers.FixProviders
 		{
 			SyntaxNode root = await context.Document.GetSyntaxRootAsync().ConfigureAwait(false);
 			SyntaxNode node = root.FindNode(context.Span);
-			string title = nameof(Resources.PXF1001Title).GetLocalized().ToString();
+			string title = nameof(Resources.PXF1001Fix).GetLocalized().ToString();
 
 			if (node == null)
 				return;
@@ -80,6 +80,7 @@ namespace PX.Analyzers.FixProviders
 
 			private SyntaxNode GetFormatted(GenericNameSyntax genericNode)
 			{
+                 
 				var typeArgs = genericNode.TypeArgumentList.Arguments;
 				List<SyntaxNode> newTypeArgs = new List<SyntaxNode>(typeArgs.Count);
 
@@ -116,11 +117,11 @@ namespace PX.Analyzers.FixProviders
 				return genericNode;// typeArgs.ToArray();
 			}
 
-			//private SyntaxNode RewriteBqlOperand(GenericNameSyntax genericNode)
-			//{
-
-			//}
-		}
+            //private SyntaxTriviaList GetStartingTrivia(GenericNameSyntax genericNode)
+            //{
+            //    if (genericNode.ContainsAnnotations 
+            //}
+        }
 
 		//private class MainDacRewriter : CSharpSyntaxRewriter
 		//{

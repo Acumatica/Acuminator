@@ -278,20 +278,20 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Format the BQL statement to meet the Code Style requirements .
+        /// </summary>
+        internal static string PXF1001Fix {
+            get {
+                return ResourceManager.GetString("PXF1001Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The BQL statement doesn&apos;t meet the Code Style requirements .
         /// </summary>
         internal static string PXF1001Title {
             get {
                 return ResourceManager.GetString("PXF1001Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Format the BQL statement to meet the Code Style requirements .
-        /// </summary>
-        internal static string PXF1002Fix {
-            get {
-                return ResourceManager.GetString("PXF1002Fix", resourceCulture);
             }
         }
     }

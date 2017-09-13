@@ -186,7 +186,7 @@
   <data name="PXF1001Title" xml:space="preserve">
     <value>The BQL statement doesn't meet the Code Style requirements </value>
   </data>
-  <data name="PXF1002Fix" xml:space="preserve">
+  <data name="PXF1001Fix" xml:space="preserve">
     <value>Format the BQL statement to meet the Code Style requirements </value>
   </data>
   <data name="PX1011Fix" xml:space="preserve">
