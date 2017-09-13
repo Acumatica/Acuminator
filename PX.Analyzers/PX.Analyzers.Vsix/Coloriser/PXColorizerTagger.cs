@@ -1,7 +1,5 @@
 ﻿using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.VisualStudio.Text.Formatting;
-using Microsoft.VisualStudio.Language.StandardClassification;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
@@ -9,43 +7,26 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using Interlocked = System.Threading.Interlocked;
+
 
 namespace PX.Analyzers.Coloriser
 {
 	internal class PXColorizerTagger : ITagger<IClassificationTag>
 	{
-        private const string PreprocessorText = "preprocessor text";
 		private readonly ConcurrentBag<ITagSpan<IClassificationTag>> tags = new ConcurrentBag<ITagSpan<IClassificationTag>>();
 		private readonly List<ITagSpan<IClassificationTag>> tagsList = new List<ITagSpan<IClassificationTag>>();
-
-		private IClassificationType dacType;
-		private IClassificationType fieldType;
-		private IClassificationType bqlParameterType;
-		private IClassificationType bqlOperatorType;
-
         private ITextBuffer theBuffer;
 		private ITextSnapshot cache;
+        private readonly PXColorizerTaggerProvider provider;
 
 #pragma warning disable CS0067
 		public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 #pragma warning restore CS0067
 
-		
-		private static int prioiryIncreased;
-
-		internal PXColorizerTagger(ITextBuffer buffer, IClassificationTypeRegistryService registry, IClassificationFormatMap formatMap)
+		internal PXColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider aProvider)
 		{            
             theBuffer = buffer;
-			dacType = registry.GetClassificationType(Constants.DacFormat);
-			fieldType = registry.GetClassificationType(Constants.DacFieldFormat);
-			bqlParameterType = registry.GetClassificationType(Constants.BQLParameterFormat);
-			bqlOperatorType = registry.GetClassificationType(Constants.BQLOperatorFormat);
-
-			if (Interlocked.CompareExchange(ref prioiryIncreased, 1, 0) == 0)
-			{
-				IncreaseServiceFormatPriority(formatMap, registry, PredefinedClassificationTypeNames.Comment);
-			}
+            provider = aProvider;           
 		}
 
 		public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
@@ -65,17 +46,6 @@ namespace PX.Analyzers.Coloriser
 			tagsList.AddRange(tags);
 			return tags;
 		}
-
-        private void IncreaseServiceFormatPriority(IClassificationFormatMap formatMap, IClassificationTypeRegistryService registry, string formatName)
-        {
-            IClassificationType predefinedClassificationType = registry.GetClassificationType(formatName);
-            IClassificationType artificialClassType = registry.CreateTransientClassificationType(predefinedClassificationType);
-            TextFormattingRunProperties properties = formatMap.GetExplicitTextProperties(predefinedClassificationType);
-           
-            formatMap.AddExplicitTextProperties(artificialClassType, properties, bqlParameterType);
-            formatMap.SwapPriorities(artificialClassType, predefinedClassificationType);
-            formatMap.SwapPriorities(bqlParameterType, predefinedClassificationType);
-        }
 
 		private void GetTagsFromSnapShot(ITextSnapshot newSnapshot, NormalizedSnapshotSpanCollection spans)
 		{
@@ -119,7 +89,7 @@ namespace PX.Analyzers.Coloriser
 			foreach (Match bqlOperandMatch in matches.OfType<Match>().Skip(1))
 			{
 				string bqlOperand = bqlOperandMatch.Value.TrimEnd('<');
-				CreateTag(newSnapshot, bqlOperandMatch, offset, bqlOperand, bqlOperatorType);
+				CreateTag(newSnapshot, bqlOperandMatch, offset, bqlOperand, provider.BqlOperatorType);
 			}
 		}
 
@@ -127,7 +97,7 @@ namespace PX.Analyzers.Coloriser
 		{
 			Span span = new Span(offset, selectOp.Length);
 			SnapshotSpan snapshotSpan = new SnapshotSpan(newSnapshot, span);
-			var tag = new TagSpan<IClassificationTag>(snapshotSpan, new ClassificationTag(bqlOperatorType));
+			var tag = new TagSpan<IClassificationTag>(snapshotSpan, new ClassificationTag(provider.BqlOperatorType));
 			tags.Add(tag);
 		}
 
@@ -138,7 +108,7 @@ namespace PX.Analyzers.Coloriser
 			foreach (Match bqlParamMatch in matches)
 			{
 				string bqlParam = bqlParamMatch.Value;
-				CreateTag(newSnapshot, bqlParamMatch, offset, bqlParam, bqlParameterType);
+				CreateTag(newSnapshot, bqlParamMatch, offset, bqlParam, provider.BqlParameterType);
 			}
 		}
 
@@ -149,7 +119,7 @@ namespace PX.Analyzers.Coloriser
 			foreach (Match dacOrConstMatch in matches)
 			{
 				string dacOrConst = dacOrConstMatch.Value.Trim(',', '<', '>');
-				CreateTag(newSnapshot, dacOrConstMatch, offset, dacOrConst, dacType);
+				CreateTag(newSnapshot, dacOrConstMatch, offset, dacOrConst, provider.DacType);
 			}
 		}
 
@@ -172,13 +142,13 @@ namespace PX.Analyzers.Coloriser
 		private void GetDacTag(ITextSnapshot newSnapshot, Match match, int offset, string[] dacParts)
 		{
 			string dacPart = dacParts[0].TrimStart(',', '<');
-			CreateTag(newSnapshot, match, offset, dacPart, dacType);
+			CreateTag(newSnapshot, match, offset, dacPart, provider.DacType);
 		}
 
 		private void GetFieldTag(ITextSnapshot newSnapshot, Match match, int offset, string[] dacParts)
 		{
 			string fieldPart = dacParts[1].TrimEnd(',', '>');
-			CreateTag(newSnapshot, match, offset, fieldPart, fieldType);
+			CreateTag(newSnapshot, match, offset, fieldPart, provider.FieldType);
 		}
 
         private void CreateTag(ITextSnapshot newSnapshot, Match match, int offset, string tagContent, IClassificationType classType)
