@@ -6,12 +6,28 @@ using System.Windows;
 
 namespace PX.Analyzers.Coloriser
 {
-	[Export(typeof(EditorFormatDefinition))]
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = Constants.BQLOperatorFormat)]
+    [Name(Constants.BQLOperatorFormat)]
+    [UserVisible(true)]
+    [Order(After = Constants.Priority)]
+    internal sealed class BQLOperatorFormat : ClassificationFormatDefinition
+    {
+        public BQLOperatorFormat()
+        {
+            ForegroundColor = Colors.BlueViolet;
+            DisplayName = Labels.BQLOperatorFormatLabel; // Human readable version of the name		
+            ForegroundCustomizable = true;
+            BackgroundCustomizable = true;
+        }
+    }
+
+    [Export(typeof(EditorFormatDefinition))]
 	[ClassificationType(ClassificationTypeNames = Constants.DacFormat)]
 	[Name(Constants.DacFormat)]
 	[UserVisible(true)]
-    [Order(Before = Constants.Priority)]
-	internal sealed class DACFormat : ClassificationFormatDefinition
+    [Order(After = Constants.BQLOperatorFormat)]
+    internal sealed class DACFormat : ClassificationFormatDefinition
 	{
 		public DACFormat()
 		{
@@ -26,7 +42,7 @@ namespace PX.Analyzers.Coloriser
 	[ClassificationType(ClassificationTypeNames = Constants.DacFieldFormat)]
 	[Name(Constants.DacFieldFormat)]
 	[UserVisible(true)]
-    [Order(Before = Constants.Priority)]
+    [Order(After = Constants.DacFormat)]
     internal sealed class DACFieldFormat : ClassificationFormatDefinition
 	{
 		public DACFieldFormat()
@@ -42,7 +58,7 @@ namespace PX.Analyzers.Coloriser
 	[ClassificationType(ClassificationTypeNames = Constants.BQLParameterFormat)]
 	[Name(Constants.BQLParameterFormat)]
 	[UserVisible(true)]
-    [Order(Before = Constants.Priority)]
+    [Order(After = Constants.DacFieldFormat)]
     internal sealed class BQLParameterFormat : ClassificationFormatDefinition
 	{
 		public BQLParameterFormat()
@@ -52,21 +68,5 @@ namespace PX.Analyzers.Coloriser
 			ForegroundCustomizable = true;
 			BackgroundCustomizable = true;
 		}
-	}
-
-	[Export(typeof(EditorFormatDefinition))]
-	[ClassificationType(ClassificationTypeNames = Constants.BQLOperatorFormat)]
-	[Name(Constants.BQLOperatorFormat)]
-	[UserVisible(true)]
-    [Order(Before = Constants.Priority)]
-    internal sealed class BQLOperatorFormat : ClassificationFormatDefinition
-	{
-		public BQLOperatorFormat()
-		{
-			ForegroundColor = Colors.BlueViolet;
-			DisplayName = Labels.BQLOperatorFormatLabel; // Human readable version of the name		
-			ForegroundCustomizable = true;
-			BackgroundCustomizable = true;
-		}
-	}
+	}	
 }
