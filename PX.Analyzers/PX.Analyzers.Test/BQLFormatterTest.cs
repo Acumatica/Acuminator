@@ -24,8 +24,8 @@ namespace PX.Analyzers.Test
 			{
 				new DiagnosticResult
 				{
-					Id = Descriptors.PXF1001_PXBadBqlDiagnostic.Id,
-					Message = Descriptors.PXF1001_PXBadBqlDiagnostic.Title.ToString(),
+					Id = Descriptors.PXF1001_PXBadBqlFormat.Id,
+					Message = Descriptors.PXF1001_PXBadBqlFormat.Title.ToString(),
 					Severity = DiagnosticSeverity.Warning,
 					Locations = new[]
 					{
@@ -35,8 +35,8 @@ namespace PX.Analyzers.Test
 
 				new DiagnosticResult
 				{
-					Id = Descriptors.PXF1001_PXBadBqlDiagnostic.Id,
-					Message = Descriptors.PXF1001_PXBadBqlDiagnostic.Title.ToString(),
+					Id = Descriptors.PXF1001_PXBadBqlFormat.Id,
+					Message = Descriptors.PXF1001_PXBadBqlFormat.Title.ToString(),
 					Severity = DiagnosticSeverity.Warning,
 					Locations = new[]
 					{
