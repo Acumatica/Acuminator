@@ -9,7 +9,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-
+using Interlocked = System.Threading.Interlocked;
 
 namespace PX.Analyzers.Coloriser
 {
@@ -31,6 +31,9 @@ namespace PX.Analyzers.Coloriser
 		public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 #pragma warning restore CS0067
 
+		
+		private static int prioiryIncreased;
+
 		internal PXColorizerTagger(ITextBuffer buffer, IClassificationTypeRegistryService registry, IClassificationFormatMap formatMap)
 		{            
             theBuffer = buffer;
@@ -39,8 +42,11 @@ namespace PX.Analyzers.Coloriser
 			bqlParameterType = registry.GetClassificationType(Constants.BQLParameterFormat);
 			bqlOperatorType = registry.GetClassificationType(Constants.BQLOperatorFormat);
 
-            IncreaseServiceFormatPriority(formatMap, registry, PredefinedClassificationTypeNames.Comment);
-        }
+			if (Interlocked.CompareExchange(ref prioiryIncreased, 1, 0) == 0)
+			{
+				IncreaseServiceFormatPriority(formatMap, registry, PredefinedClassificationTypeNames.Comment);
+			}
+		}
 
 		public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
 		{
