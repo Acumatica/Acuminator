@@ -1,5 +1,7 @@
 ﻿using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Text.Formatting;
+using Microsoft.VisualStudio.Language.StandardClassification;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
@@ -12,14 +14,15 @@ using System.Text.RegularExpressions;
 namespace PX.Analyzers.Coloriser
 {
 	internal class PXColorizerTagger : ITagger<IClassificationTag>
-	{	
+	{
+        private const string PreprocessorText = "preprocessor text";
 		private readonly ConcurrentBag<ITagSpan<IClassificationTag>> tags = new ConcurrentBag<ITagSpan<IClassificationTag>>();
 		private readonly List<ITagSpan<IClassificationTag>> tagsList = new List<ITagSpan<IClassificationTag>>();
 
 		private IClassificationType dacType;
 		private IClassificationType fieldType;
 		private IClassificationType bqlParameterType;
-		private IClassificationType bqlOperatorType;      
+		private IClassificationType bqlOperatorType;
 
         private ITextBuffer theBuffer;
 		private ITextSnapshot cache;
@@ -28,13 +31,15 @@ namespace PX.Analyzers.Coloriser
 		public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 #pragma warning restore CS0067
 
-		internal PXColorizerTagger(ITextBuffer buffer, IClassificationTypeRegistryService registry)
-		{       
+		internal PXColorizerTagger(ITextBuffer buffer, IClassificationTypeRegistryService registry, IClassificationFormatMap formatMap)
+		{            
             theBuffer = buffer;
 			dacType = registry.GetClassificationType(Constants.DacFormat);
 			fieldType = registry.GetClassificationType(Constants.DacFieldFormat);
 			bqlParameterType = registry.GetClassificationType(Constants.BQLParameterFormat);
-			bqlOperatorType = registry.GetClassificationType(Constants.BQLOperatorFormat);          
+			bqlOperatorType = registry.GetClassificationType(Constants.BQLOperatorFormat);
+
+            IncreaseServiceFormatPriority(formatMap, registry, PredefinedClassificationTypeNames.Comment);
         }
 
 		public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
@@ -54,6 +59,17 @@ namespace PX.Analyzers.Coloriser
 			tagsList.AddRange(tags);
 			return tags;
 		}
+
+        private void IncreaseServiceFormatPriority(IClassificationFormatMap formatMap, IClassificationTypeRegistryService registry, string formatName)
+        {
+            IClassificationType predefinedClassificationType = registry.GetClassificationType(formatName);
+            IClassificationType artificialClassType = registry.CreateTransientClassificationType(predefinedClassificationType);
+            TextFormattingRunProperties properties = formatMap.GetExplicitTextProperties(predefinedClassificationType);
+           
+            formatMap.AddExplicitTextProperties(artificialClassType, properties, bqlParameterType);
+            formatMap.SwapPriorities(artificialClassType, predefinedClassificationType);
+            formatMap.SwapPriorities(bqlParameterType, predefinedClassificationType);
+        }
 
 		private void GetTagsFromSnapShot(ITextSnapshot newSnapshot, NormalizedSnapshotSpanCollection spans)
 		{

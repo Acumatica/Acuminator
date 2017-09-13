@@ -15,13 +15,19 @@ namespace PX.Analyzers.Coloriser
 	[TagType(typeof(IClassificationTag))]
 	internal class PXColorizerTaggerProvider : ITaggerProvider
 	{
+        private const string textCategory = "text";
+
 		[Import]
-		internal IClassificationTypeRegistryService ClassificationRegistry = null; // Set via MEF
+		internal IClassificationTypeRegistryService classificationRegistry = null; // Set via MEF
+
+        [Import]
+        internal IClassificationFormatMapService classificationFormatMapServise = null;  //Set via MEF
 
 		public ITagger<T> CreateTagger<T>(ITextBuffer buffer)
 		where T : ITag
 		{
-			return (ITagger<T>)new PXColorizerTagger(buffer, ClassificationRegistry);
+            IClassificationFormatMap formatMap = classificationFormatMapServise.GetClassificationFormatMap(category: textCategory);
+            return (ITagger<T>)new PXColorizerTagger(buffer, classificationRegistry, formatMap);
 		}
 	}
 }
