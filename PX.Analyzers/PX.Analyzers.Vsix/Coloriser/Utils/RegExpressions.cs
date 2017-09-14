@@ -11,7 +11,7 @@ namespace PX.Analyzers.Coloriser
 		private static readonly string[] bqlSelectNames = new[]
 		{
                "(PX)?Select(GroupBy)?(OrderBy)?",
-                "Search",
+                @"Search\d?",
 				"PXSetup",
 				"PXUpdate",
 				@"PXSelectReadonly\d?",
@@ -30,6 +30,9 @@ namespace PX.Analyzers.Coloriser
 		private const string DacWithFieldPattern = @"<\W*?([A-Z]+\w*\.)?([A-Z]+\w*)+\d?\.\W*([a-z]+\w*\d*)([>|,])?";
         private const string DacOrConstantPattern = @"<\W*?([A-Z]+\w*\.)?([A-Z]+\w*\d?)\W*(>|\,)";
         private const string DacOperandPattern = @"(,|<)?([A-Z]+\w*)\d?<";
+        private const string bqlAllowedSymbols = @"[^;\{\}\(\)\[\]]";
+        private const string afterBqlAllowedSymbols = @"[^;\{\}\(\)\[\]]";
+        private const string bqlEndingSymbol = @"(;|\{|\]|\[|\(|\))";
 
         public static Regex DacWithFieldRegex { get; } = new Regex(DacWithFieldPattern, RegexOptions.Compiled);
 
@@ -43,7 +46,8 @@ namespace PX.Analyzers.Coloriser
 
 		static RegExpressions()
 		{
-			string bqlSelectCommandPattern = "(" + string.Join("|", bqlSelectNames) + ")" + @"<.*?>\.?[^;\{\}]*?(;|\{|\[)";
+			string bqlSelectCommandPattern = "(" + string.Join("|", bqlSelectNames) + ")" + $"<{bqlAllowedSymbols}*>" + @"\.?" +
+                                             $"{afterBqlAllowedSymbols}*?" + bqlEndingSymbol;
             string bqlParametersPattern = "(" + string.Join("|", bqlParameterNames) + ")";
             BQLSelectCommandRegex = new Regex(bqlSelectCommandPattern, RegexOptions.Compiled | RegexOptions.Singleline);
             BQLParametersRegex = new Regex(bqlParametersPattern, RegexOptions.Compiled);
