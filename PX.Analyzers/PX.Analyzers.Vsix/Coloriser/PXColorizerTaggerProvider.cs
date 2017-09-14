@@ -64,15 +64,20 @@ namespace PX.Analyzers.Coloriser
 
             if (lockTaken)
             {
-                if (!isPriorityIncreased)
-                {
-                    isPriorityIncreased = true;
-                    IClassificationFormatMap formatMap = formatMapService.GetClassificationFormatMap(category: textCategory);
-                    IncreaseServiceFormatPriority(formatMap, registry, PredefinedClassificationTypeNames.ExcludedCode, highestPriorityType);
-                    IncreaseServiceFormatPriority(formatMap, registry, PredefinedClassificationTypeNames.Comment, highestPriorityType);                 
-                }
-           
-                Monitor.Exit(syncRoot);
+				try
+				{
+					if (!isPriorityIncreased)
+					{
+						isPriorityIncreased = true;
+						IClassificationFormatMap formatMap = formatMapService.GetClassificationFormatMap(category: textCategory);
+						IncreaseServiceFormatPriority(formatMap, registry, PredefinedClassificationTypeNames.ExcludedCode, highestPriorityType);
+						IncreaseServiceFormatPriority(formatMap, registry, PredefinedClassificationTypeNames.Comment, highestPriorityType);
+					}
+				}
+				finally
+				{
+					Monitor.Exit(syncRoot);
+				}
             }              
         }
 
