@@ -4,6 +4,7 @@
         <Identity Id="Acumatica.Acuminator.778b19d1-1d5e-4fcb-8edb-eb103feeab7c" Version="1.0" Language="en-US" Publisher="Acumatica"/>
         <DisplayName>Acuminator</DisplayName>
         <Description xml:space="preserve">BQL colorizer &amp; formatter and a set of diagnostics / code fixes for common developer pitfalls related to Acumatica Framework.</Description>
+        <License>license.txt</License>
         <Icon>icon.ico</Icon>
         <Tags>acumatica</Tags>
     </Metadata>
