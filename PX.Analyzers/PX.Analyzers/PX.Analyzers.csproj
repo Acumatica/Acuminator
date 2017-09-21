@@ -37,7 +37,7 @@
     <Compile Include="RoslynExtensions\BQL\BqlRoslynUtil.cs" />
     <Compile Include="Analyzers\InheritanceFromPXCacheExtensionAnalyzer.cs" />
     <Compile Include="Analyzers\LongOperationDelegateClosuresAnalyzer.cs" />
-    <Compile Include="RoslynExtensions\BQL\BQLFormatterAnalyzer.cs" />
+    <Compile Include="Analyzers\BQL\BQLFormatterAnalyzer.cs" />
     <Compile Include="Analyzers\MissingTypeListAttributeAnalyzer.cs" />
     <Compile Include="Analyzers\StartRowResetForPaging.cs" />
     <Compile Include="Analyzers\DACCreateInstanceAnalyzer.cs" />
