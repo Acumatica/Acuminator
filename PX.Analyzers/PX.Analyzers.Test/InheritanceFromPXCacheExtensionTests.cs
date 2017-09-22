@@ -66,6 +66,13 @@ namespace PX.Analyzers.Test
         }
 
 	    [Theory]
+	    [EmbeddedFileData("InheritanceFromPXMappedCacheExtension.cs")]
+	    public void TestDiagnostic_PXMappedCacheExtension_ShouldNotShowDiagnostic(string actual)
+	    {
+		    VerifyCSharpDiagnostic(actual);
+	    }
+
+		[Theory]
 	    [EmbeddedFileData("InheritanceFromPXCacheExtension_Bad.cs", "InheritanceFromPXCacheExtension_Bad_Expected.cs")]
 		public void TestCodeFix(string actual, string expected)
 	    {
