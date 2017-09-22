@@ -50,6 +50,7 @@
     <Compile Include="PX1000.cs" />
     <Compile Include="PX1002.cs" />
     <Compile Include="PX1009.cs" />
+    <Compile Include="PX1010.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
