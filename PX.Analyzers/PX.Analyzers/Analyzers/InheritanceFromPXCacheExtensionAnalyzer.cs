@@ -29,7 +29,8 @@ namespace PX.Analyzers.Analyzers
         {
 	        var symbol = (INamedTypeSymbol) context.Symbol;
 	        if (!symbol.InheritsFrom(pxContext.PXCacheExtensionType)
-	            || String.Equals(nameof(PXCacheExtension), symbol.Name, StringComparison.Ordinal))
+	            || String.Equals(nameof(PXCacheExtension), symbol.Name, StringComparison.Ordinal)
+				|| symbol.InheritsFromOrEquals(pxContext.PXMappedCacheExtensionType))
 	        {
 		        return;
 	        }
