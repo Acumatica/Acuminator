@@ -24,11 +24,11 @@ namespace PX.Analyzers.Test
 			{
 				Id = Descriptors.PX1000_InvalidPXActionHandlerSignature.Id,
 				Message = Descriptors.PX1000_InvalidPXActionHandlerSignature.Title.ToString(),
-				Severity = DiagnosticSeverity.Error,
+				Severity = Descriptors.PX1000_InvalidPXActionHandlerSignature.DefaultSeverity,
 				Locations =
 					new[] {
-							new DiagnosticResultLocation("Test0.cs", 17, 21)
-						}
+						new DiagnosticResultLocation("Test0.cs", 17, 21)
+					}
 			};
 
 			VerifyCSharpDiagnostic(actual, diagnostic);
@@ -39,7 +39,14 @@ namespace PX.Analyzers.Test
         public void TestCodeFix(string actual, string expected)
 	    {
 	        VerifyCSharpFix(actual, expected);
-        }
+		}
+
+		[Theory]
+		[EmbeddedFileData("InvalidPXActionSignature_ValidParameters.cs")]
+		public void TestDiagnostic_ShouldNotShowDiagnostic(string actual)
+		{
+			VerifyCSharpDiagnostic(actual);
+		}
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider()
 		{

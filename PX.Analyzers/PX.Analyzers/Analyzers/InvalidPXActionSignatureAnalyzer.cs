@@ -31,7 +31,7 @@ namespace PX.Analyzers.Analyzers
 				if (field != null)
 				{
 					if (method.ReturnType.SpecialType == SpecialType.System_Collections_IEnumerable
-						&& (method.Parameters.Length != 1 || !method.Parameters[0].Type.Equals(pxContext.PXAdapterType))
+						&& (method.Parameters.Length == 0 || !method.Parameters[0].Type.Equals(pxContext.PXAdapterType))
 						|| method.ReturnsVoid && method.Parameters.Length > 0)
 					{
 						context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1000_InvalidPXActionHandlerSignature, method.Locations.First()));
