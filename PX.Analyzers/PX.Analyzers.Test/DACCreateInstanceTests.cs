@@ -22,7 +22,7 @@ namespace PX.Analyzers.Test
 			{
 				Id = Descriptors.PX1007_DACCreateInstance.Id,
 				Message = String.Format(Descriptors.PX1007_DACCreateInstance.MessageFormat.ToString(), "APInvoice"),
-				Severity = DiagnosticSeverity.Warning,
+				Severity = Descriptors.PX1007_DACCreateInstance.DefaultSeverity,
 				Locations =
 					new[] {
 						new DiagnosticResultLocation("Test0.cs", line, column)
