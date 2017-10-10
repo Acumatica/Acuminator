@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 
 namespace PX.Analyzers.Coloriser
 {
-	internal class PXColorizerTagger : ITagger<IClassificationTag>
+	internal class PXRegexColorizerTagger : ITagger<IClassificationTag>
 	{
 		private readonly ConcurrentBag<ITagSpan<IClassificationTag>> tags = new ConcurrentBag<ITagSpan<IClassificationTag>>();
 		private readonly List<ITagSpan<IClassificationTag>> tagsList = new List<ITagSpan<IClassificationTag>>();
@@ -23,7 +23,7 @@ namespace PX.Analyzers.Coloriser
 		public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 #pragma warning restore CS0067
 
-		internal PXColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider aProvider)
+		internal PXRegexColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider aProvider)
 		{            
             theBuffer = buffer;
             provider = aProvider;           
