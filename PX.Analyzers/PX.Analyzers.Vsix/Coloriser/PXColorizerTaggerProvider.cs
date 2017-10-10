@@ -8,52 +8,42 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Text.Tagging;
-
 using Microsoft.VisualStudio.Utilities;
+
 
 
 namespace PX.Analyzers.Coloriser
 {
-	[Export(typeof(ITaggerProvider))]
-	[ContentType("CSharp")]
-	[TagType(typeof(IClassificationTag))]
-	internal class PXColorizerTaggerProvider : ITaggerProvider
-	{
-        private const string textCategory = "text";
-
-        public IClassificationType DacType { get; private set; }
-
-        public IClassificationType FieldType { get; private set; }
-
-        public IClassificationType BqlParameterType { get; private set; }
-
-        public IClassificationType BqlOperatorType { get; private set; }
-
-        private bool isInitialized;
-        private static object syncRoot = new object();
-        private static bool isPriorityIncreased;
-
+    [ContentType("CSharp")]
+    [TagType(typeof(IClassificationTag))]
+    [Export(typeof(ITaggerProvider))]
+    internal class PXColorizerTaggerProvider : ITaggerProvider
+    {
         [Import]
-		internal IClassificationTypeRegistryService classificationRegistry = null; // Set via MEF
+        internal IClassificationTypeRegistryService classificationRegistry = null; // Set via MEF
 
         [Import]
         internal IClassificationFormatMapService classificationFormatMapService = null;  //Set via MEF
 
+        private const string textCategory = "text";
+        private static object syncRoot = new object();
+        private static bool isPriorityIncreased;
+        private bool isInitialized;
+
+        public IClassificationType DacType { get; protected set; }
+
+        public IClassificationType FieldType { get; protected set; }
+
+        public IClassificationType BqlParameterType { get; protected set; }
+
+        public IClassificationType BqlOperatorType { get; protected set; }    
+      
 		public ITagger<T> CreateTagger<T>(ITextBuffer buffer)
-		where T : ITag
+        where T : ITag
 		{
-            if (!isInitialized)
-            {
-                isInitialized = true;
-
-                DacType = classificationRegistry.GetClassificationType(Constants.DacFormat);
-                FieldType = classificationRegistry.GetClassificationType(Constants.DacFieldFormat);
-                BqlParameterType = classificationRegistry.GetClassificationType(Constants.BQLParameterFormat);
-                BqlOperatorType = classificationRegistry.GetClassificationType(Constants.BQLOperatorFormat);
-            }
-
+            InitializeClassificationTypes();
             IncreaseCommentFormatTypesPrioirity(classificationRegistry, classificationFormatMapService, BqlParameterType);
-            return (ITagger<T>)new PXColorizerTagger(buffer, this);
+            return (ITagger<T>)new PXRegexColorizerTagger(buffer, this);
 		}
 
         private static void IncreaseCommentFormatTypesPrioirity(IClassificationTypeRegistryService registry, IClassificationFormatMapService formatMapService,
@@ -91,6 +81,18 @@ namespace PX.Analyzers.Coloriser
             formatMap.AddExplicitTextProperties(artificialClassType, properties, highestPriorityType);
             formatMap.SwapPriorities(artificialClassType, predefinedClassificationType);
             formatMap.SwapPriorities(highestPriorityType, predefinedClassificationType);
+        }
+
+        protected void InitializeClassificationTypes()
+        {
+            if (isInitialized)
+                return;
+
+            isInitialized = true;
+            DacType = classificationRegistry.GetClassificationType(Constants.DacFormat);
+            FieldType = classificationRegistry.GetClassificationType(Constants.DacFieldFormat);
+            BqlParameterType = classificationRegistry.GetClassificationType(Constants.BQLParameterFormat);
+            BqlOperatorType = classificationRegistry.GetClassificationType(Constants.BQLOperatorFormat);
         }
     }
 }

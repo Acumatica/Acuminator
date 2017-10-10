@@ -125,12 +125,12 @@
   <ItemGroup>
     <Compile Include="Coloriser\ClassificationDefinitions.cs" />
     <Compile Include="Coloriser\EditorFormats.cs" />
-    <Compile Include="Coloriser\PXColorizerTagger.cs" />
+    <Compile Include="Coloriser\Regex\PXRegexColorizerTagger.cs" />
     <Compile Include="Coloriser\PXColorizerTaggerProvider.cs" />
-    <EmbeddedResource Include="Coloriser\Test\ARDocumentRelease.cs" />
-    <EmbeddedResource Include="Coloriser\Test\PMAllocationProcess.cs" />
-    <EmbeddedResource Include="Coloriser\Test\APInvoice.cs" />
-    <EmbeddedResource Include="Coloriser\Test\APRegister.cs" />
+    <EmbeddedResource Include="Coloriser\Regex\Test\ARDocumentRelease.cs" />
+    <EmbeddedResource Include="Coloriser\Regex\Test\PMAllocationProcess.cs" />
+    <EmbeddedResource Include="Coloriser\Regex\Test\APInvoice.cs" />
+    <EmbeddedResource Include="Coloriser\Regex\Test\APRegister.cs" />
     <Compile Include="Coloriser\Utils\Constants.cs" />
     <Compile Include="Coloriser\Utils\Extensions.cs" />
     <Compile Include="Coloriser\Utils\RegExpressions.cs" />
