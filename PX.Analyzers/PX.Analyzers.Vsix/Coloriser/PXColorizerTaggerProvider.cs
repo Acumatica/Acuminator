@@ -50,6 +50,10 @@ namespace PX.Analyzers.Coloriser
                 IncreaseCommentFormatTypesPrioirity(classificationRegistry, classificationFormatMapService, BqlParameterType);
                 return (ITagger<T>)new PXRegexColorizerTagger(buffer, this);
             }
+            else
+            {
+                return (ITagger<T>)new PXRoslynColorizerTagger(buffer, this);
+            }
 		}
 
         private static void IncreaseCommentFormatTypesPrioirity(IClassificationTypeRegistryService registry, IClassificationFormatMapService formatMapService,
