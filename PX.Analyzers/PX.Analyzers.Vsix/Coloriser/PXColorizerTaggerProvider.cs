@@ -19,6 +19,8 @@ namespace PX.Analyzers.Coloriser
     [Export(typeof(ITaggerProvider))]
     internal class PXColorizerTaggerProvider : ITaggerProvider
     {
+        private static readonly bool useRegexColoring = false;
+
         [Import]
         internal IClassificationTypeRegistryService classificationRegistry = null; // Set via MEF
 
@@ -42,8 +44,12 @@ namespace PX.Analyzers.Coloriser
         where T : ITag
 		{
             InitializeClassificationTypes();
-            IncreaseCommentFormatTypesPrioirity(classificationRegistry, classificationFormatMapService, BqlParameterType);
-            return (ITagger<T>)new PXRegexColorizerTagger(buffer, this);
+
+            if (useRegexColoring)
+            {
+                IncreaseCommentFormatTypesPrioirity(classificationRegistry, classificationFormatMapService, BqlParameterType);
+                return (ITagger<T>)new PXRegexColorizerTagger(buffer, this);
+            }
 		}
 
         private static void IncreaseCommentFormatTypesPrioirity(IClassificationTypeRegistryService registry, IClassificationFormatMapService formatMapService,
