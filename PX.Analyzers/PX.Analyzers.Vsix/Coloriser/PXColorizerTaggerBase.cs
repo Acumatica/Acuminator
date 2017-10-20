@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
+using PX.Analyzers.Utilities;
 
 namespace PX.Analyzers.Coloriser
 {
@@ -18,9 +19,22 @@ namespace PX.Analyzers.Coloriser
 #pragma warning restore CS0067
 
         protected ITextBuffer Buffer { get; }
-        private ITextSnapshot cache;
-        private readonly PXColorizerTaggerProvider provider;
+
+        protected PXColorizerTaggerProvider Provider { get; }
+
+        protected ITextSnapshot Cache { get; set; }
+
+        protected List<ITagSpan<IClassificationTag>> TagsList { get; } = new List<ITagSpan<IClassificationTag>>();
 
         public abstract IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans);
+
+        protected PXColorizerTaggerBase(ITextBuffer buffer, PXColorizerTaggerProvider aProvider)
+        {
+            buffer.ThrowOnNull(nameof(buffer));
+            aProvider.ThrowOnNull(nameof(aProvider));
+
+            Buffer = buffer;
+            Provider = aProvider;
+        }
     }
 }
