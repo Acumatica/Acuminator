@@ -6,7 +6,7 @@ namespace PX.Analyzers
 {
 	public class PXContext
 	{
-		internal PXContext(Compilation compilation)
+		public PXContext(Compilation compilation)
 		{
 			Compilation = compilation;
 			BQL = new BQLSymbols(Compilation);

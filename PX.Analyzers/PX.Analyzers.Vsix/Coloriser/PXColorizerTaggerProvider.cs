@@ -17,7 +17,7 @@ namespace PX.Analyzers.Coloriser
     [ContentType("CSharp")]
     [TagType(typeof(IClassificationTag))]
     [Export(typeof(ITaggerProvider))]
-    internal class PXColorizerTaggerProvider : ITaggerProvider
+    public class PXColorizerTaggerProvider : ITaggerProvider
     {
         private static readonly bool useRegexColoring = false;
 

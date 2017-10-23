@@ -368,8 +368,7 @@ namespace PX.Analyzers.Utilities
         public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
         {
             source.ThrowOnNull();
-            action.ThrowOnNull();
-            Action<T> copyAction = action; // for thread safety
+            action.ThrowOnNull();           
 
             switch (source)
             {
@@ -377,7 +376,7 @@ namespace PX.Analyzers.Utilities
 
                     for (int i = 0; i < list.Count; i++)
                     {
-                        copyAction(list[i]);
+                        action(list[i]);
                     }
 
                     break;
@@ -385,7 +384,7 @@ namespace PX.Analyzers.Utilities
 
                     foreach (T item in source)
                     {
-                        copyAction(item);
+                        action(item);
                     }
 
                     break;

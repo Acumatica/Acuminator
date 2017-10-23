@@ -5,14 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
-using PX.Analyzers.Utilities;
 
 namespace PX.Analyzers.Coloriser
 {
     /// <summary>
     /// A colorizer tagger base class.
     /// </summary>
-    internal abstract class PXColorizerTaggerBase : ITagger<IClassificationTag>
+    public abstract class PXColorizerTaggerBase : ITagger<IClassificationTag>
     {
 #pragma warning disable CS0067
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;

@@ -1,18 +1,18 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Collections.Immutable;
-//using System.Composition;
-//using System.Linq;
-//using System.Text;
-//using System.Threading;
-//using System.Threading.Tasks;
-//using Microsoft.CodeAnalysis;
-//using Microsoft.CodeAnalysis.CodeActions;
-//using Microsoft.CodeAnalysis.CodeFixes;
-//using Microsoft.CodeAnalysis.CSharp;
-//using Microsoft.CodeAnalysis.Formatting;
-//using Microsoft.CodeAnalysis.CSharp.Syntax;
-//using Microsoft.CodeAnalysis.Editing;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Composition;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeActions;
+using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Editing;
 
 //using PX.Analyzers.Analyzers.BQL;
 
@@ -33,7 +33,7 @@
 
 //			if (node == null)
 //				return;
-			
+
 //			var semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
 
 //			context.RegisterCodeFix(CodeAction.Create(title, c =>
@@ -47,81 +47,81 @@
 //			context.Diagnostics);
 //		}
 
-//		private class GenericNameRewriter : CSharpSyntaxRewriter
-//		{
-//			private readonly PXContext pxContext;
-//			private readonly Document document;
-//			private readonly SemanticModel semanticModel;
-//			private readonly SyntaxGenerator generator;
+//private class GenericNameRewriter : CSharpSyntaxRewriter
+//{
+//    private readonly PXContext pxContext;
+//    private readonly Document document;
+//    private readonly SemanticModel semanticModel;
+//    private readonly SyntaxGenerator generator;
 
-//			public GenericNameRewriter(PXContext aPxContext, Document aDocument, SemanticModel aSemanticModel)
-//			{
-//				pxContext = aPxContext;
-//				document = aDocument;
-//				semanticModel = aSemanticModel;
-//				generator = SyntaxGenerator.GetGenerator(document);
-//			}
-			
-//			public override SyntaxNode VisitGenericName(GenericNameSyntax genericNode)
-//			{
-//				if (!genericNode.CheckGenericNodeParentKind())
-//					return base.VisitGenericName(genericNode);
-						
-//				ITypeSymbol typeSymbol = semanticModel.GetSymbolInfo(genericNode).Symbol as ITypeSymbol;
+//    public GenericNameRewriter(PXContext aPxContext, Document aDocument, SemanticModel aSemanticModel)
+//    {
+//        pxContext = aPxContext;
+//        document = aDocument;
+//        semanticModel = aSemanticModel;
+//        generator = SyntaxGenerator.GetGenerator(document);
+//    }
 
-//				if (typeSymbol == null || !typeSymbol.InheritsFrom(pxContext.BQL.PXSelectBase))
-//					return base.VisitGenericName(genericNode);
+//    public override SyntaxNode VisitGenericName(GenericNameSyntax genericNode)
+//    {
+//        if (!genericNode.CheckGenericNodeParentKind())
+//            return base.VisitGenericName(genericNode);
 
-//				return GetFormatted(genericNode);
-				
-//				//return generator.GenericName(genericNode.Identifier.ValueText, typeArgs)
-//				//				.WithLeadingTrivia(genericNode.GetLeadingTrivia());
-//			}
+//        ITypeSymbol typeSymbol = semanticModel.GetSymbolInfo(genericNode).Symbol as ITypeSymbol;
 
-//			private SyntaxNode GetFormatted(GenericNameSyntax genericNode)
-//			{
-                 
-//				var typeArgs = genericNode.TypeArgumentList.Arguments;
-//				List<SyntaxNode> newTypeArgs = new List<SyntaxNode>(typeArgs.Count);
+//        if (typeSymbol == null || !typeSymbol.InheritsFrom(pxContext.BQL.PXSelectBase))
+//            return base.VisitGenericName(genericNode);
 
-//				if (typeArgs.Count == 0)
-//					return genericNode;
+//        return GetFormatted(genericNode);
 
-//				if (typeArgs.Count == 1)
-//				{
-//					newTypeArgs.Add(typeArgs[0]);
-//					return genericNode;
-//				}
+//        //return generator.GenericName(genericNode.Identifier.ValueText, typeArgs)
+//        //				.WithLeadingTrivia(genericNode.GetLeadingTrivia());
+//    }
 
-//				//MainDacRewriter mainDacVisitor = new MainDacRewriter(pxContext, document, semanticModel, generator);
-//				//newTypeArgs.Add(mainDacVisitor.Visit(typeArgs[0]));
+//    private SyntaxNode GetFormatted(GenericNameSyntax genericNode)
+//    {
 
-//				//OperandDacRewriter opRewriter = new OperandDacRewriter(pxContext, document, semanticModel, generator);
+//        var typeArgs = genericNode.TypeArgumentList.Arguments;
+//        List<SyntaxNode> newTypeArgs = new List<SyntaxNode>(typeArgs.Count);
 
-//				//for (int i = 1; i < typeArgs.Count; i++)
-//				//{
+//        if (typeArgs.Count == 0)
+//            return genericNode;
 
-//				//}
-
-//				var argsList = genericNode.TypeArgumentList.Arguments;
-
-//				foreach (var comma in genericNode.TypeArgumentList.Arguments.GetSeparators().Where(sep => !sep.HasExactlyOneEOL()))
-//				{
-//					argsList = argsList.ReplaceSeparator(comma, comma.WithTrailingTrivia(SyntaxFactory.EndOfLine(Environment.NewLine)));
-//				}
-
-//				genericNode = genericNode.WithTypeArgumentList(
-//					genericNode.TypeArgumentList.WithArguments(argsList)
-//					);
-				 
-//				return genericNode;// typeArgs.ToArray();
-//			}
-
-//            //private SyntaxTriviaList GetStartingTrivia(GenericNameSyntax genericNode)
-//            //{
-//            //    if (genericNode.ContainsAnnotations 
-//            //}
+//        if (typeArgs.Count == 1)
+//        {
+//            newTypeArgs.Add(typeArgs[0]);
+//            return genericNode;
 //        }
+
+//        //MainDacRewriter mainDacVisitor = new MainDacRewriter(pxContext, document, semanticModel, generator);
+//        //newTypeArgs.Add(mainDacVisitor.Visit(typeArgs[0]));
+
+//        //OperandDacRewriter opRewriter = new OperandDacRewriter(pxContext, document, semanticModel, generator);
+
+//        //for (int i = 1; i < typeArgs.Count; i++)
+//        //{
+
+//        //}
+
+//        var argsList = genericNode.TypeArgumentList.Arguments;
+
+//        foreach (var comma in genericNode.TypeArgumentList.Arguments.GetSeparators().Where(sep => !sep.HasExactlyOneEOL()))
+//        {
+//            argsList = argsList.ReplaceSeparator(comma, comma.WithTrailingTrivia(SyntaxFactory.EndOfLine(Environment.NewLine)));
+//        }
+
+//        genericNode = genericNode.WithTypeArgumentList(
+//            genericNode.TypeArgumentList.WithArguments(argsList)
+//            );
+
+//        return genericNode;// typeArgs.ToArray();
+//    }
+
+    //private SyntaxTriviaList GetStartingTrivia(GenericNameSyntax genericNode)
+    //{
+    //    if (genericNode.ContainsAnnotations 
+    //}
+//}
 
 //		//private class MainDacRewriter : CSharpSyntaxRewriter
 //		//{
