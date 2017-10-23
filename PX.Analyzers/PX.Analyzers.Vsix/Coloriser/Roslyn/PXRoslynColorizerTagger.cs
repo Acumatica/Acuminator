@@ -1,22 +1,22 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Linq;
+using System.Threading.Tasks;
+using System.ComponentModel.Composition;
+using CSharp = Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Classification;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
-using System;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Text.RegularExpressions;
-using System.ComponentModel.Composition;
-using CSharp = Microsoft.CodeAnalysis.CSharp;
-using PX.Analyzers.Utilities;
+
+
 
 namespace PX.Analyzers.Coloriser
 {
-    internal class PXRoslynColorizerTagger : PXColorizerTaggerBase
+    public class PXRoslynColorizerTagger : PXColorizerTaggerBase
     {
         internal PXRoslynColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider aProvider) : 
                                     base(buffer, aProvider)
@@ -54,7 +54,13 @@ namespace PX.Analyzers.Coloriser
             }
 
             ParsedDocument document = getDocumentTask.Result;
-            
+            WalkDocumentSyntaxTreeForTags(document);
+        }
+
+        private void WalkDocumentSyntaxTreeForTags(ParsedDocument document)
+        {
+            var syntaxWalker = new PXColoriserSyntaxWalker(this, document);
+            syntaxWalker.Visit(document.SyntaxRoot);
         }
     }
 }
