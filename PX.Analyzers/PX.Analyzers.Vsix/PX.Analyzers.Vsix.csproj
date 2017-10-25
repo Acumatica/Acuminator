@@ -121,6 +121,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <None Include="project.PublicKey" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Coloriser\ClassificationDefinitions.cs" />
