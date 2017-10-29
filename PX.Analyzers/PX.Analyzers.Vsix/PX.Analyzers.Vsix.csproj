@@ -120,8 +120,6 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="PX.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3b136cac2f602b8e, processorArchitecture=MSIL" />
-    <Reference Include="PX.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3b136cac2f602b8e, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.1.36.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Collections.Immutable.1.1.36\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
@@ -173,9 +171,7 @@
     <EmbeddedResource Include="Coloriser\Regex\Test\APRegister.cs" />
     <Compile Include="Coloriser\Roslyn\ParsedDocument.cs" />
     <Compile Include="Coloriser\Roslyn\PXColoriserSyntaxWalker.cs" />
-    <Compile Include="Coloriser\Roslyn\PXAcumaticaContext.cs" />
     <Compile Include="Coloriser\Roslyn\PXRoslynColorizerTagger.cs" />
-    <Compile Include="Coloriser\Roslyn\Utils\RoslynUtils.cs" />
     <Compile Include="Coloriser\Constants.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\Extensions.cs" />
     <Compile Include="Coloriser\Regex\Utils\RegExpressions.cs" />
