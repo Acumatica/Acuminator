@@ -53,8 +53,6 @@ namespace PX.Analyzers
 				compilation = aCompilation;
 			}
 
-			public INamedTypeSymbol PXSelectBase => compilation.GetTypeByMetadataName(typeof(PXSelectBase).FullName);
-
 			public INamedTypeSymbol PXSelect => compilation.GetTypeByMetadataName(typeof(PXSelect<>).FullName);
 
 			public INamedTypeSymbol PXSelectJoin1 => compilation.GetTypeByMetadataName(typeof(PXSelectJoin<,>).FullName);

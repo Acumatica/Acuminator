@@ -28,7 +28,7 @@ namespace PX.Analyzers.Coloriser
 
         public ITextSnapshot Snapshot { get; }
 
-        public PXAcumaticaContext PXContext { get; }
+        public PXContext PXContext { get; }
 
         private ParsedDocument(Workspace workspace, Document document, SemanticModel semanticModel, SyntaxNode syntaxRoot,
                                ITextSnapshot snapshot)
@@ -38,7 +38,7 @@ namespace PX.Analyzers.Coloriser
             SemanticModel = semanticModel;
             SyntaxRoot = syntaxRoot;
             Snapshot = snapshot;
-            PXContext = new PXAcumaticaContext(SemanticModel.Compilation);
+            PXContext = new PXContext(SemanticModel.Compilation);
         }
 
         public static async Task<ParsedDocument> Resolve(ITextBuffer buffer, ITextSnapshot snapshot)
