@@ -19,28 +19,57 @@ using PX.Analyzers.Analyzers.BQL;
 
 namespace PX.Analyzers.Coloriser
 {
-    public class PXColoriserSyntaxWalker : CSharpSyntaxWalker
-    {
-        private readonly PXRoslynColorizerTagger tagger;
-        private readonly ParsedDocument document;
+	public partial class PXRoslynColorizerTagger : PXColorizerTaggerBase
+	{
+		protected class PXColoriserSyntaxWalker : CSharpSyntaxWalker
+		{
+			private readonly PXRoslynColorizerTagger tagger;
+			private readonly ParsedDocument document;
 
-        public PXColoriserSyntaxWalker(PXRoslynColorizerTagger aTagger, ParsedDocument parsedDocument) : base(SyntaxWalkerDepth.StructuredTrivia)
-        {
-            aTagger.ThrowOnNull(nameof(aTagger));
-            parsedDocument.ThrowOnNull(nameof(parsedDocument));
+			public PXColoriserSyntaxWalker(PXRoslynColorizerTagger aTagger, ParsedDocument parsedDocument) : base(SyntaxWalkerDepth.StructuredTrivia)
+			{
+				aTagger.ThrowOnNull(nameof(aTagger));
+				parsedDocument.ThrowOnNull(nameof(parsedDocument));
 
-            tagger = aTagger;
-            document = parsedDocument;
-        }
+				tagger = aTagger;
+				document = parsedDocument;
+			}
 
-        public override void VisitGenericName(GenericNameSyntax genericNode)
-        {
-            ITypeSymbol typeSymbol = document.SemanticModel.GetSymbolInfo(genericNode).Symbol as ITypeSymbol;
+			public override void VisitIdentifierName(IdentifierNameSyntax node)
+			{
+				ITypeSymbol typeSymbol = document.SemanticModel.GetSymbolInfo(node).Symbol as ITypeSymbol;
 
-            if (!typeSymbol.IsBqlCommand(document.PXContext))
-                return;
+				if (typeSymbol.IsDAC(document.PXContext))
+				{
+					AddTag(node, tagger.Provider.DacType);
+					return;
+				}
+				else if (typeSymbol.IsDacField(document.PXContext))
+				{
+					AddTag(node, tagger.Provider.FieldType);
+					return;
+				}
+				
+				base.VisitIdentifierName(node);
+			}
+
+			//public override void VisitGenericName(GenericNameSyntax genericNode)
+			//{
+			//    ITypeSymbol typeSymbol = document.SemanticModel.GetSymbolInfo(genericNode).Symbol as ITypeSymbol;
+
+			//    if (!typeSymbol.IsBqlCommand(document.PXContext))
+			//        return;
 
 
-        }
-    }
+			//}
+
+			private void AddTag(SyntaxNode node, IClassificationType classificationType)
+			{
+				ITagSpan<IClassificationTag> tag = node.Span.ToTagSpan(tagger.Cache, classificationType);
+
+				if (tag != null)
+					tagger.TagsList.Add(tag);
+			}
+		}	
+	}
 }
