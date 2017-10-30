@@ -53,6 +53,18 @@ namespace PX.Analyzers
 				compilation = aCompilation;
 			}
 
+			public INamedTypeSymbol BqlCommand => compilation.GetTypeByMetadataName(typeof(BqlCommand).FullName);
+
+			public INamedTypeSymbol IBqlField => compilation.GetTypeByMetadataName(typeof(IBqlField).FullName);
+
+			public INamedTypeSymbol IBqlParameter => compilation.GetTypeByMetadataName(typeof(IBqlParameter).FullName);
+
+			public INamedTypeSymbol IBqlJoin => compilation.GetTypeByMetadataName(typeof(IBqlJoin).FullName);
+
+			public INamedTypeSymbol IBqlComparison => compilation.GetTypeByMetadataName(typeof(IBqlComparison).FullName);
+
+			public INamedTypeSymbol IBqlCreator => compilation.GetTypeByMetadataName(typeof(IBqlCreator).FullName);
+
 			public INamedTypeSymbol PXSelect => compilation.GetTypeByMetadataName(typeof(PXSelect<>).FullName);
 
 			public INamedTypeSymbol PXSelectJoin1 => compilation.GetTypeByMetadataName(typeof(PXSelectJoin<,>).FullName);

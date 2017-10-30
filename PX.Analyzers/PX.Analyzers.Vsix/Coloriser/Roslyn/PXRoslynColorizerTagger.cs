@@ -16,7 +16,7 @@ using Microsoft.VisualStudio.Text.Tagging;
 
 namespace PX.Analyzers.Coloriser
 {
-    public class PXRoslynColorizerTagger : PXColorizerTaggerBase
+    public partial class PXRoslynColorizerTagger : PXColorizerTaggerBase
     {
         internal PXRoslynColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider aProvider) : 
                                     base(buffer, aProvider)

@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using PX.Analyzers.Utilities;
 
 namespace PX.Analyzers.Analyzers.BQL
 {
@@ -26,13 +27,45 @@ namespace PX.Analyzers.Analyzers.BQL
             if (typeSymbol == null)
                 return false;
 
-            if (typeSymbol.InheritsFrom(context.PXSelectBaseType))
-                return true;
-
-            return false;
+			List<ITypeSymbol> typeHierarchy = typeSymbol.GetBaseTypesAndThis().ToList();
+			return typeHierarchy.Contains(context.PXSelectBaseType) ||
+				   typeHierarchy.Contains(context.BQL.BqlCommand);           
         }
 
-        public static bool EndsTheLine(this SyntaxNode node) => node.GetTrailingTrivia().TriviaContainsEOL();		
+		public static bool IsBqlParameter(this ITypeSymbol typeSymbol, PXContext context)
+		{
+			if (typeSymbol == null)
+				return false;
+
+			return typeSymbol.InheritsFromOrEquals(context.BQL.IBqlParameter, includeInterfaces: true);
+		}
+
+		public static bool IsBqlOperator(this ITypeSymbol typeSymbol, PXContext context)
+		{
+			if (typeSymbol == null)
+				return false;
+
+			//Simple implementation for now. More complex should check concrete operator types to filter garbage
+			return typeSymbol.InheritsFromOrEquals(context.BQL.IBqlCreator, includeInterfaces: true);  
+		}
+
+		public static bool IsDAC(this ITypeSymbol typeSymbol, PXContext context)
+		{
+			if (typeSymbol == null)
+				return false;
+
+			return typeSymbol.InheritsFromOrEquals(context.IBqlTableType, includeInterfaces: true);
+		}
+
+		public static bool IsDacField(this ITypeSymbol typeSymbol, PXContext context)
+		{
+			if (typeSymbol == null)
+				return false;
+
+			return typeSymbol.InheritsFromOrEquals(context.BQL.IBqlField, includeInterfaces: true);
+		}
+
+		public static bool EndsTheLine(this SyntaxNode node) => node.GetTrailingTrivia().TriviaContainsEOL();		
 
 		public static bool StartTheLine(this SyntaxNode node) => node.GetTrailingTrivia().TriviaContainsEOL();
 
