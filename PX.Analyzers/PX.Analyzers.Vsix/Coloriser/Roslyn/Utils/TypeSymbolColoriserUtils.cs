@@ -59,6 +59,7 @@ namespace PX.Analyzers.Coloriser
 
             //Simple implementation for now. More complex should check concrete operator types could be added later
             List<string> typeHierarchyNames = typeSymbol.GetBaseTypesAndThis()
+                                                        .Concat(typeSymbol.AllInterfaces)
                                                         .Select(type => type.Name)
                                                         .ToList();
 
