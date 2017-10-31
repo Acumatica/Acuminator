@@ -16,12 +16,12 @@ namespace PX.Analyzers.Coloriser
 
         public static string IBqlParameter => typeof(IBqlParameter).Name;
 
-        public static string IBqlJoin => typeof(IBqlJoin).Name;
+        public static string IBqlJoin => nameof(PX.Data.IBqlJoin);
 
         public static string IBqlComparison => typeof(IBqlComparison).Name;
 
         public static string IBqlCreator => typeof(IBqlCreator).Name;
-
+        
         public static string PXSelectBaseType => typeof(PXSelectBase).Name;
 
 		public static string Constant => typeof(Constant).Name;
