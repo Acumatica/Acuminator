@@ -14,57 +14,6 @@ namespace PX.Analyzers.Analyzers.BQL
 {
 	public static class BqlRoslynUtil
 	{
-        /// <summary>
-        /// An ITypeSymbol extension method that query if 'typeSymbol' is bql command.
-        /// </summary>
-        /// <param name="typeSymbol">The typeSymbol to act on.</param>
-        /// <param name="context">The context.</param>
-        /// <returns>
-        /// True if bql command, false if not.
-        /// </returns>
-        public static bool IsBqlCommand(this ITypeSymbol typeSymbol, PXContext context)
-        {
-            if (typeSymbol == null)
-                return false;
-
-			List<ITypeSymbol> typeHierarchy = typeSymbol.GetBaseTypesAndThis().ToList();
-			return typeHierarchy.Contains(context.PXSelectBaseType) ||
-				   typeHierarchy.Contains(context.BQL.BqlCommand);           
-        }
-
-		public static bool IsBqlParameter(this ITypeSymbol typeSymbol, PXContext context)
-		{
-			if (typeSymbol == null)
-				return false;
-
-			return typeSymbol.InheritsFromOrEquals(context.BQL.IBqlParameter, includeInterfaces: true);
-		}
-
-		public static bool IsBqlOperator(this ITypeSymbol typeSymbol, PXContext context)
-		{
-			if (typeSymbol == null)
-				return false;
-
-			//Simple implementation for now. More complex should check concrete operator types to filter garbage
-			return typeSymbol.InheritsFromOrEquals(context.BQL.IBqlCreator, includeInterfaces: true);  
-		}
-
-		public static bool IsDAC(this ITypeSymbol typeSymbol, PXContext context)
-		{
-			if (typeSymbol == null)
-				return false;
-
-			return typeSymbol.InheritsFromOrEquals(context.IBqlTableType, includeInterfaces: true);
-		}
-
-		public static bool IsDacField(this ITypeSymbol typeSymbol, PXContext context)
-		{
-			if (typeSymbol == null)
-				return false;
-
-			return typeSymbol.InheritsFromOrEquals(context.BQL.IBqlField, includeInterfaces: true);
-		}
-
 		public static bool EndsTheLine(this SyntaxNode node) => node.GetTrailingTrivia().TriviaContainsEOL();		
 
 		public static bool StartTheLine(this SyntaxNode node) => node.GetTrailingTrivia().TriviaContainsEOL();
