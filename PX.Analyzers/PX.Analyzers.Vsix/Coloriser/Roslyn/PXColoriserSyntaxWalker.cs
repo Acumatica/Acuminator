@@ -24,6 +24,8 @@ namespace PX.Analyzers.Coloriser
 		{
 			private readonly PXRoslynColorizerTagger tagger;
 			private readonly ParsedDocument document;
+            private int braceLevel;
+            private bool isInsideBqlCommand;
 
 			public PXColoriserSyntaxWalker(PXRoslynColorizerTagger aTagger, ParsedDocument parsedDocument) : base(SyntaxWalkerDepth.StructuredTrivia)
 			{
@@ -51,7 +53,11 @@ namespace PX.Analyzers.Coloriser
 				else if (typeSymbol.IsDacField())
 				{
 					AddTag(node.Span, tagger.Provider.FieldType);				
-				} 
+				}
+                else if (typeSymbol.IsBqlConstant())
+                {
+                    AddTag(node.Span, tagger.Provider.FieldType);
+                }
 			}
 
             public override void VisitGenericName(GenericNameSyntax genericNode)
@@ -64,11 +70,19 @@ namespace PX.Analyzers.Coloriser
                     return;
                 }
 
-				if (typeSymbol.IsBqlParameter())
+                if (typeSymbol.IsBqlCommand())
+                {
+                    isInsideBqlCommand = true;
+                    AddTag(genericNode.Identifier.Span, tagger.Provider.BqlOperatorType);
+                    base.VisitGenericName(genericNode);
+                    isInsideBqlCommand = false;
+                    return;
+                }
+				else if (typeSymbol.IsBqlParameter())
                 {
                     AddTag(genericNode.Identifier.Span, tagger.Provider.BqlParameterType);
                 }
-                else if (typeSymbol.IsBqlCommand() || typeSymbol.IsBqlOperator())
+                else if (typeSymbol.IsBqlOperator())
                 {
                     AddTag(genericNode.Identifier.Span, tagger.Provider.BqlOperatorType);
                 }
@@ -93,6 +107,34 @@ namespace PX.Analyzers.Coloriser
                 }
 
                 base.VisitQualifiedName(node);
+            }
+          
+            public override void VisitTypeArgumentList(TypeArgumentListSyntax node)
+            {
+                if (!isInsideBqlCommand)
+                {
+                    base.VisitTypeArgumentList(node);
+                    return;
+                }
+
+                braceLevel++;
+                
+                if (braceLevel <= Constants.MaxBraceLevel)
+                {
+                    IClassificationType braceClassificationType = tagger.Provider.BraceTypeByLevel[braceLevel];
+                    AddTag(node.LessThanToken.Span, braceClassificationType);
+                    AddTag(node.GreaterThanToken.Span, braceClassificationType);
+                }
+
+
+                base.VisitTypeArgumentList(node);
+
+                braceLevel--;
+            }
+
+            public override void VisitXmlComment(XmlCommentSyntax node)
+            {
+                return;  //To prevent coloring in XML comments don't call base method
             }
 
             private void AddTag(TextSpan span, IClassificationType classificationType)

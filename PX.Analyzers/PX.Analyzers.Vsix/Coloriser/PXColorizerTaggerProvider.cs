@@ -44,6 +44,8 @@ namespace PX.Analyzers.Coloriser
 
 		public IClassificationType BqlConstantEndingType { get; protected set; }
 
+        public Dictionary<int, IClassificationType> BraceTypeByLevel { get; protected set; }
+
 		public ITagger<T> CreateTagger<T>(ITextBuffer buffer)
         where T : ITag
 		{
@@ -109,6 +111,22 @@ namespace PX.Analyzers.Coloriser
             BqlOperatorType = classificationRegistry.GetClassificationType(Constants.BQLOperatorFormat);
 			BqlConstantPrefixType = classificationRegistry.GetClassificationType(Constants.BQLConstantPrefixFormat);
 			BqlConstantEndingType = classificationRegistry.GetClassificationType(Constants.BQLConstantEndingFormat);
-		}
+
+            BraceTypeByLevel = new Dictionary<int, IClassificationType>(capacity: Constants.MaxBraceLevel)
+            {
+                [1] = classificationRegistry.GetClassificationType(Constants.BraceLevel_1_Format),
+                [2] = classificationRegistry.GetClassificationType(Constants.BraceLevel_2_Format),
+                [3] = classificationRegistry.GetClassificationType(Constants.BraceLevel_3_Format),
+
+                [4] = classificationRegistry.GetClassificationType(Constants.BraceLevel_4_Format),
+                [5] = classificationRegistry.GetClassificationType(Constants.BraceLevel_5_Format),
+                [6] = classificationRegistry.GetClassificationType(Constants.BraceLevel_6_Format),
+
+                [7] = classificationRegistry.GetClassificationType(Constants.BraceLevel_7_Format),
+                [8] = classificationRegistry.GetClassificationType(Constants.BraceLevel_8_Format),
+                [9] = classificationRegistry.GetClassificationType(Constants.BraceLevel_9_Format)
+            };
+
+        }
     }
 }

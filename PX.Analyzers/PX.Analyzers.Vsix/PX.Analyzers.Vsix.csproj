@@ -162,7 +162,8 @@
     <None Include="project.PublicKey" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Coloriser\ClassificationDefinitions.cs" />
+    <Compile Include="Coloriser\BracesFormats.cs" />
+    <Compile Include="Coloriser\ClassificationTypeDefinitions.cs" />
     <Compile Include="Coloriser\EditorFormats.cs" />
     <Compile Include="Coloriser\PXColorizerTaggerBase.cs" />
     <Compile Include="Coloriser\Regex\PXRegexColorizerTagger.cs" />
