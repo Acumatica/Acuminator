@@ -13,6 +13,9 @@ namespace PX.Analyzers.Coloriser
 {
     public class ParsedDocument
     {
+        private static MetadataReference PXDataReference { get; } = 
+            MetadataReference.CreateFromFile(typeof(PX.Data.PXGraph).Assembly.Location);
+
         private static readonly HashSet<string> allowedExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             ".cs"
@@ -28,17 +31,14 @@ namespace PX.Analyzers.Coloriser
 
         public ITextSnapshot Snapshot { get; }
 
-        public PXContext PXContext { get; }
-
         private ParsedDocument(Workspace workspace, Document document, SemanticModel semanticModel, SyntaxNode syntaxRoot,
                                ITextSnapshot snapshot)
         {
             Workspace = workspace;
             Document = document;
-            SemanticModel = semanticModel;
             SyntaxRoot = syntaxRoot;
-            Snapshot = snapshot;
-            PXContext = new PXContext(SemanticModel.Compilation);
+            SemanticModel = semanticModel;
+            Snapshot = snapshot;         
         }
 
         public static async Task<ParsedDocument> Resolve(ITextBuffer buffer, ITextSnapshot snapshot)
@@ -65,9 +65,12 @@ namespace PX.Analyzers.Coloriser
             await Task.WhenAll(semanticModelTask, syntaxRootTask)
                       .ConfigureAwait(continueOnCapturedContext: false);
 
-            semanticModel = semanticModelTask.Result;
             syntaxRoot = syntaxRootTask.Result;
-            
+
+            //Add reference to PX.Data
+            Compilation newCompilation = semanticModelTask.Result.Compilation.AddReferences(PXDataReference);
+            semanticModel = newCompilation.GetSemanticModel(syntaxRoot.SyntaxTree);
+
             return new ParsedDocument(workspace, document, semanticModel, syntaxRoot, snapshot);
         }
 

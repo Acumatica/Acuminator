@@ -15,7 +15,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
-using PX.Analyzers.Analyzers.BQL;
 
 namespace PX.Analyzers.Coloriser
 {
@@ -39,37 +38,59 @@ namespace PX.Analyzers.Coloriser
 			{
 				ITypeSymbol typeSymbol = document.SemanticModel.GetSymbolInfo(node).Symbol as ITypeSymbol;
 
-				if (typeSymbol.IsDAC(document.PXContext))
+                if (typeSymbol == null)
+                {
+                    base.VisitIdentifierName(node);
+                    return;
+                }
+
+				if (typeSymbol.IsDAC())
 				{
-					AddTag(node, tagger.Provider.DacType);
-					return;
+					AddTag(node, tagger.Provider.DacType);				
 				}
-				else if (typeSymbol.IsDacField(document.PXContext))
+				else if (typeSymbol.IsDacField())
 				{
-					AddTag(node, tagger.Provider.FieldType);
-					return;
-				}
-				
-				base.VisitIdentifierName(node);
+					AddTag(node, tagger.Provider.FieldType);				
+				}                      
 			}
 
-			//public override void VisitGenericName(GenericNameSyntax genericNode)
-			//{
-			//    ITypeSymbol typeSymbol = document.SemanticModel.GetSymbolInfo(genericNode).Symbol as ITypeSymbol;
+            public override void VisitGenericName(GenericNameSyntax genericNode)
+            {    
+                ITypeSymbol typeSymbol = document.SemanticModel.GetSymbolInfo(genericNode).Symbol as ITypeSymbol;
+              
+                if (typeSymbol == null)
+                {
+                    base.VisitGenericName(genericNode);
+                    return;
+                }
 
-			//    if (!typeSymbol.IsBqlCommand(document.PXContext))
-			//        return;
+                if (typeSymbol.IsBqlParameter())
+                {
+                    AddTag(genericNode.Identifier, tagger.Provider.BqlParameterType);
+                }
+                else if (typeSymbol.IsBqlCommand() || typeSymbol.IsBqlOperator())
+                {
+                    AddTag(genericNode.Identifier, tagger.Provider.BqlOperatorType);
+                }
+                
+                base.VisitGenericName(genericNode);
+            }
 
-
-			//}
-
-			private void AddTag(SyntaxNode node, IClassificationType classificationType)
+            private void AddTag(SyntaxNode node, IClassificationType classificationType)
 			{
 				ITagSpan<IClassificationTag> tag = node.Span.ToTagSpan(tagger.Cache, classificationType);
 
 				if (tag != null)
 					tagger.TagsList.Add(tag);
 			}
-		}	
+
+            private void AddTag(SyntaxToken token, IClassificationType classificationType)
+            {
+                ITagSpan<IClassificationTag> tag = token.Span.ToTagSpan(tagger.Cache, classificationType);
+
+                if (tag != null)
+                    tagger.TagsList.Add(tag);
+            }
+        }	
 	}
 }

@@ -13,7 +13,6 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 
 
-
 namespace PX.Analyzers.Coloriser
 {
     public partial class PXRoslynColorizerTagger : PXColorizerTaggerBase
@@ -27,7 +26,7 @@ namespace PX.Analyzers.Coloriser
         {
             if (spans == null || spans.Count == 0)
                 return Enumerable.Empty<ITagSpan<IClassificationTag>>();
-
+            
             if (Cache != null && Cache == spans[0].Snapshot)
                 return TagsList;
          
