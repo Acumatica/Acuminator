@@ -57,13 +57,18 @@ namespace PX.Analyzers.Coloriser
             if (typeSymbol == null)
                 return false;
 
-            //Simple implementation for now. More complex should check concrete operator types to filter garbage
-            return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.IBqlCreator);
+            //Simple implementation for now. More complex should check concrete operator types could be added later
+            List<string> typeHierarchyNames = typeSymbol.GetBaseTypesAndThis()
+                                                        .Select(type => type.Name)
+                                                        .ToList();
+
+            return typeHierarchyNames.Contains(TypeNames.IBqlCreator) ||
+                   typeHierarchyNames.Contains(TypeNames.IBqlJoin);
         }
 
         public static bool IsDAC(this ITypeSymbol typeSymbol)
         {
-            if (typeSymbol == null)
+            if (typeSymbol == null || string.Equals(typeSymbol.Name, TypeNames.IBqlTable))
                 return false;
 
             return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.IBqlTable);
@@ -71,7 +76,7 @@ namespace PX.Analyzers.Coloriser
 
         public static bool IsDacField(this ITypeSymbol typeSymbol)
         {
-            if (typeSymbol == null)
+            if (typeSymbol == null || string.Equals(typeSymbol.Name, TypeNames.IBqlField))
                 return false;
 
             return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.IBqlField);
@@ -79,7 +84,7 @@ namespace PX.Analyzers.Coloriser
 
 		public static bool IsBqlConstant(this ITypeSymbol typeSymbol)
 		{
-			if (typeSymbol == null)
+			if (typeSymbol == null || string.Equals(typeSymbol.Name, TypeNames.Constant))
 				return false;
 
 			return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.Constant);

@@ -16,7 +16,7 @@ namespace PX.Objects.HackathonDemo
 			[PXUIField(DisplayName = "Selected")]
 			public bool? Selected { get; set; }
 		}
-
+       
 		public PXProcessing<SOSelectedOrder> Orders;
 		public PXSelect<SOOrder, 
 			Where<SOOrder.orderType, Equal<SalesOrder>, 
