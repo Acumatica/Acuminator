@@ -23,5 +23,7 @@ namespace PX.Analyzers.Coloriser
         public static string IBqlCreator => typeof(IBqlCreator).Name;
 
         public static string PXSelectBaseType => typeof(PXSelectBase).Name;
+
+		public static string Constant => typeof(Constant).Name;
     }
 }

@@ -46,12 +46,12 @@ namespace PX.Analyzers.Coloriser
 
 				if (typeSymbol.IsDAC())
 				{
-					AddTag(node, tagger.Provider.DacType);				
+					AddTag(node.Span, tagger.Provider.DacType);				
 				}
 				else if (typeSymbol.IsDacField())
 				{
-					AddTag(node, tagger.Provider.FieldType);				
-				}                      
+					AddTag(node.Span, tagger.Provider.FieldType);				
+				} 
 			}
 
             public override void VisitGenericName(GenericNameSyntax genericNode)
@@ -64,33 +64,44 @@ namespace PX.Analyzers.Coloriser
                     return;
                 }
 
-                if (typeSymbol.IsBqlParameter())
+				if (typeSymbol.IsBqlParameter())
                 {
-                    AddTag(genericNode.Identifier, tagger.Provider.BqlParameterType);
+                    AddTag(genericNode.Identifier.Span, tagger.Provider.BqlParameterType);
                 }
                 else if (typeSymbol.IsBqlCommand() || typeSymbol.IsBqlOperator())
                 {
-                    AddTag(genericNode.Identifier, tagger.Provider.BqlOperatorType);
+                    AddTag(genericNode.Identifier.Span, tagger.Provider.BqlOperatorType);
                 }
-                
+			           
                 base.VisitGenericName(genericNode);
             }
 
-            private void AddTag(SyntaxNode node, IClassificationType classificationType)
+            public override void VisitQualifiedName(QualifiedNameSyntax node)
+            {
+                ITypeSymbol typeSymbol = document.SemanticModel.GetSymbolInfo(node).Symbol as ITypeSymbol;
+
+                if (typeSymbol == null)
+                {
+                    base.VisitQualifiedName(node);
+                    return;
+                }
+
+                if (typeSymbol.IsBqlConstant())
+                {
+                    AddTag(node.Left.Span, tagger.Provider.BqlConstantPrefixType);
+                    AddTag(node.Right.Span, tagger.Provider.BqlConstantEndingType);
+                }
+
+                base.VisitQualifiedName(node);
+            }
+
+            private void AddTag(TextSpan span, IClassificationType classificationType)
 			{
-				ITagSpan<IClassificationTag> tag = node.Span.ToTagSpan(tagger.Cache, classificationType);
+				ITagSpan<IClassificationTag> tag = span.ToTagSpan(tagger.Cache, classificationType);
 
 				if (tag != null)
 					tagger.TagsList.Add(tag);
 			}
-
-            private void AddTag(SyntaxToken token, IClassificationType classificationType)
-            {
-                ITagSpan<IClassificationTag> tag = token.Span.ToTagSpan(tagger.Cache, classificationType);
-
-                if (tag != null)
-                    tagger.TagsList.Add(tag);
-            }
         }	
 	}
 }

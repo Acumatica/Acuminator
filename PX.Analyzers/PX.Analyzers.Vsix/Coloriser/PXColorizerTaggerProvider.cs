@@ -38,8 +38,12 @@ namespace PX.Analyzers.Coloriser
 
         public IClassificationType BqlParameterType { get; protected set; }
 
-        public IClassificationType BqlOperatorType { get; protected set; }    
-      
+        public IClassificationType BqlOperatorType { get; protected set; }
+
+		public IClassificationType BqlConstantPrefixType { get; protected set; }
+
+		public IClassificationType BqlConstantEndingType { get; protected set; }
+
 		public ITagger<T> CreateTagger<T>(ITextBuffer buffer)
         where T : ITag
 		{
@@ -103,6 +107,8 @@ namespace PX.Analyzers.Coloriser
             FieldType = classificationRegistry.GetClassificationType(Constants.DacFieldFormat);
             BqlParameterType = classificationRegistry.GetClassificationType(Constants.BQLParameterFormat);
             BqlOperatorType = classificationRegistry.GetClassificationType(Constants.BQLOperatorFormat);
-        }
+			BqlConstantPrefixType = classificationRegistry.GetClassificationType(Constants.BQLConstantPrefixFormat);
+			BqlConstantEndingType = classificationRegistry.GetClassificationType(Constants.BQLConstantEndingFormat);
+		}
     }
 }

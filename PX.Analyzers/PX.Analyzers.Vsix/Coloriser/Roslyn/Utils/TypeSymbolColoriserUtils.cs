@@ -76,5 +76,13 @@ namespace PX.Analyzers.Coloriser
 
             return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.IBqlField);
         }
-    }
+
+		public static bool IsBqlConstant(this ITypeSymbol typeSymbol)
+		{
+			if (typeSymbol == null)
+				return false;
+
+			return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.Constant);
+		}
+	}
 }
