@@ -13,6 +13,8 @@ namespace PX.Analyzers
 		public const string DacFieldFormat = nameof(DacFieldFormat);
 		public const string BQLParameterFormat = nameof(BQLParameterFormat);
 		public const string BQLOperatorFormat = nameof(BQLOperatorFormat);
+		public const string BQLConstantPrefixFormat = nameof(BQLConstantPrefixFormat);
+		public const string BQLConstantEndingFormat = nameof(BQLConstantEndingFormat);
 	}
 
 	public static class Labels
@@ -21,5 +23,7 @@ namespace PX.Analyzers
 		public const string DacFieldFormatLabel = "NoBrains - DAC Field Format";
 		public const string BQLParameterFormatLabel = "NoBrains - BQL parameters";
 		public const string BQLOperatorFormatLabel = "NoBrains - BQL operators";
+		public const string BQLConstantPrefixFormatLabel = "NoBrains - BQL constant - prefix";
+		public const string BQLConstantEndingFormatLabel = "NoBrains - BQL constant - ending";
 	}
 }

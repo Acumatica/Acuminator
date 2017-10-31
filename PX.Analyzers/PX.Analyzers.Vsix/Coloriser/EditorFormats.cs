@@ -68,5 +68,37 @@ namespace PX.Analyzers.Coloriser
 			ForegroundCustomizable = true;
 			BackgroundCustomizable = true;
 		}
-	}	
+	}
+
+	[Export(typeof(EditorFormatDefinition))]
+	[ClassificationType(ClassificationTypeNames = Constants.BQLConstantPrefixFormat)]
+	[Name(Constants.BQLConstantPrefixFormat)]
+	[UserVisible(true)]
+	[Order(After = Constants.DacFieldFormat)]
+	internal sealed class BQLConstantPrefixFormat : ClassificationFormatDefinition
+	{
+		public BQLConstantPrefixFormat()
+		{
+			ForegroundColor = Colors.Firebrick;
+			DisplayName = Labels.BQLConstantPrefixFormatLabel; // Human readable version of the name		
+			ForegroundCustomizable = true;
+			BackgroundCustomizable = true;
+		}
+	}
+
+	[Export(typeof(EditorFormatDefinition))]
+	[ClassificationType(ClassificationTypeNames = Constants.BQLConstantEndingFormat)]
+	[Name(Constants.BQLConstantEndingFormat)]
+	[UserVisible(true)]
+	[Order(After = Constants.BQLConstantPrefixFormat)]
+	internal sealed class BQLConstantEndingFormat : ClassificationFormatDefinition
+	{
+		public BQLConstantEndingFormat()
+		{
+			ForegroundColor = Colors.Teal;
+			DisplayName = Labels.BQLConstantEndingFormatLabel; // Human readable version of the name		
+			ForegroundCustomizable = true;
+			BackgroundCustomizable = true;
+		}
+	}
 }
