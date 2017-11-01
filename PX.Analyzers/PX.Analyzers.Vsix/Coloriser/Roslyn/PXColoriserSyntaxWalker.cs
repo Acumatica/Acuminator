@@ -56,7 +56,11 @@ namespace PX.Analyzers.Coloriser
 				}
                 else if (typeSymbol.IsBqlConstant())
                 {
-                    AddTag(node.Span, tagger.Provider.FieldType);
+                    AddTag(node.Span, tagger.Provider.BqlConstantEndingType);
+                }
+                else if (typeSymbol.IsBqlOperator())
+                {
+                    AddTag(node.Span, tagger.Provider.BqlOperatorType);
                 }
 			}
 
