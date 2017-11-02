@@ -136,10 +136,27 @@ namespace PX.Analyzers.Coloriser
                 braceLevel--;
             }
 
+            #region Visit XML comments methods
+            public override void VisitXmlCrefAttribute(XmlCrefAttributeSyntax node)
+            {
+                return;  //To prevent coloring in XML comments don't call base method
+            }
+
             public override void VisitXmlComment(XmlCommentSyntax node)
             {
                 return;  //To prevent coloring in XML comments don't call base method
             }
+
+            public override void VisitCrefBracketedParameterList(CrefBracketedParameterListSyntax node)
+            {
+                return;  //To prevent coloring in XML comments don't call base method
+            }
+
+            public override void VisitDocumentationCommentTrivia(DocumentationCommentTriviaSyntax node)
+            {
+                return;  //To prevent coloring in XML comments don't call base method
+            }
+            #endregion
 
             private void AddTag(TextSpan span, IClassificationType classificationType)
 			{
