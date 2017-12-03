@@ -35,5 +35,12 @@ namespace PX.Analyzers.Coloriser
             Buffer = buffer;
             Provider = aProvider;
         }
+
+        protected bool TagsChangedIsNull() => TagsChanged == null;
+
+        protected void RaiseTagsChanged() => TagsChanged?.Invoke(this, 
+            new SnapshotSpanEventArgs(
+                new SnapshotSpan(Buffer.CurrentSnapshot,
+                    new Span(0, Buffer.CurrentSnapshot.Length))));
     }
 }

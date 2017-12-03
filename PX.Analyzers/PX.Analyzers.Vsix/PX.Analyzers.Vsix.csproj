@@ -172,6 +172,7 @@
     <EmbeddedResource Include="Coloriser\Regex\Test\PMAllocationProcess.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\APInvoice.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\APRegister.cs" />
+    <Compile Include="Coloriser\Roslyn\ParsedSymbolsCache.cs" />
     <Compile Include="Coloriser\Roslyn\ParsedDocument.cs" />
     <Compile Include="Coloriser\Roslyn\PXColoriserSyntaxWalker.cs" />
     <Compile Include="Coloriser\Roslyn\PXRoslynColorizerTagger.cs" />
