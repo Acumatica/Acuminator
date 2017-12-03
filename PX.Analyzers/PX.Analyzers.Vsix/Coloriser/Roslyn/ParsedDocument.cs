@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 using Path = System.IO.Path;
 
+
 namespace PX.Analyzers.Coloriser
 {
     public class ParsedDocument
@@ -31,21 +32,24 @@ namespace PX.Analyzers.Coloriser
 
         public ITextSnapshot Snapshot { get; }
 
-        private ParsedDocument(Workspace workspace, Document document, SemanticModel semanticModel, SyntaxNode syntaxRoot,
+        internal ParsedSymbolsCache SymbolsCache { get; }
+
+        public ParsedDocument(Workspace workspace, Document document, SemanticModel semanticModel, SyntaxNode syntaxRoot,
                                ITextSnapshot snapshot)
         {
             Workspace = workspace;
             Document = document;
             SyntaxRoot = syntaxRoot;
             SemanticModel = semanticModel;
-            Snapshot = snapshot;         
+            Snapshot = snapshot;
+            SymbolsCache = new ParsedSymbolsCache();
         }
 
         public static async Task<ParsedDocument> Resolve(ITextBuffer buffer, ITextSnapshot snapshot)
         {
             Workspace workspace = buffer.GetWorkspace();
             Document document = snapshot.GetOpenDocumentInCurrentContextWithChanges();
-
+            
             if (document == null || !IsSupportedFileType(document) || !document.SupportsSemanticModel || 
                 !document.SupportsSyntaxTree)
             {     

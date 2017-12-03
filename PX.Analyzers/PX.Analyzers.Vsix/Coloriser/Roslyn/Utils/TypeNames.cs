@@ -24,6 +24,6 @@ namespace PX.Analyzers.Coloriser
         
         public static string PXSelectBaseType => typeof(PXSelectBase).Name;
 
-		public static string Constant => typeof(Constant).Name;
+		public static string Constant => typeof(Constant).Name;     
     }
 }
