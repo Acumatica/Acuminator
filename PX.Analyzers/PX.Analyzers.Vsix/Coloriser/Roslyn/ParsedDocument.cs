@@ -32,7 +32,7 @@ namespace PX.Analyzers.Coloriser
 
         public ITextSnapshot Snapshot { get; }
 
-        internal ParsedSymbolsCache SymbolsCache { get; }
+        //internal ParsedSymbolsCache SymbolsCache { get; }
 
         public ParsedDocument(Workspace workspace, Document document, SemanticModel semanticModel, SyntaxNode syntaxRoot,
                                ITextSnapshot snapshot)
@@ -42,7 +42,7 @@ namespace PX.Analyzers.Coloriser
             SyntaxRoot = syntaxRoot;
             SemanticModel = semanticModel;
             Snapshot = snapshot;
-            SymbolsCache = new ParsedSymbolsCache();
+            //SymbolsCache = new ParsedSymbolsCache();
         }
 
         public static async Task<ParsedDocument> Resolve(ITextBuffer buffer, ITextSnapshot snapshot)

@@ -43,7 +43,7 @@ namespace PX.Analyzers.Coloriser
                 string nodeText = node.Identifier.ValueText;
                 TextSpan span = node.Span;
 
-                if (IsVar(nodeText) || SearchIdentifierInSymbolsCache(span, node, nodeText))
+                if (IsVar(nodeText) /* || SearchIdentifierInSymbolsCache(span, node, nodeText)*/)
                     return;
               
                 ITypeSymbol typeSymbol = document.SemanticModel.GetSymbolInfo(node).Symbol as ITypeSymbol;
@@ -56,29 +56,33 @@ namespace PX.Analyzers.Coloriser
                
 				if (typeSymbol.IsDAC())
 				{
-					AddTagAndCacheIt(nodeText, TypeNames.IBqlTable, span, tagger.Provider.DacType);				
-				}
-				else if (typeSymbol.IsDacField())
+                    //AddTagAndCacheIt(nodeText, TypeNames.IBqlTable, span, tagger.Provider.DacType);		
+                    AddTag(span, tagger.Provider.DacType);		
+                }
+                else if (typeSymbol.IsDacField())
 				{
-                    var parent = node.Parent;
+                    //var parent = node.Parent;
 
-                    if (parent.Kind() == SyntaxKind.QualifiedName)
-                    {
-                        AddTagAndCacheIt(parent.ToString(), TypeNames.IBqlField, span, tagger.Provider.FieldType);
-                    }
-                    else
-                    {
-                        AddTag(span, tagger.Provider.FieldType);
-                    }
-                    	
-				}
+                    //if (parent.Kind() == SyntaxKind.QualifiedName)
+                    //{                       
+                    //    AddTagAndCacheIt(parent.ToString(), TypeNames.IBqlField, span, tagger.Provider.FieldType);
+                    //}
+                    //else
+                    //{
+                    //    AddTag(span, tagger.Provider.FieldType);
+                    //}
+
+                    AddTag(span, tagger.Provider.FieldType);
+                }
                 else if (typeSymbol.IsBqlConstant())
                 {
-                    AddTagAndCacheIt(nodeText, TypeNames.Constant, span, tagger.Provider.BqlConstantEndingType);
+                    // AddTagAndCacheIt(nodeText, TypeNames.Constant, span, tagger.Provider.BqlConstantEndingType);
+                    AddTag(span, tagger.Provider.BqlConstantEndingType);
                 }
                 else if (typeSymbol.IsBqlOperator())
                 {
-                    AddTagAndCacheIt(nodeText, TypeNames.IBqlCreator, span, tagger.Provider.BqlOperatorType);
+                    //AddTagAndCacheIt(nodeText, TypeNames.IBqlCreator, span, tagger.Provider.BqlOperatorType);
+                    AddTag(span, tagger.Provider.BqlOperatorType);
                 }
 			}
 
@@ -88,11 +92,11 @@ namespace PX.Analyzers.Coloriser
                 string nodeText = identifier.ValueText;
                 TextSpan span = identifier.Span;
 
-                if (SearchGenericNameInSymbolsCache(span, nodeText))
-                {
-                    base.VisitGenericName(genericNode);
-                    return;
-                }
+                //if (SearchGenericNameInSymbolsCache(span, nodeText))
+                //{
+                //    base.VisitGenericName(genericNode);
+                //    return;
+                //}
                    
                 ITypeSymbol typeSymbol = document.SemanticModel.GetSymbolInfo(genericNode).Symbol as ITypeSymbol;
               
@@ -105,18 +109,21 @@ namespace PX.Analyzers.Coloriser
                 if (typeSymbol.IsBqlCommand())
                 {
                     isInsideBqlCommand = true;
-                    AddTagAndCacheIt(nodeText, TypeNames.BqlCommand, span, tagger.Provider.BqlOperatorType);
+                    AddTag(span, tagger.Provider.BqlOperatorType);
+                   // AddTagAndCacheIt(nodeText, TypeNames.BqlCommand, span, tagger.Provider.BqlOperatorType);
                     base.VisitGenericName(genericNode);
                     isInsideBqlCommand = false;
                     return;
                 }
 				else if (typeSymbol.IsBqlParameter())
                 {
-                    AddTagAndCacheIt(nodeText, TypeNames.IBqlParameter, span, tagger.Provider.BqlParameterType);
+                    AddTag(span, tagger.Provider.BqlParameterType);
+                    //AddTagAndCacheIt(nodeText, TypeNames.IBqlParameter, span, tagger.Provider.BqlParameterType);
                 }
                 else if (typeSymbol.IsBqlOperator())
                 {
-                    AddTagAndCacheIt(nodeText, TypeNames.IBqlCreator, span, tagger.Provider.BqlOperatorType);
+                    AddTag(span, tagger.Provider.BqlOperatorType);
+                    //AddTagAndCacheIt(nodeText, TypeNames.IBqlCreator, span, tagger.Provider.BqlOperatorType);
                 }
 			           
                 base.VisitGenericName(genericNode);
@@ -128,11 +135,11 @@ namespace PX.Analyzers.Coloriser
                 TextSpan leftSpan = node.Left.Span;
                 TextSpan rightSpan = node.Right.Span;
 
-                if (SearchQualifiedNameInSymbolsCache(leftSpan, rightSpan, nodeText))
-                {
-                    base.VisitQualifiedName(node);
-                    return;
-                }
+                //if (SearchQualifiedNameInSymbolsCache(leftSpan, rightSpan, nodeText))
+                //{
+                //    base.VisitQualifiedName(node);
+                //    return;
+                //}
 
                 ITypeSymbol typeSymbol = document.SemanticModel.GetSymbolInfo(node).Symbol as ITypeSymbol;
 
@@ -147,7 +154,7 @@ namespace PX.Analyzers.Coloriser
                     AddTag(leftSpan, tagger.Provider.BqlConstantPrefixType);
                     AddTag(rightSpan, tagger.Provider.BqlConstantEndingType);
 
-                    document.SymbolsCache.AddNodeToCache(nodeText, TypeNames.Constant);                  
+                    //document.SymbolsCache.AddNodeToCache(nodeText, TypeNames.Constant);                  
                 }
 
                 base.VisitQualifiedName(node);
@@ -199,71 +206,71 @@ namespace PX.Analyzers.Coloriser
             #endregion
 
 
-            private bool SearchIdentifierInSymbolsCache(TextSpan span, IdentifierNameSyntax node, string nodeText)
-            {
-                var parentKind = node.Parent.Kind();
+            //private bool SearchIdentifierInSymbolsCache(TextSpan span, IdentifierNameSyntax node, string nodeText)
+            //{
+            //    var parentKind = node.Parent.Kind();
 
-                switch (parentKind)
-                {
-                    case SyntaxKind.InvocationExpression:
-                    case SyntaxKind.VariableDeclarator:
-                    case SyntaxKind.SimpleMemberAccessExpression:
-                    case SyntaxKind.QueryBody:
-                    case SyntaxKind.SimpleAssignmentExpression:
-                    case SyntaxKind.PointerMemberAccessExpression:
-                        return false;
-                }
+            //    switch (parentKind)
+            //    {
+            //        case SyntaxKind.InvocationExpression:
+            //        case SyntaxKind.VariableDeclarator:
+            //        case SyntaxKind.SimpleMemberAccessExpression:
+            //        case SyntaxKind.QueryBody:
+            //        case SyntaxKind.SimpleAssignmentExpression:
+            //        case SyntaxKind.PointerMemberAccessExpression:
+            //            return false;
+            //    }
                  
-                if (document.SymbolsCache.IsDAC(nodeText))
-                {
-                    AddTag(span, tagger.Provider.DacType);
-                }
-                else if (document.SymbolsCache.IsDacField(nodeText))
-                {
-                    AddTag(span, tagger.Provider.FieldType);
-                }
-                else if (document.SymbolsCache.IsBqlConstant(nodeText))
-                {
-                    AddTag(span, tagger.Provider.BqlConstantEndingType);
-                }
-                else if (document.SymbolsCache.IsBqlOperator(nodeText))
-                {
-                    AddTag(span, tagger.Provider.BqlOperatorType);
-                }
-                else
-                    return false;
+            //    if (document.SymbolsCache.IsDAC(nodeText))
+            //    {
+            //        AddTag(span, tagger.Provider.DacType);
+            //    }
+            //    else if (document.SymbolsCache.IsDacField(nodeText))
+            //    {
+            //        AddTag(span, tagger.Provider.FieldType);
+            //    }
+            //    else if (document.SymbolsCache.IsBqlConstant(nodeText))
+            //    {
+            //        AddTag(span, tagger.Provider.BqlConstantEndingType);
+            //    }
+            //    else if (document.SymbolsCache.IsBqlOperator(nodeText))
+            //    {
+            //        AddTag(span, tagger.Provider.BqlOperatorType);
+            //    }
+            //    else
+            //        return false;
 
-                return true;
-            }
+            //    return true;
+            //}
 
-            private bool SearchGenericNameInSymbolsCache(TextSpan span, string nodeText)
-            {
-                if (document.SymbolsCache.IsBqlCommand(nodeText) || document.SymbolsCache.IsBqlOperator(nodeText))
-                {
-                    AddTag(span, tagger.Provider.BqlOperatorType);
-                }
-                else if (document.SymbolsCache.IsBqlParameter(nodeText))
-                {
-                    AddTag(span, tagger.Provider.BqlParameterType);
-                }
-                else
-                    return false;
+            //private bool SearchGenericNameInSymbolsCache(TextSpan span, string nodeText)
+            //{
+            //    if (document.SymbolsCache.IsBqlCommand(nodeText) || document.SymbolsCache.IsBqlOperator(nodeText))
+            //    {
+            //        AddTag(span, tagger.Provider.BqlOperatorType);
+            //    }
+            //    else if (document.SymbolsCache.IsBqlParameter(nodeText))
+            //    {
+            //        AddTag(span, tagger.Provider.BqlParameterType);
+            //    }
+            //    else
+            //        return false;
 
-                return true;
-            }
+            //    return true;
+            //}
 
-            private bool SearchQualifiedNameInSymbolsCache(TextSpan leftSpan, TextSpan rightSpan, string nodeText)
-            {
-                if (document.SymbolsCache.IsBqlConstant(nodeText))
-                {
-                    AddTag(leftSpan, tagger.Provider.BqlConstantPrefixType);
-                    AddTag(rightSpan, tagger.Provider.BqlConstantEndingType);
-                }
-                else
-                    return false;
+            //private bool SearchQualifiedNameInSymbolsCache(TextSpan leftSpan, TextSpan rightSpan, string nodeText)
+            //{
+            //    if (document.SymbolsCache.IsBqlConstant(nodeText))
+            //    {
+            //        AddTag(leftSpan, tagger.Provider.BqlConstantPrefixType);
+            //        AddTag(rightSpan, tagger.Provider.BqlConstantEndingType);
+            //    }
+            //    else
+            //        return false;
 
-                return true;
-            }
+            //    return true;
+            //}
 
             private void AddTag(TextSpan span, IClassificationType classificationType)
 			{
@@ -273,16 +280,16 @@ namespace PX.Analyzers.Coloriser
 					tagger.TagsList.Add(tag);
 			}
 
-            private void AddTagAndCacheIt(string cachedText, string tagTypeName, TextSpan span, IClassificationType classificationType)
-            {
-                ITagSpan<IClassificationTag> tag = span.ToTagSpan(tagger.Cache, classificationType);
+            //private void AddTagAndCacheIt(string cachedText, string tagTypeName, TextSpan span, IClassificationType classificationType)
+            //{
+            //    ITagSpan<IClassificationTag> tag = span.ToTagSpan(tagger.Cache, classificationType);
 
-                if (tag != null)
-                {
-                    tagger.TagsList.Add(tag);
-                    document.SymbolsCache.AddNodeToCache(cachedText, tagTypeName);
-                }
-            }
+            //    if (tag != null)
+            //    {
+            //        tagger.TagsList.Add(tag);
+            //        document.SymbolsCache.AddNodeToCache(cachedText, tagTypeName);
+            //    }
+            //}
 
             /// <summary>
             /// More optimized
