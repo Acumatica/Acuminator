@@ -101,6 +101,7 @@ namespace PX.Analyzers.Coloriser
             }
 
             ParsedDocument document = getDocumentTask.Result;
+            
             WalkDocumentSyntaxTreeForTags(document);
             //documentCache = document;
             //isParsed = true;

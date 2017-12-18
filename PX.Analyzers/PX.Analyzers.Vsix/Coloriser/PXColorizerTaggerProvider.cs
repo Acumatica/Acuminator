@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.VisualStudio.Text.Editor;
 
 
 
@@ -16,11 +17,10 @@ namespace PX.Analyzers.Coloriser
 {
     [ContentType("CSharp")]
     [TagType(typeof(IClassificationTag))]
-    [Export(typeof(ITaggerProvider))]
-    public class PXColorizerTaggerProvider : ITaggerProvider
-    {
-        private static readonly bool useRegexColoring = false;
-
+    [TextViewRole(PredefinedTextViewRoles.Document)]
+    [Export(typeof(IViewTaggerProvider))]
+    public class PXColorizerTaggerProvider : IViewTaggerProvider
+    {    
         [Import]
         internal IClassificationTypeRegistryService classificationRegistry = null; // Set via MEF
 
@@ -46,19 +46,21 @@ namespace PX.Analyzers.Coloriser
 
         public Dictionary<int, IClassificationType> BraceTypeByLevel { get; protected set; }
 
-		public ITagger<T> CreateTagger<T>(ITextBuffer buffer)
-        where T : ITag
+		ITagger<T> IViewTaggerProvider.CreateTagger<T>(ITextView textView, ITextBuffer textBuffer)   
 		{
+            if (!AcuminatorSettings.ColoringEnabled || textView.TextBuffer != textBuffer)
+                return null;
+         
             InitializeClassificationTypes();
 
-            if (useRegexColoring)
+            if (AcuminatorSettings.UseRegexColoriser)
             {
                 IncreaseCommentFormatTypesPrioirity(classificationRegistry, classificationFormatMapService, BqlParameterType);
-                return (ITagger<T>)new PXRegexColorizerTagger(buffer, this);
+                return (ITagger<T>)new PXRegexColorizerTagger(textBuffer, this);
             }
             else
             {
-                return (ITagger<T>)new PXRoslynColorizerTagger(buffer, this);
+                return (ITagger<T>)new PXRoslynColorizerTagger(textBuffer, this);
             }
 		}
 

@@ -63,7 +63,14 @@
     <StartArguments>/rootsuffix Roslyn</StartArguments>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Coloriser\Settings\PXAnalysersSettings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>PXAnalysersSettings.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>PX.Analyzers</CustomToolNamespace>
+    </None>
     <None Include="packages.config" />
     <None Include="projectx.snk" />
     <None Include="source.extension.vsixmanifest">
@@ -172,6 +179,7 @@
     <EmbeddedResource Include="Coloriser\Regex\Test\PMAllocationProcess.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\APInvoice.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\APRegister.cs" />
+    <Compile Include="Coloriser\Roslyn\AsyncTagging\AsyncTagsContainer.cs" />
     <Compile Include="Coloriser\Roslyn\ParsedSymbolsCache.cs" />
     <Compile Include="Coloriser\Roslyn\ParsedDocument.cs" />
     <Compile Include="Coloriser\Roslyn\PXColoriserSyntaxWalker.cs" />
@@ -182,6 +190,12 @@
     <Compile Include="Coloriser\Roslyn\Utils\TypeNames.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\TypeSymbolColoriserUtils.cs" />
     <Compile Include="Coloriser\Regex\Utils\ConcurrentBagExtensions.cs" />
+    <Compile Include="Coloriser\Settings\AcuminatorSettings.cs" />
+    <Compile Include="Coloriser\Settings\PXAnalysersSettings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>PXAnalysersSettings.settings</DependentUpon>
+    </Compile>
     <Compile Include="Coloriser\Utils\EnumerableExtensions.cs" />
     <Compile Include="Coloriser\Utils\ExceptionExtensions.cs" />
     <Compile Include="Coloriser\Utils\StringExtensions.cs" />
