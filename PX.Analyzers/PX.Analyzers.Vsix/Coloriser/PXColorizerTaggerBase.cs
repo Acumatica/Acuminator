@@ -11,7 +11,7 @@ namespace PX.Analyzers.Coloriser
     /// <summary>
     /// A colorizer tagger base class.
     /// </summary>
-    public abstract class PXColorizerTaggerBase : ITagger<IClassificationTag>
+    public abstract class PXColorizerTaggerBase : ITagger<IClassificationTag>, IDisposable
     {
 #pragma warning disable CS0067
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
@@ -34,6 +34,18 @@ namespace PX.Analyzers.Coloriser
 
             Buffer = buffer;
             Provider = aProvider;
+
+            var genOptionsPage = Provider.Package?.GeneralOptionsPage;
+
+            if (genOptionsPage != null)
+            {
+                genOptionsPage.ColoringSettingChanged += ColoringSettingChangedHandler;
+            }
+        }
+
+        private void ColoringSettingChangedHandler(object sender, Vsix.SettingChangedEventArgs e)
+        {
+            RaiseTagsChanged();
         }
 
         protected bool TagsChangedIsNull() => TagsChanged == null;
@@ -42,5 +54,15 @@ namespace PX.Analyzers.Coloriser
             new SnapshotSpanEventArgs(
                 new SnapshotSpan(Buffer.CurrentSnapshot,
                     new Span(0, Buffer.CurrentSnapshot.Length))));
+
+        void IDisposable.Dispose()
+        {
+            var genOptionsPage = Provider.Package?.GeneralOptionsPage;
+
+            if (genOptionsPage != null)
+            {
+                genOptionsPage.ColoringSettingChanged -= ColoringSettingChangedHandler;
+            }
+        }
     }
 }
