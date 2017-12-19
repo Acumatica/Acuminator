@@ -10,6 +10,9 @@ using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using PX.Analyzers.Vsix;
 
 
 
@@ -46,14 +49,16 @@ namespace PX.Analyzers.Coloriser
 
         public Dictionary<int, IClassificationType> BraceTypeByLevel { get; protected set; }
 
+        public AcuminatorVSPackage Package { get; protected set; }
+
 		ITagger<T> IViewTaggerProvider.CreateTagger<T>(ITextView textView, ITextBuffer textBuffer)   
-		{
-            if (!AcuminatorSettings.ColoringEnabled || textView.TextBuffer != textBuffer)
-                return null;
-         
+		{               
             InitializeClassificationTypes();
 
-            if (AcuminatorSettings.UseRegexColoriser)
+            if (!Package.ColoringEnabled || textView.TextBuffer != textBuffer)
+                return null;
+
+            if (Package.UseRegexColoring)
             {
                 IncreaseCommentFormatTypesPrioirity(classificationRegistry, classificationFormatMapService, BqlParameterType);
                 return (ITagger<T>)new PXRegexColorizerTagger(textBuffer, this);
@@ -104,7 +109,7 @@ namespace PX.Analyzers.Coloriser
         protected void InitializeClassificationTypes()
         {
             if (isInitialized)
-                return;
+                return;          
 
             isInitialized = true;
             DacType = classificationRegistry.GetClassificationType(Constants.DacFormat);
@@ -129,6 +134,31 @@ namespace PX.Analyzers.Coloriser
                 [9] = classificationRegistry.GetClassificationType(Constants.BraceLevel_9_Format)
             };
 
+            InitializePackage();
+        }
+
+        protected virtual void InitializePackage()
+        {
+            IVsShell shellService = ServiceProvider.GlobalProvider.GetService(typeof(IVsShell)) as IVsShell;
+
+            if (shellService == null)
+            {
+                isInitialized = false;
+                return;
+            }
+            
+            Guid acuminatorGUID = Guid.Parse(AcuminatorVSPackage.PackageGuidString);
+            int returnCode = shellService.IsPackageLoaded(ref acuminatorGUID, out IVsPackage package);
+
+            if (returnCode != Microsoft.VisualStudio.VSConstants.S_OK)
+            {
+                shellService.LoadPackage(ref acuminatorGUID, out package);
+            }
+            
+            Package = package as AcuminatorVSPackage;
+
+            if (Package == null)
+                throw new Exception("Acuminator package loaded incorrectly");
         }
     }
 }
