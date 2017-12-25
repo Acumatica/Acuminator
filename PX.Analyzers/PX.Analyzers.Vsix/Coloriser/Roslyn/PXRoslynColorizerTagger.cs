@@ -19,12 +19,15 @@ namespace PX.Analyzers.Coloriser
 {
     public partial class PXRoslynColorizerTagger : PXColorizerTaggerBase
     {
+        public override TaggerType TaggerType => TaggerType.Roslyn;
+
         //private bool isParsed;
         //private ParsedDocument documentCache;
         //private volatile static int walking;
 
-        internal PXRoslynColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider aProvider) :
-                                    base(buffer, aProvider)
+        internal PXRoslynColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider aProvider, bool subscribeToSettingsChanges,
+                                         bool useCacheChecking) :
+                                    base(buffer, aProvider, subscribeToSettingsChanges, useCacheChecking)
         {
             //Buffer.Changed += Buffer_Changed;
         }
@@ -68,18 +71,17 @@ namespace PX.Analyzers.Coloriser
 
         public override IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {           
-            if (spans == null || spans.Count == 0)
+            if (spans == null || spans.Count == 0 || !Provider.Package.ColoringEnabled)
                 return Enumerable.Empty<ITagSpan<IClassificationTag>>();
 
+            
             //if (isParsed)
             //    return TagsList;
 
-            if (Cache != null && Cache == spans[0].Snapshot)
+            if (CheckIfRetaggingIsNotNecessary(spans[0].Snapshot))
                 return TagsList;
-         
-           
-            TagsList.Clear();
-            Cache = spans[0].Snapshot;
+
+            ResetCacheAndFlags(spans[0].Snapshot);          
             GetTagsFromSnapshot(spans);
             return TagsList;
         }
