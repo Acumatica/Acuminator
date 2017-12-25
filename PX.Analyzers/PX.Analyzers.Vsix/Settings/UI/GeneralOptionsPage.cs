@@ -3,13 +3,16 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.Shell;
 
 namespace PX.Analyzers.Vsix
 {
     public class GeneralOptionsPage : DialogPage
     {
+        private const string AllSettings = "All"; 
+
+        private object syncLock = new object();
+        private bool colorSettingsChanged = false;
         public event EventHandler<SettingChangedEventArgs> ColoringSettingChanged;
         public const string PageTitle = "General";
 
@@ -26,7 +29,7 @@ namespace PX.Analyzers.Vsix
                 if (coloringEnabled != value)
                 {
                     coloringEnabled = value;
-                    OnSettingsChanged(nameof(ColoringEnabled));
+                    colorSettingsChanged = true;
                 }
             }
         }
@@ -44,13 +47,31 @@ namespace PX.Analyzers.Vsix
                 if (useRegexColoring != value)
                 {
                     useRegexColoring = value;
-                    OnSettingsChanged(nameof(UseRegexColoring));
+                    colorSettingsChanged = true;
                 }
             }
         }
 
-        private void OnSettingsChanged(string setting)
+        public override void ResetSettings()
         {
+            coloringEnabled = true;
+            useRegexColoring = false;
+            base.ResetSettings();
+            OnSettingsChanged(AllSettings);
+        }
+
+        public override void SaveSettingsToStorage()
+        {
+            base.SaveSettingsToStorage();
+
+            if (coloringEnabled)
+            {
+                OnSettingsChanged(AllSettings);
+            }
+        }
+
+        private void OnSettingsChanged(string setting)
+        {          
             ColoringSettingChanged?.Invoke(this, new SettingChangedEventArgs(setting));
         }
     }

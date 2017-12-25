@@ -13,32 +13,39 @@ namespace PX.Analyzers.Coloriser
 {
 	internal class PXRegexColorizerTagger : PXColorizerTaggerBase
 	{
-		private readonly ConcurrentBag<ITagSpan<IClassificationTag>> tags = new ConcurrentBag<ITagSpan<IClassificationTag>>();
+        public override TaggerType TaggerType => TaggerType.RegEx;
+
+        private readonly ConcurrentBag<ITagSpan<IClassificationTag>> tags = new ConcurrentBag<ITagSpan<IClassificationTag>>();
 		
-        internal PXRegexColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider aProvider) :
-                                   base(buffer, aProvider)
+        internal PXRegexColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider aProvider, bool subscribeToSettingsChanges, 
+                                        bool useCacheChecking) :
+                                   base(buffer, aProvider, subscribeToSettingsChanges, useCacheChecking)
 		{                    
 		}
 
 		public override IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
 		{
-			if (spans.Count == 0)
+			if (spans.Count == 0 || !Provider.Package.ColoringEnabled)
 			{
 				return Enumerable.Empty<ITagSpan<IClassificationTag>>();
 			}
 
-			if (Cache != null && Cache == spans[0].Snapshot)
+			if (CheckIfRetaggingIsNotNecessary(spans[0].Snapshot))
 				return TagsList;
 
-			tags.Clear();
-			TagsList.Clear();
-            Cache = spans[0].Snapshot;
+            ResetCacheAndFlags(spans[0].Snapshot);		
 			GetTagsFromSnapshot(Cache, spans);
 			TagsList.AddRange(tags);
 			return TagsList;
 		}
 
-		private void GetTagsFromSnapshot(ITextSnapshot newSnapshot, NormalizedSnapshotSpanCollection spans)
+        protected internal override void ResetCacheAndFlags(ITextSnapshot newCache)
+        {
+            base.ResetCacheAndFlags(newCache);
+            tags.Clear();
+        }
+
+        private void GetTagsFromSnapshot(ITextSnapshot newSnapshot, NormalizedSnapshotSpanCollection spans)
 		{
 			string wholeText = newSnapshot.GetText();
             var matches = RegExpressions.BQLSelectCommandRegex

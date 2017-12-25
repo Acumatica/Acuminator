@@ -55,56 +55,13 @@ namespace PX.Analyzers.Coloriser
 		{               
             InitializeClassificationTypes();
 
-            if (!Package.ColoringEnabled || textView.TextBuffer != textBuffer)
+            if (textView.TextBuffer != textBuffer)
                 return null;
 
-            if (Package.UseRegexColoring)
-            {
-                IncreaseCommentFormatTypesPrioirity(classificationRegistry, classificationFormatMapService, BqlParameterType);
-                return (ITagger<T>)new PXRegexColorizerTagger(textBuffer, this);
-            }
-            else
-            {
-                return (ITagger<T>)new PXRoslynColorizerTagger(textBuffer, this);
-            }
-		}
-
-        private static void IncreaseCommentFormatTypesPrioirity(IClassificationTypeRegistryService registry, IClassificationFormatMapService formatMapService,
-                                                                IClassificationType highestPriorityType)
-        {        
-            bool lockTaken = false;
-            Monitor.TryEnter(syncRoot, ref lockTaken);
-
-            if (lockTaken)
-            {
-				try
-				{
-					if (!isPriorityIncreased)
-					{
-						isPriorityIncreased = true;
-						IClassificationFormatMap formatMap = formatMapService.GetClassificationFormatMap(category: textCategory);
-						IncreaseServiceFormatPriority(formatMap, registry, PredefinedClassificationTypeNames.ExcludedCode, highestPriorityType);
-						IncreaseServiceFormatPriority(formatMap, registry, PredefinedClassificationTypeNames.Comment, highestPriorityType);
-					}
-				}
-				finally
-				{
-					Monitor.Exit(syncRoot);
-				}
-            }              
-        }
-
-        private static void IncreaseServiceFormatPriority(IClassificationFormatMap formatMap, IClassificationTypeRegistryService registry, string formatName,
-                                                          IClassificationType highestPriorityType)
-        {
-            IClassificationType predefinedClassificationType = registry.GetClassificationType(formatName);
-            IClassificationType artificialClassType = registry.CreateTransientClassificationType(predefinedClassificationType);
-            TextFormattingRunProperties properties = formatMap.GetExplicitTextProperties(predefinedClassificationType);
-
-            formatMap.AddExplicitTextProperties(artificialClassType, properties, highestPriorityType);
-            formatMap.SwapPriorities(artificialClassType, predefinedClassificationType);
-            formatMap.SwapPriorities(highestPriorityType, predefinedClassificationType);
-        }
+            ITagger<T> tagger = new PXColorizerMainTagger(textBuffer, this, subscribeToSettingsChanges: true, 
+                                                          useCacheChecking: true) as ITagger<T>;
+            return tagger;
+		}     
 
         protected void InitializeClassificationTypes()
         {
@@ -135,6 +92,7 @@ namespace PX.Analyzers.Coloriser
             };
 
             InitializePackage();
+            IncreaseCommentFormatTypesPrioirity(classificationRegistry, classificationFormatMapService, BqlParameterType);
         }
 
         protected virtual void InitializePackage()
@@ -159,6 +117,43 @@ namespace PX.Analyzers.Coloriser
 
             if (Package == null)
                 throw new Exception("Acuminator package loaded incorrectly");
+        }
+
+        private static void IncreaseCommentFormatTypesPrioirity(IClassificationTypeRegistryService registry, IClassificationFormatMapService formatMapService,
+                                                               IClassificationType highestPriorityType)
+        {
+            bool lockTaken = false;
+            Monitor.TryEnter(syncRoot, ref lockTaken);
+
+            if (lockTaken)
+            {
+                try
+                {
+                    if (!isPriorityIncreased)
+                    {
+                        isPriorityIncreased = true;
+                        IClassificationFormatMap formatMap = formatMapService.GetClassificationFormatMap(category: textCategory);
+                        IncreaseServiceFormatPriority(formatMap, registry, PredefinedClassificationTypeNames.ExcludedCode, highestPriorityType);
+                        IncreaseServiceFormatPriority(formatMap, registry, PredefinedClassificationTypeNames.Comment, highestPriorityType);
+                    }
+                }
+                finally
+                {
+                    Monitor.Exit(syncRoot);
+                }
+            }
+        }
+
+        private static void IncreaseServiceFormatPriority(IClassificationFormatMap formatMap, IClassificationTypeRegistryService registry, string formatName,
+                                                          IClassificationType highestPriorityType)
+        {
+            IClassificationType predefinedClassificationType = registry.GetClassificationType(formatName);
+            IClassificationType artificialClassType = registry.CreateTransientClassificationType(predefinedClassificationType);
+            TextFormattingRunProperties properties = formatMap.GetExplicitTextProperties(predefinedClassificationType);
+
+            formatMap.AddExplicitTextProperties(artificialClassType, properties, highestPriorityType);
+            formatMap.SwapPriorities(artificialClassType, predefinedClassificationType);
+            formatMap.SwapPriorities(highestPriorityType, predefinedClassificationType);
         }
     }
 }
