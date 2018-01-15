@@ -40,6 +40,8 @@
     <AssemblyOriginatorKeyFile>projectx.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Analyzers\NonNullableTypeForBqlFieldAnalyzer.cs" />
+    <Compile Include="FixProviders\NonNullableTypeForBqlFieldFix.cs" />
     <Compile Include="RoslynExtensions\BQL\BqlRoslynUtil.cs" />
     <Compile Include="Analyzers\InheritanceFromPXCacheExtensionAnalyzer.cs" />
     <Compile Include="Analyzers\LongOperationDelegateClosuresAnalyzer.cs" />

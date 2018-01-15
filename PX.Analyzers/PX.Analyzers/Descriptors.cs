@@ -36,6 +36,7 @@ namespace PX.Analyzers
         internal static DiagnosticDescriptor PX1010_StartRowResetForPaging { get; } = Rule("PX1010", nameof(Resources.PX1010Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 		internal static DiagnosticDescriptor PX1009_InheritanceFromPXCacheExtension { get; } = Rule("PX1009", nameof(Resources.PX1009Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 		internal static DiagnosticDescriptor PX1011_InheritanceFromPXCacheExtension { get; } = Rule("PX1011", nameof(Resources.PX1011Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+		internal static DiagnosticDescriptor PX1014_NonNullableTypeForBqlField { get; } = Rule("PX1014", nameof(Resources.PX1014Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
 		internal static DiagnosticDescriptor PXF1001_PXBadBqlFormat { get; } = Rule("PXF1001", nameof(Resources.PXF1001Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 	}
