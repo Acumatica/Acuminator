@@ -46,7 +46,6 @@
     <Compile Include="Analyzers\BQL\BQLFormatterAnalyzer.cs" />
     <Compile Include="Analyzers\MissingTypeListAttributeAnalyzer.cs" />
     <Compile Include="Analyzers\StartRowResetForPaging.cs" />
-    <Compile Include="Analyzers\DACCreateInstanceAnalyzer.cs" />
     <Compile Include="Analyzers\TypoInViewDelegateNameAnalyzer.cs" />
     <Compile Include="Analyzers\PXGraphCreateInstanceAnalyzer.cs" />
     <Compile Include="Analyzers\ViewDeclarationOrderAnalyzer.cs" />
@@ -56,7 +55,6 @@
     <Compile Include="Analyzers\InvalidPXActionSignatureAnalyzer.cs" />
     <Compile Include="FixProviders\InheritanceFromPXCacheExtensionMakeSealedFix.cs" />
     <Compile Include="FixProviders\InheritanceFromPXCacheExtensionFix.cs" />
-    <Compile Include="FixProviders\DACCreateInstanceFix.cs" />
     <Compile Include="FixProviders\MissingTypeListAttributeFix.cs" />
     <Compile Include="FixProviders\StartRowResetForPagingFix.cs" />
     <Compile Include="FixProviders\TypoInViewDelegateNameFix.cs" />
