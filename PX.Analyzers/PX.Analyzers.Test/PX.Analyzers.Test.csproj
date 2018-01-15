@@ -143,7 +143,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Sources\DACCreateInstance.cs" />
     <EmbeddedResource Include="Sources\DACCreateInstance_Expected.cs" />
-    <Compile Include="DACCreateInstanceTests.cs" />
     <EmbeddedResource Include="Sources\LongOperationDelegateClosuresAnalyzer.cs" />
     <Compile Include="LongOperationDelegateClosuresTests.cs" />
     <EmbeddedResource Include="Sources\StartRowResetForPaging.cs" />
