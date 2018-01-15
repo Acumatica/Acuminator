@@ -20,9 +20,21 @@ namespace PX.Analyzers
 		}
 
 		public static bool InheritsFrom(
-			this ITypeSymbol type, ITypeSymbol baseType)
+			this ITypeSymbol type, ITypeSymbol baseType, bool includeInterfaces = false)
 		{
-			return type.GetBaseTypes().Any(t => t.Equals(baseType));
+			var list = type.GetBaseTypes();
+
+			if (includeInterfaces)
+				list = list.Concat(type.AllInterfaces);
+
+			return list.Any(t => t.Equals(baseType));
+		}
+
+		public static bool ImplementsInterface(this ITypeSymbol type, ITypeSymbol interfaceType)
+		{
+			if (!interfaceType.IsAbstract) throw new ArgumentException("Invalid interface type", nameof (interfaceType));
+
+			return type.AllInterfaces.Any(t => t.Equals(interfaceType));
 		}
 
 		public static bool InheritsFrom(this ITypeSymbol symbol, string baseType)
