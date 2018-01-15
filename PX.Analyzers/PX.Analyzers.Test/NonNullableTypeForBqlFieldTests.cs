@@ -36,7 +36,7 @@ namespace PX.Analyzers.Test
 	    [EmbeddedFileData("NonNullableTypeForBqlField.cs")]
 	    public void TestDiagnostic(string actual)
 	    {
-		    VerifyCSharpDiagnostic(actual, CreatePX1014DiagnosticResult(16, 10));
+		    VerifyCSharpDiagnostic(actual, CreatePX1014DiagnosticResult(16, 14));
 	    }
 
 		[Theory]

@@ -10,7 +10,7 @@ namespace PX.Analyzers.Test.Sources
 	public class SomeDocument : IBqlTable
 	{
 		#region LineNbr
-		public abstract class lineNbr { }
+		public abstract class lineNbr : IBqlField { }
 
 		[PXDBInt]
 		public int LineNbr { get; set; }
