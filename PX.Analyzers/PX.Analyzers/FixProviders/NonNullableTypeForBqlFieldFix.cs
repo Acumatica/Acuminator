@@ -33,6 +33,16 @@ namespace PX.Analyzers.FixProviders
 
 			public override SyntaxNode VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
 			{
+				var generator = SyntaxGenerator.GetGenerator(_document);
+				var typeSymbol = _semanticModel.GetSymbolInfo(node.Type).Symbol as ITypeSymbol;
+				if (typeSymbol != null)
+				{
+					return generator.InvocationExpression(
+						generator.MemberAccessExpression(
+							generator.TypeExpression(_pxContext.PXGraphType),
+							generator.GenericName(nameof(PX.Data.PXGraph.CreateInstance), typeSymbol)));
+				}
+
 				return base.VisitObjectCreationExpression(node);
 			}
 		}
@@ -45,18 +55,13 @@ namespace PX.Analyzers.FixProviders
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
 			var root = await context.Document.GetSyntaxRootAsync().ConfigureAwait(false);
-			var node = root.FindNode(context.Span);
-			string title = nameof(Resources.PX1014Fix).GetLocalized().ToString();
+			var node = root.FindNode(context.Span) as PropertyDeclarationSyntax;
 
 			if (node != null)
 			{
-				var semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
-				context.RegisterCodeFix(CodeAction.Create(title, c =>
-					{
-						var rewriter = new Rewriter(new PXContext(semanticModel.Compilation), context.Document, semanticModel);
-						var newNode = rewriter.Visit(node);
-						return Task.FromResult(context.Document.WithSyntaxRoot(root.ReplaceNode(node, newNode)));
-					}, title),
+				string title = nameof(Resources.PX1014Fix).GetLocalized().ToString();
+				context.RegisterCodeFix(CodeAction.Create(title, 
+					c => Task.FromResult(context.Document.WithSyntaxRoot(root.ReplaceNode(node.Type, SyntaxFactory.NullableType(node.Type)))), title),
 					context.Diagnostics);
 			}
 		}
