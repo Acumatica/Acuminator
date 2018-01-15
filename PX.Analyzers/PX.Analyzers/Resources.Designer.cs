@@ -278,6 +278,24 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Make type nullable.
+        /// </summary>
+        internal static string PX1014Fix {
+            get {
+                return ResourceManager.GetString("PX1014Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DAC field must have nullable type.
+        /// </summary>
+        internal static string PX1014Title {
+            get {
+                return ResourceManager.GetString("PX1014Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Format the BQL statement to meet the Code Style requirements .
         /// </summary>
         internal static string PXF1001Fix {
