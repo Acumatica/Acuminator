@@ -19,27 +19,19 @@ namespace PX.Analyzers.Analyzers
 
 		private static void AnalyzeProperty(SymbolAnalysisContext context, PXContext pxContext)
 		{
-			//var method = (IMethodSymbol) context.Symbol;
-			//var parent = method.ContainingType;
-			//if (parent != null && parent.InheritsFrom(pxContext.PXGraphType))
-			//{
-			//	var field = parent.GetMembers()
-			//		.OfType<IFieldSymbol>()
-			//		.FirstOrDefault(f => f.Type.InheritsFrom(pxContext.PXActionType)
-			//					&& String.Equals(f.Name, method.Name, StringComparison.OrdinalIgnoreCase));
-
-			//	if (field != null)
-			//	{
-			//		if (method.ReturnType.SpecialType == SpecialType.System_Collections_IEnumerable
-			//			&& (method.Parameters.Length == 0 || !method.Parameters[0].Type.Equals(pxContext.PXAdapterType))
-			//			|| method.ReturnsVoid && method.Parameters.Length > 0)
-			//		{
-			//			context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1014_NonNullableTypeForBqlField, method.Locations.First()));
-			//		}
-			//	}
-			//}
-
-			//context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1014_NonNullableTypeForBqlField, method.Locations.First()));
+			var property = (IPropertySymbol) context.Symbol;
+			var parent = property.ContainingType;
+			if (parent != null 
+				&& (parent.ImplementsInterface(pxContext.IBqlTableType) || parent.InheritsFrom(pxContext.PXCacheExtensionType)))
+			{
+				var bqlField = parent.GetTypeMembers().FirstOrDefault(t => t.ImplementsInterface(pxContext.IBqlFieldType)
+					&& String.Equals(t.Name, property.Name, StringComparison.OrdinalIgnoreCase));
+				if (bqlField != null 
+					&& property.Type.IsValueType && property.Type.SpecialType != SpecialType.System_Nullable_T)
+				{
+					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1014_NonNullableTypeForBqlField, property.Locations.First()));
+				}
+			}
 		}
 	}
 }
