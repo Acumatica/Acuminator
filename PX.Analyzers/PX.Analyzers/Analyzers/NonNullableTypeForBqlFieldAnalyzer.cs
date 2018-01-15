@@ -26,8 +26,10 @@ namespace PX.Analyzers.Analyzers
 			{
 				var bqlField = parent.GetTypeMembers().FirstOrDefault(t => t.ImplementsInterface(pxContext.IBqlFieldType)
 					&& String.Equals(t.Name, property.Name, StringComparison.OrdinalIgnoreCase));
-				if (bqlField != null 
-					&& property.Type.IsValueType && property.Type.SpecialType != SpecialType.System_Nullable_T)
+
+				var propertyType = property.Type as INamedTypeSymbol;
+				if (bqlField != null && propertyType != null
+					&& propertyType.IsValueType && propertyType.ConstructedFrom?.SpecialType != SpecialType.System_Nullable_T)
 				{
 					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1014_NonNullableTypeForBqlField, property.Locations.First()));
 				}
