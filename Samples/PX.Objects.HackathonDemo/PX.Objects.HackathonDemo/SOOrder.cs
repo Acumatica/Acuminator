@@ -39,7 +39,7 @@ namespace PX.Objects.HackathonDemo
 		public abstract class total : IBqlField { }
 		[PXDBDecimal]
 		[PXUIField(DisplayName = "Total")]
-		public decimal? Total { get; set; }
+		public decimal Total { get; set; }
 		#endregion
 	}
 
