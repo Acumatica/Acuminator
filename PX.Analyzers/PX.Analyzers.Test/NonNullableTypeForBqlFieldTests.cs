@@ -47,6 +47,13 @@ namespace PX.Analyzers.Test
         }
 
 	    [Theory]
+	    [EmbeddedFileData("NonNullableTypeForBqlField_Valid.cs")]
+	    public void TestDiagnostic_ShouldNotShowDiagnostic2(string actual)
+	    {
+		    VerifyCSharpDiagnostic(actual);
+	    }
+
+		[Theory]
 	    [EmbeddedFileData("NonNullableTypeForBqlField.cs", "NonNullableTypeForBqlField_Expected.cs")]
 	    public void TestCodeFix(string actual, string expected)
 	    {
