@@ -11,43 +11,41 @@ using System.Text.RegularExpressions;
 
 namespace PX.Analyzers.Coloriser
 {
-	internal class PXRegexColorizerTagger : ITagger<IClassificationTag>
+	internal class PXRegexColorizerTagger : PXColorizerTaggerBase
 	{
-		private readonly ConcurrentBag<ITagSpan<IClassificationTag>> tags = new ConcurrentBag<ITagSpan<IClassificationTag>>();
-		private readonly List<ITagSpan<IClassificationTag>> tagsList = new List<ITagSpan<IClassificationTag>>();
-        private ITextBuffer theBuffer;
-		private ITextSnapshot cache;
-        private readonly PXColorizerTaggerProvider provider;
+        public override TaggerType TaggerType => TaggerType.RegEx;
 
-#pragma warning disable CS0067
-		public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
-#pragma warning restore CS0067
-
-		internal PXRegexColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider aProvider)
-		{            
-            theBuffer = buffer;
-            provider = aProvider;           
+        private readonly ConcurrentBag<ITagSpan<IClassificationTag>> tags = new ConcurrentBag<ITagSpan<IClassificationTag>>();
+		
+        internal PXRegexColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider aProvider, bool subscribeToSettingsChanges, 
+                                        bool useCacheChecking) :
+                                   base(buffer, aProvider, subscribeToSettingsChanges, useCacheChecking)
+		{                    
 		}
 
-		public IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
+		public override IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
 		{
-			if (spans.Count == 0)
+			if (spans.Count == 0 || !Provider.Package.ColoringEnabled)
 			{
 				return Enumerable.Empty<ITagSpan<IClassificationTag>>();
 			}
 
-			if (cache != null && cache == spans[0].Snapshot)
-				return tags;
+			if (CheckIfRetaggingIsNotNecessary(spans[0].Snapshot))
+				return TagsList;
 
-			tags.Clear();
-			tagsList.Clear();
-			cache = spans[0].Snapshot;
-			GetTagsFromSnapShot(cache, spans);
-			tagsList.AddRange(tags);
-			return tags;
+            ResetCacheAndFlags(spans[0].Snapshot);		
+			GetTagsFromSnapshot(Cache, spans);
+			TagsList.AddRange(tags);
+			return TagsList;
 		}
 
-		private void GetTagsFromSnapShot(ITextSnapshot newSnapshot, NormalizedSnapshotSpanCollection spans)
+        protected internal override void ResetCacheAndFlags(ITextSnapshot newCache)
+        {
+            base.ResetCacheAndFlags(newCache);
+            tags.Clear();
+        }
+
+        private void GetTagsFromSnapshot(ITextSnapshot newSnapshot, NormalizedSnapshotSpanCollection spans)
 		{
 			string wholeText = newSnapshot.GetText();
             var matches = RegExpressions.BQLSelectCommandRegex
@@ -89,7 +87,7 @@ namespace PX.Analyzers.Coloriser
 			foreach (Match bqlOperandMatch in matches.OfType<Match>().Skip(1))
 			{
 				string bqlOperand = bqlOperandMatch.Value.TrimEnd('<');
-				CreateTag(newSnapshot, bqlOperandMatch, offset, bqlOperand, provider.BqlOperatorType);
+				CreateTag(newSnapshot, bqlOperandMatch, offset, bqlOperand, Provider.BqlOperatorType);
 			}
 		}
 
@@ -97,7 +95,7 @@ namespace PX.Analyzers.Coloriser
 		{
 			Span span = new Span(offset, selectOp.Length);
 			SnapshotSpan snapshotSpan = new SnapshotSpan(newSnapshot, span);
-			var tag = new TagSpan<IClassificationTag>(snapshotSpan, new ClassificationTag(provider.BqlOperatorType));
+			var tag = new TagSpan<IClassificationTag>(snapshotSpan, new ClassificationTag(Provider.BqlOperatorType));
 			tags.Add(tag);
 		}
 
@@ -108,7 +106,7 @@ namespace PX.Analyzers.Coloriser
 			foreach (Match bqlParamMatch in matches)
 			{
 				string bqlParam = bqlParamMatch.Value;
-				CreateTag(newSnapshot, bqlParamMatch, offset, bqlParam, provider.BqlParameterType);
+				CreateTag(newSnapshot, bqlParamMatch, offset, bqlParam, Provider.BqlParameterType);
 			}
 		}
 
@@ -119,7 +117,7 @@ namespace PX.Analyzers.Coloriser
 			foreach (Match dacOrConstMatch in matches)
 			{
 				string dacOrConst = dacOrConstMatch.Value.Trim(',', '<', '>');
-				CreateTag(newSnapshot, dacOrConstMatch, offset, dacOrConst, provider.DacType);
+				CreateTag(newSnapshot, dacOrConstMatch, offset, dacOrConst, Provider.DacType);
 			}
 		}
 
@@ -142,13 +140,13 @@ namespace PX.Analyzers.Coloriser
 		private void GetDacTag(ITextSnapshot newSnapshot, Match match, int offset, string[] dacParts)
 		{
 			string dacPart = dacParts[0].TrimStart(',', '<');
-			CreateTag(newSnapshot, match, offset, dacPart, provider.DacType);
+			CreateTag(newSnapshot, match, offset, dacPart, Provider.DacType);
 		}
 
 		private void GetFieldTag(ITextSnapshot newSnapshot, Match match, int offset, string[] dacParts)
 		{
 			string fieldPart = dacParts[1].TrimEnd(',', '>');
-			CreateTag(newSnapshot, match, offset, fieldPart, provider.FieldType);
+			CreateTag(newSnapshot, match, offset, fieldPart, Provider.FieldType);
 		}
 
         private void CreateTag(ITextSnapshot newSnapshot, Match match, int offset, string tagContent, IClassificationType classType)
