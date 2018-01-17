@@ -12,7 +12,7 @@ using PX.Analyzers.Utilities;
 
 namespace PX.Analyzers.Utilities
 {
-    internal static partial class ITypeSymbolExtensions
+    public static partial class ITypeSymbolExtensions
     {
         private const string DefaultParameterName = "p";
         private const string DefaultBuiltInParameterName = "v";
