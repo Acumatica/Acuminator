@@ -22,7 +22,7 @@
 
   <!--The Commands section is where commands, menus, and menu groups are defined.
       This section uses a Guid to identify the package that provides the command defined inside it. -->
-  <Commands package="guidFormatBqlCommandPackage">
+  <Commands package="guidAcuminatorVSPackage">
     <!-- Inside this section we have different sub-sections: one for the menus, another
     for the menu groups, one for the buttons (the actual commands), one for the combos
     and the last one for the bitmaps used. Each element is identified by a command id that
@@ -55,6 +55,7 @@
       <Button guid="guidFormatBqlCommandPackageCmdSet" id="FormatBqlCommandId" priority="0x0100" type="Button">
         <Parent guid="guidFormatBqlCommandPackageCmdSet" id="MyMenuGroup" />
         <!--<Icon guid="guidImages" id="bmpPic1" />-->
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
@@ -74,12 +75,6 @@
     </Bitmaps>-->
   </Commands>
 
-  <VisibilityConstraints>
-    <VisibilityItem guid="guidFormatBqlCommandPackageCmdSet"
-                    id="FormatBqlCommandId"
-                    context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging" />
-  </VisibilityConstraints>
-
   <KeyBindings>
     <!-- guidVSStd97 is global scope -->
     <KeyBinding guid="guidFormatBqlCommandPackageCmdSet" id="FormatBqlCommandId"
@@ -91,7 +86,7 @@
 
   <Symbols>
     <!-- This is the package guid. -->
-    <GuidSymbol name="guidFormatBqlCommandPackage" value="{8b6bd68b-a23c-4f4c-94a4-9bbce4f0d816}" />
+    <GuidSymbol name="guidAcuminatorVSPackage" value="{7e538ed0-0699-434f-acf0-3f6dbc9898ea}" />
 
     <!-- This is the guid used to group the menu commands together -->
     <GuidSymbol name="guidFormatBqlCommandPackageCmdSet" value="{3cd59430-1e8d-40af-b48d-9007624b3d77}">
