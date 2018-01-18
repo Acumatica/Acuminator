@@ -52,9 +52,9 @@ namespace PX.Analyzers.Vsix.Formatter
 			if (commandService != null)
 			{
 				var menuCommandID = new CommandID(CommandSet, CommandId);
-				var menuItem = new MenuCommand(this.FormatButtonCallback, menuCommandID);
-				//var menuItem = new OleMenuCommand(this.FormatButtonCallback, menuCommandID);
-				//menuItem.BeforeQueryStatus += QueryFormatButtonStatus;
+				//var menuItem = new MenuCommand(this.FormatButtonCallback, menuCommandID);
+				var menuItem = new OleMenuCommand(this.FormatButtonCallback, menuCommandID);
+				menuItem.BeforeQueryStatus += QueryFormatButtonStatus;
 				commandService.AddCommand(menuItem);
 			}
 		}
@@ -94,13 +94,17 @@ namespace PX.Analyzers.Vsix.Formatter
 			var dte = GetService<DTE, DTE2>();
 			if (menuCommand != null)
 			{
+				bool visible = false;
 				bool enabled = false;
-				if (dte.ActiveDocument != null && !dte.ActiveDocument.ReadOnly)
+
+				if (dte.ActiveDocument != null)
 				{
 					string fileExtension = System.IO.Path.GetExtension(dte.ActiveDocument.FullName);
-					enabled = !String.IsNullOrEmpty(fileExtension) && fileExtension.Equals(".cs", StringComparison.OrdinalIgnoreCase);
+					visible = !String.IsNullOrEmpty(fileExtension) && fileExtension.Equals(".cs", StringComparison.OrdinalIgnoreCase);
+					enabled = !dte.ActiveDocument.ReadOnly;
 				}
 
+				menuCommand.Visible = visible;
 				menuCommand.Enabled = enabled;
 			}
 		}
