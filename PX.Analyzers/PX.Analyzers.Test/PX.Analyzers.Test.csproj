@@ -144,6 +144,7 @@
     <EmbeddedResource Include="Sources\DACCreateInstance.cs" />
     <EmbeddedResource Include="Sources\DACCreateInstance_Expected.cs" />
     <EmbeddedResource Include="Sources\LongOperationDelegateClosuresAnalyzer.cs" />
+    <Compile Include="BqlFormatterTests.cs" />
     <Compile Include="LongOperationDelegateClosuresTests.cs" />
     <EmbeddedResource Include="Sources\StartRowResetForPaging.cs" />
     <EmbeddedResource Include="Sources\MissingTypeListAttributeBad_Expected.cs" />
@@ -170,7 +171,6 @@
     <Compile Include="MissingTypeListAttributeTests.cs" />
     <EmbeddedResource Include="Sources\TypoInViewDelegateName_Good_DifferentNames.cs" />
     <EmbeddedResource Include="Sources\TypoInViewDelegateName_Bad_Expected.cs" />
-    <Compile Include="BQLFormatterTest.cs" />
     <EmbeddedResource Include="Sources\BQL\BadBQL.cs" />
     <EmbeddedResource Include="Sources\BQL\BCBudgetBalance.cs" />
     <EmbeddedResource Include="Sources\BQL\BCBudgetLedger.cs" />
@@ -201,6 +201,10 @@
     <None Include="projectx.snk" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PX.Analyzers.Vsix\PX.Analyzers.Vsix.csproj">
+      <Project>{6deb14bb-d8f6-4f5b-bbd7-e756ceb67d42}</Project>
+      <Name>PX.Analyzers.Vsix</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PX.Analyzers\PX.Analyzers.csproj">
       <Project>{984DBFAC-91A7-4059-A5B2-CDE33CD93EA0}</Project>
       <Name>PX.Analyzers</Name>
