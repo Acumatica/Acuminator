@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
+using PX.Analyzers.Vsix.Formatter;
 
 namespace PX.Analyzers.Vsix
 {
@@ -35,7 +36,9 @@ namespace PX.Analyzers.Vsix
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", 
                      Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ProvideOptionPage(typeof(GeneralOptionsPage), AcuminatorVSPackage.SettingsCategoryName, GeneralOptionsPage.PageTitle, 0, 0, true)]
-    public sealed class AcuminatorVSPackage : Package
+    [ProvideAutoLoad(VSConstants.UICONTEXT.NotBuildingAndNotDebugging_string)] // Auto-load for dynamic menu enabling/disabling; this context seems to work for SSMS and VS
+    [ProvideMenuResource("Menus.ctmenu", 1)]
+	public sealed class AcuminatorVSPackage : Package
     {
         public const string SettingsCategoryName = "Acuminator";
         /// <summary>
@@ -62,7 +65,8 @@ namespace PX.Analyzers.Vsix
         /// </summary>
         protected override void Initialize()
         {
-            base.Initialize();
+	        FormatBqlCommand.Initialize(this);
+			base.Initialize();
         }
 
         #region Package Settings   
