@@ -15,6 +15,8 @@ namespace PX.Analyzers.Vsix.Formatter
 			public override SyntaxNode Visit(SyntaxNode node)
 			{
 				var result = base.Visit(node);
+				if (result == null) return null;
+
 				var leadingTrivia = result.GetLeadingTrivia();
 				leadingTrivia = leadingTrivia.Add(SyntaxFactory.Tab);
 				return result.WithLeadingTrivia(leadingTrivia);
