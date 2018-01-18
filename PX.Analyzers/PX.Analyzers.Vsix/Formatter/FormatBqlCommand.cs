@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 
@@ -113,11 +114,26 @@ namespace PX.Analyzers.Vsix.Formatter
 		private void FormatButtonCallback(object sender, EventArgs e)
 		{
 			IWpfTextView textView = GetTextView();
+			
 			var caretPosition = textView.Caret.Position.BufferPosition;
 			Microsoft.CodeAnalysis.Document document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
 
 			var syntaxRoot = document.GetSyntaxRootAsync().Result;
-			var semanticModel = document.GetSemanticModelAsync().Result;	
+			var semanticModel = document.GetSemanticModelAsync().Result;
+
+			SyntaxNode first = syntaxRoot;
+
+			if (textView.Selection.IsActive && !textView.Selection.IsEmpty)
+			{
+				var start = textView.Selection.Start.Position;
+				var end = textView.Selection.End.Position;
+
+				first = syntaxRoot.FindNode(Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(start, end));
+
+				SyntaxNode formattedNode = BqlFormatter.Format(first, semanticModel);
+				
+				textView.TextBuffer.Replace(Span.FromBounds(start, end), formattedNode.ToFullString());
+			}
 		}
 
 
