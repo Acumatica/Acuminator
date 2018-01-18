@@ -6,6 +6,7 @@ using EnvDTE;
 using EnvDTE80;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -124,7 +125,14 @@ namespace PX.Analyzers.Vsix.Formatter
 		{
 			var textManager = GetService<SVsTextManager, IVsTextManager>();
 			textManager.GetActiveView(1, null, out IVsTextView textView);
-			return GetService<IVsEditorAdaptersFactoryService>().GetWpfTextView(textView);
+
+			return GetEditorAdaptersFactoryService().GetWpfTextView(textView);
+		}
+
+		private IVsEditorAdaptersFactoryService GetEditorAdaptersFactoryService()
+		{
+			IComponentModel componentModel = GetService<SComponentModel, IComponentModel>();
+			return componentModel.GetService<IVsEditorAdaptersFactoryService>();
 		}
 
 		private T GetService<T>()
