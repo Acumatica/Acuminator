@@ -122,17 +122,30 @@ namespace PX.Analyzers.Vsix.Formatter
 			var semanticModel = document.GetSemanticModelAsync().Result;
 
 			SyntaxNode first = syntaxRoot;
+			Span replacementSpan = Span.FromBounds(0, textView.TextSnapshot.Length);
 
-			if (textView.Selection.IsActive && !textView.Selection.IsEmpty)
+			bool hasSelection = textView.Selection.IsActive && !textView.Selection.IsEmpty;
+			bool isReversed = hasSelection && textView.Selection.IsReversed;
+
+			if (hasSelection)
 			{
 				var start = textView.Selection.Start.Position;
 				var end = textView.Selection.End.Position;
+				replacementSpan = Span.FromBounds(start, end);
 
 				first = syntaxRoot.FindNode(Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(start, end));
+			}
 
-				SyntaxNode formattedNode = BqlFormatter.Format(first, semanticModel);
-				
-				textView.TextBuffer.Replace(Span.FromBounds(start, end), formattedNode.ToFullString());
+			SyntaxNode formattedNode = BqlFormatter.Format(first, semanticModel);
+
+			if (!textView.TextBuffer.EditInProgress)
+			{
+				string newText = formattedNode.ToFullString();
+				var snapshot = textView.TextBuffer.Replace(replacementSpan, formattedNode.ToFullString());
+				if (hasSelection) // restore selection
+				{
+					textView.Selection.Select(new SnapshotSpan(snapshot, replacementSpan.Start, newText.Length), isReversed);
+				}
 			}
 		}
 
