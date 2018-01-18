@@ -1,10 +1,16 @@
 ﻿using System;
 using System.ComponentModel.Design;
 using System.Globalization;
+using System.Linq;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace PX.Analyzers.Vsix.Formatter
 {
@@ -42,12 +48,13 @@ namespace PX.Analyzers.Vsix.Formatter
 
 			this.package = package;
 
-			OleMenuCommandService commandService = this.ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+			OleMenuCommandService commandService = GetService<IMenuCommandService, OleMenuCommandService>();
 			if (commandService != null)
 			{
 				var menuCommandID = new CommandID(CommandSet, CommandId);
-				var menuItem = new OleMenuCommand(this.FormatButtonCallback, menuCommandID);
-				menuItem.BeforeQueryStatus += QueryFormatButtonStatus;
+				var menuItem = new MenuCommand(this.FormatButtonCallback, menuCommandID);
+				//var menuItem = new OleMenuCommand(this.FormatButtonCallback, menuCommandID);
+				//menuItem.BeforeQueryStatus += QueryFormatButtonStatus;
 				commandService.AddCommand(menuItem);
 			}
 		}
@@ -81,21 +88,10 @@ namespace PX.Analyzers.Vsix.Formatter
 			Instance = new FormatBqlCommand(package);
 		}
 
-		/// <summary>
-		/// This function is the callback used to execute the command when the menu item is clicked.
-		/// See the constructor to see how the menu item is associated with this function using
-		/// OleMenuCommandService service and MenuCommand class.
-		/// </summary>
-		/// <param name="sender">Event sender.</param>
-		/// <param name="e">Event args.</param>
-		private void FormatButtonCallback(object sender, EventArgs e)
-		{
-		}
-
 		private void QueryFormatButtonStatus(object sender, EventArgs e)
 		{
 			var menuCommand = sender as OleMenuCommand;
-			DTE2 dte = (DTE2) ServiceProvider.GetService(typeof (DTE));
+			var dte = GetService<DTE, DTE2>();
 			if (menuCommand != null)
 			{
 				bool enabled = false;
@@ -107,6 +103,34 @@ namespace PX.Analyzers.Vsix.Formatter
 
 				menuCommand.Enabled = enabled;
 			}
+		}
+
+		private void FormatButtonCallback(object sender, EventArgs e)
+		{
+			IWpfTextView textView = GetTextView();
+			var caretPosition = textView.Caret.Position.BufferPosition;
+			Microsoft.CodeAnalysis.Document document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
+
+			var syntaxRoot = document.GetSyntaxRootAsync().Result;
+			var semanticModel = document.GetSemanticModelAsync().Result;	
+		}
+
+
+		private IWpfTextView GetTextView()
+		{
+			var textManager = GetService<SVsTextManager, IVsTextManager>();
+			textManager.GetActiveView(1, null, out IVsTextView textView);
+			return GetService<IVsEditorAdaptersFactoryService>().GetWpfTextView(textView);
+		}
+
+		private T GetService<T>()
+		{
+			return (T) ServiceProvider.GetService(typeof (T));
+		}
+
+		private TActual GetService<TRequested, TActual>()
+		{
+			return (TActual) ServiceProvider.GetService(typeof (TRequested));
 		}
 	}
 }

@@ -55,7 +55,8 @@
       <Button guid="guidFormatBqlCommandPackageCmdSet" id="FormatBqlCommandId" priority="0x0100" type="Button">
         <Parent guid="guidFormatBqlCommandPackageCmdSet" id="MyMenuGroup" />
         <!--<Icon guid="guidImages" id="bmpPic1" />-->
-        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Format BQL Statements</ButtonText>
         </Strings>
@@ -72,6 +73,12 @@
       <Bitmap guid="guidImages" href="Resources\FormatBqlCommand.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough"/>
     </Bitmaps>-->
   </Commands>
+
+  <VisibilityConstraints>
+    <VisibilityItem guid="guidFormatBqlCommandPackageCmdSet"
+                    id="FormatBqlCommandId"
+                    context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging" />
+  </VisibilityConstraints>
 
   <KeyBindings>
     <!-- guidVSStd97 is global scope -->

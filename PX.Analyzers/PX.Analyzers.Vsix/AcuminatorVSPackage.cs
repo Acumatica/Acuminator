@@ -32,12 +32,12 @@ namespace PX.Analyzers.Vsix
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
-    [Guid(AcuminatorVSPackage.PackageGuidString)]
+	//[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExistsAndNotBuildingAndNotDebugging_string)] // Auto-load for dynamic menu enabling/disabling; this context seems to work for SSMS and VS
+	[ProvideMenuResource("Menus.ctmenu", 1)]
+	[Guid(AcuminatorVSPackage.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", 
                      Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ProvideOptionPage(typeof(GeneralOptionsPage), AcuminatorVSPackage.SettingsCategoryName, GeneralOptionsPage.PageTitle, 0, 0, true)]
-    [ProvideAutoLoad(VSConstants.UICONTEXT.NotBuildingAndNotDebugging_string)] // Auto-load for dynamic menu enabling/disabling; this context seems to work for SSMS and VS
-    [ProvideMenuResource("Menus.ctmenu", 1)]
 	public sealed class AcuminatorVSPackage : Package
     {
         public const string SettingsCategoryName = "Acuminator";
