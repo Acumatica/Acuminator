@@ -12,6 +12,8 @@ namespace PX.Analyzers.Test
 {
 	public class BqlFormatterTests : DiagnosticVerifier
 	{
+		private readonly BqlFormatter _formatter = new BqlFormatter("\r\n", true, 4, 4);
+
 		[Fact]
 		public void TestHelloWorld()
 		{
@@ -20,7 +22,7 @@ namespace PX.Analyzers.Test
 			Document document = CreateDocument(query);
 			SyntaxNode syntaxRoot = document.GetSyntaxRootAsync().Result;
 			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
-			SyntaxNode formattedNode = BqlFormatter.Format(syntaxRoot, semanticModel);
+			SyntaxNode formattedNode = _formatter.Format(syntaxRoot, semanticModel);
 
 			string actual = formattedNode.ToFullString();
 		}
