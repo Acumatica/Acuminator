@@ -33,8 +33,8 @@ namespace PX.Analyzers.Coloriser
 
 	public static class Labels
 	{
-		public const string DacFormatLabel  = "NoBrains - DAC Format";
-		public const string DacFieldFormatLabel = "NoBrains - DAC Field Format";
+		public const string DacFormatLabel  = "NoBrains - DAC Name";
+		public const string DacFieldFormatLabel = "NoBrains - DAC Field Name";
 		public const string BQLParameterFormatLabel = "NoBrains - BQL parameters";
 		public const string BQLOperatorFormatLabel = "NoBrains - BQL operators";
 		public const string BQLConstantPrefixFormatLabel = "NoBrains - BQL constant - prefix";
