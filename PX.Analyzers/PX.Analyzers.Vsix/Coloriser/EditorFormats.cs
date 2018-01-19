@@ -15,7 +15,7 @@ namespace PX.Analyzers.Coloriser
     {
         public BQLOperatorFormat()
         {
-            ForegroundColor = Colors.BlueViolet;
+            ForegroundColor = Color.FromRgb(r: 181, g: 121, b: 255);
             DisplayName = Labels.BQLOperatorFormatLabel; // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;
@@ -31,8 +31,8 @@ namespace PX.Analyzers.Coloriser
 	{
 		public DACFormat()
 		{
-			ForegroundColor = Colors.Maroon;
-			DisplayName = Labels.DacFormatLabel; // Human readable version of the name		
+			ForegroundColor = Color.FromRgb(r: 255, g: 153, b: 0);
+            DisplayName = Labels.DacFormatLabel; // Human readable version of the name		
 			ForegroundCustomizable = true;
 			BackgroundCustomizable = true;
 		}
@@ -47,8 +47,8 @@ namespace PX.Analyzers.Coloriser
 	{
 		public DACFieldFormat()
 		{
-			ForegroundColor = Colors.DarkGreen;
-			DisplayName = Labels.DacFieldFormatLabel; // Human readable version of the name		
+			ForegroundColor = Color.FromRgb(r: 76, g: 255, b: 79);
+            DisplayName = Labels.DacFieldFormatLabel; // Human readable version of the name		
 			ForegroundCustomizable = true;
 			BackgroundCustomizable = true;
 		}
@@ -63,8 +63,8 @@ namespace PX.Analyzers.Coloriser
 	{
 		public BQLParameterFormat()
 		{
-			ForegroundColor = Colors.IndianRed;
-			DisplayName = Labels.BQLParameterFormatLabel; // Human readable version of the name		
+			ForegroundColor = Color.FromRgb(r: 255, g: 79, b: 255);
+            DisplayName = Labels.BQLParameterFormatLabel; // Human readable version of the name		
 			ForegroundCustomizable = true;
 			BackgroundCustomizable = true;
 		}
@@ -79,8 +79,8 @@ namespace PX.Analyzers.Coloriser
 	{
 		public BQLConstantPrefixFormat()
 		{
-			ForegroundColor = Colors.Firebrick;
-			DisplayName = Labels.BQLConstantPrefixFormatLabel; // Human readable version of the name		
+			ForegroundColor = Color.FromRgb(r: 255, g: 153, b: 153);
+            DisplayName = Labels.BQLConstantPrefixFormatLabel; // Human readable version of the name		
 			ForegroundCustomizable = true;
 			BackgroundCustomizable = true;
 		}
@@ -95,8 +95,8 @@ namespace PX.Analyzers.Coloriser
 	{
 		public BQLConstantEndingFormat()
 		{
-			ForegroundColor = Colors.Teal;
-			DisplayName = Labels.BQLConstantEndingFormatLabel; // Human readable version of the name		
+			ForegroundColor = Color.FromRgb(r: 1, g: 153, b: 153);
+            DisplayName = Labels.BQLConstantEndingFormatLabel; // Human readable version of the name		
 			ForegroundCustomizable = true;
 			BackgroundCustomizable = true;
 		}
