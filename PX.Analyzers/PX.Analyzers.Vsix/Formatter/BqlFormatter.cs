@@ -24,17 +24,17 @@ namespace PX.Analyzers.Vsix.Formatter
 			{
 				if (parent == null) throw new ArgumentNullException(nameof (parent));
 
-				EndOfLineTrivia = SyntaxFactory.ElasticEndOfLine(parent._endOfLineCharacter);
+				EndOfLineTrivia = SyntaxFactory.EndOfLine(parent._endOfLineCharacter);
 				if (parent._useTabs || parent._indentSize >= parent._tabSize)
 				{
 					var items = Enumerable
-						.Repeat(SyntaxFactory.ElasticTab, parent._indentSize / parent._tabSize)
-						.Append(SyntaxFactory.ElasticWhitespace(new string(' ', parent._indentSize % parent._tabSize)));
+						.Repeat(SyntaxFactory.Tab, parent._indentSize / parent._tabSize)
+						.Append(SyntaxFactory.Whitespace(new string(' ', parent._indentSize % parent._tabSize)));
 					IndentationTrivia = SyntaxTriviaList.Empty.AddRange(items);
 				}
 				else
 				{
-					IndentationTrivia = SyntaxTriviaList.Create(SyntaxFactory.ElasticWhitespace(new string(' ', parent._indentSize)));
+					IndentationTrivia = SyntaxTriviaList.Create(SyntaxFactory.Whitespace(new string(' ', parent._indentSize)));
 				}
 			}
 
