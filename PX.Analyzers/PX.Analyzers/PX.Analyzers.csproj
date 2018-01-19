@@ -41,6 +41,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Analyzers\NonNullableTypeForBqlFieldAnalyzer.cs" />
+    <Compile Include="EnumerableHelpers.cs" />
     <Compile Include="FixProviders\NonNullableTypeForBqlFieldFix.cs" />
     <Compile Include="RoslynExtensions\BQL\BqlRoslynUtil.cs" />
     <Compile Include="Analyzers\InheritanceFromPXCacheExtensionAnalyzer.cs" />
