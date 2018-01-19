@@ -114,7 +114,12 @@ namespace PX.Analyzers.Vsix.Formatter
 		private void FormatButtonCallback(object sender, EventArgs e)
 		{
 			IWpfTextView textView = GetTextView();
-			
+
+			int indentSize = textView.Options.GetOptionValue(DefaultOptions.IndentSizeOptionId);
+			int tabSize = textView.Options.GetOptionValue(DefaultOptions.TabSizeOptionId);
+			bool convertTabsToSpaces = textView.Options.GetOptionValue(DefaultOptions.ConvertTabsToSpacesOptionId);
+			string newLineCharacter = textView.Options.GetOptionValue(DefaultOptions.NewLineCharacterOptionId);
+
 			SnapshotPoint caretPosition = textView.Caret.Position.BufferPosition;
 			Microsoft.CodeAnalysis.Document document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
 
@@ -141,7 +146,8 @@ namespace PX.Analyzers.Vsix.Formatter
 				first = syntaxRoot;
 			}
 
-			SyntaxNode formattedNode = BqlFormatter.Format(first, semanticModel);
+			var formatter = new BqlFormatter(newLineCharacter, !convertTabsToSpaces, tabSize, indentSize);
+			SyntaxNode formattedNode = formatter.Format(first, semanticModel);
 
 			if (!textView.TextBuffer.EditInProgress)
 			{
