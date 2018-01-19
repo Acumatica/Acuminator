@@ -115,25 +115,30 @@ namespace PX.Analyzers.Vsix.Formatter
 		{
 			IWpfTextView textView = GetTextView();
 			
-			var caretPosition = textView.Caret.Position.BufferPosition;
+			SnapshotPoint caretPosition = textView.Caret.Position.BufferPosition;
 			Microsoft.CodeAnalysis.Document document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
 
-			var syntaxRoot = document.GetSyntaxRootAsync().Result;
-			var semanticModel = document.GetSemanticModelAsync().Result;
+			SyntaxNode syntaxRoot = document.GetSyntaxRootAsync().Result;
+			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
 
-			SyntaxNode first = syntaxRoot;
-			Span replacementSpan = Span.FromBounds(0, textView.TextSnapshot.Length);
+			SyntaxNode first;
+			Span replacementSpan;
 
 			bool hasSelection = textView.Selection.IsActive && !textView.Selection.IsEmpty;
 			bool isReversed = hasSelection && textView.Selection.IsReversed;
 
 			if (hasSelection)
 			{
-				var start = textView.Selection.Start.Position;
-				var end = textView.Selection.End.Position;
+				SnapshotPoint start = textView.Selection.Start.Position;
+				SnapshotPoint end = textView.Selection.End.Position;
 				replacementSpan = Span.FromBounds(start, end);
 
 				first = syntaxRoot.FindNode(Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(start, end));
+			}
+			else
+			{
+				replacementSpan = Span.FromBounds(0, textView.TextSnapshot.Length);
+				first = syntaxRoot;
 			}
 
 			SyntaxNode formattedNode = BqlFormatter.Format(first, semanticModel);
@@ -146,6 +151,11 @@ namespace PX.Analyzers.Vsix.Formatter
 				{
 					textView.Selection.Select(new SnapshotSpan(snapshot, replacementSpan.Start, newText.Length), isReversed);
 				}
+
+				// Restore caret position
+				SnapshotPoint newCaretPosition = caretPosition.TranslateTo(snapshot, PointTrackingMode.Positive);
+				textView.Caret.MoveTo(newCaretPosition);
+				// TODO: change caret position restoration to more accurate implementation
 			}
 		}
 
