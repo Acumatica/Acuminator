@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PX.Analyzers.Utilities;
 
@@ -43,10 +44,15 @@ namespace PX.Analyzers.Vsix.Formatter
 		private SyntaxTriviaList GetDefaultLeadingTrivia(SyntaxNode node)
 		{
 			if (node == null) return SyntaxTriviaList.Empty;
-			if (node.HasLeadingTrivia)
+			if (node.HasLeadingTrivia 
+				|| node.IsKind(SyntaxKind.PropertyDeclaration) // View
+				|| node.IsKind(SyntaxKind.TypeOfExpression) // BQL in attribute
+				|| node.IsKind(SyntaxKind.SimpleMemberAccessExpression)) // Static call
+			{
 				return node.GetLeadingTrivia();
-			else
-				return GetDefaultLeadingTrivia(node.Parent);
+			}
+
+			return GetDefaultLeadingTrivia(node.Parent);
 		}
 	}
 }
