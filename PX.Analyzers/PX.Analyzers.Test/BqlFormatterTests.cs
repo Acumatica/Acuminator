@@ -21,7 +21,7 @@ namespace PX.Analyzers.Test
 		[EmbeddedFileData("BQL_raw.cs", "BQL_formatted.cs")]
 		[EmbeddedFileData("BQL_static_raw.cs", "BQL_static_formatted.cs")]
 		[EmbeddedFileData("BQL_attribute_raw.cs", "BQL_attribute_formatted.cs")]
-		public void TestHelloWorld(string text, string expected)
+		public void FormatDocument(string text, string expected)
 		{
 			Document document = CreateDocument(text);
 			SyntaxNode syntaxRoot = document.GetSyntaxRootAsync().Result;
