@@ -18,14 +18,20 @@ namespace PX.Analyzers.Vsix.Formatter
 			node = (GenericNameSyntax)base.VisitGenericName(node);
 
 			INamedTypeSymbol typeSymbol = GetTypeSymbol(node);
-			if (typeSymbol != null
-				&& (typeSymbol.InheritsFromOrEquals(Context.SelectBase)
-					|| typeSymbol.InheritsFromOrEquals(Context.SearchBase)
-					|| typeSymbol.InheritsFromOrEquals(Context.PXSelectBase)))
+			INamedTypeSymbol constructedFromSymbol = typeSymbol?.ConstructedFrom; // get generic type
+
+			if (constructedFromSymbol != null)
 			{
-				SyntaxTriviaList defaultTrivia = GetDefaultLeadingTrivia(node);
-				var selectRewriter = new BqlSelectRewriter(this, defaultTrivia);
-				node = (GenericNameSyntax)selectRewriter.Visit(node);
+				// Check interfaces - it is hard to check inheritance from base generic types because of generic parameters
+				// E.g. Search<Field, Where> doesn't inherit from SearchBase directly, we need to check ConstructedFrom
+				if (constructedFromSymbol.InheritsFromOrEquals(Context.PXSelectBase)
+				    || constructedFromSymbol.ImplementsInterface(Context.IBqlSelect)
+				    || constructedFromSymbol.ImplementsInterface(Context.IBqlSearch)) // TODO: could be Coalesce - handle this case in the future
+				{
+					SyntaxTriviaList defaultTrivia = GetDefaultLeadingTrivia(node);
+					var selectRewriter = new BqlSelectRewriter(this, defaultTrivia);
+					node = (GenericNameSyntax) selectRewriter.Visit(node);
+				}
 			}
 
 			return node;
