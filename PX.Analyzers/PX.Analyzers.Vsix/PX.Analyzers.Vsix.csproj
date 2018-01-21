@@ -261,6 +261,31 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AcuminatorVSPackage.cs" />
+    <Compile Include="Coloriser\AsyncTagging\AsyncTaggerSource.cs" />
+    <Compile Include="Coloriser\AsyncTagging\EditorUtilsFactory.cs" />
+    <Compile Include="Coloriser\AsyncTagging\EditorUtilsResources.cs" />
+    <Compile Include="Coloriser\AsyncTagging\EditorUtilsTrace.cs" />
+    <Compile Include="Coloriser\AsyncTagging\AsyncUtils\Extensions.cs" />
+    <Compile Include="Coloriser\AsyncTagging\Interfaces\IAdhocOutliner.cs" />
+    <Compile Include="Coloriser\AsyncTagging\Interfaces\IAsyncTaggerSource.cs" />
+    <Compile Include="Coloriser\AsyncTagging\Interfaces\IBasicTaggerSource.cs" />
+    <Compile Include="Coloriser\AsyncTagging\Interfaces\IBasicUndoHistoryRegistry.cs" />
+    <Compile Include="Coloriser\AsyncTagging\Tagging\AsyncTagger.Channel.cs" />
+    <Compile Include="Coloriser\AsyncTagging\Tagging\AsyncTagger.cs" />
+    <Compile Include="Coloriser\AsyncTagging\Tagging\BasicTagger.cs" />
+    <Compile Include="Coloriser\AsyncTagging\Tagging\Classifier.cs" />
+    <Compile Include="Coloriser\AsyncTagging\Tagging\CountedClassifier.cs" />
+    <Compile Include="Coloriser\AsyncTagging\Tagging\CountedTagger.cs" />
+    <Compile Include="Coloriser\AsyncTagging\Tagging\CountedValue.cs" />
+    <Compile Include="Coloriser\AsyncTagging\Tagging\TaggerUtil.cs" />
+    <Compile Include="Coloriser\AsyncTagging\AsyncUtils\AdhocOutliner.cs" />
+    <Compile Include="Coloriser\AsyncTagging\AsyncUtils\EqualityUtility.cs" />
+    <Compile Include="Coloriser\AsyncTagging\AsyncUtils\NormalizedLineRangeCollection.cs" />
+    <Compile Include="Coloriser\AsyncTagging\AsyncUtils\ProtectedOperations.cs" />
+    <Compile Include="Coloriser\AsyncTagging\AsyncUtils\ReadOnlyStack.cs" />
+    <Compile Include="Coloriser\AsyncTagging\Interfaces\IProtectedOperations.cs" />
+    <Compile Include="Coloriser\AsyncTagging\LineRange.cs" />
+    <Compile Include="Coloriser\AsyncTagging\SnapshotLineRange.cs" />
     <Compile Include="Coloriser\BracesFormats.cs" />
     <Compile Include="Coloriser\ClassificationTypeDefinitions.cs" />
     <Compile Include="Coloriser\EditorFormats.cs" />
@@ -276,7 +301,6 @@
     <EmbeddedResource Include="Coloriser\Regex\Test\PMAllocationProcess.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\APInvoice.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\APRegister.cs" />
-    <Compile Include="Coloriser\Roslyn\AsyncTagging\AsyncTagsContainer.cs" />
     <Compile Include="Coloriser\Roslyn\ParsedSymbolsCache.cs" />
     <Compile Include="Coloriser\Roslyn\ParsedDocument.cs" />
     <Compile Include="Coloriser\Roslyn\PXColoriserSyntaxWalker.cs" />
@@ -299,6 +323,7 @@
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

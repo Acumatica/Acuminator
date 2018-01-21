@@ -29,6 +29,11 @@ namespace PX.Analyzers.Coloriser
         public const string BraceLevel_9_Format = nameof(BraceLevel_9_Format);
 
         public const int MaxBraceLevel = 9;
+
+        /// <summary>
+        /// Standard delay for asynchronous taggers
+        /// </summary>
+        public const int DefaultAsyncDelay = 100;
     }
 
 	public static class Labels
