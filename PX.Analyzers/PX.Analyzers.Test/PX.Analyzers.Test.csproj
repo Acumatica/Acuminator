@@ -156,6 +156,7 @@
     <EmbeddedResource Include="Sources\NonNullableTypeForBqlField_Expected.cs" />
     <EmbeddedResource Include="Sources\NonNullableTypeForBqlField.cs" />
     <EmbeddedResource Include="Sources\NonNullableTypeForBqlField_Valid.cs" />
+    <EmbeddedResource Include="Sources\BQL_raw.cs" />
     <Compile Include="StartRowResetForPagingTests.cs" />
     <Compile Include="InheritanceFromPXCacheExtensionTests.cs" />
     <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtension_Bad.cs" />

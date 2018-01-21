@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis;
 
 namespace PX.Analyzers
 {
-	internal static class SymbolHelpers
+	public static class SymbolHelpers
 	{
 		public static IEnumerable<ITypeSymbol> GetBaseTypes(this ITypeSymbol type)
 		{
