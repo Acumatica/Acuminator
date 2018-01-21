@@ -26,7 +26,7 @@ namespace PX.Analyzers.Vsix.Formatter
 
 			if (!_tokenCompleted && token.IsKind(SyntaxKind.LessThanToken))
 			{
-				token = AddTrivia(token, SyntaxTriviaList.Empty, SyntaxTriviaList.Create(EndOfLineTrivia));
+				token = token.WithTrailingTrivia(EndOfLineTrivia);
 				_tokenCompleted = true;
 			}
 
@@ -41,7 +41,7 @@ namespace PX.Analyzers.Vsix.Formatter
 				var typeSymbol = GetTypeSymbol(node);
 				if (typeSymbol != null && typeSymbol.ImplementsInterface(Context.IBqlTable))
 				{
-					node = AddTrivia(node, DefaultLeadingTrivia.AddRange(IndentationTrivia), SyntaxTriviaList.Empty);
+					node = node.WithLeadingTrivia(DefaultLeadingTrivia.AddRange(IndentationTrivia));
 					_identifierCompleted = true;
 				}
 			}
