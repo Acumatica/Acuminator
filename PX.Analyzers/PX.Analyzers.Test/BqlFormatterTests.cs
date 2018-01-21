@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Formatting;
 using PX.Analyzers.Test.Helpers;
@@ -17,8 +18,10 @@ namespace PX.Analyzers.Test
 		private readonly BqlFormatter _formatter = new BqlFormatter("\r\n", true, 4, 4);
 
 		[Theory]
-		[EmbeddedFileData("BQL_raw.cs")]
-		public void TestHelloWorld(string text)
+		[EmbeddedFileData("BQL_raw.cs", "BQL_formatted.cs")]
+		[EmbeddedFileData("BQL_static_raw.cs", "BQL_static_formatted.cs")]
+		[EmbeddedFileData("BQL_attribute_raw.cs", "BQL_attribute_formatted.cs")]
+		public void TestHelloWorld(string text, string expected)
 		{
 			Document document = CreateDocument(text);
 			SyntaxNode syntaxRoot = document.GetSyntaxRootAsync().Result;
@@ -27,6 +30,8 @@ namespace PX.Analyzers.Test
 
 			formattedNode = formattedNode.WithAdditionalAnnotations(Formatter.Annotation);
 			string actual = formattedNode.ToFullString();
+
+			actual.Should().Be(expected);
 		}
 	}
 }
