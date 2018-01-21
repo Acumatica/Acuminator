@@ -15,12 +15,12 @@ namespace PX.Analyzers.Vsix.Formatter
 
 		public BqlFormatter(string endOfLineCharacter, bool useTabs, int tabSize, int indentSize)
 		{
-			EndOfLineTrivia = SyntaxFactory.ElasticEndOfLine(endOfLineCharacter);
+			EndOfLineTrivia = SyntaxFactory.EndOfLine(endOfLineCharacter);
 			if (useTabs || indentSize >= tabSize)
 			{
 				var items = Enumerable
-					.Repeat(SyntaxFactory.ElasticTab, indentSize / tabSize)
-					.Append(SyntaxFactory.ElasticWhitespace(new string(' ', indentSize % tabSize)));
+					.Repeat(SyntaxFactory.Tab, indentSize / tabSize)
+					.Append(SyntaxFactory.Whitespace(new string(' ', indentSize % tabSize)));
 				IndentationTrivia = SyntaxTriviaList.Empty.AddRange(items);
 			}
 			else
