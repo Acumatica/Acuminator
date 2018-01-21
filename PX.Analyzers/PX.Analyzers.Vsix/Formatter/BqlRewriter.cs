@@ -8,7 +8,7 @@ namespace PX.Analyzers.Vsix.Formatter
 	{
 		public BqlRewriter(BqlContext context, SemanticModel semanticModel,
 			SyntaxTrivia endOfLineTrivia, SyntaxTriviaList indentationTrivia)
-			: base(context, semanticModel, endOfLineTrivia, indentationTrivia)
+			: base(context, semanticModel, endOfLineTrivia, indentationTrivia, SyntaxTriviaList.Empty)
 		{
 		}
 
@@ -22,7 +22,8 @@ namespace PX.Analyzers.Vsix.Formatter
 					|| typeSymbol.InheritsFromOrEquals(Context.SearchBase)
 					|| typeSymbol.InheritsFromOrEquals(Context.PXSelectBase)))
 			{
-				var selectRewriter = new BqlSelectRewriter(this);
+				SyntaxTriviaList defaultTrivia = GetDefaultLeadingTrivia(node);
+				var selectRewriter = new BqlSelectRewriter(this, defaultTrivia);
 				node = (GenericNameSyntax)selectRewriter.Visit(node);
 			}
 
@@ -37,6 +38,15 @@ namespace PX.Analyzers.Vsix.Formatter
 		public override SyntaxNode VisitQualifiedName(QualifiedNameSyntax node)
 		{
 			return base.VisitQualifiedName(node);
+		}
+
+		private SyntaxTriviaList GetDefaultLeadingTrivia(SyntaxNode node)
+		{
+			if (node == null) return SyntaxTriviaList.Empty;
+			if (node.HasLeadingTrivia)
+				return node.GetLeadingTrivia();
+			else
+				return GetDefaultLeadingTrivia(node.Parent);
 		}
 	}
 }

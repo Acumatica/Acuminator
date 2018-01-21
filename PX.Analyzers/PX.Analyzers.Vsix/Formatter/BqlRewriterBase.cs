@@ -7,21 +7,24 @@ namespace PX.Analyzers.Vsix.Formatter
 	{
 		protected SyntaxTrivia EndOfLineTrivia { get; }
 		protected SyntaxTriviaList IndentationTrivia { get; }
+		protected SyntaxTriviaList DefaultLeadingTrivia { get; }
 
 		protected SemanticModel SemanticModel { get; }
 		protected BqlContext Context { get; }
 
 		protected BqlRewriterBase(BqlContext context, SemanticModel semanticModel,
-			SyntaxTrivia endOfLineTrivia, SyntaxTriviaList indentationTrivia)
+			SyntaxTrivia endOfLineTrivia, SyntaxTriviaList indentationTrivia, SyntaxTriviaList defaultLeadingTrivia)
 		{
 			Context = context;
 			SemanticModel = semanticModel;
 			EndOfLineTrivia = endOfLineTrivia;
 			IndentationTrivia = indentationTrivia;
+			DefaultLeadingTrivia = defaultLeadingTrivia;
 		}
 
-		protected BqlRewriterBase(BqlRewriterBase parent)
-			: this(parent.Context, parent.SemanticModel, parent.EndOfLineTrivia, parent.IndentationTrivia)
+		protected BqlRewriterBase(BqlRewriterBase parent, SyntaxTriviaList defaultLeadingTrivia)
+			: this(parent.Context, parent.SemanticModel, 
+				  parent.EndOfLineTrivia, parent.IndentationTrivia, defaultLeadingTrivia)
 		{
 		}
 

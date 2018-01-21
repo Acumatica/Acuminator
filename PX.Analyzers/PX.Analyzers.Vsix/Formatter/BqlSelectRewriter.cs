@@ -10,13 +10,13 @@ namespace PX.Analyzers.Vsix.Formatter
 		private bool _identifierCompleted;
 
 		public BqlSelectRewriter(BqlContext context, SemanticModel semanticModel,
-			SyntaxTrivia endOfLineTrivia, SyntaxTriviaList indentationTrivia)
-			: base(context, semanticModel, endOfLineTrivia, indentationTrivia)
+			SyntaxTrivia endOfLineTrivia, SyntaxTriviaList indentationTrivia, SyntaxTriviaList defaultLeadingTrivia)
+			: base(context, semanticModel, endOfLineTrivia, indentationTrivia, defaultLeadingTrivia)
 		{
 		}
 
-		public BqlSelectRewriter(BqlRewriterBase parent)
-			: base(parent)
+		public BqlSelectRewriter(BqlRewriterBase parent, SyntaxTriviaList defaultLeadingTrivia)
+			: base(parent, defaultLeadingTrivia)
 		{
 		}
 
@@ -41,7 +41,7 @@ namespace PX.Analyzers.Vsix.Formatter
 				var typeSymbol = GetTypeSymbol(node);
 				if (typeSymbol != null && typeSymbol.ImplementsInterface(Context.IBqlTable))
 				{
-					node = AddTrivia(node, IndentationTrivia, SyntaxTriviaList.Empty);
+					node = AddTrivia(node, DefaultLeadingTrivia.AddRange(IndentationTrivia), SyntaxTriviaList.Empty);
 					_identifierCompleted = true;
 				}
 			}
