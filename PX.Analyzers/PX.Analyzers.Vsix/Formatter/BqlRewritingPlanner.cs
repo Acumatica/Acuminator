@@ -58,6 +58,29 @@ namespace PX.Analyzers.Vsix.Formatter
 			base.VisitIdentifierName(node);
 		}
 
+		public override void VisitVariableDeclarator(VariableDeclaratorSyntax node)
+		{
+			// Move BQL View field name to a new line and indent it
+			var parentNode = node.Parent as VariableDeclarationSyntax;
+			var genericNameNode = parentNode?.Type as GenericNameSyntax;
+
+			if (genericNameNode != null)
+			{
+				INamedTypeSymbol parentType = GetTypeSymbol(genericNameNode);
+				INamedTypeSymbol constructedFromSymbol = parentType?.ConstructedFrom; // get generic type
+
+				if (constructedFromSymbol != null
+					&& constructedFromSymbol.InheritsFromOrEquals(Context.PXSelectBase))
+				{
+					Set(node, OnNewLineAndIndentet(node));
+				}
+			}
+
+			base.VisitVariableDeclarator(node);
+		}
+
+
+
 		private SyntaxNode OnNewLineAndIndentet(SyntaxNode node)
 		{
 			return node.WithLeadingTrivia(EndOfLineTrivia
