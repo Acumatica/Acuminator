@@ -9,7 +9,7 @@ namespace PX.Objects.SO
 {
 	public class SOOrderEntry : PXGraph<SOOrderEntry>
 	{
-		public PXSelect<SOOrder, Where<SOOrder.orderType, Equal<SalesOrder>, And<SOOrder.status, Equal<Open>>>, OrderBy<Asc<SOOrder.orderNbr>>> OpenSalesOrders;
+		public PXSelect<SOOrder, Where<SOOrder.orderType, Equal<SalesOrder>, And<SOOrder.status, Equal<Open>>>, OrderBy<Desc<SOOrder.orderType, Asc<SOOrder.orderNbr, Asc<SOOrder.status>>>>> OpenSalesOrders;
 	}
 
 	public class SOOrder : IBqlTable
