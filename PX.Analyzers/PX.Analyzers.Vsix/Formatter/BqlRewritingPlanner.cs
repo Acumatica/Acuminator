@@ -25,7 +25,9 @@ namespace PX.Analyzers.Vsix.Formatter
 			
 			if (constructedFromSymbol != null)
 			{
-				if (constructedFromSymbol.ImplementsInterface(Context.IBqlWhere))
+				if (constructedFromSymbol.ImplementsInterface(Context.IBqlJoin)
+					|| constructedFromSymbol.ImplementsInterface(Context.IBqlWhere)
+				    || constructedFromSymbol.ImplementsInterface(Context.IBqlOrderBy))
 				{
 					Set(node, OnNewLineAndIndentet(node));
 				}
