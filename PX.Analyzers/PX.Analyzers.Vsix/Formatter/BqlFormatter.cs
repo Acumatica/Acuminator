@@ -10,12 +10,12 @@ namespace PX.Analyzers.Vsix.Formatter
 {
 	public class BqlFormatter
 	{
-		private readonly SyntaxTrivia EndOfLineTrivia;
+		private readonly SyntaxTriviaList EndOfLineTrivia;
 		private readonly SyntaxTriviaList IndentationTrivia;
 
 		public BqlFormatter(string endOfLineCharacter, bool useTabs, int tabSize, int indentSize)
 		{
-			EndOfLineTrivia = SyntaxFactory.EndOfLine(endOfLineCharacter);
+			EndOfLineTrivia = SyntaxTriviaList.Create(SyntaxFactory.EndOfLine(endOfLineCharacter));
 			if (useTabs || indentSize >= tabSize)
 			{
 				var items = Enumerable
@@ -31,8 +31,11 @@ namespace PX.Analyzers.Vsix.Formatter
 
 		public SyntaxNode Format(SyntaxNode syntaxRoot, SemanticModel semanticModel)
 		{
-			var rewriter = new BqlRewriter(new BqlContext(semanticModel.Compilation), semanticModel,
+			var planner = new BqlRewritingPlanner(new BqlContext(semanticModel.Compilation), semanticModel,
 				EndOfLineTrivia, IndentationTrivia);
+			planner.Visit(syntaxRoot);
+			
+			var rewriter = new MapSyntaxRewriter(planner.Result);
 			return rewriter.Visit(syntaxRoot);
 		}
 	}
