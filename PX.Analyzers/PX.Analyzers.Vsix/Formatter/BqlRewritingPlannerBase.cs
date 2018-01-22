@@ -13,8 +13,8 @@ namespace PX.Analyzers.Vsix.Formatter
 		protected BqlContext Context { get; }
 		protected SemanticModel SemanticModel { get; }
 
-		public IReadOnlyDictionary<SyntaxNode, SyntaxNode> Result => _result;
-		private readonly Dictionary<SyntaxNode, SyntaxNode> _result = new Dictionary<SyntaxNode, SyntaxNode>();
+		public IReadOnlyDictionary<SyntaxNode, SyntaxTriviaList> Result => _result;
+		private readonly Dictionary<SyntaxNode, SyntaxTriviaList> _result = new Dictionary<SyntaxNode, SyntaxTriviaList>();
 
 		protected BqlRewritingPlannerBase(BqlContext context, SemanticModel semanticModel,
 			SyntaxTriviaList endOfLineTrivia, SyntaxTriviaList indentationTrivia, SyntaxTriviaList defaultLeadingTrivia)
@@ -37,12 +37,12 @@ namespace PX.Analyzers.Vsix.Formatter
 			return SemanticModel.GetTypeInfo(node).Type as INamedTypeSymbol;
 		}
 
-		protected void Set(SyntaxNode originalNode, SyntaxNode newNode)
+		protected void Set(SyntaxNode originalNode, SyntaxTriviaList newNode)
 		{
 			_result[originalNode] = newNode;
 		}
 
-		protected void MergeWith(IReadOnlyDictionary<SyntaxNode, SyntaxNode> values)
+		protected void MergeWith(IReadOnlyDictionary<SyntaxNode, SyntaxTriviaList> values)
 		{
 			_result.MergeWith(values);
 		}

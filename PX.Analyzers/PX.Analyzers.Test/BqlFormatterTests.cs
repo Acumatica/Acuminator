@@ -15,7 +15,9 @@ namespace PX.Analyzers.Test
 {
 	public class BqlFormatterTests : DiagnosticVerifier
 	{
-		private readonly BqlFormatter _formatter = new BqlFormatter("\r\n", true, 4, 4);
+		private const string EndOfLine = "\r\n";
+
+		private readonly BqlFormatter _formatter = new BqlFormatter(EndOfLine, true, 4, 4);
 
 		[Theory]
 		[EmbeddedFileData("BQL_raw.cs", "BQL_formatted.cs")]
@@ -31,7 +33,15 @@ namespace PX.Analyzers.Test
 			formattedNode = formattedNode.WithAdditionalAnnotations(Formatter.Annotation);
 			string actual = formattedNode.ToFullString();
 
-			actual.Should().Be(expected);
+			Normalize(actual).Should().Be(Normalize(expected));
+		}
+
+		private string Normalize(string text)
+		{
+			return String.Join(EndOfLine, 
+				text
+				.Split(new[] { EndOfLine }, StringSplitOptions.None)
+				.Select(line => line.TrimEnd()));
 		}
 	}
 }
