@@ -20,7 +20,9 @@ namespace PX.Analyzers.Vsix.Formatter
 
 		public INamedTypeSymbol IBqlSelect => _compilation.GetTypeByMetadataName(typeof(IBqlSelect).FullName);
 		public INamedTypeSymbol IBqlSearch => _compilation.GetTypeByMetadataName(typeof(IBqlSearch).FullName);
+		public INamedTypeSymbol IBqlJoin => _compilation.GetTypeByMetadataName(typeof(IBqlJoin).FullName);
 		public INamedTypeSymbol IBqlWhere => _compilation.GetTypeByMetadataName(typeof(IBqlWhere).FullName);
+		public INamedTypeSymbol IBqlOrderBy => _compilation.GetTypeByMetadataName(typeof(IBqlOrderBy).FullName);
 
 		public INamedTypeSymbol IBqlTable => _compilation.GetTypeByMetadataName(typeof(IBqlTable).FullName);
 	}
