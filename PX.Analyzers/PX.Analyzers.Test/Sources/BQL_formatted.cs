@@ -12,8 +12,8 @@ namespace PX.Objects.SO
 		public PXSelect<
 			SOOrder, 
 			Where<SOOrder.orderType, Equal<SalesOrder>, And<SOOrder.status, Equal<Open>>>, 
-			OrderBy<Desc<SOOrder.orderType, Asc<SOOrder.orderNbr, Asc<SOOrder.status>>>>>
-			OpenSalesOrders;f
+			OrderBy<Desc<SOOrder.orderType, Asc<SOOrder.orderNbr, Asc<SOOrder.status>>>>> 
+			OpenSalesOrders;
 	}
 
 	public class SOOrder : IBqlTable
