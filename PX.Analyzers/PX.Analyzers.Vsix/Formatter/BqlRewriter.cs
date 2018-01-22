@@ -50,10 +50,10 @@ namespace PX.Analyzers.Vsix.Formatter
 		private SyntaxTriviaList GetDefaultLeadingTrivia(SyntaxNode node)
 		{
 			if (node == null) return SyntaxTriviaList.Empty;
-			if (node.HasLeadingTrivia 
-				|| node.IsKind(SyntaxKind.PropertyDeclaration) // View
-				|| node.IsKind(SyntaxKind.TypeOfExpression) // BQL in attribute
-				|| node.IsKind(SyntaxKind.SimpleMemberAccessExpression)) // Static call
+			if (node.HasLeadingTrivia &&
+				(node.IsKind(SyntaxKind.PropertyDeclaration) // View
+				|| node.IsKind(SyntaxKind.AttributeList) // BQL in attribute
+				|| node.IsKind(SyntaxKind.SimpleMemberAccessExpression))) // Static call
 			{
 				return node.GetLeadingTrivia();
 			}
