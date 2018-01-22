@@ -35,7 +35,7 @@ namespace PX.Analyzers.Vsix.Formatter
 				EndOfLineTrivia, IndentationTrivia);
 			planner.Visit(syntaxRoot);
 			
-			var rewriter = new MapSyntaxRewriter(planner.Result);
+			var rewriter = new LeadingTriviaRewriter(planner.Result);
 			return rewriter.Visit(syntaxRoot);
 		}
 	}

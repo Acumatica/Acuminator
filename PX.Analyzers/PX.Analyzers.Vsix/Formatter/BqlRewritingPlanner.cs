@@ -29,7 +29,11 @@ namespace PX.Analyzers.Vsix.Formatter
 					|| constructedFromSymbol.ImplementsInterface(Context.IBqlWhere)
 				    || constructedFromSymbol.ImplementsInterface(Context.IBqlOrderBy))
 				{
-					Set(node, OnNewLineAndIndentet(node));
+					Set(node, NewLineAndIndentation(node));
+				}
+				else if (constructedFromSymbol.ImplementsInterface(Context.IBqlSortColumn))
+				{
+					Set(node, NewLineAndIndentation(node, 2));
 				}
 			}
 
@@ -50,7 +54,7 @@ namespace PX.Analyzers.Vsix.Formatter
 					    || constructedFromSymbol.ImplementsInterface(Context.IBqlSelect)
 					    || constructedFromSymbol.ImplementsInterface(Context.IBqlSearch)) // TODO: could be Coalesce - handle this case in the future
 					{
-						Set(node, OnNewLineAndIndentet(node));
+						Set(node, NewLineAndIndentation(node));
 					}
 				}
 			}
@@ -72,7 +76,7 @@ namespace PX.Analyzers.Vsix.Formatter
 				if (constructedFromSymbol != null
 					&& constructedFromSymbol.InheritsFromOrEquals(Context.PXSelectBase))
 				{
-					Set(node, OnNewLineAndIndentet(node));
+					Set(node, NewLineAndIndentation(node));
 				}
 			}
 
@@ -81,11 +85,16 @@ namespace PX.Analyzers.Vsix.Formatter
 
 
 
-		private SyntaxNode OnNewLineAndIndentet(SyntaxNode node)
+		private SyntaxTriviaList NewLineAndIndentation(SyntaxNode node, int indentLength = 1)
 		{
-			return node.WithLeadingTrivia(EndOfLineTrivia
-				.AddRange(GetDefaultLeadingTrivia(node))
-				.AddRange(IndentationTrivia));
+			SyntaxTriviaList newTrivia = EndOfLineTrivia.AddRange(GetDefaultLeadingTrivia(node));
+
+			for (int i = 0; i < indentLength; i++)
+			{
+				newTrivia = newTrivia.AddRange(IndentationTrivia);
+			}
+
+			return newTrivia;
 		}
 
 		private SyntaxTriviaList GetDefaultLeadingTrivia(SyntaxNode node)
