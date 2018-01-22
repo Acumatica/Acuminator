@@ -283,7 +283,6 @@
     <Compile Include="Formatter\BqlFormatter.cs" />
     <Compile Include="Formatter\BqlRewritingPlanner.cs" />
     <Compile Include="Formatter\BqlRewritingPlannerBase.cs" />
-    <Compile Include="Formatter\BqlSelectRewritingPlanner.cs" />
     <Compile Include="Formatter\DictionaryHelpers.cs" />
     <Compile Include="Formatter\FormatBqlCommand.cs" />
     <Compile Include="Formatter\MapSyntaxRewriter.cs" />
