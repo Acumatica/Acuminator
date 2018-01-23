@@ -52,15 +52,54 @@ namespace PX.Analyzers.Vsix.Formatter
 		{
 			if (node == null) return SyntaxTriviaList.Empty;
 
-			if (node.HasLeadingTrivia &&
-			    (node.IsKind(SyntaxKind.FieldDeclaration) // View
-			     || node.IsKind(SyntaxKind.AttributeList) // BQL in attribute
-			     || node.IsKind(SyntaxKind.SimpleMemberAccessExpression))) // Static call
+			SyntaxToken firstToken = node.GetFirstToken();
+			SyntaxToken token = firstToken;
+			do
 			{
-				return node.GetLeadingTrivia();
-			}
+				int leadingEol = token.LeadingTrivia.IndexOf(SyntaxKind.EndOfLineTrivia);
+				if (leadingEol >= 0)
+				{
+					var triviaAfterEol = token.LeadingTrivia.Skip(leadingEol + 1).ToSyntaxTriviaList();
+					return GetWhitespaceTrivia(triviaAfterEol);
+				}
 
-			return GetDefaultLeadingTrivia(node.Parent);
+				int trailingEol = token.TrailingTrivia.IndexOf(SyntaxKind.EndOfLineTrivia);
+				if (token != firstToken && trailingEol >= 0)
+				{
+					var trivia = token.TrailingTrivia.Skip(trailingEol + 1).ToList();
+					// Concat trailing trivia from current token (starting from EOL) with leading trivia from previous token
+					SyntaxToken nextToken = token.GetNextToken(true, true);
+					if (nextToken.HasLeadingTrivia)
+					{
+						trivia.AddRange(nextToken.LeadingTrivia);
+					}
+
+					return GetWhitespaceTrivia(trivia.ToSyntaxTriviaList());
+				}
+
+				token = token.GetPreviousToken(true, true);
+			} while (!token.IsKind(SyntaxKind.None));
+
+			return SyntaxTriviaList.Empty;
+		}
+
+		private SyntaxTriviaList GetWhitespaceTrivia(SyntaxTriviaList input)
+		{
+			if (input.All(t => t.IsKind(SyntaxKind.WhitespaceTrivia)))
+				return input;
+
+			// If there are some unexpected trivias (non-whitespace), calculate approximate indent
+			int totalLength = input.FullSpan.Length;
+			int indentLength = IndentationTrivia.FullSpan.Length;
+			var trivia = new List<SyntaxTrivia>();
+			int repeatCount = totalLength / indentLength;
+			if (totalLength % indentLength > 0 || indentLength % totalLength > 0)
+				repeatCount++;
+			for (int i = 0; i < repeatCount; i++)
+			{
+				trivia.AddRange(IndentationTrivia);
+			}
+			return trivia.ToSyntaxTriviaList();
 		}
 	}
 }
