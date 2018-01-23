@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -12,6 +13,26 @@ namespace PX.Analyzers.Vsix.Formatter
 	/// </summary>
 	class BqlRewriter : BqlRewriterBase
 	{
+		class WithDefaultTriviaFrom : IDisposable
+		{
+			private readonly BqlRewriter _parent;
+
+			public WithDefaultTriviaFrom(BqlRewriter parent, SyntaxNode node)
+			{
+				if (node == null) throw new ArgumentNullException(nameof (node));
+				_parent = parent ?? throw new ArgumentNullException(nameof (parent));
+				_parent._defaultLeadingTrivia = parent.GetDefaultLeadingTrivia(node);
+			}
+
+			public void Dispose()
+			{
+				_parent._defaultLeadingTrivia = SyntaxTriviaList.Empty;
+			}
+		}
+
+		private SyntaxTriviaList _defaultLeadingTrivia;
+		protected override SyntaxTriviaList DefaultLeadingTrivia => _defaultLeadingTrivia;
+
 		public BqlRewriter(BqlContext context, SemanticModel semanticModel,
 			SyntaxTriviaList endOfLineTrivia, SyntaxTriviaList indentationTrivia)
 			: base(context, semanticModel, endOfLineTrivia, indentationTrivia, SyntaxTriviaList.Empty)
@@ -27,7 +48,9 @@ namespace PX.Analyzers.Vsix.Formatter
 				&& (constructedFromSymbol.InheritsFromOrEquals(Context.PXSelectBase) 
 					|| constructedFromSymbol.ImplementsInterface(Context.IBqlCreator)))
 			{
-				var statementRewriter = new BqlStatementRewriter(this, GetDefaultLeadingTrivia(node));
+				// First case is for complete statement (view declaration, PXSelect, etc.), second is for partial BQL statement
+				var defaultTrivia = DefaultLeadingTrivia.Any() ? DefaultLeadingTrivia : GetDefaultLeadingTrivia(node);
+				var statementRewriter = new BqlStatementRewriter(this, defaultTrivia);
 				return statementRewriter.Visit(node);
 			}
 			
@@ -36,17 +59,36 @@ namespace PX.Analyzers.Vsix.Formatter
 
 		public override SyntaxNode VisitVariableDeclaration(VariableDeclarationSyntax node)
 		{
-			var defaultTrivia = GetDefaultLeadingTrivia(node);
-			var newNode = (VariableDeclarationSyntax) base.VisitVariableDeclaration(node);
-
-			if (newNode != node)
+			using (new WithDefaultTriviaFrom(this, node))
 			{
-				var childRewriter = new BqlViewDeclarationRewriter(this, defaultTrivia);
-				newNode = (VariableDeclarationSyntax) childRewriter.Visit(newNode);
-			}
+				var newNode = (VariableDeclarationSyntax) base.VisitVariableDeclaration(node);
 
-			return newNode;
+				if (newNode != node)
+				{
+					// Using rewriter because there might be multiple declarators
+					var childRewriter = new BqlViewDeclarationRewriter(this, DefaultLeadingTrivia);
+					newNode = (VariableDeclarationSyntax) childRewriter.Visit(newNode);
+				}
+
+				return newNode;
+			}
 		}
+
+		public override SyntaxNode VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
+		{
+			using (new WithDefaultTriviaFrom(this, node))
+			{
+				var newNode = (MemberAccessExpressionSyntax) base.VisitMemberAccessExpression(node);
+
+				if (newNode != node)
+				{
+					newNode = newNode.WithOperatorToken(OnNewLineAndIndented(newNode.OperatorToken));
+				}
+
+				return newNode;
+			}
+		}
+
 
 		private SyntaxTriviaList GetDefaultLeadingTrivia(SyntaxNode node)
 		{

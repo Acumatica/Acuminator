@@ -8,7 +8,7 @@ namespace PX.Analyzers.Vsix.Formatter
 	{
 		protected SyntaxTriviaList EndOfLineTrivia { get; }
 		protected SyntaxTriviaList IndentationTrivia { get; }
-		protected SyntaxTriviaList DefaultLeadingTrivia { get; }
+		protected virtual SyntaxTriviaList DefaultLeadingTrivia { get; }
 		protected SyntaxTriviaList IndentedDefaultTrivia => DefaultLeadingTrivia.AddRange(IndentationTrivia);
 
 		protected BqlContext Context { get; }
