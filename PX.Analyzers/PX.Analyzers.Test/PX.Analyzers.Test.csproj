@@ -162,6 +162,7 @@
     <EmbeddedResource Include="Sources\BQL\Formatted\StaticCall.cs" />
     <EmbeddedResource Include="Sources\BQL\Raw\SearchInAttribute.cs" />
     <EmbeddedResource Include="Sources\BQL\Formatted\SearchInAttribute.cs" />
+    <EmbeddedResource Include="Sources\BQL\Common.cs" />
     <Compile Include="StartRowResetForPagingTests.cs" />
     <Compile Include="InheritanceFromPXCacheExtensionTests.cs" />
     <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtension_Bad.cs" />

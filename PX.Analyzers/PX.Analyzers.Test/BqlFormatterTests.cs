@@ -20,28 +20,28 @@ namespace PX.Analyzers.Test
 		private readonly BqlFormatter _formatter = new BqlFormatter(EndOfLine, true, 4, 4);
 
 		[Theory]
-		[EmbeddedFileData(@"BQL\Raw\View.cs", @"BQL\Formatted\View.cs")]
-		[EmbeddedFileData(@"BQL\Raw\StaticCall.cs", @"BQL\Formatted\StaticCall.cs")]
-		[EmbeddedFileData(@"BQL\Raw\SearchInAttribute.cs", @"BQL\Formatted\SearchInAttribute.cs")]
-		public void FormatDocument(string text, string expected)
+		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Raw\View.cs", @"BQL\Formatted\View.cs")]
+		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Raw\StaticCall.cs", @"BQL\Formatted\StaticCall.cs")]
+		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Raw\SearchInAttribute.cs", @"BQL\Formatted\SearchInAttribute.cs")]
+		public void FormatDocument(string common, string text, string expected)
 		{
-			string actual = Format(text);
+			string actual = Format(common, text);
 			Normalize(actual).Should().Be(Normalize(expected));
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"BQL\Formatted\View.cs")]
-		[EmbeddedFileData(@"BQL\Formatted\StaticCall.cs")]
-		[EmbeddedFileData(@"BQL\Formatted\SearchInAttribute.cs")]
-		public void ShouldNotDoubleFormat(string expected)
+		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Formatted\View.cs")]
+		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Formatted\StaticCall.cs")]
+		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Formatted\SearchInAttribute.cs")]
+		public void ShouldNotDoubleFormat(string common, string expected)
 		{
-			string actual = Format(expected);
+			string actual = Format(common, expected);
 			Normalize(actual).Should().Be(Normalize(expected));
 		}
 
-		private string Format(string text)
+		private string Format(string common, string text)
 		{
-			Document document = CreateDocument(text);
+			Document document = CreateCSharpDocument(text, common);
 			SyntaxNode syntaxRoot = document.GetSyntaxRootAsync().Result;
 			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
 			SyntaxNode formattedNode = _formatter.Format(syntaxRoot, semanticModel);

@@ -136,6 +136,12 @@ namespace TestHelper
 			return CreateProject(new[] { source }, language).Documents.First();
 		}
 
+		protected static Document CreateCSharpDocument(string source, params string[] additionalSources)
+		{
+			var sources = new List<string>(additionalSources) { source };
+			return CreateProject(sources.ToArray()).Documents.Last();
+		}
+
 		/// <summary>
 		/// Create a project using the inputted strings as sources.
 		/// </summary>
