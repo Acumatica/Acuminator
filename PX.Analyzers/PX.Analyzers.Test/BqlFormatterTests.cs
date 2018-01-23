@@ -20,9 +20,9 @@ namespace PX.Analyzers.Test
 		private readonly BqlFormatter _formatter = new BqlFormatter(EndOfLine, true, 4, 4);
 
 		[Theory]
-		[EmbeddedFileData("BQL_raw.cs", "BQL_formatted.cs")]
-		[EmbeddedFileData("BQL_static_raw.cs", "BQL_static_formatted.cs")]
-		[EmbeddedFileData("BQL_attribute_raw.cs", "BQL_attribute_formatted.cs")]
+		[EmbeddedFileData(@"BQL\Raw\View.cs", @"BQL\Formatted\View.cs")]
+		[EmbeddedFileData(@"BQL\Raw\StaticCall.cs", @"BQL\Formatted\StaticCall.cs")]
+		[EmbeddedFileData(@"BQL\Raw\SearchInAttribute.cs", @"BQL\Formatted\SearchInAttribute.cs")]
 		public void FormatDocument(string text, string expected)
 		{
 			Document document = CreateDocument(text);
