@@ -12,6 +12,8 @@ namespace PX.Analyzers.Vsix.Formatter
 	/// </summary>
 	class BqlRewritingPlanner : BqlRewritingPlannerBase
 	{
+		private readonly Stack<SyntaxTriviaList> _currentIndentation = new Stack<SyntaxTriviaList>();
+
 		public BqlRewritingPlanner(BqlContext context, SemanticModel semanticModel,
 			SyntaxTriviaList endOfLineTrivia, SyntaxTriviaList indentationTrivia)
 			: base(context, semanticModel, endOfLineTrivia, indentationTrivia, SyntaxTriviaList.Empty)
@@ -23,22 +25,33 @@ namespace PX.Analyzers.Vsix.Formatter
 		{
 			INamedTypeSymbol typeSymbol = GetTypeSymbol(node);
 			INamedTypeSymbol constructedFromSymbol = typeSymbol?.ConstructedFrom; // get generic type
-			
+
+			bool withIndent = false;
+
 			if (constructedFromSymbol != null)
 			{
-				if (constructedFromSymbol.ImplementsInterface(Context.IBqlJoin)
-					|| constructedFromSymbol.ImplementsInterface(Context.IBqlWhere)
+				if (constructedFromSymbol.InheritsFromOrEquals(Context.PXSelectBase)
+				         || constructedFromSymbol.ImplementsInterface(Context.IBqlSelect)
+				         || constructedFromSymbol.ImplementsInterface(Context.IBqlSearch)) // TODO: could be Coalesce - handle this case in the future
+				{
+					withIndent = true;
+				}
+				else if (constructedFromSymbol.ImplementsInterface(Context.IBqlJoin)
+				    || constructedFromSymbol.ImplementsInterface(Context.IBqlWhere)
 				    || constructedFromSymbol.ImplementsInterface(Context.IBqlOrderBy))
 				{
 					Set(node, NewLineAndIndentation(node));
+					withIndent = true;
 				}
 				else if (constructedFromSymbol.ImplementsInterface(Context.IBqlSortColumn))
 				{
 					Set(node, NewLineAndIndentation(node));
 				}
 			}
-
+			
+			if (withIndent) IncreaseCurrentIndentation();
 			base.VisitGenericName(node);
+			if (withIndent) DecreaseCurrentIndentation();
 		}
 
 		public override void VisitIdentifierName(IdentifierNameSyntax node)
@@ -77,28 +90,21 @@ namespace PX.Analyzers.Vsix.Formatter
 				if (constructedFromSymbol != null
 					&& constructedFromSymbol.InheritsFromOrEquals(Context.PXSelectBase))
 				{
+					IncreaseCurrentIndentation();
 					Set(node, NewLineAndIndentation(node));
+					DecreaseCurrentIndentation();
 				}
 			}
 
 			base.VisitVariableDeclarator(node);
 		}
 
-
-
-		private SyntaxTriviaList NewLineAndIndentation(SyntaxNode node, int indentLength = 1)
+		private SyntaxTriviaList NewLineAndIndentation(SyntaxNode node)
 		{
-			SyntaxTriviaList prevTrivia = GetCurrentIndentationTrivia(node);
-			if (!prevTrivia.Any())
-				prevTrivia = GetDefaultLeadingTrivia(node);
-
-			SyntaxTriviaList newTrivia = EndOfLineTrivia.AddRange(prevTrivia);
-
-			for (int i = 0; i < indentLength; i++)
-			{
-				newTrivia = newTrivia.AddRange(IndentationTrivia);
-			}
-
+			SyntaxTriviaList defaultTrivia = GetDefaultLeadingTrivia(node);
+			SyntaxTriviaList currentTrivia = GetCurrentIndentationTrivia(node);
+			SyntaxTriviaList newTrivia = EndOfLineTrivia.AddRange(defaultTrivia.AddRange(currentTrivia));
+			
 			return newTrivia;
 		}
 
@@ -119,17 +125,23 @@ namespace PX.Analyzers.Vsix.Formatter
 		private SyntaxTriviaList GetCurrentIndentationTrivia(SyntaxNode node)
 		{
 			if (node == null) return SyntaxTriviaList.Empty;
-
-			SyntaxNode parent = node.Parent;
-			SyntaxTriviaList trivia;
-			while (parent != null)
+			
+			SyntaxTriviaList result = SyntaxTriviaList.Empty;
+			foreach (SyntaxTriviaList trivia in _currentIndentation)
 			{
-				if (Result.TryGetValue(parent, out trivia))
-					return SyntaxTriviaList.Empty.AddRange(trivia.Where(t => t.IsKind(SyntaxKind.WhitespaceTrivia)));
-				parent = parent.Parent;
+				result = result.AddRange(trivia);
 			}
+			return result;
+		}
 
-			return SyntaxTriviaList.Empty;
+		private void IncreaseCurrentIndentation()
+		{
+			_currentIndentation.Push(IndentationTrivia);
+		}
+
+		private void DecreaseCurrentIndentation()
+		{
+			_currentIndentation.Pop();
 		}
 	}
 }
