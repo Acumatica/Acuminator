@@ -56,19 +56,28 @@ namespace PX.Analyzers.Vsix.Formatter
 
 		public override void VisitIdentifierName(IdentifierNameSyntax node)
 		{
-			SyntaxNode genericNameNode = node.Parent?.Parent; // IdentifierNameSyntax -> TypeArgumentSyntaxList -> GenericNameSyntax
-			if (genericNameNode != null)
+			SyntaxNode topParent = node.Parent?.Parent; // IdentifierNameSyntax -> TypeArgumentSyntaxList -> GenericNameSyntax
+			if (topParent != null)
 			{
-				INamedTypeSymbol parentType = GetTypeSymbol(genericNameNode);
-				INamedTypeSymbol constructedFromSymbol = parentType?.ConstructedFrom; // get generic type
-
-				if (constructedFromSymbol != null)
+				if (topParent.IsKind(SyntaxKind.InvocationExpression)) // static Select
 				{
-					if (constructedFromSymbol.InheritsFromOrEquals(Context.PXSelectBase)
-					    || constructedFromSymbol.ImplementsInterface(Context.IBqlSelect)
-					    || constructedFromSymbol.ImplementsInterface(Context.IBqlSearch)) // TODO: could be Coalesce - handle this case in the future
+					IncreaseCurrentIndentation();
+					Set(node, NewLineAndIndentation(node));
+					DecreaseCurrentIndentation();
+				}
+				else
+				{
+					INamedTypeSymbol parentType = GetTypeSymbol(topParent);
+					INamedTypeSymbol constructedFromSymbol = parentType?.ConstructedFrom; // get generic type
+
+					if (constructedFromSymbol != null)
 					{
-						Set(node, NewLineAndIndentation(node));
+						if (constructedFromSymbol.InheritsFromOrEquals(Context.PXSelectBase)
+						    || constructedFromSymbol.ImplementsInterface(Context.IBqlSelect)
+						    || constructedFromSymbol.ImplementsInterface(Context.IBqlSearch)) // TODO: could be Coalesce - handle this case in the future
+						{
+							Set(node, NewLineAndIndentation(node));
+						}
 					}
 				}
 			}
