@@ -47,7 +47,8 @@ namespace PX.Analyzers.Vsix.Formatter
 					return newNode.WithTypeArgumentList((TypeArgumentListSyntax) childRewriter.Visit(newNode.TypeArgumentList));
 				}
 
-				if (constructedFromSymbol.ImplementsInterface(Context.IBqlSortColumn))
+				if (constructedFromSymbol.ImplementsInterface(Context.IBqlJoin)
+					|| constructedFromSymbol.ImplementsInterface(Context.IBqlSortColumn))
 				{
 					var newNode = OnNewLineAndIndented(node);
 					var childRewriter = new BqlStatementRewriter(this, DefaultLeadingTrivia);
