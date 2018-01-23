@@ -40,12 +40,35 @@ namespace PX.Analyzers.Vsix.Formatter
 		protected T OnNewLineAndIndented<T>(T node)
 			where T : SyntaxNode
 		{
-			return node?.WithLeadingTrivia(EndOfLineTrivia.AddRange(DefaultLeadingTrivia).AddRange(IndentationTrivia));
+			if (node == null) return null;
+
+			SyntaxToken previousToken = node.GetFirstToken().GetPreviousToken();
+			SyntaxTriviaList trivia = GetNewLineAndIndentedTrivia(previousToken);
+			return node.WithLeadingTrivia(trivia);
 		}
 
 		protected SyntaxToken OnNewLineAndIndented(SyntaxToken token)
 		{
-			return token.WithLeadingTrivia(EndOfLineTrivia.AddRange(DefaultLeadingTrivia).AddRange(IndentationTrivia));
+			SyntaxToken previousToken = token.GetPreviousToken();
+			SyntaxTriviaList trivia = GetNewLineAndIndentedTrivia(previousToken);
+			return token.WithLeadingTrivia(trivia);
+		}
+
+		private SyntaxTriviaList GetNewLineAndIndentedTrivia(SyntaxToken previousToken)
+		{
+			// If previous token has trailing trivia, and it ends with EOL, do not append EOL again
+			var trivia = new List<SyntaxTrivia>();
+
+			if (!previousToken.HasTrailingTrivia
+			    || !previousToken.TrailingTrivia.Last().IsKind(SyntaxKind.EndOfLineTrivia))
+			{
+				trivia.AddRange(EndOfLineTrivia);
+			}
+
+			trivia.AddRange(DefaultLeadingTrivia);
+			trivia.AddRange(IndentationTrivia);
+
+			return trivia.ToSyntaxTriviaList();
 		}
 	}
 }
