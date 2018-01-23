@@ -10,18 +10,18 @@ namespace PX.Analyzers.Vsix.Formatter
 	/// <summary>
 	/// Collects all modifications without modifying original syntax tree
 	/// </summary>
-	class BqlRewritingPlanner : BqlRewritingPlannerBase
+	class BqlRewriter : BqlRewriterBase
 	{
 		private readonly Stack<SyntaxTriviaList> _currentIndentation = new Stack<SyntaxTriviaList>();
 
-		public BqlRewritingPlanner(BqlContext context, SemanticModel semanticModel,
+		public BqlRewriter(BqlContext context, SemanticModel semanticModel,
 			SyntaxTriviaList endOfLineTrivia, SyntaxTriviaList indentationTrivia)
 			: base(context, semanticModel, endOfLineTrivia, indentationTrivia, SyntaxTriviaList.Empty)
 		{
 		}
 
 
-		public override void VisitGenericName(GenericNameSyntax node)
+		public override SyntaxNode VisitGenericName(GenericNameSyntax node)
 		{
 			INamedTypeSymbol typeSymbol = GetTypeSymbol(node);
 			INamedTypeSymbol constructedFromSymbol = typeSymbol?.ConstructedFrom; // get generic type
@@ -40,21 +40,22 @@ namespace PX.Analyzers.Vsix.Formatter
 				    || constructedFromSymbol.ImplementsInterface(Context.IBqlWhere)
 				    || constructedFromSymbol.ImplementsInterface(Context.IBqlOrderBy))
 				{
-					Set(node, NewLineAndIndentation(node));
+					node = WithNewLineAndIndentation(node);
 					withIndent = true;
 				}
 				else if (constructedFromSymbol.ImplementsInterface(Context.IBqlSortColumn))
 				{
-					Set(node, NewLineAndIndentation(node));
+					node = WithNewLineAndIndentation(node);
 				}
 			}
 			
 			if (withIndent) IncreaseCurrentIndentation();
-			base.VisitGenericName(node);
+			var result = base.VisitGenericName(node);
 			if (withIndent) DecreaseCurrentIndentation();
+			return result;
 		}
 
-		public override void VisitIdentifierName(IdentifierNameSyntax node)
+		public override SyntaxNode VisitIdentifierName(IdentifierNameSyntax node)
 		{
 			SyntaxNode topParent = node.Parent?.Parent; // IdentifierNameSyntax -> TypeArgumentSyntaxList -> GenericNameSyntax
 			if (topParent != null)
@@ -62,7 +63,7 @@ namespace PX.Analyzers.Vsix.Formatter
 				if (topParent.IsKind(SyntaxKind.InvocationExpression)) // static Select
 				{
 					IncreaseCurrentIndentation();
-					Set(node, NewLineAndIndentation(node));
+					node = WithNewLineAndIndentation(node);
 					DecreaseCurrentIndentation();
 				}
 				else
@@ -76,16 +77,16 @@ namespace PX.Analyzers.Vsix.Formatter
 						    || constructedFromSymbol.ImplementsInterface(Context.IBqlSelect)
 						    || constructedFromSymbol.ImplementsInterface(Context.IBqlSearch)) // TODO: could be Coalesce - handle this case in the future
 						{
-							Set(node, NewLineAndIndentation(node));
+							node = WithNewLineAndIndentation(node);
 						}
 					}
 				}
 			}
 
-			base.VisitIdentifierName(node);
+			return base.VisitIdentifierName(node);
 		}
 
-		public override void VisitVariableDeclarator(VariableDeclaratorSyntax node)
+		public override SyntaxNode VisitVariableDeclarator(VariableDeclaratorSyntax node)
 		{
 			// Move BQL View field name to a new line and indent it
 			var parentNode = node.Parent as VariableDeclarationSyntax;
@@ -100,21 +101,22 @@ namespace PX.Analyzers.Vsix.Formatter
 					&& constructedFromSymbol.InheritsFromOrEquals(Context.PXSelectBase))
 				{
 					IncreaseCurrentIndentation();
-					Set(node, NewLineAndIndentation(node));
+					node = WithNewLineAndIndentation(node);
 					DecreaseCurrentIndentation();
 				}
 			}
 
-			base.VisitVariableDeclarator(node);
+			return base.VisitVariableDeclarator(node);
 		}
 
-		private SyntaxTriviaList NewLineAndIndentation(SyntaxNode node)
+		private T WithNewLineAndIndentation<T>(T node)
+			where T : SyntaxNode
 		{
 			SyntaxTriviaList defaultTrivia = GetDefaultLeadingTrivia(node);
 			SyntaxTriviaList currentTrivia = GetCurrentIndentationTrivia(node);
 			SyntaxTriviaList newTrivia = EndOfLineTrivia.AddRange(defaultTrivia.AddRange(currentTrivia));
 			
-			return newTrivia;
+			return node.WithLeadingTrivia(newTrivia);
 		}
 
 		private SyntaxTriviaList GetDefaultLeadingTrivia(SyntaxNode node)
