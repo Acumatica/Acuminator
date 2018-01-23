@@ -25,6 +25,22 @@ namespace PX.Analyzers.Test
 		[EmbeddedFileData(@"BQL\Raw\SearchInAttribute.cs", @"BQL\Formatted\SearchInAttribute.cs")]
 		public void FormatDocument(string text, string expected)
 		{
+			string actual = Format(text);
+			Normalize(actual).Should().Be(Normalize(expected));
+		}
+
+		[Theory]
+		[EmbeddedFileData(@"BQL\Formatted\View.cs")]
+		[EmbeddedFileData(@"BQL\Formatted\StaticCall.cs")]
+		[EmbeddedFileData(@"BQL\Formatted\SearchInAttribute.cs")]
+		public void ShouldNotDoubleFormat(string expected)
+		{
+			string actual = Format(expected);
+			Normalize(actual).Should().Be(Normalize(expected));
+		}
+
+		private string Format(string text)
+		{
 			Document document = CreateDocument(text);
 			SyntaxNode syntaxRoot = document.GetSyntaxRootAsync().Result;
 			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
@@ -33,7 +49,7 @@ namespace PX.Analyzers.Test
 			formattedNode = formattedNode.WithAdditionalAnnotations(Formatter.Annotation);
 			string actual = formattedNode.ToFullString();
 
-			Normalize(actual).Should().Be(Normalize(expected));
+			return actual;
 		}
 
 		private string Normalize(string text)
