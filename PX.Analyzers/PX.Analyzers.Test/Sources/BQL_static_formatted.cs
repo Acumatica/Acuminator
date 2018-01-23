@@ -9,14 +9,17 @@ namespace PX.Objects.SO
 {
 	public class SOOrderEntry : PXGraph<SOOrderEntry>
 	{
-		public PXSelect<SOOrder> OpenSalesOrders;
+		public PXSelect<
+			SOOrder> 
+			OpenSalesOrders;
 
 		public IEnumerable openSalesorders()
 		{
 			PXSelect<
 				SOOrder, 
 				Where<SOOrder.orderType, Equal<SalesOrder>, And<SOOrder.status, Equal<Open>>>, 
-				OrderBy<Asc<SOOrder.orderNbr>>>
+				OrderBy<
+					Asc<SOOrder.orderNbr>>>
 				.Select(this);
 		}
 	}
