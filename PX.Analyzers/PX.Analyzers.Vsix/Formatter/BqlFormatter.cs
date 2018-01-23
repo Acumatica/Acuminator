@@ -31,11 +31,8 @@ namespace PX.Analyzers.Vsix.Formatter
 
 		public SyntaxNode Format(SyntaxNode syntaxRoot, SemanticModel semanticModel)
 		{
-			var planner = new BqlRewritingPlanner(new BqlContext(semanticModel.Compilation), semanticModel,
+			var rewriter = new BqlRewriter(new BqlContext(semanticModel.Compilation), semanticModel,
 				EndOfLineTrivia, IndentationTrivia);
-			planner.Visit(syntaxRoot);
-			
-			var rewriter = new LeadingTriviaRewriter(planner.Result);
 			return rewriter.Visit(syntaxRoot);
 		}
 	}
