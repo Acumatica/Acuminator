@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -33,7 +34,7 @@ namespace PX.Analyzers.Vsix.Formatter
 				}
 				else if (constructedFromSymbol.ImplementsInterface(Context.IBqlSortColumn))
 				{
-					Set(node, NewLineAndIndentation(node, 2));
+					Set(node, NewLineAndIndentation(node));
 				}
 			}
 
@@ -87,7 +88,11 @@ namespace PX.Analyzers.Vsix.Formatter
 
 		private SyntaxTriviaList NewLineAndIndentation(SyntaxNode node, int indentLength = 1)
 		{
-			SyntaxTriviaList newTrivia = EndOfLineTrivia.AddRange(GetDefaultLeadingTrivia(node));
+			SyntaxTriviaList prevTrivia = GetCurrentIndentationTrivia(node);
+			if (!prevTrivia.Any())
+				prevTrivia = GetDefaultLeadingTrivia(node);
+
+			SyntaxTriviaList newTrivia = EndOfLineTrivia.AddRange(prevTrivia);
 
 			for (int i = 0; i < indentLength; i++)
 			{
@@ -109,6 +114,22 @@ namespace PX.Analyzers.Vsix.Formatter
 			}
 
 			return GetDefaultLeadingTrivia(node.Parent);
+		}
+
+		private SyntaxTriviaList GetCurrentIndentationTrivia(SyntaxNode node)
+		{
+			if (node == null) return SyntaxTriviaList.Empty;
+
+			SyntaxNode parent = node.Parent;
+			SyntaxTriviaList trivia;
+			while (parent != null)
+			{
+				if (Result.TryGetValue(parent, out trivia))
+					return SyntaxTriviaList.Empty.AddRange(trivia.Where(t => t.IsKind(SyntaxKind.WhitespaceTrivia)));
+				parent = parent.Parent;
+			}
+
+			return SyntaxTriviaList.Empty;
 		}
 	}
 }
