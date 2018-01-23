@@ -9,9 +9,10 @@ namespace PX.Analyzers.Vsix.Formatter
 		protected SyntaxTriviaList EndOfLineTrivia { get; }
 		protected SyntaxTriviaList IndentationTrivia { get; }
 		protected SyntaxTriviaList DefaultLeadingTrivia { get; }
-		
+		protected SyntaxTriviaList IndentedDefaultTrivia => DefaultLeadingTrivia.AddRange(IndentationTrivia);
+
 		protected BqlContext Context { get; }
-		private SemanticModel _semanticModel;
+		private readonly SemanticModel _semanticModel;
 		
 		protected BqlRewriterBase(BqlContext context, SemanticModel semanticModel,
 			SyntaxTriviaList endOfLineTrivia, SyntaxTriviaList indentationTrivia, SyntaxTriviaList defaultLeadingTrivia)
@@ -28,38 +29,23 @@ namespace PX.Analyzers.Vsix.Formatter
 				  parent.EndOfLineTrivia, parent.IndentationTrivia, defaultLeadingTrivia)
 		{
 		}
-
-		//public override SyntaxNode Visit(SyntaxNode node)
-		//{
-		//	if (node == null) return null;
-		//	SyntaxNode newNode = base.Visit(node);
-		//	if (newNode == null) return null;
-			
-		//	// update semantic model
-		//	if (!_semanticModel.Compilation.ContainsSyntaxTree(newNode.SyntaxTree))
-		//	{
-		//		Compilation newCompilation = _semanticModel.Compilation
-		//			.ReplaceSyntaxTree(node.SyntaxTree, newNode.SyntaxTree);
-		//		_semanticModel = newCompilation.GetSemanticModel(_semanticModel.SyntaxTree);
-		//	}
-
-		//	return newNode;
-		//}
-
+		
 		protected INamedTypeSymbol GetTypeSymbol(SyntaxNode node)
 		{
-			//if (!_semanticModel.Compilation.ContainsSyntaxTree(node.SyntaxTree))
-			//{
-			//	Compilation newCompilation = _semanticModel.Compilation
-			//		.ReplaceSyntaxTree(_semanticModel.SyntaxTree, node.SyntaxTree);
-			//	_semanticModel = newCompilation.GetSemanticModel(node.SyntaxTree);
-			//}
-
-			//return _semanticModel.GetTypeInfo(node).Type as INamedTypeSymbol;
-
 			return _semanticModel
 				.GetSpeculativeTypeInfo(_semanticModel.SyntaxTree.Length, node, SpeculativeBindingOption.BindAsExpression)
 				.Type as INamedTypeSymbol;
+		}
+
+		protected T OnNewLineAndIndented<T>(T node)
+			where T : SyntaxNode
+		{
+			return node?.WithLeadingTrivia(EndOfLineTrivia.AddRange(DefaultLeadingTrivia).AddRange(IndentationTrivia));
+		}
+
+		protected SyntaxToken OnNewLineAndIndented(SyntaxToken token)
+		{
+			return token.WithLeadingTrivia(EndOfLineTrivia.AddRange(DefaultLeadingTrivia).AddRange(IndentationTrivia));
 		}
 	}
 }
