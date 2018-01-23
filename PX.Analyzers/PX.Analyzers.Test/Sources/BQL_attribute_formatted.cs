@@ -34,7 +34,8 @@ namespace PX.Objects.SO
 
 		#region BAccountID
 		[PXDBInt]
-		[PXSelector(typeof(Search<BAccount.bAccountID, Where<BAccount.bAccountID, Equal<Current<SOOrder.bAccountID>>>>))]
+		[PXSelector(typeof(Search<BAccount.bAccountID, 
+			Where<BAccount.bAccountID, Equal<Current<SOOrder.bAccountID>>>>))]
 		public int? BAccountID { get; set; }
 		public abstract class bAccountID : IBqlField { }
 		#endregion
