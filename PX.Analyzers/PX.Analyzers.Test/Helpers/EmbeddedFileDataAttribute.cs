@@ -26,6 +26,7 @@ namespace PX.Analyzers.Test.Helpers
 		private static string ReadFile(string fileName)
 		{
 			var assembly = Assembly.GetExecutingAssembly();
+			fileName = fileName?.Replace('\\', '.');
 			using (var stream = assembly.GetManifestResourceStream($"PX.Analyzers.Test.Sources.{fileName}"))
 			{
 				if (stream != null)
