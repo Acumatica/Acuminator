@@ -18,6 +18,7 @@ namespace PX.Analyzers.Vsix.Formatter
 
 		public INamedTypeSymbol Where2 => _compilation.GetTypeByMetadataName(typeof(Where2<,>).FullName);
 
+		public INamedTypeSymbol IBqlCreator => _compilation.GetTypeByMetadataName(typeof(IBqlCreator).FullName);
 		public INamedTypeSymbol IBqlSelect => _compilation.GetTypeByMetadataName(typeof(IBqlSelect).FullName);
 		public INamedTypeSymbol IBqlSearch => _compilation.GetTypeByMetadataName(typeof(IBqlSearch).FullName);
 		public INamedTypeSymbol IBqlJoin => _compilation.GetTypeByMetadataName(typeof(IBqlJoin).FullName);
