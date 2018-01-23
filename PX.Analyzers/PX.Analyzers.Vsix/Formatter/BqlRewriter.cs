@@ -34,14 +34,28 @@ namespace PX.Analyzers.Vsix.Formatter
 			return base.VisitGenericName(node);
 		}
 
+		public override SyntaxNode VisitVariableDeclaration(VariableDeclarationSyntax node)
+		{
+			var defaultTrivia = GetDefaultLeadingTrivia(node);
+			var newNode = (VariableDeclarationSyntax) base.VisitVariableDeclaration(node);
+
+			if (newNode != node)
+			{
+				var childRewriter = new BqlViewDeclarationRewriter(this, defaultTrivia);
+				newNode = (VariableDeclarationSyntax) childRewriter.Visit(newNode);
+			}
+
+			return newNode;
+		}
+
 		private SyntaxTriviaList GetDefaultLeadingTrivia(SyntaxNode node)
 		{
 			if (node == null) return SyntaxTriviaList.Empty;
 
 			if (node.HasLeadingTrivia &&
-				(node.IsKind(SyntaxKind.FieldDeclaration) // View
-				|| node.IsKind(SyntaxKind.AttributeList) // BQL in attribute
-				|| node.IsKind(SyntaxKind.SimpleMemberAccessExpression))) // Static call
+			    (node.IsKind(SyntaxKind.FieldDeclaration) // View
+			     || node.IsKind(SyntaxKind.AttributeList) // BQL in attribute
+			     || node.IsKind(SyntaxKind.SimpleMemberAccessExpression))) // Static call
 			{
 				return node.GetLeadingTrivia();
 			}
