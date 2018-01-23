@@ -127,8 +127,7 @@ namespace PX.Analyzers.Vsix.Formatter
 			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
 
 			SyntaxNode first;
-			Span replacementSpan;
-
+			
 			bool hasSelection = textView.Selection.IsActive && !textView.Selection.IsEmpty;
 			bool isReversed = hasSelection && textView.Selection.IsReversed;
 
@@ -136,13 +135,11 @@ namespace PX.Analyzers.Vsix.Formatter
 			{
 				SnapshotPoint start = textView.Selection.Start.Position;
 				SnapshotPoint end = textView.Selection.End.Position;
-				replacementSpan = Span.FromBounds(start, end);
 
 				first = syntaxRoot.FindNode(Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(start, end));
 			}
 			else
 			{
-				replacementSpan = Span.FromBounds(0, textView.TextSnapshot.Length);
 				first = syntaxRoot;
 			}
 
@@ -152,6 +149,7 @@ namespace PX.Analyzers.Vsix.Formatter
 			if (!textView.TextBuffer.EditInProgress)
 			{
 				string newText = formattedNode.ToFullString();
+				Span replacementSpan = Span.FromBounds(first.FullSpan.Start, first.FullSpan.End);
 				var snapshot = textView.TextBuffer.Replace(replacementSpan, formattedNode.ToFullString());
 				if (hasSelection) // restore selection
 				{
