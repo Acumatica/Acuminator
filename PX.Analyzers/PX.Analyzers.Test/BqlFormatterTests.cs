@@ -20,34 +20,34 @@ namespace PX.Analyzers.Test
 		private readonly BqlFormatter _formatter = new BqlFormatter(EndOfLine, true, 4, 4);
 
 		[Theory]
-		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Raw\View.cs", @"BQL\Formatted\View.cs")]
-		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Raw\StaticCall.cs", @"BQL\Formatted\StaticCall.cs")]
-		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Raw\SearchInAttribute.cs", @"BQL\Formatted\SearchInAttribute.cs")]
-		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Raw\View_JoinWhere2.cs", @"BQL\Formatted\View_JoinWhere2.cs")]
-		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Raw\View_MultipleJoins.cs", @"BQL\Formatted\View_MultipleJoins.cs")]
-		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Raw\View_Complex.cs", @"BQL\Formatted\View_Complex.cs")]
-		public void FormatDocument(string common, string text, string expected)
+		[EmbeddedFileData(@"BQL\Raw\View.cs", @"BQL\Formatted\View.cs")]
+		[EmbeddedFileData(@"BQL\Raw\StaticCall.cs", @"BQL\Formatted\StaticCall.cs")]
+		[EmbeddedFileData(@"BQL\Raw\SearchInAttribute.cs", @"BQL\Formatted\SearchInAttribute.cs")]
+		[EmbeddedFileData(@"BQL\Raw\View_JoinWhere2.cs", @"BQL\Formatted\View_JoinWhere2.cs")]
+		[EmbeddedFileData(@"BQL\Raw\View_MultipleJoins.cs", @"BQL\Formatted\View_MultipleJoins.cs")]
+		[EmbeddedFileData(@"BQL\Raw\View_Complex.cs", @"BQL\Formatted\View_Complex.cs")]
+		public void FormatDocument(string text, string expected)
 		{
-			string actual = Format(common, text);
+			string actual = Format(text);
 			Normalize(actual).Should().Be(Normalize(expected));
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Formatted\View.cs")]
-		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Formatted\StaticCall.cs")]
-		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Formatted\SearchInAttribute.cs")]
-		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Formatted\View_JoinWhere2.cs")]
-		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Formatted\View_MultipleJoins.cs")]
-		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Formatted\View_Complex.cs")]
-		public void ShouldNotDoubleFormat(string common, string expected)
+		[EmbeddedFileData(@"BQL\Formatted\View.cs")]
+		[EmbeddedFileData(@"BQL\Formatted\StaticCall.cs")]
+		[EmbeddedFileData(@"BQL\Formatted\SearchInAttribute.cs")]
+		[EmbeddedFileData(@"BQL\Formatted\View_JoinWhere2.cs")]
+		[EmbeddedFileData(@"BQL\Formatted\View_MultipleJoins.cs")]
+		[EmbeddedFileData(@"BQL\Formatted\View_Complex.cs")]
+		public void ShouldNotDoubleFormat(string expected)
 		{
-			string actual = Format(common, expected);
+			string actual = Format(expected);
 			Normalize(actual).Should().Be(Normalize(expected));
 		}
 
-		private string Format(string common, string text)
+		private string Format(string text)
 		{
-			Document document = CreateCSharpDocument(text, common);
+			Document document = CreateDocument(text);
 			SyntaxNode syntaxRoot = document.GetSyntaxRootAsync().Result;
 			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
 			SyntaxNode formattedNode = _formatter.Format(syntaxRoot, semanticModel);
