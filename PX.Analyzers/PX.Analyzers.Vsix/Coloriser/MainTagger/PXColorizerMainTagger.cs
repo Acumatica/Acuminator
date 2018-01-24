@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
+using PX.Analyzers.Vsix.Utilities;
 
 namespace PX.Analyzers.Coloriser
 {
