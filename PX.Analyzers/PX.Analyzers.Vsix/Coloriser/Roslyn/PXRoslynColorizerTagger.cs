@@ -19,6 +19,8 @@ namespace PX.Analyzers.Coloriser
 {
     public partial class PXRoslynColorizerTagger : PXColorizerTaggerBase
     {
+        protected internal override bool UseAsyncTagging => true;
+
         public override TaggerType TaggerType => TaggerType.Roslyn;
 
         //private bool isParsed;
@@ -69,24 +71,13 @@ namespace PX.Analyzers.Coloriser
         //    }
         //}
 
-        public override IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
-        {           
-            if (spans == null || spans.Count == 0 || !Provider.Package.ColoringEnabled)
-                return Enumerable.Empty<ITagSpan<IClassificationTag>>();
-
-            
-            //if (isParsed)
-            //    return TagsList;
-
-            if (CheckIfRetaggingIsNotNecessary(spans[0].Snapshot))
-                return TagsList;
-
-            ResetCacheAndFlags(spans[0].Snapshot);          
-            GetTagsFromSnapshot(spans);
+        internal override IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot)
+        {
+            GetTagsFromSnapshot(snapshot);
             return TagsList;
         }
 
-        private void GetTagsFromSnapshot(NormalizedSnapshotSpanCollection spans)
+        private void GetTagsFromSnapshot(ITextSnapshot snapshot)
         {
             Task<ParsedDocument> getDocumentTask = ParsedDocument.Resolve(Buffer, Cache);
 
