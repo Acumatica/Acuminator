@@ -7,6 +7,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using PX.Analyzers.Vsix.Utilities;
 
 
 namespace PX.Analyzers.Coloriser

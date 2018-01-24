@@ -1,10 +1,12 @@
-﻿using Microsoft.VisualStudio.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
-using System;
-using System.Collections.Generic;
 using PX.Analyzers.Vsix.Utilities;
-using System.Linq;
+
+
 
 namespace PX.Analyzers.Coloriser
 {
@@ -32,7 +34,7 @@ namespace PX.Analyzers.Coloriser
     /// <summary>
     /// A colorizer tagger base class.
     /// </summary>
-    public abstract class PXColorizerTaggerBase : ITagger<IClassificationTag>, IDisposable
+    public abstract partial class PXColorizerTaggerBase : ITagger<IClassificationTag>, IDisposable
     {
 #pragma warning disable CS0067
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
@@ -96,11 +98,6 @@ namespace PX.Analyzers.Coloriser
             return UseAsyncTagging 
                 ? GetTagsAsync(snapshot)
                 : GetTagsSynchronousImplementation(snapshot);          
-        }
-
-        protected virtual IEnumerable<ITagSpan<IClassificationTag>> GetTagsAsync(ITextSnapshot snapshot)
-        {
-
         }
 
         internal abstract IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot);
