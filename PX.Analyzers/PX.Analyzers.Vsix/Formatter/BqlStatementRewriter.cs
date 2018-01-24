@@ -26,37 +26,36 @@ namespace PX.Analyzers.Vsix.Formatter
 		public override SyntaxNode VisitGenericName(GenericNameSyntax node)
 		{
 			INamedTypeSymbol typeSymbol = GetTypeSymbol(node);
-			INamedTypeSymbol constructedFromSymbol = typeSymbol?.ConstructedFrom; // get generic type
+			INamedTypeSymbol originalSymbol = typeSymbol?.OriginalDefinition; // get generic type
 
-			if (constructedFromSymbol != null)
+			if (originalSymbol != null)
 			{
 				// Move first table declaration to a new line and indent it
-				if (constructedFromSymbol.InheritsFromOrEquals(Context.PXSelectBase)
-				    || constructedFromSymbol.ImplementsInterface(Context.IBqlSelect)
-				    || constructedFromSymbol.ImplementsInterface(Context.IBqlSearch)) // TODO: could be Coalesce - handle this case in the future
+				if (originalSymbol.InheritsFromOrEqualsGeneric(Context.PXSelectBase)
+				    || originalSymbol.ImplementsInterface(Context.IBqlSelect)
+				    || originalSymbol.ImplementsInterface(Context.IBqlSearch)) // TODO: could be Coalesce - handle this case in the future
 				{
 					var childRewriter = new BqlFirstTableRewriter(this, DefaultLeadingTrivia);
 					node = (GenericNameSyntax) childRewriter.Visit(node);
 				}
 
 				// Each time we see one of this statements, increase indent and move statement to new line
-				if (constructedFromSymbol.ImplementsInterface(Context.IBqlWhere)
-				    || constructedFromSymbol.ImplementsInterface(Context.IBqlOrderBy)
-					|| constructedFromSymbol.InheritsFromOrEquals(Context.Aggregate))
+				if (originalSymbol.ImplementsInterface(Context.IBqlWhere)
+				    || originalSymbol.ImplementsInterface(Context.IBqlOrderBy))
 				{
-					var newNode = OnNewLineAndIndented(node);
-					var childRewriter = new BqlStatementRewriter(this, IndentedDefaultTrivia);
-					return newNode.WithTypeArgumentList((TypeArgumentListSyntax) childRewriter.Visit(newNode.TypeArgumentList));
+					return RewriteGenericNode(node, new BqlStatementRewriter(this, IndentedDefaultTrivia));
 				}
 
 				// Each time we see one of this statements, move statement to new line
-				if (constructedFromSymbol.ImplementsInterface(Context.IBqlJoin)
-					|| constructedFromSymbol.ImplementsInterface(Context.IBqlSortColumn)
-					|| constructedFromSymbol.ImplementsInterface(Context.IBqlFunction))
+				if (originalSymbol.ImplementsInterface(Context.IBqlJoin)
+					|| originalSymbol.ImplementsInterface(Context.IBqlSortColumn))
 				{
-					var newNode = OnNewLineAndIndented(node);
-					var childRewriter = new BqlStatementRewriter(this, DefaultLeadingTrivia);
-					return newNode.WithTypeArgumentList((TypeArgumentListSyntax) childRewriter.Visit(newNode.TypeArgumentList));
+					return RewriteGenericNode(node, new BqlStatementRewriter(this, DefaultLeadingTrivia));
+				}
+
+				if (originalSymbol.InheritsFromOrEqualsGeneric(Context.Aggregate))
+				{
+					return RewriteGenericNode(node, new BqlAggregateRewriter(this, IndentedDefaultTrivia));
 				}
 			}
 
