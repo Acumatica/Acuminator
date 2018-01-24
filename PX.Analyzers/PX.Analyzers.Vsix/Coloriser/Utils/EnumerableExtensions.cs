@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 using System.Diagnostics;
 using System.Linq;
 
-namespace PX.Analyzers.Coloriser
+
+
+namespace PX.Analyzers.Vsix.Utilities
 {
     internal static class EnumerableExtensions
     {
+        [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
         {
             source.ThrowOnNull(nameof(source));
@@ -18,10 +22,18 @@ namespace PX.Analyzers.Coloriser
             // perf optimization. try to not use enumerator if possible
             switch (source)
             {
-                case IList<T> list:
-                    for (int i = 0, count = list.Count; i < count; i++)
+                case T[] array:
+                    Array.ForEach(array, action);
+                    return;
+
+                case List<T> list:
+                    list.ForEach(action);
+                    return;
+                
+                case IList<T> iList:
+                    for (int i = 0; i < iList.Count; i++)
                     {
-                        action(list[i]);
+                        action(iList[i]);
                     }
 
                     return;
@@ -31,10 +43,12 @@ namespace PX.Analyzers.Coloriser
                         action(value);
                     }
 
-                    break;
+                    return;
             }                    
         }
 
+        [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source, IEqualityComparer<T> comparer = null)
         {
             source.ThrowOnNull(nameof(source));
@@ -43,8 +57,12 @@ namespace PX.Analyzers.Coloriser
                 : new HashSet<T>(source);
         }
 
+        [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsEmpty<T>(this IEnumerable<T> source)
         {
+            source.ThrowOnNull(nameof(source));
+
             switch (source)
             {
                 case IReadOnlyCollection<T> readOnlyCollection:
@@ -53,30 +71,60 @@ namespace PX.Analyzers.Coloriser
                     return genericCollection.Count == 0;
                 case ICollection collection:
                     return collection.Count == 0;
-                default:
-                    string str = source as string;
-                    return str != null
-                        ? str.Length == 0
-                        : !source.Any();
+                case string str:
+                    return str.Length == 0;
+                default:                                      
+                    return !source.Any();
             }
         }
 
-        public static bool IsEmpty<T>(this IReadOnlyCollection<T> source) => source.Count == 0;    
-        
-        public static bool IsEmpty<T>(this ICollection<T> source) => source.Count == 0;
-      
-        public static bool IsEmpty(this string source) => source.Length == 0;
-        
-        /// <remarks>
-        /// This method is necessary to avoid an ambiguity between <see cref="IsEmpty{T}(IReadOnlyCollection{T})"/> and <see cref="IsEmpty{T}(ICollection{T})"/>.
-        /// </remarks>
-        public static bool IsEmpty<T>(this T[] source) => source.Length == 0;
-        
-        /// <remarks>
-        /// This method is necessary to avoid an ambiguity between <see cref="IsEmpty{T}(IReadOnlyCollection{T})"/> and <see cref="IsEmpty{T}(ICollection{T})"/>.
-        /// </remarks>
-        public static bool IsEmpty<T>(this List<T> source) => source.Count == 0;
-               
-        public static bool IsNullOrEmpty<T>(this IEnumerable<T> source) => source == null ? true : source.IsEmpty();     
+        [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsEmpty<T>(this IReadOnlyCollection<T> source)
+        {
+            source.ThrowOnNull(nameof(source));
+
+            return source.Count == 0;
+        }
+
+        [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsEmpty<T>(this ICollection<T> source)
+        {
+            source.ThrowOnNull(nameof(source));
+
+            return source.Count == 0;
+        }
+
+        [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsEmpty(this ICollection source)
+        {
+            source.ThrowOnNull(nameof(source));
+
+            return source.Count == 0;
+        }
+
+        [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T> source) => source == null ? true : source.IsEmpty();
+
+        [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> source)
+        {
+            source.ThrowOnNull(nameof(source));
+
+            return new ReadOnlyCollection<T>(source.ToList());
+        }
+
+        [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlyCollection<T> ToReadOnlyCollectionShallow<T>(this IList<T> list)
+        {
+            list.ThrowOnNull(nameof(list));
+
+            return new ReadOnlyCollection<T>(list);
+        }       
     }
 }

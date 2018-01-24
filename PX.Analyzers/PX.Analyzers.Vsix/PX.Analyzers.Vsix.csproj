@@ -57,6 +57,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <StartAction>Program</StartAction>
@@ -262,7 +263,7 @@
   <ItemGroup>
     <Compile Include="AcuminatorVSPackage.cs" />
     <Compile Include="Coloriser\AsyncTagging\AsyncTaggerSource.cs" />
-    <Compile Include="Coloriser\AsyncTagging\AsyncUtils\Extensions.cs" />
+    <Compile Include="Coloriser\Utils\EditorExtensions.cs" />
     <Compile Include="Coloriser\AsyncTagging\AsyncUtils\TagsCache.cs" />
     <Compile Include="Coloriser\AsyncTagging\Tagging\AsyncTagger.cs" />
     <Compile Include="Coloriser\AsyncTagging\AsyncUtils\EqualityUtility.cs" />
