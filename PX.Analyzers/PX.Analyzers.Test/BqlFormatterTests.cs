@@ -25,6 +25,7 @@ namespace PX.Analyzers.Test
 		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Raw\SearchInAttribute.cs", @"BQL\Formatted\SearchInAttribute.cs")]
 		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Raw\View_JoinWhere2.cs", @"BQL\Formatted\View_JoinWhere2.cs")]
 		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Raw\View_MultipleJoins.cs", @"BQL\Formatted\View_MultipleJoins.cs")]
+		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Raw\View_Complex.cs", @"BQL\Formatted\View_Complex.cs")]
 		public void FormatDocument(string common, string text, string expected)
 		{
 			string actual = Format(common, text);
@@ -37,6 +38,7 @@ namespace PX.Analyzers.Test
 		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Formatted\SearchInAttribute.cs")]
 		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Formatted\View_JoinWhere2.cs")]
 		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Formatted\View_MultipleJoins.cs")]
+		[EmbeddedFileData(@"BQL\Common.cs", @"BQL\Formatted\View_Complex.cs")]
 		public void ShouldNotDoubleFormat(string common, string expected)
 		{
 			string actual = Format(common, expected);
