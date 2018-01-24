@@ -57,17 +57,17 @@ namespace PX.Analyzers.Vsix.Formatter
 			return base.VisitGenericName(node);
 		}
 
-		public override SyntaxNode VisitVariableDeclaration(VariableDeclarationSyntax node)
+		public override SyntaxNode VisitFieldDeclaration(FieldDeclarationSyntax node)
 		{
 			using (new WithDefaultTriviaFrom(this, node))
 			{
-				var newNode = (VariableDeclarationSyntax) base.VisitVariableDeclaration(node);
+				var newNode = (FieldDeclarationSyntax) base.VisitFieldDeclaration(node);
 
 				if (newNode != node)
 				{
 					// Using rewriter because there might be multiple declarators
 					var childRewriter = new BqlViewDeclarationRewriter(this, DefaultLeadingTrivia);
-					newNode = (VariableDeclarationSyntax) childRewriter.Visit(newNode);
+					newNode = (FieldDeclarationSyntax) childRewriter.Visit(newNode);
 				}
 
 				return newNode;
