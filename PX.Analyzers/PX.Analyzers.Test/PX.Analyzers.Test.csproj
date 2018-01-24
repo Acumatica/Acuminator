@@ -167,6 +167,8 @@
     <EmbeddedResource Include="Sources\BQL\Formatted\View_JoinWhere2.cs" />
     <EmbeddedResource Include="Sources\BQL\Raw\View_MultipleJoins.cs" />
     <EmbeddedResource Include="Sources\BQL\Formatted\View_MultipleJoins.cs" />
+    <EmbeddedResource Include="Sources\BQL\Raw\View_Complex.cs" />
+    <EmbeddedResource Include="Sources\BQL\Formatted\View_Complex.cs" />
     <Compile Include="StartRowResetForPagingTests.cs" />
     <Compile Include="InheritanceFromPXCacheExtensionTests.cs" />
     <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtension_Bad.cs" />
