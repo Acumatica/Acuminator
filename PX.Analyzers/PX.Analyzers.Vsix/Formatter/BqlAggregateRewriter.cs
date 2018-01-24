@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Linq;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PX.Analyzers.Utilities;
 
@@ -6,6 +7,8 @@ namespace PX.Analyzers.Vsix.Formatter
 {
 	class BqlAggregateRewriter : BqlRewriterBase
 	{
+		private readonly INamedTypeSymbol _currentType;
+
 		public BqlAggregateRewriter(BqlRewriterBase parent, SyntaxTriviaList defaultLeadingTrivia) 
 			: base(parent, defaultLeadingTrivia)
 		{
@@ -18,14 +21,27 @@ namespace PX.Analyzers.Vsix.Formatter
 
 			if (originalSymbol != null)
 			{
+				INamedTypeSymbol currentType = null;
 				if (originalSymbol.InheritsFromOrEqualsGeneric(Context.GroupByBase))
 				{
-					return RewriteGenericNode(node, new BqlAggregateRewriter(this, IndentedDefaultTrivia));
+					currentType = Context.GroupByBase;
+				}
+				else if (originalSymbol.ImplementsInterface(Context.IBqlFunction))
+				{
+					currentType = Context.IBqlFunction;
 				}
 
-				if (originalSymbol.ImplementsInterface(Context.IBqlFunction))
-				{
-					return RewriteGenericNode(node, new BqlAggregateRewriter(this, DefaultLeadingTrivia));
+				if (currentType != null)
+				{ 
+					SyntaxTriviaList trivia = DefaultLeadingTrivia;
+					if (node.TypeArgumentList.Arguments.Count > 1) // GroupBy node changes for AggregateFunction (Min / Max / etc.)
+					{
+						INamedTypeSymbol nextParam = GetTypeSymbol(node.TypeArgumentList.Arguments[1])?.OriginalDefinition;
+						if (nextParam != null && !nextParam.InheritsFromOrEqualsGeneric(currentType, true))
+							trivia = IndentedDefaultTrivia;
+					}
+					
+					return RewriteGenericNode(node, new BqlAggregateRewriter(this, trivia));
 				}
 			}
 

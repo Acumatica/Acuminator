@@ -71,12 +71,16 @@ namespace PX.Analyzers.Utilities
         public static bool InheritsFromOrEquals(
             this ITypeSymbol type, ITypeSymbol baseType, bool includeInterfaces)
         {
-            if (!includeInterfaces)
+	        if (type == null) throw new ArgumentNullException(nameof (type));
+	        if (baseType == null) throw new ArgumentNullException(nameof (baseType));
+
+	        var typeList = type.GetBaseTypesAndThis();
+            if (includeInterfaces)
             {
-                return InheritsFromOrEquals(type, baseType);
+	            typeList = typeList.Concat(type.AllInterfaces);
             }
 
-            return type.GetBaseTypesAndThis().Concat(type.AllInterfaces).Any(t => t.Equals(baseType));
+            return typeList.Any(t => t.Equals(baseType));
         }
 
         // Determine if "type" inherits from "baseType", ignoring constructed types and interfaces, dealing
@@ -90,8 +94,22 @@ namespace PX.Analyzers.Utilities
 	    public static bool InheritsFromOrEqualsGeneric(
 		    this ITypeSymbol type, ITypeSymbol baseType)
 	    {
-		    return type.GetBaseTypesAndThis().Select(t => t.OriginalDefinition)
-				.Any(t => t.Equals(baseType.OriginalDefinition));
+		    return InheritsFromOrEqualsGeneric(type, baseType, false);
+	    }
+
+	    public static bool InheritsFromOrEqualsGeneric(
+		    this ITypeSymbol type, ITypeSymbol baseType, bool includeInterfaces)
+	    {
+		    if (type == null) throw new ArgumentNullException(nameof (type));
+		    if (baseType == null) throw new ArgumentNullException(nameof (baseType));
+
+		    var typeList = type.GetBaseTypesAndThis();
+		    if (includeInterfaces)
+			    typeList = typeList.Concat(type.AllInterfaces);
+
+			return typeList
+				.Select(t => t.OriginalDefinition)
+			    .Any(t => t.Equals(baseType.OriginalDefinition));
 	    }
 	}
 }
