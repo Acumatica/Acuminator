@@ -4,11 +4,13 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using EditorUtils.Implementation.Utilities;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
+using PX.Analyzers.Vsix.Utilities;
 
-namespace EditorUtils.Implementation.Tagging
+
+
+namespace PX.Analyzers.Coloriser.AsyncTagging
 {
     internal sealed partial class AsyncTagger<TData, TTag> : ITagger<TTag>, IDisposable
         where TTag : ITag

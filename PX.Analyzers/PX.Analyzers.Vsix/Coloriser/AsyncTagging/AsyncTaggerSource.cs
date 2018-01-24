@@ -5,12 +5,13 @@ using System.Threading;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
+using PX.Analyzers.Vsix.Utilities;
 
 
 
 namespace PX.Analyzers.Coloriser.AsyncTagging
 {
-    public abstract class AsyncTaggerSource<TData, TTag> : IAsyncTaggerSource<TData, TTag>
+    public abstract class AsyncTaggerSource<TData, TTag> 
         where TTag : ITag
     {
         private readonly ITextView _textViewOptional;

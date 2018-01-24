@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
+using PX.Analyzers.Vsix.Utilities;
 using System.Linq;
 
 namespace PX.Analyzers.Coloriser
