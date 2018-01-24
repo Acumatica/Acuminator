@@ -76,7 +76,7 @@ namespace PX.Analyzers.Utilities
                 return InheritsFromOrEquals(type, baseType);
             }
 
-            return type.GetBaseTypesAndThis().Concat(type.AllInterfaces).Contains(baseType);
+            return type.GetBaseTypesAndThis().Concat(type.AllInterfaces).Any(t => t.Equals(baseType));
         }
 
         // Determine if "type" inherits from "baseType", ignoring constructed types and interfaces, dealing
@@ -84,7 +84,14 @@ namespace PX.Analyzers.Utilities
         public static bool InheritsFromOrEquals(
             this ITypeSymbol type, ITypeSymbol baseType)
         {
-            return type.GetBaseTypesAndThis().Contains(baseType);
+            return type.GetBaseTypesAndThis().Any(t => t.Equals(baseType));
         }
-    }
+
+	    public static bool InheritsFromOrEqualsGeneric(
+		    this ITypeSymbol type, ITypeSymbol baseType)
+	    {
+		    return type.GetBaseTypesAndThis().Select(t => t.OriginalDefinition)
+				.Any(t => t.Equals(baseType.OriginalDefinition));
+	    }
+	}
 }
