@@ -7,7 +7,7 @@ using System.Collections;
 using PX.Analyzers.Vsix.Utilities;
 
 
-namespace PX.Analyzers.Coloriser.AsyncTagging
+namespace PX.Analyzers.Coloriser
 {
     internal class TagsCache<TTag> : IReadOnlyCollection<ITagSpan<TTag>>
     where TTag : ITag

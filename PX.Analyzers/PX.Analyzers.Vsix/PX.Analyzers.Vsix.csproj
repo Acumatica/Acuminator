@@ -49,6 +49,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <DebugType>pdbonly</DebugType>
@@ -262,12 +263,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AcuminatorVSPackage.cs" />
-    <Compile Include="Coloriser\AsyncTagging\AsyncTaggerSource.cs" />
     <Compile Include="Coloriser\AsyncTagging\PXColorizerTaggerBaseAsyncTagging.cs" />
     <Compile Include="Coloriser\Utils\EditorExtensions.cs" />
-    <Compile Include="Coloriser\AsyncTagging\AsyncUtils\TagsCache.cs" />
-    <Compile Include="Coloriser\AsyncTagging\Tagging\AsyncTagger.cs" />
-    <Compile Include="Coloriser\AsyncTagging\AsyncUtils\EqualityUtility.cs" />
+    <Compile Include="Coloriser\AsyncTagging\TagsCache.cs" />
     <Compile Include="Coloriser\BracesFormats.cs" />
     <Compile Include="Coloriser\ClassificationTypeDefinitions.cs" />
     <Compile Include="Coloriser\EditorFormats.cs" />

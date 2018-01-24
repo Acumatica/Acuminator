@@ -15,6 +15,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
+using PX.Analyzers.Vsix.Utilities;
+
 
 namespace PX.Analyzers.Coloriser
 {
