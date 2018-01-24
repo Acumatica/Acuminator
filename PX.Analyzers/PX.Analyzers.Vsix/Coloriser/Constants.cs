@@ -33,23 +33,23 @@ namespace PX.Analyzers.Coloriser
 
 	public static class Labels
 	{
-		public const string DacFormatLabel  = "NoBrains - DAC Name";
-		public const string DacFieldFormatLabel = "NoBrains - DAC Field Name";
-		public const string BQLParameterFormatLabel = "NoBrains - BQL parameters";
-		public const string BQLOperatorFormatLabel = "NoBrains - BQL operators";
-		public const string BQLConstantPrefixFormatLabel = "NoBrains - BQL constant - prefix";
-		public const string BQLConstantEndingFormatLabel = "NoBrains - BQL constant - ending";
+		public const string DacFormatLabel  = "Acuminator - DAC Name";
+		public const string DacFieldFormatLabel = "Acuminator - DAC Field Name";
+		public const string BQLParameterFormatLabel = "Acuminator - BQL parameters";
+		public const string BQLOperatorFormatLabel = "Acuminator - BQL operators";
+		public const string BQLConstantPrefixFormatLabel = "Acuminator - BQL constant - prefix";
+		public const string BQLConstantEndingFormatLabel = "Acuminator - BQL constant - ending";
 
-        public const string BraceLevel_1_FormatLabel = "NoBrains - BQL angle braces level 1";
-        public const string BraceLevel_2_FormatLabel = "NoBrains - BQL angle braces level 2";
-        public const string BraceLevel_3_FormatLabel = "NoBrains - BQL angle braces level 3";
+        public const string BraceLevel_1_FormatLabel = "Acuminator - BQL angle braces level 1";
+        public const string BraceLevel_2_FormatLabel = "Acuminator - BQL angle braces level 2";
+        public const string BraceLevel_3_FormatLabel = "Acuminator - BQL angle braces level 3";
 
-        public const string BraceLevel_4_FormatLabel = "NoBrains - BQL angle braces level 4";
-        public const string BraceLevel_5_FormatLabel = "NoBrains - BQL angle braces level 5";
-        public const string BraceLevel_6_FormatLabel = "NoBrains - BQL angle braces level 6";
+        public const string BraceLevel_4_FormatLabel = "Acuminator - BQL angle braces level 4";
+        public const string BraceLevel_5_FormatLabel = "Acuminator - BQL angle braces level 5";
+        public const string BraceLevel_6_FormatLabel = "Acuminator - BQL angle braces level 6";
 
-        public const string BraceLevel_7_FormatLabel = "NoBrains - BQL angle braces level 7";
-        public const string BraceLevel_8_FormatLabel = "NoBrains - BQL angle braces level 8";
-        public const string BraceLevel_9_FormatLabel = "NoBrains - BQL angle braces level 9";
+        public const string BraceLevel_7_FormatLabel = "Acuminator - BQL angle braces level 7";
+        public const string BraceLevel_8_FormatLabel = "Acuminator - BQL angle braces level 8";
+        public const string BraceLevel_9_FormatLabel = "Acuminator - BQL angle braces level 9";
     }
 }
