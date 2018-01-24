@@ -114,55 +114,66 @@ namespace PX.Analyzers.Vsix.Formatter
 		private void FormatButtonCallback(object sender, EventArgs e)
 		{
 			IWpfTextView textView = GetTextView();
-
-			int indentSize = textView.Options.GetOptionValue(DefaultOptions.IndentSizeOptionId);
-			int tabSize = textView.Options.GetOptionValue(DefaultOptions.TabSizeOptionId);
-			bool convertTabsToSpaces = textView.Options.GetOptionValue(DefaultOptions.ConvertTabsToSpacesOptionId);
-			string newLineCharacter = textView.Options.GetOptionValue(DefaultOptions.NewLineCharacterOptionId);
+			BqlFormatter formatter = CreateFormatter(textView);
 
 			SnapshotPoint caretPosition = textView.Caret.Position.BufferPosition;
 			Microsoft.CodeAnalysis.Document document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
 
 			SyntaxNode syntaxRoot = document.GetSyntaxRootAsync().Result;
 			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
-
-			SyntaxNode first;
+			SyntaxNode formattedRoot;
 			
-			bool hasSelection = textView.Selection.IsActive && !textView.Selection.IsEmpty;
-			bool isReversed = hasSelection && textView.Selection.IsReversed;
-
-			if (hasSelection)
+			if (textView.Selection.IsActive && !textView.Selection.IsEmpty) // if has selection
 			{
-				SnapshotPoint start = textView.Selection.Start.Position;
-				SnapshotPoint end = textView.Selection.End.Position;
+				// Find all nodes within the span and format them
+				var selectionSpan = Microsoft.CodeAnalysis.Text.TextSpan
+					.FromBounds(textView.Selection.Start.Position, textView.Selection.End.Position);
 
-				first = syntaxRoot.FindNode(Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(start, end));
+				SyntaxNode topNode = syntaxRoot.FindNode(selectionSpan); // can, return top node that intersects with selectionSpan, so we need SpanWalker here
+				if (topNode == null) return; // nothing to format (e.g. selection contains only trivia)
+				
+				var spanWalker = new SpanWalker(selectionSpan);
+				spanWalker.Visit(topNode);
+				if (spanWalker.NodesWithinSpan.Count == 0) return;
+
+				formattedRoot = syntaxRoot.ReplaceNodes(spanWalker.NodesWithinSpan, (o, r) => formatter.Format(o, semanticModel));
 			}
 			else
 			{
-				first = syntaxRoot;
+				formattedRoot = formatter.Format(syntaxRoot, semanticModel);
 			}
-
-			var formatter = new BqlFormatter(newLineCharacter, !convertTabsToSpaces, tabSize, indentSize);
-			SyntaxNode formattedNode = formatter.Format(first, semanticModel);
-
+			
 			if (!textView.TextBuffer.EditInProgress)
 			{
-				string newText = formattedNode.ToFullString();
-				Span replacementSpan = Span.FromBounds(first.FullSpan.Start, first.FullSpan.End);
-				var snapshot = textView.TextBuffer.Replace(replacementSpan, formattedNode.ToFullString());
-				if (hasSelection) // restore selection
-				{
-					textView.Selection.Select(new SnapshotSpan(snapshot, replacementSpan.Start, newText.Length), isReversed);
-				}
-
-				// Restore caret position
-				SnapshotPoint newCaretPosition = caretPosition.TranslateTo(snapshot, PointTrackingMode.Positive);
-				textView.Caret.MoveTo(newCaretPosition);
-				// TODO: change caret position restoration to more accurate implementation
+				var formattedDocument = document.WithSyntaxRoot(formattedRoot);
+				ApplyChanges(document, formattedDocument);
 			}
 		}
 
+		private void ApplyChanges(Microsoft.CodeAnalysis.Document oldDocument, Microsoft.CodeAnalysis.Document newDocument)
+		{
+			if (oldDocument == null) throw new ArgumentNullException(nameof (oldDocument));
+			if (newDocument == null) throw new ArgumentNullException(nameof (newDocument));
+
+			var workspace = oldDocument.Project?.Solution?.Workspace;
+			var newSolution = newDocument.Project?.Solution;
+			if (workspace != null && newSolution != null)
+			{
+				workspace.TryApplyChanges(newSolution);
+			}
+		}
+
+		private BqlFormatter CreateFormatter(IWpfTextView textView)
+		{
+			if (textView == null) throw new ArgumentNullException(nameof (textView));
+
+			int indentSize = textView.Options.GetOptionValue(DefaultOptions.IndentSizeOptionId);
+			int tabSize = textView.Options.GetOptionValue(DefaultOptions.TabSizeOptionId);
+			bool convertTabsToSpaces = textView.Options.GetOptionValue(DefaultOptions.ConvertTabsToSpacesOptionId);
+			string newLineCharacter = textView.Options.GetOptionValue(DefaultOptions.NewLineCharacterOptionId);
+
+			return new BqlFormatter(newLineCharacter, !convertTabsToSpaces, tabSize, indentSize);
+		}
 
 		private IWpfTextView GetTextView()
 		{
