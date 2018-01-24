@@ -39,16 +39,20 @@ namespace PX.Analyzers.Vsix.Formatter
 					node = (GenericNameSyntax) childRewriter.Visit(node);
 				}
 
+				// Each time we see one of this statements, increase indent and move statement to new line
 				if (constructedFromSymbol.ImplementsInterface(Context.IBqlWhere)
-				    || constructedFromSymbol.ImplementsInterface(Context.IBqlOrderBy))
+				    || constructedFromSymbol.ImplementsInterface(Context.IBqlOrderBy)
+					|| constructedFromSymbol.InheritsFromOrEquals(Context.Aggregate))
 				{
 					var newNode = OnNewLineAndIndented(node);
 					var childRewriter = new BqlStatementRewriter(this, IndentedDefaultTrivia);
 					return newNode.WithTypeArgumentList((TypeArgumentListSyntax) childRewriter.Visit(newNode.TypeArgumentList));
 				}
 
+				// Each time we see one of this statements, move statement to new line
 				if (constructedFromSymbol.ImplementsInterface(Context.IBqlJoin)
-					|| constructedFromSymbol.ImplementsInterface(Context.IBqlSortColumn))
+					|| constructedFromSymbol.ImplementsInterface(Context.IBqlSortColumn)
+					|| constructedFromSymbol.ImplementsInterface(Context.IBqlFunction))
 				{
 					var newNode = OnNewLineAndIndented(node);
 					var childRewriter = new BqlStatementRewriter(this, DefaultLeadingTrivia);

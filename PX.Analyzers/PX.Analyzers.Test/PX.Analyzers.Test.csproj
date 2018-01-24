@@ -168,6 +168,8 @@
     <EmbeddedResource Include="Sources\BQL\Formatted\View_MultipleJoins.cs" />
     <EmbeddedResource Include="Sources\BQL\Raw\View_Complex.cs" />
     <EmbeddedResource Include="Sources\BQL\Formatted\View_Complex.cs" />
+    <EmbeddedResource Include="Sources\BQL\Raw\StaticCall_GroupBy.cs" />
+    <EmbeddedResource Include="Sources\BQL\Formatted\StaticCall_GroupBy.cs" />
     <Compile Include="StartRowResetForPagingTests.cs" />
     <Compile Include="InheritanceFromPXCacheExtensionTests.cs" />
     <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtension_Bad.cs" />

@@ -9,7 +9,9 @@ namespace PX.Objects
 {
 	public class SOOrderEntry : PXGraph<SOOrderEntry>
 	{
-		public PXSelect<SupplierProduct> Products;
+		public PXSelect<
+			SupplierProduct> 
+			Products;
 
 		public IEnumerable products()
 		{
@@ -21,9 +23,9 @@ namespace PX.Objects
 						Avg<SupplierProduct.supplierPrice,
 						Min<SupplierProduct.minOrderQty,
 						Max<SupplierProduct.lastPurchaseDate>>>>>,
-					OrderBy<
-						Asc<SupplierProduct.productID,
-						Asc<SupplierProduct.supplierID>>>>
+				OrderBy<
+					Asc<SupplierProduct.productID,
+					Asc<SupplierProduct.supplierID>>>>
 				.Select(this);
 			return filteredProducts;
 		}
