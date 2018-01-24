@@ -18,7 +18,11 @@ namespace PX.Analyzers.Coloriser
 
         public override TaggerType TaggerType => TaggerType.RegEx;
 
-        private readonly ConcurrentBag<ITagSpan<IClassificationTag>> tags = new ConcurrentBag<ITagSpan<IClassificationTag>>();
+        private readonly TagsCacheSync<IClassificationTag> tagsCache = new TagsCacheSync<IClassificationTag>();
+
+        protected internal override ITagsCache<IClassificationTag> TagsCache => tagsCache;
+
+        private readonly ConcurrentBag<ITagSpan<IClassificationTag>> tagsBag = new ConcurrentBag<ITagSpan<IClassificationTag>>();
 		
         internal PXRegexColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider aProvider, bool subscribeToSettingsChanges, 
                                         bool useCacheChecking) :
@@ -29,14 +33,14 @@ namespace PX.Analyzers.Coloriser
         internal override IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot)
         {
             GetTagsFromSnapshot(snapshot);
-            TagsList.AddRange(tags);
-            return TagsList;
+            tagsCache.AddTags(tagsBag);
+            return TagsCache;
         }
 
         protected internal override void ResetCacheAndFlags(ITextSnapshot newCache)
         {
             base.ResetCacheAndFlags(newCache);
-            tags.Clear();
+            tagsBag.Clear();
         }
 
         private void GetTagsFromSnapshot(ITextSnapshot newSnapshot)
@@ -90,7 +94,7 @@ namespace PX.Analyzers.Coloriser
 			Span span = new Span(offset, selectOp.Length);
 			SnapshotSpan snapshotSpan = new SnapshotSpan(newSnapshot, span);
 			var tag = new TagSpan<IClassificationTag>(snapshotSpan, new ClassificationTag(Provider.BqlOperatorType));
-			tags.Add(tag);
+			tagsBag.Add(tag);
 		}
 
 		private void GetBqlParameterTags(ITextSnapshot newSnapshot, string bqlCommand, int offset)
@@ -149,7 +153,7 @@ namespace PX.Analyzers.Coloriser
 			Span span = new Span(startIndex, tagContent.Length);
 			SnapshotSpan snapshotSpan = new SnapshotSpan(newSnapshot, span);
 			var tag = new TagSpan<IClassificationTag>(snapshotSpan, new ClassificationTag(classType));
-			tags.Add(tag);
+			tagsBag.Add(tag);
 		}
 	}
 }

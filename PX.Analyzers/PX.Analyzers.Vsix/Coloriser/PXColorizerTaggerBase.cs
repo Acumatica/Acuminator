@@ -44,24 +44,19 @@ namespace PX.Analyzers.Coloriser
 
         protected PXColorizerTaggerProvider Provider { get; }
 
-        protected ITextSnapshot Cache { get; private set; }
+        protected ITextSnapshot Snapshot { get; private set; }
 
         protected bool ColoringSettingsChanged { get; private set; }
 
         protected bool SubscribedToSettingsChanges { get; private set; }
-
-        protected internal abstract bool UseAsyncTagging { get; }
-
-
+       
         private readonly bool cacheCheckingEnabled;
 
         /// <summary>
         /// The type of the tagger.
         /// </summary>      
         public abstract TaggerType TaggerType { get; }
-
-        protected List<ITagSpan<IClassificationTag>> TagsList { get; } = new List<ITagSpan<IClassificationTag>>();
-        
+            
         protected PXColorizerTaggerBase(ITextBuffer buffer, PXColorizerTaggerProvider aProvider, bool subscribeToSettingsChanges, 
                                         bool useCacheChecking)
         {
@@ -83,25 +78,7 @@ namespace PX.Analyzers.Coloriser
                 }
             }
         }
-
-        public virtual IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
-        {
-            if (spans == null || spans.Count == 0 || !Provider.Package.ColoringEnabled)
-                return Enumerable.Empty<ITagSpan<IClassificationTag>>();
-
-            ITextSnapshot snapshot = spans[0].Snapshot;
-
-            if (CheckIfRetaggingIsNotNecessary(snapshot))
-                return TagsList;
-
-            ResetCacheAndFlags(snapshot);
-            return UseAsyncTagging 
-                ? GetTagsAsync(snapshot)
-                : GetTagsSynchronousImplementation(snapshot);          
-        }
-
-        internal abstract IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot);
-
+            
         private void ColoringSettingChangedHandler(object sender, Vsix.SettingChangedEventArgs e)
         {
             ColoringSettingsChanged = true;
@@ -118,24 +95,11 @@ namespace PX.Analyzers.Coloriser
         protected internal virtual void ResetCacheAndFlags(ITextSnapshot newCache)
         {
             ColoringSettingsChanged = false;
-            TagsList.Clear();
-            Cache = newCache;
+            TagsCache.Reset();
+            Snapshot = newCache;
         }
 
         protected virtual bool CheckIfRetaggingIsNotNecessary(ITextSnapshot snapshot) =>
-            cacheCheckingEnabled && Cache != null && Cache == snapshot && !ColoringSettingsChanged;
-        
-        public virtual void Dispose()
-        {
-            if (!SubscribedToSettingsChanges)
-                return;
-
-            var genOptionsPage = Provider.Package?.GeneralOptionsPage;
-
-            if (genOptionsPage != null)
-            {
-                genOptionsPage.ColoringSettingChanged -= ColoringSettingChangedHandler;
-            }
-        }
+            cacheCheckingEnabled && Snapshot != null && Snapshot == snapshot && !ColoringSettingsChanged;
     }
 }

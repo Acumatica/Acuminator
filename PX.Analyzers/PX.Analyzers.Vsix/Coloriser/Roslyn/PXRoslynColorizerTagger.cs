@@ -23,6 +23,8 @@ namespace PX.Analyzers.Coloriser
 
         public override TaggerType TaggerType => TaggerType.Roslyn;
 
+        protected internal override ITagsCache<IClassificationTag> TagsCache { get; } = new TagsCacheAsync<IClassificationTag>();
+
         //private bool isParsed;
         //private ParsedDocument documentCache;
         //private volatile static int walking;
@@ -74,12 +76,12 @@ namespace PX.Analyzers.Coloriser
         internal override IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot)
         {
             GetTagsFromSnapshot(snapshot);
-            return TagsList;
+            return TagsCache;
         }
 
         private void GetTagsFromSnapshot(ITextSnapshot snapshot)
         {
-            Task<ParsedDocument> getDocumentTask = ParsedDocument.Resolve(Buffer, Cache);
+            Task<ParsedDocument> getDocumentTask = ParsedDocument.Resolve(Buffer, Snapshot);
 
             if (getDocumentTask == null)    // Razor cshtml returns a null document for some reason.        
                 return;

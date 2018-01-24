@@ -28,7 +28,18 @@ namespace PX.Analyzers.Coloriser
                     : false;
             }
         }
-    
+
+        protected internal override ITagsCache<IClassificationTag> TagsCache
+        {
+            get
+            {
+                TaggerType currentTaggerType = GetCurrentTaggerTypeFromSettings();
+                return taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase tagger)
+                    ? tagger.TagsCache
+                    : throw new NotSupportedException($"Tagger type {currentTaggerType} not supported");
+            }
+        }
+
         public PXColorizerMainTagger(ITextBuffer buffer, PXColorizerTaggerProvider aProvider, bool subscribeToSettingsChanges, 
                                      bool useCacheChecking) :
                                 base(buffer, aProvider, subscribeToSettingsChanges, useCacheChecking)
@@ -55,10 +66,10 @@ namespace PX.Analyzers.Coloriser
 
             if (!tags.IsNullOrEmpty())
             {
-                TagsList.AddRange(tags);
+                TagsCache.AddRange(tags);
             }
 
-            return TagsList;
+            return TagsCache;
         }
 
         public override void Dispose()

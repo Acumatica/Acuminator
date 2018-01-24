@@ -263,9 +263,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AcuminatorVSPackage.cs" />
+    <Compile Include="Coloriser\AsyncTagging\Interfaces\ITagsCache.cs" />
     <Compile Include="Coloriser\AsyncTagging\PXColorizerTaggerBaseAsyncTagging.cs" />
+    <Compile Include="Coloriser\AsyncTagging\TagsCacheSync.cs" />
     <Compile Include="Coloriser\Utils\EditorExtensions.cs" />
-    <Compile Include="Coloriser\AsyncTagging\TagsCache.cs" />
+    <Compile Include="Coloriser\AsyncTagging\TagsCacheAsync.cs" />
     <Compile Include="Coloriser\BracesFormats.cs" />
     <Compile Include="Coloriser\ClassificationTypeDefinitions.cs" />
     <Compile Include="Coloriser\EditorFormats.cs" />
