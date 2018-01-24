@@ -20,9 +20,10 @@ namespace PX.Objects
 				InnerJoin<Supplier, On<Supplier.supplierID, Equal<SupplierProduct.supplierID>>>,
 				Aggregate<
 					GroupBy<SupplierProduct.productID,
+					GroupBy<SupplierProduct.supplierID,
 						Avg<SupplierProduct.supplierPrice,
 						Min<SupplierProduct.minOrderQty,
-						Max<SupplierProduct.lastPurchaseDate>>>>>,
+						Max<SupplierProduct.lastPurchaseDate>>>>>>,
 				OrderBy<
 					Asc<SupplierProduct.productID,
 					Asc<SupplierProduct.supplierID>>>>
