@@ -16,17 +16,19 @@ namespace PX.Analyzers.Vsix.Formatter
 		class WithDefaultTriviaFrom : IDisposable
 		{
 			private readonly BqlRewriter _parent;
+			private readonly SyntaxTriviaList _previous;
 
 			public WithDefaultTriviaFrom(BqlRewriter parent, SyntaxNode node)
 			{
 				if (node == null) throw new ArgumentNullException(nameof (node));
 				_parent = parent ?? throw new ArgumentNullException(nameof (parent));
+				_previous = _parent._defaultLeadingTrivia;
 				_parent._defaultLeadingTrivia = parent.GetDefaultLeadingTrivia(node);
 			}
 
 			public void Dispose()
 			{
-				_parent._defaultLeadingTrivia = SyntaxTriviaList.Empty;
+				_parent._defaultLeadingTrivia = _previous;
 			}
 		}
 
