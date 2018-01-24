@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace PX.Analyzers.Vsix.Formatter
 {
@@ -45,6 +46,15 @@ namespace PX.Analyzers.Vsix.Formatter
 			SyntaxToken previousToken = node.GetFirstToken().GetPreviousToken();
 			SyntaxTriviaList trivia = GetNewLineAndIndentedTrivia(previousToken);
 			return node.WithLeadingTrivia(trivia);
+		}
+
+		/// <summary>
+		/// Moves node to a new line, indents it and visit it using provided rewriter.
+		/// </summary>
+		protected SyntaxNode RewriteGenericNode(GenericNameSyntax node, BqlRewriterBase rewriter)
+		{
+			var newNode = OnNewLineAndIndented(node);
+			return newNode.WithTypeArgumentList((TypeArgumentListSyntax)rewriter.Visit(newNode.TypeArgumentList));
 		}
 
 		protected SyntaxToken OnNewLineAndIndented(SyntaxToken token)

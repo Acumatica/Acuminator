@@ -42,11 +42,11 @@ namespace PX.Analyzers.Vsix.Formatter
 		public override SyntaxNode VisitGenericName(GenericNameSyntax node)
 		{
 			INamedTypeSymbol typeSymbol = GetTypeSymbol(node);
-			INamedTypeSymbol constructedFromSymbol = typeSymbol?.ConstructedFrom; // get generic type
+			INamedTypeSymbol originalSymbol = typeSymbol?.OriginalDefinition; // get generic type
 			
-			if (constructedFromSymbol != null 
-				&& (constructedFromSymbol.InheritsFromOrEquals(Context.PXSelectBase) 
-					|| constructedFromSymbol.ImplementsInterface(Context.IBqlCreator)))
+			if (originalSymbol != null 
+				&& (originalSymbol.InheritsFromOrEqualsGeneric(Context.PXSelectBase) 
+					|| originalSymbol.ImplementsInterface(Context.IBqlCreator)))
 			{
 				// First case is for complete statement (view declaration, PXSelect, etc.), second is for partial BQL statement
 				var defaultTrivia = DefaultLeadingTrivia.Any() ? DefaultLeadingTrivia : GetDefaultLeadingTrivia(node);
