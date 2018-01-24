@@ -162,7 +162,6 @@
     <EmbeddedResource Include="Sources\BQL\Formatted\StaticCall.cs" />
     <EmbeddedResource Include="Sources\BQL\Raw\SearchInAttribute.cs" />
     <EmbeddedResource Include="Sources\BQL\Formatted\SearchInAttribute.cs" />
-    <EmbeddedResource Include="Sources\BQL\Common.cs" />
     <EmbeddedResource Include="Sources\BQL\Raw\View_JoinWhere2.cs" />
     <EmbeddedResource Include="Sources\BQL\Formatted\View_JoinWhere2.cs" />
     <EmbeddedResource Include="Sources\BQL\Raw\View_MultipleJoins.cs" />
