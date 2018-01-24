@@ -276,10 +276,10 @@ namespace PX.Analyzers.Coloriser
 
             private void AddTag(TextSpan span, IClassificationType classificationType)
 			{
-				ITagSpan<IClassificationTag> tag = span.ToTagSpan(tagger.Cache, classificationType);
+				ITagSpan<IClassificationTag> tag = span.ToTagSpan(tagger.Snapshot, classificationType);
 
 				if (tag != null)
-					tagger.TagsList.Add(tag);
+					tagger.TagsCache.Add(tag);
 			}
 
             //private void AddTagAndCacheIt(string cachedText, string tagTypeName, TextSpan span, IClassificationType classificationType)

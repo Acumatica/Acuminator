@@ -9,11 +9,11 @@ using PX.Analyzers.Vsix.Utilities;
 
 namespace PX.Analyzers.Coloriser
 {
-    internal class TagsCache<TTag> : IReadOnlyCollection<ITagSpan<TTag>>
+    public class TagsCacheAsync<TTag> : ITagsCache<TTag>
     where TTag : ITag
     {
         private const int defaultCapacity = 64;
-        private const int defaultChunkSize = 50;
+        private const int defaultMaxChunkSize = 50;
       
         public bool IsCompleted { get; private set; }
 
@@ -24,7 +24,7 @@ namespace PX.Analyzers.Coloriser
 
         public int Count => ProcessedTags.Count;
 
-        public TagsCache(int? capacity = null)
+        public TagsCacheAsync(int? capacity = null)
         {
             resultTagsList = new List<ITagSpan<TTag>>(capacity ?? defaultCapacity);
             ProcessedTags = resultTagsList.AsReadOnly();
@@ -34,7 +34,7 @@ namespace PX.Analyzers.Coloriser
         {
             int counter = 0;
 
-            while (tagsQueue.TryDequeue(out ITagSpan<TTag> tag) && counter < defaultChunkSize)
+            while (tagsQueue.TryDequeue(out ITagSpan<TTag> tag) && counter < defaultMaxChunkSize)
             {
                 resultTagsList.Add(tag);
                 counter++;
