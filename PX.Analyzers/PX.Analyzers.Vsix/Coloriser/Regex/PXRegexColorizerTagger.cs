@@ -13,6 +13,8 @@ namespace PX.Analyzers.Coloriser
 {
 	internal class PXRegexColorizerTagger : PXColorizerTaggerBase
 	{
+        protected internal override bool UseAsyncTagging => false;
+
         public override TaggerType TaggerType => TaggerType.RegEx;
 
         private readonly ConcurrentBag<ITagSpan<IClassificationTag>> tags = new ConcurrentBag<ITagSpan<IClassificationTag>>();
@@ -23,21 +25,12 @@ namespace PX.Analyzers.Coloriser
 		{                    
 		}
 
-		public override IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
-		{
-			if (spans.Count == 0 || !Provider.Package.ColoringEnabled)
-			{
-				return Enumerable.Empty<ITagSpan<IClassificationTag>>();
-			}
-
-			if (CheckIfRetaggingIsNotNecessary(spans[0].Snapshot))
-				return TagsList;
-
-            ResetCacheAndFlags(spans[0].Snapshot);		
-			GetTagsFromSnapshot(Cache, spans);
-			TagsList.AddRange(tags);
-			return TagsList;
-		}
+        internal override IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot)
+        {
+            GetTagsFromSnapshot(snapshot);
+            TagsList.AddRange(tags);
+            return TagsList;
+        }
 
         protected internal override void ResetCacheAndFlags(ITextSnapshot newCache)
         {
@@ -45,7 +38,7 @@ namespace PX.Analyzers.Coloriser
             tags.Clear();
         }
 
-        private void GetTagsFromSnapshot(ITextSnapshot newSnapshot, NormalizedSnapshotSpanCollection spans)
+        private void GetTagsFromSnapshot(ITextSnapshot newSnapshot)
 		{
 			string wholeText = newSnapshot.GetText();
             var matches = RegExpressions.BQLSelectCommandRegex

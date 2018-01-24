@@ -15,8 +15,19 @@ namespace PX.Analyzers.Coloriser
     {
         public override TaggerType TaggerType => TaggerType.General;
 
-        private readonly Dictionary<TaggerType, PXColorizerTaggerBase> taggersByType;      
+        private readonly Dictionary<TaggerType, PXColorizerTaggerBase> taggersByType;
 
+        protected internal override bool UseAsyncTagging
+        {
+            get
+            {
+                TaggerType currentTaggerType = GetCurrentTaggerTypeFromSettings();
+                return taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase tagger) 
+                    ? tagger.UseAsyncTagging
+                    : false;
+            }
+        }
+    
         public PXColorizerMainTagger(ITextBuffer buffer, PXColorizerTaggerProvider aProvider, bool subscribeToSettingsChanges, 
                                      bool useCacheChecking) :
                                 base(buffer, aProvider, subscribeToSettingsChanges, useCacheChecking)
@@ -31,22 +42,15 @@ namespace PX.Analyzers.Coloriser
                 { regexTagger.TaggerType, regexTagger }
             };
         }
-
-        public override IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
+      
+        internal override IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot)
         {
-            if (spans == null || spans.Count == 0 || !Provider.Package.ColoringEnabled)
-                return Enumerable.Empty<ITagSpan<IClassificationTag>>();
-            
-            if (CheckIfRetaggingIsNotNecessary(spans[0].Snapshot))
-                return TagsList;
-            
-            ResetCacheAndFlags(spans[0].Snapshot);
             TaggerType currentTaggerType = GetCurrentTaggerTypeFromSettings();
 
             if (!taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase activeTagger))
                 return Enumerable.Empty<ITagSpan<IClassificationTag>>();
 
-            var tags = activeTagger.GetTags(spans);
+            var tags = activeTagger.GetTagsSynchronousImplementation(snapshot);
 
             if (!tags.IsNullOrEmpty())
             {

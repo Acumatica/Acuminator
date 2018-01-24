@@ -48,6 +48,9 @@ namespace PX.Analyzers.Coloriser
 
         protected bool SubscribedToSettingsChanges { get; private set; }
 
+        protected internal abstract bool UseAsyncTagging { get; }
+
+
         private readonly bool cacheCheckingEnabled;
 
         /// <summary>
@@ -56,9 +59,7 @@ namespace PX.Analyzers.Coloriser
         public abstract TaggerType TaggerType { get; }
 
         protected List<ITagSpan<IClassificationTag>> TagsList { get; } = new List<ITagSpan<IClassificationTag>>();
-
-        public abstract IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans);
-
+        
         protected PXColorizerTaggerBase(ITextBuffer buffer, PXColorizerTaggerProvider aProvider, bool subscribeToSettingsChanges, 
                                         bool useCacheChecking)
         {
@@ -80,6 +81,29 @@ namespace PX.Analyzers.Coloriser
                 }
             }
         }
+
+        public virtual IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
+        {
+            if (spans == null || spans.Count == 0 || !Provider.Package.ColoringEnabled)
+                return Enumerable.Empty<ITagSpan<IClassificationTag>>();
+
+            ITextSnapshot snapshot = spans[0].Snapshot;
+
+            if (CheckIfRetaggingIsNotNecessary(snapshot))
+                return TagsList;
+
+            ResetCacheAndFlags(snapshot);
+            return UseAsyncTagging 
+                ? GetTagsAsync(snapshot)
+                : GetTagsSynchronousImplementation(snapshot);          
+        }
+
+        protected virtual IEnumerable<ITagSpan<IClassificationTag>> GetTagsAsync(ITextSnapshot snapshot)
+        {
+
+        }
+
+        internal abstract IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot);
 
         private void ColoringSettingChangedHandler(object sender, Vsix.SettingChangedEventArgs e)
         {

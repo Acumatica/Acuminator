@@ -755,7 +755,7 @@ namespace EditorUtils.Implementation.Tagging
             {
                 // Handle cancellation exceptions and everything else.  Don't want an errant 
                 // exception thrown by the IAsyncTaggerSource to crash the process
-                EditorUtilsTrace.TraceInfo("AsyncTagger Exception in background processing {0}", e);
+               
                 completeReason = CompleteReason.Error;
             }
 
