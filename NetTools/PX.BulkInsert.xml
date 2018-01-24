@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PX.BulkInsert</name>
+    </assembly>
+    <members>
+        <member name="M:PX.BulkInsert.DbmsMaintenance.InsertRestartMark">
+            <summary>
+            Inserts a mark for restarting multiple cluster nodes.
+            </summary>
+        </member>
+        <member name="T:PX.BulkInsert.SpecialUpgrade.UserReports.UserReportUpgrader">
+            <summary>
+            	<para>The <code>UserReportUpgrader</code> interface is a supplementary interface that you can use to make an Acumatica Framework application or
+            an Acumatica ERP add-on application update customized reports during the update to a newer version of the application or when an Acumatica ERP customization is
+            being published. By using classes that implement this interface, the system updates the XML versions of reports that are stored in the database with the latest
+            changes in data access classes (DACs). The interface is available under the <code>PX.BulkInsert.SpecialUpgrade.UserReports</code> namespace
+            of the <code>PX.BulkInsert.dll library</code>.</para>
+            </summary>
+        </member>
+        <member name="P:PX.BulkInsert.SpecialUpgrade.UserReports.UserReportUpgrader.MaxVersionToUpgradeFrom">
+            <summary>
+            	<para>Specifies the version of the class, which is the date when the class that implements the <code>UserReportUpgrader</code> interface was added. You specify the date as an int value with the <code>YYYYMMDD</code> format. 
+            	This property is used to identify the classes that can update a report. 
+            	For example, if the <code>MaxVersionToUpgradeFrom</code> property returns the value 20160713, which corresponds to July 13, 2016, 
+            	the class that provides this implementation of the <code>UserReportUpgrader</code> interface can be used to update the reports that were created earlier than July 13, 2016.</para>
+            	<para></para>
+            </summary>
+        </member>
+        <member name="P:PX.BulkInsert.SpecialUpgrade.UserReports.UserReportUpgrader.OrderNumber">
+            <summary>Specifies the order number of the class in the sequence of update classes. You can use this property to specify the order of classes to be used for update 
+            in case when <tt>MaxVersion</tt> values are equal for several implementations of <tt>UserReportUpgrader</tt> interface.
+            </summary>
+        </member>
+        <member name="M:PX.BulkInsert.SpecialUpgrade.UserReports.UserReportUpgrader.Upgrade(System.Xml.XmlElement)">
+            <summary>
+            	<para>Performs the update of a report. The method is called for a report that was created earlier than the date specified in the <code>MaxVersionToUpgradeFrom</code> property.</para>
+            	<para></para>
+            </summary>
+            <param name="entity">
+            	<para>A <code>System.XML.XmlElement</code> object that contains a report to be updated.</para>
+            </param>
+            <remarks>
+            	<para>To simplify a report update routine, you can create a class that implements the <code>PX.BulkInsert.SpecialUpgrade.UserReports.UserReportUpgrader</code> interface. This class should define:</para>
+            	<list type="bullet">
+            		<item>The version of the class, which is the date when the class was added (in the <code>MaxVersionToUpgradeFrom</code> property). This
+                version is used to identify the classes that can update a report.</item>
+            		<item>The order number of the class in the sequence of update classes (in the <code>OrderNumber</code> property).</item>
+            		<item>The actions that should be performed during update (in the <code>Upgrade()</code> method).</item>
+            	</list>
+            </remarks>
+            <returns>
+            	<para>The method returns a <code>System.XML.XmlElement</code> object that contains an updated report.</para>
+            </returns>
+            <example>
+            	<para></para>
+            	<code title="Example" description=" An example of the UserReportUpgrader interface implementation is shown in the following code. You can create this class in any part of your application’s project. " lang="CS">
+            using System;
+            using System.Collections.Generic;
+            using System.Linq;
+            using System.Text;
+            using System.Xml;
+             
+            namespace PX.BulkInsert.SpecialUpgrade.UserReports
+            {
+              public class So64101xUpgradeExample : UserReportUpgrader
+              {
+                public int MaxVersionToUpgradeFrom { get { return 20160713; } }
+                public int OrderNumber { get { return 1; } }
+             
+                public XmlElement Upgrade(XmlElement entity)
+                {
+                  //Make sure this is the right report
+                  bool found1 = false;
+                  foreach (XmlNode p in entity.GetElementsByTagName("ReportParameter"))
+                  {
+                    if (p.ChildNodes.OfType&lt;XmlNode&gt;()
+                         .Any(n =&gt; n.Name == "Name" &amp;&amp; n.InnerText == "BONbr"))
+                      found1 = true;
+                  }
+                  if (!found1)
+                    return null;
+             
+                  //Perform the update of the report
+                  ...
+                  entity.SetAttribute("version", "20160713");
+                  return entity;
+                }
+              }
+            }</code>
+            </example>
+        </member>
+    </members>
+</doc>

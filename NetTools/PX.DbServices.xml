@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PX.DbServices</name>
+    </assembly>
+    <members>
+        <member name="T:PX.DbServices.Model.ImportExport.Upgrade.XmlEntityUpgrader">
+            <summary>
+            <parap>
+            The <code>XmlEntityUpgrader</code> interface is a supplementary interface that you can use to make an Acumatica Framework application or an Acumatica ERP add-on application update entities in XML format 
+            (such as generic inquiries saved in XML format) when these entities are imported from XML to the application or when an 
+            Acumatica ERP customization is being published. By using classes that implement this interface, before the system imports XML entities to the database,
+            it updates the XML entities with the latest changes in data access classes (DACs). 
+            The interface is available under the <code>PX.DbServices.Model.ImportExport.Upgrade.XmlEntityUpgrader</code> namespace of the <code>PX.DbServices.dll</code> library.
+            You can find the list of forms for which XML import and export is supported in Acumatica ERP in the <code>/App_Data/XmlExportDefinitions</code> folder of your application.</parap>
+            </summary>
+        </member>
+        <member name="P:PX.DbServices.Model.ImportExport.Upgrade.XmlEntityUpgrader.MaxVersionToUpgradeFrom">
+            <summary>
+            Specifies the date when the class that implements the <code>XmlEntityUpgrader</code> interface was added. You specify the date as an int value with the <code>YYYYMMDD</code> format. 
+            This property is used to identify the classes that can update an entity. 
+            For example, if the <code>MaxVersionToUpgradeFrom</code> property returns the value 20160713, which corresponds to July 13, 2016, 
+            the class that provides this implementation of the XmlEntityUpgrader interface can be used to update the XML entities that were created earlier than July 13, 2016.
+            </summary>
+        </member>
+        <member name="P:PX.DbServices.Model.ImportExport.Upgrade.XmlEntityUpgrader.EntityNameToUpgrade">
+            <summary>
+            Specifies the name of the entity that this class can update. The name of the entity is the same as the file name of the corresponding XML export 
+            definition in the <code>App_Data/XmlExportDefinitions</code>/ folder of your application. For example, if your class updates generic inquiries that are imported from XML 
+            to the Generic Inquiry (SM.20.80.00) form, this property would return the string SM208000.
+            </summary>
+        </member>
+        <member name="P:PX.DbServices.Model.ImportExport.Upgrade.XmlEntityUpgrader.OrderNumber">
+            <summary>
+            Specifies the order number of the class in the sequence of update classes. You can use this property to specify the order of classes to be used for update.
+            </summary>
+        </member>
+        <member name="M:PX.DbServices.Model.ImportExport.Upgrade.XmlEntityUpgrader.Upgrade(PX.DbServices.Model.ImportExport.Upgrade.XmlEntityBeingUpgraded)">
+            <summary>
+            Performs the update of an XML entity. The method is called for the entity that has the name specified in the <code>EntityNameToUpgrade</code> property and that was created earlier than the date specified in the <code>MaxVersionToUpgradeFrom</code> property.
+            </summary>
+            <param name="entity">An <code>XmlEntityBeingUpgraded</code> object of the <code>PX.DbServices.Model.ImportExport.Upgrade</code> library that contains an entity to be updated</param>
+            <returns>The method returns a <code>bool</code> value that specifies whether the entity has been updated.</returns>
+        </member>
+        <member name="T:PX.DbServices.Model.ImportExport.Upgrade.XmlEntityBeingUpgraded">
+            <summary>
+            	<para>The <code>XmlEntityBeingUpgraded</code> class is a supplementary class that is used during the update of XML entities that are imported to an Acumatica Framework application or an Acumatica ERP add-on application. The class represents an XML entity to be upgraded. An object of this class is passed to the <code>XMLEntityUpgrader.Update()</code> method to update the corresponding entity.</para>
+            </summary>
+        </member>
+        <member name="F:PX.DbServices.Model.ImportExport.Upgrade.XmlEntityBeingUpgraded.Data">
+            <summary>
+            	<para>Contains an entity to be updated in the XML format as a <code>System.Xml.Lynq.XElement</code> object.</para>
+            </summary>
+        </member>
+        <member name="F:PX.DbServices.Model.ImportExport.Upgrade.XmlEntityBeingUpgraded.Template">
+            <summary>
+                <para>Contains a layout of lines in the XML representation of the entity as an object of the <code>PX.DbServices.Model.Schema.SchemaXmlLayout</code> class.</para>
+            </summary>
+        </member>
+        <member name="F:PX.DbServices.Model.ImportExport.Upgrade.XmlEntityBeingUpgraded.Layout">
+            <summary>
+            <para>Contains an XML export template, which includes the name and version of the database table that corresponds to the entity and describes the relations with related tables, as an object of the <code>PX.DbServices.Model.ImportExport.ExportTemplate</code> class.</para>
+            </summary>
+        </member>
+        <member name="M:PX.DbServices.Model.Entities.EntitiesComparer.compareIndices(PX.DbServices.Model.Entities.TableIndex,PX.DbServices.Model.Entities.TableIndex)">
+            			Compares two indices, while matching the position of all columns except the special ones (variable declared above)
+        </member>
+        <member name="M:PX.DbServices.Model.Entities.TableForeignKey.getImplementationOn(PX.DbServices.Model.Entities.TableHeader,PX.DbServices.Model.Entities.TableHeader)">
+            <summary> Get the way a FK should be implemented when parent and referenced table are like parameters passed. </summary>
+            <param name="refTable">Referenced Table</param>
+            <param name="parentTable">Parent Table - the one that normally holds the constraint</param>
+            <returns>Implementation method</returns>
+        </member>
+        <member name="T:PX.DbServices.Model.PXLockoutReason">
+            <summary> Defines reasons for a database lockout. </summary>
+        </member>
+        <member name="F:PX.DbServices.Model.PXLockoutReason.DatabaseLock">
+            <summary> Only the host that has done this lock has access to the database. </summary>
+        </member>
+        <member name="F:PX.DbServices.Model.PXLockoutReason.ScheduledLock">
+            <summary> Access denied for all except Administrators. </summary>
+            <remarks> Application lock from "Apply Updates" screen (Schedule Lockout). </remarks>
+        </member>
+        <member name="M:PX.DbServices.Points.DbmsBase.AcumaticaDbKeeperBase.makeForeignsCreationScript(System.Collections.Generic.IEnumerable{PX.DbServices.Commands.Ddl.ForeignKeyBeingAdjusted})">
+            <summary> Groups the commands that create foreign keys (which have to be implemented as triggers) per referenced tables. </summary>
+            <returns>Commands</returns>
+        </member>
+        <member name="F:PX.DbServices.Points.MsSql.MsSqlScripter.MAX_ROWS_IN_INSERT">
+            <summary>
+            Maximum number of rows in INSERT .. VALUES statement
+            </summary>
+        </member>
+        <member name="M:PX.DbServices.Points.MsSql.PointMsSqlServer.__giveAwayOpenConnection">
+            <summary>Get an open <c>SqlConnection</c> from this point.
+            <para><b>It is caller's responsibility to close and dispose this connection.</b></para>
+            </summary>
+        </member>
+        <member name="T:PX.DbServices.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:PX.DbServices.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:PX.DbServices.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="M:PX.DbServices.ZipArchive.FileNameExists(System.String)">
+            <summary>
+            Provides correct file name if it exists
+            </summary>
+            <param name="fileName">Name of requested file</param>
+            <returns>Returns name, or NULL if name is incorrect or file do not exits</returns>
+        </member>
+    </members>
+</doc>
