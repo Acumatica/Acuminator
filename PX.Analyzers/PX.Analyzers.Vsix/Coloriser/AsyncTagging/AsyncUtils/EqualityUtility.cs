@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace EditorUtils.Implementation.Utilities
+namespace PX.Analyzers.Vsix.Utilities
 {
     internal static class EqualityUtility
     {
