@@ -28,7 +28,7 @@ namespace PX.Analyzers.Coloriser
         /// </returns>
         protected virtual IEnumerable<ITagSpan<IClassificationTag>> GetTagsAsync(ITextSnapshot snapshot)
         {
-
+            throw new NotImplementedException();
         }     
     }
 }
