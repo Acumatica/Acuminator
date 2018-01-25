@@ -44,7 +44,7 @@ namespace PX.Analyzers.Coloriser
 
         protected PXColorizerTaggerProvider Provider { get; }
 
-        protected ITextSnapshot Snapshot { get; private set; }
+        protected internal ITextSnapshot Snapshot { get; private set; }
 
         protected bool ColoringSettingsChanged { get; private set; }
 
@@ -85,9 +85,7 @@ namespace PX.Analyzers.Coloriser
             RaiseTagsChanged();
         }
 
-        protected bool TagsChangedIsNull() => TagsChanged == null;
-
-        protected void RaiseTagsChanged() => TagsChanged?.Invoke(this, 
+        internal void RaiseTagsChanged() => TagsChanged?.Invoke(this, 
             new SnapshotSpanEventArgs(
                 new SnapshotSpan(Buffer.CurrentSnapshot,
                     new Span(0, Buffer.CurrentSnapshot.Length))));

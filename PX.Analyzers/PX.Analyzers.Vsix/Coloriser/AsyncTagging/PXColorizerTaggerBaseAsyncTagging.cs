@@ -21,9 +21,7 @@ namespace PX.Analyzers.Coloriser
     /// </content>
     public abstract partial class PXColorizerTaggerBase : ITagger<IClassificationTag>, IDisposable
     {
-        protected CancellationTokenSource cancellationTokenSource;
-
-        protected Task<IEnumerable<ITagSpan<IClassificationTag>>> TaggingTask;
+        public BackgroundTagging BackgroundTagging { get; protected set; }
 
         protected internal abstract ITagsCache<IClassificationTag> TagsCache { get; }
 
@@ -37,16 +35,22 @@ namespace PX.Analyzers.Coloriser
             ITextSnapshot snapshot = spans[0].Snapshot;
 
             if (CheckIfRetaggingIsNotNecessary(snapshot))
+            {
+                TagsCache.PersistIntermediateResult();
                 return TagsCache.ProcessedTags;
+            }
 
-            ResetCacheAndFlags(snapshot);
-            return UseAsyncTagging
-                ? GetTagsAsync(snapshot)
-                : GetTagsSynchronousImplementation(snapshot);
+            if (UseAsyncTagging)
+            {
+                return GetTagsAsync(snapshot);
+            }
+            else
+            {
+                ResetCacheAndFlags(snapshot);
+                return GetTagsSynchronousImplementation(snapshot);
+            }                      
         }
-
-        internal abstract IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot);
-
+       
         /// <summary>
         /// Gets the tags asynchronous in this collection.
         /// </summary>
@@ -56,12 +60,28 @@ namespace PX.Analyzers.Coloriser
         /// </returns>
         protected virtual IEnumerable<ITagSpan<IClassificationTag>> GetTagsAsync(ITextSnapshot snapshot)
         {
-            
+            if (BackgroundTagging != null)
+            {
+                BackgroundTagging.CancelTagging();   //Cancel currently running task
+                //BackgroundTagging.TaggingTask?.Wait();
+                BackgroundTagging = null;
+            }
+
+            ResetCacheAndFlags(snapshot);
+            BackgroundTagging = BackgroundTagging.StartBackgroundTagging(this);
+
+            return TagsCache.ProcessedTags;
         }
 
+        protected internal abstract IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot);
+
+        protected internal abstract Task<IEnumerable<ITagSpan<IClassificationTag>>> GetTagsAsyncImplementation(ITextSnapshot snapshot, 
+                                                                                                               CancellationToken cancellationToken);
 
         public virtual void Dispose()
         {
+            BackgroundTagging?.Dispose();
+
             if (!SubscribedToSettingsChanges)
                 return;
 

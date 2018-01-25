@@ -26,7 +26,11 @@ namespace PX.Analyzers.Coloriser
             resultTagsList = new List<ITagSpan<TTag>>(capacity ?? defaultCapacity);
             ProcessedTags = resultTagsList.AsReadOnly();
         }
-       
+
+        public void PersistIntermediateResult()
+        {            
+        }
+
         public void CompleteProcessing()
         {          
             IsCompleted = true;
@@ -50,6 +54,6 @@ namespace PX.Analyzers.Coloriser
         
         public IEnumerator<ITagSpan<TTag>> GetEnumerator() => ProcessedTags.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();       
     }
 }
