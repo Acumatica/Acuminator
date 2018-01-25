@@ -276,7 +276,6 @@
     <Compile Include="Coloriser\PXColorizerTaggerBase.cs" />
     <Compile Include="Coloriser\Regex\PXRegexColorizerTagger.cs" />
     <Compile Include="Coloriser\PXColorizerTaggerProvider.cs" />
-    <Compile Include="Coloriser\Utils\EditorExtensions.cs" />
     <Compile Include="Settings\SettingChangedEventArgs.cs" />
     <Compile Include="Settings\UI\GeneralOptionsPage.cs">
       <SubType>Component</SubType>
