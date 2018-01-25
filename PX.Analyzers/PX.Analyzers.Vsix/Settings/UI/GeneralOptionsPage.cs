@@ -11,8 +11,7 @@ namespace PX.Analyzers.Vsix
     {
         private const string AllSettings = "All"; 
 
-        private object syncLock = new object();
-        private bool colorSettingsChanged = false;
+        private bool colorSettingsChanged;
         public event EventHandler<SettingChangedEventArgs> ColoringSettingChanged;
         public const string PageTitle = "General";
 
@@ -52,10 +51,30 @@ namespace PX.Analyzers.Vsix
             }
         }
 
+        private bool useBqlOutlining = true;
+
+        [Category(AcuminatorVSPackage.SettingsCategoryName)]
+        [DisplayName("Use BQL Outlining")]
+        [Description("Use BQL outlining to collapse parts of BQL (works only with Roslyn coloring)")]
+        public bool UseBqlOutlining
+        {
+            get => useBqlOutlining;
+            set
+            {
+                if (useBqlOutlining != value)
+                {
+                    useBqlOutlining = value;
+                    colorSettingsChanged = true;
+                }
+            }
+        }
+
         public override void ResetSettings()
         {
             coloringEnabled = true;
             useRegexColoring = false;
+            useBqlOutlining = true;
+            colorSettingsChanged = false;
             base.ResetSettings();
             OnSettingsChanged(AllSettings);
         }
@@ -64,8 +83,9 @@ namespace PX.Analyzers.Vsix
         {
             base.SaveSettingsToStorage();
 
-            if (coloringEnabled)
+            if (colorSettingsChanged)
             {
+                colorSettingsChanged = false;
                 OnSettingsChanged(AllSettings);
             }
         }

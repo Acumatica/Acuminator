@@ -34,10 +34,35 @@ namespace PX.Analyzers.Coloriser
     /// <summary>
     /// A colorizer tagger base class.
     /// </summary>
-    public abstract partial class PXColorizerTaggerBase : ITagger<IClassificationTag>, IDisposable
+    public abstract partial class PXColorizerTaggerBase : ITagger<IClassificationTag>, ITagger<IOutliningRegionTag>, IDisposable
     {
 #pragma warning disable CS0067
-        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
+        private object eventSyncLock = new object();
+        private event EventHandler<SnapshotSpanEventArgs> tagsChangedDelegate;
+
+        event EventHandler<SnapshotSpanEventArgs> ITagger<IClassificationTag>.TagsChanged
+        {
+            add
+            {              
+                tagsChangedDelegate += value;             
+            }
+            remove
+            {              
+                tagsChangedDelegate -= value;            
+            }
+        }
+
+        event EventHandler<SnapshotSpanEventArgs> ITagger<IOutliningRegionTag>.TagsChanged
+        {
+            add
+            {
+                tagsChangedDelegate += value;
+            }
+            remove
+            {
+                tagsChangedDelegate -= value;
+            }
+        }
 #pragma warning restore CS0067
 
         protected ITextBuffer Buffer { get; }
@@ -85,7 +110,7 @@ namespace PX.Analyzers.Coloriser
             RaiseTagsChanged();
         }
 
-        internal void RaiseTagsChanged() => TagsChanged?.Invoke(this, 
+        internal void RaiseTagsChanged() => tagsChangedDelegate?.Invoke(this, 
             new SnapshotSpanEventArgs(
                 new SnapshotSpan(Buffer.CurrentSnapshot,
                     new Span(0, Buffer.CurrentSnapshot.Length))));
@@ -93,11 +118,12 @@ namespace PX.Analyzers.Coloriser
         protected internal virtual void ResetCacheAndFlags(ITextSnapshot newCache)
         {
             ColoringSettingsChanged = false;
-            TagsCache.Reset();
+            ClassificationTagsCache.Reset();
+            OutliningsTagsCache.Reset();
             Snapshot = newCache;
         }
 
         protected virtual bool CheckIfRetaggingIsNotNecessary(ITextSnapshot snapshot) =>
-            cacheCheckingEnabled && Snapshot != null && Snapshot == snapshot && !ColoringSettingsChanged;
+            cacheCheckingEnabled && Snapshot != null && Snapshot == snapshot && !ColoringSettingsChanged;      
     }
 }

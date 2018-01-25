@@ -286,6 +286,8 @@
     <Compile Include="Coloriser\AsyncTagging\PXColorizerTaggerBaseAsyncTagging.cs" />
     <Compile Include="Coloriser\AsyncTagging\BackgroundTagging.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheSync.cs" />
+    <Compile Include="Coloriser\Outlining\PXOutliningTaggerProvider.cs" />
+    <Compile Include="Coloriser\PXColorizerTaggerProviderBase.cs" />
     <Compile Include="Coloriser\Utils\EditorExtensions.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheAsync.cs" />
     <Compile Include="Coloriser\BracesFormats.cs" />
