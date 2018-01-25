@@ -5,6 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
+using PX.Analyzers.Vsix.Utilities;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PX.Analyzers.Coloriser
 {
@@ -15,7 +18,29 @@ namespace PX.Analyzers.Coloriser
     {
         public override TaggerType TaggerType => TaggerType.General;
 
-        private readonly Dictionary<TaggerType, PXColorizerTaggerBase> taggersByType;      
+        private readonly Dictionary<TaggerType, PXColorizerTaggerBase> taggersByType;
+
+        protected internal override bool UseAsyncTagging
+        {
+            get
+            {
+                TaggerType currentTaggerType = GetCurrentTaggerTypeFromSettings();
+                return taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase tagger) 
+                    ? tagger.UseAsyncTagging
+                    : false;
+            }
+        }
+
+        protected internal override ITagsCache<IClassificationTag> TagsCache
+        {
+            get
+            {
+                TaggerType currentTaggerType = GetCurrentTaggerTypeFromSettings();
+                return taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase tagger)
+                    ? tagger.TagsCache
+                    : throw new NotSupportedException($"Tagger type {currentTaggerType} not supported");
+            }
+        }
 
         public PXColorizerMainTagger(ITextBuffer buffer, PXColorizerTaggerProvider aProvider, bool subscribeToSettingsChanges, 
                                      bool useCacheChecking) :
@@ -25,6 +50,7 @@ namespace PX.Analyzers.Coloriser
                                                                              useCacheChecking: false);
             PXColorizerTaggerBase regexTagger = new PXRegexColorizerTagger(buffer, aProvider, subscribeToSettingsChanges: false, 
                                                                            useCacheChecking: false);
+
             taggersByType = new Dictionary<TaggerType, PXColorizerTaggerBase>(capacity: 2)
             {
                 { roslynTagger.TaggerType, roslynTagger },
@@ -32,28 +58,33 @@ namespace PX.Analyzers.Coloriser
             };
         }
 
-        public override IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
+        protected internal override IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot)
         {
-            if (spans == null || spans.Count == 0 || !Provider.Package.ColoringEnabled)
-                return Enumerable.Empty<ITagSpan<IClassificationTag>>();
-            
-            if (CheckIfRetaggingIsNotNecessary(spans[0].Snapshot))
-                return TagsList;
-            
-            ResetCacheAndFlags(spans[0].Snapshot);
             TaggerType currentTaggerType = GetCurrentTaggerTypeFromSettings();
 
             if (!taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase activeTagger))
                 return Enumerable.Empty<ITagSpan<IClassificationTag>>();
+                    
+            return activeTagger.GetTagsSynchronousImplementation(snapshot);
+        }
 
-            var tags = activeTagger.GetTags(spans);
+        protected internal override Task<IEnumerable<ITagSpan<IClassificationTag>>> GetTagsAsyncImplementation(ITextSnapshot snapshot, 
+                                                                                                               CancellationToken cancellationToken)
+        {
+            TaggerType currentTaggerType = GetCurrentTaggerTypeFromSettings();
 
-            if (!tags.IsNullOrEmpty())
+            if (!taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase activeTagger))
+                return Task.FromResult(Enumerable.Empty<ITagSpan<IClassificationTag>>());
+
+            if (activeTagger.UseAsyncTagging)
             {
-                TagsList.AddRange(tags);
+                return activeTagger.GetTagsAsyncImplementation(snapshot, cancellationToken);
             }
-
-            return TagsList;
+            else
+            {
+                var tags = activeTagger.GetTagsSynchronousImplementation(snapshot);
+                return Task.FromResult(tags);
+            }
         }
 
         public override void Dispose()
@@ -74,6 +105,6 @@ namespace PX.Analyzers.Coloriser
             return Provider.Package?.UseRegexColoring == true
                 ? TaggerType.RegEx
                 : TaggerType.Roslyn;
-        }
+        }       
     }
 }

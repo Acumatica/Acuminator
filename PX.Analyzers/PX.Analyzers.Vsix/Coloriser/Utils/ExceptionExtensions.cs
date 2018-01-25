@@ -2,12 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
+using System.Diagnostics;
 
-namespace PX.Analyzers.Coloriser
+
+
+namespace PX.Analyzers.Vsix.Utilities
 {
     public static class ExceptionExtensions
     {
+        [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ThrowOnNull<T>(this T obj, string parameter = null, string message = null)
         where T : class
         {
@@ -17,6 +22,8 @@ namespace PX.Analyzers.Coloriser
             throw NewException(parameter, message);
         }
 
+        [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ThrowOnNullOrWhiteSpace(this string str, string parameter = null, string message = null)
         {
             if (!string.IsNullOrWhiteSpace(str))
@@ -25,6 +32,7 @@ namespace PX.Analyzers.Coloriser
             throw NewException(parameter, message);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ArgumentNullException NewException(string parameter = null, string message = null)
         {
             return parameter == null
