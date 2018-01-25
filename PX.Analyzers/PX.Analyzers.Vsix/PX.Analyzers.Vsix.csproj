@@ -288,6 +288,7 @@
     <Compile Include="Coloriser\Regex\PXRegexColorizerTagger.cs" />
     <Compile Include="Coloriser\PXColorizerTaggerProvider.cs" />
     <Compile Include="Formatter\BqlAggregateRewriter.cs" />
+    <Compile Include="Formatter\BqlConditionRewriter.cs" />
     <Compile Include="Formatter\BqlContext.cs" />
     <Compile Include="Formatter\BqlFirstTableRewriter.cs" />
     <Compile Include="Formatter\BqlFormatter.cs" />
