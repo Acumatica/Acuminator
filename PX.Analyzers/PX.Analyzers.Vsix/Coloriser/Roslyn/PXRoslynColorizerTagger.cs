@@ -25,15 +25,20 @@ namespace PX.Analyzers.Coloriser
 
         public override TaggerType TaggerType => TaggerType.Roslyn;
 
-        private readonly TagsCacheAsync<IClassificationTag> tagsCache;
+        private readonly TagsCacheAsync<IClassificationTag> classificationTagsCache;
 
-        protected internal override ITagsCache<IClassificationTag> TagsCache => tagsCache;
-       
+        protected internal override ITagsCache<IClassificationTag> ClassificationTagsCache => classificationTagsCache;
+
+        private readonly TagsCacheAsync<IOutliningRegionTag> outliningTagsCache;
+
+        protected internal override ITagsCache<IOutliningRegionTag> OutliningsTagsCache => outliningTagsCache;
+
         internal PXRoslynColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider aProvider, bool subscribeToSettingsChanges,
                                          bool useCacheChecking) :
                                     base(buffer, aProvider, subscribeToSettingsChanges, useCacheChecking)
         {
-            tagsCache = new TagsCacheAsync<IClassificationTag>();
+            classificationTagsCache = new TagsCacheAsync<IClassificationTag>();
+            outliningTagsCache = new TagsCacheAsync<IOutliningRegionTag>();
 
             //Buffer.Changed += Buffer_Changed;
         }
@@ -83,11 +88,13 @@ namespace PX.Analyzers.Coloriser
 
         protected internal override IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot)
         {
-            tagsCache.SetCancellation(CancellationToken.None);
+            classificationTagsCache.SetCancellation(CancellationToken.None);
+            outliningTagsCache.SetCancellation(CancellationToken.None);
+
             Task<ParsedDocument> getDocumentTask = ParsedDocument.Resolve(Buffer, Snapshot, CancellationToken.None);
 
             if (getDocumentTask == null)    // Razor cshtml returns a null document for some reason.        
-                return TagsCache.ProcessedTags; 
+                return ClassificationTagsCache.ProcessedTags; 
 
             try
             {
@@ -95,7 +102,7 @@ namespace PX.Analyzers.Coloriser
             }
             catch (Exception e)
             {
-                return TagsCache.ProcessedTags;     // TODO: report this to someone.
+                return ClassificationTagsCache.ProcessedTags;     // TODO: report this to someone.
             }
 
             ParsedDocument document = getDocumentTask.Result;
@@ -103,38 +110,42 @@ namespace PX.Analyzers.Coloriser
             //documentCache = document;
             //isParsed = true;
           
-            return TagsCache.ProcessedTags;
+            return ClassificationTagsCache.ProcessedTags;
         }
 
         protected internal async override Task<IEnumerable<ITagSpan<IClassificationTag>>> GetTagsAsyncImplementation(ITextSnapshot snapshot,
                                                                                                                      CancellationToken cToken)
         {
-            tagsCache.SetCancellation(cToken);
+            classificationTagsCache.SetCancellation(cToken);
+            outliningTagsCache.SetCancellation(cToken);
+
             Task<ParsedDocument> getDocumentTask = ParsedDocument.Resolve(Buffer, Snapshot, cToken);
 
             if (cToken.IsCancellationRequested || getDocumentTask == null)              // Razor cshtml returns a null document for some reason.        
-                return TagsCache.ProcessedTags;
+                return ClassificationTagsCache.ProcessedTags;
 
             var documentTaskResult = await getDocumentTask.TryAwait();
             bool isSuccess = documentTaskResult.Key;
 
             if (!isSuccess)
-                return TagsCache.ProcessedTags;
+                return ClassificationTagsCache.ProcessedTags;
 
             ParsedDocument document = documentTaskResult.Value;            
 
             if (document == null || cToken.IsCancellationRequested)
-                return TagsCache.ProcessedTags;
+                return ClassificationTagsCache.ProcessedTags;
 
             isSuccess = await WalkDocumentSyntaxTreeForTagsAsync(document, cToken).TryAwait();
-            return TagsCache.ProcessedTags;
+            return ClassificationTagsCache.ProcessedTags;
         }    
 
         private void WalkDocumentSyntaxTreeForTags(ParsedDocument document, CancellationToken cancellationToken)
         {
             var syntaxWalker = new PXColoriserSyntaxWalker(this, document, cancellationToken);
+
             syntaxWalker.Visit(document.SyntaxRoot);
-            TagsCache.CompleteProcessing();
+            ClassificationTagsCache.CompleteProcessing();
+            OutliningsTagsCache.CompleteProcessing();
         }
 
         private Task WalkDocumentSyntaxTreeForTagsAsync(ParsedDocument document, CancellationToken cancellationToken)

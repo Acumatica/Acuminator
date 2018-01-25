@@ -76,6 +76,8 @@ namespace PX.Analyzers.Vsix
 
 
         public bool UseRegexColoring => (GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage)?.UseRegexColoring ?? false;
+
+        public bool UseBqlOutlining => (GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage)?.UseBqlOutlining ?? true;
         #endregion
     }
 }

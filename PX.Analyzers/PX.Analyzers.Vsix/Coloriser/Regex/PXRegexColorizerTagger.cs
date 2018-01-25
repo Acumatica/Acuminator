@@ -18,9 +18,14 @@ namespace PX.Analyzers.Coloriser
 
         public override TaggerType TaggerType => TaggerType.RegEx;
 
-        private readonly TagsCacheSync<IClassificationTag> tagsCache = new TagsCacheSync<IClassificationTag>();
+        private readonly TagsCacheSync<IClassificationTag> classificationTagsCache = new TagsCacheSync<IClassificationTag>();
 
-        protected internal override ITagsCache<IClassificationTag> TagsCache => tagsCache;
+        protected internal override ITagsCache<IClassificationTag> ClassificationTagsCache => classificationTagsCache;
+
+        private readonly TagsCacheSync<IOutliningRegionTag> outliningTagsCache = new TagsCacheSync<IOutliningRegionTag>(capacity: 0);
+
+        protected internal override ITagsCache<IOutliningRegionTag> OutliningsTagsCache => outliningTagsCache;
+
 
         private readonly ConcurrentBag<ITagSpan<IClassificationTag>> tagsBag = new ConcurrentBag<ITagSpan<IClassificationTag>>();
 		
@@ -47,8 +52,10 @@ namespace PX.Analyzers.Coloriser
         protected internal override IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot)
         {
             GetTagsFromSnapshot(snapshot);
-            tagsCache.AddTags(tagsBag);
-            return TagsCache;
+            classificationTagsCache.AddTags(tagsBag);
+            ClassificationTagsCache.CompleteProcessing();
+            OutliningsTagsCache.CompleteProcessing();
+            return ClassificationTagsCache;
         }
 
         protected internal override void ResetCacheAndFlags(ITextSnapshot newCache)

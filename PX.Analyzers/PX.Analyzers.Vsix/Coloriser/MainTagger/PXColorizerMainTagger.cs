@@ -31,13 +31,24 @@ namespace PX.Analyzers.Coloriser
             }
         }
 
-        protected internal override ITagsCache<IClassificationTag> TagsCache
+        protected internal override ITagsCache<IClassificationTag> ClassificationTagsCache
         {
             get
             {
                 TaggerType currentTaggerType = GetCurrentTaggerTypeFromSettings();
                 return taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase tagger)
-                    ? tagger.TagsCache
+                    ? tagger.ClassificationTagsCache
+                    : throw new NotSupportedException($"Tagger type {currentTaggerType} not supported");
+            }
+        }
+
+        protected internal override ITagsCache<IOutliningRegionTag> OutliningsTagsCache
+        {
+            get
+            {
+                TaggerType currentTaggerType = GetCurrentTaggerTypeFromSettings();
+                return taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase tagger)
+                    ? tagger.OutliningsTagsCache
                     : throw new NotSupportedException($"Tagger type {currentTaggerType} not supported");
             }
         }

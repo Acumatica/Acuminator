@@ -19,13 +19,31 @@ namespace PX.Analyzers.Coloriser
     /// <content>
     /// A colorizer tagger base class.
     /// </content>
-    public abstract partial class PXColorizerTaggerBase : ITagger<IClassificationTag>, IDisposable
+    public abstract partial class PXColorizerTaggerBase : ITagger<IClassificationTag>, ITagger<IOutliningRegionTag>, IDisposable
     {
         public BackgroundTagging BackgroundTagging { get; protected set; }
 
-        protected internal abstract ITagsCache<IClassificationTag> TagsCache { get; }
+        protected internal abstract ITagsCache<IClassificationTag> ClassificationTagsCache { get; }
+
+        protected internal abstract ITagsCache<IOutliningRegionTag> OutliningsTagsCache { get; }
 
         protected internal abstract bool UseAsyncTagging { get; }
+
+        IEnumerable<ITagSpan<IOutliningRegionTag>> ITagger<IOutliningRegionTag>.GetTags(NormalizedSnapshotSpanCollection spans)
+        {
+            if (spans == null || spans.Count == 0 || !Provider.Package.UseBqlOutlining)
+                return Enumerable.Empty<ITagSpan<IOutliningRegionTag>>();
+
+            switch (TaggerType)
+            {
+                case TaggerType.General when Provider.Package?.UseRegexColoring == true:                             
+                case TaggerType.RegEx:
+                    return Enumerable.Empty<ITagSpan<IOutliningRegionTag>>();          
+            }
+
+            GetTags(spans);
+            return OutliningsTagsCache.ProcessedTags;
+        }
 
         public virtual IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
@@ -36,8 +54,8 @@ namespace PX.Analyzers.Coloriser
 
             if (CheckIfRetaggingIsNotNecessary(snapshot))
             {
-                TagsCache.PersistIntermediateResult();
-                return TagsCache.ProcessedTags;
+                //ClassificationTagsCache.PersistIntermediateResult();
+                return ClassificationTagsCache.ProcessedTags;
             }
 
             if (UseAsyncTagging)
@@ -70,7 +88,7 @@ namespace PX.Analyzers.Coloriser
             ResetCacheAndFlags(snapshot);
             BackgroundTagging = BackgroundTagging.StartBackgroundTagging(this);
 
-            return TagsCache.ProcessedTags;
+            return ClassificationTagsCache.ProcessedTags;
         }
 
         protected internal abstract IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot);

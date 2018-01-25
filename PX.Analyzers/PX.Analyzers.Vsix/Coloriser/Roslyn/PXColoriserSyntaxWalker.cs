@@ -69,7 +69,7 @@ namespace PX.Analyzers.Coloriser
 				if (typeSymbol.IsDAC())
 				{
                     //AddTagAndCacheIt(nodeText, TypeNames.IBqlTable, span, tagger.Provider.DacType);		
-                    AddTag(span, tagger.Provider.DacType);		
+                    AddClassificationTag(span, tagger.Provider.DacType);		
                 }
                 else if (typeSymbol.IsDacField())
 				{
@@ -84,21 +84,21 @@ namespace PX.Analyzers.Coloriser
                     //    AddTag(span, tagger.Provider.FieldType);
                     //}
 
-                    AddTag(span, tagger.Provider.FieldType);
+                    AddClassificationTag(span, tagger.Provider.FieldType);
                 }
                 else if (typeSymbol.IsDacExtension())
                 {
-                    AddTag(span, tagger.Provider.DacExtensionType);
+                    AddClassificationTag(span, tagger.Provider.DacExtensionType);
                 }
                 else if (typeSymbol.IsBqlConstant())
                 {
                     // AddTagAndCacheIt(nodeText, TypeNames.Constant, span, tagger.Provider.BqlConstantEndingType);
-                    AddTag(span, tagger.Provider.BqlConstantEndingType);
+                    AddClassificationTag(span, tagger.Provider.BqlConstantEndingType);
                 }
                 else if (typeSymbol.IsBqlOperator())
                 {
                     //AddTagAndCacheIt(nodeText, TypeNames.IBqlCreator, span, tagger.Provider.BqlOperatorType);
-                    AddTag(span, tagger.Provider.BqlOperatorType);
+                    AddClassificationTag(span, tagger.Provider.BqlOperatorType);
                 }
 
                 UpdateCodeEditorIfNecessary();
@@ -135,7 +135,7 @@ namespace PX.Analyzers.Coloriser
                 if (typeSymbol.IsBqlCommand())
                 {
                     isInsideBqlCommand = true;
-                    AddTag(span, tagger.Provider.BqlOperatorType);
+                    AddClassificationTag(span, tagger.Provider.BqlOperatorType);
                     // AddTagAndCacheIt(nodeText, TypeNames.BqlCommand, span, tagger.Provider.BqlOperatorType);
 
                     if (!cancellationToken.IsCancellationRequested)
@@ -146,12 +146,12 @@ namespace PX.Analyzers.Coloriser
                 }
 				else if (typeSymbol.IsBqlParameter())
                 {
-                    AddTag(span, tagger.Provider.BqlParameterType);
+                    AddClassificationTag(span, tagger.Provider.BqlParameterType);
                     //AddTagAndCacheIt(nodeText, TypeNames.IBqlParameter, span, tagger.Provider.BqlParameterType);
                 }
                 else if (typeSymbol.IsBqlOperator())
                 {
-                    AddTag(span, tagger.Provider.BqlOperatorType);
+                    AddClassificationTag(span, tagger.Provider.BqlOperatorType);
                     //AddTagAndCacheIt(nodeText, TypeNames.IBqlCreator, span, tagger.Provider.BqlOperatorType);
                 }
 
@@ -191,8 +191,8 @@ namespace PX.Analyzers.Coloriser
 
                 if (typeSymbol.IsBqlConstant())
                 {
-                    AddTag(leftSpan, tagger.Provider.BqlConstantPrefixType);
-                    AddTag(rightSpan, tagger.Provider.BqlConstantEndingType);
+                    AddClassificationTag(leftSpan, tagger.Provider.BqlConstantPrefixType);
+                    AddClassificationTag(rightSpan, tagger.Provider.BqlConstantEndingType);
 
                     //document.SymbolsCache.AddNodeToCache(nodeText, TypeNames.Constant);                  
                 }
@@ -218,11 +218,16 @@ namespace PX.Analyzers.Coloriser
 
                 braceLevel++;
 
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
+                AddOutliningTag(node.Span);
+
                 if (braceLevel <= Constants.MaxBraceLevel && !cancellationToken.IsCancellationRequested &&
                     tagger.Provider.BraceTypeByLevel.TryGetValue(braceLevel, out IClassificationType braceClassificationType))
                 {
-                    AddTag(node.LessThanToken.Span, braceClassificationType);
-                    AddTag(node.GreaterThanToken.Span, braceClassificationType);
+                    AddClassificationTag(node.LessThanToken.Span, braceClassificationType);
+                    AddClassificationTag(node.GreaterThanToken.Span, braceClassificationType);
                 }
 
                 if (!cancellationToken.IsCancellationRequested)
@@ -266,10 +271,16 @@ namespace PX.Analyzers.Coloriser
             #endregion
 
 
-            private void AddTag(TextSpan span, IClassificationType classificationType)
+            private void AddClassificationTag(TextSpan span, IClassificationType classificationType)
             {
-                ITagSpan<IClassificationTag> tag = span.ToTagSpan(tagger.Snapshot, classificationType);
-                tagger.TagsCache.AddTag(tag);
+                ITagSpan<IClassificationTag> tag = span.ToClassificationTagSpan(tagger.Snapshot, classificationType);
+                tagger.ClassificationTagsCache.AddTag(tag);
+            }
+
+            private void AddOutliningTag(TextSpan span)
+            {
+                ITagSpan<IOutliningRegionTag> tag = span.ToOutliningTagSpan(tagger.Snapshot);
+                tagger.OutliningsTagsCache.AddTag(tag);
             }
 
             private void UpdateCodeEditorIfNecessary()
@@ -278,7 +289,8 @@ namespace PX.Analyzers.Coloriser
                     return;
 
                 visitedNodesCounter = 0;
-                tagger.TagsCache.PersistIntermediateResult();
+                tagger.ClassificationTagsCache.PersistIntermediateResult();
+                tagger.OutliningsTagsCache.PersistIntermediateResult();
                 tagger.RaiseTagsChanged();
             }
 

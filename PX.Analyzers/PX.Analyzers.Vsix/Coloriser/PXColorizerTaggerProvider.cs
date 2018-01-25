@@ -20,9 +20,11 @@ namespace PX.Analyzers.Coloriser
 {
     [ContentType("CSharp")]
     [TagType(typeof(IClassificationTag))]
+    [TagType(typeof(IOutliningRegionTag))]
     [TextViewRole(PredefinedTextViewRoles.Document)]
     [Export(typeof(IViewTaggerProvider))]
-    public class PXColorizerTaggerProvider : IViewTaggerProvider
+    [Export(typeof(ITaggerProvider))]
+    public class PXColorizerTaggerProvider : PXColorizerTaggerProviderBase
     {    
         [Import]
         internal IClassificationTypeRegistryService classificationRegistry = null; // Set via MEF
@@ -33,7 +35,6 @@ namespace PX.Analyzers.Coloriser
         private const string textCategory = "text";
         private static object syncRoot = new object();
         private static bool isPriorityIncreased;
-        private bool isInitialized;
 
         public IClassificationType DacType { get; protected set; }
 
@@ -50,27 +51,25 @@ namespace PX.Analyzers.Coloriser
 		public IClassificationType BqlConstantEndingType { get; protected set; }
 
         public Dictionary<int, IClassificationType> BraceTypeByLevel { get; protected set; }
+       
+        protected override ITagger<T> CreateTaggerImpl<T>(ITextBuffer textBuffer)
+        {
+            return new PXColorizerMainTagger(textBuffer, this, subscribeToSettingsChanges: true,
+                                             useCacheChecking: true) as ITagger<T>;
+        }
 
-        public AcuminatorVSPackage Package { get; protected set; }
+        protected override void Initialize()
+        {
+            if (IsInitialized)
+                return;
 
-		ITagger<T> IViewTaggerProvider.CreateTagger<T>(ITextView textView, ITextBuffer textBuffer)   
-		{               
-            InitializeClassificationTypes();
-
-            if (textView.TextBuffer != textBuffer)
-                return null;
-
-            ITagger<T> tagger = new PXColorizerMainTagger(textBuffer, this, subscribeToSettingsChanges: true, 
-                                                          useCacheChecking: true) as ITagger<T>;
-            return tagger;
-		}     
+            base.Initialize();
+            InitializeClassificationTypes();          
+            IncreaseCommentFormatTypesPrioirity(classificationRegistry, classificationFormatMapService, BqlParameterType);
+        }
 
         protected void InitializeClassificationTypes()
         {
-            if (isInitialized)
-                return;          
-
-            isInitialized = true;
             DacType = classificationRegistry.GetClassificationType(Constants.DacFormat);
             DacExtensionType = classificationRegistry.GetClassificationType(Constants.DacExtensionFormat);
             FieldType = classificationRegistry.GetClassificationType(Constants.DacFieldFormat);
@@ -99,34 +98,7 @@ namespace PX.Analyzers.Coloriser
 
                 [13] = classificationRegistry.GetClassificationType(Constants.BraceLevel_13_Format),
                 [14] = classificationRegistry.GetClassificationType(Constants.BraceLevel_14_Format),
-            };
-
-            InitializePackage();
-            IncreaseCommentFormatTypesPrioirity(classificationRegistry, classificationFormatMapService, BqlParameterType);
-        }
-
-        protected virtual void InitializePackage()
-        {
-            IVsShell shellService = ServiceProvider.GlobalProvider.GetService(typeof(IVsShell)) as IVsShell;
-
-            if (shellService == null)
-            {
-                isInitialized = false;
-                return;
-            }
-            
-            Guid acuminatorGUID = Guid.Parse(AcuminatorVSPackage.PackageGuidString);
-            int returnCode = shellService.IsPackageLoaded(ref acuminatorGUID, out IVsPackage package);
-
-            if (returnCode != Microsoft.VisualStudio.VSConstants.S_OK)
-            {
-                shellService.LoadPackage(ref acuminatorGUID, out package);
-            }
-            
-            Package = package as AcuminatorVSPackage;
-
-            if (Package == null)
-                throw new Exception("Acuminator package loaded incorrectly");
+            }; 
         }
 
         private static void IncreaseCommentFormatTypesPrioirity(IClassificationTypeRegistryService registry, IClassificationFormatMapService formatMapService,
@@ -164,6 +136,6 @@ namespace PX.Analyzers.Coloriser
             formatMap.AddExplicitTextProperties(artificialClassType, properties, highestPriorityType);
             formatMap.SwapPriorities(artificialClassType, predefinedClassificationType);
             formatMap.SwapPriorities(highestPriorityType, predefinedClassificationType);
-        }
+        }       
     }
 }
