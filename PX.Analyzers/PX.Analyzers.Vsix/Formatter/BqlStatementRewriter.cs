@@ -39,8 +39,7 @@ namespace PX.Analyzers.Vsix.Formatter
 				}
 
 				// Each time we see one of this statements, increase indent and move statement to new line
-				if (originalSymbol.ImplementsInterface(Context.IBqlWhere)
-				    || originalSymbol.ImplementsInterface(Context.IBqlOrderBy))
+				if (originalSymbol.ImplementsInterface(Context.IBqlOrderBy))
 				{
 					return RewriteGenericNode(node, new BqlStatementRewriter(this, IndentedDefaultTrivia));
 				}
@@ -55,6 +54,11 @@ namespace PX.Analyzers.Vsix.Formatter
 				{
 					var rewriter = new BqlJoinRewriter(this, DefaultLeadingTrivia);
 					return rewriter.Visit(node);
+				}
+
+				if (originalSymbol.ImplementsInterface(Context.IBqlWhere))
+				{
+					return RewriteGenericNode(node, new BqlConditionRewriter(this, IndentedDefaultTrivia));
 				}
 
 				if (originalSymbol.InheritsFromOrEqualsGeneric(Context.Aggregate))

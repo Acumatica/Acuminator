@@ -19,6 +19,7 @@ namespace PX.Analyzers.Vsix.Formatter
 		public INamedTypeSymbol Where2 => _compilation.GetTypeByMetadataName(typeof(Where2<,>).FullName);
 		public INamedTypeSymbol Aggregate => _compilation.GetTypeByMetadataName(typeof(Aggregate<>).FullName);
 		public INamedTypeSymbol GroupByBase => _compilation.GetTypeByMetadataName(typeof(GroupByBase<,>).FullName);
+		public INamedTypeSymbol BqlPredicateBinaryBase => _compilation.GetTypeByMetadataName(typeof(BqlPredicateBinaryBase<,>).FullName);
 
 		public INamedTypeSymbol IBqlCreator => _compilation.GetTypeByMetadataName(typeof(IBqlCreator).FullName);
 		public INamedTypeSymbol IBqlSelect => _compilation.GetTypeByMetadataName(typeof(IBqlSelect).FullName);
@@ -29,6 +30,7 @@ namespace PX.Analyzers.Vsix.Formatter
 		public INamedTypeSymbol IBqlOrderBy => _compilation.GetTypeByMetadataName(typeof(IBqlOrderBy).FullName);
 		public INamedTypeSymbol IBqlSortColumn => _compilation.GetTypeByMetadataName(typeof(IBqlSortColumn).FullName);
 		public INamedTypeSymbol IBqlFunction => _compilation.GetTypeByMetadataName(typeof(IBqlFunction).FullName);
+		public INamedTypeSymbol IBqlPredicateChain => _compilation.GetTypeByMetadataName(typeof(IBqlPredicateChain).FullName);
 
 		public INamedTypeSymbol IBqlTable => _compilation.GetTypeByMetadataName(typeof(IBqlTable).FullName);
 	}
