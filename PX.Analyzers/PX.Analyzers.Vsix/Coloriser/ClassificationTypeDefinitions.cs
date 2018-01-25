@@ -66,7 +66,6 @@ namespace PX.Analyzers.Coloriser
 
 
 
-
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(Constants.BraceLevel_7_Format)]
         internal static ClassificationTypeDefinition BraceLevel_7_Type = null;
@@ -78,5 +77,30 @@ namespace PX.Analyzers.Coloriser
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(Constants.BraceLevel_9_Format)]
         internal static ClassificationTypeDefinition BraceLevel_9_Type = null;
+
+
+
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name(Constants.BraceLevel_10_Format)]
+        internal static ClassificationTypeDefinition BraceLevel_10_Type = null;
+
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name(Constants.BraceLevel_11_Format)]
+        internal static ClassificationTypeDefinition BraceLevel_11_Type = null;
+
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name(Constants.BraceLevel_12_Format)]
+        internal static ClassificationTypeDefinition BraceLevel_12_Type = null;
+
+
+
+
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name(Constants.BraceLevel_13_Format)]
+        internal static ClassificationTypeDefinition BraceLevel_13_Type = null;
+
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name(Constants.BraceLevel_14_Format)]
+        internal static ClassificationTypeDefinition BraceLevel_14_Type = null;     
     }
 }

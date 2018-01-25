@@ -99,8 +99,7 @@ namespace PX.Analyzers.Coloriser
         }
     }
 
-    //*********************************************************************************************************************
-    // 
+    //********************************************************************************************************************* 
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = Constants.BraceLevel_7_Format)]
     [Name(Constants.BraceLevel_7_Format)]
@@ -141,6 +140,83 @@ namespace PX.Analyzers.Coloriser
         public BraceLevel_9_Format()
         {
             DisplayName = Labels.BraceLevel_9_FormatLabel; // Human readable version of the name		
+            ForegroundCustomizable = true;
+            BackgroundCustomizable = true;
+        }
+    }
+
+    //********************************************************************************************************************* 
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = Constants.BraceLevel_10_Format)]
+    [Name(Constants.BraceLevel_10_Format)]
+    [UserVisible(true)]
+    [Order(After = Constants.BraceLevel_9_Format)]
+    internal sealed class BraceLevel_10_Format : ClassificationFormatDefinition
+    {
+        public BraceLevel_10_Format()
+        {
+            DisplayName = Labels.BraceLevel_10_FormatLabel; // Human readable version of the name		
+            ForegroundCustomizable = true;
+            BackgroundCustomizable = true;
+        }
+    }
+
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = Constants.BraceLevel_11_Format)]
+    [Name(Constants.BraceLevel_11_Format)]
+    [UserVisible(true)]
+    [Order(After = Constants.BraceLevel_10_Format)]
+    internal sealed class BraceLevel_11_Format : ClassificationFormatDefinition
+    {
+        public BraceLevel_11_Format()
+        {
+            DisplayName = Labels.BraceLevel_11_FormatLabel; // Human readable version of the name		
+            ForegroundCustomizable = true;
+            BackgroundCustomizable = true;
+        }
+    }
+
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = Constants.BraceLevel_12_Format)]
+    [Name(Constants.BraceLevel_12_Format)]
+    [UserVisible(true)]
+    [Order(After = Constants.BraceLevel_11_Format)]
+    internal sealed class BraceLevel_12_Format : ClassificationFormatDefinition
+    {
+        public BraceLevel_12_Format()
+        {
+            DisplayName = Labels.BraceLevel_12_FormatLabel; // Human readable version of the name		
+            ForegroundCustomizable = true;
+            BackgroundCustomizable = true;
+        }
+    }
+
+    //********************************************************************************************************************* 
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = Constants.BraceLevel_13_Format)]
+    [Name(Constants.BraceLevel_13_Format)]
+    [UserVisible(true)]
+    [Order(After = Constants.BraceLevel_12_Format)]
+    internal sealed class BraceLevel_13_Format : ClassificationFormatDefinition
+    {
+        public BraceLevel_13_Format()
+        {
+            DisplayName = Labels.BraceLevel_13_FormatLabel; // Human readable version of the name		
+            ForegroundCustomizable = true;
+            BackgroundCustomizable = true;
+        }
+    }
+
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = Constants.BraceLevel_14_Format)]
+    [Name(Constants.BraceLevel_14_Format)]
+    [UserVisible(true)]
+    [Order(After = Constants.BraceLevel_13_Format)]
+    internal sealed class BraceLevel_14_Format : ClassificationFormatDefinition
+    {
+        public BraceLevel_14_Format()
+        {
+            DisplayName = Labels.BraceLevel_14_FormatLabel; // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;
         }

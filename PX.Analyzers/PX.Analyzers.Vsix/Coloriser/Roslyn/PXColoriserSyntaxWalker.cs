@@ -217,10 +217,10 @@ namespace PX.Analyzers.Coloriser
                 }
 
                 braceLevel++;
-                
-                if (braceLevel <= Constants.MaxBraceLevel && !cancellationToken.IsCancellationRequested)
+
+                if (braceLevel <= Constants.MaxBraceLevel && !cancellationToken.IsCancellationRequested &&
+                    tagger.Provider.BraceTypeByLevel.TryGetValue(braceLevel, out IClassificationType braceClassificationType))
                 {
-                    IClassificationType braceClassificationType = tagger.Provider.BraceTypeByLevel[braceLevel];
                     AddTag(node.LessThanToken.Span, braceClassificationType);
                     AddTag(node.GreaterThanToken.Span, braceClassificationType);
                 }

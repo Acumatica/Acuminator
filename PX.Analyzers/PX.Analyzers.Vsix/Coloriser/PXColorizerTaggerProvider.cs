@@ -91,7 +91,14 @@ namespace PX.Analyzers.Coloriser
 
                 [7] = classificationRegistry.GetClassificationType(Constants.BraceLevel_7_Format),
                 [8] = classificationRegistry.GetClassificationType(Constants.BraceLevel_8_Format),
-                [9] = classificationRegistry.GetClassificationType(Constants.BraceLevel_9_Format)
+                [9] = classificationRegistry.GetClassificationType(Constants.BraceLevel_9_Format),
+
+                [10] = classificationRegistry.GetClassificationType(Constants.BraceLevel_10_Format),
+                [11] = classificationRegistry.GetClassificationType(Constants.BraceLevel_11_Format),
+                [12] = classificationRegistry.GetClassificationType(Constants.BraceLevel_12_Format),
+
+                [13] = classificationRegistry.GetClassificationType(Constants.BraceLevel_13_Format),
+                [14] = classificationRegistry.GetClassificationType(Constants.BraceLevel_14_Format),
             };
 
             InitializePackage();
