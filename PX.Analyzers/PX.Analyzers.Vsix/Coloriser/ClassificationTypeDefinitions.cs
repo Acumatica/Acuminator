@@ -10,7 +10,11 @@ namespace PX.Analyzers.Coloriser
 		[Name(Constants.DacFormat)]
 		internal static ClassificationTypeDefinition DACType = null;
 
-		[Export(typeof(ClassificationTypeDefinition))]
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name(Constants.DacExtensionFormat)]
+        internal static ClassificationTypeDefinition DACExtensionType = null;
+
+        [Export(typeof(ClassificationTypeDefinition))]
 		[Name(Constants.DacFieldFormat)]
 		internal static ClassificationTypeDefinition DACFieldType = null;
 

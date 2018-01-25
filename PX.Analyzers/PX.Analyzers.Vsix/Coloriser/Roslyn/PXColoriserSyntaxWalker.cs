@@ -86,6 +86,10 @@ namespace PX.Analyzers.Coloriser
 
                     AddTag(span, tagger.Provider.FieldType);
                 }
+                else if (typeSymbol.IsDacExtension())
+                {
+                    AddTag(span, tagger.Provider.DacExtensionType);
+                }
                 else if (typeSymbol.IsBqlConstant())
                 {
                     // AddTagAndCacheIt(nodeText, TypeNames.Constant, span, tagger.Provider.BqlConstantEndingType);

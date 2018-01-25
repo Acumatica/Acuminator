@@ -75,6 +75,14 @@ namespace PX.Analyzers.Coloriser
             return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.IBqlTable);
         }
 
+        public static bool IsDacExtension(this ITypeSymbol typeSymbol)
+        {
+            if (typeSymbol == null || string.Equals(typeSymbol.Name, TypeNames.PXCacheExtension))
+                return false;
+
+            return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.PXCacheExtension);
+        }
+
         public static bool IsDacField(this ITypeSymbol typeSymbol)
         {
             if (typeSymbol == null || string.Equals(typeSymbol.Name, TypeNames.IBqlField))
