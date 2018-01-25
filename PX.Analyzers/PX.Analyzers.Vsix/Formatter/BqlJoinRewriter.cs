@@ -47,7 +47,7 @@ namespace PX.Analyzers.Vsix.Formatter
 			{
 				if (originalSymbol.ImplementsInterface(Context.IBqlOn))
 				{
-					return RewriteGenericNode(node, new BqlOnRewriter(this, DefaultLeadingTrivia));
+					return RewriteGenericNode(node, new BqlConditionRewriter(this, DefaultLeadingTrivia));
 				}
 			}
 

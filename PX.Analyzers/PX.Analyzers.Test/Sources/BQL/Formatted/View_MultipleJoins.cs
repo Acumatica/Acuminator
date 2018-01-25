@@ -13,7 +13,7 @@ namespace PX.Objects
 			APAdjust,
 			InnerJoin<APPayment, 
 				On<APPayment.docType, Equal<APAdjust.adjgDocType>, 
-					And<APPayment.refNbr, Equal<APAdjust.adjgRefNbr>>>,
+				And<APPayment.refNbr, Equal<APAdjust.adjgRefNbr>>>,
 			InnerJoin<CurrencyInfo, 
 				On<CurrencyInfo.curyInfoID, Equal<APPayment.curyInfoID>>>>,
 			Where<APAdjust.adjdDocType, Equal<Current<APInvoice.docType>>, 
