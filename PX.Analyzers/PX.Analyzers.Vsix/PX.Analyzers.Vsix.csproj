@@ -49,6 +49,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <DebugType>pdbonly</DebugType>
@@ -57,6 +58,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <StartAction>Program</StartAction>
@@ -280,6 +282,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AcuminatorVSPackage.cs" />
+    <Compile Include="Coloriser\AsyncTagging\Interfaces\ITagsCache.cs" />
+    <Compile Include="Coloriser\AsyncTagging\PXColorizerTaggerBaseAsyncTagging.cs" />
+    <Compile Include="Coloriser\AsyncTagging\BackgroundTagging.cs" />
+    <Compile Include="Coloriser\AsyncTagging\TagsCacheSync.cs" />
+    <Compile Include="Coloriser\Utils\EditorExtensions.cs" />
+    <Compile Include="Coloriser\AsyncTagging\TagsCacheAsync.cs" />
     <Compile Include="Coloriser\BracesFormats.cs" />
     <Compile Include="Coloriser\ClassificationTypeDefinitions.cs" />
     <Compile Include="Coloriser\EditorFormats.cs" />
@@ -308,7 +316,6 @@
     <EmbeddedResource Include="Coloriser\Regex\Test\PMAllocationProcess.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\APInvoice.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\APRegister.cs" />
-    <Compile Include="Coloriser\Roslyn\AsyncTagging\AsyncTagsContainer.cs" />
     <Compile Include="Coloriser\Roslyn\ParsedSymbolsCache.cs" />
     <Compile Include="Coloriser\Roslyn\ParsedDocument.cs" />
     <Compile Include="Coloriser\Roslyn\PXColoriserSyntaxWalker.cs" />
@@ -318,7 +325,7 @@
     <Compile Include="Coloriser\Regex\Utils\RegExpressions.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\TypeNames.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\TypeSymbolColoriserUtils.cs" />
-    <Compile Include="Coloriser\Regex\Utils\ConcurrentBagExtensions.cs" />
+    <Compile Include="Coloriser\Utils\ConcurrentExtensions.cs" />
     <Compile Include="Coloriser\Utils\EnumerableExtensions.cs" />
     <Compile Include="Coloriser\Utils\ExceptionExtensions.cs" />
     <Compile Include="Coloriser\Utils\StringExtensions.cs" />
