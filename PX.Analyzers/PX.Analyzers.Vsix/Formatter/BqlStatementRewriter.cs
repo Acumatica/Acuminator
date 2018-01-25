@@ -25,8 +25,7 @@ namespace PX.Analyzers.Vsix.Formatter
 
 		public override SyntaxNode VisitGenericName(GenericNameSyntax node)
 		{
-			INamedTypeSymbol typeSymbol = GetTypeSymbol(node);
-			INamedTypeSymbol originalSymbol = typeSymbol?.OriginalDefinition; // get generic type
+			INamedTypeSymbol originalSymbol = GetOriginalTypeSymbol(node);
 
 			if (originalSymbol != null)
 			{
@@ -47,10 +46,15 @@ namespace PX.Analyzers.Vsix.Formatter
 				}
 
 				// Each time we see one of this statements, move statement to new line
-				if (originalSymbol.ImplementsInterface(Context.IBqlJoin)
-					|| originalSymbol.ImplementsInterface(Context.IBqlSortColumn))
+				if (originalSymbol.ImplementsInterface(Context.IBqlSortColumn))
 				{
 					return RewriteGenericNode(node, new BqlStatementRewriter(this, DefaultLeadingTrivia));
+				}
+
+				if (originalSymbol.ImplementsInterface(Context.IBqlJoin))
+				{
+					var rewriter = new BqlJoinRewriter(this, DefaultLeadingTrivia);
+					return rewriter.Visit(node);
 				}
 
 				if (originalSymbol.InheritsFromOrEqualsGeneric(Context.Aggregate))

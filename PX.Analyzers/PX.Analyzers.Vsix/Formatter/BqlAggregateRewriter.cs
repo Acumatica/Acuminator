@@ -16,8 +16,7 @@ namespace PX.Analyzers.Vsix.Formatter
 
 		public override SyntaxNode VisitGenericName(GenericNameSyntax node)
 		{
-			INamedTypeSymbol typeSymbol = GetTypeSymbol(node);
-			INamedTypeSymbol originalSymbol = typeSymbol?.OriginalDefinition; // get generic type
+			INamedTypeSymbol originalSymbol = GetOriginalTypeSymbol(node);
 
 			if (originalSymbol != null)
 			{

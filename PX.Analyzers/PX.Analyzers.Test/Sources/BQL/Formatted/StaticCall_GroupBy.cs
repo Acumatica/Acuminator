@@ -17,7 +17,8 @@ namespace PX.Objects
 		{
 			var filteredProducts = PXSelectGroupByOrderBy<
 				SupplierProduct,
-				InnerJoin<Supplier, On<Supplier.supplierID, Equal<SupplierProduct.supplierID>>>,
+				InnerJoin<Supplier, 
+					On<Supplier.supplierID, Equal<SupplierProduct.supplierID>>>,
 				Aggregate<
 					GroupBy<SupplierProduct.productID,
 					GroupBy<SupplierProduct.supplierID,
