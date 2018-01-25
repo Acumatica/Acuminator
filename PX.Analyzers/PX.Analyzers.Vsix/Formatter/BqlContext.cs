@@ -17,6 +17,8 @@ namespace PX.Analyzers.Vsix.Formatter
 		public INamedTypeSymbol PXSelectBase => _compilation.GetTypeByMetadataName(typeof(PXSelectBase).FullName);
 
 		public INamedTypeSymbol Where2 => _compilation.GetTypeByMetadataName(typeof(Where2<,>).FullName);
+		public INamedTypeSymbol And2 => _compilation.GetTypeByMetadataName(typeof(And2<,>).FullName);
+		public INamedTypeSymbol Or2 => _compilation.GetTypeByMetadataName(typeof(Or2<,>).FullName);
 		public INamedTypeSymbol Aggregate => _compilation.GetTypeByMetadataName(typeof(Aggregate<>).FullName);
 		public INamedTypeSymbol GroupByBase => _compilation.GetTypeByMetadataName(typeof(GroupByBase<,>).FullName);
 		public INamedTypeSymbol BqlPredicateBinaryBase => _compilation.GetTypeByMetadataName(typeof(BqlPredicateBinaryBase<,>).FullName);

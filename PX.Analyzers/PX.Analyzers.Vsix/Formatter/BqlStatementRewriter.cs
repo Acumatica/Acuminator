@@ -58,7 +58,8 @@ namespace PX.Analyzers.Vsix.Formatter
 
 				if (originalSymbol.ImplementsInterface(Context.IBqlWhere))
 				{
-					return RewriteGenericNode(node, new BqlConditionRewriter(this, IndentedDefaultTrivia));
+					var rewriter = new BqlConditionRewriter(this, DefaultLeadingTrivia);
+					return rewriter.Visit(node);
 				}
 
 				if (originalSymbol.InheritsFromOrEqualsGeneric(Context.Aggregate))
