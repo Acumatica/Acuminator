@@ -10,7 +10,8 @@ namespace PX.Analyzers.Coloriser
 		public const string Priority = Microsoft.VisualStudio.Text.Classification.Priority.High;
 
 		public const string DacFormat = nameof(DacFormat);
-		public const string DacFieldFormat = nameof(DacFieldFormat);
+        public const string DacExtensionFormat = nameof(DacExtensionFormat);
+        public const string DacFieldFormat = nameof(DacFieldFormat);
 		public const string BQLParameterFormat = nameof(BQLParameterFormat);
 		public const string BQLOperatorFormat = nameof(BQLOperatorFormat);
 		public const string BQLConstantPrefixFormat = nameof(BQLConstantPrefixFormat);
@@ -39,7 +40,8 @@ namespace PX.Analyzers.Coloriser
 	public static class Labels
 	{
 		public const string DacFormatLabel  = "Acuminator - DAC Name";
-		public const string DacFieldFormatLabel = "Acuminator - DAC Field Name";
+        public const string DacExtensionFormatLabel = "Acuminator - DAC Extension Name";
+        public const string DacFieldFormatLabel = "Acuminator - DAC Field Name";
 		public const string BQLParameterFormatLabel = "Acuminator - BQL parameters";
 		public const string BQLOperatorFormatLabel = "Acuminator - BQL operators";
 		public const string BQLConstantPrefixFormatLabel = "Acuminator - BQL constant - prefix";

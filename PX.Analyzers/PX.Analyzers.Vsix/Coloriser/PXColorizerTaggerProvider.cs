@@ -37,6 +37,8 @@ namespace PX.Analyzers.Coloriser
 
         public IClassificationType DacType { get; protected set; }
 
+        public IClassificationType DacExtensionType { get; protected set; }
+
         public IClassificationType FieldType { get; protected set; }
 
         public IClassificationType BqlParameterType { get; protected set; }
@@ -70,6 +72,7 @@ namespace PX.Analyzers.Coloriser
 
             isInitialized = true;
             DacType = classificationRegistry.GetClassificationType(Constants.DacFormat);
+            DacExtensionType = classificationRegistry.GetClassificationType(Constants.DacExtensionFormat);
             FieldType = classificationRegistry.GetClassificationType(Constants.DacFieldFormat);
             BqlParameterType = classificationRegistry.GetClassificationType(Constants.BQLParameterFormat);
             BqlOperatorType = classificationRegistry.GetClassificationType(Constants.BQLOperatorFormat);

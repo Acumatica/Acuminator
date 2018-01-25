@@ -38,11 +38,27 @@ namespace PX.Analyzers.Coloriser
 		}
 	}
 
-	[Export(typeof(EditorFormatDefinition))]
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = Constants.DacExtensionFormat)]
+    [Name(Constants.DacExtensionFormat)]
+    [UserVisible(true)]
+    [Order(After = Constants.DacFormat)]
+    internal sealed class DacExtensionFormat : ClassificationFormatDefinition
+    {
+        public DacExtensionFormat()
+        {
+            ForegroundColor = Color.FromRgb(r: 255, g: 255, b: 78);
+            DisplayName = Labels.DacExtensionFormatLabel;       // Human readable version of the name		
+            ForegroundCustomizable = true;
+            BackgroundCustomizable = true;
+        }
+    }
+
+    [Export(typeof(EditorFormatDefinition))]
 	[ClassificationType(ClassificationTypeNames = Constants.DacFieldFormat)]
 	[Name(Constants.DacFieldFormat)]
 	[UserVisible(true)]
-    [Order(After = Constants.DacFormat)]
+    [Order(After = Constants.DacExtensionFormat)]
     internal sealed class DACFieldFormat : ClassificationFormatDefinition
 	{
 		public DACFieldFormat()
