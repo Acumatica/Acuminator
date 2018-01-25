@@ -10,12 +10,11 @@ namespace PX.Objects
 	public class FooEntry : PXGraph<FooEntry>
 	{
 		public PXSelect<
-			Table, 
+			Table,
 			Where2<
 				Where<Table.field2, Greater<Table.field1>,
-				And<Table.field3, Between<Table.field1, Table.field2>>>,
-				Or<
-					Where<Table.field3, IsNull,
+					Or<Table.field3, Between<Table.field1, Table.field2>>>,
+				And<Where<Table.field3, IsNull,
 					And<Table.field1, Equal<Table.field2>>>>>>
 			Foos;
 	}

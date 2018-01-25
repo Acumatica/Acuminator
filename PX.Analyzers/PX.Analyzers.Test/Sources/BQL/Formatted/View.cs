@@ -11,7 +11,8 @@ namespace PX.Objects
 	{
 		public PXSelect<
 			SOOrder, 
-			Where<SOOrder.orderType, Equal<SalesOrder>, And<SOOrder.status, Equal<Open>>>, 
+			Where<SOOrder.orderType, Equal<SalesOrder>, 
+				And<SOOrder.status, Equal<Open>>>, 
 			OrderBy<
 				Desc<SOOrder.orderType, 
 				Asc<SOOrder.orderNbr, 

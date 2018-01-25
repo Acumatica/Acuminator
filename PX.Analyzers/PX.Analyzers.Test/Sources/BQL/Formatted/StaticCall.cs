@@ -17,7 +17,8 @@ namespace PX.Objects
 		{
 			var result = PXSelect<
 				SOOrder, 
-				Where<SOOrder.orderType, Equal<SalesOrder>, And<SOOrder.status, Equal<Open>>>, 
+				Where<SOOrder.orderType, Equal<SalesOrder>, 
+					And<SOOrder.status, Equal<Open>>>, 
 				OrderBy<
 					Asc<SOOrder.orderNbr>>>
 				.Select(this);
