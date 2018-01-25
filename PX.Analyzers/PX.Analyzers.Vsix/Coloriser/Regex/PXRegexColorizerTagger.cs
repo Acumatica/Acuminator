@@ -7,15 +7,22 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-
+using PX.Analyzers.Vsix.Utilities;
+using System.Threading;
 
 namespace PX.Analyzers.Coloriser
 {
 	internal class PXRegexColorizerTagger : PXColorizerTaggerBase
 	{
+        protected internal override bool UseAsyncTagging => false;
+
         public override TaggerType TaggerType => TaggerType.RegEx;
 
-        private readonly ConcurrentBag<ITagSpan<IClassificationTag>> tags = new ConcurrentBag<ITagSpan<IClassificationTag>>();
+        private readonly TagsCacheSync<IClassificationTag> tagsCache = new TagsCacheSync<IClassificationTag>();
+
+        protected internal override ITagsCache<IClassificationTag> TagsCache => tagsCache;
+
+        private readonly ConcurrentBag<ITagSpan<IClassificationTag>> tagsBag = new ConcurrentBag<ITagSpan<IClassificationTag>>();
 		
         internal PXRegexColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider aProvider, bool subscribeToSettingsChanges, 
                                         bool useCacheChecking) :
@@ -23,29 +30,34 @@ namespace PX.Analyzers.Coloriser
 		{                    
 		}
 
-		public override IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
-		{
-			if (spans.Count == 0 || !Provider.Package.ColoringEnabled)
-			{
-				return Enumerable.Empty<ITagSpan<IClassificationTag>>();
-			}
+        protected internal async override Task<IEnumerable<ITagSpan<IClassificationTag>>> GetTagsAsyncImplementation(ITextSnapshot snapshot,
+                                                                                                               CancellationToken cancellationToken)
+        {
+            var taggingInfo = await Task.Run(() => GetTagsSynchronousImplementation(snapshot))
+                                        .TryAwait();
 
-			if (CheckIfRetaggingIsNotNecessary(spans[0].Snapshot))
-				return TagsList;
+            bool parsingSuccess = taggingInfo.Key;
 
-            ResetCacheAndFlags(spans[0].Snapshot);		
-			GetTagsFromSnapshot(Cache, spans);
-			TagsList.AddRange(tags);
-			return TagsList;
-		}
+            if (!parsingSuccess)
+                return Enumerable.Empty<ITagSpan<IClassificationTag>>();
+
+            return taggingInfo.Value;
+        }
+
+        protected internal override IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot)
+        {
+            GetTagsFromSnapshot(snapshot);
+            tagsCache.AddTags(tagsBag);
+            return TagsCache;
+        }
 
         protected internal override void ResetCacheAndFlags(ITextSnapshot newCache)
         {
             base.ResetCacheAndFlags(newCache);
-            tags.Clear();
+            tagsBag.Clear();
         }
 
-        private void GetTagsFromSnapshot(ITextSnapshot newSnapshot, NormalizedSnapshotSpanCollection spans)
+        private void GetTagsFromSnapshot(ITextSnapshot newSnapshot)
 		{
 			string wholeText = newSnapshot.GetText();
             var matches = RegExpressions.BQLSelectCommandRegex
@@ -96,7 +108,7 @@ namespace PX.Analyzers.Coloriser
 			Span span = new Span(offset, selectOp.Length);
 			SnapshotSpan snapshotSpan = new SnapshotSpan(newSnapshot, span);
 			var tag = new TagSpan<IClassificationTag>(snapshotSpan, new ClassificationTag(Provider.BqlOperatorType));
-			tags.Add(tag);
+			tagsBag.Add(tag);
 		}
 
 		private void GetBqlParameterTags(ITextSnapshot newSnapshot, string bqlCommand, int offset)
@@ -155,7 +167,7 @@ namespace PX.Analyzers.Coloriser
 			Span span = new Span(startIndex, tagContent.Length);
 			SnapshotSpan snapshotSpan = new SnapshotSpan(newSnapshot, span);
 			var tag = new TagSpan<IClassificationTag>(snapshotSpan, new ClassificationTag(classType));
-			tags.Add(tag);
-		}
-	}
+			tagsBag.Add(tag);
+		}       
+    }
 }
