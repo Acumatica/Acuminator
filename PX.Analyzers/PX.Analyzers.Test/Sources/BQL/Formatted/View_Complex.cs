@@ -30,8 +30,7 @@ namespace PX.Objects.AR
 				And<ARRegister.hold, Equal<boolFalse>, 
 				And<ARRegister.voided, Equal<boolFalse>, 
 				And<ARRegister.scheduled, Equal<boolFalse>, 
-				And<
-					Where<BalancedARDocument.released, Equal<boolFalse>,
+				And<Where<BalancedARDocument.released, Equal<boolFalse>,
 					And<BalancedARDocument.origModule, Equal<GL.BatchModule.moduleAR>,
 					Or<BalancedARDocument.openDoc, Equal<boolTrue>, 
 					And<ARAdjust.adjdRefNbr, IsNotNull>>>>>>>>>> 
