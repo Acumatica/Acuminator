@@ -11,8 +11,10 @@ namespace PX.Objects
 	{
 		public PXSelectJoin<
 			APAdjust,
-			InnerJoin<APPayment, On<APPayment.docType, Equal<APAdjust.adjgDocType>, And<APPayment.refNbr, Equal<APAdjust.adjgRefNbr>>>,
-			InnerJoin<CurrencyInfo, On<CurrencyInfo.curyInfoID, Equal<APPayment.curyInfoID>>>>,
+			InnerJoin<APPayment, 
+				On<APPayment.docType, Equal<APAdjust.adjgDocType>, And<APPayment.refNbr, Equal<APAdjust.adjgRefNbr>>>,
+			InnerJoin<CurrencyInfo, 
+				On<CurrencyInfo.curyInfoID, Equal<APPayment.curyInfoID>>>>,
 			Where<APAdjust.adjdDocType, Equal<Current<APInvoice.docType>>, And<APAdjust.adjdRefNbr, Equal<Current<APInvoice.refNbr>>>>>
 			Adjustments;
 	}

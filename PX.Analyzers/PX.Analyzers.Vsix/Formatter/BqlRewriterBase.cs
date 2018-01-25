@@ -38,6 +38,11 @@ namespace PX.Analyzers.Vsix.Formatter
 				.Type as INamedTypeSymbol;
 		}
 
+		protected INamedTypeSymbol GetOriginalTypeSymbol(SyntaxNode node)
+		{
+			return GetTypeSymbol(node)?.OriginalDefinition;
+		}
+
 		protected T OnNewLineAndIndented<T>(T node)
 			where T : SyntaxNode
 		{

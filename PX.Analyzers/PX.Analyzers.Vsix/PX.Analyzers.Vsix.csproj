@@ -291,6 +291,7 @@
     <Compile Include="Formatter\BqlContext.cs" />
     <Compile Include="Formatter\BqlFirstTableRewriter.cs" />
     <Compile Include="Formatter\BqlFormatter.cs" />
+    <Compile Include="Formatter\BqlJoinRewriter.cs" />
     <Compile Include="Formatter\BqlRewriter.cs" />
     <Compile Include="Formatter\BqlRewriterBase.cs" />
     <Compile Include="Formatter\BqlStatementRewriter.cs" />
