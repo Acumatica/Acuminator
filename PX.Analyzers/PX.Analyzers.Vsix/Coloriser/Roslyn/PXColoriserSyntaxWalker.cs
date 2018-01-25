@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Classification;
@@ -26,36 +27,45 @@ namespace PX.Analyzers.Coloriser
 		{
             private const string varKeyword = "var";
 
+            private long visitedNodesCounter = 0;
             private readonly PXRoslynColorizerTagger tagger;
 			private readonly ParsedDocument document;
             private int braceLevel;
             private bool isInsideBqlCommand;
+            private readonly CancellationToken cancellationToken;
 
-			public PXColoriserSyntaxWalker(PXRoslynColorizerTagger aTagger, ParsedDocument parsedDocument) : base(SyntaxWalkerDepth.Node)
+			public PXColoriserSyntaxWalker(PXRoslynColorizerTagger aTagger, ParsedDocument parsedDocument, CancellationToken cToken) :
+                                      base(SyntaxWalkerDepth.Node)
 			{
 				aTagger.ThrowOnNull(nameof(aTagger));
 				parsedDocument.ThrowOnNull(nameof(parsedDocument));
 
 				tagger = aTagger;
 				document = parsedDocument;
-			}
+                cancellationToken = cToken;
+            }
 
 			public override void VisitIdentifierName(IdentifierNameSyntax node)
 			{
                 string nodeText = node.Identifier.ValueText;
                 TextSpan span = node.Span;
 
-                if (IsVar(nodeText) /* || SearchIdentifierInSymbolsCache(span, node, nodeText)*/)
+                if (cancellationToken.IsCancellationRequested || IsVar(nodeText) /* || SearchIdentifierInSymbolsCache(span, node, nodeText)*/)
                     return;
               
                 ITypeSymbol typeSymbol = document.SemanticModel.GetSymbolInfo(node).Symbol as ITypeSymbol;
 
                 if (typeSymbol == null)
                 {
-                    base.VisitIdentifierName(node);
+                    if (!cancellationToken.IsCancellationRequested)
+                        base.VisitIdentifierName(node);
+
                     return;
                 }
-               
+
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
 				if (typeSymbol.IsDAC())
 				{
                     //AddTagAndCacheIt(nodeText, TypeNames.IBqlTable, span, tagger.Provider.DacType);		
@@ -86,10 +96,15 @@ namespace PX.Analyzers.Coloriser
                     //AddTagAndCacheIt(nodeText, TypeNames.IBqlCreator, span, tagger.Provider.BqlOperatorType);
                     AddTag(span, tagger.Provider.BqlOperatorType);
                 }
-			}
+
+                UpdateCodeEditorIfNecessary();
+            }
 
             public override void VisitGenericName(GenericNameSyntax genericNode)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
                 var identifier = genericNode.Identifier;  //The property hides the creation of new node and some other overhead. Must be cautious with Roslyn properties
                 string nodeText = identifier.ValueText;
                 TextSpan span = identifier.Span;
@@ -104,16 +119,24 @@ namespace PX.Analyzers.Coloriser
               
                 if (typeSymbol == null)
                 {
-                    base.VisitGenericName(genericNode);
+                    if (!cancellationToken.IsCancellationRequested)
+                        base.VisitGenericName(genericNode);
+
                     return;
                 }
+
+                if (cancellationToken.IsCancellationRequested)
+                    return;
 
                 if (typeSymbol.IsBqlCommand())
                 {
                     isInsideBqlCommand = true;
                     AddTag(span, tagger.Provider.BqlOperatorType);
-                   // AddTagAndCacheIt(nodeText, TypeNames.BqlCommand, span, tagger.Provider.BqlOperatorType);
-                    base.VisitGenericName(genericNode);
+                    // AddTagAndCacheIt(nodeText, TypeNames.BqlCommand, span, tagger.Provider.BqlOperatorType);
+
+                    if (!cancellationToken.IsCancellationRequested)
+                        base.VisitGenericName(genericNode);
+
                     isInsideBqlCommand = false;
                     return;
                 }
@@ -127,12 +150,18 @@ namespace PX.Analyzers.Coloriser
                     AddTag(span, tagger.Provider.BqlOperatorType);
                     //AddTagAndCacheIt(nodeText, TypeNames.IBqlCreator, span, tagger.Provider.BqlOperatorType);
                 }
-			           
-                base.VisitGenericName(genericNode);
+
+                if (!cancellationToken.IsCancellationRequested)
+                    base.VisitGenericName(genericNode);
+
+                UpdateCodeEditorIfNecessary();
             }
 
             public override void VisitQualifiedName(QualifiedNameSyntax node)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
                 string nodeText = node.ToString();
                 TextSpan leftSpan = node.Left.Span;
                 TextSpan rightSpan = node.Right.Span;
@@ -147,9 +176,14 @@ namespace PX.Analyzers.Coloriser
 
                 if (typeSymbol == null)
                 {
-                    base.VisitQualifiedName(node);
+                    if (!cancellationToken.IsCancellationRequested)
+                        base.VisitQualifiedName(node);
+
                     return;
                 }
+
+                if (cancellationToken.IsCancellationRequested)
+                    return;
 
                 if (typeSymbol.IsBqlConstant())
                 {
@@ -159,30 +193,50 @@ namespace PX.Analyzers.Coloriser
                     //document.SymbolsCache.AddNodeToCache(nodeText, TypeNames.Constant);                  
                 }
 
-                base.VisitQualifiedName(node);
+                if (!cancellationToken.IsCancellationRequested)
+                    base.VisitQualifiedName(node);
+
+                UpdateCodeEditorIfNecessary();
             }
           
             public override void VisitTypeArgumentList(TypeArgumentListSyntax node)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
                 if (!isInsideBqlCommand)
                 {
-                    base.VisitTypeArgumentList(node);
+                    if (!cancellationToken.IsCancellationRequested)
+                        base.VisitTypeArgumentList(node);
+
                     return;
                 }
 
                 braceLevel++;
                 
-                if (braceLevel <= Constants.MaxBraceLevel)
+                if (braceLevel <= Constants.MaxBraceLevel && !cancellationToken.IsCancellationRequested)
                 {
                     IClassificationType braceClassificationType = tagger.Provider.BraceTypeByLevel[braceLevel];
                     AddTag(node.LessThanToken.Span, braceClassificationType);
                     AddTag(node.GreaterThanToken.Span, braceClassificationType);
                 }
 
-
-                base.VisitTypeArgumentList(node);
+                if (!cancellationToken.IsCancellationRequested)
+                    base.VisitTypeArgumentList(node);
 
                 braceLevel--;
+                UpdateCodeEditorIfNecessary();
+            }
+
+            public override void Visit(SyntaxNode node)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
+                if (visitedNodesCounter < long.MaxValue)
+                    visitedNodesCounter++;
+
+                base.Visit(node);
             }
 
             #region Visit XML comments methods
@@ -208,6 +262,33 @@ namespace PX.Analyzers.Coloriser
             #endregion
 
 
+            private void AddTag(TextSpan span, IClassificationType classificationType)
+            {
+                ITagSpan<IClassificationTag> tag = span.ToTagSpan(tagger.Snapshot, classificationType);
+                tagger.TagsCache.AddTag(tag);
+            }
+
+            private void UpdateCodeEditorIfNecessary()
+            {
+                if (visitedNodesCounter <= Constants.ChunkSize || cancellationToken.IsCancellationRequested)
+                    return;
+
+                visitedNodesCounter = 0;
+                tagger.TagsCache.PersistIntermediateResult();
+                tagger.RaiseTagsChanged();
+            }
+
+            /// <summary>
+            /// Check if node is var keyword
+            /// </summary>
+            /// <param name="nodeText">The node text.</param>
+            /// <returns/>         
+            private bool IsVar(string nodeText) => nodeText == varKeyword;
+
+            #region Commented methods for symbol's cache optimization
+
+
+
             //private bool SearchIdentifierInSymbolsCache(TextSpan span, IdentifierNameSyntax node, string nodeText)
             //{
             //    var parentKind = node.Parent.Kind();
@@ -222,7 +303,7 @@ namespace PX.Analyzers.Coloriser
             //        case SyntaxKind.PointerMemberAccessExpression:
             //            return false;
             //    }
-                 
+
             //    if (document.SymbolsCache.IsDAC(nodeText))
             //    {
             //        AddTag(span, tagger.Provider.DacType);
@@ -274,13 +355,7 @@ namespace PX.Analyzers.Coloriser
             //    return true;
             //}
 
-            private void AddTag(TextSpan span, IClassificationType classificationType)
-			{
-				ITagSpan<IClassificationTag> tag = span.ToTagSpan(tagger.Snapshot, classificationType);
 
-				if (tag != null)
-					tagger.TagsCache.Add(tag);
-			}
 
             //private void AddTagAndCacheIt(string cachedText, string tagTypeName, TextSpan span, IClassificationType classificationType)
             //{
@@ -292,13 +367,7 @@ namespace PX.Analyzers.Coloriser
             //        document.SymbolsCache.AddNodeToCache(cachedText, tagTypeName);
             //    }
             //}
-
-            /// <summary>
-            /// More optimized
-            /// </summary>
-            /// <param name="nodeText">The node text.</param>
-            /// <returns/>         
-            private bool IsVar(string nodeText) => nodeText == varKeyword;
-        }	
-	}
+            #endregion
+        }
+    }
 }

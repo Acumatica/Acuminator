@@ -31,9 +31,9 @@ namespace PX.Analyzers.Coloriser
         public const int MaxBraceLevel = 9;
 
         /// <summary>
-        /// Standard delay for asynchronous taggers
+        /// Count of visited nodes for Text editor update in Roslyn colorizer
         /// </summary>
-        public const int DefaultAsyncDelay = 100;
+        public const long ChunkSize = 200;
     }
 
 	public static class Labels

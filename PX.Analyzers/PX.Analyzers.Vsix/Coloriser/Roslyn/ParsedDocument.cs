@@ -5,7 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent; 
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using PX.Analyzers.Vsix.Utilities;
+
 
 using Path = System.IO.Path;
 
@@ -45,8 +48,11 @@ namespace PX.Analyzers.Coloriser
             //SymbolsCache = new ParsedSymbolsCache();
         }
 
-        public static async Task<ParsedDocument> Resolve(ITextBuffer buffer, ITextSnapshot snapshot)
+        public static async Task<ParsedDocument> Resolve(ITextBuffer buffer, ITextSnapshot snapshot, CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+                return null;
+
             Workspace workspace = buffer.GetWorkspace();
             Document document = snapshot.GetOpenDocumentInCurrentContextWithChanges();
             
@@ -62,18 +68,36 @@ namespace PX.Analyzers.Coloriser
                 return new ParsedDocument(workspace, document, semanticModel, syntaxRoot, snapshot);
             }
 
-            // the ConfigureAwait() calls are important, otherwise we'll deadlock VS
-            Task<SemanticModel> semanticModelTask = document.GetSemanticModelAsync();
-            Task<SyntaxNode> syntaxRootTask = document.GetSyntaxRootAsync();
+            if (cancellationToken.IsCancellationRequested)
+                return null;
 
-            await Task.WhenAll(semanticModelTask, syntaxRootTask)
-                      .ConfigureAwait(continueOnCapturedContext: false);
+            // the ConfigureAwait() calls are important, otherwise we'll deadlock VS
+            Task<SemanticModel> semanticModelTask = document.GetSemanticModelAsync(cancellationToken);
+            Task<SyntaxNode> syntaxRootTask = document.GetSyntaxRootAsync(cancellationToken);
+
+            bool success = await Task.WhenAll(semanticModelTask, syntaxRootTask)
+                                     .TryAwait();
+
+            if (!success)
+                return null;
+
+            if (!semanticModelTask.IsCompleted || !syntaxRootTask.IsCompleted || cancellationToken.IsCancellationRequested)
+            {
+                return null;
+            }
 
             syntaxRoot = syntaxRootTask.Result;
 
             //Add reference to PX.Data
             Compilation newCompilation = semanticModelTask.Result.Compilation.AddReferences(PXDataReference);
+
+            if (cancellationToken.IsCancellationRequested)
+                return null;
+
             semanticModel = newCompilation.GetSemanticModel(syntaxRoot.SyntaxTree);
+
+            if (cancellationToken.IsCancellationRequested)
+                return null;
 
             return new ParsedDocument(workspace, document, semanticModel, syntaxRoot, snapshot);
         }

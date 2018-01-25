@@ -16,10 +16,14 @@ namespace PX.Analyzers.Coloriser
       
         IReadOnlyCollection<ITagSpan<TTag>> ProcessedTags { get; }
 
+        void PersistIntermediateResult();
+
         void CompleteProcessing();
 
         void Reset();
 
-        void AddTag(ITagSpan<TTag> tag);       
+        void AddTag(ITagSpan<TTag> tag);
+
+        void AddTags(IEnumerable<ITagSpan<TTag>> tags);
     }
 }

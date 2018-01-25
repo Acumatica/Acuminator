@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using PX.Analyzers.Vsix.Utilities;
-
+using System.Threading;
 
 namespace PX.Analyzers.Coloriser
 {
@@ -30,7 +30,21 @@ namespace PX.Analyzers.Coloriser
 		{                    
 		}
 
-        internal override IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot)
+        protected internal async override Task<IEnumerable<ITagSpan<IClassificationTag>>> GetTagsAsyncImplementation(ITextSnapshot snapshot,
+                                                                                                               CancellationToken cancellationToken)
+        {
+            var taggingInfo = await Task.Run(() => GetTagsSynchronousImplementation(snapshot))
+                                        .TryAwait();
+
+            bool parsingSuccess = taggingInfo.Key;
+
+            if (!parsingSuccess)
+                return Enumerable.Empty<ITagSpan<IClassificationTag>>();
+
+            return taggingInfo.Value;
+        }
+
+        protected internal override IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot)
         {
             GetTagsFromSnapshot(snapshot);
             tagsCache.AddTags(tagsBag);
@@ -154,6 +168,6 @@ namespace PX.Analyzers.Coloriser
 			SnapshotSpan snapshotSpan = new SnapshotSpan(newSnapshot, span);
 			var tag = new TagSpan<IClassificationTag>(snapshotSpan, new ClassificationTag(classType));
 			tagsBag.Add(tag);
-		}
-	}
+		}       
+    }
 }

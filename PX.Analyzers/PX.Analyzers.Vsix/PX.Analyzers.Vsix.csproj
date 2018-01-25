@@ -265,6 +265,7 @@
     <Compile Include="AcuminatorVSPackage.cs" />
     <Compile Include="Coloriser\AsyncTagging\Interfaces\ITagsCache.cs" />
     <Compile Include="Coloriser\AsyncTagging\PXColorizerTaggerBaseAsyncTagging.cs" />
+    <Compile Include="Coloriser\AsyncTagging\BackgroundTagging.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheSync.cs" />
     <Compile Include="Coloriser\Utils\EditorExtensions.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheAsync.cs" />
@@ -292,7 +293,7 @@
     <Compile Include="Coloriser\Regex\Utils\RegExpressions.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\TypeNames.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\TypeSymbolColoriserUtils.cs" />
-    <Compile Include="Coloriser\Utils\ConcurrentCollectionsExtensions.cs" />
+    <Compile Include="Coloriser\Utils\ConcurrentExtensions.cs" />
     <Compile Include="Coloriser\Utils\EnumerableExtensions.cs" />
     <Compile Include="Coloriser\Utils\ExceptionExtensions.cs" />
     <Compile Include="Coloriser\Utils\StringExtensions.cs" />
