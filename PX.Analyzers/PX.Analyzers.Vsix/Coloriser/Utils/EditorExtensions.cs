@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.Utilities;
 
 
 
-namespace PX.Analyzers.Coloriser
+namespace PX.Analyzers.Vsix.Utilities
 {
     public static class EditorExtensions
     {

@@ -1,10 +1,12 @@
-﻿using Microsoft.VisualStudio.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
-using System;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Linq;
+using PX.Analyzers.Vsix.Utilities;
+
+
 
 namespace PX.Analyzers.Coloriser
 {
@@ -32,7 +34,7 @@ namespace PX.Analyzers.Coloriser
     /// <summary>
     /// A colorizer tagger base class.
     /// </summary>
-    public abstract class PXColorizerTaggerBase : ITagger<IClassificationTag>, IDisposable
+    public abstract partial class PXColorizerTaggerBase : ITagger<IClassificationTag>, IDisposable
     {
 #pragma warning disable CS0067
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
@@ -42,23 +44,19 @@ namespace PX.Analyzers.Coloriser
 
         protected PXColorizerTaggerProvider Provider { get; }
 
-        protected ITextSnapshot Cache { get; private set; }
+        protected internal ITextSnapshot Snapshot { get; private set; }
 
         protected bool ColoringSettingsChanged { get; private set; }
 
         protected bool SubscribedToSettingsChanges { get; private set; }
-
+       
         private readonly bool cacheCheckingEnabled;
 
         /// <summary>
         /// The type of the tagger.
         /// </summary>      
         public abstract TaggerType TaggerType { get; }
-
-        protected List<ITagSpan<IClassificationTag>> TagsList { get; } = new List<ITagSpan<IClassificationTag>>();
-
-        public abstract IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans);
-
+            
         protected PXColorizerTaggerBase(ITextBuffer buffer, PXColorizerTaggerProvider aProvider, bool subscribeToSettingsChanges, 
                                         bool useCacheChecking)
         {
@@ -80,16 +78,14 @@ namespace PX.Analyzers.Coloriser
                 }
             }
         }
-
+            
         private void ColoringSettingChangedHandler(object sender, Vsix.SettingChangedEventArgs e)
         {
             ColoringSettingsChanged = true;
             RaiseTagsChanged();
         }
 
-        protected bool TagsChangedIsNull() => TagsChanged == null;
-
-        protected void RaiseTagsChanged() => TagsChanged?.Invoke(this, 
+        internal void RaiseTagsChanged() => TagsChanged?.Invoke(this, 
             new SnapshotSpanEventArgs(
                 new SnapshotSpan(Buffer.CurrentSnapshot,
                     new Span(0, Buffer.CurrentSnapshot.Length))));
@@ -97,24 +93,11 @@ namespace PX.Analyzers.Coloriser
         protected internal virtual void ResetCacheAndFlags(ITextSnapshot newCache)
         {
             ColoringSettingsChanged = false;
-            TagsList.Clear();
-            Cache = newCache;
+            TagsCache.Reset();
+            Snapshot = newCache;
         }
 
         protected virtual bool CheckIfRetaggingIsNotNecessary(ITextSnapshot snapshot) =>
-            cacheCheckingEnabled && Cache != null && Cache == snapshot && !ColoringSettingsChanged;
-        
-        public virtual void Dispose()
-        {
-            if (!SubscribedToSettingsChanges)
-                return;
-
-            var genOptionsPage = Provider.Package?.GeneralOptionsPage;
-
-            if (genOptionsPage != null)
-            {
-                genOptionsPage.ColoringSettingChanged -= ColoringSettingChangedHandler;
-            }
-        }
+            cacheCheckingEnabled && Snapshot != null && Snapshot == snapshot && !ColoringSettingsChanged;
     }
 }

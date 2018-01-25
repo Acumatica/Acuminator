@@ -29,6 +29,11 @@ namespace PX.Analyzers.Coloriser
         public const string BraceLevel_9_Format = nameof(BraceLevel_9_Format);
 
         public const int MaxBraceLevel = 9;
+
+        /// <summary>
+        /// Count of visited nodes for Text editor update in Roslyn colorizer
+        /// </summary>
+        public const long ChunkSize = 200;
     }
 
 	public static class Labels
