@@ -29,6 +29,7 @@ namespace PX.Analyzers.Test
 		[EmbeddedFileData(@"BQL\Raw\View_Complex.cs", @"BQL\Formatted\View_Complex.cs")]
 		[EmbeddedFileData(@"BQL\Raw\View_NestedWhere.cs", @"BQL\Formatted\View_NestedWhere.cs")]
 		[EmbeddedFileData(@"BQL\Raw\View_EmptyLines.cs", @"BQL\Formatted\View_EmptyLines.cs")]
+		[EmbeddedFileData(@"BQL\Raw\Search_Join.cs", @"BQL\Formatted\Search_Join.cs")]
 		public void FormatDocument(string text, string expected)
 		{
 			string actual = Format(text);
@@ -45,6 +46,7 @@ namespace PX.Analyzers.Test
 		[EmbeddedFileData(@"BQL\Formatted\View_Complex.cs")]
 		[EmbeddedFileData(@"BQL\Formatted\View_NestedWhere.cs")]
 		[EmbeddedFileData(@"BQL\Formatted\View_EmptyLines.cs")]
+		[EmbeddedFileData(@"BQL\Formatted\Search_Join.cs")]
 		public void ShouldNotDoubleFormat(string expected)
 		{
 			string actual = Format(expected);
