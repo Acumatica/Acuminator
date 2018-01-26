@@ -7,10 +7,10 @@ using System.Windows;
 namespace PX.Analyzers.Coloriser
 {
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = Constants.BQLOperatorFormat)]
-    [Name(Constants.BQLOperatorFormat)]
+    [ClassificationType(ClassificationTypeNames = ColoringConstants.BQLOperatorFormat)]
+    [Name(ColoringConstants.BQLOperatorFormat)]
     [UserVisible(true)]
-    [Order(After = Constants.Priority)]
+    [Order(After = ColoringConstants.Priority)]
     internal sealed class BQLOperatorFormat : ClassificationFormatDefinition
     {
         public BQLOperatorFormat()
@@ -23,10 +23,10 @@ namespace PX.Analyzers.Coloriser
     }
 
     [Export(typeof(EditorFormatDefinition))]
-	[ClassificationType(ClassificationTypeNames = Constants.DacFormat)]
-	[Name(Constants.DacFormat)]
+	[ClassificationType(ClassificationTypeNames = ColoringConstants.DacFormat)]
+	[Name(ColoringConstants.DacFormat)]
 	[UserVisible(true)]
-    [Order(After = Constants.BQLOperatorFormat)]
+    [Order(After = ColoringConstants.BQLOperatorFormat)]
     internal sealed class DACFormat : ClassificationFormatDefinition
 	{
 		public DACFormat()
@@ -39,10 +39,10 @@ namespace PX.Analyzers.Coloriser
 	}
 
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = Constants.DacExtensionFormat)]
-    [Name(Constants.DacExtensionFormat)]
+    [ClassificationType(ClassificationTypeNames = ColoringConstants.DacExtensionFormat)]
+    [Name(ColoringConstants.DacExtensionFormat)]
     [UserVisible(true)]
-    [Order(After = Constants.DacFormat)]
+    [Order(After = ColoringConstants.DacFormat)]
     internal sealed class DacExtensionFormat : ClassificationFormatDefinition
     {
         public DacExtensionFormat()
@@ -55,10 +55,10 @@ namespace PX.Analyzers.Coloriser
     }
 
     [Export(typeof(EditorFormatDefinition))]
-	[ClassificationType(ClassificationTypeNames = Constants.DacFieldFormat)]
-	[Name(Constants.DacFieldFormat)]
+	[ClassificationType(ClassificationTypeNames = ColoringConstants.DacFieldFormat)]
+	[Name(ColoringConstants.DacFieldFormat)]
 	[UserVisible(true)]
-    [Order(After = Constants.DacExtensionFormat)]
+    [Order(After = ColoringConstants.DacExtensionFormat)]
     internal sealed class DACFieldFormat : ClassificationFormatDefinition
 	{
 		public DACFieldFormat()
@@ -71,10 +71,10 @@ namespace PX.Analyzers.Coloriser
 	}
 
 	[Export(typeof(EditorFormatDefinition))]
-	[ClassificationType(ClassificationTypeNames = Constants.BQLParameterFormat)]
-	[Name(Constants.BQLParameterFormat)]
+	[ClassificationType(ClassificationTypeNames = ColoringConstants.BQLParameterFormat)]
+	[Name(ColoringConstants.BQLParameterFormat)]
 	[UserVisible(true)]
-    [Order(After = Constants.DacFieldFormat)]
+    [Order(After = ColoringConstants.DacFieldFormat)]
     internal sealed class BQLParameterFormat : ClassificationFormatDefinition
 	{
 		public BQLParameterFormat()
@@ -87,10 +87,10 @@ namespace PX.Analyzers.Coloriser
 	}
 
 	[Export(typeof(EditorFormatDefinition))]
-	[ClassificationType(ClassificationTypeNames = Constants.BQLConstantPrefixFormat)]
-	[Name(Constants.BQLConstantPrefixFormat)]
+	[ClassificationType(ClassificationTypeNames = ColoringConstants.BQLConstantPrefixFormat)]
+	[Name(ColoringConstants.BQLConstantPrefixFormat)]
 	[UserVisible(true)]
-	[Order(After = Constants.DacFieldFormat)]
+	[Order(After = ColoringConstants.DacFieldFormat)]
 	internal sealed class BQLConstantPrefixFormat : ClassificationFormatDefinition
 	{
 		public BQLConstantPrefixFormat()
@@ -103,10 +103,10 @@ namespace PX.Analyzers.Coloriser
 	}
 
 	[Export(typeof(EditorFormatDefinition))]
-	[ClassificationType(ClassificationTypeNames = Constants.BQLConstantEndingFormat)]
-	[Name(Constants.BQLConstantEndingFormat)]
+	[ClassificationType(ClassificationTypeNames = ColoringConstants.BQLConstantEndingFormat)]
+	[Name(ColoringConstants.BQLConstantEndingFormat)]
 	[UserVisible(true)]
-	[Order(After = Constants.BQLConstantPrefixFormat)]
+	[Order(After = ColoringConstants.BQLConstantPrefixFormat)]
 	internal sealed class BQLConstantEndingFormat : ClassificationFormatDefinition
 	{
 		public BQLConstantEndingFormat()

@@ -286,13 +286,13 @@
     <Compile Include="Coloriser\AsyncTagging\PXColorizerTaggerBaseAsyncTagging.cs" />
     <Compile Include="Coloriser\AsyncTagging\BackgroundTagging.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheSync.cs" />
-    <Compile Include="Coloriser\Outlining\PXOutliningTaggerProvider.cs" />
-    <Compile Include="Coloriser\PXColorizerTaggerProviderBase.cs" />
+    <Compile Include="Coloriser\Constants\OutliningConstants.cs" />
+    <Compile Include="Coloriser\PXTaggerProviderBase.cs" />
     <Compile Include="Coloriser\Utils\EditorExtensions.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheAsync.cs" />
-    <Compile Include="Coloriser\BracesFormats.cs" />
-    <Compile Include="Coloriser\ClassificationTypeDefinitions.cs" />
-    <Compile Include="Coloriser\EditorFormats.cs" />
+    <Compile Include="Coloriser\Formats\BracesFormats.cs" />
+    <Compile Include="Coloriser\Formats\ClassificationTypeDefinitions.cs" />
+    <Compile Include="Coloriser\Formats\EditorFormats.cs" />
     <Compile Include="Coloriser\MainTagger\PXColorizerMainTagger.cs" />
     <Compile Include="Coloriser\PXColorizerTaggerBase.cs" />
     <Compile Include="Coloriser\Regex\PXRegexColorizerTagger.cs" />
@@ -322,7 +322,7 @@
     <Compile Include="Coloriser\Roslyn\ParsedDocument.cs" />
     <Compile Include="Coloriser\Roslyn\PXColoriserSyntaxWalker.cs" />
     <Compile Include="Coloriser\Roslyn\PXRoslynColorizerTagger.cs" />
-    <Compile Include="Coloriser\Constants.cs" />
+    <Compile Include="Coloriser\Constants\ColoringConstants.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\RoslynVSEditorExtensions.cs" />
     <Compile Include="Coloriser\Regex\Utils\RegExpressions.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\TypeNames.cs" />
