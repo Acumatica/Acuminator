@@ -17,14 +17,14 @@ using PX.Analyzers.Vsix;
 
 
 namespace PX.Analyzers.Coloriser
-{
+{  
     [ContentType("CSharp")]
     [TagType(typeof(IClassificationTag))]
     [TagType(typeof(IOutliningRegionTag))]
     [TextViewRole(PredefinedTextViewRoles.Document)]
     [Export(typeof(IViewTaggerProvider))]
     [Export(typeof(ITaggerProvider))]
-    public class PXColorizerTaggerProvider : PXColorizerTaggerProviderBase
+    public class PXColorizerTaggerProvider : PXTaggerProviderBase, IViewTaggerProvider, ITaggerProvider
     {    
         [Import]
         internal IClassificationTypeRegistryService classificationRegistry = null; // Set via MEF
@@ -51,11 +51,47 @@ namespace PX.Analyzers.Coloriser
 		public IClassificationType BqlConstantEndingType { get; protected set; }
 
         public Dictionary<int, IClassificationType> BraceTypeByLevel { get; protected set; }
+
+        public virtual ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer textBuffer)
+        where T : ITag
+        {
+            Initialize();
+
+            if (textView.TextBuffer != textBuffer)
+                return null;
+
+            return CreateTaggerImpl<T>(textBuffer);
+        }
+
+        public ITagger<T> CreateTagger<T>(ITextBuffer textBuffer) 
+        where T : ITag
+        {
+            Initialize();
+
+            return CreateTaggerImpl<T>(textBuffer);
+        }
+
        
-        protected override ITagger<T> CreateTaggerImpl<T>(ITextBuffer textBuffer)
+        protected  ITagger<T> CreateTaggerImpl<T>(ITextBuffer textBuffer)
+        where T: ITag
+        {
+            if (typeof(T) != typeof(IClassificationTag) && typeof(T) != typeof(IOutliningRegionTag))
+                return null;
+
+            Func<ITagger<IClassificationTag>> classificationTaggerFactory = () => TaggerFactory<IClassificationTag>(textBuffer);
+            Func<ITagger<IOutliningRegionTag>> outliningTaggerFactory = () => TaggerFactory<IOutliningRegionTag>(textBuffer);
+            Func<ITagger<T>> factory = () => TaggerFactory<T>(textBuffer);
+
+            textBuffer.Properties.GetOrCreateSingletonProperty(classificationTaggerFactory);
+            textBuffer.Properties.GetOrCreateSingletonProperty(outliningTaggerFactory);
+            return textBuffer.Properties.GetOrCreateSingletonProperty(factory);
+        }
+
+        protected ITagger<TTag> TaggerFactory<TTag>(ITextBuffer textBuffer)
+        where TTag : ITag
         {
             return new PXColorizerMainTagger(textBuffer, this, subscribeToSettingsChanges: true,
-                                             useCacheChecking: true) as ITagger<T>;
+                                             useCacheChecking: true) as ITagger<TTag>;
         }
 
         protected override void Initialize()
@@ -70,34 +106,34 @@ namespace PX.Analyzers.Coloriser
 
         protected void InitializeClassificationTypes()
         {
-            DacType = classificationRegistry.GetClassificationType(Constants.DacFormat);
-            DacExtensionType = classificationRegistry.GetClassificationType(Constants.DacExtensionFormat);
-            FieldType = classificationRegistry.GetClassificationType(Constants.DacFieldFormat);
-            BqlParameterType = classificationRegistry.GetClassificationType(Constants.BQLParameterFormat);
-            BqlOperatorType = classificationRegistry.GetClassificationType(Constants.BQLOperatorFormat);
-			BqlConstantPrefixType = classificationRegistry.GetClassificationType(Constants.BQLConstantPrefixFormat);
-			BqlConstantEndingType = classificationRegistry.GetClassificationType(Constants.BQLConstantEndingFormat);
+            DacType = classificationRegistry.GetClassificationType(ColoringConstants.DacFormat);
+            DacExtensionType = classificationRegistry.GetClassificationType(ColoringConstants.DacExtensionFormat);
+            FieldType = classificationRegistry.GetClassificationType(ColoringConstants.DacFieldFormat);
+            BqlParameterType = classificationRegistry.GetClassificationType(ColoringConstants.BQLParameterFormat);
+            BqlOperatorType = classificationRegistry.GetClassificationType(ColoringConstants.BQLOperatorFormat);
+			BqlConstantPrefixType = classificationRegistry.GetClassificationType(ColoringConstants.BQLConstantPrefixFormat);
+			BqlConstantEndingType = classificationRegistry.GetClassificationType(ColoringConstants.BQLConstantEndingFormat);
 
-            BraceTypeByLevel = new Dictionary<int, IClassificationType>(capacity: Constants.MaxBraceLevel)
+            BraceTypeByLevel = new Dictionary<int, IClassificationType>(capacity: ColoringConstants.MaxBraceLevel)
             {
-                [1] = classificationRegistry.GetClassificationType(Constants.BraceLevel_1_Format),
-                [2] = classificationRegistry.GetClassificationType(Constants.BraceLevel_2_Format),
-                [3] = classificationRegistry.GetClassificationType(Constants.BraceLevel_3_Format),
+                [1] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_1_Format),
+                [2] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_2_Format),
+                [3] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_3_Format),
 
-                [4] = classificationRegistry.GetClassificationType(Constants.BraceLevel_4_Format),
-                [5] = classificationRegistry.GetClassificationType(Constants.BraceLevel_5_Format),
-                [6] = classificationRegistry.GetClassificationType(Constants.BraceLevel_6_Format),
+                [4] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_4_Format),
+                [5] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_5_Format),
+                [6] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_6_Format),
 
-                [7] = classificationRegistry.GetClassificationType(Constants.BraceLevel_7_Format),
-                [8] = classificationRegistry.GetClassificationType(Constants.BraceLevel_8_Format),
-                [9] = classificationRegistry.GetClassificationType(Constants.BraceLevel_9_Format),
+                [7] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_7_Format),
+                [8] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_8_Format),
+                [9] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_9_Format),
 
-                [10] = classificationRegistry.GetClassificationType(Constants.BraceLevel_10_Format),
-                [11] = classificationRegistry.GetClassificationType(Constants.BraceLevel_11_Format),
-                [12] = classificationRegistry.GetClassificationType(Constants.BraceLevel_12_Format),
+                [10] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_10_Format),
+                [11] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_11_Format),
+                [12] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_12_Format),
 
-                [13] = classificationRegistry.GetClassificationType(Constants.BraceLevel_13_Format),
-                [14] = classificationRegistry.GetClassificationType(Constants.BraceLevel_14_Format),
+                [13] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_13_Format),
+                [14] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_14_Format),
             }; 
         }
 

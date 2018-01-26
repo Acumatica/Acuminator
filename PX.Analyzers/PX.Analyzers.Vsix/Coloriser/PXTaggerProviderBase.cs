@@ -18,36 +18,15 @@ using PX.Analyzers.Vsix;
 
 namespace PX.Analyzers.Coloriser
 {
-    public abstract class PXColorizerTaggerProviderBase : IViewTaggerProvider, ITaggerProvider
+    public abstract class PXTaggerProviderBase
     {    
-        protected bool IsInitialized { get; set; }
+        protected bool IsInitialized { get; private set; }
         
         public AcuminatorVSPackage Package { get; protected set; }
 
-		public virtual ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer textBuffer)
-        where T : ITag
-		{            
-            Initialize();
-            
-            if (textView.TextBuffer != textBuffer)
-                return null;
-
-            Func<ITagger<T>> taggerFactory = () => CreateTaggerImpl<T>(textBuffer);
-            return textBuffer.Properties.GetOrCreateSingletonProperty(taggerFactory);
-        }
-
-        public ITagger<T> CreateTagger<T>(ITextBuffer textBuffer) where T : ITag
-        {
-            Initialize();
-
-            Func<ITagger<T>> taggerFactory = () => CreateTaggerImpl<T>(textBuffer);
-            return textBuffer.Properties.GetOrCreateSingletonProperty<ITagger<T>>(taggerFactory);
-        }
-
-        protected abstract ITagger<T> CreateTaggerImpl<T>(ITextBuffer textBuffer)
-        where T : ITag;
-        
-
+        /// <summary>
+        /// Initializes the reference to the Package if needed and sets the <see cref="IsInitialized"/> flag if all initialized correctly.
+        /// </summary>
         protected virtual void Initialize()
         {
             if (IsInitialized)

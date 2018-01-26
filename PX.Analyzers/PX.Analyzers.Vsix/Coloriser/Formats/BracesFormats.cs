@@ -9,10 +9,10 @@ using Microsoft.VisualStudio.Utilities;
 namespace PX.Analyzers.Coloriser
 {
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = Constants.BraceLevel_1_Format)]
-    [Name(Constants.BraceLevel_1_Format)]
+    [ClassificationType(ClassificationTypeNames = ColoringConstants.BraceLevel_1_Format)]
+    [Name(ColoringConstants.BraceLevel_1_Format)]
     [UserVisible(true)]
-    [Order(After = Constants.BQLConstantEndingFormat)]
+    [Order(After = ColoringConstants.BQLConstantEndingFormat)]
     internal sealed class BraceLevel_1_Format : ClassificationFormatDefinition
     {
         public BraceLevel_1_Format()
@@ -24,10 +24,10 @@ namespace PX.Analyzers.Coloriser
     }
 
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = Constants.BraceLevel_2_Format)]
-    [Name(Constants.BraceLevel_2_Format)]
+    [ClassificationType(ClassificationTypeNames = ColoringConstants.BraceLevel_2_Format)]
+    [Name(ColoringConstants.BraceLevel_2_Format)]
     [UserVisible(true)]
-    [Order(After = Constants.BraceLevel_1_Format)]
+    [Order(After = ColoringConstants.BraceLevel_1_Format)]
     internal sealed class BraceLevel_2_Format : ClassificationFormatDefinition
     {
         public BraceLevel_2_Format()
@@ -39,10 +39,10 @@ namespace PX.Analyzers.Coloriser
     }
 
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = Constants.BraceLevel_3_Format)]
-    [Name(Constants.BraceLevel_3_Format)]
+    [ClassificationType(ClassificationTypeNames = ColoringConstants.BraceLevel_3_Format)]
+    [Name(ColoringConstants.BraceLevel_3_Format)]
     [UserVisible(true)]
-    [Order(After = Constants.BraceLevel_2_Format)]
+    [Order(After = ColoringConstants.BraceLevel_2_Format)]
     internal sealed class BraceLevel_3_Format : ClassificationFormatDefinition
     {
         public BraceLevel_3_Format()
@@ -55,10 +55,10 @@ namespace PX.Analyzers.Coloriser
 
     //*********************************************************************************************************************
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = Constants.BraceLevel_4_Format)]
-    [Name(Constants.BraceLevel_4_Format)]
+    [ClassificationType(ClassificationTypeNames = ColoringConstants.BraceLevel_4_Format)]
+    [Name(ColoringConstants.BraceLevel_4_Format)]
     [UserVisible(true)]
-    [Order(After = Constants.BraceLevel_3_Format)]
+    [Order(After = ColoringConstants.BraceLevel_3_Format)]
     internal sealed class BraceLevel_4_Format : ClassificationFormatDefinition
     {
         public BraceLevel_4_Format()
@@ -70,10 +70,10 @@ namespace PX.Analyzers.Coloriser
     }
 
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = Constants.BraceLevel_5_Format)]
-    [Name(Constants.BraceLevel_5_Format)]
+    [ClassificationType(ClassificationTypeNames = ColoringConstants.BraceLevel_5_Format)]
+    [Name(ColoringConstants.BraceLevel_5_Format)]
     [UserVisible(true)]
-    [Order(After = Constants.BraceLevel_4_Format)]
+    [Order(After = ColoringConstants.BraceLevel_4_Format)]
     internal sealed class BraceLevel_5_Format : ClassificationFormatDefinition
     {
         public BraceLevel_5_Format()
@@ -85,10 +85,10 @@ namespace PX.Analyzers.Coloriser
     }
 
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = Constants.BraceLevel_6_Format)]
-    [Name(Constants.BraceLevel_6_Format)]
+    [ClassificationType(ClassificationTypeNames = ColoringConstants.BraceLevel_6_Format)]
+    [Name(ColoringConstants.BraceLevel_6_Format)]
     [UserVisible(true)]
-    [Order(After = Constants.BraceLevel_5_Format)]
+    [Order(After = ColoringConstants.BraceLevel_5_Format)]
     internal sealed class BraceLevel_6_Format : ClassificationFormatDefinition
     {
         public BraceLevel_6_Format()
@@ -101,10 +101,10 @@ namespace PX.Analyzers.Coloriser
 
     //********************************************************************************************************************* 
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = Constants.BraceLevel_7_Format)]
-    [Name(Constants.BraceLevel_7_Format)]
+    [ClassificationType(ClassificationTypeNames = ColoringConstants.BraceLevel_7_Format)]
+    [Name(ColoringConstants.BraceLevel_7_Format)]
     [UserVisible(true)]
-    [Order(After = Constants.BraceLevel_6_Format)]
+    [Order(After = ColoringConstants.BraceLevel_6_Format)]
     internal sealed class BraceLevel_7_Format : ClassificationFormatDefinition
     {
         public BraceLevel_7_Format()
@@ -116,10 +116,10 @@ namespace PX.Analyzers.Coloriser
     }
 
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = Constants.BraceLevel_8_Format)]
-    [Name(Constants.BraceLevel_8_Format)]
+    [ClassificationType(ClassificationTypeNames = ColoringConstants.BraceLevel_8_Format)]
+    [Name(ColoringConstants.BraceLevel_8_Format)]
     [UserVisible(true)]
-    [Order(After = Constants.BraceLevel_7_Format)]
+    [Order(After = ColoringConstants.BraceLevel_7_Format)]
     internal sealed class BraceLevel_8_Format : ClassificationFormatDefinition
     {
         public BraceLevel_8_Format()
@@ -131,10 +131,10 @@ namespace PX.Analyzers.Coloriser
     }
 
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = Constants.BraceLevel_9_Format)]
-    [Name(Constants.BraceLevel_9_Format)]
+    [ClassificationType(ClassificationTypeNames = ColoringConstants.BraceLevel_9_Format)]
+    [Name(ColoringConstants.BraceLevel_9_Format)]
     [UserVisible(true)]
-    [Order(After = Constants.BraceLevel_8_Format)]
+    [Order(After = ColoringConstants.BraceLevel_8_Format)]
     internal sealed class BraceLevel_9_Format : ClassificationFormatDefinition
     {
         public BraceLevel_9_Format()
@@ -147,10 +147,10 @@ namespace PX.Analyzers.Coloriser
 
     //********************************************************************************************************************* 
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = Constants.BraceLevel_10_Format)]
-    [Name(Constants.BraceLevel_10_Format)]
+    [ClassificationType(ClassificationTypeNames = ColoringConstants.BraceLevel_10_Format)]
+    [Name(ColoringConstants.BraceLevel_10_Format)]
     [UserVisible(true)]
-    [Order(After = Constants.BraceLevel_9_Format)]
+    [Order(After = ColoringConstants.BraceLevel_9_Format)]
     internal sealed class BraceLevel_10_Format : ClassificationFormatDefinition
     {
         public BraceLevel_10_Format()
@@ -162,10 +162,10 @@ namespace PX.Analyzers.Coloriser
     }
 
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = Constants.BraceLevel_11_Format)]
-    [Name(Constants.BraceLevel_11_Format)]
+    [ClassificationType(ClassificationTypeNames = ColoringConstants.BraceLevel_11_Format)]
+    [Name(ColoringConstants.BraceLevel_11_Format)]
     [UserVisible(true)]
-    [Order(After = Constants.BraceLevel_10_Format)]
+    [Order(After = ColoringConstants.BraceLevel_10_Format)]
     internal sealed class BraceLevel_11_Format : ClassificationFormatDefinition
     {
         public BraceLevel_11_Format()
@@ -177,10 +177,10 @@ namespace PX.Analyzers.Coloriser
     }
 
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = Constants.BraceLevel_12_Format)]
-    [Name(Constants.BraceLevel_12_Format)]
+    [ClassificationType(ClassificationTypeNames = ColoringConstants.BraceLevel_12_Format)]
+    [Name(ColoringConstants.BraceLevel_12_Format)]
     [UserVisible(true)]
-    [Order(After = Constants.BraceLevel_11_Format)]
+    [Order(After = ColoringConstants.BraceLevel_11_Format)]
     internal sealed class BraceLevel_12_Format : ClassificationFormatDefinition
     {
         public BraceLevel_12_Format()
@@ -193,10 +193,10 @@ namespace PX.Analyzers.Coloriser
 
     //********************************************************************************************************************* 
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = Constants.BraceLevel_13_Format)]
-    [Name(Constants.BraceLevel_13_Format)]
+    [ClassificationType(ClassificationTypeNames = ColoringConstants.BraceLevel_13_Format)]
+    [Name(ColoringConstants.BraceLevel_13_Format)]
     [UserVisible(true)]
-    [Order(After = Constants.BraceLevel_12_Format)]
+    [Order(After = ColoringConstants.BraceLevel_12_Format)]
     internal sealed class BraceLevel_13_Format : ClassificationFormatDefinition
     {
         public BraceLevel_13_Format()
@@ -208,10 +208,10 @@ namespace PX.Analyzers.Coloriser
     }
 
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = Constants.BraceLevel_14_Format)]
-    [Name(Constants.BraceLevel_14_Format)]
+    [ClassificationType(ClassificationTypeNames = ColoringConstants.BraceLevel_14_Format)]
+    [Name(ColoringConstants.BraceLevel_14_Format)]
     [UserVisible(true)]
-    [Order(After = Constants.BraceLevel_13_Format)]
+    [Order(After = ColoringConstants.BraceLevel_13_Format)]
     internal sealed class BraceLevel_14_Format : ClassificationFormatDefinition
     {
         public BraceLevel_14_Format()

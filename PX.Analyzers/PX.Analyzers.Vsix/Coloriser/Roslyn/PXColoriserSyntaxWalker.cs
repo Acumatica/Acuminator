@@ -31,6 +31,7 @@ namespace PX.Analyzers.Coloriser
             private readonly PXRoslynColorizerTagger tagger;
 			private readonly ParsedDocument document;
             private int braceLevel;
+            private int attributeLevel;
             private bool isInsideBqlCommand;
             private readonly CancellationToken cancellationToken;
 
@@ -217,13 +218,9 @@ namespace PX.Analyzers.Coloriser
                 }
 
                 braceLevel++;
+                AddOutliningTagToBQL(node.Span);
 
-                if (cancellationToken.IsCancellationRequested)
-                    return;
-
-                AddOutliningTag(node.Span);
-
-                if (braceLevel <= Constants.MaxBraceLevel && !cancellationToken.IsCancellationRequested &&
+                if (braceLevel <= ColoringConstants.MaxBraceLevel && !cancellationToken.IsCancellationRequested &&
                     tagger.Provider.BraceTypeByLevel.TryGetValue(braceLevel, out IClassificationType braceClassificationType))
                 {
                     AddClassificationTag(node.LessThanToken.Span, braceClassificationType);
@@ -235,6 +232,26 @@ namespace PX.Analyzers.Coloriser
 
                 braceLevel--;
                 UpdateCodeEditorIfNecessary();
+            }
+
+            public override void VisitAttributeList(AttributeListSyntax node)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
+                attributeLevel++;
+
+                if (attributeLevel <= OutliningConstants.MaxAttributeOutliningLevel)
+                {
+                    AddOutliningTagToAttribute(node);
+                }
+
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    base.VisitAttributeList(node);
+                }
+
+                attributeLevel--;
             }
 
             public override void Visit(SyntaxNode node)
@@ -277,15 +294,40 @@ namespace PX.Analyzers.Coloriser
                 tagger.ClassificationTagsCache.AddTag(tag);
             }
 
-            private void AddOutliningTag(TextSpan span)
+            private void AddOutliningTagToBQL(TextSpan span)
             {
+                if (!tagger.Provider.Package.UseBqlOutlining)
+                    return;
+
                 ITagSpan<IOutliningRegionTag> tag = span.ToOutliningTagSpan(tagger.Snapshot);
+                tagger.OutliningsTagsCache.AddTag(tag);
+            }
+
+            private void AddOutliningTagToAttribute(AttributeListSyntax attributeListNode)
+            {
+                if (!tagger.Provider.Package.UseBqlOutlining)
+                    return;
+
+                AttributeSyntax attribute = attributeListNode.ChildNodes()
+                                                             .OfType<AttributeSyntax>()
+                                                             .FirstOrDefault();
+
+                if (attribute?.ArgumentList == null || attribute.ArgumentList.Arguments.IsNullOrEmpty() || cancellationToken.IsCancellationRequested)
+                    return;
+
+                IdentifierNameSyntax attributeName = attribute.ChildNodes()
+                                                              .OfType<IdentifierNameSyntax>()
+                                                              .FirstOrDefault();
+
+                string collapsedText = $"[{attributeName.Identifier.ValueText}]";
+
+                ITagSpan<IOutliningRegionTag> tag = attributeListNode.Span.ToOutliningTagSpan(tagger.Snapshot, collapsedText);
                 tagger.OutliningsTagsCache.AddTag(tag);
             }
 
             private void UpdateCodeEditorIfNecessary()
             {
-                if (visitedNodesCounter <= Constants.ChunkSize || cancellationToken.IsCancellationRequested)
+                if (visitedNodesCounter <= ColoringConstants.ChunkSize || cancellationToken.IsCancellationRequested)
                     return;
 
                 visitedNodesCounter = 0;

@@ -23,10 +23,13 @@ namespace PX.Analyzers.Coloriser
                                                                        string toolTipText = null)
         {
             if (collapsedText.IsNullOrWhiteSpace())
-                collapsedText = Constants.DefaultCollapsedRegionText;
+                collapsedText = OutliningConstants.DefaultCollapsedBQLRegionText;
 
             if (toolTipText.IsNullOrWhiteSpace())
                 toolTipText = snapshot.GetText(span);
+
+            if (toolTipText.Length > OutliningConstants.HintTooltipMaxLength)
+                toolTipText = toolTipText.Substring(OutliningConstants.HintTooltipMaxLength) + OutliningConstants.SuffixForTooLongTooltips;
 
             return new TagSpan<IOutliningRegionTag>(
               new SnapshotSpan(snapshot, span.Start, span.Length),

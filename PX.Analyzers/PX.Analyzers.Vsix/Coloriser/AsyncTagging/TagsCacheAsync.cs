@@ -55,7 +55,7 @@ namespace PX.Analyzers.Coloriser
             {
                 int counter = 0;
 
-                while (tagsQueue.TryDequeue(out ITagSpan<TTag> tag) && counter < Constants.ChunkSize)
+                while (tagsQueue.TryDequeue(out ITagSpan<TTag> tag) && counter < ColoringConstants.ChunkSize)
                 {
                     if (CancellationToken.IsCancellationRequested)
                         return;

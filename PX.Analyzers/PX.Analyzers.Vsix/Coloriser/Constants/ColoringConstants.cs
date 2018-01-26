@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PX.Analyzers.Coloriser
 {
-	public static class Constants
+	public static class ColoringConstants  
 	{
 		public const string Priority = Microsoft.VisualStudio.Text.Classification.Priority.High;
 
@@ -37,8 +37,7 @@ namespace PX.Analyzers.Coloriser
         public const string BraceLevel_14_Format = nameof(BraceLevel_14_Format);
 
         public const int MaxBraceLevel = 14;
-        public const string DefaultCollapsedRegionText = "...";
-
+       
         /// <summary>
         /// Count of visited nodes for Text editor update in Roslyn colorizer
         /// </summary>
