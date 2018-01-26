@@ -77,23 +77,19 @@ namespace PX.Analyzers.Coloriser
         {
             if (typeof(T) != typeof(IClassificationTag) && typeof(T) != typeof(IOutliningRegionTag))
                 return null;
+          
+            Type key = typeof(PXColorizerMainTagger);    //Buffer's PropertyCollection use types as keys by default
 
-            Func<ITagger<IClassificationTag>> classificationTaggerFactory = () => TaggerFactory<IClassificationTag>(textBuffer);
-            Func<ITagger<IOutliningRegionTag>> outliningTaggerFactory = () => TaggerFactory<IOutliningRegionTag>(textBuffer);
-            Func<ITagger<T>> factory = () => TaggerFactory<T>(textBuffer);
+            if (!textBuffer.Properties.TryGetProperty(key, out PXColorizerMainTagger tagger))
+            {
+                tagger = new PXColorizerMainTagger(textBuffer, this, subscribeToSettingsChanges: true,
+                                                   useCacheChecking: true);
+                textBuffer.Properties.AddProperty(key, tagger);
+            }
 
-            textBuffer.Properties.GetOrCreateSingletonProperty(classificationTaggerFactory);
-            textBuffer.Properties.GetOrCreateSingletonProperty(outliningTaggerFactory);
-            return textBuffer.Properties.GetOrCreateSingletonProperty(factory);
+            return tagger as ITagger<T>;
         }
-
-        protected ITagger<TTag> TaggerFactory<TTag>(ITextBuffer textBuffer)
-        where TTag : ITag
-        {
-            return new PXColorizerMainTagger(textBuffer, this, subscribeToSettingsChanges: true,
-                                             useCacheChecking: true) as ITagger<TTag>;
-        }
-
+    
         protected override void Initialize()
         {
             if (IsInitialized)
