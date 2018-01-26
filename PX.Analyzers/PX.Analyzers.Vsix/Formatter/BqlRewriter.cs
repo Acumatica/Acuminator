@@ -100,14 +100,14 @@ namespace PX.Analyzers.Vsix.Formatter
 			SyntaxToken token = firstToken;
 			do
 			{
-				int leadingEol = token.LeadingTrivia.IndexOf(SyntaxKind.EndOfLineTrivia);
+				int leadingEol = token.LeadingTrivia.LastIndexOf(SyntaxKind.EndOfLineTrivia);
 				if (leadingEol >= 0)
 				{
 					var triviaAfterEol = token.LeadingTrivia.Skip(leadingEol + 1).ToSyntaxTriviaList();
 					return GetWhitespaceTrivia(triviaAfterEol);
 				}
 
-				int trailingEol = token.TrailingTrivia.IndexOf(SyntaxKind.EndOfLineTrivia);
+				int trailingEol = token.TrailingTrivia.LastIndexOf(SyntaxKind.EndOfLineTrivia);
 				if (token != firstToken && trailingEol >= 0)
 				{
 					var trivia = token.TrailingTrivia.Skip(trailingEol + 1).ToList();
