@@ -31,7 +31,7 @@ namespace PX.Analyzers.Coloriser
 
         IEnumerable<ITagSpan<IOutliningRegionTag>> ITagger<IOutliningRegionTag>.GetTags(NormalizedSnapshotSpanCollection spans)
         {
-            if (spans == null || spans.Count == 0 || !Provider.Package.UseBqlOutlining)
+           if (spans == null || spans.Count == 0 || !Provider.Package.UseBqlOutlining)
                 return Enumerable.Empty<ITagSpan<IOutliningRegionTag>>();
 
             switch (TaggerType)
@@ -41,7 +41,6 @@ namespace PX.Analyzers.Coloriser
                     return Enumerable.Empty<ITagSpan<IOutliningRegionTag>>();          
             }
 
-            GetTags(spans);
             return OutliningsTagsCache.ProcessedTags;
         }
 
