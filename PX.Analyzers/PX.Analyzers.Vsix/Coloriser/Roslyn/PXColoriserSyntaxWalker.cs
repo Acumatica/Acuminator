@@ -315,14 +315,35 @@ namespace PX.Analyzers.Coloriser
                 if (attribute?.ArgumentList == null || attribute.ArgumentList.Arguments.IsNullOrEmpty() || cancellationToken.IsCancellationRequested)
                     return;
 
-                IdentifierNameSyntax attributeName = attribute.ChildNodes()
-                                                              .OfType<IdentifierNameSyntax>()
-                                                              .FirstOrDefault();
-
-                string collapsedText = $"[{attributeName.Identifier.ValueText}]";
-
+                string collapsedText = GetAttributeName(attribute);
                 ITagSpan<IOutliningRegionTag> tag = attributeListNode.Span.ToOutliningTagSpan(tagger.Snapshot, collapsedText);
                 tagger.OutliningsTagsCache.AddTag(tag);
+            }
+
+            private string GetAttributeName(AttributeSyntax attribute)
+            {
+                foreach (SyntaxNode childNode in attribute.ChildNodes())
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        return null;
+
+                    switch (childNode)
+                    {
+                        case IdentifierNameSyntax attributeName:
+                            {
+                                return $"[{attributeName.Identifier.ValueText}]";
+                            }
+                        case QualifiedNameSyntax qualifiedName:
+                            {
+                                string identifierText = tagger.Snapshot.GetText(qualifiedName.Span);
+                                return !identifierText.IsNullOrWhiteSpace()
+                                    ? $"[{identifierText}]"
+                                    : null;
+                            }
+                    }
+                }
+
+                return null;
             }
 
             private void UpdateCodeEditorIfNecessary()
