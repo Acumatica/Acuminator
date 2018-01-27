@@ -145,6 +145,7 @@
     <EmbeddedResource Include="Sources\DACCreateInstance_Expected.cs" />
     <EmbeddedResource Include="Sources\LongOperationDelegateClosuresAnalyzer.cs" />
     <Compile Include="BqlFormatterTests.cs" />
+    <Compile Include="Helpers\EmbeddedFileDataWithParamsAttribute.cs" />
     <Compile Include="LongOperationDelegateClosuresTests.cs" />
     <EmbeddedResource Include="Sources\StartRowResetForPaging.cs" />
     <EmbeddedResource Include="Sources\MissingTypeListAttributeBad_Expected.cs" />
