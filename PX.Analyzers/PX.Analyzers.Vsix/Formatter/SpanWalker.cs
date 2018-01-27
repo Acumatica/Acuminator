@@ -12,7 +12,7 @@ namespace PX.Analyzers.Vsix.Formatter
 	/// <summary>
 	/// Finds nodes within provided span.
 	/// </summary>
-	class SpanWalker : CSharpSyntaxWalker
+	public class SpanWalker : CSharpSyntaxWalker
 	{
 		private readonly TextSpan _span;
 		private readonly List<SyntaxNode> _nodesWithinSpan = new List<SyntaxNode>();
