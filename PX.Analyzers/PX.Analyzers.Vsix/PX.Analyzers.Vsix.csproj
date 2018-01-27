@@ -305,9 +305,9 @@
     <Compile Include="Formatter\BqlRewriterBase.cs" />
     <Compile Include="Formatter\BqlStatementRewriter.cs" />
     <Compile Include="Formatter\BqlViewDeclarationRewriter.cs" />
-    <Compile Include="Formatter\DictionaryHelpers.cs" />
     <Compile Include="Formatter\FormatBqlCommand.cs" />
     <Compile Include="Formatter\SpanWalker.cs" />
+    <Compile Include="Formatter\SyntaxTriviaListExtensions.cs" />
     <Compile Include="Settings\SettingChangedEventArgs.cs" />
     <Compile Include="Settings\UI\GeneralOptionsPage.cs">
       <SubType>Component</SubType>
