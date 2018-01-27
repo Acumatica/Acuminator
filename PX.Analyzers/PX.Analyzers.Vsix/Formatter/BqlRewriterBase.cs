@@ -33,9 +33,11 @@ namespace PX.Analyzers.Vsix.Formatter
 		
 		protected INamedTypeSymbol GetTypeSymbol(SyntaxNode node)
 		{
-			return _semanticModel
-				.GetSpeculativeTypeInfo(_semanticModel.SyntaxTree.Length, node, SpeculativeBindingOption.BindAsExpression)
-				.Type as INamedTypeSymbol;
+			TypeInfo typeInfo = _semanticModel.Compilation.ContainsSyntaxTree(node.SyntaxTree)
+				? _semanticModel.GetTypeInfo(node)
+				: _semanticModel.GetSpeculativeTypeInfo(_semanticModel.SyntaxTree.Length, node, SpeculativeBindingOption.BindAsExpression);
+
+			return typeInfo.Type as INamedTypeSymbol;
 		}
 
 		protected INamedTypeSymbol GetOriginalTypeSymbol(SyntaxNode node)
