@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Text;
 using PX.Analyzers.Test.Helpers;
 using PX.Analyzers.Vsix.Formatter;
 using TestHelper;
@@ -51,6 +52,42 @@ namespace PX.Analyzers.Test
 		{
 			string actual = Format(expected);
 			Normalize(actual).Should().Be(Normalize(expected));
+		}
+
+		[Theory]
+		[EmbeddedFileDataWithParams(@"BQL\Raw\Search_Join.cs", @"BQL\Formatted\Search_Join.cs", 28, 28, 29, 35)]
+		public void FormatSelection(string text, string expected, 
+			int startLine, int endLine,
+			int expectedStartLine, int expectedEndLine)
+		{
+			Document document = CreateDocument(text);
+			Document expectedDocument = CreateDocument(expected);
+			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
+
+			var originalNodes = GetSelectedNodes(document, startLine, endLine);
+			var expectedNodes = GetSelectedNodes(expectedDocument, expectedStartLine, expectedEndLine);
+
+			for (int i = 0; i < originalNodes.Count; i++)
+			{
+				SyntaxNode expectedNode = expectedNodes[i];
+				SyntaxNode actualNode = _formatter.Format(originalNodes[i], semanticModel);
+				Normalize(actualNode.ToFullString()).Should().Be(Normalize(expectedNode.ToFullString()));
+			}
+		}
+
+		private IReadOnlyList<SyntaxNode> GetSelectedNodes(Document document, int startLine, int endLine)
+		{
+			SyntaxNode syntaxRoot = document.GetSyntaxRootAsync().Result;
+			SourceText text = document.GetTextAsync().Result;
+			
+			int start = text.Lines[startLine - 1].Start;
+			int end = text.Lines[endLine - 1].End;
+
+			var selection = TextSpan.FromBounds(start, end);
+			var walker = new SpanWalker(selection);
+			walker.Visit(syntaxRoot.FindNode(selection));
+
+			return walker.NodesWithinSpan.ToArray();
 		}
 
 		private string Format(string text)
