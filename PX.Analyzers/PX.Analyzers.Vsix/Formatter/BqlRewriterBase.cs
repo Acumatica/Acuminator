@@ -35,7 +35,7 @@ namespace PX.Analyzers.Vsix.Formatter
 		{
 			TypeInfo typeInfo = _semanticModel.Compilation.ContainsSyntaxTree(node.SyntaxTree)
 				? _semanticModel.GetTypeInfo(node)
-				: _semanticModel.GetSpeculativeTypeInfo(_semanticModel.SyntaxTree.Length, node, SpeculativeBindingOption.BindAsExpression);
+				: _semanticModel.GetSpeculativeTypeInfo(_semanticModel.SyntaxTree.Length - node.SpanStart, node, SpeculativeBindingOption.BindAsExpression);
 
 			return typeInfo.Type as INamedTypeSymbol;
 		}
