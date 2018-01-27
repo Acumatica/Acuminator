@@ -131,7 +131,7 @@ namespace PX.Analyzers.Coloriser
                 return ClassificationTagsCache.ProcessedTags;
 
             ParsedDocument document = documentTaskResult.Value;            
-
+            
             if (document == null || cToken.IsCancellationRequested)
                 return ClassificationTagsCache.ProcessedTags;
 

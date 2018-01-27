@@ -41,6 +41,11 @@ namespace PX.Analyzers.Coloriser
                     return Enumerable.Empty<ITagSpan<IOutliningRegionTag>>();          
             }
 
+            if (BackgroundTagging == null && !OutliningsTagsCache.IsCompleted)
+            {
+                GetTags(spans);
+            }
+
             return OutliningsTagsCache.ProcessedTags;
         }
 
@@ -53,7 +58,6 @@ namespace PX.Analyzers.Coloriser
 
             if (CheckIfRetaggingIsNotNecessary(snapshot))
             {
-                //ClassificationTagsCache.PersistIntermediateResult();
                 return ClassificationTagsCache.ProcessedTags;
             }
 
@@ -80,7 +84,6 @@ namespace PX.Analyzers.Coloriser
             if (BackgroundTagging != null)
             {
                 BackgroundTagging.CancelTagging();   //Cancel currently running task
-                //BackgroundTagging.TaggingTask?.Wait();
                 BackgroundTagging = null;
             }
 

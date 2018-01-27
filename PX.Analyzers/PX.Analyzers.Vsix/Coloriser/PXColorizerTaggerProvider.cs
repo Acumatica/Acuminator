@@ -20,7 +20,7 @@ namespace PX.Analyzers.Coloriser
 {  
     [ContentType("CSharp")]
     [TagType(typeof(IClassificationTag))]
-    [TagType(typeof(IOutliningRegionTag))]
+    //[TagType(typeof(IOutliningRegionTag))]
     [TextViewRole(PredefinedTextViewRoles.Document)]
     [Export(typeof(IViewTaggerProvider))]
     [Export(typeof(ITaggerProvider))]
@@ -59,8 +59,8 @@ namespace PX.Analyzers.Coloriser
 
             if (textView.TextBuffer != textBuffer)
                 return null;
-
-            return CreateTaggerImpl<T>(textBuffer);
+            
+            return CreateTaggerImpl<T>(textBuffer) as ITagger<T>;
         }
 
         public ITagger<T> CreateTagger<T>(ITextBuffer textBuffer) 
@@ -68,26 +68,21 @@ namespace PX.Analyzers.Coloriser
         {
             Initialize();
 
-            return CreateTaggerImpl<T>(textBuffer);
+            return CreateTaggerImpl<T>(textBuffer) as ITagger<T>;
         }
 
        
-        protected  ITagger<T> CreateTaggerImpl<T>(ITextBuffer textBuffer)
-        where T: ITag
+        protected PXColorizerMainTagger CreateTaggerImpl<T>(ITextBuffer textBuffer)      
         {
             if (typeof(T) != typeof(IClassificationTag) && typeof(T) != typeof(IOutliningRegionTag))
                 return null;
-          
-            Type key = typeof(PXColorizerMainTagger);    //Buffer's PropertyCollection use types as keys by default
 
-            if (!textBuffer.Properties.TryGetProperty(key, out PXColorizerMainTagger tagger))
+            PXColorizerMainTagger tagger = textBuffer.Properties.GetOrCreateSingletonProperty(() =>
             {
-                tagger = new PXColorizerMainTagger(textBuffer, this, subscribeToSettingsChanges: true,
-                                                   useCacheChecking: true);
-                textBuffer.Properties.AddProperty(key, tagger);
-            }
-
-            return tagger as ITagger<T>;
+                return new PXColorizerMainTagger(textBuffer, this, subscribeToSettingsChanges: true, useCacheChecking: true);
+            });
+            
+            return tagger;
         }
     
         protected override void Initialize()
