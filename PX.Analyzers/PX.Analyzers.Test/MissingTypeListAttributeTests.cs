@@ -39,6 +39,13 @@ namespace PX.Analyzers.Test
         }
 
         [Theory]
+        [EmbeddedFileData("MissingTypeListAttributeInheritedList.cs")]
+        public void TestDiagnostic_InheritedList_Good(string actual)
+        {
+            VerifyCSharpDiagnostic(actual);
+        }
+
+        [Theory]
         [EmbeddedFileData("MissingTypeListAttributeBad.cs")]
         public void TestDiagnostic_Bad(string actual)
         {

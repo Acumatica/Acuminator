@@ -26,31 +26,34 @@ namespace PX.Analyzers.Analyzers
 
             if (parent == null || !parent.InheritsFromOrEquals(pxContext.IBqlTableType, true))
                 return;
-
-            var lists = new List<INamedTypeSymbol> {
-                                    //pxContext.PXBaseListAttributeType,
-                                    pxContext.PXIntListAttributeType,
-                                    pxContext.PXStringListAttributeType};
-
             var types = new List<INamedTypeSymbol> {
                                     pxContext.PXIntAttributeType,
                                     pxContext.PXShortAttributeType,
                                     pxContext.PXStringAttributeType,
                                     pxContext.PXByteAttributeType,
+                                    pxContext.PXDBDecimalAttributeType,
+                                    pxContext.PXDBDoubleAttributeType,
                                     pxContext.PXDBIntAttributeType,
                                     pxContext.PXDBShortAttributeType,
                                     pxContext.PXDBStringAttributeType,
-                                    pxContext.PXDBByteAttributeType};
+                                    pxContext.PXDBByteAttributeType,
+                                    pxContext.PXDecimalAttributeType,
+                                    pxContext.PXDoubleAttributeType};
+
 
             var attributeClasses = property.GetAttributes().
                     Select(a => a.AttributeClass);
 
             var listAttribute = attributeClasses.
-                    FirstOrDefault(c => lists.Any(l => c.InheritsFromOrEquals(l, true)));
+                    FirstOrDefault(c => c.InheritsFromOrEquals(pxContext.IPXLocalizableListType, true));
 
             if (listAttribute == null)
                 return;
 
+            var systemObject = context.Compilation.GetTypeByMetadataName(typeof(System.Object).FullName);
+            while (!listAttribute.BaseType.Equals(pxContext.PXEventSubscriberAttributeType) &&
+                   !listAttribute.BaseType.Equals(systemObject))
+                listAttribute = listAttribute.BaseType;
             //hardcode
             bool hasTypeAttribute = attributeClasses.
                     Any(c => types.Any(l => c.InheritsFromOrEquals(l, true)));
