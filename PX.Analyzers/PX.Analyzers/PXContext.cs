@@ -30,22 +30,29 @@ namespace PX.Analyzers
 		//public INamedTypeSymbol PXBaseListAttributeType => Compilation.GetTypeByMetadataName(typeof(PXBaseListAttribute).FullName);
 		public INamedTypeSymbol PXStringListAttributeType => Compilation.GetTypeByMetadataName(typeof(PXStringListAttribute).FullName);
         public INamedTypeSymbol PXIntListAttributeType => Compilation.GetTypeByMetadataName(typeof(PXIntListAttribute).FullName);
+        public INamedTypeSymbol IPXLocalizableListType => Compilation.GetTypeByMetadataName(typeof(IPXLocalizableList).FullName);
         public INamedTypeSymbol PXIntAttributeType => Compilation.GetTypeByMetadataName(typeof(PXIntAttribute).FullName);
         public INamedTypeSymbol PXShortAttributeType => Compilation.GetTypeByMetadataName(typeof(PXShortAttribute).FullName);
         public INamedTypeSymbol PXStringAttributeType => Compilation.GetTypeByMetadataName(typeof(PXStringAttribute).FullName);
         public INamedTypeSymbol PXByteAttributeType => Compilation.GetTypeByMetadataName(typeof(PXByteAttribute).FullName);
-
+        public INamedTypeSymbol PXDecimalAttributeType => Compilation.GetTypeByMetadataName(typeof(PXDecimalAttribute).FullName);
+        public INamedTypeSymbol PXDoubleAttributeType => Compilation.GetTypeByMetadataName(typeof(PXDoubleAttribute).FullName);
         public INamedTypeSymbol PXDBIntAttributeType => Compilation.GetTypeByMetadataName(typeof(PXDBIntAttribute).FullName);
         public INamedTypeSymbol PXDBShortAttributeType => Compilation.GetTypeByMetadataName(typeof(PXDBShortAttribute).FullName);
         public INamedTypeSymbol PXDBStringAttributeType => Compilation.GetTypeByMetadataName(typeof(PXDBStringAttribute).FullName);
         public INamedTypeSymbol PXDBByteAttributeType => Compilation.GetTypeByMetadataName(typeof(PXDBByteAttribute).FullName);
+        public INamedTypeSymbol PXDBDecimalAttributeType => Compilation.GetTypeByMetadataName(typeof(PXDBDecimalAttribute).FullName);
+        public INamedTypeSymbol PXDBDoubleAttributeType => Compilation.GetTypeByMetadataName(typeof(PXDBDoubleAttribute).FullName);
+        public INamedTypeSymbol PXEventSubscriberAttributeType => Compilation.GetTypeByMetadataName(typeof(PXEventSubscriberAttribute).FullName);
+        public INamedTypeSymbol PXFieldStateType => Compilation.GetTypeByMetadataName(typeof(PXFieldState).FullName);
+        public INamedTypeSymbol PXAttributeFamilyType => Compilation.GetTypeByMetadataName(typeof(PXAttributeFamilyAttribute).FullName);
 
 
-		#region BQL Types
-		/// <summary>
-		/// BQL Symbols are stored in separate file.
-		/// </summary>
-		public class BQLSymbols
+        #region BQL Types
+        /// <summary>
+        /// BQL Symbols are stored in separate file.
+        /// </summary>
+        public class BQLSymbols
 		{
 			private readonly Compilation compilation;
 

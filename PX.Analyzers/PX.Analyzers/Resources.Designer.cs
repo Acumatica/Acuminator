@@ -251,7 +251,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to StartRow must be reset if delegate returns applies paging in inner select (or paging will be applied twice).
+        ///   Looks up a localized string similar to StartRow must be reset if delegate applies paging in inner select (or paging will be applied twice).
         /// </summary>
         internal static string PX1010Title {
             get {
