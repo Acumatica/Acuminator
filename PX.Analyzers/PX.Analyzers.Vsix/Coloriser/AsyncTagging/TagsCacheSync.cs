@@ -27,10 +27,6 @@ namespace PX.Analyzers.Coloriser
             ProcessedTags = resultTagsList.AsReadOnly();
         }
 
-        public void PersistIntermediateResult()
-        {            
-        }
-
         public void CompleteProcessing()
         {          
             IsCompleted = true;

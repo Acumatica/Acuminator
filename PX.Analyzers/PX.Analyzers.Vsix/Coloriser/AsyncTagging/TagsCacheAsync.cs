@@ -13,31 +13,20 @@ namespace PX.Analyzers.Coloriser
     public class TagsCacheAsync<TTag> : ITagsCache<TTag>
     where TTag : ITag
     {
-        private object syncLock = new object();
         private const int defaultCapacity = 64;
-
+        
         protected CancellationToken CancellationToken { get; set;  }
 
         public bool IsCompleted { get; private set; }
 
-        private readonly List<ITagSpan<TTag>> resultTagsList;
         private readonly ConcurrentQueue<ITagSpan<TTag>> tagsQueue = new ConcurrentQueue<ITagSpan<TTag>>();
 
-        public IReadOnlyCollection<ITagSpan<TTag>> ProcessedTags
-        {
-            get
-            {
-                lock (syncLock)
-                {
-                    return resultTagsList.ToList();
-                }
-            }
-        }
+        public IReadOnlyCollection<ITagSpan<TTag>> ProcessedTags => tagsQueue;
+        
         public int Count => ProcessedTags.Count;
 
         public TagsCacheAsync(int? capacity = null)
         {
-            resultTagsList = new List<ITagSpan<TTag>>(capacity ?? defaultCapacity);
             CancellationToken = CancellationToken.None;
         }
 
@@ -46,55 +35,19 @@ namespace PX.Analyzers.Coloriser
             CancellationToken = cancellationToken;
         }
 
-        public void PersistIntermediateResult()
-        {
-            if (CancellationToken.IsCancellationRequested)
-                return;
-
-            lock (syncLock)
-            {
-                int counter = 0;
-
-                while (tagsQueue.TryDequeue(out ITagSpan<TTag> tag) && counter < ColoringConstants.ChunkSize)
-                {
-                    if (CancellationToken.IsCancellationRequested)
-                        return;
-
-                    resultTagsList.Add(tag);
-                    counter++;
-                }
-            }
-        }
-
         public void CompleteProcessing()
         {
             if (CancellationToken.IsCancellationRequested)
                 return;
 
-            lock (syncLock)
-            {
-                while (tagsQueue.TryDequeue(out ITagSpan<TTag> tag))
-                {
-                    if (CancellationToken.IsCancellationRequested)
-                        return;
-
-                    resultTagsList.Add(tag);
-                }
-            }
-
-            IsCompleted = true;
+            IsCompleted = true;            
         }
 
         public void Reset()
         {
-            lock (syncLock)
-            {
-                resultTagsList.Clear();
-                resultTagsList.Capacity = defaultCapacity;
-            }
-
             tagsQueue.Clear();
-            IsCompleted = false;
+
+            IsCompleted = false;                    
         }
 
         public void AddTag(ITagSpan<TTag> tag)

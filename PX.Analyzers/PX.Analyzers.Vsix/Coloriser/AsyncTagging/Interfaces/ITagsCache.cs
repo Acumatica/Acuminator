@@ -15,9 +15,7 @@ namespace PX.Analyzers.Coloriser
         bool IsCompleted { get; }
       
         IReadOnlyCollection<ITagSpan<TTag>> ProcessedTags { get; }
-
-        void PersistIntermediateResult();
-
+      
         void CompleteProcessing();
 
         void Reset();
