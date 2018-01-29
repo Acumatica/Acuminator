@@ -351,9 +351,7 @@ namespace PX.Analyzers.Coloriser
                 if (visitedNodesCounter <= ColoringConstants.ChunkSize || cancellationToken.IsCancellationRequested)
                     return;
 
-                visitedNodesCounter = 0;
-                tagger.ClassificationTagsCache.PersistIntermediateResult();
-                tagger.OutliningsTagsCache.PersistIntermediateResult();
+                visitedNodesCounter = 0;               
                 tagger.RaiseTagsChanged();
             }
 
