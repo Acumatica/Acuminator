@@ -20,11 +20,9 @@ namespace PX.Analyzers.Coloriser
 {  
     [ContentType("CSharp")]
     [TagType(typeof(IClassificationTag))]
-    //[TagType(typeof(IOutliningRegionTag))]
     [TextViewRole(PredefinedTextViewRoles.Document)]
     [Export(typeof(IViewTaggerProvider))]
-    [Export(typeof(ITaggerProvider))]
-    public class PXColorizerTaggerProvider : PXTaggerProviderBase, IViewTaggerProvider, ITaggerProvider
+    public class PXColorizerTaggerProvider : PXTaggerProviderBase, IViewTaggerProvider
     {    
         [Import]
         internal IClassificationTypeRegistryService classificationRegistry = null; // Set via MEF
@@ -59,32 +57,16 @@ namespace PX.Analyzers.Coloriser
 
             if (textView.TextBuffer != textBuffer)
                 return null;
-            
-            return CreateTaggerImpl<T>(textBuffer) as ITagger<T>;
-        }
 
-        public ITagger<T> CreateTagger<T>(ITextBuffer textBuffer) 
-        where T : ITag
-        {
-            Initialize();
-
-            return CreateTaggerImpl<T>(textBuffer) as ITagger<T>;
-        }
-
-       
-        protected PXColorizerMainTagger CreateTaggerImpl<T>(ITextBuffer textBuffer)      
-        {
-            if (typeof(T) != typeof(IClassificationTag) && typeof(T) != typeof(IOutliningRegionTag))
-                return null;
-
-            PXColorizerMainTagger tagger = textBuffer.Properties.GetOrCreateSingletonProperty(() =>
+            var tagger = textBuffer.Properties.GetOrCreateSingletonProperty(typeof(PXColorizerTaggerBase), () =>
             {
                 return new PXColorizerMainTagger(textBuffer, this, subscribeToSettingsChanges: true, useCacheChecking: true);
             });
-            
-            return tagger;
+
+            return tagger as ITagger<T>;
         }
-    
+          
+        
         protected override void Initialize()
         {
             if (IsInitialized)

@@ -1,6 +1,12 @@
-﻿using System;
+﻿
+// <summary> The asynchronous tagging part of the PXColorizerTaggerBase class</summary>
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -10,120 +16,90 @@ using PX.Analyzers.Vsix.Utilities;
 
 namespace PX.Analyzers.Coloriser
 {
-    /// <summary>
-    /// Values that represent tagger types.
-    /// </summary>
-    public enum TaggerType
-    {
-        /// <summary>
-        /// The general tagger which chooses other taggers according to the settings.
-        /// </summary>
-        General,
-
-        /// <summary>
-        /// The tagger based on Roslyn 
-        /// </summary>
-        Roslyn,
-
-        /// <summary>
-        /// The tagger based on regular expressions
-        /// </summary>
-        RegEx
-    };
-
-    /// <summary>
+    /// <content>
     /// A colorizer tagger base class.
-    /// </summary>
-    public abstract partial class PXColorizerTaggerBase : ITagger<IClassificationTag>, ITagger<IOutliningRegionTag>, IDisposable
-    {
-#pragma warning disable CS0067
-        private object eventSyncLock = new object();
-        private event EventHandler<SnapshotSpanEventArgs> tagsChangedDelegate;
+    /// </content>
+    public abstract class PXColorizerTaggerBase : PXTaggerBase, ITagger<IClassificationTag>, IDisposable
+    {      
+        public BackgroundTagging BackgroundTagging { get; protected set; }
 
-        event EventHandler<SnapshotSpanEventArgs> ITagger<IClassificationTag>.TagsChanged
+        protected internal abstract ITagsCache<IClassificationTag> ClassificationTagsCache { get; }
+
+        protected internal abstract ITagsCache<IOutliningRegionTag> OutliningsTagsCache { get; }
+
+        protected internal abstract bool UseAsyncTagging { get; }
+
+        protected PXColorizerTaggerProvider Provider => ProviderBase as PXColorizerTaggerProvider;
+
+        protected PXColorizerTaggerBase(ITextBuffer buffer, PXColorizerTaggerProvider aProvider, bool subscribeToSettingsChanges,
+                                        bool useCacheChecking) :
+                                   base(buffer, aProvider, subscribeToSettingsChanges, useCacheChecking)
         {
-            add
-            {              
-                tagsChangedDelegate += value;             
-            }
-            remove
-            {              
-                tagsChangedDelegate -= value;            
-            }
-        }
+        }    
 
-        event EventHandler<SnapshotSpanEventArgs> ITagger<IOutliningRegionTag>.TagsChanged
+        protected internal override void ResetCacheAndFlags(ITextSnapshot newCache)
         {
-            add
-            {
-                tagsChangedDelegate += value;
-            }
-            remove
-            {
-                tagsChangedDelegate -= value;
-            }
-        }
-#pragma warning restore CS0067
-
-        protected ITextBuffer Buffer { get; }
-
-        protected PXColorizerTaggerProvider Provider { get; }
-
-        protected internal ITextSnapshot Snapshot { get; private set; }
-
-        protected bool ColoringSettingsChanged { get; private set; }
-
-        protected bool SubscribedToSettingsChanges { get; private set; }
-       
-        private readonly bool cacheCheckingEnabled;
-
-        /// <summary>
-        /// The type of the tagger.
-        /// </summary>      
-        public abstract TaggerType TaggerType { get; }
-            
-        protected PXColorizerTaggerBase(ITextBuffer buffer, PXColorizerTaggerProvider aProvider, bool subscribeToSettingsChanges, 
-                                        bool useCacheChecking)
-        {
-            buffer.ThrowOnNull(nameof(buffer));
-            aProvider.ThrowOnNull(nameof(aProvider));
-
-            Buffer = buffer;
-            Provider = aProvider;
-            SubscribedToSettingsChanges = subscribeToSettingsChanges;
-            cacheCheckingEnabled = useCacheChecking;
-
-            if (SubscribedToSettingsChanges)
-            {
-                var genOptionsPage = Provider.Package?.GeneralOptionsPage;
-
-                if (genOptionsPage != null)
-                {
-                    genOptionsPage.ColoringSettingChanged += ColoringSettingChangedHandler;
-                }
-            }
-        }
-            
-        private void ColoringSettingChangedHandler(object sender, Vsix.SettingChangedEventArgs e)
-        {
-            ColoringSettingsChanged = true;
-            RaiseTagsChanged();
-        }
-
-        internal void RaiseTagsChanged() => tagsChangedDelegate?.Invoke(this, 
-            new SnapshotSpanEventArgs(
-                new SnapshotSpan(Buffer.CurrentSnapshot,
-                    new Span(0, Buffer.CurrentSnapshot.Length))));
-
-        protected internal virtual void ResetCacheAndFlags(ITextSnapshot newCache)
-        {
-            ColoringSettingsChanged = false;
+            base.ResetCacheAndFlags(newCache);
             ClassificationTagsCache.Reset();
             OutliningsTagsCache.Reset();
-            Snapshot = newCache;
         }
 
-        protected virtual bool CheckIfRetaggingIsNotNecessary(ITextSnapshot snapshot) =>
-            cacheCheckingEnabled && Snapshot != null && Snapshot == snapshot && !ColoringSettingsChanged;      
+        public virtual IEnumerable<ITagSpan<IClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
+        {
+            if (spans == null || spans.Count == 0 || !Provider.Package.ColoringEnabled)
+                return Enumerable.Empty<ITagSpan<IClassificationTag>>();
+
+            ITextSnapshot snapshot = spans[0].Snapshot;
+
+            if (CheckIfRetaggingIsNotNecessary(snapshot))
+            {
+                return ClassificationTagsCache.ProcessedTags;
+            }
+
+            if (UseAsyncTagging)
+            {
+                return GetTagsAsync(snapshot);
+            }
+            else
+            {
+                ResetCacheAndFlags(snapshot);
+                return GetTagsSynchronousImplementation(snapshot);
+            }                      
+        }
+       
+        /// <summary>
+        /// Gets the tags asynchronous in this collection.
+        /// </summary>
+        /// <param name="snapshot">The snapshot.</param>
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process the tags asynchronous in this collection.
+        /// </returns>
+        protected virtual IEnumerable<ITagSpan<IClassificationTag>> GetTagsAsync(ITextSnapshot snapshot)
+        {
+            if (BackgroundTagging != null)
+            {
+                BackgroundTagging.CancelTagging();   //Cancel currently running task
+                BackgroundTagging = null;
+            }
+
+            ResetCacheAndFlags(snapshot);
+            BackgroundTagging = BackgroundTagging.StartBackgroundTagging(this);
+
+            return ClassificationTagsCache.ProcessedTags;
+        }
+
+        protected internal abstract IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot);
+
+        protected internal abstract Task<IEnumerable<ITagSpan<IClassificationTag>>> GetTagsAsyncImplementation(ITextSnapshot snapshot, 
+                                                                                                               CancellationToken cancellationToken);
+
+        public override void Dispose()
+        {
+            BackgroundTagging?.Dispose();
+            ClassificationTagsCache?.Reset();
+            OutliningsTagsCache?.Reset();
+
+            base.Dispose();
+        }
     }
 }
