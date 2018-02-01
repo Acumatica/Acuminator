@@ -47,7 +47,7 @@ namespace PX.Analyzers.Coloriser
     {
         public DacExtensionFormat()
         {
-            ForegroundColor = Color.FromRgb(r: 255, g: 255, b: 78);
+            ForegroundColor = Color.FromRgb(r: 255, g: 78, b: 79);
             DisplayName = Labels.DacExtensionFormatLabel;       // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;
