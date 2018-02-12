@@ -8,24 +8,34 @@ namespace PX.Analyzers.Coloriser
 {
     internal static class TypeNames
     {
-        public static string IBqlTable => typeof(IBqlTable).Name;
+        public static readonly string IBqlTable = typeof(IBqlTable).Name;
 
-        public static string BqlCommand => typeof(BqlCommand).Name;
+        public static readonly string BqlCommand = typeof(BqlCommand).Name;
 
-        public static string IBqlField => typeof(IBqlField).Name;
+        public static readonly string IBqlField = typeof(IBqlField).Name;
 
-        public static string IBqlParameter => typeof(IBqlParameter).Name;
+        public static readonly string IBqlParameter = typeof(IBqlParameter).Name;
 
-        public static string IBqlJoin => nameof(PX.Data.IBqlJoin);
+        public static readonly string IBqlJoin = nameof(PX.Data.IBqlJoin);
 
-        public static string IBqlComparison => typeof(IBqlComparison).Name;
+        public static readonly string IBqlOrderBy = typeof(PX.Data.IBqlOrderBy).Name;
 
-        public static string IBqlCreator => typeof(IBqlCreator).Name;
-        
-        public static string PXSelectBaseType => typeof(PXSelectBase).Name;
+        public static readonly string IBqlAggregate = typeof(PX.Data.IBqlAggregate).Name;
 
-		public static string Constant => typeof(Constant).Name;
+        public static readonly string IBqlFunction = typeof(PX.Data.IBqlFunction).Name;
 
-        public static string PXCacheExtension => typeof(PXCacheExtension).Name;
+        public static readonly string IBqlComparison = typeof(IBqlComparison).Name;
+
+        public static readonly string IBqlCreator = typeof(IBqlCreator).Name;
+
+        public static readonly string IBqlPredicateChain = typeof(IBqlPredicateChain).Name;
+
+        public static readonly string IBqlOn = typeof(IBqlOn).Name;
+
+        public static readonly string PXSelectBaseType = typeof(PXSelectBase).Name;
+
+		public static readonly string Constant = typeof(Constant).Name;
+
+        public static readonly string PXCacheExtension = typeof(PXCacheExtension).Name;      
     }
 }
