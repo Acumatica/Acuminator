@@ -116,9 +116,12 @@ namespace PX.Analyzers.Coloriser
                                                         .Select(type => type.Name)
                                                         .ToList();
 
-            if (typesAndInterfaces.Contains(TypeNames.IBqlComparison) || 
-                typesAndInterfaces.Contains(TypeNames.IBqlFunction))
+            if (typesAndInterfaces.Contains(TypeNames.IBqlComparison) ||
+                typesAndInterfaces.Contains(TypeNames.IBqlFunction) ||
+                typesAndInterfaces.Contains(TypeNames.IBqlSortColumn))
+            {
                 return null;
+            }
 
             if (typesAndInterfaces.Contains(TypeNames.IBqlJoin) ||
                 typesAndInterfaces.Contains(TypeNames.IBqlAggregate) ||
@@ -136,11 +139,17 @@ namespace PX.Analyzers.Coloriser
             TypeArgumentListSyntax typeParamsListSyntax = bqlOperatorNode.TypeArgumentList;
             var typeArgumentsList = typeParamsListSyntax.Arguments;
 
-            if (typeArgumentsList.SeparatorCount <= 1)
-                return typeParamsListSyntax.Span;
-          
-            int length = typeArgumentsList.GetSeparator(1).SpanStart - typeParamsListSyntax.SpanStart;
-            return new TextSpan(typeParamsListSyntax.SpanStart, length);           
+            switch (typeArgumentsList.Count)
+            {
+                case 0:
+                case 1:
+                    return null;
+                case 2:
+                    return typeParamsListSyntax.Span;
+                default:
+                    int length = typeArgumentsList.GetSeparator(1).SpanStart - typeParamsListSyntax.SpanStart;
+                    return new TextSpan(typeParamsListSyntax.SpanStart, length);
+            }          
         }
     }
 }

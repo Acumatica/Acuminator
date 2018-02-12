@@ -24,6 +24,8 @@ namespace PX.Analyzers.Coloriser
 
         public static readonly string IBqlFunction = typeof(PX.Data.IBqlFunction).Name;
 
+        public static readonly string IBqlSortColumn = typeof(PX.Data.IBqlSortColumn).Name;
+
         public static readonly string IBqlComparison = typeof(IBqlComparison).Name;
 
         public static readonly string IBqlCreator = typeof(IBqlCreator).Name;
