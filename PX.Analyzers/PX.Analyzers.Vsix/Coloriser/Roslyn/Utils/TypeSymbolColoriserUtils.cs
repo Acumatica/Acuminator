@@ -4,7 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PX.Analyzers.Utilities;
+using System.Runtime.CompilerServices;
+
+
 
 namespace PX.Analyzers.Coloriser
 {
@@ -12,15 +17,34 @@ namespace PX.Analyzers.Coloriser
     {
         // Determine if "type" inherits from "baseType", ignoring constructed types, optionally including interfaces,
         // dealing only with original types.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool InheritsOrImplementsOrEquals(this ITypeSymbol type, string baseTypeName, 
                                                         bool includeInterfaces = true)
         {
+            if (type == null)
+                return false;
+
             IEnumerable<ITypeSymbol> baseTypes = includeInterfaces 
                 ? type.GetBaseTypesAndThis().Concat(type.AllInterfaces)
                 : type.GetBaseTypesAndThis();
 
             return baseTypes.Select(typeSymbol => typeSymbol.Name)
                             .Contains(baseTypeName);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ImplementsInterface(this ITypeSymbol type, string interfaceName)
+        {
+            if (type == null)
+                return false;
+
+            foreach (var interfaceSymbol in type.AllInterfaces)
+            {
+                if (interfaceSymbol.Name == interfaceName)
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -33,7 +57,7 @@ namespace PX.Analyzers.Coloriser
         /// </returns>
         public static bool IsBqlCommand(this ITypeSymbol typeSymbol)
         {
-            if (typeSymbol == null)
+            if (typeSymbol == null || string.Equals(typeSymbol.Name, TypeNames.BqlCommand))
                 return false;
 
             List<string> typeHierarchyNames = typeSymbol.GetBaseTypesAndThis()
@@ -44,59 +68,79 @@ namespace PX.Analyzers.Coloriser
                    typeHierarchyNames.Contains(TypeNames.BqlCommand);
         }
 
-        public static bool IsBqlParameter(this ITypeSymbol typeSymbol)
-        {
-            if (typeSymbol == null)
-                return false;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsBqlParameter(this ITypeSymbol typeSymbol) => typeSymbol.InheritsOrImplementsOrEquals(TypeNames.IBqlParameter);
 
-            return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.IBqlParameter);
-        }
 
         public static bool IsBqlOperator(this ITypeSymbol typeSymbol)
         {
             if (typeSymbol == null)
                 return false;
 
-            //Simple implementation for now. More complex should check concrete operator types could be added later
-            List<string> typeHierarchyNames = typeSymbol.GetBaseTypesAndThis()
-                                                        .Concat(typeSymbol.AllInterfaces)
+            foreach (var interfaceSymbol in typeSymbol.AllInterfaces)
+            {
+                if (interfaceSymbol.Name == TypeNames.IBqlCreator || interfaceSymbol.Name == TypeNames.IBqlJoin)
+                    return true;
+            }
+
+            return false;
+        }    
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsDAC(this ITypeSymbol typeSymbol) => typeSymbol.ImplementsInterface(TypeNames.IBqlTable);
+        
+        public static bool IsDacExtension(this ITypeSymbol typeSymbol)
+        {
+            if (string.Equals(typeSymbol?.Name, TypeNames.PXCacheExtension))
+                return false;
+
+            return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.PXCacheExtension, includeInterfaces: false);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsDacField(this ITypeSymbol typeSymbol) => typeSymbol.ImplementsInterface(TypeNames.IBqlField);
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsBqlConstant(this ITypeSymbol typeSymbol)
+		{
+			if (string.Equals(typeSymbol?.Name, TypeNames.Constant))
+				return false;
+
+			return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.Constant, includeInterfaces: false);
+		}
+
+        public static TextSpan? GetBqlOperatorOutliningTextSpan(this ITypeSymbol typeSymbol, GenericNameSyntax bqlOperatorNode)
+        {
+            List<string> typesAndInterfaces = typeSymbol.AllInterfaces
                                                         .Select(type => type.Name)
                                                         .ToList();
 
-            return typeHierarchyNames.Contains(TypeNames.IBqlCreator) ||
-                   typeHierarchyNames.Contains(TypeNames.IBqlJoin);
+            if (typesAndInterfaces.Contains(TypeNames.IBqlComparison) || 
+                typesAndInterfaces.Contains(TypeNames.IBqlFunction))
+                return null;
+
+            if (typesAndInterfaces.Contains(TypeNames.IBqlJoin) ||
+                typesAndInterfaces.Contains(TypeNames.IBqlAggregate) ||
+                typesAndInterfaces.Contains(TypeNames.IBqlOrderBy))
+            {
+                return bqlOperatorNode.TypeArgumentList.Span;
+            }        
+
+            if (!typesAndInterfaces.Contains(TypeNames.IBqlPredicateChain) && 
+                !typesAndInterfaces.Contains(TypeNames.IBqlOn))
+            {
+                return null;
+            }
+            
+            TypeArgumentListSyntax typeParamsListSyntax = bqlOperatorNode.TypeArgumentList;
+            var typeArgumentsList = typeParamsListSyntax.Arguments;
+
+            if (typeArgumentsList.SeparatorCount <= 1)
+                return typeParamsListSyntax.Span;
+          
+            int length = typeArgumentsList.GetSeparator(1).SpanStart - typeParamsListSyntax.SpanStart;
+            return new TextSpan(typeParamsListSyntax.SpanStart, length);           
         }
-
-        public static bool IsDAC(this ITypeSymbol typeSymbol)
-        {
-            if (typeSymbol == null || string.Equals(typeSymbol.Name, TypeNames.IBqlTable))
-                return false;
-
-            return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.IBqlTable);
-        }
-
-        public static bool IsDacExtension(this ITypeSymbol typeSymbol)
-        {
-            if (typeSymbol == null || string.Equals(typeSymbol.Name, TypeNames.PXCacheExtension))
-                return false;
-
-            return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.PXCacheExtension);
-        }
-
-        public static bool IsDacField(this ITypeSymbol typeSymbol)
-        {
-            if (typeSymbol == null || string.Equals(typeSymbol.Name, TypeNames.IBqlField))
-                return false;
-
-            return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.IBqlField);
-        }
-
-		public static bool IsBqlConstant(this ITypeSymbol typeSymbol)
-		{
-			if (typeSymbol == null || string.Equals(typeSymbol.Name, TypeNames.Constant))
-				return false;
-
-			return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.Constant);
-		}
-	}
+    }
 }

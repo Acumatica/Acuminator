@@ -136,6 +136,7 @@ namespace PX.Analyzers.Coloriser
                 if (typeSymbol.IsBqlCommand())
                 {
                     isInsideBqlCommand = true;
+                    AddOutliningTagToBQL(genericNode.TypeArgumentList.Span);
                     AddClassificationTag(span, tagger.Provider.BqlOperatorType);
                     // AddTagAndCacheIt(nodeText, TypeNames.BqlCommand, span, tagger.Provider.BqlOperatorType);
 
@@ -152,6 +153,13 @@ namespace PX.Analyzers.Coloriser
                 }
                 else if (typeSymbol.IsBqlOperator())
                 {
+                    TextSpan? outliningSpan = typeSymbol.GetBqlOperatorOutliningTextSpan(genericNode);
+                   
+                    if (outliningSpan != null)
+                    {
+                        AddOutliningTagToBQL(outliningSpan.Value);
+                    }
+
                     AddClassificationTag(span, tagger.Provider.BqlOperatorType);
                     //AddTagAndCacheIt(nodeText, TypeNames.IBqlCreator, span, tagger.Provider.BqlOperatorType);
                 }
@@ -217,8 +225,7 @@ namespace PX.Analyzers.Coloriser
                     return;
                 }
 
-                braceLevel++;
-                AddOutliningTagToBQL(node.Span);
+                braceLevel++;               
 
                 if (braceLevel <= ColoringConstants.MaxBraceLevel && !cancellationToken.IsCancellationRequested &&
                     tagger.Provider.BraceTypeByLevel.TryGetValue(braceLevel, out IClassificationType braceClassificationType))
@@ -302,7 +309,7 @@ namespace PX.Analyzers.Coloriser
                 ITagSpan<IOutliningRegionTag> tag = span.ToOutliningTagSpan(tagger.Snapshot);
                 tagger.OutliningsTagsCache.AddTag(tag);
             }
-
+         
             private void AddOutliningTagToAttribute(AttributeListSyntax attributeListNode)
             {
                 if (!tagger.Provider.Package.UseBqlOutlining)
