@@ -34,6 +34,8 @@ namespace PX.Analyzers.Coloriser
         private static object syncRoot = new object();
         private static bool isPriorityIncreased;
 
+        protected bool AreClassificationsInitialized { get; private set; }
+
         public IClassificationType DacType { get; protected set; }
 
         public IClassificationType DacExtensionType { get; protected set; }
@@ -53,9 +55,9 @@ namespace PX.Analyzers.Coloriser
         public virtual ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer textBuffer)
         where T : ITag
         {
-            Initialize();
+            Initialize(textBuffer);
 
-            if (textView.TextBuffer != textBuffer)
+            if (textView.TextBuffer != textBuffer || !IsInitialized || !HasReferenceToAcumaticaPlatform)
                 return null;
 
             var tagger = textBuffer.Properties.GetOrCreateSingletonProperty(typeof(PXColorizerTaggerBase), () =>
@@ -67,12 +69,14 @@ namespace PX.Analyzers.Coloriser
         }
           
         
-        protected override void Initialize()
+        protected override void Initialize(ITextBuffer textBuffer)
         {
-            if (IsInitialized)
+            base.Initialize(textBuffer);
+
+            if (AreClassificationsInitialized)
                 return;
 
-            base.Initialize();
+            AreClassificationsInitialized = true;
             InitializeClassificationTypes();          
             IncreaseCommentFormatTypesPrioirity(classificationRegistry, classificationFormatMapService, BqlParameterType);
         }

@@ -42,6 +42,9 @@ namespace PX.Analyzers.Coloriser
         /// Count of visited nodes for Text editor update in Roslyn colorizer
         /// </summary>
         public const long ChunkSize = 200;
+
+        public const string PlatformDllName = "PX.Data";
+        public const string AppDllName = "PX.Objects";
     }
 
 	public static class Labels
