@@ -29,7 +29,10 @@ namespace PX.Analyzers.Coloriser
             if (buffer == null)
                 return null;
 
-            Initialize();
+            Initialize(buffer);
+
+            if (!IsInitialized || !HasReferenceToAcumaticaPlatform)
+                return null;
 
             PXOutliningTagger outliningTagger = buffer.Properties.GetOrCreateSingletonProperty(() =>
             {
