@@ -59,7 +59,9 @@ namespace PX.Analyzers.Coloriser
                 if (typeSymbol == null)
                 {
                     if (!cancellationToken.IsCancellationRequested)
+                    {
                         base.VisitIdentifierName(node);
+                    }
 
                     return;
                 }
@@ -135,15 +137,29 @@ namespace PX.Analyzers.Coloriser
 
                 if (typeSymbol.IsBqlCommand())
                 {
-                    isInsideBqlCommand = true;
-                    AddOutliningTagToBQL(genericNode.TypeArgumentList.Span);
-                    AddClassificationTag(span, tagger.Provider.BqlOperatorType);
-                    // AddTagAndCacheIt(nodeText, TypeNames.BqlCommand, span, tagger.Provider.BqlOperatorType);
+                    try
+                    {
+                        isInsideBqlCommand = true;
+                        var typeArgumentList = genericNode.TypeArgumentList;
 
-                    if (!cancellationToken.IsCancellationRequested)
-                        base.VisitGenericName(genericNode);
+                        if (typeArgumentList.Arguments.Count > 1)
+                        {
+                            AddOutliningTagToBQL(typeArgumentList.Span);
+                        }
 
-                    isInsideBqlCommand = false;
+                        AddClassificationTag(span, tagger.Provider.BqlOperatorType);
+                        // AddTagAndCacheIt(nodeText, TypeNames.BqlCommand, span, tagger.Provider.BqlOperatorType);
+
+                        if (!cancellationToken.IsCancellationRequested)
+                        {
+                            base.VisitGenericName(genericNode);
+                        }
+                    }
+                    finally
+                    {
+                        isInsideBqlCommand = false;                      
+                    }
+
                     return;
                 }
 				else if (typeSymbol.IsBqlParameter())
@@ -225,19 +241,26 @@ namespace PX.Analyzers.Coloriser
                     return;
                 }
 
-                braceLevel++;               
+                braceLevel++;
 
-                if (braceLevel <= ColoringConstants.MaxBraceLevel && !cancellationToken.IsCancellationRequested &&
-                    tagger.Provider.BraceTypeByLevel.TryGetValue(braceLevel, out IClassificationType braceClassificationType))
+                try
                 {
-                    AddClassificationTag(node.LessThanToken.Span, braceClassificationType);
-                    AddClassificationTag(node.GreaterThanToken.Span, braceClassificationType);
+
+                    if (braceLevel <= ColoringConstants.MaxBraceLevel && !cancellationToken.IsCancellationRequested &&
+                        tagger.Provider.BraceTypeByLevel.TryGetValue(braceLevel, out IClassificationType braceClassificationType))
+                    {
+                        AddClassificationTag(node.LessThanToken.Span, braceClassificationType);
+                        AddClassificationTag(node.GreaterThanToken.Span, braceClassificationType);
+                    }
+
+                    if (!cancellationToken.IsCancellationRequested)
+                        base.VisitTypeArgumentList(node);
+                }
+                finally
+                {
+                    braceLevel--;
                 }
 
-                if (!cancellationToken.IsCancellationRequested)
-                    base.VisitTypeArgumentList(node);
-
-                braceLevel--;
                 UpdateCodeEditorIfNecessary();
             }
 
@@ -248,17 +271,22 @@ namespace PX.Analyzers.Coloriser
 
                 attributeLevel++;
 
-                if (attributeLevel <= OutliningConstants.MaxAttributeOutliningLevel)
+                try
                 {
-                    AddOutliningTagToAttribute(node);
-                }
+                    if (attributeLevel <= OutliningConstants.MaxAttributeOutliningLevel)
+                    {
+                        AddOutliningTagToAttribute(node);
+                    }
 
-                if (!cancellationToken.IsCancellationRequested)
+                    if (!cancellationToken.IsCancellationRequested)
+                    {
+                        base.VisitAttributeList(node);
+                    }
+                }
+                finally
                 {
-                    base.VisitAttributeList(node);
+                    attributeLevel--;
                 }
-
-                attributeLevel--;
             }
 
             public override void Visit(SyntaxNode node)
