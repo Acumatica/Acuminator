@@ -117,4 +117,38 @@ namespace PX.Analyzers.Coloriser
 			BackgroundCustomizable = true;
 		}
 	}
+
+
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = ColoringConstants.PXGraphFormat)]
+    [Name(ColoringConstants.PXGraphFormat)]
+    [UserVisible(true)]
+    [Order(After = ColoringConstants.BQLConstantEndingFormat)]
+    internal sealed class PXGraphFormat : ClassificationFormatDefinition
+    {
+        public PXGraphFormat()
+        {
+            ForegroundColor = Color.FromRgb(r: 179, g: 14, b: 14);   
+            DisplayName = Labels.PXGraphFormatLabel; // Human readable version of the name		
+            ForegroundCustomizable = true;
+            BackgroundCustomizable = true;
+        }
+    }
+
+
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = ColoringConstants.PXActionFormat)]
+    [Name(ColoringConstants.PXActionFormat)]
+    [UserVisible(true)]
+    [Order(After = ColoringConstants.PXGraphFormat)]
+    internal sealed class PXActionFormat : ClassificationFormatDefinition
+    {
+        public PXActionFormat()
+        {
+            ForegroundColor = Color.FromRgb(r: 187, g: 55, b: 167);
+            DisplayName = Labels.PXActionFormatLabel;   // Human readable version of the name		
+            ForegroundCustomizable = true;
+            BackgroundCustomizable = true;
+        }
+    }
 }

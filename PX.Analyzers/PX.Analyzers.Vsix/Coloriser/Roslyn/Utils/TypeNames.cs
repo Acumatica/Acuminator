@@ -18,13 +18,13 @@ namespace PX.Analyzers.Coloriser
 
         public static readonly string IBqlJoin = nameof(PX.Data.IBqlJoin);
 
-        public static readonly string IBqlOrderBy = typeof(PX.Data.IBqlOrderBy).Name;
+        public static readonly string IBqlOrderBy = typeof(IBqlOrderBy).Name;
 
-        public static readonly string IBqlAggregate = typeof(PX.Data.IBqlAggregate).Name;
+        public static readonly string IBqlAggregate = typeof(IBqlAggregate).Name;
 
-        public static readonly string IBqlFunction = typeof(PX.Data.IBqlFunction).Name;
+        public static readonly string IBqlFunction = typeof(IBqlFunction).Name;
 
-        public static readonly string IBqlSortColumn = typeof(PX.Data.IBqlSortColumn).Name;
+        public static readonly string IBqlSortColumn = typeof(IBqlSortColumn).Name;
 
         public static readonly string IBqlComparison = typeof(IBqlComparison).Name;
 
@@ -38,6 +38,10 @@ namespace PX.Analyzers.Coloriser
 
 		public static readonly string Constant = typeof(Constant).Name;
 
-        public static readonly string PXCacheExtension = typeof(PXCacheExtension).Name;      
+        public static readonly string PXCacheExtension = typeof(PXCacheExtension).Name;
+
+        public static readonly string PXGraph = typeof(PXGraph).Name;
+
+        public static readonly string PXAction = typeof(PXAction).Name;
     }
 }

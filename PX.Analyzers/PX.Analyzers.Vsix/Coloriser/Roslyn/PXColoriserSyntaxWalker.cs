@@ -103,6 +103,10 @@ namespace PX.Analyzers.Coloriser
                     //AddTagAndCacheIt(nodeText, TypeNames.IBqlCreator, span, tagger.Provider.BqlOperatorType);
                     AddClassificationTag(span, tagger.Provider.BqlOperatorType);
                 }
+                else if (typeSymbol.IsPXGraph())
+                {
+                    AddClassificationTag(span, tagger.Provider.PXGraphType);
+                }               
 
                 UpdateCodeEditorIfNecessary();
             }
@@ -178,6 +182,10 @@ namespace PX.Analyzers.Coloriser
 
                     AddClassificationTag(span, tagger.Provider.BqlOperatorType);
                     //AddTagAndCacheIt(nodeText, TypeNames.IBqlCreator, span, tagger.Provider.BqlOperatorType);
+                }
+                else if (typeSymbol.IsPXAction())
+                {
+                    AddClassificationTag(span, tagger.Provider.PXActionType);
                 }
 
                 if (!cancellationToken.IsCancellationRequested)

@@ -35,8 +35,18 @@ namespace PX.Analyzers.Coloriser
 		internal static ClassificationTypeDefinition BQLConstantEndingType = null;
 
 
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name(ColoringConstants.PXGraphFormat)]
+        internal static ClassificationTypeDefinition PXGraphType = null;
 
 
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name(ColoringConstants.PXActionFormat)]
+        internal static ClassificationTypeDefinition PXActionType = null;
+        //*******************************************************************************************************************************************************************************
+        //*******************************************************************************************************************************************************************************
+        //*******************************************************************************************************************************************************************************
+        #region Braces      
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(ColoringConstants.BraceLevel_1_Format)]
         internal static ClassificationTypeDefinition BraceLevel_1_Type = null;
@@ -101,6 +111,7 @@ namespace PX.Analyzers.Coloriser
 
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(ColoringConstants.BraceLevel_14_Format)]
-        internal static ClassificationTypeDefinition BraceLevel_14_Type = null;     
+        internal static ClassificationTypeDefinition BraceLevel_14_Type = null;
+        #endregion
     }
 }

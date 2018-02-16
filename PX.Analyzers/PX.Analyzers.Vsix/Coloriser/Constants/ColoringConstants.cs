@@ -17,6 +17,11 @@ namespace PX.Analyzers.Coloriser
 		public const string BQLConstantPrefixFormat = nameof(BQLConstantPrefixFormat);
 		public const string BQLConstantEndingFormat = nameof(BQLConstantEndingFormat);
 
+        public const string PXGraphFormat = nameof(PXGraphFormat);
+        public const string PXActionFormat = nameof(PXActionFormat);
+
+        //******************************************************************************
+        #region Brace Constants
         public const string BraceLevel_1_Format = nameof(BraceLevel_1_Format);
         public const string BraceLevel_2_Format = nameof(BraceLevel_2_Format);
         public const string BraceLevel_3_Format = nameof(BraceLevel_3_Format);
@@ -37,7 +42,8 @@ namespace PX.Analyzers.Coloriser
         public const string BraceLevel_14_Format = nameof(BraceLevel_14_Format);
 
         public const int MaxBraceLevel = 14;
-       
+        #endregion
+        //******************************************************************************
         /// <summary>
         /// Count of visited nodes for Text editor update in Roslyn colorizer
         /// </summary>
@@ -57,6 +63,10 @@ namespace PX.Analyzers.Coloriser
 		public const string BQLConstantPrefixFormatLabel = "Acuminator - BQL constant - prefix";
 		public const string BQLConstantEndingFormatLabel = "Acuminator - BQL constant - ending";
 
+        public const string PXGraphFormatLabel = "Acuminator - PXGraph";
+        public const string PXActionFormatLabel = "Acuminator - PXAction";
+
+        #region Brace Constants      
         public const string BraceLevel_1_FormatLabel = "Acuminator - BQL angle braces level 1";
         public const string BraceLevel_2_FormatLabel = "Acuminator - BQL angle braces level 2";
         public const string BraceLevel_3_FormatLabel = "Acuminator - BQL angle braces level 3";
@@ -74,6 +84,7 @@ namespace PX.Analyzers.Coloriser
         public const string BraceLevel_12_FormatLabel = "Acuminator - BQL angle braces level 12";
 
         public const string BraceLevel_13_FormatLabel = "Acuminator - BQL angle braces level 13";
-        public const string BraceLevel_14_FormatLabel = "Acuminator - BQL angle braces level 14";      
+        public const string BraceLevel_14_FormatLabel = "Acuminator - BQL angle braces level 14";
+        #endregion
     }
 }
