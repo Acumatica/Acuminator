@@ -49,6 +49,10 @@ namespace PX.Analyzers.Coloriser
 		public IClassificationType BqlConstantPrefixType { get; protected set; }
 
 		public IClassificationType BqlConstantEndingType { get; protected set; }
+      
+        public IClassificationType PXGraphType { get; protected set; }
+
+        public IClassificationType PXActionType { get; protected set; }
 
         public Dictionary<int, IClassificationType> BraceTypeByLevel { get; protected set; }
 
@@ -90,6 +94,9 @@ namespace PX.Analyzers.Coloriser
             BqlOperatorType = classificationRegistry.GetClassificationType(ColoringConstants.BQLOperatorFormat);
 			BqlConstantPrefixType = classificationRegistry.GetClassificationType(ColoringConstants.BQLConstantPrefixFormat);
 			BqlConstantEndingType = classificationRegistry.GetClassificationType(ColoringConstants.BQLConstantEndingFormat);
+
+            PXGraphType = classificationRegistry.GetClassificationType(ColoringConstants.PXGraphFormat);
+            PXActionType = classificationRegistry.GetClassificationType(ColoringConstants.PXActionFormat);
 
             BraceTypeByLevel = new Dictionary<int, IClassificationType>(capacity: ColoringConstants.MaxBraceLevel)
             {

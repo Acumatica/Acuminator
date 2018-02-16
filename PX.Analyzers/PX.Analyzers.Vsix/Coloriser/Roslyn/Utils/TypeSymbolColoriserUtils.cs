@@ -104,11 +104,29 @@ namespace PX.Analyzers.Coloriser
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsBqlConstant(this ITypeSymbol typeSymbol)
 		{
-			if (string.Equals(typeSymbol?.Name, TypeNames.Constant))
+			if (typeSymbol?.Name == null || typeSymbol.Name.StartsWith(TypeNames.Constant))
 				return false;
 
 			return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.Constant, includeInterfaces: false);
 		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsPXGraph(this ITypeSymbol typeSymbol)
+        {
+            if (string.Equals(typeSymbol?.Name, TypeNames.PXGraph))
+                return false;
+
+            return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.PXGraph, includeInterfaces: false);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsPXAction(this ITypeSymbol typeSymbol)
+        {
+            if (typeSymbol?.Name == null)
+                return false;
+
+            return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.PXAction, includeInterfaces: false);
+        }
 
         public static TextSpan? GetBqlOperatorOutliningTextSpan(this ITypeSymbol typeSymbol, GenericNameSyntax bqlOperatorNode)
         {
