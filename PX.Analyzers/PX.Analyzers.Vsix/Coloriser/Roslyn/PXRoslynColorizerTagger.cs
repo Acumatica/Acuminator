@@ -100,7 +100,7 @@ namespace PX.Analyzers.Coloriser
             {
                 getDocumentTask.Wait();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return ClassificationTagsCache.ProcessedTags;     // TODO: report this to someone.
             }

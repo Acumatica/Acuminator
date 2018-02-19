@@ -51,7 +51,7 @@ namespace PX.Analyzers.Coloriser
                 string nodeText = node.Identifier.ValueText;
                 TextSpan span = node.Span;
 
-                if (cancellationToken.IsCancellationRequested || IsVar(nodeText) /* || SearchIdentifierInSymbolsCache(span, node, nodeText)*/)
+                if (cancellationToken.IsCancellationRequested || IsVar(nodeText))
                     return;
               
                 ITypeSymbol typeSymbol = document.SemanticModel.GetSymbolInfo(node).Symbol as ITypeSymbol;
@@ -65,48 +65,48 @@ namespace PX.Analyzers.Coloriser
 
                     return;
                 }
-
+              
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
-				if (typeSymbol.IsDAC())
-				{
-                    //AddTagAndCacheIt(nodeText, TypeNames.IBqlTable, span, tagger.Provider.DacType);		
-                    AddClassificationTag(span, tagger.Provider.DacType);		
-                }
-                else if (typeSymbol.IsDacField())
-				{
-                    //var parent = node.Parent;
+                ColoredCodeType? coloredCodeType = typeSymbol.GetColoringTypeFromIdentifierNode();
 
-                    //if (parent.Kind() == SyntaxKind.QualifiedName)
-                    //{                       
-                    //    AddTagAndCacheIt(parent.ToString(), TypeNames.IBqlField, span, tagger.Provider.FieldType);
-                    //}
-                    //else
-                    //{
-                    //    AddTag(span, tagger.Provider.FieldType);
-                    //}
+                if (coloredCodeType != null)
+                {
+                    IClassificationType classificationType = tagger.Provider[coloredCodeType.Value];
+                    
+                    if (classificationType != null)
+                    {
+                        AddClassificationTag(span, classificationType);
+                    }
+                }
 
-                    AddClassificationTag(span, tagger.Provider.FieldType);
-                }
-                else if (typeSymbol.IsDacExtension())
-                {
-                    AddClassificationTag(span, tagger.Provider.DacExtensionType);
-                }
-                else if (typeSymbol.IsBqlConstant())
-                {
-                    // AddTagAndCacheIt(nodeText, TypeNames.Constant, span, tagger.Provider.BqlConstantEndingType);
-                    AddClassificationTag(span, tagger.Provider.BqlConstantEndingType);
-                }
-                else if (typeSymbol.IsBqlOperator())
-                {
-                    //AddTagAndCacheIt(nodeText, TypeNames.IBqlCreator, span, tagger.Provider.BqlOperatorType);
-                    AddClassificationTag(span, tagger.Provider.BqlOperatorType);
-                }
-                else if (typeSymbol.IsPXGraph())
-                {
-                    AddClassificationTag(span, tagger.Provider.PXGraphType);
-                }               
+
+
+                //if (typeSymbol.IsDAC())
+                //{
+                //                AddClassificationTag(span, tagger.Provider[ColoredCodeType.Dac]);		
+                //            }
+                //            else if (typeSymbol.IsDacField())
+                //{                   
+                //                AddClassificationTag(span, tagger.Provider[ColoredCodeType.DacField]);
+                //            }
+                //            else if (typeSymbol.IsDacExtension())
+                //            {
+                //                AddClassificationTag(span, tagger.Provider[ColoredCodeType.DacExtension]);
+                //            }
+                //            else if (typeSymbol.IsBqlConstant())
+                //            {
+                //                AddClassificationTag(span, tagger.Provider[ColoredCodeType.BQLConstantEnding]);
+                //            }
+                //            else if (typeSymbol.IsBqlOperator())
+                //            {
+                //                AddClassificationTag(span, tagger.Provider[ColoredCodeType.BqlOperator]);
+                //            }
+                //            else if (typeSymbol.IsPXGraph())
+                //            {
+                //                AddClassificationTag(span, tagger.Provider[ColoredCodeType.PXGraph]);
+                //            }               
 
                 UpdateCodeEditorIfNecessary();
             }
@@ -119,13 +119,7 @@ namespace PX.Analyzers.Coloriser
                 var identifier = genericNode.Identifier;  //The property hides the creation of new node and some other overhead. Must be cautious with Roslyn properties
                 string nodeText = identifier.ValueText;
                 TextSpan span = identifier.Span;
-
-                //if (SearchGenericNameInSymbolsCache(span, nodeText))
-                //{
-                //    base.VisitGenericName(genericNode);
-                //    return;
-                //}
-                   
+                             
                 ITypeSymbol typeSymbol = document.SemanticModel.GetSymbolInfo(genericNode).Symbol as ITypeSymbol;
               
                 if (typeSymbol == null)
@@ -151,8 +145,7 @@ namespace PX.Analyzers.Coloriser
                             AddOutliningTagToBQL(typeArgumentList.Span);
                         }
 
-                        AddClassificationTag(span, tagger.Provider.BqlOperatorType);
-                        // AddTagAndCacheIt(nodeText, TypeNames.BqlCommand, span, tagger.Provider.BqlOperatorType);
+                        AddClassificationTag(span, tagger.Provider[ColoredCodeType.BqlOperator]);
 
                         if (!cancellationToken.IsCancellationRequested)
                         {
@@ -168,8 +161,7 @@ namespace PX.Analyzers.Coloriser
                 }
 				else if (typeSymbol.IsBqlParameter())
                 {
-                    AddClassificationTag(span, tagger.Provider.BqlParameterType);
-                    //AddTagAndCacheIt(nodeText, TypeNames.IBqlParameter, span, tagger.Provider.BqlParameterType);
+                    AddClassificationTag(span, tagger.Provider[ColoredCodeType.BqlParameter]);
                 }
                 else if (typeSymbol.IsBqlOperator())
                 {
@@ -180,12 +172,11 @@ namespace PX.Analyzers.Coloriser
                         AddOutliningTagToBQL(outliningSpan.Value);
                     }
 
-                    AddClassificationTag(span, tagger.Provider.BqlOperatorType);
-                    //AddTagAndCacheIt(nodeText, TypeNames.IBqlCreator, span, tagger.Provider.BqlOperatorType);
+                    AddClassificationTag(span, tagger.Provider[ColoredCodeType.BqlOperator]);
                 }
                 else if (typeSymbol.IsPXAction())
                 {
-                    AddClassificationTag(span, tagger.Provider.PXActionType);
+                    AddClassificationTag(span, tagger.Provider[ColoredCodeType.PXAction]);
                 }
 
                 if (!cancellationToken.IsCancellationRequested)
@@ -201,14 +192,7 @@ namespace PX.Analyzers.Coloriser
 
                 string nodeText = node.ToString();
                 TextSpan leftSpan = node.Left.Span;
-                TextSpan rightSpan = node.Right.Span;
-
-                //if (SearchQualifiedNameInSymbolsCache(leftSpan, rightSpan, nodeText))
-                //{
-                //    base.VisitQualifiedName(node);
-                //    return;
-                //}
-
+                TextSpan rightSpan = node.Right.Span;              
                 ITypeSymbol typeSymbol = document.SemanticModel.GetSymbolInfo(node).Symbol as ITypeSymbol;
 
                 if (typeSymbol == null)
@@ -224,10 +208,8 @@ namespace PX.Analyzers.Coloriser
 
                 if (typeSymbol.IsBqlConstant())
                 {
-                    AddClassificationTag(leftSpan, tagger.Provider.BqlConstantPrefixType);
-                    AddClassificationTag(rightSpan, tagger.Provider.BqlConstantEndingType);
-
-                    //document.SymbolsCache.AddNodeToCache(nodeText, TypeNames.Constant);                  
+                    AddClassificationTag(leftSpan, tagger.Provider[ColoredCodeType.BQLConstantPrefix]);
+                    AddClassificationTag(rightSpan, tagger.Provider[ColoredCodeType.BQLConstantEnding]);
                 }
 
                 if (!cancellationToken.IsCancellationRequested)
@@ -253,12 +235,15 @@ namespace PX.Analyzers.Coloriser
 
                 try
                 {
-
-                    if (braceLevel <= ColoringConstants.MaxBraceLevel && !cancellationToken.IsCancellationRequested &&
-                        tagger.Provider.BraceTypeByLevel.TryGetValue(braceLevel, out IClassificationType braceClassificationType))
+                    if (braceLevel <= ColoringConstants.MaxBraceLevel && !cancellationToken.IsCancellationRequested)
                     {
-                        AddClassificationTag(node.LessThanToken.Span, braceClassificationType);
-                        AddClassificationTag(node.GreaterThanToken.Span, braceClassificationType);
+                        IClassificationType braceClassificationType = tagger.Provider[braceLevel];
+
+                        if (braceClassificationType != null)
+                        {
+                            AddClassificationTag(node.LessThanToken.Span, braceClassificationType);
+                            AddClassificationTag(node.GreaterThanToken.Span, braceClassificationType);
+                        }
                     }
 
                     if (!cancellationToken.IsCancellationRequested)
@@ -403,91 +388,7 @@ namespace PX.Analyzers.Coloriser
             /// </summary>
             /// <param name="nodeText">The node text.</param>
             /// <returns/>         
-            private bool IsVar(string nodeText) => nodeText == varKeyword;
-
-            #region Commented methods for symbol's cache optimization
-
-
-
-            //private bool SearchIdentifierInSymbolsCache(TextSpan span, IdentifierNameSyntax node, string nodeText)
-            //{
-            //    var parentKind = node.Parent.Kind();
-
-            //    switch (parentKind)
-            //    {
-            //        case SyntaxKind.InvocationExpression:
-            //        case SyntaxKind.VariableDeclarator:
-            //        case SyntaxKind.SimpleMemberAccessExpression:
-            //        case SyntaxKind.QueryBody:
-            //        case SyntaxKind.SimpleAssignmentExpression:
-            //        case SyntaxKind.PointerMemberAccessExpression:
-            //            return false;
-            //    }
-
-            //    if (document.SymbolsCache.IsDAC(nodeText))
-            //    {
-            //        AddTag(span, tagger.Provider.DacType);
-            //    }
-            //    else if (document.SymbolsCache.IsDacField(nodeText))
-            //    {
-            //        AddTag(span, tagger.Provider.FieldType);
-            //    }
-            //    else if (document.SymbolsCache.IsBqlConstant(nodeText))
-            //    {
-            //        AddTag(span, tagger.Provider.BqlConstantEndingType);
-            //    }
-            //    else if (document.SymbolsCache.IsBqlOperator(nodeText))
-            //    {
-            //        AddTag(span, tagger.Provider.BqlOperatorType);
-            //    }
-            //    else
-            //        return false;
-
-            //    return true;
-            //}
-
-            //private bool SearchGenericNameInSymbolsCache(TextSpan span, string nodeText)
-            //{
-            //    if (document.SymbolsCache.IsBqlCommand(nodeText) || document.SymbolsCache.IsBqlOperator(nodeText))
-            //    {
-            //        AddTag(span, tagger.Provider.BqlOperatorType);
-            //    }
-            //    else if (document.SymbolsCache.IsBqlParameter(nodeText))
-            //    {
-            //        AddTag(span, tagger.Provider.BqlParameterType);
-            //    }
-            //    else
-            //        return false;
-
-            //    return true;
-            //}
-
-            //private bool SearchQualifiedNameInSymbolsCache(TextSpan leftSpan, TextSpan rightSpan, string nodeText)
-            //{
-            //    if (document.SymbolsCache.IsBqlConstant(nodeText))
-            //    {
-            //        AddTag(leftSpan, tagger.Provider.BqlConstantPrefixType);
-            //        AddTag(rightSpan, tagger.Provider.BqlConstantEndingType);
-            //    }
-            //    else
-            //        return false;
-
-            //    return true;
-            //}
-
-
-
-            //private void AddTagAndCacheIt(string cachedText, string tagTypeName, TextSpan span, IClassificationType classificationType)
-            //{
-            //    ITagSpan<IClassificationTag> tag = span.ToTagSpan(tagger.Cache, classificationType);
-
-            //    if (tag != null)
-            //    {
-            //        tagger.TagsList.Add(tag);
-            //        document.SymbolsCache.AddNodeToCache(cachedText, tagTypeName);
-            //    }
-            //}
-            #endregion
+            private bool IsVar(string nodeText) => nodeText == varKeyword;           
         }
     }
 }

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.CodeAnalysis;
 using PX.Data;
+using PX.Analyzers.Vsix.Utilities;
 
 namespace PX.Analyzers.Coloriser
 {
@@ -43,5 +45,18 @@ namespace PX.Analyzers.Coloriser
         public static readonly string PXGraph = typeof(PXGraph).Name;
 
         public static readonly string PXAction = typeof(PXAction).Name;
+
+        public static Dictionary<string, ColoredCodeType> TypeNamesToColoredCodeTypesForIdentifier { get; } =
+            new Dictionary<string, ColoredCodeType>
+            {
+                [IBqlTable] = ColoredCodeType.Dac,
+                [IBqlField] = ColoredCodeType.DacField,
+                [PXCacheExtension] = ColoredCodeType.DacExtension,
+                [IBqlParameter] = ColoredCodeType.BqlParameter,
+                [Constant] = ColoredCodeType.BQLConstantEnding,
+                [IBqlCreator] = ColoredCodeType.BqlOperator,
+                [IBqlJoin] = ColoredCodeType.BqlOperator,
+                [PXGraph] = ColoredCodeType.PXGraph
+            };
     }
 }

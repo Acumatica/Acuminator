@@ -49,7 +49,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>7.2</LangVersion>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <DebugType>pdbonly</DebugType>
@@ -291,6 +291,7 @@
     <Compile Include="Coloriser\Outlining\PXOutliningTagger.cs" />
     <Compile Include="Coloriser\Outlining\PXOutliningTaggerProvider.cs" />
     <Compile Include="Coloriser\Base\PXTaggerProviderBase.cs" />
+    <Compile Include="Coloriser\Roslyn\Utils\ColoredCodeType.cs" />
     <Compile Include="Coloriser\Utils\EditorExtensions.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheAsync.cs" />
     <Compile Include="Coloriser\Formats\BracesFormats.cs" />
