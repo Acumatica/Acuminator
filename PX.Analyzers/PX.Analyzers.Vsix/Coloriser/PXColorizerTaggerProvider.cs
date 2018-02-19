@@ -36,25 +36,19 @@ namespace PX.Analyzers.Coloriser
 
         protected bool AreClassificationsInitialized { get; private set; }
 
-        public IClassificationType DacType { get; protected set; }
+        private Dictionary<ColoredCodeType, IClassificationType> codeColoringClassificationTypes;
 
-        public IClassificationType DacExtensionType { get; protected set; }
+        public IClassificationType this[ColoredCodeType codeType] => 
+            codeColoringClassificationTypes.TryGetValue(codeType, out IClassificationType type) 
+            ? type 
+            : null;
 
-        public IClassificationType FieldType { get; protected set; }
+        private Dictionary<int, IClassificationType> braceTypeByLevel;
 
-        public IClassificationType BqlParameterType { get; protected set; }
-
-        public IClassificationType BqlOperatorType { get; protected set; }
-
-		public IClassificationType BqlConstantPrefixType { get; protected set; }
-
-		public IClassificationType BqlConstantEndingType { get; protected set; }
-      
-        public IClassificationType PXGraphType { get; protected set; }
-
-        public IClassificationType PXActionType { get; protected set; }
-
-        public Dictionary<int, IClassificationType> BraceTypeByLevel { get; protected set; }
+        public IClassificationType this[int braceLevel] =>
+             braceTypeByLevel.TryGetValue(braceLevel, out IClassificationType type)
+            ? type
+            : null;
 
         public virtual ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer textBuffer)
         where T : ITag
@@ -82,23 +76,28 @@ namespace PX.Analyzers.Coloriser
 
             AreClassificationsInitialized = true;
             InitializeClassificationTypes();          
-            IncreaseCommentFormatTypesPrioirity(classificationRegistry, classificationFormatMapService, BqlParameterType);
+            IncreaseCommentFormatTypesPrioirity(classificationRegistry, classificationFormatMapService, 
+                                                codeColoringClassificationTypes[ColoredCodeType.BqlParameter]);
         }
 
         protected void InitializeClassificationTypes()
         {
-            DacType = classificationRegistry.GetClassificationType(ColoringConstants.DacFormat);
-            DacExtensionType = classificationRegistry.GetClassificationType(ColoringConstants.DacExtensionFormat);
-            FieldType = classificationRegistry.GetClassificationType(ColoringConstants.DacFieldFormat);
-            BqlParameterType = classificationRegistry.GetClassificationType(ColoringConstants.BQLParameterFormat);
-            BqlOperatorType = classificationRegistry.GetClassificationType(ColoringConstants.BQLOperatorFormat);
-			BqlConstantPrefixType = classificationRegistry.GetClassificationType(ColoringConstants.BQLConstantPrefixFormat);
-			BqlConstantEndingType = classificationRegistry.GetClassificationType(ColoringConstants.BQLConstantEndingFormat);
+            codeColoringClassificationTypes = new Dictionary<ColoredCodeType, IClassificationType>
+            {
+                [ColoredCodeType.Dac] = classificationRegistry.GetClassificationType(ColoringConstants.DacFormat),
+                [ColoredCodeType.DacExtension] = classificationRegistry.GetClassificationType(ColoringConstants.DacExtensionFormat),
+                [ColoredCodeType.DacField] = classificationRegistry.GetClassificationType(ColoringConstants.DacFieldFormat),
+                [ColoredCodeType.BqlParameter] = classificationRegistry.GetClassificationType(ColoringConstants.BQLParameterFormat),
+                [ColoredCodeType.BqlOperator] = classificationRegistry.GetClassificationType(ColoringConstants.BQLOperatorFormat),
 
-            PXGraphType = classificationRegistry.GetClassificationType(ColoringConstants.PXGraphFormat);
-            PXActionType = classificationRegistry.GetClassificationType(ColoringConstants.PXActionFormat);
+                [ColoredCodeType.BQLConstantPrefix] = classificationRegistry.GetClassificationType(ColoringConstants.BQLConstantPrefixFormat),
+                [ColoredCodeType.BQLConstantEnding] = classificationRegistry.GetClassificationType(ColoringConstants.BQLConstantEndingFormat),
 
-            BraceTypeByLevel = new Dictionary<int, IClassificationType>(capacity: ColoringConstants.MaxBraceLevel)
+                [ColoredCodeType.PXGraph] = classificationRegistry.GetClassificationType(ColoringConstants.PXGraphFormat),
+                [ColoredCodeType.PXAction] = classificationRegistry.GetClassificationType(ColoringConstants.PXActionFormat),
+            };
+
+            braceTypeByLevel = new Dictionary<int, IClassificationType>(capacity: ColoringConstants.MaxBraceLevel)
             {
                 [1] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_1_Format),
                 [2] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_2_Format),

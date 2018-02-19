@@ -46,6 +46,23 @@ namespace PX.Analyzers.Coloriser
 
             return false;
         }
+        
+        public static ColoredCodeType? GetColoringTypeFromIdentifierNode(this ITypeSymbol identifierType)
+        {
+            if (identifierType == null)
+                return null;
+
+            IEnumerable<ITypeSymbol> typeHierarchy = identifierType.GetBaseTypes()
+                                                                   .Concat(identifierType.AllInterfaces);
+
+            foreach (ITypeSymbol typeOrInterface in typeHierarchy)
+            {
+                if (TypeNames.TypeNamesToColoredCodeTypesForIdentifier.TryGetValue(typeOrInterface.Name, out ColoredCodeType coloredCodeType))
+                    return coloredCodeType;               
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// An ITypeSymbol extension method that query if 'typeSymbol' is bql command.
