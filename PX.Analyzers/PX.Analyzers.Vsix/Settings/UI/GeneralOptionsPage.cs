@@ -33,6 +33,42 @@ namespace PX.Analyzers.Vsix
             }
         }
 
+        private bool pxActionColoringEnabled = true;
+
+        [Category(AcuminatorVSPackage.SettingsCategoryName)]
+        [DisplayName("PXAction coloring is enabled")]
+        [Description("Coloring for PXAction declarations is enabled in Roslyn coloring")]
+        public bool PXActionColoringEnabled
+        {
+            get => pxActionColoringEnabled;
+            set
+            {
+                if (pxActionColoringEnabled != value)
+                {
+                    pxActionColoringEnabled = value;
+                    colorSettingsChanged = true;
+                }
+            }
+        }
+
+        private bool pxGraphColoringEnabled = true;
+
+        [Category(AcuminatorVSPackage.SettingsCategoryName)]
+        [DisplayName("PXGraph coloring is enabled")]
+        [Description("Coloring for PXGraph declarations is enabled in Roslyn coloring")]
+        public bool PXGraphColoringEnabled
+        {
+            get => pxGraphColoringEnabled;
+            set
+            {
+                if (pxGraphColoringEnabled != value)
+                {
+                    pxGraphColoringEnabled = value;
+                    colorSettingsChanged = true;
+                }
+            }
+        }
+
         private bool useRegexColoring;
 
         [Category(AcuminatorVSPackage.SettingsCategoryName)]
@@ -74,6 +110,9 @@ namespace PX.Analyzers.Vsix
             coloringEnabled = true;
             useRegexColoring = false;
             useBqlOutlining = true;
+            pxActionColoringEnabled = true;
+            pxGraphColoringEnabled = true;
+
             colorSettingsChanged = false;
             base.ResetSettings();
             OnSettingsChanged(AllSettings);
