@@ -40,6 +40,28 @@ namespace PX.Analyzers.Vsix
     [ProvideOptionPage(typeof(GeneralOptionsPage), AcuminatorVSPackage.SettingsCategoryName, GeneralOptionsPage.PageTitle, 0, 0, true)]
 	public sealed class AcuminatorVSPackage : Package
     {
+        private object locker = new object();
+        private GeneralOptionsPage generalOptionsPage = null;
+           
+        public GeneralOptionsPage GeneralOptionsPage
+        {
+            get
+            {
+                if (generalOptionsPage == null)
+                {
+                    lock (locker)
+                    {
+                        if (generalOptionsPage == null)
+                        {
+                            generalOptionsPage = GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage;
+                        }
+                    }
+                }
+
+                return generalOptionsPage;
+            }
+        }
+
         public const string SettingsCategoryName = "Acuminator";
         /// <summary>
         /// AcuminatorVSPackage GUID string.
@@ -69,15 +91,17 @@ namespace PX.Analyzers.Vsix
 			base.Initialize();
         }
 
-        #region Package Settings   
-        public GeneralOptionsPage GeneralOptionsPage => GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage;
-
-        public bool ColoringEnabled => (GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage)?.ColoringEnabled ?? true;
+        #region Package Settings         
+        public bool ColoringEnabled => GeneralOptionsPage?.ColoringEnabled ?? true;
 
 
-        public bool UseRegexColoring => (GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage)?.UseRegexColoring ?? false;
+        public bool UseRegexColoring => GeneralOptionsPage?.UseRegexColoring ?? false;
 
-        public bool UseBqlOutlining => (GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage)?.UseBqlOutlining ?? true;
+        public bool UseBqlOutlining => GeneralOptionsPage?.UseBqlOutlining ?? true;
+
+        public bool PXGraphColoringEnabled => GeneralOptionsPage?.PXGraphColoringEnabled ?? true;
+        
+        public bool PXActionColoringEnabled => GeneralOptionsPage?.PXGraphColoringEnabled ?? true;
         #endregion
     }
 }

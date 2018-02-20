@@ -74,8 +74,9 @@ namespace PX.Analyzers.Coloriser
                     ? tagger.Provider[coloredCodeType.Value]
                     : null;
 
-                if (classificationType != null)
-                {
+                if (classificationType != null && 
+                   (coloredCodeType.Value != ColoredCodeType.PXGraph || tagger.Provider.Package.PXGraphColoringEnabled))
+                {                    
                     AddClassificationTag(span, classificationType);
                 }
 
@@ -156,10 +157,16 @@ namespace PX.Analyzers.Coloriser
                             AddClassificationTag(span, classificationType);
                             break;
                         }
-                    case ColoredCodeType.BqlParameter:                                                                    
-                    case ColoredCodeType.PXAction:
+                    case ColoredCodeType.BqlParameter:
                         {
                             AddClassificationTag(span, classificationType);
+                            break;
+                        }
+                    case ColoredCodeType.PXAction:
+                        {
+                            if (tagger.Provider.Package.PXActionColoringEnabled)
+                                AddClassificationTag(span, classificationType);
+
                             break;
                         }
                 }
