@@ -188,12 +188,29 @@ namespace PX.Analyzers.Coloriser
                 return null;
             }
 
-            if (typesAndInterfaces.Contains(TypeNames.IBqlJoin) ||
-                typesAndInterfaces.Contains(TypeNames.IBqlAggregate) ||
+            if (typesAndInterfaces.Contains(TypeNames.IBqlAggregate) ||
                 typesAndInterfaces.Contains(TypeNames.IBqlOrderBy))
             {
-                return bqlOperatorNode.TypeArgumentList.Span;
-            }        
+                return bqlOperatorNode.TypeArgumentList.Span;             
+            }    
+            
+            if (typesAndInterfaces.Contains(TypeNames.IBqlJoin))
+            {
+                TypeArgumentListSyntax bqlJoinTypeParamsListSyntax = bqlOperatorNode.TypeArgumentList;
+                var bqlJoinTypeArgumentsList = bqlJoinTypeParamsListSyntax.Arguments;
+             
+                switch (bqlJoinTypeArgumentsList.Count)
+                {
+                    case 0:
+                    case 1:
+                        return null;
+                    case 2:
+                        return bqlJoinTypeParamsListSyntax.Span;                                                                                                                                           
+                    default:                                                                                                            //Has next Join => we emit extra outlining tag
+                        int length = bqlJoinTypeArgumentsList.GetSeparator(1).SpanStart - bqlJoinTypeParamsListSyntax.SpanStart;
+                        return new TextSpan(bqlJoinTypeParamsListSyntax.SpanStart, length);
+                }               
+            }
 
             if (!typesAndInterfaces.Contains(TypeNames.IBqlPredicateChain) && 
                 !typesAndInterfaces.Contains(TypeNames.IBqlOn))
@@ -210,10 +227,10 @@ namespace PX.Analyzers.Coloriser
                 case 1:
                     return null;
                 case 2:
-                    return typeParamsListSyntax.Span;
+                    return typeParamsListSyntax.Span;                    
                 default:
                     int length = typeArgumentsList.GetSeparator(1).SpanStart - typeParamsListSyntax.SpanStart;
-                    return new TextSpan(typeParamsListSyntax.SpanStart, length);
+                    return new TextSpan(typeParamsListSyntax.SpanStart, length);                  
             }          
         }
     }

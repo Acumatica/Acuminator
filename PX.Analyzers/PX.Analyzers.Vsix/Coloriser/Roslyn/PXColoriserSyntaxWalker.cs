@@ -144,11 +144,11 @@ namespace PX.Analyzers.Coloriser
                             UpdateCodeEditorIfNecessary();
                             return;
                         }
-                    case ColoredCodeType.BqlParameter:
+                    case ColoredCodeType.BqlOperator:
                         {
                             TextSpan? outliningSpan = typeSymbol.GetBqlOperatorOutliningTextSpan(genericNode);
 
-                            if (outliningSpan != null)
+                            if (outliningSpan.HasValue)
                             {
                                 AddOutliningTagToBQL(outliningSpan.Value);
                             }
@@ -156,7 +156,7 @@ namespace PX.Analyzers.Coloriser
                             AddClassificationTag(span, classificationType);
                             break;
                         }
-                    case ColoredCodeType.BqlOperator:                                                                    
+                    case ColoredCodeType.BqlParameter:                                                                    
                     case ColoredCodeType.PXAction:
                         {
                             AddClassificationTag(span, classificationType);
@@ -325,8 +325,11 @@ namespace PX.Analyzers.Coloriser
                                                              .OfType<AttributeSyntax>()
                                                              .FirstOrDefault();
 
-                if (attribute?.ArgumentList == null || attribute.ArgumentList.Arguments.IsNullOrEmpty() || cancellationToken.IsCancellationRequested)
+                if (attribute?.ArgumentList?.Arguments == null || attribute.ArgumentList.Arguments.Count == 0 || 
+                    cancellationToken.IsCancellationRequested)
+                {
                     return;
+                }
 
                 string collapsedText = GetAttributeName(attribute);
                 ITagSpan<IOutliningRegionTag> tag = attributeListNode.Span.ToOutliningTagSpan(tagger.Snapshot, collapsedText);
