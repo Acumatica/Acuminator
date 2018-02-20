@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Classification;
 using Microsoft.CodeAnalysis.Text;
@@ -48,6 +48,14 @@ namespace PX.Analyzers.Coloriser
 
             public override void VisitIdentifierName(IdentifierNameSyntax node)
             {
+                if (tagger.Provider.Package.ColorOnlyInsideBQL && !isInsideBqlCommand)
+                {
+                    if (!cancellationToken.IsCancellationRequested)
+                        base.VisitIdentifierName(node);
+
+                    return;
+                }
+
                 string nodeText = node.Identifier.ValueText;
                 TextSpan span = node.Span;
 
@@ -87,11 +95,7 @@ namespace PX.Analyzers.Coloriser
             {
                 if (cancellationToken.IsCancellationRequested)
                     return;
-
-                var identifier = genericNode.Identifier;  //The property hides the creation of new node and some other overhead. Must be cautious with Roslyn properties
-                string nodeText = identifier.ValueText;
-                TextSpan span = identifier.Span;
-                             
+                                       
                 ITypeSymbol typeSymbol = document.SemanticModel.GetSymbolInfo(genericNode).Symbol as ITypeSymbol;
               
                 if (typeSymbol == null)
@@ -116,35 +120,52 @@ namespace PX.Analyzers.Coloriser
                     return;
                 }
 
-                switch (coloredCodeType.Value)
+                if (coloredCodeType.Value == ColoredCodeType.BqlCommand)
                 {
-                    case ColoredCodeType.BqlCommand:
+                    try
+                    {
+                        isInsideBqlCommand = true;
+                        var typeArgumentList = genericNode.TypeArgumentList;
+
+                        if (typeArgumentList.Arguments.Count > 1)
                         {
-                            try
-                            {
-                                isInsideBqlCommand = true;
-                                var typeArgumentList = genericNode.TypeArgumentList;
-
-                                if (typeArgumentList.Arguments.Count > 1)
-                                {
-                                    AddOutliningTagToBQL(typeArgumentList.Span);
-                                }
-
-                                AddClassificationTag(span, classificationType);
-
-                                if (!cancellationToken.IsCancellationRequested)
-                                {
-                                    base.VisitGenericName(genericNode);
-                                }
-                            }
-                            finally
-                            {
-                                isInsideBqlCommand = false;
-                            }
-
-                            UpdateCodeEditorIfNecessary();
-                            return;
+                            AddOutliningTagToBQL(typeArgumentList.Span);
                         }
+
+                        AddClassificationTag(genericNode.Identifier.Span, classificationType);
+
+                        if (!cancellationToken.IsCancellationRequested)
+                        {
+                            base.VisitGenericName(genericNode);
+                        }
+                    }
+                    finally
+                    {
+                        isInsideBqlCommand = false;
+                    }
+
+                    UpdateCodeEditorIfNecessary();                   
+                }
+                else
+                {
+                    ColorBqlPartsAndPXActions(genericNode, typeSymbol, classificationType, coloredCodeType.Value);
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void ColorBqlPartsAndPXActions(GenericNameSyntax genericNode, ITypeSymbol typeSymbol, IClassificationType classificationType, 
+                                                   ColoredCodeType coloredCodeType)
+            {
+                if (tagger.Provider.Package.ColorOnlyInsideBQL && !isInsideBqlCommand)
+                {
+                    if (!cancellationToken.IsCancellationRequested)
+                        base.VisitGenericName(genericNode);
+
+                    return;
+                }
+                                 
+                switch (coloredCodeType)
+                {
                     case ColoredCodeType.BqlOperator:
                         {
                             TextSpan? outliningSpan = typeSymbol.GetBqlOperatorOutliningTextSpan(genericNode);
@@ -154,23 +175,23 @@ namespace PX.Analyzers.Coloriser
                                 AddOutliningTagToBQL(outliningSpan.Value);
                             }
 
-                            AddClassificationTag(span, classificationType);
+                            AddClassificationTag(genericNode.Identifier.Span, classificationType);
                             break;
                         }
                     case ColoredCodeType.BqlParameter:
                         {
-                            AddClassificationTag(span, classificationType);
+                            AddClassificationTag(genericNode.Identifier.Span, classificationType);
                             break;
                         }
                     case ColoredCodeType.PXAction:
                         {
                             if (tagger.Provider.Package.PXActionColoringEnabled)
-                                AddClassificationTag(span, classificationType);
+                                AddClassificationTag(genericNode.Identifier.Span, classificationType);
 
                             break;
                         }
                 }
-               
+
                 if (!cancellationToken.IsCancellationRequested)
                     base.VisitGenericName(genericNode);
 
@@ -181,6 +202,14 @@ namespace PX.Analyzers.Coloriser
             {
                 if (cancellationToken.IsCancellationRequested)
                     return;
+
+                if (tagger.Provider.Package.ColorOnlyInsideBQL && !isInsideBqlCommand)
+                {
+                    if (!cancellationToken.IsCancellationRequested)
+                        base.VisitQualifiedName(node);
+
+                    return;
+                }
 
                 string nodeText = node.ToString();
                 TextSpan leftSpan = node.Left.Span;

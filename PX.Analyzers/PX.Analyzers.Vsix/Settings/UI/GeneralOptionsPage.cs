@@ -37,7 +37,7 @@ namespace PX.Analyzers.Vsix
 
         [Category(AcuminatorVSPackage.SettingsCategoryName)]
         [DisplayName("PXAction coloring is enabled")]
-        [Description("Coloring for PXAction declarations is enabled in Roslyn coloring")]
+        [Description("Coloring for PXAction declarations is enabled for Roslyn coloring")]
         public bool PXActionColoringEnabled
         {
             get => pxActionColoringEnabled;
@@ -55,7 +55,7 @@ namespace PX.Analyzers.Vsix
 
         [Category(AcuminatorVSPackage.SettingsCategoryName)]
         [DisplayName("PXGraph coloring is enabled")]
-        [Description("Coloring for PXGraph declarations is enabled in Roslyn coloring")]
+        [Description("Coloring for PXGraph declarations is enabled for Roslyn coloring")]
         public bool PXGraphColoringEnabled
         {
             get => pxGraphColoringEnabled;
@@ -64,6 +64,24 @@ namespace PX.Analyzers.Vsix
                 if (pxGraphColoringEnabled != value)
                 {
                     pxGraphColoringEnabled = value;
+                    colorSettingsChanged = true;
+                }
+            }
+        }
+
+        private bool colorOnlyInsideBQL;
+
+        [Category(AcuminatorVSPackage.SettingsCategoryName)]
+        [DisplayName("Color code only inside BQL")]
+        [Description("Coloring is enabled only inside BQL commands for Roslyn coloring")]
+        public bool ColorOnlyInsideBQL
+        {
+            get => colorOnlyInsideBQL;
+            set
+            {
+                if (colorOnlyInsideBQL != value)
+                {
+                    colorOnlyInsideBQL = value;
                     colorSettingsChanged = true;
                 }
             }
@@ -112,6 +130,7 @@ namespace PX.Analyzers.Vsix
             useBqlOutlining = true;
             pxActionColoringEnabled = true;
             pxGraphColoringEnabled = true;
+            colorOnlyInsideBQL = false;
 
             colorSettingsChanged = false;
             base.ResetSettings();
