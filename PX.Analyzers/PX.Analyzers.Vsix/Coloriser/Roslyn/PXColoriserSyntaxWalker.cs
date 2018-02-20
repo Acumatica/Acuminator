@@ -142,14 +142,14 @@ namespace PX.Analyzers.Coloriser
                     finally
                     {
                         isInsideBqlCommand = false;
-                    }
-
-                    UpdateCodeEditorIfNecessary();                   
+                    }                              
                 }
                 else
                 {
                     ColorBqlPartsAndPXActions(genericNode, typeSymbol, classificationType, coloredCodeType.Value);
                 }
+
+                UpdateCodeEditorIfNecessary();
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -193,9 +193,7 @@ namespace PX.Analyzers.Coloriser
                 }
 
                 if (!cancellationToken.IsCancellationRequested)
-                    base.VisitGenericName(genericNode);
-
-                UpdateCodeEditorIfNecessary();
+                    base.VisitGenericName(genericNode);              
             }
 
             public override void VisitQualifiedName(QualifiedNameSyntax node)

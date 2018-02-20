@@ -101,7 +101,7 @@ namespace PX.Analyzers.Vsix
 
         public bool PXGraphColoringEnabled => GeneralOptionsPage?.PXGraphColoringEnabled ?? true;
         
-        public bool PXActionColoringEnabled => GeneralOptionsPage?.PXGraphColoringEnabled ?? true;
+        public bool PXActionColoringEnabled => GeneralOptionsPage?.PXActionColoringEnabled ?? true;
 
         public bool ColorOnlyInsideBQL => GeneralOptionsPage?.ColorOnlyInsideBQL ?? false;
         #endregion
