@@ -49,14 +49,26 @@ namespace PX.Analyzers.Coloriser
         public static Dictionary<string, ColoredCodeType> TypeNamesToColoredCodeTypesForIdentifier { get; } =
             new Dictionary<string, ColoredCodeType>
             {
-                [IBqlTable] = ColoredCodeType.Dac,
-                [IBqlField] = ColoredCodeType.DacField,
+                [IBqlTable]        = ColoredCodeType.Dac,
+                [IBqlField]        = ColoredCodeType.DacField,
                 [PXCacheExtension] = ColoredCodeType.DacExtension,
-                [IBqlParameter] = ColoredCodeType.BqlParameter,
-                [Constant] = ColoredCodeType.BQLConstantEnding,
-                [IBqlCreator] = ColoredCodeType.BqlOperator,
-                [IBqlJoin] = ColoredCodeType.BqlOperator,
-                [PXGraph] = ColoredCodeType.PXGraph
+                [IBqlParameter]    = ColoredCodeType.BqlParameter,
+                [Constant]         = ColoredCodeType.BQLConstantEnding,
+                [IBqlCreator]      = ColoredCodeType.BqlOperator,
+                [IBqlJoin]         = ColoredCodeType.BqlOperator,
+                [PXGraph]          = ColoredCodeType.PXGraph
+            };
+
+
+        public static Dictionary<string, ColoredCodeType> TypeNamesToColoredCodeTypesForGenericName { get; } =
+            new Dictionary<string, ColoredCodeType>
+            {
+                [PXSelectBaseType] = ColoredCodeType.BqlCommand,
+                [BqlCommand]       = ColoredCodeType.BqlCommand,
+                [IBqlParameter]    = ColoredCodeType.BqlParameter,
+                [IBqlCreator]      = ColoredCodeType.BqlOperator,
+                [IBqlJoin]         = ColoredCodeType.BqlOperator,
+                [PXAction]         = ColoredCodeType.PXAction
             };
     }
 }

@@ -46,8 +46,14 @@ namespace PX.Analyzers.Coloriser
 
             return false;
         }
-        
-        public static ColoredCodeType? GetColoringTypeFromIdentifierNode(this ITypeSymbol identifierType)
+
+        /// <summary>
+        /// An ITypeSymbol extension method that gets <see cref="ColoredCodeType"/> from identifier type symbol.
+        /// </summary>
+        /// <param name="identifierType">The identifierType to act on.</param>
+        /// <returns/>  
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ColoredCodeType? GetColoringTypeFromIdentifier(this ITypeSymbol identifierType)
         {
             if (identifierType == null)
                 return null;
@@ -61,6 +67,30 @@ namespace PX.Analyzers.Coloriser
                     return coloredCodeType;               
             }
 
+            return null;
+        }
+
+
+        /// <summary>
+        /// An ITypeSymbol extension method that gets <see cref="ColoredCodeType"/> from generic Name type symbol.
+        /// </summary>
+        /// <param name="genericName">The generic Name type symbol to act on.</param>
+        /// <returns/>  
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ColoredCodeType? GetColoringTypeFromGenericName(this ITypeSymbol genericName)
+        {
+            if (genericName == null)
+                return null;
+
+            IEnumerable<ITypeSymbol> typeHierarchy = genericName.GetBaseTypes()
+                                                                .Concat(genericName.AllInterfaces);
+
+            foreach (ITypeSymbol typeOrInterface in typeHierarchy)
+            {
+                if (TypeNames.TypeNamesToColoredCodeTypesForGenericName.TryGetValue(typeOrInterface.Name, out ColoredCodeType coloredCodeType))
+                    return coloredCodeType;
+            }
+           
             return null;
         }
 
