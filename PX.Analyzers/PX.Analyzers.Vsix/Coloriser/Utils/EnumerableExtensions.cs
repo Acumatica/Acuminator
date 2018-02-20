@@ -59,7 +59,7 @@ namespace PX.Analyzers.Vsix.Utilities
 
         [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsEmpty<T>(this IEnumerable<T> source)
+        public static bool IsEmpty<T>(this IEnumerable<T> source)      
         {
             source.ThrowOnNull(nameof(source));
 
