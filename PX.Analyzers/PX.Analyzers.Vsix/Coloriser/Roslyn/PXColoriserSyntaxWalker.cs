@@ -168,11 +168,14 @@ namespace PX.Analyzers.Coloriser
                 {
                     case ColoredCodeType.BqlOperator:
                         {
-                            TextSpan? outliningSpan = typeSymbol.GetBqlOperatorOutliningTextSpan(genericNode);
-
-                            if (outliningSpan.HasValue)
+                            if (tagger.Provider.Package.UseBqlOutlining)
                             {
-                                AddOutliningTagToBQL(outliningSpan.Value);
+                                TextSpan? outliningSpan = typeSymbol.GetBqlOperatorOutliningTextSpan(genericNode);
+
+                                if (outliningSpan.HasValue)
+                                {
+                                    AddOutliningTagToBQL(outliningSpan.Value);
+                                }
                             }
 
                             AddClassificationTag(genericNode.Identifier.Span, classificationType);
