@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel.Composition;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using Microsoft.VisualStudio.Language.StandardClassification;
 using Microsoft.VisualStudio.Text;
@@ -17,13 +18,13 @@ using PX.Analyzers.Vsix;
 
 
 namespace PX.Analyzers.Coloriser
-{  
+{
     [ContentType("CSharp")]
     [TagType(typeof(IClassificationTag))]
     [TextViewRole(PredefinedTextViewRoles.Document)]
     [Export(typeof(IViewTaggerProvider))]
     public class PXColorizerTaggerProvider : PXTaggerProviderBase, IViewTaggerProvider
-    {    
+    {
         [Import]
         internal IClassificationTypeRegistryService classificationRegistry = null; // Set via MEF
 
@@ -38,17 +39,29 @@ namespace PX.Analyzers.Coloriser
 
         private Dictionary<ColoredCodeType, IClassificationType> codeColoringClassificationTypes;
 
-        public IClassificationType this[ColoredCodeType codeType] => 
-            codeColoringClassificationTypes.TryGetValue(codeType, out IClassificationType type) 
-            ? type 
-            : null;
+        public IClassificationType this[ColoredCodeType codeType]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                return codeColoringClassificationTypes.TryGetValue(codeType, out IClassificationType type)
+                 ? type
+                 : null;
+            }
+        }
 
         private Dictionary<int, IClassificationType> braceTypeByLevel;
-
-        public IClassificationType this[int braceLevel] =>
-             braceTypeByLevel.TryGetValue(braceLevel, out IClassificationType type)
-            ? type
-            : null;
+    
+        public IClassificationType this[int braceLevel]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+               return braceTypeByLevel.TryGetValue(braceLevel, out IClassificationType type)
+                ? type
+                : null;
+            }
+        }
 
         public virtual ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer textBuffer)
         where T : ITag
@@ -82,19 +95,22 @@ namespace PX.Analyzers.Coloriser
 
         protected void InitializeClassificationTypes()
         {
+            IClassificationType bqlClassificationType = classificationRegistry.GetClassificationType(ColoringConstants.BQLOperatorFormat);
+
             codeColoringClassificationTypes = new Dictionary<ColoredCodeType, IClassificationType>
             {
-                [ColoredCodeType.Dac] = classificationRegistry.GetClassificationType(ColoringConstants.DacFormat),
-                [ColoredCodeType.DacExtension] = classificationRegistry.GetClassificationType(ColoringConstants.DacExtensionFormat),
-                [ColoredCodeType.DacField] = classificationRegistry.GetClassificationType(ColoringConstants.DacFieldFormat),
-                [ColoredCodeType.BqlParameter] = classificationRegistry.GetClassificationType(ColoringConstants.BQLParameterFormat),
-                [ColoredCodeType.BqlOperator] = classificationRegistry.GetClassificationType(ColoringConstants.BQLOperatorFormat),
+                [ColoredCodeType.Dac]               = classificationRegistry.GetClassificationType(ColoringConstants.DacFormat),
+                [ColoredCodeType.DacExtension]      = classificationRegistry.GetClassificationType(ColoringConstants.DacExtensionFormat),
+                [ColoredCodeType.DacField]          = classificationRegistry.GetClassificationType(ColoringConstants.DacFieldFormat),
+                [ColoredCodeType.BqlParameter]      = classificationRegistry.GetClassificationType(ColoringConstants.BQLParameterFormat),
+                [ColoredCodeType.BqlOperator]       = bqlClassificationType,
+                [ColoredCodeType.BqlCommand]        = bqlClassificationType,
 
                 [ColoredCodeType.BQLConstantPrefix] = classificationRegistry.GetClassificationType(ColoringConstants.BQLConstantPrefixFormat),
                 [ColoredCodeType.BQLConstantEnding] = classificationRegistry.GetClassificationType(ColoringConstants.BQLConstantEndingFormat),
 
-                [ColoredCodeType.PXGraph] = classificationRegistry.GetClassificationType(ColoringConstants.PXGraphFormat),
-                [ColoredCodeType.PXAction] = classificationRegistry.GetClassificationType(ColoringConstants.PXActionFormat),
+                [ColoredCodeType.PXGraph]           = classificationRegistry.GetClassificationType(ColoringConstants.PXGraphFormat),
+                [ColoredCodeType.PXAction]          = classificationRegistry.GetClassificationType(ColoringConstants.PXActionFormat),
             };
 
             braceTypeByLevel = new Dictionary<int, IClassificationType>(capacity: ColoringConstants.MaxBraceLevel)

@@ -12,6 +12,7 @@ namespace PX.Analyzers.Coloriser
     /// </summary>
     public enum ColoredCodeType 
     {
+        BqlCommand,
         BqlOperator,
         Dac,
         DacField,

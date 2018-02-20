@@ -46,14 +46,14 @@ namespace PX.Analyzers.Coloriser
                 cancellationToken = cToken;
             }
 
-			public override void VisitIdentifierName(IdentifierNameSyntax node)
-			{
+            public override void VisitIdentifierName(IdentifierNameSyntax node)
+            {
                 string nodeText = node.Identifier.ValueText;
                 TextSpan span = node.Span;
 
                 if (cancellationToken.IsCancellationRequested || IsVar(nodeText))
                     return;
-              
+
                 ITypeSymbol typeSymbol = document.SemanticModel.GetSymbolInfo(node).Symbol as ITypeSymbol;
 
                 if (typeSymbol == null)
@@ -65,48 +65,19 @@ namespace PX.Analyzers.Coloriser
 
                     return;
                 }
-              
+
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
-                ColoredCodeType? coloredCodeType = typeSymbol.GetColoringTypeFromIdentifierNode();
+                ColoredCodeType? coloredCodeType = typeSymbol.GetColoringTypeFromIdentifier();
+                IClassificationType classificationType = coloredCodeType.HasValue
+                    ? tagger.Provider[coloredCodeType.Value]
+                    : null;
 
-                if (coloredCodeType != null)
+                if (classificationType != null)
                 {
-                    IClassificationType classificationType = tagger.Provider[coloredCodeType.Value];
-                    
-                    if (classificationType != null)
-                    {
-                        AddClassificationTag(span, classificationType);
-                    }
+                    AddClassificationTag(span, classificationType);
                 }
-
-
-
-                //if (typeSymbol.IsDAC())
-                //{
-                //                AddClassificationTag(span, tagger.Provider[ColoredCodeType.Dac]);		
-                //            }
-                //            else if (typeSymbol.IsDacField())
-                //{                   
-                //                AddClassificationTag(span, tagger.Provider[ColoredCodeType.DacField]);
-                //            }
-                //            else if (typeSymbol.IsDacExtension())
-                //            {
-                //                AddClassificationTag(span, tagger.Provider[ColoredCodeType.DacExtension]);
-                //            }
-                //            else if (typeSymbol.IsBqlConstant())
-                //            {
-                //                AddClassificationTag(span, tagger.Provider[ColoredCodeType.BQLConstantEnding]);
-                //            }
-                //            else if (typeSymbol.IsBqlOperator())
-                //            {
-                //                AddClassificationTag(span, tagger.Provider[ColoredCodeType.BqlOperator]);
-                //            }
-                //            else if (typeSymbol.IsPXGraph())
-                //            {
-                //                AddClassificationTag(span, tagger.Provider[ColoredCodeType.PXGraph]);
-                //            }               
 
                 UpdateCodeEditorIfNecessary();
             }
@@ -133,52 +104,66 @@ namespace PX.Analyzers.Coloriser
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
-                if (typeSymbol.IsBqlCommand())
+                ColoredCodeType? coloredCodeType = typeSymbol.GetColoringTypeFromGenericName();
+                IClassificationType classificationType = coloredCodeType.HasValue 
+                    ? tagger.Provider[coloredCodeType.Value]
+                    : null;
+
+                if (classificationType == null)
                 {
-                    try
-                    {
-                        isInsideBqlCommand = true;
-                        var typeArgumentList = genericNode.TypeArgumentList;
-
-                        if (typeArgumentList.Arguments.Count > 1)
-                        {
-                            AddOutliningTagToBQL(typeArgumentList.Span);
-                        }
-
-                        AddClassificationTag(span, tagger.Provider[ColoredCodeType.BqlOperator]);
-
-                        if (!cancellationToken.IsCancellationRequested)
-                        {
-                            base.VisitGenericName(genericNode);
-                        }
-                    }
-                    finally
-                    {
-                        isInsideBqlCommand = false;                      
-                    }
-
+                    UpdateCodeEditorIfNecessary();
                     return;
                 }
-				else if (typeSymbol.IsBqlParameter())
-                {
-                    AddClassificationTag(span, tagger.Provider[ColoredCodeType.BqlParameter]);
-                }
-                else if (typeSymbol.IsBqlOperator())
-                {
-                    TextSpan? outliningSpan = typeSymbol.GetBqlOperatorOutliningTextSpan(genericNode);
-                   
-                    if (outliningSpan != null)
-                    {
-                        AddOutliningTagToBQL(outliningSpan.Value);
-                    }
 
-                    AddClassificationTag(span, tagger.Provider[ColoredCodeType.BqlOperator]);
-                }
-                else if (typeSymbol.IsPXAction())
+                switch (coloredCodeType.Value)
                 {
-                    AddClassificationTag(span, tagger.Provider[ColoredCodeType.PXAction]);
-                }
+                    case ColoredCodeType.BqlCommand:
+                        {
+                            try
+                            {
+                                isInsideBqlCommand = true;
+                                var typeArgumentList = genericNode.TypeArgumentList;
 
+                                if (typeArgumentList.Arguments.Count > 1)
+                                {
+                                    AddOutliningTagToBQL(typeArgumentList.Span);
+                                }
+
+                                AddClassificationTag(span, classificationType);
+
+                                if (!cancellationToken.IsCancellationRequested)
+                                {
+                                    base.VisitGenericName(genericNode);
+                                }
+                            }
+                            finally
+                            {
+                                isInsideBqlCommand = false;
+                            }
+
+                            UpdateCodeEditorIfNecessary();
+                            return;
+                        }
+                    case ColoredCodeType.BqlParameter:
+                        {
+                            TextSpan? outliningSpan = typeSymbol.GetBqlOperatorOutliningTextSpan(genericNode);
+
+                            if (outliningSpan != null)
+                            {
+                                AddOutliningTagToBQL(outliningSpan.Value);
+                            }
+
+                            AddClassificationTag(span, classificationType);
+                            break;
+                        }
+                    case ColoredCodeType.BqlOperator:                                                                    
+                    case ColoredCodeType.PXAction:
+                        {
+                            AddClassificationTag(span, classificationType);
+                            break;
+                        }
+                }
+               
                 if (!cancellationToken.IsCancellationRequested)
                     base.VisitGenericName(genericNode);
 
