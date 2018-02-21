@@ -125,6 +125,38 @@ namespace PX.Analyzers.Vsix.Utilities
             list.ThrowOnNull(nameof(list));
 
             return new ReadOnlyCollection<T>(list);
-        }       
+        }
+
+        /// <summary>
+        /// Concatenate structure list to this collection. This is an optimization method which allows to avoid boxing for collections implemented as structs.
+        /// </summary>
+        /// <typeparam name="TItem">Type of the item.</typeparam>
+        /// <typeparam name="TStructList">Type of the structure list.</typeparam>
+        /// <param name="source">The source to act on.</param>
+        /// <param name="structList">List implemented as structure.</param>
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process concatenate structure list in this collection.
+        /// </returns>
+        [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IEnumerable<TItem> ConcatStructList<TItem, TStructList>(this IEnumerable<TItem> source, TStructList structList)
+        where TStructList : struct, IReadOnlyCollection<TItem>
+        {
+            if (source != null)
+            {
+                foreach(TItem item in source)
+                {
+                    yield return item;                     
+                }
+            }
+
+            if (structList.Count > 0)
+            {
+                foreach (TItem item in structList)
+                {
+                    yield return item;
+                }
+            }
+        }
     }
 }

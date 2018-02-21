@@ -40,11 +40,19 @@ namespace PX.Analyzers.Coloriser
 
 		public static readonly string Constant = typeof(Constant).Name;
 
+        public static readonly string ConstantGeneric = typeof(Constant).Name + "`1";
+
         public static readonly string PXCacheExtension = typeof(PXCacheExtension).Name;
+
+        public static readonly string PXCacheExtensionGeneric = typeof(PXCacheExtension).Name + "`1";
 
         public static readonly string PXGraph = typeof(PXGraph).Name;
 
+        public static readonly string PXGraphGeneric = typeof(PXGraph).Name + "`1";
+
         public static readonly string PXAction = typeof(PXAction).Name;
+
+        public static readonly string PXActionGeneric = typeof(PXAction).Name + "`1";
 
         public static Dictionary<string, ColoredCodeType> TypeNamesToColoredCodeTypesForIdentifier { get; } =
             new Dictionary<string, ColoredCodeType>
@@ -54,6 +62,8 @@ namespace PX.Analyzers.Coloriser
                 [PXCacheExtension] = ColoredCodeType.DacExtension,
                 [IBqlParameter]    = ColoredCodeType.BqlParameter,
                 [Constant]         = ColoredCodeType.BQLConstantEnding,
+                [PXSelectBaseType] = ColoredCodeType.BqlCommand,
+                [BqlCommand]       = ColoredCodeType.BqlCommand,
                 [IBqlCreator]      = ColoredCodeType.BqlOperator,
                 [IBqlJoin]         = ColoredCodeType.BqlOperator,
                 [PXGraph]          = ColoredCodeType.PXGraph
@@ -70,5 +80,16 @@ namespace PX.Analyzers.Coloriser
                 [IBqlJoin]         = ColoredCodeType.BqlOperator,
                 [PXAction]         = ColoredCodeType.PXAction
             };
+
+        public static List<string> NotColoredTypes = new List<string>
+        {
+            BqlCommand,
+            PXCacheExtension,
+            PXCacheExtensionGeneric,
+            Constant,
+            ConstantGeneric,
+            PXGraph,
+            PXGraphGeneric
+        };
     }
 }
