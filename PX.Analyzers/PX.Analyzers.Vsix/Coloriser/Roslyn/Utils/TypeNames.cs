@@ -81,7 +81,7 @@ namespace PX.Analyzers.Coloriser
                 [PXAction]         = ColoredCodeType.PXAction
             };
 
-        public static List<string> NotColoredTypes = new List<string>
+        public static HashSet<string> NotColoredTypes = new HashSet<string>
         {
             BqlCommand,
             PXCacheExtension,
