@@ -66,10 +66,8 @@ namespace PX.Analyzers.Coloriser
 
                 if (typeSymbol == null)
                 {
-                    if (!cancellationToken.IsCancellationRequested)
-                    {
-                        base.VisitIdentifierName(node);
-                    }
+                    if (!cancellationToken.IsCancellationRequested)                    
+                        base.VisitIdentifierName(node);                 
 
                     return;
                 }
@@ -87,6 +85,9 @@ namespace PX.Analyzers.Coloriser
                 {                    
                     AddClassificationTag(span, classificationType);
                 }
+
+                if (!cancellationToken.IsCancellationRequested)
+                    base.VisitIdentifierName(node);
 
                 UpdateCodeEditorIfNecessary();
             }
@@ -116,6 +117,9 @@ namespace PX.Analyzers.Coloriser
 
                 if (classificationType == null)
                 {
+                    if (!cancellationToken.IsCancellationRequested)
+                        base.VisitGenericName(genericNode);
+
                     UpdateCodeEditorIfNecessary();
                     return;
                 }
@@ -135,9 +139,7 @@ namespace PX.Analyzers.Coloriser
                         AddClassificationTag(genericNode.Identifier.Span, classificationType);
 
                         if (!cancellationToken.IsCancellationRequested)
-                        {
                             base.VisitGenericName(genericNode);
-                        }
                     }
                     finally
                     {

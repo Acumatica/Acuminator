@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PX.Analyzers.Utilities;
-using System.Runtime.CompilerServices;
+using PX.Analyzers.Vsix.Utilities;
+
 
 
 
@@ -25,7 +26,7 @@ namespace PX.Analyzers.Coloriser
                 return false;
 
             IEnumerable<ITypeSymbol> baseTypes = includeInterfaces 
-                ? type.GetBaseTypesAndThis().Concat(type.AllInterfaces)
+                ? type.GetBaseTypesAndThis().ConcatStructList(type.AllInterfaces)
                 : type.GetBaseTypesAndThis();
 
             return baseTypes.Select(typeSymbol => typeSymbol.Name)
@@ -55,21 +56,27 @@ namespace PX.Analyzers.Coloriser
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ColoredCodeType? GetColoringTypeFromIdentifier(this ITypeSymbol identifierType)
         {
-            if (identifierType == null)
+            if (!identifierType.IsValidForColoring(checkForNotColoredTypes: false))
                 return null;
 
             IEnumerable<ITypeSymbol> typeHierarchy = identifierType.GetBaseTypes()
-                                                                   .Concat(identifierType.AllInterfaces);
+                                                                   .ConcatStructList(identifierType.AllInterfaces);
+
+            ColoredCodeType? resolvedColoredCodeType = null;
 
             foreach (ITypeSymbol typeOrInterface in typeHierarchy)
             {
                 if (TypeNames.TypeNamesToColoredCodeTypesForIdentifier.TryGetValue(typeOrInterface.Name, out ColoredCodeType coloredCodeType))
-                    return coloredCodeType;               
+                {
+                    resolvedColoredCodeType = coloredCodeType;
+                    break;
+                }
             }
-
-            return null;
+       
+            return resolvedColoredCodeType.HasValue 
+                ? ValidateColorCodeTypeAndSymbolName(resolvedColoredCodeType.Value, identifierType.Name)
+                : null;
         }
-
 
         /// <summary>
         /// An ITypeSymbol extension method that gets <see cref="ColoredCodeType"/> from generic Name type symbol.
@@ -79,19 +86,79 @@ namespace PX.Analyzers.Coloriser
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ColoredCodeType? GetColoringTypeFromGenericName(this ITypeSymbol genericName)
         {
-            if (genericName == null)
+            if (!genericName.IsValidForColoring())
                 return null;
 
             IEnumerable<ITypeSymbol> typeHierarchy = genericName.GetBaseTypes()
-                                                                .Concat(genericName.AllInterfaces);
+                                                                .ConcatStructList(genericName.AllInterfaces);
+
+            ColoredCodeType? resolvedColoredCodeType = null;
 
             foreach (ITypeSymbol typeOrInterface in typeHierarchy)
             {
                 if (TypeNames.TypeNamesToColoredCodeTypesForGenericName.TryGetValue(typeOrInterface.Name, out ColoredCodeType coloredCodeType))
-                    return coloredCodeType;
+                {
+                    resolvedColoredCodeType = coloredCodeType;
+                    break;
+                }
             }
-           
-            return null;
+
+            return resolvedColoredCodeType.HasValue
+                ? ValidateColorCodeTypeAndSymbolName(resolvedColoredCodeType.Value, genericName.Name)
+                : null;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ColoredCodeType? ValidateColorCodeTypeAndSymbolName(ColoredCodeType coloredCodeType, string typeSymbolName)
+        {
+            bool isValid = true;
+
+            switch (coloredCodeType)
+            {
+                case ColoredCodeType.BqlOperator:
+                case ColoredCodeType.BqlCommand:
+                    isValid = typeSymbolName != TypeNames.BqlCommand;
+                    break;
+                case ColoredCodeType.DacExtension:
+                    isValid = typeSymbolName != TypeNames.PXCacheExtension && typeSymbolName != TypeNames.PXCacheExtensionGeneric;
+                    break;
+                case ColoredCodeType.BQLConstantPrefix:
+                case ColoredCodeType.BQLConstantEnding:
+                    isValid = typeSymbolName != TypeNames.Constant && typeSymbolName != TypeNames.ConstantGeneric;
+                    break;
+                case ColoredCodeType.PXGraph:
+                    isValid = typeSymbolName != TypeNames.PXGraph && typeSymbolName != TypeNames.PXGraphGeneric;
+                    break;
+            }
+
+            return isValid ? coloredCodeType : (ColoredCodeType?)null;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsValidForColoring(this ITypeSymbol typeSymbol, bool checkForNotColoredTypes = true)
+        {
+            if (typeSymbol == null)
+                return false;
+
+            if (checkForNotColoredTypes && typeSymbol.IsAbstract && TypeNames.NotColoredTypes.Contains(typeSymbol.Name))
+                return false;
+
+            switch (typeSymbol.TypeKind)
+            {
+                case TypeKind.Unknown:                   
+                case TypeKind.Array:                                 
+                case TypeKind.Delegate:                    
+                case TypeKind.Dynamic:                  
+                case TypeKind.Enum:                  
+                case TypeKind.Error:                  
+                case TypeKind.Interface:                   
+                case TypeKind.Module:                 
+                case TypeKind.Pointer:                                              
+                case TypeKind.Submission:               
+                    return false;              
+                default:
+                    return true;
+            } 
         }
 
         /// <summary>
@@ -104,7 +171,7 @@ namespace PX.Analyzers.Coloriser
         /// </returns>
         public static bool IsBqlCommand(this ITypeSymbol typeSymbol)
         {
-            if (typeSymbol == null || string.Equals(typeSymbol.Name, TypeNames.BqlCommand))
+            if (!typeSymbol.IsValidForColoring() || string.Equals(typeSymbol.Name, TypeNames.BqlCommand))
                 return false;
 
             List<string> typeHierarchyNames = typeSymbol.GetBaseTypesAndThis()
@@ -116,12 +183,17 @@ namespace PX.Analyzers.Coloriser
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsBqlParameter(this ITypeSymbol typeSymbol) => typeSymbol.InheritsOrImplementsOrEquals(TypeNames.IBqlParameter);
+        public static bool IsBqlParameter(this ITypeSymbol typeSymbol)
+        {
+            if (!typeSymbol.IsValidForColoring())
+                return false;
 
+            return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.IBqlParameter);
+        }
 
         public static bool IsBqlOperator(this ITypeSymbol typeSymbol)
         {
-            if (typeSymbol == null)
+            if (!typeSymbol.IsValidForColoring())
                 return false;
 
             foreach (var interfaceSymbol in typeSymbol.AllInterfaces)
@@ -131,27 +203,37 @@ namespace PX.Analyzers.Coloriser
             }
 
             return false;
-        }    
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsDAC(this ITypeSymbol typeSymbol) => typeSymbol.ImplementsInterface(TypeNames.IBqlTable);
-        
+        public static bool IsDAC(this ITypeSymbol typeSymbol)
+        {
+            if (!typeSymbol.IsValidForColoring())
+                return false;
+
+            return typeSymbol.ImplementsInterface(TypeNames.IBqlTable);
+        }
         public static bool IsDacExtension(this ITypeSymbol typeSymbol)
         {
-            if (string.Equals(typeSymbol?.Name, TypeNames.PXCacheExtension))
+            if (!typeSymbol.IsValidForColoring() || string.Equals(typeSymbol.Name, TypeNames.PXCacheExtension))
                 return false;
 
             return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.PXCacheExtension, includeInterfaces: false);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsDacField(this ITypeSymbol typeSymbol) => typeSymbol.ImplementsInterface(TypeNames.IBqlField);
+        public static bool IsDacField(this ITypeSymbol typeSymbol)
+        {
+            if (!typeSymbol.IsValidForColoring())
+                return false;
 
+            return typeSymbol.ImplementsInterface(TypeNames.IBqlField);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsBqlConstant(this ITypeSymbol typeSymbol)
 		{
-			if (typeSymbol?.Name == null || typeSymbol.Name.StartsWith(TypeNames.Constant))
+			if (!typeSymbol.IsValidForColoring() || typeSymbol.Name.StartsWith(TypeNames.Constant))
 				return false;
 
 			return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.Constant, includeInterfaces: false);
@@ -160,7 +242,7 @@ namespace PX.Analyzers.Coloriser
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsPXGraph(this ITypeSymbol typeSymbol)
         {
-            if (string.Equals(typeSymbol?.Name, TypeNames.PXGraph))
+            if (!typeSymbol.IsValidForColoring() || string.Equals(typeSymbol.Name, TypeNames.PXGraph))
                 return false;
 
             return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.PXGraph, includeInterfaces: false);
@@ -169,7 +251,7 @@ namespace PX.Analyzers.Coloriser
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsPXAction(this ITypeSymbol typeSymbol)
         {
-            if (typeSymbol?.Name == null)
+            if (!typeSymbol.IsValidForColoring())
                 return false;
 
             return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.PXAction, includeInterfaces: false);
