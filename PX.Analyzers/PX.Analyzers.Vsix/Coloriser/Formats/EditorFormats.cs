@@ -1,8 +1,11 @@
 ﻿using System.ComponentModel.Composition;
 using System.Windows.Media;
+using System.Windows;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
-using System.Windows;
+using Microsoft.VisualStudio.PlatformUI;
+using PX.Analyzers.Vsix;
+
 
 namespace PX.Analyzers.Coloriser
 {
@@ -11,15 +14,15 @@ namespace PX.Analyzers.Coloriser
     [Name(ColoringConstants.BQLOperatorFormat)]
     [UserVisible(true)]
     [Order(After = ColoringConstants.Priority)]
-    internal sealed class BQLOperatorFormat : ClassificationFormatDefinition
-    {
+    internal sealed class BQLOperatorFormat : EditorFormatBase
+    {      
         public BQLOperatorFormat()
         {
-            ForegroundColor = Color.FromRgb(r: 181, g: 121, b: 255);
+
             DisplayName = Labels.BQLOperatorFormatLabel; // Human readable version of the name		
             ForegroundCustomizable = true;
-            BackgroundCustomizable = true;
-        }
+            BackgroundCustomizable = true;           
+        }     
     }
 
     [Export(typeof(EditorFormatDefinition))]
@@ -27,11 +30,10 @@ namespace PX.Analyzers.Coloriser
 	[Name(ColoringConstants.DacFormat)]
 	[UserVisible(true)]
     [Order(After = ColoringConstants.BQLOperatorFormat)]
-    internal sealed class DACFormat : ClassificationFormatDefinition
+    internal sealed class DACFormat : EditorFormatBase
 	{
 		public DACFormat()
 		{
-			ForegroundColor = Color.FromRgb(r: 255, g: 153, b: 0);
             DisplayName = Labels.DacFormatLabel; // Human readable version of the name		
 			ForegroundCustomizable = true;
 			BackgroundCustomizable = true;
@@ -43,11 +45,10 @@ namespace PX.Analyzers.Coloriser
     [Name(ColoringConstants.DacExtensionFormat)]
     [UserVisible(true)]
     [Order(After = ColoringConstants.DacFormat)]
-    internal sealed class DacExtensionFormat : ClassificationFormatDefinition
+    internal sealed class DacExtensionFormat : EditorFormatBase
     {
         public DacExtensionFormat()
         {
-            ForegroundColor = Color.FromRgb(r: 255, g: 78, b: 79);
             DisplayName = Labels.DacExtensionFormatLabel;       // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;
@@ -59,11 +60,10 @@ namespace PX.Analyzers.Coloriser
 	[Name(ColoringConstants.DacFieldFormat)]
 	[UserVisible(true)]
     [Order(After = ColoringConstants.DacExtensionFormat)]
-    internal sealed class DACFieldFormat : ClassificationFormatDefinition
+    internal sealed class DACFieldFormat : EditorFormatBase
 	{
 		public DACFieldFormat()
 		{
-			ForegroundColor = Color.FromRgb(r: 76, g: 255, b: 79);
             DisplayName = Labels.DacFieldFormatLabel; // Human readable version of the name		
 			ForegroundCustomizable = true;
 			BackgroundCustomizable = true;
@@ -75,11 +75,10 @@ namespace PX.Analyzers.Coloriser
 	[Name(ColoringConstants.BQLParameterFormat)]
 	[UserVisible(true)]
     [Order(After = ColoringConstants.DacFieldFormat)]
-    internal sealed class BQLParameterFormat : ClassificationFormatDefinition
+    internal sealed class BQLParameterFormat : EditorFormatBase
 	{
 		public BQLParameterFormat()
 		{
-			ForegroundColor = Color.FromRgb(r: 255, g: 79, b: 255);
             DisplayName = Labels.BQLParameterFormatLabel; // Human readable version of the name		
 			ForegroundCustomizable = true;
 			BackgroundCustomizable = true;
@@ -91,11 +90,10 @@ namespace PX.Analyzers.Coloriser
 	[Name(ColoringConstants.BQLConstantPrefixFormat)]
 	[UserVisible(true)]
 	[Order(After = ColoringConstants.DacFieldFormat)]
-	internal sealed class BQLConstantPrefixFormat : ClassificationFormatDefinition
+	internal sealed class BQLConstantPrefixFormat : EditorFormatBase
 	{
 		public BQLConstantPrefixFormat()
 		{
-			ForegroundColor = Color.FromRgb(r: 255, g: 153, b: 153);
             DisplayName = Labels.BQLConstantPrefixFormatLabel; // Human readable version of the name		
 			ForegroundCustomizable = true;
 			BackgroundCustomizable = true;
@@ -107,11 +105,10 @@ namespace PX.Analyzers.Coloriser
 	[Name(ColoringConstants.BQLConstantEndingFormat)]
 	[UserVisible(true)]
 	[Order(After = ColoringConstants.BQLConstantPrefixFormat)]
-	internal sealed class BQLConstantEndingFormat : ClassificationFormatDefinition
+	internal sealed class BQLConstantEndingFormat : EditorFormatBase
 	{
 		public BQLConstantEndingFormat()
 		{
-			ForegroundColor = Color.FromRgb(r: 1, g: 153, b: 153);
             DisplayName = Labels.BQLConstantEndingFormatLabel; // Human readable version of the name		
 			ForegroundCustomizable = true;
 			BackgroundCustomizable = true;
@@ -124,11 +121,10 @@ namespace PX.Analyzers.Coloriser
     [Name(ColoringConstants.PXGraphFormat)]
     [UserVisible(true)]
     [Order(After = ColoringConstants.BQLConstantEndingFormat)]
-    internal sealed class PXGraphFormat : ClassificationFormatDefinition
+    internal sealed class PXGraphFormat : EditorFormatBase
     {
         public PXGraphFormat()
         {
-            ForegroundColor = Color.FromRgb(r: 179, g: 14, b: 14);   
             DisplayName = Labels.PXGraphFormatLabel; // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;
@@ -141,11 +137,10 @@ namespace PX.Analyzers.Coloriser
     [Name(ColoringConstants.PXActionFormat)]
     [UserVisible(true)]
     [Order(After = ColoringConstants.PXGraphFormat)]
-    internal sealed class PXActionFormat : ClassificationFormatDefinition
+    internal sealed class PXActionFormat : EditorFormatBase
     {
         public PXActionFormat()
         {
-            ForegroundColor = Color.FromRgb(r: 187, g: 55, b: 167);
             DisplayName = Labels.PXActionFormatLabel;   // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;

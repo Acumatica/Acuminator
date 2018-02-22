@@ -6,6 +6,8 @@ using System.Windows.Media;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
+
+
 namespace PX.Analyzers.Coloriser
 {
     [Export(typeof(EditorFormatDefinition))]
@@ -13,7 +15,7 @@ namespace PX.Analyzers.Coloriser
     [Name(ColoringConstants.BraceLevel_1_Format)]
     [UserVisible(true)]
     [Order(After = ColoringConstants.BQLConstantEndingFormat)]
-    internal sealed class BraceLevel_1_Format : ClassificationFormatDefinition
+    internal sealed class BraceLevel_1_Format : EditorFormatBase
     {
         public BraceLevel_1_Format()
         {
@@ -28,7 +30,7 @@ namespace PX.Analyzers.Coloriser
     [Name(ColoringConstants.BraceLevel_2_Format)]
     [UserVisible(true)]
     [Order(After = ColoringConstants.BraceLevel_1_Format)]
-    internal sealed class BraceLevel_2_Format : ClassificationFormatDefinition
+    internal sealed class BraceLevel_2_Format : EditorFormatBase
     {
         public BraceLevel_2_Format()
         {
@@ -43,7 +45,7 @@ namespace PX.Analyzers.Coloriser
     [Name(ColoringConstants.BraceLevel_3_Format)]
     [UserVisible(true)]
     [Order(After = ColoringConstants.BraceLevel_2_Format)]
-    internal sealed class BraceLevel_3_Format : ClassificationFormatDefinition
+    internal sealed class BraceLevel_3_Format : EditorFormatBase
     {
         public BraceLevel_3_Format()
         {            
@@ -59,7 +61,7 @@ namespace PX.Analyzers.Coloriser
     [Name(ColoringConstants.BraceLevel_4_Format)]
     [UserVisible(true)]
     [Order(After = ColoringConstants.BraceLevel_3_Format)]
-    internal sealed class BraceLevel_4_Format : ClassificationFormatDefinition
+    internal sealed class BraceLevel_4_Format : EditorFormatBase
     {
         public BraceLevel_4_Format()
         {           
@@ -74,7 +76,7 @@ namespace PX.Analyzers.Coloriser
     [Name(ColoringConstants.BraceLevel_5_Format)]
     [UserVisible(true)]
     [Order(After = ColoringConstants.BraceLevel_4_Format)]
-    internal sealed class BraceLevel_5_Format : ClassificationFormatDefinition
+    internal sealed class BraceLevel_5_Format : EditorFormatBase
     {
         public BraceLevel_5_Format()
         {        
@@ -89,7 +91,7 @@ namespace PX.Analyzers.Coloriser
     [Name(ColoringConstants.BraceLevel_6_Format)]
     [UserVisible(true)]
     [Order(After = ColoringConstants.BraceLevel_5_Format)]
-    internal sealed class BraceLevel_6_Format : ClassificationFormatDefinition
+    internal sealed class BraceLevel_6_Format : EditorFormatBase
     {
         public BraceLevel_6_Format()
         {            
@@ -105,7 +107,7 @@ namespace PX.Analyzers.Coloriser
     [Name(ColoringConstants.BraceLevel_7_Format)]
     [UserVisible(true)]
     [Order(After = ColoringConstants.BraceLevel_6_Format)]
-    internal sealed class BraceLevel_7_Format : ClassificationFormatDefinition
+    internal sealed class BraceLevel_7_Format : EditorFormatBase
     {
         public BraceLevel_7_Format()
         {
@@ -120,7 +122,7 @@ namespace PX.Analyzers.Coloriser
     [Name(ColoringConstants.BraceLevel_8_Format)]
     [UserVisible(true)]
     [Order(After = ColoringConstants.BraceLevel_7_Format)]
-    internal sealed class BraceLevel_8_Format : ClassificationFormatDefinition
+    internal sealed class BraceLevel_8_Format : EditorFormatBase
     {
         public BraceLevel_8_Format()
         {
@@ -135,7 +137,7 @@ namespace PX.Analyzers.Coloriser
     [Name(ColoringConstants.BraceLevel_9_Format)]
     [UserVisible(true)]
     [Order(After = ColoringConstants.BraceLevel_8_Format)]
-    internal sealed class BraceLevel_9_Format : ClassificationFormatDefinition
+    internal sealed class BraceLevel_9_Format : EditorFormatBase
     {
         public BraceLevel_9_Format()
         {
@@ -151,7 +153,7 @@ namespace PX.Analyzers.Coloriser
     [Name(ColoringConstants.BraceLevel_10_Format)]
     [UserVisible(true)]
     [Order(After = ColoringConstants.BraceLevel_9_Format)]
-    internal sealed class BraceLevel_10_Format : ClassificationFormatDefinition
+    internal sealed class BraceLevel_10_Format : EditorFormatBase
     {
         public BraceLevel_10_Format()
         {
@@ -166,7 +168,7 @@ namespace PX.Analyzers.Coloriser
     [Name(ColoringConstants.BraceLevel_11_Format)]
     [UserVisible(true)]
     [Order(After = ColoringConstants.BraceLevel_10_Format)]
-    internal sealed class BraceLevel_11_Format : ClassificationFormatDefinition
+    internal sealed class BraceLevel_11_Format : EditorFormatBase
     {
         public BraceLevel_11_Format()
         {
@@ -181,7 +183,7 @@ namespace PX.Analyzers.Coloriser
     [Name(ColoringConstants.BraceLevel_12_Format)]
     [UserVisible(true)]
     [Order(After = ColoringConstants.BraceLevel_11_Format)]
-    internal sealed class BraceLevel_12_Format : ClassificationFormatDefinition
+    internal sealed class BraceLevel_12_Format : EditorFormatBase
     {
         public BraceLevel_12_Format()
         {
@@ -197,7 +199,7 @@ namespace PX.Analyzers.Coloriser
     [Name(ColoringConstants.BraceLevel_13_Format)]
     [UserVisible(true)]
     [Order(After = ColoringConstants.BraceLevel_12_Format)]
-    internal sealed class BraceLevel_13_Format : ClassificationFormatDefinition
+    internal sealed class BraceLevel_13_Format : EditorFormatBase
     {
         public BraceLevel_13_Format()
         {
@@ -212,7 +214,7 @@ namespace PX.Analyzers.Coloriser
     [Name(ColoringConstants.BraceLevel_14_Format)]
     [UserVisible(true)]
     [Order(After = ColoringConstants.BraceLevel_13_Format)]
-    internal sealed class BraceLevel_14_Format : ClassificationFormatDefinition
+    internal sealed class BraceLevel_14_Format : EditorFormatBase
     {
         public BraceLevel_14_Format()
         {

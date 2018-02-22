@@ -1,13 +1,15 @@
 ﻿using System;
-using System.ComponentModel.Design;
+using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.Win32;
 using PX.Analyzers.Vsix.Formatter;
 
@@ -40,9 +42,25 @@ namespace PX.Analyzers.Vsix
     [ProvideOptionPage(typeof(GeneralOptionsPage), AcuminatorVSPackage.SettingsCategoryName, GeneralOptionsPage.PageTitle, 0, 0, true)]
 	public sealed class AcuminatorVSPackage : Package
     {
+        [Import]
+        internal IClassificationFormatMapService classificationFormatMapService = null;  //Set via MEF
+
+        public IClassificationFormatMapService ClassificationFormatMapService => classificationFormatMapService;
+
+        [Import]
+        internal IClassificationTypeRegistryService classificationRegistry = null; // Set via MEF
+
+        public IClassificationTypeRegistryService ClassificationRegistry => classificationRegistry;
+
+        private const int INSTANCE_UNINITIALIZED = 0;
+        private const int INSTANCE_INITIALIZED = 1;
+        private static int instanceInitialized;
+
+        public static AcuminatorVSPackage Instance { get; private set; }
+
         private object locker = new object();
-        private GeneralOptionsPage generalOptionsPage = null;
-           
+        private GeneralOptionsPage generalOptionsPage = null;     
+      
         public GeneralOptionsPage GeneralOptionsPage
         {
             get
@@ -77,9 +95,20 @@ namespace PX.Analyzers.Vsix
             // any Visual Studio service because at this point the package object is created but
             // not sited yet inside Visual Studio environment. The place to do all the other
             // initialization is the Initialize method.
+        
+            SetupSingleton(this);
         }
+          
+        private static void SetupSingleton(AcuminatorVSPackage package)
+        {
+            if (package == null)
+                return;
 
-       
+            if (Interlocked.CompareExchange(ref instanceInitialized, INSTANCE_INITIALIZED, INSTANCE_UNINITIALIZED) == INSTANCE_UNINITIALIZED)
+            {
+                Instance = package;
+            }
+        }
 
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
@@ -87,8 +116,22 @@ namespace PX.Analyzers.Vsix
         /// </summary>
         protected override void Initialize()
         {
-	        FormatBqlCommand.Initialize(this);
-			base.Initialize();
+            FormatBqlCommand.Initialize(this);
+            base.Initialize();
+
+            IComponentModel componentModel = Package.GetGlobalService(typeof(SComponentModel)) as IComponentModel;
+
+            if (componentModel == null)
+                return;
+
+            try
+            {
+                componentModel.DefaultCompositionService.SatisfyImportsOnce(this);             
+            }
+            catch(Exception e)
+            {
+                //TODO Need to log error here
+            }
         }
 
         #region Package Settings         
