@@ -142,11 +142,10 @@ namespace PX.Analyzers.Coloriser
 
             if (checkForNotColoredTypes && typeSymbol.IsAbstract && TypeNames.NotColoredTypes.Contains(typeSymbol.Name))
                 return false;
-
+         
             switch (typeSymbol.TypeKind)
             {
-                case TypeKind.Unknown:                   
-                case TypeKind.Array:                                 
+                case TypeKind.Unknown:                                                            
                 case TypeKind.Delegate:                    
                 case TypeKind.Dynamic:                  
                 case TypeKind.Enum:                  
