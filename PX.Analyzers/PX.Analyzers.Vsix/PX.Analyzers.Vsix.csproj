@@ -283,6 +283,8 @@
   <ItemGroup>
     <Compile Include="AcuminatorVSPackage.cs" />
     <Compile Include="Coloriser\AsyncTagging\Interfaces\ITagsCache.cs" />
+    <Compile Include="Coloriser\Constants\VSColors.cs" />
+    <Compile Include="Coloriser\Formats\EditorFormatBase.cs" />
     <Compile Include="Coloriser\PXColorizerTaggerBase.cs" />
     <Compile Include="Coloriser\AsyncTagging\BackgroundTagging.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheSync.cs" />
