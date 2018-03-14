@@ -4,6 +4,10 @@
 # Acumatica Framework binaries
 [Nn]et[Tt]ools/
 
+# Sensitive info
+*.snk
+*.pfx
+
 # User-specific files
 *.suo
 *.user
