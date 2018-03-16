@@ -13,7 +13,7 @@ For the found errors, Acuminator suggests code fixes. For the full list of suppo
 ## Code Coloring, Formatting, and Outlining
 Acuminator colorizes and formats BQL statements and therefore improves readability of long BQL queries. You can adjust the colors in the Visual Studio settings.
 
-Acuminator can collapse attributes and parts of BQL queries to small tags, which makes it easier for you to focus on the parts of code related to the current task.
+Acuminator can collapse parts of BQL queries and the code inside attributes to small tags, which makes it easier for you to focus on the parts of code related to the current task.
 
 ## Building of the Solution
 To build the solution, do the following:
