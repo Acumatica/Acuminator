@@ -35,6 +35,7 @@ Acuminator 1.0 exposes the following features.
 
 ### Diagnostics and Code Fixes
 In the code based on Acumatica Framework, Acuminator finds common mistakes and typos and suggests code fixes. The list of the issues that Acuminator diagnostics is described in the following table.
+
 | Code   | Issue Description                                                                                                                               | Type    | Diagnostics | Code Fix      | 
 | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ----------- | ------------- | 
 | PX1000 | Invalid signature of `PXAction` handler is used.                                                                                                | Error   | Available   | Available     |                     
