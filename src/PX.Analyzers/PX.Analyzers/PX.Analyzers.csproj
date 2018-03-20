@@ -37,7 +37,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>projectx.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Analyzers\NonNullableTypeForBqlFieldAnalyzer.cs" />
@@ -122,10 +122,10 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="PX.Common">
-      <HintPath>..\..\NetTools\PX.Common.dll</HintPath>
+      <HintPath>..\..\..\lib\PX.Common.dll</HintPath>
     </Reference>
     <Reference Include="PX.Data">
-      <HintPath>..\..\NetTools\PX.Data.dll</HintPath>
+      <HintPath>..\..\..\lib\PX.Data.dll</HintPath>
     </Reference>
     <Reference Include="System.Collections.Immutable, Version=1.1.36.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Collections.Immutable.1.1.36\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>

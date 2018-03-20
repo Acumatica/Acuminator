@@ -18,7 +18,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>projectx.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -68,7 +68,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="projectx.snk" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -223,12 +222,12 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="PX.BulkInsert, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3b136cac2f602b8e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\NetTools\PX.BulkInsert.dll</HintPath>
+      <HintPath>..\..\..\lib\PX.BulkInsert.dll</HintPath>
     </Reference>
     <Reference Include="PX.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3b136cac2f602b8e, processorArchitecture=MSIL" />
     <Reference Include="PX.DbServices, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3b136cac2f602b8e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\NetTools\PX.DbServices.dll</HintPath>
+      <HintPath>..\..\..\lib\PX.DbServices.dll</HintPath>
     </Reference>
     <Reference Include="stdole, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>False</EmbedInteropTypes>
@@ -278,7 +277,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\AcuminatorVSPackage.ico" />
-    <None Include="project.PublicKey" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AcuminatorVSPackage.cs" />
@@ -294,7 +292,7 @@
     <Compile Include="Coloriser\Outlining\PXOutliningTaggerProvider.cs" />
     <Compile Include="Coloriser\Base\PXTaggerProviderBase.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\ColoredCodeType.cs" />
-    <Compile Include="Utils\EditorExtensions.cs" />
+    <Compile Include="Coloriser\Utils\EditorExtensions.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheAsync.cs" />
     <Compile Include="Coloriser\Formats\BracesFormats.cs" />
     <Compile Include="Coloriser\Formats\ClassificationTypeDefinitions.cs" />
@@ -302,7 +300,6 @@
     <Compile Include="Coloriser\MainTagger\PXColorizerMainTagger.cs" />
     <Compile Include="Coloriser\Regex\PXRegexColorizerTagger.cs" />
     <Compile Include="Coloriser\PXColorizerTaggerProvider.cs" />
-    <Compile Include="Utils\ResourceManagerExtensions.cs" />
     <Compile Include="Formatter\BqlAggregateRewriter.cs" />
     <Compile Include="Formatter\BqlConditionRewriter.cs" />
     <Compile Include="Formatter\BqlContext.cs" />
@@ -316,17 +313,9 @@
     <Compile Include="Formatter\FormatBqlCommand.cs" />
     <Compile Include="Formatter\SpanWalker.cs" />
     <Compile Include="Formatter\SyntaxTriviaListExtensions.cs" />
-    <Compile Include="Utils\UIAttributes\AcuCategoryAttribute.cs" />
-    <Compile Include="Utils\UIAttributes\AcuDescriptionAttribute.cs" />
-    <Compile Include="Utils\UIAttributes\AcuDisplayNameAttribute.cs" />
     <Compile Include="Settings\SettingChangedEventArgs.cs" />
     <Compile Include="Settings\UI\GeneralOptionsPage.cs">
       <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Resources\VSIXResource.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>VSIXResource.resx</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Coloriser\Regex\Test\ARDocumentRelease.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\PMAllocationProcess.cs" />
@@ -341,15 +330,10 @@
     <Compile Include="Coloriser\Regex\Utils\RegExpressions.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\TypeNames.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\TypeSymbolColoriserUtils.cs" />
-    <Compile Include="Utils\ConcurrentExtensions.cs" />
-    <Compile Include="Utils\EnumerableExtensions.cs" />
-    <Compile Include="Utils\ExceptionExtensions.cs" />
-    <Compile Include="Utils\StringExtensions.cs" />
-    <EmbeddedResource Include="Resources\VSIXResource.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>VSIXResource.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>PX.Analyzers.Vsix</CustomToolNamespace>
-    </EmbeddedResource>
+    <Compile Include="Coloriser\Utils\ConcurrentExtensions.cs" />
+    <Compile Include="Coloriser\Utils\EnumerableExtensions.cs" />
+    <Compile Include="Coloriser\Utils\ExceptionExtensions.cs" />
+    <Compile Include="Coloriser\Utils\StringExtensions.cs" />
     <EmbeddedResource Include="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>
