@@ -34,11 +34,11 @@ namespace PX.Analyzers.Vsix
         }
 
         private bool pxActionColoringEnabled = true;
-		
-        [Category(AcuminatorVSPackage.SettingsCategoryName)]
-        [DisplayName("PXAction coloring is enabled")]
-        [Description("Coloring for PXAction declarations is enabled for Roslyn coloring")]
-        public bool PXActionColoringEnabled
+
+		[AcuCategory(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+		[AcuDisplayName(resourceKey: nameof(VSIXResource.Setting_PXActionColoringEnabled_Title))]
+		[AcuDescription(resourceKey: nameof(VSIXResource.Setting_PXActionColoringEnabled_Description))]
+		public bool PXActionColoringEnabled
         {
             get => pxActionColoringEnabled;
             set
@@ -53,10 +53,10 @@ namespace PX.Analyzers.Vsix
 
         private bool pxGraphColoringEnabled = true;
 
-        [Category(AcuminatorVSPackage.SettingsCategoryName)]
-        [DisplayName("PXGraph coloring is enabled")]
-        [Description("Coloring for PXGraph declarations is enabled for Roslyn coloring")]
-        public bool PXGraphColoringEnabled
+		[AcuCategory(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+		[AcuDisplayName(resourceKey: nameof(VSIXResource.Setting_PXGraphColoringEnabled_Title))]
+		[AcuDescription(resourceKey: nameof(VSIXResource.Setting_PXGraphColoringEnabled_Description))]
+		public bool PXGraphColoringEnabled
         {
             get => pxGraphColoringEnabled;
             set
@@ -71,10 +71,10 @@ namespace PX.Analyzers.Vsix
 
         private bool colorOnlyInsideBQL;
 
-        [Category(AcuminatorVSPackage.SettingsCategoryName)]
-        [DisplayName("Color code only inside BQL")]
-        [Description("Coloring is enabled only inside BQL commands for Roslyn coloring")]
-        public bool ColorOnlyInsideBQL
+		[AcuCategory(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+		[AcuDisplayName(resourceKey: nameof(VSIXResource.Setting_ColorOnlyInsideBQL_Title))]
+		[AcuDescription(resourceKey: nameof(VSIXResource.Setting_ColorOnlyInsideBQL_Description))]
+		public bool ColorOnlyInsideBQL
         {
             get => colorOnlyInsideBQL;
             set
@@ -89,10 +89,10 @@ namespace PX.Analyzers.Vsix
 
         private bool useRegexColoring;
 
-        [Category(AcuminatorVSPackage.SettingsCategoryName)]
-        [DisplayName("Use RegEx coloriser")]
-        [Description("Use syntax coloriser implemented via regular expressions, provide worse coloring but works faster")]
-        public bool UseRegexColoring
+		[AcuCategory(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+		[AcuDisplayName(resourceKey: nameof(VSIXResource.Setting_UseRegexColoring_Title))]
+		[AcuDescription(resourceKey: nameof(VSIXResource.Setting_UseRegexColoring_Description))]
+		public bool UseRegexColoring
         {
             get => useRegexColoring;
             set
@@ -107,10 +107,10 @@ namespace PX.Analyzers.Vsix
 
         private bool useBqlOutlining = true;
 
-        [Category(AcuminatorVSPackage.SettingsCategoryName)]
-        [DisplayName("Use BQL Outlining")]
-        [Description("Use BQL outlining to collapse parts of BQL (works only with Roslyn coloring)")]
-        public bool UseBqlOutlining
+		[AcuCategory(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+		[AcuDisplayName(resourceKey: nameof(VSIXResource.Setting_UseBqlOutlining_Title))]
+		[AcuDescription(resourceKey: nameof(VSIXResource.Setting_UseBqlOutlining_Description))]
+		public bool UseBqlOutlining
         {
             get => useBqlOutlining;
             set

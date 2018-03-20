@@ -138,6 +138,12 @@
   <data name="BQLConstantPrefixFormatLabel" xml:space="preserve">
     <value>Acuminator - BQL constant - prefix</value>
   </data>
+  <data name="PXActionFormatLabel" xml:space="preserve">
+    <value>Acuminator - PXAction</value>
+  </data>
+  <data name="PXGraphFormatLabel" xml:space="preserve">
+    <value>Acuminator - PXGraph</value>
+  </data>
   <data name="BraceLevel_10_FormatLabel" xml:space="preserve">
     <value>Acuminator - BQL angle braces level 10</value>
   </data>
@@ -180,20 +186,45 @@
   <data name="BraceLevel_9_FormatLabel" xml:space="preserve">
     <value>Acuminator - BQL angle braces level 9</value>
   </data>
-  <data name="PXActionFormatLabel" xml:space="preserve">
-    <value>Acuminator - PXAction</value>
-  </data>
-  <data name="PXGraphFormatLabel" xml:space="preserve">
-    <value>Acuminator - PXGraph</value>
-  </data>
-  <data name="Setting_ColoringEnabled_Title" xml:space="preserve">
-    <value>Coloring enabled</value>
-  </data>
   <data name="Category_Acuminator" xml:space="preserve">
     <value>Acuminator</value>
     <comment>Must be same as corresponding category name in VSPackage.resx</comment>
   </data>
+  <data name="Setting_ColoringEnabled_Title" xml:space="preserve">
+    <value>Coloring enabled</value>
+  </data>
   <data name="Setting_ColoringEnabled_Description" xml:space="preserve">
     <value>Syntax coloring enabled</value>
+  </data>
+  <data name="Setting_PXActionColoringEnabled_Title" xml:space="preserve">
+    <value>PXAction coloring is enabled</value>
+  </data>
+  <data name="Setting_PXActionColoringEnabled_Description" xml:space="preserve">
+    <value>Coloring for PXAction declarations is enabled for Roslyn coloring</value>
+  </data>
+  <data name="Setting_PXGraphColoringEnabled_Title" xml:space="preserve">
+    <value>PXGraph coloring is enabled</value>
+  </data>
+  <data name="Setting_PXGraphColoringEnabled_Description" xml:space="preserve">
+    <value>Coloring for PXGraph declarations is enabled for Roslyn coloring</value>
+  </data>
+
+  <data name="Setting_ColorOnlyInsideBQL_Title" xml:space="preserve">
+    <value>Color code only inside BQL</value>
+  </data>
+  <data name="Setting_ColorOnlyInsideBQL_Description" xml:space="preserve">
+    <value>Coloring is enabled only inside BQL commands for Roslyn coloring</value>
+  </data>
+  <data name="Setting_UseRegexColoring_Title" xml:space="preserve">
+    <value>Use RegEx coloriser</value>
+  </data>
+  <data name="Setting_UseRegexColoring_Description" xml:space="preserve">
+    <value>Use syntax coloriser implemented via regular expressions, provide worse coloring but works faster</value>
+  </data>
+  <data name="Setting_UseBqlOutlining_Title" xml:space="preserve">
+    <value>Use BQL Outlining</value>
+  </data>
+  <data name="Setting_UseBqlOutlining_Description" xml:space="preserve">
+    <value>Use BQL outlining to collapse parts of BQL (works only with Roslyn coloring)</value>
   </data>
 </root>

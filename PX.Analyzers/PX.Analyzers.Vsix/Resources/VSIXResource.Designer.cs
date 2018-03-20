@@ -293,5 +293,95 @@ namespace PX.Analyzers.Vsix {
                 return ResourceManager.GetString("Setting_ColoringEnabled_Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Coloring is enabled only inside BQL commands for Roslyn coloring.
+        /// </summary>
+        public static string Setting_ColorOnlyInsideBQL_Description {
+            get {
+                return ResourceManager.GetString("Setting_ColorOnlyInsideBQL_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Color code only inside BQL.
+        /// </summary>
+        public static string Setting_ColorOnlyInsideBQL_Title {
+            get {
+                return ResourceManager.GetString("Setting_ColorOnlyInsideBQL_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Coloring for PXAction declarations is enabled for Roslyn coloring.
+        /// </summary>
+        public static string Setting_PXActionColoringEnabled_Description {
+            get {
+                return ResourceManager.GetString("Setting_PXActionColoringEnabled_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXAction coloring is enabled.
+        /// </summary>
+        public static string Setting_PXActionColoringEnabled_Title {
+            get {
+                return ResourceManager.GetString("Setting_PXActionColoringEnabled_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Coloring for PXGraph declarations is enabled for Roslyn coloring.
+        /// </summary>
+        public static string Setting_PXGraphColoringEnabled_Description {
+            get {
+                return ResourceManager.GetString("Setting_PXGraphColoringEnabled_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXGraph coloring is enabled.
+        /// </summary>
+        public static string Setting_PXGraphColoringEnabled_Title {
+            get {
+                return ResourceManager.GetString("Setting_PXGraphColoringEnabled_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use BQL outlining to collapse parts of BQL (works only with Roslyn coloring).
+        /// </summary>
+        public static string Setting_UseBqlOutlining_Description {
+            get {
+                return ResourceManager.GetString("Setting_UseBqlOutlining_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use BQL Outlining.
+        /// </summary>
+        public static string Setting_UseBqlOutlining_Title {
+            get {
+                return ResourceManager.GetString("Setting_UseBqlOutlining_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use syntax coloriser implemented via regular expressions, provide worse coloring but works faster.
+        /// </summary>
+        public static string Setting_UseRegexColoring_Description {
+            get {
+                return ResourceManager.GetString("Setting_UseRegexColoring_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use RegEx coloriser.
+        /// </summary>
+        public static string Setting_UseRegexColoring_Title {
+            get {
+                return ResourceManager.GetString("Setting_UseRegexColoring_Title", resourceCulture);
+            }
+        }
     }
 }
