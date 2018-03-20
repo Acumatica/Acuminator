@@ -282,7 +282,9 @@
     <Compile Include="AcuminatorVSPackage.cs" />
     <Compile Include="Coloriser\AsyncTagging\Interfaces\ITagsCache.cs" />
     <Compile Include="Coloriser\Constants\VSColors.cs" />
+    <Compile Include="Coloriser\Formats\BracesFormats.cs" />
     <Compile Include="Coloriser\Formats\EditorFormatBase.cs" />
+    <Compile Include="Coloriser\Formats\EditorFormats.cs" />
     <Compile Include="Coloriser\PXColorizerTaggerBase.cs" />
     <Compile Include="Coloriser\AsyncTagging\BackgroundTagging.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheSync.cs" />
@@ -292,11 +294,12 @@
     <Compile Include="Coloriser\Outlining\PXOutliningTaggerProvider.cs" />
     <Compile Include="Coloriser\Base\PXTaggerProviderBase.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\ColoredCodeType.cs" />
-    <Compile Include="Coloriser\Utils\EditorExtensions.cs" />
+    <Compile Include="Settings\UI\GeneralOptionsPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Utils\EditorExtensions.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheAsync.cs" />
-    <Compile Include="Coloriser\Formats\BracesFormats.cs" />
     <Compile Include="Coloriser\Formats\ClassificationTypeDefinitions.cs" />
-    <Compile Include="Coloriser\Formats\EditorFormats.cs" />
     <Compile Include="Coloriser\MainTagger\PXColorizerMainTagger.cs" />
     <Compile Include="Coloriser\Regex\PXRegexColorizerTagger.cs" />
     <Compile Include="Coloriser\PXColorizerTaggerProvider.cs" />
@@ -313,10 +316,11 @@
     <Compile Include="Formatter\FormatBqlCommand.cs" />
     <Compile Include="Formatter\SpanWalker.cs" />
     <Compile Include="Formatter\SyntaxTriviaListExtensions.cs" />
+    <Compile Include="Resources\VSIXResource.Designer.cs" />
     <Compile Include="Settings\SettingChangedEventArgs.cs" />
-    <Compile Include="Settings\UI\GeneralOptionsPage.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Utils\UIAttributes\CategoryFromResourcesAttribute.cs" />
+    <Compile Include="Utils\UIAttributes\DescriptionFromResourcesAttribute.cs" />
+    <Compile Include="Utils\UIAttributes\DisplayNameFromResourcesAttribute.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\ARDocumentRelease.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\PMAllocationProcess.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\APInvoice.cs" />
@@ -330,10 +334,12 @@
     <Compile Include="Coloriser\Regex\Utils\RegExpressions.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\TypeNames.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\TypeSymbolColoriserUtils.cs" />
-    <Compile Include="Coloriser\Utils\ConcurrentExtensions.cs" />
-    <Compile Include="Coloriser\Utils\EnumerableExtensions.cs" />
-    <Compile Include="Coloriser\Utils\ExceptionExtensions.cs" />
-    <Compile Include="Coloriser\Utils\StringExtensions.cs" />
+    <Compile Include="Utils\ConcurrentExtensions.cs" />
+    <Compile Include="Utils\EnumerableExtensions.cs" />
+    <Compile Include="Utils\ExceptionExtensions.cs" />
+    <Compile Include="Utils\ResourceManagerExtensions.cs" />
+    <Compile Include="Utils\StringExtensions.cs" />
+    <EmbeddedResource Include="Resources\VSIXResource.resx" />
     <EmbeddedResource Include="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>

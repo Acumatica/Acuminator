@@ -16,10 +16,10 @@ namespace PX.Analyzers.Vsix
         public const string PageTitle = "General";
 
         private bool coloringEnabled = true;
-
-        [Category(AcuminatorVSPackage.SettingsCategoryName)]
-        [DisplayName("Coloring enabled")]
-        [Description("Syntax coloring enabled")]
+		
+        [CategoryFromResources(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+        [DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_ColoringEnabled_Title))]
+        [DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_ColoringEnabled_Description))]
         public bool ColoringEnabled
         {
             get => coloringEnabled;
@@ -35,10 +35,10 @@ namespace PX.Analyzers.Vsix
 
         private bool pxActionColoringEnabled = true;
 
-        [Category(AcuminatorVSPackage.SettingsCategoryName)]
-        [DisplayName("PXAction coloring is enabled")]
-        [Description("Coloring for PXAction declarations is enabled for Roslyn coloring")]
-        public bool PXActionColoringEnabled
+		[CategoryFromResources(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_PXActionColoringEnabled_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_PXActionColoringEnabled_Description))]
+		public bool PXActionColoringEnabled
         {
             get => pxActionColoringEnabled;
             set
@@ -53,10 +53,10 @@ namespace PX.Analyzers.Vsix
 
         private bool pxGraphColoringEnabled = true;
 
-        [Category(AcuminatorVSPackage.SettingsCategoryName)]
-        [DisplayName("PXGraph coloring is enabled")]
-        [Description("Coloring for PXGraph declarations is enabled for Roslyn coloring")]
-        public bool PXGraphColoringEnabled
+		[CategoryFromResources(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_PXGraphColoringEnabled_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_PXGraphColoringEnabled_Description))]
+		public bool PXGraphColoringEnabled
         {
             get => pxGraphColoringEnabled;
             set
@@ -71,10 +71,10 @@ namespace PX.Analyzers.Vsix
 
         private bool colorOnlyInsideBQL;
 
-        [Category(AcuminatorVSPackage.SettingsCategoryName)]
-        [DisplayName("Color code only inside BQL")]
-        [Description("Coloring is enabled only inside BQL commands for Roslyn coloring")]
-        public bool ColorOnlyInsideBQL
+		[CategoryFromResources(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_ColorOnlyInsideBQL_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_ColorOnlyInsideBQL_Description))]
+		public bool ColorOnlyInsideBQL
         {
             get => colorOnlyInsideBQL;
             set
@@ -89,10 +89,10 @@ namespace PX.Analyzers.Vsix
 
         private bool useRegexColoring;
 
-        [Category(AcuminatorVSPackage.SettingsCategoryName)]
-        [DisplayName("Use RegEx coloriser")]
-        [Description("Use syntax coloriser implemented via regular expressions, provide worse coloring but works faster")]
-        public bool UseRegexColoring
+		[CategoryFromResources(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_UseRegexColoring_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_UseRegexColoring_Description))]
+		public bool UseRegexColoring
         {
             get => useRegexColoring;
             set
@@ -107,10 +107,10 @@ namespace PX.Analyzers.Vsix
 
         private bool useBqlOutlining = true;
 
-        [Category(AcuminatorVSPackage.SettingsCategoryName)]
-        [DisplayName("Use BQL Outlining")]
-        [Description("Use BQL outlining to collapse parts of BQL (works only with Roslyn coloring)")]
-        public bool UseBqlOutlining
+		[CategoryFromResources(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlOutlining_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlOutlining_Description))]
+		public bool UseBqlOutlining
         {
             get => useBqlOutlining;
             set
