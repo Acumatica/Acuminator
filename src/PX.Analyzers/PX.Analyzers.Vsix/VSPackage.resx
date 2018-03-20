@@ -123,6 +123,14 @@
   <data name="112" xml:space="preserve">
     <value>BQL colorizer &amp; formatter and a set of diagnostics / code fixes for common developer pitfalls related to Acumatica Framework.</value>
   </data>
+  <data name="201" xml:space="preserve">
+    <value>Acuminator</value>
+    <comment>Acuminator Settings Category Name</comment>
+  </data>
+  <data name="202" xml:space="preserve">
+    <value>General</value>
+    <comment>General Options Page Title</comment>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="400" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\AcuminatorVSPackage.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
