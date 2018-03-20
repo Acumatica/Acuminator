@@ -16,10 +16,10 @@ namespace PX.Analyzers.Vsix
         public const string PageTitle = "General";
 
         private bool coloringEnabled = true;
-
-        [Category(AcuminatorVSPackage.SettingsCategoryName)]
-        [DisplayName("Coloring enabled")]
-        [Description("Syntax coloring enabled")]
+		
+        [AcuCategory(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+        [AcuDisplayName(resourceKey: nameof(VSIXResource.Setting_ColoringEnabled_Title))]
+        [AcuDescription(resourceKey: nameof(VSIXResource.Setting_ColoringEnabled_Description))]
         public bool ColoringEnabled
         {
             get => coloringEnabled;

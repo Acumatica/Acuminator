@@ -223,6 +223,15 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Acuminator.
+        /// </summary>
+        public static string Category_Acuminator {
+            get {
+                return ResourceManager.GetString("Category_Acuminator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Acuminator - DAC Extension Name.
         /// </summary>
         public static string DacExtensionFormatLabel {
@@ -264,6 +273,24 @@ namespace PX.Analyzers.Vsix {
         public static string PXGraphFormatLabel {
             get {
                 return ResourceManager.GetString("PXGraphFormatLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Syntax coloring enabled.
+        /// </summary>
+        public static string Setting_ColoringEnabled_Description {
+            get {
+                return ResourceManager.GetString("Setting_ColoringEnabled_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Coloring enabled.
+        /// </summary>
+        public static string Setting_ColoringEnabled_Title {
+            get {
+                return ResourceManager.GetString("Setting_ColoringEnabled_Title", resourceCulture);
             }
         }
     }

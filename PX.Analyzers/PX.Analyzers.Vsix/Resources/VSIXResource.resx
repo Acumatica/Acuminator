@@ -186,4 +186,14 @@
   <data name="PXGraphFormatLabel" xml:space="preserve">
     <value>Acuminator - PXGraph</value>
   </data>
+  <data name="Setting_ColoringEnabled_Title" xml:space="preserve">
+    <value>Coloring enabled</value>
+  </data>
+  <data name="Category_Acuminator" xml:space="preserve">
+    <value>Acuminator</value>
+    <comment>Must be same as corresponding category name in VSPackage.resx</comment>
+  </data>
+  <data name="Setting_ColoringEnabled_Description" xml:space="preserve">
+    <value>Syntax coloring enabled</value>
+  </data>
 </root>
