@@ -5,6 +5,7 @@ using System.ComponentModel.Composition;
 using System.Windows.Media;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
+using PX.Analyzers.Vsix;
 
 
 
@@ -19,7 +20,7 @@ namespace PX.Analyzers.Coloriser
     {
         public BraceLevel_1_Format()
         {
-            DisplayName = Labels.BraceLevel_1_FormatLabel; // Human readable version of the name		
+            DisplayName = VSIXResource.BraceLevel_1_FormatLabel; // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;
         }
@@ -34,7 +35,7 @@ namespace PX.Analyzers.Coloriser
     {
         public BraceLevel_2_Format()
         {
-            DisplayName = Labels.BraceLevel_2_FormatLabel; // Human readable version of the name		
+            DisplayName = VSIXResource.BraceLevel_2_FormatLabel; // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;
         }
@@ -49,7 +50,7 @@ namespace PX.Analyzers.Coloriser
     {
         public BraceLevel_3_Format()
         {            
-            DisplayName = Labels.BraceLevel_3_FormatLabel; // Human readable version of the name		
+            DisplayName = VSIXResource.BraceLevel_3_FormatLabel; // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;
         }
@@ -65,7 +66,7 @@ namespace PX.Analyzers.Coloriser
     {
         public BraceLevel_4_Format()
         {           
-            DisplayName = Labels.BraceLevel_4_FormatLabel; // Human readable version of the name		
+            DisplayName = VSIXResource.BraceLevel_4_FormatLabel; // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;
         }
@@ -80,7 +81,7 @@ namespace PX.Analyzers.Coloriser
     {
         public BraceLevel_5_Format()
         {        
-            DisplayName = Labels.BraceLevel_5_FormatLabel; // Human readable version of the name		
+            DisplayName = VSIXResource.BraceLevel_5_FormatLabel; // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;
         }
@@ -95,7 +96,7 @@ namespace PX.Analyzers.Coloriser
     {
         public BraceLevel_6_Format()
         {            
-            DisplayName = Labels.BraceLevel_6_FormatLabel; // Human readable version of the name		
+            DisplayName = VSIXResource.BraceLevel_6_FormatLabel; // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;
         }
@@ -111,7 +112,7 @@ namespace PX.Analyzers.Coloriser
     {
         public BraceLevel_7_Format()
         {
-            DisplayName = Labels.BraceLevel_7_FormatLabel; // Human readable version of the name		
+            DisplayName = VSIXResource.BraceLevel_7_FormatLabel; // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;
         }
@@ -126,7 +127,7 @@ namespace PX.Analyzers.Coloriser
     {
         public BraceLevel_8_Format()
         {
-            DisplayName = Labels.BraceLevel_8_FormatLabel; // Human readable version of the name		
+            DisplayName = VSIXResource.BraceLevel_8_FormatLabel; // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;
         }
@@ -141,7 +142,7 @@ namespace PX.Analyzers.Coloriser
     {
         public BraceLevel_9_Format()
         {
-            DisplayName = Labels.BraceLevel_9_FormatLabel; // Human readable version of the name		
+            DisplayName = VSIXResource.BraceLevel_9_FormatLabel; // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;
         }
@@ -157,7 +158,7 @@ namespace PX.Analyzers.Coloriser
     {
         public BraceLevel_10_Format()
         {
-            DisplayName = Labels.BraceLevel_10_FormatLabel; // Human readable version of the name		
+            DisplayName = VSIXResource.BraceLevel_10_FormatLabel; // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;
         }
@@ -172,7 +173,7 @@ namespace PX.Analyzers.Coloriser
     {
         public BraceLevel_11_Format()
         {
-            DisplayName = Labels.BraceLevel_11_FormatLabel; // Human readable version of the name		
+            DisplayName = VSIXResource.BraceLevel_11_FormatLabel; // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;
         }
@@ -187,7 +188,7 @@ namespace PX.Analyzers.Coloriser
     {
         public BraceLevel_12_Format()
         {
-            DisplayName = Labels.BraceLevel_12_FormatLabel; // Human readable version of the name		
+            DisplayName = VSIXResource.BraceLevel_12_FormatLabel; // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;
         }
@@ -203,7 +204,7 @@ namespace PX.Analyzers.Coloriser
     {
         public BraceLevel_13_Format()
         {
-            DisplayName = Labels.BraceLevel_13_FormatLabel; // Human readable version of the name		
+            DisplayName = VSIXResource.BraceLevel_13_FormatLabel; // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;
         }
@@ -218,7 +219,7 @@ namespace PX.Analyzers.Coloriser
     {
         public BraceLevel_14_Format()
         {
-            DisplayName = Labels.BraceLevel_14_FormatLabel; // Human readable version of the name		
+            DisplayName = VSIXResource.BraceLevel_14_FormatLabel; // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;
         }
