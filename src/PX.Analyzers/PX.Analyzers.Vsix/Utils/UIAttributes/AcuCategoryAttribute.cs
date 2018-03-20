@@ -14,7 +14,7 @@ using PX.Analyzers.Vsix.Utilities;
 namespace PX.Analyzers.Vsix
 {
 	[AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = false)]
-	internal sealed class AcuCategoryAttribute : CategoryAttribute
+	internal sealed class CategoryFromResourcesAttribute : CategoryAttribute
 	{		
 		public string ResourceKey { get; }
 
@@ -24,7 +24,7 @@ namespace PX.Analyzers.Vsix
 			return resourceString ?? base.GetLocalizedString(value);
 		}
 
-		public AcuCategoryAttribute(string resourceKey, string nonLocalizedCategoryName) : base(nonLocalizedCategoryName) 
+		public CategoryFromResourcesAttribute(string resourceKey, string nonLocalizedCategoryName) : base(nonLocalizedCategoryName) 
 		{			
 			resourceKey.ThrowOnNullOrWhiteSpace(nameof(resourceKey));
 			ResourceKey = resourceKey;

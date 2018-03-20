@@ -17,9 +17,9 @@ namespace PX.Analyzers.Vsix
 
         private bool coloringEnabled = true;
 		
-        [AcuCategory(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
-        [AcuDisplayName(resourceKey: nameof(VSIXResource.Setting_ColoringEnabled_Title))]
-        [AcuDescription(resourceKey: nameof(VSIXResource.Setting_ColoringEnabled_Description))]
+        [CategoryFromResources(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+        [DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_ColoringEnabled_Title))]
+        [DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_ColoringEnabled_Description))]
         public bool ColoringEnabled
         {
             get => coloringEnabled;
@@ -35,9 +35,9 @@ namespace PX.Analyzers.Vsix
 
         private bool pxActionColoringEnabled = true;
 
-		[AcuCategory(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
-		[AcuDisplayName(resourceKey: nameof(VSIXResource.Setting_PXActionColoringEnabled_Title))]
-		[AcuDescription(resourceKey: nameof(VSIXResource.Setting_PXActionColoringEnabled_Description))]
+		[CategoryFromResources(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_PXActionColoringEnabled_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_PXActionColoringEnabled_Description))]
 		public bool PXActionColoringEnabled
         {
             get => pxActionColoringEnabled;
@@ -53,9 +53,9 @@ namespace PX.Analyzers.Vsix
 
         private bool pxGraphColoringEnabled = true;
 
-		[AcuCategory(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
-		[AcuDisplayName(resourceKey: nameof(VSIXResource.Setting_PXGraphColoringEnabled_Title))]
-		[AcuDescription(resourceKey: nameof(VSIXResource.Setting_PXGraphColoringEnabled_Description))]
+		[CategoryFromResources(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_PXGraphColoringEnabled_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_PXGraphColoringEnabled_Description))]
 		public bool PXGraphColoringEnabled
         {
             get => pxGraphColoringEnabled;
@@ -71,9 +71,9 @@ namespace PX.Analyzers.Vsix
 
         private bool colorOnlyInsideBQL;
 
-		[AcuCategory(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
-		[AcuDisplayName(resourceKey: nameof(VSIXResource.Setting_ColorOnlyInsideBQL_Title))]
-		[AcuDescription(resourceKey: nameof(VSIXResource.Setting_ColorOnlyInsideBQL_Description))]
+		[CategoryFromResources(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_ColorOnlyInsideBQL_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_ColorOnlyInsideBQL_Description))]
 		public bool ColorOnlyInsideBQL
         {
             get => colorOnlyInsideBQL;
@@ -89,9 +89,9 @@ namespace PX.Analyzers.Vsix
 
         private bool useRegexColoring;
 
-		[AcuCategory(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
-		[AcuDisplayName(resourceKey: nameof(VSIXResource.Setting_UseRegexColoring_Title))]
-		[AcuDescription(resourceKey: nameof(VSIXResource.Setting_UseRegexColoring_Description))]
+		[CategoryFromResources(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_UseRegexColoring_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_UseRegexColoring_Description))]
 		public bool UseRegexColoring
         {
             get => useRegexColoring;
@@ -107,9 +107,9 @@ namespace PX.Analyzers.Vsix
 
         private bool useBqlOutlining = true;
 
-		[AcuCategory(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
-		[AcuDisplayName(resourceKey: nameof(VSIXResource.Setting_UseBqlOutlining_Title))]
-		[AcuDescription(resourceKey: nameof(VSIXResource.Setting_UseBqlOutlining_Description))]
+		[CategoryFromResources(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlOutlining_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlOutlining_Description))]
 		public bool UseBqlOutlining
         {
             get => useBqlOutlining;

@@ -11,13 +11,13 @@ using PX.Analyzers.Vsix.Utilities;
 namespace PX.Analyzers.Vsix
 {
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
-	internal sealed class AcuDisplayNameAttribute : DisplayNameAttribute
+	internal sealed class DisplayNameFromResourcesAttribute : DisplayNameAttribute
 	{		
 		public string ResourceKey { get; }
 
 		public override string DisplayName => VSIXResource.ResourceManager.GetStringResourceSafe(ResourceKey);
 
-		public AcuDisplayNameAttribute(string resourceKey)
+		public DisplayNameFromResourcesAttribute(string resourceKey)
 		{
 			resourceKey.ThrowOnNullOrWhiteSpace(nameof(resourceKey));
 			ResourceKey = resourceKey;

@@ -216,7 +216,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="projectx.snk" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PX.Analyzers.Vsix\PX.Analyzers.Vsix.csproj">
