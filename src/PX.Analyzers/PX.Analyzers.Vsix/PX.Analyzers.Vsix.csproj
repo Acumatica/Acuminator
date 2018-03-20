@@ -318,6 +318,9 @@
     <Compile Include="Settings\UI\GeneralOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Utils\UIAttributes\AcuCategoryAttribute.cs" />
+    <Compile Include="Utils\UIAttributes\AcuDescriptionAttribute.cs" />
+    <Compile Include="Utils\UIAttributes\AcuDisplayNameAttribute.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\ARDocumentRelease.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\PMAllocationProcess.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\APInvoice.cs" />
@@ -334,6 +337,7 @@
     <Compile Include="Utils\ConcurrentExtensions.cs" />
     <Compile Include="Utils\EnumerableExtensions.cs" />
     <Compile Include="Utils\ExceptionExtensions.cs" />
+    <Compile Include="Utils\ResourceManagerExtensions.cs" />
     <Compile Include="Utils\StringExtensions.cs" />
     <EmbeddedResource Include="Resources\VSIXResource.resx" />
     <EmbeddedResource Include="VSPackage.resx">
