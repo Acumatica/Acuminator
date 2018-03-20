@@ -294,6 +294,9 @@
     <Compile Include="Coloriser\Outlining\PXOutliningTaggerProvider.cs" />
     <Compile Include="Coloriser\Base\PXTaggerProviderBase.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\ColoredCodeType.cs" />
+    <Compile Include="Settings\UI\GeneralOptionsPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Utils\EditorExtensions.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheAsync.cs" />
     <Compile Include="Coloriser\Formats\ClassificationTypeDefinitions.cs" />
@@ -315,9 +318,6 @@
     <Compile Include="Formatter\SyntaxTriviaListExtensions.cs" />
     <Compile Include="Resources\VSIXResource.Designer.cs" />
     <Compile Include="Settings\SettingChangedEventArgs.cs" />
-    <Compile Include="Settings\UI\GeneralOptionsPage.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Utils\UIAttributes\AcuCategoryAttribute.cs" />
     <Compile Include="Utils\UIAttributes\AcuDescriptionAttribute.cs" />
     <Compile Include="Utils\UIAttributes\AcuDisplayNameAttribute.cs" />
