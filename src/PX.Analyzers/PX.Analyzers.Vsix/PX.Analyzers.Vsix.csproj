@@ -318,9 +318,9 @@
     <Compile Include="Formatter\SyntaxTriviaListExtensions.cs" />
     <Compile Include="Resources\VSIXResource.Designer.cs" />
     <Compile Include="Settings\SettingChangedEventArgs.cs" />
-    <Compile Include="Utils\UIAttributes\AcuCategoryAttribute.cs" />
-    <Compile Include="Utils\UIAttributes\AcuDescriptionAttribute.cs" />
-    <Compile Include="Utils\UIAttributes\AcuDisplayNameAttribute.cs" />
+    <Compile Include="Utils\UIAttributes\CategoryFromResourcesAttribute.cs" />
+    <Compile Include="Utils\UIAttributes\DescriptionFromResourcesAttribute.cs" />
+    <Compile Include="Utils\UIAttributes\DisplayNameFromResourcesAttribute.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\ARDocumentRelease.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\PMAllocationProcess.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\APInvoice.cs" />
