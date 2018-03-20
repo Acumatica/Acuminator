@@ -34,7 +34,7 @@ namespace PX.Analyzers.Vsix
         }
 
         private bool pxActionColoringEnabled = true;
-
+		
         [Category(AcuminatorVSPackage.SettingsCategoryName)]
         [DisplayName("PXAction coloring is enabled")]
         [Description("Coloring for PXAction declarations is enabled for Roslyn coloring")]
