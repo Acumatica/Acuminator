@@ -281,8 +281,11 @@
   <ItemGroup>
     <Compile Include="AcuminatorVSPackage.cs" />
     <Compile Include="Coloriser\AsyncTagging\Interfaces\ITagsCache.cs" />
+    <Compile Include="Coloriser\Constants\ColoringConstants.cs" />
     <Compile Include="Coloriser\Constants\VSColors.cs" />
+    <Compile Include="Coloriser\Formats\BracesFormats.cs" />
     <Compile Include="Coloriser\Formats\EditorFormatBase.cs" />
+    <Compile Include="Coloriser\Formats\EditorFormats.cs" />
     <Compile Include="Coloriser\PXColorizerTaggerBase.cs" />
     <Compile Include="Coloriser\AsyncTagging\BackgroundTagging.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheSync.cs" />
@@ -292,11 +295,14 @@
     <Compile Include="Coloriser\Outlining\PXOutliningTaggerProvider.cs" />
     <Compile Include="Coloriser\Base\PXTaggerProviderBase.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\ColoredCodeType.cs" />
-    <Compile Include="Coloriser\Utils\EditorExtensions.cs" />
+    <Compile Include="Resources\VSIXResource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VSIXResource.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Utils\EditorExtensions.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheAsync.cs" />
-    <Compile Include="Coloriser\Formats\BracesFormats.cs" />
     <Compile Include="Coloriser\Formats\ClassificationTypeDefinitions.cs" />
-    <Compile Include="Coloriser\Formats\EditorFormats.cs" />
     <Compile Include="Coloriser\MainTagger\PXColorizerMainTagger.cs" />
     <Compile Include="Coloriser\Regex\PXRegexColorizerTagger.cs" />
     <Compile Include="Coloriser\PXColorizerTaggerProvider.cs" />
@@ -317,6 +323,10 @@
     <Compile Include="Settings\UI\GeneralOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Utils\ResourceManagerExtensions.cs" />
+    <Compile Include="Utils\UIAttributes\CategoryFromResourcesAttribute.cs" />
+    <Compile Include="Utils\UIAttributes\DescriptionFromResourcesAttribute.cs" />
+    <Compile Include="Utils\UIAttributes\DisplayNameFromResourcesAttribute.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\ARDocumentRelease.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\PMAllocationProcess.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\APInvoice.cs" />
@@ -325,15 +335,19 @@
     <Compile Include="Coloriser\Roslyn\ParsedDocument.cs" />
     <Compile Include="Coloriser\Roslyn\PXColoriserSyntaxWalker.cs" />
     <Compile Include="Coloriser\Roslyn\PXRoslynColorizerTagger.cs" />
-    <Compile Include="Coloriser\Constants\ColoringConstants.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\RoslynVSEditorExtensions.cs" />
     <Compile Include="Coloriser\Regex\Utils\RegExpressions.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\TypeNames.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\TypeSymbolColoriserUtils.cs" />
-    <Compile Include="Coloriser\Utils\ConcurrentExtensions.cs" />
-    <Compile Include="Coloriser\Utils\EnumerableExtensions.cs" />
-    <Compile Include="Coloriser\Utils\ExceptionExtensions.cs" />
-    <Compile Include="Coloriser\Utils\StringExtensions.cs" />
+    <Compile Include="Utils\ConcurrentExtensions.cs" />
+    <Compile Include="Utils\EnumerableExtensions.cs" />
+    <Compile Include="Utils\ExceptionExtensions.cs" />
+    <Compile Include="Utils\StringExtensions.cs" />
+    <EmbeddedResource Include="Resources\VSIXResource.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>VSIXResource.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>PX.Analyzers.Vsix</CustomToolNamespace>
+    </EmbeddedResource>
     <EmbeddedResource Include="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>
