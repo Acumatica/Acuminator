@@ -19,7 +19,7 @@ namespace PX.Analyzers.Coloriser
         public BQLOperatorFormat()
         {
 
-            DisplayName = Labels.BQLOperatorFormatLabel; // Human readable version of the name		
+            DisplayName = VSIXResource.BQLOperatorFormatLabel; // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;           
         }     
@@ -34,7 +34,7 @@ namespace PX.Analyzers.Coloriser
 	{
 		public DACFormat()
 		{
-            DisplayName = Labels.DacFormatLabel; // Human readable version of the name		
+            DisplayName = VSIXResource.DacFormatLabel; // Human readable version of the name		
 			ForegroundCustomizable = true;
 			BackgroundCustomizable = true;
 		}
@@ -49,7 +49,7 @@ namespace PX.Analyzers.Coloriser
     {
         public DacExtensionFormat()
         {
-            DisplayName = Labels.DacExtensionFormatLabel;       // Human readable version of the name		
+            DisplayName = VSIXResource.DacExtensionFormatLabel;       // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;
         }
@@ -64,7 +64,7 @@ namespace PX.Analyzers.Coloriser
 	{
 		public DACFieldFormat()
 		{
-            DisplayName = Labels.DacFieldFormatLabel; // Human readable version of the name		
+            DisplayName = VSIXResource.DacFieldFormatLabel; // Human readable version of the name		
 			ForegroundCustomizable = true;
 			BackgroundCustomizable = true;
 		}
@@ -79,7 +79,7 @@ namespace PX.Analyzers.Coloriser
 	{
 		public BQLParameterFormat()
 		{
-            DisplayName = Labels.BQLParameterFormatLabel; // Human readable version of the name		
+            DisplayName = VSIXResource.BQLParameterFormatLabel; // Human readable version of the name		
 			ForegroundCustomizable = true;
 			BackgroundCustomizable = true;
 		}
@@ -94,7 +94,7 @@ namespace PX.Analyzers.Coloriser
 	{
 		public BQLConstantPrefixFormat()
 		{
-            DisplayName = Labels.BQLConstantPrefixFormatLabel; // Human readable version of the name		
+            DisplayName = VSIXResource.BQLConstantPrefixFormatLabel; // Human readable version of the name		
 			ForegroundCustomizable = true;
 			BackgroundCustomizable = true;
 		}
@@ -109,7 +109,7 @@ namespace PX.Analyzers.Coloriser
 	{
 		public BQLConstantEndingFormat()
 		{
-            DisplayName = Labels.BQLConstantEndingFormatLabel; // Human readable version of the name		
+            DisplayName = VSIXResource.BQLConstantEndingFormatLabel; // Human readable version of the name		
 			ForegroundCustomizable = true;
 			BackgroundCustomizable = true;
 		}
@@ -125,7 +125,7 @@ namespace PX.Analyzers.Coloriser
     {
         public PXGraphFormat()
         {
-            DisplayName = Labels.PXGraphFormatLabel; // Human readable version of the name		
+            DisplayName = VSIXResource.PXGraphFormatLabel; // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;
         }
@@ -141,7 +141,7 @@ namespace PX.Analyzers.Coloriser
     {
         public PXActionFormat()
         {
-            DisplayName = Labels.PXActionFormatLabel;   // Human readable version of the name		
+            DisplayName = VSIXResource.PXActionFormatLabel;   // Human readable version of the name		
             ForegroundCustomizable = true;
             BackgroundCustomizable = true;
         }

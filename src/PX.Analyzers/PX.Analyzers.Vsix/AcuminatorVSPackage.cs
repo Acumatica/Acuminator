@@ -39,7 +39,8 @@ namespace PX.Analyzers.Vsix
 	[Guid(AcuminatorVSPackage.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", 
                      Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
-    [ProvideOptionPage(typeof(GeneralOptionsPage), AcuminatorVSPackage.SettingsCategoryName, GeneralOptionsPage.PageTitle, 0, 0, true)]
+	[ProvideOptionPage(typeof(GeneralOptionsPage), SettingsCategoryName, GeneralOptionsPage.PageTitle,
+					   categoryResourceID: 201, pageNameResourceID: 202, supportsAutomation: true, SupportsProfiles = true)]
 	public sealed class AcuminatorVSPackage : Package
     {
         [Import]

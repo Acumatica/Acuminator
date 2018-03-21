@@ -117,22 +117,114 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="110" xml:space="preserve">
-    <value>The Acuminator extension for Visual Studio</value>
+  <data name="DacFormatLabel" xml:space="preserve">
+    <value>Acuminator - DAC Name</value>
   </data>
-  <data name="112" xml:space="preserve">
-    <value>BQL colorizer &amp; formatter and a set of diagnostics / code fixes for common developer pitfalls related to Acumatica Framework.</value>
+  <data name="DacExtensionFormatLabel" xml:space="preserve">
+    <value>Acuminator - DAC Extension Name</value>
   </data>
-  <data name="201" xml:space="preserve">
+  <data name="DacFieldFormatLabel" xml:space="preserve">
+    <value>Acuminator - DAC Field Name</value>
+  </data>
+  <data name="BQLParameterFormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL parameters</value>
+  </data>
+  <data name="BQLOperatorFormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL operators</value>
+  </data>
+  <data name="BQLConstantEndingFormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL constant - ending</value>
+  </data>
+  <data name="BQLConstantPrefixFormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL constant - prefix</value>
+  </data>
+  <data name="PXActionFormatLabel" xml:space="preserve">
+    <value>Acuminator - PXAction</value>
+  </data>
+  <data name="PXGraphFormatLabel" xml:space="preserve">
+    <value>Acuminator - PXGraph</value>
+  </data>
+  <data name="BraceLevel_10_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL angle braces level 10</value>
+  </data>
+  <data name="BraceLevel_11_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL angle braces level 11</value>
+  </data>
+  <data name="BraceLevel_12_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL angle braces level 12</value>
+  </data>
+  <data name="BraceLevel_13_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL angle braces level 13</value>
+  </data>
+  <data name="BraceLevel_14_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL angle braces level 14</value>
+  </data>
+  <data name="BraceLevel_1_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL angle braces level 1</value>
+  </data>
+  <data name="BraceLevel_2_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL angle braces level 2</value>
+  </data>
+  <data name="BraceLevel_3_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL angle braces level 3</value>
+  </data>
+  <data name="BraceLevel_4_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL angle braces level 4</value>
+  </data>
+  <data name="BraceLevel_5_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL angle braces level 5</value>
+  </data>
+  <data name="BraceLevel_6_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL angle braces level 6</value>
+  </data>
+  <data name="BraceLevel_7_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL angle braces level 7</value>
+  </data>
+  <data name="BraceLevel_8_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL angle braces level 8</value>
+  </data>
+  <data name="BraceLevel_9_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL angle braces level 9</value>
+  </data>
+  <data name="Category_Acuminator" xml:space="preserve">
     <value>Acuminator</value>
-    <comment>Acuminator Settings Category Name</comment>
+    <comment>Must be same as corresponding category name in VSPackage.resx</comment>
   </data>
-  <data name="202" xml:space="preserve">
-    <value>General</value>
-    <comment>General Options Page Title</comment>
+  <data name="Setting_ColoringEnabled_Title" xml:space="preserve">
+    <value>Coloring enabled</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="400" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\AcuminatorVSPackage.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Setting_ColoringEnabled_Description" xml:space="preserve">
+    <value>Syntax coloring enabled</value>
+  </data>
+  <data name="Setting_PXActionColoringEnabled_Title" xml:space="preserve">
+    <value>PXAction coloring is enabled</value>
+  </data>
+  <data name="Setting_PXActionColoringEnabled_Description" xml:space="preserve">
+    <value>Coloring for PXAction declarations is enabled for Roslyn coloring</value>
+  </data>
+  <data name="Setting_PXGraphColoringEnabled_Title" xml:space="preserve">
+    <value>PXGraph coloring is enabled</value>
+  </data>
+  <data name="Setting_PXGraphColoringEnabled_Description" xml:space="preserve">
+    <value>Coloring for PXGraph declarations is enabled for Roslyn coloring</value>
+  </data>
+
+  <data name="Setting_ColorOnlyInsideBQL_Title" xml:space="preserve">
+    <value>Color code only inside BQL</value>
+  </data>
+  <data name="Setting_ColorOnlyInsideBQL_Description" xml:space="preserve">
+    <value>Coloring is enabled only inside BQL commands for Roslyn coloring</value>
+  </data>
+  <data name="Setting_UseRegexColoring_Title" xml:space="preserve">
+    <value>Use RegEx coloriser</value>
+  </data>
+  <data name="Setting_UseRegexColoring_Description" xml:space="preserve">
+    <value>Use syntax coloriser implemented via regular expressions, provide worse coloring but works faster</value>
+  </data>
+  <data name="Setting_UseBqlOutlining_Title" xml:space="preserve">
+    <value>Use BQL Outlining</value>
+  </data>
+  <data name="Setting_UseBqlOutlining_Description" xml:space="preserve">
+    <value>Use BQL outlining to collapse parts of BQL (works only with Roslyn coloring)</value>
   </data>
 </root>
