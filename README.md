@@ -6,7 +6,7 @@ In the code based on Acumatica Framework, Acuminator finds common mistakes and t
 * Incorrect signatures of `PXAction` handlers
 * Typos in the names of view delegates
 * `PXStringList` declarations without `PXDBString`
-* C#-style inheritance from `PXCahcheExtension`
+* C#-style inheritance from `PXCacheExtension`
 
 For the errors it finds, Acuminator suggests code fixes. For the full list of supported diagnostics and code fixes, see Acuminator Release Notes. 
 
