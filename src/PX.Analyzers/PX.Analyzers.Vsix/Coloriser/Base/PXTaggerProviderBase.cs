@@ -67,7 +67,7 @@ namespace PX.Analyzers.Coloriser
             Package = package as AcuminatorVSPackage;
 
             if (Package == null)
-                throw new Exception("Acuminator package loaded incorrectly");
+                throw new Exception("The Acuminator package was loaded incorrectly");
         }
       
         protected bool CheckIfCurrentSolutionHasReferenceToAcumatica()

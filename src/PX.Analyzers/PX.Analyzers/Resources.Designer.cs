@@ -80,7 +80,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create graph using factory method.
+        ///   Looks up a localized string similar to Create a graph instance by using the factory method.
         /// </summary>
         internal static string PX1001Fix {
             get {
@@ -89,7 +89,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PXGraph instance should be created using PXGraph.CreateInstance() factory method.
+        ///   Looks up a localized string similar to A PXGraph instance must be created with the PXGraph.CreateInstance() factory method.
         /// </summary>
         internal static string PX1001Title {
             get {
@@ -98,7 +98,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to List attribute should have correspoding type attribute.
+        ///   Looks up a localized string similar to Add the type attribute corresponding to the list attribute.
         /// </summary>
         internal static string PX1002Fix {
             get {
@@ -107,7 +107,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to List attribute should have correspoding type attribute.
+        ///   Looks up a localized string similar to The field must have the type attribute corresponding to the list attribute.
         /// </summary>
         internal static string PX1002Title {
             get {
@@ -116,7 +116,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Consider using specific implementation of PXGraph.
+        ///   Looks up a localized string similar to Consider using a specific implementation of PXGraph.
         /// </summary>
         internal static string PX1003Title {
             get {
@@ -125,7 +125,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Consider changing declaration order.
+        ///   Looks up a localized string similar to Consider changing the declaration order.
         /// </summary>
         internal static string PX1004Fix {
             get {
@@ -134,7 +134,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This order of views declaration will result in creation of 2 distinct caches {0} {1}.
+        ///   Looks up a localized string similar to This order of view declarations will cause creation of two cache instances: {0} and {1}.
         /// </summary>
         internal static string PX1004Title {
             get {
@@ -143,7 +143,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Rename view delegate name to match view name.
+        ///   Looks up a localized string similar to Change the view delegate name to match the view name.
         /// </summary>
         internal static string PX1005Fix {
             get {
@@ -152,7 +152,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Possible typo in view delegate name. View name for this delegate: &apos;{0}&apos;.
+        ///   Looks up a localized string similar to A possible typo in the view delegate name. The view name for this delegate: {0}.
         /// </summary>
         internal static string PX1005MessageFormat {
             get {
@@ -161,7 +161,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Possible typo in view delegate name.
+        ///   Looks up a localized string similar to A possible typo in the view delegate name.
         /// </summary>
         internal static string PX1005Title {
             get {
@@ -170,7 +170,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Consider changing declaration order.
+        ///   Looks up a localized string similar to Consider changing the declaration order.
         /// </summary>
         internal static string PX1006Fix {
             get {
@@ -179,7 +179,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This order of views declaration will result in creation of 1 cache for both dacs {0} {1}.
+        ///   Looks up a localized string similar to This order of view declarations will cause creation of one cache instance for the following DACs: {0} and {1}.
         /// </summary>
         internal static string PX1006Title {
             get {
@@ -188,7 +188,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create DAC instance using factory method.
+        ///   Looks up a localized string similar to Create a DAC instance by using the factory method.
         /// </summary>
         internal static string PX1007Fix {
             get {
@@ -197,7 +197,8 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &apos;{0}&apos; instance should be created using PXCache&lt;{0}&gt;.CreateInstance() factory method.
+        ///   Looks up a localized string similar to An instance of {0} must be created with the PXCache&lt;{0}&gt;.CreateInstance() factory method
+        ///.
         /// </summary>
         internal static string PX1007MessageFormat {
             get {
@@ -206,7 +207,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DAC instance should be created using PXCache.CreateInstance() factory method.
+        ///   Looks up a localized string similar to A DAC instance must be created with the PXCache.CreateInstance() factory method.
         /// </summary>
         internal static string PX1007Title {
             get {
@@ -215,7 +216,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This delegate references @this graph which will result in synchronous delegate execution.
+        ///   Looks up a localized string similar to Reference of @this graph in this delegate will cause synchronous delegate execution.
         /// </summary>
         internal static string PX1008Title {
             get {
@@ -224,7 +225,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change base type to PXCacheExtension overload.
+        ///   Looks up a localized string similar to Change the base type to a PXCacheExtension overload.
         /// </summary>
         internal static string PX1009Fix {
             get {
@@ -251,7 +252,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to StartRow must be reset if delegate applies paging in inner select (or paging will be applied twice).
+        ///   Looks up a localized string similar to If a delegate applies paging in an inner select, StartRow must be reset (If StartRow is not reset, paging will be applied twice).
         /// </summary>
         internal static string PX1010Title {
             get {
@@ -260,7 +261,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Mark type as sealed.
+        ///   Looks up a localized string similar to Mark the type as sealed.
         /// </summary>
         internal static string PX1011Fix {
             get {
@@ -269,7 +270,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Multiple levels of inheritance are not supported for PXCacheExtension, so derived type can be marked as sealed..
+        ///   Looks up a localized string similar to Because multiple levels of inheritance are not supported for PXCacheExtension, the derived type can be marked as sealed.
         /// </summary>
         internal static string PX1011Title {
             get {
@@ -278,7 +279,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Make type nullable.
+        ///   Looks up a localized string similar to Make the type nullable.
         /// </summary>
         internal static string PX1014Fix {
             get {
@@ -287,7 +288,7 @@ namespace PX.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DAC field must have nullable type.
+        ///   Looks up a localized string similar to A DAC field must have a nullable type.
         /// </summary>
         internal static string PX1014Title {
             get {
