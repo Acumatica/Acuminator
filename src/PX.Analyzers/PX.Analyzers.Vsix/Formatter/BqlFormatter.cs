@@ -16,12 +16,13 @@ namespace PX.Analyzers.Vsix.Formatter
 		public BqlFormatter(string endOfLineCharacter, bool useTabs, int tabSize, int indentSize)
 		{
 			EndOfLineTrivia = SyntaxTriviaList.Create(SyntaxFactory.EndOfLine(endOfLineCharacter));
-			if (useTabs || indentSize >= tabSize)
+
+			if (useTabs && indentSize >= tabSize)
 			{
 				var items = Enumerable
 					.Repeat(SyntaxFactory.Tab, indentSize / tabSize)
 					.Append(SyntaxFactory.Whitespace(new string(' ', indentSize % tabSize)));
-				IndentationTrivia = SyntaxTriviaList.Empty.AddRange(items);
+			    IndentationTrivia = items.ToSyntaxTriviaList();
 			}
 			else
 			{
