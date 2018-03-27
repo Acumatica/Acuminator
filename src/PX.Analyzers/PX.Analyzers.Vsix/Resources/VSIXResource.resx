@@ -127,16 +127,16 @@
     <value>Acuminator - DAC Field Name</value>
   </data>
   <data name="BQLParameterFormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL parameters</value>
+    <value>Acuminator - BQL Parameters</value>
   </data>
   <data name="BQLOperatorFormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL operators</value>
+    <value>Acuminator - BQL Operators</value>
   </data>
   <data name="BQLConstantEndingFormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL constant - ending</value>
+    <value>Acuminator - BQL Constant (Ending)</value>
   </data>
   <data name="BQLConstantPrefixFormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL constant - prefix</value>
+    <value>Acuminator - BQL Constant (Prefix)</value>
   </data>
   <data name="PXActionFormatLabel" xml:space="preserve">
     <value>Acuminator - PXAction</value>
@@ -145,86 +145,85 @@
     <value>Acuminator - PXGraph</value>
   </data>
   <data name="BraceLevel_10_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL angle braces level 10</value>
+    <value>Acuminator - BQL Angle Brackets (Level 10)</value>
   </data>
   <data name="BraceLevel_11_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL angle braces level 11</value>
+    <value>Acuminator - BQL Angle Brackets (Level 11)</value>
   </data>
   <data name="BraceLevel_12_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL angle braces level 12</value>
+    <value>Acuminator - BQL Angle Brackets (Level 12)</value>
   </data>
   <data name="BraceLevel_13_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL angle braces level 13</value>
+    <value>Acuminator - BQL Angle Brackets (Level 13)</value>
   </data>
   <data name="BraceLevel_14_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL angle braces level 14</value>
+    <value>Acuminator - BQL Angle Brackets (Level 14)</value>
   </data>
   <data name="BraceLevel_1_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL angle braces level 1</value>
+    <value>Acuminator - BQL Angle Brackets (Level 1)</value>
   </data>
   <data name="BraceLevel_2_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL angle braces level 2</value>
+    <value>Acuminator - BQL Angle Brackets (Level 2)</value>
   </data>
   <data name="BraceLevel_3_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL angle braces level 3</value>
+    <value>Acuminator - BQL Angle Brackets (Level 3)</value>
   </data>
   <data name="BraceLevel_4_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL angle braces level 4</value>
+    <value>Acuminator - BQL Angle Brackets (Level 4)</value>
   </data>
   <data name="BraceLevel_5_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL angle braces level 5</value>
+    <value>Acuminator - BQL Angle Brackets (Level 5)</value>
   </data>
   <data name="BraceLevel_6_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL angle braces level 6</value>
+    <value>Acuminator - BQL Angle Brackets (Level 6)</value>
   </data>
   <data name="BraceLevel_7_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL angle braces level 7</value>
+    <value>Acuminator - BQL Angle Brackets (Level 7)</value>
   </data>
   <data name="BraceLevel_8_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL angle braces level 8</value>
+    <value>Acuminator - BQL Angle Brackets (Level 8)</value>
   </data>
   <data name="BraceLevel_9_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL angle braces level 9</value>
+    <value>Acuminator - BQL Angle Brackets (Level 9)</value>
   </data>
   <data name="Category_Acuminator" xml:space="preserve">
     <value>Acuminator</value>
     <comment>Must be same as corresponding category name in VSPackage.resx</comment>
   </data>
   <data name="Setting_ColoringEnabled_Title" xml:space="preserve">
-    <value>Coloring enabled</value>
+    <value>Enable coloring</value>
   </data>
   <data name="Setting_ColoringEnabled_Description" xml:space="preserve">
-    <value>Syntax coloring enabled</value>
+    <value>Colorize BQL syntax. If set to false, all Acuminator coloring is turned off.</value>
   </data>
   <data name="Setting_PXActionColoringEnabled_Title" xml:space="preserve">
-    <value>PXAction coloring is enabled</value>
+    <value>Enable PXAction coloring</value>
   </data>
   <data name="Setting_PXActionColoringEnabled_Description" xml:space="preserve">
-    <value>Coloring for PXAction declarations is enabled for Roslyn coloring</value>
+    <value>Colorize PXAction declarations (only for Roslyn coloring).</value>
   </data>
   <data name="Setting_PXGraphColoringEnabled_Title" xml:space="preserve">
-    <value>PXGraph coloring is enabled</value>
+    <value>Enable PXGraph coloring</value>
   </data>
   <data name="Setting_PXGraphColoringEnabled_Description" xml:space="preserve">
-    <value>Coloring for PXGraph declarations is enabled for Roslyn coloring</value>
+    <value>Colorize PXGraph declarations (only for Roslyn coloring).</value>
   </data>
-
   <data name="Setting_ColorOnlyInsideBQL_Title" xml:space="preserve">
-    <value>Color code only inside BQL</value>
+    <value>Colorize code only inside BQL commands</value>
   </data>
   <data name="Setting_ColorOnlyInsideBQL_Description" xml:space="preserve">
-    <value>Coloring is enabled only inside BQL commands for Roslyn coloring</value>
+    <value>Colorize code only inside BQL commands (only for Roslyn coloring).</value>
   </data>
   <data name="Setting_UseRegexColoring_Title" xml:space="preserve">
-    <value>Use RegEx coloriser</value>
+    <value>Use RegEx colorizer</value>
   </data>
   <data name="Setting_UseRegexColoring_Description" xml:space="preserve">
-    <value>Use syntax coloriser implemented via regular expressions, provide worse coloring but works faster</value>
+    <value>Use the syntax colorizer based on regular expressions, which provides worse coloring but works faster. If set to false, Roslyn coloring is used.</value>
   </data>
   <data name="Setting_UseBqlOutlining_Title" xml:space="preserve">
-    <value>Use BQL Outlining</value>
+    <value>Use BQL outlining</value>
   </data>
   <data name="Setting_UseBqlOutlining_Description" xml:space="preserve">
-    <value>Use BQL outlining to collapse parts of BQL (works only with Roslyn coloring)</value>
+    <value>Collapse parts of BQL commands (only for Roslyn coloring).</value>
   </data>
 </root>

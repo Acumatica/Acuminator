@@ -124,61 +124,62 @@
     <value>Invalid PXAction handler signature</value>
   </data>
   <data name="PX1002Fix" xml:space="preserve">
-    <value>List attribute should have correspoding type attribute</value>
+    <value>Add the type attribute corresponding to the list attribute</value>
   </data>
   <data name="PX1002Title" xml:space="preserve">
-    <value>List attribute should have correspoding type attribute</value>
+    <value>The field must have the type attribute corresponding to the list attribute</value>
   </data>
   <data name="PX1001Fix" xml:space="preserve">
-    <value>Create graph using factory method</value>
+    <value>Create a graph instance by using the factory method</value>
   </data>
   <data name="PX1001Title" xml:space="preserve">
-    <value>PXGraph instance should be created using PXGraph.CreateInstance() factory method</value>
+    <value>A PXGraph instance must be created with the PXGraph.CreateInstance() factory method</value>
   </data>
   <data name="PX1003Title" xml:space="preserve">
-    <value>Consider using specific implementation of PXGraph</value>
+    <value>Consider using a specific implementation of PXGraph</value>
   </data>
   <data name="PX1004Fix" xml:space="preserve">
-    <value>Consider changing declaration order</value>
+    <value>Consider changing the declaration order</value>
   </data>
   <data name="PX1004Title" xml:space="preserve">
-    <value>This order of views declaration will result in creation of 2 distinct caches {0} {1}</value>
+    <value>This order of view declarations will cause creation of two cache instances: {0} and {1}</value>
   </data>
   <data name="PX1006Fix" xml:space="preserve">
-    <value>Consider changing declaration order</value>
+    <value>Consider changing the declaration order</value>
   </data>
   <data name="PX1006Title" xml:space="preserve">
-    <value>This order of views declaration will result in creation of 1 cache for both dacs {0} {1}</value>
+    <value>This order of view declarations will cause creation of one cache instance for the following DACs: {0} and {1}</value>
   </data>
   <data name="PX1005Fix" xml:space="preserve">
-    <value>Rename view delegate name to match view name</value>
+    <value>Change the view delegate name to match the view name</value>
   </data>
   <data name="PX1005MessageFormat" xml:space="preserve">
-    <value>Possible typo in view delegate name. View name for this delegate: '{0}'</value>
+    <value>A possible typo in the view delegate name. The view name for this delegate: {0}</value>
   </data>
   <data name="PX1005Title" xml:space="preserve">
-    <value>Possible typo in view delegate name</value>
+    <value>A possible typo in the view delegate name</value>
   </data>
   <data name="PX1007Fix" xml:space="preserve">
-    <value>Create DAC instance using factory method</value>
+    <value>Create a DAC instance by using the factory method</value>
   </data>
   <data name="PX1007MessageFormat" xml:space="preserve">
-    <value>'{0}' instance should be created using PXCache&lt;{0}&gt;.CreateInstance() factory method</value>
+    <value>An instance of {0} must be created with the PXCache&lt;{0}&gt;.CreateInstance() factory method
+</value>
   </data>
   <data name="PX1007Title" xml:space="preserve">
-    <value>DAC instance should be created using PXCache.CreateInstance() factory method</value>
+    <value>A DAC instance must be created with the PXCache.CreateInstance() factory method</value>
   </data>
   <data name="PX1008Title" xml:space="preserve">
-    <value>This delegate references @this graph which will result in synchronous delegate execution</value>
+    <value>Reference of @this graph in this delegate will cause synchronous delegate execution</value>
   </data>
   <data name="PX1010Fix" xml:space="preserve">
     <value>Reset StartRow</value>
   </data>
   <data name="PX1010Title" xml:space="preserve">
-    <value>StartRow must be reset if delegate applies paging in inner select (or paging will be applied twice)</value>
+    <value>If a delegate applies paging in an inner select, StartRow must be reset (If StartRow is not reset, paging will be applied twice)</value>
   </data>
   <data name="PX1009Fix" xml:space="preserve">
-    <value>Change base type to PXCacheExtension overload</value>
+    <value>Change the base type to a PXCacheExtension overload</value>
   </data>
   <data name="PX1009Title" xml:space="preserve">
     <value>Multiple levels of inheritance are not supported for PXCacheExtension</value>
@@ -190,15 +191,15 @@
     <value>Format the BQL statement to meet the Code Style requirements </value>
   </data>
   <data name="PX1011Fix" xml:space="preserve">
-    <value>Mark type as sealed</value>
+    <value>Mark the type as sealed</value>
   </data>
   <data name="PX1011Title" xml:space="preserve">
-    <value>Multiple levels of inheritance are not supported for PXCacheExtension, so derived type can be marked as sealed.</value>
+    <value>Because multiple levels of inheritance are not supported for PXCacheExtension, the derived type can be marked as sealed</value>
   </data>
   <data name="PX1014Fix" xml:space="preserve">
-    <value>Make type nullable</value>
+    <value>Make the type nullable</value>
   </data>
   <data name="PX1014Title" xml:space="preserve">
-    <value>DAC field must have nullable type</value>
+    <value>A DAC field must have a nullable type</value>
   </data>
 </root>

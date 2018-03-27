@@ -61,7 +61,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Acuminator - BQL constant - ending.
+        ///   Looks up a localized string similar to Acuminator - BQL Constant (Ending).
         /// </summary>
         public static string BQLConstantEndingFormatLabel {
             get {
@@ -70,7 +70,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Acuminator - BQL constant - prefix.
+        ///   Looks up a localized string similar to Acuminator - BQL Constant (Prefix).
         /// </summary>
         public static string BQLConstantPrefixFormatLabel {
             get {
@@ -79,7 +79,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Acuminator - BQL operators.
+        ///   Looks up a localized string similar to Acuminator - BQL Operators.
         /// </summary>
         public static string BQLOperatorFormatLabel {
             get {
@@ -88,7 +88,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Acuminator - BQL parameters.
+        ///   Looks up a localized string similar to Acuminator - BQL Parameters.
         /// </summary>
         public static string BQLParameterFormatLabel {
             get {
@@ -97,7 +97,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Acuminator - BQL angle braces level 1.
+        ///   Looks up a localized string similar to Acuminator - BQL Angle Brackets (Level 1).
         /// </summary>
         public static string BraceLevel_1_FormatLabel {
             get {
@@ -106,7 +106,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Acuminator - BQL angle braces level 10.
+        ///   Looks up a localized string similar to Acuminator - BQL Angle Brackets (Level 10).
         /// </summary>
         public static string BraceLevel_10_FormatLabel {
             get {
@@ -115,7 +115,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Acuminator - BQL angle braces level 11.
+        ///   Looks up a localized string similar to Acuminator - BQL Angle Brackets (Level 11).
         /// </summary>
         public static string BraceLevel_11_FormatLabel {
             get {
@@ -124,7 +124,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Acuminator - BQL angle braces level 12.
+        ///   Looks up a localized string similar to Acuminator - BQL Angle Brackets (Level 12).
         /// </summary>
         public static string BraceLevel_12_FormatLabel {
             get {
@@ -133,7 +133,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Acuminator - BQL angle braces level 13.
+        ///   Looks up a localized string similar to Acuminator - BQL Angle Brackets (Level 13).
         /// </summary>
         public static string BraceLevel_13_FormatLabel {
             get {
@@ -142,7 +142,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Acuminator - BQL angle braces level 14.
+        ///   Looks up a localized string similar to Acuminator - BQL Angle Brackets (Level 14).
         /// </summary>
         public static string BraceLevel_14_FormatLabel {
             get {
@@ -151,7 +151,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Acuminator - BQL angle braces level 2.
+        ///   Looks up a localized string similar to Acuminator - BQL Angle Brackets (Level 2).
         /// </summary>
         public static string BraceLevel_2_FormatLabel {
             get {
@@ -160,7 +160,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Acuminator - BQL angle braces level 3.
+        ///   Looks up a localized string similar to Acuminator - BQL Angle Brackets (Level 3).
         /// </summary>
         public static string BraceLevel_3_FormatLabel {
             get {
@@ -169,7 +169,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Acuminator - BQL angle braces level 4.
+        ///   Looks up a localized string similar to Acuminator - BQL Angle Brackets (Level 4).
         /// </summary>
         public static string BraceLevel_4_FormatLabel {
             get {
@@ -178,7 +178,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Acuminator - BQL angle braces level 5.
+        ///   Looks up a localized string similar to Acuminator - BQL Angle Brackets (Level 5).
         /// </summary>
         public static string BraceLevel_5_FormatLabel {
             get {
@@ -187,7 +187,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Acuminator - BQL angle braces level 6.
+        ///   Looks up a localized string similar to Acuminator - BQL Angle Brackets (Level 6).
         /// </summary>
         public static string BraceLevel_6_FormatLabel {
             get {
@@ -196,7 +196,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Acuminator - BQL angle braces level 7.
+        ///   Looks up a localized string similar to Acuminator - BQL Angle Brackets (Level 7).
         /// </summary>
         public static string BraceLevel_7_FormatLabel {
             get {
@@ -205,7 +205,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Acuminator - BQL angle braces level 8.
+        ///   Looks up a localized string similar to Acuminator - BQL Angle Brackets (Level 8).
         /// </summary>
         public static string BraceLevel_8_FormatLabel {
             get {
@@ -214,7 +214,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Acuminator - BQL angle braces level 9.
+        ///   Looks up a localized string similar to Acuminator - BQL Angle Brackets (Level 9).
         /// </summary>
         public static string BraceLevel_9_FormatLabel {
             get {
@@ -277,7 +277,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Syntax coloring enabled.
+        ///   Looks up a localized string similar to Colorize BQL syntax. If set to false, all Acuminator coloring is turned off..
         /// </summary>
         public static string Setting_ColoringEnabled_Description {
             get {
@@ -286,7 +286,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Coloring enabled.
+        ///   Looks up a localized string similar to Enable coloring.
         /// </summary>
         public static string Setting_ColoringEnabled_Title {
             get {
@@ -295,7 +295,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Coloring is enabled only inside BQL commands for Roslyn coloring.
+        ///   Looks up a localized string similar to Colorize code only inside BQL commands (only for Roslyn coloring)..
         /// </summary>
         public static string Setting_ColorOnlyInsideBQL_Description {
             get {
@@ -304,7 +304,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Color code only inside BQL.
+        ///   Looks up a localized string similar to Colorize code only inside BQL commands.
         /// </summary>
         public static string Setting_ColorOnlyInsideBQL_Title {
             get {
@@ -313,7 +313,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Coloring for PXAction declarations is enabled for Roslyn coloring.
+        ///   Looks up a localized string similar to Colorize PXAction declarations (only for Roslyn coloring)..
         /// </summary>
         public static string Setting_PXActionColoringEnabled_Description {
             get {
@@ -322,7 +322,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PXAction coloring is enabled.
+        ///   Looks up a localized string similar to Enable PXAction coloring.
         /// </summary>
         public static string Setting_PXActionColoringEnabled_Title {
             get {
@@ -331,7 +331,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Coloring for PXGraph declarations is enabled for Roslyn coloring.
+        ///   Looks up a localized string similar to Colorize PXGraph declarations (only for Roslyn coloring)..
         /// </summary>
         public static string Setting_PXGraphColoringEnabled_Description {
             get {
@@ -340,7 +340,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PXGraph coloring is enabled.
+        ///   Looks up a localized string similar to Enable PXGraph coloring.
         /// </summary>
         public static string Setting_PXGraphColoringEnabled_Title {
             get {
@@ -349,7 +349,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use BQL outlining to collapse parts of BQL (works only with Roslyn coloring).
+        ///   Looks up a localized string similar to Collapse parts of BQL commands (only for Roslyn coloring)..
         /// </summary>
         public static string Setting_UseBqlOutlining_Description {
             get {
@@ -358,7 +358,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use BQL Outlining.
+        ///   Looks up a localized string similar to Use BQL outlining.
         /// </summary>
         public static string Setting_UseBqlOutlining_Title {
             get {
@@ -367,7 +367,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use syntax coloriser implemented via regular expressions, provide worse coloring but works faster.
+        ///   Looks up a localized string similar to Use the syntax colorizer based on regular expressions, which provides worse coloring but works faster. If set to false, Roslyn coloring is used..
         /// </summary>
         public static string Setting_UseRegexColoring_Description {
             get {
@@ -376,7 +376,7 @@ namespace PX.Analyzers.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use RegEx coloriser.
+        ///   Looks up a localized string similar to Use RegEx colorizer.
         /// </summary>
         public static string Setting_UseRegexColoring_Title {
             get {
