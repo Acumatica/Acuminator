@@ -4,7 +4,9 @@
         <Identity Id="Acumatica.Acuminator.778b19d1-1d5e-4fcb-8edb-eb103feeab7c" Version="1.2" Language="en-US" Publisher="Acumatica" />
         <DisplayName>Acuminator</DisplayName>
         <Description xml:space="preserve">Acuminator is a static code analysis and colorizer tool for Visual Studio that simplifies development with Acumatica Framework. Acuminator provides diagnostics and code fixes for common developer challenges related to Acumatica Framework. Also, Acuminator can colorize and format BQL statements, and can collapse attributes and parts of BQL queries.</Description>
+        <MoreInfo>https://github.com/Acumatica/Acuminator</MoreInfo>
         <License>license.txt</License>
+        <ReleaseNotes>https://github.com/Acumatica/Acuminator/blob/master/docs/ReleaseNotes.md</ReleaseNotes>
         <Icon>icon.ico</Icon>
         <Tags>acumatica</Tags>
     </Metadata>
