@@ -1,0 +1,15 @@
+install:
+  - choco install gitversion.portable -pre -y
+
+before_build:
+  - nuget restore
+  - ps: gitversion /l console /output buildserver /updateAssemblyInfo
+
+image: Visual Studio 2017
+configuration: Release
+
+version: {build}
+  
+build:
+  project: src/PX.Analyzers.sln
+  verbosity: normal
