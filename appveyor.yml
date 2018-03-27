@@ -1,6 +1,10 @@
 install:
   - choco install gitversion.portable -pre -y
 
+branches:
+  only:
+    - master
+  
 before_build:
   - nuget restore src/PX.Analyzers.sln
   - ps: gitversion /l console /output buildserver /updateAssemblyInfo
