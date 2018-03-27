@@ -7,8 +7,6 @@ before_build:
 
 image: Visual Studio 2017
 configuration: Release
-
-version: {build}
   
 build:
   project: src/PX.Analyzers.sln
