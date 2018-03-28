@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Acuminator.Analyzers;
+using Acuminator.Analyzers.Analyzers;
+using Acuminator.Analyzers.FixProviders;
+using Acuminator.Tests.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
-using PX.Analyzers.Analyzers;
-using PX.Analyzers.FixProviders;
-using PX.Analyzers.Test.Helpers;
 using TestHelper;
 using Xunit;
 
-namespace PX.Analyzers.Test
+namespace Acuminator.Tests
 {
     public class PXGraphCreateInstanceTests : CodeFixVerifier
     {

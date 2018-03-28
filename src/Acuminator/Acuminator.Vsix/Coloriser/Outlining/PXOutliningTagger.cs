@@ -5,9 +5,9 @@ using System.Threading;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
-using PX.Analyzers.Vsix.Utilities;
+using Acuminator.Vsix.Utilities;
 
-namespace PX.Analyzers.Coloriser
+namespace Acuminator.Analyzers.Coloriser
 {
     public class PXOutliningTagger : PXTaggerBase, ITagger<IOutliningRegionTag>
     {

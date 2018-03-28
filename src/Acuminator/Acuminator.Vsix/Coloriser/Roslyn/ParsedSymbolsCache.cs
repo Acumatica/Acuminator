@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 
-namespace PX.Analyzers.Coloriser
+namespace Acuminator.Analyzers.Coloriser
 {
     internal class ParsedSymbolsCache
     {

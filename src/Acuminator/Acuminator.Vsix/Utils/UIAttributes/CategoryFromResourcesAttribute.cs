@@ -7,11 +7,11 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.Shell;
 
-using PX.Analyzers.Vsix;
-using PX.Analyzers.Vsix.Utilities;
+using Acuminator.Vsix;
+using Acuminator.Vsix.Utilities;
 
 
-namespace PX.Analyzers.Vsix
+namespace Acuminator.Vsix
 {
 	[AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = false)]
 	internal sealed class CategoryFromResourcesAttribute : CategoryAttribute

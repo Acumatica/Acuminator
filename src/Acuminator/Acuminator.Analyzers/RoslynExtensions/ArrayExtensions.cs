@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace PX.Analyzers.Utilities
+namespace Acuminator.Analyzers.Utilities
 {
     internal static class ArrayExtensions
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using PX.Data;
 
-namespace PX.Analyzers.Vsix.Formatter
+namespace Acuminator.Vsix.Formatter
 {
 	class BqlContext
 	{

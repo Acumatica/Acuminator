@@ -13,7 +13,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 
-namespace PX.Analyzers.FixProviders
+namespace Acuminator.Analyzers.FixProviders
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 	public class PXGraphCreateInstanceFix : CodeFixProvider

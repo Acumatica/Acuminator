@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using PX.Data;
-using PX.Analyzers.Vsix.Utilities;
+using Acuminator.Vsix.Utilities;
 
-namespace PX.Analyzers.Coloriser
+namespace Acuminator.Analyzers.Coloriser
 {
     internal static class TypeNames
     {

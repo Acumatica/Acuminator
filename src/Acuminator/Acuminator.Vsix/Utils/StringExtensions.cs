@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 
-namespace PX.Analyzers.Vsix.Utilities
+namespace Acuminator.Vsix.Utilities
 {
 	public static class StringExtensions
 	{

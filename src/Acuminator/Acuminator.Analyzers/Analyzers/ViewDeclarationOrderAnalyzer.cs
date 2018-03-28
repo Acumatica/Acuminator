@@ -4,10 +4,10 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp;
-using PX.Analyzers.Utilities;
+using Acuminator.Analyzers.Utilities;
 using System.Collections.Generic;
 
-namespace PX.Analyzers.Analyzers
+namespace Acuminator.Analyzers.Analyzers
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ViewDeclarationOrderAnalyzer : PXDiagnosticAnalyzer

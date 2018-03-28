@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Acuminator.Analyzers;
+using Acuminator.Analyzers.Analyzers;
+using Acuminator.Tests.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using PX.Analyzers.Analyzers;
-using PX.Analyzers.Test.Helpers;
 using TestHelper;
 using Xunit;
 using Microsoft.CodeAnalysis.CodeFixes;
 
-namespace PX.Analyzers.Test
+namespace Acuminator.Tests
 {
     public class MissingTypeListAttributeTests : CodeFixVerifier
     {

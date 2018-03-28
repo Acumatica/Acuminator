@@ -12,11 +12,11 @@ using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using PX.Analyzers.Vsix;
+using Acuminator.Vsix;
 
 
 
-namespace PX.Analyzers.Coloriser
+namespace Acuminator.Analyzers.Coloriser
 {
     [ContentType("CSharp")]
     [TagType(typeof(IOutliningRegionTag))]

@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 
 
-namespace PX.Analyzers.Vsix.Utilities
+namespace Acuminator.Vsix.Utilities
 {
     public static class ExceptionExtensions
     {

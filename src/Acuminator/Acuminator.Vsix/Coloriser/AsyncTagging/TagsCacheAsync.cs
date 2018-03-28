@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Microsoft.VisualStudio.Text.Tagging;
 using System.Collections;
-using PX.Analyzers.Vsix.Utilities;
+using Acuminator.Vsix.Utilities;
 
 
-namespace PX.Analyzers.Coloriser
+namespace Acuminator.Analyzers.Coloriser
 {
     public class TagsCacheAsync<TTag> : ITagsCache<TTag>
     where TTag : ITag

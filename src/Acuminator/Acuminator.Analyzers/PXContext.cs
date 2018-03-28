@@ -2,7 +2,7 @@ using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
 using PX.Data;
 
-namespace PX.Analyzers
+namespace Acuminator.Analyzers
 {
 	public class PXContext
 	{

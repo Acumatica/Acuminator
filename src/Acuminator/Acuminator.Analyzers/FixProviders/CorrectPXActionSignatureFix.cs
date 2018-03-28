@@ -15,7 +15,7 @@ using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
 
-namespace PX.Analyzers.FixProviders
+namespace Acuminator.Analyzers.FixProviders
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 	public class CorrectPXActionSignatureFix : CodeFixProvider

@@ -4,20 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using System.Windows.Media;
+using Acuminator.Vsix;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-
-using PX.Analyzers.Vsix;
-using PX.Analyzers.Vsix.Utilities;
+using Acuminator.Vsix.Utilities;
 
 using DefGuidList = Microsoft.VisualStudio.Editor.DefGuidList;
 using VSConstants =  Microsoft.VisualStudio.VSConstants;
 
 
-namespace PX.Analyzers.Coloriser
+namespace Acuminator.Analyzers.Coloriser
 {
     internal abstract class EditorFormatBase : ClassificationFormatDefinition, IDisposable
     {

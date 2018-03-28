@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.CodeAnalysis.Formatting;
 
-namespace PX.Analyzers.Test.Helpers
+namespace Acuminator.Tests.Helpers
 {
 	public class EmbeddedFileDataWithParamsAttribute : EmbeddedFileDataAttribute
 	{

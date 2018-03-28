@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.Shell;
 
-namespace PX.Analyzers.Vsix
+namespace Acuminator.Vsix
 {
 	public class GeneralOptionsPage : DialogPage
 	{

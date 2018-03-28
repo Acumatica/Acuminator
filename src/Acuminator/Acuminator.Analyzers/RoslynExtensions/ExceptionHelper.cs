@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PX.Analyzers.Utilities
+namespace Acuminator.Analyzers.Utilities
 {
     public static class ExceptionHelper
     {

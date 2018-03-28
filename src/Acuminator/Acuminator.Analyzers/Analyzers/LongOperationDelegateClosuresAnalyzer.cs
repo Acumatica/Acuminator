@@ -5,10 +5,10 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using PX.Analyzers.Utilities;
+using Acuminator.Analyzers.Utilities;
 using System.Collections.Generic;
 
-namespace PX.Analyzers.Analyzers
+namespace Acuminator.Analyzers.Analyzers
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class LongOperationDelegateClosuresAnalyzer : PXDiagnosticAnalyzer

@@ -8,7 +8,7 @@ using System.Linq;
 
 
 
-namespace PX.Analyzers.Vsix.Utilities
+namespace Acuminator.Vsix.Utilities
 {
     internal static class EnumerableExtensions
     {

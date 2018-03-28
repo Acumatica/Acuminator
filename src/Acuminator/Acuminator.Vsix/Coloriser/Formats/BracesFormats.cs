@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel.Composition;
 using System.Windows.Media;
+using Acuminator.Vsix;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
-using PX.Analyzers.Vsix;
 
 
-
-namespace PX.Analyzers.Coloriser
+namespace Acuminator.Analyzers.Coloriser
 {
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = ColoringConstants.BraceLevel_1_Format)]

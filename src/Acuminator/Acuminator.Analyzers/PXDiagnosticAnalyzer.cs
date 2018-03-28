@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace PX.Analyzers
+namespace Acuminator.Analyzers
 {
 	public abstract class PXDiagnosticAnalyzer : DiagnosticAnalyzer
 	{

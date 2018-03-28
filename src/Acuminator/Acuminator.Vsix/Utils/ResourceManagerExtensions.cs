@@ -9,7 +9,7 @@ using System.Resources;
 
 
 
-namespace PX.Analyzers.Vsix.Utilities
+namespace Acuminator.Vsix.Utilities
 {
     public static class ResourceManagerExtensions
 	{       

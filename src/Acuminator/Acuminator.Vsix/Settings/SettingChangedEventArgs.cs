@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PX.Analyzers.Vsix.Utilities;
+using Acuminator.Vsix.Utilities;
 
-namespace PX.Analyzers.Vsix
+namespace Acuminator.Vsix
 {
     public class SettingChangedEventArgs : EventArgs
     {

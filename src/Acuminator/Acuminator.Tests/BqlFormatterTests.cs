@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Acuminator.Vsix.Formatter;
+using Acuminator.Tests.Helpers;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Text;
-using PX.Analyzers.Test.Helpers;
-using PX.Analyzers.Vsix.Formatter;
 using TestHelper;
 using Xunit;
 
-namespace PX.Analyzers.Test
+namespace Acuminator.Tests
 {
 	public class BqlFormatterTests : DiagnosticVerifier
 	{

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace PX.Analyzers {
+namespace Acuminator.Analyzers {
     using System;
     using System.Reflection;
     

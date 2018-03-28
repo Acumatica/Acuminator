@@ -1,9 +1,10 @@
 ﻿using System.Linq;
+using Acuminator.Analyzers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using PX.Analyzers.Utilities;
+using Acuminator.Analyzers.Utilities;
 
-namespace PX.Analyzers.Vsix.Formatter
+namespace Acuminator.Vsix.Formatter
 {
 	class BqlAggregateRewriter : BqlRewriterBase
 	{

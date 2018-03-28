@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace PX.Analyzers.Vsix.Formatter
+namespace Acuminator.Vsix.Formatter
 {
 	class BqlFirstTableRewriter : BqlRewriterBase
 	{

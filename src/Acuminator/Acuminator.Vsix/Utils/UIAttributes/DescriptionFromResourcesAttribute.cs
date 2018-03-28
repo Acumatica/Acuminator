@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using PX.Analyzers.Vsix;
-using PX.Analyzers.Vsix.Utilities;
+using Acuminator.Vsix;
+using Acuminator.Vsix.Utilities;
 
 
-namespace PX.Analyzers.Vsix
+namespace Acuminator.Vsix
 {
 	[AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = false)]
 	internal sealed class DescriptionFromResourcesAttribute : DescriptionAttribute

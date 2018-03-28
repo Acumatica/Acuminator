@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 
-namespace PX.Analyzers
+namespace Acuminator.Analyzers
 {
 	public static class SymbolHelpers
 	{

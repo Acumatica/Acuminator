@@ -8,9 +8,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.FindSymbols;
 using Microsoft.CodeAnalysis.LanguageServices;
 using Microsoft.CodeAnalysis.Shared.Utilities;
-using PX.Analyzers.Utilities;
+using Acuminator.Analyzers.Utilities;
 
-namespace PX.Analyzers.Utilities
+namespace Acuminator.Analyzers.Utilities
 {
     public static partial class ITypeSymbolExtensions
     {

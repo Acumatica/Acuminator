@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace PX.Analyzers.Vsix.Formatter
+namespace Acuminator.Vsix.Formatter
 {
 	public static class SyntaxTriviaListExtensions
 	{

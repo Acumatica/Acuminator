@@ -14,7 +14,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 
-namespace PX.Analyzers.Vsix.Formatter
+namespace Acuminator.Vsix.Formatter
 {
 	/// <summary>
 	/// Command handler

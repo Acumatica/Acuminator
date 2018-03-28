@@ -2,21 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel.Composition;
+using Acuminator.Vsix;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using PX.Analyzers.Vsix;
-using PX.Analyzers.Vsix.Utilities;
+using Acuminator.Vsix.Utilities;
 
 
 using Path = System.IO.Path;
 
 
 
-namespace PX.Analyzers.Coloriser
+namespace Acuminator.Analyzers.Coloriser
 {
     public abstract class PXTaggerProviderBase
     {    

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PX.Analyzers
+namespace Acuminator.Analyzers
 {
 	public static class EnumerableHelpers
 	{

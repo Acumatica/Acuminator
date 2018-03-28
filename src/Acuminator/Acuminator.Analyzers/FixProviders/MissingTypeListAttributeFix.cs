@@ -12,9 +12,9 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
-using PX.Analyzers.Utilities;
+using Acuminator.Analyzers.Utilities;
 
-namespace PX.Analyzers.Analyzers
+namespace Acuminator.Analyzers.Analyzers
 {
     [ExportCodeFixProvider(LanguageNames.CSharp), Shared]
     public class MissingTypeListAttributeFix : CodeFixProvider

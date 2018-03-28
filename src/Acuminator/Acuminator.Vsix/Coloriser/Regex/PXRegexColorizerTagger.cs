@@ -7,10 +7,10 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using PX.Analyzers.Vsix.Utilities;
+using Acuminator.Vsix.Utilities;
 using System.Threading;
 
-namespace PX.Analyzers.Coloriser
+namespace Acuminator.Analyzers.Coloriser
 {
 	internal class PXRegexColorizerTagger : PXColorizerTaggerBase
 	{

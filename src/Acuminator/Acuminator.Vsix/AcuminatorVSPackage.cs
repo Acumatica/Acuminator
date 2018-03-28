@@ -5,15 +5,15 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Acuminator.Vsix.Formatter;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.Win32;
-using PX.Analyzers.Vsix.Formatter;
 
-namespace PX.Analyzers.Vsix
+namespace Acuminator.Vsix
 {
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.

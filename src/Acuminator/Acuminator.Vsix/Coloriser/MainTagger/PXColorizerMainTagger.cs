@@ -5,11 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
-using PX.Analyzers.Vsix.Utilities;
+using Acuminator.Vsix.Utilities;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PX.Analyzers.Coloriser
+namespace Acuminator.Analyzers.Coloriser
 {
     /// <summary>
     /// A colorizer tagger base class.

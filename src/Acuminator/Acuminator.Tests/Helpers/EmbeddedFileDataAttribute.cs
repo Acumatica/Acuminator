@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit.Sdk;
 
-namespace PX.Analyzers.Test.Helpers
+namespace Acuminator.Tests.Helpers
 {
 	public class EmbeddedFileDataAttribute : DataAttribute
 	{

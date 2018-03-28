@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 
 
-namespace PX.Analyzers.Vsix.Utilities
+namespace Acuminator.Vsix.Utilities
 {
     public static class ConcurrentExtensions
     {

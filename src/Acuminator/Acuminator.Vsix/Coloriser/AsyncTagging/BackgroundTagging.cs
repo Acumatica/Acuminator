@@ -5,10 +5,10 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.Text.Tagging;
 using System.Collections;
-using PX.Analyzers.Vsix.Utilities;
+using Acuminator.Vsix.Utilities;
 
 
-namespace PX.Analyzers.Coloriser
+namespace Acuminator.Analyzers.Coloriser
 {
     public class BackgroundTagging : IDisposable
     {

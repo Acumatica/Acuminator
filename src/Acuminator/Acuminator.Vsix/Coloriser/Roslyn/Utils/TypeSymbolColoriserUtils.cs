@@ -6,13 +6,13 @@ using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using PX.Analyzers.Utilities;
-using PX.Analyzers.Vsix.Utilities;
+using Acuminator.Analyzers.Utilities;
+using Acuminator.Vsix.Utilities;
 
 
 
 
-namespace PX.Analyzers.Coloriser
+namespace Acuminator.Analyzers.Coloriser
 {
     internal static class TypeSymbolColoriserUtils
     {

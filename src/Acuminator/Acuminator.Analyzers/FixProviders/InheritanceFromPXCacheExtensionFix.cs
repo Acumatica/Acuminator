@@ -14,7 +14,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using PX.Data;
 
-namespace PX.Analyzers.FixProviders
+namespace Acuminator.Analyzers.FixProviders
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 	public class InheritanceFromPXCacheExtensionFix : CodeFixProvider

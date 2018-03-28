@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace PX.Analyzers.Vsix {
+namespace Acuminator.Vsix {
     using System;
     
     
