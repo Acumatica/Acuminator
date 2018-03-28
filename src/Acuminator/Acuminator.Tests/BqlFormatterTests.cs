@@ -16,9 +16,19 @@ namespace Acuminator.Tests
 {
 	public class BqlFormatterTests : DiagnosticVerifier
 	{
-		private const string EndOfLine = "\r\n";
+		protected const string EndOfLine = "\r\n";
 
-		private readonly BqlFormatter _formatter = new BqlFormatter(EndOfLine, true, 4, 4);
+		protected readonly BqlFormatter _formatter;
+
+		public BqlFormatterTests()
+			: this(new BqlFormatter(EndOfLine, true, 4, 4))
+		{
+		}
+
+		protected BqlFormatterTests(BqlFormatter formatter)
+		{
+			_formatter = formatter;
+		}
 
 		[Theory]
 		[EmbeddedFileData(@"BQL\Raw\View.cs", @"BQL\Formatted\View.cs")]
@@ -31,7 +41,7 @@ namespace Acuminator.Tests
 		[EmbeddedFileData(@"BQL\Raw\View_NestedWhere.cs", @"BQL\Formatted\View_NestedWhere.cs")]
 		[EmbeddedFileData(@"BQL\Raw\View_EmptyLines.cs", @"BQL\Formatted\View_EmptyLines.cs")]
 		[EmbeddedFileData(@"BQL\Raw\Search_Join.cs", @"BQL\Formatted\Search_Join.cs")]
-		public void FormatDocument(string text, string expected)
+		public virtual void FormatDocument(string text, string expected)
 		{
 			string actual = Format(text);
 			Normalize(actual).Should().Be(Normalize(expected));
@@ -48,7 +58,7 @@ namespace Acuminator.Tests
 		[EmbeddedFileData(@"BQL\Formatted\View_NestedWhere.cs")]
 		[EmbeddedFileData(@"BQL\Formatted\View_EmptyLines.cs")]
 		[EmbeddedFileData(@"BQL\Formatted\Search_Join.cs")]
-		public void ShouldNotDoubleFormat(string expected)
+		public virtual void ShouldNotDoubleFormat(string expected)
 		{
 			string actual = Format(expected);
 			Normalize(actual).Should().Be(Normalize(expected));
@@ -56,7 +66,7 @@ namespace Acuminator.Tests
 
 		[Theory]
 		[EmbeddedFileDataWithParams(@"BQL\Raw\Search_Join.cs", @"BQL\Formatted\Search_Join.cs", 28, 28, 29, 35)]
-		public void FormatSelection(string text, string expected, 
+		public virtual void FormatSelection(string text, string expected, 
 			int startLine, int endLine,
 			int expectedStartLine, int expectedEndLine)
 		{
@@ -109,6 +119,46 @@ namespace Acuminator.Tests
 				text
 				.Split(new[] { EndOfLine }, StringSplitOptions.None)
 				.Select(line => line.TrimEnd()));
+		}
+	}
+
+	public class BqlFormatterTestsUsingSpaces : BqlFormatterTests
+	{
+		protected const int IndentSize = 4;
+
+		public BqlFormatterTestsUsingSpaces()
+			: base(new BqlFormatter(EndOfLine, false, 4, IndentSize))
+		{
+		}
+
+		public override void FormatDocument(string text, string expected)
+		{
+			text = ReplaceTabsWithSpaces(text);
+			expected = ReplaceTabsWithSpaces(expected);
+
+			base.FormatDocument(text, expected);
+		}
+
+		public override void FormatSelection(string text, string expected, int startLine, int endLine, int expectedStartLine,
+			int expectedEndLine)
+		{
+			text = ReplaceTabsWithSpaces(text);
+			expected = ReplaceTabsWithSpaces(expected);
+
+			base.FormatSelection(text, expected, startLine, endLine, expectedStartLine, expectedEndLine);
+		}
+
+		public override void ShouldNotDoubleFormat(string expected)
+		{
+			expected = ReplaceTabsWithSpaces(expected);
+
+			base.ShouldNotDoubleFormat(expected);
+		}
+
+		private string ReplaceTabsWithSpaces(string text)
+		{
+			if (String.IsNullOrEmpty(text)) return text;
+			return text.Replace("\t", new string(' ', IndentSize));
 		}
 	}
 }
