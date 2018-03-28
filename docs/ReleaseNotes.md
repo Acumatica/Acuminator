@@ -2,7 +2,7 @@
 This document provides information about fixes, enhancements, and key features that are available in Acuminator 1.2.
 
 ## Acuminator 1.2
-Acuminator 1.2 includes the new features described in this section as well as the features for the previous versions, which are described in the Acuminator 1.1 and Acuminator 1.0 sections.
+Acuminator 1.2 includes the new features and the bug fix described in this section as well as the features for the previous versions, which are described in the Acuminator 1.1 and Acuminator 1.0 sections.
 ### New Settings for Roslyn Coloring
 You can adjust the color settings of Acuminator for Roslyn coloring as follows:
 * Colorize PXAction declarations.<br/> In Visual Studio, specify the value of **Tools > Options > Acuminator > Enable PXAction coloring**.      
@@ -15,6 +15,13 @@ Acuminator can use different color sets for different visual themes (such as lig
 ### Code Outlining
 Acuminator can collapse parts of BQL statements and the code inside attributes to small tags. To use code outlining, in Visual Studio, set **Tools > Options > Acuminator > Use BQL outlining** to true.
 
+### Bug Fix
+In this version, the following bug has been fixed.
+
+| Bug    | Fix Description                         | 
+| ------ | --------------------------------------- | 
+| Acuminator 1.1 always used tabs to format BQL statements regardless of the Visual Studio settings. | Acuminator 1.2 formats BQL statements with spaces or tabs depending on the settings in **Tools > Options > Text Editor > C# > Tabs**.  |
+ 
 ## Acuminator 1.1
 Acuminator 1.1 provides the new features described in this section as well as the features described below for Acuminator 1.0.
 ### New Diagnostics and Code Fixes
