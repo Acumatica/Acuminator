@@ -30,8 +30,8 @@
     <ProjectGuid>{6DEB14BB-D8F6-4F5B-BBD7-E756CEB67D42}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PX.Analyzers.Vsix</RootNamespace>
-    <AssemblyName>PX.Analyzers.Vsix</AssemblyName>
+    <RootNamespace>Acuminator.Vsix</RootNamespace>
+    <AssemblyName>Acuminator.Vsix</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <GeneratePkgDefFile>true</GeneratePkgDefFile>
     <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
@@ -73,9 +73,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PX.Analyzers\PX.Analyzers.csproj">
+    <ProjectReference Include="..\Acuminator.Analyzers\Acuminator.Analyzers.csproj">
       <Project>{984DBFAC-91A7-4059-A5B2-CDE33CD93EA0}</Project>
-      <Name>PX.Analyzers</Name>
+      <Name>Acuminator.Analyzers</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -346,7 +346,7 @@
     <EmbeddedResource Include="Resources\VSIXResource.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>VSIXResource.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>PX.Analyzers.Vsix</CustomToolNamespace>
+      <CustomToolNamespace>Acuminator.Vsix</CustomToolNamespace>
     </EmbeddedResource>
     <EmbeddedResource Include="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>

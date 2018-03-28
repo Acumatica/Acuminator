@@ -10,8 +10,8 @@
     <ProjectGuid>{984DBFAC-91A7-4059-A5B2-CDE33CD93EA0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PX.Analyzers</RootNamespace>
-    <AssemblyName>PX.Analyzers</AssemblyName>
+    <RootNamespace>Acuminator.Analyzers</RootNamespace>
+    <AssemblyName>Acuminator.Analyzers</AssemblyName>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkProfile>Profile7</TargetFrameworkProfile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>

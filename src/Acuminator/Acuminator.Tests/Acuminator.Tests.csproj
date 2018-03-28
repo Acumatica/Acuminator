@@ -11,8 +11,8 @@
     <ProjectGuid>{3C74FF92-B17D-4C26-A16E-FCB5348C5B46}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PX.Analyzers.Test</RootNamespace>
-    <AssemblyName>PX.Analyzers.Test</AssemblyName>
+    <RootNamespace>Acuminator.Tests</RootNamespace>
+    <AssemblyName>Acuminator.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -218,13 +218,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PX.Analyzers.Vsix\PX.Analyzers.Vsix.csproj">
+    <ProjectReference Include="..\Acuminator.Vsix\Acuminator.Vsix.csproj">
       <Project>{6deb14bb-d8f6-4f5b-bbd7-e756ceb67d42}</Project>
-      <Name>PX.Analyzers.Vsix</Name>
+      <Name>Acuminator.Vsix</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PX.Analyzers\PX.Analyzers.csproj">
+    <ProjectReference Include="..\Acuminator.Analyzers\Acuminator.Analyzers.csproj">
       <Project>{984DBFAC-91A7-4059-A5B2-CDE33CD93EA0}</Project>
-      <Name>PX.Analyzers</Name>
+      <Name>Acuminator.Analyzers</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
