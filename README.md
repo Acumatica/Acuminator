@@ -22,6 +22,6 @@ To build the solution, do the following:
 3. Add your strong-name key file as _src/key.snk_. If you don't have one, run Developer Command Prompt and generate the key by using the following command: _sn.exe -k "src\key.snk"_.
 3. Open _src/Acuminator/Acuminator.Analyzers/Properties/AssemblyInfo.cs_ and change the public key in the _InternalsVisibleTo_ attribute to your own. To extract the key from the strong-name key file, do the following: 
    1. In Developer Command Prompt, extract the public key from the _snk_ file to a _txt_ file as follows: _sn.exe -p "src\key.snk" "src\publickey.txt"_. 
-   2. Display the public key to the console by using the following command: _sn.exe -tp "src\publickey.txt".
+   2. Display the public key to the console by using the following command: _sn.exe -tp "src\publickey.txt"_.
 4. Build _Acuminator.sln_.
 
