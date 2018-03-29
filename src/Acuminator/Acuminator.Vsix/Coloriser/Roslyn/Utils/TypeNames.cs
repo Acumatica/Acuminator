@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 using PX.Data;
 using Acuminator.Vsix.Utilities;
 
-namespace Acuminator.Analyzers.Coloriser
+namespace Acuminator.Vsix.Coloriser
 {
     internal static class TypeNames
     {

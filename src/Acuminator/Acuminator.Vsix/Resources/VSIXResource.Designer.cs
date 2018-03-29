@@ -8,7 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Acuminator.Vsix {
+namespace Acuminator.Vsix.Resources
+{
     using System;
     
     
@@ -39,7 +40,7 @@ namespace Acuminator.Vsix {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("PX.Analyzers.Vsix.Resources.VSIXResource", typeof(VSIXResource).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Acuminator.Vsix.Resources.VSIXResource", typeof(VSIXResource).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

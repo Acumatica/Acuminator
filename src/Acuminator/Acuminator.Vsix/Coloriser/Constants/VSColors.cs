@@ -10,7 +10,7 @@ using Acuminator.Vsix.Utilities;
 
 
 
-namespace Acuminator.Analyzers.Coloriser
+namespace Acuminator.Vsix.Coloriser
 {
     public static class VSColors
     {

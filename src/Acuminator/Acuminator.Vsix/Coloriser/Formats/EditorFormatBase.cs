@@ -16,7 +16,7 @@ using DefGuidList = Microsoft.VisualStudio.Editor.DefGuidList;
 using VSConstants =  Microsoft.VisualStudio.VSConstants;
 
 
-namespace Acuminator.Analyzers.Coloriser
+namespace Acuminator.Vsix.Coloriser
 {
     internal abstract class EditorFormatBase : ClassificationFormatDefinition, IDisposable
     {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.Text.Classification;
 
-namespace Acuminator.Analyzers.Coloriser
+namespace Acuminator.Vsix.Coloriser
 {
     /// <summary>
     /// Values that represent classification types for the coloring of code fragments.

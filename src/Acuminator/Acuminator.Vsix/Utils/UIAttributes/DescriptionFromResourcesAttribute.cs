@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using Acuminator.Vsix;
+using Acuminator.Vsix.Resources;
 using Acuminator.Vsix.Utilities;
 
 

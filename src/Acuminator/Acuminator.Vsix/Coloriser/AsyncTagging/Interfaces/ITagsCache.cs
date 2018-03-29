@@ -7,7 +7,7 @@ using System.Collections;
 using Acuminator.Vsix.Utilities;
 
 
-namespace Acuminator.Analyzers.Coloriser
+namespace Acuminator.Vsix.Coloriser
 {
     public interface ITagsCache<TTag> : IReadOnlyCollection<ITagSpan<TTag>>
     where TTag : ITag

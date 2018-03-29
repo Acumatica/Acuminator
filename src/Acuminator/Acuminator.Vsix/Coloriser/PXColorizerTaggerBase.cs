@@ -14,7 +14,7 @@ using Acuminator.Vsix.Utilities;
 
 
 
-namespace Acuminator.Analyzers.Coloriser
+namespace Acuminator.Vsix.Coloriser
 {
     /// <content>
     /// A colorizer tagger base class.

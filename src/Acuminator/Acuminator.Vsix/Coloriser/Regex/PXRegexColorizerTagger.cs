@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using Acuminator.Vsix.Utilities;
 using System.Threading;
 
-namespace Acuminator.Analyzers.Coloriser
+namespace Acuminator.Vsix.Coloriser
 {
 	internal class PXRegexColorizerTagger : PXColorizerTaggerBase
 	{

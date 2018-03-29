@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.Text.Tagging;
 using Acuminator.Vsix.Utilities;
 
 
-namespace Acuminator.Analyzers.Coloriser
+namespace Acuminator.Vsix.Coloriser
 {
     public partial class PXRoslynColorizerTagger : PXColorizerTaggerBase
     {
