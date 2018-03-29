@@ -9,7 +9,7 @@ using Acuminator.Vsix.Utilities;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Acuminator.Analyzers.Coloriser
+namespace Acuminator.Vsix.Coloriser
 {
     /// <summary>
     /// A colorizer tagger base class.

@@ -6,7 +6,7 @@ using System.Collections;
 using Acuminator.Vsix.Utilities;
 
 
-namespace Acuminator.Analyzers.Coloriser
+namespace Acuminator.Vsix.Coloriser
 {
     public class TagsCacheSync<TTag> : ITagsCache<TTag>
     where TTag : ITag

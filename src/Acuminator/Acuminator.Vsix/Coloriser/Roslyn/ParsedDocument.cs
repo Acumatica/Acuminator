@@ -13,7 +13,7 @@ using Acuminator.Vsix.Utilities;
 using Path = System.IO.Path;
 
 
-namespace Acuminator.Analyzers.Coloriser
+namespace Acuminator.Vsix.Coloriser
 {
     public class ParsedDocument
     {

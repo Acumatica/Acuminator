@@ -2,12 +2,13 @@
 using System.Windows.Media;
 using System.Windows;
 using Acuminator.Vsix;
+using Acuminator.Vsix.Resources;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.PlatformUI;
 
 
-namespace Acuminator.Analyzers.Coloriser
+namespace Acuminator.Vsix.Coloriser
 {
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = ColoringConstants.BQLOperatorFormat)]

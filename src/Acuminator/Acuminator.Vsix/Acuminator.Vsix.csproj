@@ -347,6 +347,7 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>VSIXResource.Designer.cs</LastGenOutput>
       <CustomToolNamespace>Acuminator.Vsix</CustomToolNamespace>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>

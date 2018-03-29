@@ -16,7 +16,7 @@ using Acuminator.Vsix;
 
 
 
-namespace Acuminator.Analyzers.Coloriser
+namespace Acuminator.Vsix.Coloriser
 {
     [ContentType("CSharp")]
     [TagType(typeof(IOutliningRegionTag))]

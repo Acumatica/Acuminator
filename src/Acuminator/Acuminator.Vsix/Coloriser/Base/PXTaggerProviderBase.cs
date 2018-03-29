@@ -16,7 +16,7 @@ using Path = System.IO.Path;
 
 
 
-namespace Acuminator.Analyzers.Coloriser
+namespace Acuminator.Vsix.Coloriser
 {
     public abstract class PXTaggerProviderBase
     {    
