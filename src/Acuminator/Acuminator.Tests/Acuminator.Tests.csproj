@@ -1,0 +1,240 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c)  Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information. -->
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\xunit.runner.visualstudio.2.2.0\build\net20\xunit.runner.visualstudio.props" Condition="Exists('..\..\packages\xunit.runner.visualstudio.2.2.0\build\net20\xunit.runner.visualstudio.props')" />
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3C74FF92-B17D-4C26-A16E-FCB5348C5B46}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Acuminator.Tests</RootNamespace>
+    <AssemblyName>Acuminator.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FluentAssertions, Version=4.19.4.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FluentAssertions.4.19.4\lib\net45\FluentAssertions.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentAssertions.Core, Version=4.19.4.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FluentAssertions.4.19.4\lib\net45\FluentAssertions.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Common.1.0.1\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.1.0.1\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.1.0.1\lib\net45\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.VisualBasic, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.VisualBasic.1.0.1\lib\net45\Microsoft.CodeAnalysis.VisualBasic.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.VisualBasic.Workspaces.1.0.1\lib\net45\Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.1\lib\net452\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.1\lib\net452\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PX.Common">
+      <HintPath>..\..\..\lib\PX.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="PX.Data">
+      <HintPath>..\..\..\lib\PX.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.1.36.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Collections.Immutable.1.1.36\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Composition.AttributedModel, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.AttributedModel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Composition.Convention, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.Convention.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Composition.Hosting, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.Hosting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Composition.Runtime, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Composition.TypedParts, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.TypedParts.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Reflection.Metadata, Version=1.0.21.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Reflection.Metadata.1.0.21\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\xunit.abstractions.2.0.1\lib\net35\xunit.abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="xunit.assert, Version=2.2.0.3545, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\xunit.assert.2.2.0\lib\netstandard1.1\xunit.assert.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="xunit.core, Version=2.2.0.3545, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\xunit.extensibility.core.2.2.0\lib\netstandard1.1\xunit.core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="xunit.execution.desktop, Version=2.2.0.3545, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\xunit.extensibility.execution.2.2.0\lib\net452\xunit.execution.desktop.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Sources\DACCreateInstance.cs" />
+    <EmbeddedResource Include="Sources\DACCreateInstance_Expected.cs" />
+    <EmbeddedResource Include="Sources\LongOperationDelegateClosuresAnalyzer.cs" />
+    <Compile Include="BqlFormatterTests.cs" />
+    <Compile Include="Helpers\EmbeddedFileDataWithParamsAttribute.cs" />
+    <Compile Include="LongOperationDelegateClosuresTests.cs" />
+    <EmbeddedResource Include="Sources\StartRowResetForPaging.cs" />
+    <EmbeddedResource Include="Sources\MissingTypeListAttributeBad_Expected.cs" />
+    <EmbeddedResource Include="Sources\StartRowResetForPaging_Expected.cs" />
+    <EmbeddedResource Include="Sources\TypoInViewDelegateName_Good_SameName.cs" />
+    <EmbeddedResource Include="Sources\InheritanceFromPXMappedCacheExtension.cs" />
+    <EmbeddedResource Include="Sources\InvalidPXActionSignature_ValidParameters.cs" />
+    <Compile Include="NonNullableTypeForBqlFieldTests.cs" />
+    <EmbeddedResource Include="Sources\NonNullableTypeForBqlField_Expected.cs" />
+    <EmbeddedResource Include="Sources\NonNullableTypeForBqlField.cs" />
+    <EmbeddedResource Include="Sources\NonNullableTypeForBqlField_Valid.cs" />
+    <EmbeddedResource Include="Sources\BQL\Raw\View.cs" />
+    <EmbeddedResource Include="Sources\BQL\Formatted\View.cs" />
+    <EmbeddedResource Include="Sources\BQL\Raw\StaticCall.cs" />
+    <EmbeddedResource Include="Sources\BQL\Formatted\StaticCall.cs" />
+    <EmbeddedResource Include="Sources\BQL\Raw\SearchInAttribute.cs" />
+    <EmbeddedResource Include="Sources\BQL\Formatted\SearchInAttribute.cs" />
+    <EmbeddedResource Include="Sources\BQL\Raw\View_JoinWhere2.cs" />
+    <EmbeddedResource Include="Sources\BQL\Formatted\View_JoinWhere2.cs" />
+    <EmbeddedResource Include="Sources\BQL\Raw\View_MultipleJoins.cs" />
+    <EmbeddedResource Include="Sources\BQL\Formatted\View_MultipleJoins.cs" />
+    <EmbeddedResource Include="Sources\BQL\Raw\View_Complex.cs" />
+    <EmbeddedResource Include="Sources\BQL\Formatted\View_Complex.cs" />
+    <EmbeddedResource Include="Sources\BQL\Raw\StaticCall_GroupBy.cs" />
+    <EmbeddedResource Include="Sources\BQL\Formatted\StaticCall_GroupBy.cs" />
+    <EmbeddedResource Include="Sources\BQL\Raw\View_NestedWhere.cs" />
+    <EmbeddedResource Include="Sources\BQL\Formatted\View_NestedWhere.cs" />
+    <EmbeddedResource Include="Sources\BQL\Raw\View_EmptyLines.cs" />
+    <EmbeddedResource Include="Sources\BQL\Formatted\View_EmptyLines.cs" />
+    <EmbeddedResource Include="Sources\BQL\Raw\Search_Join.cs" />
+    <EmbeddedResource Include="Sources\BQL\Formatted\Search_Join.cs" />
+    <Compile Include="StartRowResetForPagingTests.cs" />
+    <Compile Include="InheritanceFromPXCacheExtensionTests.cs" />
+    <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtension_Bad.cs" />
+    <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtension_Bad_Expected.cs" />
+    <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtension_Good.cs" />
+    <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtensionMakeSealed_Bad.cs" />
+    <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtensionMakeSealed_Bad_Expected.cs" />
+    <Compile Include="ViewDeclarationOrderTests.cs" />
+    <EmbeddedResource Include="Sources\InvalidPXActionSignature.cs" />
+    <EmbeddedResource Include="Sources\InvalidPXActionSignature_Expected.cs" />
+    <Compile Include="Helpers\EmbeddedFileDataAttribute.cs" />
+    <Compile Include="InvalidPXActionSignatureTests.cs" />
+    <Compile Include="MissingTypeListAttributeTests.cs" />
+    <EmbeddedResource Include="Sources\TypoInViewDelegateName_Good_DifferentNames.cs" />
+    <EmbeddedResource Include="Sources\TypoInViewDelegateName_Bad_Expected.cs" />
+    <Compile Include="TypoInViewDelegateNameTests.cs" />
+    <Compile Include="PXGraphCreateInstanceTests.cs" />
+    <EmbeddedResource Include="Sources\PXGraphCreateInstanceField.cs" />
+    <EmbeddedResource Include="Sources\PXGraphCreateInstanceMethod.cs" />
+    <EmbeddedResource Include="Sources\PXGraphCreateInstanceProperty.cs" />
+    <EmbeddedResource Include="Sources\MissingTypeListAttributeBad.cs" />
+    <EmbeddedResource Include="Sources\MissingTypeListAttributeGood.cs" />
+    <EmbeddedResource Include="Sources\PXGraphCreateInstanceMethod_Expected.cs" />
+    <EmbeddedResource Include="Sources\PXGraphCreateInstanceField_Expected.cs" />
+    <EmbeddedResource Include="Sources\PXGraphCreateInstanceProperty_Expected.cs" />
+    <EmbeddedResource Include="Sources\NonSpecificPXGraphCreateInstanceMethod.cs" />
+    <EmbeddedResource Include="Sources\ViewDeclarationOrder.cs" />
+    <EmbeddedResource Include="Sources\TypoInViewDelegateName_Good_Override.cs" />
+    <EmbeddedResource Include="Sources\TypoInViewDelegateName_Bad.cs" />
+    <Compile Include="Verifiers\CodeFixVerifier.cs" />
+    <Compile Include="Verifiers\DiagnosticVerifier.cs" />
+    <Compile Include="Helpers\CodeFixVerifier.Helper.cs" />
+    <Compile Include="Helpers\DiagnosticResult.cs" />
+    <Compile Include="Helpers\DiagnosticVerifier.Helper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Acuminator.Vsix\Acuminator.Vsix.csproj">
+      <Project>{6deb14bb-d8f6-4f5b-bbd7-e756ceb67d42}</Project>
+      <Name>Acuminator.Vsix</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Acuminator.Analyzers\Acuminator.Analyzers.csproj">
+      <Project>{984DBFAC-91A7-4059-A5B2-CDE33CD93EA0}</Project>
+      <Name>Acuminator.Analyzers</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\xunit.runner.visualstudio.2.2.0\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\xunit.runner.visualstudio.2.2.0\build\net20\xunit.runner.visualstudio.props'))" />
+  </Target>
+</Project>
