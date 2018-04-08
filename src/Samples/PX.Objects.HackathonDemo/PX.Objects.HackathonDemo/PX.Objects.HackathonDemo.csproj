@@ -31,10 +31,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PX.Common">
-      <HintPath>..\..\..\..\..\..\src\hackathon\NetTools\PX.Common.dll</HintPath>
+      <HintPath>..\..\..\..\lib\PX.Common.dll</HintPath>
     </Reference>
     <Reference Include="PX.Data">
-      <HintPath>..\..\..\..\..\..\src\hackathon\NetTools\PX.Data.dll</HintPath>
+      <HintPath>..\..\..\..\lib\PX.Data.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
