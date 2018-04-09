@@ -342,7 +342,7 @@ namespace Acuminator.Vsix.Coloriser
 
 			private void AnalyzeTypeParameterNode(IdentifierNameSyntax node, ITypeParameterSymbol typeParameterSymbol)
 			{
-				if (!typeParameterSymbol.HasReferenceTypeConstraint || typeParameterSymbol.ConstraintTypes.Length == 0)
+				if (typeParameterSymbol.ConstraintTypes.Length == 0)
 					return;
 
 				foreach (ITypeSymbol constraintType in typeParameterSymbol.ConstraintTypes)

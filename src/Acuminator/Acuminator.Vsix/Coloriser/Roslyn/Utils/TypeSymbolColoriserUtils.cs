@@ -79,11 +79,17 @@ namespace Acuminator.Vsix.Coloriser
                     break;
                 }
             }
-       
-            return resolvedColoredCodeType.HasValue 
-                ? ValidateColorCodeTypeAndSymbolName(resolvedColoredCodeType.Value, identifierType.Name)
-                : null;
-        }
+
+			switch (resolvedColoredCodeType)
+			{
+				case null:
+					return null;
+				case ColoredCodeType resultCodeType when skipValidation:
+					return resultCodeType;
+				default:
+					return ValidateColorCodeTypeAndSymbolName(resolvedColoredCodeType.Value, identifierType.Name);
+			}
+		}
 
         /// <summary>
         /// An ITypeSymbol extension method that gets <see cref="ColoredCodeType"/> from generic Name type symbol.
