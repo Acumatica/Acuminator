@@ -52,16 +52,23 @@ namespace Acuminator.Vsix.Coloriser
         /// An ITypeSymbol extension method that gets <see cref="ColoredCodeType"/> from identifier type symbol.
         /// </summary>
         /// <param name="identifierType">The identifierType to act on.</param>
-        /// <returns/>  
+        /// <param name="skipValidation">(Optional) True to skip validation.</param>
+        /// <param name="checkItself">(Optional) True to check the type itself.</param>
+        /// <returns>
+        /// The coloring type from identifier.
+        /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ColoredCodeType? GetColoringTypeFromIdentifier(this ITypeSymbol identifierType)
+        public static ColoredCodeType? GetColoringTypeFromIdentifier(this ITypeSymbol identifierType, bool skipValidation = false, 
+																	 bool checkItself = false)
         {
-            if (!identifierType.IsValidForColoring(checkForNotColoredTypes: false))
+            if (!skipValidation && !identifierType.IsValidForColoring(checkForNotColoredTypes: false))
                 return null;
 
-            IEnumerable<ITypeSymbol> typeHierarchy = identifierType.GetBaseTypes()
-                                                                   .ConcatStructList(identifierType.AllInterfaces);
+			IEnumerable<ITypeSymbol> typeHierarchy = checkItself 
+				? identifierType.GetBaseTypesAndThis() 
+				: identifierType.GetBaseTypes();
 
+			typeHierarchy = typeHierarchy.ConcatStructList(identifierType.AllInterfaces);
             ColoredCodeType? resolvedColoredCodeType = null;
 
             foreach (ITypeSymbol typeOrInterface in typeHierarchy)
