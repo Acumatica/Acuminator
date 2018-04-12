@@ -23,7 +23,7 @@ namespace Acuminator.Analyzers {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -37,10 +37,10 @@ namespace Acuminator.Analyzers {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("PX.Analyzers.Resources", typeof(Resources).GetTypeInfo().Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Acuminator.Analyzers.Resources", typeof(Resources).GetTypeInfo().Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -52,7 +52,7 @@ namespace Acuminator.Analyzers {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -64,7 +64,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to Fix PXAction handler signature.
         /// </summary>
-        internal static string PX1000Fix {
+        public static string PX1000Fix {
             get {
                 return ResourceManager.GetString("PX1000Fix", resourceCulture);
             }
@@ -73,7 +73,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to Invalid PXAction handler signature.
         /// </summary>
-        internal static string PX1000Title {
+        public static string PX1000Title {
             get {
                 return ResourceManager.GetString("PX1000Title", resourceCulture);
             }
@@ -82,7 +82,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to Create a graph instance by using the factory method.
         /// </summary>
-        internal static string PX1001Fix {
+        public static string PX1001Fix {
             get {
                 return ResourceManager.GetString("PX1001Fix", resourceCulture);
             }
@@ -91,7 +91,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to A PXGraph instance must be created with the PXGraph.CreateInstance() factory method.
         /// </summary>
-        internal static string PX1001Title {
+        public static string PX1001Title {
             get {
                 return ResourceManager.GetString("PX1001Title", resourceCulture);
             }
@@ -100,7 +100,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to Add the type attribute corresponding to the list attribute.
         /// </summary>
-        internal static string PX1002Fix {
+        public static string PX1002Fix {
             get {
                 return ResourceManager.GetString("PX1002Fix", resourceCulture);
             }
@@ -109,7 +109,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to The field must have the type attribute corresponding to the list attribute.
         /// </summary>
-        internal static string PX1002Title {
+        public static string PX1002Title {
             get {
                 return ResourceManager.GetString("PX1002Title", resourceCulture);
             }
@@ -118,7 +118,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to Consider using a specific implementation of PXGraph.
         /// </summary>
-        internal static string PX1003Title {
+        public static string PX1003Title {
             get {
                 return ResourceManager.GetString("PX1003Title", resourceCulture);
             }
@@ -127,7 +127,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to Consider changing the declaration order.
         /// </summary>
-        internal static string PX1004Fix {
+        public static string PX1004Fix {
             get {
                 return ResourceManager.GetString("PX1004Fix", resourceCulture);
             }
@@ -136,7 +136,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to This order of view declarations will cause creation of two cache instances: {0} and {1}.
         /// </summary>
-        internal static string PX1004Title {
+        public static string PX1004Title {
             get {
                 return ResourceManager.GetString("PX1004Title", resourceCulture);
             }
@@ -145,7 +145,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to Change the view delegate name to match the view name.
         /// </summary>
-        internal static string PX1005Fix {
+        public static string PX1005Fix {
             get {
                 return ResourceManager.GetString("PX1005Fix", resourceCulture);
             }
@@ -154,7 +154,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to A possible typo in the view delegate name. The view name for this delegate: {0}.
         /// </summary>
-        internal static string PX1005MessageFormat {
+        public static string PX1005MessageFormat {
             get {
                 return ResourceManager.GetString("PX1005MessageFormat", resourceCulture);
             }
@@ -163,7 +163,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to A possible typo in the view delegate name.
         /// </summary>
-        internal static string PX1005Title {
+        public static string PX1005Title {
             get {
                 return ResourceManager.GetString("PX1005Title", resourceCulture);
             }
@@ -172,7 +172,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to Consider changing the declaration order.
         /// </summary>
-        internal static string PX1006Fix {
+        public static string PX1006Fix {
             get {
                 return ResourceManager.GetString("PX1006Fix", resourceCulture);
             }
@@ -181,7 +181,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to This order of view declarations will cause creation of one cache instance for the following DACs: {0} and {1}.
         /// </summary>
-        internal static string PX1006Title {
+        public static string PX1006Title {
             get {
                 return ResourceManager.GetString("PX1006Title", resourceCulture);
             }
@@ -190,7 +190,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to Create a DAC instance by using the factory method.
         /// </summary>
-        internal static string PX1007Fix {
+        public static string PX1007Fix {
             get {
                 return ResourceManager.GetString("PX1007Fix", resourceCulture);
             }
@@ -200,7 +200,7 @@ namespace Acuminator.Analyzers {
         ///   Looks up a localized string similar to An instance of {0} must be created with the PXCache&lt;{0}&gt;.CreateInstance() factory method
         ///.
         /// </summary>
-        internal static string PX1007MessageFormat {
+        public static string PX1007MessageFormat {
             get {
                 return ResourceManager.GetString("PX1007MessageFormat", resourceCulture);
             }
@@ -209,7 +209,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to A DAC instance must be created with the PXCache.CreateInstance() factory method.
         /// </summary>
-        internal static string PX1007Title {
+        public static string PX1007Title {
             get {
                 return ResourceManager.GetString("PX1007Title", resourceCulture);
             }
@@ -218,7 +218,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to Reference of @this graph in this delegate will cause synchronous delegate execution.
         /// </summary>
-        internal static string PX1008Title {
+        public static string PX1008Title {
             get {
                 return ResourceManager.GetString("PX1008Title", resourceCulture);
             }
@@ -227,7 +227,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to Change the base type to a PXCacheExtension overload.
         /// </summary>
-        internal static string PX1009Fix {
+        public static string PX1009Fix {
             get {
                 return ResourceManager.GetString("PX1009Fix", resourceCulture);
             }
@@ -236,7 +236,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to Multiple levels of inheritance are not supported for PXCacheExtension.
         /// </summary>
-        internal static string PX1009Title {
+        public static string PX1009Title {
             get {
                 return ResourceManager.GetString("PX1009Title", resourceCulture);
             }
@@ -245,7 +245,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to Reset StartRow.
         /// </summary>
-        internal static string PX1010Fix {
+        public static string PX1010Fix {
             get {
                 return ResourceManager.GetString("PX1010Fix", resourceCulture);
             }
@@ -254,7 +254,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to If a delegate applies paging in an inner select, StartRow must be reset (If StartRow is not reset, paging will be applied twice).
         /// </summary>
-        internal static string PX1010Title {
+        public static string PX1010Title {
             get {
                 return ResourceManager.GetString("PX1010Title", resourceCulture);
             }
@@ -263,7 +263,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to Mark the type as sealed.
         /// </summary>
-        internal static string PX1011Fix {
+        public static string PX1011Fix {
             get {
                 return ResourceManager.GetString("PX1011Fix", resourceCulture);
             }
@@ -272,7 +272,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to Because multiple levels of inheritance are not supported for PXCacheExtension, the derived type can be marked as sealed.
         /// </summary>
-        internal static string PX1011Title {
+        public static string PX1011Title {
             get {
                 return ResourceManager.GetString("PX1011Title", resourceCulture);
             }
@@ -281,7 +281,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to Make the type nullable.
         /// </summary>
-        internal static string PX1014Fix {
+        public static string PX1014Fix {
             get {
                 return ResourceManager.GetString("PX1014Fix", resourceCulture);
             }
@@ -290,7 +290,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to A DAC field must have a nullable type.
         /// </summary>
-        internal static string PX1014Title {
+        public static string PX1014Title {
             get {
                 return ResourceManager.GetString("PX1014Title", resourceCulture);
             }
@@ -299,7 +299,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to Format the BQL statement to meet the Code Style requirements .
         /// </summary>
-        internal static string PXF1001Fix {
+        public static string PXF1001Fix {
             get {
                 return ResourceManager.GetString("PXF1001Fix", resourceCulture);
             }
@@ -308,7 +308,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to The BQL statement doesn&apos;t meet the Code Style requirements .
         /// </summary>
-        internal static string PXF1001Title {
+        public static string PXF1001Title {
             get {
                 return ResourceManager.GetString("PXF1001Title", resourceCulture);
             }
