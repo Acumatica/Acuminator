@@ -75,16 +75,17 @@ namespace Acuminator.Vsix.Coloriser
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
-                ColoredCodeType? coloredCodeType = typeSymbol.GetColoringTypeFromIdentifier();
-                IClassificationType classificationType = coloredCodeType.HasValue
-                    ? tagger.Provider[coloredCodeType.Value]
-                    : null;
+				if (typeSymbol is ITypeParameterSymbol typeParameterSymbol)
+				{
+					AnalyzeTypeParameterNode(node, typeParameterSymbol);
 
-                if (classificationType != null && 
-                   (coloredCodeType.Value != ColoredCodeType.PXGraph || tagger.Provider.Package.PXGraphColoringEnabled))
-                {                    
-                    AddClassificationTag(span, classificationType);
-                }
+					if (!cancellationToken.IsCancellationRequested)
+						base.VisitIdentifierName(node);
+
+					return;
+				}
+
+				ColorIdentifierTypeSymbol(typeSymbol, span, isTypeParameter: false);
 
                 if (!cancellationToken.IsCancellationRequested)
                     base.VisitIdentifierName(node);
@@ -339,6 +340,32 @@ namespace Acuminator.Vsix.Coloriser
             }
             #endregion
 
+			private void AnalyzeTypeParameterNode(IdentifierNameSyntax node, ITypeParameterSymbol typeParameterSymbol)
+			{
+				if (typeParameterSymbol.ConstraintTypes.Length == 0)
+					return;
+
+				foreach (ITypeSymbol constraintType in typeParameterSymbol.ConstraintTypes)
+				{
+					ColorIdentifierTypeSymbol(constraintType, node.Span, isTypeParameter: true);
+				}
+			}
+
+			private void ColorIdentifierTypeSymbol(ITypeSymbol typeSymbol, TextSpan span, bool isTypeParameter)
+			{
+				ColoredCodeType? coloredCodeType = typeSymbol.GetColoringTypeFromIdentifier(skipValidation: isTypeParameter, 
+																							checkItself: isTypeParameter);
+				IClassificationType classificationType = coloredCodeType.HasValue
+					? tagger.Provider[coloredCodeType.Value]
+					: null;
+
+				if (classificationType == null || 
+				   (coloredCodeType.Value == ColoredCodeType.PXGraph && !tagger.Provider.Package.PXGraphColoringEnabled) ||
+				   (coloredCodeType.Value == ColoredCodeType.PXAction && !tagger.Provider.Package.PXActionColoringEnabled))
+					return;
+
+				AddClassificationTag(span, classificationType);
+			}
 
             private void AddClassificationTag(TextSpan span, IClassificationType classificationType)
             {
