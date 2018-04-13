@@ -256,28 +256,27 @@ namespace Acuminator.Vsix.Coloriser
                     return;
                 }
 
-                braceLevel++;
+				IClassificationType braceClassificationType = tagger.Provider[braceLevel];
 
-                try
-                {
-                    if (braceLevel <= ColoringConstants.MaxBraceLevel && !cancellationToken.IsCancellationRequested)
-                    {
-                        IClassificationType braceClassificationType = tagger.Provider[braceLevel];
+				try
+				{				
+					braceLevel = (braceLevel + 1) % ColoringConstants.MaxBraceLevel;
 
-                        if (braceClassificationType != null)
-                        {
-                            AddClassificationTag(node.LessThanToken.Span, braceClassificationType);
-                            AddClassificationTag(node.GreaterThanToken.Span, braceClassificationType);
-                        }
-                    }
+					if (braceClassificationType != null && !cancellationToken.IsCancellationRequested)
+					{
+						AddClassificationTag(node.LessThanToken.Span, braceClassificationType);
+						AddClassificationTag(node.GreaterThanToken.Span, braceClassificationType);
+					}
 
-                    if (!cancellationToken.IsCancellationRequested)
-                        base.VisitTypeArgumentList(node);
-                }
-                finally
-                {
-                    braceLevel--;
-                }
+					if (!cancellationToken.IsCancellationRequested)
+						base.VisitTypeArgumentList(node);
+				}
+				finally
+				{
+					braceLevel = braceLevel == 0
+						? ColoringConstants.MaxBraceLevel - 1 
+						: braceLevel - 1;
+				}
 
                 UpdateCodeEditorIfNecessary();
             }

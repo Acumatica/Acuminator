@@ -115,24 +115,24 @@ namespace Acuminator.Vsix.Coloriser
 
             braceTypeByLevel = new Dictionary<int, IClassificationType>(capacity: ColoringConstants.MaxBraceLevel)
             {
-                [1] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_1_Format),
-                [2] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_2_Format),
-                [3] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_3_Format),
+                [0] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_1_Format),
+                [1] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_2_Format),
+                [2] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_3_Format),
 
-                [4] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_4_Format),
-                [5] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_5_Format),
-                [6] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_6_Format),
+                [3] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_4_Format),
+                [4] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_5_Format),
+                [5] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_6_Format),
 
-                [7] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_7_Format),
-                [8] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_8_Format),
-                [9] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_9_Format),
+                [6] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_7_Format),
+                [7] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_8_Format),
+                [8] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_9_Format),
 
-                [10] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_10_Format),
-                [11] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_11_Format),
-                [12] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_12_Format),
+                [9] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_10_Format),
+                [10] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_11_Format),
+                [11] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_12_Format),
 
-                [13] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_13_Format),
-                [14] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_14_Format),
+                [12] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_13_Format),
+                [13] = classificationRegistry.GetClassificationType(ColoringConstants.BraceLevel_14_Format),
             }; 
         }
 
