@@ -24,8 +24,7 @@ namespace PX.Objects.IN
 		/// </value>
 		[PXDBInt]
 		[PXUIField(DisplayName = "Item Class", Visibility = PXUIVisibility.SelectorVisible)]
-		[PXDimensionSelector(INItemClass.Dimension, typeof(Search<
-			INItemClass.itemClassID>), typeof(INItemClass.itemClassCD), DescriptionField = typeof(INItemClass.descr))]
+		[PXDimensionSelector(INItemClass.Dimension, typeof(Search<INItemClass.itemClassID>), typeof(INItemClass.itemClassCD), DescriptionField = typeof(INItemClass.descr))]
 		[PXDefault(typeof(Search2<
 			INItemClass.itemClassID, 
 			InnerJoin<INSetup, 

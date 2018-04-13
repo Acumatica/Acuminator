@@ -9,9 +9,7 @@ namespace PX.Objects
 {
 	public class SOOrderEntry : PXGraph<SOOrderEntry>
 	{
-		public PXSelect<
-			SOOrder> 
-			OpenSalesOrders;
+		public PXSelect<SOOrder> OpenSalesOrders;
 
 		public IEnumerable openSalesorders()
 		{
