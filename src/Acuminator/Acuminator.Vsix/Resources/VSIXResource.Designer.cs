@@ -223,11 +223,11 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Acuminator.
+        ///   Looks up a localized string similar to BQL Coloring.
         /// </summary>
-        public static string Category_Acuminator {
+        public static string Category_Coloring {
             get {
-                return ResourceManager.GetString("Category_Acuminator", resourceCulture);
+                return ResourceManager.GetString("Category_Coloring", resourceCulture);
             }
         }
         

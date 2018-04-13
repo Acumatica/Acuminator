@@ -10,6 +10,7 @@ namespace Acuminator.Vsix
 	public class GeneralOptionsPage : DialogPage
 	{
 		private const string AllSettings = "All";
+		private const string ColoringCategoryName = "BQL Coloring";
 		private const string OutliningCategoryName = "BQL Outlining";
 
 		private bool colorSettingsChanged;
@@ -18,7 +19,7 @@ namespace Acuminator.Vsix
 
 		private bool coloringEnabled = true;
 
-		[CategoryFromResources(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+		[CategoryFromResources(nameof(VSIXResource.Category_Coloring), ColoringCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_ColoringEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_ColoringEnabled_Description))]
 		public bool ColoringEnabled
@@ -36,7 +37,7 @@ namespace Acuminator.Vsix
 
 		private bool pxActionColoringEnabled = true;
 
-		[CategoryFromResources(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+		[CategoryFromResources(nameof(VSIXResource.Category_Coloring), ColoringCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_PXActionColoringEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_PXActionColoringEnabled_Description))]
 		public bool PXActionColoringEnabled
@@ -54,7 +55,7 @@ namespace Acuminator.Vsix
 
 		private bool pxGraphColoringEnabled = true;
 
-		[CategoryFromResources(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+		[CategoryFromResources(nameof(VSIXResource.Category_Coloring), ColoringCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_PXGraphColoringEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_PXGraphColoringEnabled_Description))]
 		public bool PXGraphColoringEnabled
@@ -72,7 +73,7 @@ namespace Acuminator.Vsix
 
 		private bool colorOnlyInsideBQL;
 
-		[CategoryFromResources(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+		[CategoryFromResources(nameof(VSIXResource.Category_Coloring), ColoringCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_ColorOnlyInsideBQL_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_ColorOnlyInsideBQL_Description))]
 		public bool ColorOnlyInsideBQL
@@ -90,7 +91,7 @@ namespace Acuminator.Vsix
 
 		private bool useRegexColoring;
 
-		[CategoryFromResources(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+		[CategoryFromResources(nameof(VSIXResource.Category_Coloring), ColoringCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_UseRegexColoring_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_UseRegexColoring_Description))]
 		public bool UseRegexColoring
@@ -108,7 +109,7 @@ namespace Acuminator.Vsix
 
 		private bool useBqlOutlining = true;
 
-		[CategoryFromResources(nameof(VSIXResource.Category_Outlining), AcuminatorVSPackage.SettingsCategoryName)]
+		[CategoryFromResources(nameof(VSIXResource.Category_Outlining), OutliningCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlOutlining_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlOutlining_Description))]
 		public bool UseBqlOutlining
@@ -126,7 +127,7 @@ namespace Acuminator.Vsix
 
 		private bool useBqlDetailedOutlining = true;
 
-		[CategoryFromResources(nameof(VSIXResource.Category_Outlining), AcuminatorVSPackage.SettingsCategoryName)]
+		[CategoryFromResources(nameof(VSIXResource.Category_Outlining), OutliningCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlDetailedOutlining_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlDetailedOutlining_Description))]
 		public bool UseBqlDetailedOutlining

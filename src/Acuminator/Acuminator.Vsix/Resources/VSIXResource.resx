@@ -186,9 +186,8 @@
   <data name="BraceLevel_14_FormatLabel" xml:space="preserve">
     <value>Acuminator - BQL Angle Brackets (Level 14)</value>
   </data>
-  <data name="Category_Acuminator" xml:space="preserve">
-    <value>Acuminator</value>
-    <comment>Must be same as corresponding category name in VSPackage.resx</comment>
+  <data name="Category_Coloring" xml:space="preserve">
+    <value>BQL Coloring</value>
   </data>
   <data name="Category_Outlining" xml:space="preserve">
     <value>BQL Outlining</value>
