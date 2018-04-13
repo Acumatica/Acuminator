@@ -2,7 +2,6 @@
 using System.Windows.Media;
 using System.Windows;
 using Acuminator.Vsix;
-using Acuminator.Vsix.Resources;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.PlatformUI;
