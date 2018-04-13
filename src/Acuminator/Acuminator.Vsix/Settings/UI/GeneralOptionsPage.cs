@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Acuminator.Vsix.Resources;
 using Microsoft.VisualStudio.Shell;
 
 namespace Acuminator.Vsix
@@ -11,6 +10,7 @@ namespace Acuminator.Vsix
 	public class GeneralOptionsPage : DialogPage
 	{
 		private const string AllSettings = "All";
+		private const string OutliningCategoryName = "BQL Outlining";
 
 		private bool colorSettingsChanged;
 		public event EventHandler<SettingChangedEventArgs> ColoringSettingChanged;
@@ -108,7 +108,7 @@ namespace Acuminator.Vsix
 
 		private bool useBqlOutlining = true;
 
-		[CategoryFromResources(nameof(VSIXResource.Category_Acuminator), AcuminatorVSPackage.SettingsCategoryName)]
+		[CategoryFromResources(nameof(VSIXResource.Category_Outlining), AcuminatorVSPackage.SettingsCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlOutlining_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlOutlining_Description))]
 		public bool UseBqlOutlining
@@ -124,11 +124,30 @@ namespace Acuminator.Vsix
 			}
 		}
 
+		private bool useBqlDetailedOutlining = true;
+
+		[CategoryFromResources(nameof(VSIXResource.Category_Outlining), AcuminatorVSPackage.SettingsCategoryName)]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlDetailedOutlining_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlDetailedOutlining_Description))]
+		public bool UseBqlDetailedOutlining
+		{
+			get => useBqlDetailedOutlining;
+			set
+			{
+				if (useBqlDetailedOutlining != value)
+				{
+					useBqlDetailedOutlining = value;
+					colorSettingsChanged = true;
+				}
+			}
+		}
+
 		public override void ResetSettings()
 		{
 			coloringEnabled = true;
 			useRegexColoring = false;
 			useBqlOutlining = true;
+			useBqlDetailedOutlining = true;
 			pxActionColoringEnabled = true;
 			pxGraphColoringEnabled = true;
 			colorOnlyInsideBQL = false;

@@ -8,8 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Acuminator.Vsix.Resources
-{
+namespace Acuminator.Vsix {
     using System;
     
     
@@ -233,6 +232,15 @@ namespace Acuminator.Vsix.Resources
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to BQL Outlining.
+        /// </summary>
+        public static string Category_Outlining {
+            get {
+                return ResourceManager.GetString("Category_Outlining", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Acuminator - DAC Extension Name.
         /// </summary>
         public static string DacExtensionFormatLabel {
@@ -346,6 +354,24 @@ namespace Acuminator.Vsix.Resources
         public static string Setting_PXGraphColoringEnabled_Title {
             get {
                 return ResourceManager.GetString("Setting_PXGraphColoringEnabled_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allow to collapse parts of the BQL (only for Roslyn coloring). If this setting is set to false the Acuminator will collapse only entire BQL queries..
+        /// </summary>
+        public static string Setting_UseBqlDetailedOutlining_Description {
+            get {
+                return ResourceManager.GetString("Setting_UseBqlDetailedOutlining_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Outline parts of the BQL.
+        /// </summary>
+        public static string Setting_UseBqlDetailedOutlining_Title {
+            get {
+                return ResourceManager.GetString("Setting_UseBqlDetailedOutlining_Title", resourceCulture);
             }
         }
         

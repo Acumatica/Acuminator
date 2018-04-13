@@ -149,15 +149,15 @@ namespace Acuminator.Vsix.Coloriser
                 }
                 else
                 {
-                    ColorBqlPartsAndPXActions(genericNode, typeSymbol, classificationType, coloredCodeType.Value);
+                    ColorAndOutlineBqlPartsAndPXActions(genericNode, typeSymbol, classificationType, coloredCodeType.Value);
                 }
 
                 UpdateCodeEditorIfNecessary();
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void ColorBqlPartsAndPXActions(GenericNameSyntax genericNode, ITypeSymbol typeSymbol, IClassificationType classificationType, 
-                                                   ColoredCodeType coloredCodeType)
+            private void ColorAndOutlineBqlPartsAndPXActions(GenericNameSyntax genericNode, ITypeSymbol typeSymbol, 
+															 IClassificationType classificationType, ColoredCodeType coloredCodeType)
             {
                 if (tagger.Provider.Package.ColorOnlyInsideBQL && !isInsideBqlCommand)
                 {
@@ -171,7 +171,7 @@ namespace Acuminator.Vsix.Coloriser
                 {
                     case ColoredCodeType.BqlOperator:
                         {
-                            if (tagger.Provider.Package.UseBqlOutlining)
+                            if (tagger.Provider.Package.UseBqlOutlining && tagger.Provider.Package.UseBqlDetailedOutlining)
                             {
                                 TextSpan? outliningSpan = typeSymbol.GetBqlOperatorOutliningTextSpan(genericNode);
 

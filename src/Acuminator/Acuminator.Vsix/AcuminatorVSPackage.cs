@@ -143,6 +143,8 @@ namespace Acuminator.Vsix
 
         public bool UseBqlOutlining => GeneralOptionsPage?.UseBqlOutlining ?? true;
 
+		public bool UseBqlDetailedOutlining => GeneralOptionsPage?.UseBqlDetailedOutlining ?? true;
+
         public bool PXGraphColoringEnabled => GeneralOptionsPage?.PXGraphColoringEnabled ?? true;
         
         public bool PXActionColoringEnabled => GeneralOptionsPage?.PXActionColoringEnabled ?? true;
