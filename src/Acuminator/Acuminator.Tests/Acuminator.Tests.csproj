@@ -175,7 +175,7 @@
     <EmbeddedResource Include="Sources\BQL\Formatted\View_EmptyLines.cs" />
     <EmbeddedResource Include="Sources\BQL\Raw\Search_Join.cs" />
     <EmbeddedResource Include="Sources\BQL\Formatted\Search_Join.cs" />
-    <Compile Include="Sources\MissingTypeListAttributeInheritedList.cs" />
+    <EmbeddedResource Include="Sources\MissingTypeListAttributeInheritedList.cs" />
     <Compile Include="StartRowResetForPagingTests.cs" />
     <Compile Include="InheritanceFromPXCacheExtensionTests.cs" />
     <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtension_Bad.cs" />
