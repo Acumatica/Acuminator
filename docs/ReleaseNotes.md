@@ -1,6 +1,9 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator 1.2.
 
+## Acuminator 1.2.1
+Acuminator 1.2.1 contains hotfix for the critical bug found in 1.2 that broke static code analysis execution.
+
 ## Acuminator 1.2
 Acuminator 1.2 includes the new features and the bug fix described in this section, as well as the features for the previous versions, which are described in the Acuminator 1.1 and Acuminator 1.0 sections.
 ### New Settings for Roslyn Coloring
