@@ -44,6 +44,9 @@ namespace Acuminator.Vsix.Formatter
 
 		public override SyntaxNode VisitGenericName(GenericNameSyntax node)
 		{
+			if (node.TypeArgumentList.Arguments.Count <= 1)
+				return base.VisitGenericName(node);
+
 			INamedTypeSymbol typeSymbol = GetTypeSymbol(node);
 			INamedTypeSymbol originalSymbol = typeSymbol?.OriginalDefinition; // get generic type
 			

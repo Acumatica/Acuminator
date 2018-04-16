@@ -43,7 +43,7 @@ namespace Acuminator.Tests
 		[EmbeddedFileData(@"BQL\Raw\Search_Join.cs", @"BQL\Formatted\Search_Join.cs")]
 		public virtual void FormatDocument(string text, string expected)
 		{
-			string actual = Format(text);
+			string actual = Format(text); 
 			Normalize(actual).Should().Be(Normalize(expected));
 		}
 
@@ -60,13 +60,13 @@ namespace Acuminator.Tests
 		[EmbeddedFileData(@"BQL\Formatted\Search_Join.cs")]
 		public virtual void ShouldNotDoubleFormat(string expected)
 		{
-			string actual = Format(expected);
+			string actual = Format(expected); 
 			Normalize(actual).Should().Be(Normalize(expected));
 		}
 
 		[Theory]
-		[EmbeddedFileDataWithParams(@"BQL\Raw\Search_Join.cs", @"BQL\Formatted\Search_Join.cs", 28, 28, 29, 35)]
-		public virtual void FormatSelection(string text, string expected, 
+		[EmbeddedFileDataWithParams(@"BQL\Raw\Search_Join.cs", @"BQL\Formatted\Search_Join.cs", 28, 28, 28, 35)]
+		public virtual void FormatSelection(string text, string expected,  
 			int startLine, int endLine,
 			int expectedStartLine, int expectedEndLine)
 		{
@@ -77,7 +77,7 @@ namespace Acuminator.Tests
 			var originalNodes = GetSelectedNodes(document, startLine, endLine);
 			var expectedNodes = GetSelectedNodes(expectedDocument, expectedStartLine, expectedEndLine);
 
-			for (int i = 0; i < originalNodes.Count; i++)
+			for (int i = 0; i < originalNodes.Count; i++) 
 			{
 				SyntaxNode expectedNode = expectedNodes[i];
 				SyntaxNode actualNode = _formatter.Format(originalNodes[i], semanticModel);
@@ -95,7 +95,7 @@ namespace Acuminator.Tests
 
 			var selection = TextSpan.FromBounds(start, end);
 			var walker = new SpanWalker(selection);
-			walker.Visit(syntaxRoot.FindNode(selection));
+			walker.Visit(syntaxRoot.FindNode(selection)); 
 
 			return walker.NodesWithinSpan.ToArray();
 		}
@@ -108,7 +108,7 @@ namespace Acuminator.Tests
 			SyntaxNode formattedNode = _formatter.Format(syntaxRoot, semanticModel);
 
 			formattedNode = formattedNode.WithAdditionalAnnotations(Formatter.Annotation);
-			string actual = formattedNode.ToFullString();
+			string actual = formattedNode.ToFullString(); 
 
 			return actual;
 		}
@@ -118,7 +118,7 @@ namespace Acuminator.Tests
 			return String.Join(EndOfLine, 
 				text
 				.Split(new[] { EndOfLine }, StringSplitOptions.None)
-				.Select(line => line.TrimEnd()));
+				.Select(line => line.TrimEnd())); 
 		}
 	}
 
