@@ -9,9 +9,7 @@ namespace PX.Objects
 {
 	public class SOOrderEntry : PXGraph<SOOrderEntry>
 	{
-		public PXSelect<
-			SupplierProduct> 
-			Products;
+		public PXSelect<SupplierProduct> Products;
 
 		public IEnumerable products()
 		{
