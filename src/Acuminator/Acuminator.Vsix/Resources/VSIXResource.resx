@@ -144,21 +144,6 @@
   <data name="PXGraphFormatLabel" xml:space="preserve">
     <value>Acuminator - PXGraph</value>
   </data>
-  <data name="BraceLevel_10_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL Angle Brackets (Level 10)</value>
-  </data>
-  <data name="BraceLevel_11_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL Angle Brackets (Level 11)</value>
-  </data>
-  <data name="BraceLevel_12_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL Angle Brackets (Level 12)</value>
-  </data>
-  <data name="BraceLevel_13_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL Angle Brackets (Level 13)</value>
-  </data>
-  <data name="BraceLevel_14_FormatLabel" xml:space="preserve">
-    <value>Acuminator - BQL Angle Brackets (Level 14)</value>
-  </data>
   <data name="BraceLevel_1_FormatLabel" xml:space="preserve">
     <value>Acuminator - BQL Angle Brackets (Level 1)</value>
   </data>
@@ -186,9 +171,26 @@
   <data name="BraceLevel_9_FormatLabel" xml:space="preserve">
     <value>Acuminator - BQL Angle Brackets (Level 9)</value>
   </data>
-  <data name="Category_Acuminator" xml:space="preserve">
-    <value>Acuminator</value>
-    <comment>Must be same as corresponding category name in VSPackage.resx</comment>
+  <data name="BraceLevel_10_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL Angle Brackets (Level 10)</value>
+  </data>
+  <data name="BraceLevel_11_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL Angle Brackets (Level 11)</value>
+  </data>
+  <data name="BraceLevel_12_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL Angle Brackets (Level 12)</value>
+  </data>
+  <data name="BraceLevel_13_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL Angle Brackets (Level 13)</value>
+  </data>
+  <data name="BraceLevel_14_FormatLabel" xml:space="preserve">
+    <value>Acuminator - BQL Angle Brackets (Level 14)</value>
+  </data>
+  <data name="Category_Coloring" xml:space="preserve">
+    <value>BQL Coloring</value>
+  </data>
+  <data name="Category_Outlining" xml:space="preserve">
+    <value>BQL Outlining</value>
   </data>
   <data name="Setting_ColoringEnabled_Title" xml:space="preserve">
     <value>Enable coloring</value>
@@ -224,6 +226,12 @@
     <value>Use BQL outlining</value>
   </data>
   <data name="Setting_UseBqlOutlining_Description" xml:space="preserve">
-    <value>Collapse parts of BQL commands (only for Roslyn coloring).</value>
+    <value>Collapse BQL commands (only for Roslyn coloring).</value>
+  </data>
+  <data name="Setting_UseBqlDetailedOutlining_Title" xml:space="preserve">
+    <value>Outline parts of BQL commands</value>
+  </data>
+  <data name="Setting_UseBqlDetailedOutlining_Description" xml:space="preserve">
+    <value>Collapse parts of BQL commands (only for Roslyn coloring). If set to false, BQL commands are collapsed only entirely.</value>
   </data>
 </root>

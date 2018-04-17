@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel.Composition;
 using System.Windows.Media;
-using Acuminator.Vsix;
-using Acuminator.Vsix.Resources;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 

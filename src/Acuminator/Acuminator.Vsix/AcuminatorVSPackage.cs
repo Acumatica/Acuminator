@@ -43,7 +43,14 @@ namespace Acuminator.Vsix
 					   categoryResourceID: 201, pageNameResourceID: 202, supportsAutomation: true, SupportsProfiles = true)]
 	public sealed class AcuminatorVSPackage : Package
     {
-        [Import]
+		private const string SettingsCategoryName = "Acuminator";
+
+		/// <summary>
+		/// AcuminatorVSPackage GUID string.
+		/// </summary>
+		public const string PackageGuidString = "7e538ed0-0699-434f-acf0-3f6dbc9898ea";
+
+		[Import]
         internal IClassificationFormatMapService classificationFormatMapService = null;  //Set via MEF
 
         public IClassificationFormatMapService ClassificationFormatMapService => classificationFormatMapService;
@@ -80,12 +87,6 @@ namespace Acuminator.Vsix
                 return generalOptionsPage;
             }
         }
-
-        public const string SettingsCategoryName = "Acuminator";
-        /// <summary>
-        /// AcuminatorVSPackage GUID string.
-        /// </summary>
-        public const string PackageGuidString = "7e538ed0-0699-434f-acf0-3f6dbc9898ea";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AcuminatorVSPackage"/> class.
@@ -142,6 +143,8 @@ namespace Acuminator.Vsix
         public bool UseRegexColoring => GeneralOptionsPage?.UseRegexColoring ?? false;
 
         public bool UseBqlOutlining => GeneralOptionsPage?.UseBqlOutlining ?? true;
+
+		public bool UseBqlDetailedOutlining => GeneralOptionsPage?.UseBqlDetailedOutlining ?? true;
 
         public bool PXGraphColoringEnabled => GeneralOptionsPage?.PXGraphColoringEnabled ?? true;
         

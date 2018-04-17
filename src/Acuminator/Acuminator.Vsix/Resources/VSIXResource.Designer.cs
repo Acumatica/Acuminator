@@ -8,8 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Acuminator.Vsix.Resources
-{
+namespace Acuminator.Vsix {
     using System;
     
     
@@ -224,11 +223,20 @@ namespace Acuminator.Vsix.Resources
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Acuminator.
+        ///   Looks up a localized string similar to BQL Coloring.
         /// </summary>
-        public static string Category_Acuminator {
+        public static string Category_Coloring {
             get {
-                return ResourceManager.GetString("Category_Acuminator", resourceCulture);
+                return ResourceManager.GetString("Category_Coloring", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BQL Outlining.
+        /// </summary>
+        public static string Category_Outlining {
+            get {
+                return ResourceManager.GetString("Category_Outlining", resourceCulture);
             }
         }
         
@@ -350,7 +358,25 @@ namespace Acuminator.Vsix.Resources
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Collapse parts of BQL commands (only for Roslyn coloring)..
+        ///   Looks up a localized string similar to Collapse parts of BQL commands (only for Roslyn coloring). If set to false, BQL commands are collapsed only entirely..
+        /// </summary>
+        public static string Setting_UseBqlDetailedOutlining_Description {
+            get {
+                return ResourceManager.GetString("Setting_UseBqlDetailedOutlining_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Outline parts of BQL commands.
+        /// </summary>
+        public static string Setting_UseBqlDetailedOutlining_Title {
+            get {
+                return ResourceManager.GetString("Setting_UseBqlDetailedOutlining_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collapse BQL commands (only for Roslyn coloring)..
         /// </summary>
         public static string Setting_UseBqlOutlining_Description {
             get {
