@@ -226,12 +226,12 @@
     <value>Use BQL outlining</value>
   </data>
   <data name="Setting_UseBqlOutlining_Description" xml:space="preserve">
-    <value>Collapse parts of BQL commands (only for Roslyn coloring).</value>
+    <value>Collapse BQL commands (only for Roslyn coloring).</value>
   </data>
   <data name="Setting_UseBqlDetailedOutlining_Title" xml:space="preserve">
-    <value>Outline parts of the BQL</value>
+    <value>Outline parts of BQL commands</value>
   </data>
   <data name="Setting_UseBqlDetailedOutlining_Description" xml:space="preserve">
-    <value>Allow to collapse parts of the BQL (only for Roslyn coloring). If this setting is set to false the Acuminator will collapse only entire BQL queries.</value>
+    <value>Collapse parts of BQL commands (only for Roslyn coloring). If set to false, BQL commands are collapsed only entirely.</value>
   </data>
 </root>

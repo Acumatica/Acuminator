@@ -358,7 +358,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow to collapse parts of the BQL (only for Roslyn coloring). If this setting is set to false the Acuminator will collapse only entire BQL queries..
+        ///   Looks up a localized string similar to Collapse parts of BQL commands (only for Roslyn coloring). If set to false, BQL commands are collapsed only entirely..
         /// </summary>
         public static string Setting_UseBqlDetailedOutlining_Description {
             get {
@@ -367,7 +367,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Outline parts of the BQL.
+        ///   Looks up a localized string similar to Outline parts of BQL commands.
         /// </summary>
         public static string Setting_UseBqlDetailedOutlining_Title {
             get {
@@ -376,7 +376,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Collapse parts of BQL commands (only for Roslyn coloring)..
+        ///   Looks up a localized string similar to Collapse BQL commands (only for Roslyn coloring)..
         /// </summary>
         public static string Setting_UseBqlOutlining_Description {
             get {
