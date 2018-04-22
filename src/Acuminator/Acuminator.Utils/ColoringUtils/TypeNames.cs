@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using PX.Data;
-using Acuminator.Vsix.Utilities;
 
-namespace Acuminator.Vsix.Coloriser
+
+namespace Acuminator.Utilities
 {
-    internal static class TypeNames
+    public static class TypeNames
     {
         public static readonly string IBqlTable = typeof(IBqlTable).Name;
 

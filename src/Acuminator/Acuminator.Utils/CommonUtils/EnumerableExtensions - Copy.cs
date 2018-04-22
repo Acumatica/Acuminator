@@ -8,7 +8,7 @@ using System.Linq;
 
 
 
-namespace Acuminator.Vsix.Utilities
+namespace Acuminator.Utilities
 {
     internal static class EnumerableExtensions
     {

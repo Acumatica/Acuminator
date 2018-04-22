@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Acuminator.Analyzers.Utilities
+namespace Acuminator.Utilities
 {
     internal static partial class EnumerableExtensions
     {
