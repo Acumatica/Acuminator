@@ -64,22 +64,44 @@ namespace Acuminator.Utilities
                 : new HashSet<T>(source);
         }
 
-        public static IEnumerable<T> Concat<T>(this IEnumerable<T> source, T value)
+        /// <summary>
+        /// Adds a single element to the end of an IEnumerable.
+        /// </summary>
+        /// <typeparam name="T">Type of enumerable to return.</typeparam>
+        /// <param name="source">The source to act on.</param>
+        /// <param name="element">The element.</param>
+        /// <returns>
+        /// IEnumerable containing all the input elements, followed by the specified additional element.
+        /// </returns>
+		public static IEnumerable<T> Append<T>(this IEnumerable<T> source, T element) => ConcatIterator(element, source, false);
+       
+        /// <summary>
+        /// Adds a single element to the start of an IEnumerable.
+        /// </summary>
+        /// <typeparam name="T">Type of enumerable to return.</typeparam>
+        /// <param name="tail">The tail to act on.</param>
+        /// <param name="head">The head.</param>
+        /// <returns>
+        /// IEnumerable containing the specified additional element, followed by all the input elements.
+        /// </returns>
+        public static IEnumerable<T> Prepend<T>(this IEnumerable<T> tail, T head) => ConcatIterator(head, tail, true);
+       
+        private static IEnumerable<T> ConcatIterator<T>(T extraElement, IEnumerable<T> source, bool insertAtStart)
         {
-            source.ThrowOnNull(nameof(source));
-            return ConcatWorker(source, value);
+            if (insertAtStart)
+                yield return extraElement;
 
-            //********************************************************************************************************************
-            IEnumerable<TVal> ConcatWorker<TVal>(IEnumerable<TVal> src, TVal val)
+            if (source != null)
             {
-                foreach (var v in src)
+                foreach (var e in source)
                 {
-                    yield return v;
+                    yield return e;
                 }
-
-                yield return val;
             }
-        }
+
+            if (!insertAtStart)
+                yield return extraElement;
+        }   
 
         /// <summary>
         /// Concatenate structure list to this collection. This is an optimization method which allows to avoid boxing for collections implemented as structs.
@@ -159,11 +181,19 @@ namespace Acuminator.Utilities
 
             return sequence.Any(predicate);
         }
-   
+
+        [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool Contains<T>(this T[] array, T item) => Array.IndexOf(array, item) >= 0;
+
         [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNullOrEmpty<T>(this IEnumerable<T> source) => source == null 
             ? true 
-            : source.IsEmpty();     
+            : source.IsEmpty();
+
+        [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsNullOrEmpty<T>(this T[] array) => array == null || array.Length == 0;      
     }   
 }

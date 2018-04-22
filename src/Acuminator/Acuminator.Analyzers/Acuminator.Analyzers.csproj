@@ -41,7 +41,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Analyzers\NonNullableTypeForBqlFieldAnalyzer.cs" />
-    <Compile Include="EnumerableHelpers.cs" />
     <Compile Include="FixProviders\NonNullableTypeForBqlFieldFix.cs" />
     <Compile Include="Analyzers\InheritanceFromPXCacheExtensionAnalyzer.cs" />
     <Compile Include="Analyzers\LongOperationDelegateClosuresAnalyzer.cs" />
@@ -70,8 +69,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="ResourcesHelper.cs" />
-    <Compile Include="StringHelpers.cs" />
-    <Compile Include="SymbolHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">

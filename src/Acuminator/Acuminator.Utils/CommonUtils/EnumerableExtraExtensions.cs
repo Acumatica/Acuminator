@@ -178,7 +178,7 @@ namespace Acuminator.Utilities.Extra
 
             return true;
         }
-
+               
         public static IComparer<T> ToComparer<T>(this Comparison<T> comparison) => Comparer<T>.Create(comparison);      
 
         private static class Comparisons<T>
@@ -186,6 +186,40 @@ namespace Acuminator.Utilities.Extra
         {
             public static readonly Comparison<T> CompareTo = (t1, t2) => t1.CompareTo(t2);
             public static readonly IComparer<T> Comparer = Comparer<T>.Create(CompareTo);
+        }
+
+        public static T[] Append<T>(this T[] source, T element) => ConcatArray(element, source, false);
+
+        public static T[] Prepend<T>(this T[] tail, T head) => ConcatArray(head, tail, true);
+
+        private static T[] ConcatArray<T>(T extraElement, T[] source, bool insertAtStart)
+        {
+            if (source == null)
+            {
+                source = new T[0];
+            }
+
+            T[] result = new T[source.Length + 1];
+            source.CopyTo(result, insertAtStart ? 1 : 0);
+            result[insertAtStart ? 0 : source.Length] = extraElement;
+            return result;
+        }
+
+        public static T[] Append<T>(this T[] source, params T[] elements) => ConcatArrays(elements, source, false);
+
+        public static T[] Prepend<T>(this T[] tail, params T[] head) => ConcatArrays(head, tail, true);
+
+        private static T[] ConcatArrays<T>(T[] extraElements, T[] source, bool insertAtStart)
+        {
+            if (source == null)
+            {
+                source = new T[0];
+            }
+
+            T[] result = new T[source.Length + extraElements.Length];
+            source.CopyTo(result, insertAtStart ? extraElements.Length : 0);
+            extraElements.CopyTo(result, insertAtStart ? 0 : source.Length);
+            return result;
         }
     }
 

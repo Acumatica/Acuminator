@@ -96,8 +96,6 @@
     <Compile Include="CommonUtils\ConcurrentExtensions.cs" />
     <Compile Include="CommonUtils\EnumerableExtraExtensions.cs" />
     <Compile Include="RoslynExtensions\ITypeSymbolExtensions.cs" />
-    <Compile Include="RoslynExtensions\RoslynVSEditorExtensions.cs" />
-    <Compile Include="ColoringUtils\TypeNames.cs" />
     <Compile Include="ColoringUtils\TypeSymbolColoriserUtils.cs" />
   </ItemGroup>
   <ItemGroup>

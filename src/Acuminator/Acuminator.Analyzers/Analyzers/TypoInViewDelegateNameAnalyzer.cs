@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Acuminator.Utilities;
 
 namespace Acuminator.Analyzers.Analyzers
 {
@@ -19,6 +20,7 @@ namespace Acuminator.Analyzers.Analyzers
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
 				Descriptors.PX1005_TypoInViewDelegateName);
+
         internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
         {
             compilationStartContext.RegisterSymbolAction(c => Analyze(c, pxContext), 
@@ -61,9 +63,11 @@ namespace Acuminator.Analyzers.Analyzers
 			string methodName = method.Name.ToLowerInvariant();
 		    int minDistance = int.MaxValue;
 		    IFieldSymbol nearest = null;
+
 		    foreach (var view in views)
 		    {
-			    int distance = StringHelpers.LevenshteinDistance(methodName, view.Name.ToLowerInvariant());
+			    int distance = StringExtensions.LevenshteinDistance(methodName, view.Name.ToLowerInvariant());
+
 			    if (distance <= MaximumDistance && distance < minDistance)
 			    {
 				    minDistance = distance;

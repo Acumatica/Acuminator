@@ -301,6 +301,8 @@
     <Compile Include="Coloriser\Outlining\PXOutliningTaggerProvider.cs" />
     <Compile Include="Coloriser\Base\PXTaggerProviderBase.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\ColoredCodeType.cs" />
+    <Compile Include="Coloriser\Roslyn\Utils\RoslynVSEditorExtensions.cs" />
+    <Compile Include="Coloriser\Roslyn\Utils\TypeNames.cs" />
     <Compile Include="Resources\VSIXResource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
