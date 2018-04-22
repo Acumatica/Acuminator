@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Acuminator.Utilities
+namespace Acuminator.Utilities.Extra
 {
-    internal static class ArrayExtensions
+    public static class ArrayExtensions
     {
-        internal static T[] Copy<T>(this T[] array, int start, int length)
+        public static T[] Copy<T>(this T[] array, int start, int length)
         {
             // It's ok for 'start' to equal 'array.Length'.  In that case you'll
             // just get an empty array back.
@@ -22,7 +22,7 @@ namespace Acuminator.Utilities
             return newArray;
         }
 
-        internal static bool ValueEquals(this uint[] array, uint[] other)
+        public static bool ValueEquals(this uint[] array, uint[] other)
         {
             if (array == other)
             {
@@ -45,9 +45,10 @@ namespace Acuminator.Utilities
             return true;
         }
 
-        internal static T[] InsertAt<T>(this T[] array, int position, T item)
+        public static T[] InsertAt<T>(this T[] array, int position, T item)
         {
             T[] newArray = new T[array.Length + 1];
+
             if (position > 0)
             {
                 Array.Copy(array, newArray, position);
@@ -62,14 +63,12 @@ namespace Acuminator.Utilities
             return newArray;
         }
 
-        internal static T[] Append<T>(this T[] array, T item)
-        {
-            return InsertAt(array, array.Length, item);
-        }
+        public static T[] Append<T>(this T[] array, T item) => InsertAt(array, array.Length, item);
 
-        internal static T[] InsertAt<T>(this T[] array, int position, T[] items)
+        public static T[] InsertAt<T>(this T[] array, int position, T[] items)
         {
             T[] newArray = new T[array.Length + items.Length];
+
             if (position > 0)
             {
                 Array.Copy(array, newArray, position);
@@ -84,17 +83,11 @@ namespace Acuminator.Utilities
             return newArray;
         }
 
-        internal static T[] Append<T>(this T[] array, T[] items)
-        {
-            return InsertAt(array, array.Length, items);
-        }
+        public static T[] Append<T>(this T[] array, T[] items) => InsertAt(array, array.Length, items);
 
-        internal static T[] RemoveAt<T>(this T[] array, int position)
-        {
-            return RemoveAt(array, position, 1);
-        }
+        public static T[] RemoveAt<T>(this T[] array, int position) => RemoveAt(array, position, 1);
 
-        internal static T[] RemoveAt<T>(this T[] array, int position, int length)
+        public static T[] RemoveAt<T>(this T[] array, int position, int length)
         {
             if (position + length > array.Length)
             {
@@ -102,6 +95,7 @@ namespace Acuminator.Utilities
             }
 
             T[] newArray = new T[array.Length - length];
+
             if (position > 0)
             {
                 Array.Copy(array, newArray, position);
@@ -115,7 +109,7 @@ namespace Acuminator.Utilities
             return newArray;
         }
 
-        internal static T[] ReplaceAt<T>(this T[] array, int position, T item)
+        public static T[] ReplaceAt<T>(this T[] array, int position, T item)
         {
             T[] newArray = new T[array.Length];
             Array.Copy(array, newArray, array.Length);
@@ -123,19 +117,15 @@ namespace Acuminator.Utilities
             return newArray;
         }
 
-        internal static T[] ReplaceAt<T>(this T[] array, int position, int length, T[] items)
-        {
-            return InsertAt(RemoveAt(array, position, length), position, items);
-        }
-
-        internal static void ReverseContents<T>(this T[] array)
-        {
-            ReverseContents(array, 0, array.Length);
-        }
-
-        internal static void ReverseContents<T>(this T[] array, int start, int count)
+        public static T[] ReplaceAt<T>(this T[] array, int position, int length, T[] items) =>
+            InsertAt(RemoveAt(array, position, length), position, items);
+       
+        public static void ReverseContents<T>(this T[] array) => ReverseContents(array, 0, array.Length);
+        
+        public static void ReverseContents<T>(this T[] array, int start, int count)
         {
             int end = start + count - 1;
+
             for (int i = start, j = end; i < j; i++, j--)
             {
                 T tmp = array[i];
@@ -145,7 +135,7 @@ namespace Acuminator.Utilities
         }
 
         // same as Array.BinarySearch, but without using IComparer to compare ints
-        internal static int BinarySearch(this int[] array, int value)
+        public static int BinarySearch(this int[] array, int value)
         {
             var low = 0;
             var high = array.Length - 1;
@@ -181,7 +171,7 @@ namespace Acuminator.Utilities
         /// inserted in order to maintain the sorted order. All values to the right of this position will be
         /// strictly greater than <paramref name="value"/>. Note that this may return a position off the end
         /// of the array if all elements are less than or equal to <paramref name="value"/>.</returns>
-        internal static int BinarySearchUpperBound(this int[] array, int value)
+        public static int BinarySearchUpperBound(this int[] array, int value)
         {
             int low = 0;
             int high = array.Length - 1;
@@ -189,6 +179,7 @@ namespace Acuminator.Utilities
             while (low <= high)
             {
                 int middle = low + ((high - low) >> 1);
+
                 if (array[middle] > value)
                 {
                     high = middle - 1;

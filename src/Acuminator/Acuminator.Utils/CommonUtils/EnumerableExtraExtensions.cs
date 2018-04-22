@@ -94,7 +94,6 @@ namespace Acuminator.Utilities.Extra
             return true;
         }
 
-
         public static IOrderedEnumerable<T> OrderBy<T>(this IEnumerable<T> source, IComparer<T> comparer)
         {
             source.ThrowOnNull(nameof(source));
