@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Acuminator.Analyzers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Acuminator.Utilities;
 
 namespace Acuminator.Vsix.Formatter
 {

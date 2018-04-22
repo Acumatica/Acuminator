@@ -6,7 +6,6 @@ using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Acuminator.Analyzers.Utilities;
 using Acuminator.Utilities;
 
 

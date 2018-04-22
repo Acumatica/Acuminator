@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.Text.Tagging;
 using System.Collections;
-using Acuminator.Vsix.Utilities;
+using Acuminator.Utilities;
 
 
 namespace Acuminator.Vsix.Coloriser

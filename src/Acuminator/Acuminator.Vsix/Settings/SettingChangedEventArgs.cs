@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Acuminator.Vsix.Utilities;
+using Acuminator.Utilities;
 
 namespace Acuminator.Vsix
 {
