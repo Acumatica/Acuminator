@@ -12,35 +12,23 @@ namespace Acuminator.Utilities.Extra
     public static class EnumerableExtraExtensions
     {
         public static T? FirstOrNullable<T>(this IEnumerable<T> source)
-         where T : struct
+        where T : struct
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
+            source.ThrowOnNull(nameof(source));
             return source.Cast<T?>().FirstOrDefault();
         }
 
         public static T? FirstOrNullable<T>(this IEnumerable<T> source, Func<T, bool> predicate)
-            where T : struct
+        where T : struct
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
+            source.ThrowOnNull(nameof(source));
             return source.Cast<T?>().FirstOrDefault(v => predicate(v.Value));
         }
 
         public static T? LastOrNullable<T>(this IEnumerable<T> source)
-            where T : struct
+        where T : struct
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
+            source.ThrowOnNull(nameof(source));
             return source.Cast<T?>().LastOrDefault();
         }
 
