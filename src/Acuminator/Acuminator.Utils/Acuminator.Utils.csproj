@@ -94,7 +94,7 @@
     <Compile Include="CommonUtils\ArrayExtensions.cs" />
     <Compile Include="CommonUtils\EnumerableExtensions.cs" />
     <Compile Include="CommonUtils\ConcurrentExtensions.cs" />
-    <Compile Include="CommonUtils\EnumerableExtensions - Copy.cs" />
+    <Compile Include="CommonUtils\EnumerableExtraExtensions.cs" />
     <Compile Include="RoslynExtensions\ITypeSymbolExtensions.cs" />
     <Compile Include="RoslynExtensions\RoslynVSEditorExtensions.cs" />
     <Compile Include="ColoringUtils\TypeNames.cs" />
