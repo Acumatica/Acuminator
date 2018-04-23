@@ -31,12 +31,13 @@ namespace Acuminator.Vsix.Coloriser
             private readonly PXRoslynColorizerTagger tagger;
 			private readonly ParsedDocument document;
             private int braceLevel;
-            private int attributeLevel;
-            private bool isInsideBqlCommand;
-            private long bqlDeepnessLevel;
+            private int attributeLevel;                  
             private readonly CancellationToken cancellationToken;
 
-			public PXColoriserSyntaxWalker(PXRoslynColorizerTagger aTagger, ParsedDocument parsedDocument, CancellationToken cToken) :
+            private long bqlDeepnessLevel;
+            private bool IsInsideBqlCommand => bqlDeepnessLevel > 0;
+
+            public PXColoriserSyntaxWalker(PXRoslynColorizerTagger aTagger, ParsedDocument parsedDocument, CancellationToken cToken) :
                                       base(SyntaxWalkerDepth.Node)
 			{
 				aTagger.ThrowOnNull(nameof(aTagger));
@@ -49,7 +50,7 @@ namespace Acuminator.Vsix.Coloriser
 
             public override void VisitIdentifierName(IdentifierNameSyntax node)
             {
-                if (tagger.Provider.Package.ColorOnlyInsideBQL && !isInsideBqlCommand)
+                if (tagger.Provider.Package.ColorOnlyInsideBQL && !IsInsideBqlCommand)
                 {
                     if (!cancellationToken.IsCancellationRequested)
                         base.VisitIdentifierName(node);
@@ -144,7 +145,6 @@ namespace Acuminator.Vsix.Coloriser
             {
                 try
                 {
-                    isInsideBqlCommand = true;
                     bqlDeepnessLevel++;
                     var typeArgumentList = genericNode.TypeArgumentList;
 
@@ -160,7 +160,6 @@ namespace Acuminator.Vsix.Coloriser
                 }
                 finally
                 {
-                    isInsideBqlCommand = false;
                     bqlDeepnessLevel--;
                 }
             }
@@ -169,7 +168,7 @@ namespace Acuminator.Vsix.Coloriser
             private void ColorAndOutlineBqlPartsAndPXActions(GenericNameSyntax genericNode, ITypeSymbol typeSymbol, 
 															 IClassificationType classificationType, ColoredCodeType coloredCodeType)
             {
-                if (tagger.Provider.Package.ColorOnlyInsideBQL && !isInsideBqlCommand)
+                if (tagger.Provider.Package.ColorOnlyInsideBQL && !IsInsideBqlCommand)
                 {
                     if (!cancellationToken.IsCancellationRequested)
                         base.VisitGenericName(genericNode);
@@ -251,7 +250,7 @@ namespace Acuminator.Vsix.Coloriser
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
-                if (tagger.Provider.Package.ColorOnlyInsideBQL && !isInsideBqlCommand)
+                if (tagger.Provider.Package.ColorOnlyInsideBQL && !IsInsideBqlCommand)
                 {
                     if (!cancellationToken.IsCancellationRequested)
                         base.VisitQualifiedName(node);
