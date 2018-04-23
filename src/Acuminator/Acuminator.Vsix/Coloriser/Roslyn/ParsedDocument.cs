@@ -7,7 +7,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Acuminator.Vsix.Utilities;
+using Acuminator.Utilities;
 
 
 using Path = System.IO.Path;

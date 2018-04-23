@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Acuminator.Utilities;
 
 namespace Acuminator.Analyzers.Analyzers
 {
@@ -21,6 +22,7 @@ namespace Acuminator.Analyzers.Analyzers
 		{
 			var property = (IPropertySymbol) context.Symbol;
 			var parent = property.ContainingType;
+
 			if (parent != null 
 				&& (parent.ImplementsInterface(pxContext.IBqlTableType) || parent.InheritsFrom(pxContext.PXCacheExtensionType)))
 			{
@@ -28,6 +30,7 @@ namespace Acuminator.Analyzers.Analyzers
 					&& String.Equals(t.Name, property.Name, StringComparison.OrdinalIgnoreCase));
 
 				var propertyType = property.Type as INamedTypeSymbol;
+
 				if (bqlField != null && propertyType != null
 					&& propertyType.IsValueType && propertyType.ConstructedFrom?.SpecialType != SpecialType.System_Nullable_T)
 				{

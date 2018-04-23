@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Acuminator.Analyzers.Utilities;
-using System.Collections.Generic;
+using Acuminator.Utilities;
+
 
 namespace Acuminator.Analyzers.Analyzers
 {

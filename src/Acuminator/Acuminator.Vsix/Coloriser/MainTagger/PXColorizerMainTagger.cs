@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
-using Acuminator.Vsix.Utilities;
+using Acuminator.Utilities;
 using System.Threading;
 using System.Threading.Tasks;
 

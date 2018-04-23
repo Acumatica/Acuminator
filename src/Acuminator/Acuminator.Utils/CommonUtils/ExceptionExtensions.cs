@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 
 
-namespace Acuminator.Vsix.Utilities
+namespace Acuminator.Utilities
 {
     public static class ExceptionExtensions
     {
@@ -19,7 +19,7 @@ namespace Acuminator.Vsix.Utilities
             if (obj != null)
                 return;
 
-            throw NewException(parameter, message);
+            throw NewArgumentNullException(parameter, message);
         }
 
         [DebuggerStepThrough]
@@ -29,11 +29,21 @@ namespace Acuminator.Vsix.Utilities
             if (!string.IsNullOrWhiteSpace(str))
                 return;
 
-            throw NewException(parameter, message);
+            throw str == null
+                ? NewArgumentNullException(parameter, message)
+                : NewArgumentException(parameter, message);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ArgumentNullException NewException(string parameter = null, string message = null)
+        private static ArgumentNullException NewArgumentNullException(string parameter = null, string message = null)
+        {
+            return parameter == null
+               ? throw new ArgumentNullException()
+               : message == null
+                   ? new ArgumentNullException(parameter)
+                   : new ArgumentNullException(parameter, message);
+        }
+
+        private static ArgumentException NewArgumentException(string parameter = null, string message = null)
         {
             return parameter == null
                ? throw new ArgumentNullException()

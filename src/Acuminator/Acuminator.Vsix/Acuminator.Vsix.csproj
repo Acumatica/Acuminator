@@ -77,6 +77,12 @@
       <Project>{984DBFAC-91A7-4059-A5B2-CDE33CD93EA0}</Project>
       <Name>Acuminator.Analyzers</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Acuminator.Utils\Acuminator.Utils.csproj">
+      <Project>{b902103c-831b-4bbf-a88b-3dae6f601cf0}</Project>
+      <Name>Acuminator.Utils</Name>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -294,7 +300,7 @@
     <Compile Include="Coloriser\Outlining\PXOutliningTagger.cs" />
     <Compile Include="Coloriser\Outlining\PXOutliningTaggerProvider.cs" />
     <Compile Include="Coloriser\Base\PXTaggerProviderBase.cs" />
-    <Compile Include="Coloriser\Roslyn\Utils\ColoredCodeType.cs" />
+    <Compile Include="Coloriser\Roslyn\Utils\RoslynVSEditorExtensions.cs" />
     <Compile Include="Resources\VSIXResource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -335,14 +341,7 @@
     <Compile Include="Coloriser\Roslyn\ParsedDocument.cs" />
     <Compile Include="Coloriser\Roslyn\PXColoriserSyntaxWalker.cs" />
     <Compile Include="Coloriser\Roslyn\PXRoslynColorizerTagger.cs" />
-    <Compile Include="Coloriser\Roslyn\Utils\RoslynVSEditorExtensions.cs" />
     <Compile Include="Coloriser\Regex\Utils\RegExpressions.cs" />
-    <Compile Include="Coloriser\Roslyn\Utils\TypeNames.cs" />
-    <Compile Include="Coloriser\Roslyn\Utils\TypeSymbolColoriserUtils.cs" />
-    <Compile Include="Utils\ConcurrentExtensions.cs" />
-    <Compile Include="Utils\EnumerableExtensions.cs" />
-    <Compile Include="Utils\ExceptionExtensions.cs" />
-    <Compile Include="Utils\StringExtensions.cs" />
     <EmbeddedResource Include="Resources\VSIXResource.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>VSIXResource.Designer.cs</LastGenOutput>

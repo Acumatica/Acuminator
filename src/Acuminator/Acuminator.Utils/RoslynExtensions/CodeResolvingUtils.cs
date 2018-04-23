@@ -6,26 +6,23 @@ using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Acuminator.Analyzers.Utilities;
-using Acuminator.Vsix.Utilities;
 
 
 
-
-namespace Acuminator.Vsix.Coloriser
+namespace Acuminator.Utilities
 {
-    internal static class TypeSymbolColoriserUtils
+    public static class CodeResolvingUtils
     {
         // Determine if "type" inherits from "baseType", ignoring constructed types, optionally including interfaces,
         // dealing only with original types.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool InheritsOrImplementsOrEquals(this ITypeSymbol type, string baseTypeName, 
+        public static bool InheritsOrImplementsOrEquals(this ITypeSymbol type, string baseTypeName,
                                                         bool includeInterfaces = true)
         {
             if (type == null)
                 return false;
 
-            IEnumerable<ITypeSymbol> baseTypes = includeInterfaces 
+            IEnumerable<ITypeSymbol> baseTypes = includeInterfaces
                 ? type.GetBaseTypesAndThis().ConcatStructList(type.AllInterfaces)
                 : type.GetBaseTypesAndThis();
 
@@ -58,17 +55,17 @@ namespace Acuminator.Vsix.Coloriser
         /// The coloring type from identifier.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ColoredCodeType? GetColoringTypeFromIdentifier(this ITypeSymbol identifierType, bool skipValidation = false, 
-																	 bool checkItself = false)
+        public static ColoredCodeType? GetColoringTypeFromIdentifier(this ITypeSymbol identifierType, bool skipValidation = false,
+                                                                     bool checkItself = false)
         {
             if (!skipValidation && !identifierType.IsValidForColoring())
                 return null;
 
-			IEnumerable<ITypeSymbol> typeHierarchy = checkItself 
-				? identifierType.GetBaseTypesAndThis() 
-				: identifierType.GetBaseTypes();
+            IEnumerable<ITypeSymbol> typeHierarchy = checkItself
+                ? identifierType.GetBaseTypesAndThis()
+                : identifierType.GetBaseTypes();
 
-			typeHierarchy = typeHierarchy.ConcatStructList(identifierType.AllInterfaces);
+            typeHierarchy = typeHierarchy.ConcatStructList(identifierType.AllInterfaces);
             ColoredCodeType? resolvedColoredCodeType = null;
 
             foreach (ITypeSymbol typeOrInterface in typeHierarchy)
@@ -128,22 +125,22 @@ namespace Acuminator.Vsix.Coloriser
 
             if (checkForNotColoredTypes && typeSymbol.IsAbstract && TypeNames.NotColoredTypes.Contains(typeSymbol.Name))
                 return false;
-         
+
             switch (typeSymbol.TypeKind)
             {
-                case TypeKind.Unknown:                                                            
-                case TypeKind.Delegate:                    
-                case TypeKind.Dynamic:                  
-                case TypeKind.Enum:                  
-                case TypeKind.Error:                  
-                case TypeKind.Interface:                   
-                case TypeKind.Module:                 
-                case TypeKind.Pointer:                                              
-                case TypeKind.Submission:               
-                    return false;              
+                case TypeKind.Unknown:
+                case TypeKind.Delegate:
+                case TypeKind.Dynamic:
+                case TypeKind.Enum:
+                case TypeKind.Error:
+                case TypeKind.Interface:
+                case TypeKind.Module:
+                case TypeKind.Pointer:
+                case TypeKind.Submission:
+                    return false;
                 default:
                     return true;
-            } 
+            }
         }
         
         /// <summary>
@@ -249,12 +246,12 @@ namespace Acuminator.Vsix.Coloriser
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsBqlConstant(this ITypeSymbol typeSymbol)
-		{
-			if (!typeSymbol.IsValidForColoring() || typeSymbol.Name.StartsWith(TypeNames.Constant))
-				return false;
+        {
+            if (!typeSymbol.IsValidForColoring() || typeSymbol.Name.StartsWith(TypeNames.Constant))
+                return false;
 
-			return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.Constant, includeInterfaces: false);
-		}
+            return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.Constant, includeInterfaces: false);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsPXGraph(this ITypeSymbol typeSymbol)
@@ -290,33 +287,33 @@ namespace Acuminator.Vsix.Coloriser
             if (typesAndInterfaces.Contains(TypeNames.IBqlAggregate) ||
                 typesAndInterfaces.Contains(TypeNames.IBqlOrderBy))
             {
-                return bqlOperatorNode.TypeArgumentList.Span;             
-            }    
-            
+                return bqlOperatorNode.TypeArgumentList.Span;
+            }
+
             if (typesAndInterfaces.Contains(TypeNames.IBqlJoin))
             {
                 TypeArgumentListSyntax bqlJoinTypeParamsListSyntax = bqlOperatorNode.TypeArgumentList;
                 var bqlJoinTypeArgumentsList = bqlJoinTypeParamsListSyntax.Arguments;
-             
+
                 switch (bqlJoinTypeArgumentsList.Count)
                 {
                     case 0:
                     case 1:
                         return null;
                     case 2:
-                        return bqlJoinTypeParamsListSyntax.Span;                                                                                                                                           
+                        return bqlJoinTypeParamsListSyntax.Span;
                     default:                                                                                                            //Has next Join => we emit extra outlining tag
                         int length = bqlJoinTypeArgumentsList.GetSeparator(1).SpanStart - bqlJoinTypeParamsListSyntax.SpanStart;
                         return new TextSpan(bqlJoinTypeParamsListSyntax.SpanStart, length);
-                }               
+                }
             }
 
-            if (!typesAndInterfaces.Contains(TypeNames.IBqlPredicateChain) && 
+            if (!typesAndInterfaces.Contains(TypeNames.IBqlPredicateChain) &&
                 !typesAndInterfaces.Contains(TypeNames.IBqlOn))
             {
                 return null;
             }
-            
+
             TypeArgumentListSyntax typeParamsListSyntax = bqlOperatorNode.TypeArgumentList;
             var typeArgumentsList = typeParamsListSyntax.Arguments;
 
@@ -326,11 +323,11 @@ namespace Acuminator.Vsix.Coloriser
                 case 1:
                     return null;
                 case 2:
-                    return typeParamsListSyntax.Span;                    
+                    return typeParamsListSyntax.Span;
                 default:
                     int length = typeArgumentsList.GetSeparator(1).SpanStart - typeParamsListSyntax.SpanStart;
-                    return new TextSpan(typeParamsListSyntax.SpanStart, length);                  
-            }          
+                    return new TextSpan(typeParamsListSyntax.SpanStart, length);
+            }
         }
     }
 }

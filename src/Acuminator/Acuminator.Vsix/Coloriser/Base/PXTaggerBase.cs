@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
-using Acuminator.Vsix.Utilities;
+using Acuminator.Utilities;
 
 namespace Acuminator.Vsix.Coloriser
 {

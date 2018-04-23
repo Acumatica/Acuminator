@@ -297,20 +297,11 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Format the BQL statement to meet the Code Style requirements .
+        ///   Looks up a localized string similar to The number of arguments passed to the Select method does not match the number of BQL statement parameters. .
         /// </summary>
-        public static string PXF1001Fix {
+        public static string PX1015Title {
             get {
-                return ResourceManager.GetString("PXF1001Fix", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The BQL statement doesn&apos;t meet the Code Style requirements .
-        /// </summary>
-        public static string PXF1001Title {
-            get {
-                return ResourceManager.GetString("PXF1001Title", resourceCulture);
+                return ResourceManager.GetString("PX1015Title", resourceCulture);
             }
         }
     }

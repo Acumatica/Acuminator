@@ -16,7 +16,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
-using Acuminator.Vsix.Utilities;
+using Acuminator.Utilities;
 
 
 namespace Acuminator.Vsix.Coloriser

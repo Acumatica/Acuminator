@@ -6,7 +6,7 @@ using System.Windows.Media;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Acuminator.Vsix.Utilities;
+using Acuminator.Utilities;
 
 
 

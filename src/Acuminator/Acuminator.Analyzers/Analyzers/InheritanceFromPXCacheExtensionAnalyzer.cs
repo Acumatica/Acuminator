@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Acuminator.Analyzers.Utilities;
+using Acuminator.Utilities;
 using PX.Data;
 
 namespace Acuminator.Analyzers.Analyzers

@@ -12,7 +12,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
-using Acuminator.Analyzers.Utilities;
+using Acuminator.Utilities;
 
 namespace Acuminator.Analyzers.Analyzers
 {

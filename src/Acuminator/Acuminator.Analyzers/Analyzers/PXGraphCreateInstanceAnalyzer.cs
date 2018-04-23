@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Acuminator.Utilities;
+
 
 namespace Acuminator.Analyzers.Analyzers
 {
@@ -27,36 +27,38 @@ namespace Acuminator.Analyzers.Analyzers
                 _semanticModel = semanticModel;
             }
 
-	        public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
-	        {
-		        if (node.Type != null)
-		        {
-			        var typeSymbol = _semanticModel.GetSymbolInfo(node.Type).Symbol as ITypeSymbol;
-			        if (typeSymbol != null)
-			        {
-				        DiagnosticDescriptor descriptor = null;
-				        if (typeSymbol.InheritsFrom(_pxContext.PXGraphType))
-				        {
-					        descriptor = Descriptors.PX1001_PXGraphCreateInstance;
-				        }
-						else if (typeSymbol.Equals(_pxContext.PXGraphType))
-				        {
-					        descriptor = Descriptors.PX1003_NonSpecificPXGraphCreateInstance;
-				        }
-				        if (descriptor != null)
-				        {
-					        _context.ReportDiagnostic(Diagnostic.Create(descriptor, node.GetLocation()));
-				        }
-			        }
-		        }
+            public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
+            {
+                if (node.Type == null || !(_semanticModel.GetSymbolInfo(node.Type).Symbol is ITypeSymbol typeSymbol))
+                {
+                    base.VisitObjectCreationExpression(node);
+                    return;
+                }
 
-		        base.VisitObjectCreationExpression(node);
-	        }
+                DiagnosticDescriptor descriptor = null;
+
+                if (typeSymbol.InheritsFrom(_pxContext.PXGraphType))
+                {
+                    descriptor = Descriptors.PX1001_PXGraphCreateInstance;
+                }
+                else if (typeSymbol.Equals(_pxContext.PXGraphType))
+                {
+                    descriptor = Descriptors.PX1003_NonSpecificPXGraphCreateInstance;
+                }
+
+                if (descriptor != null)
+                {
+                    _context.ReportDiagnostic(Diagnostic.Create(descriptor, node.GetLocation()));
+                }
+
+                base.VisitObjectCreationExpression(node);
+            }
         }
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
 				Descriptors.PX1001_PXGraphCreateInstance,
 				Descriptors.PX1003_NonSpecificPXGraphCreateInstance);
+
         internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
         {
             compilationStartContext.RegisterSymbolAction(c => Analyze(c, pxContext), 

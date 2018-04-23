@@ -2,7 +2,7 @@
 using Acuminator.Analyzers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Acuminator.Analyzers.Utilities;
+using Acuminator.Utilities;
 
 namespace Acuminator.Vsix.Formatter
 {

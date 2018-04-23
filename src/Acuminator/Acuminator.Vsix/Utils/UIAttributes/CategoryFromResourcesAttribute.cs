@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.Shell;
 
+using Acuminator.Utilities;
 using Acuminator.Vsix.Utilities;
 
 
