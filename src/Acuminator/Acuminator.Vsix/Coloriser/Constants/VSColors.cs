@@ -115,8 +115,8 @@ namespace Acuminator.Vsix.Coloriser
         #endregion
 
         #region DacExtension
-        public static Color DacExtensionFormatColorDark => Color.FromRgb(r: 255, g: 78, b: 79);
-        public static Color DacExtensionFormatColorLight => Color.FromRgb(r: 255, g: 64, b: 38);
+        public static Color DacExtensionFormatColorDark => Color.FromRgb(r: 202, g: 153, b: 102);  
+        public static Color DacExtensionFormatColorLight => Color.FromRgb(r: 202, g: 153, b: 102);  
 
         public static Color DacExtensionFormatColor => IsDarkTheme()
             ? DacExtensionFormatColorDark
@@ -160,8 +160,8 @@ namespace Acuminator.Vsix.Coloriser
         #endregion
 
         #region PXGraph
-        public static Color PXGraphFormatColorDark => Color.FromRgb(r: 179, g: 14, b: 14);
-        public static Color PXGraphFormatColorLight => Color.FromRgb(r: 179, g: 14, b: 14);
+        public static Color PXGraphFormatColorDark => Color.FromRgb(r: 38, g: 155, b: 199);  
+        public static Color PXGraphFormatColorLight => Color.FromRgb(r: 38, g: 155, b: 199);
 
         public static Color PXGraphFormatColor => IsDarkTheme()
             ? PXGraphFormatColorDark
@@ -178,8 +178,8 @@ namespace Acuminator.Vsix.Coloriser
         #endregion
 
         #region BraceLevel_2_
-        public static Color BraceLevel_2_FormatColorDark => Color.FromRgb(r: 117, g: 112, b: 92);
-        public static Color BraceLevel_2_FormatColorLight => Color.FromRgb(r: 155, g: 155, b: 155);
+        public static Color BraceLevel_2_FormatColorDark => Color.FromRgb(r: 172, g: 165, b: 133);  
+        public static Color BraceLevel_2_FormatColorLight => Color.FromRgb(r: 124, g: 124, b: 124);  
 
         public static Color BraceLevel_2_FormatColor => IsDarkTheme()
             ? BraceLevel_2_FormatColorDark
