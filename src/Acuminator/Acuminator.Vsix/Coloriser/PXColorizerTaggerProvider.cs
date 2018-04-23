@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Acuminator.Vsix;
+using Acuminator.Utilities;
 
 
 

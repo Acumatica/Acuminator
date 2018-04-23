@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 using PX.Data;
 
 
-namespace Acuminator.Vsix.Coloriser
+namespace Acuminator.Utilities
 {
     public static class TypeNames
     {

@@ -300,9 +300,7 @@
     <Compile Include="Coloriser\Outlining\PXOutliningTagger.cs" />
     <Compile Include="Coloriser\Outlining\PXOutliningTaggerProvider.cs" />
     <Compile Include="Coloriser\Base\PXTaggerProviderBase.cs" />
-    <Compile Include="Coloriser\Roslyn\Utils\ColoredCodeType.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\RoslynVSEditorExtensions.cs" />
-    <Compile Include="Coloriser\Roslyn\Utils\TypeNames.cs" />
     <Compile Include="Resources\VSIXResource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -344,7 +342,6 @@
     <Compile Include="Coloriser\Roslyn\PXColoriserSyntaxWalker.cs" />
     <Compile Include="Coloriser\Roslyn\PXRoslynColorizerTagger.cs" />
     <Compile Include="Coloriser\Regex\Utils\RegExpressions.cs" />
-    <Compile Include="Coloriser\Roslyn\Utils\TypeSymbolColoriserUtils.cs" />
     <EmbeddedResource Include="Resources\VSIXResource.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>VSIXResource.Designer.cs</LastGenOutput>

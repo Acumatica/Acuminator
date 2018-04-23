@@ -32,6 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -95,8 +96,10 @@
     <Compile Include="CommonUtils\EnumerableExtensions.cs" />
     <Compile Include="CommonUtils\ConcurrentExtensions.cs" />
     <Compile Include="CommonUtils\EnumerableExtraExtensions.cs" />
+    <Compile Include="RoslynExtensions\ColoredCodeType.cs" />
     <Compile Include="RoslynExtensions\ITypeSymbolExtensions.cs" />
-    <Compile Include="ColoringUtils\TypeSymbolColoriserUtils.cs" />
+    <Compile Include="RoslynExtensions\CodeResolvingUtils.cs" />
+    <Compile Include="RoslynExtensions\TypeNames.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
