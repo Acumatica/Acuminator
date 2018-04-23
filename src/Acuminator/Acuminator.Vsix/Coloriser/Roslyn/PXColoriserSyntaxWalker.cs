@@ -111,6 +111,11 @@ namespace Acuminator.Vsix.Coloriser
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
+                if (genericNode.IsUnboundGenericName)
+                {
+                    typeSymbol = typeSymbol.OriginalDefinition;
+                }
+
                 ColoredCodeType? coloredCodeType = typeSymbol.GetColoringTypeFromGenericName();
                 IClassificationType classificationType = coloredCodeType.HasValue 
                     ? tagger.Provider[coloredCodeType.Value]
@@ -125,34 +130,36 @@ namespace Acuminator.Vsix.Coloriser
                     return;
                 }
 
-                if (coloredCodeType.Value == ColoredCodeType.BqlCommand)
-                {
-                    try
-                    {
-                        isInsideBqlCommand = true;
-                        var typeArgumentList = genericNode.TypeArgumentList;
-
-                        if (typeArgumentList.Arguments.Count > 1)
-                        {
-                            AddOutliningTagToBQL(typeArgumentList.Span);
-                        }
-
-                        AddClassificationTag(genericNode.Identifier.Span, classificationType);
-
-                        if (!cancellationToken.IsCancellationRequested)
-                            base.VisitGenericName(genericNode);
-                    }
-                    finally
-                    {
-                        isInsideBqlCommand = false;
-                    }                              
-                }
+                if (coloredCodeType.Value == ColoredCodeType.BqlCommand)           
+                    ColorAndOutlineBqlCommandBeginning(genericNode, classificationType);
                 else
-                {
                     ColorAndOutlineBqlPartsAndPXActions(genericNode, typeSymbol, classificationType, coloredCodeType.Value);
-                }
 
                 UpdateCodeEditorIfNecessary();
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void ColorAndOutlineBqlCommandBeginning(GenericNameSyntax genericNode, IClassificationType classificationType)
+            {
+                try
+                {
+                    isInsideBqlCommand = true;
+                    var typeArgumentList = genericNode.TypeArgumentList;
+
+                    if (typeArgumentList.Arguments.Count > 1)
+                    {
+                        AddOutliningTagToBQL(typeArgumentList.Span);
+                    }
+
+                    AddClassificationTag(genericNode.Identifier.Span, classificationType);
+
+                    if (!cancellationToken.IsCancellationRequested)
+                        base.VisitGenericName(genericNode);
+                }
+                finally
+                {
+                    isInsideBqlCommand = false;
+                }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

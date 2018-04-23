@@ -58,7 +58,7 @@ namespace Acuminator.Utilities
         public static ColoredCodeType? GetColoringTypeFromIdentifier(this ITypeSymbol identifierType, bool skipValidation = false,
                                                                      bool checkItself = false)
         {
-            if (!skipValidation && !identifierType.IsValidForColoring(checkForNotColoredTypes: false))
+            if (!skipValidation && !identifierType.IsValidForColoring())
                 return null;
 
             IEnumerable<ITypeSymbol> typeHierarchy = checkItself
@@ -77,22 +77,17 @@ namespace Acuminator.Utilities
                 }
             }
 
-            switch (resolvedColoredCodeType)
-            {
-                case null:
-                    return null;
-                case ColoredCodeType resultCodeType when skipValidation:
-                    return resultCodeType;
-                default:
-                    return ValidateColorCodeTypeAndSymbolName(resolvedColoredCodeType.Value, identifierType.Name);
-            }
-        }
-
+            return resolvedColoredCodeType;
+		}
+        
         /// <summary>
         /// An ITypeSymbol extension method that gets <see cref="ColoredCodeType"/> from generic Name type symbol.
         /// </summary>
         /// <param name="genericName">The generic Name type symbol to act on.</param>
-        /// <returns/>  
+        /// <param name="genericNode">The generic node.</param>
+        /// <returns>
+        /// The coloring type from generic name.
+        /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ColoredCodeType? GetColoringTypeFromGenericName(this ITypeSymbol genericName)
         {
@@ -101,7 +96,6 @@ namespace Acuminator.Utilities
 
             IEnumerable<ITypeSymbol> typeHierarchy = genericName.GetBaseTypes()
                                                                 .ConcatStructList(genericName.AllInterfaces);
-
             ColoredCodeType? resolvedColoredCodeType = null;
 
             foreach (ITypeSymbol typeOrInterface in typeHierarchy)
@@ -113,37 +107,16 @@ namespace Acuminator.Utilities
                 }
             }
 
-            return resolvedColoredCodeType.HasValue
-                ? ValidateColorCodeTypeAndSymbolName(resolvedColoredCodeType.Value, genericName.Name)
-                : null;
+            return resolvedColoredCodeType;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ColoredCodeType? ValidateColorCodeTypeAndSymbolName(ColoredCodeType coloredCodeType, string typeSymbolName)
-        {
-            bool isValid = true;
-
-            switch (coloredCodeType)
-            {
-                case ColoredCodeType.BqlOperator:
-                case ColoredCodeType.BqlCommand:
-                    isValid = typeSymbolName != TypeNames.BqlCommand;
-                    break;
-                case ColoredCodeType.DacExtension:
-                    isValid = typeSymbolName != TypeNames.PXCacheExtension && typeSymbolName != TypeNames.PXCacheExtensionGeneric;
-                    break;
-                case ColoredCodeType.BQLConstantPrefix:
-                case ColoredCodeType.BQLConstantEnding:
-                    isValid = typeSymbolName != TypeNames.Constant && typeSymbolName != TypeNames.ConstantGeneric;
-                    break;
-                case ColoredCodeType.PXGraph:
-                    isValid = typeSymbolName != TypeNames.PXGraph && typeSymbolName != TypeNames.PXGraphGeneric;
-                    break;
-            }
-
-            return isValid ? coloredCodeType : (ColoredCodeType?)null;
-        }
-
+        /// <summary>
+        /// An <see cref="ITypeSymbol"/> extension method that query if <paramref name="typeSymbol"/> is valid for coloring.
+        /// </summary>
+        /// <param name="typeSymbol">The typeSymbol to act on.</param>
+        /// <param name="checkForNotColoredTypes">(Optional) True to check <paramref name="typeSymbol"/> in a list of not colored types.
+        /// By default is true to prevent coloring of base types and interfaces.</param>
+        /// <returns/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsValidForColoring(this ITypeSymbol typeSymbol, bool checkForNotColoredTypes = true)
         {
@@ -169,6 +142,38 @@ namespace Acuminator.Utilities
                     return true;
             }
         }
+        
+        /// <summary>
+        /// Extra validation for the color code type and symbol name.
+        /// </summary>
+        /// <param name="coloredCodeType">Type of the colored code.</param>
+        /// <param name="typeSymbolName">Name of the type symbol.</param>
+        /// <returns/>
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //private static ColoredCodeType? ValidateColorCodeTypeAndSymbolName(ColoredCodeType coloredCodeType, string typeSymbolName)
+        //{
+        //    bool isValid = true;
+
+        //    switch (coloredCodeType)
+        //    {
+        //        case ColoredCodeType.BqlOperator:
+        //        case ColoredCodeType.BqlCommand:
+        //            isValid = typeSymbolName != TypeNames.BqlCommand;
+        //            break;
+        //        case ColoredCodeType.DacExtension:
+        //            isValid = typeSymbolName != TypeNames.PXCacheExtension && typeSymbolName != TypeNames.PXCacheExtensionGeneric;
+        //            break;
+        //        case ColoredCodeType.BQLConstantPrefix:
+        //        case ColoredCodeType.BQLConstantEnding:
+        //            isValid = typeSymbolName != TypeNames.Constant && typeSymbolName != TypeNames.ConstantGeneric;
+        //            break;
+        //        case ColoredCodeType.PXGraph:
+        //            isValid = typeSymbolName != TypeNames.PXGraph && typeSymbolName != TypeNames.PXGraphGeneric;
+        //            break;
+        //    }
+
+        //    return isValid ? coloredCodeType : (ColoredCodeType?)null;
+        //}
 
         /// <summary>
         /// An ITypeSymbol extension method that query if 'typeSymbol' is bql command.
