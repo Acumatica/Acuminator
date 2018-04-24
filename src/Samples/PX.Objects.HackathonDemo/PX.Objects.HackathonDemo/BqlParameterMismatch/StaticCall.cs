@@ -17,7 +17,7 @@ namespace PX.Objects.HackathonDemo
 					And<SOOrder.status, Equal<Required<SOOrder.status>>>>, 
 				OrderBy<
 					Asc<SOOrder.orderNbr>>>
-				.Select(this).ToArray();
+				.SelectSingleBound(this, pars: null, curs: null).ToArray();
 
             return this;
 		}

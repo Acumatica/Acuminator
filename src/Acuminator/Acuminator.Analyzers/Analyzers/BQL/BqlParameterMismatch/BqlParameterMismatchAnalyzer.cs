@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp;
@@ -15,7 +16,7 @@ using PX.Data;
 namespace Acuminator.Analyzers
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class BqlParameterMismatchAnalyzer : PXDiagnosticAnalyzer
+    public partial class BqlParameterMismatchAnalyzer : PXDiagnosticAnalyzer
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1015_PXBqlParametersMismatch);
@@ -37,8 +38,9 @@ namespace Acuminator.Analyzers
 
             if (methodSymbol.IsStatic)
                 AnalyzeStaticInvocation(methodSymbol, pxContext, syntaxContext, invocationNode);
-
-        }
+			else
+				AnalyzeInstanceInvocation(methodSymbol, pxContext, syntaxContext, invocationNode);
+		}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsValidMethodGeneralCheck(IMethodSymbol methodSymbol, PXContext pxContext)
@@ -51,13 +53,22 @@ namespace Acuminator.Analyzers
                 case MethodKind.DelegateInvoke:
                 case MethodKind.Ordinary:
                 case MethodKind.DeclareMethod:
-                    return IsValidReturnType(methodSymbol, pxContext);
+				case MethodKind.ReducedExtension:
+					break;
                 default:
                     return false;
             }
-        }
 
-        private static bool IsValidReturnType(IMethodSymbol methodSymbol, PXContext pxContext)
+			var parameters = methodSymbol.Parameters;
+
+			if (parameters.IsDefaultOrEmpty || !parameters[parameters.Length - 1].IsParams)
+				return false;
+
+			return methodSymbol.ContainingType.IsBqlCommand() && IsValidReturnType(methodSymbol, pxContext);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static bool IsValidReturnType(IMethodSymbol methodSymbol, PXContext pxContext)
         {
             if (methodSymbol.ReturnsVoid)
                 return false;
@@ -70,14 +81,15 @@ namespace Acuminator.Analyzers
 
         private static void AnalyzeStaticInvocation(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
                                                     InvocationExpressionSyntax invocationNode)
-        {
-            if (!methodSymbol.ContainingType.IsBqlCommand())
-                return;
+        {         
+			(int argsCount, bool stopDiagnostic) = GetBqlArgumentsCount(methodSymbol, pxContext, syntaxContext, invocationNode);
 
-            StaticMismatchWalker walker = new StaticMismatchWalker(syntaxContext, pxContext);
+			if (stopDiagnostic || syntaxContext.CancellationToken.IsCancellationRequested)
+				return;
+
+			ParametersCounterWalker walker = new ParametersCounterWalker(syntaxContext, pxContext);
             walker.Visit(invocationNode);
-            int argsCount = invocationNode.ArgumentList.Arguments.Count;
-            int maxCount = walker.OptionalParametersCount + walker.RequiredParametersCount;
+			int maxCount = walker.OptionalParametersCount + walker.RequiredParametersCount;
             int minCount = walker.RequiredParametersCount;
             
             if (argsCount < minCount || argsCount > maxCount)
@@ -86,6 +98,72 @@ namespace Acuminator.Analyzers
                 syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1015_PXBqlParametersMismatch, location));
             }           
         }
+
+		private static async void AnalyzeInstanceInvocation(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
+															 InvocationExpressionSyntax invocationNode)
+		{
+			if (!(invocationNode.Expression is MemberAccessExpressionSyntax memberAccessNode) ||
+				memberAccessNode.OperatorToken.Kind() != SyntaxKind.DotToken ||
+				syntaxContext.CancellationToken.IsCancellationRequested)
+			{
+				return;
+			}
+
+			(int argsCount, bool stopDiagnostic) = GetBqlArgumentsCount(methodSymbol, pxContext, syntaxContext, invocationNode);
+
+			if (stopDiagnostic || syntaxContext.CancellationToken.IsCancellationRequested)
+				return;
+
+			TypeInfo typeInfo = syntaxContext.SemanticModel.GetTypeInfo(memberAccessNode.Expression, syntaxContext.CancellationToken);
+			ITypeSymbol containingType = typeInfo.ConvertedType ?? typeInfo.Type;
+
+			if (containingType == null)
+				return;
+
+			SymbolWalker visitor = new SymbolWalker();
+			visitor.Visit(containingType);
+
+			
+		}
+
+		private static (int ArgsCount, bool StopDiagnostic) GetBqlArgumentsCount(IMethodSymbol methodSymbol, PXContext pxContext,
+																				 SyntaxNodeAnalysisContext syntaxContext,
+																				 InvocationExpressionSyntax invocationNode)
+		{
+			var parameters = methodSymbol.Parameters;
+			var bqlArgsParam = parameters[parameters.Length - 1];
+			var argumentsList = invocationNode.ArgumentList.Arguments;
+
+			var argumentPassedViaName = argumentsList.FirstOrDefault(a => a.NameColon.Name.Identifier.ValueText == bqlArgsParam.Name);
+
+			if (argumentPassedViaName != null)
+				return GetBqlArgumentsCountWhenCouldBePassedAsArray(argumentPassedViaName, syntaxContext);
+
+			var nonBqlArgsParametersCount = methodSymbol.Parameters.Length - 1;   //The last one parameter is params array for BQL args
+			int argsCount = argumentsList.Count - nonBqlArgsParametersCount;
+
+			if (argsCount == 1)
+				return GetBqlArgumentsCountWhenCouldBePassedAsArray(argumentsList[argumentsList.Count - 1], syntaxContext);
+
+			return (argsCount, StopDiagnostic: false);
+		}
+
+		private static (int ArgsCount, bool StopDiagnostic) GetBqlArgumentsCountWhenCouldBePassedAsArray(ArgumentSyntax argumentPassedViaName,
+																										 SyntaxNodeAnalysisContext syntaxContext)
+		{
+			TypeInfo typeInfo = syntaxContext.SemanticModel.GetTypeInfo(argumentPassedViaName.Expression, syntaxContext.CancellationToken);
+			ITypeSymbol typeSymbol = typeInfo.ConvertedType ?? typeInfo.Type;
+
+			if (typeSymbol == null)
+				return (0, StopDiagnostic: true);
+			else if (typeSymbol.IsValueType || typeSymbol.Kind != SymbolKind.ArrayType)
+				return (1, false);
+			
+			if (argumentPassedViaName.Expression is ImplicitArrayCreationExpressionSyntax arrayCreationNode)			
+				return (arrayCreationNode.Initializer.Expressions.Count, false);
+			
+			return (0, StopDiagnostic: true);		
+		}
 
         private static Location GetLocation(InvocationExpressionSyntax invocationNode)
         {
@@ -101,64 +179,15 @@ namespace Acuminator.Analyzers
             return methodIdentifierNode?.GetLocation() ?? invocationNode.GetLocation();
         }
 
-        private class StaticMismatchWalker : CSharpSyntaxWalker
-        {
-            private readonly SyntaxNodeAnalysisContext syntaxContext;
-            private readonly PXContext pxContext;
-            private readonly SemanticModel semanticModel;
-            private readonly CancellationToken cancellationToken;
-            
-            public int RequiredParametersCount
-            {
-                get;
-                private set;
-            }
 
-            public int OptionalParametersCount
-            {
-                get;
-                private set;
-            }
+		private class SymbolWalker : SymbolVisitor
+		{
+			public override void VisitNamedType(INamedTypeSymbol symbol)
+			{
+				
 
-            public StaticMismatchWalker(SyntaxNodeAnalysisContext aSyntaxContext, PXContext aPxContext)
-            {
-                syntaxContext = aSyntaxContext;
-                pxContext = aPxContext;
-                semanticModel = syntaxContext.SemanticModel;
-                cancellationToken = syntaxContext.CancellationToken;
-            }
-
-            public override void VisitGenericName(GenericNameSyntax genericNode)
-            {
-                if (cancellationToken.IsCancellationRequested)
-                    return;
-
-                SymbolInfo symbolInfo = semanticModel.GetSymbolInfo(genericNode);
-
-                if (cancellationToken.IsCancellationRequested || !(symbolInfo.Symbol is ITypeSymbol typeSymbol))
-                {
-                    if (!cancellationToken.IsCancellationRequested)
-                        base.VisitGenericName(genericNode);
-
-                    return;
-                }
-
-                if (genericNode.IsUnboundGenericName)
-                    typeSymbol = typeSymbol.OriginalDefinition;
-
-                PXCodeType? codeType = typeSymbol.GetCodeTypeFromGenericName();
-
-                if (codeType == PXCodeType.BqlParameter)
-                {
-                    if (typeSymbol.InheritsFromOrEquals(pxContext.BQL.Required))
-                        RequiredParametersCount++;
-                    else if (typeSymbol.InheritsFromOrEquals(pxContext.BQL.Optional) || typeSymbol.InheritsFromOrEquals(pxContext.BQL.Optional2))
-                        OptionalParametersCount++;
-                }
-
-                if (!cancellationToken.IsCancellationRequested)
-                    base.VisitGenericName(genericNode);             
-            }
-        }
-    }
+				base.VisitNamedType(symbol);
+			}
+		}
+	}
 }

@@ -46,6 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BqlParameterMismatch\InstanceCall.cs" />
+    <Compile Include="BqlParameterMismatch\StaticCall.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="SOOrder.cs" />
@@ -53,7 +55,6 @@
     <Compile Include="SOOrderEntry.cs" />
     <Compile Include="SOOrderProcessing.cs" />
     <Compile Include="SOSetup.cs" />
-    <Compile Include="StaticCall.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
