@@ -40,11 +40,12 @@
     <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Analyzers\BQL\BqlMethodConstants.cs" />
     <Compile Include="Analyzers\NonNullableTypeForBqlFieldAnalyzer.cs" />
     <Compile Include="FixProviders\NonNullableTypeForBqlFieldFix.cs" />
     <Compile Include="Analyzers\InheritanceFromPXCacheExtensionAnalyzer.cs" />
     <Compile Include="Analyzers\LongOperationDelegateClosuresAnalyzer.cs" />
-    <Compile Include="Analyzers\BQL\BqlParameterMismatchAnalyzer.cs" />
+    <Compile Include="Analyzers\BQL\BqlParameterMismatch\BqlParameterMismatchAnalyzer.cs" />
     <Compile Include="Analyzers\MissingTypeListAttributeAnalyzer.cs" />
     <Compile Include="Analyzers\StartRowResetForPaging.cs" />
     <Compile Include="Analyzers\TypoInViewDelegateNameAnalyzer.cs" />

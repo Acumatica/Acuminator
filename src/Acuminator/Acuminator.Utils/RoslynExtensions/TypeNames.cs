@@ -90,6 +90,6 @@ namespace Acuminator.Utilities
             ConstantGeneric,
             PXGraph,
             PXGraphGeneric
-        };
+        };    
     }
 }

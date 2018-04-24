@@ -5,16 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 using PX.Data;
 
-namespace PX.Objects
+namespace PX.Objects.HackathonDemo
 {
-	public class SOOrderEntry : PXGraph<SOOrderEntry>
+	public class SOOrderTestEntry : PXGraph<SOOrderEntry>
 	{
 		public object Foo()
 		{
 			var result =
                 PXSelect<SOOrder, 
-				Where<SOOrder.orderType, Equal<Required<SalesOrder.orderType>>, 
-					And<SOOrder.status, Equal<Required<SalesOrder.status>>>>, 
+				Where<SOOrder.orderType, Equal<Required<SOOrder.orderType>>, 
+					And<SOOrder.status, Equal<Required<SOOrder.status>>>>, 
 				OrderBy<
 					Asc<SOOrder.orderNbr>>>
 				.Select(this).ToArray();
