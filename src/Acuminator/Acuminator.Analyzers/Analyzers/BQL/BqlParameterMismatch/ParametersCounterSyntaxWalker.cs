@@ -16,7 +16,10 @@ namespace Acuminator.Analyzers
 {
     public partial class BqlParameterMismatchAnalyzer : PXDiagnosticAnalyzer
     {      
-        protected class ParametersCounterWalker : CSharpSyntaxWalker
+        /// <summary>
+        /// The BQL parameters counting syntax walker.
+        /// </summary>
+        protected class ParametersCounterSyntaxWalker : CSharpSyntaxWalker
         {
             private readonly SyntaxNodeAnalysisContext syntaxContext;
             private readonly PXContext pxContext;
@@ -35,7 +38,7 @@ namespace Acuminator.Analyzers
                 private set;
             }
 
-            public ParametersCounterWalker(SyntaxNodeAnalysisContext aSyntaxContext, PXContext aPxContext)
+            public ParametersCounterSyntaxWalker(SyntaxNodeAnalysisContext aSyntaxContext, PXContext aPxContext)
             {
                 syntaxContext = aSyntaxContext;
                 pxContext = aPxContext;
@@ -65,15 +68,31 @@ namespace Acuminator.Analyzers
 
                 if (codeType == PXCodeType.BqlParameter)
                 {
-                    if (typeSymbol.InheritsFromOrEquals(pxContext.BQL.Required) || typeSymbol.InheritsFromOrEquals(pxContext.BQL.Argument))
-                        RequiredParametersCount++;
-                    else if (typeSymbol.InheritsFromOrEquals(pxContext.BQL.Optional) || typeSymbol.InheritsFromOrEquals(pxContext.BQL.Optional2))
-                        OptionalParametersCount++;
-                }
+					if (!UpdateParametersCount(typeSymbol))
+					{
+						UpdateParametersCount(typeSymbol.OriginalDefinition);
+					}
+				}
 
                 if (!cancellationToken.IsCancellationRequested)
                     base.VisitGenericName(genericNode);             
             }
-        }
+
+			private bool UpdateParametersCount(ITypeSymbol typeSymbol)
+			{
+				if (typeSymbol.InheritsFromOrEquals(pxContext.BQL.Required) || typeSymbol.InheritsFromOrEquals(pxContext.BQL.Argument))
+				{
+					RequiredParametersCount++;
+					return true;
+				}
+				else if (typeSymbol.InheritsFromOrEquals(pxContext.BQL.Optional) || typeSymbol.InheritsFromOrEquals(pxContext.BQL.Optional2))
+				{
+					OptionalParametersCount++;
+					return true;
+				}
+
+				return false;
+			}
+		}
     }
 }

@@ -41,7 +41,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Analyzers\BQL\BqlMethodConstants.cs" />
-    <Compile Include="Analyzers\BQL\BqlParameterMismatch\ParametersCounterWalker.cs" />
+    <Compile Include="Analyzers\BQL\BqlParameterMismatch\ParametersCounterSymbolWalker.cs" />
+    <Compile Include="Analyzers\BQL\BqlParameterMismatch\ParametersCounterSyntaxWalker.cs" />
     <Compile Include="Analyzers\NonNullableTypeForBqlFieldAnalyzer.cs" />
     <Compile Include="FixProviders\NonNullableTypeForBqlFieldFix.cs" />
     <Compile Include="Analyzers\InheritanceFromPXCacheExtensionAnalyzer.cs" />
@@ -63,7 +64,6 @@
     <Compile Include="FixProviders\TypoInViewDelegateNameFix.cs" />
     <Compile Include="FixProviders\PXGraphCreateInstanceFix.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PXContext.cs" />
     <Compile Include="PXDiagnosticAnalyzer.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>

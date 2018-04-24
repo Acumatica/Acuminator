@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Acuminator.Analyzers;
 
 
 
@@ -144,38 +145,6 @@ namespace Acuminator.Utilities
         }
         
         /// <summary>
-        /// Extra validation for the color code type and symbol name.
-        /// </summary>
-        /// <param name="coloredCodeType">Type of the colored code.</param>
-        /// <param name="typeSymbolName">Name of the type symbol.</param>
-        /// <returns/>
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //private static ColoredCodeType? ValidateColorCodeTypeAndSymbolName(ColoredCodeType coloredCodeType, string typeSymbolName)
-        //{
-        //    bool isValid = true;
-
-        //    switch (coloredCodeType)
-        //    {
-        //        case ColoredCodeType.BqlOperator:
-        //        case ColoredCodeType.BqlCommand:
-        //            isValid = typeSymbolName != TypeNames.BqlCommand;
-        //            break;
-        //        case ColoredCodeType.DacExtension:
-        //            isValid = typeSymbolName != TypeNames.PXCacheExtension && typeSymbolName != TypeNames.PXCacheExtensionGeneric;
-        //            break;
-        //        case ColoredCodeType.BQLConstantPrefix:
-        //        case ColoredCodeType.BQLConstantEnding:
-        //            isValid = typeSymbolName != TypeNames.Constant && typeSymbolName != TypeNames.ConstantGeneric;
-        //            break;
-        //        case ColoredCodeType.PXGraph:
-        //            isValid = typeSymbolName != TypeNames.PXGraph && typeSymbolName != TypeNames.PXGraphGeneric;
-        //            break;
-        //    }
-
-        //    return isValid ? coloredCodeType : (ColoredCodeType?)null;
-        //}
-
-        /// <summary>
         /// An ITypeSymbol extension method that query if 'typeSymbol' is bql command.
         /// </summary>
         /// <param name="typeSymbol">The typeSymbol to act on.</param>
@@ -185,10 +154,10 @@ namespace Acuminator.Utilities
         /// </returns>
         public static bool IsBqlCommand(this ITypeSymbol typeSymbol)
         {
-            if (!typeSymbol.IsValidForColoring() || string.Equals(typeSymbol.Name, TypeNames.BqlCommand))
-                return false;
+			if (!typeSymbol.IsValidForColoring(checkForNotColoredTypes: false))
+				return false;
 
-            List<string> typeHierarchyNames = typeSymbol.GetBaseTypesAndThis()
+			List<string> typeHierarchyNames = typeSymbol.GetBaseTypesAndThis()
                                                         .Select(type => type.Name)
                                                         .ToList();
 
@@ -196,18 +165,42 @@ namespace Acuminator.Utilities
                    typeHierarchyNames.Contains(TypeNames.BqlCommand);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsBqlCommand(this ITypeSymbol typeSymbol, PXContext pxContext)
+		{
+			if (!typeSymbol.IsValidForColoring(checkForNotColoredTypes: false))
+				return false;
+
+			if (pxContext == null)
+				return typeSymbol.IsBqlCommand();
+
+			List<ITypeSymbol> typeHierarchy = typeSymbol.GetBaseTypesAndThis().ToList();
+			return typeHierarchy.Contains(pxContext.PXSelectBaseType) || typeHierarchy.Contains(pxContext.BQL.BqlCommand);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsBqlParameter(this ITypeSymbol typeSymbol)
         {
-            if (!typeSymbol.IsValidForColoring())
+            if (!typeSymbol.IsValidForColoring(checkForNotColoredTypes: false))
                 return false;
 
             return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.IBqlParameter);
         }
 
-        public static bool IsBqlOperator(this ITypeSymbol typeSymbol)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsBqlParameter(this ITypeSymbol typeSymbol, PXContext pxContext)
+		{
+			if (!typeSymbol.IsValidForColoring(checkForNotColoredTypes: false))
+				return false;
+
+			if (pxContext == null)
+				return typeSymbol.IsBqlOperator();
+
+			return typeSymbol.ImplementsInterface(pxContext.BQL.IBqlParameter);
+		}
+
+		public static bool IsBqlOperator(this ITypeSymbol typeSymbol)
         {
-            if (!typeSymbol.IsValidForColoring())
+            if (!typeSymbol.IsValidForColoring(checkForNotColoredTypes: false))
                 return false;
 
             foreach (var interfaceSymbol in typeSymbol.AllInterfaces)

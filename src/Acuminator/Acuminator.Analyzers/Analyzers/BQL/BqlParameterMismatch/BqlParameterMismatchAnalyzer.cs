@@ -64,7 +64,7 @@ namespace Acuminator.Analyzers
 			if (parameters.IsDefaultOrEmpty || !parameters[parameters.Length - 1].IsParams)
 				return false;
 
-			return methodSymbol.ContainingType.IsBqlCommand() && IsValidReturnType(methodSymbol, pxContext);
+			return methodSymbol.ContainingType.IsBqlCommand(pxContext) && IsValidReturnType(methodSymbol, pxContext);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -87,8 +87,9 @@ namespace Acuminator.Analyzers
 			if (stopDiagnostic || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			ParametersCounterWalker walker = new ParametersCounterWalker(syntaxContext, pxContext);
+			ParametersCounterSyntaxWalker walker = new ParametersCounterSyntaxWalker(syntaxContext, pxContext);
             walker.Visit(invocationNode);
+
 			int maxCount = walker.OptionalParametersCount + walker.RequiredParametersCount;
             int minCount = walker.RequiredParametersCount;
             
@@ -99,7 +100,7 @@ namespace Acuminator.Analyzers
             }           
         }
 
-		private static async void AnalyzeInstanceInvocation(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
+		private static void AnalyzeInstanceInvocation(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
 															 InvocationExpressionSyntax invocationNode)
 		{
 			if (!(invocationNode.Expression is MemberAccessExpressionSyntax memberAccessNode) ||
@@ -120,10 +121,17 @@ namespace Acuminator.Analyzers
 			if (containingType == null)
 				return;
 
-			SymbolWalker visitor = new SymbolWalker();
-			visitor.Visit(containingType);
+			ParametersCounterSymbolWalker walker = new ParametersCounterSymbolWalker(syntaxContext, pxContext);
+			walker.Visit(containingType);
 
-			
+			int maxCount = walker.OptionalParametersCount + walker.RequiredParametersCount;
+			int minCount = walker.RequiredParametersCount;
+
+			if (argsCount < minCount || argsCount > maxCount)
+			{
+				Location location = GetLocation(invocationNode);
+				syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1015_PXBqlParametersMismatch, location));
+			}
 		}
 
 		private static (int ArgsCount, bool StopDiagnostic) GetBqlArgumentsCount(IMethodSymbol methodSymbol, PXContext pxContext,
@@ -134,7 +142,7 @@ namespace Acuminator.Analyzers
 			var bqlArgsParam = parameters[parameters.Length - 1];
 			var argumentsList = invocationNode.ArgumentList.Arguments;
 
-			var argumentPassedViaName = argumentsList.FirstOrDefault(a => a.NameColon.Name.Identifier.ValueText == bqlArgsParam.Name);
+			var argumentPassedViaName = argumentsList.FirstOrDefault(a => a.NameColon?.Name?.Identifier.ValueText == bqlArgsParam.Name);
 
 			if (argumentPassedViaName != null)
 				return GetBqlArgumentsCountWhenCouldBePassedAsArray(argumentPassedViaName, syntaxContext);
@@ -154,9 +162,11 @@ namespace Acuminator.Analyzers
 			TypeInfo typeInfo = syntaxContext.SemanticModel.GetTypeInfo(argumentPassedViaName.Expression, syntaxContext.CancellationToken);
 			ITypeSymbol typeSymbol = typeInfo.ConvertedType ?? typeInfo.Type;
 
-			if (typeSymbol == null)
+			if (typeInfo.Type == null && typeInfo.ConvertedType != null && typeInfo.ConvertedType.TypeKind == TypeKind.Array)  //Case of null argument which is converted to empty array
+				return (0, false);
+			else if (typeSymbol == null)
 				return (0, StopDiagnostic: true);
-			else if (typeSymbol.IsValueType || typeSymbol.Kind != SymbolKind.ArrayType)
+			else if (typeSymbol.IsValueType || typeSymbol.TypeKind != TypeKind.Array)
 				return (1, false);
 			
 			if (argumentPassedViaName.Expression is ImplicitArrayCreationExpressionSyntax arrayCreationNode)			
@@ -178,16 +188,5 @@ namespace Acuminator.Analyzers
 
             return methodIdentifierNode?.GetLocation() ?? invocationNode.GetLocation();
         }
-
-
-		private class SymbolWalker : SymbolVisitor
-		{
-			public override void VisitNamedType(INamedTypeSymbol symbol)
-			{
-				
-
-				base.VisitNamedType(symbol);
-			}
-		}
 	}
 }

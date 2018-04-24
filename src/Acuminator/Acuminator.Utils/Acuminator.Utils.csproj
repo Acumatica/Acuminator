@@ -99,6 +99,7 @@
     <Compile Include="RoslynExtensions\PXCodeType.cs" />
     <Compile Include="RoslynExtensions\ITypeSymbolExtensions.cs" />
     <Compile Include="RoslynExtensions\CodeResolvingUtils.cs" />
+    <Compile Include="RoslynExtensions\PXContext.cs" />
     <Compile Include="RoslynExtensions\TypeNames.cs" />
   </ItemGroup>
   <ItemGroup>
