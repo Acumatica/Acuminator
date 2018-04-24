@@ -297,7 +297,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The number of arguments passed to the Select method does not match the number of BQL statement parameters. .
+        ///   Looks up a localized string similar to The number of arguments passed to the {0} method does not match the number of BQL statement parameters. .
         /// </summary>
         public static string PX1015Title {
             get {

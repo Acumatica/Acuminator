@@ -185,7 +185,7 @@
     <value>Multiple levels of inheritance are not supported for PXCacheExtension</value>
   </data>
   <data name="PX1015Title" xml:space="preserve">
-    <value>The number of arguments passed to the Select method does not match the number of BQL statement parameters. </value>
+    <value>The number of arguments passed to the {0} method does not match the number of BQL statement parameters. </value>
   </data>
   <data name="PX1011Fix" xml:space="preserve">
     <value>Mark the type as sealed</value>

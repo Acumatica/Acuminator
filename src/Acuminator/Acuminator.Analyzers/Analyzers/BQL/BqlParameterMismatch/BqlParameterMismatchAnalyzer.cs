@@ -89,11 +89,11 @@ namespace Acuminator.Analyzers
 
 			ParametersCounterSyntaxWalker walker = new ParametersCounterSyntaxWalker(syntaxContext, pxContext);
             walker.Visit(invocationNode);
-			VerifyBqlArgumentsCount(argsCount, walker.ParametersCounter, syntaxContext, invocationNode);
+			VerifyBqlArgumentsCount(argsCount, walker.ParametersCounter, syntaxContext, invocationNode, methodSymbol);
 		}
 
 		private static void AnalyzeInstanceInvocation(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
-															 InvocationExpressionSyntax invocationNode)
+													  InvocationExpressionSyntax invocationNode)
 		{
 			if (!(invocationNode.Expression is MemberAccessExpressionSyntax memberAccessNode) ||
 				memberAccessNode.OperatorToken.Kind() != SyntaxKind.DotToken ||
@@ -115,7 +115,7 @@ namespace Acuminator.Analyzers
 
 			ParametersCounterSymbolWalker walker = new ParametersCounterSymbolWalker(syntaxContext, pxContext);
 			walker.Visit(containingType);
-			VerifyBqlArgumentsCount(argsCount, walker.ParametersCounter, syntaxContext, invocationNode);
+			VerifyBqlArgumentsCount(argsCount, walker.ParametersCounter, syntaxContext, invocationNode, methodSymbol);
 		}
 
 		private static (int ArgsCount, bool StopDiagnostic) GetBqlArgumentsCount(IMethodSymbol methodSymbol, PXContext pxContext,
@@ -160,7 +160,7 @@ namespace Acuminator.Analyzers
 		}
 
 		private static void VerifyBqlArgumentsCount(int argsCount, ParametersCounter parametersCounter, SyntaxNodeAnalysisContext syntaxContext,
-													InvocationExpressionSyntax invocationNode)
+													InvocationExpressionSyntax invocationNode, IMethodSymbol methodSymbol)
 		{
 			int maxCount = parametersCounter.OptionalParametersCount + parametersCounter.RequiredParametersCount;
 			int minCount = parametersCounter.RequiredParametersCount;
@@ -168,7 +168,7 @@ namespace Acuminator.Analyzers
 			if (argsCount < minCount || argsCount > maxCount)
 			{
 				Location location = GetLocation(invocationNode);
-				syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1015_PXBqlParametersMismatch, location));
+				syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1015_PXBqlParametersMismatch, location, methodSymbol.Name));
 			}
 		}
 
