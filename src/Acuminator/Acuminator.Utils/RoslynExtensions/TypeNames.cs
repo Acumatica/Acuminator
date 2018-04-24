@@ -54,31 +54,31 @@ namespace Acuminator.Utilities
 
         public static readonly string PXActionGeneric = typeof(PXAction).Name + "`1";
 
-        public static Dictionary<string, ColoredCodeType> TypeNamesToColoredCodeTypesForIdentifier { get; } =
-            new Dictionary<string, ColoredCodeType>
+        public static Dictionary<string, PXCodeType> TypeNamesToCodeTypesForIdentifier { get; } =
+            new Dictionary<string, PXCodeType>
             {
-                [IBqlTable]        = ColoredCodeType.Dac,
-                [IBqlField]        = ColoredCodeType.DacField,
-                [PXCacheExtension] = ColoredCodeType.DacExtension,
-                [IBqlParameter]    = ColoredCodeType.BqlParameter,
-                [Constant]         = ColoredCodeType.BQLConstantEnding,
-                [PXSelectBaseType] = ColoredCodeType.BqlCommand,
-                [BqlCommand]       = ColoredCodeType.BqlCommand,
-                [IBqlCreator]      = ColoredCodeType.BqlOperator,
-                [IBqlJoin]         = ColoredCodeType.BqlOperator,
-                [PXGraph]          = ColoredCodeType.PXGraph
+                [IBqlTable]        = PXCodeType.Dac,
+                [IBqlField]        = PXCodeType.DacField,
+                [PXCacheExtension] = PXCodeType.DacExtension,
+                [IBqlParameter]    = PXCodeType.BqlParameter,
+                [Constant]         = PXCodeType.BQLConstantEnding,
+                [PXSelectBaseType] = PXCodeType.BqlCommand,
+                [BqlCommand]       = PXCodeType.BqlCommand,
+                [IBqlCreator]      = PXCodeType.BqlOperator,
+                [IBqlJoin]         = PXCodeType.BqlOperator,
+                [PXGraph]          = PXCodeType.PXGraph
             };
 
 
-        public static Dictionary<string, ColoredCodeType> TypeNamesToColoredCodeTypesForGenericName { get; } =
-            new Dictionary<string, ColoredCodeType>
+        public static Dictionary<string, PXCodeType> TypeNamesToCodeTypesForGenericName { get; } =
+            new Dictionary<string, PXCodeType>
             {
-                [PXSelectBaseType] = ColoredCodeType.BqlCommand,
-                [BqlCommand]       = ColoredCodeType.BqlCommand,
-                [IBqlParameter]    = ColoredCodeType.BqlParameter,
-                [IBqlCreator]      = ColoredCodeType.BqlOperator,
-                [IBqlJoin]         = ColoredCodeType.BqlOperator,
-                [PXAction]         = ColoredCodeType.PXAction
+                [PXSelectBaseType] = PXCodeType.BqlCommand,
+                [BqlCommand]       = PXCodeType.BqlCommand,
+                [IBqlParameter]    = PXCodeType.BqlParameter,
+                [IBqlCreator]      = PXCodeType.BqlOperator,
+                [IBqlJoin]         = PXCodeType.BqlOperator,
+                [PXAction]         = PXCodeType.PXAction
             };
 
         public static HashSet<string> NotColoredTypes = new HashSet<string>

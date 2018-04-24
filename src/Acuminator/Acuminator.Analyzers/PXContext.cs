@@ -1,6 +1,8 @@
 using Microsoft.CodeAnalysis;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using PX.Data;
+using Acuminator.Utilities;
 
 namespace Acuminator.Analyzers
 {
@@ -65,35 +67,10 @@ namespace Acuminator.Analyzers
 				compilation = aCompilation;
 			}
 
-			public INamedTypeSymbol BqlCommand => compilation.GetTypeByMetadataName(typeof(BqlCommand).FullName);
-
-			public INamedTypeSymbol IBqlField => compilation.GetTypeByMetadataName(typeof(IBqlField).FullName);
-
-			public INamedTypeSymbol IBqlParameter => compilation.GetTypeByMetadataName(typeof(IBqlParameter).FullName);
-
-			public INamedTypeSymbol IBqlJoin => compilation.GetTypeByMetadataName(typeof(IBqlJoin).FullName);
-
-			public INamedTypeSymbol IBqlComparison => compilation.GetTypeByMetadataName(typeof(IBqlComparison).FullName);
-
-			public INamedTypeSymbol IBqlCreator => compilation.GetTypeByMetadataName(typeof(IBqlCreator).FullName);
-
-			public INamedTypeSymbol PXSelect => compilation.GetTypeByMetadataName(typeof(PXSelect<>).FullName);
-
-			public INamedTypeSymbol PXSelectJoin1 => compilation.GetTypeByMetadataName(typeof(PXSelectJoin<,>).FullName);
-
-			public INamedTypeSymbol PXSelectJoin2 => compilation.GetTypeByMetadataName(typeof(PXSelectJoin<,,>).FullName);
-			public INamedTypeSymbol PXSelectJoin3 => compilation.GetTypeByMetadataName(typeof(PXSelectJoin<,,,>).FullName);
-
-			public INamedTypeSymbol OrderBy => compilation.GetTypeByMetadataName(typeof(OrderBy<>).FullName);
-
-			public INamedTypeSymbol Asc => compilation.GetTypeByMetadataName(typeof(Asc<>).FullName);
-
-			public INamedTypeSymbol AscWithContinuation => compilation.GetTypeByMetadataName(typeof(Asc<,>).FullName);
-
-			public INamedTypeSymbol Desc => compilation.GetTypeByMetadataName(typeof(Desc<>).FullName);
-
-			public INamedTypeSymbol DescWithContinuation => compilation.GetTypeByMetadataName(typeof(Desc<,>).FullName);
-		}
+            public INamedTypeSymbol Required => compilation.GetTypeByMetadataName(typeof(Required<>).FullName);
+            public INamedTypeSymbol Optional => compilation.GetTypeByMetadataName(typeof(PX.Data.Optional<>).FullName);
+            public INamedTypeSymbol Optional2 => compilation.GetTypeByMetadataName(typeof(Optional2<>).FullName);
+        }
 		#endregion
 	}
 }

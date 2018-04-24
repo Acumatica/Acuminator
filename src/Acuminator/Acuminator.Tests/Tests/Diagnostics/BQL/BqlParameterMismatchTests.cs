@@ -21,7 +21,7 @@ namespace Acuminator.Tests
             var diagnostic = new DiagnosticResult
             {
                 Id = Descriptors.PX1015_PXBqlParametersMismatch.Id,
-                Message = Descriptors.PX1001_PXGraphCreateInstance.Title.ToString(),
+                Message = Descriptors.PX1015_PXBqlParametersMismatch.Title.ToString(),
                 Severity = DiagnosticSeverity.Error,
                 Locations =
                     new[] {
@@ -38,6 +38,6 @@ namespace Acuminator.Tests
         [Theory]
         [EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\StaticCall.cs")]
         public virtual void FormatDocument(string actual) =>
-            VerifyCSharpDiagnostic(actual, CreatePX1015DiagnosticResult(line: 20, column: 18));     
+            VerifyCSharpDiagnostic(actual, CreatePX1015DiagnosticResult(line: 20, column: 6));     
     }
 }

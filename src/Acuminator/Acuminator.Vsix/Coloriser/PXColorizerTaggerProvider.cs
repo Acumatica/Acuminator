@@ -37,9 +37,9 @@ namespace Acuminator.Vsix.Coloriser
 
         protected bool AreClassificationsInitialized { get; private set; }
 
-        private Dictionary<ColoredCodeType, IClassificationType> codeColoringClassificationTypes;
+        private Dictionary<PXCodeType, IClassificationType> codeColoringClassificationTypes;
 
-        public IClassificationType this[ColoredCodeType codeType]
+        public IClassificationType this[PXCodeType codeType]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
@@ -90,27 +90,27 @@ namespace Acuminator.Vsix.Coloriser
             AreClassificationsInitialized = true;
             InitializeClassificationTypes();          
             IncreaseCommentFormatTypesPrioirity(classificationRegistry, classificationFormatMapService, 
-                                                codeColoringClassificationTypes[ColoredCodeType.BqlParameter]);
+                                                codeColoringClassificationTypes[PXCodeType.BqlParameter]);
         }
 
         protected void InitializeClassificationTypes()
         {
             IClassificationType bqlClassificationType = classificationRegistry.GetClassificationType(ColoringConstants.BQLOperatorFormat);
 
-            codeColoringClassificationTypes = new Dictionary<ColoredCodeType, IClassificationType>
+            codeColoringClassificationTypes = new Dictionary<PXCodeType, IClassificationType>
             {
-                [ColoredCodeType.Dac]               = classificationRegistry.GetClassificationType(ColoringConstants.DacFormat),
-                [ColoredCodeType.DacExtension]      = classificationRegistry.GetClassificationType(ColoringConstants.DacExtensionFormat),
-                [ColoredCodeType.DacField]          = classificationRegistry.GetClassificationType(ColoringConstants.DacFieldFormat),
-                [ColoredCodeType.BqlParameter]      = classificationRegistry.GetClassificationType(ColoringConstants.BQLParameterFormat),
-                [ColoredCodeType.BqlOperator]       = bqlClassificationType,
-                [ColoredCodeType.BqlCommand]        = bqlClassificationType,
+                [PXCodeType.Dac]               = classificationRegistry.GetClassificationType(ColoringConstants.DacFormat),
+                [PXCodeType.DacExtension]      = classificationRegistry.GetClassificationType(ColoringConstants.DacExtensionFormat),
+                [PXCodeType.DacField]          = classificationRegistry.GetClassificationType(ColoringConstants.DacFieldFormat),
+                [PXCodeType.BqlParameter]      = classificationRegistry.GetClassificationType(ColoringConstants.BQLParameterFormat),
+                [PXCodeType.BqlOperator]       = bqlClassificationType,
+                [PXCodeType.BqlCommand]        = bqlClassificationType,
 
-                [ColoredCodeType.BQLConstantPrefix] = classificationRegistry.GetClassificationType(ColoringConstants.BQLConstantPrefixFormat),
-                [ColoredCodeType.BQLConstantEnding] = classificationRegistry.GetClassificationType(ColoringConstants.BQLConstantEndingFormat),
+                [PXCodeType.BQLConstantPrefix] = classificationRegistry.GetClassificationType(ColoringConstants.BQLConstantPrefixFormat),
+                [PXCodeType.BQLConstantEnding] = classificationRegistry.GetClassificationType(ColoringConstants.BQLConstantEndingFormat),
 
-                [ColoredCodeType.PXGraph]           = classificationRegistry.GetClassificationType(ColoringConstants.PXGraphFormat),
-                [ColoredCodeType.PXAction]          = classificationRegistry.GetClassificationType(ColoringConstants.PXActionFormat),
+                [PXCodeType.PXGraph]           = classificationRegistry.GetClassificationType(ColoringConstants.PXGraphFormat),
+                [PXCodeType.PXAction]          = classificationRegistry.GetClassificationType(ColoringConstants.PXActionFormat),
             };
 
             braceTypeByLevel = new Dictionary<int, IClassificationType>(capacity: ColoringConstants.MaxBraceLevel)

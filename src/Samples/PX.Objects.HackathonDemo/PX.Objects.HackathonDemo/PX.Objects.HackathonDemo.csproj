@@ -53,6 +53,7 @@
     <Compile Include="SOOrderEntry.cs" />
     <Compile Include="SOOrderProcessing.cs" />
     <Compile Include="SOSetup.cs" />
+    <Compile Include="StaticCall.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -46,7 +46,7 @@ namespace Acuminator.Utilities
         }
 
         /// <summary>
-        /// An ITypeSymbol extension method that gets <see cref="ColoredCodeType"/> from identifier type symbol.
+        /// An ITypeSymbol extension method that gets <see cref="PXCodeType"/> from identifier type symbol.
         /// </summary>
         /// <param name="identifierType">The identifierType to act on.</param>
         /// <param name="skipValidation">(Optional) True to skip validation.</param>
@@ -55,7 +55,7 @@ namespace Acuminator.Utilities
         /// The coloring type from identifier.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ColoredCodeType? GetColoringTypeFromIdentifier(this ITypeSymbol identifierType, bool skipValidation = false,
+        public static PXCodeType? GetColoringTypeFromIdentifier(this ITypeSymbol identifierType, bool skipValidation = false,
                                                                      bool checkItself = false)
         {
             if (!skipValidation && !identifierType.IsValidForColoring())
@@ -66,11 +66,11 @@ namespace Acuminator.Utilities
                 : identifierType.GetBaseTypes();
 
             typeHierarchy = typeHierarchy.ConcatStructList(identifierType.AllInterfaces);
-            ColoredCodeType? resolvedColoredCodeType = null;
+            PXCodeType? resolvedColoredCodeType = null;
 
             foreach (ITypeSymbol typeOrInterface in typeHierarchy)
             {
-                if (TypeNames.TypeNamesToColoredCodeTypesForIdentifier.TryGetValue(typeOrInterface.Name, out ColoredCodeType coloredCodeType))
+                if (TypeNames.TypeNamesToCodeTypesForIdentifier.TryGetValue(typeOrInterface.Name, out PXCodeType coloredCodeType))
                 {
                     resolvedColoredCodeType = coloredCodeType;
                     break;
@@ -81,26 +81,26 @@ namespace Acuminator.Utilities
 		}
         
         /// <summary>
-        /// An ITypeSymbol extension method that gets <see cref="ColoredCodeType"/> from generic Name type symbol.
+        /// An ITypeSymbol extension method that gets <see cref="PXCodeType"/> from generic Name type symbol.
         /// </summary>
         /// <param name="genericName">The generic Name type symbol to act on.</param>
         /// <param name="genericNode">The generic node.</param>
         /// <returns>
-        /// The coloring type from generic name.
+        /// The code type from generic name.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ColoredCodeType? GetColoringTypeFromGenericName(this ITypeSymbol genericName)
+        public static PXCodeType? GetCodeTypeFromGenericName(this ITypeSymbol genericName)
         {
             if (!genericName.IsValidForColoring())
                 return null;
 
             IEnumerable<ITypeSymbol> typeHierarchy = genericName.GetBaseTypes()
                                                                 .ConcatStructList(genericName.AllInterfaces);
-            ColoredCodeType? resolvedColoredCodeType = null;
+            PXCodeType? resolvedColoredCodeType = null;
 
             foreach (ITypeSymbol typeOrInterface in typeHierarchy)
             {
-                if (TypeNames.TypeNamesToColoredCodeTypesForGenericName.TryGetValue(typeOrInterface.Name, out ColoredCodeType coloredCodeType))
+                if (TypeNames.TypeNamesToCodeTypesForGenericName.TryGetValue(typeOrInterface.Name, out PXCodeType coloredCodeType))
                 {
                     resolvedColoredCodeType = coloredCodeType;
                     break;
