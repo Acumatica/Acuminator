@@ -17,14 +17,11 @@ namespace Acuminator.Analyzers
     public partial class BqlParameterMismatchAnalyzer : PXDiagnosticAnalyzer
     {
 		/// <summary>
-		/// The BQL parameters counting symbol  walker.
+		/// The BQL parameters counting logic
 		/// </summary>
 		protected class ParametersCounter
-		{
-			private readonly SyntaxNodeAnalysisContext syntaxContext;
-            private readonly PXContext pxContext;
-            private readonly SemanticModel semanticModel;
-            private readonly CancellationToken cancellationToken;
+		{		
+            private readonly PXContext pxContext;               
             
             public int RequiredParametersCount
             {
@@ -38,66 +35,25 @@ namespace Acuminator.Analyzers
                 private set;
             }
 
-            public ParametersCounterSymbolWalker(SyntaxNodeAnalysisContext aSyntaxContext, PXContext aPxContext)
+            public ParametersCounter(PXContext aPxContext)
             {
-                syntaxContext = aSyntaxContext;
-                pxContext = aPxContext;
-                semanticModel = syntaxContext.SemanticModel;
-                cancellationToken = syntaxContext.CancellationToken;
+                pxContext = aPxContext;              
             }
 
-			public override void VisitNamedType(INamedTypeSymbol typeSymbol)
+			public void CountParametersInTypeSymbol(ITypeSymbol typeSymbol, CancellationToken cancellationToken = default)
 			{
 				if (typeSymbol == null || cancellationToken.IsCancellationRequested)
 					return;
-
-				if (typeSymbol.IsUnboundGenericType)
-				{
-					typeSymbol = typeSymbol.OriginalDefinition;
-				}
 
 				PXCodeType? codeType = typeSymbol.GetCodeTypeFromGenericName();
 
 				if (codeType == PXCodeType.BqlParameter)
 				{
-					if (!UpdateParametersCount(typeSymbol))
+					if (!UpdateParametersCount(typeSymbol) && !cancellationToken.IsCancellationRequested)
 					{
 						UpdateParametersCount(typeSymbol.OriginalDefinition);
 					}
 				}
-
-				var typeArguments = typeSymbol.TypeArguments;
-
-				if (!typeArguments.IsDefaultOrEmpty)
-				{
-					foreach (ITypeSymbol typeArg in typeArguments)
-					{
-						if (cancellationToken.IsCancellationRequested)
-							return;
-
-						Visit(typeArg);
-					}
-				}				
-
-				if (!cancellationToken.IsCancellationRequested)
-					base.VisitNamedType(typeSymbol);
-			}
-
-			public override void VisitTypeParameter(ITypeParameterSymbol typeParameterSymbol)
-			{
-				if (typeParameterSymbol == null || cancellationToken.IsCancellationRequested)
-					return;
-
-				foreach (ITypeSymbol constraintType in typeParameterSymbol.ConstraintTypes)
-				{
-					if (cancellationToken.IsCancellationRequested)
-						return;
-
-					Visit(constraintType);
-				}
-			
-				if (!cancellationToken.IsCancellationRequested)
-					base.VisitTypeParameter(typeParameterSymbol);
 			}
 
 			private bool UpdateParametersCount(ITypeSymbol typeSymbol)

@@ -24,6 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <DebugType>pdbonly</DebugType>
@@ -32,6 +33,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -41,6 +43,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Analyzers\BQL\BqlMethodConstants.cs" />
+    <Compile Include="Analyzers\BQL\BqlParameterMismatch\ParametersCounter.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\ParametersCounterSymbolWalker.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\ParametersCounterSyntaxWalker.cs" />
     <Compile Include="Analyzers\NonNullableTypeForBqlFieldAnalyzer.cs" />

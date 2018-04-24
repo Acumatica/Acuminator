@@ -89,16 +89,8 @@ namespace Acuminator.Analyzers
 
 			ParametersCounterSyntaxWalker walker = new ParametersCounterSyntaxWalker(syntaxContext, pxContext);
             walker.Visit(invocationNode);
-
-			int maxCount = walker.OptionalParametersCount + walker.RequiredParametersCount;
-            int minCount = walker.RequiredParametersCount;
-            
-            if (argsCount < minCount || argsCount > maxCount)
-            {
-                Location location = GetLocation(invocationNode);
-                syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1015_PXBqlParametersMismatch, location));
-            }           
-        }
+			VerifyBqlArgumentsCount(argsCount, walker.ParametersCounter, syntaxContext, invocationNode);
+		}
 
 		private static void AnalyzeInstanceInvocation(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
 															 InvocationExpressionSyntax invocationNode)
@@ -123,15 +115,7 @@ namespace Acuminator.Analyzers
 
 			ParametersCounterSymbolWalker walker = new ParametersCounterSymbolWalker(syntaxContext, pxContext);
 			walker.Visit(containingType);
-
-			int maxCount = walker.OptionalParametersCount + walker.RequiredParametersCount;
-			int minCount = walker.RequiredParametersCount;
-
-			if (argsCount < minCount || argsCount > maxCount)
-			{
-				Location location = GetLocation(invocationNode);
-				syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1015_PXBqlParametersMismatch, location));
-			}
+			VerifyBqlArgumentsCount(argsCount, walker.ParametersCounter, syntaxContext, invocationNode);
 		}
 
 		private static (int ArgsCount, bool StopDiagnostic) GetBqlArgumentsCount(IMethodSymbol methodSymbol, PXContext pxContext,
@@ -173,6 +157,19 @@ namespace Acuminator.Analyzers
 				return (arrayCreationNode.Initializer.Expressions.Count, false);
 			
 			return (0, StopDiagnostic: true);		
+		}
+
+		private static void VerifyBqlArgumentsCount(int argsCount, ParametersCounter parametersCounter, SyntaxNodeAnalysisContext syntaxContext,
+													InvocationExpressionSyntax invocationNode)
+		{
+			int maxCount = parametersCounter.OptionalParametersCount + parametersCounter.RequiredParametersCount;
+			int minCount = parametersCounter.RequiredParametersCount;
+
+			if (argsCount < minCount || argsCount > maxCount)
+			{
+				Location location = GetLocation(invocationNode);
+				syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1015_PXBqlParametersMismatch, location));
+			}
 		}
 
         private static Location GetLocation(InvocationExpressionSyntax invocationNode)
