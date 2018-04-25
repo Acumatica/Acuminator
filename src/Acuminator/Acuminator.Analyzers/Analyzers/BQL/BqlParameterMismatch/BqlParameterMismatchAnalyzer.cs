@@ -15,49 +15,49 @@ using PX.Data;
 
 namespace Acuminator.Analyzers
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public partial class BqlParameterMismatchAnalyzer : PXDiagnosticAnalyzer
-    {
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-            ImmutableArray.Create(Descriptors.PX1015_PXBqlParametersMismatch);
+	[DiagnosticAnalyzer(LanguageNames.CSharp)]
+	public partial class BqlParameterMismatchAnalyzer : PXDiagnosticAnalyzer
+	{
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+			ImmutableArray.Create(Descriptors.PX1015_PXBqlParametersMismatch);
 
-        internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
-        {
-            compilationStartContext.RegisterSyntaxNodeAction(c => AnalyzeNode(c, pxContext), SyntaxKind.InvocationExpression);
-        }
+		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		{
+			compilationStartContext.RegisterSyntaxNodeAction(c => AnalyzeNode(c, pxContext), SyntaxKind.InvocationExpression);
+		}
 
-        private static void AnalyzeNode(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
-        {
-            if (syntaxContext.CancellationToken.IsCancellationRequested || !(syntaxContext.Node is InvocationExpressionSyntax invocationNode))
-                return;
+		private static void AnalyzeNode(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+		{
+			if (syntaxContext.CancellationToken.IsCancellationRequested || !(syntaxContext.Node is InvocationExpressionSyntax invocationNode))
+				return;
 
-            var symbolInfo = syntaxContext.SemanticModel.GetSymbolInfo(invocationNode);
+			var symbolInfo = syntaxContext.SemanticModel.GetSymbolInfo(invocationNode);
 
-            if (!(symbolInfo.Symbol is IMethodSymbol methodSymbol) || !IsValidMethodGeneralCheck(methodSymbol, pxContext))
-                return;
+			if (!(symbolInfo.Symbol is IMethodSymbol methodSymbol) || !IsValidMethodGeneralCheck(methodSymbol, pxContext))
+				return;
 
-            if (methodSymbol.IsStatic)
-                AnalyzeStaticInvocation(methodSymbol, pxContext, syntaxContext, invocationNode);
+			if (methodSymbol.IsStatic)
+				AnalyzeStaticInvocation(methodSymbol, pxContext, syntaxContext, invocationNode);
 			else
 				AnalyzeInstanceInvocation(methodSymbol, pxContext, syntaxContext, invocationNode);
 		}
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsValidMethodGeneralCheck(IMethodSymbol methodSymbol, PXContext pxContext)
-        {
-            if (methodSymbol.IsExtern)
-                return false;
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static bool IsValidMethodGeneralCheck(IMethodSymbol methodSymbol, PXContext pxContext)
+		{
+			if (methodSymbol.IsExtern)
+				return false;
 
-            switch (methodSymbol.MethodKind)
-            {
-                case MethodKind.DelegateInvoke:
-                case MethodKind.Ordinary:
-                case MethodKind.DeclareMethod:
+			switch (methodSymbol.MethodKind)
+			{
+				case MethodKind.DelegateInvoke:
+				case MethodKind.Ordinary:
+				case MethodKind.DeclareMethod:
 				case MethodKind.ReducedExtension:
 					break;
-                default:
-                    return false;
-            }
+				default:
+					return false;
+			}
 
 			var parameters = methodSymbol.Parameters;
 
@@ -69,26 +69,26 @@ namespace Acuminator.Analyzers
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static bool IsValidReturnType(IMethodSymbol methodSymbol, PXContext pxContext)
-        {
-            if (methodSymbol.ReturnsVoid)
-                return false;
+		{
+			if (methodSymbol.ReturnsVoid)
+				return false;
 
-            var returnType = methodSymbol.ReturnType;
-            return returnType.ImplementsInterface(pxContext.IPXResultsetType) ||
-                   returnType.InheritsFrom(pxContext.PXResult) ||
-                   returnType.ImplementsInterface(pxContext.IBqlTableType);
-        }
+			var returnType = methodSymbol.ReturnType;
+			return returnType.ImplementsInterface(pxContext.IPXResultsetType) ||
+				   returnType.InheritsFrom(pxContext.PXResult) ||
+				   returnType.ImplementsInterface(pxContext.IBqlTableType);
+		}
 
-        private static void AnalyzeStaticInvocation(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
-                                                    InvocationExpressionSyntax invocationNode)
-        {         
+		private static void AnalyzeStaticInvocation(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
+													InvocationExpressionSyntax invocationNode)
+		{
 			(int argsCount, bool stopDiagnostic) = GetBqlArgumentsCount(methodSymbol, pxContext, syntaxContext, invocationNode);
 
 			if (stopDiagnostic || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
 
 			ParametersCounterSyntaxWalker walker = new ParametersCounterSyntaxWalker(syntaxContext, pxContext);
-            walker.Visit(invocationNode);
+			walker.Visit(invocationNode);
 			VerifyBqlArgumentsCount(argsCount, walker.ParametersCounter, syntaxContext, invocationNode, methodSymbol);
 		}
 
@@ -152,11 +152,11 @@ namespace Acuminator.Analyzers
 				return (0, StopDiagnostic: true);
 			else if (typeSymbol.IsValueType || typeSymbol.TypeKind != TypeKind.Array)
 				return (1, false);
-			
-			if (argumentPassedViaName.Expression is ImplicitArrayCreationExpressionSyntax arrayCreationNode)			
+
+			if (argumentPassedViaName.Expression is ImplicitArrayCreationExpressionSyntax arrayCreationNode)
 				return (arrayCreationNode.Initializer.Expressions.Count, false);
-			
-			return (0, StopDiagnostic: true);		
+
+			return (0, StopDiagnostic: true);
 		}
 
 		private static void VerifyBqlArgumentsCount(int argsCount, ParametersCounter parametersCounter, SyntaxNodeAnalysisContext syntaxContext,
@@ -172,18 +172,18 @@ namespace Acuminator.Analyzers
 			}
 		}
 
-        private static Location GetLocation(InvocationExpressionSyntax invocationNode)
-        {
-            var memberAccessNode = invocationNode.ChildNodes().OfType<MemberAccessExpressionSyntax>()
-                                                              .FirstOrDefault();
+		private static Location GetLocation(InvocationExpressionSyntax invocationNode)
+		{
+			var memberAccessNode = invocationNode.ChildNodes().OfType<MemberAccessExpressionSyntax>()
+															  .FirstOrDefault();
 
-            if (memberAccessNode == null)
-                return invocationNode.GetLocation();
+			if (memberAccessNode == null)
+				return invocationNode.GetLocation();
 
-            var methodIdentifierNode = memberAccessNode.ChildNodes().OfType<IdentifierNameSyntax>()
-                                                                    .LastOrDefault();
+			var methodIdentifierNode = memberAccessNode.ChildNodes().OfType<IdentifierNameSyntax>()
+																	.LastOrDefault();
 
-            return methodIdentifierNode?.GetLocation() ?? invocationNode.GetLocation();
-        }
+			return methodIdentifierNode?.GetLocation() ?? invocationNode.GetLocation();
+		}
 	}
 }

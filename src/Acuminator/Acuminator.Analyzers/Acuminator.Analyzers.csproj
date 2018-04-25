@@ -42,7 +42,6 @@
     <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Analyzers\BQL\BqlMethodConstants.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\ParametersCounter.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\ParametersCounterSymbolWalker.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\ParametersCounterSyntaxWalker.cs" />
