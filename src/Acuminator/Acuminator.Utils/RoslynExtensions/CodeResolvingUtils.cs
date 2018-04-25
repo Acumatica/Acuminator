@@ -264,6 +264,22 @@ namespace Acuminator.Utilities
             return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.PXAction, includeInterfaces: false);
         }
 
+		public static bool IsCustomBqlCommand(this ITypeSymbol bqlTypeSymbol, PXContext context)
+		{
+			bqlTypeSymbol.ThrowOnNull(nameof(bqlTypeSymbol));
+			context.ThrowOnNull(nameof(context));
+
+			const int pxSelectBaseStandartDepth = 2;
+			int? pxSelectBaseDepth = bqlTypeSymbol.GetInheritanceDepth(context.PXSelectBaseType);
+
+			if (pxSelectBaseDepth > pxSelectBaseStandartDepth)
+				return true;
+
+			const int bqlCommandBaseStandartDepth = 2;
+			int? bqlCommandDepth = bqlTypeSymbol.GetInheritanceDepth(context.BQL.BqlCommand);
+			return bqlCommandDepth > bqlCommandBaseStandartDepth;
+		}
+
         public static TextSpan? GetBqlOperatorOutliningTextSpan(this ITypeSymbol typeSymbol, GenericNameSyntax bqlOperatorNode)
         {
             List<string> typesAndInterfaces = typeSymbol.AllInterfaces

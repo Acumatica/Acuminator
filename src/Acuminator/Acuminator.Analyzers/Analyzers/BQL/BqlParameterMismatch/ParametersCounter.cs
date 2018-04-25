@@ -35,25 +35,47 @@ namespace Acuminator.Analyzers
                 private set;
             }
 
+			public bool IsCountingValid
+			{
+				get;
+				private set;
+			}
+
             public ParametersCounter(PXContext aPxContext)
             {
-                pxContext = aPxContext;              
+                pxContext = aPxContext;
+				IsCountingValid = true;
             }
 
-			public void CountParametersInTypeSymbol(ITypeSymbol typeSymbol, CancellationToken cancellationToken = default)
+			/// <summary>
+			/// Count parameters in type symbol. Return <c>false</c> if the diagnostic should ne stopped
+			/// </summary>
+			/// <param name="typeSymbol">The type symbol.</param>
+			/// <param name="cancellationToken">(Optional) The cancellation token.</param>
+			/// <returns/>
+			public bool CountParametersInTypeSymbol(ITypeSymbol typeSymbol, CancellationToken cancellationToken = default)
 			{
-				if (typeSymbol == null || cancellationToken.IsCancellationRequested)
-					return;
+				if (!IsCountingValid || typeSymbol == null || cancellationToken.IsCancellationRequested)
+					return false;
 
 				PXCodeType? codeType = typeSymbol.GetCodeTypeFromGenericName();
 
-				if (codeType == PXCodeType.BqlParameter)
+				switch (codeType)
 				{
-					if (!UpdateParametersCount(typeSymbol) && !cancellationToken.IsCancellationRequested)
-					{
-						UpdateParametersCount(typeSymbol.OriginalDefinition);
-					}
+					case PXCodeType.BqlCommand:
+						IsCountingValid = !typeSymbol.IsCustomBqlCommand(pxContext); //diagnostic for types inherited from standard views disabled. TODO: make analysis for them
+						return IsCountingValid;
+					case PXCodeType.BqlParameter:
+
+						if (!UpdateParametersCount(typeSymbol) && !cancellationToken.IsCancellationRequested)
+						{
+							UpdateParametersCount(typeSymbol.OriginalDefinition);
+						}
+
+						return true;			
 				}
+
+				return true;
 			}
 
 			private bool UpdateParametersCount(ITypeSymbol typeSymbol)

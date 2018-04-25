@@ -43,7 +43,8 @@ namespace Acuminator.Analyzers
 					typeSymbol = typeSymbol.OriginalDefinition;
 				}
 
-				ParametersCounter.CountParametersInTypeSymbol(typeSymbol, cancellationToken);
+				if (!ParametersCounter.CountParametersInTypeSymbol(typeSymbol, cancellationToken))
+					return;
 
 				var typeArguments = typeSymbol.TypeArguments;
 

@@ -154,5 +154,31 @@ namespace Acuminator.Utilities
 
             return false;
         }
+
+		/// <summary>
+		/// Gets the depth of inheritance between <paramref name="type"/> and its <paramref name="baseType"/>.
+		/// If <paramref name="baseType"/> is not an ancestor of type returns <c>null</c>.
+		/// </summary>
+		/// <param name="type">The type to act on.</param>
+		/// <param name="baseType">The base type.</param>
+		/// <returns>
+		/// The inheritance depth.
+		/// </returns>
+		public static int? GetInheritanceDepth(this ITypeSymbol type, ITypeSymbol baseType)
+		{
+			type.ThrowOnNull(nameof(type));
+			baseType.ThrowOnNull(nameof(type));
+
+			ITypeSymbol current = type;
+			int depth = 0;
+
+			while (current != null && !current.Equals(baseType))
+			{
+				current = current.BaseType;
+				depth++;
+			}
+
+			return current != null ? depth : (int?)null;
+		}
     }
 }

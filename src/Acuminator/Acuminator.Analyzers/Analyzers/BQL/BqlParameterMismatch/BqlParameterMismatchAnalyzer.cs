@@ -144,24 +144,32 @@ namespace Acuminator.Analyzers
 																										 SyntaxNodeAnalysisContext syntaxContext)
 		{
 			TypeInfo typeInfo = syntaxContext.SemanticModel.GetTypeInfo(argumentPassedViaName.Expression, syntaxContext.CancellationToken);
-			ITypeSymbol typeSymbol = typeInfo.ConvertedType ?? typeInfo.Type;
+			ITypeSymbol typeSymbol = typeInfo.Type;
 
-			if (typeInfo.Type == null && typeInfo.ConvertedType != null && typeInfo.ConvertedType.TypeKind == TypeKind.Array)  //Case of null argument which is converted to empty array
+			if (typeSymbol == null)
 				return (0, false);
-			else if (typeSymbol == null)
-				return (0, StopDiagnostic: true);
 			else if (typeSymbol.IsValueType || typeSymbol.TypeKind != TypeKind.Array)
 				return (1, false);
-
-			if (argumentPassedViaName.Expression is ImplicitArrayCreationExpressionSyntax arrayCreationNode)
-				return (arrayCreationNode.Initializer.Expressions.Count, false);
-
-			return (0, StopDiagnostic: true);
+			
+			switch (argumentPassedViaName.Expression)
+			{
+				case InitializerExpressionSyntax initializerExpression when initializerExpression.Kind() == SyntaxKind.ArrayInitializerExpression:
+					return (initializerExpression.Expressions.Count, false);
+				case ArrayCreationExpressionSyntax arrayCreationNode:
+					return (arrayCreationNode.Initializer.Expressions.Count, false);
+				case ImplicitArrayCreationExpressionSyntax arrayImplicitCreationNode:
+					return (arrayImplicitCreationNode.Initializer.Expressions.Count, false);
+				default:
+					return (0, StopDiagnostic: true);
+			}		
 		}
 
 		private static void VerifyBqlArgumentsCount(int argsCount, ParametersCounter parametersCounter, SyntaxNodeAnalysisContext syntaxContext,
 													InvocationExpressionSyntax invocationNode, IMethodSymbol methodSymbol)
 		{
+			if (!parametersCounter.IsCountingValid)
+				return;
+
 			int maxCount = parametersCounter.OptionalParametersCount + parametersCounter.RequiredParametersCount;
 			int minCount = parametersCounter.RequiredParametersCount;
 
@@ -181,9 +189,10 @@ namespace Acuminator.Analyzers
 			if (memberAccessNode == null)
 				return invocationNode.GetLocation();
 
-			var methodIdentifierNode = memberAccessNode.ChildNodes().OfType<IdentifierNameSyntax>()
-																	.LastOrDefault();
-
+			var methodIdentifierNode = memberAccessNode.ChildNodes()
+													   .OfType<IdentifierNameSyntax>()
+													   .LastOrDefault();
+			
 			return methodIdentifierNode?.GetLocation() ?? invocationNode.GetLocation();
 		}
 	}

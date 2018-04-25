@@ -7,18 +7,16 @@ using PX.Data;
 
 namespace PX.Objects.HackathonDemo
 {
-	public class SOOrderTestEntry : PXGraph<SOOrderEntry>
+	public class SOOrderTestEntry : PXGraph<SOOrderTestEntry>
 	{
 		public object Foo()
 		{
 			var result =
                 PXSelect<SOOrder, 
 				Where<SOOrder.orderType, Equal<Required<SOOrder.orderType>>, 
-					And<SOOrder.status, Equal<Required<SOOrder.status>>>>, 
-				OrderBy<
-					Asc<SOOrder.orderNbr>>>
-				.SelectSingleBound(this, pars: null, currents: null).ToArray();
-
+					And<SOOrder.status, Equal<Required<SOOrder.status>>>>>
+				.SelectSingleBound(this, pars: new[] { 2 }, currents: null).ToArray();
+			
             return this;
 		}
 	}

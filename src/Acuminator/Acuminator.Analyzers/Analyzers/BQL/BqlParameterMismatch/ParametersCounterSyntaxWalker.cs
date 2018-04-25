@@ -52,7 +52,8 @@ namespace Acuminator.Analyzers
                 if (genericNode.IsUnboundGenericName)
                     typeSymbol = typeSymbol.OriginalDefinition;
 
-				ParametersCounter.CountParametersInTypeSymbol(typeSymbol, cancellationToken);
+				if (!ParametersCounter.CountParametersInTypeSymbol(typeSymbol, cancellationToken))
+					return;
 
                 if (!cancellationToken.IsCancellationRequested)
                     base.VisitGenericName(genericNode);             

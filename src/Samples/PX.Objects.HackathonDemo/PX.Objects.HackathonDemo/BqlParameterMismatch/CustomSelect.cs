@@ -7,19 +7,14 @@ using PX.Data;
 
 namespace PX.Objects.HackathonDemo
 {
-	public class SOOrderTestEntry1 : PXGraph<SOOrderTestEntry1>
-	{
-		PXSelect<SOOrder,
+	public class CustomSelect : PXSelect<SOOrder,
 		   Where<SOOrder.orderType, Equal<Required<SOOrder.orderType>>,
 			 And<SOOrder.status, Equal<Required<SOOrder.status>>>>,
 		 OrderBy<
-			 Asc<SOOrder.orderNbr>>> select;
-
-		public object Foo()
+			 Asc<SOOrder.orderNbr>>>
+	{
+		public CustomSelect(PXGraph graph) : base(graph)
 		{
-			var result = select.SelectSingle();
-
-            return this;
 		}
 	}
 }
