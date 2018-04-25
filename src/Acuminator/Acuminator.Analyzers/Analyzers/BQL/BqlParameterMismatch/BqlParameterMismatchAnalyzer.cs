@@ -174,8 +174,9 @@ namespace Acuminator.Analyzers
 
 		private static Location GetLocation(InvocationExpressionSyntax invocationNode)
 		{
-			var memberAccessNode = invocationNode.ChildNodes().OfType<MemberAccessExpressionSyntax>()
-															  .FirstOrDefault();
+			var memberAccessNode = invocationNode.ChildNodes()
+												 .OfType<MemberAccessExpressionSyntax>()
+												 .FirstOrDefault();
 
 			if (memberAccessNode == null)
 				return invocationNode.GetLocation();
