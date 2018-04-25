@@ -172,7 +172,38 @@ namespace Acuminator.Analyzers
 			if (containingType == null || !containingType.IsAbstract)
 				return containingType;
 
-			return null;
+			if (!(memberAccessNode.Expression is IdentifierNameSyntax variableNode))
+				return null;
+
+			MethodDeclarationSyntax containingMethod = GetDeclaringMethodNode(memberAccessNode);
+
+			if (containingMethod == null)
+				return null;
+
+			var declarations = containingMethod.Body.DescendantNodes()
+													.OfType<VariableDeclaratorSyntax>()
+													.Where(declarator => declarator.Identifier.ValueText == variableNode.Identifier.ValueText &&
+																		 declarator.Initializer != null && 
+																		 declarator.Initializer.Value is ObjectCreationExpressionSyntax)
+													.ToList();
+
+			ObjectCreationExpressionSyntax objectCreationNode = null;
+
+			foreach (VariableDeclaratorSyntax declarator in declarations)
+			{
+				ControlFlowAnalysis flowAnalysis = syntaxContext.SemanticModel.AnalyzeControlFlow(declarator, memberAccessNode.Parent);
+
+				if (flowAnalysis == null || !flowAnalysis.Succeeded || !flowAnalysis.EndPointIsReachable)
+					continue;
+
+				objectCreationNode = (ObjectCreationExpressionSyntax)declarator.Initializer.Value;		
+			}
+
+			if (objectCreationNode == null)
+				return null;
+
+			TypeInfo realTypeInfo = syntaxContext.SemanticModel.GetTypeInfo(objectCreationNode.Type, syntaxContext.CancellationToken);
+			return realTypeInfo.Type;
 		}
 
 		private static MethodDeclarationSyntax GetDeclaringMethodNode(SyntaxNode node)
