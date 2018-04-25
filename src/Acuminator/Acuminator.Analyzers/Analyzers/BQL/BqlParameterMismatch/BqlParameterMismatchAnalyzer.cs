@@ -108,7 +108,7 @@ namespace Acuminator.Analyzers
 				return;
 
 			TypeInfo typeInfo = syntaxContext.SemanticModel.GetTypeInfo(memberAccessNode.Expression, syntaxContext.CancellationToken);
-			ITypeSymbol containingType = typeInfo.ConvertedType ?? typeInfo.Type;
+			ITypeSymbol containingType = GetContainingTypeForInstanceCall(typeInfo, pxContext, syntaxContext, memberAccessNode);
 
 			if (containingType == null)
 				return;
@@ -162,6 +162,29 @@ namespace Acuminator.Analyzers
 				default:
 					return (0, StopDiagnostic: true);
 			}		
+		}
+
+		private static ITypeSymbol GetContainingTypeForInstanceCall(TypeInfo typeInfo, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
+																	MemberAccessExpressionSyntax memberAccessNode)
+		{
+			ITypeSymbol containingType = typeInfo.ConvertedType ?? typeInfo.Type;
+
+			if (containingType == null || !containingType.IsAbstract)
+				return containingType;
+
+			return null;
+		}
+
+		private static MethodDeclarationSyntax GetDeclaringMethodNode(SyntaxNode node)
+		{
+			var current = node;
+
+			while (current != null && !(current is MethodDeclarationSyntax))
+			{
+				current = current.Parent;
+			}
+
+			return current as MethodDeclarationSyntax;
 		}
 
 		private static void VerifyBqlArgumentsCount(int argsCount, ParametersCounter parametersCounter, SyntaxNodeAnalysisContext syntaxContext,
