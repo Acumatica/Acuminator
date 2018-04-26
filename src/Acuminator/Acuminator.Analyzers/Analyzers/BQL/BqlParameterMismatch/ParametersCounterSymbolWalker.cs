@@ -33,6 +33,15 @@ namespace Acuminator.Analyzers
 				ParametersCounter = new ParametersCounter(aPxContext);
 			}
 
+			public bool CountParametersInTypeSymbol(ITypeSymbol typeSymbol)
+			{
+				if (cancellationToken.IsCancellationRequested)
+					return false;
+
+				Visit(typeSymbol);
+				return ParametersCounter.IsCountingValid && !cancellationToken.IsCancellationRequested;
+			}
+
 			public override void VisitNamedType(INamedTypeSymbol typeSymbol)
 			{
 				if (typeSymbol == null || cancellationToken.IsCancellationRequested)

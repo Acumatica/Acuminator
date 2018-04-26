@@ -26,18 +26,26 @@ namespace Acuminator.Analyzers
 
 			public ParametersCounter ParametersCounter { get; }
 
-
-            public ParametersCounterSyntaxWalker(SyntaxNodeAnalysisContext aSyntaxContext, PXContext aPxContext)
+			public ParametersCounterSyntaxWalker(SyntaxNodeAnalysisContext aSyntaxContext, PXContext aPxContext)
             {
 				syntaxContext = aSyntaxContext;
                 cancellationToken = syntaxContext.CancellationToken;
 				ParametersCounter = new ParametersCounter(aPxContext);
 			}
 
+			public bool CountParametersInNode(SyntaxNode node)
+			{
+				if (cancellationToken.IsCancellationRequested)
+					return false;
+
+				Visit(node);
+				return ParametersCounter.IsCountingValid && !cancellationToken.IsCancellationRequested;
+			}
+
             public override void VisitGenericName(GenericNameSyntax genericNode)
             {
-                if (cancellationToken.IsCancellationRequested)
-                    return;
+				if (cancellationToken.IsCancellationRequested)
+					return;
 
                 SymbolInfo symbolInfo = syntaxContext.SemanticModel.GetSymbolInfo(genericNode, cancellationToken);
 
@@ -57,7 +65,7 @@ namespace Acuminator.Analyzers
 
                 if (!cancellationToken.IsCancellationRequested)
                     base.VisitGenericName(genericNode);             
-            }		
+            }
 		}
     }
 }

@@ -43,6 +43,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\ParametersCounter.cs" />
+    <Compile Include="Analyzers\BQL\BqlParameterMismatch\ResolveVarTypeMethodBodyWalker.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\ParametersCounterSymbolWalker.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\ParametersCounterSyntaxWalker.cs" />
     <Compile Include="Analyzers\NonNullableTypeForBqlFieldAnalyzer.cs" />

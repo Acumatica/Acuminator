@@ -89,7 +89,10 @@ namespace Acuminator.Analyzers
 				return;
 
 			ParametersCounterSyntaxWalker walker = new ParametersCounterSyntaxWalker(syntaxContext, pxContext);
-			walker.Visit(invocationNode);
+
+			if (!walker.CountParametersInNode(invocationNode))
+				return;
+
 			VerifyBqlArgumentsCount(argsCount, walker.ParametersCounter, syntaxContext, invocationNode, methodSymbol);
 		}
 
@@ -113,7 +116,10 @@ namespace Acuminator.Analyzers
 				return;
 
 			ParametersCounterSymbolWalker walker = new ParametersCounterSymbolWalker(syntaxContext, pxContext);
-			walker.Visit(containingType);
+
+			if (!walker.CountParametersInTypeSymbol(containingType))
+				return;
+
 			VerifyBqlArgumentsCount(argsCount, walker.ParametersCounter, syntaxContext, invocationNode, methodSymbol);
 		}
 
@@ -185,7 +191,10 @@ namespace Acuminator.Analyzers
 		{
 			ITypeSymbol containingType = typeInfo.ConvertedType ?? typeInfo.Type;
 
-			if (containingType == null || !containingType.IsAbstract)
+			if (containingType == null || !containingType.IsBqlCommand(pxContext))
+				return null;
+
+			if (!containingType.IsAbstract && !containingType.IsCustomBqlCommand(pxContext))
 				return containingType;
 
 			if (!(accessExpression is IdentifierNameSyntax variableNode))
@@ -198,6 +207,9 @@ namespace Acuminator.Analyzers
 			{
 				return null;
 			}
+
+
+
 
 
 
@@ -225,6 +237,7 @@ namespace Acuminator.Analyzers
 		{
 			List<SyntaxNode> candidatesList = new List<SyntaxNode>(capacity: 2);
 			candidatesList = null;
+
 			foreach (SyntaxNode node in containingMethod.Body.DescendantNodes())
 			{
 				switch (node)
@@ -248,7 +261,7 @@ namespace Acuminator.Analyzers
 		private static void VerifyBqlArgumentsCount(int argsCount, ParametersCounter parametersCounter, SyntaxNodeAnalysisContext syntaxContext,
 													InvocationExpressionSyntax invocationNode, IMethodSymbol methodSymbol)
 		{
-			if (!parametersCounter.IsCountingValid)
+			if (syntaxContext.CancellationToken.IsCancellationRequested || !parametersCounter.IsCountingValid)
 				return;
 
 			int maxCount = parametersCounter.OptionalParametersCount + parametersCounter.RequiredParametersCount;

@@ -55,9 +55,9 @@ namespace Acuminator.Analyzers
 			/// <returns/>
 			public bool CountParametersInTypeSymbol(ITypeSymbol typeSymbol, CancellationToken cancellationToken = default)
 			{
-				if (!IsCountingValid || typeSymbol == null || cancellationToken.IsCancellationRequested)
+				if (!IsCountingValid || typeSymbol == null || IsCancelled(cancellationToken))
 					return false;
-
+				
 				PXCodeType? codeType = typeSymbol.GetCodeTypeFromGenericName();
 
 				switch (codeType)
@@ -92,6 +92,16 @@ namespace Acuminator.Analyzers
 				}
 
 				return false;
+			}
+
+			private bool IsCancelled(CancellationToken cancellationToken)
+			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					IsCountingValid = false;
+				}
+
+				return cancellationToken.IsCancellationRequested;
 			}
 		}
     }
