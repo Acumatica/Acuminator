@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -16,88 +17,216 @@ namespace Acuminator.Analyzers
 {
 	public partial class BqlParameterMismatchAnalyzer : PXDiagnosticAnalyzer
 	{
-		/// <summary>
-		/// The BQL parameters counting syntax walker.
-		/// </summary>
-		protected class ResolveVarTypeMethodBodyWalker : CSharpSyntaxWalker
+		protected class LocalVariableTypeResolver
 		{
-			private readonly SyntaxNodeAnalysisContext syntaxContext;			
-			private readonly PXContext pxContext;
+			private readonly ResolveVarTypeMethodBodyWalker methodBodyWalker;
 
-			private readonly MethodDeclarationSyntax methodDeclaration;
-			private readonly InvocationExpressionSyntax invocation;
-			private readonly string variable;
+			private readonly SyntaxNodeAnalysisContext syntaxContext;
+			private readonly PXContext pxContext;		
+			private readonly IdentifierNameSyntax identifier;
+			
+			private InvocationExpressionSyntax Invocation { get; }
+
+			private string VariableName { get; }
 
 			private SemanticModel SemanticModel => syntaxContext.SemanticModel;
 
 			private CancellationToken CancellationToken => syntaxContext.CancellationToken;
-			private bool shouldStop;
 
-			public ITypeSymbol VariableResolvedType
-			{
-				get;
-				private set;
-			}
-
-			public bool IsValid
-			{
-				get;
-				private set;
-			}
-
-			public ResolveVarTypeMethodBodyWalker(SyntaxNodeAnalysisContext aSyntaxContext, PXContext aPxContext, MethodDeclarationSyntax methodNode,
-												  InvocationExpressionSyntax invocationNode, string variableName)
+			public LocalVariableTypeResolver(SyntaxNodeAnalysisContext aSyntaxContext, PXContext aPxContext, IdentifierNameSyntax identifierNode)
 			{
 				syntaxContext = aSyntaxContext;
-				methodDeclaration = methodNode;
-				invocation = invocationNode;
-				variable = variableName;
+				pxContext = aPxContext;
+				identifier = identifierNode;
+				Invocation = syntaxContext.Node as InvocationExpressionSyntax;		
+				VariableName = identifierNode.Identifier.ValueText;
+				methodBodyWalker = new ResolveVarTypeMethodBodyWalker(this);
+			}
+
+			public ITypeSymbol ResolveVariableType()
+			{
+				if (CancellationToken.IsCancellationRequested)
+					return null;
+
+				MethodDeclarationSyntax methodDeclaration = GetDeclaringMethodNode(Invocation);
+
+				if (methodDeclaration == null)
+					return null;
+
+				if (!IsLocalVariable(methodDeclaration))
+					return null;
+
+				methodBodyWalker.Visit(methodDeclaration);
+			}
+
+			private static MethodDeclarationSyntax GetDeclaringMethodNode(SyntaxNode node)
+			{
+				var current = node;
+
+				while (current != null && !(current is MethodDeclarationSyntax))
+				{
+					current = current.Parent;
+				}
+
+				return current as MethodDeclarationSyntax;
+			}
+
+			private bool IsLocalVariable(MethodDeclarationSyntax containingMethod)
+			{
+				DataFlowAnalysis dataFlowAnalysis = SemanticModel.AnalyzeDataFlow(containingMethod.Body);
+
+				if (dataFlowAnalysis == null || !dataFlowAnalysis.Succeeded)
+					return false;
+
+				return dataFlowAnalysis.VariablesDeclared.Any(var => var.Name == VariableName);
+			}
+
+
+
+
+
+
+			//*****************************************************************************************************************************************************************************
+			//*****************************************************************************************************************************************************************************
+			//*****************************************************************************************************************************************************************************
+			private class ResolveVarTypeMethodBodyWalker : CSharpSyntaxWalker
+			{
+				private readonly LocalVariableTypeResolver resolver;
+
+				private bool isInVariableInvocation;
+
+				private bool shouldStop;
+				private bool isValid = true;
+
+				public List<(SyntaxNode PotentialAssignment, TypeSyntax AssignedType)> Candidates { get; }
 				
-				IsValid = true;
-			}
+				public bool IsValid
+				{
+					get => isValid;
+					set
+					{
+						if (value == false)
+						{
+							isValid = false;
+							shouldStop = true;
+						}
+					}
+				}
 
-			public override void Visit(SyntaxNode node)
-			{
-				if (!shouldStop)
+				public ResolveVarTypeMethodBodyWalker(LocalVariableTypeResolver aResolver)
+				{
+					resolver = aResolver;
+					Candidates = new List<(SyntaxNode, TypeSyntax)>(capacity: 2);
+				}
+
+				public override void Visit(SyntaxNode node)
+				{
+					if (resolver.CancellationToken.IsCancellationRequested)
+					{
+						IsValid = false;
+					}
+
+					if (shouldStop)
+						return;
+
 					base.Visit(node);
-			}
-
-			public override void VisitInvocationExpression(InvocationExpressionSyntax node)
-			{
-				if (node.IsEquivalentTo(invocation))
-				{
-					shouldStop = true;
-					return;
 				}
 
-				base.VisitInvocationExpression(node);
-			}
-
-
-			public override void VisitGenericName(GenericNameSyntax genericNode)
-			{
-				if (cancellationToken.IsCancellationRequested)
-					return;
-
-				SymbolInfo symbolInfo = syntaxContext.SemanticModel.GetSymbolInfo(genericNode, cancellationToken);
-
-				if (cancellationToken.IsCancellationRequested || !(symbolInfo.Symbol is ITypeSymbol typeSymbol))
+				public override void VisitVariableDeclarator(VariableDeclaratorSyntax declarator)
 				{
-					if (!cancellationToken.IsCancellationRequested)
-						base.VisitGenericName(genericNode);
+					if (resolver.CancellationToken.IsCancellationRequested || declarator.Identifier.ValueText != resolver.VariableName ||
+					   !(declarator.Initializer?.Value is ObjectCreationExpressionSyntax objectCreation) || !IsReacheable(declarator))
+					{
+						if (!resolver.CancellationToken.IsCancellationRequested)
+							base.VisitVariableDeclarator(declarator);
 
-					return;
+						return;
+					}
+
+					Candidates.Add((declarator, objectCreation.Type));
+
+					if (!resolver.CancellationToken.IsCancellationRequested)
+						base.VisitVariableDeclarator(declarator);
 				}
 
-				if (genericNode.IsUnboundGenericName)
-					typeSymbol = typeSymbol.OriginalDefinition;
+				public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
+				{
+					if (invocation.IsEquivalentTo(resolver.Invocation))
+					{
+						shouldStop = true;
+						return;
+					}
 
-				if (!ParametersCounter.CountParametersInTypeSymbol(typeSymbol, cancellationToken))
-					return;
+					
+						AnalyzeInvocationOnVariable(invocation);
 
-				if (!cancellationToken.IsCancellationRequested)
-					base.VisitGenericName(genericNode);
+						if (!IsValid)
+							return;
+					
+
+					var arguments = invocation.ArgumentList.Arguments;
+
+					if (arguments.Count == 0 || resolver.CancellationToken.IsCancellationRequested)
+					{
+						if (!resolver.CancellationToken.IsCancellationRequested)
+							base.VisitInvocationExpression(invocation);
+
+						return;
+					}
+
+					if (arguments.Any(arg => arg.NameColon?.Name?.Identifier.ValueText == resolver.VariableName))
+					{
+						IsValid = false;
+						return;
+					}
+
+
+					if (!resolver.CancellationToken.IsCancellationRequested)
+						base.VisitInvocationExpression(invocation);
+				}			
+
+				private void AnalyzeInvocationOnVariable(InvocationExpressionSyntax invocation)
+				{
+					//switch (invocation.Expression)
+					//{
+					//	case MemberAccessExpressionSyntax memberAccess when memberAccess.OperatorToken.Kind() == SyntaxKind.DotToken:
+					//		if (!(memberAccess.Expression is IdentifierNameSyntax identifier) || identifier.Identifier.ValueText != resolver.VariableName)
+
+
+
+					//		break;
+					//	case MemberBindingExpressionSyntax memberBinding when memberBinding.OperatorToken.Kind() == SyntaxKind.DotToken:
+					//		memberBinding.
+
+					//		break;
+					//	default:
+					//		return;
+					//}
+
+
+
+
+
+
+					try
+					{
+						isInVariableInvocation = true;
+
+
+					}
+					finally
+					{
+						isInVariableInvocation = false;
+					}
+				}
+
+				[MethodImpl(MethodImplOptions.AggressiveInlining)]
+				private bool IsReacheable(SyntaxNode assignmentNode)
+				{
+					ControlFlowAnalysis flowAnalysis = resolver.SemanticModel.AnalyzeControlFlow(assignmentNode, resolver.Invocation);
+					return flowAnalysis?.Succeeded == true && flowAnalysis.EndPointIsReachable;
+				}
 			}
-		}
+		}	
 	}
 }

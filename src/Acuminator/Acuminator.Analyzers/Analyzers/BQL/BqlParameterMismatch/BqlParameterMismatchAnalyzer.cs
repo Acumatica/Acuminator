@@ -109,8 +109,8 @@ namespace Acuminator.Analyzers
 			if (stopDiagnostic || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			TypeInfo typeInfo = syntaxContext.SemanticModel.GetTypeInfo(accessExpression, syntaxContext.CancellationToken);
-			ITypeSymbol containingType = GetContainingTypeForInstanceCall(typeInfo, pxContext, syntaxContext, accessExpression);
+			
+			ITypeSymbol containingType = GetContainingTypeForInstanceCall(pxContext, syntaxContext, accessExpression);
 
 			if (containingType == null)
 				return;
@@ -186,9 +186,10 @@ namespace Acuminator.Analyzers
 			}
 		}
 
-		private static ITypeSymbol GetContainingTypeForInstanceCall(TypeInfo typeInfo, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
+		private static ITypeSymbol GetContainingTypeForInstanceCall(PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
 																	ExpressionSyntax accessExpression)
 		{
+			TypeInfo typeInfo = syntaxContext.SemanticModel.GetTypeInfo(accessExpression, syntaxContext.CancellationToken);
 			ITypeSymbol containingType = typeInfo.ConvertedType ?? typeInfo.Type;
 
 			if (containingType == null || !containingType.IsBqlCommand(pxContext))
@@ -197,19 +198,11 @@ namespace Acuminator.Analyzers
 			if (!containingType.IsAbstract && !containingType.IsCustomBqlCommand(pxContext))
 				return containingType;
 
-			if (!(accessExpression is IdentifierNameSyntax variableNode))
-				return null;
+			if (!(accessExpression is IdentifierNameSyntax identifierNode) || syntaxContext.CancellationToken.IsCancellationRequested)   
+				return null;                                                 //Should exclude everything except local variable. For example expressions like "this.var.Select()" should be excluded
 
-			MethodDeclarationSyntax containingMethod = GetDeclaringMethodNode(variableNode);
-
-			if (containingMethod == null ||
-				containingMethod.ParameterList.Parameters.Any(p => p.Identifier.ValueText == variableNode.Identifier.ValueText))  //fast check if variable was passed as parameter to method
-			{
-				return null;
-			}
-
-
-
+			LocalVariableTypeResolver resolver = new LocalVariableTypeResolver(syntaxContext, pxContext, identifierNode);
+			return resolver.ResolveVariableType();
 
 
 
@@ -231,6 +224,8 @@ namespace Acuminator.Analyzers
 			TypeInfo realTypeInfo = syntaxContext.SemanticModel.GetTypeInfo(objectCreationNode.Type, syntaxContext.CancellationToken);
 			return realTypeInfo.Type;
 		}
+
+		
 
 		private static List<SyntaxNode> GetListOfPossibleVariableAssignments(MethodDeclarationSyntax containingMethod, string identifier,
 																			 SyntaxNodeAnalysisContext syntaxContext)
@@ -272,18 +267,6 @@ namespace Acuminator.Analyzers
 				Location location = GetLocation(invocationNode);
 				syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1015_PXBqlParametersMismatch, location, methodSymbol.Name));
 			}
-		}
-
-		private static MethodDeclarationSyntax GetDeclaringMethodNode(SyntaxNode node)
-		{
-			var current = node;
-
-			while (current != null && !(current is MethodDeclarationSyntax))
-			{
-				current = current.Parent;
-			}
-
-			return current as MethodDeclarationSyntax;
 		}
 
 		private static Location GetLocation(InvocationExpressionSyntax invocationNode)

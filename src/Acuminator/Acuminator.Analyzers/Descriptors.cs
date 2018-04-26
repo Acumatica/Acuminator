@@ -63,6 +63,6 @@ namespace Acuminator.Analyzers
             Rule("PX1014", nameof(Resources.PX1014Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
 		internal static DiagnosticDescriptor PX1015_PXBqlParametersMismatch { get; } = 
-            Rule("PX1015", nameof(Resources.PX1015Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+            Rule("PX1015", nameof(Resources.PX1015Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 	}
 }

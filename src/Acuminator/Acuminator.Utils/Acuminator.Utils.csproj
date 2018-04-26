@@ -96,6 +96,7 @@
     <Compile Include="CommonUtils\EnumerableExtensions.cs" />
     <Compile Include="CommonUtils\ConcurrentExtensions.cs" />
     <Compile Include="CommonUtils\EnumerableExtraExtensions.cs" />
+    <Compile Include="RoslynExtensions\BqlModifyingMethods.cs" />
     <Compile Include="RoslynExtensions\PXCodeType.cs" />
     <Compile Include="RoslynExtensions\ITypeSymbolExtensions.cs" />
     <Compile Include="RoslynExtensions\CodeResolvingUtils.cs" />

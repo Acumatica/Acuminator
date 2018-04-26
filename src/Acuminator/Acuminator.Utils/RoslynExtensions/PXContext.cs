@@ -79,7 +79,10 @@ namespace Acuminator.Analyzers
 			public INamedTypeSymbol BqlCommand => compilation.GetTypeByMetadataName(typeof(BqlCommand).FullName);
 
 			public INamedTypeSymbol IBqlParameter => compilation.GetTypeByMetadataName(typeof(IBqlParameter).FullName);
-        }
+
+			public INamedTypeSymbol PXSelectBaseGenericType => compilation.GetTypeByMetadataName(typeof(PXSelectBase<>).FullName);
+			
+		}
 		#endregion
 	}
 }
