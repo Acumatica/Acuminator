@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -95,20 +96,18 @@ namespace Acuminator.Analyzers
 		private static void AnalyzeInstanceInvocation(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
 													  InvocationExpressionSyntax invocationNode)
 		{
-			if (!(invocationNode.Expression is MemberAccessExpressionSyntax memberAccessNode) ||
-				memberAccessNode.OperatorToken.Kind() != SyntaxKind.DotToken ||
-				syntaxContext.CancellationToken.IsCancellationRequested)
-			{
+			ExpressionSyntax accessExpression = GetAccessNodeFromInvocationNode(invocationNode);
+
+			if (accessExpression == null || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
-			}
 
 			(int argsCount, bool stopDiagnostic) = GetBqlArgumentsCount(methodSymbol, pxContext, syntaxContext, invocationNode);
 
 			if (stopDiagnostic || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			TypeInfo typeInfo = syntaxContext.SemanticModel.GetTypeInfo(memberAccessNode.Expression, syntaxContext.CancellationToken);
-			ITypeSymbol containingType = GetContainingTypeForInstanceCall(typeInfo, pxContext, syntaxContext, memberAccessNode);
+			TypeInfo typeInfo = syntaxContext.SemanticModel.GetTypeInfo(accessExpression, syntaxContext.CancellationToken);
+			ITypeSymbol containingType = GetContainingTypeForInstanceCall(typeInfo, pxContext, syntaxContext, accessExpression);
 
 			if (containingType == null)
 				return;
@@ -116,6 +115,23 @@ namespace Acuminator.Analyzers
 			ParametersCounterSymbolWalker walker = new ParametersCounterSymbolWalker(syntaxContext, pxContext);
 			walker.Visit(containingType);
 			VerifyBqlArgumentsCount(argsCount, walker.ParametersCounter, syntaxContext, invocationNode, methodSymbol);
+		}
+
+		private static ExpressionSyntax GetAccessNodeFromInvocationNode(InvocationExpressionSyntax invocationNode)
+		{
+			if (invocationNode.Expression is MemberAccessExpressionSyntax memberAccessNode &&
+				memberAccessNode.OperatorToken.Kind() == SyntaxKind.DotToken)
+			{
+				return memberAccessNode.Expression;
+			}
+			else if (invocationNode.Expression is MemberBindingExpressionSyntax memberBindingNode &&
+					 memberBindingNode.OperatorToken.Kind() == SyntaxKind.DotToken &&
+					 invocationNode.Parent is ConditionalAccessExpressionSyntax conditionalAccessNode)
+			{
+				return conditionalAccessNode.Expression;
+			}
+			
+			return null;
 		}
 
 		private static (int ArgsCount, bool StopDiagnostic) GetBqlArgumentsCount(IMethodSymbol methodSymbol, PXContext pxContext,
@@ -150,7 +166,7 @@ namespace Acuminator.Analyzers
 				return (0, false);
 			else if (typeSymbol.IsValueType || typeSymbol.TypeKind != TypeKind.Array)
 				return (1, false);
-			
+
 			switch (argumentPassedViaName.Expression)
 			{
 				case InitializerExpressionSyntax initializerExpression when initializerExpression.Kind() == SyntaxKind.ArrayInitializerExpression:
@@ -161,31 +177,29 @@ namespace Acuminator.Analyzers
 					return (arrayImplicitCreationNode.Initializer.Expressions.Count, false);
 				default:
 					return (0, StopDiagnostic: true);
-			}		
+			}
 		}
 
 		private static ITypeSymbol GetContainingTypeForInstanceCall(TypeInfo typeInfo, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
-																	MemberAccessExpressionSyntax memberAccessNode)
+																	ExpressionSyntax accessExpression)
 		{
 			ITypeSymbol containingType = typeInfo.ConvertedType ?? typeInfo.Type;
 
 			if (containingType == null || !containingType.IsAbstract)
 				return containingType;
 
-			if (!(memberAccessNode.Expression is IdentifierNameSyntax variableNode))
+			if (!(accessExpression is IdentifierNameSyntax variableNode))
 				return null;
 
-			MethodDeclarationSyntax containingMethod = GetDeclaringMethodNode(memberAccessNode);
+			MethodDeclarationSyntax containingMethod = GetDeclaringMethodNode(variableNode);
 
-			if (containingMethod == null)
+			if (containingMethod == null ||
+				containingMethod.ParameterList.Parameters.Any(p => p.Identifier.ValueText == variableNode.Identifier.ValueText))  //fast check if variable was passed as parameter to method
+			{
 				return null;
+			}
 
-			var declarations = containingMethod.Body.DescendantNodes()
-													.OfType<VariableDeclaratorSyntax>()
-													.Where(declarator => declarator.Identifier.ValueText == variableNode.Identifier.ValueText &&
-																		 declarator.Initializer != null && 
-																		 declarator.Initializer.Value is ObjectCreationExpressionSyntax)
-													.ToList();
+
 
 			ObjectCreationExpressionSyntax objectCreationNode = null;
 
@@ -196,7 +210,7 @@ namespace Acuminator.Analyzers
 				if (flowAnalysis == null || !flowAnalysis.Succeeded || !flowAnalysis.EndPointIsReachable)
 					continue;
 
-				objectCreationNode = (ObjectCreationExpressionSyntax)declarator.Initializer.Value;		
+				objectCreationNode = (ObjectCreationExpressionSyntax)declarator.Initializer.Value;
 			}
 
 			if (objectCreationNode == null)
@@ -206,16 +220,29 @@ namespace Acuminator.Analyzers
 			return realTypeInfo.Type;
 		}
 
-		private static MethodDeclarationSyntax GetDeclaringMethodNode(SyntaxNode node)
+		private static List<SyntaxNode> GetListOfPossibleVariableAssignments(MethodDeclarationSyntax containingMethod, string identifier,
+																			 SyntaxNodeAnalysisContext syntaxContext)
 		{
-			var current = node;
-
-			while (current != null && !(current is MethodDeclarationSyntax))
+			List<SyntaxNode> candidatesList = new List<SyntaxNode>(capacity: 2);
+			candidatesList = null;
+			foreach (SyntaxNode node in containingMethod.Body.DescendantNodes())
 			{
-				current = current.Parent;
+				switch (node)
+				{
+					case VariableDeclaratorSyntax declarator when declarator.Identifier.ValueText == identifier &&
+																  declarator.Initializer?.Value is ObjectCreationExpressionSyntax:
+						candidatesList.Add(declarator);
+						continue;
+					case AssignmentExpressionSyntax assignment when assignment.OperatorToken.Kind() == SyntaxKind.EqualsToken &&
+																	assignment.Left is IdentifierNameSyntax identifierNode &&
+																	identifierNode.Identifier.ValueText == identifier:
+						if (assignment.Right.DescendantNodesAndSelf().Any(node => node is ObjectCreationExpressionSyntax))
+						continue:
+
+				}
 			}
 
-			return current as MethodDeclarationSyntax;
+			return candidatesList;
 		}
 
 		private static void VerifyBqlArgumentsCount(int argsCount, ParametersCounter parametersCounter, SyntaxNodeAnalysisContext syntaxContext,
@@ -234,20 +261,30 @@ namespace Acuminator.Analyzers
 			}
 		}
 
+		private static MethodDeclarationSyntax GetDeclaringMethodNode(SyntaxNode node)
+		{
+			var current = node;
+
+			while (current != null && !(current is MethodDeclarationSyntax))
+			{
+				current = current.Parent;
+			}
+
+			return current as MethodDeclarationSyntax;
+		}
+
 		private static Location GetLocation(InvocationExpressionSyntax invocationNode)
 		{
-			var memberAccessNode = invocationNode.ChildNodes()
-												 .OfType<MemberAccessExpressionSyntax>()
-												 .FirstOrDefault();
+			if (invocationNode.Expression is MemberAccessExpressionSyntax memberAccessNode)
+			{
+				return memberAccessNode.Name?.GetLocation() ?? invocationNode.GetLocation();
+			}
+			else if (invocationNode.Expression is MemberBindingExpressionSyntax memberBindingNode)
+			{
+				return memberBindingNode.Name?.GetLocation() ?? invocationNode.GetLocation();
+			}
 
-			if (memberAccessNode == null)
-				return invocationNode.GetLocation();
-
-			var methodIdentifierNode = memberAccessNode.ChildNodes()
-													   .OfType<IdentifierNameSyntax>()
-													   .LastOrDefault();
-			
-			return methodIdentifierNode?.GetLocation() ?? invocationNode.GetLocation();
+			return invocationNode.GetLocation();
 		}
 	}
 }
