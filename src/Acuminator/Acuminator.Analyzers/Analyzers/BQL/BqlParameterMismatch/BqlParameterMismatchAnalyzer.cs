@@ -99,7 +99,7 @@ namespace Acuminator.Analyzers
 		private static void AnalyzeInstanceInvocation(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
 													  InvocationExpressionSyntax invocationNode)
 		{
-			ExpressionSyntax accessExpression = GetAccessNodeFromInvocationNode(invocationNode);
+			ExpressionSyntax accessExpression = invocationNode.GetAccessNodeFromInvocationNode();
 
 			if (accessExpression == null || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
@@ -123,22 +123,7 @@ namespace Acuminator.Analyzers
 			VerifyBqlArgumentsCount(argsCount, walker.ParametersCounter, syntaxContext, invocationNode, methodSymbol);
 		}
 
-		private static ExpressionSyntax GetAccessNodeFromInvocationNode(InvocationExpressionSyntax invocationNode)
-		{
-			if (invocationNode.Expression is MemberAccessExpressionSyntax memberAccessNode &&
-				memberAccessNode.OperatorToken.Kind() == SyntaxKind.DotToken)
-			{
-				return memberAccessNode.Expression;
-			}
-			else if (invocationNode.Expression is MemberBindingExpressionSyntax memberBindingNode &&
-					 memberBindingNode.OperatorToken.Kind() == SyntaxKind.DotToken &&
-					 invocationNode.Parent is ConditionalAccessExpressionSyntax conditionalAccessNode)
-			{
-				return conditionalAccessNode.Expression;
-			}
-			
-			return null;
-		}
+		
 
 		private static (int ArgsCount, bool StopDiagnostic) GetBqlArgumentsCount(IMethodSymbol methodSymbol, PXContext pxContext,
 																				 SyntaxNodeAnalysisContext syntaxContext,
@@ -203,54 +188,6 @@ namespace Acuminator.Analyzers
 
 			LocalVariableTypeResolver resolver = new LocalVariableTypeResolver(syntaxContext, pxContext, identifierNode);
 			return resolver.ResolveVariableType();
-
-
-
-			ObjectCreationExpressionSyntax objectCreationNode = null;
-
-			foreach (VariableDeclaratorSyntax declarator in declarations)
-			{
-				ControlFlowAnalysis flowAnalysis = syntaxContext.SemanticModel.AnalyzeControlFlow(declarator, memberAccessNode.Parent);
-
-				if (flowAnalysis == null || !flowAnalysis.Succeeded || !flowAnalysis.EndPointIsReachable)
-					continue;
-
-				objectCreationNode = (ObjectCreationExpressionSyntax)declarator.Initializer.Value;
-			}
-
-			if (objectCreationNode == null)
-				return null;
-
-			TypeInfo realTypeInfo = syntaxContext.SemanticModel.GetTypeInfo(objectCreationNode.Type, syntaxContext.CancellationToken);
-			return realTypeInfo.Type;
-		}
-
-		
-
-		private static List<SyntaxNode> GetListOfPossibleVariableAssignments(MethodDeclarationSyntax containingMethod, string identifier,
-																			 SyntaxNodeAnalysisContext syntaxContext)
-		{
-			List<SyntaxNode> candidatesList = new List<SyntaxNode>(capacity: 2);
-			candidatesList = null;
-
-			foreach (SyntaxNode node in containingMethod.Body.DescendantNodes())
-			{
-				switch (node)
-				{
-					case VariableDeclaratorSyntax declarator when declarator.Identifier.ValueText == identifier &&
-																  declarator.Initializer?.Value is ObjectCreationExpressionSyntax:
-						candidatesList.Add(declarator);
-						continue;
-					case AssignmentExpressionSyntax assignment when assignment.OperatorToken.Kind() == SyntaxKind.EqualsToken &&
-																	assignment.Left is IdentifierNameSyntax identifierNode &&
-																	identifierNode.Identifier.ValueText == identifier:
-						if (assignment.Right.DescendantNodesAndSelf().Any(node => node is ObjectCreationExpressionSyntax))
-						continue:
-
-				}
-			}
-
-			return candidatesList;
 		}
 
 		private static void VerifyBqlArgumentsCount(int argsCount, ParametersCounter parametersCounter, SyntaxNodeAnalysisContext syntaxContext,

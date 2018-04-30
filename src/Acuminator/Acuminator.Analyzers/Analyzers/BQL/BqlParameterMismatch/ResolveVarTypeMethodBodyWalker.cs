@@ -48,7 +48,7 @@ namespace Acuminator.Analyzers
 				if (CancellationToken.IsCancellationRequested)
 					return null;
 
-				MethodDeclarationSyntax methodDeclaration = GetDeclaringMethodNode(Invocation);
+				MethodDeclarationSyntax methodDeclaration = Invocation.GetDeclaringMethodNode();
 
 				if (methodDeclaration == null)
 					return null;
@@ -57,19 +57,16 @@ namespace Acuminator.Analyzers
 					return null;
 
 				methodBodyWalker.Visit(methodDeclaration);
+
+				if (CancellationToken.IsCancellationRequested || !methodBodyWalker.IsValid || methodBodyWalker.Candidates.Count != 1)
+					return null;
+
+				var (potentialAssignment, assignedType) = methodBodyWalker.Candidates[0];
+				TypeInfo typeInfo = SemanticModel.GetTypeInfo(assignedType);
+				return typeInfo.Type;
 			}
 
-			private static MethodDeclarationSyntax GetDeclaringMethodNode(SyntaxNode node)
-			{
-				var current = node;
-
-				while (current != null && !(current is MethodDeclarationSyntax))
-				{
-					current = current.Parent;
-				}
-
-				return current as MethodDeclarationSyntax;
-			}
+			
 
 			private bool IsLocalVariable(MethodDeclarationSyntax containingMethod)
 			{
@@ -84,8 +81,6 @@ namespace Acuminator.Analyzers
 
 
 
-
-
 			//*****************************************************************************************************************************************************************************
 			//*****************************************************************************************************************************************************************************
 			//*****************************************************************************************************************************************************************************
@@ -93,10 +88,11 @@ namespace Acuminator.Analyzers
 			{
 				private readonly LocalVariableTypeResolver resolver;
 
-				private bool isInVariableInvocation;
-
+				private bool isInAnalysedVariableInvocation;
 				private bool shouldStop;
 				private bool isValid = true;
+
+				private bool IsCancelationRequested => resolver.CancellationToken.IsCancellationRequested;
 
 				public List<(SyntaxNode PotentialAssignment, TypeSyntax AssignedType)> Candidates { get; }
 				
@@ -121,7 +117,7 @@ namespace Acuminator.Analyzers
 
 				public override void Visit(SyntaxNode node)
 				{
-					if (resolver.CancellationToken.IsCancellationRequested)
+					if (IsCancelationRequested)
 					{
 						IsValid = false;
 					}
@@ -134,10 +130,10 @@ namespace Acuminator.Analyzers
 
 				public override void VisitVariableDeclarator(VariableDeclaratorSyntax declarator)
 				{
-					if (resolver.CancellationToken.IsCancellationRequested || declarator.Identifier.ValueText != resolver.VariableName ||
+					if (IsCancelationRequested || declarator.Identifier.ValueText != resolver.VariableName ||
 					   !(declarator.Initializer?.Value is ObjectCreationExpressionSyntax objectCreation) || !IsReacheable(declarator))
 					{
-						if (!resolver.CancellationToken.IsCancellationRequested)
+						if (!IsCancelationRequested)
 							base.VisitVariableDeclarator(declarator);
 
 						return;
@@ -145,87 +141,199 @@ namespace Acuminator.Analyzers
 
 					Candidates.Add((declarator, objectCreation.Type));
 
-					if (!resolver.CancellationToken.IsCancellationRequested)
+					if (!IsCancelationRequested)
 						base.VisitVariableDeclarator(declarator);
 				}
-
-				public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
+				
+				public override void VisitAssignmentExpression(AssignmentExpressionSyntax assignment)
 				{
-					if (invocation.IsEquivalentTo(resolver.Invocation))
+					if (IsCancelationRequested || !IsReacheable(assignment))
+						return;
+
+					ExpressionSyntax curExpression = assignment;
+					AssignmentExpressionSyntax candidateAssignment = null;
+
+					while (curExpression is AssignmentExpressionSyntax curAssignment)
 					{
-						shouldStop = true;
+						if (candidateAssignment == null && curAssignment.Left is IdentifierNameSyntax identifier && 
+							identifier.Identifier.ValueText == resolver.VariableName)
+						{
+							candidateAssignment = curAssignment;
+						}
+
+						curExpression = curAssignment.Right;
+					}
+
+					if (candidateAssignment == null || IsCancelationRequested)
+					{
 						return;
 					}
 
-					
-						AnalyzeInvocationOnVariable(invocation);
-
-						if (!IsValid)
-							return;
-					
-
-					var arguments = invocation.ArgumentList.Arguments;
-
-					if (arguments.Count == 0 || resolver.CancellationToken.IsCancellationRequested)
-					{
-						if (!resolver.CancellationToken.IsCancellationRequested)
-							base.VisitInvocationExpression(invocation);
-
-						return;
-					}
-
-					if (arguments.Any(arg => arg.NameColon?.Name?.Identifier.ValueText == resolver.VariableName))
+					if (!(curExpression is ObjectCreationExpressionSyntax objectCreation))
 					{
 						IsValid = false;
 						return;
 					}
 
+					Candidates.Add((candidateAssignment, objectCreation.Type));
 
-					if (!resolver.CancellationToken.IsCancellationRequested)
-						base.VisitInvocationExpression(invocation);
-				}			
+					if (!IsCancelationRequested)
+						base.VisitAssignmentExpression(assignment);
+				}
 
-				private void AnalyzeInvocationOnVariable(InvocationExpressionSyntax invocation)
+				public override void VisitConditionalAccessExpression(ConditionalAccessExpressionSyntax conditionalAccess)
 				{
-					//switch (invocation.Expression)
-					//{
-					//	case MemberAccessExpressionSyntax memberAccess when memberAccess.OperatorToken.Kind() == SyntaxKind.DotToken:
-					//		if (!(memberAccess.Expression is IdentifierNameSyntax identifier) || identifier.Identifier.ValueText != resolver.VariableName)
-
-
-
-					//		break;
-					//	case MemberBindingExpressionSyntax memberBinding when memberBinding.OperatorToken.Kind() == SyntaxKind.DotToken:
-					//		memberBinding.
-
-					//		break;
-					//	default:
-					//		return;
-					//}
-
-
-
-
-
+					if (IsCancelationRequested)
+						return;
+							
+					if (isInAnalysedVariableInvocation || !(conditionalAccess.Expression is IdentifierNameSyntax identifier) ||
+						identifier.Identifier.ValueText != resolver.VariableName)
+					{
+						base.VisitConditionalAccessExpression(conditionalAccess);
+					}
 
 					try
 					{
-						isInVariableInvocation = true;
-
-
+						isInAnalysedVariableInvocation = true;
+						base.VisitConditionalAccessExpression(conditionalAccess);
 					}
 					finally
 					{
-						isInVariableInvocation = false;
+						isInAnalysedVariableInvocation = false;
+					}			
+				}
+
+				public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
+				{
+					if (shouldStop)
+						return;
+
+					if (invocation.Equals(resolver.Invocation))
+					{
+						shouldStop = true;
+						return;
 					}
+
+					if (!AnalyzeInvocation(invocation))
+					{
+						IsValid = false;
+						return;
+					}
+
+					if (IsCancelationRequested)
+						return;
+								
+					base.VisitInvocationExpression(invocation);
+				}			
+
+				/// <summary>
+				/// Analyze invocation. Returns <c>true</c> if invocation is valid for diagnostic, <c>false</c> if diagnostic can't be made with given invocation inside method.
+				/// </summary>
+				/// <param name="invocation">The invocation node.</param>
+				/// <returns/>
+				private bool AnalyzeInvocation(InvocationExpressionSyntax invocation)
+				{
+					if (invocation.ArgumentsContainIdentifier(resolver.VariableName))   //Check for all method calls which take bql as parameter because they could modify it in the method body
+						return false;
+
+					if (!IsInvocationOnAnalysedVariable(invocation))
+						return true;
+
+					var symbolInfo = resolver.SemanticModel.GetSymbolInfo(invocation);
+
+					if (!(symbolInfo.Symbol is IMethodSymbol methodSymbol))
+						return true;
+
+					if (methodSymbol.IsStatic || !BqlModifyingMethods.IsBqlModifyingInstanceMethod(methodSymbol, resolver.pxContext))
+						return true;
+
+					var invocationStatement = invocation.GetStatementNode();
+
+					return invocationStatement != null
+						? IsReacheable(invocationStatement) 
+						: false;
+				}
+
+				[MethodImpl(MethodImplOptions.AggressiveInlining)]
+				private bool IsInvocationOnAnalysedVariable(InvocationExpressionSyntax invocation)
+				{
+					if (isInAnalysedVariableInvocation)
+						return true;
+
+					return invocation.Expression is MemberAccessExpressionSyntax memberAccess && 
+						   memberAccess.OperatorToken.IsKind(SyntaxKind.DotToken) &&
+						   memberAccess.Expression is IdentifierNameSyntax identifier && 
+						   identifier.Identifier.ValueText == resolver.VariableName;
 				}
 
 				[MethodImpl(MethodImplOptions.AggressiveInlining)]
 				private bool IsReacheable(SyntaxNode assignmentNode)
 				{
-					ControlFlowAnalysis flowAnalysis = resolver.SemanticModel.AnalyzeControlFlow(assignmentNode, resolver.Invocation);
-					return flowAnalysis?.Succeeded == true && flowAnalysis.EndPointIsReachable;
+					StatementSyntax assignmentStatement = (assignmentNode as StatementSyntax) ?? assignmentNode.GetStatementNode();
+					StatementSyntax invocationStatement = resolver.Invocation.GetStatementNode();
+
+					(bool isReacheable, StatementSyntax scopedInvocationStatement) = 
+						AnalyzeControlFlowBetween(invocationStatement, assignmentStatement);
+
+					if (!isReacheable)
+						return false;
+
+					StatementSyntax nextStatementAfterAssignment = assignmentStatement.GetNextStatement();
+
+					if (nextStatementAfterAssignment == null || nextStatementAfterAssignment.Equals(invocationStatement))
+						return nextStatementAfterAssignment != null;
+
+					DataFlowAnalysis flowAnalysis = null;
+
+					try
+					{
+						flowAnalysis = resolver.SemanticModel.AnalyzeDataFlow(nextStatementAfterAssignment, scopedInvocationStatement);		
+					}
+					catch (Exception e)
+					{
+						return true;    //If there was some kind of error during analysis we should assume the worst case - that assignment is reacheable 
+					}
+
+					if (flowAnalysis?.Succeeded != true)
+						return false;
+
+					if (flowAnalysis.AlwaysAssigned.All(var => var.Name != resolver.VariableName))
+						return false;
+
+					
+					return true;
 				}
+
+				private (bool IsReacheable, StatementSyntax ScopedInvocationStatement) AnalyzeControlFlowBetween(StatementSyntax invocationStatement, 
+																												 StatementSyntax assignmentStatement)
+				{
+					SyntaxNode assignmentScope = assignmentStatement.Parent;
+					SyntaxNode currentInvocationScope = invocationStatement.Parent;
+
+					if (assignmentScope.Equals(currentInvocationScope))
+					{
+						return (true, invocationStatement);
+					}
+
+					SyntaxNode prevNode = invocationStatement;
+
+					while (!(currentInvocationScope is MethodDeclarationSyntax))
+					{
+						if (currentInvocationScope.Equals(assignmentScope))
+						{
+							StatementSyntax scopedStatement = (prevNode as StatementSyntax) ?? prevNode.GetStatementNode();
+							return (scopedStatement != null, scopedStatement);
+						}
+
+
+						prevNode = currentInvocationScope;
+						currentInvocationScope = currentInvocationScope.Parent;
+					}
+
+					return (false, null);
+				}
+
+				
 			}
 		}	
 	}
