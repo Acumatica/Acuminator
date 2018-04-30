@@ -304,36 +304,33 @@ namespace Acuminator.Analyzers
 					return true;
 				}
 
-				private (bool IsReacheable, StatementSyntax ScopedInvocationStatement) AnalyzeControlFlowBetween(StatementSyntax invocationStatement, 
-																												 StatementSyntax assignmentStatement)
+				private (bool IsReacheable, StatementSyntax ScopedInvocation,  StatementSyntax ScopedAssignment) AnalyzeControlFlowBetween(
+					StatementSyntax invocationStatement, StatementSyntax assignmentStatement)
 				{
-					SyntaxNode assignmentScope = assignmentStatement.Parent;
-					SyntaxNode currentInvocationScope = invocationStatement.Parent;
-
-					if (assignmentScope.Equals(currentInvocationScope))
+					if (assignmentStatement.Parent.Equals(invocationStatement.Parent))
 					{
-						return (true, invocationStatement);
+						return (true, invocationStatement, assignmentStatement);
 					}
 
-					SyntaxNode prevNode = invocationStatement;
+					var assignmentAncestors = assignmentStatement.Ancestors()
+																 .TakeWhile(ancestor => !(ancestor is MethodDeclarationSyntax))
+																 .OfType<StatementSyntax>()
+																 .ToList();
 
-					while (!(currentInvocationScope is MethodDeclarationSyntax))
+					SyntaxNode currentInvocationScope = invocationStatement;
+
+					while(!(currentInvocationScope is MethodDeclarationSyntax))
 					{
-						if (currentInvocationScope.Equals(assignmentScope))
+						if (currentInvocationScope is StatementSyntax)
 						{
-							StatementSyntax scopedStatement = (prevNode as StatementSyntax) ?? prevNode.GetStatementNode();
-							return (scopedStatement != null, scopedStatement);
+							int indexInAssignmentAncestors
 						}
 
-
-						prevNode = currentInvocationScope;
 						currentInvocationScope = currentInvocationScope.Parent;
 					}
 
-					return (false, null);
+					return (false, null, null);
 				}
-
-				
 			}
 		}	
 	}

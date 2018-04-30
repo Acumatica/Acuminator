@@ -52,7 +52,7 @@ namespace Acuminator.Utilities
 
 			SyntaxNode current = node;
 
-			while(current != null && !(current is StatementSyntax))
+			while (current != null && !(current is StatementSyntax))
 			{
 				current = current.Parent;
 			}
@@ -89,14 +89,14 @@ namespace Acuminator.Utilities
 						{
 							return enumerator.Current;
 						}
-						else  
+						else
 						{
 							switch (curStatement.Parent.Parent.Kind())
-							{																												
+							{
 								case SyntaxKind.MethodDeclaration:
 								case SyntaxKind.OperatorDeclaration:
 								case SyntaxKind.ConversionOperatorDeclaration:
-								case SyntaxKind.ConstructorDeclaration:								
+								case SyntaxKind.ConstructorDeclaration:
 								case SyntaxKind.DestructorDeclaration:
 								case SyntaxKind.PropertyDeclaration:
 								case SyntaxKind.EventDeclaration:
@@ -115,8 +115,45 @@ namespace Acuminator.Utilities
 					}
 				}
 			}
-	
+
 			return null;
+		}
+
+		public static int Depth(this SyntaxNode node)
+		{
+			node.ThrowOnNull(nameof(node));
+			return node.Ancestors().Count();
+		}
+
+		public static SyntaxNode LowestCommonAncestor(SyntaxNode nodeX, SyntaxNode nodeY)
+		{
+			int depthX = nodeX.Depth();            //Depth is average O(log n) operation, worst case is O(n) but it isn't the case for the syntax tree which is wide but not very deep
+			int depthY = nodeY.Depth();
+
+			SyntaxNode curentX = nodeX;
+			SyntaxNode currentY = nodeY;
+
+			while (depthX != depthY)				//First get nodes on the equal levels of depth
+			{
+				if (depthX > depthY)
+				{
+					curentX = curentX.Parent;
+					depthX--;
+				}
+				else
+				{
+					currentY = currentY.Parent;
+					depthY--;
+				}
+			}
+
+			while (curentX != currentY)          //Then move up the branches until nodes coincide
+			{
+				curentX = curentX.Parent;
+				currentY = currentY.Parent;
+			}
+
+			return curentX;
 		}
 	}
 }
