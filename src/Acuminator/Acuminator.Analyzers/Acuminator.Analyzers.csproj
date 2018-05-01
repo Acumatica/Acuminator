@@ -42,8 +42,10 @@
     <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Analyzers\BQL\BqlParameterMismatch\ArrayElemCountLocalVariableResolver.cs" />
+    <Compile Include="Analyzers\BQL\BqlParameterMismatch\BqlInvocationDataFlowAnalyserBase.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\ParametersCounter.cs" />
-    <Compile Include="Analyzers\BQL\BqlParameterMismatch\ResolveVarTypeMethodBodyWalker.cs" />
+    <Compile Include="Analyzers\BQL\BqlParameterMismatch\BqlLocalVariableTypeResolver.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\ParametersCounterSymbolWalker.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\ParametersCounterSyntaxWalker.cs" />
     <Compile Include="Analyzers\NonNullableTypeForBqlFieldAnalyzer.cs" />

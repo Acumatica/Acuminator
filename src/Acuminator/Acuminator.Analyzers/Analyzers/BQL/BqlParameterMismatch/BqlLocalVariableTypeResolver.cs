@@ -17,29 +17,13 @@ namespace Acuminator.Analyzers
 {
 	public partial class BqlParameterMismatchAnalyzer : PXDiagnosticAnalyzer
 	{
-		protected class LocalVariableTypeResolver
+		protected class BqlLocalVariableTypeResolver : BqlInvocationDataFlowAnalyserBase
 		{
 			private readonly ResolveVarTypeMethodBodyWalker methodBodyWalker;
 
-			private readonly SyntaxNodeAnalysisContext syntaxContext;
-			private readonly PXContext pxContext;
-            private readonly StatementSyntax invocationStatement;
-
-            private InvocationExpressionSyntax Invocation { get; }
-
-			private string VariableName { get; }
-
-			private SemanticModel SemanticModel => syntaxContext.SemanticModel;
-
-			private CancellationToken CancellationToken => syntaxContext.CancellationToken;
-
-			public LocalVariableTypeResolver(SyntaxNodeAnalysisContext aSyntaxContext, PXContext aPxContext, IdentifierNameSyntax identifierNode)
+			public BqlLocalVariableTypeResolver(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext, IdentifierNameSyntax identifierNode) :
+											base(syntaxContext, pxContext, identifierNode)
 			{
-				syntaxContext = aSyntaxContext;
-				pxContext = aPxContext;
-				Invocation = syntaxContext.Node as InvocationExpressionSyntax;
-                invocationStatement = Invocation.GetStatementNode();
-				VariableName = identifierNode.Identifier.ValueText;
 				methodBodyWalker = new ResolveVarTypeMethodBodyWalker(this);
 			}
 
@@ -50,10 +34,7 @@ namespace Acuminator.Analyzers
 
 				MethodDeclarationSyntax methodDeclaration = Invocation.GetDeclaringMethodNode();
 
-				if (methodDeclaration == null)
-					return null;
-
-				if (!IsLocalVariable(methodDeclaration))
+				if (methodDeclaration == null || !SemanticModel.IsLocalVariable(methodDeclaration, VariableName))
 					return null;
 
 				methodBodyWalker.Visit(methodDeclaration);
@@ -71,16 +52,6 @@ namespace Acuminator.Analyzers
 				return symbolInfo.Symbol as ITypeSymbol;
 			}
 
-			private bool IsLocalVariable(MethodDeclarationSyntax containingMethod)
-			{
-				DataFlowAnalysis dataFlowAnalysis = SemanticModel.AnalyzeDataFlow(containingMethod.Body);
-
-				if (dataFlowAnalysis == null || !dataFlowAnalysis.Succeeded)
-					return false;
-
-				return dataFlowAnalysis.VariablesDeclared.Any(var => var.Name == VariableName);
-			}
-
             private List<TypeSyntax> AnalyzeCandidates()
             {
                 List<TypeSyntax> checkedCandidates = new List<TypeSyntax>(methodBodyWalker.Candidates.Count);
@@ -89,98 +60,14 @@ namespace Acuminator.Analyzers
                 {
                     var (potentialAssignmentStatement, assignedType) = methodBodyWalker.Candidates.Pop();
 
-                    if (IsReacheable(potentialAssignmentStatement, checkedCandidates.Count))
+                    if (CanReachInvocation(potentialAssignmentStatement, checkedCandidates.Count))
                         checkedCandidates.Add(assignedType);
                 }
 
                 return checkedCandidates;
             }
 
-            private bool IsReacheable(StatementSyntax assignmentStatement, int countOfReachableCandidatesAfter)
-            {
-                (bool isSuccess, bool isReacheable, StatementSyntax scopedAssignment, StatementSyntax scopedInvocation) =
-                    AnalyzeControlFlowBetweenAssignmentAndInvocation(invocationStatement, assignmentStatement);
-
-                if (!isSuccess)
-                    return true;   //If there was some kind of error during analysis we should assume the worst case - that assignment is reacheable 
-                else if (!isReacheable)
-                    return false;
-
-                StatementSyntax nextStatementAfterAssignment = scopedAssignment.GetNextStatement();
-
-                if (nextStatementAfterAssignment == null)
-                    return false;
-
-                DataFlowAnalysis flowAnalysisWithoutAssignment = null;
-
-                try
-                {
-                    flowAnalysisWithoutAssignment = SemanticModel.AnalyzeDataFlow(nextStatementAfterAssignment, scopedInvocation);
-                }
-                catch (Exception e)
-                {
-                    return true;    //If there was some kind of error during analysis we should assume the worst case - that assignment is reacheable 
-                }
-
-                if (flowAnalysisWithoutAssignment == null || !flowAnalysisWithoutAssignment.Succeeded)
-                    return true;
-                else if (countOfReachableCandidatesAfter > 0 &&
-                         flowAnalysisWithoutAssignment.WrittenInside.Any(var => var.Name == VariableName))
-                {
-                    return false;
-                }
-
-                DataFlowAnalysis flowAnalysisWithAssignment = null;
-
-                try
-                {
-                    flowAnalysisWithAssignment = SemanticModel.AnalyzeDataFlow(scopedAssignment, scopedInvocation);
-                }
-                catch (Exception e)
-                {
-                    return true;
-                }
-
-                if (flowAnalysisWithAssignment == null || !flowAnalysisWithAssignment.Succeeded)
-                    return true;
-                else if (flowAnalysisWithAssignment.AlwaysAssigned.All(var => var.Name != VariableName))
-                    return false;
-
-                return true;
-            }
-
-            private (bool IsSuccess, bool IsReacheable, StatementSyntax ScopedAssignment, StatementSyntax ScopedInvocation) 
-                AnalyzeControlFlowBetweenAssignmentAndInvocation(StatementSyntax invocationStatement, StatementSyntax assignmentStatement)
-            {
-                ControlFlowAnalysis controlFlow = null;
-
-                try
-                {
-                    controlFlow = SemanticModel.AnalyzeControlFlow(assignmentStatement);
-
-                    if (controlFlow?.Succeeded == true && !controlFlow.EndPointIsReachable)
-                        return (true, false, null, null);
-                }
-                catch (Exception e)
-                {
-                    //If there was some kind of error during analysis we should assume the worst case - that assignment is reacheable
-                    // So do nothing
-                }
-
-                if (assignmentStatement.Parent.Equals(invocationStatement.Parent))
-                {
-                    return (true, true, assignmentStatement, invocationStatement);
-                }
-
-                var (commonAncestor, scopedAssignment, scopedInvocation) =
-                    RoslynSyntaxUtils.LowestCommonAncestorSyntaxStatement(assignmentStatement, invocationStatement);
-
-                if (commonAncestor != null && scopedAssignment != null && scopedInvocation != null)
-                    return (true, true, scopedAssignment, scopedInvocation);
-
-                return (false, false, null, null);
-            }
-
+            
 
 
             //*****************************************************************************************************************************************************************************
@@ -188,7 +75,7 @@ namespace Acuminator.Analyzers
             //*****************************************************************************************************************************************************************************
             private class ResolveVarTypeMethodBodyWalker : CSharpSyntaxWalker
 			{
-				private readonly LocalVariableTypeResolver resolver;
+				private readonly BqlLocalVariableTypeResolver resolver;
 
 				private bool isInAnalysedVariableInvocation;
 				private bool shouldStop;
@@ -211,7 +98,7 @@ namespace Acuminator.Analyzers
 					}
 				}
 
-				public ResolveVarTypeMethodBodyWalker(LocalVariableTypeResolver aResolver)
+				public ResolveVarTypeMethodBodyWalker(BqlLocalVariableTypeResolver aResolver)
 				{
 					resolver = aResolver;
 					Candidates = new Stack<(StatementSyntax, TypeSyntax)>(capacity: 2);
@@ -335,7 +222,7 @@ namespace Acuminator.Analyzers
 				/// <returns/>
 				private bool AnalyzeInvocation(InvocationExpressionSyntax invocation)
 				{
-					if (invocation.ArgumentsContainIdentifier(resolver.VariableName))   //Check for all method calls which take bql as parameter because they could modify it in the method body
+					if (invocation.DoesArgumentsContainIdentifier(resolver.VariableName))   //Check for all method calls which take bql as parameter because they could modify it in the method body
 						return false;
 
 					if (!IsInvocationOnAnalysedVariable(invocation))
@@ -346,7 +233,7 @@ namespace Acuminator.Analyzers
 					if (!(symbolInfo.Symbol is IMethodSymbol methodSymbol))
 						return true;
 
-					if (methodSymbol.IsStatic || !BqlModifyingMethods.IsBqlModifyingInstanceMethod(methodSymbol, resolver.pxContext))
+					if (methodSymbol.IsStatic || !BqlModifyingMethods.IsBqlModifyingInstanceMethod(methodSymbol, resolver.PXContext))
 						return true;
 
                     try

@@ -33,8 +33,13 @@ namespace Acuminator.Utilities
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool ArgumentsContainIdentifier(this InvocationExpressionSyntax invocation, string identifier)
+		public static bool DoesArgumentsContainIdentifier(this InvocationExpressionSyntax invocation, string identifier)
 		{
+			invocation.ThrowOnNull(nameof(invocation));
+
+			if (identifier.IsNullOrWhiteSpace())
+				return false;
+
 			var arguments = invocation.ArgumentList.Arguments;
 
 			if (arguments.Count == 0)
@@ -45,6 +50,28 @@ namespace Acuminator.Utilities
 							.Any(arg => arg.Identifier.ValueText == identifier);
 		}
 
+		public static IEnumerable<ArgumentSyntax> GetArgumentsContainingIdentifier(this InvocationExpressionSyntax invocation, string identifier)
+		{
+			invocation.ThrowOnNull(nameof(invocation));
+
+			if (identifier.IsNullOrWhiteSpace())
+				yield break;
+
+			var arguments = invocation.ArgumentList.Arguments;
+
+			if (arguments.Count == 0)
+				yield break;
+
+			foreach (ArgumentSyntax argument in arguments)
+			{
+				if (argument.Expression is IdentifierNameSyntax identifierNameSyntax && identifierNameSyntax.Identifier.ValueText == identifier)
+				{
+					yield return argument;
+				}
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static StatementSyntax GetStatementNode(this SyntaxNode node)
 		{
 			if (node == null)
@@ -60,6 +87,7 @@ namespace Acuminator.Utilities
 			return current as StatementSyntax;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static MethodDeclarationSyntax GetDeclaringMethodNode(this SyntaxNode node)
 		{
 			var current = node;
@@ -118,13 +146,14 @@ namespace Acuminator.Utilities
 
 			return null;
 		}
-		
+
 		/// <summary>
 		/// Get a parent with a specified type <typeparamref name="TParent"/>
 		/// </summary>
 		/// <typeparam name="TParent">Parent node type.</typeparam>
 		/// <param name="node">The node to act on.</param>
 		/// <returns/>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static TParent Parent<TParent>(this SyntaxNode node)
 		where TParent : SyntaxNode
 		{
@@ -143,12 +172,13 @@ namespace Acuminator.Utilities
 
 			return null;
 		}
-		
+
 		/// <summary>
-		/// Get depths of the given syntax node measuring from root.
+		/// Get depths of the given syntax node measuring from the root.
 		/// </summary>
 		/// <param name="node">The node to act on.</param>
 		/// <returns/>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Depth(this SyntaxNode node)
 		{
 			node.ThrowOnNull(nameof(node));
@@ -164,14 +194,15 @@ namespace Acuminator.Utilities
 
 			return depth;
 		}
-		
+
 		/// <summary>
-		/// Get depths of the given syntax node measuring from the root of type <typeparamref name="TRoot"/>. 
-		/// If node doesn't have the root of this type then the normal depth is returned.
+		/// Get depths of the given syntax node measuring from the first ancestor of type <typeparamref name="TRoot"/>. 
+		/// If node doesn't have the ancestor of this type then depth from the root is returned.
 		/// </summary>
 		/// <typeparam name="TRoot">Type of the root.</typeparam>
 		/// <param name="node">The node to act on.</param>
 		/// <returns/>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Depth<TRoot>(this SyntaxNode node)
 		where TRoot : SyntaxNode
 		{
@@ -191,16 +222,17 @@ namespace Acuminator.Utilities
 
 			return depth;
 		}
-		
+
 		/// <summary>
-		/// Get depths of the given syntax node measuring from root.
+		/// Get depths of the given syntax node measuring from the first ancestor of type <typeparamref name="TRoot"/> and taking into account only nodes
+		/// of type <typeparamref name="TNode"/>. If node doesn't have the ancestor of this type then the depth (taking into account only nodes of type
+		/// <typeparamref name="TNode"/>) from the root is returned.
 		/// </summary>
 		/// <typeparam name="TRoot">Type of the root.</typeparam>
 		/// <typeparam name="TNode">Type of the node.</typeparam>
 		/// <param name="node">The node to act on.</param>
-		/// <returns>
-		/// An int.
-		/// </returns>
+		/// <returns/>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Depth<TRoot, TNode>(this TNode node)
 		where TRoot : SyntaxNode
 		where TNode : SyntaxNode
@@ -294,6 +326,22 @@ namespace Acuminator.Utilities
 			}
 
 			return (currentX, prevX, prevY);
+		}
+
+		public static bool IsLocalVariable(this SemanticModel semanticModel, MethodDeclarationSyntax containingMethod, string variableName)
+		{
+			semanticModel.ThrowOnNull(nameof(semanticModel));
+			containingMethod.ThrowOnNull(nameof(containingMethod));
+
+			if (variableName.IsNullOrWhiteSpace())
+				return false;
+
+			DataFlowAnalysis dataFlowAnalysis = semanticModel.AnalyzeDataFlow(containingMethod.Body);
+
+			if (dataFlowAnalysis == null || !dataFlowAnalysis.Succeeded)
+				return false;
+
+			return dataFlowAnalysis.VariablesDeclared.Any(var => var.Name == variableName);
 		}
 	}
 }

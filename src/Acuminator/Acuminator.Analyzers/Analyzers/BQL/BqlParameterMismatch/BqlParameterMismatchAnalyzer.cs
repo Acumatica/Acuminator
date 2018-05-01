@@ -83,9 +83,9 @@ namespace Acuminator.Analyzers
 		private static void AnalyzeStaticInvocation(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
 													InvocationExpressionSyntax invocationNode)
 		{
-			(int argsCount, bool stopDiagnostic) = GetBqlArgumentsCount(methodSymbol, pxContext, syntaxContext, invocationNode);
+			int? argsCount = GetBqlArgumentsCount(methodSymbol, pxContext, syntaxContext, invocationNode);
 
-			if (stopDiagnostic || syntaxContext.CancellationToken.IsCancellationRequested)
+			if (argsCount == null || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
 
 			ParametersCounterSyntaxWalker walker = new ParametersCounterSyntaxWalker(syntaxContext, pxContext);
@@ -93,7 +93,7 @@ namespace Acuminator.Analyzers
 			if (!walker.CountParametersInNode(invocationNode))
 				return;
 
-			VerifyBqlArgumentsCount(argsCount, walker.ParametersCounter, syntaxContext, invocationNode, methodSymbol);
+			VerifyBqlArgumentsCount(argsCount.Value, walker.ParametersCounter, syntaxContext, invocationNode, methodSymbol);
 		}
 
 		private static void AnalyzeInstanceInvocation(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
@@ -104,12 +104,11 @@ namespace Acuminator.Analyzers
 			if (accessExpression == null || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			(int argsCount, bool stopDiagnostic) = GetBqlArgumentsCount(methodSymbol, pxContext, syntaxContext, invocationNode);
+			int? argsCount = GetBqlArgumentsCount(methodSymbol, pxContext, syntaxContext, invocationNode);
 
-			if (stopDiagnostic || syntaxContext.CancellationToken.IsCancellationRequested)
+			if (argsCount == null || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
-
-			
+	
 			ITypeSymbol containingType = GetContainingTypeForInstanceCall(pxContext, syntaxContext, accessExpression);
 
 			if (containingType == null)
@@ -120,54 +119,65 @@ namespace Acuminator.Analyzers
 			if (!walker.CountParametersInTypeSymbol(containingType))
 				return;
 
-			VerifyBqlArgumentsCount(argsCount, walker.ParametersCounter, syntaxContext, invocationNode, methodSymbol);
+			VerifyBqlArgumentsCount(argsCount.Value, walker.ParametersCounter, syntaxContext, invocationNode, methodSymbol);
 		}
 
-		
-
-		private static (int ArgsCount, bool StopDiagnostic) GetBqlArgumentsCount(IMethodSymbol methodSymbol, PXContext pxContext,
-																				 SyntaxNodeAnalysisContext syntaxContext,
-																				 InvocationExpressionSyntax invocationNode)
+		/// <summary>
+		/// Gets bql arguments count which goes for bql parameters. If <c>null</c> then the number couldn't be calculated by static analysis, stop diagnostic.
+		/// </summary>
+		/// <param name="methodSymbol">The method symbol.</param>
+		/// <param name="pxContext">Acumatica-specific context.</param>
+		/// <param name="syntaxContext">Syntax context.</param>
+		/// <param name="invocationNode">The invocation node.</param>
+		/// <returns/>
+		private static int? GetBqlArgumentsCount(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
+												 InvocationExpressionSyntax invocationNode)
 		{
 			var parameters = methodSymbol.Parameters;
 			var bqlArgsParam = parameters[parameters.Length - 1];
 			var argumentsList = invocationNode.ArgumentList.Arguments;
-
 			var argumentPassedViaName = argumentsList.FirstOrDefault(a => a.NameColon?.Name?.Identifier.ValueText == bqlArgsParam.Name);
 
 			if (argumentPassedViaName != null)
-				return GetBqlArgumentsCountWhenCouldBePassedAsArray(argumentPassedViaName, syntaxContext);
+				return GetBqlArgumentsCountWhenCouldBePassedAsArray(argumentPassedViaName, syntaxContext, pxContext);
 
 			var nonBqlArgsParametersCount = methodSymbol.Parameters.Length - 1;   //The last one parameter is params array for BQL args
 			int argsCount = argumentsList.Count - nonBqlArgsParametersCount;
 
 			if (argsCount == 1)
-				return GetBqlArgumentsCountWhenCouldBePassedAsArray(argumentsList[argumentsList.Count - 1], syntaxContext);
+				return GetBqlArgumentsCountWhenCouldBePassedAsArray(argumentsList[argumentsList.Count - 1], syntaxContext, pxContext);
 
-			return (argsCount, StopDiagnostic: false);
+			return argsCount;
 		}
 
-		private static (int ArgsCount, bool StopDiagnostic) GetBqlArgumentsCountWhenCouldBePassedAsArray(ArgumentSyntax argumentPassedViaName,
-																										 SyntaxNodeAnalysisContext syntaxContext)
+		private static int? GetBqlArgumentsCountWhenCouldBePassedAsArray(ArgumentSyntax argumentPassedViaName, 
+																		 SyntaxNodeAnalysisContext syntaxContext,
+																		 PXContext pxContext)
 		{
+			if (syntaxContext.CancellationToken.IsCancellationRequested)
+				return null;
+
 			TypeInfo typeInfo = syntaxContext.SemanticModel.GetTypeInfo(argumentPassedViaName.Expression, syntaxContext.CancellationToken);
 			ITypeSymbol typeSymbol = typeInfo.Type;
 
 			if (typeSymbol == null)
-				return (0, false);
-			else if (typeSymbol.IsValueType || typeSymbol.TypeKind != TypeKind.Array)
-				return (1, false);
+				return 0;
+			else if (typeSymbol.TypeKind != TypeKind.Array)
+				return 1;
 
 			switch (argumentPassedViaName.Expression)
 			{
 				case InitializerExpressionSyntax initializerExpression when initializerExpression.Kind() == SyntaxKind.ArrayInitializerExpression:
-					return (initializerExpression.Expressions.Count, false);
+					return initializerExpression.Expressions.Count;
 				case ArrayCreationExpressionSyntax arrayCreationNode:
-					return (arrayCreationNode.Initializer.Expressions.Count, false);
+					return arrayCreationNode.Initializer.Expressions.Count;
 				case ImplicitArrayCreationExpressionSyntax arrayImplicitCreationNode:
-					return (arrayImplicitCreationNode.Initializer.Expressions.Count, false);
+					return arrayImplicitCreationNode.Initializer.Expressions.Count;
+				case IdentifierNameSyntax arrayVariable:
+					var countResolver = new ArrayElemCountLocalVariableResolver(syntaxContext, pxContext, arrayVariable);
+					return countResolver.GetArrayElementsCount();
 				default:
-					return (0, StopDiagnostic: true);
+					return null;
 			}
 		}
 
@@ -186,7 +196,7 @@ namespace Acuminator.Analyzers
 			if (!(accessExpression is IdentifierNameSyntax identifierNode) || syntaxContext.CancellationToken.IsCancellationRequested)   
 				return null;                                                 //Should exclude everything except local variable. For example expressions like "this.var.Select()" should be excluded
 
-			LocalVariableTypeResolver resolver = new LocalVariableTypeResolver(syntaxContext, pxContext, identifierNode);
+			BqlLocalVariableTypeResolver resolver = new BqlLocalVariableTypeResolver(syntaxContext, pxContext, identifierNode);
 			return resolver.ResolveVariableType();
 		}
 
