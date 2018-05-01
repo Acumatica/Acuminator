@@ -22,10 +22,10 @@ namespace Acuminator.Analyzers
 			private readonly ResolveVarTypeMethodBodyWalker methodBodyWalker;
 
 			private readonly SyntaxNodeAnalysisContext syntaxContext;
-			private readonly PXContext pxContext;		
-			private readonly IdentifierNameSyntax identifier;
-			
-			private InvocationExpressionSyntax Invocation { get; }
+			private readonly PXContext pxContext;
+            private readonly StatementSyntax invocationStatement;
+
+            private InvocationExpressionSyntax Invocation { get; }
 
 			private string VariableName { get; }
 
@@ -37,8 +37,8 @@ namespace Acuminator.Analyzers
 			{
 				syntaxContext = aSyntaxContext;
 				pxContext = aPxContext;
-				identifier = identifierNode;
-				Invocation = syntaxContext.Node as InvocationExpressionSyntax;		
+				Invocation = syntaxContext.Node as InvocationExpressionSyntax;
+                invocationStatement = Invocation.GetStatementNode();
 				VariableName = identifierNode.Identifier.ValueText;
 				methodBodyWalker = new ResolveVarTypeMethodBodyWalker(this);
 			}
@@ -58,14 +58,15 @@ namespace Acuminator.Analyzers
 
 				methodBodyWalker.Visit(methodDeclaration);
 
-				if (CancellationToken.IsCancellationRequested || !methodBodyWalker.IsValid || methodBodyWalker.Candidates.Count != 1)
+				if (CancellationToken.IsCancellationRequested || !methodBodyWalker.IsValid || methodBodyWalker.Candidates.Count == 0)
 					return null;
 
-				var (potentialAssignment, assignedType) = methodBodyWalker.Candidates[0];
+                List<TypeSyntax> checkedCandidates = AnalyzeCandidates();
 
-                if (assignedType == null)
+                if (checkedCandidates.Count != 1)
                     return null;
 
+                TypeSyntax assignedType = checkedCandidates[0];
 				SymbolInfo symbolInfo = SemanticModel.GetSymbolInfo(assignedType);
 				return symbolInfo.Symbol as ITypeSymbol;
 			}
@@ -80,13 +81,112 @@ namespace Acuminator.Analyzers
 				return dataFlowAnalysis.VariablesDeclared.Any(var => var.Name == VariableName);
 			}
 
+            private List<TypeSyntax> AnalyzeCandidates()
+            {
+                List<TypeSyntax> checkedCandidates = new List<TypeSyntax>(methodBodyWalker.Candidates.Count);
+
+                while (methodBodyWalker.Candidates.Count > 0)
+                {
+                    var (potentialAssignmentStatement, assignedType) = methodBodyWalker.Candidates.Pop();
+
+                    if (IsReacheable(potentialAssignmentStatement, checkedCandidates.Count))
+                        checkedCandidates.Add(assignedType);
+                }
+
+                return checkedCandidates;
+            }
+
+            private bool IsReacheable(StatementSyntax assignmentStatement, int countOfReachableCandidatesAfter)
+            {
+                (bool isSuccess, bool isReacheable, StatementSyntax scopedAssignment, StatementSyntax scopedInvocation) =
+                    AnalyzeControlFlowBetweenAssignmentAndInvocation(invocationStatement, assignmentStatement);
+
+                if (!isSuccess)
+                    return true;   //If there was some kind of error during analysis we should assume the worst case - that assignment is reacheable 
+                else if (!isReacheable)
+                    return false;
+
+                StatementSyntax nextStatementAfterAssignment = scopedAssignment.GetNextStatement();
+
+                if (nextStatementAfterAssignment == null)
+                    return false;
+
+                DataFlowAnalysis flowAnalysisWithoutAssignment = null;
+
+                try
+                {
+                    flowAnalysisWithoutAssignment = SemanticModel.AnalyzeDataFlow(nextStatementAfterAssignment, scopedInvocation);
+                }
+                catch (Exception e)
+                {
+                    return true;    //If there was some kind of error during analysis we should assume the worst case - that assignment is reacheable 
+                }
+
+                if (flowAnalysisWithoutAssignment == null || !flowAnalysisWithoutAssignment.Succeeded)
+                    return true;
+                else if (countOfReachableCandidatesAfter > 0 &&
+                         flowAnalysisWithoutAssignment.WrittenInside.Any(var => var.Name == VariableName))
+                {
+                    return false;
+                }
+
+                DataFlowAnalysis flowAnalysisWithAssignment = null;
+
+                try
+                {
+                    flowAnalysisWithAssignment = SemanticModel.AnalyzeDataFlow(scopedAssignment, scopedInvocation);
+                }
+                catch (Exception e)
+                {
+                    return true;
+                }
+
+                if (flowAnalysisWithAssignment == null || !flowAnalysisWithAssignment.Succeeded)
+                    return true;
+                else if (flowAnalysisWithAssignment.AlwaysAssigned.All(var => var.Name != VariableName))
+                    return false;
+
+                return true;
+            }
+
+            private (bool IsSuccess, bool IsReacheable, StatementSyntax ScopedAssignment, StatementSyntax ScopedInvocation) 
+                AnalyzeControlFlowBetweenAssignmentAndInvocation(StatementSyntax invocationStatement, StatementSyntax assignmentStatement)
+            {
+                ControlFlowAnalysis controlFlow = null;
+
+                try
+                {
+                    controlFlow = SemanticModel.AnalyzeControlFlow(assignmentStatement);
+
+                    if (controlFlow?.Succeeded == true && !controlFlow.EndPointIsReachable)
+                        return (true, false, null, null);
+                }
+                catch (Exception e)
+                {
+                    //If there was some kind of error during analysis we should assume the worst case - that assignment is reacheable
+                    // So do nothing
+                }
+
+                if (assignmentStatement.Parent.Equals(invocationStatement.Parent))
+                {
+                    return (true, true, assignmentStatement, invocationStatement);
+                }
+
+                var (commonAncestor, scopedAssignment, scopedInvocation) =
+                    RoslynSyntaxUtils.LowestCommonAncestorSyntaxStatement(assignmentStatement, invocationStatement);
+
+                if (commonAncestor != null && scopedAssignment != null && scopedInvocation != null)
+                    return (true, true, scopedAssignment, scopedInvocation);
+
+                return (false, false, null, null);
+            }
 
 
 
-			//*****************************************************************************************************************************************************************************
-			//*****************************************************************************************************************************************************************************
-			//*****************************************************************************************************************************************************************************
-			private class ResolveVarTypeMethodBodyWalker : CSharpSyntaxWalker
+            //*****************************************************************************************************************************************************************************
+            //*****************************************************************************************************************************************************************************
+            //*****************************************************************************************************************************************************************************
+            private class ResolveVarTypeMethodBodyWalker : CSharpSyntaxWalker
 			{
 				private readonly LocalVariableTypeResolver resolver;
 
@@ -96,7 +196,7 @@ namespace Acuminator.Analyzers
 
 				private bool IsCancelationRequested => resolver.CancellationToken.IsCancellationRequested;
 
-				public List<(SyntaxNode PotentialAssignment, TypeSyntax AssignedType)> Candidates { get; }
+				public Stack<(StatementSyntax PotentialAssignment, TypeSyntax AssignedType)> Candidates { get; }
 				
 				public bool IsValid
 				{
@@ -114,7 +214,7 @@ namespace Acuminator.Analyzers
 				public ResolveVarTypeMethodBodyWalker(LocalVariableTypeResolver aResolver)
 				{
 					resolver = aResolver;
-					Candidates = new List<(SyntaxNode, TypeSyntax)>(capacity: 2);
+					Candidates = new Stack<(StatementSyntax, TypeSyntax)>(capacity: 2);
 				}
 
 				public override void Visit(SyntaxNode node)
@@ -133,7 +233,7 @@ namespace Acuminator.Analyzers
 				public override void VisitVariableDeclarator(VariableDeclaratorSyntax declarator)
 				{
 					if (IsCancelationRequested || declarator.Identifier.ValueText != resolver.VariableName ||
-					   !(declarator.Initializer?.Value is ObjectCreationExpressionSyntax objectCreation) || !IsReacheable(declarator))
+					   !(declarator.Initializer?.Value is ObjectCreationExpressionSyntax objectCreation))
 					{
 						if (!IsCancelationRequested)
 							base.VisitVariableDeclarator(declarator);
@@ -141,7 +241,7 @@ namespace Acuminator.Analyzers
 						return;
 					}
 
-					Candidates.Add((declarator, objectCreation.Type));
+					Candidates.Push((declarator.GetStatementNode(), objectCreation.Type));
 
 					if (!IsCancelationRequested)
 						base.VisitVariableDeclarator(declarator);
@@ -149,7 +249,7 @@ namespace Acuminator.Analyzers
 				
 				public override void VisitAssignmentExpression(AssignmentExpressionSyntax assignment)
 				{
-					if (IsCancelationRequested || !IsReacheable(assignment))
+					if (IsCancelationRequested)
 						return;
 
 					ExpressionSyntax curExpression = assignment;
@@ -177,7 +277,7 @@ namespace Acuminator.Analyzers
 						return;
 					}
 
-					Candidates.Add((candidateAssignment, objectCreation.Type));
+					Candidates.Push((candidateAssignment.GetStatementNode(), objectCreation.Type));
 
 					if (!IsCancelationRequested)
 						base.VisitAssignmentExpression(assignment);
@@ -249,11 +349,19 @@ namespace Acuminator.Analyzers
 					if (methodSymbol.IsStatic || !BqlModifyingMethods.IsBqlModifyingInstanceMethod(methodSymbol, resolver.pxContext))
 						return true;
 
-					var invocationStatement = invocation.GetStatementNode();
+                    try
+                    {
+                        ControlFlowAnalysis controlFlow = resolver.SemanticModel.AnalyzeControlFlow(invocation.GetStatementNode());
 
-					return invocationStatement != null
-						? IsReacheable(invocationStatement) 
-						: false;
+                        if (controlFlow?.Succeeded == true && !controlFlow.EndPointIsReachable)
+                            return true;
+                    }
+                    catch (Exception e)
+                    {
+                        return false;
+                    }
+
+					return false;
 				}
 
 				[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -266,75 +374,6 @@ namespace Acuminator.Analyzers
 						   memberAccess.OperatorToken.IsKind(SyntaxKind.DotToken) &&
 						   memberAccess.Expression is IdentifierNameSyntax identifier && 
 						   identifier.Identifier.ValueText == resolver.VariableName;
-				}
-
-				[MethodImpl(MethodImplOptions.AggressiveInlining)]
-				private bool IsReacheable(SyntaxNode assignmentNode)
-				{
-					StatementSyntax assignmentStatement = (assignmentNode as StatementSyntax) ?? assignmentNode.GetStatementNode();
-					StatementSyntax invocationStatement = resolver.Invocation.GetStatementNode();
-
-					(bool isSuccess, StatementSyntax scopedAssignment, StatementSyntax scopedInvocation) = 
-						AnalyzeControlFlowBetween(invocationStatement, assignmentStatement);
-
-					if (!isSuccess)
-						return true;   //If there was some kind of error during analysis we should assume the worst case - that assignment is reacheable 
-
-                    StatementSyntax nextStatementAfterAssignment = scopedAssignment.GetNextStatement();
-
-					if (nextStatementAfterAssignment == null)
-						return false;
-
-					DataFlowAnalysis flowAnalysisWithoutAssignment = null;
-
-					try
-					{
-                        flowAnalysisWithoutAssignment = resolver.SemanticModel.AnalyzeDataFlow(nextStatementAfterAssignment, scopedInvocation);		
-					}
-					catch (Exception e)
-					{
-						return true;    //If there was some kind of error during analysis we should assume the worst case - that assignment is reacheable 
-					}
-
-                    if (flowAnalysisWithoutAssignment == null || !flowAnalysisWithoutAssignment.Succeeded)
-                        return true;
-                    else if (flowAnalysisWithoutAssignment.WrittenInside.Any(var => var.Name == resolver.VariableName))
-                        return false;
-
-                    DataFlowAnalysis flowAnalysisWithAssignment = null;
-
-                    try
-                    {
-                        flowAnalysisWithAssignment = resolver.SemanticModel.AnalyzeDataFlow(scopedAssignment, scopedInvocation);
-                    }
-                    catch (Exception e)
-                    {
-                        return true;
-                    }
-
-                    if (flowAnalysisWithAssignment == null || !flowAnalysisWithAssignment.Succeeded)
-                        return true;
-                    else if (flowAnalysisWithAssignment.AlwaysAssigned.All(var => var.Name != resolver.VariableName))
-						return false;
-				
-					return true;
-				}
-
-				private (bool IsSuccess, StatementSyntax ScopedAssignment, StatementSyntax ScopedInvocation) AnalyzeControlFlowBetween(
-					StatementSyntax invocationStatement, StatementSyntax assignmentStatement)
-				{
-					if (assignmentStatement.Parent.Equals(invocationStatement.Parent))
-					{
-						return (true, assignmentStatement, invocationStatement);
-					}
-
-					var (commonAncestor, scopedAssignment, scopedInvocation) =
-						RoslynSyntaxUtils.LowestCommonAncestorSyntaxStatement(assignmentStatement, invocationStatement);
-
-					if (commonAncestor != null && scopedAssignment != null && scopedInvocation != null)
-						return (true, scopedAssignment, scopedInvocation);
-
-					return (false, null, null);
 				}
 			}
 		}	

@@ -26,10 +26,7 @@ namespace PX.Objects.HackathonDemo
                     Where<SOOrder.orderNbr, Equal<Required<SOOrder.orderNbr>>,
                       And<SOOrder.orderDate, Greater<Required<SOOrder.orderDate>>>>>(this);
 
-
-            filtered?.View?.WhereAnd(typeof(object));
-
-            if (order.OrderDate.HasValue && filtered.Select(order.OrderDate).Count > 0)
+            if (order.OrderDate.HasValue && filtered.Select(1, 2).Count > 0)
 			{
 				
 			}
