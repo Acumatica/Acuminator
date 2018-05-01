@@ -272,62 +272,65 @@ namespace Acuminator.Analyzers
 					StatementSyntax assignmentStatement = (assignmentNode as StatementSyntax) ?? assignmentNode.GetStatementNode();
 					StatementSyntax invocationStatement = resolver.Invocation.GetStatementNode();
 
-					(bool isReacheable, StatementSyntax scopedInvocationStatement) = 
+					(bool isSuccess, StatementSyntax scopedAssignment, StatementSyntax scopedInvocation) = 
 						AnalyzeControlFlowBetween(invocationStatement, assignmentStatement);
 
-					if (!isReacheable)
+					if (!isSuccess)
+						return true;   //If there was some kind of error during analysis we should assume the worst case - that assignment is reacheable 
+
+                    StatementSyntax nextStatementAfterAssignment = scopedAssignment.GetNextStatement();
+
+					if (nextStatementAfterAssignment == null)
 						return false;
 
-					StatementSyntax nextStatementAfterAssignment = assignmentStatement.GetNextStatement();
-
-					if (nextStatementAfterAssignment == null || nextStatementAfterAssignment.Equals(invocationStatement))
-						return nextStatementAfterAssignment != null;
-
-					DataFlowAnalysis flowAnalysis = null;
+					DataFlowAnalysis flowAnalysisWithoutAssignment = null;
 
 					try
 					{
-						flowAnalysis = resolver.SemanticModel.AnalyzeDataFlow(nextStatementAfterAssignment, scopedInvocationStatement);		
+                        flowAnalysisWithoutAssignment = resolver.SemanticModel.AnalyzeDataFlow(nextStatementAfterAssignment, scopedInvocation);		
 					}
 					catch (Exception e)
 					{
 						return true;    //If there was some kind of error during analysis we should assume the worst case - that assignment is reacheable 
 					}
 
-					if (flowAnalysis?.Succeeded != true)
-						return false;
+                    if (flowAnalysisWithoutAssignment == null || !flowAnalysisWithoutAssignment.Succeeded)
+                        return true;
+                    else if (flowAnalysisWithoutAssignment.WrittenInside.Any(var => var.Name == resolver.VariableName))
+                        return false;
 
-					if (flowAnalysis.AlwaysAssigned.All(var => var.Name != resolver.VariableName))
-						return false;
+                    DataFlowAnalysis flowAnalysisWithAssignment = null;
 
-					
+                    try
+                    {
+                        flowAnalysisWithAssignment = resolver.SemanticModel.AnalyzeDataFlow(scopedAssignment, scopedInvocation);
+                    }
+                    catch (Exception e)
+                    {
+                        return true;
+                    }
+
+                    if (flowAnalysisWithAssignment == null || !flowAnalysisWithAssignment.Succeeded)
+                        return true;
+                    else if (flowAnalysisWithAssignment.AlwaysAssigned.All(var => var.Name != resolver.VariableName))
+						return false;
+				
 					return true;
 				}
 
-				private (bool IsReacheable, StatementSyntax ScopedInvocation,  StatementSyntax ScopedAssignment) AnalyzeControlFlowBetween(
+				private (bool IsSuccess, StatementSyntax ScopedAssignment, StatementSyntax ScopedInvocation) AnalyzeControlFlowBetween(
 					StatementSyntax invocationStatement, StatementSyntax assignmentStatement)
 				{
 					if (assignmentStatement.Parent.Equals(invocationStatement.Parent))
 					{
-						return (true, invocationStatement, assignmentStatement);
+						return (true, assignmentStatement, invocationStatement);
 					}
 
-					var assignmentAncestors = assignmentStatement.Ancestors()
-																 .TakeWhile(ancestor => !(ancestor is MethodDeclarationSyntax))
-																 .OfType<StatementSyntax>()
-																 .ToList();
+					var (commonAncestor, scopedAssignment, scopedInvocation) =
+						RoslynSyntaxUtils.LowestCommonAncestorSyntaxStatement(assignmentStatement, invocationStatement);
 
-					SyntaxNode currentInvocationScope = invocationStatement;
-
-					while(!(currentInvocationScope is MethodDeclarationSyntax))
-					{
-						if (currentInvocationScope is StatementSyntax)
-						{
-							int indexInAssignmentAncestors
-						}
-
-						currentInvocationScope = currentInvocationScope.Parent;
-					}
+					if (commonAncestor != null && scopedAssignment != null && scopedInvocation != null)
+						return (true, scopedAssignment, scopedInvocation);
 
 					return (false, null, null);
 				}
