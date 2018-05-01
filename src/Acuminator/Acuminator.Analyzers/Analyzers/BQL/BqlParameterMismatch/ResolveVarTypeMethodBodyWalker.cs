@@ -62,11 +62,13 @@ namespace Acuminator.Analyzers
 					return null;
 
 				var (potentialAssignment, assignedType) = methodBodyWalker.Candidates[0];
-				TypeInfo typeInfo = SemanticModel.GetTypeInfo(assignedType);
-				return typeInfo.Type;
-			}
 
-			
+                if (assignedType == null)
+                    return null;
+
+				SymbolInfo symbolInfo = SemanticModel.GetSymbolInfo(assignedType);
+				return symbolInfo.Symbol as ITypeSymbol;
+			}
 
 			private bool IsLocalVariable(MethodDeclarationSyntax containingMethod)
 			{

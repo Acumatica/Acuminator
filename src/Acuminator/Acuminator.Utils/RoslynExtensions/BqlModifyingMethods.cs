@@ -76,7 +76,7 @@ namespace Acuminator.Utilities
 				return PXSelectbaseBqlModifiers.Contains(methodSymbol.Name);
 			}
 			else if (containingType.Equals(context.PXViewType))
-				return PXViewBqlModifiers.Equals(methodSymbol.Name);
+				return PXViewBqlModifiers.Contains(methodSymbol.Name);
 			else
 				return false;
 		}

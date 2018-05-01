@@ -21,14 +21,15 @@ namespace PX.Objects.HackathonDemo
 
 
 
-			filtered = new
-				PXSelect<SOOrder,
-					Where<SOOrder.orderNbr, Equal<Required<SOOrder.orderNbr>>,
-					  And<SOOrder.orderDate, Greater<Required<SOOrder.orderDate>>>>>(this);
+            filtered = new
+                PXSelect<SOOrder,
+                    Where<SOOrder.orderNbr, Equal<Required<SOOrder.orderNbr>>,
+                      And<SOOrder.orderDate, Greater<Required<SOOrder.orderDate>>>>>(this);
 
-			//Test(ref filtered);  
 
-			if (order.OrderDate.HasValue && filtered.Select(order.OrderDate).Count > 0)
+            filtered?.View?.WhereAnd(typeof(object));
+
+            if (order.OrderDate.HasValue && filtered.Select(order.OrderDate).Count > 0)
 			{
 				
 			}
@@ -36,7 +37,7 @@ namespace PX.Objects.HackathonDemo
 		}
 
 
-		public void Test(ref PXSelectBase<SOOrder> query)
+		public void Test(PXSelectBase<SOOrder> query)
 		{
 
 		}
