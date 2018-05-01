@@ -29,8 +29,11 @@ namespace Acuminator.Analyzers
 
 		private static void AnalyzeNode(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
 		{
-			if (syntaxContext.CancellationToken.IsCancellationRequested || !(syntaxContext.Node is InvocationExpressionSyntax invocationNode))
+			if (syntaxContext.CancellationToken.IsCancellationRequested || !(syntaxContext.Node is InvocationExpressionSyntax invocationNode) ||
+				invocationNode.ContainsDiagnostics)
+			{
 				return;
+			}
 
 			var symbolInfo = syntaxContext.SemanticModel.GetSymbolInfo(invocationNode);
 
@@ -150,14 +153,14 @@ namespace Acuminator.Analyzers
 			return argsCount;
 		}
 
-		private static int? GetBqlArgumentsCountWhenCouldBePassedAsArray(ArgumentSyntax argumentPassedViaName, 
+		private static int? GetBqlArgumentsCountWhenCouldBePassedAsArray(ArgumentSyntax argumentWhichCanBeArray, 
 																		 SyntaxNodeAnalysisContext syntaxContext,
 																		 PXContext pxContext)
 		{
 			if (syntaxContext.CancellationToken.IsCancellationRequested)
 				return null;
 
-			TypeInfo typeInfo = syntaxContext.SemanticModel.GetTypeInfo(argumentPassedViaName.Expression, syntaxContext.CancellationToken);
+			TypeInfo typeInfo = syntaxContext.SemanticModel.GetTypeInfo(argumentWhichCanBeArray.Expression, syntaxContext.CancellationToken);
 			ITypeSymbol typeSymbol = typeInfo.Type;
 
 			if (typeSymbol == null)
@@ -165,20 +168,14 @@ namespace Acuminator.Analyzers
 			else if (typeSymbol.TypeKind != TypeKind.Array)
 				return 1;
 
-			switch (argumentPassedViaName.Expression)
+			if (argumentWhichCanBeArray.Expression is IdentifierNameSyntax arrayVariable)
 			{
-				case InitializerExpressionSyntax initializerExpression when initializerExpression.Kind() == SyntaxKind.ArrayInitializerExpression:
-					return initializerExpression.Expressions.Count;
-				case ArrayCreationExpressionSyntax arrayCreationNode:
-					return arrayCreationNode.Initializer.Expressions.Count;
-				case ImplicitArrayCreationExpressionSyntax arrayImplicitCreationNode:
-					return arrayImplicitCreationNode.Initializer.Expressions.Count;
-				case IdentifierNameSyntax arrayVariable:
-					var countResolver = new ArrayElemCountLocalVariableResolver(syntaxContext, pxContext, arrayVariable);
-					return countResolver.GetArrayElementsCount();
-				default:
-					return null;
+				var elementsCountResolver = new ArrayElemCountLocalVariableResolver(syntaxContext, pxContext, arrayVariable);
+				return elementsCountResolver.GetArrayElementsCount();
 			}
+
+			return RoslynSyntaxUtils.TryGetSizeOfSingleDimensionalNonJaggedArray(argumentWhichCanBeArray.Expression, syntaxContext.SemanticModel,
+																			     syntaxContext.CancellationToken);
 		}
 
 		private static ITypeSymbol GetContainingTypeForInstanceCall(PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,

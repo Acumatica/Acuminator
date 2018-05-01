@@ -47,26 +47,26 @@ namespace Acuminator.Analyzers
 				if (CancellationToken.IsCancellationRequested || !methodBodyWalker.IsValid || methodBodyWalker.Candidates.Count == 0)
 					return null;
 
-                List<int> checkedCountCandidates = AnalyzeCandidates();
-                return checkedCountCandidates.Count == 1 
-					? checkedCountCandidates[0] 
-					: (int?) null;			
+				List<int> checkedCountCandidates = AnalyzeCandidates();
+				return checkedCountCandidates.Count == 1
+					? checkedCountCandidates[0]
+					: (int?)null;
 			}
 
-            private List<int> AnalyzeCandidates()
-            {
-                List<int> checkedCandidates = new List<int>(methodBodyWalker.Candidates.Count);
+			private List<int> AnalyzeCandidates()
+			{
+				List<int> checkedCandidates = new List<int>(methodBodyWalker.Candidates.Count);
 
-                while (methodBodyWalker.Candidates.Count > 0)
-                {
-                    var (potentialAssignmentStatement, assignedType) = methodBodyWalker.Candidates.Pop();
+				while (methodBodyWalker.Candidates.Count > 0)
+				{
+					var (potentialAssignmentStatement, assignedType) = methodBodyWalker.Candidates.Pop();
 
-                    if (CanReachInvocation(potentialAssignmentStatement, checkedCandidates.Count))
-                        checkedCandidates.Add(assignedType);
-                }
+					if (CanReachInvocation(potentialAssignmentStatement, checkedCandidates.Count))
+						checkedCandidates.Add(assignedType);
+				}
 
-                return checkedCandidates;
-            }
+				return checkedCandidates;
+			}
 
 
 
@@ -79,11 +79,10 @@ namespace Acuminator.Analyzers
 
 				private bool shouldStop;
 				private bool isValid = true;
-
 				private bool IsCancelationRequested => resolver.CancellationToken.IsCancellationRequested;
 
 				public Stack<(StatementSyntax PotentialAssignment, int ElementsCount)> Candidates { get; }
-				
+
 				public bool IsValid
 				{
 					get => isValid;
@@ -118,8 +117,8 @@ namespace Acuminator.Analyzers
 
 				public override void VisitVariableDeclarator(VariableDeclaratorSyntax declarator)
 				{
-					if (IsCancelationRequested || declarator.Identifier.ValueText != resolver.VariableName ||
-					   !(declarator.Initializer?.Value is ObjectCreationExpressionSyntax objectCreation))
+					if (IsCancelationRequested || declarator.Identifier.ValueText != resolver.VariableName || 
+						declarator.Initializer?.Value == null)
 					{
 						if (!IsCancelationRequested)
 							base.VisitVariableDeclarator(declarator);
@@ -127,12 +126,19 @@ namespace Acuminator.Analyzers
 						return;
 					}
 
-					Candidates.Push((declarator.GetStatementNode(), objectCreation.Type));
+					int? countOfArrayArgs = RoslynSyntaxUtils.TryGetSizeOfSingleDimensionalNonJaggedArray(declarator.Initializer.Value, 
+																									      resolver.SemanticModel,
+																									      resolver.CancellationToken);
+
+					if (countOfArrayArgs.HasValue)
+					{
+						Candidates.Push((declarator.GetStatementNode(), countOfArrayArgs.Value));
+					}
 
 					if (!IsCancelationRequested)
 						base.VisitVariableDeclarator(declarator);
 				}
-				
+
 				public override void VisitAssignmentExpression(AssignmentExpressionSyntax assignment)
 				{
 					if (IsCancelationRequested)
@@ -143,7 +149,7 @@ namespace Acuminator.Analyzers
 
 					while (curExpression is AssignmentExpressionSyntax curAssignment)
 					{
-						if (candidateAssignment == null && curAssignment.Left is IdentifierNameSyntax identifier && 
+						if (candidateAssignment == null && curAssignment.Left is IdentifierNameSyntax identifier &&
 							identifier.Identifier.ValueText == resolver.VariableName)
 						{
 							candidateAssignment = curAssignment;
@@ -153,20 +159,32 @@ namespace Acuminator.Analyzers
 					}
 
 					if (candidateAssignment == null || IsCancelationRequested)
-					{
 						return;
-					}
 
-					if (!(curExpression is ObjectCreationExpressionSyntax objectCreation))
+					int? countOfArrayArgs = RoslynSyntaxUtils.TryGetSizeOfSingleDimensionalNonJaggedArray(curExpression, resolver.SemanticModel,
+																									      resolver.CancellationToken);
+
+					if (countOfArrayArgs.HasValue)
 					{
-						IsValid = false;
-						return;
+						Candidates.Push((assignment.GetStatementNode(), countOfArrayArgs.Value));
 					}
+				}
 
-					Candidates.Push((candidateAssignment.GetStatementNode(), objectCreation.Type));
+				
 
-					if (!IsCancelationRequested)
-						base.VisitAssignmentExpression(assignment);
+				public override void VisitArrayCreationExpression(ArrayCreationExpressionSyntax node)
+				{
+					base.VisitArrayCreationExpression(node);
+				}
+
+				public override void VisitStackAllocArrayCreationExpression(StackAllocArrayCreationExpressionSyntax node)
+				{
+					base.VisitStackAllocArrayCreationExpression(node);
+				}
+
+				public override void VisitImplicitArrayCreationExpression(ImplicitArrayCreationExpressionSyntax node)
+				{
+					base.VisitImplicitArrayCreationExpression(node);
 				}
 
 				public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
@@ -188,9 +206,9 @@ namespace Acuminator.Analyzers
 
 					if (IsCancelationRequested)
 						return;
-								
+					
 					base.VisitInvocationExpression(invocation);
-				}			
+				}
 
 				/// <summary>
 				/// Analyze invocation. Returns <c>true</c> if invocation is valid for diagnostic, <c>false</c> if diagnostic can't be made with given invocation inside method.
@@ -199,29 +217,23 @@ namespace Acuminator.Analyzers
 				/// <returns/>
 				private bool AnalyzeInvocation(InvocationExpressionSyntax invocation)
 				{
-					if (invocation.ArgumentsContainIdentifier(resolver.VariableName))   //Check for all method calls which take bql as parameter because they could modify it in the method body
+					bool notPassiingVariableByRef = invocation.GetArgumentsContainingIdentifier(resolver.VariableName)
+															  .All(arg => arg.RefOrOutKeyword.IsKind(SyntaxKind.None));
+
+					if (notPassiingVariableByRef)   //Check only for method calls passing variable by ref because they could modify it in the method body
+						return true;
+
+					try
+					{
+						ControlFlowAnalysis controlFlow = resolver.SemanticModel.AnalyzeControlFlow(invocation.GetStatementNode());
+
+						if (controlFlow?.Succeeded == true && !controlFlow.EndPointIsReachable)
+							return true;
+					}
+					catch (Exception e)
+					{
 						return false;
-
-					
-					var symbolInfo = resolver.SemanticModel.GetSymbolInfo(invocation);
-
-					if (!(symbolInfo.Symbol is IMethodSymbol methodSymbol))
-						return true;
-
-					if (methodSymbol.IsStatic || !BqlModifyingMethods.IsBqlModifyingInstanceMethod(methodSymbol, resolver.pxContext))
-						return true;
-
-                    try
-                    {
-                        ControlFlowAnalysis controlFlow = resolver.SemanticModel.AnalyzeControlFlow(invocation.GetStatementNode());
-
-                        if (controlFlow?.Succeeded == true && !controlFlow.EndPointIsReachable)
-                            return true;
-                    }
-                    catch (Exception e)
-                    {
-                        return false;
-                    }
+					}
 
 					return false;
 				}

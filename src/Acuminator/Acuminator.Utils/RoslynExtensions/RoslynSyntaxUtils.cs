@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp;
@@ -342,6 +343,89 @@ namespace Acuminator.Utilities
 				return false;
 
 			return dataFlowAnalysis.VariablesDeclared.Any(var => var.Name == variableName);
+		}
+
+		/// <summary>
+		/// Try to get the size of the single dimensional non jagged array from array creation expression. If failed then return <c>null</c>. 
+		///  Only simple and sensible cases of static expressions are handled. 
+		/// The cast expressions, results of method calls or variables changed at runtime and passed as array size are not handled.
+		/// </summary>
+		/// <param name="arrayCreationExpression">The array creation expression.</param>
+		/// <param name="semanticModel">(Optional) The semantic model. Null by default. Can be passed to try to fallback to its constant evaluation if
+		/// 							simple case don't work.</param>
+		/// <param name="cancellationToken">(Optional) The cancellation token.</param>
+		/// <returns/>
+		public static int? TryGetSizeOfSingleDimensionalNonJaggedArray(ExpressionSyntax arrayCreationExpression, SemanticModel semanticModel = null,
+																	   CancellationToken cancellationToken = default)
+		{
+			switch (arrayCreationExpression)
+			{
+				case ArrayCreationExpressionSyntax arrayCreation
+				when arrayCreation.Initializer != null:
+					{
+						return arrayCreation.Initializer.Expressions.Count;
+					}
+				case ArrayCreationExpressionSyntax arrayCreationWithouInitializer:
+					{
+						return TryGetSizeOfSingleDimensionalNonJaggedArray(arrayCreationWithouInitializer.Type, semanticModel, cancellationToken);
+					}
+				case ImplicitArrayCreationExpressionSyntax implicitArrayCreation:
+					{
+						return implicitArrayCreation.Initializer?.Expressions.Count;
+					}
+				case InitializerExpressionSyntax initializerExpression
+				when initializerExpression.IsKind(SyntaxKind.ArrayInitializerExpression):
+					{
+						return initializerExpression.Expressions.Count;
+					}
+				case StackAllocArrayCreationExpressionSyntax stackAllocArrayCreation
+				when stackAllocArrayCreation.Type is ArrayTypeSyntax arrayType:
+					{
+						return TryGetSizeOfSingleDimensionalNonJaggedArray(arrayType, semanticModel, cancellationToken);
+					}
+				default:
+					return null;
+			}
+		}
+
+		/// <summary>
+		/// Try to get the size of single dimensional non jagged array. If failed then return <c>null</c>.
+		/// Only simple and sensible cases of static expressions are handled.
+		/// The cast expressions, results of method calls or variables changed at runtime and passed as array size are not handled
+		/// </summary>
+		/// <param name="arrayType">The arrayType node to act on.</param>
+		/// <param name="semanticModel">(Optional) The semantic model. Null by default. 
+		/// 							Can be passed to try to fallback to its constant evaluation if simple case don't work.</param>
+		/// <param name="cancellationToken">(Optional) The cancellation token.</param>
+		/// <returns/>
+		public static int? TryGetSizeOfSingleDimensionalNonJaggedArray(ArrayTypeSyntax arrayType, SemanticModel semanticModel = null,
+																	   CancellationToken cancellationToken = default)
+		{
+			if (arrayType == null)
+				return null;
+
+			var rankSpecifiers = arrayType.RankSpecifiers;
+
+			if (rankSpecifiers.Count != 1)  //not a jagged array
+				return null;
+
+			var rankNode = rankSpecifiers[0];
+
+			if (rankNode.Rank != 1)   //Single-dimensional array
+				return null;
+
+			//Only simple and sensible cases of static expressions are handled here
+			//The cast expressions, results of method calls or variables changed at runtime and passed as array size are not handled
+			if (rankNode.Sizes[0] is LiteralExpressionSyntax literalExpression)
+				return literalExpression.Token.Value as int?;
+
+			if (semanticModel == null)
+				return null;
+
+			var constantValue = semanticModel.GetConstantValue(rankNode.Sizes[0], cancellationToken);
+			return constantValue.HasValue 
+				? constantValue.Value as int?
+				: null;
 		}
 	}
 }

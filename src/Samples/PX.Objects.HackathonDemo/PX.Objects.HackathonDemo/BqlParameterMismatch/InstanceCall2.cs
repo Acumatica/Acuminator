@@ -19,14 +19,15 @@ namespace PX.Objects.HackathonDemo
 			if (false)
 				filtered = new PXSelect<SOOrder>(this);
 
-
+			var p1 = new[] { 1, 2 };
+			var p2 = new[] { 1 };
 
             filtered = new
                 PXSelect<SOOrder,
                     Where<SOOrder.orderNbr, Equal<Required<SOOrder.orderNbr>>,
                       And<SOOrder.orderDate, Greater<Required<SOOrder.orderDate>>>>>(this);
 
-            if (order.OrderDate.HasValue && filtered.Select(1, 2).Count > 0)
+            if (order.OrderDate.HasValue && filtered.Select(p2).Count > 0)
 			{
 				
 			}

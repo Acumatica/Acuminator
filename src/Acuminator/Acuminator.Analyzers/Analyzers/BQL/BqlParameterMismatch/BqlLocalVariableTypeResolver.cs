@@ -153,21 +153,10 @@ namespace Acuminator.Analyzers
 						curExpression = curAssignment.Right;
 					}
 
-					if (candidateAssignment == null || IsCancelationRequested)
-					{
+					if (candidateAssignment == null || IsCancelationRequested || !(curExpression is ObjectCreationExpressionSyntax objectCreation))
 						return;
-					}
-
-					if (!(curExpression is ObjectCreationExpressionSyntax objectCreation))
-					{
-						IsValid = false;
-						return;
-					}
 
 					Candidates.Push((candidateAssignment.GetStatementNode(), objectCreation.Type));
-
-					if (!IsCancelationRequested)
-						base.VisitAssignmentExpression(assignment);
 				}
 
 				public override void VisitConditionalAccessExpression(ConditionalAccessExpressionSyntax conditionalAccess)
