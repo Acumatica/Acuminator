@@ -181,7 +181,15 @@ namespace Acuminator.Analyzers
 					}			
 				}
 
-				public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
+                public override void VisitGotoStatement(GotoStatementSyntax node)
+                {
+                    if (node.IsKind(SyntaxKind.GotoStatement))   //The analysis is not valid if there are goto statements in method. This is rarely a case in C#
+                    {
+                        IsValid = false;
+                    }
+                }
+
+                public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
 				{
 					if (shouldStop)
 						return;
