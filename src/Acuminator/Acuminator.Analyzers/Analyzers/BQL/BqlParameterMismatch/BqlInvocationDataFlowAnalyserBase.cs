@@ -42,7 +42,7 @@ namespace Acuminator.Analyzers
 				VariableName = identifierNode.Identifier.ValueText;
 			}
 
-			protected bool CanReachInvocation(StatementSyntax assignmentStatement, int countOfReachableCandidatesAfterAssignment)
+			protected bool CanReachInvocation(StatementSyntax assignmentStatement)
             {
                 (bool isSuccess, bool isReacheable, StatementSyntax scopedAssignment, StatementSyntax scopedInvocation) =
                     AnalyzeControlFlowBetweenAssignmentAndInvocation(assignmentStatement);
@@ -98,25 +98,8 @@ namespace Acuminator.Analyzers
             protected (bool IsSuccess, bool IsReacheable, StatementSyntax ScopedAssignment, StatementSyntax ScopedInvocation) 
                 AnalyzeControlFlowBetweenAssignmentAndInvocation(StatementSyntax assignmentStatement)
             {
-                ControlFlowAnalysis controlFlow = null;
-
-                try
-                {
-                    controlFlow = SemanticModel.AnalyzeControlFlow(assignmentStatement);
-
-                    if (controlFlow?.Succeeded == true && !controlFlow.EndPointIsReachable)
-                        return (true, false, null, null);
-                }
-                catch (Exception e)
-                {
-                    //If there was some kind of error during analysis we should assume the worst case - that assignment is reacheable
-                    // So do nothing
-                }
-
-                if (assignmentStatement.Parent.Equals(InvocationStatement.Parent))
-                {
-                    return (true, true, assignmentStatement, InvocationStatement);
-                }
+                if (!IsReacheableByControlFlow(assignmentStatement))
+                    return (true, false, null, null);
 
                 var (commonAncestor, scopedAssignment, scopedInvocation) =
                     RoslynSyntaxUtils.LowestCommonAncestorSyntaxStatement(assignmentStatement, InvocationStatement);
@@ -125,6 +108,25 @@ namespace Acuminator.Analyzers
                     return (true, true, scopedAssignment, scopedInvocation);
 
                 return (false, false, null, null);
+            }
+
+            protected bool IsReacheableByControlFlow(StatementSyntax assignmentStatement)
+            {
+                ControlFlowAnalysis controlFlow = null;
+
+                try
+                {
+                    controlFlow = SemanticModel.AnalyzeControlFlow(assignmentStatement);
+                }
+                catch (Exception e)
+                {
+                    //If there was some kind of error during analysis we should assume the worst case - that assignment is reacheable
+                    return true;
+                }
+
+                return controlFlow?.Succeeded == true
+                    ? controlFlow.EndPointIsReachable
+                    : true;
             }
 		}	
 	}

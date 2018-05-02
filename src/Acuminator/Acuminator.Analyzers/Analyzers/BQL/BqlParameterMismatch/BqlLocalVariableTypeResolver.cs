@@ -42,7 +42,7 @@ namespace Acuminator.Analyzers
 				if (CancellationToken.IsCancellationRequested || !methodBodyWalker.IsValid || methodBodyWalker.Candidates.Count == 0)
 					return null;
 
-                List<TypeSyntax> checkedCandidates = AnalyzeCandidates();
+                List<TypeSyntax> checkedCandidates = GetTypeFromCandidates();
 
                 if (checkedCandidates.Count != 1)
                     return null;
@@ -52,16 +52,18 @@ namespace Acuminator.Analyzers
 				return symbolInfo.Symbol as ITypeSymbol;
 			}
 
-            private List<TypeSyntax> AnalyzeCandidates()
+            private TypeSyntax GetTypeFromCandidates()
             {
-                List<TypeSyntax> checkedCandidates = new List<TypeSyntax>(methodBodyWalker.Candidates.Count);
+                TypeSyntax checkedCandidate = null;
 
                 while (methodBodyWalker.Candidates.Count > 0)
                 {
                     var (potentialAssignmentStatement, assignedType) = methodBodyWalker.Candidates.Pop();
 
-                    if (CanReachInvocation(potentialAssignmentStatement, checkedCandidates.Count))
-                        checkedCandidates.Add(assignedType);
+                    if (CanReachInvocation(potentialAssignmentStatement))
+                    {
+
+                    }
                 }
 
                 return checkedCandidates;
