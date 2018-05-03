@@ -5,13 +5,13 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Acuminator.Utilities;
 
-namespace Acuminator.Analyzers
+namespace Acuminator.Analyzers.Analyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class NonNullableTypeForBqlFieldAnalyzer : PXDiagnosticAnalyzer
+	public class AttributeNotMatchingDacPropertyAnalyzer : PXDiagnosticAnalyzer
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-			ImmutableArray.Create(Descriptors.PX1014_NonNullableTypeForBqlField);
+			ImmutableArray.Create(Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty);
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
@@ -20,7 +20,7 @@ namespace Acuminator.Analyzers
 
 		private static void AnalyzeProperty(SymbolAnalysisContext context, PXContext pxContext)
 		{
-			var property = (IPropertySymbol) context.Symbol;
+            IPropertySymbol property = context.Symbol as IPropertySymbol;
 			var parent = property.ContainingType;
 
 			if (parent != null 

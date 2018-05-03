@@ -69,5 +69,8 @@ namespace Acuminator.Analyzers
         internal static DiagnosticDescriptor PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams { get; } =
             Rule("PX1015", nameof(Resources.PX1015TitleSuffixWithRequiredAndOptionalParams).GetLocalized(), 
                  Category.Default, DiagnosticSeverity.Warning);
+
+        internal static DiagnosticDescriptor PX1021_PXDBFieldAttributeNotMatchingDacProperty { get; } =
+            Rule("PX1021", nameof(Resources.PX1021Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
     }
 }

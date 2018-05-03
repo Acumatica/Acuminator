@@ -14,7 +14,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Acuminator.Utilities;
 
-namespace Acuminator.Analyzers.Analyzers
+namespace Acuminator.Analyzers
 {
     [ExportCodeFixProvider(LanguageNames.CSharp), Shared]
     public class MissingTypeListAttributeFix : CodeFixProvider

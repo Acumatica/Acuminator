@@ -313,5 +313,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1015TitleSuffixWithRequiredAndOptionalParams", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The PXDBFieldAttribute type and property type do not correspond to each other.
+        /// </summary>
+        public static string PX1021Title {
+            get {
+                return ResourceManager.GetString("PX1021Title", resourceCulture);
+            }
+        }
     }
 }

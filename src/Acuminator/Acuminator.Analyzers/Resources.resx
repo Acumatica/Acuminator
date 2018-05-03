@@ -202,4 +202,7 @@
   <data name="PX1015TitleSuffixWithRequiredAndOptionalParams" xml:space="preserve">
     <value>The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of arguments should be from {1} to {2}.</value>
   </data>
+  <data name="PX1021Title" xml:space="preserve">
+    <value>The PXDBFieldAttribute type and property type do not correspond to each other</value>
+  </data>
 </root>

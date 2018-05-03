@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Acuminator.Utilities;
 
 
-namespace Acuminator.Analyzers.Analyzers
+namespace Acuminator.Analyzers
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ViewDeclarationOrderAnalyzer : PXDiagnosticAnalyzer

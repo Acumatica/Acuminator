@@ -9,7 +9,7 @@ using Acuminator.Utilities;
 using System.Collections.Generic;
 using PX.Data;
 
-namespace Acuminator.Analyzers.Analyzers
+namespace Acuminator.Analyzers
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class StartRowResetForPagingAnalyzer : PXDiagnosticAnalyzer
