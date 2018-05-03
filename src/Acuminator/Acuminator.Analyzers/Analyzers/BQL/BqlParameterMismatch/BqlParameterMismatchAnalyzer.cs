@@ -20,7 +20,8 @@ namespace Acuminator.Analyzers
 	public partial class BqlParameterMismatchAnalyzer : PXDiagnosticAnalyzer
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-			ImmutableArray.Create(Descriptors.PX1015_PXBqlParametersMismatch);
+			ImmutableArray.Create(Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams,
+                                  Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams);
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
@@ -206,11 +207,23 @@ namespace Acuminator.Analyzers
 			int maxCount = parametersCounter.OptionalParametersCount + parametersCounter.RequiredParametersCount;
 			int minCount = parametersCounter.RequiredParametersCount;
 
-			if (argsCount < minCount || argsCount > maxCount)
-			{
-				Location location = GetLocation(invocationNode);
-				syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1015_PXBqlParametersMismatch, location, methodSymbol.Name));
-			}
+            if (argsCount < minCount || argsCount > maxCount)
+            {
+                Location location = GetLocation(invocationNode);
+
+                if (parametersCounter.OptionalParametersCount == 0)
+                {
+                    syntaxContext.ReportDiagnostic(
+                        Diagnostic.Create(Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams, location,
+                                          methodSymbol.Name, parametersCounter.RequiredParametersCount));
+                }
+                else
+                {
+                    syntaxContext.ReportDiagnostic(
+                        Diagnostic.Create(Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams, location,
+                                          methodSymbol.Name, minCount, maxCount));
+                }
+            }
 		}
 
 		private static Location GetLocation(InvocationExpressionSyntax invocationNode)

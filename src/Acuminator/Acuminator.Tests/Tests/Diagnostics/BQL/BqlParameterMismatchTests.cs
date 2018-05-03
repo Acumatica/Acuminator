@@ -20,8 +20,8 @@ namespace Acuminator.Tests
         {
             var diagnostic = new DiagnosticResult
             {
-                Id = Descriptors.PX1015_PXBqlParametersMismatch.Id,
-                Message = Descriptors.PX1015_PXBqlParametersMismatch.Title.ToString(),
+                Id = Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.Id,
+                Message = Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.Title.ToString(),
                 Severity = DiagnosticSeverity.Error,
                 Locations =
                     new[] {
