@@ -16,10 +16,15 @@ namespace PX.Objects.HackathonDemo
 					Where<SOOrder.orderNbr, Equal<Current<SOOrder.orderNbr>>,
 					  And<SOOrder.orderDate, Greater<Required<SOOrder.orderDate>>>>>(this);
 
-			if (false)
-				filtered = new PXSelect<SOOrder>(this);
+            if (flag)
+                filtered = new PXSelect<SOOrder>(this);
+            else
+                filtered = new
+                PXSelect<SOOrder,
+                    Where<SOOrder.orderNbr, Equal<Required<SOOrder.orderNbr>>,
+                      And<SOOrder.orderDate, Greater<Required<SOOrder.orderDate>>>>>(this);
 
-			var p1 = new[] { 1, 2 };
+            var p1 = new[] { 1, 2 };
 			var p2 = new[] { 1 };
 
             filtered = new

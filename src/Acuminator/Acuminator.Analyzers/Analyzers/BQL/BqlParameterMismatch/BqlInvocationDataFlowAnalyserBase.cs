@@ -50,6 +50,13 @@ namespace Acuminator.Analyzers
                 if (scopedAssignment == null || scopedInvocation == null)
                     return (false, false);       //If there was some kind of error during analysis we should assume the worst case - that the candidat is valid but not always assigns variable 
 
+                switch (scopedAssignment)
+                {
+                    case SwitchStatementSyntax _:
+                    case IfStatementSyntax _:
+                        return (true, false);
+                }
+
                 DataFlowAnalysis flowAnalysisWithAssignment = null;
 
                 try
@@ -68,7 +75,7 @@ namespace Acuminator.Analyzers
 
                 return (true, true);
             }
-
+        
             protected bool IsReacheableByControlFlow(StatementSyntax statement)
             {
                 ControlFlowAnalysis controlFlow = null;
