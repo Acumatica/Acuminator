@@ -42,31 +42,24 @@ namespace Acuminator.Analyzers
 				if (CancellationToken.IsCancellationRequested || !methodBodyWalker.IsValid || methodBodyWalker.Candidates.Count == 0)
 					return null;
 
-                List<TypeSyntax> checkedCandidates = GetTypeFromCandidates();
-
-                if (checkedCandidates.Count != 1)
-                    return null;
-
-                TypeSyntax assignedType = checkedCandidates[0];
-				SymbolInfo symbolInfo = SemanticModel.GetSymbolInfo(assignedType);
+                TypeSyntax assignedType = GetTypeFromCandidates();
+                SymbolInfo symbolInfo = SemanticModel.GetSymbolInfo(assignedType);
 				return symbolInfo.Symbol as ITypeSymbol;
 			}
 
             private TypeSyntax GetTypeFromCandidates()
-            {
-                TypeSyntax checkedCandidate = null;
-
+            {               
                 while (methodBodyWalker.Candidates.Count > 0)
                 {
                     var (potentialAssignmentStatement, assignedType) = methodBodyWalker.Candidates.Pop();
 
-                    if (CanReachInvocation(potentialAssignmentStatement))
-                    {
+                    if (!CheckCandidate(potentialAssignmentStatement) || assignedType == null)
+                        return null;    //reacheable assignment with not always assigned variable or valid candidate with unresolvable type
 
-                    }
+                    return assignedType;           
                 }
 
-                return checkedCandidates;
+                return null;
             }
 
             
@@ -119,10 +112,9 @@ namespace Acuminator.Analyzers
 					base.Visit(node);
 				}
 
-				public override void VisitVariableDeclarator(VariableDeclaratorSyntax declarator)
+                public override void VisitVariableDeclarator(VariableDeclaratorSyntax declarator)
 				{
-					if (IsCancelationRequested || declarator.Identifier.ValueText != resolver.VariableName ||
-					   !(declarator.Initializer?.Value is ObjectCreationExpressionSyntax objectCreation))
+					if (IsCancelationRequested || declarator.Identifier.ValueText != resolver.VariableName)
 					{
 						if (!IsCancelationRequested)
 							base.VisitVariableDeclarator(declarator);
@@ -130,10 +122,22 @@ namespace Acuminator.Analyzers
 						return;
 					}
 
-					Candidates.Push((declarator.GetStatementNode(), objectCreation.Type));
+                    var declaratorStatement = declarator.GetStatementNode();
 
-					if (!IsCancelationRequested)
-						base.VisitVariableDeclarator(declarator);
+                    if (!resolver.IsReacheableByControlFlow(declaratorStatement))
+                        return;
+
+                    switch (declarator?.Initializer?.Value)
+                    {
+                        case ObjectCreationExpressionSyntax objectCreation:
+                            Candidates.Push((declaratorStatement, AssignedType: objectCreation.Type));
+                            return;
+                        case null:
+                            return;
+                        default:
+                            Candidates.Push((declaratorStatement, AssignedType: null));
+                            return;
+                    }
 				}
 				
 				public override void VisitAssignmentExpression(AssignmentExpressionSyntax assignment)
@@ -155,10 +159,23 @@ namespace Acuminator.Analyzers
 						curExpression = curAssignment.Right;
 					}
 
-					if (candidateAssignment == null || IsCancelationRequested || !(curExpression is ObjectCreationExpressionSyntax objectCreation))
+					if (candidateAssignment == null || IsCancelationRequested)
 						return;
 
-					Candidates.Push((candidateAssignment.GetStatementNode(), objectCreation.Type));
+                    var assignmentStatement = candidateAssignment.GetStatementNode();
+
+                    if (!resolver.IsReacheableByControlFlow(assignmentStatement))
+                        return;
+
+                    switch (curExpression)
+                    {
+                        case ObjectCreationExpressionSyntax objectCreation:
+                            Candidates.Push((assignmentStatement, AssignedType: objectCreation.Type));
+                            return;
+                        default:
+                            Candidates.Push((assignmentStatement, AssignedType: null));
+                            return;
+                    }       
 				}
 
 				public override void VisitConditionalAccessExpression(ConditionalAccessExpressionSyntax conditionalAccess)

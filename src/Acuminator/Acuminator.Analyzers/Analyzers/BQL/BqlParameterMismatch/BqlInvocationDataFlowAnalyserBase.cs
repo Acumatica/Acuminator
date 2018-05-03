@@ -42,16 +42,18 @@ namespace Acuminator.Analyzers
 				VariableName = identifierNode.Identifier.ValueText;
 			}
 
-			protected bool CanReachInvocation(StatementSyntax assignmentStatement)
+			protected bool CheckCandidate(StatementSyntax assignmentStatement)
             {
-                (bool isSuccess, bool isReacheable, StatementSyntax scopedAssignment, StatementSyntax scopedInvocation) =
-                    AnalyzeControlFlowBetweenAssignmentAndInvocation(assignmentStatement);
+                var (_, scopedAssignment, scopedInvocation) =
+                    RoslynSyntaxUtils.LowestCommonAncestorSyntaxStatement(assignmentStatement, InvocationStatement);
 
-                if (!isSuccess)
-                    return true;   //If there was some kind of error during analysis we should assume the worst case - that assignment is reacheable 
-                else if (!isReacheable)
-                    return false;
+                if (scopedAssignment == null || scopedInvocation == null)
+                    return true;            //If there was some kind of error during analysis we should assume the worst case - that candidate is valid 
 
+
+                Dictionary<int, int> x;
+                x.TryGetValue(1, out var v);
+                DeclarationExpressionSyntax
                 StatementSyntax nextStatementAfterAssignment = scopedAssignment.GetNextStatement();
 
                 if (nextStatementAfterAssignment == null)
@@ -95,28 +97,13 @@ namespace Acuminator.Analyzers
                 return true;
             }
 
-            protected (bool IsSuccess, bool IsReacheable, StatementSyntax ScopedAssignment, StatementSyntax ScopedInvocation) 
-                AnalyzeControlFlowBetweenAssignmentAndInvocation(StatementSyntax assignmentStatement)
-            {
-                if (!IsReacheableByControlFlow(assignmentStatement))
-                    return (true, false, null, null);
-
-                var (commonAncestor, scopedAssignment, scopedInvocation) =
-                    RoslynSyntaxUtils.LowestCommonAncestorSyntaxStatement(assignmentStatement, InvocationStatement);
-
-                if (commonAncestor != null && scopedAssignment != null && scopedInvocation != null)
-                    return (true, true, scopedAssignment, scopedInvocation);
-
-                return (false, false, null, null);
-            }
-
-            protected bool IsReacheableByControlFlow(StatementSyntax assignmentStatement)
+            protected bool IsReacheableByControlFlow(StatementSyntax statement)
             {
                 ControlFlowAnalysis controlFlow = null;
 
                 try
                 {
-                    controlFlow = SemanticModel.AnalyzeControlFlow(assignmentStatement);
+                    controlFlow = SemanticModel.AnalyzeControlFlow(statement);
                 }
                 catch (Exception e)
                 {
