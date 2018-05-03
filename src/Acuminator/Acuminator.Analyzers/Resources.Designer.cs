@@ -297,7 +297,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The BQL statement requires {1} arguments..
+        ///   Looks up a localized string similar to The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of required arguments is {1}..
         /// </summary>
         public static string PX1015TitleSuffixWithOnlyRequiredParams {
             get {
@@ -306,7 +306,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The BQL statement requires between {1} and {2} arguments..
+        ///   Looks up a localized string similar to The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of arguments should be from {1} to {2}..
         /// </summary>
         public static string PX1015TitleSuffixWithRequiredAndOptionalParams {
             get {

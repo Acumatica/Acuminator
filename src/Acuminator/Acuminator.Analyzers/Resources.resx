@@ -185,7 +185,7 @@
     <value>Multiple levels of inheritance are not supported for PXCacheExtension</value>
   </data>
   <data name="PX1015TitleSuffixWithOnlyRequiredParams" xml:space="preserve">
-    <value>The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The BQL statement requires {1} arguments.</value>
+    <value>The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of required arguments is {1}.</value>
   </data>
   <data name="PX1011Fix" xml:space="preserve">
     <value>Mark the type as sealed</value>
@@ -200,6 +200,6 @@
     <value>A DAC field must have a nullable type</value>
   </data>
   <data name="PX1015TitleSuffixWithRequiredAndOptionalParams" xml:space="preserve">
-    <value>The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The BQL statement requires between {1} and {2} arguments.</value>
+    <value>The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of arguments should be from {1} to {2}.</value>
   </data>
 </root>
