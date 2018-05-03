@@ -43,6 +43,10 @@ namespace Acuminator.Analyzers
 					return null;
 
                 TypeSyntax assignedType = GetTypeFromCandidates();
+
+                if (assignedType == null)
+                    return null;
+
                 SymbolInfo symbolInfo = SemanticModel.GetSymbolInfo(assignedType);
 				return symbolInfo.Symbol as ITypeSymbol;
 			}
@@ -52,9 +56,10 @@ namespace Acuminator.Analyzers
                 while (methodBodyWalker.Candidates.Count > 0)
                 {
                     var (potentialAssignmentStatement, assignedType) = methodBodyWalker.Candidates.Pop();
+                    var (analysisSucceded, varAlwaysAssigned) = CheckCandidate(potentialAssignmentStatement);
 
-                    if (!CheckCandidate(potentialAssignmentStatement) || assignedType == null)
-                        return null;    //reacheable assignment with not always assigned variable or valid candidate with unresolvable type
+                    if (!analysisSucceded || !varAlwaysAssigned || assignedType == null)
+                        return null;    //analysis failed or reacheable assignment with not always assigned variable or valid candidate with unresolvable type
 
                     return assignedType;           
                 }
@@ -114,7 +119,8 @@ namespace Acuminator.Analyzers
 
                 public override void VisitVariableDeclarator(VariableDeclaratorSyntax declarator)
 				{
-					if (IsCancelationRequested || declarator.Identifier.ValueText != resolver.VariableName)
+					if (IsCancelationRequested || declarator.Identifier.ValueText != resolver.VariableName ||
+                        declarator.Initializer?.Value == null)
 					{
 						if (!IsCancelationRequested)
 							base.VisitVariableDeclarator(declarator);
@@ -127,12 +133,10 @@ namespace Acuminator.Analyzers
                     if (!resolver.IsReacheableByControlFlow(declaratorStatement))
                         return;
 
-                    switch (declarator?.Initializer?.Value)
+                    switch (declarator.Initializer.Value)
                     {
                         case ObjectCreationExpressionSyntax objectCreation:
                             Candidates.Push((declaratorStatement, AssignedType: objectCreation.Type));
-                            return;
-                        case null:
                             return;
                         default:
                             Candidates.Push((declaratorStatement, AssignedType: null));

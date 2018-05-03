@@ -46,27 +46,25 @@ namespace Acuminator.Analyzers
 
 				if (CancellationToken.IsCancellationRequested || !methodBodyWalker.IsValid || methodBodyWalker.Candidates.Count == 0)
 					return null;
+                
+				return GetElementsCountFromCandidates();
+            }
 
-				List<int> checkedCountCandidates = AnalyzeCandidates();
-				return checkedCountCandidates.Count == 1
-					? checkedCountCandidates[0]
-					: (int?)null;
-			}
-
-			private List<int> AnalyzeCandidates()
+			private int? GetElementsCountFromCandidates()
 			{
-				List<int> checkedCandidates = new List<int>(methodBodyWalker.Candidates.Count);
+                while (methodBodyWalker.Candidates.Count > 0)
+                {
+                    var (potentialAssignmentStatement, count) = methodBodyWalker.Candidates.Pop();
+                    var (analysisSucceded, varAlwaysAssigned) = CheckCandidate(potentialAssignmentStatement);
 
-				while (methodBodyWalker.Candidates.Count > 0)
-				{
-					var (potentialAssignmentStatement, assignedType) = methodBodyWalker.Candidates.Pop();
+                    if (!analysisSucceded || !varAlwaysAssigned || count == null)
+                        return null;    //analysis failed or reacheable assignment with not always assigned variable or valid candidate with unresolvable count
+                  
+                    return count;
+                }
 
-					if (CanReachInvocation(potentialAssignmentStatement, checkedCandidates.Count))
-						checkedCandidates.Add(assignedType);
-				}
-
-				return checkedCandidates;
-			}
+                return null;
+            }
 
 
 
@@ -81,7 +79,7 @@ namespace Acuminator.Analyzers
 				private bool isValid = true;
 				private bool IsCancelationRequested => resolver.CancellationToken.IsCancellationRequested;
 
-				public Stack<(StatementSyntax PotentialAssignment, int ElementsCount)> Candidates { get; }
+				public Stack<(StatementSyntax PotentialAssignment, int? ElementsCount)> Candidates { get; }
 
 				public bool IsValid
 				{
@@ -99,7 +97,7 @@ namespace Acuminator.Analyzers
 				public ResolveArrayElemCountMethodBodyWalker(ArrayElemCountLocalVariableResolver aResolver)
 				{
 					resolver = aResolver;
-					Candidates = new Stack<(StatementSyntax, int)>(capacity: 2);
+					Candidates = new Stack<(StatementSyntax, int?)>(capacity: 2);
 				}
 
 				public override void Visit(SyntaxNode node)
@@ -115,31 +113,29 @@ namespace Acuminator.Analyzers
 					base.Visit(node);
 				}
 
-				public override void VisitVariableDeclarator(VariableDeclaratorSyntax declarator)
-				{
-					if (IsCancelationRequested || declarator.Identifier.ValueText != resolver.VariableName || 
-						declarator.Initializer?.Value == null)
-					{
-						if (!IsCancelationRequested)
-							base.VisitVariableDeclarator(declarator);
+                public override void VisitVariableDeclarator(VariableDeclaratorSyntax declarator)
+                {
+                    if (IsCancelationRequested || declarator.Identifier.ValueText != resolver.VariableName ||
+                        declarator.Initializer?.Value == null)
+                    {
+                        if (!IsCancelationRequested)
+                            base.VisitVariableDeclarator(declarator);
 
-						return;
-					}
+                        return;
+                    }
 
-					int? countOfArrayArgs = RoslynSyntaxUtils.TryGetSizeOfSingleDimensionalNonJaggedArray(declarator.Initializer.Value, 
-																									      resolver.SemanticModel,
-																									      resolver.CancellationToken);
+                    var declaratorStatement = declarator.GetStatementNode();
 
-					if (countOfArrayArgs.HasValue)
-					{
-						Candidates.Push((declarator.GetStatementNode(), countOfArrayArgs.Value));
-					}
+                    if (!resolver.IsReacheableByControlFlow(declaratorStatement))
+                        return;
 
-					if (!IsCancelationRequested)
-						base.VisitVariableDeclarator(declarator);
-				}
-
-				public override void VisitAssignmentExpression(AssignmentExpressionSyntax assignment)
+                    int? countOfArrayArgs = RoslynSyntaxUtils.TryGetSizeOfSingleDimensionalNonJaggedArray(declarator.Initializer.Value,
+                                                                                                          resolver.SemanticModel,
+                                                                                                          resolver.CancellationToken);
+                    Candidates.Push((declaratorStatement, countOfArrayArgs));
+                }
+            
+                public override void VisitAssignmentExpression(AssignmentExpressionSyntax assignment)
 				{
 					if (IsCancelationRequested)
 						return;
@@ -161,14 +157,15 @@ namespace Acuminator.Analyzers
 					if (candidateAssignment == null || IsCancelationRequested)
 						return;
 
-					int? countOfArrayArgs = RoslynSyntaxUtils.TryGetSizeOfSingleDimensionalNonJaggedArray(curExpression, resolver.SemanticModel,
-																									      resolver.CancellationToken);
+                    var assignmentStatement = candidateAssignment.GetStatementNode();
 
-					if (countOfArrayArgs.HasValue)
-					{
-						Candidates.Push((assignment.GetStatementNode(), countOfArrayArgs.Value));
-					}
-				}
+                    if (!resolver.IsReacheableByControlFlow(assignmentStatement))
+                        return;
+
+                    int? countOfArrayArgs = RoslynSyntaxUtils.TryGetSizeOfSingleDimensionalNonJaggedArray(curExpression, resolver.SemanticModel,
+																									      resolver.CancellationToken);		
+					Candidates.Push((assignmentStatement, countOfArrayArgs));			
+				}      
 
                 public override void VisitGotoStatement(GotoStatementSyntax node)
                 {

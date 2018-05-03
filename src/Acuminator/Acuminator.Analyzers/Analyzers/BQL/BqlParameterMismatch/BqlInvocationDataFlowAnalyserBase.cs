@@ -42,41 +42,13 @@ namespace Acuminator.Analyzers
 				VariableName = identifierNode.Identifier.ValueText;
 			}
 
-			protected bool CheckCandidate(StatementSyntax assignmentStatement)
+			protected (bool AnalysisSucceded, bool VarAlwaysAssigned) CheckCandidate(StatementSyntax assignmentStatement)
             {
                 var (_, scopedAssignment, scopedInvocation) =
                     RoslynSyntaxUtils.LowestCommonAncestorSyntaxStatement(assignmentStatement, InvocationStatement);
 
                 if (scopedAssignment == null || scopedInvocation == null)
-                    return true;            //If there was some kind of error during analysis we should assume the worst case - that candidate is valid 
-
-
-                Dictionary<int, int> x;
-                x.TryGetValue(1, out var v);
-                DeclarationExpressionSyntax
-                StatementSyntax nextStatementAfterAssignment = scopedAssignment.GetNextStatement();
-
-                if (nextStatementAfterAssignment == null)
-                    return false;
-
-                DataFlowAnalysis flowAnalysisWithoutAssignment = null;
-
-                try
-                {
-                    flowAnalysisWithoutAssignment = SemanticModel.AnalyzeDataFlow(nextStatementAfterAssignment, scopedInvocation);
-                }
-                catch (Exception e)
-                {
-                    return true;    //If there was some kind of error during analysis we should assume the worst case - that assignment is reacheable 
-                }
-
-                if (flowAnalysisWithoutAssignment == null || !flowAnalysisWithoutAssignment.Succeeded)
-                    return true;
-                else if (countOfReachableCandidatesAfterAssignment > 0 &&
-                         flowAnalysisWithoutAssignment.WrittenInside.Any(var => var.Name == VariableName))
-                {
-                    return false;
-                }
+                    return (false, false);       //If there was some kind of error during analysis we should assume the worst case - that the candidat is valid but not always assigns variable 
 
                 DataFlowAnalysis flowAnalysisWithAssignment = null;
 
@@ -86,15 +58,15 @@ namespace Acuminator.Analyzers
                 }
                 catch (Exception e)
                 {
-                    return true;
+                    return (false, false);
                 }
 
                 if (flowAnalysisWithAssignment == null || !flowAnalysisWithAssignment.Succeeded)
-                    return true;
+                    return (false, false);
                 else if (flowAnalysisWithAssignment.AlwaysAssigned.All(var => var.Name != VariableName))
-                    return false;
+                    return (true, false);
 
-                return true;
+                return (true, true);
             }
 
             protected bool IsReacheableByControlFlow(StatementSyntax statement)
