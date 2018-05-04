@@ -9,19 +9,17 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Acuminator.Utilities;
 
 
-namespace Acuminator.Analyzers.Analyzers
+namespace Acuminator.Analyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AttributeNotMatchingDacPropertyAnalyzer : PXDiagnosticAnalyzer
+	public class DacPropertyAttributesAnalyzer : PXDiagnosticAnalyzer
 	{
-        private static readonly Dictionary<INamedTypeSymbol, INamedTypeSymbol> attributeWithPropertyTypesMapping =
-            new Dictionary<INamedTypeSymbol, INamedTypeSymbol>
-            {
-
-            };
-
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-			ImmutableArray.Create(Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty);
+			ImmutableArray.Create
+			(
+				Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, 
+				Descriptors.PX1023_DacPropertyBothBoundAndUnbound
+			);
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
@@ -59,7 +57,7 @@ namespace Acuminator.Analyzers.Analyzers
         private static bool CheckPropertyAttribute(IPropertySymbol property, AttributeData attribute, CancellationToken cancellationToken)
         {
             
-            attribute.AttributeClass.
+           // attribute.AttributeClass.
         }
 
         private static async Task<Location> GetAttributeLocation(AttributeData attribute, CancellationToken cancellationToken)

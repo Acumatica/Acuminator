@@ -49,7 +49,7 @@
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\ParametersCounterSymbolWalker.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\ParametersCounterSyntaxWalker.cs" />
     <Compile Include="Analyzers\NonNullableTypeForBqlFieldAnalyzer.cs" />
-    <Compile Include="Analyzers\PX1021\AttributeNotMatchingDacPropertyAnalyzer.cs" />
+    <Compile Include="Analyzers\DacPropertyAttributes\DacPropertyAttributesAnalyzer.cs" />
     <Compile Include="FixProviders\NonNullableTypeForBqlFieldFix.cs" />
     <Compile Include="Analyzers\InheritanceFromPXCacheExtensionAnalyzer.cs" />
     <Compile Include="Analyzers\LongOperationDelegateClosuresAnalyzer.cs" />

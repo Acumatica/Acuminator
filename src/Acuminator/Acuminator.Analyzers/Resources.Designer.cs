@@ -322,5 +322,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1021Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DAC property can not be marked as bound and unbound at the same time.
+        /// </summary>
+        public static string PX1023Title {
+            get {
+                return ResourceManager.GetString("PX1023Title", resourceCulture);
+            }
+        }
     }
 }
