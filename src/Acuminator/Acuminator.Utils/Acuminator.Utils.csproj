@@ -99,6 +99,7 @@
     <Compile Include="CommonUtils\EnumerableExtensions.cs" />
     <Compile Include="CommonUtils\ConcurrentExtensions.cs" />
     <Compile Include="CommonUtils\EnumerableExtraExtensions.cs" />
+    <Compile Include="RoslynExtensions\FieldAttributesInfo.cs" />
     <Compile Include="RoslynExtensions\RoslynSyntaxUtils.cs" />
     <Compile Include="RoslynExtensions\BqlModifyingMethods.cs" />
     <Compile Include="RoslynExtensions\PXCodeType.cs" />

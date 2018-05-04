@@ -55,19 +55,12 @@ namespace Acuminator.Analyzers
         public INamedTypeSymbol PXFieldStateType => Compilation.GetTypeByMetadataName(typeof(PXFieldState).FullName);
         public INamedTypeSymbol PXAttributeFamilyType => Compilation.GetTypeByMetadataName(typeof(PXAttributeFamilyAttribute).FullName);
 
-        public ImmutableDictionary<INamedTypeSymbol, INamedTypeSymbol> AttributeWithPropertyTypesMapping { get; } 
+       
            
         public PXContext(Compilation compilation)
         {
             Compilation = compilation;
             BQL = new BQLSymbols(Compilation);
-
-            AttributeWithPropertyTypesMapping = new Dictionary<INamedTypeSymbol, INamedTypeSymbol>
-            {
-                { PXStringAttributeType,  String },
-                { PXDBStringAttributeType,  String },
-                { }
-            }.ToImmutableDictionary();
         }
 
         #region BQL Types
