@@ -27,32 +27,34 @@ namespace Acuminator.Analyzers
 
             if (parent == null || !parent.InheritsFromOrEquals(pxContext.IBqlTableType, true))
                 return;
-            var types = new List<INamedTypeSymbol> {
-                                    pxContext.PXIntAttributeType,
-                                    pxContext.PXShortAttributeType,
-                                    pxContext.PXStringAttributeType,
-                                    pxContext.PXByteAttributeType,
-                                    pxContext.PXDBDecimalAttributeType,
-                                    pxContext.PXDBDoubleAttributeType,
-                                    pxContext.PXDBIntAttributeType,
-                                    pxContext.PXDBShortAttributeType,
-                                    pxContext.PXDBStringAttributeType,
-                                    pxContext.PXDBByteAttributeType,
-                                    pxContext.PXDecimalAttributeType,
-                                    pxContext.PXDoubleAttributeType};
+            var types = new List<INamedTypeSymbol>
+            {
+                pxContext.FieldAttributes.PXIntAttribute,
+                pxContext.FieldAttributes.PXShortAttribute,
+                pxContext.FieldAttributes.PXStringAttribute,
+                pxContext.FieldAttributes.PXByteAttribute,
+                pxContext.FieldAttributes.PXDBDecimalAttribute,
+                pxContext.FieldAttributes.PXDBDoubleAttribute,
+                pxContext.FieldAttributes.PXDBIntAttribute,
+                pxContext.FieldAttributes.PXDBShortAttribute,
+                pxContext.FieldAttributes.PXDBStringAttribute,
+                pxContext.FieldAttributes.PXDBByteAttribute,
+                pxContext.FieldAttributes.PXDecimalAttribute,
+                pxContext.FieldAttributes.PXDoubleAttribute
+            };
 
 
             var attributeClasses = property.GetAttributes().
                     Select(a => a.AttributeClass);
 
             var listAttribute = attributeClasses.
-                    FirstOrDefault(c => c.InheritsFromOrEquals(pxContext.IPXLocalizableListType, true));
+                    FirstOrDefault(c => c.InheritsFromOrEquals(pxContext.IPXLocalizableList, true));
 
             if (listAttribute == null)
                 return;
 
             var systemObject = context.Compilation.GetTypeByMetadataName(typeof(System.Object).FullName);
-            while (!listAttribute.BaseType.Equals(pxContext.PXEventSubscriberAttributeType) &&
+            while (!listAttribute.BaseType.Equals(pxContext.PXEventSubscriberAttribute) &&
                    !listAttribute.BaseType.Equals(systemObject))
                 listAttribute = listAttribute.BaseType;
             //hardcode

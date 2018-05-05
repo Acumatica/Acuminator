@@ -26,10 +26,10 @@ namespace Acuminator.Utilities
 			context = pxContext;
 			CorrespondingSimpleTypes = new Dictionary<INamedTypeSymbol, INamedTypeSymbol>
 			{
-				{ context.PXStringAttributeType,  context.String },
-				{ context.PXDBStringAttributeType, context.String },
-				{ context.PXDBIntAttributeType, context.Int32 },
-				{ context.PXIntAttributeType, context.Int32 }
+				{ context.FieldAttributes.PXStringAttribute,  context.String },
+				{ context.FieldAttributes.PXDBStringAttribute, context.String },
+				{ context.FieldAttributes.PXDBIntAttribute, context.Int32 },
+				{ context.FieldAttributes.PXIntAttribute, context.Int32 }
 			}.ToImmutableDictionary();
 		}
 	}

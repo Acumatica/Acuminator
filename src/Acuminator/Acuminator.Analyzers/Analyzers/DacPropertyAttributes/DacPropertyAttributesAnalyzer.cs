@@ -56,7 +56,7 @@ namespace Acuminator.Analyzers
 
         private static bool CheckPropertyAttribute(IPropertySymbol property, AttributeData attribute, CancellationToken cancellationToken)
         {
-            
+            return true;
            // attribute.AttributeClass.
         }
 
