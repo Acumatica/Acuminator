@@ -1,6 +1,7 @@
-using Microsoft.CodeAnalysis;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
 using PX.Data;
 using Acuminator.Utilities;
 
@@ -16,13 +17,16 @@ namespace Acuminator.Analyzers
 
         public INamedTypeSymbol Array => Compilation.GetSpecialType(SpecialType.System_Array);
         public INamedTypeSymbol String => Compilation.GetSpecialType(SpecialType.System_String);
+        public INamedTypeSymbol Bool => Compilation.GetSpecialType(SpecialType.System_Boolean);
         public INamedTypeSymbol Int64 => Compilation.GetSpecialType(SpecialType.System_Int64);
         public INamedTypeSymbol Int32 => Compilation.GetSpecialType(SpecialType.System_Int32);
         public INamedTypeSymbol Int16 => Compilation.GetSpecialType(SpecialType.System_Int16);
         public INamedTypeSymbol Byte => Compilation.GetSpecialType(SpecialType.System_Byte);
         public INamedTypeSymbol Double => Compilation.GetSpecialType(SpecialType.System_Double);
         public INamedTypeSymbol Decimal => Compilation.GetSpecialType(SpecialType.System_Decimal);
-        
+        public INamedTypeSymbol DateTime => Compilation.GetSpecialType(SpecialType.System_DateTime);
+        public INamedTypeSymbol Guid => Compilation.GetTypeByMetadataName(typeof(Guid).FullName);
+
         public INamedTypeSymbol PXGraphType => Compilation.GetTypeByMetadataName(typeof(PXGraph).FullName);
         public INamedTypeSymbol PXProcessingBaseType => Compilation.GetTypeByMetadataName(typeof(PXProcessingBase<>).FullName);
         public INamedTypeSymbol PXGraphExtensionType => Compilation.GetTypeByMetadataName(typeof(PXGraphExtension).FullName);
@@ -64,6 +68,10 @@ namespace Acuminator.Analyzers
                 compilation = aCompilation;
             }
 
+            #region Attribute Interfaces
+            public INamedTypeSymbol IPXFieldUpdatingSubscriber => compilation.GetTypeByMetadataName(typeof(IPXFieldUpdatingSubscriber).FullName);
+            #endregion
+
             #region Field Unbound Attributes
             public INamedTypeSymbol PXLongAttribute => compilation.GetTypeByMetadataName(typeof(PXLongAttribute).FullName);
             public INamedTypeSymbol PXIntAttribute => compilation.GetTypeByMetadataName(typeof(PXIntAttribute).FullName);
@@ -78,6 +86,8 @@ namespace Acuminator.Analyzers
             #endregion
 
             #region DBField Attributes
+            public INamedTypeSymbol PXDBFieldAttribute => compilation.GetTypeByMetadataName(typeof(PXDBFieldAttribute).FullName);
+
             public INamedTypeSymbol PXDBLongAttribute => compilation.GetTypeByMetadataName(typeof(PXDBLongAttribute).FullName);
             public INamedTypeSymbol PXDBIntAttribute => compilation.GetTypeByMetadataName(typeof(PXDBIntAttribute).FullName);
             public INamedTypeSymbol PXDBShortAttribute => compilation.GetTypeByMetadataName(typeof(PXDBShortAttribute).FullName);

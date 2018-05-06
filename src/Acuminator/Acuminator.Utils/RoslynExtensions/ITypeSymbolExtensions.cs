@@ -180,5 +180,14 @@ namespace Acuminator.Utilities
 
 			return current != null ? depth : (int?)null;
 		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IEnumerable<ITypeSymbol> GetAllAttributesDefinedOnThisAndBaseTypes(this ITypeSymbol typeSymbol)
+        {
+            typeSymbol.ThrowOnNull(nameof(typeSymbol));
+            return typeSymbol.GetBaseTypesAndThis()
+                             .SelectMany(t => t.GetAttributes())
+                             .Select(a => a.AttributeClass);
+        }
     }
 }
