@@ -111,9 +111,18 @@ namespace Acuminator.Utilities
             if (info.HasValue)
                 return info.Value;
 
-            var attributes = attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
+            var attributesOnHierarchy = attributeTypeHierarchy.SelectMany(a => a.GetAttributes())
+															  .Select(a => a.AttributeClass);
+														 
+			foreach (ITypeSymbol attribute in attributesOnHierarchy)
+			{
+				info = CheckAttributeInheritanceChain(attribute);
 
-            foreach (ITypeSymbol )
+				if (info.HasValue)
+					return info.Value;
+			}
+
+			return (IsFieldAttribute: false, default, default);
         }
 
         private (bool IsFieldAttribute, bool IsBoundField, ITypeSymbol FieldType)? CheckAttributeInheritanceChain(ITypeSymbol attributeSymbol,
@@ -122,8 +131,8 @@ namespace Acuminator.Utilities
             if (!attributeSymbol.ImplementsInterface(context.FieldAttributes.IPXFieldUpdatingSubscriber))
                 return null;
 
-            attributeTypeHierarchy = attributeTypeHierarchy ?? attributeSymbol.GetBaseTypesAndThis().ToList();
-            ITypeSymbol fieldAttribute = attributeTypeHierarchy.FirstOrDefault(attr => AllFieldAttributes.Contains(attr));
+            var attributeBaseTypesEnum = attributeTypeHierarchy ?? attributeSymbol.GetBaseTypesAndThis();
+            ITypeSymbol fieldAttribute = attributeBaseTypesEnum.FirstOrDefault(attr => AllFieldAttributes.Contains(attr));
 
             if (fieldAttribute != null)
             {

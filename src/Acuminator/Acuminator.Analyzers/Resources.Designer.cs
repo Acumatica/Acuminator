@@ -324,7 +324,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The DAC property can not be marked as bound and unbound at the same time.
+        ///   Looks up a localized string similar to The DAC property can not be marked with multiple field attributes.
         /// </summary>
         public static string PX1023Title {
             get {

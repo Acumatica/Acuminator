@@ -39,6 +39,9 @@ namespace Acuminator.Analyzers
             if (attributes.Length == 0 || symbolContext.CancellationToken.IsCancellationRequested)
                 return;
 
+			FieldAttributesInfo fieldAttributesInfo = new FieldAttributesInfo(pxContext);
+
+
             AttributeData attributeWithError = attributes.FirstOrDefault(a => !CheckPropertyAttribute(property, a, symbolContext.CancellationToken));
 
             if (attributeWithError == null || symbolContext.CancellationToken.IsCancellationRequested)

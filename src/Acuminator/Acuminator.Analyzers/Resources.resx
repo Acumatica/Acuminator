@@ -206,6 +206,6 @@
     <value>The PXDBFieldAttribute type and property type do not correspond to each other</value>
   </data>
   <data name="PX1023Title" xml:space="preserve">
-    <value>The DAC property can not be marked as bound and unbound at the same time</value>
+    <value>The DAC property can not be marked with multiple field attributes</value>
   </data>
 </root>

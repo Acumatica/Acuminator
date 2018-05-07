@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
@@ -11,9 +12,13 @@ namespace Acuminator.Analyzers
     {
         public Compilation Compilation { get; }
 
-        public BQLSymbols BQL { get; }
+		private readonly Lazy<BQLSymbols> bql;
 
-        public FieldAttributesTypes FieldAttributes { get; }
+		public BQLSymbols BQL => bql.Value;
+
+		private readonly Lazy<FieldAttributesTypes> fieldAttributes;
+
+		public FieldAttributesTypes FieldAttributes => fieldAttributes.Value;
 
         public INamedTypeSymbol Array => Compilation.GetSpecialType(SpecialType.System_Array);
         public INamedTypeSymbol String => Compilation.GetSpecialType(SpecialType.System_String);
@@ -54,8 +59,8 @@ namespace Acuminator.Analyzers
         public PXContext(Compilation compilation)
         {
             Compilation = compilation;
-            BQL = new BQLSymbols(Compilation);
-            FieldAttributes = new FieldAttributesTypes(compilation);
+			bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation)); 
+            fieldAttributes = new Lazy<FieldAttributesTypes>(() => new FieldAttributesTypes(Compilation));
         }
 
         #region Field Attributes Types
