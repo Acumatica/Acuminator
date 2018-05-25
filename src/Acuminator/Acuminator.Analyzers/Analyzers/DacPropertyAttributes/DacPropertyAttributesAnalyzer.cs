@@ -26,63 +26,63 @@ namespace Acuminator.Analyzers
 			compilationStartContext.RegisterSymbolAction(c => AnalyzeProperty(c, pxContext), SymbolKind.Property);
 		}
 
-        private static async void AnalyzeProperty(SymbolAnalysisContext symbolContext, PXContext pxContext)
-        {
-            IPropertySymbol property = symbolContext.Symbol as IPropertySymbol;
-            var parent = property?.ContainingType;
+		private static async void AnalyzeProperty(SymbolAnalysisContext symbolContext, PXContext pxContext)
+		{
+			IPropertySymbol property = symbolContext.Symbol as IPropertySymbol;
+			var parent = property?.ContainingType;
 
-            if (parent == null || (!parent.ImplementsInterface(pxContext.IBqlTableType) && !parent.InheritsFrom(pxContext.PXCacheExtensionType)))
-                return;
+			if (parent == null || (!parent.ImplementsInterface(pxContext.IBqlTableType) && !parent.InheritsFrom(pxContext.PXCacheExtensionType)))
+				return;
 
-            ImmutableArray<AttributeData> attributes = property.GetAttributes();
+			ImmutableArray<AttributeData> attributes = property.GetAttributes();
 
-            if (attributes.Length == 0 || symbolContext.CancellationToken.IsCancellationRequested)
-                return;
+			if (attributes.Length == 0 || symbolContext.CancellationToken.IsCancellationRequested)
+				return;
 
 			FieldAttributesInfo fieldAttributesInfo = new FieldAttributesInfo(pxContext);
 
 
-            AttributeData attributeWithError = attributes.FirstOrDefault(a => !CheckPropertyAttribute(property, a, symbolContext.CancellationToken));
+			AttributeData attributeWithError = attributes.FirstOrDefault(a => !CheckPropertyAttribute(property, a, symbolContext.CancellationToken));
 
-            if (attributeWithError == null || symbolContext.CancellationToken.IsCancellationRequested)
-                return;
+			if (attributeWithError == null || symbolContext.CancellationToken.IsCancellationRequested)
+				return;
 
-            Location attributeLocation = await GetAttributeLocation(attributeWithError, symbolContext.CancellationToken);
-            symbolContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty,
-                                           property.Locations.First()));
+			Location attributeLocation = await GetAttributeLocation(attributeWithError, symbolContext.CancellationToken);
+			symbolContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty,
+										   property.Locations.First()));
 
-            if (attributeLocation != null)
-            {
-                symbolContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, attributeLocation));
-            }
-        }
+			if (attributeLocation != null)
+			{
+				symbolContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, attributeLocation));
+			}
+		}
 
-        private static bool CheckPropertyAttribute(IPropertySymbol property, AttributeData attribute, CancellationToken cancellationToken)
-        {
-            return true;
-           // attribute.AttributeClass.
-        }
+		private static bool CheckPropertyAttribute(IPropertySymbol property, AttributeData attribute, CancellationToken cancellationToken)
+		{
+			return true;
+		   // attribute.AttributeClass.
+		}
 
-        private static async Task<Location> GetAttributeLocation(AttributeData attribute, CancellationToken cancellationToken)
-        {
-            SyntaxNode attributeSyntaxNode = null;
+		private static async Task<Location> GetAttributeLocation(AttributeData attribute, CancellationToken cancellationToken)
+		{
+			SyntaxNode attributeSyntaxNode = null;
 
-            try
-            {
-                attributeSyntaxNode = await attribute.ApplicationSyntaxReference.GetSyntaxAsync(cancellationToken)
-                                                                                .ConfigureAwait(false);
-            }
-            catch (OperationCanceledException)
-            {
-                return null;
-            }
-            catch (Exception e)
-            {
-                //TODO log error here
-                return null;
-            }
+			try
+			{
+				attributeSyntaxNode = await attribute.ApplicationSyntaxReference.GetSyntaxAsync(cancellationToken)
+																				.ConfigureAwait(false);
+			}
+			catch (OperationCanceledException)
+			{
+				return null;
+			}
+			catch (Exception e)
+			{
+				//TODO log error here
+				return null;
+			}
 
-            return attributeSyntaxNode?.GetLocation();
-        }
+			return attributeSyntaxNode?.GetLocation();
+		}
 	}
 }
