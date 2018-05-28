@@ -21,7 +21,7 @@ namespace Acuminator.Analyzers
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams,
-                                  Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams);
+								  Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams);
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
@@ -112,7 +112,7 @@ namespace Acuminator.Analyzers
 
 			if (argsCount == null || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
-	
+
 			ITypeSymbol containingType = GetContainingTypeForInstanceCall(pxContext, syntaxContext, accessExpression);
 
 			if (containingType == null)
@@ -154,7 +154,7 @@ namespace Acuminator.Analyzers
 			return argsCount;
 		}
 
-		private static int? GetBqlArgumentsCountWhenCouldBePassedAsArray(ArgumentSyntax argumentWhichCanBeArray, 
+		private static int? GetBqlArgumentsCountWhenCouldBePassedAsArray(ArgumentSyntax argumentWhichCanBeArray,
 																		 SyntaxNodeAnalysisContext syntaxContext,
 																		 PXContext pxContext)
 		{
@@ -176,7 +176,7 @@ namespace Acuminator.Analyzers
 			}
 
 			return RoslynSyntaxUtils.TryGetSizeOfSingleDimensionalNonJaggedArray(argumentWhichCanBeArray.Expression, syntaxContext.SemanticModel,
-																			     syntaxContext.CancellationToken);
+																				 syntaxContext.CancellationToken);
 		}
 
 		private static ITypeSymbol GetContainingTypeForInstanceCall(PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
@@ -191,7 +191,7 @@ namespace Acuminator.Analyzers
 			if (!containingType.IsAbstract && !containingType.IsCustomBqlCommand(pxContext))
 				return containingType;
 
-			if (!(accessExpression is IdentifierNameSyntax identifierNode) || syntaxContext.CancellationToken.IsCancellationRequested)   
+			if (!(accessExpression is IdentifierNameSyntax identifierNode) || syntaxContext.CancellationToken.IsCancellationRequested)
 				return null;                                                 //Should exclude everything except local variable. For example expressions like "this.var.Select()" should be excluded
 
 			BqlLocalVariableTypeResolver resolver = new BqlLocalVariableTypeResolver(syntaxContext, pxContext, identifierNode);
@@ -207,23 +207,23 @@ namespace Acuminator.Analyzers
 			int maxCount = parametersCounter.OptionalParametersCount + parametersCounter.RequiredParametersCount;
 			int minCount = parametersCounter.RequiredParametersCount;
 
-            if (argsCount < minCount || argsCount > maxCount)
-            {
-                Location location = GetLocation(invocationNode);
+			if (argsCount < minCount || argsCount > maxCount)
+			{
+				Location location = GetLocation(invocationNode);
 
-                if (parametersCounter.OptionalParametersCount == 0)
-                {
-                    syntaxContext.ReportDiagnostic(
-                        Diagnostic.Create(Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams, location,
-                                          methodSymbol.Name, parametersCounter.RequiredParametersCount));
-                }
-                else
-                {
-                    syntaxContext.ReportDiagnostic(
-                        Diagnostic.Create(Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams, location,
-                                          methodSymbol.Name, minCount, maxCount));
-                }
-            }
+				if (parametersCounter.OptionalParametersCount == 0)
+				{
+					syntaxContext.ReportDiagnostic(
+						Diagnostic.Create(Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams, location,
+										  methodSymbol.Name, parametersCounter.RequiredParametersCount));
+				}
+				else
+				{
+					syntaxContext.ReportDiagnostic(
+						Diagnostic.Create(Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams, location,
+										  methodSymbol.Name, minCount, maxCount));
+				}
+			}
 		}
 
 		private static Location GetLocation(InvocationExpressionSyntax invocationNode)

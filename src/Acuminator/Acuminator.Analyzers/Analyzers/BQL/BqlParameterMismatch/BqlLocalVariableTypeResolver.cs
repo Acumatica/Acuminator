@@ -42,38 +42,38 @@ namespace Acuminator.Analyzers
 				if (CancellationToken.IsCancellationRequested || !methodBodyWalker.IsValid || methodBodyWalker.Candidates.Count == 0)
 					return null;
 
-                TypeSyntax assignedType = GetTypeFromCandidates();
+				TypeSyntax assignedType = GetTypeFromCandidates();
 
-                if (assignedType == null)
-                    return null;
+				if (assignedType == null)
+					return null;
 
-                SymbolInfo symbolInfo = SemanticModel.GetSymbolInfo(assignedType);
+				SymbolInfo symbolInfo = SemanticModel.GetSymbolInfo(assignedType);
 				return symbolInfo.Symbol as ITypeSymbol;
 			}
 
-            private TypeSyntax GetTypeFromCandidates()
-            {               
-                while (methodBodyWalker.Candidates.Count > 0)
-                {
-                    var (potentialAssignmentStatement, assignedType) = methodBodyWalker.Candidates.Pop();
-                    var (analysisSucceded, varAlwaysAssigned) = CheckCandidate(potentialAssignmentStatement);
+			private TypeSyntax GetTypeFromCandidates()
+			{
+				while (methodBodyWalker.Candidates.Count > 0)
+				{
+					var (potentialAssignmentStatement, assignedType) = methodBodyWalker.Candidates.Pop();
+					var (analysisSucceded, varAlwaysAssigned) = CheckCandidate(potentialAssignmentStatement);
 
-                    if (!analysisSucceded || !varAlwaysAssigned || assignedType == null)
-                        return null;    //analysis failed or reacheable assignment with not always assigned variable or valid candidate with unresolvable type
+					if (!analysisSucceded || !varAlwaysAssigned || assignedType == null)
+						return null;    //analysis failed or reacheable assignment with not always assigned variable or valid candidate with unresolvable type
 
-                    return assignedType;           
-                }
+					return assignedType;
+				}
 
-                return null;
-            }
-
-            
+				return null;
+			}
 
 
-            //*****************************************************************************************************************************************************************************
-            //*****************************************************************************************************************************************************************************
-            //*****************************************************************************************************************************************************************************
-            private class ResolveVarTypeMethodBodyWalker : CSharpSyntaxWalker
+
+
+			//*****************************************************************************************************************************************************************************
+			//*****************************************************************************************************************************************************************************
+			//*****************************************************************************************************************************************************************************
+			private class ResolveVarTypeMethodBodyWalker : CSharpSyntaxWalker
 			{
 				private readonly BqlLocalVariableTypeResolver resolver;
 
@@ -84,7 +84,7 @@ namespace Acuminator.Analyzers
 				private bool IsCancelationRequested => resolver.CancellationToken.IsCancellationRequested;
 
 				public Stack<(StatementSyntax PotentialAssignment, TypeSyntax AssignedType)> Candidates { get; }
-				
+
 				public bool IsValid
 				{
 					get => isValid;
@@ -117,10 +117,10 @@ namespace Acuminator.Analyzers
 					base.Visit(node);
 				}
 
-                public override void VisitVariableDeclarator(VariableDeclaratorSyntax declarator)
+				public override void VisitVariableDeclarator(VariableDeclaratorSyntax declarator)
 				{
 					if (IsCancelationRequested || declarator.Identifier.ValueText != resolver.VariableName ||
-                        declarator.Initializer?.Value == null)
+						declarator.Initializer?.Value == null)
 					{
 						if (!IsCancelationRequested)
 							base.VisitVariableDeclarator(declarator);
@@ -128,22 +128,22 @@ namespace Acuminator.Analyzers
 						return;
 					}
 
-                    var declaratorStatement = declarator.GetStatementNode();
+					var declaratorStatement = declarator.GetStatementNode();
 
-                    if (!resolver.IsReacheableByControlFlow(declaratorStatement))
-                        return;
+					if (!resolver.IsReacheableByControlFlow(declaratorStatement))
+						return;
 
-                    switch (declarator.Initializer.Value)
-                    {
-                        case ObjectCreationExpressionSyntax objectCreation:
-                            Candidates.Push((declaratorStatement, AssignedType: objectCreation.Type));
-                            return;
-                        default:
-                            Candidates.Push((declaratorStatement, AssignedType: null));
-                            return;
-                    }
+					switch (declarator.Initializer.Value)
+					{
+						case ObjectCreationExpressionSyntax objectCreation:
+							Candidates.Push((declaratorStatement, AssignedType: objectCreation.Type));
+							return;
+						default:
+							Candidates.Push((declaratorStatement, AssignedType: null));
+							return;
+					}
 				}
-				
+
 				public override void VisitAssignmentExpression(AssignmentExpressionSyntax assignment)
 				{
 					if (IsCancelationRequested)
@@ -154,7 +154,7 @@ namespace Acuminator.Analyzers
 
 					while (curExpression is AssignmentExpressionSyntax curAssignment)
 					{
-						if (candidateAssignment == null && curAssignment.Left is IdentifierNameSyntax identifier && 
+						if (candidateAssignment == null && curAssignment.Left is IdentifierNameSyntax identifier &&
 							identifier.Identifier.ValueText == resolver.VariableName)
 						{
 							candidateAssignment = curAssignment;
@@ -166,27 +166,27 @@ namespace Acuminator.Analyzers
 					if (candidateAssignment == null || IsCancelationRequested)
 						return;
 
-                    var assignmentStatement = candidateAssignment.GetStatementNode();
+					var assignmentStatement = candidateAssignment.GetStatementNode();
 
-                    if (!resolver.IsReacheableByControlFlow(assignmentStatement))
-                        return;
+					if (!resolver.IsReacheableByControlFlow(assignmentStatement))
+						return;
 
-                    switch (curExpression)
-                    {
-                        case ObjectCreationExpressionSyntax objectCreation:
-                            Candidates.Push((assignmentStatement, AssignedType: objectCreation.Type));
-                            return;
-                        default:
-                            Candidates.Push((assignmentStatement, AssignedType: null));
-                            return;
-                    }       
+					switch (curExpression)
+					{
+						case ObjectCreationExpressionSyntax objectCreation:
+							Candidates.Push((assignmentStatement, AssignedType: objectCreation.Type));
+							return;
+						default:
+							Candidates.Push((assignmentStatement, AssignedType: null));
+							return;
+					}
 				}
 
 				public override void VisitConditionalAccessExpression(ConditionalAccessExpressionSyntax conditionalAccess)
 				{
 					if (IsCancelationRequested)
 						return;
-							
+
 					if (isInAnalysedVariableInvocation || !(conditionalAccess.Expression is IdentifierNameSyntax identifier) ||
 						identifier.Identifier.ValueText != resolver.VariableName)
 					{
@@ -201,18 +201,18 @@ namespace Acuminator.Analyzers
 					finally
 					{
 						isInAnalysedVariableInvocation = false;
-					}			
+					}
 				}
 
-                public override void VisitGotoStatement(GotoStatementSyntax node)
-                {
-                    if (node.IsKind(SyntaxKind.GotoStatement))   //The analysis is not valid if there are goto statements in method. This is rarely a case in C#
-                    {
-                        IsValid = false;
-                    }
-                }
+				public override void VisitGotoStatement(GotoStatementSyntax node)
+				{
+					if (node.IsKind(SyntaxKind.GotoStatement))   //The analysis is not valid if there are goto statements in method. This is rarely a case in C#
+					{
+						IsValid = false;
+					}
+				}
 
-                public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
+				public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
 				{
 					if (shouldStop)
 						return;
@@ -231,9 +231,9 @@ namespace Acuminator.Analyzers
 
 					if (IsCancelationRequested)
 						return;
-								
+
 					base.VisitInvocationExpression(invocation);
-				}			
+				}
 
 				/// <summary>
 				/// Analyze invocation. Returns <c>true</c> if invocation is valid for diagnostic, <c>false</c> if diagnostic can't be made with given invocation inside method.
@@ -256,17 +256,17 @@ namespace Acuminator.Analyzers
 					if (methodSymbol.IsStatic || !BqlModifyingMethods.IsBqlModifyingInstanceMethod(methodSymbol, resolver.PXContext))
 						return true;
 
-                    try
-                    {
-                        ControlFlowAnalysis controlFlow = resolver.SemanticModel.AnalyzeControlFlow(invocation.GetStatementNode());
+					try
+					{
+						ControlFlowAnalysis controlFlow = resolver.SemanticModel.AnalyzeControlFlow(invocation.GetStatementNode());
 
-                        if (controlFlow?.Succeeded == true && !controlFlow.EndPointIsReachable)
-                            return true;
-                    }
-                    catch (Exception e)
-                    {
-                        return false;
-                    }
+						if (controlFlow?.Succeeded == true && !controlFlow.EndPointIsReachable)
+							return true;
+					}
+					catch (Exception e)
+					{
+						return false;
+					}
 
 					return false;
 				}
@@ -277,12 +277,12 @@ namespace Acuminator.Analyzers
 					if (isInAnalysedVariableInvocation)
 						return true;
 
-					return invocation.Expression is MemberAccessExpressionSyntax memberAccess && 
+					return invocation.Expression is MemberAccessExpressionSyntax memberAccess &&
 						   memberAccess.OperatorToken.IsKind(SyntaxKind.DotToken) &&
-						   memberAccess.Expression is IdentifierNameSyntax identifier && 
+						   memberAccess.Expression is IdentifierNameSyntax identifier &&
 						   identifier.Identifier.ValueText == resolver.VariableName;
 				}
 			}
-		}	
+		}
 	}
 }

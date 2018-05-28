@@ -17,11 +17,11 @@ namespace Acuminator.Utilities
 		private class DummyDac : IBqlTable { }
 
 		public static readonly ImmutableHashSet<string> PXSelectbaseBqlModifiers = ImmutableHashSet.Create
-		(	
+		(
 			nameof(PXSelectBase<DummyDac>.WhereAnd),
 			nameof(PXSelectBase<DummyDac>.WhereNew),
 			nameof(PXSelectBase<DummyDac>.WhereOr),
-			nameof(PXSelectBase<DummyDac>.Join)		
+			nameof(PXSelectBase<DummyDac>.Join)
 		);
 
 		public static readonly ImmutableHashSet<string> PXViewBqlModifiers = ImmutableHashSet.Create

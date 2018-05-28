@@ -265,8 +265,8 @@ namespace Acuminator.Utilities
 
 			SyntaxNode currentX = nodeX;
 			SyntaxNode currentY = nodeY;
-			
-			while (depthX != depthY)				//First get nodes on the equal levels of depth
+
+			while (depthX != depthY)                //First get nodes on the equal levels of depth
 			{
 				if (depthX > depthY)
 				{
@@ -296,7 +296,7 @@ namespace Acuminator.Utilities
 
 			//Depth is average O(log n) operation, worst case is O(n) but it isn't the case for the syntax tree which is wide but not very deep.
 			//For statements we could consider depth constrained by MethodDeclarationSyntax 
-			int depthX = x.Depth<MethodDeclarationSyntax, StatementSyntax>();           
+			int depthX = x.Depth<MethodDeclarationSyntax, StatementSyntax>();
 			int depthY = y.Depth<MethodDeclarationSyntax, StatementSyntax>();
 
 			StatementSyntax currentX = x, prevX = null;
@@ -423,7 +423,7 @@ namespace Acuminator.Utilities
 				return null;
 
 			var constantValue = semanticModel.GetConstantValue(rankNode.Sizes[0], cancellationToken);
-			return constantValue.HasValue 
+			return constantValue.HasValue
 				? constantValue.Value as int?
 				: null;
 		}

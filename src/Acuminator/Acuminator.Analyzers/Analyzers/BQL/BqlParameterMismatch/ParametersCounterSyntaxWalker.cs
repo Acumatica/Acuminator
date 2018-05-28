@@ -14,22 +14,22 @@ using PX.Data;
 
 namespace Acuminator.Analyzers
 {
-    public partial class BqlParameterMismatchAnalyzer : PXDiagnosticAnalyzer
-    {      
-        /// <summary>
-        /// The BQL parameters counting syntax walker.
-        /// </summary>
-        protected class ParametersCounterSyntaxWalker : CSharpSyntaxWalker
-        {
-            private readonly SyntaxNodeAnalysisContext syntaxContext;
-            private readonly CancellationToken cancellationToken;
+	public partial class BqlParameterMismatchAnalyzer : PXDiagnosticAnalyzer
+	{
+		/// <summary>
+		/// The BQL parameters counting syntax walker.
+		/// </summary>
+		protected class ParametersCounterSyntaxWalker : CSharpSyntaxWalker
+		{
+			private readonly SyntaxNodeAnalysisContext syntaxContext;
+			private readonly CancellationToken cancellationToken;
 
 			public ParametersCounter ParametersCounter { get; }
 
 			public ParametersCounterSyntaxWalker(SyntaxNodeAnalysisContext aSyntaxContext, PXContext aPxContext)
-            {
+			{
 				syntaxContext = aSyntaxContext;
-                cancellationToken = syntaxContext.CancellationToken;
+				cancellationToken = syntaxContext.CancellationToken;
 				ParametersCounter = new ParametersCounter(aPxContext);
 			}
 
@@ -42,30 +42,30 @@ namespace Acuminator.Analyzers
 				return ParametersCounter.IsCountingValid && !cancellationToken.IsCancellationRequested;
 			}
 
-            public override void VisitGenericName(GenericNameSyntax genericNode)
-            {
+			public override void VisitGenericName(GenericNameSyntax genericNode)
+			{
 				if (cancellationToken.IsCancellationRequested)
 					return;
 
-                SymbolInfo symbolInfo = syntaxContext.SemanticModel.GetSymbolInfo(genericNode, cancellationToken);
+				SymbolInfo symbolInfo = syntaxContext.SemanticModel.GetSymbolInfo(genericNode, cancellationToken);
 
-                if (cancellationToken.IsCancellationRequested || !(symbolInfo.Symbol is ITypeSymbol typeSymbol))
-                {
-                    if (!cancellationToken.IsCancellationRequested)
-                        base.VisitGenericName(genericNode);
+				if (cancellationToken.IsCancellationRequested || !(symbolInfo.Symbol is ITypeSymbol typeSymbol))
+				{
+					if (!cancellationToken.IsCancellationRequested)
+						base.VisitGenericName(genericNode);
 
-                    return;
-                }
+					return;
+				}
 
-                if (genericNode.IsUnboundGenericName)
-                    typeSymbol = typeSymbol.OriginalDefinition;
+				if (genericNode.IsUnboundGenericName)
+					typeSymbol = typeSymbol.OriginalDefinition;
 
 				if (!ParametersCounter.CountParametersInTypeSymbol(typeSymbol, cancellationToken))
 					return;
 
-                if (!cancellationToken.IsCancellationRequested)
-                    base.VisitGenericName(genericNode);             
-            }
+				if (!cancellationToken.IsCancellationRequested)
+					base.VisitGenericName(genericNode);
+			}
 		}
-    }
+	}
 }

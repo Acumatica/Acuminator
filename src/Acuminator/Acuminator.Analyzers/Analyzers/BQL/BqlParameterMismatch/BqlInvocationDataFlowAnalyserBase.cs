@@ -22,8 +22,8 @@ namespace Acuminator.Analyzers
 			protected SyntaxNodeAnalysisContext SyntaxContext { get; }
 
 			protected PXContext PXContext { get; }
-           
-            protected InvocationExpressionSyntax Invocation { get; }
+
+			protected InvocationExpressionSyntax Invocation { get; }
 
 			protected StatementSyntax InvocationStatement { get; }
 
@@ -38,62 +38,62 @@ namespace Acuminator.Analyzers
 				SyntaxContext = syntaxContext;
 				PXContext = pxContext;
 				Invocation = SyntaxContext.Node as InvocationExpressionSyntax;
-                InvocationStatement = Invocation.GetStatementNode();
+				InvocationStatement = Invocation.GetStatementNode();
 				VariableName = identifierNode.Identifier.ValueText;
 			}
 
 			protected (bool AnalysisSucceded, bool VarAlwaysAssigned) CheckCandidate(StatementSyntax assignmentStatement)
-            {
-                var (_, scopedAssignment, scopedInvocation) =
-                    RoslynSyntaxUtils.LowestCommonAncestorSyntaxStatement(assignmentStatement, InvocationStatement);
+			{
+				var (_, scopedAssignment, scopedInvocation) =
+					RoslynSyntaxUtils.LowestCommonAncestorSyntaxStatement(assignmentStatement, InvocationStatement);
 
-                if (scopedAssignment == null || scopedInvocation == null)
-                    return (false, false);       //If there was some kind of error during analysis we should assume the worst case - that the candidat is valid but not always assigns variable 
+				if (scopedAssignment == null || scopedInvocation == null)
+					return (false, false);       //If there was some kind of error during analysis we should assume the worst case - that the candidat is valid but not always assigns variable 
 
-                switch (scopedAssignment)
-                {
-                    case SwitchStatementSyntax _:
-                    case IfStatementSyntax _:
-                        return (true, false);
-                }
+				switch (scopedAssignment)
+				{
+					case SwitchStatementSyntax _:
+					case IfStatementSyntax _:
+						return (true, false);
+				}
 
-                DataFlowAnalysis flowAnalysisWithAssignment = null;
+				DataFlowAnalysis flowAnalysisWithAssignment = null;
 
-                try
-                {
-                    flowAnalysisWithAssignment = SemanticModel.AnalyzeDataFlow(scopedAssignment, scopedInvocation);
-                }
-                catch (Exception e)
-                {
-                    return (false, false);
-                }
+				try
+				{
+					flowAnalysisWithAssignment = SemanticModel.AnalyzeDataFlow(scopedAssignment, scopedInvocation);
+				}
+				catch (Exception e)
+				{
+					return (false, false);
+				}
 
-                if (flowAnalysisWithAssignment == null || !flowAnalysisWithAssignment.Succeeded)
-                    return (false, false);
-                else if (flowAnalysisWithAssignment.AlwaysAssigned.All(var => var.Name != VariableName))
-                    return (true, false);
+				if (flowAnalysisWithAssignment == null || !flowAnalysisWithAssignment.Succeeded)
+					return (false, false);
+				else if (flowAnalysisWithAssignment.AlwaysAssigned.All(var => var.Name != VariableName))
+					return (true, false);
 
-                return (true, true);
-            }
-        
-            protected bool IsReacheableByControlFlow(StatementSyntax statement)
-            {
-                ControlFlowAnalysis controlFlow = null;
+				return (true, true);
+			}
 
-                try
-                {
-                    controlFlow = SemanticModel.AnalyzeControlFlow(statement);
-                }
-                catch (Exception e)
-                {
-                    //If there was some kind of error during analysis we should assume the worst case - that assignment is reacheable
-                    return true;
-                }
+			protected bool IsReacheableByControlFlow(StatementSyntax statement)
+			{
+				ControlFlowAnalysis controlFlow = null;
 
-                return controlFlow?.Succeeded == true
-                    ? controlFlow.EndPointIsReachable
-                    : true;
-            }
-		}	
+				try
+				{
+					controlFlow = SemanticModel.AnalyzeControlFlow(statement);
+				}
+				catch (Exception e)
+				{
+					//If there was some kind of error during analysis we should assume the worst case - that assignment is reacheable
+					return true;
+				}
+
+				return controlFlow?.Succeeded == true
+					? controlFlow.EndPointIsReachable
+					: true;
+			}
+		}
 	}
 }

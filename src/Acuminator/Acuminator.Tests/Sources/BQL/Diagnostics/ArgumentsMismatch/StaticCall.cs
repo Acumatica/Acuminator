@@ -12,14 +12,14 @@ namespace PX.Objects
 		public object Foo()
 		{
 			var result =
-                PXSelect<SOOrder, 
-				Where<SOOrder.orderType, Equal<Required<SalesOrder.orderType>>, 
-					And<SOOrder.status, Equal<Required<SalesOrder.status>>>>, 
+				PXSelect<SOOrder,
+				Where<SOOrder.orderType, Equal<Required<SalesOrder.orderType>>,
+					And<SOOrder.status, Equal<Required<SalesOrder.status>>>>,
 				OrderBy<
 					Asc<SOOrder.orderNbr>>>
 				.Select(this).ToArray();
 
-            return this;
+			return this;
 		}
 	}
 }

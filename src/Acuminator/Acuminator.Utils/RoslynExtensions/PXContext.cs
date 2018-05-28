@@ -44,8 +44,8 @@ namespace Acuminator.Analyzers
         public INamedTypeSymbol IBqlTableType => Compilation.GetTypeByMetadataName(typeof(IBqlTable).FullName);
         public INamedTypeSymbol IBqlFieldType => Compilation.GetTypeByMetadataName(typeof(IBqlField).FullName);
 
-        public INamedTypeSymbol IPXResultsetType => Compilation.GetTypeByMetadataName(typeof(IPXResultset).FullName);
-        public INamedTypeSymbol PXResult => Compilation.GetTypeByMetadataName(typeof(PXResult).FullName);
+		public INamedTypeSymbol IPXResultsetType => Compilation.GetTypeByMetadataName(typeof(IPXResultset).FullName);
+		public INamedTypeSymbol PXResult => Compilation.GetTypeByMetadataName(typeof(PXResult).FullName);
 
         //public INamedTypeSymbol PXBaseListAttributeType => Compilation.GetTypeByMetadataName(typeof(PXBaseListAttribute).FullName);
         public INamedTypeSymbol PXStringListAttribute => Compilation.GetTypeByMetadataName(typeof(PXStringListAttribute).FullName);
@@ -107,11 +107,11 @@ namespace Acuminator.Analyzers
         }
         #endregion
 
-        #region BQL Types
-        /// <summary>
-        /// BQL Symbols are stored in separate file.
-        /// </summary>
-        public class BQLSymbols
+		#region BQL Types
+		/// <summary>
+		/// BQL Symbols are stored in separate file.
+		/// </summary>
+		public class BQLSymbols
 		{
 			private readonly Compilation compilation;
 
@@ -120,19 +120,19 @@ namespace Acuminator.Analyzers
 				compilation = aCompilation;
 			}
 
-            public INamedTypeSymbol Required => compilation.GetTypeByMetadataName(typeof(Required<>).FullName);
+			public INamedTypeSymbol Required => compilation.GetTypeByMetadataName(typeof(Required<>).FullName);
 
 			public INamedTypeSymbol Argument => compilation.GetTypeByMetadataName(typeof(Argument<>).FullName);
 
 			public INamedTypeSymbol Optional => compilation.GetTypeByMetadataName(typeof(PX.Data.Optional<>).FullName);
-            public INamedTypeSymbol Optional2 => compilation.GetTypeByMetadataName(typeof(Optional2<>).FullName);
+			public INamedTypeSymbol Optional2 => compilation.GetTypeByMetadataName(typeof(Optional2<>).FullName);
 
 			public INamedTypeSymbol BqlCommand => compilation.GetTypeByMetadataName(typeof(BqlCommand).FullName);
 
 			public INamedTypeSymbol IBqlParameter => compilation.GetTypeByMetadataName(typeof(IBqlParameter).FullName);
 
 			public INamedTypeSymbol PXSelectBaseGenericType => compilation.GetTypeByMetadataName(typeof(PXSelectBase<>).FullName);
-			
+
 		}
         #endregion
     }
