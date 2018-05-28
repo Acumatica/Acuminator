@@ -14,22 +14,22 @@ using PX.Data;
 
 namespace Acuminator.Analyzers
 {
-    public partial class BqlParameterMismatchAnalyzer : PXDiagnosticAnalyzer
-    {
+	public partial class BqlParameterMismatchAnalyzer : PXDiagnosticAnalyzer
+	{
 		/// <summary>
 		/// The BQL parameters counting symbol  walker.
 		/// </summary>
 		protected class ParametersCounterSymbolWalker : SymbolVisitor
 		{
 			private readonly SyntaxNodeAnalysisContext syntaxContext;
-            private readonly CancellationToken cancellationToken;
+			private readonly CancellationToken cancellationToken;
 
 			public ParametersCounter ParametersCounter { get; }
 
 			public ParametersCounterSymbolWalker(SyntaxNodeAnalysisContext aSyntaxContext, PXContext aPxContext)
-            {
-                syntaxContext = aSyntaxContext;
-                cancellationToken = syntaxContext.CancellationToken;
+			{
+				syntaxContext = aSyntaxContext;
+				cancellationToken = syntaxContext.CancellationToken;
 				ParametersCounter = new ParametersCounter(aPxContext);
 			}
 
@@ -66,7 +66,7 @@ namespace Acuminator.Analyzers
 
 						Visit(typeArg);
 					}
-				}				
+				}
 
 				if (!cancellationToken.IsCancellationRequested)
 					base.VisitNamedType(typeSymbol);
@@ -84,10 +84,10 @@ namespace Acuminator.Analyzers
 
 					Visit(constraintType);
 				}
-			
+
 				if (!cancellationToken.IsCancellationRequested)
 					base.VisitTypeParameter(typeParameterSymbol);
-			}			
+			}
 		}
-    }
+	}
 }

@@ -14,26 +14,26 @@ using PX.Data;
 
 namespace Acuminator.Analyzers
 {
-    public partial class BqlParameterMismatchAnalyzer : PXDiagnosticAnalyzer
-    {
+	public partial class BqlParameterMismatchAnalyzer : PXDiagnosticAnalyzer
+	{
 		/// <summary>
 		/// The BQL parameters counting logic
 		/// </summary>
 		protected class ParametersCounter
-		{		
-            private readonly PXContext pxContext;               
-            
-            public int RequiredParametersCount
-            {
-                get;
-                private set;
-            }
+		{
+			private readonly PXContext pxContext;
 
-            public int OptionalParametersCount
-            {
-                get;
-                private set;
-            }
+			public int RequiredParametersCount
+			{
+				get;
+				private set;
+			}
+
+			public int OptionalParametersCount
+			{
+				get;
+				private set;
+			}
 
 			public bool IsCountingValid
 			{
@@ -41,11 +41,11 @@ namespace Acuminator.Analyzers
 				private set;
 			}
 
-            public ParametersCounter(PXContext aPxContext)
-            {
-                pxContext = aPxContext;
+			public ParametersCounter(PXContext aPxContext)
+			{
+				pxContext = aPxContext;
 				IsCountingValid = true;
-            }
+			}
 
 			/// <summary>
 			/// Count parameters in type symbol. Return <c>false</c> if the diagnostic should ne stopped
@@ -57,7 +57,7 @@ namespace Acuminator.Analyzers
 			{
 				if (!IsCountingValid || typeSymbol == null || IsCancelled(cancellationToken))
 					return false;
-				
+
 				PXCodeType? codeType = typeSymbol.GetCodeTypeFromGenericName();
 
 				switch (codeType)
@@ -72,7 +72,7 @@ namespace Acuminator.Analyzers
 							UpdateParametersCount(typeSymbol.OriginalDefinition);
 						}
 
-						return true;			
+						return true;
 				}
 
 				return true;
@@ -104,5 +104,5 @@ namespace Acuminator.Analyzers
 				return cancellationToken.IsCancellationRequested;
 			}
 		}
-    }
+	}
 }
