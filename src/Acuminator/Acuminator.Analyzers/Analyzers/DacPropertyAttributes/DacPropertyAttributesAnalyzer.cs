@@ -26,63 +26,94 @@ namespace Acuminator.Analyzers
 			compilationStartContext.RegisterSymbolAction(c => AnalyzeProperty(c, pxContext), SymbolKind.Property);
 		}
 
-        private static async void AnalyzeProperty(SymbolAnalysisContext symbolContext, PXContext pxContext)
-        {
-            IPropertySymbol property = symbolContext.Symbol as IPropertySymbol;
-            var parent = property?.ContainingType;
+		private static async void AnalyzeProperty(SymbolAnalysisContext symbolContext, PXContext pxContext)
+		{
+			IPropertySymbol property = symbolContext.Symbol as IPropertySymbol;
+			var parent = property?.ContainingType;
 
-            if (parent == null || (!parent.ImplementsInterface(pxContext.IBqlTableType) && !parent.InheritsFrom(pxContext.PXCacheExtensionType)))
-                return;
+			if (parent == null || (!parent.ImplementsInterface(pxContext.IBqlTableType) && !parent.InheritsFrom(pxContext.PXCacheExtensionType)))
+				return;
 
-            ImmutableArray<AttributeData> attributes = property.GetAttributes();
+			ImmutableArray<AttributeData> attributes = property.GetAttributes();
 
-            if (attributes.Length == 0 || symbolContext.CancellationToken.IsCancellationRequested)
-                return;
+			if (attributes.Length == 0 || symbolContext.CancellationToken.IsCancellationRequested)
+				return;
 
+			var attributesWithInfo = GetFieldAttributesInfos(pxContext, attributes, symbolContext.CancellationToken);
+
+			if (attributesWithInfo.Count == 0 || symbolContext.CancellationToken.IsCancellationRequested)
+				return;
+
+			ProcessFieldAttributesInfo(pxContext, attributesWithInfo, symbolContext);
+		}
+
+		private static List<(AttributeData Attribute, FieldAttributeDTO Info)> GetFieldAttributesInfos(PXContext pxContext, 
+																									   ImmutableArray<AttributeData> attributes,
+																									   CancellationToken cancellationToken)
+		{
 			FieldAttributesInfo fieldAttributesInfo = new FieldAttributesInfo(pxContext);
 
+			if (cancellationToken.IsCancellationRequested)
+				return null;
 
-            AttributeData attributeWithError = attributes.FirstOrDefault(a => !CheckPropertyAttribute(property, a, symbolContext.CancellationToken));
+			var fieldInfosList = new List<(AttributeData, FieldAttributeDTO)>(capacity: attributes.Length);
 
-            if (attributeWithError == null || symbolContext.CancellationToken.IsCancellationRequested)
-                return;
+			foreach (AttributeData attribute in attributes)
+			{
+				if (cancellationToken.IsCancellationRequested)
+					return null;
+				
+				FieldAttributeDTO attrInfo = fieldAttributesInfo.GetFieldAttributeInfo(attribute.AttributeClass);
 
-            Location attributeLocation = await GetAttributeLocation(attributeWithError, symbolContext.CancellationToken);
-            symbolContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty,
-                                           property.Locations.First()));
+				if (attrInfo.IsFieldAttribute)
+					fieldInfosList.Add((attribute, attrInfo));
+			}
 
-            if (attributeLocation != null)
-            {
-                symbolContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, attributeLocation));
-            }
-        }
+			return fieldInfosList;
+		}
 
-        private static bool CheckPropertyAttribute(IPropertySymbol property, AttributeData attribute, CancellationToken cancellationToken)
-        {
-            return true;
-           // attribute.AttributeClass.
-        }
+		private static void ProcessFieldAttributesInfo(PXContext pxContext, SymbolAnalysisContext symbolContext,
+													   List<(AttributeData Attribute, FieldAttributeDTO Info)> attributesWithInfo)
+		{
+			bool multipleFieldAttribute = attributesWithInfo.Count > 1;
+			IPropertySymbol property = symbolContext.Symbol as IPropertySymbol;
 
-        private static async Task<Location> GetAttributeLocation(AttributeData attribute, CancellationToken cancellationToken)
-        {
-            SyntaxNode attributeSyntaxNode = null;
+			foreach (var (attribute, info) in attributesWithInfo)
+			{
+				bool typesCompatible = info.FieldType.Equals(property.Type);
 
-            try
-            {
-                attributeSyntaxNode = await attribute.ApplicationSyntaxReference.GetSyntaxAsync(cancellationToken)
-                                                                                .ConfigureAwait(false);
-            }
-            catch (OperationCanceledException)
-            {
-                return null;
-            }
-            catch (Exception e)
-            {
-                //TODO log error here
-                return null;
-            }
 
-            return attributeSyntaxNode?.GetLocation();
-        }
+				Location attributeLocation = await GetAttributeLocation(attributeWithError, symbolContext.CancellationToken);
+				symbolContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty,
+											   property.Locations.First()));
+
+				if (attributeLocation != null)
+				{
+					symbolContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, attributeLocation));
+				}
+			}
+		}
+
+		private static async Task<Location> GetAttributeLocation(AttributeData attribute, CancellationToken cancellationToken)
+		{
+			SyntaxNode attributeSyntaxNode = null;
+
+			try
+			{
+				attributeSyntaxNode = await attribute.ApplicationSyntaxReference.GetSyntaxAsync(cancellationToken)
+																				.ConfigureAwait(false);
+			}
+			catch (OperationCanceledException)
+			{
+				return null;
+			}
+			catch (Exception e)
+			{
+				//TODO log error here
+				return null;
+			}
+
+			return attributeSyntaxNode?.GetLocation();
+		}
 	}
 }
