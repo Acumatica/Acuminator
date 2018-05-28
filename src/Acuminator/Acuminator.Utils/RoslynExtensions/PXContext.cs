@@ -30,7 +30,10 @@ namespace Acuminator.Analyzers
         public INamedTypeSymbol Double => Compilation.GetSpecialType(SpecialType.System_Double);
         public INamedTypeSymbol Decimal => Compilation.GetSpecialType(SpecialType.System_Decimal);
         public INamedTypeSymbol DateTime => Compilation.GetSpecialType(SpecialType.System_DateTime);
-        public INamedTypeSymbol Guid => Compilation.GetTypeByMetadataName(typeof(Guid).FullName);
+		public INamedTypeSymbol Nullable => Compilation.GetSpecialType(SpecialType.System_Nullable_T);
+		public INamedTypeSymbol Guid => Compilation.GetTypeByMetadataName(typeof(Guid).FullName);
+
+
 
         public INamedTypeSymbol PXGraphType => Compilation.GetTypeByMetadataName(typeof(PXGraph).FullName);
         public INamedTypeSymbol PXProcessingBaseType => Compilation.GetTypeByMetadataName(typeof(PXProcessingBase<>).FullName);

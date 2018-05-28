@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.FindSymbols;
 using Microsoft.CodeAnalysis.LanguageServices;
 using Microsoft.CodeAnalysis.Shared.Utilities;
+using Acuminator.Analyzers;
 
 
 namespace Acuminator.Utilities
@@ -181,13 +182,32 @@ namespace Acuminator.Utilities
 			return current != null ? depth : (int?)null;
 		}
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IEnumerable<ITypeSymbol> GetAllAttributesDefinedOnThisAndBaseTypes(this ITypeSymbol typeSymbol)
-        {
-            typeSymbol.ThrowOnNull(nameof(typeSymbol));
-            return typeSymbol.GetBaseTypesAndThis()
-                             .SelectMany(t => t.GetAttributes())
-                             .Select(a => a.AttributeClass);
-        }
-    }
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<ITypeSymbol> GetAllAttributesDefinedOnThisAndBaseTypes(this ITypeSymbol typeSymbol)
+		{
+			typeSymbol.ThrowOnNull(nameof(typeSymbol));
+			return typeSymbol.GetBaseTypesAndThis()
+							 .SelectMany(t => t.GetAttributes())
+							 .Select(a => a.AttributeClass);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static ITypeSymbol GetUnderlyingTypeFromNullable(this INamedTypeSymbol typeSymbol, PXContext pxContext)
+		{
+			if (!typeSymbol.IsNullable(pxContext))
+				return null;
+			
+			ImmutableArray<ITypeSymbol> typeArgs = typeSymbol.TypeArguments;
+			return typeArgs.Length == 1 
+				? typeArgs[0]
+				: null;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsNullable(this INamedTypeSymbol typeSymbol, PXContext pxContext)
+		{
+			pxContext.ThrowOnNull(nameof(pxContext));
+			return typeSymbol?.OriginalDefinition?.Equals(pxContext.Nullable) ?? false;
+		}
+	}
 }
