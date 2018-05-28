@@ -37,6 +37,49 @@ namespace Acuminator.Utilities
 			CorrespondingSimpleTypes = GetCorrespondingSimpleTypes(context).ToImmutableDictionary();
 		}
 
+		public FieldAttributeDTO GetFieldAttributeInfo(ITypeSymbol attributeSymbol)
+		{
+			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
+
+			List<ITypeSymbol> attributeTypeHierarchy = attributeSymbol.GetBaseTypesAndThis().ToList();        
+			var info = CheckAttributeInheritanceChain(attributeSymbol, attributeTypeHierarchy);
+
+			if (info.HasValue)
+				return info.Value;
+
+			var attributesOnHierarchy = attributeTypeHierarchy.SelectMany(a => a.GetAttributes())
+															  .Select(a => a.AttributeClass);
+														 
+			foreach (ITypeSymbol attribute in attributesOnHierarchy)
+			{
+				info = CheckAttributeInheritanceChain(attribute);
+
+				if (info.HasValue)
+					return info.Value;
+			}
+
+			return new FieldAttributeDTO(isFieldAttribute: false, isBoundField: false, fieldType: null);
+		}
+
+		private FieldAttributeDTO? CheckAttributeInheritanceChain(ITypeSymbol attributeSymbol, List<ITypeSymbol> attributeTypeHierarchy = null)
+		{
+			if (!attributeSymbol.ImplementsInterface(context.FieldAttributes.IPXFieldUpdatingSubscriber))
+				return null;
+
+			var attributeBaseTypesEnum = attributeTypeHierarchy ?? attributeSymbol.GetBaseTypesAndThis();
+			ITypeSymbol fieldAttribute = attributeBaseTypesEnum.FirstOrDefault(attr => AllFieldAttributes.Contains(attr));
+
+			if (fieldAttribute != null)
+			{
+				bool isBoundField = BoundFieldAttributes.Contains(fieldAttribute);
+				return CorrespondingSimpleTypes.TryGetValue(fieldAttribute, out var fieldType)
+					? new FieldAttributeDTO(isFieldAttribute: true, isBoundField, fieldType)
+					: new FieldAttributeDTO(isFieldAttribute: true, isBoundField, fieldType: null);
+			}
+
+			return null;
+		}
+
 		private static HashSet<INamedTypeSymbol> GetUnboundFieldAttributes(PXContext pxContext)
 		{
 			return new HashSet<INamedTypeSymbol>
@@ -99,49 +142,6 @@ namespace Acuminator.Utilities
 				{ pxContext.FieldAttributes.PXDBGuidAttribute, pxContext.Guid },
 				{ pxContext.FieldAttributes.PXDBBoolAttribute, pxContext.Bool }
 			};
-		}
-
-		public FieldAttributeDTO IsFieldAttribute(ITypeSymbol attributeSymbol)
-		{
-			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
-
-			List<ITypeSymbol> attributeTypeHierarchy = attributeSymbol.GetBaseTypesAndThis().ToList();        
-			var info = CheckAttributeInheritanceChain(attributeSymbol, attributeTypeHierarchy);
-
-			if (info.HasValue)
-				return info.Value;
-
-			var attributesOnHierarchy = attributeTypeHierarchy.SelectMany(a => a.GetAttributes())
-															  .Select(a => a.AttributeClass);
-														 
-			foreach (ITypeSymbol attribute in attributesOnHierarchy)
-			{
-				info = CheckAttributeInheritanceChain(attribute);
-
-				if (info.HasValue)
-					return info.Value;
-			}
-
-			return new FieldAttributeDTO(isFieldAttribute: false, isBoundField: false, fieldType: null);
-		}
-
-		private FieldAttributeDTO? CheckAttributeInheritanceChain(ITypeSymbol attributeSymbol, List<ITypeSymbol> attributeTypeHierarchy = null)
-		{
-			if (!attributeSymbol.ImplementsInterface(context.FieldAttributes.IPXFieldUpdatingSubscriber))
-				return null;
-
-			var attributeBaseTypesEnum = attributeTypeHierarchy ?? attributeSymbol.GetBaseTypesAndThis();
-			ITypeSymbol fieldAttribute = attributeBaseTypesEnum.FirstOrDefault(attr => AllFieldAttributes.Contains(attr));
-
-			if (fieldAttribute != null)
-			{
-				bool isBoundField = BoundFieldAttributes.Contains(fieldAttribute);
-				return CorrespondingSimpleTypes.TryGetValue(fieldAttribute, out var fieldType)
-					? new FieldAttributeDTO(isFieldAttribute: true, isBoundField, fieldType)
-					: new FieldAttributeDTO(isFieldAttribute: true, isBoundField, fieldType: null);
-			}
-
-			return null;
 		}
 	}
 }
