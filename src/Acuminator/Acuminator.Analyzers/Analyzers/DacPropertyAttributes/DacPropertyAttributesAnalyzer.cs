@@ -18,15 +18,15 @@ namespace Acuminator.Analyzers
 			ImmutableArray.Create
 			(
 				Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, 
-				Descriptors.PX1023_DacPropertyBothBoundAndUnbound
+				Descriptors.PX1023_DacPropertyMultipleFieldAttributes
 			);
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSymbolAction(c => AnalyzeProperty(c, pxContext), SymbolKind.Property);
+			compilationStartContext.RegisterSymbolAction(c => AnalyzePropertyAsync(c, pxContext), SymbolKind.Property);
 		}
 
-		private static async void AnalyzeProperty(SymbolAnalysisContext symbolContext, PXContext pxContext)
+		private static async Task AnalyzePropertyAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
 			IPropertySymbol property = symbolContext.Symbol as IPropertySymbol;
 			var parent = property?.ContainingType;
@@ -44,7 +44,14 @@ namespace Acuminator.Analyzers
 			if (attributesWithInfo.Count == 0 || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			ProcessFieldAttributesInfo(pxContext, attributesWithInfo, symbolContext);
+			if (attributesWithInfo.Count > 1)
+			{
+				SetMultipleFieldAttributesDiagnosticAsync(pxContext, symbolContext, attributesWithInfo.Select(info => info.Attribute));
+			}
+			else if (!attributesWithInfo[0].Info.FieldType.Equals(property.Type))
+			{
+				SetFieldTypeMismatchDiagnosticAsync(pxContext, symbolContext, attributesWithInfo[0].Attribute);
+			}		
 		}
 
 		private static List<(AttributeData Attribute, FieldAttributeDTO Info)> GetFieldAttributesInfos(PXContext pxContext, 
@@ -72,29 +79,36 @@ namespace Acuminator.Analyzers
 			return fieldInfosList;
 		}
 
-		private static void ProcessFieldAttributesInfo(PXContext pxContext, SymbolAnalysisContext symbolContext,
-													   List<(AttributeData Attribute, FieldAttributeDTO Info)> attributesWithInfo)
+		private static async Task SetMultipleFieldAttributesDiagnosticAsync(PXContext pxContext, SymbolAnalysisContext symbolContext,
+																			IEnumerable<AttributeData> fieldAttributes)
 		{
-			bool multipleFieldAttribute = attributesWithInfo.Count > 1;
 			IPropertySymbol property = symbolContext.Symbol as IPropertySymbol;
+			symbolContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1023_DacPropertyMultipleFieldAttributes, property.Locations.First()));
+			Location[] attributeLocations = await Task.WhenAll(fieldAttributes.Select(a => GetAttributeLocationAsync(a, symbolContext.CancellationToken)));
 
-			foreach (var (attribute, info) in attributesWithInfo)
+			foreach (Location attrLocation in attributeLocations)
 			{
-				bool typesCompatible = info.FieldType.Equals(property.Type);
-
-
-				Location attributeLocation = await GetAttributeLocation(attributeWithError, symbolContext.CancellationToken);
-				symbolContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty,
-											   property.Locations.First()));
-
-				if (attributeLocation != null)
-				{
-					symbolContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, attributeLocation));
-				}
+				if (attrLocation == null)
+					continue;
+			
+				symbolContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1023_DacPropertyMultipleFieldAttributes, attrLocation));			
 			}
 		}
 
-		private static async Task<Location> GetAttributeLocation(AttributeData attribute, CancellationToken cancellationToken)
+		private static async Task SetFieldTypeMismatchDiagnosticAsync(PXContext pxContext, SymbolAnalysisContext symbolContext, AttributeData attribute)
+		{
+			IPropertySymbol property = symbolContext.Symbol as IPropertySymbol;
+			symbolContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, property.Locations.First()));
+
+			Location attributeLocation = await GetAttributeLocationAsync(attribute, symbolContext.CancellationToken);
+			
+			if (attributeLocation != null)
+			{
+				symbolContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, attributeLocation));
+			}
+		}
+
+		private static async Task<Location> GetAttributeLocationAsync(AttributeData attribute, CancellationToken cancellationToken)
 		{
 			SyntaxNode attributeSyntaxNode = null;
 

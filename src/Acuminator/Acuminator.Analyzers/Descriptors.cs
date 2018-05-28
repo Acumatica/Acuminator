@@ -73,7 +73,7 @@ namespace Acuminator.Analyzers
         internal static DiagnosticDescriptor PX1021_PXDBFieldAttributeNotMatchingDacProperty { get; } =
             Rule("PX1021", nameof(Resources.PX1021Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
-		internal static DiagnosticDescriptor PX1023_DacPropertyBothBoundAndUnbound { get; } =
+		internal static DiagnosticDescriptor PX1023_DacPropertyMultipleFieldAttributes { get; } =
 		   Rule("PX1023", nameof(Resources.PX1023Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 	}
 }
