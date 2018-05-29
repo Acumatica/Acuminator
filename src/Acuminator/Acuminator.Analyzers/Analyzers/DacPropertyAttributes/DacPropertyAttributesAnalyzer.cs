@@ -81,7 +81,7 @@ namespace Acuminator.Analyzers
 				   property.Type.TypeKind == TypeKind.Class;
 		}
 
-		private static List<(AttributeData Attribute, FieldAttributeDTO Info)> GetFieldAttributesInfos(PXContext pxContext, 
+		private static List<(AttributeData Attribute, FieldAttributeInfo Info)> GetFieldAttributesInfos(PXContext pxContext, 
 																									   ImmutableArray<AttributeData> attributes,
 																									   CancellationToken cancellationToken)
 		{
@@ -90,14 +90,14 @@ namespace Acuminator.Analyzers
 			if (cancellationToken.IsCancellationRequested)
 				return null;
 
-			var fieldInfosList = new List<(AttributeData, FieldAttributeDTO)>(capacity: attributes.Length);
+			var fieldInfosList = new List<(AttributeData, FieldAttributeInfo)>(capacity: attributes.Length);
 
 			foreach (AttributeData attribute in attributes)
 			{
 				if (cancellationToken.IsCancellationRequested)
 					return null;
 				
-				FieldAttributeDTO attrInfo = fieldAttributesInfo.GetFieldAttributeInfo(attribute.AttributeClass);
+				FieldAttributeInfo attrInfo = fieldAttributesInfo.GetFieldAttributeInfo(attribute.AttributeClass);
 
 				if (attrInfo.IsFieldAttribute)
 					fieldInfosList.Add((attribute, attrInfo));
@@ -107,7 +107,7 @@ namespace Acuminator.Analyzers
 		}
 
 		private static async Task CheckAttributeAndPropertyTypesForCompatibilityAsync(AttributeData fieldAttribute, 
-																					  FieldAttributeDTO fieldAttributeInfo,
+																					  FieldAttributeInfo fieldAttributeInfo,
 																					  PXContext pxContext, SymbolAnalysisContext symbolContext)
 		{
 			IPropertySymbol property = symbolContext.Symbol as IPropertySymbol;

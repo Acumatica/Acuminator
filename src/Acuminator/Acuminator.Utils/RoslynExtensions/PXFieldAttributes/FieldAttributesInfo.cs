@@ -37,7 +37,7 @@ namespace Acuminator.Utilities
 			CorrespondingSimpleTypes = GetCorrespondingSimpleTypes(context).ToImmutableDictionary();
 		}
 
-		public FieldAttributeDTO GetFieldAttributeInfo(ITypeSymbol attributeSymbol)
+		public FieldAttributeInfo GetFieldAttributeInfo(ITypeSymbol attributeSymbol)
 		{
 			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
 
@@ -58,10 +58,10 @@ namespace Acuminator.Utilities
 					return info.Value;
 			}
 
-			return new FieldAttributeDTO(isFieldAttribute: false, isBoundField: false, fieldType: null);
+			return new FieldAttributeInfo(isFieldAttribute: false, isBoundField: false, fieldType: null);
 		}
 
-		private FieldAttributeDTO? CheckAttributeInheritanceChain(ITypeSymbol attributeSymbol, List<ITypeSymbol> attributeTypeHierarchy = null)
+		private FieldAttributeInfo? CheckAttributeInheritanceChain(ITypeSymbol attributeSymbol, List<ITypeSymbol> attributeTypeHierarchy = null)
 		{
 			if (!attributeSymbol.ImplementsInterface(context.FieldAttributes.IPXFieldUpdatingSubscriber))
 				return null;
@@ -73,8 +73,8 @@ namespace Acuminator.Utilities
 			{
 				bool isBoundField = BoundFieldAttributes.Contains(fieldAttribute);
 				return CorrespondingSimpleTypes.TryGetValue(fieldAttribute, out var fieldType)
-					? new FieldAttributeDTO(isFieldAttribute: true, isBoundField, fieldType)
-					: new FieldAttributeDTO(isFieldAttribute: true, isBoundField, fieldType: null);
+					? new FieldAttributeInfo(isFieldAttribute: true, isBoundField, fieldType)
+					: new FieldAttributeInfo(isFieldAttribute: true, isBoundField, fieldType: null);
 			}
 
 			return null;

@@ -13,7 +13,7 @@ namespace Acuminator.Utilities
 	/// <summary>
 	/// Information about the Acumatica field attributes.
 	/// </summary>
-	public readonly struct FieldAttributeDTO
+	public readonly struct FieldAttributeInfo
 	{
 		public bool IsFieldAttribute { get; }
 
@@ -21,7 +21,7 @@ namespace Acuminator.Utilities
 
 		public ITypeSymbol FieldType { get; }
 
-		public FieldAttributeDTO(bool isFieldAttribute, bool isBoundField, ITypeSymbol fieldType)
+		public FieldAttributeInfo(bool isFieldAttribute, bool isBoundField, ITypeSymbol fieldType)
 		{
 			IsFieldAttribute = isFieldAttribute;
 			IsBoundField = isBoundField;

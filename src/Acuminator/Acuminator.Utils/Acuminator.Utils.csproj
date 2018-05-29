@@ -99,7 +99,7 @@
     <Compile Include="CommonUtils\EnumerableExtensions.cs" />
     <Compile Include="CommonUtils\ConcurrentExtensions.cs" />
     <Compile Include="CommonUtils\EnumerableExtraExtensions.cs" />
-    <Compile Include="RoslynExtensions\PXFieldAttributes\FieldAttributeDTO.cs" />
+    <Compile Include="RoslynExtensions\PXFieldAttributes\FieldAttributeInfo.cs" />
     <Compile Include="RoslynExtensions\PXFieldAttributes\FieldAttributesInfo.cs" />
     <Compile Include="RoslynExtensions\RoslynSyntaxUtils.cs" />
     <Compile Include="RoslynExtensions\BqlModifyingMethods.cs" />
