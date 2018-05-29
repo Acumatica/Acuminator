@@ -5,9 +5,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.FindSymbols;
-using Microsoft.CodeAnalysis.LanguageServices;
-using Microsoft.CodeAnalysis.Shared.Utilities;
 using Acuminator.Analyzers;
 
 
@@ -21,7 +18,7 @@ namespace Acuminator.Utilities
 		public static IEnumerable<ITypeSymbol> GetBaseTypesAndThis(this ITypeSymbol type)
 		{
 			var current = type;
-
+			
 			while (current != null)
 			{
 				yield return current;

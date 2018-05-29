@@ -17,11 +17,11 @@ namespace Acuminator.Utilities
 	{
 		private readonly PXContext context;
 
-		public ImmutableDictionary<ITypeSymbol, INamedTypeSymbol> CorrespondingSimpleTypes { get; }
+		public ImmutableDictionary<ITypeSymbol, ITypeSymbol> CorrespondingSimpleTypes { get; }
 
-		public ImmutableHashSet<INamedTypeSymbol> UnboundFieldAttributes { get; }
-		public ImmutableHashSet<INamedTypeSymbol> BoundFieldAttributes { get; }
-		public ImmutableHashSet<INamedTypeSymbol> AllFieldAttributes { get; }
+		public ImmutableHashSet<ITypeSymbol> UnboundFieldAttributes { get; }
+		public ImmutableHashSet<ITypeSymbol> BoundFieldAttributes { get; }
+		public ImmutableHashSet<ITypeSymbol> AllFieldAttributes { get; }
 
 		public FieldAttributesRegister(PXContext pxContext)
 		{
@@ -80,9 +80,9 @@ namespace Acuminator.Utilities
 			return null;
 		}
 
-		private static HashSet<INamedTypeSymbol> GetUnboundFieldAttributes(PXContext pxContext)
+		private static HashSet<ITypeSymbol> GetUnboundFieldAttributes(PXContext pxContext)
 		{
-			return new HashSet<INamedTypeSymbol>
+			return new HashSet<ITypeSymbol>
 			{
 				pxContext.FieldAttributes.PXLongAttribute,
 				pxContext.FieldAttributes.PXIntAttribute,
@@ -90,6 +90,7 @@ namespace Acuminator.Utilities
 				pxContext.FieldAttributes.PXStringAttribute,
 				pxContext.FieldAttributes.PXByteAttribute,
 				pxContext.FieldAttributes.PXDecimalAttribute,
+				pxContext.FieldAttributes.PXFloatAttribute,
 				pxContext.FieldAttributes.PXDoubleAttribute,
 				pxContext.FieldAttributes.PXDateAttribute,
 				pxContext.FieldAttributes.PXGuidAttribute,
@@ -97,9 +98,9 @@ namespace Acuminator.Utilities
 			};
 		}
 
-		private static HashSet<INamedTypeSymbol> GetBoundFieldAttributes(PXContext pxContext)
+		private static HashSet<ITypeSymbol> GetBoundFieldAttributes(PXContext pxContext)
 		{
-			return new HashSet<INamedTypeSymbol>
+			return new HashSet<ITypeSymbol>
 			{
 				pxContext.FieldAttributes.PXDBFieldAttribute,
 
@@ -110,15 +111,21 @@ namespace Acuminator.Utilities
 				pxContext.FieldAttributes.PXDBByteAttribute,
 				pxContext.FieldAttributes.PXDBDecimalAttribute,
 				pxContext.FieldAttributes.PXDBDoubleAttribute,
+				pxContext.FieldAttributes.PXDBFloatAttribute,
 				pxContext.FieldAttributes.PXDBDateAttribute,
 				pxContext.FieldAttributes.PXDBGuidAttribute,
-				pxContext.FieldAttributes.PXDBBoolAttribute
+				pxContext.FieldAttributes.PXDBBoolAttribute,
+				pxContext.FieldAttributes.PXDBTimestampAttribute,
+				pxContext.FieldAttributes.PXDBIdentityAttribute,
+				pxContext.FieldAttributes.PXDBLongIdentityAttribute,
+				pxContext.FieldAttributes.PXDBBinaryAttribute,
+				pxContext.FieldAttributes.PXDBUserPasswordAttribute,
 			};
 		}
 
-		private static Dictionary<ITypeSymbol, INamedTypeSymbol> GetCorrespondingSimpleTypes(PXContext pxContext)
+		private static Dictionary<ITypeSymbol, ITypeSymbol> GetCorrespondingSimpleTypes(PXContext pxContext)
 		{
-			return new Dictionary<ITypeSymbol, INamedTypeSymbol>
+			return new Dictionary<ITypeSymbol, ITypeSymbol>
 			{
 				{ pxContext.FieldAttributes.PXLongAttribute, pxContext.Int64 },
 				{ pxContext.FieldAttributes.PXIntAttribute, pxContext.Int32 },
@@ -127,6 +134,7 @@ namespace Acuminator.Utilities
 				{ pxContext.FieldAttributes.PXByteAttribute, pxContext.Byte },
 				{ pxContext.FieldAttributes.PXDecimalAttribute, pxContext.Decimal },
 				{ pxContext.FieldAttributes.PXDoubleAttribute, pxContext.Double },
+				{ pxContext.FieldAttributes.PXFloatAttribute, pxContext.Float },
 				{ pxContext.FieldAttributes.PXDateAttribute, pxContext.DateTime },
 				{ pxContext.FieldAttributes.PXGuidAttribute, pxContext.Guid },
 				{ pxContext.FieldAttributes.PXBoolAttribute, pxContext.Bool },
@@ -138,9 +146,15 @@ namespace Acuminator.Utilities
 				{ pxContext.FieldAttributes.PXDBByteAttribute, pxContext.Byte },
 				{ pxContext.FieldAttributes.PXDBDecimalAttribute, pxContext.Decimal },
 				{ pxContext.FieldAttributes.PXDBDoubleAttribute, pxContext.Double },
+				{ pxContext.FieldAttributes.PXDBFloatAttribute, pxContext.Float },
 				{ pxContext.FieldAttributes.PXDBDateAttribute, pxContext.DateTime },
 				{ pxContext.FieldAttributes.PXDBGuidAttribute, pxContext.Guid },
-				{ pxContext.FieldAttributes.PXDBBoolAttribute, pxContext.Bool }
+				{ pxContext.FieldAttributes.PXDBBoolAttribute, pxContext.Bool },
+				{ pxContext.FieldAttributes.PXDBTimestampAttribute, pxContext.ByteArray },
+				{ pxContext.FieldAttributes.PXDBIdentityAttribute, pxContext.Int32 },
+				{ pxContext.FieldAttributes.PXDBLongIdentityAttribute, pxContext.Int64 },
+				{ pxContext.FieldAttributes.PXDBBinaryAttribute, pxContext.ByteArray },
+				{ pxContext.FieldAttributes.PXDBUserPasswordAttribute, pxContext.String },
 			};
 		}
 	}

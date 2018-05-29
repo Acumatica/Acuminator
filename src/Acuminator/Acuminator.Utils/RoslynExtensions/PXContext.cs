@@ -21,6 +21,9 @@ namespace Acuminator.Analyzers
 		public FieldAttributesTypes FieldAttributes => fieldAttributes.Value;
 
         public INamedTypeSymbol Array => Compilation.GetSpecialType(SpecialType.System_Array);
+
+		public IArrayTypeSymbol ByteArray => Compilation.CreateArrayTypeSymbol(Byte);
+
         public INamedTypeSymbol String => Compilation.GetSpecialType(SpecialType.System_String);
         public INamedTypeSymbol Bool => Compilation.GetSpecialType(SpecialType.System_Boolean);
         public INamedTypeSymbol Int64 => Compilation.GetSpecialType(SpecialType.System_Int64);
@@ -28,6 +31,7 @@ namespace Acuminator.Analyzers
         public INamedTypeSymbol Int16 => Compilation.GetSpecialType(SpecialType.System_Int16);
         public INamedTypeSymbol Byte => Compilation.GetSpecialType(SpecialType.System_Byte);
         public INamedTypeSymbol Double => Compilation.GetSpecialType(SpecialType.System_Double);
+        public INamedTypeSymbol Float => Compilation.GetSpecialType(SpecialType.System_Single);
         public INamedTypeSymbol Decimal => Compilation.GetSpecialType(SpecialType.System_Decimal);
         public INamedTypeSymbol DateTime => Compilation.GetSpecialType(SpecialType.System_DateTime);
 		public INamedTypeSymbol Nullable => Compilation.GetSpecialType(SpecialType.System_Nullable_T);
@@ -88,9 +92,11 @@ namespace Acuminator.Analyzers
             public INamedTypeSymbol PXByteAttribute => compilation.GetTypeByMetadataName(typeof(PXByteAttribute).FullName);
             public INamedTypeSymbol PXDecimalAttribute => compilation.GetTypeByMetadataName(typeof(PXDecimalAttribute).FullName);
             public INamedTypeSymbol PXDoubleAttribute => compilation.GetTypeByMetadataName(typeof(PXDoubleAttribute).FullName);
-            public INamedTypeSymbol PXDateAttribute => compilation.GetTypeByMetadataName(typeof(PXDateAttribute).FullName);
+
+			public INamedTypeSymbol PXFloatAttribute => compilation.GetTypeByMetadataName(typeof(PXFloatAttribute).FullName);
+			public INamedTypeSymbol PXDateAttribute => compilation.GetTypeByMetadataName(typeof(PXDateAttribute).FullName);
             public INamedTypeSymbol PXGuidAttribute => compilation.GetTypeByMetadataName(typeof(PXGuidAttribute).FullName);
-            public INamedTypeSymbol PXBoolAttribute => compilation.GetTypeByMetadataName(typeof(PXBoolAttribute).FullName);
+            public INamedTypeSymbol PXBoolAttribute => compilation.GetTypeByMetadataName(typeof(PXBoolAttribute).FullName);			
             #endregion
 
             #region DBField Attributes
@@ -103,13 +109,16 @@ namespace Acuminator.Analyzers
             public INamedTypeSymbol PXDBByteAttribute => compilation.GetTypeByMetadataName(typeof(PXDBByteAttribute).FullName);
             public INamedTypeSymbol PXDBDecimalAttribute => compilation.GetTypeByMetadataName(typeof(PXDBDecimalAttribute).FullName);
             public INamedTypeSymbol PXDBDoubleAttribute => compilation.GetTypeByMetadataName(typeof(PXDBDoubleAttribute).FullName);
+            public INamedTypeSymbol PXDBFloatAttribute => compilation.GetTypeByMetadataName(typeof(PXDBFloatAttribute).FullName);
             public INamedTypeSymbol PXDBDateAttribute => compilation.GetTypeByMetadataName(typeof(PXDBDateAttribute).FullName);
             public INamedTypeSymbol PXDBGuidAttribute => compilation.GetTypeByMetadataName(typeof(PXDBGuidAttribute).FullName);
             public INamedTypeSymbol PXDBBoolAttribute => compilation.GetTypeByMetadataName(typeof(PXDBBoolAttribute).FullName);
-
             public INamedTypeSymbol PXDBTimestampAttribute => compilation.GetTypeByMetadataName(typeof(PXDBTimestampAttribute).FullName);
 
-
+            public INamedTypeSymbol PXDBIdentityAttribute => compilation.GetTypeByMetadataName(typeof(PXDBIdentityAttribute).FullName);
+            public INamedTypeSymbol PXDBLongIdentityAttribute => compilation.GetTypeByMetadataName(typeof(PXDBLongIdentityAttribute).FullName);
+            public INamedTypeSymbol PXDBBinaryAttribute => compilation.GetTypeByMetadataName(typeof(PXDBBinaryAttribute).FullName);
+            public INamedTypeSymbol PXDBUserPasswordAttribute => compilation.GetTypeByMetadataName(typeof(PXDBUserPasswordAttribute).FullName);
             #endregion
         }
         #endregion

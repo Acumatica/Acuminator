@@ -39,6 +39,19 @@ namespace PX.Objects.HackathonDemo
 		[PXUIField(DisplayName = "OrderDate")]
 		public DateTime? OrderDate { get; set; }
 		#endregion
+
+		#region tstamp
+		public abstract class Tstamp : IBqlField
+		{
+		}
+
+		[PXDBTimestamp]
+		public virtual byte[] tstamp
+		{
+			get;
+			set;
+		}
+		#endregion
 	}
 
 	public class SOOrderWithTotal : PXCacheExtension<SOOrder>

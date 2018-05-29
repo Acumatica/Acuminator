@@ -78,7 +78,8 @@ namespace Acuminator.Analyzers
 				return false;
 
 			return property.Type.TypeKind == TypeKind.Struct || 
-				   property.Type.TypeKind == TypeKind.Class;
+				   property.Type.TypeKind == TypeKind.Class ||
+				   property.Type.TypeKind == TypeKind.Array;
 		}
 
 		private static List<(AttributeData Attribute, FieldAttributeInfo Info)> GetFieldAttributesInfos(PXContext pxContext, 
@@ -110,6 +111,9 @@ namespace Acuminator.Analyzers
 																					  FieldAttributeInfo fieldAttributeInfo,
 																					  PXContext pxContext, SymbolAnalysisContext symbolContext)
 		{
+			if (fieldAttributeInfo.FieldType == null)
+				return;
+
 			IPropertySymbol property = symbolContext.Symbol as IPropertySymbol;
 			ITypeSymbol typeToCompare = property.Type.IsValueType 
 				? (property.Type as INamedTypeSymbol)?.GetUnderlyingTypeFromNullable(pxContext)
