@@ -85,7 +85,7 @@ namespace Acuminator.Analyzers
 																									   ImmutableArray<AttributeData> attributes,
 																									   CancellationToken cancellationToken)
 		{
-			FieldAttributesInfo fieldAttributesInfo = new FieldAttributesInfo(pxContext);
+			FieldAttributesRegister fieldAttributesInfo = new FieldAttributesRegister(pxContext);
 
 			if (cancellationToken.IsCancellationRequested)
 				return null;

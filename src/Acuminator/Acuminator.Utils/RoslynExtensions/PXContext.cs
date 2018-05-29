@@ -106,6 +106,10 @@ namespace Acuminator.Analyzers
             public INamedTypeSymbol PXDBDateAttribute => compilation.GetTypeByMetadataName(typeof(PXDBDateAttribute).FullName);
             public INamedTypeSymbol PXDBGuidAttribute => compilation.GetTypeByMetadataName(typeof(PXDBGuidAttribute).FullName);
             public INamedTypeSymbol PXDBBoolAttribute => compilation.GetTypeByMetadataName(typeof(PXDBBoolAttribute).FullName);
+
+            public INamedTypeSymbol PXDBTimestampAttribute => compilation.GetTypeByMetadataName(typeof(PXDBTimestampAttribute).FullName);
+
+
             #endregion
         }
         #endregion

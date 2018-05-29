@@ -13,7 +13,7 @@ namespace Acuminator.Utilities
 	/// <summary>
 	/// Information about the Acumatica field attributes.
 	/// </summary>
-	public class FieldAttributesInfo
+	public class FieldAttributesRegister
 	{
 		private readonly PXContext context;
 
@@ -23,7 +23,7 @@ namespace Acuminator.Utilities
 		public ImmutableHashSet<INamedTypeSymbol> BoundFieldAttributes { get; }
 		public ImmutableHashSet<INamedTypeSymbol> AllFieldAttributes { get; }
 
-		public FieldAttributesInfo(PXContext pxContext)
+		public FieldAttributesRegister(PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
