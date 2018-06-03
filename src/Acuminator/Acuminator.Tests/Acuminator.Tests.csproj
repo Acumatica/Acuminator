@@ -146,6 +146,9 @@
     <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\InheritanceCall.cs" />
     <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\FieldInstanceCall.cs" />
     <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\VariableInstanceCall.cs" />
+    <EmbeddedResource Include="Sources\Attributes\Diagnostics\FieldAttributesTypeMismatch\DacExampleWithMultipleFieldAttributes.cs" />
+    <EmbeddedResource Include="Sources\Attributes\Diagnostics\FieldAttributesTypeMismatch\DacExampleFieldAttributesTypeMismatch.cs" />
+    <Compile Include="Tests\Diagnostics\Attributes\DacFieldAttributesTests.cs" />
     <Compile Include="Tests\Diagnostics\BQL\BqlParameterMismatchTests.cs" />
     <Compile Include="Tests\Formatter\BqlFormatterTests.cs" />
     <Compile Include="Helpers\EmbeddedFileDataWithParamsAttribute.cs" />
@@ -239,9 +242,7 @@
   <ItemGroup>
     <Analyzer Include="..\..\packages\xunit.analyzers.0.8.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Tests\Diagnostics\Attributes\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
