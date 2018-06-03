@@ -16,28 +16,48 @@ namespace Acuminator.Tests
 {
 	public class BqlParameterMismatchTests : CodeFixVerifier
 	{
-		private DiagnosticResult CreatePX1015DiagnosticResult(int line, int column)
-		{
-			var diagnostic = new DiagnosticResult
-			{
-				Id = Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.Id,
-				Message = Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.Title.ToString(),
-				Severity = DiagnosticSeverity.Error,
-				Locations =
-					new[] {
-						new DiagnosticResultLocation("Test0.cs", line, column)
-					}
-			};
-
-			return diagnostic;
-		}
+		[Theory]
+		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\StaticCall.cs")]
+		public virtual void Test_Static_Calls(string actual) =>
+			VerifyCSharpDiagnostic(actual, 
+				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 20, column: 6, expectedMethodName: "SelectSingleBound", expectedArgsCount: 2),
+				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 33, column: 6, expectedMethodName: "SelectSingleBound", expectedArgsCount: 2),
+				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 47, column: 6, expectedMethodName: "SelectSingleBound", expectedArgsCount: 2),
+				CreatePX1015RequiredAndOptionalArgsDiagnosticResult(line: 62, column: 6, expectedMethodName: "SelectSingleBound",
+																	minExpectedArgsCount: 1, maxExpectedArgsConut: 2));
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new BqlParameterMismatchAnalyzer();
 
-		[Theory]
-		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\StaticCall.cs")]
-		public virtual void FormatDocument(string actual) =>
-			VerifyCSharpDiagnostic(actual, CreatePX1015DiagnosticResult(line: 20, column: 6));
+		private DiagnosticResult CreatePX1015RequiredArgsOnlyDiagnosticResult(int line, int column, string expectedMethodName,
+																			  int expectedArgsCount)
+		{
+			string format = Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.Title.ToString();
+			string expectedMessage = string.Format(format, expectedMethodName, expectedArgsCount);
+			return CreatePX1015DiagnosticResult(line, column, expectedMessage);
+		}
+
+		private DiagnosticResult CreatePX1015RequiredAndOptionalArgsDiagnosticResult(int line, int column, string expectedMethodName,
+																					 int minExpectedArgsCount, int maxExpectedArgsConut)
+		{
+			string format = Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.Title.ToString();
+			string expectedMessage = string.Format(format, expectedMethodName, minExpectedArgsCount, maxExpectedArgsConut);
+			return CreatePX1015DiagnosticResult(line, column, expectedMessage);
+		}
+
+		private DiagnosticResult CreatePX1015DiagnosticResult(int line, int column, string expectedMessage)
+		{
+			return new DiagnosticResult
+			{
+				Id = Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.Id,
+				Message = expectedMessage,
+				Severity = DiagnosticSeverity.Warning,
+				Locations =
+					new[]
+					{
+						new DiagnosticResultLocation("Test0.cs", line, column)
+					}
+			};
+		}
 	}
 }

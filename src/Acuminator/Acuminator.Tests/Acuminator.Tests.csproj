@@ -142,6 +142,11 @@
     <EmbeddedResource Include="Sources\DACCreateInstance.cs" />
     <EmbeddedResource Include="Sources\DACCreateInstance_Expected.cs" />
     <EmbeddedResource Include="Sources\LongOperationDelegateClosuresAnalyzer.cs" />
+    <EmbeddedResource Include="Sources\Attributes\SOOrder.cs" />
+    <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\CustomSelect.cs" />
+    <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\InheritanceCall.cs" />
+    <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\InstanceCall.cs" />
+    <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\InstanceCall2.cs" />
     <Compile Include="Tests\Diagnostics\BQL\BqlParameterMismatchTests.cs" />
     <Compile Include="Tests\Formatter\BqlFormatterTests.cs" />
     <Compile Include="Helpers\EmbeddedFileDataWithParamsAttribute.cs" />
@@ -234,6 +239,9 @@
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\packages\xunit.analyzers.0.8.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Tests\Diagnostics\Attributes\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
