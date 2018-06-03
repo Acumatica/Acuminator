@@ -24,7 +24,7 @@ namespace Acuminator.Tests
 				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 33, column: 6, expectedMethodName: "SelectSingleBound", expectedArgsCount: 2),
 				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 47, column: 6, expectedMethodName: "SelectSingleBound", expectedArgsCount: 2),
 				CreatePX1015RequiredAndOptionalArgsDiagnosticResult(line: 62, column: 6, expectedMethodName: "SelectSingleBound",
-																	minExpectedArgsCount: 1, maxExpectedArgsConut: 2));
+																	minExpectedArgsCount: 1, maxExpectedArgsCount: 2));
 
 		[Theory]
 		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\InheritanceCall.cs")]
@@ -36,8 +36,19 @@ namespace Acuminator.Tests
 			VerifyCSharpDiagnostic(new[] { source, dacSource },
 				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 20, column: 24, expectedMethodName: "SelectSingle", expectedArgsCount: 2));
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-			new BqlParameterMismatchAnalyzer();
+		[Theory]
+		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\VariableInstanceCall.cs", @"Dac\SOOrder.cs")]
+		public virtual void Test_Variable_Instance_Calls(string source, string dacSource) =>
+			VerifyCSharpDiagnostic(new[] { source, dacSource },
+				CreatePX1015RequiredAndOptionalArgsDiagnosticResult(line: 24, column: 27, expectedMethodName: "Select",
+																	minExpectedArgsCount: 1, maxExpectedArgsCount: 2),
+
+				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 38, column: 27, expectedMethodName: "Select", expectedArgsCount: 1),
+
+				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 57, column: 54, expectedMethodName: "Select", expectedArgsCount: 2));
+
+
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new BqlParameterMismatchAnalyzer();
 
 		private DiagnosticResult CreatePX1015RequiredArgsOnlyDiagnosticResult(int line, int column, string expectedMethodName,
 																			  int expectedArgsCount)
@@ -48,10 +59,10 @@ namespace Acuminator.Tests
 		}
 
 		private DiagnosticResult CreatePX1015RequiredAndOptionalArgsDiagnosticResult(int line, int column, string expectedMethodName,
-																					 int minExpectedArgsCount, int maxExpectedArgsConut)
+																					 int minExpectedArgsCount, int maxExpectedArgsCount)
 		{
 			string format = Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.Title.ToString();
-			string expectedMessage = string.Format(format, expectedMethodName, minExpectedArgsCount, maxExpectedArgsConut);
+			string expectedMessage = string.Format(format, expectedMethodName, minExpectedArgsCount, maxExpectedArgsCount);
 			return CreatePX1015DiagnosticResult(line, column, expectedMessage);
 		}
 
