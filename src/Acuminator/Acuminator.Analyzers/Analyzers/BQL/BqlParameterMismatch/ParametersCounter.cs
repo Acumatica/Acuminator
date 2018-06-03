@@ -57,7 +57,7 @@ namespace Acuminator.Analyzers
 			{
 				if (!IsCountingValid || typeSymbol == null || IsCancelled(cancellationToken))
 					return false;
-
+				
 				PXCodeType? codeType = typeSymbol.GetCodeTypeFromGenericName();
 
 				switch (codeType)
