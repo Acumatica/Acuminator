@@ -18,13 +18,23 @@ namespace Acuminator.Tests
 	{
 		[Theory]
 		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\StaticCall.cs")]
-		public virtual void Test_Static_Calls(string actual) =>
-			VerifyCSharpDiagnostic(actual, 
+		public virtual void Test_Static_Calls(string source) =>
+			VerifyCSharpDiagnostic(source, 
 				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 20, column: 6, expectedMethodName: "SelectSingleBound", expectedArgsCount: 2),
 				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 33, column: 6, expectedMethodName: "SelectSingleBound", expectedArgsCount: 2),
 				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 47, column: 6, expectedMethodName: "SelectSingleBound", expectedArgsCount: 2),
 				CreatePX1015RequiredAndOptionalArgsDiagnosticResult(line: 62, column: 6, expectedMethodName: "SelectSingleBound",
 																	minExpectedArgsCount: 1, maxExpectedArgsConut: 2));
+
+		[Theory]
+		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\InheritanceCall.cs")]
+		public virtual void Test_No_DIagnostic_On_Inheritance_Calls(string source) => VerifyCSharpDiagnostic(source, new DiagnosticResult[0]);
+
+		[Theory]
+		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\FieldInstanceCall.cs", @"Dac\SOOrder.cs")]
+		public virtual void Test_Field_Instance_Calls(string source, string dacSource) =>
+			VerifyCSharpDiagnostic(new[] { source, dacSource },
+				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 20, column: 24, expectedMethodName: "SelectSingle", expectedArgsCount: 2));
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new BqlParameterMismatchAnalyzer();
