@@ -205,7 +205,16 @@
   <data name="PX1021Title" xml:space="preserve">
     <value>The PXDBFieldAttribute type and property type do not correspond to each other</value>
   </data>
+  <data name="PX1021PropertyFix" xml:space="preserve">
+    <value>Make the property type correspond to the attribute type.</value>
+  </data>
+  <data name="PX1021AttributeFix" xml:space="preserve">
+    <value>Make the attribute type correspond to the property type.</value>
+  </data>
   <data name="PX1023Title" xml:space="preserve">
     <value>The DAC property can not be marked with multiple field attributes</value>
+  </data>
+ <data name="PX1023Fix" xml:space="preserve">
+    <value>Remove other field attributes from the property.</value>
   </data>
 </root>

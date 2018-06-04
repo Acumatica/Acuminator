@@ -315,11 +315,38 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Make the attribute type correspond to the property type..
+        /// </summary>
+        public static string PX1021AttributeFix {
+            get {
+                return ResourceManager.GetString("PX1021AttributeFix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Make the property type correspond to the attribute type..
+        /// </summary>
+        public static string PX1021PropertyFix {
+            get {
+                return ResourceManager.GetString("PX1021PropertyFix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The PXDBFieldAttribute type and property type do not correspond to each other.
         /// </summary>
         public static string PX1021Title {
             get {
                 return ResourceManager.GetString("PX1021Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove other field attributes from the property..
+        /// </summary>
+        public static string PX1023Fix {
+            get {
+                return ResourceManager.GetString("PX1023Fix", resourceCulture);
             }
         }
         
