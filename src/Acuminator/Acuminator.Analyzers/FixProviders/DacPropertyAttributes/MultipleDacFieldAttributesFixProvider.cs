@@ -66,6 +66,8 @@ namespace Acuminator.Analyzers.FixProviders
 			return document.WithSyntaxRoot(modifiedRoot);
 		}
 
+
+
 		private class MultipleFieldAttributesRewriter : CSharpSyntaxRewriter
 		{
 			private int visitedAttributeListCounter;
