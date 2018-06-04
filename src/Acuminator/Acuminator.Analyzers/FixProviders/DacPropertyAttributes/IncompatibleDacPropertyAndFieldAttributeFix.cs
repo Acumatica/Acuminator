@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Simplification;
 using Microsoft.CodeAnalysis.Editing;
 using Acuminator.Utilities;
 
@@ -29,56 +29,45 @@ namespace Acuminator.Analyzers.FixProviders
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty.Id);
-
-			if (diagnostic == null ||
-				!diagnostic.Properties.TryGetValue(DacPropertyAttributesAnalyzer.NotMatchingTypeDiagnosticProperty, out string replacingTypeMetadataName))
-				return;
-
 			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			SyntaxNode codeFixNode = root?.FindNode(context.Span);
 
 			if (codeFixNode == null)
 				return;
 			
-			if (codeFixNode is AttributeSyntax)
+			if (codeFixNode is AttributeSyntax attribute)
 			{
-				RegisterCodeFixForAttributeType(root, codeFixNode, context, replacingTypeMetadataName);
+				RegisterCodeFixForAttributeType(root, attribute, context);
 			}
 			else
 			{
-				RegisterCodeFixForPropertyType(root, codeFixNode, context, replacingTypeMetadataName);
+				RegisterCodeFixForPropertyType(root, codeFixNode, context);
 			}		
 		}
 
-		private void RegisterCodeFixForAttributeType(SyntaxNode root, SyntaxNode codeFixNode, CodeFixContext context,
-													 string replacingTypeMetadataName)
+		private void RegisterCodeFixForPropertyType(SyntaxNode root, SyntaxNode codeFixNode, CodeFixContext context)
 		{
 			string codeActionName = nameof(Resources.PX1021AttributeFix).GetLocalized().ToString();
 		}
 
-		private void RegisterCodeFixForPropertyType(SyntaxNode root, SyntaxNode codeFixNode, CodeFixContext context, 
-													string replacingTypeMetadataName)
+		private void RegisterCodeFixForAttributeType(SyntaxNode root, AttributeSyntax attributeNode, CodeFixContext context)
 		{
-			PropertyDeclarationSyntax propertyDeclaration = codeFixNode.Parent<PropertyDeclarationSyntax>();
-
-			if (propertyDeclaration == null || context.CancellationToken.IsCancellationRequested)
-				return;
-
 			string codeActionName = nameof(Resources.PX1021PropertyFix).GetLocalized().ToString();
 
 			CodeAction codeAction =
 				CodeAction.Create(codeActionName,
-								  cToken => ChangePropertyType(context.Document, root, propertyDeclaration, replacingTypeMetadataName, cToken),
+								  cToken => ChangePropertyTypeToAttributeType(context.Document, root, attributeNode, cToken),
 								  equivalenceKey: codeActionName);
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, context.Diagnostics);		
 		}
 
-		private async Task<Document> ChangePropertyType(Document document, SyntaxNode root, PropertyDeclarationSyntax propertyNode,
-														string replacingTypeMetadataName, CancellationToken cancellationToken)
+		private async Task<Document> ChangePropertyTypeToAttributeType(Document document, SyntaxNode root, AttributeSyntax attributeNode,
+																	   CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			PropertyDeclarationSyntax propertyNode = attributeNode.Parent<PropertyDeclarationSyntax>();
+
+			if (propertyNode == null || cancellationToken.IsCancellationRequested)
 				return document;
 
 			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
@@ -86,110 +75,38 @@ namespace Acuminator.Analyzers.FixProviders
 			if (semanticModel == null || cancellationToken.IsCancellationRequested)
 				return document;
 
-			var replacingType = semanticModel.Compilation.GetTypeByMetadataName(replacingTypeMetadataName);
+			ITypeSymbol attributeType = semanticModel.GetTypeInfo(attributeNode).Type;
 
-			if (replacingType == null)
+			if (attributeType == null || cancellationToken.IsCancellationRequested)
 				return document;
 
-			S
+			PXContext pxContext = new PXContext(semanticModel.Compilation);
+			FieldAttributesRegister attributesRegister = new FieldAttributesRegister(pxContext);
+			FieldAttributeInfo info = attributesRegister.GetFieldAttributeInfo(attributeType);
 
-			var rewriterWalker = new MultipleFieldAttributesRewriter(document, semanticModel, attributeNode, cancellationToken);
-			var propertyModified = rewriterWalker.Visit(propertyDeclaration) as PropertyDeclarationSyntax;
+			if (!info.IsFieldAttribute || info.FieldType == null)
+				return document;
+
+			SyntaxGenerator generator = SyntaxGenerator.GetGenerator(document);
+			TypeSyntax replacingTypeNode = generator.TypeExpression(info.FieldType) as TypeSyntax;
+
+			if (info.FieldType.IsValueType)
+			{
+				replacingTypeNode = generator.NullableTypeExpression(replacingTypeNode) as TypeSyntax;
+			}
+
+			replacingTypeNode = replacingTypeNode.WithTrailingTrivia(propertyNode.Type.GetTrailingTrivia());
+	
+			if (replacingTypeNode == null || cancellationToken.IsCancellationRequested)
+				return document;
+;
+			var propertyModified = propertyNode.WithType(replacingTypeNode);
 
 			if (propertyModified == null || cancellationToken.IsCancellationRequested)
 				return document;
 
-			var modifiedRoot = root.ReplaceNode(propertyDeclaration, propertyModified);
+			var modifiedRoot = root.ReplaceNode(propertyNode, propertyModified);
 			return document.WithSyntaxRoot(modifiedRoot);
-		}
-
-
-
-		private class MultipleFieldAttributesRewriter : CSharpSyntaxRewriter
-		{
-			private int visitedAttributeListCounter;
-			private int attributeListRemovedCounter;
-			private bool alreadyMetRemainingAttribute;
-			
-			private readonly Document document;
-			private readonly SemanticModel semanticModel;
-			private readonly FieldAttributesRegister attributesRegister;
-			private readonly AttributeSyntax remainingAttribute;
-			private readonly CancellationToken cancellationToken;
-
-			public MultipleFieldAttributesRewriter(Document aDocument, SemanticModel aSemanticModel, AttributeSyntax aRemainingAttribute,
-												   CancellationToken cToken)
-			{
-				document = aDocument;
-				semanticModel = aSemanticModel;
-				cancellationToken = cToken;
-				remainingAttribute = aRemainingAttribute;
-
-				PXContext pxContext = new PXContext(semanticModel.Compilation);
-				attributesRegister = new FieldAttributesRegister(pxContext);
-			}
-
-			public override SyntaxNode VisitAttributeList(AttributeListSyntax attributeListNode)
-			{
-				if (cancellationToken.IsCancellationRequested)
-					return null;
-
-				if (visitedAttributeListCounter < Int32.MaxValue)
-					visitedAttributeListCounter++;
-
-				var attributesToCheck = attributeListNode.Attributes;
-				var modifiedAttributes = new List<AttributeSyntax>(attributesToCheck.Count);
-
-				foreach (AttributeSyntax attribute in attributesToCheck)
-				{
-					if (cancellationToken.IsCancellationRequested)
-						return null;
-
-					if (!IsFieldAttributeToRemove(attribute))
-						modifiedAttributes.Add(attribute);
-				}
-
-				bool allPreviousAttributeListWereRemoved = attributeListRemovedCounter == (visitedAttributeListCounter - 1);
-
-				if (modifiedAttributes.Count == attributesToCheck.Count && !allPreviousAttributeListWereRemoved)
-					return attributeListNode;
-				else if (modifiedAttributes.Count == 0)
-				{
-					if (attributeListRemovedCounter < Int32.MaxValue)
-						attributeListRemovedCounter++;
-
-					return null;
-				}
-
-				AttributeListSyntax modifiedAttributeListNode = attributeListNode.WithAttributes(SyntaxFactory.SeparatedList(modifiedAttributes));
-
-				if (allPreviousAttributeListWereRemoved)
-				{
-					var trivia = modifiedAttributeListNode.GetLeadingTrivia().Prepend(SyntaxFactory.CarriageReturnLineFeed);
-					modifiedAttributeListNode = modifiedAttributeListNode.WithLeadingTrivia(trivia);
-				}
-
-				return modifiedAttributeListNode;
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool IsFieldAttributeToRemove(AttributeSyntax attributeNode)
-			{
-				if (!alreadyMetRemainingAttribute && attributeNode.Equals(remainingAttribute))
-				{
-					alreadyMetRemainingAttribute = true;
-					return false;
-				}
-
-				ITypeSymbol attributeType = semanticModel.GetTypeInfo(attributeNode, cancellationToken).Type;
-				cancellationToken.ThrowIfCancellationRequested();
-
-				if (attributeType == null)
-					return false;
-				
-				FieldAttributeInfo info = attributesRegister.GetFieldAttributeInfo(attributeType);
-				return info.IsFieldAttribute;
-			}
 		}
 	}
 }

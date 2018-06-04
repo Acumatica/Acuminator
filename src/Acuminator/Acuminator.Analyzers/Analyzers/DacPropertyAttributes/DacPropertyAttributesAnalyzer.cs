@@ -132,26 +132,16 @@ namespace Acuminator.Analyzers
 
 			if (propertyTypeLocation != null)
 			{
-				var diagnosticProperties = new Dictionary<string, string>
-				{
-					{ NotMatchingTypeDiagnosticProperty, fieldAttributeInfo.FieldType.MetadataName }
-				}.ToImmutableDictionary();
-
 				symbolContext.ReportDiagnostic(
 					Diagnostic.Create(
-						Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, propertyTypeLocation, diagnosticProperties));
+						Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, propertyTypeLocation));
 			}
 
 			if (attributeLocation != null)
 			{
-				var diagnosticProperties = new Dictionary<string, string>
-				{
-					{ NotMatchingTypeDiagnosticProperty, property.Type.MetadataName }
-				}.ToImmutableDictionary();
-
 				symbolContext.ReportDiagnostic(
 					Diagnostic.Create(
-						Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, attributeLocation, diagnosticProperties));
+						Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, attributeLocation));
 			}
 		}
 
