@@ -37,7 +37,6 @@ namespace PX.Objects.HackathonDemo
 
 		[PXDBInt]      
 		[PXDBDate]
-		[PXDBString]
 		[PXUIField(DisplayName = "OrderDate")]
 		public DateTime? OrderDate { get; set; }
 		#endregion

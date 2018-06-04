@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CSharp;
@@ -71,7 +72,7 @@ namespace Acuminator.Analyzers.FixProviders
 		private class MultipleFieldAttributesRewriter : CSharpSyntaxRewriter
 		{
 			private int visitedAttributeListCounter;
-			private bool someAttributeListWasRemoved;
+			private int attributeListRemovedCounter;
 			private bool alreadyMetRemainingAttribute;
 			
 			private readonly Document document;
@@ -94,56 +95,64 @@ namespace Acuminator.Analyzers.FixProviders
 
 			public override SyntaxNode VisitAttributeList(AttributeListSyntax attributeListNode)
 			{
-				if (visitedAttributeListCounter < Int32.MaxValue)
-				{
-					visitedAttributeListCounter++;
-				}
-
 				if (cancellationToken.IsCancellationRequested)
 					return null;
 
-				bool oldAlreadyMetRemainingAttribute = alreadyMetRemainingAttribute;
-				AttributeListSyntax modifiedAttributeListNode = base.VisitAttributeList(attributeListNode) as AttributeListSyntax;
+				if (visitedAttributeListCounter < Int32.MaxValue)
+					visitedAttributeListCounter++;
 
-				if (modifiedAttributeListNode == null || modifiedAttributeListNode.Attributes.Count == 0)
+				var attributesToCheck = attributeListNode.Attributes;
+				var modifiedAttributes = new List<AttributeSyntax>(attributesToCheck.Count);
+
+				foreach (AttributeSyntax attribute in attributesToCheck)
 				{
-					someAttributeListWasRemoved = true;
+					if (cancellationToken.IsCancellationRequested)
+						return null;
+
+					if (!IsFieldAttributeToRemove(attribute))
+						modifiedAttributes.Add(attribute);
+				}
+
+				bool allPreviousAttributeListWereRemoved = attributeListRemovedCounter == (visitedAttributeListCounter - 1);
+
+				if (modifiedAttributes.Count == attributesToCheck.Count && !allPreviousAttributeListWereRemoved)
+					return attributeListNode;
+				else if (modifiedAttributes.Count == 0)
+				{
+					if (attributeListRemovedCounter < Int32.MaxValue)
+						attributeListRemovedCounter++;
+
 					return null;
 				}
 
-				bool containsRemainingAttribute = !oldAlreadyMetRemainingAttribute && alreadyMetRemainingAttribute;
-				bool isSecondAttributeList = visitedAttributeListCounter == 2;
-				bool firstAttributeListWasRemoved = someAttributeListWasRemoved;
+				AttributeListSyntax modifiedAttributeListNode = attributeListNode.WithAttributes(SyntaxFactory.SeparatedList(modifiedAttributes));
 
-				if (containsRemainingAttribute && isSecondAttributeList && firstAttributeListWasRemoved)
+				if (allPreviousAttributeListWereRemoved)
 				{
-					var trivia = modifiedAttributeListNode.GetLeadingTrivia()
-														  .Prepend(SyntaxFactory.CarriageReturnLineFeed);
+					var trivia = modifiedAttributeListNode.GetLeadingTrivia().Prepend(SyntaxFactory.CarriageReturnLineFeed);
 					modifiedAttributeListNode = modifiedAttributeListNode.WithLeadingTrivia(trivia);
 				}
 
 				return modifiedAttributeListNode;
 			}
 
-			public override SyntaxNode VisitAttribute(AttributeSyntax attributeNode)
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool IsFieldAttributeToRemove(AttributeSyntax attributeNode)
 			{
 				if (!alreadyMetRemainingAttribute && attributeNode.Equals(remainingAttribute))
 				{
 					alreadyMetRemainingAttribute = true;
-					return base.VisitAttribute(attributeNode);
+					return false;
 				}
 
 				ITypeSymbol attributeType = semanticModel.GetTypeInfo(attributeNode, cancellationToken).Type;
+				cancellationToken.ThrowIfCancellationRequested();
 
-				if (attributeType == null || cancellationToken.IsCancellationRequested)
-				{
-					return !cancellationToken.IsCancellationRequested 
-						? base.VisitAttribute(attributeNode)
-						: null;
-				}
-
+				if (attributeType == null)
+					return false;
+				
 				FieldAttributeInfo info = attributesRegister.GetFieldAttributeInfo(attributeType);
-				return info.IsFieldAttribute ? null : base.VisitAttribute(attributeNode);
+				return info.IsFieldAttribute;
 			}
 		}
 	}
