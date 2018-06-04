@@ -20,42 +20,78 @@ namespace Acuminator.Analyzers.FixProviders
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public class MultipleDacFieldAttributesFixProvider : CodeFixProvider
+	public class IncompatibleDacPropertyAndFieldAttributeFix : CodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-			ImmutableArray.Create(Descriptors.PX1023_DacPropertyMultipleFieldAttributes.Id);
+			ImmutableArray.Create(Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty.Id);
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken)
-													.ConfigureAwait(false);
+			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty.Id);
 
-			if (!(root?.FindNode(context.Span) is AttributeSyntax attributeNode))
+			if (diagnostic == null ||
+				!diagnostic.Properties.TryGetValue(DacPropertyAttributesAnalyzer.NotMatchingTypeDiagnosticProperty, out string replacingTypeMetadataName))
 				return;
 
-			string codeActionName = nameof(Resources.PX1023Fix).GetLocalized().ToString();
+			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+			SyntaxNode codeFixNode = root?.FindNode(context.Span);
+
+			if (codeFixNode == null)
+				return;
+			
+			if (codeFixNode is AttributeSyntax)
+			{
+				RegisterCodeFixForAttributeType(root, codeFixNode, context, replacingTypeMetadataName);
+			}
+			else
+			{
+				RegisterCodeFixForPropertyType(root, codeFixNode, context, replacingTypeMetadataName);
+			}		
+		}
+
+		private void RegisterCodeFixForAttributeType(SyntaxNode root, SyntaxNode codeFixNode, CodeFixContext context,
+													 string replacingTypeMetadataName)
+		{
+			string codeActionName = nameof(Resources.PX1021AttributeFix).GetLocalized().ToString();
+		}
+
+		private void RegisterCodeFixForPropertyType(SyntaxNode root, SyntaxNode codeFixNode, CodeFixContext context, 
+													string replacingTypeMetadataName)
+		{
+			PropertyDeclarationSyntax propertyDeclaration = codeFixNode.Parent<PropertyDeclarationSyntax>();
+
+			if (propertyDeclaration == null || context.CancellationToken.IsCancellationRequested)
+				return;
+
+			string codeActionName = nameof(Resources.PX1021PropertyFix).GetLocalized().ToString();
+
 			CodeAction codeAction =
 				CodeAction.Create(codeActionName,
-								  cToken => RemoveAllOtherAttributesFromPropertyAsync(context.Document, root, attributeNode, cToken),
+								  cToken => ChangePropertyType(context.Document, root, propertyDeclaration, replacingTypeMetadataName, cToken),
 								  equivalenceKey: codeActionName);
 
 			context.RegisterCodeFix(codeAction, context.Diagnostics);
 		}
 
-		private async Task<Document> RemoveAllOtherAttributesFromPropertyAsync(Document document, SyntaxNode root, AttributeSyntax attributeNode,
-																			   CancellationToken cancellationToken)
+		private async Task<Document> ChangePropertyType(Document document, SyntaxNode root, PropertyDeclarationSyntax propertyNode,
+														string replacingTypeMetadataName, CancellationToken cancellationToken)
 		{
-			var propertyDeclaration = attributeNode.Parent<PropertyDeclarationSyntax>();
-
-			if (propertyDeclaration == null || cancellationToken.IsCancellationRequested)
+			if (cancellationToken.IsCancellationRequested)
 				return document;
 
 			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
 
-			if (semanticModel == null)
+			if (semanticModel == null || cancellationToken.IsCancellationRequested)
 				return document;
+
+			var replacingType = semanticModel.Compilation.GetTypeByMetadataName(replacingTypeMetadataName);
+
+			if (replacingType == null)
+				return document;
+
+			S
 
 			var rewriterWalker = new MultipleFieldAttributesRewriter(document, semanticModel, attributeNode, cancellationToken);
 			var propertyModified = rewriterWalker.Visit(propertyDeclaration) as PropertyDeclarationSyntax;

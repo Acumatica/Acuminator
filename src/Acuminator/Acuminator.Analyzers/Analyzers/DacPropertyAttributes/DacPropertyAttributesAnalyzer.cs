@@ -16,6 +16,8 @@ namespace Acuminator.Analyzers
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class DacPropertyAttributesAnalyzer : PXDiagnosticAnalyzer
 	{
+		public const string NotMatchingTypeDiagnosticProperty = "NotMatchingType";
+
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
 			(
@@ -130,16 +132,26 @@ namespace Acuminator.Analyzers
 
 			if (propertyTypeLocation != null)
 			{
+				var diagnosticProperties = new Dictionary<string, string>
+				{
+					{ NotMatchingTypeDiagnosticProperty, fieldAttributeInfo.FieldType.MetadataName }
+				}.ToImmutableDictionary();
+
 				symbolContext.ReportDiagnostic(
 					Diagnostic.Create(
-						Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, propertyTypeLocation));
+						Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, propertyTypeLocation, diagnosticProperties));
 			}
 
 			if (attributeLocation != null)
 			{
+				var diagnosticProperties = new Dictionary<string, string>
+				{
+					{ NotMatchingTypeDiagnosticProperty, property.Type.MetadataName }
+				}.ToImmutableDictionary();
+
 				symbolContext.ReportDiagnostic(
 					Diagnostic.Create(
-						Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, attributeLocation));
+						Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, attributeLocation, diagnosticProperties));
 			}
 		}
 
