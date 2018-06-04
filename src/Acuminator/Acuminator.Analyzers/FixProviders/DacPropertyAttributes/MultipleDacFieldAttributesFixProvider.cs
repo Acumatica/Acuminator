@@ -68,6 +68,10 @@ namespace Acuminator.Analyzers.FixProviders
 
 		private class MultipleFieldAttributesRewriter : CSharpSyntaxRewriter
 		{
+			private int visitedAttributeListCounter;
+			private bool someAttributeListWasRemoved;
+			private bool alreadyMetRemainingAttribute;
+			
 			private readonly Document document;
 			private readonly SemanticModel semanticModel;
 			private readonly FieldAttributesRegister attributesRegister;
@@ -88,21 +92,44 @@ namespace Acuminator.Analyzers.FixProviders
 
 			public override SyntaxNode VisitAttributeList(AttributeListSyntax attributeListNode)
 			{
+				if (visitedAttributeListCounter < Int32.MaxValue)
+				{
+					visitedAttributeListCounter++;
+				}
+
 				if (cancellationToken.IsCancellationRequested)
 					return null;
 
+				bool oldAlreadyMetRemainingAttribute = alreadyMetRemainingAttribute;
 				AttributeListSyntax modifiedAttributeListNode = base.VisitAttributeList(attributeListNode) as AttributeListSyntax;
 
 				if (modifiedAttributeListNode == null || modifiedAttributeListNode.Attributes.Count == 0)
+				{
+					someAttributeListWasRemoved = true;
 					return null;
+				}
+
+				bool containsRemainingAttribute = !oldAlreadyMetRemainingAttribute && alreadyMetRemainingAttribute;
+				bool isSecondAttributeList = visitedAttributeListCounter == 2;
+				bool firstAttributeListWasRemoved = someAttributeListWasRemoved;
+
+				if (containsRemainingAttribute && isSecondAttributeList && firstAttributeListWasRemoved)
+				{
+					var trivia = modifiedAttributeListNode.GetLeadingTrivia()
+														  .Prepend(SyntaxFactory.CarriageReturnLineFeed);
+					modifiedAttributeListNode = modifiedAttributeListNode.WithLeadingTrivia(trivia);
+				}
 
 				return modifiedAttributeListNode;
 			}
 
 			public override SyntaxNode VisitAttribute(AttributeSyntax attributeNode)
 			{
-				if (attributeNode.Equals(remainingAttribute))
+				if (!alreadyMetRemainingAttribute && attributeNode.Equals(remainingAttribute))
+				{
+					alreadyMetRemainingAttribute = true;
 					return base.VisitAttribute(attributeNode);
+				}
 
 				ITypeSymbol attributeType = semanticModel.GetTypeInfo(attributeNode, cancellationToken).Type;
 
@@ -116,45 +143,6 @@ namespace Acuminator.Analyzers.FixProviders
 				FieldAttributeInfo info = attributesRegister.GetFieldAttributeInfo(attributeType);
 				return info.IsFieldAttribute ? null : base.VisitAttribute(attributeNode);
 			}
-
-
-			//private IEnumerable<AttributeListSyntax> GetAllOtherAttributesLists(PropertyDeclarationSyntax propertyNode, AttributeSyntax attributeNode,
-			//																SemanticModel semanticModel, CancellationToken cancellationToken)
-			//{
-				
-				
-			//	SyntaxList<AttributeListSyntax> attributesLists = propertyNode.AttributeLists;
-
-			//	if (cancellationToken.IsCancellationRequested)
-			//		return null;
-
-			//	foreach (AttributeListSyntax attributesListNode in attributesLists)
-			//	{
-
-			//	}
-			//}
-
-			//private AttributeListSyntax RemoveFieldAttributesFromAttributesListNode(AttributeListSyntax attributesList, AttributeSyntax remainingAttribute,
-			//																		FieldAttributesRegister attributesRegister, SemanticModel semanticModel,
-			//																		CancellationToken cToken)
-			//{
-			//	AttributeListSyntax attributeListToReturn = attributesList;
-
-			//	foreach (AttributeSyntax attribute in attributesList.Attributes)
-			//	{
-			//		if (cToken.IsCancellationRequested)
-			//			return null;
-
-			//		if (attribute.Equals(remainingAttribute))
-			//			continue;
-
-			//		//attributesRegister.GetFieldAttributeInfo(attribute.Attribu)
-
-
-			//	}
-
-			//	return attributeListToReturn;
-			//}
 		}
 	}
 }

@@ -35,7 +35,7 @@ namespace PX.Objects.HackathonDemo
 		#region OrderDate
 		public abstract class orderDate : IBqlField { }
 
-		[PXDBInt]
+		[PXDBInt]      
 		[PXDBDate]
 		[PXDBString]
 		[PXUIField(DisplayName = "OrderDate")]
