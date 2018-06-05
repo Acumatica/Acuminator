@@ -81,7 +81,7 @@ namespace Acuminator.Analyzers
             }
 
             #region Attribute Interfaces
-            public INamedTypeSymbol IPXFieldUpdatingSubscriber => compilation.GetTypeByMetadataName(typeof(IPXFieldUpdatingSubscriber).FullName);
+            public INamedTypeSymbol PXEventSubscriberAttribute => compilation.GetTypeByMetadataName(typeof(PXEventSubscriberAttribute).FullName);
             #endregion
 
             #region Field Unbound Attributes

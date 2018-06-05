@@ -73,7 +73,7 @@ namespace Acuminator.Analyzers.FixProviders
 		private class MultipleFieldAttributesRewriter : CSharpSyntaxRewriter
 		{
 			private int visitedAttributeListCounter;
-			private int attributeListRemovedCounter;
+			private int attributeListsRemovedCounter;
 			private bool alreadyMetRemainingAttribute;
 			
 			private readonly Document document;
@@ -114,14 +114,15 @@ namespace Acuminator.Analyzers.FixProviders
 						modifiedAttributes.Add(attribute);
 				}
 
-				bool allPreviousAttributeListWereRemoved = attributeListRemovedCounter == (visitedAttributeListCounter - 1);
+				bool allPreviousAttributeListWereRemoved = attributeListsRemovedCounter > 0 &&
+														   attributeListsRemovedCounter == (visitedAttributeListCounter - 1);
 
 				if (modifiedAttributes.Count == attributesToCheck.Count && !allPreviousAttributeListWereRemoved)
 					return attributeListNode;
 				else if (modifiedAttributes.Count == 0)
 				{
-					if (attributeListRemovedCounter < Int32.MaxValue)
-						attributeListRemovedCounter++;
+					if (attributeListsRemovedCounter < Int32.MaxValue)
+						attributeListsRemovedCounter++;
 
 					return null;
 				}
