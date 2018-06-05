@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Acuminator.Tests
 {
-	public class DacFieldAttributesTests : CodeFixVerifier
+	public class DacFieldAttributesTests : DiagnosticVerifier
 	{
 		[Theory]
 		[EmbeddedFileData(@"Attributes\Diagnostics\FieldAttributesTypeMismatch\DacExampleWithMultipleFieldAttributes.cs")]

@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Acuminator.Tests
 {
-	public class BqlParameterMismatchTests : CodeFixVerifier
+	public class BqlParameterMismatchTests : DiagnosticVerifier
 	{
 		[Theory]
 		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\StaticCall.cs")]
