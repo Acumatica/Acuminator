@@ -16,8 +16,6 @@ namespace Acuminator.Analyzers
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class DacPropertyAttributesAnalyzer : PXDiagnosticAnalyzer
 	{
-		public const string NotMatchingTypeDiagnosticProperty = "NotMatchingType";
-
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
 			(
@@ -28,7 +26,7 @@ namespace Acuminator.Analyzers
 #pragma warning disable CS4014
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSymbolAction(c => AnalyzePropertyAsync(c, pxContext), SymbolKind.Property);
+			compilationStartContext.RegisterSymbolAction(symbolContext => AnalyzePropertyAsync(symbolContext, pxContext), SymbolKind.Property);
 		}
 #pragma warning restore CS4014
 
@@ -67,7 +65,7 @@ namespace Acuminator.Analyzers
 				var (fieldAttribute, fieldAttrInfo) = attributesWithInfo[0];
 
 #pragma warning disable CS4014
-				CheckAttributeAndPropertyTypesForCompatibilityAsync(fieldAttribute, fieldAttrInfo, pxContext, symbolContext);
+				CheckAttributeAndPropertyTypesForCompatibility(fieldAttribute, fieldAttrInfo, pxContext, symbolContext);
 #pragma warning restore CS4014 
 			}		
 		}
@@ -109,21 +107,32 @@ namespace Acuminator.Analyzers
 			return fieldInfosList;
 		}
 
-		private static async Task CheckAttributeAndPropertyTypesForCompatibilityAsync(AttributeData fieldAttribute, 
-																					  FieldAttributeInfo fieldAttributeInfo,
-																					  PXContext pxContext, SymbolAnalysisContext symbolContext)
+		private static Task CheckAttributeAndPropertyTypesForCompatibility(AttributeData fieldAttribute, FieldAttributeInfo fieldAttributeInfo,
+																		   PXContext pxContext, SymbolAnalysisContext symbolContext)
 		{
-			if (fieldAttributeInfo.FieldType == null)
-				return;
-
 			IPropertySymbol property = symbolContext.Symbol as IPropertySymbol;
+
+			if (property == null)
+				return null;
+
+			if (fieldAttributeInfo.FieldType == null)																//PXDBFieldAttribute case
+				return CreateDiagnosticsAsync(property, fieldAttribute, symbolContext, registerCodeFix: false);
+
 			ITypeSymbol typeToCompare = property.Type.IsValueType 
 				? (property.Type as INamedTypeSymbol)?.GetUnderlyingTypeFromNullable(pxContext)
 				: property.Type;
 
 			if (fieldAttributeInfo.FieldType.Equals(typeToCompare))
-				return;
+				return null;
 
+			return CreateDiagnosticsAsync(property, fieldAttribute, symbolContext, registerCodeFix: true);
+		}
+
+		private static async Task CreateDiagnosticsAsync(IPropertySymbol property, AttributeData fieldAttribute, SymbolAnalysisContext symbolContext,
+														 bool registerCodeFix)
+		{
+			var diagnosticProperties = ImmutableDictionary.Create<string, string>()
+														  .Add(DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString());
 			Location[] locations = await Task.WhenAll(GetPropertyTypeLocationAsync(property, symbolContext.CancellationToken),
 													  GetAttributeLocationAsync(fieldAttribute, symbolContext.CancellationToken));
 
@@ -134,14 +143,14 @@ namespace Acuminator.Analyzers
 			{
 				symbolContext.ReportDiagnostic(
 					Diagnostic.Create(
-						Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, propertyTypeLocation));
+						Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, propertyTypeLocation, diagnosticProperties));
 			}
 
 			if (attributeLocation != null)
 			{
 				symbolContext.ReportDiagnostic(
 					Diagnostic.Create(
-						Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, attributeLocation));
+						Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, attributeLocation, diagnosticProperties));
 			}
 		}
 

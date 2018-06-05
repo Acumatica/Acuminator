@@ -50,6 +50,7 @@
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\ParametersCounterSyntaxWalker.cs" />
     <Compile Include="Analyzers\NonNullableTypeForBqlFieldAnalyzer.cs" />
     <Compile Include="Analyzers\DacPropertyAttributes\DacPropertyAttributesAnalyzer.cs" />
+    <Compile Include="DiagnosticProperty.cs" />
     <Compile Include="FixProviders\DacPropertyAttributes\IncompatibleDacPropertyAndFieldAttributeFix.cs" />
     <Compile Include="FixProviders\DacPropertyAttributes\MultipleDacFieldAttributesFix.cs" />
     <Compile Include="FixProviders\NonNullableTypeForBqlFieldFix.cs" />
@@ -162,9 +163,7 @@
       <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\portable-net40+sl4+win8+wp8\System.ValueTuple.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="CodeActions\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Acuminator.Utils\Acuminator.Utils.csproj">
       <Project>{b902103c-831b-4bbf-a88b-3dae6f601cf0}</Project>

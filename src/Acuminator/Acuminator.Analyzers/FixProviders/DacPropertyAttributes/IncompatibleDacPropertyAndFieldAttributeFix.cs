@@ -29,6 +29,17 @@ namespace Acuminator.Analyzers.FixProviders
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
+			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty.Id);
+
+			if (diagnostic == null)
+				return;
+
+			if (diagnostic.Properties.TryGetValue(DiagnosticProperty.RegisterCodeFix, out string registerCodeFix) && 
+				string.Equals(registerCodeFix, bool.FalseString))
+			{
+				return;
+			}
+
 			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			SyntaxNode codeFixNode = root?.FindNode(context.Span);
 
