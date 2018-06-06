@@ -80,10 +80,6 @@ namespace Acuminator.Analyzers
                 compilation = aCompilation;
             }
 
-            #region Attribute Interfaces
-            public INamedTypeSymbol PXEventSubscriberAttribute => compilation.GetTypeByMetadataName(typeof(PXEventSubscriberAttribute).FullName);
-            #endregion
-
             #region Field Unbound Attributes
             public INamedTypeSymbol PXLongAttribute => compilation.GetTypeByMetadataName(typeof(PXLongAttribute).FullName);
             public INamedTypeSymbol PXIntAttribute => compilation.GetTypeByMetadataName(typeof(PXIntAttribute).FullName);

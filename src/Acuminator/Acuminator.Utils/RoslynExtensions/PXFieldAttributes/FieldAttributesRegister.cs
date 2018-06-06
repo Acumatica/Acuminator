@@ -63,9 +63,6 @@ namespace Acuminator.Utilities
 
 		private FieldAttributeInfo? CheckAttributeInheritanceChain(ITypeSymbol attributeSymbol, List<ITypeSymbol> attributeTypeHierarchy = null)
 		{
-			if (!attributeSymbol.InheritsFrom(context.FieldAttributes.PXEventSubscriberAttribute))
-				return null;
-
 			var attributeBaseTypesEnum = attributeTypeHierarchy ?? attributeSymbol.GetBaseTypesAndThis();
 			ITypeSymbol fieldAttribute = attributeBaseTypesEnum.FirstOrDefault(attr => AllFieldAttributes.Contains(attr));
 
