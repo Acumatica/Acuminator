@@ -77,9 +77,8 @@ namespace Acuminator.Utilities
 			return null;
 		}
 
-		private static HashSet<ITypeSymbol> GetUnboundFieldAttributes(PXContext pxContext)
-		{
-			return new HashSet<ITypeSymbol>
+		private static HashSet<ITypeSymbol> GetUnboundFieldAttributes(PXContext pxContext) =>
+			new HashSet<ITypeSymbol>
 			{
 				pxContext.FieldAttributes.PXLongAttribute,
 				pxContext.FieldAttributes.PXIntAttribute,
@@ -93,11 +92,9 @@ namespace Acuminator.Utilities
 				pxContext.FieldAttributes.PXGuidAttribute,
 				pxContext.FieldAttributes.PXBoolAttribute
 			};
-		}
 
-		private static HashSet<ITypeSymbol> GetBoundFieldAttributes(PXContext pxContext)
-		{
-			return new HashSet<ITypeSymbol>
+		private static HashSet<ITypeSymbol> GetBoundFieldAttributes(PXContext pxContext) =>
+			new HashSet<ITypeSymbol>
 			{
 				pxContext.FieldAttributes.PXDBFieldAttribute,
 
@@ -118,11 +115,9 @@ namespace Acuminator.Utilities
 				pxContext.FieldAttributes.PXDBBinaryAttribute,
 				pxContext.FieldAttributes.PXDBUserPasswordAttribute,
 			};
-		}
 
-		private static Dictionary<ITypeSymbol, ITypeSymbol> GetCorrespondingSimpleTypes(PXContext pxContext)
-		{
-			return new Dictionary<ITypeSymbol, ITypeSymbol>
+		private static Dictionary<ITypeSymbol, ITypeSymbol> GetCorrespondingSimpleTypes(PXContext pxContext) =>
+			new Dictionary<ITypeSymbol, ITypeSymbol>
 			{
 				{ pxContext.FieldAttributes.PXLongAttribute, pxContext.Int64 },
 				{ pxContext.FieldAttributes.PXIntAttribute, pxContext.Int32 },
@@ -153,6 +148,5 @@ namespace Acuminator.Utilities
 				{ pxContext.FieldAttributes.PXDBBinaryAttribute, pxContext.ByteArray },
 				{ pxContext.FieldAttributes.PXDBUserPasswordAttribute, pxContext.String },
 			};
-		}
 	}
 }
