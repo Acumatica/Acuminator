@@ -62,7 +62,12 @@ namespace Acuminator.Analyzers
 		internal static DiagnosticDescriptor PX1014_NonNullableTypeForBqlField { get; } = 
             Rule("PX1014", nameof(Resources.PX1014Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
-		internal static DiagnosticDescriptor PX1015_PXBqlParametersMismatch { get; } = 
-            Rule("PX1015", nameof(Resources.PX1015Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
-	}
+		internal static DiagnosticDescriptor PX1015_PXBqlParametersMismatchWithOnlyRequiredParams { get; } = 
+            Rule("PX1015", nameof(Resources.PX1015TitleSuffixWithOnlyRequiredParams).GetLocalized(), 
+                Category.Default, DiagnosticSeverity.Warning);
+
+        internal static DiagnosticDescriptor PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams { get; } =
+            Rule("PX1015", nameof(Resources.PX1015TitleSuffixWithRequiredAndOptionalParams).GetLocalized(), 
+                 Category.Default, DiagnosticSeverity.Warning);
+    }
 }
