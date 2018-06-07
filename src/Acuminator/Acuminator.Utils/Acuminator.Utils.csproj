@@ -87,6 +87,9 @@
     <Reference Include="System.Reflection.Metadata, Version=1.0.21.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Reflection.Metadata.1.0.21\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
     </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\portable-net40+sl4+win8+wp8\System.ValueTuple.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommonUtils\ExceptionExtensions.cs" />
@@ -96,9 +99,12 @@
     <Compile Include="CommonUtils\EnumerableExtensions.cs" />
     <Compile Include="CommonUtils\ConcurrentExtensions.cs" />
     <Compile Include="CommonUtils\EnumerableExtraExtensions.cs" />
-    <Compile Include="RoslynExtensions\ColoredCodeType.cs" />
+    <Compile Include="RoslynExtensions\RoslynSyntaxUtils.cs" />
+    <Compile Include="RoslynExtensions\BqlModifyingMethods.cs" />
+    <Compile Include="RoslynExtensions\PXCodeType.cs" />
     <Compile Include="RoslynExtensions\ITypeSymbolExtensions.cs" />
     <Compile Include="RoslynExtensions\CodeResolvingUtils.cs" />
+    <Compile Include="RoslynExtensions\PXContext.cs" />
     <Compile Include="RoslynExtensions\TypeNames.cs" />
   </ItemGroup>
   <ItemGroup>

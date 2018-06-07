@@ -106,7 +106,7 @@ namespace Acuminator.Vsix.Coloriser
 			foreach (Match bqlOperandMatch in matches.OfType<Match>().Skip(1))
 			{
 				string bqlOperand = bqlOperandMatch.Value.TrimEnd('<');
-				CreateTag(newSnapshot, bqlOperandMatch, offset, bqlOperand, Provider[ColoredCodeType.BqlOperator]);
+				CreateTag(newSnapshot, bqlOperandMatch, offset, bqlOperand, Provider[PXCodeType.BqlOperator]);
 			}
 		}
 
@@ -114,7 +114,7 @@ namespace Acuminator.Vsix.Coloriser
 		{
 			Span span = new Span(offset, selectOp.Length);
 			SnapshotSpan snapshotSpan = new SnapshotSpan(newSnapshot, span);
-			var tag = new TagSpan<IClassificationTag>(snapshotSpan, new ClassificationTag(Provider[ColoredCodeType.BqlOperator]));
+			var tag = new TagSpan<IClassificationTag>(snapshotSpan, new ClassificationTag(Provider[PXCodeType.BqlOperator]));
 			tagsBag.Add(tag);
 		}
 
@@ -125,7 +125,7 @@ namespace Acuminator.Vsix.Coloriser
 			foreach (Match bqlParamMatch in matches)
 			{
 				string bqlParam = bqlParamMatch.Value;
-				CreateTag(newSnapshot, bqlParamMatch, offset, bqlParam, Provider[ColoredCodeType.BqlParameter]);
+				CreateTag(newSnapshot, bqlParamMatch, offset, bqlParam, Provider[PXCodeType.BqlParameter]);
 			}
 		}
 
@@ -136,7 +136,7 @@ namespace Acuminator.Vsix.Coloriser
 			foreach (Match dacOrConstMatch in matches)
 			{
 				string dacOrConst = dacOrConstMatch.Value.Trim(',', '<', '>');
-				CreateTag(newSnapshot, dacOrConstMatch, offset, dacOrConst, Provider[ColoredCodeType.Dac]);
+				CreateTag(newSnapshot, dacOrConstMatch, offset, dacOrConst, Provider[PXCodeType.Dac]);
 			}
 		}
 
@@ -159,13 +159,13 @@ namespace Acuminator.Vsix.Coloriser
 		private void GetDacTag(ITextSnapshot newSnapshot, Match match, int offset, string[] dacParts)
 		{
 			string dacPart = dacParts[0].TrimStart(',', '<');
-			CreateTag(newSnapshot, match, offset, dacPart, Provider[ColoredCodeType.Dac]);
+			CreateTag(newSnapshot, match, offset, dacPart, Provider[PXCodeType.Dac]);
 		}
 
 		private void GetFieldTag(ITextSnapshot newSnapshot, Match match, int offset, string[] dacParts)
 		{
 			string fieldPart = dacParts[1].TrimEnd(',', '>');
-			CreateTag(newSnapshot, match, offset, fieldPart, Provider[ColoredCodeType.DacField]);
+			CreateTag(newSnapshot, match, offset, fieldPart, Provider[PXCodeType.DacField]);
 		}
 
         private void CreateTag(ITextSnapshot newSnapshot, Match match, int offset, string tagContent, IClassificationType classType)

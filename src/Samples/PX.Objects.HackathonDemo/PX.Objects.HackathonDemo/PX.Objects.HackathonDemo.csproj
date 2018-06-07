@@ -46,6 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BqlParameterMismatch\CustomSelect.cs" />
+    <Compile Include="BqlParameterMismatch\InheritanceCall.cs" />
+    <Compile Include="BqlParameterMismatch\InstanceCall2.cs" />
+    <Compile Include="BqlParameterMismatch\InstanceCall.cs" />
+    <Compile Include="BqlParameterMismatch\StaticCall.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="SOOrder.cs" />

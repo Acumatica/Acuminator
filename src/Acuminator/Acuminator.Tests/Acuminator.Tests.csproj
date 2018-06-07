@@ -143,16 +143,21 @@
     <EmbeddedResource Include="Sources\DACCreateInstance.cs" />
     <EmbeddedResource Include="Sources\DACCreateInstance_Expected.cs" />
     <EmbeddedResource Include="Sources\LongOperationDelegateClosuresAnalyzer.cs" />
-    <Compile Include="BqlFormatterTests.cs" />
+    <EmbeddedResource Include="Sources\Dac\SOOrder.cs" />
+    <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\InheritanceCall.cs" />
+    <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\FieldInstanceCall.cs" />
+    <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\VariableInstanceCall.cs" />
+    <Compile Include="Tests\Diagnostics\BQL\BqlParameterMismatchTests.cs" />
+    <Compile Include="Tests\Formatter\BqlFormatterTests.cs" />
     <Compile Include="Helpers\EmbeddedFileDataWithParamsAttribute.cs" />
-    <Compile Include="LongOperationDelegateClosuresTests.cs" />
+    <Compile Include="Tests\Diagnostics\LongOperationDelegateClosuresTests.cs" />
     <EmbeddedResource Include="Sources\StartRowResetForPaging.cs" />
     <EmbeddedResource Include="Sources\MissingTypeListAttributeBad_Expected.cs" />
     <EmbeddedResource Include="Sources\StartRowResetForPaging_Expected.cs" />
     <EmbeddedResource Include="Sources\TypoInViewDelegateName_Good_SameName.cs" />
     <EmbeddedResource Include="Sources\InheritanceFromPXMappedCacheExtension.cs" />
     <EmbeddedResource Include="Sources\InvalidPXActionSignature_ValidParameters.cs" />
-    <Compile Include="NonNullableTypeForBqlFieldTests.cs" />
+    <Compile Include="Tests\Diagnostics\NonNullableTypeForBqlFieldTests.cs" />
     <EmbeddedResource Include="Sources\NonNullableTypeForBqlField_Expected.cs" />
     <EmbeddedResource Include="Sources\NonNullableTypeForBqlField.cs" />
     <EmbeddedResource Include="Sources\NonNullableTypeForBqlField_Valid.cs" />
@@ -176,24 +181,25 @@
     <EmbeddedResource Include="Sources\BQL\Formatted\View_EmptyLines.cs" />
     <EmbeddedResource Include="Sources\BQL\Raw\Search_Join.cs" />
     <EmbeddedResource Include="Sources\BQL\Formatted\Search_Join.cs" />
-    <EmbeddedResource Include="Sources\MissingTypeListAttributeInheritedList.cs" />
-    <Compile Include="StartRowResetForPagingTests.cs" />
-    <Compile Include="InheritanceFromPXCacheExtensionTests.cs" />
+    <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\StaticCall.cs" />
+    <Compile Include="Sources\MissingTypeListAttributeInheritedList.cs" />
+    <Compile Include="Tests\Diagnostics\StartRowResetForPagingTests.cs" />
+    <Compile Include="Tests\Diagnostics\InheritanceFromPXCacheExtensionTests.cs" />
     <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtension_Bad.cs" />
     <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtension_Bad_Expected.cs" />
     <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtension_Good.cs" />
     <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtensionMakeSealed_Bad.cs" />
     <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtensionMakeSealed_Bad_Expected.cs" />
-    <Compile Include="ViewDeclarationOrderTests.cs" />
+    <Compile Include="Tests\Diagnostics\ViewDeclarationOrderTests.cs" />
     <EmbeddedResource Include="Sources\InvalidPXActionSignature.cs" />
     <EmbeddedResource Include="Sources\InvalidPXActionSignature_Expected.cs" />
     <Compile Include="Helpers\EmbeddedFileDataAttribute.cs" />
-    <Compile Include="InvalidPXActionSignatureTests.cs" />
-    <Compile Include="MissingTypeListAttributeTests.cs" />
+    <Compile Include="Tests\Diagnostics\InvalidPXActionSignatureTests.cs" />
+    <Compile Include="Tests\Diagnostics\MissingTypeListAttributeTests.cs" />
     <EmbeddedResource Include="Sources\TypoInViewDelegateName_Good_DifferentNames.cs" />
     <EmbeddedResource Include="Sources\TypoInViewDelegateName_Bad_Expected.cs" />
-    <Compile Include="TypoInViewDelegateNameTests.cs" />
-    <Compile Include="PXGraphCreateInstanceTests.cs" />
+    <Compile Include="Tests\Diagnostics\TypoInViewDelegateNameTests.cs" />
+    <Compile Include="Tests\Diagnostics\PXGraphCreateInstanceTests.cs" />
     <EmbeddedResource Include="Sources\PXGraphCreateInstanceField.cs" />
     <EmbeddedResource Include="Sources\PXGraphCreateInstanceMethod.cs" />
     <EmbeddedResource Include="Sources\PXGraphCreateInstanceProperty.cs" />
@@ -235,6 +241,9 @@
     <Analyzer Include="..\..\packages\xunit.analyzers.0.8.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
   </ItemGroup>
   <Import Project="..\..\packages\GitVersionTask.3.6.5\build\portable-net+sl+win+wpa+wp\GitVersionTask.targets" Condition="Exists('..\..\packages\GitVersionTask.3.6.5\build\portable-net+sl+win+wpa+wp\GitVersionTask.targets')" />
+  <ItemGroup>
+    <Folder Include="Tests\Diagnostics\Attributes\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

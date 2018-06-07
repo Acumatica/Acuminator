@@ -118,7 +118,7 @@ namespace Acuminator.Vsix.Coloriser
                     typeSymbol = typeSymbol.OriginalDefinition;
                 }
 
-                ColoredCodeType? coloredCodeType = typeSymbol.GetColoringTypeFromGenericName();
+                PXCodeType? coloredCodeType = typeSymbol.GetCodeTypeFromGenericName();
                 IClassificationType classificationType = coloredCodeType.HasValue 
                     ? tagger.Provider[coloredCodeType.Value]
                     : null;
@@ -132,7 +132,7 @@ namespace Acuminator.Vsix.Coloriser
                     return;
                 }
 
-                if (coloredCodeType.Value == ColoredCodeType.BqlCommand)           
+                if (coloredCodeType.Value == PXCodeType.BqlCommand)           
                     ColorAndOutlineBqlCommandBeginning(genericNode, classificationType);
                 else
                     ColorAndOutlineBqlPartsAndPXActions(genericNode, typeSymbol, classificationType, coloredCodeType.Value);
@@ -166,7 +166,7 @@ namespace Acuminator.Vsix.Coloriser
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void ColorAndOutlineBqlPartsAndPXActions(GenericNameSyntax genericNode, ITypeSymbol typeSymbol, 
-															 IClassificationType classificationType, ColoredCodeType coloredCodeType)
+															 IClassificationType classificationType, PXCodeType coloredCodeType)
             {
                 if (tagger.Provider.Package.ColorOnlyInsideBQL && !IsInsideBqlCommand)
                 {
@@ -178,13 +178,13 @@ namespace Acuminator.Vsix.Coloriser
                                  
                 switch (coloredCodeType)
                 {
-                    case ColoredCodeType.BqlOperator:
+                    case PXCodeType.BqlOperator:
                         ColorAndOutlineBqlOperator(genericNode, typeSymbol, classificationType);
                         return;
-                    case ColoredCodeType.BqlParameter:
+                    case PXCodeType.BqlParameter:
                         ColorBqlParameter(genericNode, typeSymbol, classificationType);
                         return;
-                    case ColoredCodeType.PXAction:
+                    case PXCodeType.PXAction:
                         {
                             if (tagger.Provider.Package.PXActionColoringEnabled)
                                 AddClassificationTag(genericNode.Identifier.Span, classificationType);
@@ -276,8 +276,8 @@ namespace Acuminator.Vsix.Coloriser
 
                 if (typeSymbol.IsBqlConstant())
                 {
-                    AddClassificationTag(leftSpan, tagger.Provider[ColoredCodeType.BQLConstantPrefix]);
-                    AddClassificationTag(rightSpan, tagger.Provider[ColoredCodeType.BQLConstantEnding]);
+                    AddClassificationTag(leftSpan, tagger.Provider[PXCodeType.BQLConstantPrefix]);
+                    AddClassificationTag(rightSpan, tagger.Provider[PXCodeType.BQLConstantEnding]);
                 }
 
                 if (!cancellationToken.IsCancellationRequested)
@@ -395,15 +395,15 @@ namespace Acuminator.Vsix.Coloriser
 
 			private void ColorIdentifierTypeSymbol(ITypeSymbol typeSymbol, TextSpan span, bool isTypeParameter)
 			{
-				ColoredCodeType? coloredCodeType = typeSymbol.GetColoringTypeFromIdentifier(skipValidation: isTypeParameter, 
+				PXCodeType? coloredCodeType = typeSymbol.GetColoringTypeFromIdentifier(skipValidation: isTypeParameter, 
 																							checkItself: isTypeParameter);
 				IClassificationType classificationType = coloredCodeType.HasValue
 					? tagger.Provider[coloredCodeType.Value]
 					: null;
 
 				if (classificationType == null || 
-				   (coloredCodeType.Value == ColoredCodeType.PXGraph && !tagger.Provider.Package.PXGraphColoringEnabled) ||
-				   (coloredCodeType.Value == ColoredCodeType.PXAction && !tagger.Provider.Package.PXActionColoringEnabled))
+				   (coloredCodeType.Value == PXCodeType.PXGraph && !tagger.Provider.Package.PXGraphColoringEnabled) ||
+				   (coloredCodeType.Value == PXCodeType.PXAction && !tagger.Provider.Package.PXActionColoringEnabled))
 					return;
 
 				AddClassificationTag(span, classificationType);

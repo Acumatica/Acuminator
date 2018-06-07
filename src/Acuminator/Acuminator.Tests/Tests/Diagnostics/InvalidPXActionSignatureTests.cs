@@ -35,11 +35,11 @@ namespace Acuminator.Tests
 			VerifyCSharpDiagnostic(actual, diagnostic);
 		}
 
-	    [Theory]
-	    [EmbeddedFileData("InvalidPXActionSignature.cs", "InvalidPXActionSignature_Expected.cs")]
-        public void TestCodeFix(string actual, string expected)
-	    {
-	        VerifyCSharpFix(actual, expected);
+		[Theory]
+		[EmbeddedFileData("InvalidPXActionSignature.cs", "InvalidPXActionSignature_Expected.cs")]
+		public void TestCodeFix(string actual, string expected)
+		{
+			VerifyCSharpFix(actual, expected);
 		}
 
 		[Theory]

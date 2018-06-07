@@ -297,11 +297,20 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The number of arguments passed to the Select method does not match the number of BQL statement parameters. .
+        ///   Looks up a localized string similar to The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of required arguments is {1}..
         /// </summary>
-        public static string PX1015Title {
+        public static string PX1015TitleSuffixWithOnlyRequiredParams {
             get {
-                return ResourceManager.GetString("PX1015Title", resourceCulture);
+                return ResourceManager.GetString("PX1015TitleSuffixWithOnlyRequiredParams", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of arguments should be from {1} to {2}..
+        /// </summary>
+        public static string PX1015TitleSuffixWithRequiredAndOptionalParams {
+            get {
+                return ResourceManager.GetString("PX1015TitleSuffixWithRequiredAndOptionalParams", resourceCulture);
             }
         }
     }
