@@ -182,7 +182,7 @@
     <EmbeddedResource Include="Sources\BQL\Raw\Search_Join.cs" />
     <EmbeddedResource Include="Sources\BQL\Formatted\Search_Join.cs" />
     <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\StaticCall.cs" />
-    <Compile Include="Sources\MissingTypeListAttributeInheritedList.cs" />
+    <EmbeddedResource Include="Sources\MissingTypeListAttributeInheritedList.cs" />
     <Compile Include="Tests\Diagnostics\StartRowResetForPagingTests.cs" />
     <Compile Include="Tests\Diagnostics\InheritanceFromPXCacheExtensionTests.cs" />
     <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtension_Bad.cs" />
