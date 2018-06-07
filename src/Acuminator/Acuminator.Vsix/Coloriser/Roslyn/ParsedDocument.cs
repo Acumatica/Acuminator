@@ -29,13 +29,10 @@ namespace Acuminator.Vsix.Coloriser
 
         public Document Document { get; }
 
-        public SemanticModel SemanticModel { get; }
-
         public SyntaxNode SyntaxRoot { get; }
 
         public ITextSnapshot Snapshot { get; }
 
-        //internal ParsedSymbolsCache SymbolsCache { get; }
 
         public ParsedDocument(Workspace workspace, Document document, SemanticModel semanticModel, SyntaxNode syntaxRoot,
                                ITextSnapshot snapshot)
@@ -43,12 +40,18 @@ namespace Acuminator.Vsix.Coloriser
             Workspace = workspace;
             Document = document;
             SyntaxRoot = syntaxRoot;
-            SemanticModel = semanticModel;
-            Snapshot = snapshot;
-            //SymbolsCache = new ParsedSymbolsCache();
+            Snapshot = snapshot;     
         }
 
-        public static async Task<ParsedDocument> Resolve(ITextBuffer buffer, ITextSnapshot snapshot, CancellationToken cancellationToken)
+		public Task<SemanticModel> SemanticModelAsync(CancellationToken cancellationToken = default)
+		{
+			if (Document.TryGetSemanticModel(out var semanticModel))
+				return Task.FromResult(semanticModel);
+
+			return Document.GetSemanticModelAsync(cancellationToken);
+		}
+
+		public static async Task<ParsedDocument> Resolve(ITextBuffer buffer, ITextSnapshot snapshot, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
                 return null;
