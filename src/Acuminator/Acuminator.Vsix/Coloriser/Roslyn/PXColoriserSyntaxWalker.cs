@@ -398,14 +398,7 @@ namespace Acuminator.Vsix.Coloriser
 					symbol = symbolInfo.CandidateSymbols[0];
 				}
 
-				ITypeSymbol type = symbol as ITypeSymbol;
-
-				if (type == null && !cancellationToken.IsCancellationRequested)
-				{
-					type = semanticModel.GetTypeInfo(node).Type;
-				}
-
-				return type;
+				return symbol as ITypeSymbol;
 			}
 
 			private void AnalyzeTypeParameterNode(IdentifierNameSyntax node, ITypeParameterSymbol typeParameterSymbol)
