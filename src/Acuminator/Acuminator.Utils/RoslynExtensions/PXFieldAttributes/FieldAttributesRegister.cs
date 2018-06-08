@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using PX.Data;
 using Acuminator.Analyzers;
@@ -41,7 +41,7 @@ namespace Acuminator.Utilities
 		{
 			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
 
-			List<ITypeSymbol> attributeTypeHierarchy = attributeSymbol.GetBaseTypesAndThis().ToList();        
+			List<ITypeSymbol> attributeTypeHierarchy = attributeSymbol.GetBaseTypesAndThis().ToList();
 			var info = CheckAttributeInheritanceChain(attributeSymbol, attributeTypeHierarchy);
 
 			if (info.HasValue)
@@ -64,7 +64,7 @@ namespace Acuminator.Utilities
 		private FieldAttributeInfo? CheckAttributeInheritanceChain(ITypeSymbol attributeSymbol, List<ITypeSymbol> attributeTypeHierarchy = null)
 		{
 			var attributeBaseTypesEnum = attributeTypeHierarchy ?? attributeSymbol.GetBaseTypesAndThis();
-			ITypeSymbol fieldAttribute = attributeBaseTypesEnum.FirstOrDefault(attr => AllFieldAttributes.Contains(attr));
+			ITypeSymbol fieldAttribute = attributeBaseTypesEnum.FirstOrDefault(IsFieldAttribute);
 
 			if (fieldAttribute != null)
 			{
@@ -76,6 +76,10 @@ namespace Acuminator.Utilities
 
 			return null;
 		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private bool IsFieldAttribute(ITypeSymbol attribute) => 
+			AllFieldAttributes.Contains(attribute) && !attribute.Equals(context.FieldAttributes.PXDBScalarAttribute);
 
 		private static HashSet<ITypeSymbol> GetUnboundFieldAttributes(PXContext pxContext) =>
 			new HashSet<ITypeSymbol>

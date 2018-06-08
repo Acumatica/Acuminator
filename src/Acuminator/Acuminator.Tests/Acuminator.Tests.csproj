@@ -156,6 +156,7 @@
     <Compile Include="Tests\StaticAnalysis\BQL\BqlParameterMismatchTests.cs" />
     <Compile Include="Tests\Formatter\BqlFormatterTests.cs" />
     <Compile Include="Helpers\EmbeddedFileDataWithParamsAttribute.cs" />
+    <Compile Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtensionTests.cs" />
     <Compile Include="Tests\StaticAnalysis\LongOperationDelegateClosuresTests.cs" />
     <EmbeddedResource Include="Sources\StartRowResetForPaging.cs" />
     <EmbeddedResource Include="Sources\MissingTypeListAttributeBad_Expected.cs" />
@@ -189,13 +190,12 @@
     <EmbeddedResource Include="Sources\BQL\Formatted\Search_Join.cs" />
     <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\StaticCall.cs" />
     <EmbeddedResource Include="Sources\MissingTypeListAttributeInheritedList.cs" />
-    <Compile Include="Tests\Diagnostics\StartRowResetForPagingTests.cs" />
-    <Compile Include="Tests\Diagnostics\InheritanceFromPXCacheExtensionTests.cs" />
     <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtension_Bad.cs" />
     <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtension_Bad_Expected.cs" />
     <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtension_Good.cs" />
     <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtensionMakeSealed_Bad.cs" />
     <EmbeddedResource Include="Sources\InheritanceFromPXCacheExtensionMakeSealed_Bad_Expected.cs" />
+    <Compile Include="Tests\StaticAnalysis\StartRowResetForPagingTests.cs" />
     <Compile Include="Tests\StaticAnalysis\ViewDeclarationOrderTests.cs" />
     <EmbeddedResource Include="Sources\InvalidPXActionSignature.cs" />
     <EmbeddedResource Include="Sources\InvalidPXActionSignature_Expected.cs" />

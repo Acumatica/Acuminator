@@ -80,8 +80,10 @@ namespace Acuminator.Analyzers
                 compilation = aCompilation;
             }
 
-            #region Field Unbound Attributes
-            public INamedTypeSymbol PXLongAttribute => compilation.GetTypeByMetadataName(typeof(PXLongAttribute).FullName);
+			public INamedTypeSymbol PXDBScalarAttribute => compilation.GetTypeByMetadataName(typeof(PXDBScalarAttribute).FullName);
+
+			#region Field Unbound Attributes
+			public INamedTypeSymbol PXLongAttribute => compilation.GetTypeByMetadataName(typeof(PXLongAttribute).FullName);
             public INamedTypeSymbol PXIntAttribute => compilation.GetTypeByMetadataName(typeof(PXIntAttribute).FullName);
             public INamedTypeSymbol PXShortAttribute => compilation.GetTypeByMetadataName(typeof(PXShortAttribute).FullName);
             public INamedTypeSymbol PXStringAttribute => compilation.GetTypeByMetadataName(typeof(PXStringAttribute).FullName);
