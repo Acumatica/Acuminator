@@ -64,22 +64,17 @@ namespace Acuminator.Utilities
 		private FieldAttributeInfo? CheckAttributeInheritanceChain(ITypeSymbol attributeSymbol, List<ITypeSymbol> attributeTypeHierarchy = null)
 		{
 			var attributeBaseTypesEnum = attributeTypeHierarchy ?? attributeSymbol.GetBaseTypesAndThis();
-			ITypeSymbol fieldAttribute = attributeBaseTypesEnum.FirstOrDefault(IsFieldAttribute);
+			ITypeSymbol fieldAttribute = attributeBaseTypesEnum.TakeWhile(a => !a.Equals(context.FieldAttributes.PXDBScalarAttribute))
+															   .FirstOrDefault(a => AllFieldAttributes.Contains(a));
 
-			if (fieldAttribute != null)
-			{
-				bool isBoundField = BoundFieldAttributes.Contains(fieldAttribute);
-				return CorrespondingSimpleTypes.TryGetValue(fieldAttribute, out var fieldType)
-					? new FieldAttributeInfo(isFieldAttribute: true, isBoundField, fieldType)
-					: new FieldAttributeInfo(isFieldAttribute: true, isBoundField, fieldType: null);
-			}
+			if (fieldAttribute == null)
+				return null;
 
-			return null;
+			bool isBoundField = BoundFieldAttributes.Contains(fieldAttribute);
+			return CorrespondingSimpleTypes.TryGetValue(fieldAttribute, out var fieldType)
+				? new FieldAttributeInfo(isFieldAttribute: true, isBoundField, fieldType)
+				: new FieldAttributeInfo(isFieldAttribute: true, isBoundField, fieldType: null);
 		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private bool IsFieldAttribute(ITypeSymbol attribute) => 
-			AllFieldAttributes.Contains(attribute) && !attribute.Equals(context.FieldAttributes.PXDBScalarAttribute);
 
 		private static HashSet<ITypeSymbol> GetUnboundFieldAttributes(PXContext pxContext) =>
 			new HashSet<ITypeSymbol>
