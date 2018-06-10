@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using PX.Data;
 using Acuminator.Analyzers;
@@ -41,7 +41,7 @@ namespace Acuminator.Utilities
 		{
 			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
 
-			List<ITypeSymbol> attributeTypeHierarchy = attributeSymbol.GetBaseTypesAndThis().ToList();        
+			List<ITypeSymbol> attributeTypeHierarchy = attributeSymbol.GetBaseTypesAndThis().ToList();
 			var info = CheckAttributeInheritanceChain(attributeSymbol, attributeTypeHierarchy);
 
 			if (info.HasValue)
@@ -64,17 +64,16 @@ namespace Acuminator.Utilities
 		private FieldAttributeInfo? CheckAttributeInheritanceChain(ITypeSymbol attributeSymbol, List<ITypeSymbol> attributeTypeHierarchy = null)
 		{
 			var attributeBaseTypesEnum = attributeTypeHierarchy ?? attributeSymbol.GetBaseTypesAndThis();
-			ITypeSymbol fieldAttribute = attributeBaseTypesEnum.FirstOrDefault(attr => AllFieldAttributes.Contains(attr));
+			ITypeSymbol fieldAttribute = attributeBaseTypesEnum.TakeWhile(a => !a.Equals(context.FieldAttributes.PXDBScalarAttribute))
+															   .FirstOrDefault(a => AllFieldAttributes.Contains(a));
 
-			if (fieldAttribute != null)
-			{
-				bool isBoundField = BoundFieldAttributes.Contains(fieldAttribute);
-				return CorrespondingSimpleTypes.TryGetValue(fieldAttribute, out var fieldType)
-					? new FieldAttributeInfo(isFieldAttribute: true, isBoundField, fieldType)
-					: new FieldAttributeInfo(isFieldAttribute: true, isBoundField, fieldType: null);
-			}
+			if (fieldAttribute == null)
+				return null;
 
-			return null;
+			bool isBoundField = BoundFieldAttributes.Contains(fieldAttribute);
+			return CorrespondingSimpleTypes.TryGetValue(fieldAttribute, out var fieldType)
+				? new FieldAttributeInfo(isFieldAttribute: true, isBoundField, fieldType)
+				: new FieldAttributeInfo(isFieldAttribute: true, isBoundField, fieldType: null);
 		}
 
 		private static HashSet<ITypeSymbol> GetUnboundFieldAttributes(PXContext pxContext) =>
