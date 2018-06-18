@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Acuminator.Utilities;
 using PX.Data;
 
-namespace Acuminator.Analyzers.Analyzers
+namespace Acuminator.Analyzers
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class InheritanceFromPXCacheExtensionAnalyzer : PXDiagnosticAnalyzer

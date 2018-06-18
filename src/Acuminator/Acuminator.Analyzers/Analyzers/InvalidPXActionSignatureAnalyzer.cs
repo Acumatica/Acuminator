@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Acuminator.Utilities;
 
-namespace Acuminator.Analyzers.Analyzers
+namespace Acuminator.Analyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class InvalidPXActionSignatureAnalyzer : PXDiagnosticAnalyzer

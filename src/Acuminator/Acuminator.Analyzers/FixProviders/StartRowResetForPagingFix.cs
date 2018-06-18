@@ -15,7 +15,7 @@ using Microsoft.CodeAnalysis.Editing;
 using Acuminator.Utilities;
 using PX.Data;
 
-namespace Acuminator.Analyzers.Analyzers
+namespace Acuminator.Analyzers
 {
     [ExportCodeFixProvider(LanguageNames.CSharp), Shared]
     public class StartRowResetForPagingFix : CodeFixProvider

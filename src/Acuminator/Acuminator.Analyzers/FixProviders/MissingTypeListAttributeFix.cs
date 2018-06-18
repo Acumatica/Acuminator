@@ -14,7 +14,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Acuminator.Utilities;
 
-namespace Acuminator.Analyzers.Analyzers
+namespace Acuminator.Analyzers
 {
     [ExportCodeFixProvider(LanguageNames.CSharp), Shared]
     public class MissingTypeListAttributeFix : CodeFixProvider
@@ -43,8 +43,8 @@ namespace Acuminator.Analyzers.Analyzers
             var pxContext = new PXContext(semanticModel.Compilation);
 
             var lists = new List<INamedTypeSymbol> {
-                                    pxContext.PXIntListAttributeType,
-                                    pxContext.PXStringListAttributeType};
+                                    pxContext.PXIntListAttribute,
+                                    pxContext.PXStringListAttribute};
 
             var property = semanticModel.GetDeclaredSymbol(propertyDeclaration);
             var attributeClasses = property.GetAttributes().
@@ -53,13 +53,13 @@ namespace Acuminator.Analyzers.Analyzers
                     FirstOrDefault(c => lists.Any(l => c.InheritsFromOrEquals(l, true)));
 
             AttributeSyntax attr = null;
-            if (listAttribute.InheritsFromOrEquals(pxContext.PXIntListAttributeType))
+            if (listAttribute.InheritsFromOrEquals(pxContext.PXIntListAttribute))
             {
-                attr = SyntaxFactory.Attribute(SyntaxFactory.IdentifierName(pxContext.PXIntAttributeType.Name));
+                attr = SyntaxFactory.Attribute(SyntaxFactory.IdentifierName(pxContext.FieldAttributes.PXIntAttribute.Name));
             }
-            else if (listAttribute.InheritsFromOrEquals(pxContext.PXStringListAttributeType))
+            else if (listAttribute.InheritsFromOrEquals(pxContext.PXStringListAttribute))
             {
-                attr = SyntaxFactory.Attribute(SyntaxFactory.IdentifierName(pxContext.PXStringAttributeType.Name));
+                attr = SyntaxFactory.Attribute(SyntaxFactory.IdentifierName(pxContext.FieldAttributes.PXStringAttribute.Name));
             }
             var attributes = propertyDeclaration.AttributeLists.Add(
                    SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList<AttributeSyntax>(attr)));

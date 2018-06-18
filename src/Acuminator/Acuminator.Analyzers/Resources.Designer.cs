@@ -313,5 +313,41 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1015TitleSuffixWithRequiredAndOptionalParams", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change the property type so that it corresponds to the attribute type.
+        /// </summary>
+        public static string PX1021PropertyFix {
+            get {
+                return ResourceManager.GetString("PX1021PropertyFix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type of the DAC field attribute does not correspond to the property type.
+        /// </summary>
+        public static string PX1021Title {
+            get {
+                return ResourceManager.GetString("PX1021Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leave the selected field attribute and remove other field attributes from the property.
+        /// </summary>
+        public static string PX1023Fix {
+            get {
+                return ResourceManager.GetString("PX1023Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DAC property cannot be marked with multiple field attributes.
+        /// </summary>
+        public static string PX1023Title {
+            get {
+                return ResourceManager.GetString("PX1023Title", resourceCulture);
+            }
+        }
     }
 }
