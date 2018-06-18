@@ -44,7 +44,7 @@ namespace Acuminator.Analyzers
 
 			var attributesWithInfo = GetFieldAttributesInfos(pxContext, attributes, symbolContext.CancellationToken);
 
-			if (attributesWithInfo.Count == 0 || symbolContext.CancellationToken.IsCancellationRequested)
+			if (symbolContext.CancellationToken.IsCancellationRequested || attributesWithInfo.IsNullOrEmpty())
 				return;
 
 			if (attributesWithInfo.Count > 1)
