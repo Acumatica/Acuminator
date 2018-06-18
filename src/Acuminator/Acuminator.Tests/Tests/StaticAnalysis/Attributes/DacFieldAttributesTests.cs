@@ -27,15 +27,21 @@ namespace Acuminator.Tests
 		[EmbeddedFileData(@"Attributes\Diagnostics\FieldAttributesTypeMismatch\DacExampleFieldAttributesTypeMismatch.cs")]
 		public virtual void Test_Dac_With_Property_Type_Not_Matching_Field_Attribute_Type(string source) =>
 			VerifyCSharpDiagnostic(source,
-				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 24, column: 4),
-				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 26, column: 10),
+				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 24, column: 4, extraLocationLine: 26, extraLocationColumn: 10),
+				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 26, column: 10, extraLocationLine: 24, extraLocationColumn: 4),
 
-				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 34, column: 4),
-				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 35, column: 18));
+				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 34, column: 4, extraLocationLine: 35, extraLocationColumn: 18),
+				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 35, column: 18, extraLocationLine: 34, extraLocationColumn: 4));
+
+		[Theory]
+		[EmbeddedFileData(@"Attributes\Diagnostics\FieldAttributesTypeMismatch\DacExampleFieldTypeMismatchPXDBScalarAttr.cs")]
+		public virtual void Test_Dac_Property_With_PXDBScalar_Attribute(string source) =>
+			VerifyCSharpDiagnostic(source);	
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacPropertyAttributesAnalyzer();
 
-		private DiagnosticResult CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(int line, int column)
+		private DiagnosticResult CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(int line, int column, 
+																								  int extraLocationLine, int extraLocationColumn)
 		{
 			return new DiagnosticResult
 			{
@@ -45,7 +51,8 @@ namespace Acuminator.Tests
 				Locations =
 					new[]
 					{
-						new DiagnosticResultLocation("Test0.cs", line, column)
+						new DiagnosticResultLocation("Test0.cs", line, column),
+						new DiagnosticResultLocation("Test0.cs", extraLocationLine, extraLocationColumn)
 					}
 			};
 		}
