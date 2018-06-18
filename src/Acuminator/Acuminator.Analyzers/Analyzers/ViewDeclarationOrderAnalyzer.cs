@@ -18,55 +18,62 @@ namespace Acuminator.Analyzers
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-            compilationStartContext.RegisterSymbolAction(c => AnalyzeMethod(c, pxContext), SymbolKind.NamedType);
+            compilationStartContext.RegisterSymbolAction(c => AnalyzeGraphViews(c, pxContext), SymbolKind.NamedType);
 		}
 
-		private static void AnalyzeMethod(SymbolAnalysisContext context, PXContext pxContext)
+		private static void AnalyzeGraphViews(SymbolAnalysisContext context, PXContext pxContext)
 		{
-			var graph = (INamedTypeSymbol)context.Symbol;
-            if (!graph.InheritsFromOrEquals(pxContext.PXGraphType) &&
-                !graph.InheritsFromOrEquals(pxContext.PXGraphExtensionType))
-                return;
+			INamedTypeSymbol graph = (INamedTypeSymbol)context.Symbol;
 
-            var test = graph.GetMembers().Where(m => m is IFieldSymbol);
-            var selects = graph.GetMembers().Where(m => m is IFieldSymbol).
-                Select(f => ((IFieldSymbol)f).Type as INamedTypeSymbol).
-                Where(t => t != null &&
-                           t.InheritsFrom(pxContext.PXSelectBaseType) && 
-                           t.IsGenericType &&
-                           t.TypeArguments.Count() > 0).
-                ToImmutableList();
+			if (graph == null || context.CancellationToken.IsCancellationRequested ||
+			   !graph.InheritsFromOrEquals(pxContext.PXGraphType) && !graph.InheritsFromOrEquals(pxContext.PXGraphExtensionType))
+			{
+				return;
+			}
+        
+            var graphViews = graph.GetMembers()
+								  .OfType<IFieldSymbol>()
+								  .Select(field => field.Type as INamedTypeSymbol)
+								  .Where(fieldType => fieldType != null &&
+													   fieldType.InheritsFrom(pxContext.PXSelectBaseType) && 
+													   fieldType.IsGenericType &&
+													   fieldType.TypeArguments.Length > 0).
+								   ToImmutableList();
 
-            var visited = new HashSet<INamedTypeSymbol>();
-            //forward pass
-            foreach (var select in selects)
-            {
-                var type = (INamedTypeSymbol)select.TypeArguments.First();
-                if (visited.Contains(type))
-                    continue;
-                foreach(var parent in type.GetBaseTypes())
-                    if(visited.Contains(parent))
-                        context.ReportDiagnostic(
-                            Diagnostic.Create(Descriptors.PX1004_ViewDeclarationOrder, 
-                                              graph.Locations.First(),
-                                              type.Name, parent.Name));
-                visited.Add(type);
-            }
+			Location graphLocation = graph.Locations.FirstOrDefault();
 
-            //backward pass
-            visited.Clear();
-            foreach (var select in selects.Reverse())
-            {
-                var type = (INamedTypeSymbol)select.TypeArguments.First();
-                if (visited.Contains(type))
-                    continue;
-                foreach (var parent in type.GetBaseTypes())
-                    if (visited.Contains(parent))
-                        context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1006_ViewDeclarationOrder, 
-                                                                   graph.Locations.First(),
-                                                                   type.Name, parent.Name));
-                visited.Add(type);
-            }
-        }
+			if (graphLocation == null || context.CancellationToken.IsCancellationRequested)
+				return;
+
+			//forward pass
+			CheckGraphViews(context, graphLocation, graphViews, Descriptors.PX1004_ViewDeclarationOrder);
+
+			if (context.CancellationToken.IsCancellationRequested)
+				return;
+
+			//backward pass
+			CheckGraphViews(context, graphLocation, graphViews.Reverse(), Descriptors.PX1006_ViewDeclarationOrder);
+		}
+
+		private static void CheckGraphViews(SymbolAnalysisContext context, Location graphLocation, ImmutableList<INamedTypeSymbol> graphViews,
+											DiagnosticDescriptor diagnosticDescriptor)
+		{
+			var visitedViews = new HashSet<ITypeSymbol>();
+
+			foreach (INamedTypeSymbol view in graphViews)
+			{
+				ITypeSymbol viewType = view.TypeArguments[0] as ITypeSymbol;
+
+				if (viewType == null || visitedViews.Contains(viewType))
+					continue;
+
+				foreach (INamedTypeSymbol parentType in viewType.GetBaseTypes().Where(pType => visitedViews.Contains(pType)))
+				{
+					context.ReportDiagnostic(Diagnostic.Create(diagnosticDescriptor, graphLocation, viewType.Name, parentType.Name));
+				}
+
+				visitedViews.Add(viewType);
+			}
+		}
 	}
 }
