@@ -315,15 +315,6 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Make the attribute type correspond to the property type..
-        /// </summary>
-        public static string PX1021AttributeFix {
-            get {
-                return ResourceManager.GetString("PX1021AttributeFix", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Make the property type correspond to the attribute type..
         /// </summary>
         public static string PX1021PropertyFix {

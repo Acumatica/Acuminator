@@ -47,8 +47,7 @@ namespace Acuminator.Analyzers.FixProviders
 			
 			if (codeFixNode is AttributeSyntax attribute)
 			{
-				string codeActionName = nameof(Resources.PX1021PropertyFix).GetLocalized().ToString();
-				RegisterCodeFix(root, attribute, context, codeActionName);
+				RegisterCodeFix(root, attribute, context);
 			}
 			else
 			{
@@ -67,13 +66,14 @@ namespace Acuminator.Analyzers.FixProviders
 
 			if (attributeNode == null || context.CancellationToken.IsCancellationRequested)
 				return;
-
-			string codeActionName = nameof(Resources.PX1021AttributeFix).GetLocalized().ToString();
-			RegisterCodeFix(root, attributeNode, context, codeActionName);
+			
+			RegisterCodeFix(root, attributeNode, context);
 		}
 
-		private void RegisterCodeFix(SyntaxNode root, AttributeSyntax attributeNode, CodeFixContext context, string codeActionName)
+		private void RegisterCodeFix(SyntaxNode root, AttributeSyntax attributeNode, CodeFixContext context)
 		{
+			string codeActionName = nameof(Resources.PX1021PropertyFix).GetLocalized().ToString();
+
 			CodeAction codeAction =
 				CodeAction.Create(codeActionName,
 								  cToken => ChangePropertyTypeToAttributeType(context.Document, root, attributeNode, cToken),
