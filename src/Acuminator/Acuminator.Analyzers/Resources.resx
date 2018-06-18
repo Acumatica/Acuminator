@@ -203,15 +203,15 @@
     <value>The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of arguments should be from {1} to {2}.</value>
   </data>
   <data name="PX1021Title" xml:space="preserve">
-    <value>The PXDBFieldAttribute type and property type do not correspond to each other</value>
+    <value>The type of the DAC field attribute does not correspond to the property type</value>
   </data>
   <data name="PX1021PropertyFix" xml:space="preserve">
-    <value>Make the property type correspond to the attribute type.</value>
+    <value>Change the property type so that it corresponds to the attribute type</value>
   </data>
   <data name="PX1023Title" xml:space="preserve">
-    <value>The DAC property can not be marked with multiple field attributes</value>
+    <value>The DAC property cannot be marked with multiple field attributes</value>
   </data>
   <data name="PX1023Fix" xml:space="preserve">
-    <value>Remove other field attributes from the property.</value>
+    <value>Leave the selected field attribute and remove other field attributes from the property</value>
   </data>
 </root>

@@ -315,7 +315,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Make the property type correspond to the attribute type..
+        ///   Looks up a localized string similar to Change the property type so that it corresponds to the attribute type.
         /// </summary>
         public static string PX1021PropertyFix {
             get {
@@ -324,7 +324,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The PXDBFieldAttribute type and property type do not correspond to each other.
+        ///   Looks up a localized string similar to The type of the DAC field attribute does not correspond to the property type.
         /// </summary>
         public static string PX1021Title {
             get {
@@ -333,7 +333,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove other field attributes from the property..
+        ///   Looks up a localized string similar to Leave the selected field attribute and remove other field attributes from the property.
         /// </summary>
         public static string PX1023Fix {
             get {
@@ -342,7 +342,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The DAC property can not be marked with multiple field attributes.
+        ///   Looks up a localized string similar to The DAC property cannot be marked with multiple field attributes.
         /// </summary>
         public static string PX1023Title {
             get {
