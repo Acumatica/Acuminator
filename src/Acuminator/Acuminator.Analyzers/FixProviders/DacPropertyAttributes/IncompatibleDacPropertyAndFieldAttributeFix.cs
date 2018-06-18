@@ -11,7 +11,6 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Simplification;
 using Microsoft.CodeAnalysis.Editing;
 using Acuminator.Utilities;
 
@@ -48,23 +47,33 @@ namespace Acuminator.Analyzers.FixProviders
 			
 			if (codeFixNode is AttributeSyntax attribute)
 			{
-				RegisterCodeFixForAttributeType(root, attribute, context);
+				string codeActionName = nameof(Resources.PX1021PropertyFix).GetLocalized().ToString();
+				RegisterCodeFix(root, attribute, context, codeActionName);
 			}
 			else
 			{
-				RegisterCodeFixForPropertyType(root, codeFixNode, context);
+				RegisterCodeFixForPropertyType(root, codeFixNode, context, diagnostic);
 			}		
 		}
 
-		private void RegisterCodeFixForPropertyType(SyntaxNode root, SyntaxNode codeFixNode, CodeFixContext context)
+		private void RegisterCodeFixForPropertyType(SyntaxNode root, SyntaxNode codeFixNode, CodeFixContext context, Diagnostic diagnostic)
 		{
+			Location attributeLocation = diagnostic.AdditionalLocations.FirstOrDefault();
+
+			if (attributeLocation == null || context.CancellationToken.IsCancellationRequested)
+				return;
+
+			AttributeSyntax attributeNode = root.FindNode(attributeLocation.SourceSpan) as AttributeSyntax;
+
+			if (attributeNode == null || context.CancellationToken.IsCancellationRequested)
+				return;
+
 			string codeActionName = nameof(Resources.PX1021AttributeFix).GetLocalized().ToString();
+			RegisterCodeFix(root, attributeNode, context, codeActionName);
 		}
 
-		private void RegisterCodeFixForAttributeType(SyntaxNode root, AttributeSyntax attributeNode, CodeFixContext context)
+		private void RegisterCodeFix(SyntaxNode root, AttributeSyntax attributeNode, CodeFixContext context, string codeActionName)
 		{
-			string codeActionName = nameof(Resources.PX1021PropertyFix).GetLocalized().ToString();
-
 			CodeAction codeAction =
 				CodeAction.Create(codeActionName,
 								  cToken => ChangePropertyTypeToAttributeType(context.Document, root, attributeNode, cToken),
@@ -90,7 +99,7 @@ namespace Acuminator.Analyzers.FixProviders
 
 			if (attributeType == null || cancellationToken.IsCancellationRequested)
 				return document;
-
+			
 			PXContext pxContext = new PXContext(semanticModel.Compilation);
 			FieldAttributesRegister attributesRegister = new FieldAttributesRegister(pxContext);
 			FieldAttributeInfo info = attributesRegister.GetFieldAttributeInfo(attributeType);

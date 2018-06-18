@@ -143,14 +143,16 @@ namespace Acuminator.Analyzers
 			{
 				symbolContext.ReportDiagnostic(
 					Diagnostic.Create(
-						Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, propertyTypeLocation, diagnosticProperties));
+						Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, propertyTypeLocation, attributeLocation.ToEnumerable(),
+						diagnosticProperties));
 			}
 
 			if (attributeLocation != null)
 			{
 				symbolContext.ReportDiagnostic(
 					Diagnostic.Create(
-						Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, attributeLocation, diagnosticProperties));
+						Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, attributeLocation, propertyTypeLocation.ToEnumerable(),
+						diagnosticProperties));
 			}
 		}
 

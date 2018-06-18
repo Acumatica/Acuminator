@@ -12,6 +12,13 @@ namespace Acuminator.Utilities
 	public static partial class EnumerableExtensions
 	{
 		[DebuggerStepThrough]
+		public static IEnumerable<T> ToEnumerable<T>(this T item)
+		{
+			if (item != null)
+				yield return item;
+		}
+
+		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
 		{
