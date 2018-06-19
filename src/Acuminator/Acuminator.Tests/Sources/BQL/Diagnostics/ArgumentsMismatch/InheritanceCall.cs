@@ -25,6 +25,7 @@ namespace PX.Objects.HackathonDemo
 		public object Foo()
 		{
 			var result = select.SelectSingle(1);
+			var result2 = CustomSelect.Select(this, 1);
 
 			return this;
 		}
