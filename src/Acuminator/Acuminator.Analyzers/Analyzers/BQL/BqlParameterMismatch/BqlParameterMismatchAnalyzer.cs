@@ -87,6 +87,20 @@ namespace Acuminator.Analyzers
 		private static void AnalyzeStaticInvocation(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
 													InvocationExpressionSyntax invocationNode)
 		{
+			ExpressionSyntax accessExpression = invocationNode.GetAccessNodeFromInvocationNode();
+
+			if (accessExpression == null || syntaxContext.CancellationToken.IsCancellationRequested)
+				return;
+
+			ITypeSymbol callerStaticType = syntaxContext.SemanticModel.GetTypeInfo(accessExpression, syntaxContext.CancellationToken).Type;
+
+			if (callerStaticType == null || callerStaticType.IsCustomBqlCommand(pxContext) ||
+				syntaxContext.CancellationToken.IsCancellationRequested)
+			{
+				//We currently don't support custom BQL command, derived from standard commands. This could be an extension point in the future.
+				return;
+			}
+
 			int? argsCount = GetBqlArgumentsCount(methodSymbol, pxContext, syntaxContext, invocationNode);
 
 			if (argsCount == null || syntaxContext.CancellationToken.IsCancellationRequested)
