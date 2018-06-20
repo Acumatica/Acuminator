@@ -44,12 +44,12 @@
     <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Analyzers\BQL\BqlParameterMismatch\ArrayElemCountLocalVariableResolver.cs" />
-    <Compile Include="Analyzers\BQL\BqlParameterMismatch\BqlInvocationDataFlowAnalyserBase.cs" />
-    <Compile Include="Analyzers\BQL\BqlParameterMismatch\ParametersCounter.cs" />
-    <Compile Include="Analyzers\BQL\BqlParameterMismatch\BqlLocalVariableTypeResolver.cs" />
-    <Compile Include="Analyzers\BQL\BqlParameterMismatch\ParametersCounterSymbolWalker.cs" />
-    <Compile Include="Analyzers\BQL\BqlParameterMismatch\ParametersCounterSyntaxWalker.cs" />
+    <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\ArrayElemCountLocalVariableResolver.cs" />
+    <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\BqlInvocationDataFlowAnalyserBase.cs" />
+    <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\ParametersCounter.cs" />
+    <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\BqlLocalVariableTypeResolver.cs" />
+    <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\ParametersCounterSymbolWalker.cs" />
+    <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\ParametersCounterSyntaxWalker.cs" />
     <Compile Include="Analyzers\NonNullableTypeForBqlFieldAnalyzer.cs" />
     <Compile Include="Analyzers\DacPropertyAttributes\DacPropertyAttributesAnalyzer.cs" />
     <Compile Include="DiagnosticProperty.cs" />
