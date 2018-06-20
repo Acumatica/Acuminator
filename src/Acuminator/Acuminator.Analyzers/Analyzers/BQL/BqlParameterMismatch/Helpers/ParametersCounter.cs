@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Immutable;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -22,6 +22,11 @@ namespace Acuminator.Analyzers
 		protected class ParametersCounter
 		{
 			private readonly PXContext pxContext;
+			private readonly Dictionary<ITypeSymbol, int> customPredicatesWithParameterMultipliers;
+			private int currentParameterMultiplier = 1;
+
+			private const int AreDistinctMultiplier = 2;
+			private const int AreSameMultiplier = 2;
 
 			public int RequiredParametersCount
 			{
@@ -45,15 +50,20 @@ namespace Acuminator.Analyzers
 			{
 				pxContext = aPxContext;
 				IsCountingValid = true;
+				customPredicatesWithParameterMultipliers = new Dictionary<ITypeSymbol, int>
+				{
+					{ pxContext.BQL.AreDistinct, AreDistinctMultiplier },
+					{ pxContext.BQL.AreSame, AreSameMultiplier }
+				};
 			}
 
 			/// <summary>
-			/// Count parameters in type symbol. Return <c>false</c> if the diagnostic should ne stopped
+			/// Count parameters in type symbol. Return <c>false</c> if the diagnostic should be stopped
 			/// </summary>
 			/// <param name="typeSymbol">The type symbol.</param>
 			/// <param name="cancellationToken">(Optional) The cancellation token.</param>
 			/// <returns/>
-			public bool CountParametersInTypeSymbol(ITypeSymbol typeSymbol, CancellationToken cancellationToken = default)
+			public (bool Cancel, int? Multiplier) CountParametersInTypeSymbol(ITypeSymbol typeSymbol, CancellationToken cancellationToken = default)
 			{
 				if (!IsCountingValid || typeSymbol == null || IsCancelled(cancellationToken))
 					return false;
@@ -65,6 +75,16 @@ namespace Acuminator.Analyzers
 					case PXCodeType.BqlCommand:
 						IsCountingValid = !typeSymbol.IsCustomBqlCommand(pxContext); //diagnostic for types inherited from standard views disabled. TODO: make analysis for them
 						return IsCountingValid;
+					case PXCodeType.BqlOperator when typeSymbol.InheritsFrom(pxContext.BQL.CustomPredicate):
+
+						if (!customPredicatesWithParameterMultipliers.TryGetValue(typeSymbol, out int multiplier))
+						{
+							IsCountingValid = false;
+							return IsCountingValid;
+						}
+
+
+
 					case PXCodeType.BqlParameter:
 
 						if (!UpdateParametersCount(typeSymbol) && !cancellationToken.IsCancellationRequested)
