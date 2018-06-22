@@ -199,17 +199,19 @@ namespace Acuminator.Analyzers
 			TypeInfo typeInfo = syntaxContext.SemanticModel.GetTypeInfo(accessExpression, syntaxContext.CancellationToken);
 			ITypeSymbol containingType = typeInfo.ConvertedType ?? typeInfo.Type;
 
-			if (containingType == null || !containingType.IsBqlCommand(pxContext))
+			if (containingType == null || !containingType.IsBqlCommand(pxContext) || containingType.IsCustomBqlCommand(pxContext))
 				return null;
 
-			if (!containingType.IsAbstract && !containingType.IsCustomBqlCommand(pxContext))
-				return containingType;
-
 			if (!(accessExpression is IdentifierNameSyntax identifierNode) || syntaxContext.CancellationToken.IsCancellationRequested)
-				return null;                                                 //Should exclude everything except local variable. For example expressions like "this.var.Select()" should be excluded
+				return null;
 
 			BqlLocalVariableTypeResolver resolver = new BqlLocalVariableTypeResolver(syntaxContext, pxContext, identifierNode);
-			return resolver.ResolveVariableType();
+
+			return containingType.IsAbstract 
+				? resolver.ResolveVariableType()
+				: resolver.CheckForBqlModifications()
+					? containingType
+					: null;
 		}
 
 		private static void VerifyBqlArgumentsCount(int argsCount, ParametersCounter parametersCounter, SyntaxNodeAnalysisContext syntaxContext,
