@@ -94,10 +94,12 @@ namespace Acuminator.Analyzers
 
 			ITypeSymbol callerStaticType = syntaxContext.SemanticModel.GetTypeInfo(accessExpression, syntaxContext.CancellationToken).Type;
 
-			if (callerStaticType == null || callerStaticType.IsCustomBqlCommand(pxContext) ||
-				syntaxContext.CancellationToken.IsCancellationRequested)
+			if (callerStaticType == null || syntaxContext.CancellationToken.IsCancellationRequested)
+				return;
+
+			if (callerStaticType.IsCustomBqlCommand(pxContext))
 			{
-				//We currently don't support custom BQL command, derived from standard commands. This could be an extension point in the future.
+				AnalyzeDerivedBqlStaticCall(methodSymbol, pxContext, syntaxContext);
 				return;
 			}
 
@@ -109,6 +111,30 @@ namespace Acuminator.Analyzers
 			ParametersCounterSyntaxWalker walker = new ParametersCounterSyntaxWalker(syntaxContext, pxContext);
 
 			if (!walker.CountParametersInNode(invocationNode))
+				return;
+
+			VerifyBqlArgumentsCount(argsCount.Value, walker.ParametersCounter, syntaxContext, invocationNode, methodSymbol);
+		}
+
+		private static void AnalyzeDerivedBqlStaticCall(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext)
+		{
+			INamedTypeSymbol containingType = methodSymbol.ContainingType;
+
+			if (containingType.IsUnboundGenericType || !containingType.IsBqlCommand() || containingType.IsCustomBqlCommand(pxContext) ||
+				syntaxContext.CancellationToken.IsCancellationRequested)
+			{
+				return;
+			}
+
+			var invocationNode = syntaxContext.Node as InvocationExpressionSyntax; 
+			int? argsCount = GetBqlArgumentsCount(methodSymbol, pxContext, syntaxContext, invocationNode);
+
+			if (argsCount == null || syntaxContext.CancellationToken.IsCancellationRequested)
+				return;
+
+			ParametersCounterSymbolWalker walker = new ParametersCounterSymbolWalker(syntaxContext, pxContext);
+
+			if (!walker.CountParametersInTypeSymbol(containingType))
 				return;
 
 			VerifyBqlArgumentsCount(argsCount.Value, walker.ParametersCounter, syntaxContext, invocationNode, methodSymbol);
