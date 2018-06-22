@@ -14,54 +14,105 @@ namespace Acuminator.Analyzers.Analyzers
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class LongOperationDelegateClosuresAnalyzer : PXDiagnosticAnalyzer
     {
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+		private const string SetProcessDelegateMethodName = "SetProcessDelegate";
+
+
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1008_LongOperationDelegateClosures);
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-            compilationStartContext.RegisterSyntaxNodeAction(c => AnalyzeMethod(c, pxContext), SyntaxKind.InvocationExpression);
+            compilationStartContext.RegisterSyntaxNodeAction(c => AnalyzeSetProcessDelegateMethod(c, pxContext), SyntaxKind.InvocationExpression);
 		}
 
-		private static void AnalyzeMethod(SyntaxNodeAnalysisContext context, PXContext pxContext)
+		private static void AnalyzeSetProcessDelegateMethod(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
 		{
-			var setDelegateInvocation = (InvocationExpressionSyntax)context.Node;
-            var setDelegatememberAccessExpr = setDelegateInvocation.Expression as MemberAccessExpressionSyntax;
+			var setDelegateInvocation = syntaxContext.Node as InvocationExpressionSyntax;
 
-            if (setDelegatememberAccessExpr?.Name.ToString() != "SetProcessDelegate")
-                return;
-
-            var setDelegateSymbol = context.SemanticModel.GetSymbolInfo(setDelegatememberAccessExpr).Symbol as IMethodSymbol;
-
-            if (!setDelegateSymbol.ContainingType.ConstructedFrom.InheritsFromOrEquals(pxContext.PXProcessingBaseType))
-                return;
+			if (!CheckIfDiagnosticIsValid(setDelegateInvocation, syntaxContext, pxContext))
+				return;
             
             DataFlowAnalysis dfa = null;
 
             switch (setDelegateInvocation.ArgumentList.Arguments[0].Expression)
             {
                 case IdentifierNameSyntax ins:
-                    if (!context.SemanticModel.GetSymbolInfo(ins).Symbol.IsStatic)
+					ISymbol identifierSymbol = syntaxContext.SemanticModel.GetSymbolInfo(ins, syntaxContext.CancellationToken).Symbol;
+
+					if (identifierSymbol != null && !identifierSymbol.IsStatic)
                     {
-                        context.ReportDiagnostic(
+                        syntaxContext.ReportDiagnostic(
                             Diagnostic.Create(
                                 Descriptors.PX1008_LongOperationDelegateClosures, setDelegateInvocation.GetLocation()));
                     }
 
                     return;
-                case AnonymousMethodExpressionSyntax ame:
-                    dfa = context.SemanticModel.AnalyzeDataFlow(ame);
+				case MemberAccessExpressionSyntax memberAccess 
+				when memberAccess.Expression is ElementAccessExpressionSyntax arrayIndexAccess:
+					AnalyzeMemberAccessExpressions(arrayIndexAccess.Expression, syntaxContext);
+					return;
+				case MemberAccessExpressionSyntax memberAccess:
+					AnalyzeMemberAccessExpressions(memberAccess.Expression, syntaxContext);
+					return;
+				case ConditionalAccessExpressionSyntax conditionalAccess 
+				when conditionalAccess.Expression is ElementAccessExpressionSyntax arrayIndexAccess:
+					AnalyzeMemberAccessExpressions(arrayIndexAccess.Expression, syntaxContext);
+					return;
+				case ConditionalAccessExpressionSyntax conditionalAccess:
+					AnalyzeMemberAccessExpressions(conditionalAccess.Expression, syntaxContext);
+					return;
+                case AnonymousMethodExpressionSyntax anonMethodNode:
+                    dfa = syntaxContext.SemanticModel.AnalyzeDataFlow(anonMethodNode);
                     break;
-                case LambdaExpressionSyntax le:
-                    dfa = context.SemanticModel.AnalyzeDataFlow(le);
+                case LambdaExpressionSyntax lambdaNode:
+                    dfa = syntaxContext.SemanticModel.AnalyzeDataFlow(lambdaNode);
                     break;
             }
 
-            if (dfa.DataFlowsIn.OfType<IParameterSymbol>().Any(p => p.IsThis))
+            if (dfa != null && dfa.DataFlowsIn.OfType<IParameterSymbol>().Any(p => p.IsThis))
             {
-                context.ReportDiagnostic(
+                syntaxContext.ReportDiagnostic(
                     Diagnostic.Create(
                         Descriptors.PX1008_LongOperationDelegateClosures, setDelegateInvocation.GetLocation()));
             }
         }
+
+		private static bool CheckIfDiagnosticIsValid(InvocationExpressionSyntax setDelegateInvocation, SyntaxNodeAnalysisContext syntaxContext,
+													 PXContext pxContext)
+		{
+			var setDelegatememberAccessExpr = setDelegateInvocation?.Expression as MemberAccessExpressionSyntax;
+
+			if (setDelegatememberAccessExpr?.Name.ToString() != SetProcessDelegateMethodName ||
+				syntaxContext.CancellationToken.IsCancellationRequested)
+			{
+				return false;
+			}
+
+			var setDelegateSymbol = syntaxContext.SemanticModel.GetSymbolInfo(setDelegatememberAccessExpr).Symbol as IMethodSymbol;
+
+			if (setDelegateSymbol == null || !setDelegateSymbol.ContainingType.ConstructedFrom.InheritsFromOrEquals(pxContext.PXProcessingBaseType))
+				return false;
+
+			return true;
+		}
+
+		private static void AnalyzeMemberAccessExpressions(ExpressionSyntax expression, SyntaxNodeAnalysisContext syntaxContext)
+		{
+			if (!(expression is IdentifierNameSyntax identifier))
+				return;
+
+			ISymbol identifierSymbol = syntaxContext.SemanticModel.GetSymbolInfo(identifier, syntaxContext.CancellationToken).Symbol;
+
+			if (identifierSymbol == null || syntaxContext.CancellationToken.IsCancellationRequested)
+				return;
+
+			if ((identifierSymbol.Kind == SymbolKind.Field || identifierSymbol.Kind == SymbolKind.Property) && !identifierSymbol.IsStatic)
+			{
+				var setDelegateInvocation = syntaxContext.Node as InvocationExpressionSyntax;
+				syntaxContext.ReportDiagnostic(
+					Diagnostic.Create(
+						Descriptors.PX1008_LongOperationDelegateClosures, setDelegateInvocation.GetLocation()));
+			}
+		}
 	}
 }
