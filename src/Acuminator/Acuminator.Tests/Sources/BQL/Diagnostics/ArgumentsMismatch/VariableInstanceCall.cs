@@ -76,5 +76,20 @@ namespace PX.Objects.HackathonDemo
 		{
 			//Possible modifications in the method
 		}
+
+		public void TestBqlModificationsForNonAbstractVariable(bool flag)
+		{
+			var p1 = new[] { 1, 2 };
+
+			PXSelectBase<SOOrder> filtered = new
+					PXSelect<SOOrder,
+					Where<SOOrder.orderNbr, Equal<Current<SOOrder.orderNbr>>,
+					  And<SOOrder.orderDate, Greater<Required<SOOrder.orderDate>>>>>(this);
+
+			if (flag)
+				filtered.WhereAnd<Where<SOOrder.orderType, Equal<Required<SOOrder.orderType>>>>();
+
+			var result1 = filtered.Select(p1);   //No diagnostic should be here
+		}
 	}
 }
