@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Acuminator.Utilities;
-using System.Collections.Generic;
 using PX.Data;
+using Acuminator.Utilities;
+
 
 namespace Acuminator.Analyzers
 {
@@ -22,105 +25,141 @@ namespace Acuminator.Analyzers
             compilationStartContext.RegisterSymbolAction(c => AnalyzeSymbol(c, pxContext), SymbolKind.Method);
         }
 
-		private static void AnalyzeSymbol(SymbolAnalysisContext context, PXContext pxContext)
+		private static async Task AnalyzeSymbol(SymbolAnalysisContext syntaxContext, PXContext pxContext)
 		{
-            var method = (IMethodSymbol)context.Symbol;
-            if (method.ReturnType.SpecialType != SpecialType.System_Collections_IEnumerable)
-                return;
+			IMethodSymbol method = syntaxContext.Symbol as IMethodSymbol;
 
-            var parent = method.ContainingType;
-            if (parent == null || !parent.InheritsFrom(pxContext.PXGraphType))
-                return;
-
-            var views = parent.GetMembers()
-                .OfType<IFieldSymbol>()
-                .Where(f => f.Type.InheritsFrom(pxContext.PXSelectBaseType))
-                .ToArray();
-            if (!views.Any(f => String.Equals(f.Name, method.Name, StringComparison.OrdinalIgnoreCase)))
-                return;
+			if (!IsDiagnosticValid(method, syntaxContext, pxContext))
+				return;
 
             var declaration = method.DeclaringSyntaxReferences[0];
-            var methodDeclaration = declaration.GetSyntax() as MethodDeclarationSyntax;
+			var methodDeclaration = await declaration.GetSyntaxAsync(syntaxContext.CancellationToken)
+													 .ConfigureAwait(false) as MethodDeclarationSyntax;
+
             if (methodDeclaration == null)
                 return;
 
-            var semanticModel = context.Compilation.GetSemanticModel(declaration.SyntaxTree);
-            DataFlowAnalysis df = semanticModel.AnalyzeDataFlow(
-               methodDeclaration.Body);
-
-            if (df == null || !df.Succeeded)
-                return;
-
-            ILocalSymbol refStartRow = null;
-            foreach (var p in df.WrittenInside)
-            {
-                if (p is ILocalSymbol ls)
-                {
-                    List<MemberAccessExpressionSyntax> memberAccesses = p.DeclaringSyntaxReferences[0].GetSyntax().
-                        DescendantNodes().OfType<MemberAccessExpressionSyntax>().ToList();
-                    if (memberAccesses.Count != 1)
-                        continue;
-                    var symbol = semanticModel.GetSymbolInfo(memberAccesses[0]).Symbol;
-                    if (symbol != null &&
-                        symbol.ContainingType == pxContext.PXViewType &&
-                        symbol.Name == nameof(PXView.StartRow))
-                    {
-                        refStartRow = ls;
-                        break;
-                    }
-                }
-            }
+			SemanticModel semanticModel = syntaxContext.Compilation.GetSemanticModel(declaration.SyntaxTree);      
+            ILocalSymbol refStartRow = await GetReferenceToStartRow(methodDeclaration, semanticModel, pxContext, syntaxContext.CancellationToken)
+													.ConfigureAwait(false);
 
             if (refStartRow == null)
                 return;
 
-            IMethodSymbol selectSymbol = null;
-            InvocationExpressionSyntax selectInvocation = null;
-            foreach (var argumentSyntax in declaration.GetSyntax().DescendantNodes().OfType<ArgumentSyntax>())
-            {
-                var ins = argumentSyntax.Expression as IdentifierNameSyntax;
-                if (ins != null && ins.Identifier.ValueText == refStartRow.Name)
-                {
-                    SyntaxNode ies = argumentSyntax;
-                    do
-                    {
-                        ies = ies.Parent;
-                    } while (!(ies is InvocationExpressionSyntax));
-                    var symbol = (IMethodSymbol)semanticModel.GetSymbolInfo(ies).Symbol;
-                    if(symbol.Name.StartsWith("Select") && 
-                       (symbol.ContainingType.InheritsFromOrEquals(pxContext.PXViewType) ||
-                        symbol.ContainingType.InheritsFromOrEquals(pxContext.PXSelectBaseType)))
-                    {
-                        //context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1010_StartRowResetForPaging, a.GetLocation()));
-                        selectSymbol = symbol;
-                        selectInvocation = (InvocationExpressionSyntax)ies;
-                        break;
-                    }
-                }
-            }
-
-            if (selectSymbol == null)
+			var (selectSymbol, selectInvocation) = GetSelectSymbolAndInvocationNode(methodDeclaration, refStartRow, pxContext, semanticModel,
+																					syntaxContext.CancellationToken);
+			if (selectSymbol == null || selectInvocation == null)
                 return;
 
-            AssignmentExpressionSyntax lastAssigment = null;
-            foreach (var memberAccess in declaration.GetSyntax().DescendantNodes().
-                OfType<MemberAccessExpressionSyntax>().
-                Where(m => m.Name is IdentifierNameSyntax i && i.Identifier.ValueText == nameof(PXView.StartRow)))
-            {
-                if (memberAccess.Parent is AssignmentExpressionSyntax assigment &&
-                    assigment.Right is LiteralExpressionSyntax literalExpression &&
-                    literalExpression.Token.Value.ToString() == "0")
-                {
-                    lastAssigment = assigment;
-                }
-            }
+			AssignmentExpressionSyntax lastAssigment = GetLastStartRowResetAssignment(methodDeclaration);
 
-            if (lastAssigment != null &&
-                lastAssigment.SpanStart > selectInvocation.Span.End)
+			if (lastAssigment != null && lastAssigment.SpanStart > selectInvocation.Span.End)
                 return;
                 
-            context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1010_StartRowResetForPaging, selectInvocation.GetLocation()));
-
+            syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1010_StartRowResetForPaging, selectInvocation.GetLocation()));
         }
+
+		private static bool IsDiagnosticValid(IMethodSymbol method, SymbolAnalysisContext syntaxContext, PXContext pxContext)
+		{
+			if (method == null || method.ReturnType.SpecialType != SpecialType.System_Collections_IEnumerable ||
+				method.DeclaringSyntaxReferences.Length != 1)
+			{
+				return false;
+			}
+
+			return method.IsDelegateForViewInPXGraph(pxContext);
+		}
+
+		private static async Task<ILocalSymbol> GetReferenceToStartRow(MethodDeclarationSyntax methodDeclaration, SemanticModel semanticModel,
+																	   PXContext pxContext, CancellationToken cancellationToken)
+		{
+			DataFlowAnalysis df = semanticModel.AnalyzeDataFlow(methodDeclaration.Body);
+
+			if (df == null || !df.Succeeded || cancellationToken.IsCancellationRequested)
+				return null; 
+
+			foreach (ILocalSymbol localSymbol in df.WrittenInside.OfType<ILocalSymbol>())
+			{
+				ImmutableArray<SyntaxReference> syntaxReferences = localSymbol.DeclaringSyntaxReferences;
+
+				if (syntaxReferences.Length == 0)
+					continue;
+
+				SyntaxNode symbolSyntax = await syntaxReferences[0].GetSyntaxAsync(cancellationToken).ConfigureAwait(false);
+
+				if (symbolSyntax == null || cancellationToken.IsCancellationRequested)
+					return null;
+
+				List<MemberAccessExpressionSyntax> memberAccesses = symbolSyntax.DescendantNodes()
+																				.OfType<MemberAccessExpressionSyntax>()
+																				.ToList();
+
+				if (memberAccesses.Count != 1)
+					continue;
+
+				var symbol = semanticModel.GetSymbolInfo(memberAccesses[0]).Symbol;
+
+				if (symbol != null && symbol.ContainingType.Equals(pxContext.PXViewType) && symbol.Name == nameof(PXView.StartRow))
+				{
+					return localSymbol;
+				}
+			}
+
+			return null;
+		}
+
+		private static (IMethodSymbol SelectSymbol, InvocationExpressionSyntax SelectInvocation) GetSelectSymbolAndInvocationNode(
+									MethodDeclarationSyntax methodDeclaration, ILocalSymbol refStartRow, PXContext pxContext,
+									SemanticModel semanticModel, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+				return default;
+
+			var invocationsWithStartRowPassedArg = from argument in methodDeclaration.DescendantNodes().OfType<ArgumentSyntax>()
+												   where argument.Expression is IdentifierNameSyntax identifier &&
+														 identifier.Identifier.ValueText == refStartRow.Name
+												   select argument.Parent<InvocationExpressionSyntax>();
+
+			foreach (InvocationExpressionSyntax invocation in invocationsWithStartRowPassedArg)
+			{
+				var symbol = (IMethodSymbol)semanticModel.GetSymbolInfo(invocation, cancellationToken).Symbol;
+
+				if (cancellationToken.IsCancellationRequested)
+					return default;
+
+				if (symbol == null)
+					continue;
+
+				if (symbol.Name.StartsWith("Select") &&
+				   (symbol.ContainingType.InheritsFromOrEquals(pxContext.PXViewType) ||
+					symbol.ContainingType.InheritsFromOrEquals(pxContext.PXSelectBaseType)))
+				{
+					return (symbol, invocation);
+				}
+			}
+
+			return default;
+		}
+
+		private static AssignmentExpressionSyntax GetLastStartRowResetAssignment(MethodDeclarationSyntax methodDeclaration)
+		{
+			AssignmentExpressionSyntax lastAssigment = null;
+			var startRowAccesses = methodDeclaration.DescendantNodes()
+													.OfType<MemberAccessExpressionSyntax>()
+													.Where(m => m.Name is IdentifierNameSyntax i && 
+																i.Identifier.ValueText == nameof(PXView.StartRow));
+
+			foreach (var memberAccess in startRowAccesses)
+			{
+				if (memberAccess.Parent is AssignmentExpressionSyntax assigment &&
+					assigment.Right is LiteralExpressionSyntax literalExpression &&
+					literalExpression.Token.Value.ToString() == "0")
+				{
+					lastAssigment = assigment;
+				}
+			}
+
+			return lastAssigment;
+		}
 	}
 }

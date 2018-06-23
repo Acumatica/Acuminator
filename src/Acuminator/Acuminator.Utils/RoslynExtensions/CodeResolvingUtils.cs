@@ -338,5 +338,22 @@ namespace Acuminator.Utilities
 					return new TextSpan(typeParamsListSyntax.SpanStart, length);
 			}
 		}
+
+		public static bool IsDelegateForViewInPXGraph(this IMethodSymbol method, PXContext pxContext)
+		{
+			if (method == null || method.ReturnType.SpecialType != SpecialType.System_Collections_IEnumerable)
+				return false;
+
+			INamedTypeSymbol containingType = method.ContainingType;
+
+			if (containingType == null ||
+			   (!containingType.InheritsFrom(pxContext.PXGraphType) && !containingType.InheritsFrom(pxContext.PXGraphExtensionType)))
+				return false;
+
+			return containingType.GetMembers()
+								 .OfType<IFieldSymbol>()
+								 .Where(field => field.Type.InheritsFrom(pxContext.PXSelectBaseType))
+								 .Any(field => String.Equals(field.Name, method.Name, StringComparison.OrdinalIgnoreCase));
+		}
 	}
 }
