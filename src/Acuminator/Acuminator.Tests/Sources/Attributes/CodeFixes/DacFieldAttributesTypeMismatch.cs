@@ -17,7 +17,7 @@ namespace PX.Objects.HackathonDemo
 		[PXUIField(DisplayName = "Order Type")]
 		public string OrderType { get; set; }
 		#endregion
-		
+
 		#region OrderDate
 		public abstract class orderDate : IBqlField { }
 
