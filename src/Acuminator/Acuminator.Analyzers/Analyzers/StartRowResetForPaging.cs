@@ -36,7 +36,7 @@ namespace Acuminator.Analyzers
 			var methodDeclaration = await declaration.GetSyntaxAsync(syntaxContext.CancellationToken)
 													 .ConfigureAwait(false) as MethodDeclarationSyntax;
 
-            if (methodDeclaration == null)
+            if (methodDeclaration?.Body == null)
                 return;
 
 			SemanticModel semanticModel = syntaxContext.Compilation.GetSemanticModel(declaration.SyntaxTree);      
@@ -61,7 +61,7 @@ namespace Acuminator.Analyzers
 
 		private static bool IsDiagnosticValid(IMethodSymbol method, SymbolAnalysisContext syntaxContext, PXContext pxContext)
 		{
-			if (method == null || method.ReturnType.SpecialType != SpecialType.System_Collections_IEnumerable ||
+			if (method == null || method.IsAbstract || method.ReturnType.SpecialType != SpecialType.System_Collections_IEnumerable ||
 				method.DeclaringSyntaxReferences.Length != 1)
 			{
 				return false;
