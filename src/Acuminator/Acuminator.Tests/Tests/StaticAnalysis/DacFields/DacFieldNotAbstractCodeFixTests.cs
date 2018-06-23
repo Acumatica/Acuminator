@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Acuminator.Analyzers;
-using Acuminator.Tests.Helpers;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -12,21 +10,25 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using TestHelper;
 using Xunit;
 
+using Acuminator.Analyzers;
+using Acuminator.Tests.Helpers;
+using Acuminator.Analyzers.FixProviders;
+
+
 namespace Acuminator.Tests
 {
-	public class DacFieldNotAbstractTests : DiagnosticVerifier
+	public class DacFieldNotAbstractCodeFixTests : CodeFixVerifier
 	{
 		[Theory]
-		[EmbeddedFileData(@"Dac\SOOrderNotAbstractField.cs")]
-		public virtual void Test_Dac_With_Not_Abstract_Fields(string source) =>
-			VerifyCSharpDiagnostic(source,
-				CreatePX1024NotAbstractDacFieldDiagnosticResult(line: 22, column: 16),
-				CreatePX1024NotAbstractDacFieldDiagnosticResult(line: 34, column: 16),
-				CreatePX1024NotAbstractDacFieldDiagnosticResult(line: 45, column: 16));	
+		[EmbeddedFileData(@"Dac\SOOrderNotAbstractField.cs",
+						  @"Dac\SOOrderNotAbstractFieldExpected.cs")]
+		public virtual void Test_Fix_For_Dac_With_Not_Abstract_Fields(string actual, string expected) =>
+			VerifyCSharpFix(actual, expected);
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacNonAbstractFieldTypeAnalyzer();
 
-		
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new DacNonAbstractFieldTypeFix();
+
 		private DiagnosticResult CreatePX1024NotAbstractDacFieldDiagnosticResult(int line, int column)
 		{
 			return new DiagnosticResult
