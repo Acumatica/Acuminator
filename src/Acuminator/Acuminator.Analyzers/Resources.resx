@@ -123,17 +123,17 @@
   <data name="PX1000Title" xml:space="preserve">
     <value>Invalid PXAction handler signature</value>
   </data>
-  <data name="PX1002Fix" xml:space="preserve">
-    <value>Add the type attribute corresponding to the list attribute</value>
-  </data>
-  <data name="PX1002Title" xml:space="preserve">
-    <value>The field must have the type attribute corresponding to the list attribute</value>
-  </data>
   <data name="PX1001Fix" xml:space="preserve">
     <value>Create a graph instance by using the factory method</value>
   </data>
   <data name="PX1001Title" xml:space="preserve">
     <value>A PXGraph instance must be created with the PXGraph.CreateInstance() factory method</value>
+  </data>
+  <data name="PX1002Fix" xml:space="preserve">
+    <value>Add the type attribute corresponding to the list attribute</value>
+  </data>
+  <data name="PX1002Title" xml:space="preserve">
+    <value>The field must have the type attribute corresponding to the list attribute</value>
   </data>
   <data name="PX1003Title" xml:space="preserve">
     <value>Consider using a specific implementation of PXGraph</value>
@@ -144,12 +144,6 @@
   <data name="PX1004Title" xml:space="preserve">
     <value>This order of view declarations will cause creation of two cache instances: {0} and {1}</value>
   </data>
-  <data name="PX1006Fix" xml:space="preserve">
-    <value>Consider changing the declaration order</value>
-  </data>
-  <data name="PX1006Title" xml:space="preserve">
-    <value>This order of view declarations will cause creation of one cache instance for the following DACs: {0} and {1}</value>
-  </data>
   <data name="PX1005Fix" xml:space="preserve">
     <value>Change the view delegate name to match the view name</value>
   </data>
@@ -159,12 +153,17 @@
   <data name="PX1005Title" xml:space="preserve">
     <value>A possible typo in the view delegate name</value>
   </data>
+  <data name="PX1006Fix" xml:space="preserve">
+    <value>Consider changing the declaration order</value>
+  </data>
+  <data name="PX1006Title" xml:space="preserve">
+    <value>This order of view declarations will cause creation of one cache instance for the following DACs: {0} and {1}</value>
+  </data>
   <data name="PX1007Fix" xml:space="preserve">
     <value>Create a DAC instance by using the factory method</value>
   </data>
   <data name="PX1007MessageFormat" xml:space="preserve">
-    <value>An instance of {0} must be created with the PXCache&lt;{0}&gt;.CreateInstance() factory method
-</value>
+    <value>An instance of {0} must be created with the PXCache&lt;{0}&gt;.CreateInstance() factory method</value>
   </data>
   <data name="PX1007Title" xml:space="preserve">
     <value>A DAC instance must be created with the PXCache.CreateInstance() factory method</value>
@@ -172,20 +171,17 @@
   <data name="PX1008Title" xml:space="preserve">
     <value>Reference of @this graph in this delegate will cause synchronous delegate execution</value>
   </data>
-  <data name="PX1010Fix" xml:space="preserve">
-    <value>Reset StartRow</value>
-  </data>
-  <data name="PX1010Title" xml:space="preserve">
-    <value>If a delegate applies paging in an inner select, StartRow must be reset (If StartRow is not reset, paging will be applied twice)</value>
-  </data>
   <data name="PX1009Fix" xml:space="preserve">
     <value>Change the base type to a PXCacheExtension overload</value>
   </data>
   <data name="PX1009Title" xml:space="preserve">
     <value>Multiple levels of inheritance are not supported for PXCacheExtension</value>
   </data>
-  <data name="PX1015TitleSuffixWithOnlyRequiredParams" xml:space="preserve">
-    <value>The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of required arguments is {1}.</value>
+  <data name="PX1010Fix" xml:space="preserve">
+    <value>Reset StartRow</value>
+  </data>
+  <data name="PX1010Title" xml:space="preserve">
+    <value>If a delegate applies paging in an inner select, StartRow must be reset (If StartRow is not reset, paging will be applied twice)</value>
   </data>
   <data name="PX1011Fix" xml:space="preserve">
     <value>Mark the type as sealed</value>
@@ -193,11 +189,20 @@
   <data name="PX1011Title" xml:space="preserve">
     <value>Because multiple levels of inheritance are not supported for PXCacheExtension, the derived type can be marked as sealed</value>
   </data>
+  <data name="PX1012Fix" xml:space="preserve">
+    <value>Change the action to be declared on primary DAC {0}</value>
+  </data>
+  <data name="PX1012Title" xml:space="preserve">
+    <value>The action {0} is declared on non primary DAC and will not be visible in a toolbar. You should declare it on {1} DAC</value>
+  </data>
   <data name="PX1014Fix" xml:space="preserve">
     <value>Make the type nullable</value>
   </data>
   <data name="PX1014Title" xml:space="preserve">
     <value>A DAC field must have a nullable type</value>
+  </data>
+  <data name="PX1015TitleSuffixWithOnlyRequiredParams" xml:space="preserve">
+    <value>The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of required arguments is {1}.</value>
   </data>
   <data name="PX1015TitleSuffixWithRequiredAndOptionalParams" xml:space="preserve">
     <value>The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of arguments should be from {1} to {2}.</value>
