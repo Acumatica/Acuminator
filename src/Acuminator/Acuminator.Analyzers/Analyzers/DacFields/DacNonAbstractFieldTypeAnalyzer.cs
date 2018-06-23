@@ -25,11 +25,11 @@ namespace Acuminator.Analyzers
 #pragma warning disable CS4014
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSymbolAction(symbolContext => AnalyzeDacFieldType(symbolContext, pxContext), SymbolKind.NamedType);
+			compilationStartContext.RegisterSymbolAction(symbolContext => AnalyzeDacFieldTypeAsync(symbolContext, pxContext), SymbolKind.NamedType);
 		}
 #pragma warning restore CS4014
 
-		private static async Task AnalyzeDacFieldType(SymbolAnalysisContext symbolContext, PXContext pxContext)
+		private static async Task AnalyzeDacFieldTypeAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
 			INamedTypeSymbol dacFieldType = symbolContext.Symbol as INamedTypeSymbol;
 

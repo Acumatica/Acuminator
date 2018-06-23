@@ -54,6 +54,7 @@
     <Compile Include="Analyzers\NonNullableTypeForBqlFieldAnalyzer.cs" />
     <Compile Include="Analyzers\DacPropertyAttributes\DacPropertyAttributesAnalyzer.cs" />
     <Compile Include="DiagnosticProperty.cs" />
+    <Compile Include="FixProviders\DacFields\DacNonAbstractFieldTypeFix.cs" />
     <Compile Include="FixProviders\DacPropertyAttributes\IncompatibleDacPropertyAndFieldAttributeFix.cs" />
     <Compile Include="FixProviders\DacPropertyAttributes\MultipleDacFieldAttributesFix.cs" />
     <Compile Include="FixProviders\NonNullableTypeForBqlFieldFix.cs" />
