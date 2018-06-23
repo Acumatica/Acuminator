@@ -17,112 +17,77 @@ namespace Acuminator.Analyzers
     public class PXActionOnNonPrimaryViewAnalyzer : PXDiagnosticAnalyzer
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-            ImmutableArray.Create(Descriptors.PX1010_StartRowResetForPaging);
+            ImmutableArray.Create(Descriptors.PX1012_PXActionOnNonPrimaryView);
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-            compilationStartContext.RegisterSymbolAction(c => AnalyzeSymbol(c, pxContext), SymbolKind.Method);
+            compilationStartContext.RegisterSymbolAction(c => AnalyzePXActionSymbol(c, pxContext), SymbolKind.Field, SymbolKind.Property);
         }
 
-		private static void AnalyzeSymbol(SymbolAnalysisContext context, PXContext pxContext)
+		private static void AnalyzePXActionSymbol(SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
-            var method = (IMethodSymbol)context.Symbol;
-            if (method.ReturnType.SpecialType != SpecialType.System_Collections_IEnumerable)
-                return;
+			if (!IsDiagnosticValidForSymbol(symbolContext, pxContext))
+				return;
 
-            var parent = method.ContainingType;
-            if (parent == null || !parent.InheritsFrom(pxContext.PXGraphType))
-                return;
+			INamedTypeSymbol pxActionType = GetPXActionType(symbolContext);
 
-            var views = parent.GetMembers()
-                .OfType<IFieldSymbol>()
-                .Where(f => f.Type.InheritsFrom(pxContext.PXSelectBaseType))
-                .ToArray();
-            if (!views.Any(f => String.Equals(f.Name, method.Name, StringComparison.OrdinalIgnoreCase)))
-                return;
+			if (pxActionType == null || !pxActionType.IsGenericType)
+				return;
 
-            var declaration = method.DeclaringSyntaxReferences[0];
-            var methodDeclaration = declaration.GetSyntax() as MethodDeclarationSyntax;
-            if (methodDeclaration == null)
-                return;
+			var pxActionTypeArgs = pxActionType.TypeArguments;
 
-            var semanticModel = context.Compilation.GetSemanticModel(declaration.SyntaxTree);
-            DataFlowAnalysis df = semanticModel.AnalyzeDataFlow(
-               methodDeclaration.Body);
+			if (pxActionTypeArgs.Length == 0 || symbolContext.CancellationToken.IsCancellationRequested)
+				return;
 
-            if (df == null || !df.Succeeded)
-                return;
+			var pxActionDacType = pxActionTypeArgs[0];
 
-            ILocalSymbol refStartRow = null;
-            foreach (var p in df.WrittenInside)
-            {
-                if (p is ILocalSymbol ls)
-                {
-                    List<MemberAccessExpressionSyntax> memberAccesses = p.DeclaringSyntaxReferences[0].GetSyntax().
-                        DescendantNodes().OfType<MemberAccessExpressionSyntax>().ToList();
-                    if (memberAccesses.Count != 1)
-                        continue;
-                    var symbol = semanticModel.GetSymbolInfo(memberAccesses[0]).Symbol;
-                    if (symbol != null &&
-                        symbol.ContainingType == pxContext.PXViewType &&
-                        symbol.Name == nameof(PXView.StartRow))
-                    {
-                        refStartRow = ls;
-                        break;
-                    }
-                }
-            }
 
-            if (refStartRow == null)
-                return;
+           
 
-            IMethodSymbol selectSymbol = null;
-            InvocationExpressionSyntax selectInvocation = null;
-            foreach (var argumentSyntax in declaration.GetSyntax().DescendantNodes().OfType<ArgumentSyntax>())
-            {
-                var ins = argumentSyntax.Expression as IdentifierNameSyntax;
-                if (ins != null && ins.Identifier.ValueText == refStartRow.Name)
-                {
-                    SyntaxNode ies = argumentSyntax;
-                    do
-                    {
-                        ies = ies.Parent;
-                    } while (!(ies is InvocationExpressionSyntax));
-                    var symbol = (IMethodSymbol)semanticModel.GetSymbolInfo(ies).Symbol;
-                    if(symbol.Name.StartsWith("Select") && 
-                       (symbol.ContainingType.InheritsFromOrEquals(pxContext.PXViewType) ||
-                        symbol.ContainingType.InheritsFromOrEquals(pxContext.PXSelectBaseType)))
-                    {
-                        //context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1010_StartRowResetForPaging, a.GetLocation()));
-                        selectSymbol = symbol;
-                        selectInvocation = (InvocationExpressionSyntax)ies;
-                        break;
-                    }
-                }
-            }
-
-            if (selectSymbol == null)
-                return;
-
-            AssignmentExpressionSyntax lastAssigment = null;
-            foreach (var memberAccess in declaration.GetSyntax().DescendantNodes().
-                OfType<MemberAccessExpressionSyntax>().
-                Where(m => m.Name is IdentifierNameSyntax i && i.Identifier.ValueText == nameof(PXView.StartRow)))
-            {
-                if (memberAccess.Parent is AssignmentExpressionSyntax assigment &&
-                    assigment.Right is LiteralExpressionSyntax literalExpression &&
-                    literalExpression.Token.Value.ToString() == "0")
-                {
-                    lastAssigment = assigment;
-                }
-            }
-
-            if (lastAssigment != null &&
-                lastAssigment.SpanStart > selectInvocation.Span.End)
-                return;
+           
                 
-            context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1010_StartRowResetForPaging, selectInvocation.GetLocation()));
+            symbolContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1010_StartRowResetForPaging, selectInvocation.GetLocation()));
 
         }
+
+		private static bool IsDiagnosticValidForSymbol(SymbolAnalysisContext symbolContext, PXContext pxContext)
+		{
+			if (symbolContext.Symbol?.ContainingType == null || symbolContext.CancellationToken.IsCancellationRequested)
+				return false;
+
+			INamedTypeSymbol containingType = symbolContext.Symbol.ContainingType;
+			return containingType.InheritsFrom(pxContext.PXGraphType) || 
+				   containingType.InheritsFrom(pxContext.PXGraphExtensionType); 
+		}
+
+		private static INamedTypeSymbol GetPXActionType(SymbolAnalysisContext symbolContext)
+		{
+			if (symbolContext.CancellationToken.IsCancellationRequested)
+				return null;
+
+			switch (symbolContext.Symbol)
+			{
+				case IFieldSymbol fieldSymbol when fieldSymbol.Type.IsPXAction():
+					return fieldSymbol.Type as INamedTypeSymbol;
+				case IPropertySymbol propertySymbol when propertySymbol.Type.IsPXAction():
+					return propertySymbol.Type as INamedTypeSymbol;
+				default:
+					return null;
+			}
+		}
+
+		private static ITypeSymbol GetMainDacFromPXGraph(SymbolAnalysisContext symbolContext, PXContext pxContext)
+		{
+			INamedTypeSymbol pxGraphType = symbolContext.Symbol.ContainingType;
+			var graphTypeArgs = pxGraphType.TypeArguments;
+			
+			if (pxGraphType.IsGenericType && graphTypeArgs.Length >= 2)  //Case when main DAC is already defined as type parameter
+			{
+				return graphTypeArgs[1];
+			}
+
+
+
+		}
 	}
 }
