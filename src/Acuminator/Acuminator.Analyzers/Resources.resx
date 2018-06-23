@@ -214,4 +214,7 @@
   <data name="PX1023Fix" xml:space="preserve">
     <value>Leave the selected field attribute and remove other field attributes from the property</value>
   </data>
+  <data name="PX1024Title" xml:space="preserve">
+    <value>The DAC field type must be abstract</value>
+  </data>
 </root>

@@ -349,5 +349,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1023Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DAC field type must be abstract.
+        /// </summary>
+        public static string PX1024Title {
+            get {
+                return ResourceManager.GetString("PX1024Title", resourceCulture);
+            }
+        }
     }
 }
