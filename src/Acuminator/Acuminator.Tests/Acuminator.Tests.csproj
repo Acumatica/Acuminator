@@ -152,11 +152,13 @@
     <EmbeddedResource Include="Sources\Attributes\CodeFixes\DacExampleWithMultipleFieldAttributes.cs" />
     <EmbeddedResource Include="Sources\Attributes\CodeFixes\DacExampleWithMultipleFieldAttributes_Expected.cs" />
     <EmbeddedResource Include="Sources\Attributes\Diagnostics\FieldAttributesTypeMismatch\DacExampleFieldTypeMismatchPXDBScalarAttr.cs" />
+    <EmbeddedResource Include="Sources\Dac\SOOrderNotAbstractField.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\MultipleFieldAttributesCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\DacFieldAttributesTests.cs" />
     <Compile Include="Tests\StaticAnalysis\BQL\BqlParameterMismatchTests.cs" />
     <Compile Include="Tests\Formatter\BqlFormatterTests.cs" />
     <Compile Include="Helpers\EmbeddedFileDataWithParamsAttribute.cs" />
+    <Compile Include="Tests\StaticAnalysis\DacFields\DacFieldNotAbstractTests.cs" />
     <Compile Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtensionTests.cs" />
     <Compile Include="Tests\StaticAnalysis\LongOperationDelegateClosuresTests.cs" />
     <EmbeddedResource Include="Sources\StartRowResetForPaging.cs" />
