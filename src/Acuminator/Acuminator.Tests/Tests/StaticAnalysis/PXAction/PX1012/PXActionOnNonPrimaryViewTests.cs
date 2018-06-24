@@ -17,7 +17,7 @@ namespace Acuminator.Tests
 	public class PXActionOnNonPrimaryViewTests : DiagnosticVerifier
 	{
 		[Theory]
-		[EmbeddedFileData(@"PXAction\Diagnostics\NonPrimaryView\GraphWithNonPrimaryDacView.cs")] 
+		[EmbeddedFileData(@"PXAction\Diagnostics\PX1012\GraphWithNonPrimaryDacView.cs")] 
 		public virtual void Test_Action_Declared_For_Not_Primary_View(string source) =>
 			VerifyCSharpDiagnostic(source,
 				CreatePX1012ActionOnNonPrimaryViewDiagnosticResult(line: 23, column: 10, actionName: "Release1", mainDacName: "SOOrder"),
