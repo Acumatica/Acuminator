@@ -34,28 +34,29 @@ namespace Acuminator.Tests
 	    }
 
 	    [Theory]
-	    [EmbeddedFileData("NonNullableTypeForBqlField.cs")]
-	    public void TestDiagnostic(string actual)
+	    [EmbeddedFileData(@"Dac\Diagnostics\PX1014\NonNullableTypeForBqlField.cs")] 
+		public void TestDiagnostic(string actual)
 	    {
 		    VerifyCSharpDiagnostic(actual, CreatePX1014DiagnosticResult(16, 14));
 	    }
 
 		[Theory]
-        [EmbeddedFileData("NonNullableTypeForBqlField_Expected.cs")]
+        [EmbeddedFileData(@"Dac\CodeFixes\PX1014\NonNullableTypeForBqlField_Expected.cs")]
         public void TestDiagnostic_ShouldNotShowDiagnostic(string actual)
         {
             VerifyCSharpDiagnostic(actual);
         }
 
 	    [Theory]
-	    [EmbeddedFileData("NonNullableTypeForBqlField_Valid.cs")]
+	    [EmbeddedFileData(@"Dac\Diagnostics\PX1014\NonNullableTypeForBqlField_Valid.cs")]
 	    public void TestDiagnostic_ShouldNotShowDiagnostic2(string actual)
 	    {
 		    VerifyCSharpDiagnostic(actual);
 	    }
 
 		[Theory]
-	    [EmbeddedFileData("NonNullableTypeForBqlField.cs", "NonNullableTypeForBqlField_Expected.cs")]
+	    [EmbeddedFileData(@"Dac\Diagnostics\PX1014\NonNullableTypeForBqlField.cs",
+						  @"Dac\CodeFixes\PX1014\NonNullableTypeForBqlField_Expected.cs")]
 	    public void TestCodeFix(string actual, string expected)
 	    {
 		    VerifyCSharpFix(actual, expected);
