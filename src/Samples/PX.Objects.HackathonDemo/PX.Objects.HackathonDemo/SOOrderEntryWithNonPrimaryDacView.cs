@@ -8,10 +8,15 @@ using PX.Data;
 
 namespace PX.Objects.HackathonDemo
 {
-	public class SOOrderEntryWithNonPrimaryDacView : PXGraph<SOOrderEntry>
+	public class SOOrderEntryWithNonPrimaryDacView : PXGraph<SOOrderEntryWithNonPrimaryDacView, SOOrder>
 	{
 		public PXSelect<SOOrder> Orders;
 
 		public PXAction<SOTran> Release;
+	}
+
+	public class SOOrderEntryWithNonPrimaryDacViewExtension : PXGraphExtension<SOOrderEntryWithNonPrimaryDacView>
+	{
+		public PXAction<SOTran> Action;
 	}
 }

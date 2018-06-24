@@ -89,9 +89,12 @@ namespace Acuminator.Analyzers
 
 		private static ITypeSymbol GetMainDacFromPXGraph(INamedTypeSymbol pxGraphType, PXContext pxContext, CancellationToken cancellationToken)
 		{
-			var graphTypeArgs = pxGraphType.TypeArguments;
+			if (pxGraphType.BaseType == null)
+				return null;
 
-			if (pxGraphType.IsGenericType && graphTypeArgs.Length >= 2)  //Case when main DAC is already defined as type parameter
+			var graphTypeArgs = pxGraphType.BaseType.TypeArguments;
+
+			if (graphTypeArgs.Length >= 2)  //Case when main DAC is already defined as type parameter
 			{
 				return graphTypeArgs[1];
 			}
@@ -112,7 +115,10 @@ namespace Acuminator.Analyzers
 		private static ITypeSymbol GetMainDacFromPXGraphExtension(INamedTypeSymbol pxGraphExtensionType, PXContext pxContext,
 																  CancellationToken cancellationToken)
 		{
-			var graphExtTypeArgs = pxGraphExtensionType.TypeArguments;
+			if (pxGraphExtensionType.BaseType == null)
+				return null;
+
+			var graphExtTypeArgs = pxGraphExtensionType.BaseType.TypeArguments;
 
 			if (graphExtTypeArgs.Length == 0 || cancellationToken.IsCancellationRequested)
 				return null;
@@ -140,6 +146,11 @@ namespace Acuminator.Analyzers
 					return propertyDeclaration.Type.GetLocation();
 				case FieldDeclarationSyntax fieldDeclaration:
 					return fieldDeclaration.Declaration.Type.GetLocation();
+				case VariableDeclarationSyntax variableDeclaration:
+					return variableDeclaration.Type.GetLocation();
+				case VariableDeclaratorSyntax variableDeclarator 
+				when variableDeclarator.Parent is VariableDeclarationSyntax variableDeclaration:
+					return variableDeclaration.Type.GetLocation();
 				default:
 					return symbolSyntax?.GetLocation();
 			}
