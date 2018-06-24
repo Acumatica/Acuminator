@@ -17,8 +17,8 @@ namespace Acuminator.Tests
 {
 	public class InvalidPXActionSignatureTests : CodeFixVerifier
 	{
-		[Theory]
-		[EmbeddedFileData("InvalidPXActionSignature.cs")]
+		[Theory] 
+		[EmbeddedFileData(@"PXAction\Diagnostics\IncorrectSignature\InvalidPXActionSignature.cs")]
 		public void TestDiagnostic(string actual)
 		{
 			var diagnostic = new DiagnosticResult
@@ -36,14 +36,15 @@ namespace Acuminator.Tests
 		}
 
 		[Theory]
-		[EmbeddedFileData("InvalidPXActionSignature.cs", "InvalidPXActionSignature_Expected.cs")]
+		[EmbeddedFileData(@"PXAction\Diagnostics\IncorrectSignature\InvalidPXActionSignature.cs",
+						  @"PXAction\CodeFixes\IncorrectSignature\InvalidPXActionSignature_Expected.cs")]
 		public void TestCodeFix(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
 
 		[Theory]
-		[EmbeddedFileData("InvalidPXActionSignature_ValidParameters.cs")]
+		[EmbeddedFileData(@"PXAction\Diagnostics\IncorrectSignature\InvalidPXActionSignature_ValidParameters.cs")]
 		public void TestDiagnostic_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
