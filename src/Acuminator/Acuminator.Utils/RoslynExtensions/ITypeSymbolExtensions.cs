@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Acuminator.Analyzers;
 
@@ -12,8 +13,8 @@ namespace Acuminator.Utilities
 {
 	public static class ITypeSymbolExtensions
 	{
-		private const string DefaultParameterName = "p";
-		private const string DefaultBuiltInParameterName = "v";
+		private const char DefaultGenericArgsCountSeparator = '`';
+		private const char DefaultNestedTypesSeparator = '+';
 
 		public static IEnumerable<ITypeSymbol> GetBaseTypesAndThis(this ITypeSymbol type)
 		{
@@ -205,6 +206,58 @@ namespace Acuminator.Utilities
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 			return typeSymbol?.OriginalDefinition?.Equals(pxContext.Nullable) ?? false;
+		}
+		
+		/// <summary>
+		/// An INamedTypeSymbol extension method that gets CLR-style full type name from type.
+		/// </summary>
+		/// <param name="typeSymbol">The typeSymbol to act on.</param>
+		/// <returns/>
+		public static string GetCLRTypeNameFromType(this ITypeSymbol typeSymbol)
+		{
+			if (typeSymbol == null)
+				return string.Empty;
+			else if (typeSymbol.ContainingType == null)
+				return typeSymbol.GetClrStyleTypeFullNameForNotNestedType();
+
+			Stack<ITypeSymbol> containingTypesStack = typeSymbol.GetContainingTypesAndThis().ToStack();
+			string notNestedTypeName = containingTypesStack.Pop().GetClrStyleTypeFullNameForNotNestedType();
+			StringBuilder nameBuilder = new StringBuilder(notNestedTypeName, capacity: 128);
+
+			while (containingTypesStack.Count > 0)
+			{
+				ITypeSymbol nestedType = containingTypesStack.Pop();
+				nameBuilder.AppendClrStyleNestedTypeShortName(nestedType);
+			}
+
+			return nameBuilder.ToString();
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static StringBuilder AppendClrStyleNestedTypeShortName(this StringBuilder builder, ITypeSymbol typeSymbol)
+		{
+			builder.Append(DefaultNestedTypesSeparator)
+				   .Append(typeSymbol.Name);
+
+			if (!(typeSymbol is INamedTypeSymbol namedType) || !namedType.IsGenericType)
+				return builder;
+
+			var typeArgs = namedType.TypeArguments;
+			return builder.Append(DefaultGenericArgsCountSeparator)
+						  .Append(typeArgs.Length);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static string GetClrStyleTypeFullNameForNotNestedType(this ITypeSymbol notNestedTypeSymbol)
+		{
+			if (!(notNestedTypeSymbol is INamedTypeSymbol namedType) || !namedType.IsGenericType)
+				return notNestedTypeSymbol.ToDisplayString();
+
+			var typeArgs = namedType.TypeArguments;
+			var displayFormat = new SymbolDisplayFormat(typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+														genericsOptions: SymbolDisplayGenericsOptions.None);
+			string typeNameWithoutGeneric = namedType.ToDisplayString(displayFormat);
+			return typeNameWithoutGeneric + DefaultGenericArgsCountSeparator + typeArgs.Length;
 		}
 	}
 }
