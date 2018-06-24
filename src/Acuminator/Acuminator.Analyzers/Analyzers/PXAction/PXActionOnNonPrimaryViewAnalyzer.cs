@@ -54,11 +54,18 @@ namespace Acuminator.Analyzers
 			SyntaxNode symbolSyntax = await symbol.GetSyntaxAsync(symbolContext.CancellationToken).ConfigureAwait(false);
 			Location location = GetLocation(symbolSyntax);
 
-			if (location != null)
+			if (location == null)
+				return;
+
+			var diagnosticExtraData = new Dictionary<string, string>
 			{
-				symbolContext.ReportDiagnostic(
-					Diagnostic.Create(Descriptors.PX1012_PXActionOnNonPrimaryView,  location, symbol.Name, mainDacType.Name));
-			}
+				{ DiagnosticProperty.DacName, mainDacType.Name },
+				{ DiagnosticProperty.DacMetadataName, mainDacType.GetCLRTypeNameFromType() }
+			}.ToImmutableDictionary();
+			
+			symbolContext.ReportDiagnostic(
+				Diagnostic.Create(Descriptors.PX1012_PXActionOnNonPrimaryView, location, diagnosticExtraData,
+								  symbol.Name, mainDacType.Name));
 		}
 
 		private static bool IsDiagnosticValidForSymbol(SymbolAnalysisContext symbolContext, PXContext pxContext)

@@ -26,43 +26,56 @@ namespace Acuminator.Analyzers.FixProviders
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-		public override Task RegisterCodeFixesAsync(CodeFixContext context)
+		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			return Task.Run(() =>
+			Diagnostic diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1012_PXActionOnNonPrimaryView.Id);
+
+			if (diagnostic == null || context.CancellationToken.IsCancellationRequested)
+				return;
+
+			if (!diagnostic.Properties.TryGetValue(DiagnosticProperty.DacName, out string mainDacName) ||
+				!diagnostic.Properties.TryGetValue(DiagnosticProperty.DacMetadataName, out string mainDacMetadata))
 			{
-				Diagnostic diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1012_PXActionOnNonPrimaryView.Id);
+				return;
+			}
 
-				if (diagnostic == null || context.CancellationToken.IsCancellationRequested)
-					return;
+			string format = nameof(Resources.PX1012Fix).GetLocalized().ToString();
+			string codeActionName = string.Format(format, mainDacName);
+			SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken)
+																.ConfigureAwait(false);
 
+			INamedTypeSymbol mainDacType = semanticModel?.Compilation.GetTypeByMetadataName(mainDacMetadata);
 
+			if (mainDacType == null || context.CancellationToken.IsCancellationRequested)
+				return;
 
-				string codeActionName = nameof(Resources.PX1024Fix).GetLocalized().ToString();
-				CodeAction codeAction =
-					CodeAction.Create(codeActionName,
-									  cToken => MarkDacFieldAsAbstractAsync(context.Document, context.Span, cToken),
-									  equivalenceKey: codeActionName);
+			CodeAction codeAction =
+				CodeAction.Create(codeActionName,
+								  cToken => ChangePXActionDeclarationAsync(context.Document, context.Span, cToken, mainDacType),
+								  equivalenceKey: codeActionName);
 
-				context.RegisterCodeFix(codeAction, context.Diagnostics);
-			});
+			context.RegisterCodeFix(codeAction, context.Diagnostics);
 		}
 
-		private async Task<Document> MarkDacFieldAsAbstractAsync(Document document, TextSpan span, CancellationToken cancellationToken)
+		private async Task<Document> ChangePXActionDeclarationAsync(Document document, TextSpan span, CancellationToken cancellationToken,
+																	INamedTypeSymbol mainDacType)
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken)
 											.ConfigureAwait(false);
-			ClassDeclarationSyntax dacFieldDeclaration = root?.FindNode(span) as ClassDeclarationSyntax;
+			SyntaxNode dacFieldDeclaration = root?.FindNode(span);
 
 			if (dacFieldDeclaration == null || cancellationToken.IsCancellationRequested)
 				return document;
 
-			SyntaxToken abstractToken = SyntaxFactory.Token(SyntaxKind.AbstractKeyword);
+			return document;
 
-			if (dacFieldDeclaration.Modifiers.Contains(abstractToken))
-				return document;
+			//SyntaxToken abstractToken = SyntaxFactory.Token(SyntaxKind.AbstractKeyword);
 
-			var modifiedRoot = root.ReplaceNode(dacFieldDeclaration, dacFieldDeclaration.AddModifiers(abstractToken));
-			return document.WithSyntaxRoot(modifiedRoot);
+			//if (dacFieldDeclaration.Modifiers.Contains(abstractToken))
+			//	return document;
+
+			//var modifiedRoot = root.ReplaceNode(dacFieldDeclaration, dacFieldDeclaration.AddModifiers(abstractToken));
+			//return document.WithSyntaxRoot(modifiedRoot);
 		}
 	}
 }
