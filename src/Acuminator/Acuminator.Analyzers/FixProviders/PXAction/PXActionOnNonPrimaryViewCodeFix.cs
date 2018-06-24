@@ -60,22 +60,40 @@ namespace Acuminator.Analyzers.FixProviders
 		private async Task<Document> ChangePXActionDeclarationAsync(Document document, TextSpan span, CancellationToken cancellationToken,
 																	INamedTypeSymbol mainDacType)
 		{
-			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken)
-											.ConfigureAwait(false);
-			SyntaxNode dacFieldDeclaration = root?.FindNode(span);
+			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			GenericNameSyntax pxActionTypeDeclaration = root?.FindNode(span) as GenericNameSyntax;
 
-			if (dacFieldDeclaration == null || cancellationToken.IsCancellationRequested)
+			if (pxActionTypeDeclaration == null || cancellationToken.IsCancellationRequested)
 				return document;
 
-			return document;
+			SyntaxGenerator generator = SyntaxGenerator.GetGenerator(document);
+			TypeSyntax mainDacTypeNode = generator.TypeExpression(mainDacType) as TypeSyntax;
 
-			//SyntaxToken abstractToken = SyntaxFactory.Token(SyntaxKind.AbstractKeyword);
+			if (mainDacType == null || cancellationToken.IsCancellationRequested)
+				return document;
 
-			//if (dacFieldDeclaration.Modifiers.Contains(abstractToken))
-			//	return document;
+			var modifiedTypeArgsSyntax = pxActionTypeDeclaration.TypeArgumentList
+																.WithArguments(SyntaxFactory.SingletonSeparatedList(mainDacTypeNode));
+			GenericNameSyntax modifiedDeclaration = pxActionTypeDeclaration.WithTypeArgumentList(modifiedTypeArgsSyntax); 
+			SyntaxNode originalNode = null, modifiedNode = null;
 
-			//var modifiedRoot = root.ReplaceNode(dacFieldDeclaration, dacFieldDeclaration.AddModifiers(abstractToken));
-			//return document.WithSyntaxRoot(modifiedRoot);
+			switch (pxActionTypeDeclaration.Parent)
+			{
+				case VariableDeclarationSyntax variableDeclaration:
+					originalNode = variableDeclaration;
+					modifiedNode = variableDeclaration.WithType(modifiedDeclaration);
+					break;
+				case PropertyDeclarationSyntax propertyDeclaration:
+					originalNode = propertyDeclaration;
+					modifiedNode = propertyDeclaration.WithType(modifiedDeclaration);
+					break;
+			}
+
+			if (originalNode == null || modifiedNode == null || cancellationToken.IsCancellationRequested)
+				return document;
+
+			var modifiedRoot = root.ReplaceNode(originalNode, modifiedNode);
+			return document.WithSyntaxRoot(modifiedRoot);
 		}
 	}
 }
