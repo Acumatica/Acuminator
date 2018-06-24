@@ -51,14 +51,14 @@
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\ParametersCounterSymbolWalker.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\ParametersCounterSyntaxWalker.cs" />
     <Compile Include="Analyzers\DAC\DacFields\DacNonAbstractFieldTypeAnalyzer.cs" />
-    <Compile Include="Analyzers\NonNullableTypeForBqlFieldAnalyzer.cs" />
+    <Compile Include="Analyzers\DAC\DacPropertyAttributes\NonNullableTypeForBqlFieldAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacPropertyAttributes\DacPropertyAttributesAnalyzer.cs" />
     <Compile Include="Analyzers\PXAction\PXActionOnNonPrimaryViewAnalyzer.cs" />
     <Compile Include="DiagnosticProperty.cs" />
     <Compile Include="FixProviders\DAC\DacFields\DacNonAbstractFieldTypeFix.cs" />
     <Compile Include="FixProviders\DAC\DacPropertyAttributes\IncompatibleDacPropertyAndFieldAttributeFix.cs" />
     <Compile Include="FixProviders\DAC\DacPropertyAttributes\MultipleDacFieldAttributesFix.cs" />
-    <Compile Include="FixProviders\NonNullableTypeForBqlFieldFix.cs" />
+    <Compile Include="FixProviders\DAC\DacPropertyAttributes\NonNullableTypeForBqlFieldFix.cs" />
     <Compile Include="Analyzers\InheritanceFromPXCacheExtensionAnalyzer.cs" />
     <Compile Include="Analyzers\LongOperationDelegateClosuresAnalyzer.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\BqlParameterMismatchAnalyzer.cs" />
@@ -74,6 +74,7 @@
     <Compile Include="FixProviders\InheritanceFromPXCacheExtensionMakeSealedFix.cs" />
     <Compile Include="FixProviders\InheritanceFromPXCacheExtensionFix.cs" />
     <Compile Include="FixProviders\MissingTypeListAttributeFix.cs" />
+    <Compile Include="FixProviders\PXAction\PXActionOnNonPrimaryViewCodeFix.cs" />
     <Compile Include="FixProviders\StartRowResetForPagingFix.cs" />
     <Compile Include="FixProviders\TypoInViewDelegateNameFix.cs" />
     <Compile Include="FixProviders\PXGraphCreateInstanceFix.cs" />
