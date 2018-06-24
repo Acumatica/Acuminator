@@ -17,7 +17,7 @@ namespace Acuminator.Tests
 	public class DacFieldNotAbstractTests : DiagnosticVerifier
 	{
 		[Theory]
-		[EmbeddedFileData(@"Dac\SOOrderNotAbstractField.cs")]
+		[EmbeddedFileData(@"Dac\Diagnostics\SOOrderNotAbstractField.cs")]
 		public virtual void Test_Dac_With_Not_Abstract_Fields(string source) =>
 			VerifyCSharpDiagnostic(source,
 				CreatePX1024NotAbstractDacFieldDiagnosticResult(line: 22, column: 16),

@@ -140,8 +140,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Sources\DACCreateInstance.cs" />
-    <EmbeddedResource Include="Sources\DACCreateInstance_Expected.cs" />
+    <EmbeddedResource Include="Sources\Dac\Diagnostics\PX1007\DACCreateInstance.cs" />
+    <EmbeddedResource Include="Sources\Dac\CodeFixes\PX1007\DACCreateInstance_Expected.cs" />
     <EmbeddedResource Include="Sources\LongOperationDelegateClosuresAnalyzer.cs" />
     <EmbeddedResource Include="Sources\Dac\SOOrder.cs" />
     <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\InheritanceCall.cs" />
@@ -149,14 +149,15 @@
     <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\VariableInstanceCall.cs" />
     <EmbeddedResource Include="Sources\Attributes\Diagnostics\FieldAttributesTypeMismatch\DacWithMultipleFieldAttributes.cs" />
     <EmbeddedResource Include="Sources\Attributes\Diagnostics\FieldAttributesTypeMismatch\DacFieldAttributesTypeMismatch.cs" />
-    <EmbeddedResource Include="Sources\Attributes\CodeFixes\DacWithMultipleFieldAttributes.cs" />
-    <EmbeddedResource Include="Sources\Attributes\CodeFixes\DacWithMultipleFieldAttributes_Expected.cs" />
+    <EmbeddedResource Include="Sources\Attributes\CodeFixes\FieldAttributesTypeMismatch\DacWithMultipleFieldAttributes.cs" />
+    <EmbeddedResource Include="Sources\Attributes\CodeFixes\FieldAttributesTypeMismatch\DacWithMultipleFieldAttributes_Expected.cs" />
     <EmbeddedResource Include="Sources\Attributes\Diagnostics\FieldAttributesTypeMismatch\DacFieldTypeMismatchPXDBScalarAttr.cs" />
-    <EmbeddedResource Include="Sources\Dac\SOOrderNotAbstractField.cs" />
-    <EmbeddedResource Include="Sources\Dac\SOOrderNotAbstractFieldExpected.cs" />
-    <EmbeddedResource Include="Sources\Attributes\CodeFixes\DacFieldAttributesTypeMismatchExpected.cs" />
-    <EmbeddedResource Include="Sources\Attributes\CodeFixes\DacFieldAttributesTypeMismatch.cs" />
+    <EmbeddedResource Include="Sources\Dac\Diagnostics\PX1024\SOOrderNotAbstractField.cs" />
+    <EmbeddedResource Include="Sources\Dac\CodeFixes\PX1024\SOOrderNotAbstractFieldExpected.cs" />
+    <EmbeddedResource Include="Sources\Attributes\CodeFixes\FieldAttributesTypeMismatch\DacFieldAttributesTypeMismatchExpected.cs" />
+    <EmbeddedResource Include="Sources\Attributes\CodeFixes\FieldAttributesTypeMismatch\DacFieldAttributesTypeMismatch.cs" />
     <EmbeddedResource Include="Sources\PXAction\Diagnostics\NonPrimaryView\GraphWithNonPrimaryDacView.cs" />
+    <EmbeddedResource Include="Sources\PXAction\CodeFixes\NonPrimaryView\GraphWithNonPrimaryDacViewExpected.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\DacFieldAttributesTypeMismatchCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\MultipleFieldAttributesCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\DacFieldAttributesTests.cs" />
@@ -174,9 +175,9 @@
     <EmbeddedResource Include="Sources\InheritanceFromPXMappedCacheExtension.cs" />
     <EmbeddedResource Include="Sources\PXAction\Diagnostics\IncorrectSignature\InvalidPXActionSignature_ValidParameters.cs" />
     <Compile Include="Tests\StaticAnalysis\NonNullableTypeForBqlFieldTests.cs" />
-    <EmbeddedResource Include="Sources\NonNullableTypeForBqlField_Expected.cs" />
-    <EmbeddedResource Include="Sources\NonNullableTypeForBqlField.cs" />
-    <EmbeddedResource Include="Sources\NonNullableTypeForBqlField_Valid.cs" />
+    <EmbeddedResource Include="Sources\Dac\CodeFixes\PX1014\NonNullableTypeForBqlField_Expected.cs" />
+    <EmbeddedResource Include="Sources\Dac\Diagnostics\PX1014\NonNullableTypeForBqlField.cs" />
+    <EmbeddedResource Include="Sources\Dac\Diagnostics\PX1014\NonNullableTypeForBqlField_Valid.cs" />
     <EmbeddedResource Include="Sources\BQL\Raw\View.cs" />
     <EmbeddedResource Include="Sources\BQL\Formatted\View.cs" />
     <EmbeddedResource Include="Sources\BQL\Raw\StaticCall.cs" />
