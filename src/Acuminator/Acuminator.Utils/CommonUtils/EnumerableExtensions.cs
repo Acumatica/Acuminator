@@ -71,6 +71,12 @@ namespace Acuminator.Utilities
 				: new HashSet<T>(source);
 		}
 
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Stack<T> ToStack<T>(this IEnumerable<T> source) => source != null 
+			? new Stack<T>(source)
+			: throw new ArgumentNullException(nameof(source));
+
 		/// <summary>
 		/// Adds a single element to the end of an IEnumerable.
 		/// </summary>
