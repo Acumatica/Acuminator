@@ -147,11 +147,6 @@
     <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\InheritanceCall.cs" />
     <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\FieldInstanceCall.cs" />
     <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\VariableInstanceCall.cs" />
-    <EmbeddedResource Include="Sources\Attributes\Diagnostics\FieldAttributesTypeMismatch\DacExampleWithMultipleFieldAttributes.cs" />
-    <EmbeddedResource Include="Sources\Attributes\Diagnostics\FieldAttributesTypeMismatch\DacExampleFieldAttributesTypeMismatch.cs" />
-    <EmbeddedResource Include="Sources\Attributes\CodeFixes\DacExampleWithMultipleFieldAttributes.cs" />
-    <EmbeddedResource Include="Sources\Attributes\CodeFixes\DacExampleWithMultipleFieldAttributes_Expected.cs" />
-    <EmbeddedResource Include="Sources\Attributes\Diagnostics\FieldAttributesTypeMismatch\DacExampleFieldTypeMismatchPXDBScalarAttr.cs" />
     <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\StaticCallWithCustomPredicate.cs" />
     <EmbeddedResource Include="Sources\Attributes\Diagnostics\FieldAttributesTypeMismatch\DacWithMultipleFieldAttributes.cs" />
     <EmbeddedResource Include="Sources\Attributes\Diagnostics\FieldAttributesTypeMismatch\DacFieldAttributesTypeMismatch.cs" />
