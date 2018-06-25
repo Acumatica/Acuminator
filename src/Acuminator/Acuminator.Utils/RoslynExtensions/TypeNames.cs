@@ -50,10 +50,6 @@ namespace Acuminator.Utilities
 
 		public static readonly string PXGraphGeneric = typeof(PXGraph<>).Name;
 
-		public static readonly string PXGraphGeneric2 = typeof(PXGraph<,>).Name;
-
-		public static readonly string PXGraphGeneric3 = typeof(PXGraph<,,>).Name;
-
 		public static readonly string PXGraphExtension = typeof(PXGraphExtension).Name;
 
 		public static readonly string PXAction = typeof(PXAction).Name;

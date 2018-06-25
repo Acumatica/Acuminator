@@ -247,9 +247,9 @@ namespace Acuminator.Utilities
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsPXGraph(this ITypeSymbol typeSymbol)
+		public static bool IsPXGraph(this ITypeSymbol typeSymbol, bool ruleOutBaseTypes = false)
 		{
-			if (!typeSymbol.IsValidForColoring() || string.Equals(typeSymbol.Name, TypeNames.PXGraph))
+			if (!typeSymbol.IsValidForColoring() || (ruleOutBaseTypes && string.Equals(typeSymbol.Name, TypeNames.PXGraph)))
 				return false;
 
 			return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.PXGraph, includeInterfaces: false);

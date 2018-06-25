@@ -11,7 +11,7 @@ namespace PX.Objects.HackathonDemo
 	public class SOOrderEntryWithNonPrimaryDacView : PXGraph<SOOrderEntryWithNonPrimaryDacView, SOOrder>
 	{
 		public PXSelect<SOOrder> Orders;
-
+		
 		public PXAction<SOTran> Release;
 	}
 

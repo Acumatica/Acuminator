@@ -33,7 +33,7 @@ namespace Acuminator.Analyzers
 				syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			var pxGraph = syntaxContext.SemanticModel.GetSymbolInfo(pxGraphNode, syntaxContext.CancellationToken).Symbol as INamedTypeSymbol;
+			var pxGraph = syntaxContext.SemanticModel.GetDeclaredSymbol(pxGraphNode, syntaxContext.CancellationToken);
 
 			if (pxGraph == null || !pxGraph.IsPXGraph())
 				return;
@@ -60,6 +60,7 @@ namespace Acuminator.Analyzers
 		private static ITypeSymbol GetPrimaryDacFromPXGraph(INamedTypeSymbol pxGraph, PXContext pxContext)
 		{
 			var baseGraphType = pxGraph.GetBaseTypesAndThis()
+									   .OfType<INamedTypeSymbol>()
 									   .FirstOrDefault(type => IsGraphWithPrimaryDacBaseGenericType(type)) as INamedTypeSymbol;
 
 			if (baseGraphType == null || baseGraphType.TypeArguments.Length < 2)
@@ -72,6 +73,7 @@ namespace Acuminator.Analyzers
 		private static IEnumerable<ITypeSymbol> GetGraphViewDacTypes(INamedTypeSymbol pxGraph, PXContext pxContext)
 		{
 			var allViews = pxGraph.GetBaseTypesAndThis()
+								  .OfType<INamedTypeSymbol>()
 								  .TakeWhile(type => !IsGraphWithPrimaryDacBaseGenericType(type))
 								  .SelectMany(type => type.GetAllViewTypesFromPXGraphOrPXGraphExtension(pxContext));
 
@@ -79,9 +81,8 @@ namespace Acuminator.Analyzers
 						   .Where(dacType => dacType != null);		
 		}
 
-		private static bool IsGraphWithPrimaryDacBaseGenericType(ITypeSymbol type) =>
-			type.Name.Equals(TypeNames.PXGraphGeneric2, StringComparison.Ordinal) ||
-			type.Name.Equals(TypeNames.PXGraphGeneric3, StringComparison.Ordinal);
+		private static bool IsGraphWithPrimaryDacBaseGenericType(INamedTypeSymbol type) =>
+			type.TypeArguments.Length >= 2 && type.Name.Equals(TypeNames.PXGraph, StringComparison.Ordinal);
 
 		private static ITypeSymbol GetDacTypeFromView(INamedTypeSymbol viewType, PXContext pxContext)
 		{
