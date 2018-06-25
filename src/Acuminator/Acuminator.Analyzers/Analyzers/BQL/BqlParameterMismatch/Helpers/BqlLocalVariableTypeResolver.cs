@@ -27,6 +27,20 @@ namespace Acuminator.Analyzers
 				methodBodyWalker = new ResolveVarTypeMethodBodyWalker(this);
 			}
 
+			public bool CheckForBqlModifications()
+			{
+				if (CancellationToken.IsCancellationRequested)
+					return false;
+
+				MethodDeclarationSyntax methodDeclaration = Invocation.GetDeclaringMethodNode();
+
+				if (methodDeclaration == null || CancellationToken.IsCancellationRequested)
+					return false;
+
+				methodBodyWalker.Visit(methodDeclaration);
+				return methodBodyWalker.IsValid && !CancellationToken.IsCancellationRequested;
+			}
+
 			public ITypeSymbol ResolveVariableType()
 			{
 				if (CancellationToken.IsCancellationRequested)

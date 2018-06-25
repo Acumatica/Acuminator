@@ -27,8 +27,15 @@ namespace Acuminator.Tests
 																	minExpectedArgsCount: 1, maxExpectedArgsCount: 2));
 
 		[Theory]
+		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\StaticCallWithCustomPredicate.cs")]
+		public virtual void Test_Static_Call_With_Custom_Predicates(string source) =>
+			VerifyCSharpDiagnostic(source,
+				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 28, column: 6, expectedMethodName: "SelectSingleBound", expectedArgsCount: 4));
+
+		[Theory]
 		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\InheritanceCall.cs")]
-		public virtual void Test_No_DIagnostic_On_Inheritance_Calls(string source) => VerifyCSharpDiagnostic(source, new DiagnosticResult[0]);
+		public virtual void Test_Inheritance_Calls_Instance_And_Static(string source) => VerifyCSharpDiagnostic(source,
+			CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 28, column: 31, expectedMethodName: "Select", expectedArgsCount: 2));
 
 		[Theory]
 		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\FieldInstanceCall.cs", @"Dac\SOOrder.cs")]
