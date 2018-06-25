@@ -190,10 +190,10 @@
     <value>Because multiple levels of inheritance are not supported for PXCacheExtension, the derived type can be marked as sealed</value>
   </data>
   <data name="PX1012Fix" xml:space="preserve">
-    <value>Change the action to be declared on primary DAC {0}</value>
+    <value>Change the type parameter of the action to the primary DAC ({0})</value>
   </data>
   <data name="PX1012Title" xml:space="preserve">
-    <value>The action {0} is declared on non primary DAC and will not be visible in a toolbar. You should declare it on {1} DAC</value>
+    <value>The type parameter of the {0} action is not the primary DAC. You should specify the {1} DAC as the type parameter to make the action available on the toolbar.</value>
   </data>
   <data name="PX1014Fix" xml:space="preserve">
     <value>Make the type nullable</value>
