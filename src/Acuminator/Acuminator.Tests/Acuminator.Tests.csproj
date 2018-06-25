@@ -152,6 +152,7 @@
     <EmbeddedResource Include="Sources\Attributes\CodeFixes\DacExampleWithMultipleFieldAttributes.cs" />
     <EmbeddedResource Include="Sources\Attributes\CodeFixes\DacExampleWithMultipleFieldAttributes_Expected.cs" />
     <EmbeddedResource Include="Sources\Attributes\Diagnostics\FieldAttributesTypeMismatch\DacExampleFieldTypeMismatchPXDBScalarAttr.cs" />
+    <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\StaticCallWithCustomPredicate.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\MultipleFieldAttributesCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\DacFieldAttributesTests.cs" />
     <Compile Include="Tests\StaticAnalysis\BQL\BqlParameterMismatchTests.cs" />
