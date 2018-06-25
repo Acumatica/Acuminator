@@ -112,15 +112,16 @@ namespace Acuminator.Analyzers
 		{
 			IPropertySymbol property = symbolContext.Symbol as IPropertySymbol;
 
-			if (property == null)
+			if (property == null || !(property.Type is INamedTypeSymbol propertyType))
 				return null;
 
 			if (fieldAttributeInfo.FieldType == null)																//PXDBFieldAttribute case
 				return CreateDiagnosticsAsync(property, fieldAttribute, symbolContext, registerCodeFix: false);
 
-			ITypeSymbol typeToCompare = property.Type.IsValueType 
-				? (property.Type as INamedTypeSymbol)?.GetUnderlyingTypeFromNullable(pxContext)
-				: property.Type;
+			ITypeSymbol typeToCompare = propertyType;
+
+			if (propertyType.IsValueType)
+				typeToCompare = propertyType.GetUnderlyingTypeFromNullable(pxContext) ?? propertyType;
 
 			if (fieldAttributeInfo.FieldType.Equals(typeToCompare))
 				return null;
