@@ -20,8 +20,8 @@ namespace Acuminator.Tests
 	public class DacFieldNotAbstractCodeFixTests : CodeFixVerifier
 	{
 		[Theory]
-		[EmbeddedFileData(@"Dac\Diagnostics\PX1024\SOOrderNotAbstractField.cs",
-						  @"Dac\CodeFixes\PX1024\SOOrderNotAbstractFieldExpected.cs")]
+		[EmbeddedFileData(@"Dac\PX1024\Diagnostics\SOOrderNotAbstractField.cs",
+						  @"Dac\PX1024\CodeFixes\SOOrderNotAbstractFieldExpected.cs")]
 		public virtual void Test_Fix_For_Dac_With_Not_Abstract_Fields(string actual, string expected) =>
 			VerifyCSharpFix(actual, expected);
 

@@ -32,14 +32,15 @@ namespace Acuminator.Tests
 	    }
 
         [Theory]
-        [EmbeddedFileData("StartRowResetForPaging.cs")]
-        public void TestDiagnostic(string actual)
+        [EmbeddedFileData(@"View\Delegate\PX1010\Diagnostics\StartRowResetForPaging.cs")] 
+		public void TestDiagnostic(string actual)
         {
             VerifyCSharpDiagnostic(actual, CreateDiagnosticResults());
         }
 
         [Theory]
-        [EmbeddedFileData("StartRowResetForPaging.cs", "StartRowResetForPaging_Expected.cs")]
+        [EmbeddedFileData(@"View\Delegate\PX1010\Diagnostics\StartRowResetForPaging.cs",
+						  @"View\Delegate\PX1010\CodeFixes\StartRowResetForPaging_Expected.cs")]
         public void TestCodeFix(string actual, string expected)
         {
             VerifyCSharpFix(actual, expected);

@@ -34,35 +34,36 @@ namespace Acuminator.Tests
 	    }
 
 		[Theory]
-        [EmbeddedFileData("TypoInViewDelegateName_Good_SameName.cs")]
-        public void TestDiagnostic_ShouldNotShowDiagnostic_SameName(string actual)
+        [EmbeddedFileData(@"View\Delegate\PX1005\Diagnostics\TypoInViewDelegateName_Good_SameName.cs")] 
+		public void TestDiagnostic_ShouldNotShowDiagnostic_SameName(string actual)
         {
             VerifyCSharpDiagnostic(actual);
         }
 
 	    [Theory]
-	    [EmbeddedFileData("TypoInViewDelegateName_Good_DifferentNames.cs")]
+	    [EmbeddedFileData(@"View\Delegate\PX1005\Diagnostics\TypoInViewDelegateName_Good_DifferentNames.cs")]
 	    public void TestDiagnostic_ShouldNotShowDiagnostic_DifferentNames(string actual)
 	    {
 		    VerifyCSharpDiagnostic(actual);
 	    }
 
 	    [Theory]
-	    [EmbeddedFileData("TypoInViewDelegateName_Good_Override.cs")]
+	    [EmbeddedFileData(@"View\Delegate\PX1005\Diagnostics\TypoInViewDelegateName_Good_Override.cs")]
 	    public void TestDiagnostic_ShouldNotShowDiagnostic_Override(string actual)
 	    {
 		    VerifyCSharpDiagnostic(actual);
 	    }
 
 		[Theory]
-        [EmbeddedFileData("TypoInViewDelegateName_Bad.cs")]
+        [EmbeddedFileData(@"View\Delegate\PX1005\Diagnostics\TypoInViewDelegateName_Bad.cs")]
         public void TestDiagnostic(string actual)
         {
             VerifyCSharpDiagnostic(actual, CreatePX1005DiagnosticResult(16, 22));
         }
 
 	    [Theory]
-	    [EmbeddedFileData("TypoInViewDelegateName_Bad.cs", "TypoInViewDelegateName_Bad_Expected.cs")]
+	    [EmbeddedFileData(@"View\Delegate\PX1005\Diagnostics\TypoInViewDelegateName_Bad.cs",
+						  @"View\Delegate\PX1005\CodeFixes\TypoInViewDelegateName_Bad_Expected.cs")]
 		public void TestCodeFix(string actual, string expected)
 	    {
 		    VerifyCSharpFix(actual, expected);

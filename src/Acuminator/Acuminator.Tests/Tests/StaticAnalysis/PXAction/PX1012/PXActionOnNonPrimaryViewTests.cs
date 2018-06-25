@@ -18,7 +18,7 @@ namespace Acuminator.Tests
 	public class PXActionOnNonPrimaryViewTests : CodeFixVerifier
 	{
 		[Theory]
-		[EmbeddedFileData(@"PXAction\Diagnostics\PX1012\GraphWithNonPrimaryDacView.cs")] 
+		[EmbeddedFileData(@"PXAction\PX1012\Diagnostics\GraphWithNonPrimaryDacView.cs")] 
 		public virtual void Test_Action_Declared_For_Not_Primary_View(string source) =>
 			VerifyCSharpDiagnostic(source,
 				CreatePX1012ActionOnNonPrimaryViewDiagnosticResult(line: 23, column: 10, actionName: "Release1", mainDacName: "SOOrder"),
@@ -29,8 +29,8 @@ namespace Acuminator.Tests
 				CreatePX1012ActionOnNonPrimaryViewDiagnosticResult(line: 49, column: 10, actionName: "Release2", mainDacName: "SOOrder"));
 
 		[Theory]
-		[EmbeddedFileData(@"PXAction\Diagnostics\PX1012\GraphWithNonPrimaryDacView.cs",
-						  @"PXAction\CodeFixes\PX1012\GraphWithNonPrimaryDacViewExpected.cs")]
+		[EmbeddedFileData(@"PXAction\PX1012\Diagnostics\GraphWithNonPrimaryDacView.cs",
+						  @"PXAction\PX1012\CodeFixes\GraphWithNonPrimaryDacViewExpected.cs")]
 		public void TestCodeFix(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
