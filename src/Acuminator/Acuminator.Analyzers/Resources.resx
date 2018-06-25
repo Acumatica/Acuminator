@@ -208,7 +208,7 @@
     <value>The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of arguments should be from {1} to {2}.</value>
   </data>
   <data name="PX1018Title" xml:space="preserve">
-    <value>The graph with specified primary DAC type does not contain view of the specified type.</value>
+    <value>The graph with the specified primary DAC type does not contain a view of this type</value>
   </data>
   <data name="PX1021Title" xml:space="preserve">
     <value>The type of the DAC field attribute does not correspond to the property type</value>

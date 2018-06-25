@@ -332,7 +332,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The graph with specified primary DAC type does not contain view of the specified type..
+        ///   Looks up a localized string similar to The graph with the specified primary DAC type does not contain a view of this type.
         /// </summary>
         public static string PX1018Title {
             get {
