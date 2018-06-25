@@ -50,7 +50,7 @@ namespace Acuminator.Tests
 	    }
 
 		[Theory]
-        [EmbeddedFileData(@"PXGraph\PX1001 and PX1003\Diagnostics\PXGraphCreateInstanceMethod.cs")]
+        [EmbeddedFileData(@"PXGraph\PX1001 and PX1003\Diagnostics\PXGraphCreateInstanceMethod.cs")] 
 		public void TestDiagnostic_Method(string actual)
         {
             VerifyCSharpDiagnostic(actual, CreatePX1001DiagnosticResult(14, 25));
