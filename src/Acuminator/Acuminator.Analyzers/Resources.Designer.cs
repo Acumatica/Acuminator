@@ -278,7 +278,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change the action to be declared on primary DAC {0}.
+        ///   Looks up a localized string similar to Change the type parameter of the action to the primary DAC ({0}).
         /// </summary>
         public static string PX1012Fix {
             get {
@@ -287,7 +287,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The action {0} is declared on non primary DAC and will not be visible in a toolbar. You should declare it on {1} DAC.
+        ///   Looks up a localized string similar to The type parameter of the {0} action is not the primary DAC. You should specify the {1} DAC as the type parameter to make the action available on the toolbar..
         /// </summary>
         public static string PX1012Title {
             get {
