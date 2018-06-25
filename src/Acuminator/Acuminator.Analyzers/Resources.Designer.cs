@@ -332,6 +332,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The graph with specified primary DAC type does not contain view of the specified type..
+        /// </summary>
+        public static string PX1018Title {
+            get {
+                return ResourceManager.GetString("PX1018Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Change the property type so that it corresponds to the attribute type.
         /// </summary>
         public static string PX1021PropertyFix {
