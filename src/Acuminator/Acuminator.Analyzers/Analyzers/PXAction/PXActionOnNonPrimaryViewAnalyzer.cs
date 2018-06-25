@@ -112,10 +112,17 @@ namespace Acuminator.Analyzers
 													.SelectMany(type => type.GetAllViewTypesFromPXGraphOrPXGraphExtension(pxContext))
 													.FirstOrDefault();
 
-			if (firstView == null || firstView.TypeArguments.Length == 0 || cancellationToken.IsCancellationRequested)
+			if (firstView == null || cancellationToken.IsCancellationRequested)
 				return null;
 
-			var mainDacType = firstView.TypeArguments[0];
+			INamedTypeSymbol baseViewType = firstView.GetBaseTypesAndThis()
+													 .OfType<INamedTypeSymbol>()
+													 .FirstOrDefault(type => !type.IsCustomBqlCommand(pxContext));
+
+			if (baseViewType?.IsBqlCommand() != true || baseViewType.TypeArguments.Length == 0 || cancellationToken.IsCancellationRequested)
+				return null;
+
+			var mainDacType = baseViewType.TypeArguments[0];
 			return mainDacType.IsDAC() ? mainDacType : null;
 		}
 
