@@ -134,6 +134,14 @@ namespace Acuminator.Analyzers
 				compilation = aCompilation;
 			}
 
+			#region CustomDelegates
+			public INamedTypeSymbol CustomPredicate => compilation.GetTypeByMetadataName(typeof(CustomPredicate).FullName);
+
+			public INamedTypeSymbol AreSame => compilation.GetTypeByMetadataName(typeof(AreSame<,>).FullName);
+
+			public INamedTypeSymbol AreDistinct => compilation.GetTypeByMetadataName(typeof(AreDistinct<,>).FullName);
+			#endregion
+
 			public INamedTypeSymbol Required => compilation.GetTypeByMetadataName(typeof(Required<>).FullName);
 
 			public INamedTypeSymbol Argument => compilation.GetTypeByMetadataName(typeof(Argument<>).FullName);
@@ -146,7 +154,6 @@ namespace Acuminator.Analyzers
 			public INamedTypeSymbol IBqlParameter => compilation.GetTypeByMetadataName(typeof(IBqlParameter).FullName);
 
 			public INamedTypeSymbol PXSelectBaseGenericType => compilation.GetTypeByMetadataName(typeof(PXSelectBase<>).FullName);
-
 		}
         #endregion
     }
