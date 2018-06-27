@@ -50,9 +50,11 @@
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\BqlLocalVariableTypeResolver.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\ParametersCounterSymbolWalker.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\ParametersCounterSyntaxWalker.cs" />
+    <Compile Include="Analyzers\DacFields\DacNonAbstractFieldTypeAnalyzer.cs" />
     <Compile Include="Analyzers\NonNullableTypeForBqlFieldAnalyzer.cs" />
     <Compile Include="Analyzers\DacPropertyAttributes\DacPropertyAttributesAnalyzer.cs" />
     <Compile Include="DiagnosticProperty.cs" />
+    <Compile Include="FixProviders\DacFields\DacNonAbstractFieldTypeFix.cs" />
     <Compile Include="FixProviders\DacPropertyAttributes\IncompatibleDacPropertyAndFieldAttributeFix.cs" />
     <Compile Include="FixProviders\DacPropertyAttributes\MultipleDacFieldAttributesFix.cs" />
     <Compile Include="FixProviders\NonNullableTypeForBqlFieldFix.cs" />
