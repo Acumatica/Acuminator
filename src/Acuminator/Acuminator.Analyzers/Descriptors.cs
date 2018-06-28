@@ -59,6 +59,9 @@ namespace Acuminator.Analyzers
 		internal static DiagnosticDescriptor PX1011_InheritanceFromPXCacheExtension { get; } =
             Rule("PX1011", nameof(Resources.PX1011Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 
+		internal static DiagnosticDescriptor PX1012_PXActionOnNonPrimaryView { get; } =
+			Rule("PX1012", nameof(Resources.PX1012Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+
 		internal static DiagnosticDescriptor PX1014_NonNullableTypeForBqlField { get; } = 
             Rule("PX1014", nameof(Resources.PX1014Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 

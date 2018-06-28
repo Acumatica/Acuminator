@@ -197,8 +197,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An instance of {0} must be created with the PXCache&lt;{0}&gt;.CreateInstance() factory method
-        ///.
+        ///   Looks up a localized string similar to An instance of {0} must be created with the PXCache&lt;{0}&gt;.CreateInstance() factory method.
         /// </summary>
         public static string PX1007MessageFormat {
             get {
@@ -275,6 +274,24 @@ namespace Acuminator.Analyzers {
         public static string PX1011Title {
             get {
                 return ResourceManager.GetString("PX1011Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change the type parameter of the action to the primary DAC ({0}).
+        /// </summary>
+        public static string PX1012Fix {
+            get {
+                return ResourceManager.GetString("PX1012Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type parameter of the {0} action is not the primary DAC. You should specify the {1} DAC as the type parameter to make the action available on the toolbar..
+        /// </summary>
+        public static string PX1012Title {
+            get {
+                return ResourceManager.GetString("PX1012Title", resourceCulture);
             }
         }
         

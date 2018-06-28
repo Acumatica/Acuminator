@@ -339,6 +339,29 @@ namespace Acuminator.Utilities
 			}
 		}
 
+		public static IEnumerable<INamedTypeSymbol> GetAllViewTypesFromPXGraphOrPXGraphExtension(this ITypeSymbol graphOrExtension, 
+																								 PXContext pxContext)
+		{
+			if (graphOrExtension == null || 
+			   (!graphOrExtension.InheritsFrom(pxContext.PXGraphType) && !graphOrExtension.InheritsFrom(pxContext.PXGraphExtensionType)))
+				yield break;
+
+			foreach (ISymbol member in graphOrExtension.GetMembers())
+			{
+				switch (member)
+				{
+					case IFieldSymbol field 
+					when field.Type is INamedTypeSymbol fieldType && fieldType.InheritsFrom(pxContext.PXSelectBaseType):
+						yield return fieldType;
+						continue;
+					case IPropertySymbol property 
+					when property is INamedTypeSymbol propertyType && propertyType.InheritsFrom(pxContext.PXSelectBaseType):
+						yield return propertyType;
+						continue;
+				}
+			}								 
+		}
+
 		public static bool IsDelegateForViewInPXGraph(this IMethodSymbol method, PXContext pxContext)
 		{
 			if (method == null || method.ReturnType.SpecialType != SpecialType.System_Collections_IEnumerable)

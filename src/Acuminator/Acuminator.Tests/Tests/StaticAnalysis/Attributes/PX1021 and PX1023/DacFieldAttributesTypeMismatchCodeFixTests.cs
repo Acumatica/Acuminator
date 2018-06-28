@@ -12,18 +12,18 @@ using Acuminator.Tests.Helpers;
 
 namespace Acuminator.Tests
 {
-	public class MultipleFieldAttributesCodeFixTests : CodeFixVerifier
+	public class DacFieldAttributesTypeMismatchCodeFixTests : CodeFixVerifier
 	{
 		[Theory]
-		[EmbeddedFileData(@"Attributes\CodeFixes\DacWithMultipleFieldAttributes.cs",
-						  @"Attributes\CodeFixes\DacWithMultipleFieldAttributes_Expected.cs")]
-		public void Test_Multiple_Field_Attributes_On_DAC_Property_CodeFix(string actual, string expected)
+		[EmbeddedFileData(@"Attributes\CodeFixes\PX1021\DacFieldAttributesTypeMismatch.cs",
+						  @"Attributes\CodeFixes\PX1021\DacFieldAttributesTypeMismatchExpected.cs")]
+		public void Test_DAC_Property_Type_Not_Compatible_With_Field_Attribute_CodeFix(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacPropertyAttributesAnalyzer();
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider() => new MultipleDacFieldAttributesFix();
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new IncompatibleDacPropertyAndFieldAttributeFix();
 	}
 }

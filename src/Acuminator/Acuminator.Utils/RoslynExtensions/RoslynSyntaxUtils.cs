@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp;
@@ -426,6 +427,27 @@ namespace Acuminator.Utilities
 			return constantValue.HasValue
 				? constantValue.Value as int?
 				: null;
+		}
+		
+		/// <summary>
+		/// An ISymbol extension method that gets syntax for symbol asynchronously.
+		/// </summary>
+		/// <param name="symbol">The symbol to act on.</param>
+		/// <param name="cancellationToken">(Optional) The cancellation token.</param>
+		/// <returns>
+		/// An asynchronous task that yields the syntax.
+		/// </returns>
+		public static Task<SyntaxNode> GetSyntaxAsync(this ISymbol symbol, CancellationToken cancellationToken = default)
+		{
+			if (symbol == null)
+				return Task.FromResult<SyntaxNode>(null);
+
+			var declarations = symbol.DeclaringSyntaxReferences;
+
+			if (declarations.Length == 0)
+				return Task.FromResult<SyntaxNode>(null);
+
+			return declarations[0].GetSyntaxAsync(cancellationToken);
 		}
 	}
 }
