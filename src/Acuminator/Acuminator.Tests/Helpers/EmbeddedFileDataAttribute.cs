@@ -26,7 +26,9 @@ namespace Acuminator.Tests.Helpers
 		private static string ReadFile(string fileName)
 		{	
 			var assembly = Assembly.GetExecutingAssembly();
-			fileName = fileName?.Replace('\\', '.');
+			fileName = fileName?.Replace('\\', '.')
+								.Replace(' ', '_');
+
 			using (var stream = assembly.GetManifestResourceStream($"Acuminator.Tests.Sources.{fileName}"))
 			{
 				if (stream != null)
