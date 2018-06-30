@@ -220,9 +220,11 @@ namespace Acuminator.Utilities
 
 			return typeSymbol.ImplementsInterface(TypeNames.IBqlTable);
 		}
-		public static bool IsDacExtension(this ITypeSymbol typeSymbol)
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsDacExtension(this ITypeSymbol typeSymbol, bool ruleOutBaseTypes = false)
 		{
-			if (!typeSymbol.IsValidForColoring() || string.Equals(typeSymbol.Name, TypeNames.PXCacheExtension))
+			if (!typeSymbol.IsValidForColoring() || (ruleOutBaseTypes && string.Equals(typeSymbol.Name, TypeNames.PXCacheExtension)))
 				return false;
 
 			return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.PXCacheExtension, includeInterfaces: false);

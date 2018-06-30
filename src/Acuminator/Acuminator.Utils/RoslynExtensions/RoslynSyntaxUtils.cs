@@ -89,6 +89,13 @@ namespace Acuminator.Utilities
 			return current as StatementSyntax;
 		}
 
+		/// <summary>
+		/// A <see cref="SyntaxNode"/> extension method that gets declaring method node for syntax nodes inside the method. For nodes outside the method returns <c>null</c>.
+		/// </summary>
+		/// <param name="node">The node to act on.</param>
+		/// <returns>
+		/// The declaring method node.
+		/// </returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static MethodDeclarationSyntax GetDeclaringMethodNode(this SyntaxNode node)
 		{
@@ -448,6 +455,20 @@ namespace Acuminator.Utilities
 				return Task.FromResult<SyntaxNode>(null);
 
 			return declarations[0].GetSyntaxAsync(cancellationToken);
+		}
+
+		public static SyntaxToken? GetIdentifier(this MemberDeclarationSyntax member)
+		{
+			if (member == null)
+				return null;
+
+			foreach (SyntaxToken token in member.ChildTokens())
+			{
+				if (token.IsKind(SyntaxKind.IdentifierToken))
+					return token;
+			}
+
+			return null;
 		}
 	}
 }
