@@ -51,6 +51,7 @@
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\ParametersCounterSymbolWalker.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\ParametersCounterSyntaxWalker.cs" />
     <Compile Include="Analyzers\DAC\DacFields\DacNonAbstractFieldTypeAnalyzer.cs" />
+    <Compile Include="Analyzers\DAC\DacDeclarationAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacPropertyAttributes\NonNullableTypeForBqlFieldAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacPropertyAttributes\DacPropertyAttributesAnalyzer.cs" />
     <Compile Include="Analyzers\PXAction\PXActionOnNonPrimaryViewAnalyzer.cs" />
