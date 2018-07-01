@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Acuminator.Analyzers;
-using Acuminator.Tests.Helpers;
-using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using TestHelper;
+using Acuminator.Analyzers;
+using Acuminator.Analyzers.FixProviders;
+using Acuminator.Tests.Helpers;
+using FluentAssertions;
 using Xunit;
 
 namespace Acuminator.Tests
 {
-	public class UnderscoresInDacTests : DiagnosticVerifier
+	public class UnderscoresInDacTests : CodeFixVerifier
 	{
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1026\Diagnostics\DacWithUnderscores.cs")]
@@ -23,6 +24,8 @@ namespace Acuminator.Tests
 				CreatePX1026DiagnosticResult(line: 10, column: 15),
 				CreatePX1026DiagnosticResult(line: 13, column: 25),
 				CreatePX1026DiagnosticResult(line: 18, column: 17),
+				CreatePX1026DiagnosticResult(line: 37, column: 25),
+				CreatePX1026DiagnosticResult(line: 41, column: 20),
 				CreatePX1026DiagnosticResult(line: 49, column: 18),
 				CreatePX1026DiagnosticResult(line: 52, column: 25));
 
@@ -32,10 +35,26 @@ namespace Acuminator.Tests
 			VerifyCSharpDiagnostic(source,
 				CreatePX1026DiagnosticResult(line: 10, column: 15),
 				CreatePX1026DiagnosticResult(line: 13, column: 25),
-				CreatePX1026DiagnosticResult(line: 17, column: 18));
+				CreatePX1026DiagnosticResult(line: 17, column: 18),
+				CreatePX1026DiagnosticResult(line: 21, column: 25),
+				CreatePX1026DiagnosticResult(line: 24, column: 18));
+
+		[Theory]
+		[EmbeddedFileData(@"Dac\PX1026\Diagnostics\DacWithUnderscores.cs",
+						  @"Dac\PX1026\CodeFixes\DacWithUnderscores_Expected.cs")]
+		public virtual void Test__Fix_For_Dac_With_Underscores_In_Declaration(string actual, string expected) =>
+			VerifyCSharpFix(actual, expected);
+
+		[Theory]
+		[EmbeddedFileData(@"Dac\PX1026\Diagnostics\DacExtensionWithUnderscores.cs",
+						  @"Dac\PX1026\CodeFixes\DacExtensionWithUnderscores_Expected.cs")]
+		public virtual void Test__Fix_For_Dac_Extension_With_Underscores_In_Declaration(string actual, string expected) =>
+			VerifyCSharpFix(actual, expected);
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacDeclarationAnalyzer();
-		
+
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new UnderscoresInDacCodeFix();
+
 		private DiagnosticResult CreatePX1026DiagnosticResult(int line, int column)
 		{
 			return new DiagnosticResult

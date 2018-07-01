@@ -162,6 +162,8 @@
     <EmbeddedResource Include="Sources\View\PX1018\Diagnostics\GraphWithPrimaryDacWithoutView.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1026\Diagnostics\DacWithUnderscores.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1026\Diagnostics\DacExtensionWithUnderscores.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1026\CodeFixes\DacExtensionWithUnderscores_Expected.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1026\CodeFixes\DacWithUnderscores_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTypeMismatchCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\MultipleFieldAttributesCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTests.cs" />
