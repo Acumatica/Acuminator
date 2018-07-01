@@ -56,7 +56,9 @@
     <Compile Include="Analyzers\DAC\DacPropertyAttributes\DacPropertyAttributesAnalyzer.cs" />
     <Compile Include="Analyzers\PXAction\PXActionOnNonPrimaryViewAnalyzer.cs" />
     <Compile Include="Analyzers\View\NoPrimaryViewForPrimaryDacAnalyzer.cs" />
-    <Compile Include="DiagnosticProperty.cs" />
+    <Compile Include="Diagnostic\DiagnosticProperty.cs" />
+    <Compile Include="Diagnostic\DiagnosticUtils.cs" />
+    <Compile Include="FixProviders\DAC\UnderscoresInDacCodeFix.cs" />
     <Compile Include="FixProviders\DAC\DacFields\DacNonAbstractFieldTypeFix.cs" />
     <Compile Include="FixProviders\DAC\DacPropertyAttributes\IncompatibleDacPropertyAndFieldAttributeFix.cs" />
     <Compile Include="FixProviders\DAC\DacPropertyAttributes\MultipleDacFieldAttributesFix.cs" />

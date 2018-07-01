@@ -38,7 +38,7 @@ namespace Acuminator.Analyzers.FixProviders
 									  equivalenceKey: codeActionName);
 
 				context.RegisterCodeFix(codeAction, context.Diagnostics);
-			});
+			}, context.CancellationToken);
 		}
 
 		private async Task<Document> RemoveAllOtherAttributesFromPropertyAsync(Document document, TextSpan span, CancellationToken cancellationToken)

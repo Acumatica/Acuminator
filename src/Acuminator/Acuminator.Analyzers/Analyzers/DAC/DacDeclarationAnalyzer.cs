@@ -48,9 +48,15 @@ namespace Acuminator.Analyzers
 
 			if (identifier.ValueText.Contains("_"))
 			{
+				bool registerCodeFix = !IdentifierContainsOnlyUnderscores(identifier.ValueText);
+				var diagnosticProperties = new Dictionary<string, string>
+				{
+					{ DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString() }
+				}.ToImmutableDictionary();
+
 				syntaxContext.ReportDiagnostic(
 					Diagnostic.Create(
-						Descriptors.PX1026_UnderscoresInDacDeclaration, identifier.GetLocation()));
+						Descriptors.PX1026_UnderscoresInDacDeclaration, identifier.GetLocation(), diagnosticProperties));
 			}
 
 			var identifiersWithUnderscores = from member in dacOrDacExtNode.Members
@@ -60,10 +66,28 @@ namespace Acuminator.Analyzers
 
 			foreach (SyntaxToken identifierToReport in identifiersWithUnderscores)
 			{
+				bool registerCodeFix = !IdentifierContainsOnlyUnderscores(identifierToReport.ValueText);
+				var diagnosticProperties = new Dictionary<string, string>
+				{
+					{ DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString() }
+				}.ToImmutableDictionary();
+
 				syntaxContext.ReportDiagnostic(
 					Diagnostic.Create(
-						Descriptors.PX1026_UnderscoresInDacDeclaration, identifierToReport.GetLocation()));
-			}		
+						Descriptors.PX1026_UnderscoresInDacDeclaration, identifierToReport.GetLocation(), diagnosticProperties));
+			}
+
+			//*************************************Local Functions**********************************************************************
+			bool IdentifierContainsOnlyUnderscores(string identifierName)
+			{
+				for (int i = 0; i < identifierName.Length; i++)
+				{
+					if (identifierName[i] != '_')
+						return false;
+				}
+
+				return true;
+			}
 		}
 	}
 }
