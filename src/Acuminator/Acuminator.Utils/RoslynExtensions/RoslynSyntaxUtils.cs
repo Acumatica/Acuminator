@@ -435,7 +435,7 @@ namespace Acuminator.Utilities
 				? constantValue.Value as int?
 				: null;
 		}
-		
+
 		/// <summary>
 		/// An ISymbol extension method that gets syntax for symbol asynchronously.
 		/// </summary>
@@ -457,18 +457,29 @@ namespace Acuminator.Utilities
 			return declarations[0].GetSyntaxAsync(cancellationToken);
 		}
 
-		public static SyntaxToken? GetIdentifier(this MemberDeclarationSyntax member)
+		public static IEnumerable<SyntaxToken> GetIdentifiers(this MemberDeclarationSyntax member)
 		{
-			if (member == null)
-				return null;
-
-			foreach (SyntaxToken token in member.ChildTokens())
+			switch (member)
 			{
-				if (token.IsKind(SyntaxKind.IdentifierToken))
-					return token;
+				case PropertyDeclarationSyntax propertyDeclaration:
+					return propertyDeclaration.Identifier.ToEnumerable();
+				case FieldDeclarationSyntax fieldDeclaration:
+					return fieldDeclaration.Declaration.Variables.Select(variable => variable.Identifier);
+				case MethodDeclarationSyntax methodDeclaration:
+					return methodDeclaration.Identifier.ToEnumerable();
+				case EventDeclarationSyntax eventDeclaration:														//for explicit event declaration with "add" and "remove"
+					return eventDeclaration.Identifier.ToEnumerable();
+				case EventFieldDeclarationSyntax eventFieldDeclaration:
+					return eventFieldDeclaration.Declaration.Variables.Select(variable => variable.Identifier);     //for field event declaration
+				case DelegateDeclarationSyntax delegateDeclaration:
+					return delegateDeclaration.Identifier.ToEnumerable();
+				case ClassDeclarationSyntax nestedClassDeclaration:
+					return nestedClassDeclaration.Identifier.ToEnumerable();
+				case EnumDeclarationSyntax enumDeclaration:
+					return enumDeclaration.Identifier.ToEnumerable();
+				default:
+					return Enumerable.Empty<SyntaxToken>();
 			}
-
-			return null;
 		}
 	}
 }

@@ -54,9 +54,9 @@ namespace Acuminator.Analyzers
 			}
 
 			var identifiersWithUnderscores = from member in dacOrDacExtNode.Members
-											 select member.GetIdentifier() into memberIdentifier
-											 where memberIdentifier != null && memberIdentifier.Value.ValueText.Contains("_")
-											 select memberIdentifier.Value;
+											 from memberIdentifier in member.GetIdentifiers()
+											 where memberIdentifier.ValueText.Contains("_")
+											 select memberIdentifier;
 
 			foreach (SyntaxToken identifierToReport in identifiersWithUnderscores)
 			{
