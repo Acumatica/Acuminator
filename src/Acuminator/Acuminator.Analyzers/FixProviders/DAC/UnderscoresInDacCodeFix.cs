@@ -29,13 +29,13 @@ namespace Acuminator.Analyzers.FixProviders
 
 		public override Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1026_UnderscoresInDacDeclaration.Id);
-
-			if (diagnostic == null || !diagnostic.IsRegisteredForCodeFix())
-				return Task.FromResult(false);
-
 			return Task.Run(() =>
 			{
+				var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1026_UnderscoresInDacDeclaration.Id);
+
+				if (diagnostic == null || !diagnostic.IsRegisteredForCodeFix())
+					return;
+
 				string codeActionName = nameof(Resources.PX1026Fix).GetLocalized().ToString();
 				CodeAction codeAction = CodeAction.Create(codeActionName,
 														  cToken => ChangeUnderscoredNamesAsync(context.Document, context.Span, cToken),
@@ -54,7 +54,7 @@ namespace Acuminator.Analyzers.FixProviders
 				return document;
 
 			SyntaxNode modifiedNode = GetNodeWithoutUnderscores(diagnosticNode);
-			
+
 			if (modifiedNode == null || cancellationToken.IsCancellationRequested)
 				return document;
 

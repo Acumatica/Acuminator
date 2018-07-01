@@ -7,14 +7,14 @@ using PX.Data;
 
 namespace PX.Objects.HackathonDemo
 {
-	public class SO_Tran : IBqlTable
+	public class SO_Order : IBqlTable
 	{
 		#region OrderType
 		public abstract class orderType : IBqlField { }
 		[PXDBString(IsKey = true, InputMask = "")]
 		[PXDefault]
-		[PXUIField(DisplayName = "Order Type")]
-		public string OrderType { get; set; }
+		[PXUIField(DisplayName = "Order Type")] 
+		public string Order_Type { get; set; }
 		#endregion
 
 		#region OrderNbr
