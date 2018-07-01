@@ -26,7 +26,7 @@ namespace Acuminator.Tests
 				CreatePX1026DiagnosticResult(line: 18, column: 17),
 				CreatePX1026DiagnosticResult(line: 37, column: 25),
 				CreatePX1026DiagnosticResult(line: 41, column: 20),
-				CreatePX1026DiagnosticResult(line: 49, column: 18),
+				CreatePX1026DiagnosticResult(line: 49, column: 27),
 				CreatePX1026DiagnosticResult(line: 52, column: 25));
 
 		[Theory]
