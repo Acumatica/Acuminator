@@ -18,13 +18,21 @@ namespace Acuminator.Tests
 	{
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1026\Diagnostics\DacWithUnderscores.cs")]
-		public virtual void Test_Dac_With_Not_Abstract_Fields(string source) =>
+		public virtual void Test_Dac_With_Underscores_In_Declaration(string source) =>
 			VerifyCSharpDiagnostic(source,
 				CreatePX1026DiagnosticResult(line: 10, column: 15),
 				CreatePX1026DiagnosticResult(line: 13, column: 25),
 				CreatePX1026DiagnosticResult(line: 18, column: 17),
 				CreatePX1026DiagnosticResult(line: 49, column: 18),
-				CreatePX1026DiagnosticResult(line: 52, column: 25));	
+				CreatePX1026DiagnosticResult(line: 52, column: 25));
+
+		[Theory]
+		[EmbeddedFileData(@"Dac\PX1026\Diagnostics\DacExtensionWithUnderscores.cs")]
+		public virtual void Test_Dac_Extension_With_Underscores_In_Declaration(string source) =>
+			VerifyCSharpDiagnostic(source,
+				CreatePX1026DiagnosticResult(line: 10, column: 15),
+				CreatePX1026DiagnosticResult(line: 13, column: 25),
+				CreatePX1026DiagnosticResult(line: 17, column: 18));
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacDeclarationAnalyzer();
 		
