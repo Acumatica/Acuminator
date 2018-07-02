@@ -160,6 +160,8 @@
     <EmbeddedResource Include="Sources\PXAction\PX1012\Diagnostics\GraphWithNonPrimaryDacView.cs" />
     <EmbeddedResource Include="Sources\PXAction\PX1012\CodeFixes\GraphWithNonPrimaryDacViewExpected.cs" />
     <EmbeddedResource Include="Sources\View\PX1018\Diagnostics\GraphWithPrimaryDacWithoutView.cs" />
+    <EmbeddedResource Include="Sources\PXAction\PX1012\Diagnostics\DerivedGraphWithBaseGraphPrimaryDac.cs" />
+    <EmbeddedResource Include="Sources\PXAction\PX1012\CodeFixes\DerivedGraphWithBaseGraphPrimaryDacExpected.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTypeMismatchCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\MultipleFieldAttributesCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTests.cs" />
