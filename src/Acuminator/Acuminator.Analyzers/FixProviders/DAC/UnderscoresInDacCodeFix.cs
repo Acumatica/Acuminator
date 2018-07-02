@@ -64,53 +64,42 @@ namespace Acuminator.Analyzers.FixProviders
 
 		private static SyntaxNode GetNodeWithoutUnderscores(SyntaxNode diagnosticNode)
 		{
-			string identifierWithoutUnderscores = null;
-
 			switch (diagnosticNode)
 			{
 				case ClassDeclarationSyntax classDeclaration:
-					identifierWithoutUnderscores = classDeclaration.Identifier.ValueText.Replace("_", string.Empty);
 					return classDeclaration.WithIdentifier(
-						SyntaxFactory.Identifier(identifierWithoutUnderscores));
-
+								GetIdentifierWithoutUnderscores(classDeclaration.Identifier));
 				case IdentifierNameSyntax identifierName:
-					identifierWithoutUnderscores = identifierName.Identifier.ValueText.Replace("_", string.Empty);
 					return identifierName.WithIdentifier(
-						SyntaxFactory.Identifier(identifierWithoutUnderscores));
-
+								GetIdentifierWithoutUnderscores(identifierName.Identifier));
 				case VariableDeclaratorSyntax variableDeclarator:
-					identifierWithoutUnderscores = variableDeclarator.Identifier.ValueText.Replace("_", string.Empty);
 					return variableDeclarator.WithIdentifier(
-						SyntaxFactory.Identifier(identifierWithoutUnderscores));
-
+								GetIdentifierWithoutUnderscores(variableDeclarator.Identifier));
 				case PropertyDeclarationSyntax propertyDeclaration:
-					identifierWithoutUnderscores = propertyDeclaration.Identifier.ValueText.Replace("_", string.Empty);
 					return propertyDeclaration.WithIdentifier(
-						SyntaxFactory.Identifier(identifierWithoutUnderscores));
-
+													GetIdentifierWithoutUnderscores(propertyDeclaration.Identifier));
 				case EventDeclarationSyntax eventDeclaration:
-					identifierWithoutUnderscores = eventDeclaration.Identifier.ValueText.Replace("_", string.Empty);
 					return eventDeclaration.WithIdentifier(
-						SyntaxFactory.Identifier(identifierWithoutUnderscores));
-
+								GetIdentifierWithoutUnderscores(eventDeclaration.Identifier));
 				case DelegateDeclarationSyntax delegateDeclaration:
-					identifierWithoutUnderscores = delegateDeclaration.Identifier.ValueText.Replace("_", string.Empty);
 					return delegateDeclaration.WithIdentifier(
-						SyntaxFactory.Identifier(identifierWithoutUnderscores));
-
+								GetIdentifierWithoutUnderscores(delegateDeclaration.Identifier));
 				case MethodDeclarationSyntax methodDeclaration:
-					identifierWithoutUnderscores = methodDeclaration.Identifier.ValueText.Replace("_", string.Empty);
 					return methodDeclaration.WithIdentifier(
-						SyntaxFactory.Identifier(identifierWithoutUnderscores));
-
+								GetIdentifierWithoutUnderscores(methodDeclaration.Identifier));
 				case EnumDeclarationSyntax enumDeclaration:
-					identifierWithoutUnderscores = enumDeclaration.Identifier.ValueText.Replace("_", string.Empty);
 					return enumDeclaration.WithIdentifier(
-						SyntaxFactory.Identifier(identifierWithoutUnderscores));
-
+								GetIdentifierWithoutUnderscores(enumDeclaration.Identifier));
 				default:
 					return null;
 			}
+		}
+
+		private static SyntaxToken GetIdentifierWithoutUnderscores(SyntaxToken originalIdentifier)
+		{
+			string identifierWithoutUnderscores = originalIdentifier.ValueText.Replace("_", string.Empty);
+			return SyntaxFactory.Identifier(identifierWithoutUnderscores)
+								.WithTrailingTrivia(originalIdentifier.TrailingTrivia);
 		}
 	}
 }
