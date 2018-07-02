@@ -26,7 +26,7 @@ namespace Acuminator.Tests
                     Message = Descriptors.PX1010_StartRowResetForPaging.Title.ToString(),
                     Severity = DiagnosticSeverity.Warning,
                     Locations =
-                        new[] { new DiagnosticResultLocation("Test0.cs", 17, 44) }
+                        new[] { new DiagnosticResultLocation("Test0.cs", 17, 38) }
                 }
             };
 	    }

@@ -24,10 +24,7 @@ namespace Acuminator.Tests
 				CreatePX1026DiagnosticResult(line: 10, column: 15),
 				CreatePX1026DiagnosticResult(line: 13, column: 25),
 				CreatePX1026DiagnosticResult(line: 18, column: 17),
-				CreatePX1026DiagnosticResult(line: 37, column: 25),
-				CreatePX1026DiagnosticResult(line: 41, column: 20),
-				CreatePX1026DiagnosticResult(line: 49, column: 27),
-				CreatePX1026DiagnosticResult(line: 52, column: 25));
+				CreatePX1026DiagnosticResult(line: 44, column: 25));
 
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1026\Diagnostics\DacExtensionWithUnderscores.cs")]

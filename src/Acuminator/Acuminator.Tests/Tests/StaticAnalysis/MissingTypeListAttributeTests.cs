@@ -50,7 +50,7 @@ namespace Acuminator.Tests
         [EmbeddedFileData("MissingTypeListAttributeBad.cs")]
         public void TestDiagnostic_Bad(string actual)
         {
-            VerifyCSharpDiagnostic(actual, CreateDiagnosticResult(14, 23));
+            VerifyCSharpDiagnostic(actual, CreateDiagnosticResult(14, 17));
         }
 
         [Theory]
