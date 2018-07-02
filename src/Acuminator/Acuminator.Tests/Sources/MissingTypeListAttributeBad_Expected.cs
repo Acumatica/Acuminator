@@ -7,11 +7,11 @@ using PX.Data;
 
 namespace PX.Analyzers.Test.Sources
 {
-    public class BadDac : IBqlTable
-    {
-        public abstract class someField { }
-        [PXStringList(new[] { "O", "N" }, new[] { "Open", "New" })]
-        [PXStringAttribute]
-        public string SomeField { get; set; }
-    }
+	public class BadDac : IBqlTable
+	{
+		public abstract class someField { }
+		[PXStringList(new[] { "O", "N" }, new[] { "Open", "New" })]
+		[PXStringAttribute]
+		public string SomeField { get; set; }
+	}
 }

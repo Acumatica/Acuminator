@@ -33,14 +33,6 @@ namespace PX.Objects.HackathonDemo
 		public string Status { get; set; }
 		#endregion
 
-		#region OrderDate
-		public abstract class __ : IBqlField { }
-
-		[PXDBInt]
-		[PXUIField(DisplayName = "OrderDate")]
-		public DateTime? _ { get; set; }
-		#endregion
-
 		#region TestField
 		public abstract class Tstamp : IBqlField
 		{
