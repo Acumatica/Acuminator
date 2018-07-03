@@ -45,7 +45,7 @@ namespace Acuminator.Analyzers
 			protected (bool AnalysisSucceded, bool VarAlwaysAssigned) CheckCandidate(StatementSyntax assignmentStatement)
 			{
 				var (_, scopedAssignment, scopedInvocation) =
-					RoslynSyntaxUtils.LowestCommonAncestorSyntaxStatement(assignmentStatement, InvocationStatement);
+					MethodDeclarationUtils.LowestCommonAncestorSyntaxStatement(assignmentStatement, InvocationStatement);
 
 				if (scopedAssignment == null || scopedInvocation == null)
 					return (false, false);       //If there was some kind of error during analysis we should assume the worst case - that the candidat is valid but not always assigns variable 

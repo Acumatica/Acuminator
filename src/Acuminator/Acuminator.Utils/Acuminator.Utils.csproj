@@ -101,7 +101,9 @@
     <Compile Include="CommonUtils\EnumerableExtraExtensions.cs" />
     <Compile Include="RoslynExtensions\PXFieldAttributes\FieldAttributeInfo.cs" />
     <Compile Include="RoslynExtensions\PXFieldAttributes\FieldAttributesRegister.cs" />
-    <Compile Include="RoslynExtensions\RoslynSyntaxUtils.cs" />
+    <Compile Include="RoslynExtensions\SyntaxUtils\MethodDeclarationUtils.cs" />
+    <Compile Include="RoslynExtensions\SyntaxUtils\SyntaxTreeUtils.cs" />
+    <Compile Include="RoslynExtensions\SyntaxUtils\RoslynSyntaxUtils.cs" />
     <Compile Include="RoslynExtensions\BqlModifyingMethods.cs" />
     <Compile Include="RoslynExtensions\PXCodeType.cs" />
     <Compile Include="RoslynExtensions\ITypeSymbolExtensions.cs" />
