@@ -154,8 +154,54 @@ namespace Acuminator.Utilities
 					return nestedClassDeclaration.Identifier.ToEnumerable();
 				case EnumDeclarationSyntax enumDeclaration:
 					return enumDeclaration.Identifier.ToEnumerable();
+				case ConstructorDeclarationSyntax constructorDeclaration:
+					return constructorDeclaration.Identifier.ToEnumerable();
 				default:
 					return Enumerable.Empty<SyntaxToken>();
+			}
+		}
+
+		public static Accessibility? GetAccessibility(this MemberDeclarationSyntax member, SemanticModel semanticModel,
+													 CancellationToken cancellationToken = default)
+		{
+			member.ThrowOnNull(nameof(member));
+			semanticModel.ThrowOnNull(nameof(semanticModel));
+			
+			switch (member)
+			{		
+				case FieldDeclarationSyntax fieldDeclaration:
+					VariableDeclaratorSyntax firstFieldDeclaration = fieldDeclaration.Declaration.Variables.FirstOrDefault();
+					return firstFieldDeclaration != null 
+						? semanticModel.GetDeclaredSymbol(firstFieldDeclaration, cancellationToken)?.DeclaredAccessibility
+						: null;
+				case EventFieldDeclarationSyntax eventFieldDeclaration:
+					VariableDeclaratorSyntax firstEventDeclaration = eventFieldDeclaration.Declaration.Variables.FirstOrDefault();     //for field event declaration
+					return firstEventDeclaration != null 
+						? semanticModel.GetDeclaredSymbol(firstEventDeclaration, cancellationToken)?.DeclaredAccessibility
+						: null;
+				default:
+					return semanticModel.GetDeclaredSymbol(member, cancellationToken)?.DeclaredAccessibility;
+			}
+		}
+
+		public static bool IsPublic(this MemberDeclarationSyntax member)
+		{
+			member.ThrowOnNull(nameof(member));
+
+			switch (member)
+			{
+				case BasePropertyDeclarationSyntax basePropertyDeclaration:
+					return basePropertyDeclaration.Modifiers.Any(SyntaxKind.PublicKeyword);
+				case BaseMethodDeclarationSyntax baseMethodDeclaration:
+					return baseMethodDeclaration.Modifiers.Any(SyntaxKind.PublicKeyword);
+				case BaseTypeDeclarationSyntax baseTypeDeclaration:
+					return baseTypeDeclaration.Modifiers.Any(SyntaxKind.PublicKeyword);
+				case BaseFieldDeclarationSyntax baseFieldDeclaration:
+					return baseFieldDeclaration.Modifiers.Any(SyntaxKind.PublicKeyword);			
+				case DelegateDeclarationSyntax delegateDeclaration:
+					return delegateDeclaration.Modifiers.Any(SyntaxKind.PublicKeyword);		
+				default:
+					return false;
 			}
 		}
 	}

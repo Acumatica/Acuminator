@@ -60,7 +60,7 @@ namespace Acuminator.Analyzers
 			}
 
 			var identifiersWithUnderscores = from member in dacOrDacExtNode.Members
-											 where !(member is FieldDeclarationSyntax)
+											 where member.IsPublic()
 											 from memberIdentifier in member.GetIdentifiers()
 											 where memberIdentifier.ValueText.Contains("_")
 											 select memberIdentifier;
