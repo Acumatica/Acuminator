@@ -33,26 +33,37 @@ namespace Acuminator.Analyzers
             context.RegisterCodeFix(
                 CodeAction.Create(
                     Resources.PX1010Fix,
-                    c => InsertStartRowAssigment(context.Document, node, c),
+                    c => InsertStartRowAssigmentAsync(context.Document, node, c),
                     Resources.PX1010Fix),
                 context.Diagnostics);
         }
 
-        private async Task<Document> InsertStartRowAssigment(Document document, InvocationExpressionSyntax invocationDeclaration, CancellationToken cancellationToken)
+        private async Task<Document> InsertStartRowAssigmentAsync(Document document, InvocationExpressionSyntax invocationDeclaration, CancellationToken cancellationToken)
         {
-            MethodDeclarationSyntax mds = invocationDeclaration.SyntaxTree.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>().
-                Where(m => m.DescendantNodes().Contains(invocationDeclaration)).Single();
+            MethodDeclarationSyntax methodDeclaration = invocationDeclaration.GetDeclaringMethodNode();
+
+			if (methodDeclaration?.Body == null)
+				return document;
 
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
             var pxContext = new PXContext(semanticModel.Compilation);
 
-            var last = mds.Body.DescendantNodes().OfType<ReturnStatementSyntax>().Last();
-            var newAssigment = SyntaxFactory.ExpressionStatement(
-                SyntaxFactory.ParseExpression($"{nameof(PXView)}.{nameof(PXView.StartRow)} = 0").
-                WithLeadingTrivia(last.GetLeadingTrivia()));
-            var root = await document.GetSyntaxRootAsync();
-            return document.WithSyntaxRoot(
-                root.InsertNodesBefore(last, new SyntaxNode[] { newAssigment }));
+			ReturnStatementSyntax lastReturnStatement = methodDeclaration.Body.DescendantNodes()
+																			  .OfType<ReturnStatementSyntax>()
+																			  .LastOrDefault();
+
+			if (lastReturnStatement != null)
+			{
+				var newAssigment = SyntaxFactory.ExpressionStatement(
+					SyntaxFactory.ParseExpression($"{nameof(PXView)}.{nameof(PXView.StartRow)} = 0").
+					WithLeadingTrivia(lastReturnStatement.GetLeadingTrivia()));
+
+				var root = await document.GetSyntaxRootAsync();
+				return document.WithSyntaxRoot(
+									root.InsertNodesBefore(lastReturnStatement, new SyntaxNode[] { newAssigment }));
+			}
+
+			
         }
     }
 }
