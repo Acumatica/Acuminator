@@ -61,7 +61,7 @@ namespace Acuminator.Analyzers
 
 			HashSet<string> dacProperties = dacOrDacExtNode.Members.OfType<PropertyDeclarationSyntax>()
 																   .Select(p => p.Identifier.ValueText)
-																   .ToHashSet();
+																   .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
 			var identifiersWithUnderscores = from member in dacOrDacExtNode.Members
 											 where ShouldCheckIdentifier(member, dacProperties)
@@ -100,13 +100,8 @@ namespace Acuminator.Analyzers
 			if (!member.IsPublic() && !member.IsInternal())
 				return false;
 
-			if (member is ClassDeclarationSyntax dacFieldClassNode)
-			{
-				string correspondingPropertyName = dacFieldClassNode.Identifier.ValueText.ToPascalCase();
-
-				if (!dacProperties.Contains(correspondingPropertyName))
-					return false;
-			}
+			if (member is ClassDeclarationSyntax dacFieldClassNode && !dacProperties.Contains(dacFieldClassNode.Identifier.ValueText))
+				return false;
 
 			return true;
 		}
