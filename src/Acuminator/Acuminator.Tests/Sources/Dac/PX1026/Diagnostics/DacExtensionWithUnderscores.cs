@@ -23,5 +23,11 @@ namespace PX.Objects.HackathonDemo
 		[PXDBDecimal]
 		public decimal __ { get; set; }
 		#endregion
+
+		#region CustomerID_Customer_acctType
+		public new abstract class customerID_Customer_acctType : PX.Data.IBqlField
+		{
+		}
+		#endregion
 	}
 }

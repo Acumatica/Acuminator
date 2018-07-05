@@ -47,5 +47,11 @@ namespace PX.Objects.HackathonDemo
 			set;
 		}
 		#endregion
+
+		#region CustomerID_Customer_acctName
+		public new abstract class customerID_Customer_acctName : PX.Data.IBqlField
+		{
+		}
+		#endregion
 	}
 }
