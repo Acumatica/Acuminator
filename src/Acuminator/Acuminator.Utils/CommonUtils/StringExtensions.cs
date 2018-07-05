@@ -28,6 +28,21 @@ namespace Acuminator.Utilities
 		}
 
 		/// <summary>
+		/// A string extension method that converts the string to a pascal case (first letter to upper case).
+		/// </summary>
+		/// <param name="s">The string to act on.</param>
+		/// <returns/>
+		public static string ToPascalCase(this string s)
+		{
+			if (s.IsNullOrWhiteSpace() || char.IsUpper(s[0]))
+				return s;
+
+			return s.Length > 1 
+				? char.ToUpperInvariant(s[0]).ToString() + s.Substring(1)
+				: char.ToUpperInvariant(s[0]).ToString();
+		}
+
+		/// <summary>
 		/// Compute the distance between two strings.
 		/// </summary>
 		public static int LevenshteinDistance(string s, string t)

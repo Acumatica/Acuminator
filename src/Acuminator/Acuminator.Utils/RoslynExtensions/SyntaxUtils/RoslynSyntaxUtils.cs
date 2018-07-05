@@ -186,22 +186,36 @@ namespace Acuminator.Utilities
 
 		public static bool IsPublic(this MemberDeclarationSyntax member)
 		{
+			SyntaxTokenList modifiers = member.GetModifiers();
+			return modifiers.Any(SyntaxKind.PublicKeyword);
+		}
+
+		public static bool IsInternal(this MemberDeclarationSyntax member)
+		{
+			SyntaxTokenList modifiers = member.GetModifiers();
+
+			//Exclude private internal modifiers from C# 7 whish are actually for members visible only from internal inherited classes 
+			return modifiers.Any(SyntaxKind.InternalKeyword) && !modifiers.Any(SyntaxKind.PrivateKeyword);  
+		}
+
+		public static SyntaxTokenList GetModifiers(this MemberDeclarationSyntax member)
+		{
 			member.ThrowOnNull(nameof(member));
 
 			switch (member)
 			{
 				case BasePropertyDeclarationSyntax basePropertyDeclaration:
-					return basePropertyDeclaration.Modifiers.Any(SyntaxKind.PublicKeyword);
+					return basePropertyDeclaration.Modifiers;
 				case BaseMethodDeclarationSyntax baseMethodDeclaration:
-					return baseMethodDeclaration.Modifiers.Any(SyntaxKind.PublicKeyword);
+					return baseMethodDeclaration.Modifiers;
 				case BaseTypeDeclarationSyntax baseTypeDeclaration:
-					return baseTypeDeclaration.Modifiers.Any(SyntaxKind.PublicKeyword);
+					return baseTypeDeclaration.Modifiers;
 				case BaseFieldDeclarationSyntax baseFieldDeclaration:
-					return baseFieldDeclaration.Modifiers.Any(SyntaxKind.PublicKeyword);			
+					return baseFieldDeclaration.Modifiers;
 				case DelegateDeclarationSyntax delegateDeclaration:
-					return delegateDeclaration.Modifiers.Any(SyntaxKind.PublicKeyword);		
+					return delegateDeclaration.Modifiers;
 				default:
-					return false;
+					return SyntaxFactory.TokenList();
 			}
 		}
 	}

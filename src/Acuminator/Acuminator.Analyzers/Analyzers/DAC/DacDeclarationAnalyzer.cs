@@ -59,8 +59,12 @@ namespace Acuminator.Analyzers
 						Descriptors.PX1026_UnderscoresInDacDeclaration, identifier.GetLocation(), diagnosticProperties));
 			}
 
+			HashSet<string> dacProperties = dacOrDacExtNode.Members.OfType<PropertyDeclarationSyntax>()
+																   .Select(p => p.Identifier.ValueText)
+																   .ToHashSet();
+
 			var identifiersWithUnderscores = from member in dacOrDacExtNode.Members
-											 where member.IsPublic()
+											 where ShouldCheckIdentifier(member, dacProperties)
 											 from memberIdentifier in member.GetIdentifiers()
 											 where memberIdentifier.ValueText.Contains("_")
 											 select memberIdentifier;
@@ -88,7 +92,23 @@ namespace Acuminator.Analyzers
 				}
 
 				return true;
+			}	
+		}
+
+		private static bool ShouldCheckIdentifier(MemberDeclarationSyntax member, HashSet<string> dacProperties)
+		{
+			if (!member.IsPublic() && !member.IsInternal())
+				return false;
+
+			if (member is ClassDeclarationSyntax dacFieldClassNode)
+			{
+				string correspondingPropertyName = dacFieldClassNode.Identifier.ValueText.ToPascalCase();
+
+				if (!dacProperties.Contains(correspondingPropertyName))
+					return false;
 			}
+
+			return true;
 		}
 	}
 }
