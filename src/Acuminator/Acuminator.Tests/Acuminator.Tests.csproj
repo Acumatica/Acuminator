@@ -160,6 +160,8 @@
     <EmbeddedResource Include="Sources\PXAction\PX1012\Diagnostics\GraphWithNonPrimaryDacView.cs" />
     <EmbeddedResource Include="Sources\PXAction\PX1012\CodeFixes\GraphWithNonPrimaryDacViewExpected.cs" />
     <EmbeddedResource Include="Sources\View\PX1018\Diagnostics\GraphWithPrimaryDacWithoutView.cs" />
+    <EmbeddedResource Include="Sources\PXAction\PX1012\Diagnostics\DerivedGraphWithBaseGraphPrimaryDac.cs" />
+    <EmbeddedResource Include="Sources\PXAction\PX1012\CodeFixes\DerivedGraphWithBaseGraphPrimaryDacExpected.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1026\Diagnostics\DacWithUnderscores.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1026\Diagnostics\DacExtensionWithUnderscores.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1026\CodeFixes\DacExtensionWithUnderscores_Expected.cs" />
