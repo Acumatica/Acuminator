@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -25,52 +26,75 @@ namespace Acuminator.Analyzers
 
         public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
-        {
+		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		{
 			Diagnostic diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1010_StartRowResetForPaging.Id);
 
-			if (diagnostic == null || diagnostic.C || context.CancellationToken.IsCancellationRequested)
+			if (diagnostic?.IsRegisteredForCodeFix() != true || context.CancellationToken.IsCancellationRequested)
 				return;
 
 			SyntaxNode root = await context.Document.GetSyntaxRootAsync().ConfigureAwait(false);
-            var invocation = root?.FindNode(context.Span) as InvocationExpressionSyntax;
+			var invocation = root?.FindNode(context.Span) as InvocationExpressionSyntax;
 
 			if (invocation == null)
 				return;
 
 			string codeActionName = nameof(Resources.PX1010Fix).GetLocalized().ToString();
-			CodeAction codeAction = CodeAction.Create(codeActionName, cToken => InsertStartRowAssigmentAsync(context.Document, invocation, cToken),
+			CodeAction codeAction = CodeAction.Create(codeActionName, 
+													  cToken => InsertStartRowAssigmentsAsync(context.Document, root, invocation, cToken),
 													  equivalenceKey: codeActionName);
+			context.RegisterCodeFix(codeAction, context.Diagnostics);			
+		}
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
-        }
+		private Task<Document> InsertStartRowAssigmentsAsync(Document document, SyntaxNode root, InvocationExpressionSyntax invocation,
+															 CancellationToken cToken)
+		{
+			return Task.Run(() => InsertStartRowAssigments(document, invocation, root, cToken),
+							cToken);
+		}
 
-        private async Task<Document> InsertStartRowAssigmentAsync(Document document, InvocationExpressionSyntax invocationDeclaration, CancellationToken cancellationToken)
-        {
-            MethodDeclarationSyntax methodDeclaration = invocationDeclaration.GetDeclaringMethodNode();
+		private Document InsertStartRowAssigments(Document document, InvocationExpressionSyntax invocationDeclaration,
+												 SyntaxNode root, CancellationToken cancellationToken)
+		{
+			MethodDeclarationSyntax methodDeclaration = invocationDeclaration.GetDeclaringMethodNode();
 
-			if (methodDeclaration?.Body == null)
+			if (methodDeclaration?.Body == null || cancellationToken.IsCancellationRequested)
 				return document;
 
-            var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
-            var pxContext = new PXContext(semanticModel.Compilation);
-
-			ReturnStatementSyntax lastReturnStatement = methodDeclaration.Body.DescendantNodes()
+			int invocationSpanEnd = invocationDeclaration.Span.End;
+			var returnsAfterInvocation = (from returnNode in methodDeclaration.Body.DescendantNodes()
 																			  .OfType<ReturnStatementSyntax>()
-																			  .LastOrDefault();
+										  where returnNode.SpanStart > invocationSpanEnd
+										  select returnNode)
+										 .ToList();
 
-			if (lastReturnStatement != null)
+			if (returnsAfterInvocation.Count == 0)
+				return document;
+
+			SyntaxNode modifiedRoot = root;
+
+			foreach (ReturnStatementSyntax returnNode in returnsAfterInvocation)
 			{
-				var newAssigment = SyntaxFactory.ExpressionStatement(
-					SyntaxFactory.ParseExpression($"{nameof(PXView)}.{nameof(PXView.StartRow)} = 0").
-					WithLeadingTrivia(lastReturnStatement.GetLeadingTrivia()));
-
-				var root = await document.GetSyntaxRootAsync();
-				return document.WithSyntaxRoot(
-									root.InsertNodesBefore(lastReturnStatement, new SyntaxNode[] { newAssigment }));
+				modifiedRoot = InsertStartRowAssignmentBeforeReturn(modifiedRoot, returnNode);
 			}
 
-			
-        }
+			return document.WithSyntaxRoot(modifiedRoot);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static SyntaxNode InsertStartRowAssignmentBeforeReturn(SyntaxNode root, ReturnStatementSyntax returnStatement)
+		{
+			var startRowAssignment = CreateStartRowAssignment(returnStatement);
+			var modifiedRoot = root.InsertNodesBefore(returnStatement, startRowAssignment.ToEnumerable());
+			return modifiedRoot;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static ExpressionStatementSyntax CreateStartRowAssignment(ReturnStatementSyntax returnStatement)
+		{
+			return SyntaxFactory.ExpressionStatement(
+						SyntaxFactory.ParseExpression($"{nameof(PXView)}.{nameof(PXView.StartRow)} = 0")
+									 .WithLeadingTrivia(returnStatement.GetLeadingTrivia()));
+		}
     }
 }

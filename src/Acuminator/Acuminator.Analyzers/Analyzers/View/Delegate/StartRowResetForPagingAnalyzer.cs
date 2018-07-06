@@ -68,7 +68,7 @@ namespace Acuminator.Analyzers
 
 			syntaxContext.ReportDiagnostic(
 				Diagnostic.Create(
-					Descriptors.PX1010_StartRowResetForPaging, selectInvocation.GetLocation(), diagnosticProperties));
+					Descriptors.PX1010_StartRowResetForPaging, selectInvocation.GetLocation()/*, diagnosticProperties*/));
 		}
 
 		private static bool IsDiagnosticValid(IMethodSymbol method, SymbolAnalysisContext syntaxContext, PXContext pxContext)
