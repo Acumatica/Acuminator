@@ -36,19 +36,19 @@ namespace Acuminator.Analyzers
 			var methodDeclaration = await declaration.GetSyntaxAsync(syntaxContext.CancellationToken)
 													 .ConfigureAwait(false) as MethodDeclarationSyntax;
 
-			if (methodDeclaration?.Body == null)
+			if (methodDeclaration?.Body == null || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
 
 			SemanticModel semanticModel = syntaxContext.Compilation.GetSemanticModel(declaration.SyntaxTree);
 			ILocalSymbol refStartRow = await GetReferenceToStartRow(methodDeclaration, semanticModel, pxContext, syntaxContext.CancellationToken)
 													.ConfigureAwait(false);
 
-			if (refStartRow == null)
+			if (refStartRow == null || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
 
 			var (selectSymbol, selectInvocation) = GetSelectSymbolAndInvocationNode(methodDeclaration, refStartRow, pxContext, semanticModel,
 																					syntaxContext.CancellationToken);
-			if (selectSymbol == null || selectInvocation == null)
+			if (selectSymbol == null || selectInvocation == null || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
 
 			AssignmentExpressionSyntax lastAssigment = GetLastStartRowResetAssignment(methodDeclaration);
@@ -56,11 +56,7 @@ namespace Acuminator.Analyzers
 			if (lastAssigment != null && lastAssigment.SpanStart > selectInvocation.Span.End)
 				return;
 
-			bool containsYield = methodDeclaration.Body.DescendantNodesAndSelf()
-													   .OfType<StatementSyntax>()
-													   .Any(statement => statement is YieldStatementSyntax);
-			bool isInReturnStatement = selectInvocation.Parent<ReturnStatementSyntax>() != null;
-			bool registerCodeFix = !containsYield && !isInReturnStatement;
+			bool registerCodeFix = RegisterCodeFix(methodDeclaration, selectInvocation);
 			var diagnosticProperties = new Dictionary<string, string>
 			{
 				{ DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString() }
@@ -68,7 +64,7 @@ namespace Acuminator.Analyzers
 
 			syntaxContext.ReportDiagnostic(
 				Diagnostic.Create(
-					Descriptors.PX1010_StartRowResetForPaging, selectInvocation.GetLocation()/*, diagnosticProperties*/));
+					Descriptors.PX1010_StartRowResetForPaging, selectInvocation.GetLocation(), diagnosticProperties));
 		}
 
 		private static bool IsDiagnosticValid(IMethodSymbol method, SymbolAnalysisContext syntaxContext, PXContext pxContext)
@@ -172,6 +168,39 @@ namespace Acuminator.Analyzers
 			}
 
 			return lastAssigment;
+		}
+
+		private static bool RegisterCodeFix(MethodDeclarationSyntax methodDeclaration, InvocationExpressionSyntax selectInvocation)
+		{
+			bool isInReturnStatement = selectInvocation.Parent<ReturnStatementSyntax>() != null;
+
+			if (isInReturnStatement)
+				return false;
+
+			int selectInvocationEnd = selectInvocation.Span.End;
+			var statements = methodDeclaration.Body.DescendantNodesAndSelf()
+												   .OfType<StatementSyntax>();
+
+			foreach (StatementSyntax statement in statements)
+			{
+				switch (statement)
+				{
+					case YieldStatementSyntax yieldStatement:
+						return false;
+					case GotoStatementSyntax gotoStatement when gotoStatement.SpanStart > selectInvocationEnd:
+						if (gotoStatement.IsKind(SyntaxKind.GotoStatement))
+							return false;
+
+						SwitchSectionSyntax switchSectionWithGoTo = gotoStatement.Parent<SwitchSectionSyntax>();
+
+						if (switchSectionWithGoTo == null || switchSectionWithGoTo.Span.OverlapsWith(selectInvocation.Span)) 
+							return false;
+
+						continue;
+				}
+			}
+
+			return true;
 		}
 	}
 }
