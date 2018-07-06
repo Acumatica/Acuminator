@@ -59,8 +59,9 @@ namespace Acuminator.Analyzers
 			bool containsYield = methodDeclaration.Body.DescendantNodesAndSelf()
 													   .OfType<StatementSyntax>()
 													   .Any(statement => statement is YieldStatementSyntax);
-			bool registerCodeFix = !containsYield;
-			ImmutableDictionary<string, string> diagnosticProperties = new Dictionary<string, string>
+			bool isInReturnStatement = selectInvocation.Parent<ReturnStatementSyntax>() != null;
+			bool registerCodeFix = !containsYield && !isInReturnStatement;
+			var diagnosticProperties = new Dictionary<string, string>
 			{
 				{ DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString() }
 			}.ToImmutableDictionary();
