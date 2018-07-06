@@ -7,14 +7,15 @@ using PX.Data;
 
 namespace PX.Objects.HackathonDemo
 {
-	public class SO_Order : IBqlTable
+	public class SOOrder : IBqlTable
 	{
 		#region OrderType
 		public abstract class orderType : IBqlField { }
+
 		[PXDBString(IsKey = true, InputMask = "")]
 		[PXDefault]
-		[PXUIField(DisplayName = "Order Type")] 
-		public string Order_Type { get; set; }
+		[PXUIField(DisplayName = "Order Type")]
+		public string OrderType { get; set; }
 		#endregion
 
 		#region OrderNbr
@@ -31,25 +32,25 @@ namespace PX.Objects.HackathonDemo
 		[PXUIField(DisplayName = "Status")]
 		public string Status { get; set; }
 		#endregion
-		
-		#region OrderDate
-		public abstract class orderDate : IBqlField { }
 
-		[PXDBInt]      
-		[PXUIField(DisplayName = "OrderDate")]
-		public DateTime? OrderDate { get; set; }
-		#endregion
-
-		#region tstamp
+		#region TestField
 		public abstract class Tstamp : IBqlField
 		{
 		}
 
+		private readonly byte[] test_field;
+
 		[PXDBTimestamp]
-		public virtual byte[] tstamp
+		public virtual byte[] TestProperty
 		{
 			get;
 			set;
+		}
+		#endregion
+
+		#region CustomerID_Customer_acctName
+		public new abstract class customerID_Customer_acctName : PX.Data.IBqlField
+		{
 		}
 		#endregion
 	}

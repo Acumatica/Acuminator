@@ -15,12 +15,12 @@ namespace PX.Objects.SO
 
 		public PXAction<SOOrder> Release;
 
-        public IEnumerable release(PXAdapter adapter)
-        {
-            string s = "blabla";
-            return adapter.Get();
-        }
-    }
+		public IEnumerable release(PXAdapter adapter)
+		{
+			string s = "blabla";
+			return adapter.Get();
+		}
+	}
 
 	public class SOOrder : IBqlTable
 	{

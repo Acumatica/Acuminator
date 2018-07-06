@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (c)  Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information. -->
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\Microsoft.Net.Compilers.2.8.2\build\Microsoft.Net.Compilers.props" Condition="Exists('..\..\packages\Microsoft.Net.Compilers.2.8.2\build\Microsoft.Net.Compilers.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
@@ -51,12 +52,15 @@
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\ParametersCounterSymbolWalker.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\ParametersCounterSyntaxWalker.cs" />
     <Compile Include="Analyzers\DAC\DacFields\DacNonAbstractFieldTypeAnalyzer.cs" />
+    <Compile Include="Analyzers\DAC\DacDeclarationAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacPropertyAttributes\NonNullableTypeForBqlFieldAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacPropertyAttributes\DacPropertyAttributesAnalyzer.cs" />
     <Compile Include="Analyzers\PXAction\PXActionOnNonPrimaryViewAnalyzer.cs" />
     <Compile Include="Analyzers\View\Delegate\StartRowResetForPagingAnalyzer.cs" />
     <Compile Include="Analyzers\View\NoPrimaryViewForPrimaryDacAnalyzer.cs" />
-    <Compile Include="DiagnosticProperty.cs" />
+    <Compile Include="Diagnostic\DiagnosticProperty.cs" />
+    <Compile Include="Diagnostic\DiagnosticUtils.cs" />
+    <Compile Include="FixProviders\DAC\UnderscoresInDacCodeFix.cs" />
     <Compile Include="FixProviders\DAC\DacFields\DacNonAbstractFieldTypeFix.cs" />
     <Compile Include="FixProviders\DAC\DacPropertyAttributes\IncompatibleDacPropertyAndFieldAttributeFix.cs" />
     <Compile Include="FixProviders\DAC\DacPropertyAttributes\MultipleDacFieldAttributesFix.cs" />
@@ -195,5 +199,6 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\GitVersionTask.3.6.5\build\portable-net+sl+win+wpa+wp\GitVersionTask.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\GitVersionTask.3.6.5\build\portable-net+sl+win+wpa+wp\GitVersionTask.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.Net.Compilers.2.8.2\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Net.Compilers.2.8.2\build\Microsoft.Net.Compilers.props'))" />
   </Target>
 </Project>

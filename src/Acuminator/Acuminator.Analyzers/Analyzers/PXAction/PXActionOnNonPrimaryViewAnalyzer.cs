@@ -99,11 +99,13 @@ namespace Acuminator.Analyzers
 			if (pxGraphType.BaseType == null)
 				return null;
 
-			var graphTypeArgs = pxGraphType.BaseType.TypeArguments;
+			var baseGraphType = pxGraphType.GetBaseTypesAndThis()
+										   .OfType<INamedTypeSymbol>()
+										   .FirstOrDefault(type => IsGraphWithPrimaryDacBaseGenericType(type));
 
-			if (graphTypeArgs.Length >= 2)  //Case when main DAC is already defined as type parameter
+			if (baseGraphType != null)  //Case when main DAC is already defined as type parameter
 			{
-				return graphTypeArgs[1];
+				return baseGraphType.TypeArguments[1];
 			}
 
 			INamedTypeSymbol firstView = pxGraphType.GetBaseTypesAndThis()
@@ -144,6 +146,9 @@ namespace Acuminator.Analyzers
 
 			return GetMainDacFromPXGraph(pxGraphType, pxContext, cancellationToken);
 		}
+
+		private static bool IsGraphWithPrimaryDacBaseGenericType(INamedTypeSymbol type) =>
+			type.TypeArguments.Length >= 2 && type.Name.Equals(TypeNames.PXGraph, StringComparison.Ordinal);
 
 		private static bool IsGraphOrGraphExtensionBaseType(ITypeSymbol type)
 		{

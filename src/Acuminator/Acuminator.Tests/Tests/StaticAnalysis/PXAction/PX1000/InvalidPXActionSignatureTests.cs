@@ -28,7 +28,7 @@ namespace Acuminator.Tests
 				Severity = Descriptors.PX1000_InvalidPXActionHandlerSignature.DefaultSeverity,
 				Locations =
 					new[] {
-						new DiagnosticResultLocation("Test0.cs", 17, 21)
+						new DiagnosticResultLocation("Test0.cs", 17, 15)
 					}
 			};
 
