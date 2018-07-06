@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -81,20 +80,43 @@ namespace Acuminator.Analyzers
 			return document.WithSyntaxRoot(modifiedRoot);
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static SyntaxNode InsertStartRowAssignmentBeforeReturn(SyntaxNode root, ReturnStatementSyntax returnStatement)
 		{
-			var startRowAssignment = CreateStartRowAssignment(returnStatement);
-			var modifiedRoot = root.InsertNodesBefore(returnStatement, startRowAssignment.ToEnumerable());
-			return modifiedRoot;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private static ExpressionStatementSyntax CreateStartRowAssignment(ReturnStatementSyntax returnStatement)
-		{
-			return SyntaxFactory.ExpressionStatement(
-						SyntaxFactory.ParseExpression($"{nameof(PXView)}.{nameof(PXView.StartRow)} = 0")
-									 .WithLeadingTrivia(returnStatement.GetLeadingTrivia()));
+			var startRowAssignment = SyntaxFactory.ExpressionStatement(
+											SyntaxFactory.ParseExpression($"{nameof(PXView)}.{nameof(PXView.StartRow)} = 0")
+														 .WithLeadingTrivia(returnStatement.GetLeadingTrivia()));
+			switch (returnStatement.Parent)
+			{
+				case IfStatementSyntax ifStatement:
+					var ifStatementWithBlock = ifStatement.WithStatement(
+													SyntaxFactory.Block(startRowAssignment, returnStatement));
+					return root.ReplaceNode(ifStatement, ifStatementWithBlock);
+				case ElseClauseSyntax elseClause:
+					var elseClauseWithBlock = elseClause.WithStatement(
+													SyntaxFactory.Block(startRowAssignment, returnStatement));
+					return root.ReplaceNode(elseClause, elseClauseWithBlock);
+				case WhileStatementSyntax whileStatement:
+					var whileStatementWithBlock = whileStatement.WithStatement(
+													SyntaxFactory.Block(startRowAssignment, returnStatement));
+					return root.ReplaceNode(whileStatement, whileStatementWithBlock);
+				case DoStatementSyntax doStatement:
+					var doStatementWithBlock = doStatement.WithStatement(
+													SyntaxFactory.Block(startRowAssignment, returnStatement));
+					return root.ReplaceNode(doStatement, doStatementWithBlock);
+				case ForStatementSyntax forStatement:
+					var forStatementWithBlock = forStatement.WithStatement(
+													SyntaxFactory.Block(startRowAssignment, returnStatement));
+					return root.ReplaceNode(forStatement, forStatementWithBlock);
+				case ForEachStatementSyntax forEachStatement:
+					var forEachStatementWithBlock = forEachStatement.WithStatement(
+													SyntaxFactory.Block(startRowAssignment, returnStatement));
+					return root.ReplaceNode(forEachStatement, forEachStatementWithBlock);
+				case BlockSyntax block:
+				case SwitchSectionSyntax switchSection:
+					return root.InsertNodesBefore(returnStatement, startRowAssignment.ToEnumerable());
+				default:
+					return root;
+			}
 		}
     }
 }
