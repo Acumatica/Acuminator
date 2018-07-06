@@ -16,13 +16,17 @@ namespace Acuminator.Analyzers
 
 	internal static class Descriptors
 	{
+		private const string HelpLink = @"https://wiki.acumatica.com/pages/viewpage.action?spaceKey=ENG&title=Acuminator%3A+static+code+analysis+and+coloriser+tool+for+Acumatica+Framework"; 
+
 		static readonly ConcurrentDictionary<Category, string> categoryMapping = new ConcurrentDictionary<Category, string>();
-        static DiagnosticDescriptor Rule(string id, LocalizableString title, Category category, DiagnosticSeverity defaultSeverity, LocalizableString messageFormat = null, LocalizableString description = null)
+
+        static DiagnosticDescriptor Rule(string id, LocalizableString title, Category category, DiagnosticSeverity defaultSeverity, 
+										 LocalizableString messageFormat = null, LocalizableString description = null)
 		{
-			var helpLink = "";
-			var isEnabledByDefault = true;
+			bool isEnabledByDefault = true;
 			messageFormat = messageFormat ?? title;
-			return new DiagnosticDescriptor(id, title, messageFormat, categoryMapping.GetOrAdd(category, c => c.ToString()), defaultSeverity, isEnabledByDefault, description, helpLink);
+			return new DiagnosticDescriptor(id, title, messageFormat, categoryMapping.GetOrAdd(category, c => c.ToString()), defaultSeverity,
+											isEnabledByDefault, description, HelpLink);
 		}
 
 		internal static DiagnosticDescriptor PX1000_InvalidPXActionHandlerSignature { get; } = 
