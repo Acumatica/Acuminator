@@ -27,15 +27,22 @@ namespace Acuminator.Analyzers
 
         public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync().ConfigureAwait(false);
-            var node = (InvocationExpressionSyntax)root.FindNode(context.Span);
+			Diagnostic diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1010_StartRowResetForPaging.Id);
 
-            context.RegisterCodeFix(
-                CodeAction.Create(
-                    Resources.PX1010Fix,
-                    c => InsertStartRowAssigmentAsync(context.Document, node, c),
-                    Resources.PX1010Fix),
-                context.Diagnostics);
+			if (diagnostic == null || diagnostic.C || context.CancellationToken.IsCancellationRequested)
+				return;
+
+			SyntaxNode root = await context.Document.GetSyntaxRootAsync().ConfigureAwait(false);
+            var invocation = root?.FindNode(context.Span) as InvocationExpressionSyntax;
+
+			if (invocation == null)
+				return;
+
+			string codeActionName = nameof(Resources.PX1010Fix).GetLocalized().ToString();
+			CodeAction codeAction = CodeAction.Create(codeActionName, cToken => InsertStartRowAssigmentAsync(context.Document, invocation, cToken),
+													  equivalenceKey: codeActionName);
+
+			context.RegisterCodeFix(codeAction, context.Diagnostics);
         }
 
         private async Task<Document> InsertStartRowAssigmentAsync(Document document, InvocationExpressionSyntax invocationDeclaration, CancellationToken cancellationToken)
