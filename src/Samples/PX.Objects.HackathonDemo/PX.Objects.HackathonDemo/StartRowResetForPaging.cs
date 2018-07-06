@@ -22,6 +22,17 @@ namespace PX.Objects.HackathonDemo
 					.Select(PXView.Currents, PXView.Parameters, PXView.Searches, PXView.SortColumns, PXView.Descendings, PXView.Filters,
 					ref startRow, PXView.MaximumRows, ref totalRows).Cast<ListEntryPoint>();
 
+			switch (totalRows)
+			{
+				case 3:
+					return rows;
+			}
+
+			if (totalRows < 5)
+				return rows;
+			else
+				return rows;
+
 			return rows;
 		}
 

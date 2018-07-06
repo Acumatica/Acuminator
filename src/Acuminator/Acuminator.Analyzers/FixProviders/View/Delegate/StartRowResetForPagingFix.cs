@@ -67,17 +67,22 @@ namespace Acuminator.Analyzers
 										  select returnNode)
 										 .ToList();
 
-			if (returnsAfterInvocation.Count == 0)
+			if (returnsAfterInvocation.Count == 0 || cancellationToken.IsCancellationRequested)
 				return document;
 
-			SyntaxNode modifiedRoot = root;
+			SyntaxNode trackingRoot = root.TrackNodes(returnsAfterInvocation);
 
 			foreach (ReturnStatementSyntax returnNode in returnsAfterInvocation)
 			{
-				modifiedRoot = InsertStartRowAssignmentBeforeReturn(modifiedRoot, returnNode);
+				var returnNodeFromModifiedTree = trackingRoot.GetCurrentNode(returnNode);
+
+				if (returnNodeFromModifiedTree != null)
+				{
+					trackingRoot = InsertStartRowAssignmentBeforeReturn(trackingRoot, returnNodeFromModifiedTree);
+				}
 			}
 
-			return document.WithSyntaxRoot(modifiedRoot);
+			return document.WithSyntaxRoot(trackingRoot);
 		}
 
 		private static SyntaxNode InsertStartRowAssignmentBeforeReturn(SyntaxNode root, ReturnStatementSyntax returnStatement)
