@@ -25,34 +25,103 @@ namespace Acuminator.Analyzers
 
         public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
-        {
-            var root = await context.Document.GetSyntaxRootAsync().ConfigureAwait(false);
-            var node = (InvocationExpressionSyntax)root.FindNode(context.Span);
+		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		{
+			Diagnostic diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1010_StartRowResetForPaging.Id);
 
-            context.RegisterCodeFix(
-                CodeAction.Create(
-                    Resources.PX1010Fix,
-                    c => InsertStartRowAssigment(context.Document, node, c),
-                    Resources.PX1010Fix),
-                context.Diagnostics);
-        }
+			if (diagnostic?.IsRegisteredForCodeFix() != true || context.CancellationToken.IsCancellationRequested)
+				return;
 
-        private async Task<Document> InsertStartRowAssigment(Document document, InvocationExpressionSyntax invocationDeclaration, CancellationToken cancellationToken)
-        {
-            MethodDeclarationSyntax mds = invocationDeclaration.SyntaxTree.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>().
-                Where(m => m.DescendantNodes().Contains(invocationDeclaration)).Single();
+			SyntaxNode root = await context.Document.GetSyntaxRootAsync().ConfigureAwait(false);
+			var invocation = root?.FindNode(context.Span) as InvocationExpressionSyntax;
 
-            var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
-            var pxContext = new PXContext(semanticModel.Compilation);
+			if (invocation == null)
+				return;
 
-            var last = mds.Body.DescendantNodes().OfType<ReturnStatementSyntax>().Last();
-            var newAssigment = SyntaxFactory.ExpressionStatement(
-                SyntaxFactory.ParseExpression($"{nameof(PXView)}.{nameof(PXView.StartRow)} = 0").
-                WithLeadingTrivia(last.GetLeadingTrivia()));
-            var root = await document.GetSyntaxRootAsync();
-            return document.WithSyntaxRoot(
-                root.InsertNodesBefore(last, new SyntaxNode[] { newAssigment }));
-        }
+			string codeActionName = nameof(Resources.PX1010Fix).GetLocalized().ToString();
+			CodeAction codeAction = CodeAction.Create(codeActionName, 
+													  cToken => InsertStartRowAssigmentsAsync(context.Document, root, invocation, cToken),
+													  equivalenceKey: codeActionName);
+			context.RegisterCodeFix(codeAction, context.Diagnostics);			
+		}
+
+		private Task<Document> InsertStartRowAssigmentsAsync(Document document, SyntaxNode root, InvocationExpressionSyntax invocation,
+															 CancellationToken cToken)
+		{
+			return Task.Run(() => InsertStartRowAssigments(document, invocation, root, cToken),
+							cToken);
+		}
+
+		private Document InsertStartRowAssigments(Document document, InvocationExpressionSyntax invocationDeclaration,
+												 SyntaxNode root, CancellationToken cancellationToken)
+		{
+			MethodDeclarationSyntax methodDeclaration = invocationDeclaration.GetDeclaringMethodNode();
+
+			if (methodDeclaration?.Body == null || cancellationToken.IsCancellationRequested)
+				return document;
+
+			int invocationSpanEnd = invocationDeclaration.Span.End;
+			var returnsAfterInvocation = (from returnNode in methodDeclaration.Body.DescendantNodes()
+																			  .OfType<ReturnStatementSyntax>()
+										  where returnNode.SpanStart > invocationSpanEnd
+										  select returnNode)
+										 .ToList();
+
+			if (returnsAfterInvocation.Count == 0 || cancellationToken.IsCancellationRequested)
+				return document;
+
+			SyntaxNode trackingRoot = root.TrackNodes(returnsAfterInvocation);
+
+			foreach (ReturnStatementSyntax returnNode in returnsAfterInvocation)
+			{
+				var returnNodeFromModifiedTree = trackingRoot.GetCurrentNode(returnNode);
+
+				if (returnNodeFromModifiedTree != null)
+				{
+					trackingRoot = InsertStartRowAssignmentBeforeReturn(trackingRoot, returnNodeFromModifiedTree);
+				}
+			}
+
+			return document.WithSyntaxRoot(trackingRoot);
+		}
+
+		private static SyntaxNode InsertStartRowAssignmentBeforeReturn(SyntaxNode root, ReturnStatementSyntax returnStatement)
+		{
+			var startRowAssignment = SyntaxFactory.ExpressionStatement(
+											SyntaxFactory.ParseExpression($"{nameof(PXView)}.{nameof(PXView.StartRow)} = 0")
+														 .WithLeadingTrivia(returnStatement.GetLeadingTrivia()));
+			switch (returnStatement.Parent)
+			{
+				case IfStatementSyntax ifStatement:
+					var ifStatementWithBlock = ifStatement.WithStatement(
+													SyntaxFactory.Block(startRowAssignment, returnStatement));
+					return root.ReplaceNode(ifStatement, ifStatementWithBlock);
+				case ElseClauseSyntax elseClause:
+					var elseClauseWithBlock = elseClause.WithStatement(
+													SyntaxFactory.Block(startRowAssignment, returnStatement));
+					return root.ReplaceNode(elseClause, elseClauseWithBlock);
+				case WhileStatementSyntax whileStatement:
+					var whileStatementWithBlock = whileStatement.WithStatement(
+													SyntaxFactory.Block(startRowAssignment, returnStatement));
+					return root.ReplaceNode(whileStatement, whileStatementWithBlock);
+				case DoStatementSyntax doStatement:
+					var doStatementWithBlock = doStatement.WithStatement(
+													SyntaxFactory.Block(startRowAssignment, returnStatement));
+					return root.ReplaceNode(doStatement, doStatementWithBlock);
+				case ForStatementSyntax forStatement:
+					var forStatementWithBlock = forStatement.WithStatement(
+													SyntaxFactory.Block(startRowAssignment, returnStatement));
+					return root.ReplaceNode(forStatement, forStatementWithBlock);
+				case ForEachStatementSyntax forEachStatement:
+					var forEachStatementWithBlock = forEachStatement.WithStatement(
+													SyntaxFactory.Block(startRowAssignment, returnStatement));
+					return root.ReplaceNode(forEachStatement, forEachStatementWithBlock);
+				case BlockSyntax block:
+				case SwitchSectionSyntax switchSection:
+					return root.InsertNodesBefore(returnStatement, startRowAssignment.ToEnumerable());
+				default:
+					return root;
+			}
+		}
     }
 }

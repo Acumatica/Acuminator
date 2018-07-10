@@ -56,6 +56,7 @@
     <Compile Include="Analyzers\DAC\DacPropertyAttributes\NonNullableTypeForBqlFieldAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacPropertyAttributes\DacPropertyAttributesAnalyzer.cs" />
     <Compile Include="Analyzers\PXAction\PXActionOnNonPrimaryViewAnalyzer.cs" />
+    <Compile Include="Analyzers\View\Delegate\StartRowResetForPagingAnalyzer.cs" />
     <Compile Include="Analyzers\View\NoPrimaryViewForPrimaryDacAnalyzer.cs" />
     <Compile Include="Diagnostic\DiagnosticProperty.cs" />
     <Compile Include="Diagnostic\DiagnosticUtils.cs" />
@@ -68,7 +69,6 @@
     <Compile Include="Analyzers\LongOperationDelegateClosuresAnalyzer.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\BqlParameterMismatchAnalyzer.cs" />
     <Compile Include="Analyzers\MissingTypeListAttributeAnalyzer.cs" />
-    <Compile Include="Analyzers\View\Delegate\StartRowResetForPaging.cs" />
     <Compile Include="Analyzers\View\Delegate\TypoInViewDelegateNameAnalyzer.cs" />
     <Compile Include="Analyzers\PXGraph\PXGraphCreateInstanceAnalyzer.cs" />
     <Compile Include="Analyzers\View\ViewDeclarationOrderAnalyzer.cs" />

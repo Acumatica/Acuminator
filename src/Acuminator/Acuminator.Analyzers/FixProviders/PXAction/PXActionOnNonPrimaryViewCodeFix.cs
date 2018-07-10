@@ -39,16 +39,15 @@ namespace Acuminator.Analyzers.FixProviders
 				return;
 			}
 
-			string format = nameof(Resources.PX1012Fix).GetLocalized().ToString();
-			string codeActionName = string.Format(format, mainDacName);
 			SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken)
 																.ConfigureAwait(false);
-
 			INamedTypeSymbol mainDacType = semanticModel?.Compilation.GetTypeByMetadataName(mainDacMetadata);
 
 			if (mainDacType == null || context.CancellationToken.IsCancellationRequested)
 				return;
 
+			string format = nameof(Resources.PX1012Fix).GetLocalized().ToString();
+			string codeActionName = string.Format(format, mainDacName);
 			CodeAction codeAction =
 				CodeAction.Create(codeActionName,
 								  cToken => ChangePXActionDeclarationAsync(context.Document, context.Span, cToken, mainDacType),
@@ -74,7 +73,7 @@ namespace Acuminator.Analyzers.FixProviders
 
 			var modifiedTypeArgsSyntax = pxActionTypeDeclaration.TypeArgumentList
 																.WithArguments(SyntaxFactory.SingletonSeparatedList(mainDacTypeNode));
-			GenericNameSyntax modifiedDeclaration = pxActionTypeDeclaration.WithTypeArgumentList(modifiedTypeArgsSyntax); 
+			GenericNameSyntax modifiedDeclaration = pxActionTypeDeclaration.WithTypeArgumentList(modifiedTypeArgsSyntax);
 			SyntaxNode originalNode = null, modifiedNode = null;
 
 			switch (pxActionTypeDeclaration.Parent)

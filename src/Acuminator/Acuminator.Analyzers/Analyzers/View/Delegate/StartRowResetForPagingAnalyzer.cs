@@ -14,50 +14,58 @@ using Acuminator.Utilities;
 
 namespace Acuminator.Analyzers
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class StartRowResetForPagingAnalyzer : PXDiagnosticAnalyzer
-    {
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-            ImmutableArray.Create(Descriptors.PX1010_StartRowResetForPaging);
+	[DiagnosticAnalyzer(LanguageNames.CSharp)]
+	public class StartRowResetForPagingAnalyzer : PXDiagnosticAnalyzer
+	{
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+			ImmutableArray.Create(Descriptors.PX1010_StartRowResetForPaging);
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-            compilationStartContext.RegisterSymbolAction(c => AnalyzeSymbol(c, pxContext), SymbolKind.Method);
-        }
+			compilationStartContext.RegisterSymbolAction(c => AnalyzeDelegateAsync(c, pxContext), SymbolKind.Method);
+		}
 
-		private static async Task AnalyzeSymbol(SymbolAnalysisContext syntaxContext, PXContext pxContext)
+		private static async Task AnalyzeDelegateAsync(SymbolAnalysisContext syntaxContext, PXContext pxContext)
 		{
 			IMethodSymbol method = syntaxContext.Symbol as IMethodSymbol;
 
 			if (!IsDiagnosticValid(method, syntaxContext, pxContext))
 				return;
 
-            var declaration = method.DeclaringSyntaxReferences[0];
+			var declaration = method.DeclaringSyntaxReferences[0];
 			var methodDeclaration = await declaration.GetSyntaxAsync(syntaxContext.CancellationToken)
 													 .ConfigureAwait(false) as MethodDeclarationSyntax;
 
-            if (methodDeclaration?.Body == null)
-                return;
+			if (methodDeclaration?.Body == null || syntaxContext.CancellationToken.IsCancellationRequested)
+				return;
 
-			SemanticModel semanticModel = syntaxContext.Compilation.GetSemanticModel(declaration.SyntaxTree);      
-            ILocalSymbol refStartRow = await GetReferenceToStartRow(methodDeclaration, semanticModel, pxContext, syntaxContext.CancellationToken)
+			SemanticModel semanticModel = syntaxContext.Compilation.GetSemanticModel(declaration.SyntaxTree);
+			ILocalSymbol refStartRow = await GetReferenceToStartRow(methodDeclaration, semanticModel, pxContext, syntaxContext.CancellationToken)
 													.ConfigureAwait(false);
 
-            if (refStartRow == null)
-                return;
+			if (refStartRow == null || syntaxContext.CancellationToken.IsCancellationRequested)
+				return;
 
 			var (selectSymbol, selectInvocation) = GetSelectSymbolAndInvocationNode(methodDeclaration, refStartRow, pxContext, semanticModel,
 																					syntaxContext.CancellationToken);
-			if (selectSymbol == null || selectInvocation == null)
-                return;
+			if (selectSymbol == null || selectInvocation == null || syntaxContext.CancellationToken.IsCancellationRequested)
+				return;
 
 			AssignmentExpressionSyntax lastAssigment = GetLastStartRowResetAssignment(methodDeclaration);
 
 			if (lastAssigment != null && lastAssigment.SpanStart > selectInvocation.Span.End)
-                return;
-                
-            syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1010_StartRowResetForPaging, selectInvocation.GetLocation()));
-        }
+				return;
+
+			bool registerCodeFix = RegisterCodeFix(methodDeclaration, selectInvocation);
+			var diagnosticProperties = new Dictionary<string, string>
+			{
+				{ DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString() }
+			}.ToImmutableDictionary();
+
+			syntaxContext.ReportDiagnostic(
+				Diagnostic.Create(
+					Descriptors.PX1010_StartRowResetForPaging, selectInvocation.GetLocation(), diagnosticProperties));
+		}
 
 		private static bool IsDiagnosticValid(IMethodSymbol method, SymbolAnalysisContext syntaxContext, PXContext pxContext)
 		{
@@ -76,7 +84,7 @@ namespace Acuminator.Analyzers
 			DataFlowAnalysis df = semanticModel.AnalyzeDataFlow(methodDeclaration.Body);
 
 			if (df == null || !df.Succeeded || cancellationToken.IsCancellationRequested)
-				return null; 
+				return null;
 
 			foreach (ILocalSymbol localSymbol in df.WrittenInside.OfType<ILocalSymbol>())
 			{
@@ -146,7 +154,7 @@ namespace Acuminator.Analyzers
 			AssignmentExpressionSyntax lastAssigment = null;
 			var startRowAccesses = methodDeclaration.DescendantNodes()
 													.OfType<MemberAccessExpressionSyntax>()
-													.Where(m => m.Name is IdentifierNameSyntax i && 
+													.Where(m => m.Name is IdentifierNameSyntax i &&
 																i.Identifier.ValueText == nameof(PXView.StartRow));
 
 			foreach (var memberAccess in startRowAccesses)
@@ -160,6 +168,39 @@ namespace Acuminator.Analyzers
 			}
 
 			return lastAssigment;
+		}
+
+		private static bool RegisterCodeFix(MethodDeclarationSyntax methodDeclaration, InvocationExpressionSyntax selectInvocation)
+		{
+			bool isInReturnStatement = selectInvocation.Parent<ReturnStatementSyntax>() != null;
+
+			if (isInReturnStatement)
+				return false;
+
+			int selectInvocationEnd = selectInvocation.Span.End;
+			var statements = methodDeclaration.Body.DescendantNodesAndSelf()
+												   .OfType<StatementSyntax>();
+
+			foreach (StatementSyntax statement in statements)
+			{
+				switch (statement)
+				{
+					case YieldStatementSyntax yieldStatement:
+						return false;
+					case GotoStatementSyntax gotoStatement when gotoStatement.SpanStart > selectInvocationEnd:
+						if (gotoStatement.IsKind(SyntaxKind.GotoStatement))
+							return false;
+
+						SwitchSectionSyntax switchSectionWithGoTo = gotoStatement.Parent<SwitchSectionSyntax>();
+
+						if (switchSectionWithGoTo == null || switchSectionWithGoTo.Span.OverlapsWith(selectInvocation.Span)) 
+							return false;
+
+						continue;
+				}
+			}
+
+			return true;
 		}
 	}
 }
