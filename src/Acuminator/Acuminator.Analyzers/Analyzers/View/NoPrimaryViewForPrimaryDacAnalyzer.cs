@@ -24,10 +24,10 @@ namespace Acuminator.Analyzers
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{	
 			compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => 
-				AnalyzePXGraphViewsAsync(syntaxContext, pxContext), SyntaxKind.ClassDeclaration);
+				AnalyzePXGraphViews(syntaxContext, pxContext), SyntaxKind.ClassDeclaration);
 		}
 
-		private static void AnalyzePXGraphViewsAsync(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+		private static void AnalyzePXGraphViews(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
 		{
 			if (!(syntaxContext.Node is ClassDeclarationSyntax pxGraphNode) || pxGraphNode.BaseList == null ||
 				syntaxContext.CancellationToken.IsCancellationRequested)

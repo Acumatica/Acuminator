@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.Formatting;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -155,17 +156,21 @@ namespace TestHelper
 
 			var projectId = ProjectId.CreateNewId(debugName: TestProjectName);
 
-			var solution = new AdhocWorkspace()
-				.CurrentSolution
-				.AddProject(projectId, TestProjectName, TestProjectName, language)
-				.AddMetadataReference(projectId, CorlibReference)
-				.AddMetadataReference(projectId, SystemCoreReference)
-				.AddMetadataReference(projectId, CSharpSymbolsReference)
-				.AddMetadataReference(projectId, CodeAnalysisReference)
-				.AddMetadataReference(projectId, PXDataReference)
-				.AddMetadataReference(projectId, PXCommonReference);
+			var workspace = new AdhocWorkspace();
+			workspace.Options = workspace.Options.WithChangedOption(FormattingOptions.UseTabs, LanguageNames.CSharp, true)
+												 .WithChangedOption(FormattingOptions.SmartIndent, LanguageNames.CSharp, FormattingOptions.IndentStyle.Smart)
+												 .WithChangedOption(FormattingOptions.TabSize, LanguageNames.CSharp, 4);
 
+			var solution = workspace.CurrentSolution
+									.AddProject(projectId, TestProjectName, TestProjectName, language)
+									.AddMetadataReference(projectId, CorlibReference)
+									.AddMetadataReference(projectId, SystemCoreReference)
+									.AddMetadataReference(projectId, CSharpSymbolsReference)
+									.AddMetadataReference(projectId, CodeAnalysisReference)
+									.AddMetadataReference(projectId, PXDataReference)
+									.AddMetadataReference(projectId, PXCommonReference);
 			int count = 0;
+
 			foreach (var source in sources)
 			{
 				var newFileName = fileNamePrefix + count + "." + fileExt;
@@ -173,6 +178,7 @@ namespace TestHelper
 				solution = solution.AddDocument(documentId, newFileName, SourceText.From(source));
 				count++;
 			}
+
 			return solution.GetProject(projectId);
 		}
 		#endregion

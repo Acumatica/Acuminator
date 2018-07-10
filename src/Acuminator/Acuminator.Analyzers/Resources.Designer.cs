@@ -393,5 +393,23 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1024Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove underscores from the DAC declaration.
+        /// </summary>
+        public static string PX1026Fix {
+            get {
+                return ResourceManager.GetString("PX1026Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Underscores cannot be used in DAC declarations.
+        /// </summary>
+        public static string PX1026Title {
+            get {
+                return ResourceManager.GetString("PX1026Title", resourceCulture);
+            }
+        }
     }
 }

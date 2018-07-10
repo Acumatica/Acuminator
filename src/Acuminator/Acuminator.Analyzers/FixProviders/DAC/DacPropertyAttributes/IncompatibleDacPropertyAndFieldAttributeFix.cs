@@ -30,14 +30,8 @@ namespace Acuminator.Analyzers.FixProviders
 		{
 			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty.Id);
 
-			if (diagnostic == null)
+			if (diagnostic == null || !diagnostic.IsRegisteredForCodeFix())
 				return;
-
-			if (diagnostic.Properties.TryGetValue(DiagnosticProperty.RegisterCodeFix, out string registerCodeFix) && 
-				string.Equals(registerCodeFix, bool.FalseString))
-			{
-				return;
-			}
 
 			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			SyntaxNode codeFixNode = root?.FindNode(context.Span);

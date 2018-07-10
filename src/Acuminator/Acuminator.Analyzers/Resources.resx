@@ -228,4 +228,10 @@
   <data name="PX1024Fix" xml:space="preserve">
     <value>Make the DAC field type abstract</value>
   </data>
+  <data name="PX1026Title" xml:space="preserve">
+    <value>Underscores cannot be used in DAC declarations</value>
+  </data>
+  <data name="PX1026Fix" xml:space="preserve">
+    <value>Remove underscores from the DAC declaration</value>
+  </data>
 </root>
