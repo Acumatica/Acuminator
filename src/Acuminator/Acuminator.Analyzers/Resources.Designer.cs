@@ -395,7 +395,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove the underscores from the DAC declaration.
+        ///   Looks up a localized string similar to Remove underscores from the DAC declaration.
         /// </summary>
         public static string PX1026Fix {
             get {
@@ -404,7 +404,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The underscores are prohibited in the DAC declaration.
+        ///   Looks up a localized string similar to Underscores cannot be used in DAC declarations.
         /// </summary>
         public static string PX1026Title {
             get {
