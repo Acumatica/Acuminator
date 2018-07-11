@@ -99,6 +99,7 @@
     <Compile Include="CommonUtils\EnumerableExtensions.cs" />
     <Compile Include="CommonUtils\ConcurrentExtensions.cs" />
     <Compile Include="CommonUtils\EnumerableExtraExtensions.cs" />
+    <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacFinder.cs" />
     <Compile Include="RoslynExtensions\PXFieldAttributes\FieldAttributeInfo.cs" />
     <Compile Include="RoslynExtensions\PXFieldAttributes\FieldAttributesRegister.cs" />
     <Compile Include="RoslynExtensions\SyntaxUtils\MethodDeclarationUtils.cs" />

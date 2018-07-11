@@ -176,7 +176,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CodeActions\" />
-    <Folder Include="FixProviders\PXAction\PX1012\Helper\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Acuminator.Utils\Acuminator.Utils.csproj">
