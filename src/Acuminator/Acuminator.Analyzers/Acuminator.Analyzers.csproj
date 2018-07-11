@@ -79,7 +79,7 @@
     <Compile Include="FixProviders\InheritanceFromPXCacheExtensionMakeSealedFix.cs" />
     <Compile Include="FixProviders\InheritanceFromPXCacheExtensionFix.cs" />
     <Compile Include="FixProviders\MissingTypeListAttributeFix.cs" />
-    <Compile Include="FixProviders\PXAction\PXActionOnNonPrimaryViewCodeFix.cs" />
+    <Compile Include="FixProviders\PXAction\PX1012\PXActionOnNonPrimaryViewCodeFix.cs" />
     <Compile Include="FixProviders\View\Delegate\StartRowResetForPagingFix.cs" />
     <Compile Include="FixProviders\View\Delegate\TypoInViewDelegateNameFix.cs" />
     <Compile Include="FixProviders\PXGraph\PXGraphCreateInstanceFix.cs" />
@@ -176,6 +176,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CodeActions\" />
+    <Folder Include="FixProviders\PXAction\PX1012\Helper\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Acuminator.Utils\Acuminator.Utils.csproj">
