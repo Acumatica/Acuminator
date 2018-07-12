@@ -32,15 +32,14 @@ namespace Acuminator.Analyzers
 			if (!(symbolContext.Symbol is INamedTypeSymbol graphOrGraphExtension) || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			if (!graphOrGraphExtension.InheritsFrom(pxContext.PXGraphType) && !graphOrGraphExtension.InheritsFrom(pxContext.PXGraphExtensionType))
+			bool isGraph = graphOrGraphExtension.InheritsFrom(pxContext.PXGraphType);
+
+			if (!isGraph && !graphOrGraphExtension.InheritsFrom(pxContext.PXGraphExtensionType))
 				return;
 
-		
+			var actions = GetActionsFromGraphOrGraphExtension(graphOrGraphExtension, pxContext, isGraph, symbolContext.CancellationToken);
 
-
-			
-
-			if (pxActionType == null || !pxActionType.IsGenericType)
+			if (actions == null || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
 
 			var pxActionTypeArgs = pxActionType.TypeArguments;
@@ -74,20 +73,17 @@ namespace Acuminator.Analyzers
 		}
 
 
-		private static INamedTypeSymbol GetPXActionType(SymbolAnalysisContext symbolContext)
+		private static IEnumerable<INamedTypeSymbol> GetActionsFromGraphOrGraphExtension(INamedTypeSymbol graphOrGraphExtension, PXContext pxContext,
+																						 bool isGraph, CancellationToken cancellationToken)
 		{
-			if (symbolContext.CancellationToken.IsCancellationRequested)
+			if (cancellationToken.IsCancellationRequested)
 				return null;
 
-			switch (symbolContext.Symbol)
-			{
-				case IFieldSymbol fieldSymbol when fieldSymbol.Type.IsPXAction():
-					return fieldSymbol.Type as INamedTypeSymbol;
-				case IPropertySymbol propertySymbol when propertySymbol.Type.IsPXAction():
-					return propertySymbol.Type as INamedTypeSymbol;
-				default:
-					return null;
-			}
+			var actions = isGraph
+				? graphOrGraphExtension.GetPXActionsFromGraphOrGraphExtension(pxContext)
+				: graphOrGraphExtension.GetPXActionsFromGraphExtensionAndItsBaseGraph(pxContext);
+
+			return actions.Where(action => action.IsGenericType);
 		}
 
 		private static ITypeSymbol GetMainDacFromPXGraph(INamedTypeSymbol pxGraphType, PXContext pxContext, CancellationToken cancellationToken)
