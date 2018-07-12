@@ -23,17 +23,22 @@ namespace Acuminator.Analyzers
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSymbolAction(symbolContext => AnalyzePXActionSymbolAsync(symbolContext, pxContext),
+			compilationStartContext.RegisterSymbolAction(symbolContext => AnalyzePXGraphSymbolAsync(symbolContext, pxContext),
 														 SymbolKind.Field, SymbolKind.Property);
 		}
 
-		private static async Task AnalyzePXActionSymbolAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
+		private static async Task AnalyzePXGraphSymbolAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
-			if (!IsDiagnosticValidForSymbol(symbolContext, pxContext))
+			if (!(symbolContext.Symbol is INamedTypeSymbol graphOrGraphExtension) || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			ISymbol symbol = symbolContext.Symbol;
-			INamedTypeSymbol pxActionType = GetPXActionType(symbolContext);
+			if (!graphOrGraphExtension.InheritsFrom(pxContext.PXGraphType) && !graphOrGraphExtension.InheritsFrom(pxContext.PXGraphExtensionType))
+				return;
+
+		
+
+
+			
 
 			if (pxActionType == null || !pxActionType.IsGenericType)
 				return;
@@ -68,15 +73,6 @@ namespace Acuminator.Analyzers
 								  symbol.Name, mainDacType.Name));
 		}
 
-		private static bool IsDiagnosticValidForSymbol(SymbolAnalysisContext symbolContext, PXContext pxContext)
-		{
-			if (symbolContext.Symbol?.ContainingType == null || symbolContext.CancellationToken.IsCancellationRequested)
-				return false;
-
-			INamedTypeSymbol containingType = symbolContext.Symbol.ContainingType;
-			return containingType.InheritsFrom(pxContext.PXGraphType) ||
-				   containingType.InheritsFrom(pxContext.PXGraphExtensionType);
-		}
 
 		private static INamedTypeSymbol GetPXActionType(SymbolAnalysisContext symbolContext)
 		{
@@ -99,9 +95,9 @@ namespace Acuminator.Analyzers
 			if (pxGraphType.BaseType == null)
 				return null;
 
-			var baseGraphType = pxGraphType.GetBaseTypesAndThis()
-										   .OfType<INamedTypeSymbol>()
-										   .FirstOrDefault(type => IsGraphWithPrimaryDacBaseGenericType(type));
+			//var baseGraphType = pxGraphType.GetBaseTypesAndThis()
+			//							   .OfType<INamedTypeSymbol>()
+			//							   .FirstOrDefault(type => IsGraphWithPrimaryDacBaseGenericType(type));
 
 			if (baseGraphType != null)  //Case when main DAC is already defined as type parameter
 			{
@@ -147,8 +143,7 @@ namespace Acuminator.Analyzers
 			return GetMainDacFromPXGraph(pxGraphType, pxContext, cancellationToken);
 		}
 
-		private static bool IsGraphWithPrimaryDacBaseGenericType(INamedTypeSymbol type) =>
-			type.TypeArguments.Length >= 2 && type.Name.Equals(TypeNames.PXGraph, StringComparison.Ordinal);
+		
 
 		private static bool IsGraphOrGraphExtensionBaseType(ITypeSymbol type)
 		{
