@@ -15,7 +15,7 @@ using Microsoft.CodeAnalysis.Editing;
 using Acuminator.Analyzers;
 
 
-namespace Acuminator.Utilities
+namespace Acuminator.Utilities.PrimaryDAC
 {
 	/// <summary>
 	/// A graph's primary DAC finder.
@@ -28,6 +28,8 @@ namespace Acuminator.Utilities
 
 		public SemanticModel SemanticModel { get; }
 
+		public ImmutableArray<PrimaryDacRuleBase> Rules { get; }
+
 		private readonly INamedTypeSymbol graphSymbol;
 		private readonly ClassDeclarationSyntax graphDeclaration;
 		
@@ -35,17 +37,18 @@ namespace Acuminator.Utilities
 		private readonly Dictionary<string, ISymbol> graphViews;
 
 		private PrimaryDacFinder(PXContext pxContext, SemanticModel semanticModel, INamedTypeSymbol graph, ClassDeclarationSyntax graphNode,
-								 CancellationToken cancellationToken)
+								 ImmutableArray<PrimaryDacRuleBase> rules, CancellationToken cancellationToken)
 		{
 			SemanticModel = semanticModel;
 			PxContext = pxContext;
 			graphSymbol = graph;
 			graphDeclaration = graphNode;
 			CancellationToken = cancellationToken;
+			Rules = rules;
 		}
 
 		public static async Task<PrimaryDacFinder> CreateAsync(PXContext pxContext, SemanticModel semanticModel, INamedTypeSymbol graph,
-															   CancellationToken cancellationToken)
+															   CancellationToken cancellationToken, IRulesProvider rulesProvider = null)
 		{
 			if (pxContext == null || semanticModel == null || graph == null || !graph.InheritsFrom(pxContext.PXGraphType) || 
 				cancellationToken.IsCancellationRequested)
@@ -53,12 +56,18 @@ namespace Acuminator.Utilities
 				return null;
 			}
 
+			rulesProvider = rulesProvider ?? new DefaultRulesProvider();
+			var rules = rulesProvider.GetRules();
+
+			if (rules.Length == 0)
+				return null;
+
 			ClassDeclarationSyntax graphNode = await graph.GetSyntaxAsync(cancellationToken).ConfigureAwait(false) as ClassDeclarationSyntax;
 
 			if (graphNode == null || cancellationToken.IsCancellationRequested)
 				return null;
 			
-			return new PrimaryDacFinder(pxContext, semanticModel, graph, graphNode, cancellationToken);
+			return new PrimaryDacFinder(pxContext, semanticModel, graph, graphNode, rules, cancellationToken);
 		}
 
 		public INamedTypeSymbol FindPrimaryDAC()
