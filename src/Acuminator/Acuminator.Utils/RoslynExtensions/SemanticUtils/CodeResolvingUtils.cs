@@ -14,38 +14,6 @@ namespace Acuminator.Utilities
 {
 	public static class CodeResolvingUtils
 	{
-		// Determine if "type" inherits from "baseType", ignoring constructed types, optionally including interfaces,
-		// dealing only with original types.
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool InheritsOrImplementsOrEquals(this ITypeSymbol type, string baseTypeName,
-														bool includeInterfaces = true)
-		{
-			if (type == null)
-				return false;
-
-			IEnumerable<ITypeSymbol> baseTypes = includeInterfaces
-				? type.GetBaseTypesAndThis().ConcatStructList(type.AllInterfaces)
-				: type.GetBaseTypesAndThis();
-
-			return baseTypes.Select(typeSymbol => typeSymbol.Name)
-							.Contains(baseTypeName);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool ImplementsInterface(this ITypeSymbol type, string interfaceName)
-		{
-			if (type == null)
-				return false;
-
-			foreach (var interfaceSymbol in type.AllInterfaces)
-			{
-				if (interfaceSymbol.Name == interfaceName)
-					return true;
-			}
-
-			return false;
-		}
-
 		/// <summary>
 		/// An ITypeSymbol extension method that gets <see cref="PXCodeType"/> from identifier type symbol.
 		/// </summary>
@@ -339,48 +307,6 @@ namespace Acuminator.Utilities
 					int length = typeArgumentsList.GetSeparator(1).SpanStart - typeParamsListSyntax.SpanStart;
 					return new TextSpan(typeParamsListSyntax.SpanStart, length);
 			}
-		}
-
-		public static IEnumerable<INamedTypeSymbol> GetAllViewTypesFromPXGraphOrPXGraphExtension(this ITypeSymbol graphOrExtension, 
-																								 PXContext pxContext)
-		{
-			if (graphOrExtension == null || 
-			   (!graphOrExtension.InheritsFrom(pxContext.PXGraphType) && !graphOrExtension.InheritsFrom(pxContext.PXGraphExtensionType)))
-				yield break;
-
-			foreach (ISymbol member in graphOrExtension.GetMembers())
-			{
-				switch (member)
-				{
-					case IFieldSymbol field 
-					when field.Type is INamedTypeSymbol fieldType && fieldType.InheritsFrom(pxContext.PXSelectBaseType):
-						yield return fieldType;
-						continue;
-					case IPropertySymbol property 
-					when property is INamedTypeSymbol propertyType && propertyType.InheritsFrom(pxContext.PXSelectBaseType):
-						yield return propertyType;
-						continue;
-				}
-			}								 
-		}
-
-		public static IEnumerable<ITypeSymbol> GetPXActionsFromGraph()
-
-		public static bool IsDelegateForViewInPXGraph(this IMethodSymbol method, PXContext pxContext)
-		{
-			if (method == null || method.ReturnType.SpecialType != SpecialType.System_Collections_IEnumerable)
-				return false;
-
-			INamedTypeSymbol containingType = method.ContainingType;
-
-			if (containingType == null ||
-			   (!containingType.InheritsFrom(pxContext.PXGraphType) && !containingType.InheritsFrom(pxContext.PXGraphExtensionType)))
-				return false;
-
-			return containingType.GetMembers()
-								 .OfType<IFieldSymbol>()
-								 .Where(field => field.Type.InheritsFrom(pxContext.PXSelectBaseType))
-								 .Any(field => String.Equals(field.Name, method.Name, StringComparison.OrdinalIgnoreCase));
 		}
 	}
 }
