@@ -99,7 +99,13 @@
     <Compile Include="CommonUtils\EnumerableExtensions.cs" />
     <Compile Include="CommonUtils\ConcurrentExtensions.cs" />
     <Compile Include="CommonUtils\EnumerableExtraExtensions.cs" />
+    <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacTraits\Base\DacRuleBase.cs" />
+    <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacTraits\Base\GraphRuleBase.cs" />
+    <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacTraits\Base\PrimaryDacRuleBase.cs" />
+    <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacTraits\Base\PrimaryDacRuleKind.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacFinder.cs" />
+    <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacTraits\Base\ViewRuleBase.cs" />
+    <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacTraits\PrimaryDacSpecifiedGraphRule.cs" />
     <Compile Include="RoslynExtensions\PXFieldAttributes\FieldAttributeInfo.cs" />
     <Compile Include="RoslynExtensions\PXFieldAttributes\FieldAttributesRegister.cs" />
     <Compile Include="RoslynExtensions\SyntaxUtils\MethodDeclarationUtils.cs" />
@@ -119,6 +125,9 @@
   <ItemGroup>
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="RoslynExtensions\SemanticUtils\" />
   </ItemGroup>
   <Import Project="..\..\packages\GitVersionTask.3.6.5\build\portable-net+sl+win+wpa+wp\GitVersionTask.targets" Condition="Exists('..\..\packages\GitVersionTask.3.6.5\build\portable-net+sl+win+wpa+wp\GitVersionTask.targets')" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

@@ -22,39 +22,43 @@ namespace Acuminator.Utilities
 	/// </summary>
 	public class PrimaryDacFinder
 	{
-		private readonly PXContext pxContext;
+		public PXContext PxContext { get; }
+
+		public CancellationToken CancellationToken { get; }
+
+		public SemanticModel SemanticModel { get; }
+
 		private readonly INamedTypeSymbol graphSymbol;
 		private readonly ClassDeclarationSyntax graphDeclaration;
-		private readonly SemanticModel semanticModel;
-		private CancellationToken cancellationToken;
+		
 
 		private readonly Dictionary<string, ISymbol> graphViews;
 
-		private PrimaryDacFinder(PXContext context, SemanticModel semModel, INamedTypeSymbol graph, ClassDeclarationSyntax graphNode,
-								 CancellationToken cToken)
-		{ 
-			semanticModel = semModel;
-			pxContext = context;
+		private PrimaryDacFinder(PXContext pxContext, SemanticModel semanticModel, INamedTypeSymbol graph, ClassDeclarationSyntax graphNode,
+								 CancellationToken cancellationToken)
+		{
+			SemanticModel = semanticModel;
+			PxContext = pxContext;
 			graphSymbol = graph;
 			graphDeclaration = graphNode;
-			cancellationToken = cToken;
+			CancellationToken = cancellationToken;
 		}
 
-		public static async Task<PrimaryDacFinder> CreateAsync(PXContext context, SemanticModel semModel, INamedTypeSymbol graph,
-															   CancellationToken cToken)
+		public static async Task<PrimaryDacFinder> CreateAsync(PXContext pxContext, SemanticModel semanticModel, INamedTypeSymbol graph,
+															   CancellationToken cancellationToken)
 		{
-			if (context == null || semModel == null || graph == null || !graph.InheritsFrom(context.PXGraphType) || 
-				cToken.IsCancellationRequested)
+			if (pxContext == null || semanticModel == null || graph == null || !graph.InheritsFrom(pxContext.PXGraphType) || 
+				cancellationToken.IsCancellationRequested)
 			{
 				return null;
 			}
 
-			ClassDeclarationSyntax graphNode = await graph.GetSyntaxAsync(cToken).ConfigureAwait(false) as ClassDeclarationSyntax;
+			ClassDeclarationSyntax graphNode = await graph.GetSyntaxAsync(cancellationToken).ConfigureAwait(false) as ClassDeclarationSyntax;
 
-			if (graphNode == null || cToken.IsCancellationRequested)
+			if (graphNode == null || cancellationToken.IsCancellationRequested)
 				return null;
 			
-			return new PrimaryDacFinder(context, semModel, graph, graphNode, cToken);
+			return new PrimaryDacFinder(pxContext, semanticModel, graph, graphNode, cancellationToken);
 		}
 
 		public INamedTypeSymbol FindPrimaryDAC()

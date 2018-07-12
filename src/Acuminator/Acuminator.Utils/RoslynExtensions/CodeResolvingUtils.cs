@@ -364,6 +364,8 @@ namespace Acuminator.Utilities
 			}								 
 		}
 
+		public static IEnumerable<ITypeSymbol> GetPXActionsFromGraph()
+
 		public static bool IsDelegateForViewInPXGraph(this IMethodSymbol method, PXContext pxContext)
 		{
 			if (method == null || method.ReturnType.SpecialType != SpecialType.System_Collections_IEnumerable)
