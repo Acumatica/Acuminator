@@ -26,8 +26,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 
 		public override double Weight => double.MaxValue;
 
-		public override IEnumerable<ITypeSymbol> FindPrimaryDacCandidatesByRule(PrimaryDacFinder dacFinder, INamedTypeSymbol graph, 
-																				ClassDeclarationSyntax graphNode)
+		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder, INamedTypeSymbol graph)
 		{
 			if (graph == null)
 				return Enumerable.Empty<ITypeSymbol>();

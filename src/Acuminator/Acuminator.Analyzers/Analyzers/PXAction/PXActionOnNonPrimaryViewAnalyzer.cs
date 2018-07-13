@@ -127,9 +127,9 @@ namespace Acuminator.Analyzers
 		//	if (firstView == null || cancellationToken.IsCancellationRequested)
 		//		return null;
 
-		//	INamedTypeSymbol baseViewType = firstView.GetBaseTypesAndThis()
-		//											 .OfType<INamedTypeSymbol>()
-		//											 .FirstOrDefault(type => !type.IsCustomBqlCommand(pxContext));
+		//INamedTypeSymbol baseViewType = firstView.GetBaseTypesAndThis()
+		//										 .OfType<INamedTypeSymbol>()
+		//										 .FirstOrDefault(type => !type.IsCustomBqlCommand(pxContext));
 
 		//	if (baseViewType?.IsBqlCommand() != true || baseViewType.TypeArguments.Length == 0 || cancellationToken.IsCancellationRequested)
 		//		return null;
@@ -157,7 +157,7 @@ namespace Acuminator.Analyzers
 		//	return GetMainDacFromPXGraph(pxGraphType, pxContext, cancellationToken);
 		//}
 
-		
+
 
 		private static bool IsGraphOrGraphExtensionBaseType(ITypeSymbol type)
 		{

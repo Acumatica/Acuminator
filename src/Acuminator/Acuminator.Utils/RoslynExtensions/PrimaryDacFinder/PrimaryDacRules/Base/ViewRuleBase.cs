@@ -28,13 +28,12 @@ namespace Acuminator.Utilities.PrimaryDAC
 		public sealed override PrimaryDacRuleKind RuleKind => PrimaryDacRuleKind.View;
 
 		/// <summary>
-		/// Find Dac from view using this rule.
+		/// Query if view satisfies this rule's conditions.
 		/// </summary>
 		/// <param name="dacFinder">The DAC finder.</param>
 		/// <param name="view">The view.</param>
-		/// <param name="viewNode">The view node.</param>
+		/// <param name="viewType">Type of the view.</param>
 		/// <returns/>
-		public abstract INamedTypeSymbol FindDacCandidateFromRule(PrimaryDacFinder dacFinder, INamedTypeSymbol view,
-																  MemberDeclarationSyntax viewNode);
+		public abstract bool SatisfyRule(PrimaryDacFinder dacFinder, ISymbol view, INamedTypeSymbol viewType);
 	}
 }

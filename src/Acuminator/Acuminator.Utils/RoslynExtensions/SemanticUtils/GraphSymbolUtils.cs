@@ -130,5 +130,30 @@ namespace Acuminator.Utilities
 								 .Where(field => field.Type.InheritsFrom(pxContext.PXSelectBaseType))
 								 .Any(field => String.Equals(field.Name, method.Name, StringComparison.OrdinalIgnoreCase));
 		}
+
+		/// <summary>
+		/// Get view's DAC for which the view was declared.
+		/// </summary>
+		/// <param name="pxView">The view to act on.</param>
+		/// <param name="pxContext">Context.</param>
+		/// <returns>
+		/// The DAC from view.
+		/// </returns>
+		public static ITypeSymbol GetDacFromView(this ITypeSymbol pxView, PXContext pxContext)
+		{
+			pxContext.ThrowOnNull(nameof(pxContext));
+
+			if (pxView?.InheritsFrom(pxContext.PXSelectBaseType) != true)
+				return null;
+
+			INamedTypeSymbol baseViewType = pxView.GetBaseTypesAndThis()
+												  .OfType<INamedTypeSymbol>()
+												  .FirstOrDefault(type => !type.IsCustomBqlCommand(pxContext));
+
+			if (baseViewType?.IsBqlCommand() != true || baseViewType.TypeArguments.Length == 0)
+				return null;
+
+			return baseViewType.TypeArguments[0];
+		}
 	}
 }

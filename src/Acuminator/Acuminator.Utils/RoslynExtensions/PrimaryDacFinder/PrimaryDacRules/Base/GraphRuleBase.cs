@@ -32,9 +32,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 		/// </summary>
 		/// <param name="dacFinder">The DAC finder.</param>
 		/// <param name="graph">The graph.</param>
-		/// <param name="graphNode">The graph node.</param>
 		/// <returns/>
-		public abstract IEnumerable<ITypeSymbol> FindPrimaryDacCandidatesByRule(PrimaryDacFinder dacFinder, INamedTypeSymbol graph,
-																				ClassDeclarationSyntax graphNode);
+		public abstract IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder, INamedTypeSymbol graph);
 	}
 }

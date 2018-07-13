@@ -33,6 +33,6 @@ namespace Acuminator.Utilities.PrimaryDAC
 		/// <param name="dacFinder">The DAC finder.</param>
 		/// <param name="dac">The DAC.</param>
 		/// <returns/>
-		public abstract bool SatisfyRule(PrimaryDacFinder dacFinder, INamedTypeSymbol dac);
+		public abstract bool SatisfyRule(PrimaryDacFinder dacFinder, ITypeSymbol dac);
 	}
 }
