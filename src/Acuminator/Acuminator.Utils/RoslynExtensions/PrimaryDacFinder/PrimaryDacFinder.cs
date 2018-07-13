@@ -31,46 +31,65 @@ namespace Acuminator.Utilities.PrimaryDAC
 		public ImmutableArray<PrimaryDacRuleBase> Rules { get; }
 
 		private readonly INamedTypeSymbol graphSymbol;
-		private readonly ClassDeclarationSyntax graphDeclaration;
 		
-
 		private readonly Dictionary<string, ISymbol> graphViews;
 
-		private PrimaryDacFinder(PXContext pxContext, SemanticModel semanticModel, INamedTypeSymbol graph, ClassDeclarationSyntax graphNode,
+		private PrimaryDacFinder(PXContext pxContext, SemanticModel semanticModel, INamedTypeSymbol graph,
 								 ImmutableArray<PrimaryDacRuleBase> rules, CancellationToken cancellationToken)
 		{
 			SemanticModel = semanticModel;
 			PxContext = pxContext;
 			graphSymbol = graph;
-			graphDeclaration = graphNode;
 			CancellationToken = cancellationToken;
 			Rules = rules;
 		}
 
-		public static async Task<PrimaryDacFinder> CreateAsync(PXContext pxContext, SemanticModel semanticModel, INamedTypeSymbol graph,
-															   CancellationToken cancellationToken, IRulesProvider rulesProvider = null)
+		public static PrimaryDacFinder Create(PXContext pxContext, SemanticModel semanticModel, INamedTypeSymbol graphOrGraphExtension,
+											  CancellationToken cancellationToken, IRulesProvider rulesProvider = null)
 		{
-			if (pxContext == null || semanticModel == null || graph == null || !graph.InheritsFrom(pxContext.PXGraphType) || 
-				cancellationToken.IsCancellationRequested)
-			{
+			if (pxContext == null || semanticModel == null || graphOrGraphExtension == null || cancellationToken.IsCancellationRequested)
 				return null;
-			}
+
+			bool isGraph = graphOrGraphExtension.InheritsFrom(pxContext.PXGraphType);
+
+			if (!isGraph && !graphOrGraphExtension.InheritsFrom(pxContext.PXGraphExtensionType))
+				return null;
+
+			INamedTypeSymbol graph = isGraph
+				? graphOrGraphExtension
+				: graphOrGraphExtension.GetGraphFromGraphExtension(pxContext) as INamedTypeSymbol;
+
+			if (graph == null || cancellationToken.IsCancellationRequested)
+				return null;
 
 			rulesProvider = rulesProvider ?? new DefaultRulesProvider();
 			var rules = rulesProvider.GetRules();
 
-			if (rules.Length == 0)
+			if (rules.Length == 0 || cancellationToken.IsCancellationRequested)
 				return null;
 
-			ClassDeclarationSyntax graphNode = await graph.GetSyntaxAsync(cancellationToken).ConfigureAwait(false) as ClassDeclarationSyntax;
+			var allActions = GetAllActionsFromGraphOrGraphExtension(graphOrGraphExtension, pxContext, isGraph, cancellationToken);
 
-			if (graphNode == null || cancellationToken.IsCancellationRequested)
+			if (allActions == null || cancellationToken.IsCancellationRequested)
 				return null;
-			
-			return new PrimaryDacFinder(pxContext, semanticModel, graph, graphNode, rules, cancellationToken);
+
+			return new PrimaryDacFinder(pxContext, semanticModel, graph, rules, cancellationToken);
 		}
 
-		public INamedTypeSymbol FindPrimaryDAC()
+		private static IEnumerable<INamedTypeSymbol> GetAllActionsFromGraphOrGraphExtension(INamedTypeSymbol graphOrGraphExtension, PXContext pxContext,
+																							bool isGraph, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+				return null;
+
+			var actions = isGraph
+				? graphOrGraphExtension.GetPXActionsFromGraphOrGraphExtension(pxContext)
+				: graphOrGraphExtension.GetPXActionsFromGraphExtensionAndItsBaseGraph(pxContext);
+
+			return actions.Where(action => action.IsGenericType);
+		}
+
+		public ITypeSymbol FindPrimaryDAC()
 		{
 
 		}
