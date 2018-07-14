@@ -379,6 +379,37 @@ namespace Acuminator.Utilities
 
 			return baseViewType.TypeArguments[0];
 		}
+		
+		/// <summary>
+		/// Get declared primary DAC from graph or graph extension.
+		/// </summary>
+		/// <param name="graphOrExtension">The graph or graph extension to act on.</param>
+		/// <param name="pxContext">Context.</param>
+		/// <returns>
+		/// The declared primary DAC from graph or graph extension.
+		/// </returns>
+		public static ITypeSymbol GetDeclaredPrimaryDacFromGraphOrGraphExtension(this INamedTypeSymbol graphOrExtension, PXContext pxContext)
+		{
+			pxContext.ThrowOnNull(nameof(pxContext));
+			bool isGraph = graphOrExtension?.InheritsFrom(pxContext.PXGraphType) ?? false;
+
+			if (!isGraph && !graphOrExtension?.InheritsFrom(pxContext.PXGraphExtensionType) != true)
+				return null;
+
+			ITypeSymbol graph = isGraph
+				? graphOrExtension
+				: graphOrExtension.GetGraphFromGraphExtension(pxContext);
+
+			var baseGraphType = graph.GetBaseTypesAndThis()
+									 .OfType<INamedTypeSymbol>()
+									 .FirstOrDefault(type => IsGraphWithPrimaryDacBaseGenericType(type)) as INamedTypeSymbol;
+
+			if (baseGraphType == null || baseGraphType.TypeArguments.Length < 2)
+				return null;
+
+			ITypeSymbol primaryDacType = baseGraphType.TypeArguments[1];
+			return primaryDacType.IsDAC() ? primaryDacType : null;
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static bool IsGraphOrGraphExtensionBaseType(this ITypeSymbol type)
@@ -401,5 +432,9 @@ namespace Acuminator.Utilities
 			string typeNameWithoutGenericArgsCount = type.Name.Split('`')[0];
 			return typeNameWithoutGenericArgsCount.Equals(TypeNames.PXGraphExtension, StringComparison.Ordinal);
 		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static bool IsGraphWithPrimaryDacBaseGenericType(INamedTypeSymbol type) =>
+			type.TypeArguments.Length >= 2 && type.Name.Equals(TypeNames.PXGraph, StringComparison.Ordinal);
 	}
 }
