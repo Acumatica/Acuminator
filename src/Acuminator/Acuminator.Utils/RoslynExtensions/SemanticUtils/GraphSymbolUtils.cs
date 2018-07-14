@@ -14,14 +14,28 @@ namespace Acuminator.Utilities
 {
 	public static class GraphSymbolUtils
 	{
+		/// <summary>
+		/// Gets the graph type from graph extension type.
+		/// </summary>
+		/// <param name="graphExtension">The graph extension to act on.</param>
+		/// <param name="pxContext">Context.</param>
+		/// <returns>
+		/// The graph from graph extension.
+		/// </returns>
 		public static ITypeSymbol GetGraphFromGraphExtension(this ITypeSymbol graphExtension, PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			if (graphExtension?.BaseType == null || !graphExtension.InheritsFrom(pxContext.PXGraphExtensionType))
+			if (graphExtension == null || !graphExtension.InheritsFrom(pxContext.PXGraphExtensionType))
 				return null;
 
-			var graphExtTypeArgs = graphExtension.BaseType.TypeArguments;
+			var baseGraphExtensionType = graphExtension.GetBaseTypesAndThis()
+													   .OfType<INamedTypeSymbol>()
+													   .FirstOrDefault(type => IsGraphExtensionBaseType(type));
+			if (baseGraphExtensionType == null)
+				return null;
+
+			var graphExtTypeArgs = baseGraphExtensionType.TypeArguments;
 
 			if (graphExtTypeArgs.Length == 0)
 				return null;
@@ -34,35 +48,85 @@ namespace Acuminator.Utilities
 			return pxGraph;
 		}
 
-		public static IEnumerable<INamedTypeSymbol> GetAllViewTypesFromPXGraphOrPXGraphExtension(this ITypeSymbol graphOrExtension, 
-																								 PXContext pxContext)
+		#region View Types
+		/// <summary>
+		/// Gets all declared views from the graph and its base graphs if there is a graphs class hierarchy and <paramref name="includeViewsFromInheritanceChain"/> parameter is <c>true</c>.
+		/// </summary>
+		/// <param name="graph">The graph to act on.</param>
+		/// <param name="pxContext">Context.</param>
+		/// <param name="includeViewsFromInheritanceChain">(Optional) True to include, false to exclude the views from inheritance chain.</param>
+		/// <returns/>
+		public static IEnumerable<INamedTypeSymbol> GetViewsFromPXGraph(this ITypeSymbol graph, PXContext pxContext,
+																		bool includeViewsFromInheritanceChain = true)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			if (graphOrExtension == null ||
-			   (!graphOrExtension.InheritsFrom(pxContext.PXGraphType) && !graphOrExtension.InheritsFrom(pxContext.PXGraphExtensionType)))
+			if (graph?.InheritsFrom(pxContext.PXGraphType) != true)
+				return Enumerable.Empty<INamedTypeSymbol>();
+
+			if (includeViewsFromInheritanceChain)
 			{
-				return Enumerable.Empty<INamedTypeSymbol>();
+				return graph.GetBaseTypesAndThis()
+							.TakeWhile(baseGraph => !baseGraph.IsGraphBaseType())
+							.Reverse()
+							.SelectMany(baseGraph => GetAllViewTypesFromPXGraphOrPXGraphExtensionImpl(baseGraph, pxContext));
 			}
-
-			return GetAllViewTypesFromPXGraphOrPXGraphExtensionImpl(graphOrExtension, pxContext);			
+			else
+				return GetAllViewTypesFromPXGraphOrPXGraphExtensionImpl(graph, pxContext);
 		}
 
-		public static IEnumerable<INamedTypeSymbol> GetAllViewsFromThisAndBaseGraphs(this ITypeSymbol graph, PXContext pxContext)
+		/// <summary>
+		/// Gets all declared views from graph extension and its base graph extensions if there is a class hierarchy and <paramref name="includeViewsFromInheritanceChain"/> parameter is <c>true</c>.
+		/// Does not include views from extension's graph.
+		/// </summary>
+		/// <param name="graphExtension">The graph extension to act on.</param>
+		/// <param name="pxContext">Context.</param>
+		/// <param name="includeViewsFromInheritanceChain">(Optional) True to include, false to exclude the views from inheritance chain.</param>
+		/// <returns/>
+		public static IEnumerable<INamedTypeSymbol> GetViewsFromGraphExtension(this ITypeSymbol graphExtension, PXContext pxContext,
+																			   bool includeViewsFromInheritanceChain = true)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			if (graph == null || !graph.InheritsFrom(pxContext.PXGraphType))
+			if (graphExtension?.InheritsFrom(pxContext.PXGraphExtensionType) != true)
 				return Enumerable.Empty<INamedTypeSymbol>();
 
-			return graph.GetBaseTypesAndThis()
-						.TakeWhile(baseGraph => !IsGraphOrGraphExtensionBaseType(baseGraph))
-						.Reverse()
-						.SelectMany(baseGraph => GetAllViewTypesFromPXGraphOrPXGraphExtensionImpl(baseGraph, pxContext));			
+			if (includeViewsFromInheritanceChain)
+			{
+				return graphExtension.GetBaseTypesAndThis()
+									 .TakeWhile(baseGraphExt => !baseGraphExt.IsGraphExtensionBaseType())
+									 .Reverse()
+									 .SelectMany(baseGraphExt => GetAllViewTypesFromPXGraphOrPXGraphExtensionImpl(baseGraphExt, pxContext));
+			}
+			else
+				return GetAllViewTypesFromPXGraphOrPXGraphExtensionImpl(graphExtension, pxContext);
+		}
+		
+		/// <summary>
+		/// Gets the views from graph extension and its base graph.
+		/// </summary>
+		/// <param name="graphExtension">The graph extension to act on.</param>
+		/// <param name="pxContext">Context.</param>
+		/// <param name="includeViewsFromExtensionsInheritanceChain">(Optional) True to include, false to exclude the views from extensions
+		/// 														 inheritance chain.</param>
+		/// <param name="includeViewsFromGraphsInheritanceChain">(Optional) True to include, false to exclude the views from graphs inheritance
+		/// 													 chain.</param>
+		/// <returns/>
+		public static IEnumerable<INamedTypeSymbol> GetViewsFromGraphExtensionAndItsBaseGraph(this ITypeSymbol graphExtension, PXContext pxContext,
+																							  bool includeViewsFromExtensionsInheritanceChain = true,
+																							  bool includeViewsFromGraphsInheritanceChain = true)
+		{
+			var extensionViews = graphExtension.GetViewsFromGraphExtension(pxContext, includeViewsFromExtensionsInheritanceChain);
+			ITypeSymbol graph = graphExtension.GetGraphFromGraphExtension(pxContext);
+
+			if (graph == null)
+				return extensionViews;
+
+			var graphViews = graph.GetViewsFromPXGraph(pxContext, includeViewsFromGraphsInheritanceChain);
+			return graphViews.Concat(extensionViews);
 		}
 
-		private static IEnumerable<INamedTypeSymbol> GetAllViewTypesFromPXGraphOrPXGraphExtensionImpl(ITypeSymbol graphOrExtension,
-																									  PXContext pxContext)
+		private static IEnumerable<INamedTypeSymbol> GetAllViewTypesFromPXGraphOrPXGraphExtensionImpl(ITypeSymbol graphOrExtension, PXContext pxContext)
 		{
 			foreach (ISymbol member in graphOrExtension.GetMembers())
 			{
@@ -79,60 +143,83 @@ namespace Acuminator.Utilities
 				}
 			}
 		}
+		#endregion
 
-		public static IEnumerable<INamedTypeSymbol> GetPXActionsFromGraphOrGraphExtension(this ITypeSymbol graphOrExtension, PXContext pxContext)
-		{
-			pxContext.ThrowOnNull(nameof(pxContext));
-
-			if (graphOrExtension == null ||
-			   (!graphOrExtension.InheritsFrom(pxContext.PXGraphType) && !graphOrExtension.InheritsFrom(pxContext.PXGraphExtensionType)))
-			{
-				return Enumerable.Empty<INamedTypeSymbol>();
-			}
-
-			return graphOrExtension.GetPXActionsFromGraphOrGraphExtensionImpl(pxContext);
-		}
-
-		/// <summary>Gets the PXActions declared on the graph extension and its base graphs in this collection.d.</summary>
-		/// <param name="graphExtension">The graph extension to act on.</param>
+		#region PXAction types
+		/// <summary>
+		/// Gets the PXActions from graph and, if <paramref name="includeActionsFromInheritanceChain"/> is <c>true</c>, its base graphs.
+		/// </summary>
+		/// <param name="graph">The graph to act on.</param>
 		/// <param name="pxContext">Context.</param>
 		/// <param name="includeActionsFromInheritanceChain">(Optional) True to include, false to exclude the actions from the inheritance chain.</param>
 		/// <returns/>
-		public static IEnumerable<INamedTypeSymbol> GetPXActionsFromGraphExtensionAndItsBaseGraph(this ITypeSymbol graphExtension, PXContext pxContext,
-																							      bool includeActionsFromInheritanceChain = true)
+		public static IEnumerable<INamedTypeSymbol> GetPXActionsFromGraph(this ITypeSymbol graph, PXContext pxContext,
+																		  bool includeActionsFromInheritanceChain = true)
+		{
+			pxContext.ThrowOnNull(nameof(pxContext));
+
+			if (graph?.InheritsFrom(pxContext.PXGraphType) != true)
+				return Enumerable.Empty<INamedTypeSymbol>();
+
+			if (includeActionsFromInheritanceChain)
+			{
+				return graph.GetBaseTypesAndThis()
+							.TakeWhile(baseGraph => !baseGraph.IsGraphBaseType())
+							.Reverse()
+							.SelectMany(baseGraph => baseGraph.GetPXActionsFromGraphOrGraphExtensionImpl(pxContext));
+			}
+			else
+				return graph.GetPXActionsFromGraphOrGraphExtensionImpl(pxContext);
+		}
+
+		/// <summary>
+		/// Gets all declared actions from graph extension and its base graph extensions if there is a class hierarchy and <paramref name="includeActionsFromInheritanceChain"/> parameter is <c>true</c>.
+		/// Does not include actions from extension's graph.
+		/// </summary>
+		/// <param name="graphExtension">The graph extension to act on.</param>
+		/// <param name="pxContext">Context.</param>
+		/// <param name="includeActionsFromInheritanceChain">(Optional) True to include, false to exclude the actions from inheritance chain.</param>
+		/// <returns/>
+		public static IEnumerable<INamedTypeSymbol> GetPXActionsFromGraphExtension(this ITypeSymbol graphExtension, PXContext pxContext,
+																				   bool includeActionsFromInheritanceChain = true)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
 			if (graphExtension?.InheritsFrom(pxContext.PXGraphExtensionType) != true)
 				return Enumerable.Empty<INamedTypeSymbol>();
 
-			var graphExtensionActions = graphExtension.GetPXActionsFromGraphOrGraphExtensionImpl(pxContext);
-			var graph = graphExtension.GetGraphFromGraphExtension(pxContext);
-
-			if (graph == null)
-				return graphExtensionActions;
-
-			IEnumerable<INamedTypeSymbol> graphActions;
-
 			if (includeActionsFromInheritanceChain)
 			{
-
+				return graphExtension.GetBaseTypesAndThis()
+									 .TakeWhile(baseGraphExt => !baseGraphExt.IsGraphExtensionBaseType())
+									 .Reverse()
+									 .SelectMany(baseGraphExt => baseGraphExt.GetPXActionsFromGraphOrGraphExtensionImpl(pxContext));
 			}
 			else
-			{
-				graphActions = graph.GetPXActionsFromGraphOrGraphExtensionImpl(pxContext);
-			}
-
-			return graphActions.Concat(graphExtensionActions);
+				return graphExtension.GetPXActionsFromGraphOrGraphExtensionImpl(pxContext);
 		}
-
-		/// <summary>Gets the PXActions from the base graph of the <paramref name="graphExtension"/> graph extensions.</summary>
+		
+		/// <summary>
+		/// Gets the PXActions declared on the graph extension and its base graph.
+		/// </summary>
 		/// <param name="graphExtension">The graph extension to act on.</param>
 		/// <param name="pxContext">Context.</param>
+		/// <param name="includeActionsFromExtensionInheritanceChain">(Optional) True to include, false to exclude the actions from extension inheritance chain.</param>
+		/// <param name="includeActionsFromGraphInheritanceChain">(Optional) True to include, false to exclude the actions from graph inheritance chain.</param>
 		/// <returns/>
-		public static IEnumerable<INamedTypeSymbol> GetPXActionsFromBaseGraphOfGraphExtension(this ITypeSymbol graphExtension, PXContext pxContext) =>
-			graphExtension?.GetGraphFromGraphExtension(pxContext)
-						  ?.GetPXActionsFromGraphOrGraphExtensionImpl(pxContext) ?? Enumerable.Empty<INamedTypeSymbol>();
+		public static IEnumerable<INamedTypeSymbol> GetPXActionsFromGraphExtensionAndItsBaseGraph(this ITypeSymbol graphExtension, PXContext pxContext,
+																							      bool includeActionsFromExtensionInheritanceChain = true,
+																								  bool includeActionsFromGraphInheritanceChain = true)
+		{
+			var extensionActions = graphExtension.GetPXActionsFromGraphExtension(pxContext, includeActionsFromExtensionInheritanceChain);
+			ITypeSymbol graph = graphExtension.GetGraphFromGraphExtension(pxContext);
+
+			if (graph == null)
+				return extensionActions;
+
+			var graphActions = graph.GetPXActionsFromGraph(pxContext, includeActionsFromGraphInheritanceChain);
+			return graphActions.Concat(extensionActions);
+		}
 
 		private static IEnumerable<INamedTypeSymbol> GetPXActionsFromGraphOrGraphExtensionImpl(this ITypeSymbol graphOrExtension, PXContext pxContext)
 		{
@@ -149,6 +236,7 @@ namespace Acuminator.Utilities
 				}
 			}
 		}
+		#endregion
 
 		public static bool IsDelegateForViewInPXGraph(this IMethodSymbol method, PXContext pxContext)
 		{
@@ -208,7 +296,7 @@ namespace Acuminator.Utilities
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private static bool IsGraphExtensionBaseType(ITypeSymbol type)
+		private static bool IsGraphExtensionBaseType(this ITypeSymbol type)
 		{
 			string typeNameWithoutGenericArgsCount = type.Name.Split('`')[0];
 			return typeNameWithoutGenericArgsCount.Equals(TypeNames.PXGraphExtension, StringComparison.Ordinal);
