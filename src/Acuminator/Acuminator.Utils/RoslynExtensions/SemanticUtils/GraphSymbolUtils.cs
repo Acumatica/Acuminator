@@ -45,25 +45,45 @@ namespace Acuminator.Utilities
 				return Enumerable.Empty<INamedTypeSymbol>();
 			}
 
-			return GetAllViewTypesFromPXGraphOrPXGraphExtensionImpl();
+			return GetAllViewTypesFromPXGraphOrPXGraphExtensionImpl(graphOrExtension, pxContext);			
+		}
 
+		public static IEnumerable<INamedTypeSymbol> GetAllViewsFromThisAndBaseGraphs(this ITypeSymbol graph, PXContext pxContext)
+		{
+			pxContext.ThrowOnNull(nameof(pxContext));
 
-			//*********************************************Local Funcations*****************************************************************
-			IEnumerable<INamedTypeSymbol> GetAllViewTypesFromPXGraphOrPXGraphExtensionImpl()
+			if (graph == null || !graph.InheritsFrom(pxContext.PXGraphType))
+				return Enumerable.Empty<INamedTypeSymbol>();
+
+			return graph.GetBaseTypesAndThis()
+						.TakeWhile(baseGraph => !IsGraphOrGraphExtensionBaseType(baseGraph))
+						.Reverse()
+						.SelectMany(baseGraph => GetAllViewTypesFromPXGraphOrPXGraphExtensionImpl(baseGraph, pxContext));
+
+			//****************************Local Function************************************************************
+			bool IsGraphOrGraphExtensionBaseType(ITypeSymbol type)
 			{
-				foreach (ISymbol member in graphOrExtension.GetMembers())
+				string typeNameWithoutGenericArgsCount = type.Name.Split('`')[0];
+				return typeNameWithoutGenericArgsCount.Equals(TypeNames.PXGraph, StringComparison.Ordinal) ||
+					   typeNameWithoutGenericArgsCount.Equals(TypeNames.PXGraphExtension, StringComparison.Ordinal);
+			}
+		}
+
+		private static IEnumerable<INamedTypeSymbol> GetAllViewTypesFromPXGraphOrPXGraphExtensionImpl(ITypeSymbol graphOrExtension,
+																									  PXContext pxContext)
+		{
+			foreach (ISymbol member in graphOrExtension.GetMembers())
+			{
+				switch (member)
 				{
-					switch (member)
-					{
-						case IFieldSymbol field
-						when field.Type is INamedTypeSymbol fieldType && fieldType.InheritsFrom(pxContext.PXSelectBaseType):
-							yield return fieldType;
-							continue;
-						case IPropertySymbol property
-						when property.Type is INamedTypeSymbol propertyType && propertyType.InheritsFrom(pxContext.PXSelectBaseType):
-							yield return propertyType;
-							continue;
-					}
+					case IFieldSymbol field
+					when field.Type is INamedTypeSymbol fieldType && fieldType.InheritsFrom(pxContext.PXSelectBaseType):
+						yield return fieldType;
+						continue;
+					case IPropertySymbol property
+					when property.Type is INamedTypeSymbol propertyType && propertyType.InheritsFrom(pxContext.PXSelectBaseType):
+						yield return propertyType;
+						continue;
 				}
 			}
 		}

@@ -157,15 +157,6 @@ namespace Acuminator.Analyzers
 		//	return GetMainDacFromPXGraph(pxGraphType, pxContext, cancellationToken);
 		//}
 
-
-
-		private static bool IsGraphOrGraphExtensionBaseType(ITypeSymbol type)
-		{
-			string typeNameWithoutGenericArgsCount = type.Name.Split('`')[0];
-			return typeNameWithoutGenericArgsCount.Equals(TypeNames.PXGraph, StringComparison.Ordinal) ||
-				   typeNameWithoutGenericArgsCount.Equals(TypeNames.PXGraphExtension, StringComparison.Ordinal);
-		}
-
 		private static Location GetLocation(SyntaxNode symbolSyntax)
 		{
 			switch (symbolSyntax)
