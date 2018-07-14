@@ -58,15 +58,7 @@ namespace Acuminator.Utilities
 			return graph.GetBaseTypesAndThis()
 						.TakeWhile(baseGraph => !IsGraphOrGraphExtensionBaseType(baseGraph))
 						.Reverse()
-						.SelectMany(baseGraph => GetAllViewTypesFromPXGraphOrPXGraphExtensionImpl(baseGraph, pxContext));
-
-			//****************************Local Function************************************************************
-			bool IsGraphOrGraphExtensionBaseType(ITypeSymbol type)
-			{
-				string typeNameWithoutGenericArgsCount = type.Name.Split('`')[0];
-				return typeNameWithoutGenericArgsCount.Equals(TypeNames.PXGraph, StringComparison.Ordinal) ||
-					   typeNameWithoutGenericArgsCount.Equals(TypeNames.PXGraphExtension, StringComparison.Ordinal);
-			}
+						.SelectMany(baseGraph => GetAllViewTypesFromPXGraphOrPXGraphExtensionImpl(baseGraph, pxContext));			
 		}
 
 		private static IEnumerable<INamedTypeSymbol> GetAllViewTypesFromPXGraphOrPXGraphExtensionImpl(ITypeSymbol graphOrExtension,
@@ -101,7 +93,13 @@ namespace Acuminator.Utilities
 			return graphOrExtension.GetPXActionsFromGraphOrGraphExtensionImpl(pxContext);
 		}
 
-		public static IEnumerable<INamedTypeSymbol> GetPXActionsFromGraphExtensionAndItsBaseGraph(this ITypeSymbol graphExtension, PXContext pxContext)
+		/// <summary>Gets the PXActions declared on the graph extension and its base graphs in this collection.d.</summary>
+		/// <param name="graphExtension">The graph extension to act on.</param>
+		/// <param name="pxContext">Context.</param>
+		/// <param name="includeActionsFromInheritanceChain">(Optional) True to include, false to exclude the actions from the inheritance chain.</param>
+		/// <returns/>
+		public static IEnumerable<INamedTypeSymbol> GetPXActionsFromGraphExtensionAndItsBaseGraph(this ITypeSymbol graphExtension, PXContext pxContext,
+																							      bool includeActionsFromInheritanceChain = true)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
@@ -114,9 +112,27 @@ namespace Acuminator.Utilities
 			if (graph == null)
 				return graphExtensionActions;
 
-			var graphActions = graph.GetPXActionsFromGraphOrGraphExtensionImpl(pxContext);
+			IEnumerable<INamedTypeSymbol> graphActions;
+
+			if (includeActionsFromInheritanceChain)
+			{
+
+			}
+			else
+			{
+				graphActions = graph.GetPXActionsFromGraphOrGraphExtensionImpl(pxContext);
+			}
+
 			return graphActions.Concat(graphExtensionActions);
 		}
+
+		/// <summary>Gets the PXActions from the base graph of the <paramref name="graphExtension"/> graph extensions.</summary>
+		/// <param name="graphExtension">The graph extension to act on.</param>
+		/// <param name="pxContext">Context.</param>
+		/// <returns/>
+		public static IEnumerable<INamedTypeSymbol> GetPXActionsFromBaseGraphOfGraphExtension(this ITypeSymbol graphExtension, PXContext pxContext) =>
+			graphExtension?.GetGraphFromGraphExtension(pxContext)
+						  ?.GetPXActionsFromGraphOrGraphExtensionImpl(pxContext) ?? Enumerable.Empty<INamedTypeSymbol>();
 
 		private static IEnumerable<INamedTypeSymbol> GetPXActionsFromGraphOrGraphExtensionImpl(this ITypeSymbol graphOrExtension, PXContext pxContext)
 		{
@@ -174,6 +190,28 @@ namespace Acuminator.Utilities
 				return null;
 
 			return baseViewType.TypeArguments[0];
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static bool IsGraphOrGraphExtensionBaseType(this ITypeSymbol type)
+		{
+			string typeNameWithoutGenericArgsCount = type.Name.Split('`')[0];
+			return typeNameWithoutGenericArgsCount.Equals(TypeNames.PXGraph, StringComparison.Ordinal) ||
+				   typeNameWithoutGenericArgsCount.Equals(TypeNames.PXGraphExtension, StringComparison.Ordinal);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static bool IsGraphBaseType(this ITypeSymbol type)
+		{
+			string typeNameWithoutGenericArgsCount = type.Name.Split('`')[0];
+			return typeNameWithoutGenericArgsCount.Equals(TypeNames.PXGraph, StringComparison.Ordinal);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static bool IsGraphExtensionBaseType(ITypeSymbol type)
+		{
+			string typeNameWithoutGenericArgsCount = type.Name.Split('`')[0];
+			return typeNameWithoutGenericArgsCount.Equals(TypeNames.PXGraphExtension, StringComparison.Ordinal);
 		}
 	}
 }
