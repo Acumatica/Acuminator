@@ -49,7 +49,9 @@ namespace Acuminator.Analyzers
 			if (!isGraph && !graphOrGraphExtension.InheritsFrom(pxContext.PXGraphExtensionType))
 				return;
 
-			var declaredActions = graphOrGraphExtension.GetPXActionsFromGraphOrGraphExtension(pxContext);
+			var declaredActions = isGraph 
+				? graphOrGraphExtension.GetPXActionsFromGraph(pxContext, includeActionsFromInheritanceChain: false)
+				: graphOrGraphExtension.GetPXActionsFromGraphExtension(pxContext, includeActionsFromInheritanceChain: false);
 
 			if (declaredActions.IsNullOrEmpty() || symbolContext.CancellationToken.IsCancellationRequested)
 				return;

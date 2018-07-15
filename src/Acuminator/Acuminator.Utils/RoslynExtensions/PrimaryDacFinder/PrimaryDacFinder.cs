@@ -29,29 +29,33 @@ namespace Acuminator.Utilities.PrimaryDAC
 
 		public SemanticModel SemanticModel { get; }
 
-		
-
 		public INamedTypeSymbol Graph { get; }
-
-		private readonly List<(ISymbol View, INamedTypeSymbol ViewType)> graphViews;
-		private readonly Dictionary<string, INamedTypeSymbol> graphViewsByName;
 
 		public ImmutableDictionary<string, INamedTypeSymbol> GraphActionsByName { get; }
 
+		private readonly List<(ISymbol View, INamedTypeSymbol ViewType)> graphViewSymbolsWithTypes;
 		private readonly Dictionary<ITypeSymbol, double> dacWithScores;
 
 		private readonly List<PrimaryDacRuleBase> absoluteRules;
-
 		private readonly List<PrimaryDacRuleBase> heuristicRules;
 
 		private PrimaryDacFinder(PXContext pxContext, SemanticModel semanticModel, INamedTypeSymbol graph,
-								 ImmutableArray<PrimaryDacRuleBase> rules, CancellationToken cancellationToken)
+								 ImmutableArray<PrimaryDacRuleBase> rules, CancellationToken cancellationToken,
+								 IEnumerable<(ISymbol View, INamedTypeSymbol ViewType)> viewSymbolsWithTypes,
+								 IEnumerable<INamedTypeSymbol> graphActions)
 		{
 			SemanticModel = semanticModel;
 			PxContext = pxContext;
 			Graph = graph;
-			CancellationToken = cancellationToken;
+			CancellationToken = cancellationToken;	
+			GraphActionsByName = graphActions.ToImmutableDictionary(action => action.Name);
 
+			graphViewSymbolsWithTypes = viewSymbolsWithTypes.ToList();
+			dacWithScores = graphViewSymbolsWithTypes.Select(viewWithType => viewWithType.ViewType.GetDacFromView(PxContext))
+													 .Where(dac => dac != null)
+													 .Distinct()
+													 .ToDictionary(dac => dac, 
+																   dac => 0.0);
 			absoluteRules = rules.Where(rule => rule.IsAbsolute).ToList();
 			heuristicRules = rules.Where(rule => !rule.IsAbsolute).ToList();
 		}
@@ -80,25 +84,16 @@ namespace Acuminator.Utilities.PrimaryDAC
 			if (rules.Length == 0 || cancellationToken.IsCancellationRequested)
 				return null;
 
-			var allActions = GetAllActionsFromGraphOrGraphExtension(graphOrGraphExtension, pxContext, isGraph, cancellationToken);
+			var allGraphActions = graph.GetPXActionsFromGraph(pxContext);
 
-			if (allActions == null || cancellationToken.IsCancellationRequested)
-				return null;
-
-			return new PrimaryDacFinder(pxContext, semanticModel, graph, rules, cancellationToken);
-		}
-
-		private static IEnumerable<INamedTypeSymbol> GetAllActionsFromGraphOrGraphExtension(INamedTypeSymbol graphOrGraphExtension, PXContext pxContext,
-																							bool isGraph, CancellationToken cancellationToken)
-		{
 			if (cancellationToken.IsCancellationRequested)
 				return null;
 
-			var actions = isGraph
-				? graphOrGraphExtension.GetPXActionsFromGraphOrGraphExtension(pxContext)
-				: graphOrGraphExtension.GetPXActionsFromGraphExtensionAndItsBaseGraph(pxContext);
+			var allViewSymbolsWithTypes = isGraph 
+				? graphOrGraphExtension.GetViewsWithSymbolsFromPXGraph(pxContext) 
+				: graphOrGraphExtension.GetViewSymbolsWithTypesFromGraphExtensionAndItsBaseGraph(pxContext);
 
-			return actions.Where(action => action.IsGenericType);
+			return new PrimaryDacFinder(pxContext, semanticModel, graph, rules, cancellationToken);
 		}
 
 		public ITypeSymbol FindPrimaryDAC()
@@ -166,10 +161,10 @@ namespace Acuminator.Utilities.PrimaryDAC
 
 		private IEnumerable<ITypeSymbol> GetCandidatesFromViewRule(ViewRuleBase viewRule)
 		{
-			if (graphViews.Count == 0 || CancellationToken.IsCancellationRequested)
+			if (graphViewSymbolsWithTypes.Count == 0 || CancellationToken.IsCancellationRequested)
 				return null;
 
-			var dacCandidates = from viewWithType in graphViews.TakeWhile(v => !CancellationToken.IsCancellationRequested)
+			var dacCandidates = from viewWithType in graphViewSymbolsWithTypes.TakeWhile(v => !CancellationToken.IsCancellationRequested)
 								where viewRule.SatisfyRule(this, viewWithType.View, viewWithType.ViewType)
 								select viewWithType.ViewType.GetDacFromView(PxContext);
 
