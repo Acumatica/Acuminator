@@ -154,6 +154,25 @@ namespace Acuminator.Analyzers
 			public INamedTypeSymbol IBqlParameter => compilation.GetTypeByMetadataName(typeof(IBqlParameter).FullName);
 
 			public INamedTypeSymbol PXSelectBaseGenericType => compilation.GetTypeByMetadataName(typeof(PXSelectBase<>).FullName);
+
+			#region PXSetup
+			public INamedTypeSymbol PXSetup => compilation.GetTypeByMetadataName(typeof(PXSetup<>).FullName);
+
+			public INamedTypeSymbol PXSetupWhere => compilation.GetTypeByMetadataName(typeof(PXSetup<,>).FullName);
+
+			public INamedTypeSymbol PXSetupJoin => compilation.GetTypeByMetadataName(typeof(PXSetup<,,>).FullName);
+
+			public INamedTypeSymbol PXSetupSelect => compilation.GetTypeByMetadataName(typeof(PXSetupSelect<>).FullName);
+
+			public ImmutableArray<INamedTypeSymbol> GetPXSetupTypes() =>
+				ImmutableArray.Create
+				(
+					PXSetup,
+					PXSetupWhere,
+					PXSetupJoin,
+					PXSetupSelect
+				);
+			#endregion
 		}
         #endregion
     }

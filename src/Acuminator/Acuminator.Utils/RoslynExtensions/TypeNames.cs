@@ -56,6 +56,10 @@ namespace Acuminator.Utilities
 
 		public static readonly string PXActionGeneric = typeof(PXAction).Name + "`1";
 
+		public const string PXSelectReadonly = nameof(PXSelectReadonly<DummyDac>);
+		public const string PXSelectReadonly2 = nameof(PXSelectReadonly2);
+		public const string PXSelectReadonly3 = nameof(PXSelectReadonly3);
+
 		public static Dictionary<string, PXCodeType> TypeNamesToCodeTypesForIdentifier { get; } =
 			new Dictionary<string, PXCodeType>
 			{
@@ -93,5 +97,13 @@ namespace Acuminator.Utilities
 			PXGraph,
 			PXGraphGeneric
 		};
+
+		public static HashSet<string> ReadOnlySelects { get; } =
+			new HashSet<string>
+			{
+				PXSelectReadonly,
+				PXSelectReadonly2,
+				PXSelectReadonly3
+			};
 	}
 }

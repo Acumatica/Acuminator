@@ -109,6 +109,7 @@
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\GraphRules\PrimaryDacSpecifiedGraphRule.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\RulesProvider\DefaultRulesProvider.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\RulesProvider\IRulesProvider.cs" />
+    <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\ViewRules\NoPXSetupRule.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\ViewRules\ForbiddenWordsInNameRule.cs" />
     <Compile Include="RoslynExtensions\PXFieldAttributes\FieldAttributeInfo.cs" />
     <Compile Include="RoslynExtensions\PXFieldAttributes\FieldAttributesRegister.cs" />

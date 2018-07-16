@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Runtime.CompilerServices;
@@ -248,6 +249,29 @@ namespace Acuminator.Utilities
 			const int bqlCommandBaseStandartDepth = 2;
 			int? bqlCommandDepth = bqlTypeSymbol.GetInheritanceDepth(context.BQL.BqlCommand);
 			return bqlCommandDepth > bqlCommandBaseStandartDepth;
+		}
+
+		public static bool IsPXSelectReadOnlyCommand(this ITypeSymbol bqlTypeSymbol, PXContext context)
+		{
+			bqlTypeSymbol.ThrowOnNull(nameof(bqlTypeSymbol));
+			context.ThrowOnNull(nameof(context));
+
+			if (!bqlTypeSymbol.IsBqlCommand(context))
+				return false;
+
+			return bqlTypeSymbol.GetBaseTypesAndThis()
+								.Select(type => type.Name.Split('`').FirstOrDefault())
+								.Any(typeName => TypeNames.ReadOnlySelects.Contains(typeName));
+		}
+
+		public static bool IsPXSetupBqlCommand(this ITypeSymbol bqlTypeSymbol, PXContext context)
+		{
+			bqlTypeSymbol.ThrowOnNull(nameof(bqlTypeSymbol));
+			context.ThrowOnNull(nameof(context));
+
+			ImmutableArray<INamedTypeSymbol> setupTypes = context.BQL.PXSetupTypes;
+			return bqlTypeSymbol.GetBaseTypesAndThis()
+								.Any(type => setupTypes.Contains(type));
 		}
 
 		public static TextSpan? GetBqlOperatorOutliningTextSpan(this ITypeSymbol typeSymbol, GenericNameSyntax bqlOperatorNode)

@@ -17,17 +17,25 @@ namespace Acuminator.Utilities.PrimaryDAC
 		private const int First_5_ViewWeight = 15;
 		private const int First_10_ViewWeight = 10;
 
-		private readonly ImmutableArray<PrimaryDacRuleBase> rules = new List<PrimaryDacRuleBase>
+		private readonly ImmutableArray<PrimaryDacRuleBase> rules;
+
+		public DefaultRulesProvider(PXContext context)
 		{
-			new PrimaryDacSpecifiedGraphRule(),
+			context.ThrowOnNull(nameof(context));
 
-			new FirstViewsInGraphRule(numberOfViews: 1, weight: First_1_ViewWeight),
-			new FirstViewsInGraphRule(numberOfViews: 5, weight: First_5_ViewWeight),
-			new FirstViewsInGraphRule(numberOfViews: 10, weight: First_10_ViewWeight),
+			rules = new List<PrimaryDacRuleBase>
+			{
+				new PrimaryDacSpecifiedGraphRule(),
 
-			new ForbiddenWordsInNameRule()
+				new FirstViewsInGraphRule(numberOfViews: 1, weight: First_1_ViewWeight),
+				new FirstViewsInGraphRule(numberOfViews: 5, weight: First_5_ViewWeight),
+				new FirstViewsInGraphRule(numberOfViews: 10, weight: First_10_ViewWeight),
+
+				new ForbiddenWordsInNameRule(),
+				new NoPXSetupRule(context)
+			}
+			.ToImmutableArray();
 		}
-		.ToImmutableArray();
 
 		public ImmutableArray<PrimaryDacRuleBase> GetRules() => rules;
 	}
