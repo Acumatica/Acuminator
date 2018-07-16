@@ -47,7 +47,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 		/// <returns/>
 		public sealed override bool SatisfyRule(PrimaryDacFinder dacFinder, ISymbol view, INamedTypeSymbol viewType)
 		{
-			if (dacFinder == null || viewType == null)
+			if (dacFinder == null || viewType == null || dacFinder.CancellationToken.IsCancellationRequested)
 				return false;
 
 			return viewType.GetBaseTypesAndThis()

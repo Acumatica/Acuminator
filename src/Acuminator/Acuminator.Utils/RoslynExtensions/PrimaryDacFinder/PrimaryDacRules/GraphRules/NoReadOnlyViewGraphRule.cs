@@ -35,7 +35,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 
 		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder, INamedTypeSymbol graph)
 		{
-			if (dacFinder == null || graph == null)
+			if (dacFinder == null || graph == null || dacFinder.CancellationToken.IsCancellationRequested)
 				return Enumerable.Empty<ITypeSymbol>();
 
 			List<INamedTypeSymbol> readOnlyViews = new List<INamedTypeSymbol>(capacity: 4);
@@ -43,13 +43,16 @@ namespace Acuminator.Utilities.PrimaryDAC
 
 			foreach (var viewWithType in dacFinder.GraphViewSymbolsWithTypes)
 			{
+				if (dacFinder.CancellationToken.IsCancellationRequested)
+					return Enumerable.Empty<ITypeSymbol>();
+
 				if (viewWithType.ViewType.IsReadOnlyBqlCommand(dacFinder.PxContext))
 					readOnlyViews.Add(viewWithType.ViewType);
 				else
 					editableViews.Add(viewWithType.ViewType);
 			}
 
-			if (editableViews.Count == 0)
+			if (editableViews.Count == 0 || dacFinder.CancellationToken.IsCancellationRequested)
 				return Enumerable.Empty<ITypeSymbol>();
 
 			return readOnlyViews.Select(viewType => viewType.GetDacFromView(dacFinder.PxContext));

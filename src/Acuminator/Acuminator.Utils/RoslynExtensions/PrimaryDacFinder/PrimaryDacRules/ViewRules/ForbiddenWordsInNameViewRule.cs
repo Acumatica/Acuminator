@@ -20,7 +20,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 	/// <summary>
 	/// A rule to filter out views which contain forbidden words.
 	/// </summary>
-	public class ForbiddenWordsInNameRule : ViewRuleBase
+	public class ForbiddenWordsInNameViewRule : ViewRuleBase
 	{
 		private const double DefaultWeight = -15;
 
@@ -30,7 +30,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 
 		public override double Weight { get; }
 
-		public ForbiddenWordsInNameRule(IEnumerable<string> wordsToForbid = null, double? weight = null)
+		public ForbiddenWordsInNameViewRule(IEnumerable<string> wordsToForbid = null, double? weight = null)
 		{
 			Weight = weight ?? DefaultWeight;
 			forbiddenWords = wordsToForbid.IsNullOrEmpty() 

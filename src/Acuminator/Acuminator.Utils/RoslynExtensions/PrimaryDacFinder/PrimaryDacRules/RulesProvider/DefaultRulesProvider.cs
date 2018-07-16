@@ -32,7 +32,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 				new FirstViewsInGraphRule(numberOfViews: 10, weight: First_10_ViewWeight),
 				new NoReadOnlyViewGraphRule(),
 
-				new ForbiddenWordsInNameRule(),
+				new ForbiddenWordsInNameViewRule(),
 				new NoPXSetupViewRule(context)
 			}
 			.ToImmutableArray();

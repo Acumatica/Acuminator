@@ -44,8 +44,11 @@ namespace Acuminator.Utilities.PrimaryDAC
 
 		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder, INamedTypeSymbol graph)
 		{
-			if (graph == null || dacFinder == null || dacFinder.GraphViewSymbolsWithTypes.Length == 0)
+			if (graph == null || dacFinder == null || dacFinder.GraphViewSymbolsWithTypes.Length == 0 ||
+				dacFinder.CancellationToken.IsCancellationRequested)
+			{
 				return Enumerable.Empty<ITypeSymbol>();
+			}
 
 			return dacFinder.GraphViewSymbolsWithTypes.Take(NumberOfViews)
 													  .Select(viewWithType => viewWithType.ViewType.GetDacFromView(dacFinder.PxContext))
