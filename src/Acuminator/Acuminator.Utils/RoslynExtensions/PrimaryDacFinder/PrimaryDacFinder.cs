@@ -33,7 +33,8 @@ namespace Acuminator.Utilities.PrimaryDAC
 
 		public ImmutableDictionary<string, INamedTypeSymbol> GraphActionsByName { get; }
 
-		private readonly List<(ISymbol View, INamedTypeSymbol ViewType)> graphViewSymbolsWithTypes;
+		public ImmutableArray<(ISymbol View, INamedTypeSymbol ViewType)> GraphViewSymbolsWithTypes { get; }
+
 		private readonly Dictionary<ITypeSymbol, double> dacWithScores;
 
 		private readonly List<PrimaryDacRuleBase> absoluteRules;
@@ -50,12 +51,12 @@ namespace Acuminator.Utilities.PrimaryDAC
 			CancellationToken = cancellationToken;	
 			GraphActionsByName = graphActions.ToImmutableDictionary(action => action.Name);
 
-			graphViewSymbolsWithTypes = viewSymbolsWithTypes.ToList();
-			dacWithScores = graphViewSymbolsWithTypes.Select(viewWithType => viewWithType.ViewType.GetDacFromView(PxContext))
+			GraphViewSymbolsWithTypes = viewSymbolsWithTypes.ToImmutableArray();
+			dacWithScores = GraphViewSymbolsWithTypes.Select(viewWithType => viewWithType.ViewType.GetDacFromView(PxContext))
 													 .Where(dac => dac != null)
 													 .Distinct()
-													 .ToDictionary(dac => dac, 
-																   dac => 0.0);
+													 .ToDictionary(dac => dac, dac => 0.0);
+
 			absoluteRules = rules.Where(rule => rule.IsAbsolute).ToList();
 			heuristicRules = rules.Where(rule => !rule.IsAbsolute).ToList();
 		}
@@ -93,7 +94,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 				? graphOrGraphExtension.GetViewsWithSymbolsFromPXGraph(pxContext) 
 				: graphOrGraphExtension.GetViewSymbolsWithTypesFromGraphExtensionAndItsBaseGraph(pxContext);
 
-			if (allViewSymbolsWithTypes.IsNullOrEmpty() || cancellationToken.IsCancellationRequested)
+			if (cancellationToken.IsCancellationRequested)
 				return null;
 
 			return new PrimaryDacFinder(pxContext, semanticModel, graph, rules, cancellationToken, allViewSymbolsWithTypes, allGraphActions);
@@ -153,21 +154,22 @@ namespace Acuminator.Utilities.PrimaryDAC
 			if (dacCandidates == null)
 				return null;
 
+			var dacCandidatesList = dacCandidates.Distinct().ToList();
 			ITypeSymbol primaryDac = null;
 
-			if (rule.IsAbsolute && dacCandidates.IsSingle())
-				primaryDac = dacCandidates.Single();
+			if (rule.IsAbsolute && dacCandidatesList.Count == 1)
+				primaryDac = dacCandidatesList[0];
 
-			ScoreRuleForCandidates(dacCandidates, rule);
+			ScoreRuleForCandidates(dacCandidatesList, rule);
 			return primaryDac;
 		}
 
 		private IEnumerable<ITypeSymbol> GetCandidatesFromViewRule(ViewRuleBase viewRule)
 		{
-			if (graphViewSymbolsWithTypes.Count == 0 || CancellationToken.IsCancellationRequested)
+			if (GraphViewSymbolsWithTypes.Length == 0 || CancellationToken.IsCancellationRequested)
 				return null;
 
-			var dacCandidates = from viewWithType in graphViewSymbolsWithTypes.TakeWhile(v => !CancellationToken.IsCancellationRequested)
+			var dacCandidates = from viewWithType in GraphViewSymbolsWithTypes
 								where viewRule.SatisfyRule(this, viewWithType.View, viewWithType.ViewType)
 								select viewWithType.ViewType.GetDacFromView(PxContext);
 
