@@ -84,7 +84,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 			if (rules.Length == 0 || cancellationToken.IsCancellationRequested)
 				return null;
 
-			var allGraphActions = graph.GetPXActionsFromGraph(pxContext);
+			IEnumerable<INamedTypeSymbol> allGraphActions = graph.GetPXActionsFromGraph(pxContext);
 
 			if (cancellationToken.IsCancellationRequested)
 				return null;
@@ -93,7 +93,10 @@ namespace Acuminator.Utilities.PrimaryDAC
 				? graphOrGraphExtension.GetViewsWithSymbolsFromPXGraph(pxContext) 
 				: graphOrGraphExtension.GetViewSymbolsWithTypesFromGraphExtensionAndItsBaseGraph(pxContext);
 
-			return new PrimaryDacFinder(pxContext, semanticModel, graph, rules, cancellationToken);
+			if (allViewSymbolsWithTypes.IsNullOrEmpty() || cancellationToken.IsCancellationRequested)
+				return null;
+
+			return new PrimaryDacFinder(pxContext, semanticModel, graph, rules, cancellationToken, allViewSymbolsWithTypes, allGraphActions);
 		}
 
 		public ITypeSymbol FindPrimaryDAC()
@@ -196,7 +199,20 @@ namespace Acuminator.Utilities.PrimaryDAC
 				if (!dacWithScores.TryGetValue(candidate, out double score))
 					continue;
 
-				dacWithScores[candidate] = score + rule.Weight;
+				if (rule.Weight > 0)
+				{
+					if (score <= double.MaxValue - rule.Weight)
+						dacWithScores[candidate] = score + rule.Weight;
+					else
+						dacWithScores[candidate] = double.MaxValue;
+				}
+				else
+				{
+					if (score >= double.MinValue - rule.Weight)
+						dacWithScores[candidate] = score + rule.Weight;
+					else
+						dacWithScores[candidate] = double.MinValue;
+				}			
 			}
 		}
 	}

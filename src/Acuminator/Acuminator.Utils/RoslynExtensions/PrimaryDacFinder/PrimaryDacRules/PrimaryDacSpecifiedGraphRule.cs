@@ -31,16 +31,8 @@ namespace Acuminator.Utilities.PrimaryDAC
 			if (graph == null)
 				return Enumerable.Empty<ITypeSymbol>();
 
-			var baseGraphType = graph.GetBaseTypesAndThis()
-									 .OfType<INamedTypeSymbol>()
-									 .FirstOrDefault(type => IsGraphWithPrimaryDacBaseGenericType(type));
-
-			return baseGraphType != null 
-				? baseGraphType.TypeArguments[1].ToEnumerable()
-				: Enumerable.Empty<ITypeSymbol>();
+			ITypeSymbol primaryDac = graph.GetDeclaredPrimaryDacFromGraphOrGraphExtension(dacFinder.PxContext);
+			return primaryDac?.ToEnumerable() ?? Enumerable.Empty<ITypeSymbol>();
 		}
-
-		private static bool IsGraphWithPrimaryDacBaseGenericType(INamedTypeSymbol type) =>
-			type.TypeArguments.Length >= 2 && type.Name.Equals(TypeNames.PXGraph, StringComparison.Ordinal);	
 	}
 }
