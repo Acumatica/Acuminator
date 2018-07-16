@@ -79,7 +79,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 			if (graph == null || cancellationToken.IsCancellationRequested)
 				return null;
 
-			rulesProvider = rulesProvider ?? new DefaultRulesProvider();
+			rulesProvider = rulesProvider ?? new DefaultRulesProvider(pxContext);
 			var rules = rulesProvider.GetRules();
 
 			if (rules.Length == 0 || cancellationToken.IsCancellationRequested)

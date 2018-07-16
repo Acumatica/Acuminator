@@ -155,6 +155,10 @@ namespace Acuminator.Analyzers
 
 			public INamedTypeSymbol PXSelectBaseGenericType => compilation.GetTypeByMetadataName(typeof(PXSelectBase<>).FullName);
 
+			public INamedTypeSymbol PXFilter => compilation.GetTypeByMetadataName(typeof(PXFilter<>).FullName);
+
+			public INamedTypeSymbol IPXNonUpdateable => compilation.GetTypeByMetadataName(typeof(IPXNonUpdateable).FullName); 
+
 			#region PXSetup
 			public INamedTypeSymbol PXSetup => compilation.GetTypeByMetadataName(typeof(PXSetup<>).FullName);
 

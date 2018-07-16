@@ -30,9 +30,10 @@ namespace Acuminator.Utilities.PrimaryDAC
 				new FirstViewsInGraphRule(numberOfViews: 1, weight: First_1_ViewWeight),
 				new FirstViewsInGraphRule(numberOfViews: 5, weight: First_5_ViewWeight),
 				new FirstViewsInGraphRule(numberOfViews: 10, weight: First_10_ViewWeight),
+				new NoReadOnlyViewGraphRule(),
 
 				new ForbiddenWordsInNameRule(),
-				new NoPXSetupRule(context)
+				new NoPXSetupViewRule(context)
 			}
 			.ToImmutableArray();
 		}

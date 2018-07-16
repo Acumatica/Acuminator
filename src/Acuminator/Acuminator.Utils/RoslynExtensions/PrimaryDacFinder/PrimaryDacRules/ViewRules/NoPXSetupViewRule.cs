@@ -20,16 +20,17 @@ namespace Acuminator.Utilities.PrimaryDAC
 	/// <summary>
 	/// A rule to filter out views which are PXSetup.
 	/// </summary>
-	public class NoPXSetupRule : ViewRuleBase
+	public class NoPXSetupViewRule : ViewRuleBase
 	{
 		private const double DefaultWeight = -40;
-		private readonly ImmutableArray<INamedTypeSymbol> setupTypes;
 
 		public sealed override bool IsAbsolute => false;
 
 		public override double Weight { get; }
 
-		public NoPXSetupRule(PXContext context, double? weight = null)
+		private readonly ImmutableArray<INamedTypeSymbol> setupTypes;
+
+		public NoPXSetupViewRule(PXContext context, double? weight = null)
 		{
 			context.ThrowOnNull(nameof(context));
 
@@ -38,7 +39,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 		}
 		
 		/// <summary>
-		/// Query if view type is PXSetup-kind. 
+		/// Query if view type is PXSetup-like. 
 		/// </summary>
 		/// <param name="dacFinder">The DAC finder.</param>
 		/// <param name="view">The view.</param>

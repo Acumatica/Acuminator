@@ -251,12 +251,11 @@ namespace Acuminator.Utilities
 			return bqlCommandDepth > bqlCommandBaseStandartDepth;
 		}
 
-		public static bool IsPXSelectReadOnlyCommand(this ITypeSymbol bqlTypeSymbol, PXContext context)
+		public static bool IsPXSelectReadOnlyCommand(this ITypeSymbol bqlTypeSymbol)
 		{
 			bqlTypeSymbol.ThrowOnNull(nameof(bqlTypeSymbol));
-			context.ThrowOnNull(nameof(context));
 
-			if (!bqlTypeSymbol.IsBqlCommand(context))
+			if (!bqlTypeSymbol.IsBqlCommand())
 				return false;
 
 			return bqlTypeSymbol.GetBaseTypesAndThis()
@@ -264,12 +263,23 @@ namespace Acuminator.Utilities
 								.Any(typeName => TypeNames.ReadOnlySelects.Contains(typeName));
 		}
 
+		public static bool IsReadOnlyBqlCommand(this ITypeSymbol bqlTypeSymbol, PXContext context)
+		{
+			bqlTypeSymbol.ThrowOnNull(nameof(bqlTypeSymbol));
+			context.ThrowOnNull(nameof(context));
+
+			if (!bqlTypeSymbol.IsBqlCommand(context))
+				return false;
+
+			return bqlTypeSymbol.ImplementsInterface(context.BQL.IPXNonUpdateable);
+		}
+
 		public static bool IsPXSetupBqlCommand(this ITypeSymbol bqlTypeSymbol, PXContext context)
 		{
 			bqlTypeSymbol.ThrowOnNull(nameof(bqlTypeSymbol));
 			context.ThrowOnNull(nameof(context));
 
-			ImmutableArray<INamedTypeSymbol> setupTypes = context.BQL.PXSetupTypes;
+			ImmutableArray<INamedTypeSymbol> setupTypes = context.BQL.GetPXSetupTypes();
 			return bqlTypeSymbol.GetBaseTypesAndThis()
 								.Any(type => setupTypes.Contains(type));
 		}
