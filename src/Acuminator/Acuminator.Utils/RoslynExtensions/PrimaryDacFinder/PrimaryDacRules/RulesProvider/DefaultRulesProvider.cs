@@ -13,10 +13,10 @@ namespace Acuminator.Utilities.PrimaryDAC
 	/// </summary>
 	internal class DefaultRulesProvider : IRulesProvider
 	{
-		private const int First_1_ViewsWeight = 5;
-		private const int First_3_ViewsWeight = 5;
-		private const int First_5_ViewsWeight = 5;
-		private const int First_10_ViewsWeight = 10;
+		private const double First_1_ViewsWeight = 1;
+		private const double First_3_ViewsWeight = 5;
+		private const double First_5_ViewsWeight = 5;
+		private const double First_10_ViewsWeight = 10;
 
 		private readonly ImmutableArray<PrimaryDacRuleBase> rules;
 
