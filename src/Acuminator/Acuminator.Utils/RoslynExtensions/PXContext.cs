@@ -55,6 +55,8 @@ namespace Acuminator.Analyzers
 		public INamedTypeSymbol PXResult => Compilation.GetTypeByMetadataName(typeof(PXResult).FullName);
 
         public INamedTypeSymbol PXImportAttribute => Compilation.GetTypeByMetadataName(typeof(PXImportAttribute).FullName);
+        public INamedTypeSymbol PXHiddenAttribute => Compilation.GetTypeByMetadataName(typeof(PXHiddenAttribute).FullName);
+        public INamedTypeSymbol PXCopyPasteHiddenViewAttribute => Compilation.GetTypeByMetadataName(typeof(PXCopyPasteHiddenViewAttribute).FullName);
         
         public INamedTypeSymbol PXStringListAttribute => Compilation.GetTypeByMetadataName(typeof(PXStringListAttribute).FullName);
         public INamedTypeSymbol PXIntListAttribute => Compilation.GetTypeByMetadataName(typeof(PXIntListAttribute).FullName);
