@@ -58,7 +58,7 @@ namespace Acuminator.Analyzers
 
 			PrimaryDacFinder primaryDacFinder = PrimaryDacFinder.Create(pxContext, semanticModel, graphOrGraphExtension, 
 																		symbolContext.CancellationToken);
-			ITypeSymbol primaryDAC = primaryDacFinder.FindPrimaryDAC();
+			ITypeSymbol primaryDAC = primaryDacFinder?.FindPrimaryDAC();
 
 			if (primaryDAC == null || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
@@ -76,9 +76,9 @@ namespace Acuminator.Analyzers
 				{ DiagnosticProperty.DacMetadataName, primaryDAC.GetCLRTypeNameFromType() }
 			}.ToImmutableDictionary();
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-			actionsWithWrongDAC.ForEach(a => RegisterDiagnosticForActionAsync(a.ActionSymbol, primaryDAC.Name, diagnosticExtraData, symbolContext));
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+			var registrationTasks = actionsWithWrongDAC.Select(a => RegisterDiagnosticForActionAsync(a.ActionSymbol, primaryDAC.Name, 
+																									 diagnosticExtraData, symbolContext));
+			await Task.WhenAll(registrationTasks);
 		}
 
 		private static bool CheckActionIsDeclaredForPrimaryDAC(INamedTypeSymbol action, ITypeSymbol primaryDAC)

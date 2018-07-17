@@ -26,7 +26,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 
 		protected override double DefaultWeight => 1000;
 
-		public PXImportAttributeGraphRule(double? customWeight) : base(customWeight)
+		public PXImportAttributeGraphRule(double? customWeight = null) : base(customWeight)
 		{
 		}
 

@@ -13,9 +13,10 @@ namespace Acuminator.Utilities.PrimaryDAC
 	/// </summary>
 	internal class DefaultRulesProvider : IRulesProvider
 	{
-		private const int First_2_ViewsWeight = 25;
-		private const int First_5_ViewsWeight = 20;
-		private const int First_10_ViewsWeight = 15;
+		private const int First_1_ViewsWeight = 5;
+		private const int First_3_ViewsWeight = 5;
+		private const int First_5_ViewsWeight = 5;
+		private const int First_10_ViewsWeight = 10;
 
 		private readonly ImmutableArray<PrimaryDacRuleBase> rules;
 
@@ -26,8 +27,10 @@ namespace Acuminator.Utilities.PrimaryDAC
 			rules = new List<PrimaryDacRuleBase>
 			{
 				new PrimaryDacSpecifiedGraphRule(),
+				new PXImportAttributeGraphRule(),
 
-				new FirstViewsInGraphRule(numberOfViews: 2, weight: First_2_ViewsWeight),
+				new FirstViewsInGraphRule(numberOfViews: 1, weight: First_1_ViewsWeight),
+				new FirstViewsInGraphRule(numberOfViews: 3, weight: First_3_ViewsWeight),
 				new FirstViewsInGraphRule(numberOfViews: 5, weight: First_5_ViewsWeight),
 				new FirstViewsInGraphRule(numberOfViews: 10, weight: First_10_ViewsWeight),
 				new NoReadOnlyViewGraphRule(),

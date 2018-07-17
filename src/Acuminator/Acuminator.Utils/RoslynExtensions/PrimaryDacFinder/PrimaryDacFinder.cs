@@ -154,7 +154,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 					break;
 			}
 
-			if (dacCandidates == null)
+			if (dacCandidates.IsNullOrEmpty())
 				return null;
 
 			var dacCandidatesList = dacCandidates.Distinct().ToList();
