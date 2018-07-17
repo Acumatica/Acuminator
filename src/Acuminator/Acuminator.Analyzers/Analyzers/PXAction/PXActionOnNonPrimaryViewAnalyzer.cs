@@ -25,12 +25,17 @@ namespace Acuminator.Analyzers
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
 			compilationStartContext.RegisterSymbolAction(symbolContext => AnalyzePXGraphSymbolAsync(symbolContext, pxContext),
-														 SymbolKind.Field, SymbolKind.Property);
+														 SymbolKind.NamedType);
 		}
 
 		private static async Task AnalyzePXGraphSymbolAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
 			if (!(symbolContext.Symbol is INamedTypeSymbol graphOrGraphExtension) || symbolContext.CancellationToken.IsCancellationRequested)
+				return;
+
+			bool isGraph = graphOrGraphExtension.InheritsFrom(pxContext.PXGraphType);
+
+			if (!isGraph && !graphOrGraphExtension.InheritsFrom(pxContext.PXGraphExtensionType))
 				return;
 
 			ClassDeclarationSyntax graphOrGraphExtNode = await graphOrGraphExtension.GetSyntaxAsync(symbolContext.CancellationToken)
@@ -42,11 +47,6 @@ namespace Acuminator.Analyzers
 			SemanticModel semanticModel = symbolContext.Compilation.GetSemanticModel(graphOrGraphExtNode.SyntaxTree);
 
 			if (semanticModel == null || symbolContext.CancellationToken.IsCancellationRequested)
-				return;
-
-			bool isGraph = graphOrGraphExtension.InheritsFrom(pxContext.PXGraphType);
-
-			if (!isGraph && !graphOrGraphExtension.InheritsFrom(pxContext.PXGraphExtensionType))
 				return;
 
 			var declaredActions = isGraph 
