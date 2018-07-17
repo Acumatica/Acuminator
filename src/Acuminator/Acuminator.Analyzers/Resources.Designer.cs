@@ -411,5 +411,23 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1026Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove depricated field from the DAC declaration.
+        /// </summary>
+        public static string PX1027Fix {
+            get {
+                return ResourceManager.GetString("PX1027Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Field cannot be declared within DAC declarations.
+        /// </summary>
+        public static string PX1027Title {
+            get {
+                return ResourceManager.GetString("PX1027Title", resourceCulture);
+            }
+        }
     }
 }

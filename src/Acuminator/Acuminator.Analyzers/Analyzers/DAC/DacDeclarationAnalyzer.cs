@@ -19,7 +19,8 @@ namespace Acuminator.Analyzers
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
 			(
-				Descriptors.PX1026_UnderscoresInDacDeclaration
+				Descriptors.PX1026_UnderscoresInDacDeclaration,
+                Descriptors.PX1027_DepricatedFieldsInDacDeclaration
 			);
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
@@ -39,10 +40,20 @@ namespace Acuminator.Analyzers
 				syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			CheckDeclarationForUnderscores(dacOrDacExtNode, syntaxContext);
+
+            var dacProperties = dacOrDacExtNode.Members.OfType<PropertyDeclarationSyntax>()
+                                                       .ToDictionary(t => t.Identifier.ValueText);
+                //.GroupBy(p => p.Identifier.ValueText, StringComparer.OrdinalIgnoreCase)
+                                                      //.ToDictionary(group => group.Key, 
+                                                      //              group => group.ToList());
+            
+            CheckDeclarationForUnderscores(dacOrDacExtNode, syntaxContext, dacProperties);
+            CheckDeclarationForDepricatedFields(dacOrDacExtNode, syntaxContext, dacProperties);
 		}
 
-		private static void CheckDeclarationForUnderscores(ClassDeclarationSyntax dacOrDacExtNode, SyntaxNodeAnalysisContext syntaxContext)
+		private static void CheckDeclarationForUnderscores(ClassDeclarationSyntax dacOrDacExtNode,
+                                                           SyntaxNodeAnalysisContext syntaxContext,
+                                                           Dictionary<string, PropertyDeclarationSyntax> dacProperties)
 		{
 			SyntaxToken identifier = dacOrDacExtNode.Identifier;
 
@@ -59,11 +70,7 @@ namespace Acuminator.Analyzers
 						Descriptors.PX1026_UnderscoresInDacDeclaration, identifier.GetLocation(), diagnosticProperties));
 			}
 
-			HashSet<string> dacProperties = dacOrDacExtNode.Members.OfType<PropertyDeclarationSyntax>()
-																   .Select(p => p.Identifier.ValueText)
-																   .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-			var identifiersWithUnderscores = from member in dacOrDacExtNode.Members
+            var identifiersWithUnderscores = from member in dacOrDacExtNode.Members
 											 where ShouldCheckIdentifier(member, dacProperties)
 											 from memberIdentifier in member.GetIdentifiers()
 											 where memberIdentifier.ValueText.Contains("_")
@@ -82,8 +89,10 @@ namespace Acuminator.Analyzers
 						Descriptors.PX1026_UnderscoresInDacDeclaration, identifierToReport.GetLocation(), diagnosticProperties));
 			}
 
-			//*************************************Local Functions**********************************************************************
-			bool IdentifierContainsOnlyUnderscores(string identifierName)
+            
+
+            //*************************************Local Functions**********************************************************************
+            bool IdentifierContainsOnlyUnderscores(string identifierName)
 			{
 				for (int i = 0; i < identifierName.Length; i++)
 				{
@@ -95,12 +104,46 @@ namespace Acuminator.Analyzers
 			}	
 		}
 
-		private static bool ShouldCheckIdentifier(MemberDeclarationSyntax member, HashSet<string> dacProperties)
+        private static void CheckDeclarationForDepricatedFields(ClassDeclarationSyntax dacOrDacExtNode, 
+                                                                SyntaxNodeAnalysisContext syntaxContext, 
+                                                                Dictionary<string, PropertyDeclarationSyntax> dacProperties)
+        {
+
+            string[] depricatedFields = { "CompanyID","DeletedDatabaseRecord","CompanyMask"};
+
+            var invalidProperties = from dacProps in dacProperties
+                                    where depricatedFields.Contains(dacProps.Key, StringComparer.OrdinalIgnoreCase)
+                                    select dacProps;
+
+
+
+            foreach (var property in invalidProperties)
+            {
+                IEnumerable<ClassDeclarationSyntax> invalidClass = dacOrDacExtNode.Members.OfType<ClassDeclarationSyntax>()
+                                                                                          .Where(dacField => string.Equals(dacField.Identifier.ValueText, 
+                                                                                                                            property.Key,
+                                                                                                                            StringComparison.OrdinalIgnoreCase));
+
+                foreach (ClassDeclarationSyntax classIterator in invalidClass)
+                {
+                    syntaxContext.ReportDiagnostic(
+                        Diagnostic.Create(
+                            Descriptors.PX1027_DepricatedFieldsInDacDeclaration, classIterator.GetLocation()));
+                }
+
+                syntaxContext.ReportDiagnostic(
+                        Diagnostic.Create(
+                            Descriptors.PX1027_DepricatedFieldsInDacDeclaration, property.Value.GetLocation()));
+            }
+        }
+
+
+        private static bool ShouldCheckIdentifier(MemberDeclarationSyntax member, Dictionary<string, PropertyDeclarationSyntax> dacProperties)
 		{
 			if (!member.IsPublic() && !member.IsInternal())
 				return false;
 
-			if (member is ClassDeclarationSyntax dacFieldClassNode && !dacProperties.Contains(dacFieldClassNode.Identifier.ValueText))
+			if (member is ClassDeclarationSyntax dacFieldClassNode && !dacProperties.ContainsKey(dacFieldClassNode.Identifier.ValueText))
 				return false;
 
 			return true;
