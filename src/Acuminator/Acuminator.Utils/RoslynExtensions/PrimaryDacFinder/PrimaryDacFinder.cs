@@ -31,7 +31,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 
 		public INamedTypeSymbol Graph { get; }
 
-		public ImmutableDictionary<string, INamedTypeSymbol> GraphActionsByName { get; }
+		public ImmutableArray<(ISymbol Action, INamedTypeSymbol ActionType)> GraphActionSymbolsWithTypes { get; }
 
 		public ImmutableArray<(ISymbol View, INamedTypeSymbol ViewType)> GraphViewSymbolsWithTypes { get; }
 
@@ -43,13 +43,13 @@ namespace Acuminator.Utilities.PrimaryDAC
 		private PrimaryDacFinder(PXContext pxContext, SemanticModel semanticModel, INamedTypeSymbol graph,
 								 ImmutableArray<PrimaryDacRuleBase> rules, CancellationToken cancellationToken,
 								 IEnumerable<(ISymbol View, INamedTypeSymbol ViewType)> viewSymbolsWithTypes,
-								 IEnumerable<INamedTypeSymbol> graphActions)
+								 IEnumerable<(ISymbol Action, INamedTypeSymbol ActionType)> actionSymbolsWithTypes)
 		{
 			SemanticModel = semanticModel;
 			PxContext = pxContext;
 			Graph = graph;
-			CancellationToken = cancellationToken;	
-			GraphActionsByName = graphActions.ToImmutableDictionary(action => action.Name);
+			CancellationToken = cancellationToken;
+			GraphActionSymbolsWithTypes = actionSymbolsWithTypes.ToImmutableArray();
 
 			GraphViewSymbolsWithTypes = viewSymbolsWithTypes.ToImmutableArray();
 			dacWithScores = GraphViewSymbolsWithTypes.Select(viewWithType => viewWithType.ViewType.GetDacFromView(PxContext))
@@ -85,7 +85,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 			if (rules.Length == 0 || cancellationToken.IsCancellationRequested)
 				return null;
 
-			IEnumerable<INamedTypeSymbol> allGraphActions = graph.GetPXActionsFromGraph(pxContext);
+			var allGraphActionSymbolsWithTypes = graph.GetPXActionSymbolsWithTypesFromGraph(pxContext);
 
 			if (cancellationToken.IsCancellationRequested)
 				return null;
@@ -97,7 +97,8 @@ namespace Acuminator.Utilities.PrimaryDAC
 			if (cancellationToken.IsCancellationRequested)
 				return null;
 
-			return new PrimaryDacFinder(pxContext, semanticModel, graph, rules, cancellationToken, allViewSymbolsWithTypes, allGraphActions);
+			return new PrimaryDacFinder(pxContext, semanticModel, graph, rules, cancellationToken, allViewSymbolsWithTypes,
+										allGraphActionSymbolsWithTypes);
 		}
 
 		public ITypeSymbol FindPrimaryDAC()

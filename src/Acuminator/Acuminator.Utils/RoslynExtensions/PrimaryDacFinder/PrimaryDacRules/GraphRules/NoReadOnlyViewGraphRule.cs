@@ -39,7 +39,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 				return Enumerable.Empty<ITypeSymbol>();
 
 			List<INamedTypeSymbol> readOnlyViews = new List<INamedTypeSymbol>(capacity: 4);
-			List<INamedTypeSymbol> editableViews = new List<INamedTypeSymbol>(capacity: dacFinder.GraphViewSymbolsWithTypes.Length - 4);
+			List<INamedTypeSymbol> editableViews = new List<INamedTypeSymbol>(capacity: dacFinder.GraphViewSymbolsWithTypes.Length);
 
 			foreach (var viewWithType in dacFinder.GraphViewSymbolsWithTypes)
 			{
