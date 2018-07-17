@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Runtime.CompilerServices;
@@ -476,6 +477,29 @@ namespace Acuminator.Utilities
 				return null;
 
 			return baseViewType.TypeArguments[0];
+		}
+
+		/// <summary>
+		/// Get action's DAC for which the action was declared.
+		/// </summary>
+		/// <param name="pxAction">The action to act on.</param>
+		/// <returns>
+		/// The DAC from action.
+		/// </returns>
+		public static ITypeSymbol GetDacFromAction(this INamedTypeSymbol pxAction)
+		{
+			if (pxAction?.IsPXAction() != true)
+				return null;
+
+			ImmutableArray<ITypeSymbol> actionTypeArgs = pxAction.TypeArguments;
+
+			if (actionTypeArgs.Length == 0)  
+				return null;
+
+			ITypeSymbol pxActionDacType = actionTypeArgs[0];
+			return pxActionDacType.IsDAC()
+				? pxActionDacType
+				: null;
 		}
 
 		/// <summary>

@@ -24,6 +24,11 @@ namespace Acuminator.Utilities.PrimaryDAC
 		/// <summary>
 		/// The rule is related to the graph's DAC.
 		/// </summary>
-		Dac
+		Dac,
+
+		/// <summary>
+		/// The rule is related to the graph's action.
+		/// </summary>
+		Action
 	}
 }

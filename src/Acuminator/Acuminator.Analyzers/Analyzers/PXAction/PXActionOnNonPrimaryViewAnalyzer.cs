@@ -76,9 +76,9 @@ namespace Acuminator.Analyzers
 				{ DiagnosticProperty.DacMetadataName, primaryDAC.GetCLRTypeNameFromType() }
 			}.ToImmutableDictionary();
 
-			var registrationTasks = actionsWithWrongDAC.Select(a => RegisterDiagnosticForActionAsync(a.ActionSymbol, primaryDAC.Name, 
-																									 diagnosticExtraData, symbolContext));
-			await Task.WhenAll(registrationTasks).ConfigureAwait(false);
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+			actionsWithWrongDAC.ForEach(a => RegisterDiagnosticForActionAsync(a.ActionSymbol, primaryDAC.Name, diagnosticExtraData, symbolContext));
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 		}
 
 		private static bool CheckActionIsDeclaredForPrimaryDAC(INamedTypeSymbol action, ITypeSymbol primaryDAC)

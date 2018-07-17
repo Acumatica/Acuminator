@@ -138,17 +138,19 @@ namespace Acuminator.Utilities.PrimaryDAC
 		{	
 			IEnumerable<ITypeSymbol> dacCandidates = null;
 
-			switch (rule)
+			switch (rule.RuleKind)
 			{
-				case GraphRuleBase graphRule:
-					dacCandidates = graphRule.GetCandidatesFromGraphRule(this, Graph);				
+				case PrimaryDacRuleKind.Graph:
+					dacCandidates = (rule as GraphRuleBase)?.GetCandidatesFromGraphRule(this, Graph);
 					break;
-				case ViewRuleBase viewRule:
-					dacCandidates = GetCandidatesFromViewRule(viewRule);
+				case PrimaryDacRuleKind.View:
+					dacCandidates = GetCandidatesFromViewRule(rule as ViewRuleBase);
 					break;
-
-				case DacRuleBase dacRule:
-					dacCandidates = GetCandidatesFromDacRule(dacRule);
+				case PrimaryDacRuleKind.Dac:
+					dacCandidates = GetCandidatesFromDacRule(rule as DacRuleBase);
+					break;
+				case PrimaryDacRuleKind.Action:
+					dacCandidates = GetCandidatesFromActionRule(rule as ActionRuleBase);
 					break;
 			}
 
@@ -167,7 +169,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 
 		private IEnumerable<ITypeSymbol> GetCandidatesFromViewRule(ViewRuleBase viewRule)
 		{
-			if (GraphViewSymbolsWithTypes.Length == 0 || CancellationToken.IsCancellationRequested)
+			if (viewRule == null || GraphViewSymbolsWithTypes.Length == 0 || CancellationToken.IsCancellationRequested)
 				return null;
 
 			var dacCandidates = from viewWithType in GraphViewSymbolsWithTypes
@@ -181,12 +183,26 @@ namespace Acuminator.Utilities.PrimaryDAC
 
 		private IEnumerable<ITypeSymbol> GetCandidatesFromDacRule(DacRuleBase dacRule)
 		{
-			if (dacWithScores.Count == 0 || CancellationToken.IsCancellationRequested)
+			if (dacRule == null || dacWithScores.Count == 0 || CancellationToken.IsCancellationRequested)
 				return null;
 
 			var dacCandidates = dacWithScores.Keys.TakeWhile(v => !CancellationToken.IsCancellationRequested)
 												  .Where(dac => dacRule.SatisfyRule(this, dac));
 							
+			return !CancellationToken.IsCancellationRequested
+				? dacCandidates
+				: null;
+		}
+
+		private IEnumerable<ITypeSymbol> GetCandidatesFromActionRule(ActionRuleBase actionRule)
+		{
+			if (actionRule == null || GraphViewSymbolsWithTypes.Length == 0 || CancellationToken.IsCancellationRequested)
+				return null;
+
+			var dacCandidates = from actionWithType in GraphActionSymbolsWithTypes
+								where actionRule.SatisfyRule(this, actionWithType.Action, actionWithType.ActionType)
+								select actionWithType.ActionType.GetDacFromAction();
+
 			return !CancellationToken.IsCancellationRequested
 				? dacCandidates
 				: null;
