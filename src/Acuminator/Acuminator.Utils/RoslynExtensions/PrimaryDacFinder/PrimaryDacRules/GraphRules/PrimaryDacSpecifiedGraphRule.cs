@@ -24,7 +24,11 @@ namespace Acuminator.Utilities.PrimaryDAC
 	{
 		public override bool IsAbsolute => true;
 
-		public override double Weight => double.MaxValue;
+		protected override double DefaultWeight => double.MaxValue;
+
+		public PrimaryDacSpecifiedGraphRule() : base(null)
+		{
+		}
 
 		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder, INamedTypeSymbol graph)
 		{

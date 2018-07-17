@@ -35,6 +35,16 @@ namespace Acuminator.Utilities.PrimaryDAC
 		/// <summary>
 		/// The weight of a trait which shows the likeliness that DAC found this rule is a primary DAC.
 		/// </summary>
-		public abstract double Weight { get; }
+		public virtual double Weight { get; protected set; }
+
+		/// <summary>
+		/// The default weight value for this rule.
+		/// </summary>
+		protected abstract double DefaultWeight { get; }
+
+		protected PrimaryDacRuleBase(double? customWeight)
+		{
+			Weight = customWeight ?? DefaultWeight;
+		}
 	}
 }

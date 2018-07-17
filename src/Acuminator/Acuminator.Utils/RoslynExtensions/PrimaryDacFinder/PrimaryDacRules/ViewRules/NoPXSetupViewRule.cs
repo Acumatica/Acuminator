@@ -22,20 +22,17 @@ namespace Acuminator.Utilities.PrimaryDAC
 	/// </summary>
 	public class NoPXSetupViewRule : ViewRuleBase
 	{
-		private const double DefaultWeight = -40;
-
 		public sealed override bool IsAbsolute => false;
 
-		public override double Weight { get; }
+		protected override double DefaultWeight => -40;
 
 		private readonly ImmutableArray<INamedTypeSymbol> setupTypes;
 
-		public NoPXSetupViewRule(PXContext context, double? weight = null)
+		public NoPXSetupViewRule(PXContext context, double? weight = null) : base(weight)
 		{
 			context.ThrowOnNull(nameof(context));
 
 			setupTypes = context.BQL.GetPXSetupTypes();
-			Weight = weight ?? DefaultWeight;
 		}
 		
 		/// <summary>

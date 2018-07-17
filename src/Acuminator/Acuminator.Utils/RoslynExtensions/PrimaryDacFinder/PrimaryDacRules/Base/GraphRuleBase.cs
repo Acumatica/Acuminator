@@ -27,6 +27,10 @@ namespace Acuminator.Utilities.PrimaryDAC
 		/// </summary>
 		public sealed override PrimaryDacRuleKind RuleKind => PrimaryDacRuleKind.Graph;
 
+		protected GraphRuleBase(double? customWeight) : base(customWeight)
+		{
+		}
+
 		/// <summary>
 		/// Filter DACs from graph using this rule.
 		/// </summary>

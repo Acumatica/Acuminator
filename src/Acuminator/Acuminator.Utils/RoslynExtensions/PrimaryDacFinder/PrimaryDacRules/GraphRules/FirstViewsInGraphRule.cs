@@ -29,16 +29,15 @@ namespace Acuminator.Utilities.PrimaryDAC
 		/// </summary>
 		public int NumberOfViews { get; }
 
-		public override double Weight { get; }
+		protected override double DefaultWeight => 0.0;
 
-		public FirstViewsInGraphRule(int numberOfViews, int weight)
+		public FirstViewsInGraphRule(int numberOfViews, double weight) : base(weight)
 		{
 			if (weight == 0)
 				throw new ArgumentOutOfRangeException(nameof(weight), "Rule weight can't be zero");
 			else if (numberOfViews <= 0)
 				throw new ArgumentOutOfRangeException(nameof(numberOfViews), "Number of views should be positive");
 
-			Weight = weight;
 			NumberOfViews = numberOfViews;
 		}
 

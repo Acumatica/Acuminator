@@ -27,6 +27,10 @@ namespace Acuminator.Utilities.PrimaryDAC
 		/// </summary>
 		public sealed override PrimaryDacRuleKind RuleKind => PrimaryDacRuleKind.View;
 
+		protected ViewRuleBase(double? customWeight) : base(customWeight)
+		{
+		}
+
 		/// <summary>
 		/// Query if view satisfies this rule's conditions.
 		/// </summary>

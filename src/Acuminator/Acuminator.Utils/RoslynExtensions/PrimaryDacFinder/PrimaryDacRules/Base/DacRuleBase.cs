@@ -27,6 +27,10 @@ namespace Acuminator.Utilities.PrimaryDAC
 		/// </summary>
 		public sealed override PrimaryDacRuleKind RuleKind => PrimaryDacRuleKind.Dac;
 
+		protected DacRuleBase(double? customWeight) : base(customWeight)
+		{
+		}
+
 		/// <summary>
 		/// Query if DAC satisfies this rule's conditions.
 		/// </summary>

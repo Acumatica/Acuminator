@@ -22,17 +22,14 @@ namespace Acuminator.Utilities.PrimaryDAC
 	/// </summary>
 	public class ForbiddenWordsInNameViewRule : ViewRuleBase
 	{
-		private const double DefaultWeight = -15;
-
 		private readonly ImmutableArray<string> forbiddenWords;
 
 		public sealed override bool IsAbsolute => false;
 
-		public override double Weight { get; }
+		protected override double DefaultWeight => -15;
 
-		public ForbiddenWordsInNameViewRule(IEnumerable<string> wordsToForbid = null, double? weight = null)
+		public ForbiddenWordsInNameViewRule(IEnumerable<string> wordsToForbid = null, double? weight = null) : base(weight)
 		{
-			Weight = weight ?? DefaultWeight;
 			forbiddenWords = wordsToForbid.IsNullOrEmpty() 
 				? GetDefaultForbiddenWords()
 				: wordsToForbid.ToImmutableArray();

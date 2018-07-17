@@ -22,15 +22,12 @@ namespace Acuminator.Utilities.PrimaryDAC
 	/// </summary>
 	public class PXImportAttributeGraphRule : GraphRuleBase
 	{
-		private const double DefaultWeight = 100;
-
 		public sealed override bool IsAbsolute => true;
 
-		public override double Weight { get; }
+		protected override double DefaultWeight => 1000;
 
-		public PXImportAttributeGraphRule(double? weight = null)
+		public PXImportAttributeGraphRule(double? customWeight) : base(customWeight)
 		{
-			Weight = weight ?? DefaultWeight;
 		}
 
 		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder, INamedTypeSymbol graph)

@@ -22,15 +22,12 @@ namespace Acuminator.Utilities.PrimaryDAC
 	/// </summary>
 	public class NoReadOnlyViewGraphRule : GraphRuleBase
 	{
-		private const double DefaultWeight = -20;
-
 		public sealed override bool IsAbsolute => false;
 
-		public override double Weight { get; }
+		protected override double DefaultWeight => -20;
 
-		public NoReadOnlyViewGraphRule(double? weight = null)
+		public NoReadOnlyViewGraphRule(double? weight = null) : base(weight)
 		{
-			Weight = weight ?? DefaultWeight;
 		}
 
 		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder, INamedTypeSymbol graph)
