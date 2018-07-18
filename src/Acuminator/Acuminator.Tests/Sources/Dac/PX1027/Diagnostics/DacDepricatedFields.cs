@@ -28,15 +28,18 @@ namespace PX.Objects.HackathonDemo
         [PXUIField(DisplayName = "Company Mask")]
         public string CompanyMask { get; set; }
         #endregion
-        
-
         #region OrderNbr
         public abstract class orderNbr : IBqlField { }
-
         [PXDBInt(IsKey = true)]
         [PXDefault]
         [PXUIField(DisplayName = "Order Nbr")]
         public int? OrderNbr { get; set; }
+        #endregion
+        #region  DeletedDatabaseRecord
+        public abstract class deletedDatabaseRecord : IBqlField { }
+        [PXDefault]
+        [PXUIField(DisplayName = "Deleted Flag")]
+        public string DeletedDatabaseRecord { get; set; }
         #endregion
     }
 }

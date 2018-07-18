@@ -18,9 +18,14 @@ namespace Acuminator.Tests
         [EmbeddedFileData(@"Dac\PX1027\Diagnostics\DacDepricatedFields.cs")]
         public virtual void Test_Dac_With_Depricated_Fields(string source) =>
             VerifyCSharpDiagnostic(source,
-                CreatePX1027DepricatedDacFieldDiagnosticResult(line:13,column:31),
-                CreatePX1027DepricatedDacFieldDiagnosticResult(line:20,column:31),
-                CreatePX1027DepricatedDacFieldDiagnosticResult(line:26,column:31));
+                CreatePX1027DepricatedDacFieldDiagnosticResult(line: 13, column: 9),
+                CreatePX1027DepricatedDacFieldDiagnosticResult(line: 17, column: 23),
+                CreatePX1027DepricatedDacFieldDiagnosticResult(line: 20, column: 9),
+                CreatePX1027DepricatedDacFieldDiagnosticResult(line: 23, column: 23),
+                CreatePX1027DepricatedDacFieldDiagnosticResult(line: 26, column: 9),
+                CreatePX1027DepricatedDacFieldDiagnosticResult(line: 29, column: 23),
+                CreatePX1027DepricatedDacFieldDiagnosticResult(line: 39, column: 9),
+                CreatePX1027DepricatedDacFieldDiagnosticResult(line: 42, column: 23));
 
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacDeclarationAnalyzer();
 

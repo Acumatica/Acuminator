@@ -41,11 +41,12 @@ namespace Acuminator.Analyzers
 				return;
 
 
-            var dacProperties = dacOrDacExtNode.Members.OfType<PropertyDeclarationSyntax>()
-                                                       .ToDictionary(t => t.Identifier.ValueText);
-                //.GroupBy(p => p.Identifier.ValueText, StringComparer.OrdinalIgnoreCase)
-                                                      //.ToDictionary(group => group.Key, 
-                                                      //              group => group.ToList());
+            /*            var dacProperties = dacOrDacExtNode.Members.OfType<PropertyDeclarationSyntax>()
+                                                                   .ToDictionary(t => t.Identifier.ValueText);*/
+            var dacProperties = dacOrDacExtNode.Members.OfType<PropertyDeclarationSyntax>()  
+                                                       .GroupBy(p => p.Identifier.ValueText, StringComparer.OrdinalIgnoreCase)
+                                                       .ToDictionary(group => group.Key, 
+                                                                     group => group.ToList());
             
             CheckDeclarationForUnderscores(dacOrDacExtNode, syntaxContext, dacProperties);
             CheckDeclarationForDepricatedFields(dacOrDacExtNode, syntaxContext, dacProperties);
@@ -53,7 +54,7 @@ namespace Acuminator.Analyzers
 
 		private static void CheckDeclarationForUnderscores(ClassDeclarationSyntax dacOrDacExtNode,
                                                            SyntaxNodeAnalysisContext syntaxContext,
-                                                           Dictionary<string, PropertyDeclarationSyntax> dacProperties)
+                                                            Dictionary<string, List<PropertyDeclarationSyntax>> dacProperties)
 		{
 			SyntaxToken identifier = dacOrDacExtNode.Identifier;
 
@@ -105,25 +106,22 @@ namespace Acuminator.Analyzers
 		}
 
         private static void CheckDeclarationForDepricatedFields(ClassDeclarationSyntax dacOrDacExtNode, 
-                                                                SyntaxNodeAnalysisContext syntaxContext, 
-                                                                Dictionary<string, PropertyDeclarationSyntax> dacProperties)
+                                                                SyntaxNodeAnalysisContext syntaxContext,
+                                                                Dictionary<string, List<PropertyDeclarationSyntax>> dacProperties)
         {
 
-            string[] depricatedFields = { "CompanyID","DeletedDatabaseRecord","CompanyMask"};
+            string[] depricatedFields = GetDepricatedFieldsNames();
 
             var invalidProperties = from dacProps in dacProperties
                                     where depricatedFields.Contains(dacProps.Key, StringComparer.OrdinalIgnoreCase)
                                     select dacProps;
-
-
-
+            
             foreach (var property in invalidProperties)
             {
                 IEnumerable<ClassDeclarationSyntax> invalidClass = dacOrDacExtNode.Members.OfType<ClassDeclarationSyntax>()
                                                                                           .Where(dacField => string.Equals(dacField.Identifier.ValueText, 
                                                                                                                             property.Key,
                                                                                                                             StringComparison.OrdinalIgnoreCase));
-
                 foreach (ClassDeclarationSyntax classIterator in invalidClass)
                 {
                     syntaxContext.ReportDiagnostic(
@@ -131,14 +129,17 @@ namespace Acuminator.Analyzers
                             Descriptors.PX1027_DepricatedFieldsInDacDeclaration, classIterator.GetLocation()));
                 }
 
-                syntaxContext.ReportDiagnostic(
+                foreach (var prop in property.Value)
+                {
+                    syntaxContext.ReportDiagnostic(
                         Diagnostic.Create(
-                            Descriptors.PX1027_DepricatedFieldsInDacDeclaration, property.Value.GetLocation()));
+                            Descriptors.PX1027_DepricatedFieldsInDacDeclaration, prop.Identifier.GetLocation()));
+                }
             }
         }
 
 
-        private static bool ShouldCheckIdentifier(MemberDeclarationSyntax member, Dictionary<string, PropertyDeclarationSyntax> dacProperties)
+        private static bool ShouldCheckIdentifier(MemberDeclarationSyntax member, Dictionary<string, List<PropertyDeclarationSyntax>> dacProperties)
 		{
 			if (!member.IsPublic() && !member.IsInternal())
 				return false;
@@ -148,5 +149,15 @@ namespace Acuminator.Analyzers
 
 			return true;
 		}
+
+        private static string[] GetDepricatedFieldsNames()
+        {
+            return new string[]  
+            {
+                "CompanyID",
+                "DeletedDatabaseRecord",
+                "CompanyMask"
+            };
+        }
 	}
 }
