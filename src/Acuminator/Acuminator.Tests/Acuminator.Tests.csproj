@@ -167,6 +167,7 @@
     <EmbeddedResource Include="Sources\Dac\PX1026\CodeFixes\DacExtensionWithUnderscores_Expected.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1026\CodeFixes\DacWithUnderscores_Expected.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1027\Diagnostics\DacDepricatedFields.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1027\CodeFixes\DacDepricatedFields_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTypeMismatchCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\MultipleFieldAttributesCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTests.cs" />
@@ -270,9 +271,7 @@
     <Analyzer Include="..\..\packages\xunit.analyzers.0.8.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
   </ItemGroup>
   <Import Project="..\..\packages\GitVersionTask.3.6.5\build\portable-net+sl+win+wpa+wp\GitVersionTask.targets" Condition="Exists('..\..\packages\GitVersionTask.3.6.5\build\portable-net+sl+win+wpa+wp\GitVersionTask.targets')" />
-  <ItemGroup>
-    <Folder Include="Sources\Dac\PX1027\CodeFixes\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

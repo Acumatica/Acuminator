@@ -38,10 +38,17 @@ namespace PX.Objects.HackathonDemo
 		[PXDBInt]      
 		[PXUIField(DisplayName = "OrderDate")]
 		public DateTime? OrderDate { get; set; }
-		#endregion
+        #endregion
 
-		#region tstamp
-		public abstract class Tstamp : IBqlField
+        #region CompanyMask
+        public abstract class COMPANYMASK : IBqlField { }
+        [PXDefiault]
+        [PXUIField(DisplayName = "Company Mask")]
+        public string CompanyMask { get; set; }
+        #endregion
+
+        #region tstamp
+        public abstract class Tstamp : IBqlField
 		{
 		}
 

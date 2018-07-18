@@ -17,7 +17,7 @@ namespace PX.Objects.HackathonDemo
         public string CompanyID { get; set; }
         #endregion
         #region  DeletedDatabaseRecord
-        public abstract class deletedDatabaseRecord  { }
+        public abstract class deletedDatabaseRecord { }
         [PXDefault]
         [PXUIField(DisplayName = "Deleted Flag")]
         public string DeletedDatabaseRecord { get; set; }

@@ -40,9 +40,7 @@ namespace Acuminator.Analyzers
 				syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
 
-
-            /*            var dacProperties = dacOrDacExtNode.Members.OfType<PropertyDeclarationSyntax>()
-                                                                   .ToDictionary(t => t.Identifier.ValueText);*/
+            
             var dacProperties = dacOrDacExtNode.Members.OfType<PropertyDeclarationSyntax>()  
                                                        .GroupBy(p => p.Identifier.ValueText, StringComparer.OrdinalIgnoreCase)
                                                        .ToDictionary(group => group.Key, 

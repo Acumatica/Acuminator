@@ -4,15 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Acuminator.Analyzers;
+using Acuminator.Analyzers.FixProviders;
 using Acuminator.Tests.Helpers;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using TestHelper;
 using Xunit;
 
 namespace Acuminator.Tests
 {
-    public class DacDepricatedFieldsTests : DiagnosticVerifier
+    public class DacDepricatedFieldsTests : CodeFixVerifier
     {
         [Theory]
         [EmbeddedFileData(@"Dac\PX1027\Diagnostics\DacDepricatedFields.cs")]
@@ -27,7 +29,17 @@ namespace Acuminator.Tests
                 CreatePX1027DepricatedDacFieldDiagnosticResult(line: 39, column: 9),
                 CreatePX1027DepricatedDacFieldDiagnosticResult(line: 42, column: 23));
 
+        [Theory]
+        [EmbeddedFileData(@"Dac\PX1027\Diagnostics\DacDepricatedFields.cs",
+                          @"Dac\PX1027\CodeFixes\DacDepricatedFields_Expected.cs")]
+        public virtual void Test_Fix_For_Dac_With_Depricated_Fields(string actual, string expected) =>
+            VerifyCSharpFix(actual, expected);
+            
+            
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacDeclarationAnalyzer();
+
+        protected override CodeFixProvider GetCSharpCodeFixProvider() => new DepricatedFieldsInDacFix();
+
 
         private DiagnosticResult CreatePX1027DepricatedDacFieldDiagnosticResult(int line, int column)
         {
