@@ -157,7 +157,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 			if (dacCandidates.IsNullOrEmpty())
 				return null;
 
-			var dacCandidatesList = dacCandidates.Distinct().ToList();
+			var dacCandidatesList = dacCandidates.Where(dac => dac != null).Distinct().ToList();
 			ITypeSymbol primaryDac = null;
 
 			if (rule.IsAbsolute && dacCandidatesList.Count == 1)

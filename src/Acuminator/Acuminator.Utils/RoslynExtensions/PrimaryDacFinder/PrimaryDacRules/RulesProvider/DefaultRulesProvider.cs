@@ -37,7 +37,9 @@ namespace Acuminator.Utilities.PrimaryDAC
 
 				new ForbiddenWordsInNameViewRule(),
 				new HiddenAttributesViewRule(),
-				new NoPXSetupViewRule(context)
+				new NoPXSetupViewRule(context),
+
+				new ScoreSimpleActionRule()
 			}
 			.ToImmutableArray();
 		}
