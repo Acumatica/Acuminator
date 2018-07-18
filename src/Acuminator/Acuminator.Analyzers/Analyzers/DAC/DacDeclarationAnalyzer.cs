@@ -46,7 +46,7 @@ namespace Acuminator.Analyzers
             var dacProperties = dacOrDacExtNode.Members.OfType<PropertyDeclarationSyntax>()  
                                                        .GroupBy(p => p.Identifier.ValueText, StringComparer.OrdinalIgnoreCase)
                                                        .ToDictionary(group => group.Key, 
-                                                                     group => group.ToList());
+                                                                     group => group.ToList(), StringComparer.OrdinalIgnoreCase);
             
             CheckDeclarationForUnderscores(dacOrDacExtNode, syntaxContext, dacProperties);
             CheckDeclarationForDepricatedFields(dacOrDacExtNode, syntaxContext, dacProperties);
