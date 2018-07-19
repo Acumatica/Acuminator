@@ -429,5 +429,23 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1027Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove all constructors entirely.
+        /// </summary>
+        public static string PX1028Fix {
+            get {
+                return ResourceManager.GetString("PX1028Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Constructors in DACs are strictly prohoboted.
+        /// </summary>
+        public static string PX1028Title {
+            get {
+                return ResourceManager.GetString("PX1028Title", resourceCulture);
+            }
+        }
     }
 }

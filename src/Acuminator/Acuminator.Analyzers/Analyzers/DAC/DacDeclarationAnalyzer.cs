@@ -20,7 +20,8 @@ namespace Acuminator.Analyzers
 			ImmutableArray.Create
 			(
 				Descriptors.PX1026_UnderscoresInDacDeclaration,
-                Descriptors.PX1027_DepricatedFieldsInDacDeclaration
+                Descriptors.PX1027_DepricatedFieldsInDacDeclaration,
+                Descriptors.PX1028_ConstructorInDacDeclaration
 			);
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
@@ -48,6 +49,9 @@ namespace Acuminator.Analyzers
             
             CheckDeclarationForUnderscores(dacOrDacExtNode, syntaxContext, dacProperties);
             CheckDeclarationForDepricatedFields(dacOrDacExtNode, syntaxContext, dacProperties);
+
+
+            CheckDeclarationForConstructors(dacOrDacExtNode, syntaxContext);
 		}
 
 		private static void CheckDeclarationForUnderscores(ClassDeclarationSyntax dacOrDacExtNode,
@@ -134,6 +138,21 @@ namespace Acuminator.Analyzers
                             Descriptors.PX1027_DepricatedFieldsInDacDeclaration, prop.Identifier.GetLocation()));
                 }
             }
+        }
+
+        private static void CheckDeclarationForConstructors(ClassDeclarationSyntax dacOrDacExtNode,
+                                                            SyntaxNodeAnalysisContext syntaxContext)
+        {
+            var dacConstructors = dacOrDacExtNode.Members.OfType<ConstructorDeclarationSyntax>()
+                                            .ToDictionary(c => c);
+
+            foreach (var constructor in dacConstructors)
+            {
+                syntaxContext.ReportDiagnostic(
+                    Diagnostic.Create(
+                        Descriptors.PX1028_ConstructorInDacDeclaration, constructor.Value.Identifier.GetLocation()));
+            }
+
         }
 
 
