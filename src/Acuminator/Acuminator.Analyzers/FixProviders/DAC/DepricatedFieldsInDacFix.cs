@@ -52,7 +52,7 @@ namespace Acuminator.Analyzers.FixProviders
             if (diagnosticNode == null || cancellationToken.IsCancellationRequested)
                 return document;
 
-            var modifiedRoot = root.RemoveNode(diagnosticNode, SyntaxRemoveOptions.KeepEndOfLine);
+            var modifiedRoot = root.RemoveNode(diagnosticNode, SyntaxRemoveOptions.KeepTrailingTrivia | SyntaxRemoveOptions.KeepLeadingTrivia);
             return document.WithSyntaxRoot(modifiedRoot);
         }
     }
