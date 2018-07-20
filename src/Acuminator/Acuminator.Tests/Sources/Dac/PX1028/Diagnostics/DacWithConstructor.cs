@@ -73,11 +73,7 @@ namespace PX.Objects.HackathonDemo
         #region Cons
         public SOOrderWithTotal() { }
         #endregion
-
-        #region
-        public SOOrderWithTotal(decimal? total) { Total = total; }
-        #endregion
-
+        
         #region Total
         public abstract class total : IBqlField { }
         [PXDBDecimal]

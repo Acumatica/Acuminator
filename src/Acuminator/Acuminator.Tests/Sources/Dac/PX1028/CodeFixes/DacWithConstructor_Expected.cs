@@ -10,17 +10,11 @@ namespace PX.Objects.HackathonDemo
     public class SOOrder : IBqlTable
     {
         #region Cons
-        public SOOrder() : base() { }
+        
         #endregion
 
         #region ConsParams
-        public SOOrder(string orderType, string orderNbr, string status, DateTime? orderDate)
-        {
-            OrderType = orderType;
-            OrderNbr = orderNbr;
-            Status = status;
-            OrderDate = orderDate;
-        }
+        
         #endregion
 
         #region OrderType
@@ -71,13 +65,9 @@ namespace PX.Objects.HackathonDemo
     public class SOOrderWithTotal : PXCacheExtension<SOOrder>
     {
         #region Cons
-        public SOOrderWithTotal() { }
+        
         #endregion
-
-        #region
-        public SOOrderWithTotal(decimal? total) { Total = total; }
-        #endregion
-
+        
         #region Total
         public abstract class total : IBqlField { }
         [PXDBDecimal]
@@ -89,11 +79,11 @@ namespace PX.Objects.HackathonDemo
     public class SOOrderWithHold : SOOrderWithTotal
     {
         #region Cons
-        public SOOrderWithHold() { }
+        
         #endregion
 
         #region Cons
-        public SOOrderWithHold(bool? hold) { Hold = hold; }
+        
         #endregion
 
         #region Hold

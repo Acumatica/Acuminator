@@ -53,6 +53,7 @@
     <Compile Include="BqlParameterMismatch\StaticCall.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="SOOrderWithConstructors.cs" />
     <Compile Include="SOTran.cs" />
     <Compile Include="SOOrder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
