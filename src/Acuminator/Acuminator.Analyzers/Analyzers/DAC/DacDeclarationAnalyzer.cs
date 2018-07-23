@@ -143,14 +143,14 @@ namespace Acuminator.Analyzers
         private static void CheckDeclarationForConstructors(ClassDeclarationSyntax dacOrDacExtNode,
                                                             SyntaxNodeAnalysisContext syntaxContext)
         {
-            var dacConstructors = dacOrDacExtNode.Members.OfType<ConstructorDeclarationSyntax>()
-                                            .ToDictionary(c => c);
+            var dacConstructors = dacOrDacExtNode.Members.OfType<ConstructorDeclarationSyntax>().ToList();
+                                            //.ToDictionary(c => c);
 
             foreach (var constructor in dacConstructors)
             {
                 syntaxContext.ReportDiagnostic(
                     Diagnostic.Create(
-                        Descriptors.PX1028_ConstructorInDacDeclaration, constructor.Value.Identifier.GetLocation()));
+                        Descriptors.PX1028_ConstructorInDacDeclaration, constructor.Identifier.GetLocation()));
             }
 
         }

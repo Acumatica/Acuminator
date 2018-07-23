@@ -10,7 +10,9 @@ namespace PX.Objects.HackathonDemo
 	public class SOOrder : IBqlTable
 	{
         #region Cons
-        public SOOrder() : base() { }
+        public SOOrder() : base()
+        {
+        }
         #endregion
 
         #region ConsParams

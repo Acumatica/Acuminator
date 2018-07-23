@@ -51,9 +51,70 @@ namespace Acuminator.Analyzers.FixProviders
             if (diagnosticNode == null || cancellationToken.IsCancellationRequested)
                 return document;
 
-            var modifiedRoot = root.RemoveNode(diagnosticNode, SyntaxRemoveOptions.KeepTrailingTrivia | SyntaxRemoveOptions.KeepLeadingTrivia);
+            var modifiedRoot = root.RemoveNode(diagnosticNode, SyntaxRemoveOptions.KeepNoTrivia);
+
+            SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+            ClassDeclarationSyntax classDeclaration = diagnosticNode.Parent<ClassDeclarationSyntax>();
+
+            var rewriterWalker = new RegionTriviaRewriter(document, semanticModel, diagnosticNode, cancellationToken);
+            var classModified = rewriterWalker.Visit(classDeclaration) as ClassDeclarationSyntax;
+
+            if (classModified == null || cancellationToken.IsCancellationRequested)
+                return document;
+
+            modifiedRoot = modifiedRoot.ReplaceNode(classDeclaration, classModified);
             return document.WithSyntaxRoot(modifiedRoot);
         }
 
+        
+        private class RegionTriviaRewriter : CSharpSyntaxRewriter
+        {
+            private int visitedRegionTriviaCounter;
+            private int triviaListsRemovedCounter;
+            private bool alreadyVisited;
+
+            private Stack<RegionDirectiveTriviaSyntax> regionDirectives;
+
+            private readonly Document document;
+            private readonly SemanticModel semanticModel;
+            private readonly SyntaxNode deletedNode; 
+            private readonly RegionDirectiveTriviaSyntax regionDirectiveTrivia;
+            private readonly CancellationToken cancellationToken;
+
+
+
+            public RegionTriviaRewriter(Document aDocument, SemanticModel aSemanticModel,
+                                        SyntaxNode aDeletedNode, CancellationToken cToken)
+            {
+                document = aDocument;
+                semanticModel = aSemanticModel;
+                cancellationToken = cToken;
+                /*endRegionDirectiveTrivia = aEndRegionDirectiveTrivia;
+                regionDirectiveTrivia = aRegionDirectiveTrivia;
+                */
+                PXContext pxContext = new PXContext(semanticModel.Compilation);
+                // = new FieldAttributesRegister(pxContext);
+            }
+
+            public override SyntaxNode VisitEndRegionDirectiveTrivia(EndRegionDirectiveTriviaSyntax node)
+            {
+                return base.VisitEndRegionDirectiveTrivia(node);
+            }
+            public override SyntaxNode VisitRegionDirectiveTrivia(RegionDirectiveTriviaSyntax node)
+            {
+                regionDirectives.Push(node);
+                if (cancellationToken.IsCancellationRequested)
+                    return null;
+
+                if (visitedRegionTriviaCounter < Int32.MaxValue)
+                    visitedRegionTriviaCounter++;
+
+                
+
+                return null;
+            }
+
+
+        }
     }
 }
