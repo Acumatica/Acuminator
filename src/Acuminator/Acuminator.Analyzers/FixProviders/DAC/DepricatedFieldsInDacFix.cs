@@ -52,8 +52,49 @@ namespace Acuminator.Analyzers.FixProviders
             if (diagnosticNode == null || cancellationToken.IsCancellationRequested)
                 return document;
 
+            ClassDeclarationSyntax classDeclaration = diagnosticNode.Parent<ClassDeclarationSyntax>();
+
+            var rewriterWalker = new RegionClassRewriter();
+            var classModified = rewriterWalker.Visit(classDeclaration) as ClassDeclarationSyntax;
+
             var modifiedRoot = root.RemoveNode(diagnosticNode, SyntaxRemoveOptions.KeepTrailingTrivia | SyntaxRemoveOptions.KeepLeadingTrivia);
             return document.WithSyntaxRoot(modifiedRoot);
+        }
+    }
+
+
+    public class RegionClassRewriter : CSharpSyntaxRewriter
+    {
+        private Stack<RegionDirectiveTriviaSyntax> regionsStack;
+
+        public RegionClassRewriter()
+                                : base(visitIntoStructuredTrivia: true)
+        {
+            regionsStack = new Stack<RegionDirectiveTriviaSyntax>();
+
+        }
+
+        public override SyntaxNode VisitRegionDirectiveTrivia(RegionDirectiveTriviaSyntax node)
+        {
+            regionsStack.Push(node);
+            foreach (string identificator in DacDeclarationAnalyzer.GetDepricatedFieldsNames())
+            {
+                if (node.ToString().EndsWith(identificator))
+                    return null;
+            }
+            return node;
+
+        }
+        public override SyntaxNode VisitEndRegionDirectiveTrivia(EndRegionDirectiveTriviaSyntax node)
+        {
+            
+            RegionDirectiveTriviaSyntax regionStart = regionsStack.Pop();
+            foreach (string identificator in DacDeclarationAnalyzer.GetDepricatedFieldsNames())
+            {
+                if (regionStart.ToString().EndsWith(identificator))
+                    return null;
+            }
+            return node;
         }
     }
 }

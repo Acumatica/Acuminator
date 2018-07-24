@@ -148,7 +148,7 @@ namespace Acuminator.Analyzers
 			return true;
 		}
 
-        private static string[] GetDepricatedFieldsNames()
+        public static string[] GetDepricatedFieldsNames()
         {
             return new string[]  
             {
