@@ -144,7 +144,6 @@ namespace Acuminator.Analyzers
                                                             SyntaxNodeAnalysisContext syntaxContext)
         {
             var dacConstructors = dacOrDacExtNode.Members.OfType<ConstructorDeclarationSyntax>().ToList();
-                                            //.ToDictionary(c => c);
 
             foreach (var constructor in dacConstructors)
             {
