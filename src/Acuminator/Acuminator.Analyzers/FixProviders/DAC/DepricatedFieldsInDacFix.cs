@@ -48,16 +48,22 @@ namespace Acuminator.Analyzers.FixProviders
         {
             SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             SyntaxNode diagnosticNode = root?.FindNode(span);
+           
 
             if (diagnosticNode == null || cancellationToken.IsCancellationRequested)
                 return document;
-
+            var trackingRoot = root.TrackNodes(diagnosticNode);
             ClassDeclarationSyntax classDeclaration = diagnosticNode.Parent<ClassDeclarationSyntax>();
 
-            var rewriterWalker = new RegionClassRewriter();
+            var rewriterWalker = new RegionClassRewriter((diagnosticNode is ClassDeclarationSyntax) ?
+                                                                (diagnosticNode as ClassDeclarationSyntax)?.Identifier.Text :
+                                                                (diagnosticNode as PropertyDeclarationSyntax)?.Identifier.Text,
+                                                         cancellationToken);
             var classModified = rewriterWalker.Visit(classDeclaration) as ClassDeclarationSyntax;
 
-            var modifiedRoot = root.RemoveNode(diagnosticNode, SyntaxRemoveOptions.KeepTrailingTrivia | SyntaxRemoveOptions.KeepLeadingTrivia);
+            var modifiedNode = trackingRoot.GetCurrentNode(diagnosticNode);
+            var modifiedRoot = root.ReplaceNode(classDeclaration, classModified);
+
             return document.WithSyntaxRoot(modifiedRoot);
         }
     }
@@ -66,35 +72,59 @@ namespace Acuminator.Analyzers.FixProviders
     public class RegionClassRewriter : CSharpSyntaxRewriter
     {
         private Stack<RegionDirectiveTriviaSyntax> regionsStack;
+        private string removableIdentifier;
+        private CancellationToken cancellationToken;
 
-        public RegionClassRewriter()
+        public RegionClassRewriter(string aRemovableIdentifier,
+                                   CancellationToken cToken)
                                 : base(visitIntoStructuredTrivia: true)
         {
             regionsStack = new Stack<RegionDirectiveTriviaSyntax>();
-
+            removableIdentifier = aRemovableIdentifier.ToUpperInvariant();
+            cancellationToken = cToken;
         }
 
         public override SyntaxNode VisitRegionDirectiveTrivia(RegionDirectiveTriviaSyntax node)
         {
+            if (regionsStack == null || cancellationToken.IsCancellationRequested)
+                return null;
             regionsStack.Push(node);
-            foreach (string identificator in DacDeclarationAnalyzer.GetDepricatedFieldsNames())
-            {
-                if (node.ToString().EndsWith(identificator))
-                    return null;
-            }
+            if (node.ToString().ToUpperInvariant().Contains(removableIdentifier))
+                return null;
             return node;
 
         }
         public override SyntaxNode VisitEndRegionDirectiveTrivia(EndRegionDirectiveTriviaSyntax node)
         {
-            
+            if (regionsStack == null || regionsStack.Count == 0 || cancellationToken.IsCancellationRequested)
+                return null;
             RegionDirectiveTriviaSyntax regionStart = regionsStack.Pop();
-            foreach (string identificator in DacDeclarationAnalyzer.GetDepricatedFieldsNames())
-            {
-                if (regionStart.ToString().EndsWith(identificator))
-                    return null;
-            }
+            if (regionStart.ToString().ToUpperInvariant().Contains(removableIdentifier))
+                return null;
             return node;
+        }
+
+        public override SyntaxNode VisitClassDeclaration(ClassDeclarationSyntax node)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return null;
+            if (string.Equals(node.Identifier.Text, removableIdentifier, StringComparison.OrdinalIgnoreCase))
+            {
+                var result = base.VisitClassDeclaration(node);
+                
+                return null;
+            }
+            var result2 = base.VisitClassDeclaration(node);
+            return result2;
+        }
+
+        public override SyntaxNode VisitPropertyDeclaration(PropertyDeclarationSyntax node)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return null;
+            if (string.Equals(node.Identifier.Text, removableIdentifier, StringComparison.OrdinalIgnoreCase))
+                return null;
+            return base.VisitPropertyDeclaration(node);
         }
     }
 }
