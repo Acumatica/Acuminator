@@ -20,8 +20,9 @@ namespace Acuminator.Analyzers
 			ImmutableArray.Create
 			(
 				Descriptors.PX1026_UnderscoresInDacDeclaration,
-                Descriptors.PX1027_ForbiddenFieldsInDacDeclaration
-			);
+                Descriptors.PX1027_ForbiddenFieldsInDacDeclaration,
+                Descriptors.PX1028_ConstructorInDacDeclaration
+            );
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
@@ -48,7 +49,8 @@ namespace Acuminator.Analyzers
             
             CheckDeclarationForUnderscores(dacOrDacExtNode, syntaxContext, dacProperties);
             CheckDeclarationForForbiddenFields(dacOrDacExtNode, syntaxContext, dacProperties);
-		}
+            CheckDeclarationForConstructors(dacOrDacExtNode, syntaxContext);
+        }
 
 		private static void CheckDeclarationForUnderscores(ClassDeclarationSyntax dacOrDacExtNode,
                                                            SyntaxNodeAnalysisContext syntaxContext,
@@ -134,6 +136,20 @@ namespace Acuminator.Analyzers
                             Descriptors.PX1027_ForbiddenFieldsInDacDeclaration, prop.Identifier.GetLocation(),prop.Identifier.Text));
                 }
             }
+        }
+
+        private static void CheckDeclarationForConstructors(ClassDeclarationSyntax dacOrDacExtNode,
+                                                            SyntaxNodeAnalysisContext syntaxContext)
+        {
+            var dacConstructors = dacOrDacExtNode.Members.OfType<ConstructorDeclarationSyntax>().ToList();
+
+            foreach (var constructor in dacConstructors)
+            {
+                syntaxContext.ReportDiagnostic(
+                    Diagnostic.Create(
+                        Descriptors.PX1028_ConstructorInDacDeclaration, constructor.Identifier.GetLocation()));
+            }
+
         }
 
 

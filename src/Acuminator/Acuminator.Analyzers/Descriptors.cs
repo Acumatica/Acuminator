@@ -95,5 +95,8 @@ namespace Acuminator.Analyzers
         internal static DiagnosticDescriptor PX1027_ForbiddenFieldsInDacDeclaration { get; } =
            Rule("PX1027", nameof(Resources.PX1027Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
+        internal static DiagnosticDescriptor PX1028_ConstructorInDacDeclaration { get; } =
+           Rule("PX1028", nameof(Resources.PX1028Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
     }
 }
