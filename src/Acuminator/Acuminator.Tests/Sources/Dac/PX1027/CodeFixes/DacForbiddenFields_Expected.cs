@@ -9,7 +9,7 @@ namespace PX.Objects.HackathonDemo
 {
     public class SOOrder : IBqlTable
     {
-        #region OrderNbr
+            #region OrderNbr
         public abstract class orderNbr : IBqlField { }
         [PXDBInt(IsKey = true)]
         [PXDefault]

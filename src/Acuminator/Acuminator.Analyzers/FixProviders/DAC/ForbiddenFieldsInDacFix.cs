@@ -19,10 +19,10 @@ namespace Acuminator.Analyzers.FixProviders
 {
     [Shared]
     [ExportCodeFixProvider(LanguageNames.CSharp)]
-    public class DepricatedFieldsInDacFix : CodeFixProvider
+    public class ForbiddenFieldsInDacFix : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-            ImmutableArray.Create(Descriptors.PX1027_DepricatedFieldsInDacDeclaration.Id);
+            ImmutableArray.Create(Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.Id);
 
         public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
@@ -30,21 +30,21 @@ namespace Acuminator.Analyzers.FixProviders
         {
             return Task.Run(() =>
             {
-                var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1027_DepricatedFieldsInDacDeclaration.Id);
+                var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.Id);
 
                 if (diagnostic == null || !diagnostic.IsRegisteredForCodeFix())
                     return;
 
                 string codeActionName = nameof(Resources.PX1027Fix).GetLocalized().ToString();
                 CodeAction codeAction = CodeAction.Create(codeActionName,
-                                                          cToken => DeleteDepricatedFieldsAsync(context.Document, context.Span, cToken),
+                                                          cToken => DeleteForbiddenFieldsAsync(context.Document, context.Span, cToken),
                                                           equivalenceKey: codeActionName);
 
                 context.RegisterCodeFix(codeAction, context.Diagnostics);
             }, context.CancellationToken);
         }
 
-        private async Task<Document> DeleteDepricatedFieldsAsync(Document document, TextSpan span, CancellationToken cancellationToken)
+        private async Task<Document> DeleteForbiddenFieldsAsync(Document document, TextSpan span, CancellationToken cancellationToken)
         {
             SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             SyntaxNode diagnosticNode = root?.FindNode(span);

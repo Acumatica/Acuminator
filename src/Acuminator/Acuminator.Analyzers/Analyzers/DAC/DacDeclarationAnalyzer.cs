@@ -20,7 +20,7 @@ namespace Acuminator.Analyzers
 			ImmutableArray.Create
 			(
 				Descriptors.PX1026_UnderscoresInDacDeclaration,
-                Descriptors.PX1027_DepricatedFieldsInDacDeclaration
+                Descriptors.PX1027_ForbiddenFieldsInDacDeclaration
 			);
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
@@ -47,7 +47,7 @@ namespace Acuminator.Analyzers
                                                                      group => group.ToList(), StringComparer.OrdinalIgnoreCase);
             
             CheckDeclarationForUnderscores(dacOrDacExtNode, syntaxContext, dacProperties);
-            CheckDeclarationForDepricatedFields(dacOrDacExtNode, syntaxContext, dacProperties);
+            CheckDeclarationForForbiddenFields(dacOrDacExtNode, syntaxContext, dacProperties);
 		}
 
 		private static void CheckDeclarationForUnderscores(ClassDeclarationSyntax dacOrDacExtNode,
@@ -103,16 +103,16 @@ namespace Acuminator.Analyzers
 			}	
 		}
 
-        private static void CheckDeclarationForDepricatedFields(ClassDeclarationSyntax dacOrDacExtNode, 
+        private static void CheckDeclarationForForbiddenFields(ClassDeclarationSyntax dacOrDacExtNode, 
                                                                 SyntaxNodeAnalysisContext syntaxContext,
                                                                 Dictionary<string, List<PropertyDeclarationSyntax>> dacProperties)
         {
 
-            string[] depricatedFields = GetDepricatedFieldsNames();
+            string[] forbiddenFields = GetForbiddenFieldsNames();
 
-            var invalidProperties = from dacProps in dacProperties
-                                    where depricatedFields.Contains(dacProps.Key, StringComparer.OrdinalIgnoreCase)
-                                    select dacProps;
+            var invalidProperties = from dacProperty in dacProperties
+                                    where forbiddenFields.Contains(dacProperty.Key, StringComparer.OrdinalIgnoreCase)
+                                    select dacProperty;
             
             foreach (var property in invalidProperties)
             {
@@ -124,14 +124,14 @@ namespace Acuminator.Analyzers
                 {
                     syntaxContext.ReportDiagnostic(
                         Diagnostic.Create(
-                            Descriptors.PX1027_DepricatedFieldsInDacDeclaration, classIterator.GetLocation()));
+                            Descriptors.PX1027_ForbiddenFieldsInDacDeclaration, classIterator.GetLocation()));
                 }
 
                 foreach (var prop in property.Value)
                 {
                     syntaxContext.ReportDiagnostic(
                         Diagnostic.Create(
-                            Descriptors.PX1027_DepricatedFieldsInDacDeclaration, prop.Identifier.GetLocation()));
+                            Descriptors.PX1027_ForbiddenFieldsInDacDeclaration, prop.Identifier.GetLocation()));
                 }
             }
         }
@@ -148,7 +148,7 @@ namespace Acuminator.Analyzers
 			return true;
 		}
 
-        public static string[] GetDepricatedFieldsNames()
+        public static string[] GetForbiddenFieldsNames()
         {
             return new string[]  
             {

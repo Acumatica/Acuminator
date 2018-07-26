@@ -413,7 +413,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove depricated field from the DAC declaration.
+        ///   Looks up a localized string similar to Remove forbidden field from the DAC declaration.
         /// </summary>
         public static string PX1027Fix {
             get {
@@ -422,7 +422,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Field cannot be declared within DAC declarations.
+        ///   Looks up a localized string similar to Field &quot;{0}&quot; cannot be declared within DAC declarations.
         /// </summary>
         public static string PX1027Title {
             get {
