@@ -238,6 +238,6 @@
     <value>Remove forbidden field from the DAC declaration</value>
   </data>
   <data name="PX1027Title" xml:space="preserve">
-    <value>Field "{0}" cannot be declared within DAC declarations</value>
+    <value>Field {0} cannot be declared within DAC declarations</value>
   </data>
 </root>

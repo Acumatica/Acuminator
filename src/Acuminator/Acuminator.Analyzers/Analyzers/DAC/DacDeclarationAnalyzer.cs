@@ -124,14 +124,14 @@ namespace Acuminator.Analyzers
                 {
                     syntaxContext.ReportDiagnostic(
                         Diagnostic.Create(
-                            Descriptors.PX1027_ForbiddenFieldsInDacDeclaration, dacFieldClass.Identifier.GetLocation()));
+                            Descriptors.PX1027_ForbiddenFieldsInDacDeclaration, dacFieldClass.Identifier.GetLocation(),dacFieldClass.Identifier.Text));
                 }
 
                 foreach (var prop in property.Value)
                 {
                     syntaxContext.ReportDiagnostic(
                         Diagnostic.Create(
-                            Descriptors.PX1027_ForbiddenFieldsInDacDeclaration, prop.Identifier.GetLocation()));
+                            Descriptors.PX1027_ForbiddenFieldsInDacDeclaration, prop.Identifier.GetLocation(),prop.Identifier.Text));
                 }
             }
         }

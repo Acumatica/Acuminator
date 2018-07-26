@@ -32,9 +32,10 @@ namespace Acuminator.Analyzers.FixProviders
             {
                 var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.Id);
 
-                if (diagnostic == null)
+                if (diagnostic == null || context.CancellationToken.IsCancellationRequested)
                     return;
 
+                    
                 string codeActionName = nameof(Resources.PX1027Fix).GetLocalized().ToString();
                 CodeAction codeAction = CodeAction.Create(codeActionName,
                                                           cToken => DeleteForbiddenFieldsAsync(context.Document, context.Span, cToken),

@@ -21,15 +21,15 @@ namespace Acuminator.Tests
         public virtual void Test_Dac_With_Forbidden_Fields(string source) =>
             VerifyCSharpDiagnostic(source,
                 //DAC part 1
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 13, column: 31),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 17, column: 23),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 20, column: 31),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 23, column: 23),
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 13, column: 31, fieldName: "companyId"),
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 17, column: 23, fieldName: "CompanyID"),
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 20, column: 31, fieldName: "deletedDatabaseRecord"),
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 23, column: 23, fieldName: "DeletedDatabaseRecord"),
                 //DAC part 2
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 37, column: 31),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 40, column: 23),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 43, column: 31),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 46, column: 23));
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 37, column: 31, fieldName: "deletedDatabaseRecord"),
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 40, column: 23, fieldName: "DeletedDatabaseRecord"),
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 43, column: 31, fieldName: "companyMask"),
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 46, column: 23, fieldName: "CompanyMask"));
 
         [Theory]
         [EmbeddedFileData(@"Dac\PX1027\Diagnostics\DacForbiddenFields.cs",
@@ -44,12 +44,15 @@ namespace Acuminator.Tests
     }
     public partial class DacForbiddenFieldsTests : CodeFixVerifier
     {
-        private DiagnosticResult CreatePX1027ForbiddenDacFieldDiagnosticResult(int line, int column)
+        private DiagnosticResult CreatePX1027ForbiddenDacFieldDiagnosticResult(int line, int column, string fieldName)
         {
+            string format = Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.Title.ToString();
+            string expectedMessage = string.Format(format, fieldName);
+
             return new DiagnosticResult
             {
                 Id = Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.Id,
-                Message = Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.Title.ToString(),
+                Message = expectedMessage,
                 Severity = DiagnosticSeverity.Error,
                 Locations =
                 new[]
