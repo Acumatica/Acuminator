@@ -32,7 +32,7 @@ namespace Acuminator.Analyzers.FixProviders
             {
                 var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.Id);
 
-                if (diagnostic == null || !diagnostic.IsRegisteredForCodeFix())
+                if (diagnostic == null)
                     return;
 
                 string codeActionName = nameof(Resources.PX1027Fix).GetLocalized().ToString();

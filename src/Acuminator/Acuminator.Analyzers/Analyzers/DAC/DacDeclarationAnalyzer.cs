@@ -116,15 +116,15 @@ namespace Acuminator.Analyzers
             
             foreach (var property in invalidProperties)
             {
-                IEnumerable<ClassDeclarationSyntax> invalidClass = dacOrDacExtNode.Members.OfType<ClassDeclarationSyntax>()
+                IEnumerable<ClassDeclarationSyntax> invalidClasses = dacOrDacExtNode.Members.OfType<ClassDeclarationSyntax>()
                                                                                           .Where(dacField => string.Equals(dacField.Identifier.ValueText, 
                                                                                                                             property.Key,
                                                                                                                             StringComparison.OrdinalIgnoreCase));
-                foreach (ClassDeclarationSyntax classIterator in invalidClass)
+                foreach (ClassDeclarationSyntax dacFieldClass in invalidClasses)
                 {
                     syntaxContext.ReportDiagnostic(
                         Diagnostic.Create(
-                            Descriptors.PX1027_ForbiddenFieldsInDacDeclaration, classIterator.GetLocation()));
+                            Descriptors.PX1027_ForbiddenFieldsInDacDeclaration, dacFieldClass.Identifier.GetLocation()));
                 }
 
                 foreach (var prop in property.Value)
