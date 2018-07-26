@@ -53,7 +53,7 @@ namespace Acuminator.Analyzers.FixProviders
 
             if (diagnosticNode == null || cancellationToken.IsCancellationRequested)
                 return document;
-            var trackingRoot = root.TrackNodes(diagnosticNode);
+            //var trackingRoot = root.TrackNodes(diagnosticNode);
             ClassDeclarationSyntax classDeclaration = diagnosticNode.Parent<ClassDeclarationSyntax>();
 
             var rewriterWalker = new RegionClassRewriter((diagnosticNode is ClassDeclarationSyntax) ?
@@ -62,7 +62,7 @@ namespace Acuminator.Analyzers.FixProviders
                                                          cancellationToken);
             var classModified = rewriterWalker.Visit(classDeclaration) as ClassDeclarationSyntax;
 
-            var modifiedNode = trackingRoot.GetCurrentNode(diagnosticNode);
+            //var modifiedNode = trackingRoot.GetCurrentNode(diagnosticNode);
             var modifiedRoot = root.ReplaceNode(classDeclaration, classModified);
 
             return document.WithSyntaxRoot(modifiedRoot);
