@@ -20,6 +20,13 @@ namespace Acuminator.Analyzers
 
 		public FieldAttributesTypes FieldAttributes => fieldAttributes.Value;
 
+		private readonly Lazy<PXSystemActionTypes> systemActionTypes;
+
+		public PXSystemActionTypes PXSystemActions => systemActionTypes.Value;
+
+
+
+
         public INamedTypeSymbol Array => Compilation.GetSpecialType(SpecialType.System_Array);
 
 		public IArrayTypeSymbol ByteArray => Compilation.CreateArrayTypeSymbol(Byte);
@@ -48,9 +55,7 @@ namespace Acuminator.Analyzers
         public INamedTypeSymbol PXSelectBaseType => Compilation.GetTypeByMetadataName(typeof(PXSelectBase).FullName);
 
         public INamedTypeSymbol PXActionType => Compilation.GetTypeByMetadataName(typeof(PXAction).FullName);
-		public INamedTypeSymbol PXActionType => Compilation.GetTypeByMetadataName(typeof(PXCancel).FullName);
-		public INamedTypeSymbol PXActionType => Compilation.GetTypeByMetadataName(typeof(PXAction).FullName);
-
+		
 		public INamedTypeSymbol PXAdapterType => Compilation.GetTypeByMetadataName(typeof(PXAdapter).FullName);
         public INamedTypeSymbol IBqlTableType => Compilation.GetTypeByMetadataName(typeof(IBqlTable).FullName);
         public INamedTypeSymbol IBqlFieldType => Compilation.GetTypeByMetadataName(typeof(IBqlField).FullName);
@@ -74,7 +79,10 @@ namespace Acuminator.Analyzers
         {
             Compilation = compilation;
 			bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation)); 
-            fieldAttributes = new Lazy<FieldAttributesTypes>(() => new FieldAttributesTypes(Compilation));
+            fieldAttributes = new Lazy<FieldAttributesTypes>(
+										() => new FieldAttributesTypes(Compilation));
+            systemActionTypes = new Lazy<PXSystemActionTypes>(
+										() => new PXSystemActionTypes(Compilation));
         }
 
         #region Field Attributes Types
@@ -126,7 +134,37 @@ namespace Acuminator.Analyzers
             public INamedTypeSymbol PXDBUserPasswordAttribute => compilation.GetTypeByMetadataName(typeof(PXDBUserPasswordAttribute).FullName);
             #endregion
         }
-        #endregion
+		#endregion
+
+		#region System Actions Types
+		public class PXSystemActionTypes
+		{
+			private readonly Compilation compilation;
+
+			public PXSystemActionTypes(Compilation aCompilation)
+			{
+				compilation = aCompilation;
+			}
+
+			public INamedTypeSymbol PXSave => compilation.GetTypeByMetadataName(typeof(PXSave<>).FullName);
+
+			public INamedTypeSymbol PXCancel => compilation.GetTypeByMetadataName(typeof(PXCancel<>).FullName);
+
+			public INamedTypeSymbol PXInsert => compilation.GetTypeByMetadataName(typeof(PXInsert<>).FullName);
+
+			public INamedTypeSymbol PXDelete => compilation.GetTypeByMetadataName(typeof(PXDelete<>).FullName);
+
+			public INamedTypeSymbol PXCopyPasteAction => compilation.GetTypeByMetadataName(typeof(PXCopyPasteAction<>).FullName);
+
+			public INamedTypeSymbol PXFirst => compilation.GetTypeByMetadataName(typeof(PXFirst<>).FullName);
+
+			public INamedTypeSymbol PXPrevious => compilation.GetTypeByMetadataName(typeof(PXPrevious<>).FullName);
+
+			public INamedTypeSymbol PXNext => compilation.GetTypeByMetadataName(typeof(PXNext<>).FullName);
+
+			public INamedTypeSymbol PXLast => compilation.GetTypeByMetadataName(typeof(PXLast<>).FullName);
+		}
+		#endregion
 
 		#region BQL Types
 		/// <summary>
