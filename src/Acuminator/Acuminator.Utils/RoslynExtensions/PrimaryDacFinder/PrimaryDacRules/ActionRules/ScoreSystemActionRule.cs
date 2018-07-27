@@ -22,18 +22,21 @@ namespace Acuminator.Utilities.PrimaryDAC
 	/// </summary>
 	public class ScoreSystemActionRule : ScoreSimpleActionRule
 	{
-		protected override double DefaultWeight => 5;
+		private readonly PXSystemActionsRegister systemActionsRegister;
 
-		public ScoreSystemActionRule( double? weight = null) : base(weight)
+		protected override double DefaultWeight => 4;
+
+		public ScoreSystemActionRule(PXContext context, double? weight = null) : base(weight)
 		{
+			systemActionsRegister = new PXSystemActionsRegister(context);
 		}
 
 		public override bool SatisfyRule(PrimaryDacFinder dacFinder, ISymbol action, INamedTypeSymbol actionType)
 		{
-			if (dacFinder == null || dacFinder.CancellationToken.IsCancellationRequested || actionType == null)
+			if (!base.SatisfyRule(dacFinder, action, actionType))
 				return false;
 
-			return true;
+			return systemActionsRegister.IsSystemAction(actionType);
 		}
 	}
 }

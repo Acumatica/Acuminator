@@ -20,22 +20,26 @@ namespace Acuminator.Utilities.PrimaryDAC
 	/// <summary>
 	/// A rule to  add score to DACs which has action declared for it.
 	/// </summary>
-	public class ScoreSimpleActionRule : ActionRuleBase
+	public class SameOrDescendingNamespaceDacRule : DacRuleBase
 	{
 		public sealed override bool IsAbsolute => false;
 
-		protected override double DefaultWeight => 1;
+		protected override double DefaultWeight => 2;
 
-		public ScoreSimpleActionRule(double? weight = null) : base(weight)
+		public SameOrDescendingNamespaceDacRule(double? weight = null) : base(weight)
 		{
 		}
 
-		public override bool SatisfyRule(PrimaryDacFinder dacFinder, ISymbol action, INamedTypeSymbol actionType)
+		public override bool SatisfyRule(PrimaryDacFinder dacFinder, ITypeSymbol dac)
 		{
-			if (dacFinder == null || dacFinder.CancellationToken.IsCancellationRequested || actionType == null)
+			if (dacFinder?.Graph?.ContainingNamespace == null || dacFinder.CancellationToken.IsCancellationRequested ||
+				dac?.ContainingNamespace == null)
+			{
 				return false;
+			}
 
-			return true;
+			var graphNameSpace = dacFinder.Graph.ContainingNamespace;
+			return dac.GetContainingNamespaces().Contains(graphNameSpace);
 		}
 	}
 }

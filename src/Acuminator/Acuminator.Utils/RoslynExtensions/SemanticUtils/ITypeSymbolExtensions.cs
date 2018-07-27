@@ -60,6 +60,17 @@ namespace Acuminator.Utilities
 			}
 		}
 
+		public static IEnumerable<INamespaceSymbol> GetContainingNamespaces(this ITypeSymbol type)
+		{
+			var currentNamespace = type?.ContainingNamespace;
+
+			while (currentNamespace != null)
+			{
+				yield return currentNamespace;
+				currentNamespace = currentNamespace.ContainingNamespace;
+			}
+		}
+
 		/// <summary>
 		/// Determine if "type" inherits from "baseType", ignoring constructed types, optionally including interfaces, dealing only with original types.
 		/// </summary>

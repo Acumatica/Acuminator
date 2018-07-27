@@ -26,20 +26,29 @@ namespace Acuminator.Utilities.PrimaryDAC
 
 			rules = new List<PrimaryDacRuleBase>
 			{
+				//AbsoluteRules
 				new PrimaryDacSpecifiedGraphRule(),
 				new PXImportAttributeGraphRule(),
 
+				// Heuristic rules
+				// Graph rules
 				new FirstViewsInGraphRule(numberOfViews: 1, weight: First_1_ViewsWeight),
 				new FirstViewsInGraphRule(numberOfViews: 3, weight: First_3_ViewsWeight),
 				new FirstViewsInGraphRule(numberOfViews: 5, weight: First_5_ViewsWeight),
 				new FirstViewsInGraphRule(numberOfViews: 10, weight: First_10_ViewsWeight),
 				new NoReadOnlyViewGraphRule(),
 
+				// View rules
 				new ForbiddenWordsInNameViewRule(),
 				new HiddenAttributesViewRule(),
 				new NoPXSetupViewRule(context),
 
-				new ScoreSimpleActionRule()
+				// Action rules
+				new ScoreSimpleActionRule(),
+				new ScoreSystemActionRule(context),
+
+				// DAC rules
+				new SameOrDescendingNamespaceDacRule()
 			}
 			.ToImmutableArray();
 		}

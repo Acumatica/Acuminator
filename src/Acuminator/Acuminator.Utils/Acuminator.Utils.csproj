@@ -108,6 +108,7 @@
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\Base\PrimaryDacRuleKind.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacFinder.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\Base\ViewRuleBase.cs" />
+    <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\DacRules\SameOrDescendingNamespaceDacRule.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\GraphRules\FirstViewsInGraphRule.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\GraphRules\PrimaryDacSpecifiedGraphRule.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\RulesProvider\DefaultRulesProvider.cs" />
