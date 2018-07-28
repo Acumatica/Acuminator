@@ -35,8 +35,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 		/// Filter DACs from graph using this rule.
 		/// </summary>
 		/// <param name="dacFinder">The DAC finder.</param>
-		/// <param name="graph">The graph.</param>
 		/// <returns/>
-		public abstract IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder, INamedTypeSymbol graph);
+		public abstract IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder);
 	}
 }

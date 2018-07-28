@@ -13,10 +13,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 	/// </summary>
 	internal class DefaultRulesProvider : IRulesProvider
 	{
-		private const double First_1_ViewsWeight = 1;
-		private const double First_3_ViewsWeight = 5;
-		private const double First_5_ViewsWeight = 5;
-		private const double First_10_ViewsWeight = 10;
+		
 
 		private readonly ImmutableArray<PrimaryDacRuleBase> rules;
 
@@ -32,10 +29,10 @@ namespace Acuminator.Utilities.PrimaryDAC
 
 				// Heuristic rules
 				// Graph rules
-				new FirstViewsInGraphRule(numberOfViews: 1, weight: First_1_ViewsWeight),
-				new FirstViewsInGraphRule(numberOfViews: 3, weight: First_3_ViewsWeight),
-				new FirstViewsInGraphRule(numberOfViews: 5, weight: First_5_ViewsWeight),
-				new FirstViewsInGraphRule(numberOfViews: 10, weight: First_10_ViewsWeight),
+				new FirstViewsInGraphRule(numberOfViews: 1),
+				new FirstViewsInGraphRule(numberOfViews: 3),
+				new FirstViewsInGraphRule(numberOfViews: 5),
+				new FirstViewsInGraphRule(numberOfViews: 10),
 				new NoReadOnlyViewGraphRule(),
 
 				// View rules

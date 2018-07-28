@@ -24,13 +24,11 @@ namespace Acuminator.Utilities.PrimaryDAC
 	{
 		public sealed override bool IsAbsolute => true;
 
-		protected override double DefaultWeight => 1000;
-
 		public PXImportAttributeGraphRule(double? customWeight = null) : base(customWeight)
 		{
 		}
 
-		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder, INamedTypeSymbol graph)
+		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder)
 		{
 			if (dacFinder == null || dacFinder.CancellationToken.IsCancellationRequested)
 				return Enumerable.Empty<ITypeSymbol>();

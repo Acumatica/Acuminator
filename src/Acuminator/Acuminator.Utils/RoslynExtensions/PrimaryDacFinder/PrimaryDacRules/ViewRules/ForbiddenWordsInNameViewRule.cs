@@ -26,8 +26,6 @@ namespace Acuminator.Utilities.PrimaryDAC
 
 		public sealed override bool IsAbsolute => false;
 
-		protected override double DefaultWeight => -15;
-
 		public ForbiddenWordsInNameViewRule(IEnumerable<string> wordsToForbid = null, double? weight = null) : base(weight)
 		{
 			forbiddenWords = wordsToForbid.IsNullOrEmpty() 

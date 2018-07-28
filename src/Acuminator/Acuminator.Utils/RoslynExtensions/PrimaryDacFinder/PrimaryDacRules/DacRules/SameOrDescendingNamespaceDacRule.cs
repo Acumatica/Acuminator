@@ -24,8 +24,6 @@ namespace Acuminator.Utilities.PrimaryDAC
 	{
 		public sealed override bool IsAbsolute => false;
 
-		protected override double DefaultWeight => 2;
-
 		public SameOrDescendingNamespaceDacRule(double? weight = null) : base(weight)
 		{
 		}

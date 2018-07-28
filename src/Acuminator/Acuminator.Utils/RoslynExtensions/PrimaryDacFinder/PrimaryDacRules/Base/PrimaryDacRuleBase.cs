@@ -40,7 +40,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 		/// <summary>
 		/// The default weight value for this rule.
 		/// </summary>
-		protected abstract double DefaultWeight { get; }
+		protected virtual double DefaultWeight => WeightsTable.Default[this.GetType().Name];
 
 		protected PrimaryDacRuleBase(double? customWeight)
 		{

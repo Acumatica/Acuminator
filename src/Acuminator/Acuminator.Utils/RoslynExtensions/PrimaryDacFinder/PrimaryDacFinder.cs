@@ -141,7 +141,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 			switch (rule.RuleKind)
 			{
 				case PrimaryDacRuleKind.Graph:
-					dacCandidates = (rule as GraphRuleBase)?.GetCandidatesFromGraphRule(this, Graph);
+					dacCandidates = (rule as GraphRuleBase)?.GetCandidatesFromGraphRule(this);
 					break;
 				case PrimaryDacRuleKind.View:
 					dacCandidates = GetCandidatesFromViewRule(rule as ViewRuleBase);

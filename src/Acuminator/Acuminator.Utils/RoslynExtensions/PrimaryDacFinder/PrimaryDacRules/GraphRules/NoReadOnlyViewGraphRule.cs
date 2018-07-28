@@ -24,15 +24,13 @@ namespace Acuminator.Utilities.PrimaryDAC
 	{
 		public sealed override bool IsAbsolute => false;
 
-		protected override double DefaultWeight => -20;
-
 		public NoReadOnlyViewGraphRule(double? weight = null) : base(weight)
 		{
 		}
 
-		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder, INamedTypeSymbol graph)
+		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder)
 		{
-			if (dacFinder == null || graph == null || dacFinder.CancellationToken.IsCancellationRequested)
+			if (dacFinder == null || dacFinder.CancellationToken.IsCancellationRequested)
 				return Enumerable.Empty<ITypeSymbol>();
 
 			List<INamedTypeSymbol> readOnlyViews = new List<INamedTypeSymbol>(capacity: 4);

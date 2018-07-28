@@ -31,7 +31,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 
 		protected override double DefaultWeight => 0.0;
 
-		public FirstViewsInGraphRule(int numberOfViews, double weight) : base(weight)
+		public FirstViewsInGraphRule(int numberOfViews, double? weight = null) : base(weight)
 		{
 			if (weight == 0)
 				throw new ArgumentOutOfRangeException(nameof(weight), "Rule weight can't be zero");
@@ -39,11 +39,16 @@ namespace Acuminator.Utilities.PrimaryDAC
 				throw new ArgumentOutOfRangeException(nameof(numberOfViews), "Number of views should be positive");
 
 			NumberOfViews = numberOfViews;
+			
+			if (weight == null)
+			{
+				Weight = WeightsTable.Default[$"{nameof(FirstViewsInGraphRule)}-{NumberOfViews}"];
+			}
 		}
 
-		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder, INamedTypeSymbol graph)
+		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder)
 		{
-			if (graph == null || dacFinder == null || dacFinder.GraphViewSymbolsWithTypes.Length == 0 ||
+			if (dacFinder == null || dacFinder.GraphViewSymbolsWithTypes.Length == 0 ||
 				dacFinder.CancellationToken.IsCancellationRequested)
 			{
 				return Enumerable.Empty<ITypeSymbol>();

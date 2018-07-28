@@ -24,8 +24,6 @@ namespace Acuminator.Utilities.PrimaryDAC
 	{
 		private readonly PXSystemActionsRegister systemActionsRegister;
 
-		protected override double DefaultWeight => 4;
-
 		public ScoreSystemActionRule(PXContext context, double? weight = null) : base(weight)
 		{
 			systemActionsRegister = new PXSystemActionsRegister(context);

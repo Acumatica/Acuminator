@@ -111,6 +111,7 @@
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\DacRules\SameOrDescendingNamespaceDacRule.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\GraphRules\FirstViewsInGraphRule.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\GraphRules\PrimaryDacSpecifiedGraphRule.cs" />
+    <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\RulesProvider\WeightsTable.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\RulesProvider\DefaultRulesProvider.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\RulesProvider\IRulesProvider.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\ViewRules\HiddenAttributesViewRule.cs" />

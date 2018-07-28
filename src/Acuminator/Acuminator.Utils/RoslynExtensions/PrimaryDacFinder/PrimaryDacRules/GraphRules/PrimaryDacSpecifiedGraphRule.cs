@@ -24,18 +24,16 @@ namespace Acuminator.Utilities.PrimaryDAC
 	{
 		public override bool IsAbsolute => true;
 
-		protected override double DefaultWeight => double.MaxValue;
-
 		public PrimaryDacSpecifiedGraphRule() : base(null)
 		{
 		}
 
-		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder, INamedTypeSymbol graph)
+		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder)
 		{
-			if (graph == null)
+			if (dacFinder?.Graph == null)
 				return Enumerable.Empty<ITypeSymbol>();
 
-			ITypeSymbol primaryDac = graph.GetDeclaredPrimaryDacFromGraphOrGraphExtension(dacFinder.PxContext);
+			ITypeSymbol primaryDac = dacFinder.Graph.GetDeclaredPrimaryDacFromGraphOrGraphExtension(dacFinder.PxContext);
 			return primaryDac?.ToEnumerable() ?? Enumerable.Empty<ITypeSymbol>();
 		}
 	}

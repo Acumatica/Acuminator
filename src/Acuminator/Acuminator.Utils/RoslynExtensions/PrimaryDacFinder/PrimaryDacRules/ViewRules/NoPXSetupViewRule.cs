@@ -24,8 +24,6 @@ namespace Acuminator.Utilities.PrimaryDAC
 	{
 		public sealed override bool IsAbsolute => false;
 
-		protected override double DefaultWeight => -40;
-
 		private readonly ImmutableArray<INamedTypeSymbol> setupTypes;
 
 		public NoPXSetupViewRule(PXContext context, double? weight = null) : base(weight)
