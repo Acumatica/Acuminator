@@ -114,6 +114,7 @@
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\RulesProvider\WeightsTable.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\RulesProvider\DefaultRulesProvider.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\RulesProvider\IRulesProvider.cs" />
+    <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\ViewRules\PXViewNameAttributeViewRule.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\ViewRules\HiddenAttributesViewRule.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\ViewRules\NoPXSetupViewRule.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\GraphRules\NoReadOnlyViewGraphRule.cs" />
