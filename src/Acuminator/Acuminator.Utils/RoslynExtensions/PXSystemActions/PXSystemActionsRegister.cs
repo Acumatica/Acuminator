@@ -38,7 +38,7 @@ namespace Acuminator.Utilities
 			pxAction.ThrowOnNull(nameof(pxAction));
 
 			return pxAction.GetBaseTypesAndThis()
-						   .Any(action => SystemActions.Contains(action));
+						   .Any(action => SystemActions.Contains(action) || SystemActions.Contains(action.OriginalDefinition));
 		}
 
 		private static HashSet<ITypeSymbol> GetSystemActions(PXContext pxContext) =>
