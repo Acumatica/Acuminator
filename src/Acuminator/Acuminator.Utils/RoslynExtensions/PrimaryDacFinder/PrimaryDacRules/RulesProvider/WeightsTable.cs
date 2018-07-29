@@ -17,19 +17,25 @@ namespace Acuminator.Utilities.PrimaryDAC
 
 		private static readonly IImmutableDictionary<string, double> weights = new Dictionary<string, double>
 		{
-			[nameof(PrimaryDacSpecifiedGraphRule)]     = double.MaxValue,
-			[nameof(PXImportAttributeGraphRule)]       = 1000.0,
-			[$"{nameof(FirstViewsInGraphRule)}-1"]     = 1.0,
-			[$"{nameof(FirstViewsInGraphRule)}-3"]     = 5.0,
-			[$"{nameof(FirstViewsInGraphRule)}-5"]     = 5.0,
-			[$"{nameof(FirstViewsInGraphRule)}-10"]    = 10.0,
-			[nameof(NoReadOnlyViewGraphRule)]          = -20.0,
-			[nameof(ForbiddenWordsInNameViewRule)]     = -15.0,
-			[nameof(HiddenAttributesViewRule)]         = -50.0,
-			[nameof(NoPXSetupViewRule)]                = -40.0,
-			[nameof(ScoreSimpleActionRule)]            = 1.0,
-			[nameof(ScoreSystemActionRule)]            = 4.0,
-			[nameof(SameOrDescendingNamespaceDacRule)] = 2.0,
+			[nameof(PrimaryDacSpecifiedGraphRule)]             = double.MaxValue,
+			[nameof(PXImportAttributeGraphRule)]               = 1000.0,
+
+			[$"{nameof(FirstViewsInGraphRule)}-1"]             = 1.0,
+			[$"{nameof(FirstViewsInGraphRule)}-3"]             = 5.0,
+			[$"{nameof(FirstViewsInGraphRule)}-5"]             = 5.0,
+			[$"{nameof(FirstViewsInGraphRule)}-10"]            = 10.0,
+
+			[nameof(NoReadOnlyViewGraphRule)]                  = -20.0,
+			[nameof(ForbiddenWordsInNameViewRule)]             = -15.0,
+			[nameof(HiddenAttributesViewRule)]                 = -50.0,
+			[nameof(NoPXSetupViewRule)]                        = -40.0,
+			[nameof(ViewsWithoutPXViewNameAttributeGraphRule)] = -3.0,
+			[nameof(PXViewNameAttributeViewRule)]	           = 3.0,
+
+			[nameof(ScoreSimpleActionRule)]                    = 1.0,
+			[nameof(ScoreSystemActionRule)]                    = 4.0,
+
+			[nameof(SameOrDescendingNamespaceDacRule)]         = 2.0,
 		}
 		.ToImmutableDictionary();
 

@@ -34,11 +34,13 @@ namespace Acuminator.Utilities.PrimaryDAC
 				new FirstViewsInGraphRule(numberOfViews: 5),
 				new FirstViewsInGraphRule(numberOfViews: 10),
 				new NoReadOnlyViewGraphRule(),
+				new ViewsWithoutPXViewNameAttributeGraphRule(context),
 
 				// View rules
 				new ForbiddenWordsInNameViewRule(),
 				new HiddenAttributesViewRule(),
 				new NoPXSetupViewRule(context),
+				new PXViewNameAttributeViewRule(context),			
 
 				// Action rules
 				new ScoreSimpleActionRule(),
