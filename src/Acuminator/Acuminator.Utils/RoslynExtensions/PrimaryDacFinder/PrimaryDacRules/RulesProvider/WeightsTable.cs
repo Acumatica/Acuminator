@@ -26,10 +26,12 @@ namespace Acuminator.Utilities.PrimaryDAC
 			[$"{nameof(FirstViewsInGraphRule)}-10"]            = 10.0,
 
 			[nameof(NoReadOnlyViewGraphRule)]                  = -20.0,
+			[nameof(ViewsWithoutPXViewNameAttributeGraphRule)] = -3.0,
+			[nameof(PairOfViewsWithSpecialNamesGraphRule)]	   = 10,
+
 			[nameof(ForbiddenWordsInNameViewRule)]             = -15.0,
 			[nameof(HiddenAttributesViewRule)]                 = -50.0,
-			[nameof(NoPXSetupViewRule)]                        = -40.0,
-			[nameof(ViewsWithoutPXViewNameAttributeGraphRule)] = -3.0,
+			[nameof(NoPXSetupViewRule)]                        = -40.0,		
 			[nameof(PXViewNameAttributeViewRule)]	           = 3.0,
 
 			[nameof(ScoreSimpleActionRule)]                    = 1.0,

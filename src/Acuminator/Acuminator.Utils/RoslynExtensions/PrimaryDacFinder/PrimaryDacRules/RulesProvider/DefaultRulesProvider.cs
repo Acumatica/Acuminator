@@ -13,8 +13,6 @@ namespace Acuminator.Utilities.PrimaryDAC
 	/// </summary>
 	internal class DefaultRulesProvider : IRulesProvider
 	{
-		
-
 		private readonly ImmutableArray<PrimaryDacRuleBase> rules;
 
 		public DefaultRulesProvider(PXContext context)
@@ -33,6 +31,10 @@ namespace Acuminator.Utilities.PrimaryDAC
 				new FirstViewsInGraphRule(numberOfViews: 3),
 				new FirstViewsInGraphRule(numberOfViews: 5),
 				new FirstViewsInGraphRule(numberOfViews: 10),
+
+				new PairOfViewsWithSpecialNamesGraphRule(aFirstName: "Document", aSecondName: "CurrentDocument"),
+				new PairOfViewsWithSpecialNamesGraphRule(aFirstName: "Entities", aSecondName: "CurrentEntity"),
+
 				new NoReadOnlyViewGraphRule(),
 				new ViewsWithoutPXViewNameAttributeGraphRule(context),
 
