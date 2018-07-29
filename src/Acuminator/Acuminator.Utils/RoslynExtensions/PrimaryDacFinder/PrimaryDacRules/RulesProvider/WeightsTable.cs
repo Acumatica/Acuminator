@@ -19,6 +19,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 		{
 			[nameof(PrimaryDacSpecifiedGraphRule)]             = double.MaxValue,
 			[nameof(PXImportAttributeGraphRule)]               = 1000.0,
+			[nameof(PXFilteredProcessingGraphRule)]			   = 1000.0,
 
 			[$"{nameof(FirstViewsInGraphRule)}-1"]             = 1.0,
 			[$"{nameof(FirstViewsInGraphRule)}-3"]             = 5.0,

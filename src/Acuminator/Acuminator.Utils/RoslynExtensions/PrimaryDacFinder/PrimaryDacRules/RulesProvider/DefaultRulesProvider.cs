@@ -24,6 +24,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 				//AbsoluteRules
 				new PrimaryDacSpecifiedGraphRule(),
 				new PXImportAttributeGraphRule(),
+				new PXFilteredProcessingGraphRule(context),
 
 				// Heuristic rules
 				// Graph rules
