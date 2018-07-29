@@ -36,6 +36,8 @@ namespace Acuminator.Utilities
 
 		public static readonly string IBqlOn = typeof(IBqlOn).Name;
 
+		public static readonly string IBqlSet = typeof(IBqlSet).Name;
+
 		public static readonly string PXSelectBaseType = typeof(PXSelectBase).Name;
 
 		public static readonly string Constant = typeof(Constant).Name;
@@ -72,6 +74,7 @@ namespace Acuminator.Utilities
 				[BqlCommand] = PXCodeType.BqlCommand,
 				[IBqlCreator] = PXCodeType.BqlOperator,
 				[IBqlJoin] = PXCodeType.BqlOperator,
+				[IBqlSet] = PXCodeType.BqlOperator,
 				[PXGraph] = PXCodeType.PXGraph
 			};
 
@@ -84,6 +87,7 @@ namespace Acuminator.Utilities
 				[IBqlParameter] = PXCodeType.BqlParameter,
 				[IBqlCreator] = PXCodeType.BqlOperator,
 				[IBqlJoin] = PXCodeType.BqlOperator,
+				[IBqlSet] = PXCodeType.BqlOperator,
 				[PXAction] = PXCodeType.PXAction
 			};
 
