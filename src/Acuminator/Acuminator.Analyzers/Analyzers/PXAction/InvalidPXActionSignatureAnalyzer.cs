@@ -18,27 +18,48 @@ namespace Acuminator.Analyzers
 			compilationStartContext.RegisterSymbolAction(c => AnalyzeMethod(c, pxContext), SymbolKind.Method);
 		}
 
-		private static void AnalyzeMethod(SymbolAnalysisContext context, PXContext pxContext)
+		private static void AnalyzeMethod(SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
-			var method = (IMethodSymbol) context.Symbol;
-			var parent = method.ContainingType;
-			if (parent != null && parent.InheritsFrom(pxContext.PXGraphType))
+			if (!(symbolContext.Symbol is IMethodSymbol method) || symbolContext.CancellationToken.IsCancellationRequested ||
+				!CheckIfDiagnosticShouldBeRegisteredForMethod(method, pxContext))
 			{
-				var field = parent.GetMembers()
-					.OfType<IFieldSymbol>()
-					.FirstOrDefault(f => f.Type.InheritsFrom(pxContext.PXActionType)
-								&& String.Equals(f.Name, method.Name, StringComparison.OrdinalIgnoreCase));
-
-				if (field != null)
-				{
-					if (method.ReturnType.SpecialType == SpecialType.System_Collections_IEnumerable
-						&& (method.Parameters.Length == 0 || !method.Parameters[0].Type.Equals(pxContext.PXAdapterType))
-						|| method.ReturnsVoid && method.Parameters.Length > 0)
-					{
-						context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1000_InvalidPXActionHandlerSignature, method.Locations.First()));
-					}
-				}
+				return;
 			}
+
+			var graphOrGraphExt = method.ContainingType;
+			bool isGraph = graphOrGraphExt?.InheritsFrom(pxContext.PXGraphType) ?? false;
+
+			if (graphOrGraphExt == null ||
+				(!isGraph && !graphOrGraphExt.InheritsFrom(pxContext.PXGraphExtensionType)))
+			{
+				return;
+			}
+
+			var actionsWithTypes = isGraph
+				? graphOrGraphExt.GetPXActionSymbolsWithTypesFromGraph(pxContext)
+				: graphOrGraphExt.GetPXActionSymbolsWithTypesFromGraphExtension(pxContext);
+
+			var action = actionsWithTypes.FirstOrDefault(a => String.Equals(a.ActionSymbol.Name, method.Name, StringComparison.OrdinalIgnoreCase))
+										 .ActionSymbol;
+
+			if (action == null || symbolContext.CancellationToken.IsCancellationRequested)
+				return;
+
+			Location methodLocation = method.Locations.FirstOrDefault();
+
+			if (methodLocation != null)
+			{
+				symbolContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1000_InvalidPXActionHandlerSignature, methodLocation));
+			}
+		}
+
+		private static bool CheckIfDiagnosticShouldBeRegisteredForMethod(IMethodSymbol method, PXContext pxContext)
+		{
+			if (method.ReturnsVoid && method.Parameters.Length > 0)
+				return true;
+
+			return method.ReturnType.SpecialType == SpecialType.System_Collections_IEnumerable &&
+				(method.Parameters.Length == 0 || !method.Parameters[0].Type.Equals(pxContext.PXAdapterType));
 		}
 	}
 }
