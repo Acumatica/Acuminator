@@ -64,6 +64,9 @@ namespace Acuminator.Utilities
 			if (!genericName.IsValidForColoring())
 				return null;
 
+			if (genericName.IsStatic && TypeNames.PXUpdateBqlTypes.Contains(genericName.Name))
+				return PXCodeType.BqlCommand;
+
 			IEnumerable<ITypeSymbol> typeHierarchy = genericName.GetBaseTypes()
 																.ConcatStructList(genericName.AllInterfaces);
 			PXCodeType? resolvedColoredCodeType = null;
@@ -126,6 +129,9 @@ namespace Acuminator.Utilities
 			if (!typeSymbol.IsValidForColoring(checkForNotColoredTypes: false))
 				return false;
 
+			if (typeSymbol.IsStatic && TypeNames.PXUpdateBqlTypes.Contains(typeSymbol.Name))
+				return true;
+
 			List<string> typeHierarchyNames = typeSymbol.GetBaseTypesAndThis()
 														.Select(type => type.Name)
 														.ToList();
@@ -141,6 +147,8 @@ namespace Acuminator.Utilities
 
 			if (pxContext == null)
 				return typeSymbol.IsBqlCommand();
+			else if (typeSymbol.IsStatic && TypeNames.PXUpdateBqlTypes.Contains(typeSymbol.Name))
+				return true;
 
 			List<ITypeSymbol> typeHierarchy = typeSymbol.GetBaseTypesAndThis().ToList();
 			return typeHierarchy.Contains(pxContext.PXSelectBaseType) || typeHierarchy.Contains(pxContext.BQL.BqlCommand);
