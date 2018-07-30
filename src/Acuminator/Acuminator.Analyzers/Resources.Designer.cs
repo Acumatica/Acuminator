@@ -422,7 +422,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Field {0} cannot be declared within DAC declarations.
+        ///   Looks up a localized string similar to The field {0} cannot be declared within DAC declarations.
         /// </summary>
         public static string PX1027Title {
             get {
@@ -440,7 +440,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Constructors in DACs are strictly prohoboted.
+        ///   Looks up a localized string similar to Constructors in DACs are strictly prohibited.
         /// </summary>
         public static string PX1028Title {
             get {

@@ -16,12 +16,6 @@ namespace PX.Objects.HackathonDemo
         [PXUIField(DisplayName = "Company ID")]
         public string CompanyID { get; set; }
         #endregion
-        #region  DeletedDatabaseRecord
-        public abstract class deletedDatabaseRecord { }
-        [PXDefault]
-        [PXUIField(DisplayName = "Deleted Flag")]
-        public string DeletedDatabaseRecord { get; set; }
-        #endregion
         #region OrderNbr
         public abstract class orderNbr : IBqlField { }
         [PXDBInt(IsKey = true)]
@@ -29,6 +23,27 @@ namespace PX.Objects.HackathonDemo
         [PXUIField(DisplayName = "Order Nbr")]
         public int? OrderNbr { get; set; }
         #endregion
+        #region  DeletedDatabaseRecord
+        public abstract class deletedDatabaseRecord { }
+        [PXDefault]
+        [PXUIField(DisplayName = "Deleted Flag")]
+        public string DeletedDatabaseRecord { get; set; }
+        #endregion
+        #region OrderCD
+        public abstract class orderCD : IBqlField { }
+        [PXDefault]
+        [PXUIField(DisplayName = "Order CD")]
+        public int? OrderCD { get; set; }
+        #endregion
+        #region CompanyMask
+        public abstract class companyMask : IBqlField { }
+        [PXDefault]
+        [PXUIField(DisplayName = "Company Mask")]
+        public string CompanyMask { get; set; }
+        #endregion
+
+
+
     }
 
     public partial class SOOrder : IBqlTable

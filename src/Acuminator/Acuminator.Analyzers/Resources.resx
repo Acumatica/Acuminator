@@ -238,12 +238,12 @@
     <value>Remove forbidden field from the DAC declaration</value>
   </data>
   <data name="PX1027Title" xml:space="preserve">
-    <value>Field {0} cannot be declared within DAC declarations</value>
+    <value>The field {0} cannot be declared within DAC declarations</value>
   </data>
   <data name="PX1028Fix" xml:space="preserve">
     <value>Remove all constructors entirely</value>
   </data>
   <data name="PX1028Title" xml:space="preserve">
-    <value>Constructors in DACs are strictly prohoboted</value>
+    <value>Constructors in DACs are strictly prohibited</value>
   </data>
 </root>
