@@ -248,7 +248,7 @@ namespace Acuminator.Utilities
 			bqlTypeSymbol.ThrowOnNull(nameof(bqlTypeSymbol));
 			context.ThrowOnNull(nameof(context));
 
-			const int pxSelectBaseStandartDepth = 2;
+			int pxSelectBaseStandartDepth = context.IsAcumatica2018R2 ? 3 : 2;
 			int? pxSelectBaseDepth = bqlTypeSymbol.GetInheritanceDepth(context.PXSelectBaseType);
 
 			if (pxSelectBaseDepth > pxSelectBaseStandartDepth)
