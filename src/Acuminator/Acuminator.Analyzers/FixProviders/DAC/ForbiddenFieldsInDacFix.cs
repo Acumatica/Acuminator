@@ -111,7 +111,7 @@ namespace Acuminator.Analyzers.FixProviders
                 return null;
             if (string.Equals(node.Identifier.Text, removableIdentifier, StringComparison.OrdinalIgnoreCase))
             {
-                var result = base.VisitClassDeclaration(node);
+                //var result = base.VisitClassDeclaration(node);
                 
                 return null;
             }
