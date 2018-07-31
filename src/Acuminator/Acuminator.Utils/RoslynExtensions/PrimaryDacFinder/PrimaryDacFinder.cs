@@ -35,7 +35,8 @@ namespace Acuminator.Utilities.PrimaryDAC
 
 		public ImmutableArray<(ISymbol View, INamedTypeSymbol ViewType)> GraphViewSymbolsWithTypes { get; }
 
-		private readonly Dictionary<ITypeSymbol, double> dacWithScores;
+		private readonly Dictionary<ISymbol, (ITypeSymbol DAC, double Score)> viewsWithDacAndScores;
+		private readonly HashSet<ITypeSymbol> viewDacs;
 
 		private readonly List<PrimaryDacRuleBase> absoluteRules;
 		private readonly List<PrimaryDacRuleBase> heuristicRules;
@@ -50,12 +51,20 @@ namespace Acuminator.Utilities.PrimaryDAC
 			Graph = graph;
 			CancellationToken = cancellationToken;
 			GraphActionSymbolsWithTypes = actionSymbolsWithTypes.ToImmutableArray();
-
 			GraphViewSymbolsWithTypes = viewSymbolsWithTypes.ToImmutableArray();
-			dacWithScores = GraphViewSymbolsWithTypes.Select(viewWithType => viewWithType.ViewType.GetDacFromView(PxContext))
-													 .Where(dac => dac != null)
-													 .Distinct()
-													 .ToDictionary(dac => dac, dac => 0.0);
+			viewsWithDacAndScores = new Dictionary<ISymbol, (ITypeSymbol DAC, double Score)>(GraphViewSymbolsWithTypes.Length);
+			viewDacs = new HashSet<ITypeSymbol>();
+
+			foreach (var viewWithType in GraphViewSymbolsWithTypes)
+			{
+				var dac = viewWithType.ViewType.GetDacFromView(PxContext);
+
+				if (dac == null)
+					continue;
+
+				viewsWithDacAndScores.Add(viewWithType.View, (dac, 0.0));
+				viewDacs.Add(dac);
+			}
 
 			absoluteRules = rules.Where(rule => rule.IsAbsolute).ToList();
 			heuristicRules = rules.Where(rule => !rule.IsAbsolute).ToList();
@@ -103,6 +112,9 @@ namespace Acuminator.Utilities.PrimaryDAC
 
 		public ITypeSymbol FindPrimaryDAC()
 		{
+			if (viewDacs.Count == 0)
+				return null;
+
 			foreach (PrimaryDacRuleBase rule in absoluteRules)
 			{
 				ITypeSymbol primaryDAC = ApplyRule(rule);
@@ -127,16 +139,18 @@ namespace Acuminator.Utilities.PrimaryDAC
 			if (CancellationToken.IsCancellationRequested)
 				return null;
 
-			var maxScoredDACs = dacWithScores.ItemsWithMaxValues(dacWithScore => dacWithScore.Value);
-
+			var maxScoredViews = viewsWithDacAndScores.ItemsWithMaxValues(viewWithDacAndScore => viewWithDacAndScore.Value.Score);
+			var maxScoredDACs = maxScoredViews.Select(viewWithDacAndScore => viewWithDacAndScore.Value.DAC)
+											  .ToHashSet();
 			return maxScoredDACs.Count == 1 
-				? maxScoredDACs[0].Key
+				? maxScoredDACs.FirstOrDefault()
 				: null;
 		}
 
 		private ITypeSymbol ApplyRule(PrimaryDacRuleBase rule)
 		{	
 			IEnumerable<ITypeSymbol> dacCandidates = null;
+			IEnumerable<ISymbol> viewCandidates = null;
 
 			switch (rule.RuleKind)
 			{
@@ -144,7 +158,9 @@ namespace Acuminator.Utilities.PrimaryDAC
 					dacCandidates = (rule as GraphRuleBase)?.GetCandidatesFromGraphRule(this);
 					break;
 				case PrimaryDacRuleKind.View:
-					dacCandidates = GetCandidatesFromViewRule(rule as ViewRuleBase);
+					var viewWithTypeCandidates = GetViewCandidatesFromViewRule(rule as ViewRuleBase);
+					viewCandidates = viewWithTypeCandidates.Select(viewWithType => viewWithType.View);
+					dacCandidates = viewWithTypeCandidates.Select(viewWithType => viewWithType.ViewType.GetDacFromView(PxContext));
 					break;
 				case PrimaryDacRuleKind.Dac:
 					dacCandidates = GetCandidatesFromDacRule(rule as DacRuleBase);
@@ -163,31 +179,27 @@ namespace Acuminator.Utilities.PrimaryDAC
 			if (rule.IsAbsolute && dacCandidatesList.Count == 1)
 				primaryDac = dacCandidatesList[0];
 
-			ScoreRuleForCandidates(dacCandidatesList, rule);
+			viewCandidates = viewCandidates ?? GetViewCandidatesFromDacCandidates(dacCandidatesList);
+			ScoreRuleForViewCandidates(viewCandidates, rule);
 			return primaryDac;
 		}
 
-		private IEnumerable<ITypeSymbol> GetCandidatesFromViewRule(ViewRuleBase viewRule)
+		private List<(ISymbol View, INamedTypeSymbol ViewType)> GetViewCandidatesFromViewRule(ViewRuleBase viewRule)
 		{
 			if (viewRule == null || GraphViewSymbolsWithTypes.Length == 0 || CancellationToken.IsCancellationRequested)
-				return null;
+				return default;
 
-			var dacCandidates = from viewWithType in GraphViewSymbolsWithTypes
-								where viewRule.SatisfyRule(this, viewWithType.View, viewWithType.ViewType)
-								select viewWithType.ViewType.GetDacFromView(PxContext);
-
-			return !CancellationToken.IsCancellationRequested
-				? dacCandidates
-				: null;
+			return GraphViewSymbolsWithTypes.Where(viewWithType => viewRule.SatisfyRule(this, viewWithType.View, viewWithType.ViewType))
+											.ToList();
 		}
 
 		private IEnumerable<ITypeSymbol> GetCandidatesFromDacRule(DacRuleBase dacRule)
 		{
-			if (dacRule == null || dacWithScores.Count == 0 || CancellationToken.IsCancellationRequested)
+			if (dacRule == null || viewDacs.Count == 0 || CancellationToken.IsCancellationRequested)
 				return null;
 
-			var dacCandidates = dacWithScores.Keys.TakeWhile(v => !CancellationToken.IsCancellationRequested)
-												  .Where(dac => dacRule.SatisfyRule(this, dac));
+			var dacCandidates = viewDacs.TakeWhile(v => !CancellationToken.IsCancellationRequested)
+										.Where(dac => dacRule.SatisfyRule(this, dac));
 							
 			return !CancellationToken.IsCancellationRequested
 				? dacCandidates
@@ -208,29 +220,37 @@ namespace Acuminator.Utilities.PrimaryDAC
 				: null;
 		}
 
-		private void ScoreRuleForCandidates(IEnumerable<ITypeSymbol> dacCandidates, PrimaryDacRuleBase rule)
+		private IEnumerable<ISymbol> GetViewCandidatesFromDacCandidates(IEnumerable<ITypeSymbol> dacCandidates)
+		{
+			var dacsSet = dacCandidates.ToHashSet();
+			return from viewWithDacAndScore in viewsWithDacAndScores
+				   where dacsSet.Contains(viewWithDacAndScore.Value.DAC)
+				   select viewWithDacAndScore.Key;
+		}
+
+		private void ScoreRuleForViewCandidates(IEnumerable<ISymbol> viewCandidates, PrimaryDacRuleBase rule)
 		{
 			if (rule.Weight == 0)
 				return;
 
-			foreach (ITypeSymbol candidate in dacCandidates)
+			foreach (ISymbol candidate in viewCandidates)
 			{
-				if (!dacWithScores.TryGetValue(candidate, out double score))
+				if (!viewsWithDacAndScores.TryGetValue(candidate, out var dacWithScore))
 					continue;
 
 				if (rule.Weight > 0)
 				{
-					if (score <= double.MaxValue - rule.Weight)
-						dacWithScores[candidate] = score + rule.Weight;
+					if (dacWithScore.Score <= double.MaxValue - rule.Weight)
+						viewsWithDacAndScores[candidate] = (dacWithScore.DAC, dacWithScore.Score + rule.Weight);
 					else
-						dacWithScores[candidate] = double.MaxValue;
+						viewsWithDacAndScores[candidate] = (dacWithScore.DAC, double.MaxValue);
 				}
 				else
 				{
-					if (score >= double.MinValue - rule.Weight)
-						dacWithScores[candidate] = score + rule.Weight;
+					if (dacWithScore.Score >= double.MinValue - rule.Weight)
+						viewsWithDacAndScores[candidate] = (dacWithScore.DAC, dacWithScore.Score + rule.Weight);
 					else
-						dacWithScores[candidate] = double.MinValue;
+						viewsWithDacAndScores[candidate] = (dacWithScore.DAC, double.MinValue);
 				}			
 			}
 		}
