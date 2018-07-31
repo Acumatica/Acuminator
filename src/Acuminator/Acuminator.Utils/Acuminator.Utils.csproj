@@ -123,6 +123,7 @@
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\GraphRules\NoReadOnlyViewGraphRule.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\ViewRules\ForbiddenWordsInNameViewRule.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\GraphRules\PXImportAttributeGraphRule.cs" />
+    <Compile Include="RoslynExtensions\PrimaryDacFinder\Score.cs" />
     <Compile Include="RoslynExtensions\PXFieldAttributes\FieldAttributeInfo.cs" />
     <Compile Include="RoslynExtensions\PXFieldAttributes\FieldAttributesRegister.cs" />
     <Compile Include="RoslynExtensions\PXSystemActions\PXSystemActionsRegister.cs" />
