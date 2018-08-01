@@ -44,6 +44,12 @@ namespace Acuminator.Tests
 				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 20, column: 24, expectedMethodName: "SelectSingle", expectedArgsCount: 2));
 
 		[Theory]
+		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\SearchCall.cs", @"Dac\SOOrder.cs")]
+		public virtual void Test_Search_Calls(string source, string dacSource) =>
+			VerifyCSharpDiagnostic(new[] { source, dacSource },
+				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 18, column: 24, expectedMethodName: "Search", expectedArgsCount: 1));
+
+		[Theory]
 		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\VariableInstanceCall.cs", @"Dac\SOOrder.cs")]
 		public virtual void Test_Variable_Instance_Calls(string source, string dacSource) =>
 			VerifyCSharpDiagnostic(new[] { source, dacSource },

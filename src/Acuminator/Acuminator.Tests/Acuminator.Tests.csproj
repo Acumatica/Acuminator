@@ -168,6 +168,7 @@
     <EmbeddedResource Include="Sources\Dac\PX1026\CodeFixes\DacWithUnderscores_Expected.cs" />
     <EmbeddedResource Include="Sources\PXAction\PX1000\Diagnostics\InvalidPXActionSignatureGraphExtension.cs" />
     <EmbeddedResource Include="Sources\PXAction\PX1000\CodeFixes\InvalidPXActionSignatureGraphExtension_Expected.cs" />
+    <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\SearchCall.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTypeMismatchCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\MultipleFieldAttributesCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTests.cs" />

@@ -19,6 +19,8 @@ namespace Acuminator.Analyzers
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public partial class BqlParameterMismatchAnalyzer : PXDiagnosticAnalyzer
 	{
+		private const string SearchMethodName = "Search";
+
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams,
 								  Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams);
@@ -183,15 +185,38 @@ namespace Acuminator.Analyzers
 			var argumentPassedViaName = argumentsList.FirstOrDefault(a => a.NameColon?.Name?.Identifier.ValueText == bqlArgsParam.Name);
 
 			if (argumentPassedViaName != null)
-				return GetBqlArgumentsCountWhenCouldBePassedAsArray(argumentPassedViaName, syntaxContext, pxContext);
+			{
+				int? possibleArgsCount = GetBqlArgumentsCountWhenCouldBePassedAsArray(argumentPassedViaName, syntaxContext, pxContext);
+
+
+			}
 
 			var nonBqlArgsParametersCount = methodSymbol.Parameters.Length - 1;   //The last one parameter is params array for BQL args
 			int argsCount = argumentsList.Count - nonBqlArgsParametersCount;
 
 			if (argsCount == 1)
-				return GetBqlArgumentsCountWhenCouldBePassedAsArray(argumentsList[argumentsList.Count - 1], syntaxContext, pxContext);
+			{
+				int? possibleArgsCount = GetBqlArgumentsCountWhenCouldBePassedAsArray(argumentsList[argumentsList.Count - 1], syntaxContext,
+																					  pxContext);
+				if (possibleArgsCount == null)
+					return null;
+
+				argsCount = possibleArgsCount
+			}
 
 			return argsCount;
+
+			//******************Local Function************************************
+			int? GetArgumentsCountWithConsiderationForMethod(int? possibleArgsCount)
+			{
+				if (possibleArgsCount == null || methodSymbol.Name != SearchMethodName)
+					return possibleArgsCount;
+
+				return methodSymbol.IsStatic 
+					? argumentsList.Count 
+					:;
+
+			}
 		}
 
 		private static int? GetBqlArgumentsCountWhenCouldBePassedAsArray(ArgumentSyntax argumentWhichCanBeArray,
