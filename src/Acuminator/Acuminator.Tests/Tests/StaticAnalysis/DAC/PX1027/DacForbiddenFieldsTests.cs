@@ -18,26 +18,49 @@ namespace Acuminator.Tests
     {
         [Theory]
         [EmbeddedFileData(@"Dac\PX1027\Diagnostics\DacForbiddenFields.cs")]
-        public virtual void Test_Dac_With_Forbidden_Fields(string source) =>
+        public virtual void TestDacWithForbiddenFields(string source) =>
             VerifyCSharpDiagnostic(source,
                 //DAC part 1
                 CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 13, column: 31, fieldName: "companyId"),
                 CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 17, column: 23, fieldName: "CompanyID"),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 20, column: 31, fieldName: "deletedDatabaseRecord"),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 23, column: 23, fieldName: "DeletedDatabaseRecord"),
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 27, column: 31, fieldName: "deletedDatabaseRecord"),
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 30, column: 23, fieldName: "DeletedDatabaseRecord"),
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 39, column: 31, fieldName: "companyMask"),
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 42, column: 23, fieldName: "CompanyMask"),
                 //DAC part 2
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 37, column: 31, fieldName: "deletedDatabaseRecord"),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 40, column: 23, fieldName: "DeletedDatabaseRecord"),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 43, column: 31, fieldName: "companyMask"),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 46, column: 23, fieldName: "CompanyMask"));
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 49, column: 31, fieldName: "deletedDatabaseRecord"),
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 52, column: 23, fieldName: "DeletedDatabaseRecord"),
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 55, column: 31, fieldName: "companyMask"),
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 58, column: 23, fieldName: "CompanyMask"));
 
         [Theory]
         [EmbeddedFileData(@"Dac\PX1027\Diagnostics\DacForbiddenFields.cs",
                           @"Dac\PX1027\CodeFixes\DacForbiddenFields_Expected.cs")]
-        public virtual void Test_Fix_For_Dac_With_Forbidden_Fields(string actual, string expected) =>
+        public virtual void TestFixForDacWithForbiddenFields(string actual, string expected) =>
+            VerifyCSharpFix(actual, expected);
+        [Theory]
+        [EmbeddedFileData(@"Dac\PX1027\Diagnostics\DacForbiddenFieldsWithoutRegions.cs",
+                          @"Dac\PX1027\CodeFixes\DacForbiddenFieldsWithoutRegions_Expected.cs")]
+        public virtual void TestFixForDacWithForbiddenFieldWithoutRegions(string actual, string expected) =>
             VerifyCSharpFix(actual, expected);
 
+        [Theory]
+        [EmbeddedFileData(@"Dac\PX1027\Diagnostics\DacForbiddenFieldsRegions_Case1.cs",
+                            @"Dac\PX1027\CodeFixes\DacForbiddenFieldsRegions_Case1_Expected")]
+        public virtual void TestFixForDacWithForbiddenFieldsWithRegions_Case1(string actual, string expected) =>
+            VerifyCSharpFix(actual, expected);
 
+        [Theory]
+        [EmbeddedFileData(@"Dac\PX1027\Diagnostics\DacForbiddenFieldsRegions_Case2.cs",
+                            @"Dac\PX1027\CodeFixes\DacForbiddenFieldsRegions_Case2_Expected")]
+        public virtual void TestFixForDacWithForbiddenFieldsWithRegions_Case2(string actual, string expected) =>
+            VerifyCSharpFix(actual, expected);
+
+        [Theory]
+        [EmbeddedFileData(@"Dac\PX1027\Diagnostics\DacForbiddenFieldsRegions_Case3.cs",
+                            @"Dac\PX1027\CodeFixes\DacForbiddenFieldsRegions_Case3_Expected")]
+        public virtual void TestFixForDacWithForbiddenFieldsWithRegions_Case3(string actual, string expected) =>
+            VerifyCSharpFix(actual, expected);
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacDeclarationAnalyzer();
 
         protected override CodeFixProvider GetCSharpCodeFixProvider() => new ForbiddenFieldsInDacFix();

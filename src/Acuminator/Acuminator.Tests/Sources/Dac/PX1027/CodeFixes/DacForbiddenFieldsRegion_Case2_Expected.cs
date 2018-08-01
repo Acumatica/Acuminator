@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +9,7 @@ namespace PX.Objects.HackathonDemo
 {
     public partial class SOOrder : IBqlTable
     {
-                #region OrderNbr
+        #region OrderNbr
         public abstract class orderNbr : IBqlField { }
         [PXDBInt(IsKey = true)]
         [PXDefault]
@@ -22,9 +22,5 @@ namespace PX.Objects.HackathonDemo
         [PXUIField(DisplayName = "Order CD")]
         public int? OrderCD { get; set; }
         #endregion
-}
-
-    public partial class SOOrder : IBqlTable
-    {
     }
 }

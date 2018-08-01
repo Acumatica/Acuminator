@@ -61,7 +61,8 @@ namespace Acuminator.Analyzers.FixProviders
                                                                 (diagnosticNode as PropertyDeclarationSyntax)?.Identifier.Text,
                                                          cancellationToken);
             var classModified = rewriterWalker.Visit(classDeclaration) as ClassDeclarationSyntax;
-
+            if (cancellationToken.IsCancellationRequested)
+                return document;
             //var modifiedNode = trackingRoot.GetCurrentNode(diagnosticNode);
             var modifiedRoot = root.ReplaceNode(classDeclaration, classModified);
 
@@ -88,22 +89,36 @@ namespace Acuminator.Analyzers.FixProviders
         public override SyntaxNode VisitRegionDirectiveTrivia(RegionDirectiveTriviaSyntax node)
         {
             if (regionsStack == null || cancellationToken.IsCancellationRequested)
-                return null;
+                return node;
             regionsStack.Push(node);
             if (node.ToString().ToUpperInvariant().Contains(removableIdentifier))
-                return null;
+                return SyntaxFactory.SkippedTokensTrivia();// SyntaxFactory.ElasticEndOfLine(" a") as SyntaxNode;
             return node;
 
         }
         public override SyntaxNode VisitEndRegionDirectiveTrivia(EndRegionDirectiveTriviaSyntax node)
         {
             if (regionsStack == null || regionsStack.Count == 0 || cancellationToken.IsCancellationRequested)
-                return null;
+                return node;
             RegionDirectiveTriviaSyntax regionStart = regionsStack.Pop();
             if (regionStart.ToString().ToUpperInvariant().Contains(removableIdentifier))
                 return null;
             return node;
         }
+        public override SyntaxTrivia VisitTrivia(SyntaxTrivia trivia)
+        {
+            if (trivia.Kind() == SyntaxKind.RegionDirectiveTrivia)
+            {
+
+            }
+            if (trivia.Kind()  == SyntaxKind.EndRegionDirectiveTrivia)
+            {
+
+            }
+            return base.VisitTrivia(trivia);
+        }
+
+        
 
         public override SyntaxNode VisitClassDeclaration(ClassDeclarationSyntax node)
         {
@@ -112,8 +127,17 @@ namespace Acuminator.Analyzers.FixProviders
             if (string.Equals(node.Identifier.Text, removableIdentifier, StringComparison.OrdinalIgnoreCase))
             {
                 //var result = base.VisitClassDeclaration(node);
+                var leadingTrivia = node.GetLeadingTrivia();
+                var trailingTrivia = node.GetTrailingTrivia();
+               
+                SyntaxToken newToken = SyntaxFactory.Token(
+                    leadingTrivia,
+                    SyntaxKind.None,
+                    trailingTrivia);
+
+                var newNode = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(""), "");
+                return newNode.WithLeadingTrivia(node.GetLeadingTrivia()).WithTrailingTrivia(node.GetTrailingTrivia())  ;
                 
-                return null;
             }
             var result2 = base.VisitClassDeclaration(node);
             return result2;
@@ -124,7 +148,18 @@ namespace Acuminator.Analyzers.FixProviders
             if (cancellationToken.IsCancellationRequested)
                 return null;
             if (string.Equals(node.Identifier.Text, removableIdentifier, StringComparison.OrdinalIgnoreCase))
-                return null;
+            {
+                //var result = base.VisitClassDeclaration(node);
+                var leadingTrivia = node.GetLeadingTrivia();
+                var trailingTrivia = node.GetTrailingTrivia();
+
+                SyntaxToken newToken = SyntaxFactory.Token(
+                    leadingTrivia,
+                    SyntaxKind.None,
+                    trailingTrivia);
+                var newNode = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(""),"" );
+                return newNode.WithLeadingTrivia(node.GetLeadingTrivia()).WithTrailingTrivia(node.GetTrailingTrivia());
+            }
             return base.VisitPropertyDeclaration(node);
         }
     }
