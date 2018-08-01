@@ -74,6 +74,7 @@ namespace Acuminator.Analyzers.FixProviders
     public class RegionClassRewriter : CSharpSyntaxRewriter
     {
         private Stack<RegionDirectiveTriviaSyntax> regionsStack;
+        private Stack<SyntaxTrivia> deletedTriviaStack;
         private string removableIdentifier;
         private CancellationToken cancellationToken;
 
@@ -82,6 +83,7 @@ namespace Acuminator.Analyzers.FixProviders
                                 : base(visitIntoStructuredTrivia: true)
         {
             regionsStack = new Stack<RegionDirectiveTriviaSyntax>();
+            deletedTriviaStack = new Stack<SyntaxTrivia>();
             removableIdentifier = aRemovableIdentifier.ToUpperInvariant();
             cancellationToken = cToken;
         }
@@ -109,11 +111,20 @@ namespace Acuminator.Analyzers.FixProviders
         {
             if (trivia.Kind() == SyntaxKind.RegionDirectiveTrivia)
             {
-
+                if (deletedTriviaStack == null || cancellationToken.IsCancellationRequested)
+                    return base.VisitTrivia(trivia);
+                deletedTriviaStack.Push(trivia);
+                if (trivia.ToString().ToUpperInvariant().Contains(removableIdentifier))
+                    return SyntaxFactory.SyntaxTrivia(SyntaxKind.EmptyStatement,"");// SyntaxFactory.ElasticEndOfLine(" a") as SyntaxNode;
+                
             }
             if (trivia.Kind()  == SyntaxKind.EndRegionDirectiveTrivia)
             {
-
+                if (deletedTriviaStack == null || deletedTriviaStack.Count == 0 || cancellationToken.IsCancellationRequested)
+                    return base.VisitTrivia(trivia);
+                SyntaxTrivia regionStart = deletedTriviaStack.Pop();
+                if (regionStart.ToString().ToUpperInvariant().Contains(removableIdentifier))
+                    return SyntaxFactory.SyntaxTrivia(SyntaxKind.EmptyStatement,"");
             }
             return base.VisitTrivia(trivia);
         }
@@ -135,7 +146,7 @@ namespace Acuminator.Analyzers.FixProviders
                     SyntaxKind.None,
                     trailingTrivia);
 
-                var newNode = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(""), "");
+                var newNode = SyntaxFactory.EmptyStatement();
                 return newNode.WithLeadingTrivia(node.GetLeadingTrivia()).WithTrailingTrivia(node.GetTrailingTrivia())  ;
                 
             }
@@ -157,7 +168,7 @@ namespace Acuminator.Analyzers.FixProviders
                     leadingTrivia,
                     SyntaxKind.None,
                     trailingTrivia);
-                var newNode = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(""),"" );
+                var newNode = SyntaxFactory.EmptyStatement();
                 return newNode.WithLeadingTrivia(node.GetLeadingTrivia()).WithTrailingTrivia(node.GetTrailingTrivia());
             }
             return base.VisitPropertyDeclaration(node);

@@ -26,12 +26,12 @@ namespace Acuminator.Tests
                 CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 27, column: 31, fieldName: "deletedDatabaseRecord"),
                 CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 30, column: 23, fieldName: "DeletedDatabaseRecord"),
                 CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 39, column: 31, fieldName: "companyMask"),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 42, column: 23, fieldName: "CompanyMask"),
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 42, column: 23, fieldName: "CompanyMask"));
                 //DAC part 2
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 49, column: 31, fieldName: "deletedDatabaseRecord"),
+               /* CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 49, column: 31, fieldName: "deletedDatabaseRecord"),
                 CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 52, column: 23, fieldName: "DeletedDatabaseRecord"),
                 CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 55, column: 31, fieldName: "companyMask"),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 58, column: 23, fieldName: "CompanyMask"));
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 58, column: 23, fieldName: "CompanyMask"));*/
 
         [Theory]
         [EmbeddedFileData(@"Dac\PX1027\Diagnostics\DacForbiddenFields.cs",

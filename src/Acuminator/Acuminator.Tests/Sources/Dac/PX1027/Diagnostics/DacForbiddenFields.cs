@@ -41,10 +41,10 @@ namespace PX.Objects.HackathonDemo
         [PXUIField(DisplayName = "Company Mask")]
         public string CompanyMask { get; set; }
         #endregion
-}
-
-    public partial class SOOrder : IBqlTable
-    {
-        
     }
+
+    /* public partial class SOOrder : IBqlTable
+     {
+
+     }*/
 }
