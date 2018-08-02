@@ -143,6 +143,7 @@
     <EmbeddedResource Include="Sources\Dac\PX1007\Diagnostics\DACCreateInstance.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1007\CodeFixes\DACCreateInstance_Expected.cs" />
     <EmbeddedResource Include="Sources\LongOperationDelegateClosuresAnalyzer.cs" />
+    <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\PXUpdateCall.cs" />
     <EmbeddedResource Include="Sources\Dac\SOOrder.cs" />
     <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\InheritanceCall.cs" />
     <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\FieldInstanceCall.cs" />
