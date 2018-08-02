@@ -90,7 +90,9 @@ namespace Acuminator.Analyzers
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static bool IsPXUpdateMethod(IMethodSymbol methodSymbol) =>
-			methodSymbol.ReturnType.SpecialType == SpecialType.System_Int32 && TypeNames.PXUpdateBqlTypes.Contains(methodSymbol.ContainingType?.Name);
+			methodSymbol.IsStatic && methodSymbol.ReturnType.SpecialType == SpecialType.System_Int32 &&
+			methodSymbol.ContainingType?.IsStatic == true &&
+			TypeNames.PXUpdateBqlTypes.Contains(methodSymbol.ContainingType?.Name);
 
 		private static void AnalyzeStaticInvocation(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
 													InvocationExpressionSyntax invocationNode)
