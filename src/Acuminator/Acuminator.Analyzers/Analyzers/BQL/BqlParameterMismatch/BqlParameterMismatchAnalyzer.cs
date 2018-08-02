@@ -183,12 +183,17 @@ namespace Acuminator.Analyzers
 			var bqlArgsParam = parameters[parameters.Length - 1];
 			var argumentsList = invocationNode.ArgumentList.Arguments;
 			var argumentPassedViaName = argumentsList.FirstOrDefault(a => a.NameColon?.Name?.Identifier.ValueText == bqlArgsParam.Name);
+			int searchArgsCount;
 
 			if (argumentPassedViaName != null)
 			{
 				int? possibleArgsCount = GetBqlArgumentsCountWhenCouldBePassedAsArray(argumentPassedViaName, syntaxContext, pxContext);
 
+				if (possibleArgsCount == null)
+					return null;
 
+				searchArgsCount = GetSearchMethodArgumentsCount(possibleArgsCount.Value);
+				return searchArgsCount + possibleArgsCount;
 			}
 
 			var nonBqlArgsParametersCount = methodSymbol.Parameters.Length - 1;   //The last one parameter is params array for BQL args
@@ -201,21 +206,21 @@ namespace Acuminator.Analyzers
 				if (possibleArgsCount == null)
 					return null;
 
-				argsCount = possibleArgsCount
+				argsCount = possibleArgsCount.Value;
 			}
 
-			return argsCount;
+			searchArgsCount = GetSearchMethodArgumentsCount(argsCount);
+			return searchArgsCount + argsCount;
 
 			//******************Local Function************************************
-			int? GetArgumentsCountWithConsiderationForMethod(int? possibleArgsCount)
+			int GetSearchMethodArgumentsCount(int bqlArgsCount)
 			{
-				if (possibleArgsCount == null || methodSymbol.Name != SearchMethodName)
-					return possibleArgsCount;
+				if (methodSymbol.Name != SearchMethodName)
+					return 0;
 
 				return methodSymbol.IsStatic 
-					? argumentsList.Count 
-					:;
-
+					? argumentsList.Count - 1 - bqlArgsCount
+					: argumentsList.Count - bqlArgsCount;
 			}
 		}
 
@@ -271,8 +276,15 @@ namespace Acuminator.Analyzers
 			if (syntaxContext.CancellationToken.IsCancellationRequested || !parametersCounter.IsCountingValid)
 				return;
 
-			int maxCount = parametersCounter.OptionalParametersCount + parametersCounter.RequiredParametersCount;
-			int minCount = parametersCounter.RequiredParametersCount;
+			int searchMethodParametersCount = 0;
+
+			if (methodSymbol.Name == SearchMethodName && methodSymbol.IsGenericMethod)
+			{
+				searchMethodParametersCount = methodSymbol.TypeParameters.Length;
+			}
+
+			int maxCount = parametersCounter.OptionalParametersCount + parametersCounter.RequiredParametersCount + searchMethodParametersCount;
+			int minCount = parametersCounter.RequiredParametersCount + searchMethodParametersCount;
 
 			if (argsCount < minCount || argsCount > maxCount)
 			{
@@ -282,7 +294,7 @@ namespace Acuminator.Analyzers
 				{
 					syntaxContext.ReportDiagnostic(
 						Diagnostic.Create(Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams, location,
-										  methodSymbol.Name, parametersCounter.RequiredParametersCount));
+										  methodSymbol.Name, minCount));
 				}
 				else
 				{
