@@ -79,12 +79,18 @@ namespace Acuminator.Analyzers
 		{
 			if (methodSymbol.ReturnsVoid)
 				return false;
+			else if (IsPXUpdateMethod(methodSymbol))
+				return true;
 
 			var returnType = methodSymbol.ReturnType;
 			return returnType.ImplementsInterface(pxContext.IPXResultsetType) ||
 				   returnType.InheritsFrom(pxContext.PXResult) ||
 				   returnType.ImplementsInterface(pxContext.IBqlTableType);
 		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static bool IsPXUpdateMethod(IMethodSymbol methodSymbol) =>
+			methodSymbol.ReturnType.SpecialType == SpecialType.System_Int32 && TypeNames.PXUpdateBqlTypes.Contains(methodSymbol.ContainingType?.Name);
 
 		private static void AnalyzeStaticInvocation(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
 													InvocationExpressionSyntax invocationNode)
