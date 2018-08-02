@@ -46,19 +46,19 @@ namespace Acuminator.Tests
 
         [Theory]
         [EmbeddedFileData(@"Dac\PX1027\Diagnostics\DacForbiddenFieldsRegions_Case1.cs",
-                            @"Dac\PX1027\CodeFixes\DacForbiddenFieldsRegions_Case1_Expected")]
+                            @"Dac\PX1027\CodeFixes\DacForbiddenFieldsRegions_Case1_Expected.cs")]
         public virtual void TestFixForDacWithForbiddenFieldsWithRegions_Case1(string actual, string expected) =>
             VerifyCSharpFix(actual, expected);
 
         [Theory]
         [EmbeddedFileData(@"Dac\PX1027\Diagnostics\DacForbiddenFieldsRegions_Case2.cs",
-                            @"Dac\PX1027\CodeFixes\DacForbiddenFieldsRegions_Case2_Expected")]
+                            @"Dac\PX1027\CodeFixes\DacForbiddenFieldsRegions_Case2_Expected.cs")]
         public virtual void TestFixForDacWithForbiddenFieldsWithRegions_Case2(string actual, string expected) =>
             VerifyCSharpFix(actual, expected);
 
         [Theory]
         [EmbeddedFileData(@"Dac\PX1027\Diagnostics\DacForbiddenFieldsRegions_Case3.cs",
-                            @"Dac\PX1027\CodeFixes\DacForbiddenFieldsRegions_Case3_Expected")]
+                            @"Dac\PX1027\CodeFixes\DacForbiddenFieldsRegions_Case3_Expected.cs")]
         public virtual void TestFixForDacWithForbiddenFieldsWithRegions_Case3(string actual, string expected) =>
             VerifyCSharpFix(actual, expected);
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacDeclarationAnalyzer();

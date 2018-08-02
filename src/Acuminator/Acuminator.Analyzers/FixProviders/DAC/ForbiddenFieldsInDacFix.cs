@@ -109,22 +109,22 @@ namespace Acuminator.Analyzers.FixProviders
         }
         public override SyntaxTrivia VisitTrivia(SyntaxTrivia trivia)
         {
+            if (deletedTriviaStack == null || cancellationToken.IsCancellationRequested)
+                return base.VisitTrivia(trivia);
             if (trivia.Kind() == SyntaxKind.RegionDirectiveTrivia)
             {
-                if (deletedTriviaStack == null || cancellationToken.IsCancellationRequested)
-                    return base.VisitTrivia(trivia);
                 deletedTriviaStack.Push(trivia);
                 if (trivia.ToString().ToUpperInvariant().Contains(removableIdentifier))
-                    return SyntaxFactory.SyntaxTrivia(SyntaxKind.EmptyStatement,"");// SyntaxFactory.ElasticEndOfLine(" a") as SyntaxNode;
+                    return SyntaxFactory.SyntaxTrivia(SyntaxKind.EndOfLineTrivia,"");// SyntaxFactory.ElasticEndOfLine(" a") as SyntaxNode;
                 
             }
             if (trivia.Kind()  == SyntaxKind.EndRegionDirectiveTrivia)
             {
-                if (deletedTriviaStack == null || deletedTriviaStack.Count == 0 || cancellationToken.IsCancellationRequested)
+                if (deletedTriviaStack.Count == 0)
                     return base.VisitTrivia(trivia);
                 SyntaxTrivia regionStart = deletedTriviaStack.Pop();
                 if (regionStart.ToString().ToUpperInvariant().Contains(removableIdentifier))
-                    return SyntaxFactory.SyntaxTrivia(SyntaxKind.EmptyStatement,"");
+                    return SyntaxFactory.SyntaxTrivia(SyntaxKind.EndOfLineTrivia, "");
             }
             return base.VisitTrivia(trivia);
         }
@@ -135,43 +135,22 @@ namespace Acuminator.Analyzers.FixProviders
         {
             if (cancellationToken.IsCancellationRequested)
                 return null;
-            if (string.Equals(node.Identifier.Text, removableIdentifier, StringComparison.OrdinalIgnoreCase))
+            var properties = node.Members.OfType<PropertyDeclarationSyntax>();
+            foreach (var property in properties)
             {
-                //var result = base.VisitClassDeclaration(node);
-                var leadingTrivia = node.GetLeadingTrivia();
-                var trailingTrivia = node.GetTrailingTrivia();
-               
-                SyntaxToken newToken = SyntaxFactory.Token(
-                    leadingTrivia,
-                    SyntaxKind.None,
-                    trailingTrivia);
-
-                var newNode = SyntaxFactory.EmptyStatement();
-                return newNode.WithLeadingTrivia(node.GetLeadingTrivia()).WithTrailingTrivia(node.GetTrailingTrivia())  ;
-                
+                if (string.Equals(property.Identifier.Text, removableIdentifier, StringComparison.OrdinalIgnoreCase))
+                    node = node.RemoveNode(property,SyntaxRemoveOptions.KeepExteriorTrivia);
             }
+            var classes = node.Members.OfType<ClassDeclarationSyntax>();
+            foreach (var classElement in classes)
+            {
+                if (string.Equals(classElement.Identifier.Text, removableIdentifier, StringComparison.OrdinalIgnoreCase))
+                    node = node.RemoveNode(classElement, SyntaxRemoveOptions.KeepExteriorTrivia);
+            }
+            
             var result2 = base.VisitClassDeclaration(node);
             return result2;
         }
 
-        public override SyntaxNode VisitPropertyDeclaration(PropertyDeclarationSyntax node)
-        {
-            if (cancellationToken.IsCancellationRequested)
-                return null;
-            if (string.Equals(node.Identifier.Text, removableIdentifier, StringComparison.OrdinalIgnoreCase))
-            {
-                //var result = base.VisitClassDeclaration(node);
-                var leadingTrivia = node.GetLeadingTrivia();
-                var trailingTrivia = node.GetTrailingTrivia();
-
-                SyntaxToken newToken = SyntaxFactory.Token(
-                    leadingTrivia,
-                    SyntaxKind.None,
-                    trailingTrivia);
-                var newNode = SyntaxFactory.EmptyStatement();
-                return newNode.WithLeadingTrivia(node.GetLeadingTrivia()).WithTrailingTrivia(node.GetTrailingTrivia());
-            }
-            return base.VisitPropertyDeclaration(node);
-        }
     }
 }
