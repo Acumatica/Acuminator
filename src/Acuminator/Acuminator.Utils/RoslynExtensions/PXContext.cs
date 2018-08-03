@@ -20,6 +20,13 @@ namespace Acuminator.Analyzers
 
 		public FieldAttributesTypes FieldAttributes => fieldAttributes.Value;
 
+		private readonly Lazy<PXSystemActionTypes> systemActionTypes;
+
+		public PXSystemActionTypes PXSystemActions => systemActionTypes.Value;
+
+
+
+
         public INamedTypeSymbol Array => Compilation.GetSpecialType(SpecialType.System_Array);
 
 		public IArrayTypeSymbol ByteArray => Compilation.CreateArrayTypeSymbol(Byte);
@@ -46,15 +53,20 @@ namespace Acuminator.Analyzers
         public INamedTypeSymbol PXMappedCacheExtensionType => Compilation.GetTypeByMetadataName(typeof(PXMappedCacheExtension).FullName);
         public INamedTypeSymbol PXViewType => Compilation.GetTypeByMetadataName(typeof(PXView).FullName);
         public INamedTypeSymbol PXSelectBaseType => Compilation.GetTypeByMetadataName(typeof(PXSelectBase).FullName);
+
         public INamedTypeSymbol PXActionType => Compilation.GetTypeByMetadataName(typeof(PXAction).FullName);
-        public INamedTypeSymbol PXAdapterType => Compilation.GetTypeByMetadataName(typeof(PXAdapter).FullName);
+		
+		public INamedTypeSymbol PXAdapterType => Compilation.GetTypeByMetadataName(typeof(PXAdapter).FullName);
         public INamedTypeSymbol IBqlTableType => Compilation.GetTypeByMetadataName(typeof(IBqlTable).FullName);
         public INamedTypeSymbol IBqlFieldType => Compilation.GetTypeByMetadataName(typeof(IBqlField).FullName);
 
 		public INamedTypeSymbol IPXResultsetType => Compilation.GetTypeByMetadataName(typeof(IPXResultset).FullName);
 		public INamedTypeSymbol PXResult => Compilation.GetTypeByMetadataName(typeof(PXResult).FullName);
 
-        //public INamedTypeSymbol PXBaseListAttributeType => Compilation.GetTypeByMetadataName(typeof(PXBaseListAttribute).FullName);
+        public INamedTypeSymbol PXImportAttribute => Compilation.GetTypeByMetadataName(typeof(PXImportAttribute).FullName);
+        public INamedTypeSymbol PXHiddenAttribute => Compilation.GetTypeByMetadataName(typeof(PXHiddenAttribute).FullName);
+        public INamedTypeSymbol PXCopyPasteHiddenViewAttribute => Compilation.GetTypeByMetadataName(typeof(PXCopyPasteHiddenViewAttribute).FullName);
+        
         public INamedTypeSymbol PXStringListAttribute => Compilation.GetTypeByMetadataName(typeof(PXStringListAttribute).FullName);
         public INamedTypeSymbol PXIntListAttribute => Compilation.GetTypeByMetadataName(typeof(PXIntListAttribute).FullName);
         public INamedTypeSymbol IPXLocalizableList => Compilation.GetTypeByMetadataName(typeof(IPXLocalizableList).FullName);
@@ -67,7 +79,10 @@ namespace Acuminator.Analyzers
         {
             Compilation = compilation;
 			bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation)); 
-            fieldAttributes = new Lazy<FieldAttributesTypes>(() => new FieldAttributesTypes(Compilation));
+            fieldAttributes = new Lazy<FieldAttributesTypes>(
+										() => new FieldAttributesTypes(Compilation));
+            systemActionTypes = new Lazy<PXSystemActionTypes>(
+										() => new PXSystemActionTypes(Compilation));
         }
 
         #region Field Attributes Types
@@ -119,7 +134,37 @@ namespace Acuminator.Analyzers
             public INamedTypeSymbol PXDBUserPasswordAttribute => compilation.GetTypeByMetadataName(typeof(PXDBUserPasswordAttribute).FullName);
             #endregion
         }
-        #endregion
+		#endregion
+
+		#region System Actions Types
+		public class PXSystemActionTypes
+		{
+			private readonly Compilation compilation;
+
+			public PXSystemActionTypes(Compilation aCompilation)
+			{
+				compilation = aCompilation;
+			}
+
+			public INamedTypeSymbol PXSave => compilation.GetTypeByMetadataName(typeof(PXSave<>).FullName);
+
+			public INamedTypeSymbol PXCancel => compilation.GetTypeByMetadataName(typeof(PXCancel<>).FullName);
+
+			public INamedTypeSymbol PXInsert => compilation.GetTypeByMetadataName(typeof(PXInsert<>).FullName);
+
+			public INamedTypeSymbol PXDelete => compilation.GetTypeByMetadataName(typeof(PXDelete<>).FullName);
+
+			public INamedTypeSymbol PXCopyPasteAction => compilation.GetTypeByMetadataName(typeof(PXCopyPasteAction<>).FullName);
+
+			public INamedTypeSymbol PXFirst => compilation.GetTypeByMetadataName(typeof(PXFirst<>).FullName);
+
+			public INamedTypeSymbol PXPrevious => compilation.GetTypeByMetadataName(typeof(PXPrevious<>).FullName);
+
+			public INamedTypeSymbol PXNext => compilation.GetTypeByMetadataName(typeof(PXNext<>).FullName);
+
+			public INamedTypeSymbol PXLast => compilation.GetTypeByMetadataName(typeof(PXLast<>).FullName);
+		}
+		#endregion
 
 		#region BQL Types
 		/// <summary>
@@ -154,6 +199,29 @@ namespace Acuminator.Analyzers
 			public INamedTypeSymbol IBqlParameter => compilation.GetTypeByMetadataName(typeof(IBqlParameter).FullName);
 
 			public INamedTypeSymbol PXSelectBaseGenericType => compilation.GetTypeByMetadataName(typeof(PXSelectBase<>).FullName);
+
+			public INamedTypeSymbol PXFilter => compilation.GetTypeByMetadataName(typeof(PXFilter<>).FullName);
+
+			public INamedTypeSymbol IPXNonUpdateable => compilation.GetTypeByMetadataName(typeof(IPXNonUpdateable).FullName); 
+
+			#region PXSetup
+			public INamedTypeSymbol PXSetup => compilation.GetTypeByMetadataName(typeof(PXSetup<>).FullName);
+
+			public INamedTypeSymbol PXSetupWhere => compilation.GetTypeByMetadataName(typeof(PXSetup<,>).FullName);
+
+			public INamedTypeSymbol PXSetupJoin => compilation.GetTypeByMetadataName(typeof(PXSetup<,,>).FullName);
+
+			public INamedTypeSymbol PXSetupSelect => compilation.GetTypeByMetadataName(typeof(PXSetupSelect<>).FullName);
+
+			public ImmutableArray<INamedTypeSymbol> GetPXSetupTypes() =>
+				ImmutableArray.Create
+				(
+					PXSetup,
+					PXSetupWhere,
+					PXSetupJoin,
+					PXSetupSelect
+				);
+			#endregion
 		}
         #endregion
     }

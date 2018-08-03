@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PX.Data;
 using Acuminator.Utilities;
+using Acuminator.Utilities.PrimaryDAC;
 
 
 
@@ -23,138 +24,87 @@ namespace Acuminator.Analyzers
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSymbolAction(symbolContext => AnalyzePXActionSymbolAsync(symbolContext, pxContext),
-														 SymbolKind.Field, SymbolKind.Property);
+			compilationStartContext.RegisterSymbolAction(symbolContext => AnalyzePXGraphSymbolAsync(symbolContext, pxContext),
+														 SymbolKind.NamedType);
 		}
 
-		private static async Task AnalyzePXActionSymbolAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
+		private static async Task AnalyzePXGraphSymbolAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
-			if (!IsDiagnosticValidForSymbol(symbolContext, pxContext))
+			if (!(symbolContext.Symbol is INamedTypeSymbol graphOrGraphExtension) || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			ISymbol symbol = symbolContext.Symbol;
-			INamedTypeSymbol pxActionType = GetPXActionType(symbolContext);
+			bool isGraph = graphOrGraphExtension.InheritsFrom(pxContext.PXGraphType);
 
-			if (pxActionType == null || !pxActionType.IsGenericType)
+			if (!isGraph && !graphOrGraphExtension.InheritsFrom(pxContext.PXGraphExtensionType))
 				return;
 
-			var pxActionTypeArgs = pxActionType.TypeArguments;
+			ClassDeclarationSyntax graphOrGraphExtNode = await graphOrGraphExtension.GetSyntaxAsync(symbolContext.CancellationToken)
+																					.ConfigureAwait(false) as ClassDeclarationSyntax;
 
-			if (pxActionTypeArgs.Length == 0 || symbolContext.CancellationToken.IsCancellationRequested)
+			if (graphOrGraphExtNode == null || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			ITypeSymbol pxActionDacType = pxActionTypeArgs[0];
-			ITypeSymbol mainDacType = symbol.ContainingType.IsPXGraph()
-				? GetMainDacFromPXGraph(symbol.ContainingType, pxContext, symbolContext.CancellationToken)
-				: GetMainDacFromPXGraphExtension(symbol.ContainingType, pxContext, symbolContext.CancellationToken);
+			SemanticModel semanticModel = symbolContext.Compilation.GetSemanticModel(graphOrGraphExtNode.SyntaxTree);
 
-			if (mainDacType == null || pxActionDacType.Equals(mainDacType) || symbolContext.CancellationToken.IsCancellationRequested)
+			if (semanticModel == null || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			SyntaxNode symbolSyntax = await symbol.GetSyntaxAsync(symbolContext.CancellationToken).ConfigureAwait(false);
+			var declaredActionsWithTypes = isGraph 
+				? graphOrGraphExtension.GetPXActionSymbolsWithTypesFromGraph(pxContext, includeActionsFromInheritanceChain: false)
+				: graphOrGraphExtension.GetPXActionSymbolsWithTypesFromGraphExtension(pxContext, includeActionsFromInheritanceChain: false);
+
+			if (declaredActionsWithTypes.IsNullOrEmpty() || symbolContext.CancellationToken.IsCancellationRequested)
+				return;
+
+			PrimaryDacFinder primaryDacFinder = PrimaryDacFinder.Create(pxContext, semanticModel, graphOrGraphExtension, 
+																		symbolContext.CancellationToken);
+			ITypeSymbol primaryDAC = primaryDacFinder?.FindPrimaryDAC();
+
+			if (primaryDAC == null || symbolContext.CancellationToken.IsCancellationRequested)
+				return;
+
+			var actionsWithWrongDAC = declaredActionsWithTypes.TakeWhile(a => !symbolContext.CancellationToken.IsCancellationRequested)
+															  .Where(a => !CheckActionIsDeclaredForPrimaryDAC(a.ActionType, primaryDAC))
+															  .ToList();
+
+			if (actionsWithWrongDAC.Count == 0 || symbolContext.CancellationToken.IsCancellationRequested)
+				return;
+
+			var diagnosticExtraData = new Dictionary<string, string>
+			{
+				{ DiagnosticProperty.DacName, primaryDAC.Name },
+				{ DiagnosticProperty.DacMetadataName, primaryDAC.GetCLRTypeNameFromType() }
+			}.ToImmutableDictionary();
+
+			var registrationTasks = actionsWithWrongDAC.Select(a => RegisterDiagnosticForActionAsync(a.ActionSymbol, primaryDAC.Name, 
+																									 diagnosticExtraData, symbolContext));
+			await Task.WhenAll(registrationTasks);
+		}
+
+		private static bool CheckActionIsDeclaredForPrimaryDAC(INamedTypeSymbol action, ITypeSymbol primaryDAC)
+		{
+			var actionTypeArgs = action.TypeArguments;
+
+			if (actionTypeArgs.Length == 0)   //Cannot infer action's DAC
+				return true;
+
+			ITypeSymbol pxActionDacType = actionTypeArgs[0];
+			return pxActionDacType.Equals(primaryDAC);
+		}
+
+		private static async Task RegisterDiagnosticForActionAsync(ISymbol actionSymbol, string primaryDacName, 
+																   ImmutableDictionary<string, string> diagnosticProperties,
+																   SymbolAnalysisContext symbolContext)
+		{
+			SyntaxNode symbolSyntax = await actionSymbol.GetSyntaxAsync(symbolContext.CancellationToken).ConfigureAwait(false);
 			Location location = GetLocation(symbolSyntax);
 
 			if (location == null)
 				return;
 
-			var diagnosticExtraData = new Dictionary<string, string>
-			{
-				{ DiagnosticProperty.DacName, mainDacType.Name },
-				{ DiagnosticProperty.DacMetadataName, mainDacType.GetCLRTypeNameFromType() }
-			}.ToImmutableDictionary();
-			
 			symbolContext.ReportDiagnostic(
-				Diagnostic.Create(Descriptors.PX1012_PXActionOnNonPrimaryView, location, diagnosticExtraData,
-								  symbol.Name, mainDacType.Name));
-		}
-
-		private static bool IsDiagnosticValidForSymbol(SymbolAnalysisContext symbolContext, PXContext pxContext)
-		{
-			if (symbolContext.Symbol?.ContainingType == null || symbolContext.CancellationToken.IsCancellationRequested)
-				return false;
-
-			INamedTypeSymbol containingType = symbolContext.Symbol.ContainingType;
-			return containingType.InheritsFrom(pxContext.PXGraphType) ||
-				   containingType.InheritsFrom(pxContext.PXGraphExtensionType);
-		}
-
-		private static INamedTypeSymbol GetPXActionType(SymbolAnalysisContext symbolContext)
-		{
-			if (symbolContext.CancellationToken.IsCancellationRequested)
-				return null;
-
-			switch (symbolContext.Symbol)
-			{
-				case IFieldSymbol fieldSymbol when fieldSymbol.Type.IsPXAction():
-					return fieldSymbol.Type as INamedTypeSymbol;
-				case IPropertySymbol propertySymbol when propertySymbol.Type.IsPXAction():
-					return propertySymbol.Type as INamedTypeSymbol;
-				default:
-					return null;
-			}
-		}
-
-		private static ITypeSymbol GetMainDacFromPXGraph(INamedTypeSymbol pxGraphType, PXContext pxContext, CancellationToken cancellationToken)
-		{
-			if (pxGraphType.BaseType == null)
-				return null;
-
-			var baseGraphType = pxGraphType.GetBaseTypesAndThis()
-										   .OfType<INamedTypeSymbol>()
-										   .FirstOrDefault(type => IsGraphWithPrimaryDacBaseGenericType(type));
-
-			if (baseGraphType != null)  //Case when main DAC is already defined as type parameter
-			{
-				return baseGraphType.TypeArguments[1];
-			}
-
-			INamedTypeSymbol firstView = pxGraphType.GetBaseTypesAndThis()
-													.TakeWhile(type => !IsGraphOrGraphExtensionBaseType(type))
-													.Reverse()
-													.SelectMany(type => type.GetAllViewTypesFromPXGraphOrPXGraphExtension(pxContext))
-													.FirstOrDefault();
-
-			if (firstView == null || cancellationToken.IsCancellationRequested)
-				return null;
-
-			INamedTypeSymbol baseViewType = firstView.GetBaseTypesAndThis()
-													 .OfType<INamedTypeSymbol>()
-													 .FirstOrDefault(type => !type.IsCustomBqlCommand(pxContext));
-
-			if (baseViewType?.IsBqlCommand() != true || baseViewType.TypeArguments.Length == 0 || cancellationToken.IsCancellationRequested)
-				return null;
-
-			var mainDacType = baseViewType.TypeArguments[0];
-			return mainDacType.IsDAC() ? mainDacType : null;
-		}
-
-		private static ITypeSymbol GetMainDacFromPXGraphExtension(INamedTypeSymbol pxGraphExtensionType, PXContext pxContext,
-																  CancellationToken cancellationToken)
-		{
-			if (pxGraphExtensionType.BaseType == null)
-				return null;
-
-			var graphExtTypeArgs = pxGraphExtensionType.BaseType.TypeArguments;
-
-			if (graphExtTypeArgs.Length == 0 || cancellationToken.IsCancellationRequested)
-				return null;
-
-			ITypeSymbol firstTypeArg = graphExtTypeArgs[0];
-
-			if (!(firstTypeArg is INamedTypeSymbol pxGraphType) || !pxGraphType.IsPXGraph())
-				return null;
-
-			return GetMainDacFromPXGraph(pxGraphType, pxContext, cancellationToken);
-		}
-
-		private static bool IsGraphWithPrimaryDacBaseGenericType(INamedTypeSymbol type) =>
-			type.TypeArguments.Length >= 2 && type.Name.Equals(TypeNames.PXGraph, StringComparison.Ordinal);
-
-		private static bool IsGraphOrGraphExtensionBaseType(ITypeSymbol type)
-		{
-			string typeNameWithoutGenericArgsCount = type.Name.Split('`')[0];
-			return typeNameWithoutGenericArgsCount.Equals(TypeNames.PXGraph, StringComparison.Ordinal) ||
-				   typeNameWithoutGenericArgsCount.Equals(TypeNames.PXGraphExtension, StringComparison.Ordinal);
+				Diagnostic.Create(Descriptors.PX1012_PXActionOnNonPrimaryView, location, diagnosticProperties,
+								  actionSymbol.Name, primaryDacName));
 		}
 
 		private static Location GetLocation(SyntaxNode symbolSyntax)
