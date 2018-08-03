@@ -38,6 +38,7 @@
          must be a menu. -->
     <Groups>		
 			<Group guid="guidAcuminatorCmdSet" id="AcuminatorSubMenuGroup" />
+			<Group guid="guidAcuminatorCmdSet" id="AcuminatorContextMenuGroup" />
 			<Group guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" />		
     </Groups>
 
@@ -85,18 +86,16 @@
 	<CommandPlacements>
 		<!-- Placement for groups and menus.
            The parent of a group is a menu, context menu or toolbar.
-           The parent of a submenu is always a group
+           The parent of a submenu is always a group.
+					 The parent of a command is always a group, never a menu, context menu or toolbar.
            The priority sets the position of the group compared to the priority of other existing groups in the menu.
-           The order is: Toolbar or Menu > AcuminatorSubMenuGroup > AcuminatorSubMenu > AcuminatorGroupForCommands > Command1Id, Command2Id
+					 
+					 Placement for Acuminator in Edit Menu
+           The order is: Edit > AcuminatorSubMenuGroup > AcuminatorSubMenu > AcuminatorGroupForCommands > FormatBqlCommandId
       -->
 		<CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorSubMenuGroup" priority="0xFFFF">
 			<!-- The parent of the group will be the solution context menu -->
 			<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EDIT"/>
-		</CommandPlacement>
-		
-		<CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorSubMenuGroup" priority="0x0001">
-			 <!--The parent of the group will be also the context menu--> 
-			<Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN"/>
 		</CommandPlacement>
 		
 		<CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorSubMenu" priority="0x0001">
@@ -107,11 +106,20 @@
 			<Parent guid="guidAcuminatorCmdSet" id="AcuminatorSubMenu"/>
 		</CommandPlacement>
 
-		<!-- Placement for commands.
-           The parent of a command is always a group, never a menu, context menu or toolbar.
-      -->
 		<CommandPlacement guid="guidAcuminatorCmdSet" id="FormatBqlCommandId" priority="0x0001" >
 			<Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands"/>
+		</CommandPlacement>
+
+		<!-- Placement for Acuminator in context menu
+         The order is: Context Menu > AcuminatorContextMenuGroup > FormatBqlCommandId  -->
+		
+		<CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorContextMenuGroup" priority="0x0001">
+			<!--The parent of the group will be also the context menu-->
+			<Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN"/>
+		</CommandPlacement>
+
+		<CommandPlacement guid="guidAcuminatorCmdSet" id="FormatBqlCommandId" priority="0x0001" >
+			<Parent guid="guidAcuminatorCmdSet" id="AcuminatorContextMenuGroup"/>
 		</CommandPlacement>
 	</CommandPlacements>
 
@@ -131,7 +139,8 @@
     <!-- This is the guid used to group the menu commands together -->
     <GuidSymbol name="guidAcuminatorCmdSet" value="{3cd59430-1e8d-40af-b48d-9007624b3d77}">
       <IDSymbol name="AcuminatorSubMenuGroup" value="0x1020" />
-			<IDSymbol name="AcuminatorGroupForCommands" value="0x1021" />
+      <IDSymbol name="AcuminatorContextMenuGroup" value="0x1021" />
+			<IDSymbol name="AcuminatorGroupForCommands" value="0x1022" />
 			<IDSymbol name="AcuminatorSubMenu" value="0x0100" />
 
 			<!-- Warning!!: Keep the values in sync with the code in Command1.cs, Command2.cs -->
