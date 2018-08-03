@@ -9,6 +9,8 @@ namespace PX.Objects.HackathonDemo
 {
     public partial class SOOrder : IBqlTable
     {
+
+
         #region 2
         #endregion
         #region OrderNbr

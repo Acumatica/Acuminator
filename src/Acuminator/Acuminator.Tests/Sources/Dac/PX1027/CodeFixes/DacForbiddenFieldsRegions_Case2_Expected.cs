@@ -16,6 +16,8 @@ namespace PX.Objects.HackathonDemo
         [PXUIField(DisplayName = "Order Nbr")]
         public int? OrderNbr { get; set; }
         #endregion
+
+
         #region OrderCD
         public abstract class orderCD : IBqlField { }
         [PXDefault]

@@ -42,9 +42,4 @@ namespace PX.Objects.HackathonDemo
         public string CompanyMask { get; set; }
         #endregion
     }
-
-    /* public partial class SOOrder : IBqlTable
-     {
-
-     }*/
 }

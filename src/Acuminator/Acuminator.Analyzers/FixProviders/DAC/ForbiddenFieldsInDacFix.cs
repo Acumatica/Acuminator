@@ -11,9 +11,12 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.Editing;
 using Acuminator.Utilities;
+using Microsoft.CodeAnalysis.CSharp.Formatting;
 
 namespace Acuminator.Analyzers.FixProviders
 {
@@ -53,19 +56,27 @@ namespace Acuminator.Analyzers.FixProviders
 
             if (diagnosticNode == null || cancellationToken.IsCancellationRequested)
                 return document;
-            //var trackingRoot = root.TrackNodes(diagnosticNode);
             ClassDeclarationSyntax classDeclaration = diagnosticNode.Parent<ClassDeclarationSyntax>();
 
             var rewriterWalker = new RegionClassRewriter((diagnosticNode is ClassDeclarationSyntax) ?
                                                                 (diagnosticNode as ClassDeclarationSyntax)?.Identifier.Text :
                                                                 (diagnosticNode as PropertyDeclarationSyntax)?.Identifier.Text,
                                                          cancellationToken);
-            var classModified = rewriterWalker.Visit(classDeclaration) as ClassDeclarationSyntax;
+            var classModified = rewriterWalker.Visit(classDeclaration);
+            
             if (cancellationToken.IsCancellationRequested)
                 return document;
-            //var modifiedNode = trackingRoot.GetCurrentNode(diagnosticNode);
-            var modifiedRoot = root.ReplaceNode(classDeclaration, classModified);
+            //Format tabulations
+            AdhocWorkspace workspace = new AdhocWorkspace();
+            OptionSet options = workspace.Options; 
+            options = options.WithChangedOption(FormattingOptions.UseTabs,LanguageNames.CSharp,false)
+                             .WithChangedOption(FormattingOptions.TabSize, LanguageNames.CSharp, 4)
+                             .WithChangedOption(FormattingOptions.IndentationSize, LanguageNames.CSharp, 4);
+            workspace.Options = options;
+            var modifiedRoot = Formatter.Format(root.ReplaceNode(classDeclaration, classModified),workspace,options);
 
+            if (cancellationToken.IsCancellationRequested)
+                return document;
             return document.WithSyntaxRoot(modifiedRoot);
         }
     }
@@ -73,7 +84,7 @@ namespace Acuminator.Analyzers.FixProviders
 
     public class RegionClassRewriter : CSharpSyntaxRewriter
     {
-        private Stack<RegionDirectiveTriviaSyntax> regionsStack;
+        //private Stack<RegionDirectiveTriviaSyntax> regionsStack;
         private Stack<SyntaxTrivia> deletedTriviaStack;
         private string removableIdentifier;
         private CancellationToken cancellationToken;
@@ -82,31 +93,12 @@ namespace Acuminator.Analyzers.FixProviders
                                    CancellationToken cToken)
                                 : base(visitIntoStructuredTrivia: true)
         {
-            regionsStack = new Stack<RegionDirectiveTriviaSyntax>();
+            //regionsStack = new Stack<RegionDirectiveTriviaSyntax>();
             deletedTriviaStack = new Stack<SyntaxTrivia>();
             removableIdentifier = aRemovableIdentifier.ToUpperInvariant();
             cancellationToken = cToken;
         }
 
-        public override SyntaxNode VisitRegionDirectiveTrivia(RegionDirectiveTriviaSyntax node)
-        {
-            if (regionsStack == null || cancellationToken.IsCancellationRequested)
-                return node;
-            regionsStack.Push(node);
-            if (node.ToString().ToUpperInvariant().Contains(removableIdentifier))
-                return SyntaxFactory.SkippedTokensTrivia();// SyntaxFactory.ElasticEndOfLine(" a") as SyntaxNode;
-            return node;
-
-        }
-        public override SyntaxNode VisitEndRegionDirectiveTrivia(EndRegionDirectiveTriviaSyntax node)
-        {
-            if (regionsStack == null || regionsStack.Count == 0 || cancellationToken.IsCancellationRequested)
-                return node;
-            RegionDirectiveTriviaSyntax regionStart = regionsStack.Pop();
-            if (regionStart.ToString().ToUpperInvariant().Contains(removableIdentifier))
-                return null;
-            return node;
-        }
         public override SyntaxTrivia VisitTrivia(SyntaxTrivia trivia)
         {
             if (deletedTriviaStack == null || cancellationToken.IsCancellationRequested)
@@ -115,8 +107,9 @@ namespace Acuminator.Analyzers.FixProviders
             {
                 deletedTriviaStack.Push(trivia);
                 if (trivia.ToString().ToUpperInvariant().Contains(removableIdentifier))
-                    return SyntaxFactory.SyntaxTrivia(SyntaxKind.EndOfLineTrivia,"");// SyntaxFactory.ElasticEndOfLine(" a") as SyntaxNode;
-                
+                {
+                    return SyntaxFactory.Tab;// SyntaxFactory.ElasticEndOfLine(" a") as SyntaxNode;
+                }
             }
             if (trivia.Kind()  == SyntaxKind.EndRegionDirectiveTrivia)
             {
@@ -124,11 +117,10 @@ namespace Acuminator.Analyzers.FixProviders
                     return base.VisitTrivia(trivia);
                 SyntaxTrivia regionStart = deletedTriviaStack.Pop();
                 if (regionStart.ToString().ToUpperInvariant().Contains(removableIdentifier))
-                    return SyntaxFactory.SyntaxTrivia(SyntaxKind.EndOfLineTrivia, "");
+                    return  SyntaxFactory.Tab;
             }
             return base.VisitTrivia(trivia);
         }
-
         
 
         public override SyntaxNode VisitClassDeclaration(ClassDeclarationSyntax node)

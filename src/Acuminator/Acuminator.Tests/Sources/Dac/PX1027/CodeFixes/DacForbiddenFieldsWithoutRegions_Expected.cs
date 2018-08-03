@@ -11,6 +11,9 @@ namespace PX.Objects.HackathonDemo
     {
 
 
+
+
+
         public abstract class orderNbr : IBqlField { }
         [PXDBInt(IsKey = true)]
         [PXDefault]
@@ -18,15 +21,28 @@ namespace PX.Objects.HackathonDemo
         public int? OrderNbr { get; set; }
 
 
+
+
+
+
         public abstract class orderCD : IBqlField { }
         [PXDefault]
         [PXUIField(DisplayName = "Order CD")]
         public int? OrderCD { get; set; }
 
+
+
+
+
     }
 
     public partial class SOOrder : IBqlTable
     {
+
+
+
+
+
 
     }
 }
