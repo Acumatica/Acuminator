@@ -84,7 +84,6 @@ namespace Acuminator.Analyzers.FixProviders
 
     public class RegionClassRewriter : CSharpSyntaxRewriter
     {
-        //private Stack<RegionDirectiveTriviaSyntax> regionsStack;
         private Stack<SyntaxTrivia> deletedTriviaStack;
         private string removableIdentifier;
         private CancellationToken cancellationToken;
@@ -93,7 +92,6 @@ namespace Acuminator.Analyzers.FixProviders
                                    CancellationToken cToken)
                                 : base(visitIntoStructuredTrivia: true)
         {
-            //regionsStack = new Stack<RegionDirectiveTriviaSyntax>();
             deletedTriviaStack = new Stack<SyntaxTrivia>();
             removableIdentifier = aRemovableIdentifier.ToUpperInvariant();
             cancellationToken = cToken;

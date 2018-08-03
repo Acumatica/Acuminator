@@ -18,7 +18,6 @@ namespace Acuminator.Tests
                 CreatePX1028DacConstructorDiagnosticResult(line: 13, column: 16),
                 CreatePX1028DacConstructorDiagnosticResult(line: 17, column: 16),
                 CreatePX1028DacConstructorDiagnosticResult(line: 74, column: 16),
-                //CreatePX1028DacConstructorDiagnosticResult(line: 78, column: 16),
                 CreatePX1028DacConstructorDiagnosticResult(line: 88, column: 16),
                 CreatePX1028DacConstructorDiagnosticResult(line: 92, column: 16));
 
