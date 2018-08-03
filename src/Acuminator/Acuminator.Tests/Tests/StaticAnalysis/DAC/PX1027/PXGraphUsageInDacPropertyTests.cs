@@ -37,7 +37,7 @@ namespace Acuminator.Tests
 
         [Theory]
         [EmbeddedFileData(@"Dac\PX1027\Diagnostics\DacExtensionWithGraphUsageInProperty.cs")]
-        public void Text_PXGraph_Usage_Inside_CacheExtension_Property(string source)
+        public void Test_PXGraph_Usage_Inside_CacheExtension_Property(string source)
         {
             VerifyCSharpDiagnostic(source,
                 CreatePX1027DiagnosticResult(13, 17),

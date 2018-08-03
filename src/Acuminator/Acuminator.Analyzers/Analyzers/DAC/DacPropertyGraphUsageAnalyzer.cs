@@ -26,9 +26,9 @@ namespace Acuminator.Analyzers
         private void AnalyzeGraphUsageInsideDacProperty(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
         {    
             PropertyDeclarationSyntax node = syntaxContext.Node as PropertyDeclarationSyntax;
-            IPropertySymbol property = syntaxContext.SemanticModel.GetDeclaredSymbol(node);
+            IPropertySymbol property = syntaxContext.SemanticModel.GetDeclaredSymbol(node, syntaxContext.CancellationToken);
 
-            if (IsDacProperty(property, pxContext))
+            if (property != null && IsDacProperty(property, pxContext))
             {
                 IEnumerable<MemberAccessExpressionSyntax> membersAccess = node.DescendantNodes().OfType<MemberAccessExpressionSyntax>();
 
@@ -59,9 +59,9 @@ namespace Acuminator.Analyzers
 
         private void AnalyzeMemberAccessExpression(ExpressionSyntax expression, SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
         {
-            ISymbol expressionSymbol = syntaxContext.SemanticModel.GetSymbolInfo(expression).Symbol;
+            ISymbol expressionSymbol = syntaxContext.SemanticModel.GetSymbolInfo(expression, syntaxContext.CancellationToken).Symbol;
 
-            if (IsGraphUsedAsMemberExpression(expressionSymbol, pxContext))
+            if (expressionSymbol != null && IsGraphUsedAsMemberExpression(expressionSymbol, pxContext))
             {
                 syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1027_PXGraphUsageInDacProperty, expression.GetLocation()));
             }
@@ -69,9 +69,9 @@ namespace Acuminator.Analyzers
 
         private void AnalyzeMemberAccessName(SimpleNameSyntax name, SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
         {
-            ISymbol nameSymbol = syntaxContext.SemanticModel.GetSymbolInfo(name).Symbol;
+            ISymbol nameSymbol = syntaxContext.SemanticModel.GetSymbolInfo(name, syntaxContext.CancellationToken).Symbol;
 
-            if (IsGraphUsedAsMemberName(nameSymbol, pxContext))
+            if (nameSymbol != null && IsGraphUsedAsMemberName(nameSymbol, pxContext))
             {
                 syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1027_PXGraphUsageInDacProperty, name.GetLocation()));
             }
@@ -128,8 +128,8 @@ namespace Acuminator.Analyzers
 
         private bool IsDacProperty(IPropertySymbol property, PXContext pxContext)
         {
-            return property != null && (property.ContainingType.ImplementsInterface(pxContext.IBqlTableType) ||
-                                        property.ContainingType.InheritsFrom(pxContext.PXCacheExtensionType));
+            return property.ContainingType.ImplementsInterface(pxContext.IBqlTableType) ||
+                   property.ContainingType.InheritsFrom(pxContext.PXCacheExtensionType);
         }
     }
 }
