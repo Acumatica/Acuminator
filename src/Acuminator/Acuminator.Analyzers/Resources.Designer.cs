@@ -411,5 +411,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1026Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXGraph instances cannot be used inside DAC properties.
+        /// </summary>
+        public static string PX1027Title {
+            get {
+                return ResourceManager.GetString("PX1027Title", resourceCulture);
+            }
+        }
     }
 }

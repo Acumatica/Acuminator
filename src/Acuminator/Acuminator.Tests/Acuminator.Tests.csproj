@@ -166,6 +166,8 @@
     <EmbeddedResource Include="Sources\Dac\PX1026\Diagnostics\DacExtensionWithUnderscores.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1026\CodeFixes\DacExtensionWithUnderscores_Expected.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1026\CodeFixes\DacWithUnderscores_Expected.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1027\Diagnostics\DacExtensionWithGraphUsageInProperty.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1027\Diagnostics\DacWithGraphUsageInProperty.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTypeMismatchCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\MultipleFieldAttributesCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTests.cs" />
@@ -175,6 +177,7 @@
     <Compile Include="Tests\StaticAnalysis\DAC\DacFields\PX1024\DacFieldNotAbstractCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\DacFields\PX1024\DacFieldNotAbstractTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\PX1026\UnderscoresInDacTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\DAC\PX1027\PXGraphUsageInDacPropertyTests.cs" />
     <Compile Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtensionTests.cs" />
     <Compile Include="Tests\StaticAnalysis\LongOperationDelegateClosuresTests.cs" />
     <EmbeddedResource Include="Sources\View\Delegate\PX1010\Diagnostics\StartRowResetForPaging.cs" />
