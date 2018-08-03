@@ -67,7 +67,7 @@ namespace Acuminator.Analyzers.FixProviders
             if (cancellationToken.IsCancellationRequested)
                 return document;
             //Format tabulations
-            AdhocWorkspace workspace = new AdhocWorkspace();
+            Workspace workspace = document.Project.Solution.Workspace;
             OptionSet options = workspace.Options; 
             options = options.WithChangedOption(FormattingOptions.UseTabs,LanguageNames.CSharp,false)
                              .WithChangedOption(FormattingOptions.TabSize, LanguageNames.CSharp, 4)

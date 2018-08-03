@@ -141,7 +141,7 @@ namespace Acuminator.Analyzers
         private static void CheckDeclarationForConstructors(ClassDeclarationSyntax dacOrDacExtNode,
                                                             SyntaxNodeAnalysisContext syntaxContext)
         {
-            var dacConstructors = dacOrDacExtNode.Members.OfType<ConstructorDeclarationSyntax>().ToList();
+            var dacConstructors = dacOrDacExtNode.Members.OfType<ConstructorDeclarationSyntax>();
 
             foreach (var constructor in dacConstructors)
             {

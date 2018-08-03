@@ -431,7 +431,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove all constructors entirely.
+        ///   Looks up a localized string similar to Remove constructor entirely.
         /// </summary>
         public static string PX1028Fix {
             get {

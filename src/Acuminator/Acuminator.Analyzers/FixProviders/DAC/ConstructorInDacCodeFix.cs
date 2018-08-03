@@ -31,7 +31,7 @@ namespace Acuminator.Analyzers.FixProviders
             {
                 var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1028_ConstructorInDacDeclaration.Id);
 
-                if (diagnostic == null || !diagnostic.IsRegisteredForCodeFix())
+                if (diagnostic == null || context.CancellationToken.IsCancellationRequested)
                     return;
 
                 string codeActionName = nameof(Resources.PX1028Fix).GetLocalized().ToString();
