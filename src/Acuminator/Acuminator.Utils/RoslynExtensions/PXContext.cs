@@ -10,6 +10,11 @@ namespace Acuminator.Analyzers
 {
     public class PXContext
     {
+		private const string PXSelectBase_Acumatica2018R2 = "PX.Data.PXSelectBase`2";
+		private const string IViewConfig_Acumatica2018R2 = "PX.Data.PXSelectBase`2+IViewConfig";
+
+		public bool IsAcumatica2018R2 { get; }
+
         public Compilation Compilation { get; }
 
 		private readonly Lazy<BQLSymbols> bql;
@@ -54,6 +59,11 @@ namespace Acuminator.Analyzers
         public INamedTypeSymbol PXViewType => Compilation.GetTypeByMetadataName(typeof(PXView).FullName);
         public INamedTypeSymbol PXSelectBaseType => Compilation.GetTypeByMetadataName(typeof(PXSelectBase).FullName);
 
+        public INamedTypeSymbol PXSelectBase2018R2NewType => Compilation.GetTypeByMetadataName(PXSelectBase_Acumatica2018R2);
+        public INamedTypeSymbol IViewConfig2018R2 => Compilation.GetTypeByMetadataName(IViewConfig_Acumatica2018R2);
+
+		
+
         public INamedTypeSymbol PXActionType => Compilation.GetTypeByMetadataName(typeof(PXAction).FullName);
 		
 		public INamedTypeSymbol PXAdapterType => Compilation.GetTypeByMetadataName(typeof(PXAdapter).FullName);
@@ -83,7 +93,9 @@ namespace Acuminator.Analyzers
 										() => new FieldAttributesTypes(Compilation));
             systemActionTypes = new Lazy<PXSystemActionTypes>(
 										() => new PXSystemActionTypes(Compilation));
-        }
+
+			IsAcumatica2018R2 = PXSelectBase2018R2NewType != null;
+		}
 
         #region Field Attributes Types
         public class FieldAttributesTypes
