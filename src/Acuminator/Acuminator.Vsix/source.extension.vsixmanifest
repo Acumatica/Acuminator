@@ -7,7 +7,7 @@
     <MoreInfo>https://github.com/Acumatica/Acuminator</MoreInfo>
     <License>license.txt</License>
     <ReleaseNotes>https://github.com/Acumatica/Acuminator/blob/master/docs/ReleaseNotes.md</ReleaseNotes>
-    <Icon>icon.ico</Icon>
+    <Icon>acumatica.ico</Icon>
     <Tags>acumatica</Tags>
   </Metadata>
   <Installation>
