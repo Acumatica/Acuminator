@@ -286,6 +286,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Resources\acumaticaIcon.ico" />
     <Content Include="Resources\AcuminatorVSPackage.ico" />
   </ItemGroup>
   <ItemGroup>
