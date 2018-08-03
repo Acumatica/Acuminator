@@ -23,6 +23,7 @@
   <!--The Commands section is where commands, menus, and menu groups are defined.
       This section uses a Guid to identify the package that provides the command defined inside it. -->
   <Commands package="guidAcuminatorVSPackage">
+		
     <!-- Inside this section we have different sub-sections: one for the menus, another
     for the menu groups, one for the buttons (the actual commands), one for the combos
     and the last one for the bitmaps used. Each element is identified by a command id that
@@ -35,12 +36,18 @@
          other menus or buttons (commands); from a visual point of view you can see the
          group as the part of a menu contained between two lines. The parent of a group
          must be a menu. -->
-    <Groups>
-      <Group guid="guidFormatBqlCommandPackageCmdSet" id="MyMenuGroup" priority="0x1200">
-        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EDIT"/>
-      </Group>
+    <Groups>		
+			<Group guid="guidAcuminatorCmdSet" id="AcuminatorSubMenuGroup" />
+			<Group guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" />		
     </Groups>
 
+		<Menus>
+			<Menu guid="guidAcuminatorCmdSet" id="AcuminatorSubMenu" type="Menu">
+				<Strings>
+					<ButtonText>Acuminator</ButtonText>
+				</Strings>
+			</Menu>
+		</Menus>
     <!--Buttons section. -->
     <!--This section defines the elements the user can interact with, like a menu command or a button
         or combo box in a toolbar. -->
@@ -52,13 +59,13 @@
               <CommandFlag>DefaultInvisible</CommandFlag>
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
-      <Button guid="guidFormatBqlCommandPackageCmdSet" id="FormatBqlCommandId" priority="0x0100" type="Button">
-        <Parent guid="guidFormatBqlCommandPackageCmdSet" id="MyMenuGroup" />
+      <Button guid="guidAcuminatorCmdSet" id="FormatBqlCommandId" type="Button">
         <!--<Icon guid="guidImages" id="bmpPic1" />-->
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
+					<CommandName>cmdidFormatBQLCommand</CommandName>
           <ButtonText>Format BQL Statements</ButtonText>
         </Strings>
       </Button>
@@ -75,9 +82,42 @@
     </Bitmaps>-->
   </Commands>
 
-  <KeyBindings>
+	<CommandPlacements>
+		<!-- Placement for groups and menus.
+           The parent of a group is a menu, context menu or toolbar.
+           The parent of a submenu is always a group
+           The priority sets the position of the group compared to the priority of other existing groups in the menu.
+           The order is: Toolbar or Menu > AcuminatorSubMenuGroup > AcuminatorSubMenu > AcuminatorGroupForCommands > Command1Id, Command2Id
+      -->
+		<CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorSubMenuGroup" priority="0xFFFF">
+			<!-- The parent of the group will be the solution context menu -->
+			<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EDIT"/>
+		</CommandPlacement>
+		
+		<!--<CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorSubMenuGroup" priority="0xFFFF">
+			--><!-- The parent of the group will be also the standard toolbar --><!--
+			<Parent guid="guidSHLMainMenu" id="IDM_VS_TOOL_STANDARD"/>
+		</CommandPlacement>-->
+		
+		<CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorSubMenu" priority="0x0001">
+			<Parent guid="guidAcuminatorCmdSet" id="AcuminatorSubMenuGroup"/>
+		</CommandPlacement>
+		
+		<CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" priority="0x0001">
+			<Parent guid="guidAcuminatorCmdSet" id="AcuminatorSubMenu"/>
+		</CommandPlacement>
+
+		<!-- Placement for commands.
+           The parent of a command is always a group, never a menu, context menu or toolbar.
+      -->
+		<CommandPlacement guid="guidAcuminatorCmdSet" id="FormatBqlCommandId" priority="0x0001" >
+			<Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands"/>
+		</CommandPlacement>
+	</CommandPlacements>
+
+	<KeyBindings>
     <!-- guidVSStd97 is global scope -->
-    <KeyBinding guid="guidFormatBqlCommandPackageCmdSet" id="FormatBqlCommandId"
+    <KeyBinding guid="guidAcuminatorCmdSet" id="FormatBqlCommandId"
                 editor="guidVSStd97"
                 key1="B" mod1="CONTROL"
                 key2="F" mod2="CONTROL"
@@ -89,9 +129,13 @@
     <GuidSymbol name="guidAcuminatorVSPackage" value="{7e538ed0-0699-434f-acf0-3f6dbc9898ea}" />
 
     <!-- This is the guid used to group the menu commands together -->
-    <GuidSymbol name="guidFormatBqlCommandPackageCmdSet" value="{3cd59430-1e8d-40af-b48d-9007624b3d77}">
-      <IDSymbol name="MyMenuGroup" value="0x1020" />
-      <IDSymbol name="FormatBqlCommandId" value="0x0100" />
+    <GuidSymbol name="guidAcuminatorCmdSet" value="{3cd59430-1e8d-40af-b48d-9007624b3d77}">
+      <IDSymbol name="AcuminatorSubMenuGroup" value="0x1020" />
+			<IDSymbol name="AcuminatorGroupForCommands" value="0x1021" />
+			<IDSymbol name="AcuminatorSubMenu" value="0x0100" />
+
+			<!-- Warning!!: Keep the values in sync with the code in Command1.cs, Command2.cs -->
+      <IDSymbol name="FormatBqlCommandId" value="0x0101" />
     </GuidSymbol>
 
     <!--<GuidSymbol name="guidImages" value="{a58846ee-f5a1-467a-badc-01a41af86611}" >
