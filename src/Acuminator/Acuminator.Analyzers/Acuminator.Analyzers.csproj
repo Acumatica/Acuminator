@@ -60,8 +60,9 @@
     <Compile Include="Analyzers\View\NoPrimaryViewForPrimaryDacAnalyzer.cs" />
     <Compile Include="Diagnostic\DiagnosticProperty.cs" />
     <Compile Include="Diagnostic\DiagnosticUtils.cs" />
-    <Compile Include="FixProviders\DAC\ForbiddenFieldsInDacFix.cs" />
-	<Compile Include="FixProviders\DAC\ConstructorInDacCodeFix.cs" />
+    <Compile Include="FixProviders\DAC\DacFields\ForbiddenFieldsInDAC\RegionsVisitor.cs" />
+    <Compile Include="FixProviders\DAC\DacFields\ForbiddenFieldsInDAC\ForbiddenFieldsInDacFix.cs" />
+    <Compile Include="FixProviders\DAC\ConstructorInDacCodeFix.cs" />
     <Compile Include="FixProviders\DAC\UnderscoresInDacCodeFix.cs" />
     <Compile Include="FixProviders\DAC\DacFields\DacNonAbstractFieldTypeFix.cs" />
     <Compile Include="FixProviders\DAC\DacPropertyAttributes\IncompatibleDacPropertyAndFieldAttributeFix.cs" />

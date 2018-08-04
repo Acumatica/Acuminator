@@ -159,7 +159,8 @@ namespace TestHelper
 			var workspace = new AdhocWorkspace();
 			workspace.Options = workspace.Options.WithChangedOption(FormattingOptions.UseTabs, LanguageNames.CSharp, true)
 												 .WithChangedOption(FormattingOptions.SmartIndent, LanguageNames.CSharp, FormattingOptions.IndentStyle.Smart)
-												 .WithChangedOption(FormattingOptions.TabSize, LanguageNames.CSharp, 4);
+												 .WithChangedOption(FormattingOptions.TabSize, LanguageNames.CSharp, 4)
+												 .WithChangedOption(FormattingOptions.IndentationSize, LanguageNames.CSharp, 4);
 
 			var solution = workspace.CurrentSolution
 									.AddProject(projectId, TestProjectName, TestProjectName, language)

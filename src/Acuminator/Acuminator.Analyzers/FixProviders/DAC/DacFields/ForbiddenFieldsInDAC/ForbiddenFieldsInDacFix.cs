@@ -22,7 +22,7 @@ namespace Acuminator.Analyzers.FixProviders
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public class ForbiddenFieldsInDacFix : CodeFixProvider
+	public partial class ForbiddenFieldsInDacFix : CodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.Id);
@@ -79,18 +79,15 @@ namespace Acuminator.Analyzers.FixProviders
 													   .Where(dacField => identifierToRemove.Equals(dacField.Identifier.Text, 
 																									StringComparison.OrdinalIgnoreCase));
 			modifiedDac = modifiedDac.RemoveNodes(dacFieldsToRemove, SyntaxRemoveOptions.KeepExteriorTrivia);
+			var modifiedRoot = root.ReplaceNode(dacDeclaration, modifiedDac);
 
+			if (cancellationToken.IsCancellationRequested)
+				return document;
 
 			//Format tabulations
-			//Workspace workspace = document.Project.Solution.Workspace;
-			//OptionSet options = workspace.Options;
-			//options = options.WithChangedOption(FormattingOptions.UseTabs, LanguageNames.CSharp, false)
-			//				 .WithChangedOption(FormattingOptions.TabSize, LanguageNames.CSharp, 4)
-			//				 .WithChangedOption(FormattingOptions.IndentationSize, LanguageNames.CSharp, 4);
-			//workspace.Options = options;
-			//  Formatter.Format(, workspace, options);
-
-			var modifiedRoot = root.ReplaceNode(dacDeclaration, modifiedDac);
+			Workspace workspace = document.Project.Solution.Workspace;
+			OptionSet formatOptions = GetFormattingOptions(workspace);
+			modifiedRoot = Formatter.Format(modifiedRoot, workspace, formatOptions, cancellationToken);
 
 			if (cancellationToken.IsCancellationRequested)
 				return document;
@@ -154,64 +151,19 @@ namespace Acuminator.Analyzers.FixProviders
 			newTriviaList = newTriviaList.RemoveAt(regionIndex);
 			return newTriviaList;
 		}
-		
-		/// <summary>
-		/// The #regions rewriter helper.
-		/// </summary>
-		private class RegionsVisitor : CSharpSyntaxWalker
-		{
-			private readonly Stack<RegionDirectiveTriviaSyntax> regionsStack;
-			private readonly string identifierToRemove;
-			private readonly CancellationToken cancellationToken;
 
-			public List<DirectiveTriviaSyntax> RegionNodesToRemove { get; } = new List<DirectiveTriviaSyntax>(capacity: 2);
 
-			public RegionsVisitor(string identifierToDelete, CancellationToken cToken) : base(SyntaxWalkerDepth.StructuredTrivia)
-			{
-				regionsStack = new Stack<RegionDirectiveTriviaSyntax>(capacity: 4);
-				identifierToRemove = identifierToDelete.ToUpperInvariant();
-				cancellationToken = cToken;
-			}
+		private OptionSet GetFormattingOptions(Workspace workspace)
+		{		
+			int identationSize = workspace.Options.GetOption(FormattingOptions.IndentationSize, LanguageNames.CSharp);
+			FormattingOptions.IndentStyle identationStyle = workspace.Options.GetOption(FormattingOptions.SmartIndent, LanguageNames.CSharp);
+			int tabSize = workspace.Options.GetOption(FormattingOptions.TabSize, LanguageNames.CSharp);
+			bool useTabs = workspace.Options.GetOption(FormattingOptions.UseTabs, LanguageNames.CSharp);
 
-			public override void VisitRegionDirectiveTrivia(RegionDirectiveTriviaSyntax regionDirective)
-			{
-				if (cancellationToken.IsCancellationRequested)
-					return;
-
-				regionsStack.Push(regionDirective);
-				string regionNameUpperCase = GetRegionName(regionDirective).ToUpperInvariant();
-
-				if (regionNameUpperCase.Contains(identifierToRemove))
-				{
-					RegionNodesToRemove.Add(regionDirective);
-				}
-
-				base.VisitRegionDirectiveTrivia(regionDirective);
-			}
-
-			public override void VisitEndRegionDirectiveTrivia(EndRegionDirectiveTriviaSyntax endRegionDirective)
-			{
-				if (regionsStack.Count == 0 || cancellationToken.IsCancellationRequested)
-				{
-					if (!cancellationToken.IsCancellationRequested)
-						base.VisitEndRegionDirectiveTrivia(endRegionDirective);
-
-					return;
-				}
-
-				RegionDirectiveTriviaSyntax regionDirective = regionsStack.Pop();
-				string regionNameUpperCase = GetRegionName(regionDirective).ToUpperInvariant();
-
-				if (regionNameUpperCase.Contains(identifierToRemove))
-				{
-					RegionNodesToRemove.Add(endRegionDirective);
-				}
-
-				base.VisitEndRegionDirectiveTrivia(endRegionDirective);
-			}
-
-			private static string GetRegionName(RegionDirectiveTriviaSyntax regionDirective) =>
-				regionDirective.EndOfDirectiveToken.LeadingTrivia.ToString();
+			return workspace.Options.WithChangedOption(FormattingOptions.IndentationSize, LanguageNames.CSharp, identationSize)
+									.WithChangedOption(FormattingOptions.SmartIndent, LanguageNames.CSharp, identationStyle)
+									.WithChangedOption(FormattingOptions.TabSize, LanguageNames.CSharp, tabSize)
+									.WithChangedOption(FormattingOptions.UseTabs, LanguageNames.CSharp, useTabs);
 		}
 	}
 }
