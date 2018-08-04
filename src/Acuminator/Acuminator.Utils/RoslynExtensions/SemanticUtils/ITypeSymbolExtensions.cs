@@ -60,6 +60,17 @@ namespace Acuminator.Utilities
 			}
 		}
 
+		public static IEnumerable<INamespaceSymbol> GetContainingNamespaces(this ITypeSymbol type)
+		{
+			var currentNamespace = type?.ContainingNamespace;
+
+			while (currentNamespace != null)
+			{
+				yield return currentNamespace;
+				currentNamespace = currentNamespace.ContainingNamespace;
+			}
+		}
+
 		/// <summary>
 		/// Determine if "type" inherits from "baseType", ignoring constructed types, optionally including interfaces, dealing only with original types.
 		/// </summary>
@@ -149,6 +160,38 @@ namespace Acuminator.Utilities
 					return true;
 
 				current = current.BaseType;
+			}
+
+			return false;
+		}
+
+		// Determine if "type" inherits from "baseType", ignoring constructed types, optionally including interfaces,
+		// dealing only with original types.
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool InheritsOrImplementsOrEquals(this ITypeSymbol type, string baseTypeName,
+														bool includeInterfaces = true)
+		{
+			if (type == null)
+				return false;
+
+			IEnumerable<ITypeSymbol> baseTypes = includeInterfaces
+				? type.GetBaseTypesAndThis().ConcatStructList(type.AllInterfaces)
+				: type.GetBaseTypesAndThis();
+
+			return baseTypes.Select(typeSymbol => typeSymbol.Name)
+							.Contains(baseTypeName);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool ImplementsInterface(this ITypeSymbol type, string interfaceName)
+		{
+			if (type == null)
+				return false;
+
+			foreach (var interfaceSymbol in type.AllInterfaces)
+			{
+				if (interfaceSymbol.Name == interfaceName)
+					return true;
 			}
 
 			return false;

@@ -21,6 +21,9 @@ namespace Acuminator.Analyzers
 		/// </summary>
 		protected class ParametersCounterSymbolWalker : SymbolVisitor
 		{
+			private readonly bool isAcumatica2018R2;
+			private readonly INamedTypeSymbol iViewConfig2018R2;
+
 			private readonly SyntaxNodeAnalysisContext syntaxContext;
 			private readonly CancellationToken cancellationToken;
 
@@ -30,6 +33,14 @@ namespace Acuminator.Analyzers
 			{
 				syntaxContext = aSyntaxContext;
 				cancellationToken = syntaxContext.CancellationToken;
+
+				isAcumatica2018R2 = aPxContext.IsAcumatica2018R2;
+
+				if (isAcumatica2018R2)
+				{
+					iViewConfig2018R2 = aPxContext.IViewConfig2018R2;
+				}
+
 				ParametersCounter = new ParametersCounter(aPxContext);
 			}
 
@@ -54,6 +65,12 @@ namespace Acuminator.Analyzers
 
 				if (!ParametersCounter.CountParametersInTypeSymbol(typeSymbol, cancellationToken))
 					return;
+
+				if (isAcumatica2018R2 && !cancellationToken.IsCancellationRequested && typeSymbol.ContainingType != null &&
+					ImplementsIViewConfig(typeSymbol))
+				{
+					Visit(typeSymbol.ContainingType);
+				}
 
 				var typeArguments = typeSymbol.TypeArguments;
 
@@ -87,6 +104,15 @@ namespace Acuminator.Analyzers
 
 				if (!cancellationToken.IsCancellationRequested)
 					base.VisitTypeParameter(typeParameterSymbol);
+			}
+
+			private bool ImplementsIViewConfig(ITypeSymbol type)
+			{
+				if (type == null || iViewConfig2018R2 == null)
+					return false;
+
+				return type.AllInterfaces.Any(interfaceType => iViewConfig2018R2.Equals(interfaceType) || 
+															   iViewConfig2018R2.Equals(interfaceType?.OriginalDefinition));
 			}
 		}
 	}

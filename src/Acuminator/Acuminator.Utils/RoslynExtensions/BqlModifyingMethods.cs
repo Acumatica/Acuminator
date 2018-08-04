@@ -12,10 +12,10 @@ using PX.Data;
 
 namespace Acuminator.Utilities
 {
+	internal class DummyDac : IBqlTable { }
+
 	public static class BqlModifyingMethods
 	{
-		private class DummyDac : IBqlTable { }
-
 		public static readonly ImmutableHashSet<string> PXSelectbaseBqlModifiers = ImmutableHashSet.Create
 		(
 			nameof(PXSelectBase<DummyDac>.WhereAnd),

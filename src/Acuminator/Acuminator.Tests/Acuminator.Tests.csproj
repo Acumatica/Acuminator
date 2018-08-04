@@ -143,6 +143,7 @@
     <EmbeddedResource Include="Sources\Dac\PX1007\Diagnostics\DACCreateInstance.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1007\CodeFixes\DACCreateInstance_Expected.cs" />
     <EmbeddedResource Include="Sources\LongOperationDelegateClosuresAnalyzer.cs" />
+    <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\PXUpdateCall.cs" />
     <EmbeddedResource Include="Sources\Dac\SOOrder.cs" />
     <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\InheritanceCall.cs" />
     <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\FieldInstanceCall.cs" />
@@ -178,6 +179,9 @@
     <EmbeddedResource Include="Sources\Dac\PX1027\CodeFixes\DacForbiddenFieldsRegions_Case3_Expected.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1027\CodeFixes\DacForbiddenFieldsRegions_Case1_Expected.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1027\CodeFixes\DacForbiddenFieldsRegions_Case2_Expected.cs" />
+    <EmbeddedResource Include="Sources\PXAction\PX1000\Diagnostics\InvalidPXActionSignatureGraphExtension.cs" />
+    <EmbeddedResource Include="Sources\PXAction\PX1000\CodeFixes\InvalidPXActionSignatureGraphExtension_Expected.cs" />
+    <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\SearchCall.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTypeMismatchCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\MultipleFieldAttributesCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTests.cs" />

@@ -17,28 +17,28 @@ namespace Acuminator.Tests
 {
 	public class InvalidPXActionSignatureTests : CodeFixVerifier
 	{
-		[Theory] 
+		[Theory]
 		[EmbeddedFileData(@"PXAction\PX1000\Diagnostics\InvalidPXActionSignature.cs")]
-		public void TestDiagnostic(string actual)
-		{
-			var diagnostic = new DiagnosticResult
-			{
-				Id = Descriptors.PX1000_InvalidPXActionHandlerSignature.Id,
-				Message = Descriptors.PX1000_InvalidPXActionHandlerSignature.Title.ToString(),
-				Severity = Descriptors.PX1000_InvalidPXActionHandlerSignature.DefaultSeverity,
-				Locations =
-					new[] {
-						new DiagnosticResultLocation("Test0.cs", 17, 15)
-					}
-			};
+		public void Test_Invalid_Action_Signature_In_PXGraph(string actual) =>
+			VerifyCSharpDiagnostic(actual, CreatePX100DiagnosticResult(line: 17, column: 15));
 
-			VerifyCSharpDiagnostic(actual, diagnostic);
-		}
+		[Theory]
+		[EmbeddedFileData(@"PXAction\PX1000\Diagnostics\InvalidPXActionSignatureGraphExtension.cs")]
+		public void Test_Invalid_Action_Signature_In_PXGraph_Extension(string actual) =>
+			VerifyCSharpDiagnostic(actual, CreatePX100DiagnosticResult(line: 35, column: 15));
 
 		[Theory]
 		[EmbeddedFileData(@"PXAction\PX1000\Diagnostics\InvalidPXActionSignature.cs",
 						  @"PXAction\PX1000\CodeFixes\InvalidPXActionSignature_Expected.cs")]
-		public void TestCodeFix(string actual, string expected)
+		public void Test_Invalid_Action_Signature_In_PXGraph_CodeFix(string actual, string expected)
+		{
+			VerifyCSharpFix(actual, expected);
+		}
+
+		[Theory]
+		[EmbeddedFileData(@"PXAction\PX1000\Diagnostics\InvalidPXActionSignatureGraphExtension.cs",
+						  @"PXAction\PX1000\CodeFixes\InvalidPXActionSignatureGraphExtension_Expected.cs")]
+		public void Test_Invalid_Action_Signature_In_PXGraph_Extension_CodeFix(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
@@ -50,14 +50,20 @@ namespace Acuminator.Tests
 			VerifyCSharpDiagnostic(actual);
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
-		{
-			return new CorrectPXActionSignatureFix();
-		}
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new CorrectPXActionSignatureFix();	
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-		{
-			return new InvalidPXActionSignatureAnalyzer();
-		}
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new InvalidPXActionSignatureAnalyzer();
+
+		private DiagnosticResult CreatePX100DiagnosticResult(int line, int column) =>
+			new DiagnosticResult
+			{
+				Id = Descriptors.PX1000_InvalidPXActionHandlerSignature.Id,
+				Message = Descriptors.PX1000_InvalidPXActionHandlerSignature.Title.ToString(),
+				Severity = Descriptors.PX1000_InvalidPXActionHandlerSignature.DefaultSeverity,
+				Locations =
+					new[] {
+						new DiagnosticResultLocation("Test0.cs", line, column)
+					}
+			};
 	}
 }
