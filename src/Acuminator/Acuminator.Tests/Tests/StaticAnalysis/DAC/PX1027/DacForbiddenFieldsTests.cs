@@ -19,14 +19,13 @@ namespace Acuminator.Tests
         [Theory]
         [EmbeddedFileData(@"Dac\PX1027\Diagnostics\DacForbiddenFields.cs")]
         public virtual void TestDacWithForbiddenFields(string source) =>
-            VerifyCSharpDiagnostic(source,
-                //DAC part 1
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 13, column: 31, fieldName: "companyId"),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 17, column: 23, fieldName: "CompanyID"),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 27, column: 31, fieldName: "deletedDatabaseRecord"),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 30, column: 23, fieldName: "DeletedDatabaseRecord"),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 39, column: 31, fieldName: "companyMask"),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 42, column: 23, fieldName: "CompanyMask"));
+            VerifyCSharpDiagnostic(source,           
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 13, column: 25, fieldName: "companyId"),
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 17, column: 17, fieldName: "CompanyID"),
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 27, column: 25, fieldName: "deletedDatabaseRecord"),
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 30, column: 17, fieldName: "DeletedDatabaseRecord"),
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 39, column: 25, fieldName: "companyMask"),
+                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 42, column: 17, fieldName: "CompanyMask"));
                 
         [Theory]
         [EmbeddedFileData(@"Dac\PX1027\Diagnostics\DacForbiddenFields.cs",

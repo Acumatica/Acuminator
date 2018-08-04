@@ -7,15 +7,15 @@ using PX.Data;
 
 namespace PX.Objects.HackathonDemo
 {
-    public partial class SOOrder : IBqlTable
-    {
-        #region OrderCD
-        public abstract class orderCD : IBqlField { }
-        [PXDefault]
-        [PXUIField(DisplayName = "Order CD")]
-        public int? OrderCD { get; set; }
-        #endregion
+	public partial class SOOrder : IBqlTable
+	{
+		#region OrderCD
+		public abstract class orderCD : IBqlField { }
+		[PXDefault]
+		[PXUIField(DisplayName = "Order CD")]
+		public int? OrderCD { get; set; }
+		#endregion
 
 
-    }
+	}
 }
