@@ -115,8 +115,7 @@ namespace Acuminator.Analyzers.FixProviders
 
 				if (regionIndex >= 0)
 				{
-					var newTrivia = RemoveRegionsFromTriviaList(parentToken.LeadingTrivia, 
-																regionInModifiedDeclaration.ParentTrivia, regionIndex); 
+					var newTrivia = RemoveRegionsFromTriviaList(parentToken.LeadingTrivia, regionInModifiedDeclaration.ParentTrivia, regionIndex); 
 					newParentToken = parentToken.WithLeadingTrivia(newTrivia);
 				}
 				else
@@ -126,8 +125,7 @@ namespace Acuminator.Analyzers.FixProviders
 					if (regionIndex < 0)
 						continue;
 
-					var newTrivia = RemoveRegionsFromTriviaList(parentToken.TrailingTrivia,
-																regionInModifiedDeclaration.ParentTrivia, regionIndex);
+					var newTrivia = RemoveRegionsFromTriviaList(parentToken.TrailingTrivia, regionInModifiedDeclaration.ParentTrivia, regionIndex);
 					newParentToken = parentToken.WithTrailingTrivia(newTrivia);
 				}
 
