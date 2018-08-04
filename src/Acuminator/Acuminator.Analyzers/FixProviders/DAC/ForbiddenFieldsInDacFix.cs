@@ -114,20 +114,24 @@ namespace Acuminator.Analyzers.FixProviders
 
 				SyntaxToken parentToken = regionInModifiedDeclaration.ParentTrivia.Token;
 				SyntaxToken newParentToken;
+				int regionIndex = parentToken.LeadingTrivia.IndexOf(regionInModifiedDeclaration.ParentTrivia);
 
-				if (parentToken.LeadingTrivia.Contains(regionInModifiedDeclaration.ParentTrivia))
+				if (regionIndex >= 0)
 				{
-					newParentToken = 
-						parentToken.WithLeadingTrivia(
-							parentToken.LeadingTrivia.Replace(regionInModifiedDeclaration.ParentTrivia,
-															  SyntaxFactory.CarriageReturnLineFeed));
+					var newTrivia = RemoveRegionsFromTriviaList(parentToken.LeadingTrivia, 
+																regionInModifiedDeclaration.ParentTrivia, regionIndex); 
+					newParentToken = parentToken.WithLeadingTrivia(newTrivia);
 				}
 				else
 				{
-					newParentToken =
-						parentToken.WithTrailingTrivia(
-							parentToken.TrailingTrivia.Replace(regionInModifiedDeclaration.ParentTrivia,
-															   SyntaxFactory.CarriageReturnLineFeed));
+					regionIndex = parentToken.TrailingTrivia.IndexOf(regionInModifiedDeclaration.ParentTrivia);
+
+					if (regionIndex < 0)
+						continue;
+
+					var newTrivia = RemoveRegionsFromTriviaList(parentToken.TrailingTrivia,
+																regionInModifiedDeclaration.ParentTrivia, regionIndex);
+					newParentToken = parentToken.WithTrailingTrivia(newTrivia);
 				}
 
 				SyntaxNode parentNode = regionInModifiedDeclaration.ParentTrivia.Token.Parent;
@@ -137,9 +141,20 @@ namespace Acuminator.Analyzers.FixProviders
 
 			return trackingDacDeclaration;
 		}
-		#region MyRegion
 
-		#endregion
+		private SyntaxTriviaList RemoveRegionsFromTriviaList(SyntaxTriviaList trivias, SyntaxTrivia regionTriviaToRemove, int regionIndex)
+		{
+			var newTriviaList = trivias;
+			
+			if (regionIndex < trivias.Count - 1 && trivias[regionIndex + 1].IsKind(SyntaxKind.WhitespaceTrivia))
+			{
+				newTriviaList = newTriviaList.RemoveAt(regionIndex + 1);
+			}
+
+			newTriviaList = newTriviaList.RemoveAt(regionIndex);
+			return newTriviaList;
+		}
+		
 		/// <summary>
 		/// The #regions rewriter helper.
 		/// </summary>
