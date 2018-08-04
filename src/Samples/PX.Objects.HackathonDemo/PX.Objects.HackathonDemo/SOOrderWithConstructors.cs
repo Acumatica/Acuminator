@@ -58,7 +58,7 @@ namespace PX.Objects.HackathonDemo
 
         #region CompanyMask
         public abstract class COMPANYMASK : IBqlField { }
-        [PXDefiault]
+        [PXDefault]
         [PXUIField(DisplayName = "Company Mask")]
         public string CompanyMask { get; set; }
         #endregion
