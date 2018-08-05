@@ -96,23 +96,25 @@ namespace Acuminator.Vsix.GoToDeclaration
 
 			ISymbol memberSymbol = semanticModel.GetSymbolInfo(memberNode).Symbol;
 
-			if (memberSymbol?.ContainingType == null || ))
-				return;
-
-			
-
-			
-
-
-
-			
+			if (!CheckMemberSymbol(memberSymbol))
+				return;			
 			
 		}
 
 		private bool CheckMemberSymbol(ISymbol memberSymbol)
 		{
-			if (memberSymbol?.ContainingType == null || (!memberSymbol.ContainingType.IsPXGraph() && !memberSymbol.ContainingType.IsPXGR))
+			if (memberSymbol?.ContainingType == null || !memberSymbol.ContainingType.IsPXGraph())
 				return false;
+
+			switch (memberSymbol.Kind)
+			{
+				case SymbolKind.Field:
+				case SymbolKind.Method:
+				case SymbolKind.Property:
+					return true;	
+				default:
+					return false;
+			}
 		}
 
 		private void ApplyChanges(Microsoft.CodeAnalysis.Document oldDocument, Microsoft.CodeAnalysis.Document newDocument)
