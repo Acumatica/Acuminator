@@ -11,7 +11,9 @@ using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.Win32;
+using Acuminator.Vsix.GoToDeclaration;
+
+
 
 namespace Acuminator.Vsix
 {
@@ -124,6 +126,7 @@ namespace Acuminator.Vsix
         protected override void Initialize()
         {
             FormatBqlCommand.Initialize(this);
+			GoToDeclarationOrHandlerCommand.Initialize(this);
             base.Initialize();
 
             IComponentModel componentModel = Package.GetGlobalService(typeof(SComponentModel)) as IComponentModel;

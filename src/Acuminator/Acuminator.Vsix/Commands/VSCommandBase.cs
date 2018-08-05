@@ -22,6 +22,8 @@ namespace Acuminator.Vsix
 	/// </summary>
 	internal abstract class VSCommandBase
 	{
+		protected const int NOT_INITIALIZED = 0, INITIALIZED = 1;
+
 		/// <summary>
 		/// Command menu group (command set GUID).
 		/// </summary>

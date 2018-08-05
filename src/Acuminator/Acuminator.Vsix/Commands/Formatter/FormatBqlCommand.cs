@@ -1,23 +1,15 @@
 ﻿using System;
-using System.ComponentModel.Design;
-using System.Globalization;
 using System.Linq;
-using EnvDTE;
-using EnvDTE80;
+using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.TextManager.Interop;
 using Acuminator.Utilities;
 using Acuminator.Vsix;
 using Acuminator.Vsix.Utilities;
 
-using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 
 
 namespace Acuminator.Vsix.Formatter
@@ -27,6 +19,8 @@ namespace Acuminator.Vsix.Formatter
 	/// </summary>
 	internal sealed class FormatBqlCommand : VSCommandBase
 	{
+		private static int IsCommandInitialized = NOT_INITIALIZED;
+
 		/// <summary>
 		/// Format Command ID.
 		/// </summary>
@@ -56,7 +50,10 @@ namespace Acuminator.Vsix.Formatter
 		/// <param name="package">Owner package, not null.</param>
 		public static void Initialize(Package package)
 		{
-			Instance = new FormatBqlCommand(package);
+			if (Interlocked.CompareExchange(ref IsCommandInitialized, value: INITIALIZED, comparand: NOT_INITIALIZED) == NOT_INITIALIZED)
+			{
+				Instance = new FormatBqlCommand(package);
+			}
 		}
 
 		protected override void CommandCallback(object sender, EventArgs e)

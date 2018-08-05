@@ -2,8 +2,7 @@
 using System.ComponentModel.Design;
 using System.Globalization;
 using System.Linq;
-using EnvDTE;
-using EnvDTE80;
+using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -17,16 +16,19 @@ using Acuminator.Utilities;
 using Acuminator.Vsix;
 using Acuminator.Vsix.Utilities;
 
+
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 
 
-namespace Acuminator.Vsix.Formatter
+namespace Acuminator.Vsix.GoToDeclaration
 {
 	/// <summary>
 	/// Command handler
 	/// </summary>
 	internal sealed class GoToDeclarationOrHandlerCommand : VSCommandBase
 	{
+		private static int IsCommandInitialized = NOT_INITIALIZED;
+
 		/// <summary>
 		/// Gro to View/Declaration Command ID.
 		/// </summary>
@@ -56,7 +58,10 @@ namespace Acuminator.Vsix.Formatter
 		/// <param name="package">Owner package, not null.</param>
 		public static void Initialize(Package package)
 		{
-			Instance = new GoToDeclarationOrHandlerCommand(package);
+			if (Interlocked.CompareExchange(ref IsCommandInitialized, value: INITIALIZED, comparand: NOT_INITIALIZED) == NOT_INITIALIZED)
+			{
+				Instance = new GoToDeclarationOrHandlerCommand(package);
+			}
 		}
 
 		protected override void CommandCallback(object sender, EventArgs e)
@@ -116,18 +121,6 @@ namespace Acuminator.Vsix.Formatter
 			{
 				workspace.TryApplyChanges(newSolution);
 			}
-		}
-
-		private BqlFormatter CreateFormatter(IWpfTextView textView)
-		{
-			textView.ThrowOnNull(nameof(textView));
-
-			int indentSize = textView.Options.GetOptionValue(DefaultOptions.IndentSizeOptionId);
-			int tabSize = textView.Options.GetOptionValue(DefaultOptions.TabSizeOptionId);
-			bool convertTabsToSpaces = textView.Options.GetOptionValue(DefaultOptions.ConvertTabsToSpacesOptionId);
-			string newLineCharacter = textView.Options.GetOptionValue(DefaultOptions.NewLineCharacterOptionId);
-
-			return new BqlFormatter(newLineCharacter, !convertTabsToSpaces, tabSize, indentSize);
 		}
 	}
 }
