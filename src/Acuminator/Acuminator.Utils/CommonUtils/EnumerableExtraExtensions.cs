@@ -221,6 +221,34 @@ namespace Acuminator.Utilities.Extra
 			extraElements.CopyTo(result, insertAtStart ? 0 : source.Length);
 			return result;
 		}
+
+
+		public static List<TItem> ItemsWithMaxValues<TItem>(this IEnumerable<TItem> source, Func<TItem, double> selector)
+		{
+			source.ThrowOnNull(nameof(source));
+			selector.ThrowOnNull(nameof(selector));
+
+			double maxValue = double.MinValue;
+			List<TItem> result = new List<TItem>(capacity: 2);
+
+			foreach (TItem item in source)
+			{
+				double value = selector(item);
+
+				if (maxValue > value)
+					continue;
+
+				if (maxValue < value)
+				{
+					result.Clear();
+					maxValue = value;
+				}
+				
+				result.Add(item);
+			}
+
+			return result;
+		}
 	}
 
 	/// <summary>

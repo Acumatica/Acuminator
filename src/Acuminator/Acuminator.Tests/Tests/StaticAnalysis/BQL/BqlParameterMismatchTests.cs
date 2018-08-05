@@ -44,6 +44,22 @@ namespace Acuminator.Tests
 				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 20, column: 24, expectedMethodName: "SelectSingle", expectedArgsCount: 2));
 
 		[Theory]
+		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\SearchCall.cs", @"Dac\SOOrder.cs")]
+		public virtual void Test_Search_Calls(string source, string dacSource) =>
+			VerifyCSharpDiagnostic(new[] { source, dacSource },
+				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 22, column: 24, expectedMethodName: "Search", expectedArgsCount: 1),
+				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 24, column: 24, expectedMethodName: "Search", expectedArgsCount: 3),
+				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 34, column: 7, expectedMethodName: "Search", expectedArgsCount: 1),
+				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 46, column: 6, expectedMethodName: "Search", expectedArgsCount: 3));
+
+		[Theory]
+		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\PXUpdateCall.cs", @"Dac\SOOrder.cs")]
+		public virtual void Test_PXUpdate_Calls(string source, string dacSource) =>
+			VerifyCSharpDiagnostic(new[] { source, dacSource },
+				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 43, column: 7, expectedMethodName: "Update", expectedArgsCount: 3),
+				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 54, column: 7, expectedMethodName: "Update", expectedArgsCount: 3));
+
+		[Theory]
 		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\VariableInstanceCall.cs", @"Dac\SOOrder.cs")]
 		public virtual void Test_Variable_Instance_Calls(string source, string dacSource) =>
 			VerifyCSharpDiagnostic(new[] { source, dacSource },

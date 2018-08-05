@@ -55,7 +55,7 @@
     <Compile Include="Analyzers\DAC\DacDeclarationAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacPropertyAttributes\NonNullableTypeForBqlFieldAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacPropertyAttributes\DacPropertyAttributesAnalyzer.cs" />
-    <Compile Include="Analyzers\PXAction\PXActionOnNonPrimaryViewAnalyzer.cs" />
+    <Compile Include="Analyzers\PXAction\PX1012\PXActionOnNonPrimaryViewAnalyzer.cs" />
     <Compile Include="Analyzers\View\Delegate\StartRowResetForPagingAnalyzer.cs" />
     <Compile Include="Analyzers\View\NoPrimaryViewForPrimaryDacAnalyzer.cs" />
     <Compile Include="Diagnostic\DiagnosticProperty.cs" />
@@ -73,13 +73,13 @@
     <Compile Include="Analyzers\PXGraph\PXGraphCreateInstanceAnalyzer.cs" />
     <Compile Include="Analyzers\View\ViewDeclarationOrderAnalyzer.cs" />
     <Compile Include="FixProviders\BQL\BQLFormatterFixProvider.cs" />
-    <Compile Include="FixProviders\PXAction\CorrectPXActionSignatureFix.cs" />
+    <Compile Include="FixProviders\PXAction\PX1000\CorrectPXActionSignatureFix.cs" />
     <Compile Include="Descriptors.cs" />
-    <Compile Include="Analyzers\PXAction\InvalidPXActionSignatureAnalyzer.cs" />
+    <Compile Include="Analyzers\PXAction\PX1000\InvalidPXActionSignatureAnalyzer.cs" />
     <Compile Include="FixProviders\InheritanceFromPXCacheExtensionMakeSealedFix.cs" />
     <Compile Include="FixProviders\InheritanceFromPXCacheExtensionFix.cs" />
     <Compile Include="FixProviders\MissingTypeListAttributeFix.cs" />
-    <Compile Include="FixProviders\PXAction\PXActionOnNonPrimaryViewCodeFix.cs" />
+    <Compile Include="FixProviders\PXAction\PX1012\PXActionOnNonPrimaryViewCodeFix.cs" />
     <Compile Include="FixProviders\View\Delegate\StartRowResetForPagingFix.cs" />
     <Compile Include="FixProviders\View\Delegate\TypoInViewDelegateNameFix.cs" />
     <Compile Include="FixProviders\PXGraph\PXGraphCreateInstanceFix.cs" />

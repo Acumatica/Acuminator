@@ -38,7 +38,7 @@ namespace Acuminator.Analyzers
 			if (pxGraph == null || !pxGraph.IsPXGraph())
 				return;
 
-			ITypeSymbol declaredPrimaryDacType = GetPrimaryDacFromPXGraph(pxGraph, pxContext);
+			ITypeSymbol declaredPrimaryDacType = pxGraph.GetDeclaredPrimaryDacFromGraphOrGraphExtension(pxContext);
 
 			if (declaredPrimaryDacType == null || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
@@ -57,44 +57,10 @@ namespace Acuminator.Analyzers
 				Diagnostic.Create(Descriptors.PX1018_NoPrimaryViewForPrimaryDac, location));
 		}
 
-		private static ITypeSymbol GetPrimaryDacFromPXGraph(INamedTypeSymbol pxGraph, PXContext pxContext)
-		{
-			var baseGraphType = pxGraph.GetBaseTypesAndThis()
-									   .OfType<INamedTypeSymbol>()
-									   .FirstOrDefault(type => IsGraphWithPrimaryDacBaseGenericType(type)) as INamedTypeSymbol;
-
-			if (baseGraphType == null || baseGraphType.TypeArguments.Length < 2)
-				return null;
-
-			ITypeSymbol primaryDacType = baseGraphType.TypeArguments[1];
-			return primaryDacType.IsDAC() ? primaryDacType : null;
-		}
-
-		private static IEnumerable<ITypeSymbol> GetGraphViewDacTypes(INamedTypeSymbol pxGraph, PXContext pxContext)
-		{
-			var allViews = pxGraph.GetBaseTypesAndThis()
-								  .OfType<INamedTypeSymbol>()
-								  .TakeWhile(type => !IsGraphWithPrimaryDacBaseGenericType(type))
-								  .SelectMany(type => type.GetAllViewTypesFromPXGraphOrPXGraphExtension(pxContext));
-
-			return allViews.Select(view => GetDacTypeFromView(view, pxContext))
-						   .Where(dacType => dacType != null);		
-		}
-
-		private static bool IsGraphWithPrimaryDacBaseGenericType(INamedTypeSymbol type) =>
-			type.TypeArguments.Length >= 2 && type.Name.Equals(TypeNames.PXGraph, StringComparison.Ordinal);
-
-		private static ITypeSymbol GetDacTypeFromView(INamedTypeSymbol viewType, PXContext pxContext)
-		{
-			INamedTypeSymbol baseViewType = viewType.GetBaseTypesAndThis()
-													.OfType<INamedTypeSymbol>()
-													.FirstOrDefault(type => !type.IsCustomBqlCommand(pxContext));
-
-			if (baseViewType?.IsBqlCommand() != true || baseViewType.TypeArguments.Length == 0)
-				return null;
-
-			return baseViewType.TypeArguments[0];
-		}
+		private static IEnumerable<ITypeSymbol> GetGraphViewDacTypes(INamedTypeSymbol pxGraph, PXContext pxContext) =>
+			pxGraph.GetViewsFromPXGraph(pxContext)
+				   .Select(view => view.GetDacFromView(pxContext))
+				   .Where(dacType => dacType != null);		
 
 		private static Location GetLocation(ClassDeclarationSyntax pxGraphNode, ITypeSymbol declaredPrimaryDacType,
 											SyntaxNodeAnalysisContext syntaxContext)

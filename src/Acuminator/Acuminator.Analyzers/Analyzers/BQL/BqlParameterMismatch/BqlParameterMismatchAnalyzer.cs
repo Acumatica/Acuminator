@@ -19,6 +19,8 @@ namespace Acuminator.Analyzers
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public partial class BqlParameterMismatchAnalyzer : PXDiagnosticAnalyzer
 	{
+		private const string SearchMethodName = "Search";
+
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams,
 								  Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams);
@@ -77,12 +79,20 @@ namespace Acuminator.Analyzers
 		{
 			if (methodSymbol.ReturnsVoid)
 				return false;
+			else if (IsPXUpdateMethod(methodSymbol))
+				return true;
 
 			var returnType = methodSymbol.ReturnType;
 			return returnType.ImplementsInterface(pxContext.IPXResultsetType) ||
 				   returnType.InheritsFrom(pxContext.PXResult) ||
 				   returnType.ImplementsInterface(pxContext.IBqlTableType);
 		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static bool IsPXUpdateMethod(IMethodSymbol methodSymbol) =>
+			methodSymbol.IsStatic && methodSymbol.ReturnType.SpecialType == SpecialType.System_Int32 &&
+			methodSymbol.ContainingType?.IsStatic == true &&
+			TypeNames.PXUpdateBqlTypes.Contains(methodSymbol.ContainingType?.Name);
 
 		private static void AnalyzeStaticInvocation(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
 													InvocationExpressionSyntax invocationNode)
@@ -181,17 +191,45 @@ namespace Acuminator.Analyzers
 			var bqlArgsParam = parameters[parameters.Length - 1];
 			var argumentsList = invocationNode.ArgumentList.Arguments;
 			var argumentPassedViaName = argumentsList.FirstOrDefault(a => a.NameColon?.Name?.Identifier.ValueText == bqlArgsParam.Name);
+			int searchArgsCount;
 
 			if (argumentPassedViaName != null)
-				return GetBqlArgumentsCountWhenCouldBePassedAsArray(argumentPassedViaName, syntaxContext, pxContext);
+			{
+				int? possibleArgsCount = GetBqlArgumentsCountWhenCouldBePassedAsArray(argumentPassedViaName, syntaxContext, pxContext);
+
+				if (possibleArgsCount == null)
+					return null;
+
+				searchArgsCount = GetSearchMethodArgumentsCount(possibleArgsCount.Value);
+				return searchArgsCount + possibleArgsCount;
+			}
 
 			var nonBqlArgsParametersCount = methodSymbol.Parameters.Length - 1;   //The last one parameter is params array for BQL args
 			int argsCount = argumentsList.Count - nonBqlArgsParametersCount;
 
 			if (argsCount == 1)
-				return GetBqlArgumentsCountWhenCouldBePassedAsArray(argumentsList[argumentsList.Count - 1], syntaxContext, pxContext);
+			{
+				int? possibleArgsCount = GetBqlArgumentsCountWhenCouldBePassedAsArray(argumentsList[argumentsList.Count - 1], syntaxContext,
+																					  pxContext);
+				if (possibleArgsCount == null)
+					return null;
 
-			return argsCount;
+				argsCount = possibleArgsCount.Value;
+			}
+
+			searchArgsCount = GetSearchMethodArgumentsCount(argsCount);
+			return searchArgsCount + argsCount;
+
+			//******************Local Function************************************
+			int GetSearchMethodArgumentsCount(int bqlArgsCount)
+			{
+				if (methodSymbol.Name != SearchMethodName)
+					return 0;
+
+				return methodSymbol.IsStatic 
+					? argumentsList.Count - 1 - bqlArgsCount
+					: argumentsList.Count - bqlArgsCount;
+			}
 		}
 
 		private static int? GetBqlArgumentsCountWhenCouldBePassedAsArray(ArgumentSyntax argumentWhichCanBeArray,
@@ -246,8 +284,15 @@ namespace Acuminator.Analyzers
 			if (syntaxContext.CancellationToken.IsCancellationRequested || !parametersCounter.IsCountingValid)
 				return;
 
-			int maxCount = parametersCounter.OptionalParametersCount + parametersCounter.RequiredParametersCount;
-			int minCount = parametersCounter.RequiredParametersCount;
+			int searchMethodParametersCount = 0;
+
+			if (methodSymbol.Name == SearchMethodName && methodSymbol.IsGenericMethod)
+			{
+				searchMethodParametersCount = methodSymbol.TypeParameters.Length;
+			}
+
+			int maxCount = parametersCounter.OptionalParametersCount + parametersCounter.RequiredParametersCount + searchMethodParametersCount;
+			int minCount = parametersCounter.RequiredParametersCount + searchMethodParametersCount;
 
 			if (argsCount < minCount || argsCount > maxCount)
 			{
@@ -257,7 +302,7 @@ namespace Acuminator.Analyzers
 				{
 					syntaxContext.ReportDiagnostic(
 						Diagnostic.Create(Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams, location,
-										  methodSymbol.Name, parametersCounter.RequiredParametersCount));
+										  methodSymbol.Name, minCount));
 				}
 				else
 				{
