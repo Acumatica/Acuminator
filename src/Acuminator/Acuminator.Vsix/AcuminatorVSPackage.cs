@@ -50,6 +50,11 @@ namespace Acuminator.Vsix
 		/// </summary>
 		public const string PackageGuidString = "7e538ed0-0699-434f-acf0-3f6dbc9898ea";
 
+		/// <summary>
+		/// The acuminator default command set GUID string.
+		/// </summary>
+		public const string AcuminatorDefaultCommandSetGuidString = "3cd59430-1e8d-40af-b48d-9007624b3d77";
+
 		[Import]
         internal IClassificationFormatMapService classificationFormatMapService = null;  //Set via MEF
 
