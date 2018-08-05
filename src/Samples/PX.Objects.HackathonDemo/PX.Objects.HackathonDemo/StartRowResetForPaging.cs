@@ -11,6 +11,65 @@ namespace PX.Objects.HackathonDemo
 
 		public PXSelect<SOOrder> Orders;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		public IEnumerable items()
 		{
 			int startRow = PXView.StartRow;

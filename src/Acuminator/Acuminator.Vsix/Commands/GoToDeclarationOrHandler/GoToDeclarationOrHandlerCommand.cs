@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel.Design;
 using System.Globalization;
 using System.Linq;
@@ -18,6 +20,7 @@ using Acuminator.Utilities;
 using Acuminator.Analyzers;
 using Acuminator.Vsix;
 using Acuminator.Vsix.Utilities;
+using Acuminator.Utilities.Extra;
 
 
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
@@ -87,18 +90,34 @@ namespace Acuminator.Vsix.GoToDeclaration
 			if (syntaxRoot == null || semanticModel == null)
 				return;
 
-			PXContext pxContext = new PXContext(semanticModel.Compilation);
 			TextSpan lineSpan = TextSpan.FromBounds(caretLine.Start.Position, caretLine.End.Position);
 			var memberNode = syntaxRoot.FindNode(lineSpan) as MemberDeclarationSyntax;  
 
 			if (memberNode == null)
 				return;
 
-			ISymbol memberSymbol = semanticModel.GetSymbolInfo(memberNode).Symbol;
+			ISymbol memberSymbol = GetMemberSymbol(memberNode, semanticModel, caretPosition);
 
 			if (!CheckMemberSymbol(memberSymbol))
-				return;			
-			
+				return;
+
+			NavigateToHandlerOrDeclaration(document, textView, memberSymbol, memberNode, semanticModel);
+		}
+
+		private ISymbol GetMemberSymbol(MemberDeclarationSyntax memberDeclaration, SemanticModel semanticModel, SnapshotPoint caretPosition)
+		{
+			if (!(memberDeclaration is FieldDeclarationSyntax fieldDeclaration))
+			{
+				return semanticModel.GetDeclaredSymbol(memberDeclaration);
+			}
+
+			var variableDeclaration = fieldDeclaration.Declaration.Variables
+																  .FirstOrDefault(v => v.Span.Contains(caretPosition.Position));
+
+			if (variableDeclaration == null)
+				return null;
+
+			return semanticModel.GetDeclaredSymbol(variableDeclaration);
 		}
 
 		private bool CheckMemberSymbol(ISymbol memberSymbol)
@@ -117,17 +136,79 @@ namespace Acuminator.Vsix.GoToDeclaration
 			}
 		}
 
-		private void ApplyChanges(Microsoft.CodeAnalysis.Document oldDocument, Microsoft.CodeAnalysis.Document newDocument)
+		private void NavigateToHandlerOrDeclaration(Document document, IWpfTextView textView, ISymbol memberSymbol,
+													MemberDeclarationSyntax memberNode, SemanticModel semanticModel)
 		{
-			oldDocument.ThrowOnNull(nameof(oldDocument));
-			newDocument.ThrowOnNull(nameof(newDocument));
-
-			Workspace workspace = oldDocument.Project?.Solution?.Workspace;
-			Microsoft.CodeAnalysis.Solution newSolution = newDocument.Project?.Solution;
-
-			if (workspace != null && newSolution != null)
+			PXContext context = new PXContext(semanticModel.Compilation);
+			INamedTypeSymbol graphType = memberSymbol.ContainingType;
+			
+			switch (memberSymbol)
 			{
-				workspace.TryApplyChanges(newSolution);
+				case IFieldSymbol fieldSymbol when fieldSymbol.Type.IsPXAction():
+					NavigateToPXActionHandler(document, textView, fieldSymbol, graphType, semanticModel);
+					return;
+				case IFieldSymbol fieldSymbol when fieldSymbol.Type.IsBqlCommand(context):
+					NavigateToPXViewDelegate(document, textView, fieldSymbol, graphType, semanticModel);
+					return;
+				case IPropertySymbol propertySymbol when propertySymbol.Type.IsPXAction():
+					NavigateToPXActionHandler(document, textView, propertySymbol, graphType, semanticModel);
+					return;
+				case IPropertySymbol propertySymbol when propertySymbol.Type.IsBqlCommand(context):
+					NavigateToPXViewDelegate(document, textView, propertySymbol, graphType, semanticModel);
+					return;
+				case IMethodSymbol methodSymbol:
+					NavigateToActionOrViewDeclaration(document, textView, methodSymbol, graphType, semanticModel);
+					return;
+			}
+		}
+
+		private void NavigateToPXActionHandler(Document document, IWpfTextView textView, ISymbol actionSymbol, INamedTypeSymbol graphSymbol,
+											   SemanticModel semanticModel)
+		{
+			
+		}
+
+		private void NavigateToPXViewDelegate(Document document, IWpfTextView textView, ISymbol viewSymbol, INamedTypeSymbol graphSymbol,
+											  SemanticModel semanticModel)
+		{
+			var viewDelegates = GetDelegateOrHandlerByName(graphSymbol, viewSymbol.Name);
+
+			if (!viewDelegates.IsSingle())
+				return;
+
+			IMethodSymbol viewDelegate = viewDelegates.First();
+			ImmutableArray<SyntaxReference> syntaxReferences = viewDelegate.DeclaringSyntaxReferences;
+
+			if (syntaxReferences.Length != 1 || syntaxReferences[0].SyntaxTree.FilePath != document.FilePath)
+				return;
+
+			SetNewPositionInTextView(textView, syntaxReferences[0].Span);
+		}
+
+		private void NavigateToActionOrViewDeclaration(Document document, IWpfTextView textView, ISymbol viewSymbol, INamedTypeSymbol graphSymbol,
+													   SemanticModel semanticModel)
+		{
+
+		}
+
+		private IEnumerable<IMethodSymbol> GetDelegateOrHandlerByName(INamedTypeSymbol graphSymbol, string name) =>
+			graphSymbol.GetMembers()
+					   .OfType<IMethodSymbol>()
+					   .Where(method => method.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+		private void SetNewPositionInTextView(IWpfTextView textView, TextSpan textSpan)
+		{
+			CaretPosition newCaretPosition = textView.MoveCaretTo(textSpan.Start);
+			ITextSnapshotLine newCaretLine = textView.GetCaretLine();
+
+			if (newCaretLine == null)
+				return;
+
+			textView.Selection.Select(newCaretLine.Extent, isReversed: false);
+
+			if (!textView.TextViewLines.ContainsBufferPosition(newCaretPosition.BufferPosition))
+			{
+				textView.ViewScroller.EnsureSpanVisible(newCaretLine.Extent, EnsureSpanVisibleOptions.AlwaysCenter);
 			}
 		}
 	}
