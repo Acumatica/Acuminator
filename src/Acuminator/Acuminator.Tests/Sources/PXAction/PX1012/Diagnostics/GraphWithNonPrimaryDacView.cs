@@ -24,7 +24,7 @@ namespace PX.Objects.HackathonDemo
 
 		public PXAction<SOTran> Release2 { get; }
 
-		public PXAction<SOOrder> Release3;
+		public PXSave<SOOrder> Release3;
 	}
 
 	public class SOOrderEntryWithNonPrimaryDacViewExtension : PXGraphExtension<SOOrderEntryWithNonPrimaryDacView1>
