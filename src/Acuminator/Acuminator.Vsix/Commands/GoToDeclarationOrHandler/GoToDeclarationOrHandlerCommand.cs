@@ -4,6 +4,8 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
@@ -13,6 +15,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Acuminator.Utilities;
+using Acuminator.Analyzers;
 using Acuminator.Vsix;
 using Acuminator.Vsix.Utilities;
 
@@ -66,47 +69,50 @@ namespace Acuminator.Vsix.GoToDeclaration
 
 		protected override void CommandCallback(object sender, EventArgs e)
 		{
-			//IWpfTextView textView = ServiceProvider.GetWpfTextView();
+			IWpfTextView textView = ServiceProvider.GetWpfTextView();
 
-			//if (textView == null)
-			//	return;
+			if (textView == null)
+				return;
 
-			//BqlFormatter formatter = CreateFormatter(textView);
+			SnapshotPoint caretPosition = textView.Caret.Position.BufferPosition;
+			ITextSnapshotLine caretLine = caretPosition.GetContainingLine();
 
-			//SnapshotPoint caretPosition = textView.Caret.Position.BufferPosition;
-			//Microsoft.CodeAnalysis.Document document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
+			if (caretLine == null)
+				return;
 
-			//SyntaxNode syntaxRoot = document.GetSyntaxRootAsync().Result;
-			//SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
-			//SyntaxNode formattedRoot;
+			Document document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
+			SyntaxNode syntaxRoot = document?.GetSyntaxRootAsync().Result;
+			SemanticModel semanticModel = document?.GetSemanticModelAsync().Result;
+
+			if (syntaxRoot == null || semanticModel == null)
+				return;
+
+			PXContext pxContext = new PXContext(semanticModel.Compilation);
+			TextSpan lineSpan = TextSpan.FromBounds(caretLine.Start.Position, caretLine.End.Position);
+			var memberNode = syntaxRoot.FindNode(lineSpan) as MemberDeclarationSyntax;  
+
+			if (memberNode == null)
+				return;
+
+			ISymbol memberSymbol = semanticModel.GetSymbolInfo(memberNode).Symbol;
+
+			if (memberSymbol?.ContainingType == null || ))
+				return;
+
 			
-			//if (textView.Selection.IsActive && !textView.Selection.IsEmpty) // if has selection
-			//{
-			//	// Find all nodes within the span and format them
-			//	var selectionSpan = TextSpan.FromBounds(textView.Selection.Start.Position, textView.Selection.End.Position);
-			//	SyntaxNode topNode = syntaxRoot.FindNode(selectionSpan); // can, return top node that intersects with selectionSpan, so we need SpanWalker here
 
-			//	if (topNode == null)
-			//		return; // nothing to format (e.g. selection contains only trivia)
-				
-			//	var spanWalker = new SpanWalker(selectionSpan);
-			//	spanWalker.Visit(topNode);
-
-			//	if (spanWalker.NodesWithinSpan.Count == 0)
-			//		return;
-
-			//	formattedRoot = syntaxRoot.ReplaceNodes(spanWalker.NodesWithinSpan, (o, r) => formatter.Format(o, semanticModel));
-			//}
-			//else
-			//{
-			//	formattedRoot = formatter.Format(syntaxRoot, semanticModel);
-			//}
 			
-			//if (!textView.TextBuffer.EditInProgress)
-			//{
-			//	var formattedDocument = document.WithSyntaxRoot(formattedRoot);
-			//	ApplyChanges(document, formattedDocument);
-			//}
+
+
+
+			
+			
+		}
+
+		private bool CheckMemberSymbol(ISymbol memberSymbol)
+		{
+			if (memberSymbol?.ContainingType == null || (!memberSymbol.ContainingType.IsPXGraph() && !memberSymbol.ContainingType.IsPXGR))
+				return false;
 		}
 
 		private void ApplyChanges(Microsoft.CodeAnalysis.Document oldDocument, Microsoft.CodeAnalysis.Document newDocument)
