@@ -245,8 +245,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 
 			if (syntaxReference.SyntaxTree.FilePath != document.FilePath)
 			{
-				var openedView = OpenOtherDocumentForNavigationAndGetItsTextView(document, syntaxReference);
-				textView = openedView;
+				textView = OpenOtherDocumentForNavigationAndGetItsTextView(document, syntaxReference);
 			}
 
 			if (textView == null)
