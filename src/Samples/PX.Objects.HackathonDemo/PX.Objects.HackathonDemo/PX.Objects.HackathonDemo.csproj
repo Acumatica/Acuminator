@@ -53,6 +53,8 @@
     <Compile Include="BqlParameterMismatch\StaticCall.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="PartialGraphNavigation\PartialGraphNavigation.cs" />
+    <Compile Include="PartialGraphNavigation\PartialGraphNavigation2.cs" />
     <Compile Include="PXUpdateBQL\ReportTaxProcess.cs" />
     <Compile Include="SOTran.cs" />
     <Compile Include="SOOrder.cs" />

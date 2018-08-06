@@ -145,16 +145,16 @@ namespace Acuminator.Vsix.GoToDeclaration
 			switch (memberSymbol)
 			{
 				case IFieldSymbol fieldSymbol when fieldSymbol.Type.IsPXAction():
-					NavigateToPXActionHandler(document, textView, fieldSymbol, graphType, semanticModel);
+					NavigateToPXActionHandler(document, textView, fieldSymbol, graphType, context);
 					return;
 				case IFieldSymbol fieldSymbol when fieldSymbol.Type.IsBqlCommand(context):
-					NavigateToPXViewDelegate(document, textView, fieldSymbol, graphType, semanticModel);
+					NavigateToPXViewDelegate(document, textView, fieldSymbol, graphType, context);
 					return;
 				case IPropertySymbol propertySymbol when propertySymbol.Type.IsPXAction():
-					NavigateToPXActionHandler(document, textView, propertySymbol, graphType, semanticModel);
+					NavigateToPXActionHandler(document, textView, propertySymbol, graphType, context);
 					return;
 				case IPropertySymbol propertySymbol when propertySymbol.Type.IsBqlCommand(context):
-					NavigateToPXViewDelegate(document, textView, propertySymbol, graphType, semanticModel);
+					NavigateToPXViewDelegate(document, textView, propertySymbol, graphType, context);
 					return;
 				case IMethodSymbol methodSymbol:
 					NavigateToActionOrViewDeclaration(document, textView, methodSymbol, graphType, semanticModel);
@@ -163,26 +163,69 @@ namespace Acuminator.Vsix.GoToDeclaration
 		}
 
 		private void NavigateToPXActionHandler(Document document, IWpfTextView textView, ISymbol actionSymbol, INamedTypeSymbol graphSymbol,
-											   SemanticModel semanticModel)
+											   PXContext context)
 		{
-			
+			var actionHandlers = GetActionHandlerByName(graphSymbol, actionSymbol.Name, context);
+
+			if (!actionHandlers.IsSingle())
+				return;
+
+			IMethodSymbol actionHandler = actionHandlers.First();
+			ImmutableArray<SyntaxReference> syntaxReferences = actionHandler.DeclaringSyntaxReferences;
+
+			if (syntaxReferences.Length != 1)
+				return;
+
+			SyntaxReference syntaxReference = syntaxReferences[0];
+
+			if (syntaxReference.SyntaxTree.FilePath != document.FilePath)
+			{
+				textView = OpenOtherDocumentForNavigationAndGetItsTextView(document, syntaxReference);
+			}
+
+			if (textView == null)
+				return;
+
+			MethodDeclarationSyntax methodNode = syntaxReference.GetSyntax() as MethodDeclarationSyntax;
+			TextSpan textSpan = methodNode?.Identifier.Span ?? syntaxReferences[0].Span;
+			SetNewPositionInTextView(textView, textSpan);
 		}
 
+		private IEnumerable<IMethodSymbol> GetActionHandlerByName(INamedTypeSymbol graphSymbol, string name, PXContext pxContext) =>
+			from method in graphSymbol.GetMembers().OfType<IMethodSymbol>()
+			where method.Name.Equals(name, StringComparison.OrdinalIgnoreCase) &&
+				  method.Parameters.Length > 0 &&
+				  method.Parameters[0].Equals(pxContext.PXAdapterType) &&
+				  method.ReturnType.InheritsFromOrEquals(pxContext.IEnumerable, includeInterfaces: true)
+			select method;
+										
 		private void NavigateToPXViewDelegate(Document document, IWpfTextView textView, ISymbol viewSymbol, INamedTypeSymbol graphSymbol,
-											  SemanticModel semanticModel)
+											  PXContext context)
 		{
-			var viewDelegates = GetDelegateOrHandlerByName(graphSymbol, viewSymbol.Name);
+			var viewDelegates = GetDelegateByName(graphSymbol, viewSymbol.Name, context);
 
 			if (!viewDelegates.IsSingle())
 				return;
-
+			
 			IMethodSymbol viewDelegate = viewDelegates.First();
 			ImmutableArray<SyntaxReference> syntaxReferences = viewDelegate.DeclaringSyntaxReferences;
 
-			if (syntaxReferences.Length != 1 || syntaxReferences[0].SyntaxTree.FilePath != document.FilePath)
+			if (syntaxReferences.Length != 1)
 				return;
 
-			SetNewPositionInTextView(textView, syntaxReferences[0].Span);
+			SyntaxReference syntaxReference = syntaxReferences[0];
+
+			if (syntaxReference.SyntaxTree.FilePath != document.FilePath)
+			{
+				textView = OpenOtherDocumentForNavigationAndGetItsTextView(document, syntaxReference);
+			}
+
+			if (textView == null)
+				return;
+
+			MethodDeclarationSyntax methodNode = syntaxReference.GetSyntax() as MethodDeclarationSyntax;
+			TextSpan textSpan = methodNode?.Identifier.Span ?? syntaxReferences[0].Span;
+			SetNewPositionInTextView(textView, textSpan);
 		}
 
 		private void NavigateToActionOrViewDeclaration(Document document, IWpfTextView textView, ISymbol viewSymbol, INamedTypeSymbol graphSymbol,
@@ -191,24 +234,32 @@ namespace Acuminator.Vsix.GoToDeclaration
 
 		}
 
-		private IEnumerable<IMethodSymbol> GetDelegateOrHandlerByName(INamedTypeSymbol graphSymbol, string name) =>
+		private IEnumerable<IMethodSymbol> GetDelegateByName(INamedTypeSymbol graphSymbol, string name, PXContext pxContext) =>
 			graphSymbol.GetMembers()
 					   .OfType<IMethodSymbol>()
-					   .Where(method => method.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+					   .Where(method => method.Name.Equals(name, StringComparison.OrdinalIgnoreCase) &&
+										method.ReturnType.InheritsFromOrEquals(pxContext.IEnumerable, includeInterfaces: true));
+
+		private IWpfTextView OpenOtherDocumentForNavigationAndGetItsTextView(Document originalDocument, SyntaxReference syntaxReference)
+		{
+			DocumentId documentId = originalDocument.Project.GetDocumentId(syntaxReference.SyntaxTree);
+
+			if (documentId == null)
+				return null;
+
+			originalDocument.Project.Solution.Workspace.OpenDocument(documentId);
+			return ServiceProvider.GetWpfTextView();
+		}
 
 		private void SetNewPositionInTextView(IWpfTextView textView, TextSpan textSpan)
 		{
 			CaretPosition newCaretPosition = textView.MoveCaretTo(textSpan.Start);
-			ITextSnapshotLine newCaretLine = textView.GetCaretLine();
-
-			if (newCaretLine == null)
-				return;
-
-			textView.Selection.Select(newCaretLine.Extent, isReversed: false);
+			SnapshotSpan selectedSpan = new SnapshotSpan(textView.TextSnapshot, textSpan.Start, textSpan.Length);
+			textView.Selection.Select(selectedSpan, isReversed: false);
 
 			if (!textView.TextViewLines.ContainsBufferPosition(newCaretPosition.BufferPosition))
 			{
-				textView.ViewScroller.EnsureSpanVisible(newCaretLine.Extent, EnsureSpanVisibleOptions.AlwaysCenter);
+				textView.ViewScroller.EnsureSpanVisible(selectedSpan, EnsureSpanVisibleOptions.AlwaysCenter);
 			}
 		}
 	}

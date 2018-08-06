@@ -5,11 +5,71 @@ using System.Linq;
 
 namespace PX.Objects.HackathonDemo
 {
-	public partial class LEPMaint : PXGraph<LEPMaint>
+	public partial class SimpleOrdersMaint : PXGraph<LEPMaint>
 	{
 		public PXSelect<ListEntryPoint> Items;
 
 		public PXSelect<SOOrder> Orders;
+
+
+		public PXSelect<SOOrder,
+					Where<SOOrder.orderNbr, Equal<Required<SOOrder.orderNbr>>>> CurrentOrder;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		public IEnumerable items()
 		{
