@@ -11,7 +11,7 @@ namespace Acuminator.Tests
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacPropertyGraphUsageAnalyzer();
 
-        private DiagnosticResult CreatePX1027DiagnosticResult(int line, int column)
+        private DiagnosticResult CreatePX1029DiagnosticResult(int line, int column)
         {
             return new DiagnosticResult
             {
@@ -27,12 +27,12 @@ namespace Acuminator.Tests
         public void Test_PXGraph_Usage_Inside_Dac_Property(string source)
         {
             VerifyCSharpDiagnostic(source,
-                CreatePX1027DiagnosticResult(15, 17),
-                CreatePX1027DiagnosticResult(15, 50),
-                CreatePX1027DiagnosticResult(17, 24),
-                CreatePX1027DiagnosticResult(27, 24),
-                CreatePX1027DiagnosticResult(27, 42),
-                CreatePX1027DiagnosticResult(37, 24));
+                CreatePX1029DiagnosticResult(15, 17),
+                CreatePX1029DiagnosticResult(15, 50),
+                CreatePX1029DiagnosticResult(17, 24),
+                CreatePX1029DiagnosticResult(27, 24),
+                CreatePX1029DiagnosticResult(27, 42),
+                CreatePX1029DiagnosticResult(37, 24));
         }
 
         [Theory]
@@ -40,12 +40,12 @@ namespace Acuminator.Tests
         public void Test_PXGraph_Usage_Inside_CacheExtension_Property(string source)
         {
             VerifyCSharpDiagnostic(source,
-                CreatePX1027DiagnosticResult(15, 17),
-                CreatePX1027DiagnosticResult(15, 50),
-                CreatePX1027DiagnosticResult(17, 24),
-                CreatePX1027DiagnosticResult(27, 24),
-                CreatePX1027DiagnosticResult(27, 42),
-                CreatePX1027DiagnosticResult(37, 24));
+                CreatePX1029DiagnosticResult(15, 17),
+                CreatePX1029DiagnosticResult(15, 50),
+                CreatePX1029DiagnosticResult(17, 24),
+                CreatePX1029DiagnosticResult(27, 24),
+                CreatePX1029DiagnosticResult(27, 42),
+                CreatePX1029DiagnosticResult(37, 24));
         }
     }
 }
