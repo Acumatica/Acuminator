@@ -5,6 +5,8 @@ using System.ComponentModel.Design;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using EnvDTE;
+using EnvDTE80;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -24,6 +26,7 @@ using Acuminator.Utilities.Extra;
 
 
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
+using Document = Microsoft.CodeAnalysis.Document;
 
 
 namespace Acuminator.Vsix.GoToDeclaration
@@ -242,7 +245,8 @@ namespace Acuminator.Vsix.GoToDeclaration
 
 			if (syntaxReference.SyntaxTree.FilePath != document.FilePath)
 			{
-				textView = OpenOtherDocumentForNavigationAndGetItsTextView(document, syntaxReference);
+				var openedView = OpenOtherDocumentForNavigationAndGetItsTextView(document, syntaxReference);
+				textView = openedView;
 			}
 
 			if (textView == null)
@@ -300,13 +304,26 @@ namespace Acuminator.Vsix.GoToDeclaration
 
 		private IWpfTextView OpenOtherDocumentForNavigationAndGetItsTextView(Document originalDocument, SyntaxReference syntaxReference)
 		{
-			DocumentId documentId = originalDocument.Project.GetDocumentId(syntaxReference.SyntaxTree);
+			DocumentId documentToNavigateId = originalDocument.Project.GetDocumentId(syntaxReference.SyntaxTree);
 
-			if (documentId == null)
+			if (documentToNavigateId == null)
 				return null;
 
-			originalDocument.Project.Solution.Workspace.OpenDocument(documentId);
-			return ServiceProvider.GetWpfTextView();
+			bool wasAlreadyOpened = originalDocument.Project.Solution.Workspace.IsDocumentOpen(documentToNavigateId);
+			originalDocument.Project.Solution.Workspace.OpenDocument(documentToNavigateId);
+
+			if (!wasAlreadyOpened)
+			{		
+				return ServiceProvider.GetWpfTextView();
+			}
+
+			var documentToNavigate = originalDocument.Project.GetDocument(documentToNavigateId);
+
+			if (documentToNavigate == null)
+				return null;
+
+			var wpfTextView = ServiceProvider.GetWpfTextViewByFilePath(documentToNavigate.FilePath);
+			return wpfTextView;
 		}
 
 		private void SetNewPositionInTextView(IWpfTextView textView, TextSpan textSpan)
