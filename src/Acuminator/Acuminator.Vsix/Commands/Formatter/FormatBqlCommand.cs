@@ -19,7 +19,7 @@ namespace Acuminator.Vsix.Formatter
 	/// </summary>
 	internal sealed class FormatBqlCommand : VSCommandBase
 	{
-		private static int IsCommandInitialized = NOT_INITIALIZED;
+		private static int _isCommandInitialized = NOT_INITIALIZED;
 
 		/// <summary>
 		/// Format Command ID.
@@ -50,7 +50,7 @@ namespace Acuminator.Vsix.Formatter
 		/// <param name="package">Owner package, not null.</param>
 		public static void Initialize(Package package)
 		{
-			if (Interlocked.CompareExchange(ref IsCommandInitialized, value: INITIALIZED, comparand: NOT_INITIALIZED) == NOT_INITIALIZED)
+			if (Interlocked.CompareExchange(ref _isCommandInitialized, value: INITIALIZED, comparand: NOT_INITIALIZED) == NOT_INITIALIZED)
 			{
 				Instance = new FormatBqlCommand(package);
 			}
