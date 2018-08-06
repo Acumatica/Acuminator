@@ -16,7 +16,9 @@ namespace PX.Objects.HackathonDemo
 					Where<SOOrder.orderNbr, Equal<Required<SOOrder.orderNbr>>>> CurrentOrder;
 
 
+		public PXAction<SOOrder> Release;
 
+		public PXAction<SOOrder> VoidOrder;
 
 
 
@@ -94,6 +96,11 @@ namespace PX.Objects.HackathonDemo
 				return rows;
 
 			return rows;
+		}
+
+		public IEnumerable release(PXAdapter adapter)
+		{
+			yield break;
 		}
 
 		public abstract void orders();

@@ -195,7 +195,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 			from method in graphSymbol.GetMembers().OfType<IMethodSymbol>()
 			where method.Name.Equals(name, StringComparison.OrdinalIgnoreCase) &&
 				  method.Parameters.Length > 0 &&
-				  method.Parameters[0].Equals(pxContext.PXAdapterType) &&
+				  method.Parameters[0].Type.InheritsFromOrEquals(pxContext.PXAdapterType) &&
 				  method.ReturnType.InheritsFromOrEquals(pxContext.IEnumerable, includeInterfaces: true)
 			select method;
 										

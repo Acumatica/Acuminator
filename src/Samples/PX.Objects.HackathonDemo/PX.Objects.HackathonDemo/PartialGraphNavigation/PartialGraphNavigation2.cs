@@ -11,5 +11,10 @@ namespace PX.Objects.HackathonDemo
 		{
 			return Enumerable.Empty<SOOrder>();
 		}
+
+		public IEnumerable voidOrder(PXAdapter adapter)
+		{
+			yield break;
+		}
 	}
 }
