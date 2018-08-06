@@ -13,6 +13,8 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
+using Acuminator.Utilities;
+using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.Formatter
 {
@@ -24,7 +26,7 @@ namespace Acuminator.Vsix.Formatter
 		/// <summary>
 		/// Command ID.
 		/// </summary>
-		public const int CommandId = 0x0100;
+		public const int CommandId = 0x0101;
 
 		/// <summary>
 		/// Command menu group (command set GUID).
@@ -40,17 +42,13 @@ namespace Acuminator.Vsix.Formatter
 		/// Initializes a new instance of the <see cref="FormatBqlCommand"/> class.
 		/// Adds our command handlers for menu (commands must exist in the command table file)
 		/// </summary>
-		/// <param name="package">Owner package, not null.</param>
-		private FormatBqlCommand(Package package)
+		/// <param name="aPackage">Owner package, not null.</param>
+		private FormatBqlCommand(Package aPackage)
 		{
-			if (package == null)
-			{
-				throw new ArgumentNullException("package");
-			}
+			package = aPackage ?? throw new ArgumentNullException(nameof(aPackage));
 
-			this.package = package;
+			OleMenuCommandService commandService = ServiceProvider.GetService<IMenuCommandService, OleMenuCommandService>();
 
-			OleMenuCommandService commandService = GetService<IMenuCommandService, OleMenuCommandService>();
 			if (commandService != null)
 			{
 				var menuCommandID = new CommandID(CommandSet, CommandId);
@@ -73,13 +71,8 @@ namespace Acuminator.Vsix.Formatter
 		/// <summary>
 		/// Gets the service provider from the owner package.
 		/// </summary>
-		private IServiceProvider ServiceProvider
-		{
-			get
-			{
-				return this.package;
-			}
-		}
+		private IServiceProvider ServiceProvider => package;
+		
 
 		/// <summary>
 		/// Initializes the singleton instance of the command.
@@ -92,28 +85,32 @@ namespace Acuminator.Vsix.Formatter
 
 		private void QueryFormatButtonStatus(object sender, EventArgs e)
 		{
-			var menuCommand = sender as OleMenuCommand;
-			var dte = GetService<DTE, DTE2>();
-			if (menuCommand != null)
+			if (!(sender is OleMenuCommand menuCommand))
+				return;
+
+			ThreadHelper.ThrowIfNotOnUIThread();
+			DTE2 dte = ServiceProvider.GetService<DTE, DTE2>();
+			bool visible = false;
+			bool enabled = false;
+
+			if (dte?.ActiveDocument != null)
 			{
-				bool visible = false;
-				bool enabled = false;
-
-				if (dte.ActiveDocument != null)
-				{
-					string fileExtension = System.IO.Path.GetExtension(dte.ActiveDocument.FullName);
-					visible = !String.IsNullOrEmpty(fileExtension) && fileExtension.Equals(".cs", StringComparison.OrdinalIgnoreCase);
-					enabled = !dte.ActiveDocument.ReadOnly;
-				}
-
-				menuCommand.Visible = visible;
-				menuCommand.Enabled = enabled;
+				string fileExtension = System.IO.Path.GetExtension(dte.ActiveDocument.FullName);
+				visible = !fileExtension.IsNullOrEmpty() && fileExtension.Equals(".cs", StringComparison.OrdinalIgnoreCase);
+				enabled = !dte.ActiveDocument.ReadOnly;
 			}
+
+			menuCommand.Visible = visible;
+			menuCommand.Enabled = enabled;
 		}
 
 		private void FormatButtonCallback(object sender, EventArgs e)
 		{
 			IWpfTextView textView = GetTextView();
+
+			if (textView == null)
+				return;
+
 			BqlFormatter formatter = CreateFormatter(textView);
 
 			SnapshotPoint caretPosition = textView.Caret.Position.BufferPosition;
@@ -130,11 +127,15 @@ namespace Acuminator.Vsix.Formatter
 					.FromBounds(textView.Selection.Start.Position, textView.Selection.End.Position);
 
 				SyntaxNode topNode = syntaxRoot.FindNode(selectionSpan); // can, return top node that intersects with selectionSpan, so we need SpanWalker here
-				if (topNode == null) return; // nothing to format (e.g. selection contains only trivia)
+
+				if (topNode == null)
+					return; // nothing to format (e.g. selection contains only trivia)
 				
 				var spanWalker = new SpanWalker(selectionSpan);
 				spanWalker.Visit(topNode);
-				if (spanWalker.NodesWithinSpan.Count == 0) return;
+
+				if (spanWalker.NodesWithinSpan.Count == 0)
+					return;
 
 				formattedRoot = syntaxRoot.ReplaceNodes(spanWalker.NodesWithinSpan, (o, r) => formatter.Format(o, semanticModel));
 			}
@@ -152,11 +153,12 @@ namespace Acuminator.Vsix.Formatter
 
 		private void ApplyChanges(Microsoft.CodeAnalysis.Document oldDocument, Microsoft.CodeAnalysis.Document newDocument)
 		{
-			if (oldDocument == null) throw new ArgumentNullException(nameof (oldDocument));
-			if (newDocument == null) throw new ArgumentNullException(nameof (newDocument));
+			oldDocument.ThrowOnNull(nameof(oldDocument));
+			newDocument.ThrowOnNull(nameof(newDocument));
 
-			var workspace = oldDocument.Project?.Solution?.Workspace;
-			var newSolution = newDocument.Project?.Solution;
+			Workspace workspace = oldDocument.Project?.Solution?.Workspace;
+			Microsoft.CodeAnalysis.Solution newSolution = newDocument.Project?.Solution;
+
 			if (workspace != null && newSolution != null)
 			{
 				workspace.TryApplyChanges(newSolution);
@@ -165,7 +167,7 @@ namespace Acuminator.Vsix.Formatter
 
 		private BqlFormatter CreateFormatter(IWpfTextView textView)
 		{
-			if (textView == null) throw new ArgumentNullException(nameof (textView));
+			textView.ThrowOnNull(nameof(textView));
 
 			int indentSize = textView.Options.GetOptionValue(DefaultOptions.IndentSizeOptionId);
 			int tabSize = textView.Options.GetOptionValue(DefaultOptions.TabSizeOptionId);
@@ -177,26 +179,16 @@ namespace Acuminator.Vsix.Formatter
 
 		private IWpfTextView GetTextView()
 		{
-			var textManager = GetService<SVsTextManager, IVsTextManager>();
+			var textManager = ServiceProvider.GetService<SVsTextManager, IVsTextManager>();
 			textManager.GetActiveView(1, null, out IVsTextView textView);
 
-			return GetEditorAdaptersFactoryService().GetWpfTextView(textView);
+			return GetEditorAdaptersFactoryService()?.GetWpfTextView(textView);
 		}
 
 		private IVsEditorAdaptersFactoryService GetEditorAdaptersFactoryService()
 		{
-			IComponentModel componentModel = GetService<SComponentModel, IComponentModel>();
-			return componentModel.GetService<IVsEditorAdaptersFactoryService>();
-		}
-
-		private T GetService<T>()
-		{
-			return (T) ServiceProvider.GetService(typeof (T));
-		}
-
-		private TActual GetService<TRequested, TActual>()
-		{
-			return (TActual) ServiceProvider.GetService(typeof (TRequested));
+			IComponentModel componentModel = ServiceProvider.GetService<SComponentModel, IComponentModel>();
+			return componentModel?.GetService<IVsEditorAdaptersFactoryService>();
 		}
 	}
 }
