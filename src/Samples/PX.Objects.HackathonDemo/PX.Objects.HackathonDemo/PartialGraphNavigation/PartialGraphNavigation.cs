@@ -75,7 +75,7 @@ namespace PX.Objects.HackathonDemo
 
 
 
-
+		#region Delegate
 		public IEnumerable items()
 		{
 			int startRow = PXView.StartRow;
@@ -100,6 +100,7 @@ namespace PX.Objects.HackathonDemo
 
 			return rows;
 		}
+		#endregion
 
 		public IEnumerable release(PXAdapter adapter)
 		{

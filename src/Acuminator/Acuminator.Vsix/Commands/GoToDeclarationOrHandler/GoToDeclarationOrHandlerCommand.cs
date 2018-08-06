@@ -17,6 +17,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Outlining;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Acuminator.Utilities;
 using Acuminator.Analyzers;
@@ -334,6 +335,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 			if (!textView.TextViewLines.ContainsBufferPosition(newCaretPosition.BufferPosition))
 			{
 				textView.ViewScroller.EnsureSpanVisible(selectedSpan, EnsureSpanVisibleOptions.AlwaysCenter);
+				ExpandAllRegionsContainingSpan(selectedSpan, textView);
 			}
 		}
 
@@ -344,5 +346,16 @@ namespace Acuminator.Vsix.GoToDeclaration
 
 		private static bool IsValidViewDelegate(IMethodSymbol method, PXContext pxContext) =>
 			 method.ReturnType.InheritsFromOrEquals(pxContext.IEnumerable, includeInterfaces: true);
+
+		private void ExpandAllRegionsContainingSpan(SnapshotSpan selectedSpan, IWpfTextView textView)
+		{
+			IOutliningManager outliningManager = ServiceProvider.GetOutliningManager(textView);
+
+			if (outliningManager == null)
+				return;
+
+			outliningManager.GetCollapsedRegions(selectedSpan, exposedRegionsOnly: false)
+							.ForEach(region => outliningManager.Expand(region));
+		}
 	}
 }
