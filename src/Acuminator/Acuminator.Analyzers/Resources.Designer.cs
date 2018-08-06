@@ -413,7 +413,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove forbidden field from the DAC declaration.
+        ///   Looks up a localized string similar to Remove the forbidden field from the DAC declaration.
         /// </summary>
         public static string PX1027Fix {
             get {
@@ -422,7 +422,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The field {0} cannot be declared within DAC declarations.
+        ///   Looks up a localized string similar to The {0} field cannot be declared within a DAC declaration.
         /// </summary>
         public static string PX1027Title {
             get {
@@ -431,7 +431,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove constructor entirely.
+        ///   Looks up a localized string similar to Remove the constructor.
         /// </summary>
         public static string PX1028Fix {
             get {
@@ -440,7 +440,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Constructors in DACs are strictly prohibited.
+        ///   Looks up a localized string similar to Constructors in DACs are prohibited.
         /// </summary>
         public static string PX1028Title {
             get {

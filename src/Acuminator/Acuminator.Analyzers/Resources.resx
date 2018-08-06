@@ -235,15 +235,15 @@
     <value>Remove underscores from the DAC declaration</value>
   </data>
   <data name="PX1027Fix" xml:space="preserve">
-    <value>Remove forbidden field from the DAC declaration</value>
+    <value>Remove the forbidden field from the DAC declaration</value>
   </data>
   <data name="PX1027Title" xml:space="preserve">
-    <value>The field {0} cannot be declared within DAC declarations</value>
+    <value>The {0} field cannot be declared within a DAC declaration</value>
   </data>
   <data name="PX1028Fix" xml:space="preserve">
-    <value>Remove constructor entirely</value>
+    <value>Remove the constructor</value>
   </data>
   <data name="PX1028Title" xml:space="preserve">
-    <value>Constructors in DACs are strictly prohibited</value>
+    <value>Constructors in DACs are prohibited</value>
   </data>
 </root>
