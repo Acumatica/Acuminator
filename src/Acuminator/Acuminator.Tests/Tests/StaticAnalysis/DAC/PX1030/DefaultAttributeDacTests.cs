@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Acuminator.Tests
 {
-	public class UnderscoresInDacTests : CodeFixVerifier
+	public class DefaultAttributeInDacTests : CodeFixVerifier
 	{
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1026\Diagnostics\DacWithUnderscores.cs")]
