@@ -330,13 +330,15 @@ namespace Acuminator.Vsix.GoToDeclaration
 		{
 			CaretPosition newCaretPosition = textView.MoveCaretTo(textSpan.Start);
 			SnapshotSpan selectedSpan = new SnapshotSpan(textView.TextSnapshot, textSpan.Start, textSpan.Length);
-			textView.Selection.Select(selectedSpan, isReversed: false);
-
+			
 			if (!textView.TextViewLines.ContainsBufferPosition(newCaretPosition.BufferPosition))
 			{
 				textView.ViewScroller.EnsureSpanVisible(selectedSpan, EnsureSpanVisibleOptions.AlwaysCenter);
 				ExpandAllRegionsContainingSpan(selectedSpan, textView);
+				textView.MoveCaretTo(textSpan.Start);						//Move caret second time to set caret after regions are expanded
 			}
+
+			textView.Selection.Select(selectedSpan, isReversed: false);
 		}
 
 		private static bool IsValidActionHandler(IMethodSymbol method, PXContext pxContext) =>
