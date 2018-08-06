@@ -1,7 +1,9 @@
 ﻿using PX.Data;
+using System;
 
 namespace Acuminator.Tests.Sources
 {
+    [Serializable]
     public class SOShipmentExt : PXCacheExtension<SOOrder>
     {
         public abstract class shipmentNbr : IBqlField { }

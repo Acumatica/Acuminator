@@ -1,7 +1,9 @@
 ﻿using PX.Data;
+using System;
 
 namespace Acuminator.Tests.Sources
 {
+    [Serializable]
     public class SOOrder : IBqlTable
     {
         public abstract class shipmentNbr : IBqlField { }

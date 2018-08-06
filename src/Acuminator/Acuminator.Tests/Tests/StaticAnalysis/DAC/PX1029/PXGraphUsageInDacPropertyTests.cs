@@ -15,37 +15,37 @@ namespace Acuminator.Tests
         {
             return new DiagnosticResult
             {
-                Id = Descriptors.PX1027_PXGraphUsageInDacProperty.Id,
-                Message = Descriptors.PX1027_PXGraphUsageInDacProperty.Title.ToString(),
+                Id = Descriptors.PX1029_PXGraphUsageInDacProperty.Id,
+                Message = Descriptors.PX1029_PXGraphUsageInDacProperty.Title.ToString(),
                 Severity = DiagnosticSeverity.Error,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }
             };
         }
 
         [Theory]
-        [EmbeddedFileData(@"Dac\PX1027\Diagnostics\DacWithGraphUsageInProperty.cs")]
+        [EmbeddedFileData(@"Dac\PX1029\Diagnostics\DacWithGraphUsageInProperty.cs")]
         public void Test_PXGraph_Usage_Inside_Dac_Property(string source)
         {
             VerifyCSharpDiagnostic(source,
-                CreatePX1027DiagnosticResult(13, 17),
-                CreatePX1027DiagnosticResult(13, 50),
-                CreatePX1027DiagnosticResult(15, 24),
-                CreatePX1027DiagnosticResult(25, 24),
-                CreatePX1027DiagnosticResult(25, 42),
-                CreatePX1027DiagnosticResult(35, 24));
+                CreatePX1027DiagnosticResult(15, 17),
+                CreatePX1027DiagnosticResult(15, 50),
+                CreatePX1027DiagnosticResult(17, 24),
+                CreatePX1027DiagnosticResult(27, 24),
+                CreatePX1027DiagnosticResult(27, 42),
+                CreatePX1027DiagnosticResult(37, 24));
         }
 
         [Theory]
-        [EmbeddedFileData(@"Dac\PX1027\Diagnostics\DacExtensionWithGraphUsageInProperty.cs")]
+        [EmbeddedFileData(@"Dac\PX1029\Diagnostics\DacExtensionWithGraphUsageInProperty.cs")]
         public void Test_PXGraph_Usage_Inside_CacheExtension_Property(string source)
         {
             VerifyCSharpDiagnostic(source,
-                CreatePX1027DiagnosticResult(13, 17),
-                CreatePX1027DiagnosticResult(13, 50),
-                CreatePX1027DiagnosticResult(15, 24),
-                CreatePX1027DiagnosticResult(25, 24),
-                CreatePX1027DiagnosticResult(25, 42),
-                CreatePX1027DiagnosticResult(35, 24));
+                CreatePX1027DiagnosticResult(15, 17),
+                CreatePX1027DiagnosticResult(15, 50),
+                CreatePX1027DiagnosticResult(17, 24),
+                CreatePX1027DiagnosticResult(27, 24),
+                CreatePX1027DiagnosticResult(27, 42),
+                CreatePX1027DiagnosticResult(37, 24));
         }
     }
 }

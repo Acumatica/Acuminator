@@ -15,7 +15,7 @@ namespace Acuminator.Analyzers
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create
             (
-                Descriptors.PX1027_PXGraphUsageInDacProperty
+                Descriptors.PX1029_PXGraphUsageInDacProperty
             );
 
         internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
@@ -53,7 +53,7 @@ namespace Acuminator.Analyzers
 
             if (isGraphDeclarationType)
             {
-                syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1027_PXGraphUsageInDacProperty, local.GetLocation()));
+                syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1029_PXGraphUsageInDacProperty, local.GetLocation()));
             }
         }
 
@@ -63,7 +63,7 @@ namespace Acuminator.Analyzers
 
             if (expressionSymbol != null && IsGraphUsedAsMemberExpression(expressionSymbol, pxContext))
             {
-                syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1027_PXGraphUsageInDacProperty, expression.GetLocation()));
+                syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1029_PXGraphUsageInDacProperty, expression.GetLocation()));
             }
         }
 
@@ -73,7 +73,7 @@ namespace Acuminator.Analyzers
 
             if (nameSymbol != null && IsGraphUsedAsMemberName(nameSymbol, pxContext))
             {
-                syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1027_PXGraphUsageInDacProperty, name.GetLocation()));
+                syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1029_PXGraphUsageInDacProperty, name.GetLocation()));
             }
         }
 
