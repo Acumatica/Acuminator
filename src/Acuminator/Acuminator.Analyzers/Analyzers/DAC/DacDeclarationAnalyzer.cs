@@ -52,7 +52,7 @@ namespace Acuminator.Analyzers
 								group => group.ToList(), StringComparer.OrdinalIgnoreCase);
 
 			CheckDeclarationForUnderscores(dacOrDacExtNode, syntaxContext, dacProperties);
-			CheckDeclarationForForbiddenFields(dacOrDacExtNode, syntaxContext, dacProperties,dacClassDeclarations);
+			CheckDeclarationForForbiddenNames(dacOrDacExtNode, syntaxContext, dacProperties,dacClassDeclarations);
 			CheckDeclarationForConstructors(dacOrDacExtNode, syntaxContext);
 		}
 
@@ -109,7 +109,7 @@ namespace Acuminator.Analyzers
 			}
 		}
 
-		private static void CheckDeclarationForForbiddenFields(ClassDeclarationSyntax dacOrDacExtNode,
+		private static void CheckDeclarationForForbiddenNames(ClassDeclarationSyntax dacOrDacExtNode,
 																SyntaxNodeAnalysisContext syntaxContext,
 																Dictionary<string, List<PropertyDeclarationSyntax>> dacProperties,
 																Dictionary<string, List<ClassDeclarationSyntax>> dacClassDeclarations)
