@@ -21,6 +21,7 @@ namespace Acuminator.Analyzers
 			(
 				Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty,
 				Descriptors.PX1023_DacPropertyMultipleFieldAttributes
+                //Descriptors.PX1030_DefaultAttibuteToExisitingRecords
 			);
 
 #pragma warning disable CS4014

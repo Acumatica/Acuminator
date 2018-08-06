@@ -234,4 +234,10 @@
   <data name="PX1026Fix" xml:space="preserve">
     <value>Remove underscores from the DAC declaration</value>
   </data>
+  <data name="PX1030Fix" xml:space="preserve">
+    <value>Replace with the PXUnboundDefaultAttribute or set PersistingCheck to Nothing</value>
+  </data>
+  <data name="PX1030Title" xml:space="preserve">
+    <value>Incorrect PXDefaultAttribute to exisiting field </value>
+  </data>
 </root>
