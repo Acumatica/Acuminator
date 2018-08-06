@@ -91,5 +91,11 @@ namespace Acuminator.Analyzers
 
 		internal static DiagnosticDescriptor PX1026_UnderscoresInDacDeclaration { get; } =
 		   Rule("PX1026", nameof(Resources.PX1026Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+        internal static DiagnosticDescriptor PX1031_DacCannotContainInstanceMethods { get; } =
+            Rule("PX1031", nameof(Resources.PX1031Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+        internal static DiagnosticDescriptor PX1032_DacPropertyCannotContainMethodInvocations { get; } =
+            Rule("PX1032", nameof(Resources.PX1032Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 	}
 }

@@ -411,5 +411,23 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1026Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DAC cannot contain instance methods.
+        /// </summary>
+        public static string PX1031Title {
+            get {
+                return ResourceManager.GetString("PX1031Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DAC property cannot contain any method invocations.
+        /// </summary>
+        public static string PX1032Title {
+            get {
+                return ResourceManager.GetString("PX1032Title", resourceCulture);
+            }
+        }
     }
 }
