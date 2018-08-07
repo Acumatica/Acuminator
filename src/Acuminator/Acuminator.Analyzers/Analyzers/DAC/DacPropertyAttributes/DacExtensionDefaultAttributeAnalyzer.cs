@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Acuminator.Utilities;
 using System.Collections.Immutable;
+using PX.Data;
 
 namespace Acuminator.Analyzers
 {
@@ -42,10 +43,25 @@ namespace Acuminator.Analyzers
             foreach (var attribute in attributes)
             {
                 var typesHierarchy = attribute.AttributeClass.GetBaseTypesAndThis();
-                if (typesHierarchy.Contains())
-                {
-                    return;
-                }
+                if (typesHierarchy.Contains(symbolContext.Compilation.GetTypeByMetadataName(typeof(PX.Data.PXDefaultAttribute).FullName)) ) //https://johnkoerner.com/csharp/working-with-types-in-your-analyzer/
+				{
+					Location[] locations = await Task.WhenAll(DacPropertyAttributesAnalyzer.GetPropertyTypeLocationAsync(property, symbolContext.CancellationToken),
+																DacPropertyAttributesAnalyzer.GetAttributeLocationAsync(attribute, symbolContext.CancellationToken));
+					Location propertyTypeLocation = locations[0];
+					Location attributeLocation = locations[1];
+					foreach (var argument in attribute.NamedArguments)
+					{
+						if(argument.Key.Contains("PersistingCheck") && (int)argument.Value.Value != (int)PX.Data.PXPersistingCheck.Nothing)
+							;
+					}
+					if (attributeLocation != null)
+					{
+						symbolContext.ReportDiagnostic(
+							Diagnostic.Create(
+								Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attributeLocation));
+
+					}
+				}
                // var allAttr = typesHierarchy.SelectMany(type => type.GetAttributes);
             }
 

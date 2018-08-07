@@ -62,6 +62,13 @@ namespace PX.Objects.HackathonDemo
 		[PXUIField(DisplayName = "Total")]
 		public decimal Total { get; set; }
 		#endregion
+		#region UsrNPCADocLineCntr
+		public abstract class usrNPCADocLineCntr : IBqlField { }
+		[PXDBInt]
+		[PXDefault]
+		public virtual int? UsrNPCADocLineCntr { get; set; }
+		#endregion
+
 	}
 
 	public class SOOrderWithHold : SOOrderWithTotal

@@ -22,6 +22,12 @@ namespace PX.Objects.HackathonDemo
         [PXDBInt]
         [PXDefault]
         public virtual int? UsrNPCADocLineCntr { get; set; }
-        #endregion
+		#endregion
+		#region UsrNPCADocLineCntr2
+		public abstract class usrNPCADocLineCntr2 : IBqlField { }
+		[PXDBInt]
+		[PXDefault(0,PersistingCheck = PXPersistingCheck.Nothing)]
+		public virtual int? UsrNPCADocLineCntr2 { get; set; }
+		#endregion
 	}
 }

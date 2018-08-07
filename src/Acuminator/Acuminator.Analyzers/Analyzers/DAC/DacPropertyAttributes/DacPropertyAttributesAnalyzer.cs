@@ -179,7 +179,7 @@ namespace Acuminator.Analyzers
 			return attributeSyntaxNode?.GetLocation();
 		}
 
-		private static async Task<Location> GetPropertyTypeLocationAsync(IPropertySymbol property, CancellationToken cancellationToken)
+		public static async Task<Location> GetPropertyTypeLocationAsync(IPropertySymbol property, CancellationToken cancellationToken)
 		{
 			SyntaxNode propertySyntaxNode = null;
 			var syntaxRefs = property.DeclaringSyntaxReferences;
