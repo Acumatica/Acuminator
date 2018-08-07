@@ -93,8 +93,7 @@ namespace Acuminator.Analyzers.FixProviders
 				PXContext pxContext = new PXContext(semanticModel.Compilation);
 				attributesRegister = new FieldAttributesRegister(pxContext);
 			}
-
-			public override SyntaxNode VisitAttributeList(AttributeListSyntax attributeListNode)
+            public override SyntaxNode VisitAttributeList(AttributeListSyntax attributeListNode)
 			{
 				if (cancellationToken.IsCancellationRequested)
 					return null;

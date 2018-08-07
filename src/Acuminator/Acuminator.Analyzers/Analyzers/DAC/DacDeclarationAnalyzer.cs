@@ -19,7 +19,9 @@ namespace Acuminator.Analyzers
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
 			(
-				Descriptors.PX1026_UnderscoresInDacDeclaration
+				Descriptors.PX1026_UnderscoresInDacDeclaration,
+				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration,
+				Descriptors.PX1028_ConstructorInDacDeclaration
 			);
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
@@ -35,14 +37,28 @@ namespace Acuminator.Analyzers
 
 			INamedTypeSymbol dacOrDacExt = syntaxContext.SemanticModel.GetDeclaredSymbol(dacOrDacExtNode, syntaxContext.CancellationToken);
 
-			if (dacOrDacExt == null || (!dacOrDacExt.IsDAC() && !dacOrDacExt.IsDacExtension()) || 
+			if (dacOrDacExt == null || (!dacOrDacExt.IsDAC() && !dacOrDacExt.IsDacExtension()) ||
 				syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			CheckDeclarationForUnderscores(dacOrDacExtNode, syntaxContext);
+
+			var dacProperties = dacOrDacExtNode.Members.OfType<PropertyDeclarationSyntax>()
+													   .GroupBy(p => p.Identifier.ValueText, StringComparer.OrdinalIgnoreCase)
+													   .ToDictionary(group => group.Key,
+																	 group => group.ToList(), StringComparer.OrdinalIgnoreCase);
+			var dacClassDeclarations = dacOrDacExtNode.Members.OfType<ClassDeclarationSyntax>()
+				.GroupBy(p => p.Identifier.ValueText, StringComparer.OrdinalIgnoreCase)
+				.ToDictionary(group => group.Key,
+								group => group.ToList(), StringComparer.OrdinalIgnoreCase);
+
+			CheckDeclarationForUnderscores(dacOrDacExtNode, syntaxContext, dacProperties);
+			CheckDeclarationForForbiddenNames(dacOrDacExtNode, syntaxContext, dacProperties,dacClassDeclarations);
+			CheckDeclarationForConstructors(dacOrDacExtNode, syntaxContext);
 		}
 
-		private static void CheckDeclarationForUnderscores(ClassDeclarationSyntax dacOrDacExtNode, SyntaxNodeAnalysisContext syntaxContext)
+		private static void CheckDeclarationForUnderscores(ClassDeclarationSyntax dacOrDacExtNode,
+														   SyntaxNodeAnalysisContext syntaxContext,
+															Dictionary<string, List<PropertyDeclarationSyntax>> dacProperties)
 		{
 			SyntaxToken identifier = dacOrDacExtNode.Identifier;
 
@@ -58,10 +74,6 @@ namespace Acuminator.Analyzers
 					Diagnostic.Create(
 						Descriptors.PX1026_UnderscoresInDacDeclaration, identifier.GetLocation(), diagnosticProperties));
 			}
-
-			HashSet<string> dacProperties = dacOrDacExtNode.Members.OfType<PropertyDeclarationSyntax>()
-																   .Select(p => p.Identifier.ValueText)
-																   .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
 			var identifiersWithUnderscores = from member in dacOrDacExtNode.Members
 											 where ShouldCheckIdentifier(member, dacProperties)
@@ -82,6 +94,8 @@ namespace Acuminator.Analyzers
 						Descriptors.PX1026_UnderscoresInDacDeclaration, identifierToReport.GetLocation(), diagnosticProperties));
 			}
 
+
+
 			//*************************************Local Functions**********************************************************************
 			bool IdentifierContainsOnlyUnderscores(string identifierName)
 			{
@@ -92,18 +106,80 @@ namespace Acuminator.Analyzers
 				}
 
 				return true;
-			}	
+			}
 		}
 
-		private static bool ShouldCheckIdentifier(MemberDeclarationSyntax member, HashSet<string> dacProperties)
+		private static void CheckDeclarationForForbiddenNames(ClassDeclarationSyntax dacOrDacExtNode,
+																SyntaxNodeAnalysisContext syntaxContext,
+																Dictionary<string, List<PropertyDeclarationSyntax>> dacProperties,
+																Dictionary<string, List<ClassDeclarationSyntax>> dacClassDeclarations)
+		{
+			string[] forbiddenNames = GetForbiddenFieldsNames();
+			
+			var invalidPropertiesByName = from forbiddenFieldName in forbiddenNames
+										  where dacProperties.ContainsKey(forbiddenFieldName)
+										  select dacProperties[forbiddenFieldName];
+
+			var invalidClassesByName = from forbiddenClassName in forbiddenNames
+									   where dacClassDeclarations.ContainsKey(forbiddenClassName)
+									   select dacClassDeclarations[forbiddenClassName];
+
+			foreach (var listProperties in invalidPropertiesByName)
+			{
+				foreach (var iProperty in listProperties)
+				{
+					syntaxContext.ReportDiagnostic(
+						Diagnostic.Create(
+							Descriptors.PX1027_ForbiddenFieldsInDacDeclaration, iProperty.Identifier.GetLocation(),
+							iProperty.Identifier.Text));
+				}
+			}
+			foreach (var listClasses in invalidClassesByName)
+			{
+				foreach (var iClass in listClasses)
+				{
+					syntaxContext.ReportDiagnostic(
+						Diagnostic.Create(
+							Descriptors.PX1027_ForbiddenFieldsInDacDeclaration, iClass.Identifier.GetLocation(),
+							iClass.Identifier.Text));
+				}
+			}
+		}
+		
+		private static void CheckDeclarationForConstructors(ClassDeclarationSyntax dacOrDacExtNode,
+															SyntaxNodeAnalysisContext syntaxContext)
+		{
+			var dacConstructors = dacOrDacExtNode.Members.OfType<ConstructorDeclarationSyntax>();
+
+			foreach (var constructor in dacConstructors)
+			{
+				syntaxContext.ReportDiagnostic(
+					Diagnostic.Create(
+						Descriptors.PX1028_ConstructorInDacDeclaration, constructor.Identifier.GetLocation()));
+			}
+
+		}
+
+
+		private static bool ShouldCheckIdentifier(MemberDeclarationSyntax member, Dictionary<string, List<PropertyDeclarationSyntax>> dacProperties)
 		{
 			if (!member.IsPublic() && !member.IsInternal())
 				return false;
 
-			if (member is ClassDeclarationSyntax dacFieldClassNode && !dacProperties.Contains(dacFieldClassNode.Identifier.ValueText))
+			if (member is ClassDeclarationSyntax dacFieldClassNode && !dacProperties.ContainsKey(dacFieldClassNode.Identifier.ValueText))
 				return false;
 
 			return true;
+		}
+
+		public static string[] GetForbiddenFieldsNames()
+		{
+			return new string[]
+			{
+				"CompanyID",
+				"DeletedDatabaseRecord",
+				"CompanyMask"
+			};
 		}
 	}
 }

@@ -167,6 +167,18 @@
     <EmbeddedResource Include="Sources\Dac\PX1026\Diagnostics\DacExtensionWithUnderscores.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1026\CodeFixes\DacExtensionWithUnderscores_Expected.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1026\CodeFixes\DacWithUnderscores_Expected.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1027\Diagnostics\DacForbiddenFields.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1027\CodeFixes\DacForbiddenFields_Expected.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1028\CodeFixes\DacWithConstructor_Expected.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1028\Diagnostics\DacWithConstructor.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1027\Diagnostics\DacForbiddenFieldsWithoutRegions.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1027\Diagnostics\DacForbiddenFieldsRegions_Case3.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1027\Diagnostics\DacForbiddenFieldsRegions_Case1.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1027\Diagnostics\DacForbiddenFieldsRegions_Case2.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1027\CodeFixes\DacForbiddenFieldsWithoutRegions_Expected.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1027\CodeFixes\DacForbiddenFieldsRegions_Case3_Expected.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1027\CodeFixes\DacForbiddenFieldsRegions_Case1_Expected.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1027\CodeFixes\DacForbiddenFieldsRegions_Case2_Expected.cs" />
     <EmbeddedResource Include="Sources\PXAction\PX1000\Diagnostics\InvalidPXActionSignatureGraphExtension.cs" />
     <EmbeddedResource Include="Sources\PXAction\PX1000\CodeFixes\InvalidPXActionSignatureGraphExtension_Expected.cs" />
     <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\SearchCall.cs" />
@@ -179,6 +191,8 @@
     <Compile Include="Tests\StaticAnalysis\DAC\DacFields\PX1024\DacFieldNotAbstractCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\DacFields\PX1024\DacFieldNotAbstractTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\PX1026\UnderscoresInDacTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\DAC\PX1027\DacForbiddenFieldsTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\DAC\PX1028\DacWithConstructorTests.cs" />
     <Compile Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtensionTests.cs" />
     <Compile Include="Tests\StaticAnalysis\LongOperationDelegateClosuresTests.cs" />
     <EmbeddedResource Include="Sources\View\Delegate\PX1010\Diagnostics\StartRowResetForPaging.cs" />
