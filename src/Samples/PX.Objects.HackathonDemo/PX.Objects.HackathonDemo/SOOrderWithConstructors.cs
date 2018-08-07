@@ -9,8 +9,24 @@ namespace PX.Objects.HackathonDemo
 {
 	public class SOOrder : IBqlTable
 	{
-		#region OrderType
-		public abstract class orderType : IBqlField { }
+        #region Cons
+        public SOOrder() : base()
+        {
+        }
+        #endregion
+
+        #region ConsParams
+        public SOOrder(string orderType, string orderNbr, string status, DateTime? orderDate)
+        {
+            OrderType = orderType;
+            OrderNbr = orderNbr;
+            Status = status;
+            OrderDate = orderDate;
+        }
+        #endregion
+
+        #region OrderType
+        public abstract class orderType : IBqlField { }
 		[PXDBString(IsKey = true, InputMask = "")]
 		[PXDefault]
 		[PXUIField(DisplayName = "Order Type")]
@@ -41,8 +57,10 @@ namespace PX.Objects.HackathonDemo
         #endregion
 
         #region CompanyMask
-        
-        
+        public abstract class COMPANYMASK : IBqlField { }
+        [PXDefault]
+        [PXUIField(DisplayName = "Company Mask")]
+        public string CompanyMask { get; set; }
         #endregion
 
         #region tstamp
@@ -61,18 +79,35 @@ namespace PX.Objects.HackathonDemo
 
 	public class SOOrderWithTotal : PXCacheExtension<SOOrder>
 	{
-		#region Total
-		public abstract class total : IBqlField { }
+        #region Cons
+        public SOOrderWithTotal() { }
+        #endregion
+
+        #region Cons
+        public SOOrderWithTotal(decimal? total) { Total = total; }
+        #endregion
+
+
+        #region Total
+        public abstract class total : IBqlField { }
 		[PXDBDecimal]
 		[PXUIField(DisplayName = "Total")]
-		public decimal Total { get; set; }
+		public decimal? Total { get; set; }
 		#endregion
 	}
 
 	public class SOOrderWithHold : SOOrderWithTotal
 	{
-		#region Hold
-		public abstract class hold : IBqlField { }
+        #region Cons
+        public SOOrderWithHold() { }
+        #endregion
+
+        #region Cons
+        public SOOrderWithHold(bool? hold) { Hold = hold; }
+        #endregion
+
+        #region Hold
+        public abstract class hold : IBqlField { }
 		[PXDBBool]
 		[PXDefault(true)]
 		[PXUIField(DisplayName = "Hold")]

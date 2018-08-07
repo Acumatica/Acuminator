@@ -413,6 +413,42 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remove the forbidden field from the DAC declaration.
+        /// </summary>
+        public static string PX1027Fix {
+            get {
+                return ResourceManager.GetString("PX1027Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} field cannot be declared within a DAC declaration.
+        /// </summary>
+        public static string PX1027Title {
+            get {
+                return ResourceManager.GetString("PX1027Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove the constructor.
+        /// </summary>
+        public static string PX1028Fix {
+            get {
+                return ResourceManager.GetString("PX1028Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Constructors in DACs are prohibited.
+        /// </summary>
+        public static string PX1028Title {
+            get {
+                return ResourceManager.GetString("PX1028Title", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to PXGraph instances cannot be used inside DAC properties.
         /// </summary>
         public static string PX1029Title {
