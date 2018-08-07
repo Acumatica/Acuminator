@@ -83,7 +83,7 @@ namespace Acuminator.Analyzers
 				   property.Type.TypeKind == TypeKind.Array;
 		}
 
-		private static List<(AttributeData Attribute, FieldAttributeInfo Info)> GetFieldAttributesInfos(PXContext pxContext,
+		public static List<(AttributeData Attribute, FieldAttributeInfo Info)> GetFieldAttributesInfos(PXContext pxContext,
 																									   ImmutableArray<AttributeData> attributes,
 																									   CancellationToken cancellationToken)
 		{
@@ -157,7 +157,7 @@ namespace Acuminator.Analyzers
 			}
 		}
 
-		private static async Task<Location> GetAttributeLocationAsync(AttributeData attribute, CancellationToken cancellationToken)
+		public static async Task<Location> GetAttributeLocationAsync(AttributeData attribute, CancellationToken cancellationToken)
 		{
 			SyntaxNode attributeSyntaxNode = null;
 

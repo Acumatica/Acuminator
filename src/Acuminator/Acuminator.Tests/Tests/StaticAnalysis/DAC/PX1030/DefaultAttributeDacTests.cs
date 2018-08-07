@@ -17,7 +17,32 @@ namespace Acuminator.Tests
 {
 	public class DefaultAttributeInDacTests : CodeFixVerifier
 	{
-		[Theory]
+        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacExtensionDefaultAttributeAnalyzer();
+
+        [Theory]
+        [EmbeddedFileData(@"Dac\PX1030\Diagnostics\DacExtensionWithPXDefaultAttribute.cs")]
+        public virtual void TestDacExtensionWithDefaultAttribute(string source) =>
+            VerifyCSharpDiagnostic(source,
+                CreatePX1030DiagnosticResult(line:23,column:9));
+
+        private DiagnosticResult CreatePX1030DiagnosticResult(int line, int column)
+        {
+            return new DiagnosticResult
+            {
+                Id = Descriptors.PX1030_DefaultAttibuteToExisitingRecords.Id,
+                Message = Descriptors.PX1030_DefaultAttibuteToExisitingRecords.Title.ToString(),
+                Severity = DiagnosticSeverity.Error,
+                Locations =
+                    new[]
+                    {
+                        new DiagnosticResultLocation("Test0.cs", line, column)
+                    }
+            };
+        }
+
+        //        protected override CodeFixProvider GetCSharpCodeFixProvider() => new UnderscoresInDacCodeFix();
+
+        /*[Theory]
 		[EmbeddedFileData(@"Dac\PX1026\Diagnostics\DacWithUnderscores.cs")]
 		public virtual void Test_Dac_With_Underscores_In_Declaration(string source) =>
 			VerifyCSharpDiagnostic(source,
@@ -52,19 +77,6 @@ namespace Acuminator.Tests
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new UnderscoresInDacCodeFix();
 
-		private DiagnosticResult CreatePX1026DiagnosticResult(int line, int column)
-		{
-			return new DiagnosticResult
-			{
-				Id = Descriptors.PX1026_UnderscoresInDacDeclaration.Id,
-				Message = Descriptors.PX1026_UnderscoresInDacDeclaration.Title.ToString(),
-				Severity = DiagnosticSeverity.Error,
-				Locations =
-					new[]
-					{
-						new DiagnosticResultLocation("Test0.cs", line, column)
-					}
-			};
-		}
-	}
+		*/
+    }
 }

@@ -20,7 +20,7 @@ namespace PX.Objects.HackathonDemo
         #region UsrNPCADocLineCntr
         public abstract class usrNPCADocLineCntr : IBqlField {}
         [PXDBInt]
-        [PXDefault(0, PersistingCheck = PXPersistingCheck.Nothing)]
+        [PXDefault]
         public virtual int? UsrNPCADocLineCntr { get; set; }
         #endregion
 	}
