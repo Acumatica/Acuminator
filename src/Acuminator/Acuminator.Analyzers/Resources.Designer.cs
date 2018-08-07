@@ -413,7 +413,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DAC cannot contain instance methods.
+        ///   Looks up a localized string similar to DACs cannot contain instance methods.
         /// </summary>
         public static string PX1031Title {
             get {
@@ -422,7 +422,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The DAC property cannot contain any method invocations.
+        ///   Looks up a localized string similar to DAC properties cannot contain method invocations.
         /// </summary>
         public static string PX1032Title {
             get {

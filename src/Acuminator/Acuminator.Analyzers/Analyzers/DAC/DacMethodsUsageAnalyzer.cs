@@ -29,16 +29,12 @@ namespace Acuminator.Analyzers
             ClassDeclarationSyntax classDeclaration = syntaxContext.Node as ClassDeclarationSyntax;
             INamedTypeSymbol typeSymbol = syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration, syntaxContext.CancellationToken);
 
-            if (typeSymbol != null && IsDac(typeSymbol, pxContext))
+            if (typeSymbol != null && IsDac(typeSymbol, pxContext) && !syntaxContext.CancellationToken.IsCancellationRequested)
             {
-                IEnumerable<MethodDeclarationSyntax> dacMethods = classDeclaration.DescendantNodes().OfType<MethodDeclarationSyntax>();
-
                 foreach (SyntaxNode node in classDeclaration.DescendantNodes())
                 {
                     if (syntaxContext.CancellationToken.IsCancellationRequested)
-                    {
                         return;
-                    }
 
                     if (node is MethodDeclarationSyntax method)
                     {
@@ -54,24 +50,30 @@ namespace Acuminator.Analyzers
 
         private void AnalyzeMethodInvocationInDacProperty(PropertyDeclarationSyntax property, SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
         {
-            IEnumerable<InvocationExpressionSyntax> methodInvocations = property.DescendantNodes()
-                                                                        .OfType<InvocationExpressionSyntax>();
-            foreach (InvocationExpressionSyntax invocation in methodInvocations)
+            foreach (SyntaxNode node in property.DescendantNodes())
             {
-                SymbolInfo symbol = syntaxContext.SemanticModel.GetSymbolInfo(invocation, syntaxContext.CancellationToken);
+                if (syntaxContext.CancellationToken.IsCancellationRequested)
+                    return;
 
-                if (symbol.Symbol.Kind == SymbolKind.Method)
+                if (node is InvocationExpressionSyntax invocation)
                 {
-                    syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1032_DacPropertyCannotContainMethodInvocations, invocation.GetLocation()));
+                    SymbolInfo symbol = syntaxContext.SemanticModel.GetSymbolInfo(invocation, syntaxContext.CancellationToken);
+
+                    if (symbol.Symbol != null && symbol.Symbol.Kind == SymbolKind.Method)
+                    {
+                        syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1032_DacPropertyCannotContainMethodInvocations, invocation.GetLocation()));
+                    }
+                }
+                else if (node is ObjectCreationExpressionSyntax creation)
+                {
+                    syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1032_DacPropertyCannotContainMethodInvocations, node.GetLocation()));
                 }
             }
         }
 
         private void AnalyzeMethodDeclarationInDac(MethodDeclarationSyntax method, SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
         {
-            bool isStatic = method.Modifiers.Any(m => m.IsKind(SyntaxKind.StaticKeyword));
-
-            if (!isStatic)
+            if (!method.IsStatic())
             {
                 syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1031_DacCannotContainInstanceMethods, method.GetLocation()));
             }

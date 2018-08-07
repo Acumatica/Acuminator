@@ -235,9 +235,9 @@
     <value>Remove underscores from the DAC declaration</value>
   </data>
   <data name="PX1031Title" xml:space="preserve">
-    <value>DAC cannot contain instance methods</value>
+    <value>DACs cannot contain instance methods</value>
   </data>
   <data name="PX1032Title" xml:space="preserve">
-    <value>The DAC property cannot contain any method invocations</value>
+    <value>DAC properties cannot contain method invocations</value>
   </data>
 </root>
