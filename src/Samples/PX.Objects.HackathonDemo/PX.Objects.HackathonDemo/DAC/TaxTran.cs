@@ -10,26 +10,50 @@ namespace PX.Objects.HackathonDemo
 	public class TaxTran : IBqlTable
 	{
 		#region TaxPeriodID
-		public abstract class taxPeriodID : PX.Data.IBqlField
+		public abstract class taxPeriodID : IBqlField
 		{
 		}
-		/// <summary>
-		/// The key of the tax period to which the record has been reported.
-		/// The field has the null value for the unreported records.
-		/// </summary>
-		[GL.FinPeriodID()]
-		[PXDBDefault(typeof(TaxAdjustment.taxPeriod))]
-		public virtual String TaxPeriodID
+		
+		[FinPeriodID]
+		public virtual string TaxPeriodID { get; set; }
+		#endregion
+
+		#region Released
+		public abstract class released : IBqlField
 		{
-			get
-			{
-				return this._TaxPeriodID;
-			}
-			set
-			{
-				this._TaxPeriodID = value;
-			}
 		}
+
+		[PXDBBool]
+		[PXDefault(false)]
+		public virtual bool? Released { get; set; }
+		#endregion
+
+		#region Voided
+		public abstract class voided : IBqlField
+		{
+		}
+
+		[PXDBBool]
+		[PXDefault(false)]
+		public virtual bool? Voided { get; set; }
+		#endregion
+
+		#region VendorID
+		public abstract class vendorID : IBqlField
+		{
+		}
+
+		[PXDBInt]
+		public virtual int? VendorID { get; set; }
+		#endregion
+
+		#region RevisionID
+		public abstract class revisionID : IBqlField
+		{
+		}
+
+		[PXDBInt]
+		public virtual int? RevisionID { get; set; }
 		#endregion
 
 		#region tstamp

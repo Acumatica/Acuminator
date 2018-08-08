@@ -67,7 +67,7 @@
     <Compile Include="DAC\Underscores in DAC\SO_Invoice.cs" />
     <Compile Include="DAC\SOOrder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SOOrderEntryWithNonPrimaryDacView.cs" />
+    <Compile Include="Graph\Graph with no primary view and actions not on primary DAC\POOrderEntry.cs" />
     <Compile Include="SOOrderEntry.cs" />
     <Compile Include="SOOrderProcessing.cs" />
     <Compile Include="DAC\SOSetup.cs" />

@@ -10,10 +10,9 @@ namespace PX.Objects.HackathonDemo
 {
 	public class ReportTaxProcess : PXGraph<ReportTaxProcess>
 	{
-		public PXSelect<SOOrder> Orders;
-		public PXAction<SOOrder> Release;
+		public PXSelect<TaxTran> Orders;
 
-		public virtual void VoidReportProc()
+		public virtual void VoidReportProc(TaxTran taxTran)
 		{
 			using (new PXConnectionScope())
 			{
@@ -28,7 +27,7 @@ namespace PX.Objects.HackathonDemo
 							And<TaxTran.revisionID, Equal<Required<TaxTran.revisionID>>,
 							And<TaxTran.released, Equal<True>,
 							And<TaxTran.voided, Equal<False>>>>>>>
-						.Update(this, taxper.VendorID, taxper.TaxPeriodID, taxper.RevisionId);
+						.Update(this, taxTran.VendorID, taxTran.TaxPeriodID);
 
 					ts.Complete(this);
 				}
