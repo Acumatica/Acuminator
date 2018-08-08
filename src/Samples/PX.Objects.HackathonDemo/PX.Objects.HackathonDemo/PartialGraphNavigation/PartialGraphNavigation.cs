@@ -11,9 +11,13 @@ namespace PX.Objects.HackathonDemo
 
 		public PXSelect<SOOrder> Orders;
 
-
+		#region Views
+		#region Current Order
 		public PXSelect<SOOrder,
 					Where<SOOrder.orderNbr, Equal<Required<SOOrder.orderNbr>>>> CurrentOrder;
+		#endregion
+		#endregion
+
 
 
 		public PXAction<SOOrder> Release;
@@ -75,7 +79,7 @@ namespace PX.Objects.HackathonDemo
 
 
 
-
+		#region Delegate
 		public IEnumerable items()
 		{
 			int startRow = PXView.StartRow;
@@ -100,6 +104,7 @@ namespace PX.Objects.HackathonDemo
 
 			return rows;
 		}
+		#endregion
 
 		public IEnumerable release(PXAdapter adapter)
 		{

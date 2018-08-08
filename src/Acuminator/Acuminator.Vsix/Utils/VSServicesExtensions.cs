@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Outlining;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Acuminator.Utilities;
 
@@ -35,7 +36,21 @@ namespace Acuminator.Vsix.Utilities
 			return serviceProvider?.GetService(typeof(TRequested)) as TActual;
 		}
 
-		public static IWpfTextView GetWpfTextView(this IServiceProvider serviceProvider)
+		internal static IOutliningManager GetOutliningManager(this IServiceProvider serviceProvider, ITextView textView)
+		{
+			if (serviceProvider == null || textView == null)
+				return null;
+
+			IComponentModel componentModel = serviceProvider.GetService<SComponentModel, IComponentModel>();
+			IOutliningManagerService outliningManagerService = componentModel?.GetService<IOutliningManagerService>();
+
+			if (outliningManagerService == null)
+				return null;
+			
+			return outliningManagerService.GetOutliningManager(textView);
+		}
+
+		internal static IWpfTextView GetWpfTextView(this IServiceProvider serviceProvider)
 		{
 			IVsTextManager textManager = serviceProvider?.GetService<SVsTextManager, IVsTextManager>();
 			
