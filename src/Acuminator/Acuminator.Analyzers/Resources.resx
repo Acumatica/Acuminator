@@ -234,4 +234,10 @@
   <data name="PX1026Fix" xml:space="preserve">
     <value>Remove underscores from the DAC declaration</value>
   </data>
+  <data name="PX1040Fix" xml:space="preserve">
+    <value>Move the code to the Initialize() method</value>
+  </data>
+  <data name="PX1040Title" xml:space="preserve">
+    <value>Constructors in BLC extensions are strictly prohibited. Use the Initialize() method instead.</value>
+  </data>
 </root>

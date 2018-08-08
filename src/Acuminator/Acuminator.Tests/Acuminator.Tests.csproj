@@ -170,6 +170,10 @@
     <EmbeddedResource Include="Sources\PXAction\PX1000\Diagnostics\InvalidPXActionSignatureGraphExtension.cs" />
     <EmbeddedResource Include="Sources\PXAction\PX1000\CodeFixes\InvalidPXActionSignatureGraphExtension_Expected.cs" />
     <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\SearchCall.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1040\Diagnostics\ConstructorInGraphExtension.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1040\CodeFixes\ConstructorInGraphExtension_Expected.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1040\Diagnostics\ConstructorInGraphExtensionWithInitialize.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1040\CodeFixes\ConstructorInGraphExtensionWithInitialize_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTypeMismatchCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\MultipleFieldAttributesCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTests.cs" />
@@ -179,6 +183,7 @@
     <Compile Include="Tests\StaticAnalysis\DAC\DacFields\PX1024\DacFieldNotAbstractCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\DacFields\PX1024\DacFieldNotAbstractTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\PX1026\UnderscoresInDacTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\DAC\PX1040\ConstructorInGraphExtensionTests.cs" />
     <Compile Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtensionTests.cs" />
     <Compile Include="Tests\StaticAnalysis\LongOperationDelegateClosuresTests.cs" />
     <EmbeddedResource Include="Sources\View\Delegate\PX1010\Diagnostics\StartRowResetForPaging.cs" />

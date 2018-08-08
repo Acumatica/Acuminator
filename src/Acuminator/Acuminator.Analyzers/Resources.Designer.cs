@@ -411,5 +411,23 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1026Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Move the code to the Initialize() method.
+        /// </summary>
+        public static string PX1040Fix {
+            get {
+                return ResourceManager.GetString("PX1040Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Constructors in BLC extensions are strictly prohibited. Use the Initialize() method instead..
+        /// </summary>
+        public static string PX1040Title {
+            get {
+                return ResourceManager.GetString("PX1040Title", resourceCulture);
+            }
+        }
     }
 }
