@@ -195,5 +195,13 @@ namespace Acuminator.Utilities
 
 			return (currentX, prevX, prevY);
 		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsStatic(this BaseMethodDeclarationSyntax node)
+        {
+            node.ThrowOnNull(nameof(node));
+
+            return node.Modifiers.Any(m => m.IsKind(SyntaxKind.StaticKeyword));
+        }
 	}
 }

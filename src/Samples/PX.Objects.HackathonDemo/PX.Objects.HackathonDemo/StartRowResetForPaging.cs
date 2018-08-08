@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace PX.Objects.HackathonDemo
 {
-	public class LEPMaint : PXGraph<LEPMaint>
+	public partial class LEPMaint : PXGraph<LEPMaint>
 	{
 		public PXSelect<ListEntryPoint> Items;
 
