@@ -84,16 +84,16 @@ namespace Acuminator.Analyzers
             Rule("PX1021", nameof(Resources.PX1021Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
 		internal static DiagnosticDescriptor PX1023_DacPropertyMultipleFieldAttributes { get; } =
-		   Rule("PX1023", nameof(Resources.PX1023Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+			Rule("PX1023", nameof(Resources.PX1023Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
 		internal static DiagnosticDescriptor PX1024_DacNonAbstractFieldType { get; } =
-		   Rule("PX1024", nameof(Resources.PX1024Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+			Rule("PX1024", nameof(Resources.PX1024Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
 		internal static DiagnosticDescriptor PX1026_UnderscoresInDacDeclaration { get; } =
-		   Rule("PX1026", nameof(Resources.PX1026Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+			Rule("PX1026", nameof(Resources.PX1026Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
         internal static DiagnosticDescriptor PX1030_DefaultAttibuteToExisitingRecords { get; } =
-           Rule("PX1030", nameof(Resources.PX1030Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+			Rule("PX1030", nameof(Resources.PX1030Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
     }
 }
