@@ -20,14 +20,22 @@ namespace PX.Objects.HackathonDemo
         #region UsrNPCADocLineCntr
         public abstract class usrNPCADocLineCntr : IBqlField {}
         [PXDBInt]
-        [PXDefault]
+		[PXDefault]
         public virtual int? UsrNPCADocLineCntr { get; set; }
 		#endregion
+
 		#region UsrNPCADocLineCntr2
 		public abstract class usrNPCADocLineCntr2 : IBqlField { }
 		[PXDBInt]
-		[PXDefault(0,PersistingCheck = PXPersistingCheck.Nothing)]
+		[PXDefault(0)]
 		public virtual int? UsrNPCADocLineCntr2 { get; set; }
+		#endregion
+
+		#region UsrNPCADocLineCntr3
+		public abstract class usrNPCADocLineCntr3 : IBqlField { }
+		[PXDBInt]
+		[PXDefault(0,PersistingCheck = PXPersistingCheck.Nothing)]
+		public virtual int? UsrNPCADocLineCntr3 { get; set; }
 		#endregion
 	}
 }

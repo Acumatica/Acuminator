@@ -20,18 +20,25 @@ namespace Acuminator.Tests
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacExtensionDefaultAttributeAnalyzer();
 
         [Theory]
-        [EmbeddedFileData(@"Dac\PX1030\Diagnostics\DacExtensionWithPXDefaultAttribute.cs")]
+        [EmbeddedFileData(@"Dac\PX1030\Diagnostics\DacExtensionWithBoundFields.cs")]
         public virtual void TestDacExtensionWithDefaultAttribute(string source) =>
             VerifyCSharpDiagnostic(source,
-                CreatePX1030DiagnosticResult(line:23,column:9));
+                CreatePX1030DiagnosticResult(line: 23, column: 4),
+				CreatePX1030DiagnosticResult(line: 30, column: 4));
 
+		[Theory]
+		[EmbeddedFileData(@"Dac\PX1030\Diagnostics\DacExtensionWithUnboundFields.cs")]
+		public virtual void TestDacExtensionWithUnboundFields(string source) =>
+			VerifyCSharpDiagnostic(source,
+				CreatePX1030DiagnosticResult(line: 23, column: 4),
+				CreatePX1030DiagnosticResult(line: 30, column: 4));
         private DiagnosticResult CreatePX1030DiagnosticResult(int line, int column)
         {
             return new DiagnosticResult
             {
                 Id = Descriptors.PX1030_DefaultAttibuteToExisitingRecords.Id,
                 Message = Descriptors.PX1030_DefaultAttibuteToExisitingRecords.Title.ToString(),
-                Severity = DiagnosticSeverity.Error,
+                Severity = DiagnosticSeverity.Warning,
                 Locations =
                     new[]
                     {
@@ -42,37 +49,7 @@ namespace Acuminator.Tests
 
         //        protected override CodeFixProvider GetCSharpCodeFixProvider() => new UnderscoresInDacCodeFix();
 
-        /*[Theory]
-		[EmbeddedFileData(@"Dac\PX1026\Diagnostics\DacWithUnderscores.cs")]
-		public virtual void Test_Dac_With_Underscores_In_Declaration(string source) =>
-			VerifyCSharpDiagnostic(source,
-				CreatePX1026DiagnosticResult(line: 10, column: 15),
-				CreatePX1026DiagnosticResult(line: 13, column: 25),
-				CreatePX1026DiagnosticResult(line: 18, column: 17),
-				CreatePX1026DiagnosticResult(line: 44, column: 25));
-
-		[Theory]
-		[EmbeddedFileData(@"Dac\PX1026\Diagnostics\DacExtensionWithUnderscores.cs")]
-		public virtual void Test_Dac_Extension_With_Underscores_In_Declaration(string source) =>
-			VerifyCSharpDiagnostic(source,
-				CreatePX1026DiagnosticResult(line: 10, column: 15),
-				CreatePX1026DiagnosticResult(line: 13, column: 25),
-				CreatePX1026DiagnosticResult(line: 17, column: 18),
-				CreatePX1026DiagnosticResult(line: 21, column: 25),
-				CreatePX1026DiagnosticResult(line: 24, column: 18));
-
-		[Theory]
-		[EmbeddedFileData(@"Dac\PX1026\Diagnostics\DacWithUnderscores.cs",
-						  @"Dac\PX1026\CodeFixes\DacWithUnderscores_Expected.cs")]
-		public virtual void Test__Fix_For_Dac_With_Underscores_In_Declaration(string actual, string expected) =>
-			VerifyCSharpFix(actual, expected);
-
-		[Theory]
-		[EmbeddedFileData(@"Dac\PX1026\Diagnostics\DacExtensionWithUnderscores.cs",
-						  @"Dac\PX1026\CodeFixes\DacExtensionWithUnderscores_Expected.cs")]
-		public virtual void Test__Fix_For_Dac_Extension_With_Underscores_In_Declaration(string actual, string expected) =>
-			VerifyCSharpFix(actual, expected);
-
+        /*
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacDeclarationAnalyzer();
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new UnderscoresInDacCodeFix();

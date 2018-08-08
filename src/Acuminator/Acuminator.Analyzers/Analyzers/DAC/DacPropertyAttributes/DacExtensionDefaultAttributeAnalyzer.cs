@@ -40,60 +40,61 @@ namespace Acuminator.Analyzers
             if (attributes.Length == 0 || symbolContext.CancellationToken.IsCancellationRequested)
                 return;
 
-            foreach (var attribute in attributes)
-            {
-                var typesHierarchy = attribute.AttributeClass.GetBaseTypesAndThis();
-                if (typesHierarchy.Contains(symbolContext.Compilation.GetTypeByMetadataName(typeof(PX.Data.PXDefaultAttribute).FullName)) ) //https://johnkoerner.com/csharp/working-with-types-in-your-analyzer/
+			var attributesWithInfo = DacPropertyAttributesAnalyzer.GetFieldAttributesInfos(pxContext, attributes, symbolContext.CancellationToken);
+
+
+			if (symbolContext.CancellationToken.IsCancellationRequested || attributesWithInfo.IsNullOrEmpty())
+				return;
+
+			if (attributesWithInfo.Count > 0 && attributesWithInfo[0].Info.IsBoundField) //field is DBBound
+			{
+				foreach (var attribute in attributes)
 				{
-					Location[] locations = await Task.WhenAll(DacPropertyAttributesAnalyzer.GetPropertyTypeLocationAsync(property, symbolContext.CancellationToken),
-																DacPropertyAttributesAnalyzer.GetAttributeLocationAsync(attribute, symbolContext.CancellationToken));
-					Location propertyTypeLocation = locations[0];
-					Location attributeLocation = locations[1];
-					foreach (var argument in attribute.NamedArguments)
+					var typesHierarchy = attribute.AttributeClass.GetBaseTypesAndThis();
+					if (typesHierarchy.Contains(symbolContext.Compilation.GetTypeByMetadataName(typeof(PX.Data.PXDefaultAttribute).FullName)))
 					{
-						if(argument.Key.Contains("PersistingCheck") && (int)argument.Value.Value != (int)PX.Data.PXPersistingCheck.Nothing)
-							;
-					}
-					if (attributeLocation != null)
-					{
-						symbolContext.ReportDiagnostic(
-							Diagnostic.Create(
-								Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attributeLocation));
+						Location[] locations = await Task.WhenAll(DacPropertyAttributesAnalyzer.GetAttributeLocationAsync(attribute, symbolContext.CancellationToken));
+						Location attributeLocation = locations[0];
 
+						if (attributeLocation != null)
+						{
+							foreach (var argument in attribute.NamedArguments)
+							{
+								if (argument.Key.Contains("PersistingCheck") && (int)argument.Value.Value == (int)PX.Data.PXPersistingCheck.Nothing)
+									return;
+							}
+							symbolContext.ReportDiagnostic(
+								Diagnostic.Create(
+									Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attributeLocation));
+
+						}
 					}
+					// var allAttr = typesHierarchy.SelectMany(type => type.GetAttributes);
 				}
-               // var allAttr = typesHierarchy.SelectMany(type => type.GetAttributes);
-            }
+			}
+			else
+			{
+				foreach (var attribute in attributes)
+				{
+					var typesHierarchy = attribute.AttributeClass.GetBaseTypesAndThis();
+					if (typesHierarchy.Contains(symbolContext.Compilation.GetTypeByMetadataName(typeof(PXDefaultAttribute).FullName)) &&
+						!(typesHierarchy.Contains(symbolContext.Compilation.GetTypeByMetadataName(typeof(PXUnboundDefaultAttribute).FullName))))
+					{
+						Location[] locations = await Task.WhenAll(DacPropertyAttributesAnalyzer.GetAttributeLocationAsync(attribute, symbolContext.CancellationToken));
+						Location attributeLocation = locations[0];
 
+						if (attributeLocation != null)
+						{
+							symbolContext.ReportDiagnostic(
+								Diagnostic.Create(
+									Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attributeLocation));
 
-            /*
-            var attributesWithInfo = DacPropertyAttributesAnalyzer.GetFieldAttributesInfos(pxContext, attributes, symbolContext.CancellationToken);
+						}
+					}
 
-            if (symbolContext.CancellationToken.IsCancellationRequested || attributesWithInfo.IsNullOrEmpty())
-                return;
-
-            if (attributesWithInfo.Count > 1)
-            {
-                var locationTasks = attributesWithInfo.Select(info => DacPropertyAttributesAnalyzer.GetAttributeLocationAsync(info.Attribute, symbolContext.CancellationToken));
-                Location[] attributeLocations = await Task.WhenAll(locationTasks);
-
-                foreach (Location attrLocation in attributeLocations)
-                {
-                    if (attrLocation == null)
-                        continue;
-
-                    symbolContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attrLocation));
-                }
-            }
-            else
-            {
-                var (fieldAttribute, fieldAttrInfo) = attributesWithInfo[0];
-
-#pragma warning disable CS4014
-               // CheckAttributeAndPropertyTypesForCompatibility(fieldAttribute, fieldAttrInfo, pxContext, symbolContext);
-#pragma warning restore CS4014
-            }
-           */ 
+				}
+			}
+			return;
         }
 
         private static bool CheckProperty(IPropertySymbol property, PXContext pxContext)
