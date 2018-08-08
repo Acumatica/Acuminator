@@ -449,6 +449,24 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Replace with the PXUnboundDefaultAttribute or set PersistingCheck to Nothing.
+        /// </summary>
+        public static string PX1030Fix {
+            get {
+                return ResourceManager.GetString("PX1030Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Incorrect PXDefaultAttribute to exisiting field .
+        /// </summary>
+        public static string PX1030Title {
+            get {
+                return ResourceManager.GetString("PX1030Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DACs cannot contain instance methods.
         /// </summary>
         public static string PX1031Title {
