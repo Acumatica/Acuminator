@@ -49,11 +49,8 @@
     <Compile Include="Attributes\CurrencyInfoAttribute.cs" />
     <Compile Include="Attributes\PXDBBaseCuryAttribute.cs" />
     <Compile Include="Attributes\PXDBCurrencyAttribute.cs" />
-    <Compile Include="BQL Parameters Count Mismatch Test\CustomSelect.cs" />
-    <Compile Include="BQL Parameters Count Mismatch Test\InheritanceCall.cs" />
-    <Compile Include="BQL Parameters Count Mismatch Test\InstanceCall2.cs" />
-    <Compile Include="BQL Parameters Count Mismatch Test\InstanceCall.cs" />
-    <Compile Include="BQL Parameters Count Mismatch Test\StaticCall.cs" />
+    <Compile Include="BQL Parameters Count Mismatch Test\SOOrderByTypeAndStatusSelect.cs" />
+    <Compile Include="BQL Parameters Count Mismatch Test\SOOrdersInq.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DAC\Constructors In DAC\POLineExt.cs" />
     <Compile Include="DAC\Forbidden Fields In DAC\POOrder.cs" />
