@@ -57,6 +57,7 @@
     <Compile Include="PartialGraphNavigation\PartialGraphNavigation.cs" />
     <Compile Include="PartialGraphNavigation\PartialGraphNavigation2.cs" />
     <Compile Include="PXUpdateBQL\ReportTaxProcess.cs" />
+    <Compile Include="SOOrderEntryExt.cs" />
     <Compile Include="SOOrderPartial.cs" />
     <Compile Include="SOOrderWithConstructor.cs" />
     <Compile Include="SOOrderWithConstructors.cs" />
