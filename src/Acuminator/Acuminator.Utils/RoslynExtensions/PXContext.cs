@@ -1,6 +1,6 @@
 using System;
 using System.ComponentModel;
-using System.Collections.Generic;
+using System.Collections;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using PX.Data;
@@ -47,6 +47,9 @@ namespace Acuminator.Analyzers
         public INamedTypeSymbol Decimal => Compilation.GetSpecialType(SpecialType.System_Decimal);
         public INamedTypeSymbol DateTime => Compilation.GetSpecialType(SpecialType.System_DateTime);
 		public INamedTypeSymbol Nullable => Compilation.GetSpecialType(SpecialType.System_Nullable_T);
+
+		public INamedTypeSymbol IEnumerable => Compilation.GetSpecialType(SpecialType.System_Collections_IEnumerable);
+
 		public INamedTypeSymbol Guid => Compilation.GetTypeByMetadataName(typeof(Guid).FullName);
 
 

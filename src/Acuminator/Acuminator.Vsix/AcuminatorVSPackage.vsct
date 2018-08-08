@@ -36,7 +36,7 @@
          other menus or buttons (commands); from a visual point of view you can see the
          group as the part of a menu contained between two lines. The parent of a group
          must be a menu. -->
-    <Groups>		
+    <Groups>
 			<Group guid="guidAcuminatorCmdSet" id="AcuminatorSubMenuGroup" />
 			<Group guid="guidAcuminatorCmdSet" id="AcuminatorContextMenuGroup" />
 			<Group guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" />		
@@ -70,6 +70,17 @@
           <ButtonText>Format BQL Statements</ButtonText>
         </Strings>
       </Button>
+
+			<Button guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" type="Button">
+				<Icon guid="guidImages" id="acumaticaIcon" />
+				<CommandFlag>DefaultDisabled</CommandFlag>
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<Strings>
+					<CommandName>cmdidGoToDeclarationOrHandlerCommand</CommandName>
+					<ButtonText>Go to action/view declaration/handler</ButtonText>
+				</Strings>
+			</Button>
     </Buttons>
 
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
@@ -110,6 +121,10 @@
 			<Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands"/>
 		</CommandPlacement>
 
+		<CommandPlacement guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" priority="0x0002" >
+			<Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands"/>
+		</CommandPlacement>
+
 		<!-- Placement for Acuminator in context menu
          The order is: Context Menu > AcuminatorContextMenuGroup > FormatBqlCommandId  -->
 		
@@ -119,6 +134,10 @@
 		</CommandPlacement>
 
 		<CommandPlacement guid="guidAcuminatorCmdSet" id="FormatBqlCommandId" priority="0x0001" >
+			<Parent guid="guidAcuminatorCmdSet" id="AcuminatorContextMenuGroup"/>
+		</CommandPlacement>
+
+		<CommandPlacement guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" priority="0x0002" >
 			<Parent guid="guidAcuminatorCmdSet" id="AcuminatorContextMenuGroup"/>
 		</CommandPlacement>
 	</CommandPlacements>
@@ -143,8 +162,9 @@
 			<IDSymbol name="AcuminatorGroupForCommands" value="0x1022" />
 			<IDSymbol name="AcuminatorSubMenu" value="0x0100" />
 
-			<!-- Warning!!: Keep the values in sync with the code in Command1.cs, Command2.cs -->
+			<!-- Warning!!: Keep the values in sync with the code in FormatBqlCommand.cs and etc -->
       <IDSymbol name="FormatBqlCommandId" value="0x0101" />
+      <IDSymbol name="GoToDeclarationOrHandlerCommandId" value="0x0102" />
     </GuidSymbol>
 
 		<GuidSymbol name="guidImages" value="{D87E7D18-43E1-4C9E-9550-EBF39A85F071}">

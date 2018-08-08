@@ -5,11 +5,76 @@ using System.Linq;
 
 namespace PX.Objects.HackathonDemo
 {
-	public partial class LEPMaint : PXGraph<LEPMaint>
+	public partial class SimpleOrdersMaint : PXGraph<LEPMaint>
 	{
 		public PXSelect<ListEntryPoint> Items;
 
 		public PXSelect<SOOrder> Orders;
+
+
+		public PXSelect<SOOrder,
+					Where<SOOrder.orderNbr, Equal<Required<SOOrder.orderNbr>>>> CurrentOrder;
+
+
+		public PXAction<SOOrder> Release;
+
+		public PXAction<SOOrder> VoidOrder;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		//public IEnumerable voidOrder(PXAdapter adapter)
+		//{
+		//	yield break;
+		//}
+
+
+
+
+
+
+
+
+
+
 
 		public IEnumerable items()
 		{
@@ -34,6 +99,11 @@ namespace PX.Objects.HackathonDemo
 				return rows;
 
 			return rows;
+		}
+
+		public IEnumerable release(PXAdapter adapter)
+		{
+			yield break;
 		}
 
 		public abstract void orders();

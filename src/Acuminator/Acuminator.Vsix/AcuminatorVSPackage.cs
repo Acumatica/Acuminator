@@ -11,7 +11,9 @@ using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.Win32;
+using Acuminator.Vsix.GoToDeclaration;
+
+
 
 namespace Acuminator.Vsix
 {
@@ -49,6 +51,11 @@ namespace Acuminator.Vsix
 		/// AcuminatorVSPackage GUID string.
 		/// </summary>
 		public const string PackageGuidString = "7e538ed0-0699-434f-acf0-3f6dbc9898ea";
+
+		/// <summary>
+		/// The acuminator default command set GUID string.
+		/// </summary>
+		public const string AcuminatorDefaultCommandSetGuidString = "3cd59430-1e8d-40af-b48d-9007624b3d77";
 
 		[Import]
         internal IClassificationFormatMapService classificationFormatMapService = null;  //Set via MEF
@@ -119,6 +126,7 @@ namespace Acuminator.Vsix
         protected override void Initialize()
         {
             FormatBqlCommand.Initialize(this);
+			GoToDeclarationOrHandlerCommand.Initialize(this);
             base.Initialize();
 
             IComponentModel componentModel = Package.GetGlobalService(typeof(SComponentModel)) as IComponentModel;
