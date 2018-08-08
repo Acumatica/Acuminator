@@ -7,13 +7,13 @@ using PX.Data;
 
 namespace PX.Objects.HackathonDemo
 {
-	public class CustomSelect : PXSelect<SOOrder,
+	public class SOOrderByTypeAndStatusSelect : PXSelect<SOOrder,
 		   Where<SOOrder.orderType, Equal<Required<SOOrder.orderType>>,
 			 And<SOOrder.status, Equal<Required<SOOrder.status>>>>,
 		 OrderBy<
 			 Asc<SOOrder.orderNbr>>>
 	{
-		public CustomSelect(PXGraph graph) : base(graph)
+		public SOOrderByTypeAndStatusSelect(PXGraph graph) : base(graph)
 		{
 		}
 	}

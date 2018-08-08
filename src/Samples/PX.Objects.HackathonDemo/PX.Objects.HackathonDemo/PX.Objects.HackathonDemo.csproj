@@ -46,27 +46,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BqlParameterMismatch\CustomSelect.cs" />
-    <Compile Include="BqlParameterMismatch\InheritanceCall.cs" />
-    <Compile Include="BqlParameterMismatch\InstanceCall2.cs" />
-    <Compile Include="BqlParameterMismatch\InstanceCall.cs" />
-    <Compile Include="BqlParameterMismatch\StaticCall.cs" />
+    <Compile Include="Attributes\CurrencyInfoAttribute.cs" />
+    <Compile Include="Attributes\PXDBBaseCuryAttribute.cs" />
+    <Compile Include="Attributes\PXDBCurrencyAttribute.cs" />
+    <Compile Include="BQL Parameters Count Mismatch Test\CustomSelect.cs" />
+    <Compile Include="BQL Parameters Count Mismatch Test\InheritanceCall.cs" />
+    <Compile Include="BQL Parameters Count Mismatch Test\InstanceCall2.cs" />
+    <Compile Include="BQL Parameters Count Mismatch Test\InstanceCall.cs" />
+    <Compile Include="BQL Parameters Count Mismatch Test\StaticCall.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="DacDepricatedFields.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="PartialGraphNavigation\PartialGraphNavigation.cs" />
-    <Compile Include="PartialGraphNavigation\PartialGraphNavigation2.cs" />
+    <Compile Include="DAC\Constructors In DAC\POLineExt.cs" />
+    <Compile Include="DAC\Forbidden Fields In DAC\POOrder.cs" />
+    <Compile Include="DAC\APInvoice.cs" />
+    <Compile Include="DAC\APSetup.cs" />
+    <Compile Include="Properties\GlobalSuppressions.cs" />
+    <Compile Include="GoTo Test\APInvoiceEntry.cs" />
+    <Compile Include="GoTo Test\APInvoiceEntryVoidProcess.cs" />
     <Compile Include="PXUpdateBQL\ReportTaxProcess.cs" />
-    <Compile Include="SOOrderPartial.cs" />
-    <Compile Include="SOOrderWithConstructor.cs" />
-    <Compile Include="SOOrderWithConstructors.cs" />
-    <Compile Include="SOTran.cs" />
-    <Compile Include="SOOrder.cs" />
+    <Compile Include="DAC\Forbidden Fields In DAC\POOrderExtraFields.cs" />
+    <Compile Include="DAC\Constructors In DAC\POLine.cs" />
+    <Compile Include="DAC\SOTran.cs" />
+    <Compile Include="DAC\SOOrder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SOOrderEntryWithNonPrimaryDacView.cs" />
     <Compile Include="SOOrderEntry.cs" />
     <Compile Include="SOOrderProcessing.cs" />
-    <Compile Include="SOSetup.cs" />
+    <Compile Include="DAC\SOSetup.cs" />
     <Compile Include="StartRowResetForPaging.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

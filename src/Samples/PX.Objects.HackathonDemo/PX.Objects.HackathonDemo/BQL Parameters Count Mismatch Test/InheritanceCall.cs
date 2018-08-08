@@ -9,7 +9,7 @@ namespace PX.Objects.HackathonDemo
 {
 	public class SOOrderTestEntry2 : PXGraph<SOOrderTestEntry2>
 	{
-		CustomSelect select;
+		SOOrderByTypeAndStatusSelect select;
 
 		public object Foo()
 		{
