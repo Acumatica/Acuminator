@@ -18,7 +18,21 @@ namespace Acuminator.Analyzers
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			//compilationStartContext.RegisterSymbolAction(c => AnalyzeProperty(c, pxContext), SymbolKind.Property);
+			compilationStartContext.RegisterSymbolAction(c => AnalyzeMethod(c, pxContext), SymbolKind.Method);
+		}
+
+		private void AnalyzeMethod(SymbolAnalysisContext context, PXContext pxContext)
+		{
+			if (context.CancellationToken.IsCancellationRequested) return;
+
+			var methodSymbol = (IMethodSymbol) context.Symbol;
+			var parentSymbol = methodSymbol.ContainingType;
+			if (parentSymbol != null && parentSymbol.InheritsFrom(pxContext.PXGraphExtensionType)
+				&& methodSymbol.IsInstanceConstructor())
+			{
+				context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1040_ConstructorInGraphExtension, 
+					methodSymbol.Locations.First()));
+			}
 		}
 	}
 }
