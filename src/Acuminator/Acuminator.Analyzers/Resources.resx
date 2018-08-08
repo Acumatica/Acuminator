@@ -249,4 +249,10 @@
   <data name="PX1029Title" xml:space="preserve">
     <value>PXGraph instances cannot be used inside DAC properties</value>
   </data>
+  <data name="PX1031Title" xml:space="preserve">
+    <value>DACs cannot contain instance methods</value>
+  </data>
+  <data name="PX1032Title" xml:space="preserve">
+    <value>DAC properties cannot contain method invocations</value>
+  </data>
 </root>

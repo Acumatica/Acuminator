@@ -15,8 +15,8 @@ namespace Acuminator.Vsix.Utilities
 {
     public static class EditorExtensions
     {
-        #region Span
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		#region Span
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Span CreateOverarching(this Span left, Span right)
         {
             int start = Math.Min(left.Start, right.Start);
