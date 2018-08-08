@@ -15,11 +15,11 @@ namespace PX.Objects.Ext
 
 	public class ARReleaseProcess_Extension : PXGraphExtension<ARReleaseProcess>
 	{
+
 		public override void Initialize()
 		{
 			Base.Documents.AllowInsert = false;
 			Base.Documents.AllowUpdate = false;
-
 			Views.Add(new PXView(this, true, new Select<ARInvoice>()));
 		}
 	}
