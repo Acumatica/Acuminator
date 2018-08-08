@@ -93,7 +93,7 @@ namespace Acuminator.Analyzers
 			Rule("PX1026", nameof(Resources.PX1026Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
         internal static DiagnosticDescriptor PX1030_DefaultAttibuteToExisitingRecords { get; } =
-			Rule("PX1030", nameof(Resources.PX1030Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+			Rule("PX1030", nameof(Resources.PX1030Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 
     }
 }
