@@ -268,6 +268,9 @@
     <Reference Include="System.Reflection.Metadata, Version=1.0.21.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Reflection.Metadata.1.0.21\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
     </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
@@ -309,6 +312,8 @@
     <Compile Include="Coloriser\Outlining\PXOutliningTaggerProvider.cs" />
     <Compile Include="Coloriser\Base\PXTaggerProviderBase.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\RoslynVSEditorExtensions.cs" />
+    <Compile Include="Commands\GoToDeclarationOrHandler\GoToDeclarationOrHandlerCommand.cs" />
+    <Compile Include="Commands\VSCommandBase.cs" />
     <Compile Include="Resources\VSIXResource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -320,19 +325,19 @@
     <Compile Include="Coloriser\MainTagger\PXColorizerMainTagger.cs" />
     <Compile Include="Coloriser\Regex\PXRegexColorizerTagger.cs" />
     <Compile Include="Coloriser\PXColorizerTaggerProvider.cs" />
-    <Compile Include="Formatter\BqlAggregateRewriter.cs" />
-    <Compile Include="Formatter\BqlConditionRewriter.cs" />
-    <Compile Include="Formatter\BqlContext.cs" />
-    <Compile Include="Formatter\BqlFirstTableRewriter.cs" />
-    <Compile Include="Formatter\BqlFormatter.cs" />
-    <Compile Include="Formatter\BqlJoinRewriter.cs" />
-    <Compile Include="Formatter\BqlRewriter.cs" />
-    <Compile Include="Formatter\BqlRewriterBase.cs" />
-    <Compile Include="Formatter\BqlStatementRewriter.cs" />
-    <Compile Include="Formatter\BqlViewDeclarationRewriter.cs" />
-    <Compile Include="Formatter\FormatBqlCommand.cs" />
-    <Compile Include="Formatter\SpanWalker.cs" />
-    <Compile Include="Formatter\SyntaxTriviaListExtensions.cs" />
+    <Compile Include="Commands\Formatter\BqlAggregateRewriter.cs" />
+    <Compile Include="Commands\Formatter\BqlConditionRewriter.cs" />
+    <Compile Include="Commands\Formatter\BqlContext.cs" />
+    <Compile Include="Commands\Formatter\BqlFirstTableRewriter.cs" />
+    <Compile Include="Commands\Formatter\BqlFormatter.cs" />
+    <Compile Include="Commands\Formatter\BqlJoinRewriter.cs" />
+    <Compile Include="Commands\Formatter\BqlRewriter.cs" />
+    <Compile Include="Commands\Formatter\BqlRewriterBase.cs" />
+    <Compile Include="Commands\Formatter\BqlStatementRewriter.cs" />
+    <Compile Include="Commands\Formatter\BqlViewDeclarationRewriter.cs" />
+    <Compile Include="Commands\Formatter\FormatBqlCommand.cs" />
+    <Compile Include="Commands\Formatter\SpanWalker.cs" />
+    <Compile Include="Commands\Formatter\SyntaxTriviaListExtensions.cs" />
     <Compile Include="Settings\SettingChangedEventArgs.cs" />
     <Compile Include="Settings\UI\GeneralOptionsPage.cs">
       <SubType>Component</SubType>

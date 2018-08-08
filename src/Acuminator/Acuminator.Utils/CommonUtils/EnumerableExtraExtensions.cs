@@ -61,6 +61,9 @@ namespace Acuminator.Utilities.Extra
 
 		public static bool IsSingle<T>(this IEnumerable<T> list)
 		{
+			if (list == null)
+				return false;
+
 			using (var enumerator = list.GetEnumerator())
 			{
 				return enumerator.MoveNext() && !enumerator.MoveNext();

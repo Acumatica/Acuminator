@@ -54,6 +54,7 @@
     <Compile Include="Analyzers\DAC\ConstructorInGraphExtensionAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacFields\DacNonAbstractFieldTypeAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacDeclarationAnalyzer.cs" />
+    <Compile Include="Analyzers\DAC\DacMethodsUsageAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacPropertyAttributes\NonNullableTypeForBqlFieldAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacPropertyAttributes\DacPropertyAttributesAnalyzer.cs" />
     <Compile Include="Analyzers\PXAction\PX1012\PXActionOnNonPrimaryViewAnalyzer.cs" />
@@ -61,6 +62,9 @@
     <Compile Include="Analyzers\View\NoPrimaryViewForPrimaryDacAnalyzer.cs" />
     <Compile Include="Diagnostic\DiagnosticProperty.cs" />
     <Compile Include="Diagnostic\DiagnosticUtils.cs" />
+    <Compile Include="FixProviders\DAC\DacFields\ForbiddenFieldsInDAC\RegionsVisitor.cs" />
+    <Compile Include="FixProviders\DAC\DacFields\ForbiddenFieldsInDAC\ForbiddenFieldsInDacFix.cs" />
+    <Compile Include="FixProviders\DAC\ConstructorInDacCodeFix.cs" />
     <Compile Include="FixProviders\DAC\ConstructorInGraphExtensionCodeFix.cs" />
     <Compile Include="FixProviders\DAC\UnderscoresInDacCodeFix.cs" />
     <Compile Include="FixProviders\DAC\DacFields\DacNonAbstractFieldTypeFix.cs" />

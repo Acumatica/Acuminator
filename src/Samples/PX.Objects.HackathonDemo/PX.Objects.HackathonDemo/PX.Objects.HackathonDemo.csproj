@@ -52,8 +52,14 @@
     <Compile Include="BqlParameterMismatch\InstanceCall.cs" />
     <Compile Include="BqlParameterMismatch\StaticCall.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="DacDepricatedFields.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="PartialGraphNavigation\PartialGraphNavigation.cs" />
+    <Compile Include="PartialGraphNavigation\PartialGraphNavigation2.cs" />
     <Compile Include="PXUpdateBQL\ReportTaxProcess.cs" />
+    <Compile Include="SOOrderPartial.cs" />
+    <Compile Include="SOOrderWithConstructor.cs" />
+    <Compile Include="SOOrderWithConstructors.cs" />
     <Compile Include="SOTran.cs" />
     <Compile Include="SOOrder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

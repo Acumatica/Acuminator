@@ -15,6 +15,27 @@ namespace Acuminator.Utilities
 	public static class SyntaxTreeUtils
 	{
 		/// <summary>
+		/// Get the syntax tree root from the given node.
+		/// </summary>
+		/// <param name="node">The node to act on.</param>
+		/// <returns/>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static SyntaxNode Root(this SyntaxNode node)
+		{
+			if (node == null)
+				return null;
+
+			SyntaxNode curNode = node;
+
+			while (curNode.Parent != null)
+			{
+				curNode = curNode.Parent;
+			}
+
+			return curNode;
+		}
+
+		/// <summary>
 		/// Get a parent with a specified type <typeparamref name="TParent"/>
 		/// </summary>
 		/// <typeparam name="TParent">Parent node type.</typeparam>
