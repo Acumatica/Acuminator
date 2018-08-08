@@ -13,13 +13,7 @@ namespace Acuminator.Utilities
 		{
 			if (methodSymbol == null) throw new ArgumentNullException(nameof (methodSymbol));
 
-			var parent = methodSymbol.ContainingType;
-			if (parent != null)
-			{
-				return parent.InstanceConstructors.Contains(methodSymbol);
-			}
-
-			return false;
+			return !methodSymbol.IsStatic && methodSymbol.MethodKind == MethodKind.Constructor;
 		}
 	}
 }
