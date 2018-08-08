@@ -56,17 +56,17 @@ namespace PX.Objects.HackathonDemo
 				{
 					if (doc.CuryDocBal != doc.CuryOrigDocAmt)
 					{
-						sender.RaiseExceptionHandling<APInvoice.curyOrigDocAmt>(doc, doc.CuryOrigDocAmt, new PXSetPropertyException(Messages.DocumentOutOfBalance));
+						sender.RaiseExceptionHandling<APInvoice.curyOrigDocAmt>(doc, doc.CuryOrigDocAmt, new PXException());
 					}
 					else if (doc.CuryOrigDocAmt < 0m)
 					{
 						if (APSetup.Current.RequireControlTotal == true)
 						{
-							sender.RaiseExceptionHandling<APInvoice.curyOrigDocAmt>(doc, doc.CuryOrigDocAmt, new PXSetPropertyException(Messages.DocumentBalanceNegative));
+							sender.RaiseExceptionHandling<APInvoice.curyOrigDocAmt>(doc, doc.CuryOrigDocAmt, new PXException());
 						}
 						else
 						{
-							sender.RaiseExceptionHandling<APInvoice.curyDocBal>(doc, doc.CuryDocBal, new PXSetPropertyException(Messages.DocumentBalanceNegative));
+							sender.RaiseExceptionHandling<APInvoice.curyDocBal>(doc, doc.CuryDocBal, new PXException());
 						}
 					}
 					else

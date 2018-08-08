@@ -10,11 +10,11 @@ namespace PX.Objects.HackathonDemo
 	public class POLineExt : PXCacheExtension<POLine>
 	{
         #region Cons
-        public POLineWithTotal() { }
+        public POLineExt() { }
         #endregion
 
         #region Cons
-        public POLineWithTotal(decimal? total) { Total = total; }
+        public POLineExt(decimal? total) { Total = total; }
         #endregion
 
 

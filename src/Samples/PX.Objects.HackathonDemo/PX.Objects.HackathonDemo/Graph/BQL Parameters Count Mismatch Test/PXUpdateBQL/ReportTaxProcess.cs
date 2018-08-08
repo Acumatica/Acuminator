@@ -20,12 +20,15 @@ namespace PX.Objects.HackathonDemo
 				using (PXTransactionScope ts = new PXTransactionScope())
 				{
 					PXUpdate<
-						Set<SOOrder.orderType, Null,
-							Set<SOOrder.status, Null>>,
-						SOOrder,
-						Where<SOOrder.orderDate, Equal<Required<SOOrder.orderDate>>,
-							And<SOOrder.orderType, NotEqual<Null>>>>
-						.Update(this, DateTime.Now);
+						Set<TaxTran.taxPeriodID, Null,
+							Set<TaxTran.revisionID, Null>>,
+						TaxTran,
+						Where<TaxTran.vendorID, Equal<Required<TaxTran.vendorID>>,
+							And<TaxTran.taxPeriodID, Equal<Required<TaxTran.taxPeriodID>>,
+							And<TaxTran.revisionID, Equal<Required<TaxTran.revisionID>>,
+							And<TaxTran.released, Equal<True>,
+							And<TaxTran.voided, Equal<False>>>>>>>
+						.Update(this, taxper.VendorID, taxper.TaxPeriodID, taxper.RevisionId);
 
 					ts.Complete(this);
 				}
