@@ -51,6 +51,7 @@
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\BqlLocalVariableTypeResolver.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\ParametersCounterSymbolWalker.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\ParametersCounterSyntaxWalker.cs" />
+    <Compile Include="Analyzers\Event\ConnectionScopeInRowSelectingAnalyzer.cs" />
     <Compile Include="Analyzers\PXGraph\ConstructorInGraphExtensionAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacFields\DacNonAbstractFieldTypeAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacDeclarationAnalyzer.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="FixProviders\DAC\DacFields\ForbiddenFieldsInDAC\RegionsVisitor.cs" />
     <Compile Include="FixProviders\DAC\DacFields\ForbiddenFieldsInDAC\ForbiddenFieldsInDacFix.cs" />
     <Compile Include="FixProviders\DAC\ConstructorInDacCodeFix.cs" />
+    <Compile Include="FixProviders\Event\ConnectionScopeInRowSelectingFix.cs" />
     <Compile Include="FixProviders\PXGraph\ConstructorInGraphExtensionCodeFix.cs" />
     <Compile Include="FixProviders\DAC\UnderscoresInDacCodeFix.cs" />
     <Compile Include="FixProviders\DAC\DacFields\DacNonAbstractFieldTypeFix.cs" />

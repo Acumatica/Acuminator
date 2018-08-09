@@ -186,6 +186,8 @@
     <EmbeddedResource Include="Sources\PXGraph\PX1040\CodeFixes\ConstructorInGraphExtension_Expected.cs" />
     <EmbeddedResource Include="Sources\PXGraph\PX1040\Diagnostics\ConstructorInGraphExtensionWithInitialize.cs" />
     <EmbeddedResource Include="Sources\PXGraph\PX1040\CodeFixes\ConstructorInGraphExtensionWithInitialize_Expected.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelecting.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelecting_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTypeMismatchCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\MultipleFieldAttributesCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTests.cs" />
@@ -198,7 +200,8 @@
     <Compile Include="Tests\StaticAnalysis\DAC\PX1027\DacForbiddenFieldsTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\PX1028\DacWithConstructorTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\PX1031 and PX1032\MethodsUsageInDacTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\DAC\PX1040\ConstructorInGraphExtensionTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\Event\ConstructorInGraphExtensionTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\PXGraph\PX1040\ConnectionScopeInRowSelectingTests.cs" />
     <Compile Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtensionTests.cs" />
     <Compile Include="Tests\StaticAnalysis\LongOperationDelegateClosuresTests.cs" />
     <EmbeddedResource Include="Sources\View\Delegate\PX1010\Diagnostics\StartRowResetForPaging.cs" />
