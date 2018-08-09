@@ -62,8 +62,8 @@
       <Button guid="guidAcuminatorCmdSet" id="FormatBqlCommandId" type="Button">
         <Icon guid="guidImages" id="acumaticaIcon" />
         <CommandFlag>DefaultDisabled</CommandFlag>
-        <CommandFlag>DefaultInvisible</CommandFlag>
-        <CommandFlag>DynamicVisibility</CommandFlag>
+        <!--<CommandFlag>DefaultInvisible</CommandFlag>
+					  <CommandFlag>DynamicVisibility</CommandFlag>-->
         <Strings>
 					<CommandName>cmdidFormatBQLCommand</CommandName>
           <ButtonText>Format BQL Statements</ButtonText>
@@ -73,8 +73,8 @@
 			<Button guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" type="Button">
 				<Icon guid="guidImages" id="acumaticaIcon" />
 				<CommandFlag>DefaultDisabled</CommandFlag>
-				<CommandFlag>DefaultInvisible</CommandFlag>
-				<CommandFlag>DynamicVisibility</CommandFlag>
+				<!--<CommandFlag>DefaultInvisible</CommandFlag>
+					  <CommandFlag>DynamicVisibility</CommandFlag>-->
 				<Strings>
 					<CommandName>cmdidGoToDeclarationOrHandlerCommand</CommandName>
 					<ButtonText>Go To Action/View Declaration/Handler</ButtonText>
