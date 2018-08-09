@@ -37,7 +37,6 @@
          group as the part of a menu contained between two lines. The parent of a group
          must be a menu. -->
     <Groups>
-			<Group guid="guidAcuminatorCmdSet" id="AcuminatorTopMenuGroup" />
 			<Group guid="guidAcuminatorCmdSet" id="AcuminatorContextMenuGroup" />
 			<Group guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" />		
     </Groups>
@@ -101,16 +100,12 @@
 					 The parent of a command is always a group, never a menu, context menu or toolbar.
            The priority sets the position of the group compared to the priority of other existing groups in the menu.
 					 
-					 Placement for Acuminator in Edit Menu
-           The order is: Edit > AcuminatorTopMenuGroup > AcuminatorTopMenu > AcuminatorGroupForCommands > FormatBqlCommandId
+					 Placement for Acuminator in Top Menu
+           The order is: AcuminatorTopMenu > AcuminatorGroupForCommands > FormatBqlCommandId, GoToDeclarationOrHandlerCommandId
       -->
-		<CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorTopMenuGroup" priority="0x307">
+		<CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorTopMenu" priority="0x0307">
 			<!-- The parent of the top menu will be the main menu -->
 			<Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS"/>
-		</CommandPlacement>
-		
-		<CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorTopMenu" priority="0x0001">
-			<Parent guid="guidAcuminatorCmdSet" id="AcuminatorTopMenuGroup"/>
 		</CommandPlacement>
 		
 		<CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" priority="0x0001">
@@ -157,7 +152,6 @@
 
     <!-- This is the guid used to group the menu commands together -->
     <GuidSymbol name="guidAcuminatorCmdSet" value="{3cd59430-1e8d-40af-b48d-9007624b3d77}">
-      <IDSymbol name="AcuminatorTopMenuGroup" value="0x1020" />
       <IDSymbol name="AcuminatorContextMenuGroup" value="0x1021" />
 			<IDSymbol name="AcuminatorGroupForCommands" value="0x1022" />
 			<IDSymbol name="AcuminatorTopMenu" value="0x0100" />
