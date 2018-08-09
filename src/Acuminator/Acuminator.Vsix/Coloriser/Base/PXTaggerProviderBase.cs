@@ -44,11 +44,12 @@ namespace Acuminator.Vsix.Coloriser
         }
 
         protected virtual void InitializePackage()
-        {
-            if (Package != null)
+        {	
+			if (Package != null)
                 return;
 
-            IVsShell shellService = ServiceProvider.GlobalProvider.GetService(typeof(IVsShell)) as IVsShell;
+			ThreadHelper.ThrowIfNotOnUIThread();
+			IVsShell shellService = ServiceProvider.GlobalProvider.GetService(typeof(IVsShell)) as IVsShell;
 
             if (shellService == null)
             {
