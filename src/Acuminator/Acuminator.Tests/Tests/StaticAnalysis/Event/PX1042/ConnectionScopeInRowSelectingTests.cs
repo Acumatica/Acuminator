@@ -37,14 +37,14 @@ namespace Acuminator.Tests
 		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelecting.cs")]
 		public void TestDiagnostic(string actual)
 		{
-			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(31, 7));
+			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(19, 9));
 		}
 
 		[Theory]
 		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingGeneric.cs")]
 		public void TestDiagnostic_GenericEventDeclaration(string actual)
 		{
-			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(31, 7));
+			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(19, 9));
 		}
 
 		[Theory]

@@ -90,8 +90,10 @@ namespace Acuminator.Analyzers
         public INamedTypeSymbol PXEventSubscriberAttribute => Compilation.GetTypeByMetadataName(typeof(PXEventSubscriberAttribute).FullName);
         public INamedTypeSymbol PXFieldState => Compilation.GetTypeByMetadataName(typeof(PXFieldState).FullName);
         public INamedTypeSymbol PXAttributeFamily => Compilation.GetTypeByMetadataName(typeof(PXAttributeFamilyAttribute).FullName);
-         
-        public PXContext(Compilation compilation)
+
+		public INamedTypeSymbol PXConnectionScope => Compilation.GetTypeByMetadataName(typeof(PXConnectionScope).FullName);
+
+		public PXContext(Compilation compilation)
         {
             Compilation = compilation;
 			bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation));
