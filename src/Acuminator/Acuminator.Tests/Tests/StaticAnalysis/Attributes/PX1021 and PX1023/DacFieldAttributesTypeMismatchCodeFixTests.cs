@@ -15,7 +15,7 @@ namespace Acuminator.Tests
 	public class DacFieldAttributesTypeMismatchCodeFixTests : CodeFixVerifier
 	{
 		[Theory]
-		[EmbeddedFileData(@"Attributes\PX1021\CodeFixes\DacFieldAttributesTypeMismatch.cs",
+		[EmbeddedFileData(@"Attributes\PX1021\Diagnostics\DacFieldAttributesTypeMismatch.cs",
 						  @"Attributes\PX1021\CodeFixes\DacFieldAttributesTypeMismatchExpected.cs")]
 		public void Test_DAC_Property_Type_Not_Compatible_With_Field_Attribute_CodeFix(string actual, string expected)
 		{

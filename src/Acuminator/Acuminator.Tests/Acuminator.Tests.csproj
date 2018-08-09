@@ -151,13 +151,11 @@
     <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\StaticCallWithCustomPredicate.cs" />
     <EmbeddedResource Include="Sources\Attributes\PX1023\Diagnostics\DacWithMultipleFieldAttributes.cs" />
     <EmbeddedResource Include="Sources\Attributes\PX1021\Diagnostics\DacFieldAttributesTypeMismatch.cs" />
-    <EmbeddedResource Include="Sources\Attributes\PX1023\CodeFixes\DacWithMultipleFieldAttributes.cs" />
     <EmbeddedResource Include="Sources\Attributes\PX1023\CodeFixes\DacWithMultipleFieldAttributes_Expected.cs" />
     <EmbeddedResource Include="Sources\Attributes\PX1021\Diagnostics\DacFieldTypeMismatchPXDBScalarAttr.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1024\Diagnostics\SOOrderNotAbstractField.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1024\CodeFixes\SOOrderNotAbstractFieldExpected.cs" />
     <EmbeddedResource Include="Sources\Attributes\PX1021\CodeFixes\DacFieldAttributesTypeMismatchExpected.cs" />
-    <EmbeddedResource Include="Sources\Attributes\PX1021\CodeFixes\DacFieldAttributesTypeMismatch.cs" />
     <EmbeddedResource Include="Sources\PXAction\PX1012\Diagnostics\GraphWithNonPrimaryDacView.cs" />
     <EmbeddedResource Include="Sources\PXAction\PX1012\CodeFixes\GraphWithNonPrimaryDacViewExpected.cs" />
     <EmbeddedResource Include="Sources\View\PX1018\Diagnostics\GraphWithPrimaryDacWithoutView.cs" />
