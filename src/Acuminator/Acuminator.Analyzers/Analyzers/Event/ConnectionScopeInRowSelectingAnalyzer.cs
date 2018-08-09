@@ -38,17 +38,20 @@ namespace Acuminator.Analyzers
 		{
 			if (symbol.ReturnsVoid && symbol.TypeParameters.IsEmpty && !symbol.Parameters.IsEmpty)
 			{
+				// Loosely check method signature because sometimes business logic from event handler calls is extracted to a separate method
+
+				// New generic event syntax
 				if (symbol.Parameters[0].Type.OriginalDefinition.Equals(pxContext.Events.RowSelecting))
 					return true;
 
-				// old syntax
+				// Old syntax
 				if (symbol.Parameters.Length >= 2
 				    && symbol.Parameters[0].Type.OriginalDefinition.InheritsFromOrEquals(pxContext.PXCacheType)
 				    && symbol.Parameters[1].Type.OriginalDefinition.InheritsFromOrEquals(pxContext.Events.PXRowSelectingEventArgs))
 					return true;
 			}
 
-			// new generic event syntax
+			
 			return false;
 		}
 	}
