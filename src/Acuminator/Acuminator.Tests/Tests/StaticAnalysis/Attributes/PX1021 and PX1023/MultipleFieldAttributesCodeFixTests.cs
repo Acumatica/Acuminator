@@ -15,7 +15,7 @@ namespace Acuminator.Tests
 	public class MultipleFieldAttributesCodeFixTests : CodeFixVerifier
 	{
 		[Theory]
-		[EmbeddedFileData(@"Attributes\PX1023\CodeFixes\DacWithMultipleFieldAttributes.cs",
+		[EmbeddedFileData(@"Attributes\PX1023\Diagnostics\DacWithMultipleFieldAttributes.cs",
 						  @"Attributes\PX1023\CodeFixes\DacWithMultipleFieldAttributes_Expected.cs")]
 		public void Test_Multiple_Field_Attributes_On_DAC_Property_CodeFix(string actual, string expected)
 		{

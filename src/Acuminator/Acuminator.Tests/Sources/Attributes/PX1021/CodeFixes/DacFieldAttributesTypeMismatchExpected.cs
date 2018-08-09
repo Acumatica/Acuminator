@@ -38,5 +38,13 @@ namespace PX.Objects.HackathonDemo
 			set;
 		}
 		#endregion
+
+		#region Total
+		public abstract class total : IBqlField { }
+
+		[PXDBDecimal]
+		[PXUIField(DisplayName = "Total")]
+		public decimal Total { get; set; }   //not nullable field shouldn't show diagnostic
+		#endregion
 	}
 }
