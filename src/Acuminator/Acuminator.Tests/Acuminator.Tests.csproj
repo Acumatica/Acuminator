@@ -188,6 +188,8 @@
     <EmbeddedResource Include="Sources\PXGraph\PX1040\CodeFixes\ConstructorInGraphExtensionWithInitialize_Expected.cs" />
     <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelecting.cs" />
     <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelecting_Expected.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingGeneric.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingGeneric_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTypeMismatchCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\MultipleFieldAttributesCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTests.cs" />

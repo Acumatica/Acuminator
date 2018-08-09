@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Acuminator.Utilities;
 using Microsoft.CodeAnalysis;
@@ -25,12 +26,30 @@ namespace Acuminator.Analyzers
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var typeSymbol = (IMethodSymbol) context.Symbol;
+			var methodSymbol = (IMethodSymbol) context.Symbol;
 			
-			if (typeSymbol != null)
+			if (methodSymbol != null && IsRowSelectingMethod(methodSymbol, pxContext))
 			{
 				
 			}
+		}
+
+		private bool IsRowSelectingMethod(IMethodSymbol symbol, PXContext pxContext)
+		{
+			if (symbol.ReturnsVoid && symbol.TypeParameters.IsEmpty && !symbol.Parameters.IsEmpty)
+			{
+				if (symbol.Parameters[0].Type.OriginalDefinition.Equals(pxContext.Events.RowSelecting))
+					return true;
+
+				// old syntax
+				if (symbol.Parameters.Length >= 2
+				    && symbol.Parameters[0].Type.OriginalDefinition.InheritsFromOrEquals(pxContext.PXCacheType)
+				    && symbol.Parameters[1].Type.OriginalDefinition.InheritsFromOrEquals(pxContext.Events.PXRowSelectingEventArgs))
+					return true;
+			}
+
+			// new generic event syntax
+			return false;
 		}
 	}
 }
