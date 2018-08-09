@@ -17,7 +17,7 @@ namespace PX.Objects.HackathonDemo
 		[PXUIField(DisplayName = "Order Type")]
 		public string OrderType { get; set; }
 		#endregion
-		
+
 		#region OrderDate
 		public abstract class orderDate : IBqlField { }
 
@@ -37,6 +37,14 @@ namespace PX.Objects.HackathonDemo
 			get;
 			set;
 		}
+		#endregion
+
+		#region Total
+		public abstract class total : IBqlField { }
+
+		[PXDBDecimal]
+		[PXUIField(DisplayName = "Total")]
+		public decimal Total { get; set; }   //not nullable field shouldn't show diagnostic
 		#endregion
 	}
 }
