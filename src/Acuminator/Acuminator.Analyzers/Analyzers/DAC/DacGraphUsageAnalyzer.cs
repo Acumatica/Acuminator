@@ -3,9 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 
 namespace Acuminator.Analyzers
 {
@@ -15,13 +13,12 @@ namespace Acuminator.Analyzers
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create
             (
-                Descriptors.PX1029_PXGraphUsageInDacProperty
+                Descriptors.PX1029_PXGraphUsageInDac
             );
 
         internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
         {
             compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzeGraphUsageInDac(syntaxContext, pxContext), SyntaxKind.ClassDeclaration);
-            //compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzeGraphUsageInsideDacProperty(syntaxContext, pxContext), SyntaxKind.PropertyDeclaration);
         }
 
         private void AnalyzeGraphUsageInDac(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
@@ -29,149 +26,58 @@ namespace Acuminator.Analyzers
             if (!(syntaxContext.Node is ClassDeclarationSyntax classDeclaration) || syntaxContext.CancellationToken.IsCancellationRequested)
                 return;
 
-            IEnumerable<MemberDeclarationSyntax> memberDeclarations = classDeclaration.DescendantNodes().OfType<MemberDeclarationSyntax>();
+            INamedTypeSymbol classType = syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration, syntaxContext.CancellationToken);
+            if (classType == null || !classType.IsDacOrExtension(pxContext))
+                return;
 
-            foreach (MemberDeclarationSyntax member in memberDeclarations)
-            {
-
-            }
-
-            //IsGraph
+            GraphUsageInDacWalker walker = new GraphUsageInDacWalker(syntaxContext, pxContext);
+            walker.Visit(classDeclaration);
         }
 
-        private void AnalyzeGraphUsageInsideDacProperty(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
-        {    
-            PropertyDeclarationSyntax node = syntaxContext.Node as PropertyDeclarationSyntax;
-            IPropertySymbol property = syntaxContext.SemanticModel.GetDeclaredSymbol(node, syntaxContext.CancellationToken);
-
-            if (property != null && IsDacProperty(property, pxContext) && !syntaxContext.CancellationToken.IsCancellationRequested)
-            {
-                foreach (SyntaxNode descendant in node.DescendantNodes())
-                {
-                    if (syntaxContext.CancellationToken.IsCancellationRequested)
-                        return;
-
-                    if (descendant is MemberAccessExpressionSyntax ma)
-                    {
-                        AnalyzeMemberAccessName(ma.Name, syntaxContext, pxContext);
-                        AnalyzeMemberAccessExpression(ma.Expression, syntaxContext, pxContext);
-                    }
-                    else if (descendant is MemberBindingExpressionSyntax mb)
-                    {
-                        AnalyzeMemberAccessName(mb.Name, syntaxContext, pxContext);
-
-                        SymbolInfo si = syntaxContext.SemanticModel.GetSymbolInfo(mb.Name, syntaxContext.CancellationToken);
-                        if (si.Symbol != null && IsGraphUsedAsMemberName(si.Symbol, pxContext))
-                        {
-                            syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1029_PXGraphUsageInDacProperty, mb.GetLocation()));
-                        }
-                    }
-                    else if (descendant is LocalDeclarationStatementSyntax ld)
-                    {
-                        AnalyzeLocalDeclaration(ld, syntaxContext, pxContext);
-                    }
-                }
-
-                //IEnumerable<MemberAccessExpressionSyntax> membersAccess = node.DescendantNodes().OfType<MemberAccessExpressionSyntax>();
-
-                //foreach (MemberAccessExpressionSyntax ma in membersAccess)
-                //{
-                //    AnalyzeMemberAccessName(ma.Name, syntaxContext, pxContext);
-                //    AnalyzeMemberAccessExpression(ma.Expression, syntaxContext, pxContext);
-                //}
-
-                //IEnumerable<LocalDeclarationStatementSyntax> localVariables = node.DescendantNodes().OfType<LocalDeclarationStatementSyntax>();
-
-                //foreach (LocalDeclarationStatementSyntax l in localVariables)
-                //{
-                //    AnalyzeLocalDeclaration(l, syntaxContext, pxContext);
-                //}
-            }
-        }
-
-        private void AnalyzeLocalDeclaration(LocalDeclarationStatementSyntax local, SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+        private class GraphUsageInDacWalker : CSharpSyntaxWalker
         {
-            bool isGraphDeclarationType = syntaxContext.SemanticModel.GetSymbolInfo(local.Declaration.Type).Symbol is ITypeSymbol typeSymbol && typeSymbol.InheritsFromOrEquals(pxContext.PXGraphType);
+            private readonly SyntaxNodeAnalysisContext _syntaxContext;
+            private readonly PXContext _pxContext;
 
-            if (isGraphDeclarationType)
+            public GraphUsageInDacWalker(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
             {
-                syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1029_PXGraphUsageInDacProperty, local.GetLocation()));
-            }
-        }
-
-        private void AnalyzeMemberAccessExpression(ExpressionSyntax expression, SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
-        {
-            ISymbol expressionSymbol = syntaxContext.SemanticModel.GetSymbolInfo(expression, syntaxContext.CancellationToken).Symbol;
-
-            if (expressionSymbol != null && IsGraphUsedAsMemberExpression(expressionSymbol, pxContext))
-            {
-                syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1029_PXGraphUsageInDacProperty, expression.GetLocation()));
-            }
-        }
-
-        private void AnalyzeMemberAccessName(SimpleNameSyntax name, SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
-        {
-            ISymbol nameSymbol = syntaxContext.SemanticModel.GetSymbolInfo(name, syntaxContext.CancellationToken).Symbol;
-
-            if (nameSymbol != null && IsGraphUsedAsMemberName(nameSymbol, pxContext))
-            {
-                syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1029_PXGraphUsageInDacProperty, name.GetLocation()));
-            }
-        }
-
-        private bool IsGraphUsedAsMemberExpression(ISymbol expressionSymbol, PXContext pxContext)
-        {
-            bool isGraphUsed = false;
-
-            switch (expressionSymbol)
-            {
-                case ILocalSymbol l:
-                    if (l.Type.InheritsFromOrEquals(pxContext.PXGraphType))
-                    {
-                        isGraphUsed = true;
-                    }
-                    break;
-                default:
-                    isGraphUsed = IsGraphUsedAsMemberName(expressionSymbol, pxContext);
-                    break;
+                _syntaxContext = syntaxContext;
+                _pxContext = pxContext;
             }
 
-            return isGraphUsed;
-        }
-
-        private bool IsGraphUsedAsMemberName(ISymbol nameSymbol, PXContext pxContext)
-        {
-            bool isGraphUsed = false;
-
-            switch (nameSymbol)
+            public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
             {
-                case IFieldSymbol f:
-                    if (f.Type.InheritsFromOrEquals(pxContext.PXGraphType))
-                    {
-                        isGraphUsed = true;
-                    }
-                    break;
-                case IPropertySymbol p:
-                    if (p.Type.InheritsFromOrEquals(pxContext.PXGraphType))
-                    {
-                        isGraphUsed = true;
-                    }
-                    break;
-                case IMethodSymbol m:
-                    if (m.ReturnType.InheritsFromOrEquals(pxContext.PXGraphType))
-                    {
-                        isGraphUsed = true;
-                    }
-                    break;
+                if (node.IsStatic() || _syntaxContext.CancellationToken.IsCancellationRequested)
+                    return;
+
+                base.VisitMethodDeclaration(node);
             }
 
-            return isGraphUsed;
-        }
+            public override void VisitInvocationExpression(InvocationExpressionSyntax node)
+            {
+                if (_syntaxContext.CancellationToken.IsCancellationRequested)
+                    return;
 
-        private bool IsDacProperty(IPropertySymbol property, PXContext pxContext)
-        {
-            return property.ContainingType.ImplementsInterface(pxContext.IBqlTableType) ||
-                   property.ContainingType.InheritsFrom(pxContext.PXCacheExtensionType);
+                SymbolInfo symbolInfo = _syntaxContext.SemanticModel.GetSymbolInfo(node, _syntaxContext.CancellationToken);
+
+                if (symbolInfo.Symbol == null || (symbolInfo.Symbol.Kind == SymbolKind.Method && symbolInfo.Symbol.IsStatic))
+                    return;
+
+                base.VisitInvocationExpression(node);
+            }
+
+            public override void VisitIdentifierName(IdentifierNameSyntax node)
+            {
+                if (_syntaxContext.CancellationToken.IsCancellationRequested)
+                    return;
+
+                TypeInfo typeInfo = _syntaxContext.SemanticModel.GetTypeInfo(node, _syntaxContext.CancellationToken);
+
+                if (typeInfo.Type == null || !typeInfo.Type.IsPXGraphOrExtension(_pxContext))
+                    return;
+
+                _syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1029_PXGraphUsageInDac, node.GetLocation()));
+            }
         }
     }
 }

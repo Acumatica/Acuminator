@@ -39,6 +39,12 @@ namespace Acuminator.Tests.Sources
         }
 
         private SOOrderMaintSync syncGraph = PXGraph.CreateInstance<SOOrderMaintSync>();
+
+        public static void Update()
+        {
+            SOOrderMaintSync syncGraph = PXGraph.CreateInstance<SOOrderMaintSync>();
+            syncGraph.CountSyncReadyFiles();
+        }
     }
 
     public class SOOrderMaintSync : PXGraph<SOOrderMaintSync>

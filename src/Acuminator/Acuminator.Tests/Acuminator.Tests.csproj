@@ -179,8 +179,8 @@
     <EmbeddedResource Include="Sources\Dac\PX1027\CodeFixes\DacForbiddenFieldsRegions_Case3_Expected.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1027\CodeFixes\DacForbiddenFieldsRegions_Case1_Expected.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1027\CodeFixes\DacForbiddenFieldsRegions_Case2_Expected.cs" />
-    <EmbeddedResource Include="Sources\Dac\PX1029\Diagnostics\DacExtensionWithGraphUsageInProperty.cs" />
-    <EmbeddedResource Include="Sources\Dac\PX1029\Diagnostics\DacWithGraphUsageInProperty.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1029\Diagnostics\DacExtensionWithGraphUsage.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1029\Diagnostics\DacWithGraphUsage.cs" />
     <EmbeddedResource Include="Sources\PXAction\PX1000\Diagnostics\InvalidPXActionSignatureGraphExtension.cs" />
     <EmbeddedResource Include="Sources\PXAction\PX1000\CodeFixes\InvalidPXActionSignatureGraphExtension_Expected.cs" />
     <EmbeddedResource Include="Sources\BQL\Diagnostics\ArgumentsMismatch\SearchCall.cs" />
@@ -197,6 +197,7 @@
     <Compile Include="Tests\StaticAnalysis\DAC\PX1026\UnderscoresInDacTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\PX1027\DacForbiddenFieldsTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\PX1028\DacWithConstructorTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\DAC\PX1029\PXGraphUsageInDacTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\PX1031 and PX1032\MethodsUsageInDacTests.cs" />
     <Compile Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtensionTests.cs" />
     <Compile Include="Tests\StaticAnalysis\LongOperationDelegateClosuresTests.cs" />

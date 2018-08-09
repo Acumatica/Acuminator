@@ -198,6 +198,15 @@ namespace Acuminator.Utilities
 			return typeSymbol.ImplementsInterface(TypeNames.IBqlTable);
 		}
 
+        public static bool IsDacOrExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
+        {
+            typeSymbol.ThrowOnNull(nameof(typeSymbol));
+            pxContext.ThrowOnNull(nameof(pxContext));
+
+            return typeSymbol.ImplementsInterface(pxContext.IBqlTableType) ||
+                   typeSymbol.InheritsFrom(pxContext.PXCacheExtensionType);
+        }
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsDacExtension(this ITypeSymbol typeSymbol, bool ruleOutBaseTypes = false)
 		{
@@ -233,6 +242,16 @@ namespace Acuminator.Utilities
 
 			return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.PXGraph, includeInterfaces: false);
 		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsPXGraphOrExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
+        {
+            typeSymbol.ThrowOnNull(nameof(typeSymbol));
+            pxContext.ThrowOnNull(nameof(pxContext));
+
+            return typeSymbol.InheritsFromOrEquals(pxContext.PXGraphType) ||
+                   typeSymbol.InheritsFromOrEquals(pxContext.PXGraphExtensionType);
+        }
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsPXAction(this ITypeSymbol typeSymbol)

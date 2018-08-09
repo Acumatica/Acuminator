@@ -75,7 +75,8 @@ namespace Acuminator.Analyzers
         {
             if (!method.IsStatic())
             {
-                syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1031_DacCannotContainInstanceMethods, method.GetLocation()));
+                Location location = method?.Identifier.GetLocation() ?? method.GetLocation();
+                syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1031_DacCannotContainInstanceMethods, location));
             }
         }
 

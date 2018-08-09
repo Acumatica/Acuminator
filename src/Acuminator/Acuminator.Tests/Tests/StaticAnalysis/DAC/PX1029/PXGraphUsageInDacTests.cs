@@ -15,8 +15,8 @@ namespace Acuminator.Tests
         {
             return new DiagnosticResult
             {
-                Id = Descriptors.PX1029_PXGraphUsageInDacProperty.Id,
-                Message = Descriptors.PX1029_PXGraphUsageInDacProperty.Title.ToString(),
+                Id = Descriptors.PX1029_PXGraphUsageInDac.Id,
+                Message = Descriptors.PX1029_PXGraphUsageInDac.Title.ToString(),
                 Severity = DiagnosticSeverity.Error,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }
             };
@@ -26,13 +26,12 @@ namespace Acuminator.Tests
         [EmbeddedFileData(@"Dac\PX1029\Diagnostics\DacWithGraphUsage.cs")]
         public void Test_PXGraph_Usage_Inside_Dac(string source)
         {
-            VerifyCSharpDiagnostic(source/*,
+            VerifyCSharpDiagnostic(source,
                 CreatePX1029DiagnosticResult(15, 17),
-                CreatePX1029DiagnosticResult(15, 50),
                 CreatePX1029DiagnosticResult(17, 24),
-                CreatePX1029DiagnosticResult(27, 24),
                 CreatePX1029DiagnosticResult(27, 42),
-                CreatePX1029DiagnosticResult(37, 24)*/);
+                CreatePX1029DiagnosticResult(37, 24),
+                CreatePX1029DiagnosticResult(41, 17));
         }
 
         [Theory]
@@ -41,11 +40,10 @@ namespace Acuminator.Tests
         {
             VerifyCSharpDiagnostic(source,
                 CreatePX1029DiagnosticResult(15, 17),
-                CreatePX1029DiagnosticResult(15, 50),
                 CreatePX1029DiagnosticResult(17, 24),
-                CreatePX1029DiagnosticResult(27, 24),
                 CreatePX1029DiagnosticResult(27, 42),
-                CreatePX1029DiagnosticResult(37, 24));
+                CreatePX1029DiagnosticResult(37, 24),
+                CreatePX1029DiagnosticResult(41, 17));
         }
     }
 }
