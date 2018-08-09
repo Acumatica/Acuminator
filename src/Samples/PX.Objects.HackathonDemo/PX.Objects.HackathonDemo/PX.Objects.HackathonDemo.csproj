@@ -72,6 +72,7 @@
     <Compile Include="DAC\Constructors In DAC\POLine.cs" />
     <Compile Include="DAC\Underscores in DAC\SO_Invoice.cs" />
     <Compile Include="DAC\Property and attribute types mismatch and nullable types\SOOrder.cs" />
+    <Compile Include="Graph\Graph extension with constructor\SOOrderEntryExt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Graph\Graph with no primary view and actions not on primary DAC\POOrderEntry.cs" />
     <Compile Include="Graph\Graph constructor call, typo in view delegate and invalid action handler signature\SOOrderEntry.cs" />
