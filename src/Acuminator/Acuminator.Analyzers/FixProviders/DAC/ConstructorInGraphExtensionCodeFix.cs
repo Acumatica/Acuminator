@@ -76,9 +76,8 @@ namespace Acuminator.Analyzers.FixProviders
 			else
 			{
 				// Generate Initialize() method declaration with the body from the constructor
-				var classNode = await methodSymbol.ContainingType
-					.GetSyntaxAsync(cancellationToken).ConfigureAwait(false) as ClassDeclarationSyntax;
-				if (classNode == null) return document;
+				var classNode = constructorNode.Parent<ClassDeclarationSyntax>();
+				if (classNode == null || cancellationToken.IsCancellationRequested) return document;
 
 				var syntaxGenerator = SyntaxGenerator.GetGenerator(document);
 				var initializeNode = (MethodDeclarationSyntax) syntaxGenerator.MethodDeclaration(
