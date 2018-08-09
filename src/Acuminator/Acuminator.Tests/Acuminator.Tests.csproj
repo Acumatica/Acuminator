@@ -200,8 +200,8 @@
     <Compile Include="Tests\StaticAnalysis\DAC\PX1027\DacForbiddenFieldsTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\PX1028\DacWithConstructorTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\PX1031 and PX1032\MethodsUsageInDacTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\Event\ConstructorInGraphExtensionTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\PXGraph\PX1040\ConnectionScopeInRowSelectingTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\PXGraph\PX1040\ConstructorInGraphExtensionTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\Event\PX1042\ConnectionScopeInRowSelectingTests.cs" />
     <Compile Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtensionTests.cs" />
     <Compile Include="Tests\StaticAnalysis\LongOperationDelegateClosuresTests.cs" />
     <EmbeddedResource Include="Sources\View\Delegate\PX1010\Diagnostics\StartRowResetForPaging.cs" />
