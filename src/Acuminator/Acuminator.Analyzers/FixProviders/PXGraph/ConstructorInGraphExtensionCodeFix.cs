@@ -32,7 +32,7 @@ namespace Acuminator.Analyzers.FixProviders
 			var root = await context.Document
 				.GetSyntaxRootAsync(context.CancellationToken)
 				.ConfigureAwait(false);
-			var node = root.FindNode(context.Span)?.FirstAncestorOrSelf<ConstructorDeclarationSyntax>();
+			var node = root?.FindNode(context.Span)?.FirstAncestorOrSelf<ConstructorDeclarationSyntax>();
 
 			if (node != null)
 			{
