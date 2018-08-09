@@ -7,10 +7,26 @@ using PX.Data;
 
 namespace PX.Objects.HackathonDemo
 {
-	public class SOOrder : IBqlTable
+	public class POLine : IBqlTable
 	{
-		#region OrderType
-		public abstract class orderType : IBqlField { }
+        #region Cons
+        public POLine() : base()
+        {
+        }
+        #endregion
+
+        #region ConsParams
+        public POLine(string orderType, string orderNbr, string status, DateTime? lineDate)
+        {
+            OrderType = orderType;
+            OrderNbr = orderNbr;
+            Status = status;
+			LineDate = lineDate;
+        }
+        #endregion
+
+        #region OrderType
+        public abstract class orderType : IBqlField { }
 		[PXDBString(IsKey = true, InputMask = "")]
 		[PXDefault]
 		[PXUIField(DisplayName = "Order Type")]
@@ -27,23 +43,21 @@ namespace PX.Objects.HackathonDemo
 
 		#region Status
 		public abstract class status : IBqlField { }
+
 		[PXStringList(new[] { "N", "O" }, new[] { "New", "Open" })]
 		[PXUIField(DisplayName = "Status")]
+		[PXString]
 		public string Status { get; set; }
 		#endregion
-		
-		#region OrderDate
-		public abstract class orderDate : IBqlField { }
 
-		[PXDBInt]      
+		#region LineDate
+		public abstract class lineDate : IBqlField { }
+
+		[PXDBDate]      
 		[PXUIField(DisplayName = "OrderDate")]
-		public DateTime? OrderDate { get; set; }
+		public DateTime? LineDate { get; set; }
         #endregion
 
-        #region CompanyMask
-        
-        
-        #endregion
 
         #region tstamp
         public abstract class Tstamp : IBqlField
@@ -56,27 +70,6 @@ namespace PX.Objects.HackathonDemo
 			get;
 			set;
 		}
-		#endregion
-	}
-
-	public class SOOrderWithTotal : PXCacheExtension<SOOrder>
-	{
-		#region Total
-		public abstract class total : IBqlField { }
-		[PXDBDecimal]
-		[PXUIField(DisplayName = "Total")]
-		public decimal Total { get; set; }
-		#endregion
-	}
-
-	public class SOOrderWithHold : SOOrderWithTotal
-	{
-		#region Hold
-		public abstract class hold : IBqlField { }
-		[PXDBBool]
-		[PXDefault(true)]
-		[PXUIField(DisplayName = "Hold")]
-		public bool? Hold { get; set; }
 		#endregion
 	}
 }

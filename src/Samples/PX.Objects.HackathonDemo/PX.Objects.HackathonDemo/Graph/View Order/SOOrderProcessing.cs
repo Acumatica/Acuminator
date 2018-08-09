@@ -12,12 +12,14 @@ namespace PX.Objects.HackathonDemo
 		public class SOSelectedOrder : SOOrder
 		{
 			public abstract class selected : IBqlField { }
+
 			[PXBool]
 			[PXUIField(DisplayName = "Selected")]
 			public bool? Selected { get; set; }
 		}
        
 		public PXProcessing<SOSelectedOrder> Orders;
+
 		public PXSelect<SOOrder, Where<SOOrder.orderType, Equal<SalesOrder>, And<SOOrder.status, Equal<Open>>>,	OrderBy<Asc<SOOrder.orderNbr>>> OpenSalesOrders;
 
 		public SOOrderProcessing()

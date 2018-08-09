@@ -5,81 +5,12 @@ using System.Linq;
 
 namespace PX.Objects.HackathonDemo
 {
-	public partial class SimpleOrdersMaint : PXGraph<LEPMaint>
+	public partial class LEPMaint : PXGraph<LEPMaint>
 	{
 		public PXSelect<ListEntryPoint> Items;
 
 		public PXSelect<SOOrder> Orders;
 
-		#region Views
-		#region Current Order
-		public PXSelect<SOOrder,
-					Where<SOOrder.orderNbr, Equal<Required<SOOrder.orderNbr>>>> CurrentOrder;
-		#endregion
-		#endregion
-
-
-
-		public PXAction<SOOrder> Release;
-
-		public PXAction<SOOrder> VoidOrder;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		//public IEnumerable voidOrder(PXAdapter adapter)
-		//{
-		//	yield break;
-		//}
-
-
-
-
-
-
-
-
-
-
-		#region Delegate
 		public IEnumerable items()
 		{
 			int startRow = PXView.StartRow;
@@ -91,6 +22,7 @@ namespace PX.Objects.HackathonDemo
 					.Select(PXView.Currents, PXView.Parameters, PXView.Searches, PXView.SortColumns, PXView.Descendings, PXView.Filters,
 					ref startRow, PXView.MaximumRows, ref totalRows).Cast<ListEntryPoint>();
 
+			//example of code fix generation of start row reset before each return statement
 			switch (totalRows)
 			{
 				case 3:
@@ -99,18 +31,10 @@ namespace PX.Objects.HackathonDemo
 
 			if (totalRows < 5)
 				return rows;
-			else
+			else if (totalRows > 1)
 				return rows;
 
 			return rows;
 		}
-		#endregion
-
-		public IEnumerable release(PXAdapter adapter)
-		{
-			yield break;
-		}
-
-		public abstract void orders();
 	}
 }
