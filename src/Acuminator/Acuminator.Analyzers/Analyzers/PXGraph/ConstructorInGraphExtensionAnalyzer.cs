@@ -23,7 +23,7 @@ namespace Acuminator.Analyzers
 
 		private void AnalyzeNamedType(SymbolAnalysisContext context, PXContext pxContext)
 		{
-			if (context.CancellationToken.IsCancellationRequested) return;
+			context.CancellationToken.ThrowIfCancellationRequested();
 
 			var typeSymbol = (INamedTypeSymbol) context.Symbol;
 			

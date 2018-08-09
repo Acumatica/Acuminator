@@ -29,7 +29,9 @@ namespace Acuminator.Analyzers.FixProviders
 		{
 			if (context.CancellationToken.IsCancellationRequested) return;
 
-			var root = await context.Document.GetSyntaxRootAsync().ConfigureAwait(false);
+			var root = await context.Document
+				.GetSyntaxRootAsync(context.CancellationToken)
+				.ConfigureAwait(false);
 			var node = root.FindNode(context.Span)?.FirstAncestorOrSelf<ConstructorDeclarationSyntax>();
 
 			if (node != null)
@@ -46,7 +48,7 @@ namespace Acuminator.Analyzers.FixProviders
 			ConstructorDeclarationSyntax constructorNode,
 			CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested) return document;
+			cancellationToken.ThrowIfCancellationRequested();
 
 			var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
 			var methodSymbol = semanticModel.GetDeclaredSymbol(constructorNode);
@@ -77,22 +79,23 @@ namespace Acuminator.Analyzers.FixProviders
 			{
 				// Generate Initialize() method declaration with the body from the constructor
 				var classNode = constructorNode.Parent<ClassDeclarationSyntax>();
-				if (classNode == null || cancellationToken.IsCancellationRequested) return document;
+				if (classNode != null)
+				{
+					var syntaxGenerator = SyntaxGenerator.GetGenerator(document);
+					var initializeNode = (MethodDeclarationSyntax) syntaxGenerator.MethodDeclaration(
+						"Initialize",
+						accessibility: Accessibility.Public,
+						modifiers: DeclarationModifiers.Override,
+						statements: constructorNode.Body.Statements);
 
-				var syntaxGenerator = SyntaxGenerator.GetGenerator(document);
-				var initializeNode = (MethodDeclarationSyntax) syntaxGenerator.MethodDeclaration(
-					"Initialize",
-					accessibility: Accessibility.Public,
-					modifiers: DeclarationModifiers.Override,
-					statements: constructorNode.Body.Statements);
-
-				newRoot = newRoot.TrackNodes(constructorNode, classNode);
-				classNode = newRoot.GetCurrentNode(classNode);
-				var newClassNode = classNode.AddMembers(initializeNode);
-				newRoot = newRoot.ReplaceNode(classNode, newClassNode);
+					newRoot = newRoot.TrackNodes(constructorNode, classNode);
+					classNode = newRoot.GetCurrentNode(classNode);
+					var newClassNode = classNode.AddMembers(initializeNode);
+					newRoot = newRoot.ReplaceNode(classNode, newClassNode);
+				}
 			}
 
-			if (cancellationToken.IsCancellationRequested) return document;
+			cancellationToken.ThrowIfCancellationRequested();
 
 			// Remove the constructor
 			newRoot = newRoot.RemoveNode(newRoot.GetCurrentNode(constructorNode) ?? constructorNode,
