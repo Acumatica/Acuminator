@@ -18,20 +18,24 @@ namespace Acuminator.Analyzers
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSymbolAction(c => AnalyzeMethod(c, pxContext), SymbolKind.Method);
+			compilationStartContext.RegisterSymbolAction(c => AnalyzeNamedType(c, pxContext), SymbolKind.NamedType);
 		}
 
-		private void AnalyzeMethod(SymbolAnalysisContext context, PXContext pxContext)
+		private void AnalyzeNamedType(SymbolAnalysisContext context, PXContext pxContext)
 		{
 			if (context.CancellationToken.IsCancellationRequested) return;
 
-			var methodSymbol = (IMethodSymbol) context.Symbol;
-			var parentSymbol = methodSymbol.ContainingType;
-			if (parentSymbol != null && parentSymbol.InheritsFrom(pxContext.PXGraphExtensionType)
-				&& methodSymbol.IsInstanceConstructor())
+			var typeSymbol = (INamedTypeSymbol) context.Symbol;
+			
+			if (typeSymbol != null && typeSymbol.InheritsFrom(pxContext.PXGraphExtensionType)
+				&& !typeSymbol.IsGraphExtensionBaseType())
 			{
-				context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1040_ConstructorInGraphExtension, 
-					methodSymbol.Locations.First()));
+				foreach (var constructor in typeSymbol.InstanceConstructors
+					.Where(c => !c.IsImplicitlyDeclared))
+				{
+					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1040_ConstructorInGraphExtension,
+						constructor.Locations.First()));
+				}
 			}
 		}
 	}
