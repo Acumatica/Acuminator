@@ -16,14 +16,16 @@ namespace PX.Objects.HackathonDemo
 		public virtual IEnumerable odrers()
 		{
 			int startRow = PXView.StartRow;
-			var rows = PXSelect<SOOrder, Where<SOOrder.orderType, Equal<Required<SOOrder.orderType>>>>
-				.Select(this, startRow, PXView.MaximumRows);
+			var rows = PXSelect<SOOrder, Where<SOOrder.orderType, Equal<Required<SOOrder.orderType>>>>  
+				.Select(this, "INV");
+
 			foreach (var row in rows)
 			{
 				SOOrder order = new SOOrder();
 				order.OrderType = row.GetItem<SOOrder>().OrderType;
 				order.OrderNbr = row.GetItem<SOOrder>().OrderNbr;
 			}
+
 			return rows;
 		}
 

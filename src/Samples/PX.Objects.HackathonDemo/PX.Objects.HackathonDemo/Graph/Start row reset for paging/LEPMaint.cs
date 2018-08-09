@@ -22,6 +22,7 @@ namespace PX.Objects.HackathonDemo
 					.Select(PXView.Currents, PXView.Parameters, PXView.Searches, PXView.SortColumns, PXView.Descendings, PXView.Filters,
 					ref startRow, PXView.MaximumRows, ref totalRows).Cast<ListEntryPoint>();
 
+			//example of code fix generation of start row reset before each return statement
 			switch (totalRows)
 			{
 				case 3:
@@ -30,12 +31,10 @@ namespace PX.Objects.HackathonDemo
 
 			if (totalRows < 5)
 				return rows;
-			else
+			else if (totalRows > 1)
 				return rows;
 
 			return rows;
 		}
-
-		public abstract void orders();
 	}
 }

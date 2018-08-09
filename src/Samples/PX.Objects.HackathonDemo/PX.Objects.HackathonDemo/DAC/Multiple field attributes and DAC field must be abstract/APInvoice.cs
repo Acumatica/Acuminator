@@ -9,8 +9,18 @@ namespace PX.Objects.HackathonDemo
 {
 	public class APInvoice : IBqlTable
 	{
+		#region BranchID
+		public class branchID : IBqlField
+		{
+		}
+
+		[PXDBInt]
+		[Branch]
+		public virtual int? BranchID { get; set; }
+		#endregion
+
 		#region RefNbr
-		public abstract class refNbr : PX.Data.IBqlField
+		public abstract class refNbr : IBqlField
 		{
 		}
 
@@ -24,7 +34,7 @@ namespace PX.Objects.HackathonDemo
 		#endregion
 
 		#region DocType
-		public abstract class docType : PX.Data.IBqlField
+		public abstract class docType : IBqlField
 		{
 		}
 
@@ -35,7 +45,7 @@ namespace PX.Objects.HackathonDemo
 		#endregion
 
 		#region Released
-		public abstract class released : PX.Data.IBqlField
+		public abstract class released : IBqlField
 		{
 		}
 
@@ -46,7 +56,7 @@ namespace PX.Objects.HackathonDemo
 		#endregion
 
 		#region Hold
-		public abstract class hold : PX.Data.IBqlField
+		public abstract class hold : IBqlField
 		{
 		}
 
@@ -57,7 +67,7 @@ namespace PX.Objects.HackathonDemo
 		#endregion
 
 		#region DocDate
-		public abstract class docDate : PX.Data.IBqlField
+		public abstract class docDate : IBqlField
 		{
 		}
 
@@ -68,7 +78,7 @@ namespace PX.Objects.HackathonDemo
 		#endregion
 
 		#region CuryInfoID
-		public abstract class curyInfoID : PX.Data.IBqlField
+		public abstract class curyInfoID : IBqlField
 		{
 		}
 
@@ -78,7 +88,7 @@ namespace PX.Objects.HackathonDemo
 		#endregion
 
 		#region CuryDiscTot
-		public abstract class curyDiscTot : PX.Data.IBqlField
+		public abstract class curyDiscTot : IBqlField
 		{
 		}
 
@@ -89,7 +99,7 @@ namespace PX.Objects.HackathonDemo
 		#endregion
 
 		#region CuryDocBal
-		public abstract class curyDocBal : PX.Data.IBqlField
+		public abstract class curyDocBal : IBqlField
 		{
 		}
 		
@@ -100,7 +110,7 @@ namespace PX.Objects.HackathonDemo
 		#endregion
 
 		#region DocBal
-		public abstract class docBal : PX.Data.IBqlField
+		public abstract class docBal : IBqlField
 		{
 		}
 
@@ -110,7 +120,7 @@ namespace PX.Objects.HackathonDemo
 		#endregion
 
 		#region CuryOrigDocAmt
-		public abstract class curyOrigDocAmt : PX.Data.IBqlField
+		public abstract class curyOrigDocAmt : IBqlField
 		{
 		}
 
@@ -121,7 +131,7 @@ namespace PX.Objects.HackathonDemo
 		#endregion
 
 		#region OrigDocAmt
-		public abstract class origDocAmt : PX.Data.IBqlField
+		public abstract class origDocAmt : IBqlField
 		{
 		}
 
