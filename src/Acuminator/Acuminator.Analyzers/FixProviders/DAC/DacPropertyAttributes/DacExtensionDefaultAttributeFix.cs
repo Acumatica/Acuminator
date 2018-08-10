@@ -52,7 +52,8 @@ namespace Acuminator.Analyzers.FixProviders
 
 			 if (!(root?.FindNode(span) is AttributeSyntax attributeNode))
 				return document;
-
+			if (!(attributeNode.Parent is AttributeListSyntax attributeList))
+				return document;
 			if (cancellationToken.IsCancellationRequested)
 				return document;
 
@@ -69,23 +70,38 @@ namespace Acuminator.Analyzers.FixProviders
 				if (attributeNode.ArgumentList != null)
 				{
 					var persistingCheckArguments = from arguments in attributeNode.ArgumentList.Arguments
-												   where arguments.GetText().ToString().Contains("PersistingCheck")
-												   select arguments;
-					SyntaxNode newAttributeNode = generator.InsertAttributeArguments(attributeNode, 1, new SyntaxNode[] { persistingAttributeArgument });
-					foreach (AttributeArgumentSyntax argument in persistingCheckArguments)
+													where arguments.GetText().ToString().Contains("PersistingCheck")
+													select arguments;
+					//if attribute contains PersistingCheck
+					if (persistingCheckArguments.Any())
 					{
+						AttributeArgumentSyntax argument = persistingCheckArguments.First();
+						
 						persistingAttributeArgument = argument.ReplaceNode(argument.Expression, memberAccessExpression);
-						newAttributeNode = attributeNode.ReplaceNode(argument, persistingAttributeArgument);
+						var newAttributeNode = attributeNode.ReplaceNode(argument, persistingAttributeArgument);
+						var newAttributeList = attributeList.ReplaceNode(attributeNode, newAttributeNode);
+						modifiedRoot = root.ReplaceNode(attributeList, newAttributeList);
+					}
+					else
+					{
+						//SyntaxNode newAttributeList = generator.AddAttributes(new AttributeListSyntax(), new SyntaxNode);
+						var newAttributeList = generator.AddAttributeArguments(attributeNode, new SyntaxNode[] { persistingAttributeArgument }) as AttributeListSyntax;
+						//var newAttributeList = attributeList.ReplaceNode(attributeNode, newAttributeNode);
+						modifiedRoot = root.ReplaceNode(attributeNode, newAttributeList.Attributes[0]);
 					}
 
+/*					SyntaxNode newAttributeNode = generator.InsertAttributeArguments(attributeNode, 1, new SyntaxNode[] { persistingAttributeArgument });
+					
 					//var newAttribute = generator.InsertAttributeArguments(attributeNode, 1, new SyntaxNode[] { persistingAttributeArgument });
-					modifiedRoot = root.ReplaceNode(attributeNode, newAttributeNode);
+					modifiedRoot = root.ReplaceNode(attributeNode, newAttributeNode);*/
 				}
 				else
 				{
 					AttributeListSyntax newAttribute = generator.InsertAttributeArguments(attributeNode, 1, new SyntaxNode[] { persistingAttributeArgument }) as AttributeListSyntax;
 					modifiedRoot = root.ReplaceNode(attributeNode, newAttribute.Attributes[0]);
 				}
+			
+				
 			}
 			else
 			{

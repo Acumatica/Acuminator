@@ -44,5 +44,23 @@ namespace PX.Objects.HackathonDemo
 		[PXDefault(0)]
 		public virtual int? UsrNPCADocLineCntr4 { get; set; }
 		#endregion
+
+		#region UsrNPCADocLineCntr5
+		public abstract class usrNPCADocLineCntr5 : IBqlField { }
+		[PXDBInt, PXDefault]
+		public virtual int? UsrNPCADocLineCntr5 { get; set; }
+		#endregion
+
+		#region UsrNPCADocLineCntr6
+		public abstract class usrNPCADocLineCntr6 : IBqlField { }
+		[PXDBInt, PXDefault(0, PersistingCheck = PXPersistingCheck.Null)]
+		public virtual int? UsrNPCADocLineCntr6 { get; set; }
+		#endregion
+
+		#region UsrNPCADocLineCntr7
+		public abstract class usrNPCADocLineCntr7 : IBqlField { }
+		[PXDefault(0), PXDBInt]
+		public virtual int? UsrNPCADocLineCntr7 { get; set; }
+		#endregion
 	}
 }

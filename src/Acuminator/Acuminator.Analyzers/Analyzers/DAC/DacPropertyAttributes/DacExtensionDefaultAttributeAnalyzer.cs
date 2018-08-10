@@ -34,7 +34,7 @@ namespace Acuminator.Analyzers
 
             if (!CheckProperty(property, pxContext))
                 return;
-
+			
             ImmutableArray<AttributeData> attributes = property.GetAttributes();
 
             if (attributes.Length == 0 || symbolContext.CancellationToken.IsCancellationRequested)
@@ -51,11 +51,11 @@ namespace Acuminator.Analyzers
 				foreach (var attribute in attributes)
 				{
 					var typesHierarchy = attribute.AttributeClass.GetBaseTypesAndThis();
-					if (typesHierarchy.Contains(symbolContext.Compilation.GetTypeByMetadataName(typeof(PX.Data.PXDefaultAttribute).FullName)))
+					if (typesHierarchy.Contains(symbolContext.Compilation.GetTypeByMetadataName(typeof(PXDefaultAttribute).FullName)))
 					{
 						foreach (var argument in attribute.NamedArguments)
 						{
-							if (argument.Key.Contains("PersistingCheck") && (int)argument.Value.Value == (int)PX.Data.PXPersistingCheck.Nothing)
+							if (argument.Key.Contains("PersistingCheck") && (int)argument.Value.Value == (int)PXPersistingCheck.Nothing)
 								return;
 						}
 						Location[] locations = await Task.WhenAll(DacPropertyAttributesAnalyzer.GetAttributeLocationAsync(attribute, symbolContext.CancellationToken));
