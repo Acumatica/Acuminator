@@ -26,7 +26,11 @@ namespace Acuminator.Tests
         public virtual void TestDacExtensionWithBoundAttribute(string source) =>
             VerifyCSharpDiagnostic(source,
                 CreatePX1030DiagnosticResult(line: 23, column: 4),
-				CreatePX1030DiagnosticResult(line: 30, column: 4));
+				CreatePX1030DiagnosticResult(line: 30, column: 4),
+				CreatePX1030DiagnosticResult(line: 44, column: 4),
+				CreatePX1030DiagnosticResult(line: 50, column: 13),
+				CreatePX1030DiagnosticResult(line: 56, column: 13),
+				CreatePX1030DiagnosticResult(line: 62, column: 4));
 
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1030\Diagnostics\DacExtensionWithUnboundFields.cs")]
