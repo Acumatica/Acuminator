@@ -118,9 +118,21 @@ namespace Acuminator.Analyzers
 			if (fieldAttributeInfo.FieldType == null)                                                               //PXDBFieldAttribute case
 				return CreateDiagnosticsAsync(property, fieldAttribute, symbolContext, registerCodeFix: false);
 
-			ITypeSymbol typeToCompare = property.Type.IsValueType
-				? (property.Type as INamedTypeSymbol)?.GetUnderlyingTypeFromNullable(pxContext)
-				: property.Type;
+			ITypeSymbol typeToCompare;
+
+			if (property.Type.IsValueType)
+			{
+				if (!(property.Type is INamedTypeSymbol namedPropertyType))
+					return null;
+
+				typeToCompare = namedPropertyType.IsNullable(pxContext) 
+									? namedPropertyType.GetUnderlyingTypeFromNullable(pxContext)
+									: namedPropertyType;
+			}
+			else
+			{
+				typeToCompare = property.Type;
+			}
 
 			if (fieldAttributeInfo.FieldType.Equals(typeToCompare))
 				return null;

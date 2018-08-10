@@ -21,8 +21,8 @@ namespace PX.Objects.HackathonDemo
 		#region Status
 		public abstract class status : IBqlField { }
 
-		[PXDBInt]
 		[PXDBString]
+		[PXDBInt]
 		[PXStringList(new[] { "N", "O" }, new[] { "New", "Open" })]
 		[PXUIField(DisplayName = "Status")]
 		public string Status { get; set; }
