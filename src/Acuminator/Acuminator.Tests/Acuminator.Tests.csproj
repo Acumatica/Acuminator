@@ -185,9 +185,11 @@
     <EmbeddedResource Include="Sources\Dac\PX1031 and PX1032\Diagnostics\DacWithMethodsUsage.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1031 and PX1032\Diagnostics\DacExtensionWithMethodsUsage.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1030\Diagnostics\DacExtensionWithBoundFields.cs" />
-    <EmbeddedResource Include="Sources\Dac\PX1030\CodeFixes\DacExtensionWithPXDefaultAttribute_Expected.cs" />
-    <EmbeddedResource Include="Sources\Dac\PX1030\CodeFixes\DacExtensionWithPXUnboundAttribute_Expected.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1030\CodeFixes\DacExtensionWithBoundFields_Expected.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1030\CodeFixes\DacExtensionWithUnboundFields_Expected.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1030\Diagnostics\DacExtensionWithUnboundFields.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1030\Diagnostics\AggregateAttributeDefine.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1030\Diagnostics\DacAggregateAttributes.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTypeMismatchCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\MultipleFieldAttributesCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTests.cs" />

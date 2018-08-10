@@ -53,20 +53,24 @@ namespace Acuminator.Analyzers
 					var typesHierarchy = attribute.AttributeClass.GetBaseTypesAndThis();
 					if (typesHierarchy.Contains(symbolContext.Compilation.GetTypeByMetadataName(typeof(PX.Data.PXDefaultAttribute).FullName)))
 					{
+						foreach (var argument in attribute.NamedArguments)
+						{
+							if (argument.Key.Contains("PersistingCheck") && (int)argument.Value.Value == (int)PX.Data.PXPersistingCheck.Nothing)
+								return;
+						}
 						Location[] locations = await Task.WhenAll(DacPropertyAttributesAnalyzer.GetAttributeLocationAsync(attribute, symbolContext.CancellationToken));
 						Location attributeLocation = locations[0];
 
 						if (attributeLocation != null)
 						{
-							foreach (var argument in attribute.NamedArguments)
+							var diagnosticProperties = new Dictionary<string, string>
 							{
-								if (argument.Key.Contains("PersistingCheck") && (int)argument.Value.Value == (int)PX.Data.PXPersistingCheck.Nothing)
-									return;
-							}
+								{ DiagnosticProperty.IsBoundField, attributesWithInfo[0].Info.IsBoundField.ToString() }
+							}.ToImmutableDictionary();
+
 							symbolContext.ReportDiagnostic(
 								Diagnostic.Create(
-									Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attributeLocation));
-
+									Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attributeLocation,diagnosticProperties));
 						}
 					}
 					// var allAttr = typesHierarchy.SelectMany(type => type.GetAttributes);
@@ -85,10 +89,14 @@ namespace Acuminator.Analyzers
 
 						if (attributeLocation != null)
 						{
+							var diagnosticProperties = new Dictionary<string, string>
+							{
+								{ DiagnosticProperty.IsBoundField, attributesWithInfo[0].Info.IsBoundField.ToString() }
+							}.ToImmutableDictionary();
+
 							symbolContext.ReportDiagnostic(
 								Diagnostic.Create(
-									Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attributeLocation));
-
+									Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attributeLocation,diagnosticProperties));
 						}
 					}
 

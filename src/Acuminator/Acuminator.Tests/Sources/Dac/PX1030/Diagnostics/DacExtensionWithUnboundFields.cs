@@ -15,19 +15,19 @@ namespace PX.Objects.HackathonDemo
 		[PXDecimal]
 		[PXUIField(DisplayName = "Total")]
 		public decimal TotalAmount { get; set; }
-        #endregion
+		#endregion
 
-        #region UsrNPCADocLineCntr
-        public abstract class usrNPCADocLineCntr : IBqlField {}
+		#region UsrNPCADocLineCntr
+		public abstract class usrNPCADocLineCntr : IBqlField { }
 		[PXInt]
 		[PXDefault]
-        public virtual int? UsrNPCADocLineCntr { get; set; }
+		public virtual int? UsrNPCADocLineCntr { get; set; }
 		#endregion
-		
+
 		#region UsrNPCADocLineCntr2
 		public abstract class usrNPCADocLineCntr2 : IBqlField { }
 		[PXInt]
-		[PXDefault(0,PersistingCheck = PXPersistingCheck.Nothing)]
+		[PXDefault(0, PersistingCheck = PXPersistingCheck.Nothing)]
 		public virtual int? UsrNPCADocLineCntr2 { get; set; }
 		#endregion
 

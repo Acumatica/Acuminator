@@ -12,37 +12,30 @@ namespace PX.Objects.HackathonDemo
 		#region TotalAmount
 		public abstract class totalAmount : IBqlField { }
 
-		[PXDBDecimal]
+		[PXDecimal]
 		[PXUIField(DisplayName = "Total")]
 		public decimal TotalAmount { get; set; }
 		#endregion
 
 		#region UsrNPCADocLineCntr
 		public abstract class usrNPCADocLineCntr : IBqlField { }
-		[PXDBInt]
-		[PXDefault]
+		[PXInt]
+		[PXUnboundDefault]
 		public virtual int? UsrNPCADocLineCntr { get; set; }
 		#endregion
 
 		#region UsrNPCADocLineCntr2
 		public abstract class usrNPCADocLineCntr2 : IBqlField { }
-		[PXDBInt]
-		[PXDefault(0, PersistingCheck = PXPersistingCheck.Null)]
+		[PXInt]
+		[PXUnboundDefault]
 		public virtual int? UsrNPCADocLineCntr2 { get; set; }
 		#endregion
 
 		#region UsrNPCADocLineCntr3
 		public abstract class usrNPCADocLineCntr3 : IBqlField { }
-		[PXDBInt]
-		[PXDefault(0, PersistingCheck = PXPersistingCheck.Nothing)]
+		[PXInt]
+		[PXUnboundDefault]
 		public virtual int? UsrNPCADocLineCntr3 { get; set; }
-		#endregion
-
-		#region UsrNPCADocLineCntr4
-		public abstract class usrNPCADocLineCntr4 : IBqlField { }
-		[PXDBInt]
-		[PXDefault(0)]
-		public virtual int? UsrNPCADocLineCntr4 { get; set; }
 		#endregion
 	}
 }

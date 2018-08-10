@@ -19,9 +19,11 @@ namespace Acuminator.Tests
 	{
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacExtensionDefaultAttributeAnalyzer();
 
-        [Theory]
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new DacExtensionDefaultAttributeFix();
+
+		[Theory]
         [EmbeddedFileData(@"Dac\PX1030\Diagnostics\DacExtensionWithBoundFields.cs")]
-        public virtual void TestDacExtensionWithDefaultAttribute(string source) =>
+        public virtual void TestDacExtensionWithBoundAttribute(string source) =>
             VerifyCSharpDiagnostic(source,
                 CreatePX1030DiagnosticResult(line: 23, column: 4),
 				CreatePX1030DiagnosticResult(line: 30, column: 4));
@@ -32,7 +34,26 @@ namespace Acuminator.Tests
 			VerifyCSharpDiagnostic(source,
 				CreatePX1030DiagnosticResult(line: 23, column: 4),
 				CreatePX1030DiagnosticResult(line: 30, column: 4));
-        private DiagnosticResult CreatePX1030DiagnosticResult(int line, int column)
+
+		[Theory(Skip = "Test not implemented. Remove to run test")]
+		[EmbeddedFileData(@"Dac\PX1030\Diagnostics\AggregateAttributeFields.cs")]
+		public virtual void TestDacExtensionWithAggregateAttributeFields(string source) =>
+			VerifyCSharpDiagnostic(source);
+		[Theory]
+		[EmbeddedFileData(@"Dac\PX1030\Diagnostics\DacExtensionWithBoundFields.cs",
+							@"Dac\PX1030\CodeFixes\DacExtensionWithBoundFields_Expected.cs")]
+		public virtual void TestCodeFixDacExtensionWithBoundAttribute(string actual, string expected) =>
+			VerifyCSharpFix(actual, expected);
+
+		[Theory]
+		[EmbeddedFileData(@"Dac\PX1030\Diagnostics\DacExtensionWithUnboundFields.cs",
+							@"Dac\PX1030\CodeFixes\DacExtensionWithUnboundFields_Expected.cs")]
+		public virtual void TestCodeFixDacExtensionWithUnboundAttribute(string actual, string expected) =>
+			VerifyCSharpFix(actual, expected);
+
+
+
+		private DiagnosticResult CreatePX1030DiagnosticResult(int line, int column)
         {
             return new DiagnosticResult
             {

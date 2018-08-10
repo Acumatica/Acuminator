@@ -26,5 +26,10 @@ namespace Acuminator.Analyzers
 		/// The property used to transfer the DAC metadata with the diagnostic.
 		/// </summary>
 		public const string DacMetadataName = nameof(DacMetadataName);
+
+		/// <summary>
+		/// The property used to transfer the DAC metadata with the diagnostic.
+		/// </summary>
+		public const string IsBoundField = nameof(IsBoundField);
 	}
 }

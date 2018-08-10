@@ -20,14 +20,14 @@ namespace PX.Objects.HackathonDemo
 		#region UsrNPCADocLineCntr
 		public abstract class usrNPCADocLineCntr : IBqlField { }
 		[PXDBInt]
-		[PXDefault]
+		[PXDefault(PersistingCheck = PXPersistingCheck.Nothing)]
 		public virtual int? UsrNPCADocLineCntr { get; set; }
 		#endregion
 
 		#region UsrNPCADocLineCntr2
 		public abstract class usrNPCADocLineCntr2 : IBqlField { }
 		[PXDBInt]
-		[PXDefault(0, PersistingCheck = PXPersistingCheck.Null)]
+		[PXDefault(0, PersistingCheck = PXPersistingCheck.Nothing)]
 		public virtual int? UsrNPCADocLineCntr2 { get; set; }
 		#endregion
 
@@ -41,7 +41,7 @@ namespace PX.Objects.HackathonDemo
 		#region UsrNPCADocLineCntr4
 		public abstract class usrNPCADocLineCntr4 : IBqlField { }
 		[PXDBInt]
-		[PXDefault(0)]
+		[PXDefault(0, PersistingCheck = PXPersistingCheck.Nothing)]
 		public virtual int? UsrNPCADocLineCntr4 { get; set; }
 		#endregion
 	}
