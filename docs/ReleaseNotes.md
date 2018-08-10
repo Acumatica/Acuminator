@@ -8,7 +8,7 @@ In this version, diagnostics and code fixes for the following issues have been a
 
 | Code   | Issue Description                                               | Type    | Diagnostics | Code Fix  | 
 | ------ | --------------------------------------------------------------- | ------- | ----------- | --------- | 
-| PX1012 | PXAction is declared on a non-primary view.                     | Warning | Available   | Available |
+| PX1012 | `PXAction` is declared on a non-primary view.                     | Warning | Available   | Available |
 | PX1015 | For a BQL statement that contains only `Required` parameters, the number of arguments of the `Select` method must be equal to the number of `Required` parameters. | Warning | Available | Unavailable |
 | PX1018 | The graph with the specified primary view type parameter doesn't contain the primary view of the specified type. | Error | Available | Unavailable |
 | PX1021 | The DAC property field has a type that is not compatible with the field attribute assigned to this property. | Error   | Available   | Available |
@@ -18,7 +18,7 @@ In this version, diagnostics and code fixes for the following issues have been a
 | PX1040 | Constructors cannot be used in BLC extensions.                  | Error   | Available   | Available | 
 
 ### New Code Navigation
-Acuminator now can navigate between an action and its handler, and between data view declaration and its delegate. To navigate between these items, do the following:
+Acuminator now can navigate between an action and its handler, and between a data view declaration and its delegate. To navigate between these items, do the following:
 1. Place the coursor to an action, an action handler, a data view declaration, or a data view delegate.
 2. Click **Go To Action/View Declaration/Handler** in the context menu or in the **Acuminator** main menu.
 
@@ -26,8 +26,8 @@ Acuminator now can navigate between an action and its handler, and between data 
 In previous versions of Acuminator, you have to manually add the **Format BQL Statements** command to the context menu of the code editor in Visual Studio. In Acuminator 1.3, this command is available in the context menu by default. Also this command is now available in the **Acuminator** main menu. 
 
 ### Code Outlining Enhancements
-Now you can configure Acuminator to outline entire BQL statements. In Visual Studio, set to `False` the value of **Tools > Options > Acuminator > BQL Outlining > Outline parts of BQL commands**.
-The **Use BQL outlining** has been moved under **Tools > Options > Acuminator > BQL Outlining**.
+* Now you can configure Acuminator to outline entire BQL statements. In Visual Studio, set to `False` the value of **Tools > Options > Acuminator > BQL Outlining > Outline parts of BQL commands**.
+* The **Use BQL outlining** has been moved under **Tools > Options > Acuminator > BQL Outlining**.
 
 ### Code Coloring Enhancements
 * All code coloring options have been grouped under **Tools > Options > Acuminator > BQL Coloring**.
@@ -38,7 +38,7 @@ The **Use BQL outlining** has been moved under **Tools > Options > Acuminator > 
 * Static code analyzers from Acuminator are now available as a [standalone NuGet package](https://www.nuget.org/packages/Acuminator.Analyzers/).
 * The PX.Objects.HackathonDemo demo solution has been refactored: the files of the solution have been grouped by the diagnostics they illustrate and placed in folders with sensible names.
 
-### Bug Fix
+### Bug Fixes
 In this version, the following bugs have been fixed.
 
 | Bug | Fix Description |
