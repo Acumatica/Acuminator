@@ -186,6 +186,7 @@
     <EmbeddedResource Include="Sources\PXGraph\PX1040\CodeFixes\ConstructorInGraphExtension_Expected.cs" />
     <EmbeddedResource Include="Sources\PXGraph\PX1040\Diagnostics\ConstructorInGraphExtensionWithInitialize.cs" />
     <EmbeddedResource Include="Sources\PXGraph\PX1040\CodeFixes\ConstructorInGraphExtensionWithInitialize_Expected.cs" />
+    <Compile Include="Sources\Localization\LocalizationSamples.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTypeMismatchCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\MultipleFieldAttributesCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTests.cs" />
