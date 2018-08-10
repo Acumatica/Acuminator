@@ -91,14 +91,20 @@ namespace Acuminator.Analyzers
 
 				if (symbolInfo.Symbol is IMethodSymbol methodSymbol)
 				{
-					if (IsDatabaseCall(node, methodSymbol))
+					if (IsDatabaseCall(methodSymbol))
+					{
 						ReportDiagnostic(node);
+					}
+					else
+					{
+						// Check calls to other methods
+					}
 				}
 				else if (!symbolInfo.CandidateSymbols.IsEmpty)
 				{
 					foreach (var candidate in symbolInfo.CandidateSymbols.OfType<IMethodSymbol>())
 					{
-						if (IsDatabaseCall(node, candidate))
+						if (IsDatabaseCall(candidate))
 						{
 							ReportDiagnostic(node);
 							break;
@@ -109,7 +115,7 @@ namespace Acuminator.Analyzers
 				base.VisitInvocationExpression(node);
 			}
 
-			private bool IsDatabaseCall(InvocationExpressionSyntax node, IMethodSymbol candidate)
+			private bool IsDatabaseCall(IMethodSymbol candidate)
 			{
 				var containingType = candidate.ContainingType?.OriginalDefinition;
 				return !_insideConnectionScope
