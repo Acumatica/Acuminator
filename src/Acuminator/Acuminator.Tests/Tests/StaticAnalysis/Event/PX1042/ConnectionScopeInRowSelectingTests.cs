@@ -69,6 +69,20 @@ namespace Acuminator.Tests
 		}
 
 		[Theory]
+		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingSearch.cs")]
+		public void TestDiagnostic_Search(string actual)
+		{
+			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(30, 9));
+		}
+
+		[Theory]
+		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingSelector.cs")]
+		public void TestDiagnostic_Selector(string actual)
+		{
+			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(20, 6));
+		}
+
+		[Theory]
 		[EmbeddedFileData(@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelecting_Expected.cs")]
 		public void TestDiagnostic_ShouldNotShowDiagnostic(string actual)
 		{
@@ -99,6 +113,20 @@ namespace Acuminator.Tests
 		[Theory]
 		[EmbeddedFileData(@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingNoNamespace_Expected.cs")]
 		public void TestDiagnostic_NoNamespace_ShouldNotShowDiagnostic(string actual)
+		{
+			VerifyCSharpDiagnostic(actual);
+		}
+
+		[Theory]
+		[EmbeddedFileData(@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingSelector_Expected.cs")]
+		public void TestDiagnostic_Selector_ShouldNotShowDiagnostic(string actual)
+		{
+			VerifyCSharpDiagnostic(actual);
+		}
+
+		[Theory]
+		[EmbeddedFileData(@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingSearch_Expected.cs")]
+		public void TestDiagnostic_Search_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
@@ -139,6 +167,22 @@ namespace Acuminator.Tests
 		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingNoNamespace.cs",
 			@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingNoNamespace_Expected.cs")]
 		public void TestCodeFix_NoNamespace(string actual, string expected)
+		{
+			VerifyCSharpFix(actual, expected);
+		}
+
+		[Theory]
+		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingSelector.cs",
+			@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingSelector_Expected.cs")]
+		public void TestCodeFix_Selector(string actual, string expected)
+		{
+			VerifyCSharpFix(actual, expected);
+		}
+
+		[Theory]
+		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingSearch.cs",
+			@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingSearch_Expected.cs")]
+		public void TestCodeFix_Search(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
