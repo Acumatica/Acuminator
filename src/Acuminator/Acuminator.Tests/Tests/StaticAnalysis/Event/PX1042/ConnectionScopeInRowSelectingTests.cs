@@ -83,6 +83,13 @@ namespace Acuminator.Tests
 		}
 
 		[Theory]
+		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingPXDatabase.cs")]
+		public void TestDiagnostic_PXDatabase(string actual)
+		{
+			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(19, 9));
+		}
+
+		[Theory]
 		[EmbeddedFileData(@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelecting_Expected.cs")]
 		public void TestDiagnostic_ShouldNotShowDiagnostic(string actual)
 		{
@@ -127,6 +134,13 @@ namespace Acuminator.Tests
 		[Theory]
 		[EmbeddedFileData(@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingSearch_Expected.cs")]
 		public void TestDiagnostic_Search_ShouldNotShowDiagnostic(string actual)
+		{
+			VerifyCSharpDiagnostic(actual);
+		}
+
+		[Theory]
+		[EmbeddedFileData(@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingPXDatabase_Expected.cs")]
+		public void TestDiagnostic_PXDatabase_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
@@ -183,6 +197,14 @@ namespace Acuminator.Tests
 		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingSearch.cs",
 			@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingSearch_Expected.cs")]
 		public void TestCodeFix_Search(string actual, string expected)
+		{
+			VerifyCSharpFix(actual, expected);
+		}
+
+		[Theory]
+		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingPXDatabase.cs",
+			@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingPXDatabase_Expected.cs")]
+		public void TestCodeFix_PXDatabase(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}

@@ -98,7 +98,8 @@ namespace Acuminator.Analyzers
 							&& containingType != null 
 							&& (containingType.InheritsFromOrEqualsGeneric(_pxContext.PXSelectBaseType)
 								|| containingType.InheritsFromOrEquals(_pxContext.PXViewType)
-								|| containingType.InheritsFromOrEquals(_pxContext.PXSelectorAttribute)))
+								|| containingType.InheritsFromOrEquals(_pxContext.PXSelectorAttribute)
+							    || containingType.Equals(_pxContext.PXDatabase)))
 						{
 							_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1042_ConnectionScopeInRowSelecting, node.GetLocation()));
 							break;

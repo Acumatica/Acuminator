@@ -94,6 +94,8 @@ namespace Acuminator.Analyzers
 
 		public INamedTypeSymbol PXConnectionScope => Compilation.GetTypeByMetadataName(typeof(PXConnectionScope).FullName);
 
+	    public INamedTypeSymbol PXDatabase => Compilation.GetTypeByMetadataName(typeof(PXDatabase).FullName);
+
 		public PXContext(Compilation compilation)
         {
             Compilation = compilation;
