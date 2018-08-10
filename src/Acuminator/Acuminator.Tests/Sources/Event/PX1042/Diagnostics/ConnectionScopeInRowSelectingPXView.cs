@@ -24,7 +24,7 @@ namespace PX.Objects
 
 		protected virtual void ARInvoice_RowSelecting(PXCache sender, PXRowSelectingEventArgs e)
 		{
-			ARInvoice row = (ARInvoice) e.Row;
+			ARInvoice row = (ARInvoice)e.Row;
 			if (row != null && !String.IsNullOrEmpty(row.DocType)
 				&& !String.IsNullOrEmpty(row.RefNbr))
 			{

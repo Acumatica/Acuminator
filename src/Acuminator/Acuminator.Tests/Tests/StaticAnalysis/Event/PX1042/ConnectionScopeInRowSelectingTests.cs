@@ -62,6 +62,13 @@ namespace Acuminator.Tests
 		}
 
 		[Theory]
+		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingNoNamespace.cs")]
+		public void TestDiagnostic_NoNamespace(string actual)
+		{
+			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(18, 9));
+		}
+
+		[Theory]
 		[EmbeddedFileData(@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelecting_Expected.cs")]
 		public void TestDiagnostic_ShouldNotShowDiagnostic(string actual)
 		{
@@ -90,8 +97,15 @@ namespace Acuminator.Tests
 		}
 
 		[Theory]
+		[EmbeddedFileData(@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingNoNamespace_Expected.cs")]
+		public void TestDiagnostic_NoNamespace_ShouldNotShowDiagnostic(string actual)
+		{
+			VerifyCSharpDiagnostic(actual);
+		}
+
+		[Theory]
 		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelecting.cs",
-			@"PXGraph\PX1042\CodeFixes\ConnectionScopeInRowSelecting_Expected.cs")]
+			@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelecting_Expected.cs")]
 		public void TestCodeFix(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
@@ -99,7 +113,7 @@ namespace Acuminator.Tests
 
 		[Theory]
 		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingGeneric.cs",
-			@"PXGraph\PX1042\CodeFixes\ConnectionScopeInRowSelectingGeneric_Expected.cs")]
+			@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingGeneric_Expected.cs")]
 		public void TestCodeFix_GenericEventDeclaration(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
@@ -107,7 +121,7 @@ namespace Acuminator.Tests
 
 		[Theory]
 		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingDataView.cs",
-			@"PXGraph\PX1042\CodeFixes\ConnectionScopeInRowSelectingDataView_Expected.cs")]
+			@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingDataView_Expected.cs")]
 		public void TestCodeFix_DataView(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
@@ -115,8 +129,16 @@ namespace Acuminator.Tests
 
 		[Theory]
 		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingPXView.cs",
-			@"PXGraph\PX1042\CodeFixes\ConnectionScopeInRowSelectingPXView_Expected.cs")]
+			@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingPXView_Expected.cs")]
 		public void TestCodeFix_PXView(string actual, string expected)
+		{
+			VerifyCSharpFix(actual, expected);
+		}
+
+		[Theory]
+		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingNoNamespace.cs",
+			@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingNoNamespace_Expected.cs")]
+		public void TestCodeFix_NoNamespace(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}

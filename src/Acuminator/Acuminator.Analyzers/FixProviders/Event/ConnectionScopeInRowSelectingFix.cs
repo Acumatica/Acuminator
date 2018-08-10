@@ -13,6 +13,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
+using Microsoft.CodeAnalysis.Formatting;
 
 namespace Acuminator.Analyzers.FixProviders
 {
@@ -51,10 +52,22 @@ namespace Acuminator.Analyzers.FixProviders
 			cancellationToken.ThrowIfCancellationRequested();
 
 			var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
-			var methodSymbol = semanticModel.GetDeclaredSymbol(methodNode);
 			var newRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
-			throw new NotImplementedException();
+			var generator = SyntaxGenerator.GetGenerator(document);
+			var pxContext = new PXContext(semanticModel.Compilation);
+			var usingNode = (UsingStatementSyntax) generator.UsingStatement(
+				SyntaxFactory.ObjectCreationExpression((TypeSyntax) generator.TypeExpression(pxContext.PXConnectionScope),
+					SyntaxFactory.ArgumentList(), default(InitializerExpressionSyntax)),
+				methodNode.Body.Statements)
+				.WithAdditionalAnnotations(Formatter.Annotation);
+			var newMethodNode = methodNode.Body.WithStatements(new SyntaxList<StatementSyntax>().Add(usingNode));
+
+			newRoot = newRoot.ReplaceNode(
+				methodNode.Body,
+				newMethodNode);
+
+			return document.WithSyntaxRoot(newRoot);
 		}
 	}
 }

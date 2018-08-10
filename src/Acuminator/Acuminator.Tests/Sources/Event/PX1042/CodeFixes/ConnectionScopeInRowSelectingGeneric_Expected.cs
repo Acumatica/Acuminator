@@ -11,13 +11,13 @@ namespace PX.Objects
 	{
 		protected virtual void _(Events.RowSelecting<ARInvoice> e)
 		{
-			ARInvoice row = (ARInvoice) e.Row;
-			if (row != null && !String.IsNullOrEmpty(row.DocType)
-				&& !String.IsNullOrEmpty(row.RefNbr))
+			using (new PXConnectionScope())
 			{
-				row.IsCCPayment = false;
-				using (new PXConnectionScope())
+				ARInvoice row = (ARInvoice)e.Row;
+				if (row != null && !String.IsNullOrEmpty(row.DocType)
+					&& !String.IsNullOrEmpty(row.RefNbr))
 				{
+					row.IsCCPayment = false;
 					if (PXSelectJoin<CustomerPaymentMethodC,
 								InnerJoin<CA.PaymentMethod,
 									On<CA.PaymentMethod.paymentMethodID,

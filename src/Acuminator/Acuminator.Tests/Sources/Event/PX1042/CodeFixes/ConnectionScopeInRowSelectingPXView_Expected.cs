@@ -24,13 +24,13 @@ namespace PX.Objects
 
 		protected virtual void ARInvoice_RowSelecting(PXCache sender, PXRowSelectingEventArgs e)
 		{
-			ARInvoice row = (ARInvoice) e.Row;
-			if (row != null && !String.IsNullOrEmpty(row.DocType)
-				&& !String.IsNullOrEmpty(row.RefNbr))
+			using (new PXConnectionScope())
 			{
-				row.IsCCPayment = false;
-				using (new PXConnectionScope())
+				ARInvoice row = (ARInvoice)e.Row;
+				if (row != null && !String.IsNullOrEmpty(row.DocType)
+					&& !String.IsNullOrEmpty(row.RefNbr))
 				{
+					row.IsCCPayment = false;
 					if (CCPayments.View.SelectMulti(row.DocType, row.RefNbr).Count > 0)
 					{
 						row.IsCCPayment = true;

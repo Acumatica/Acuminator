@@ -194,6 +194,8 @@
     <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingDataView_Expected.cs" />
     <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingPXView_Expected.cs" />
     <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingPXView.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingNoNamespace.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingNoNamespace_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTypeMismatchCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\MultipleFieldAttributesCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTests.cs" />
