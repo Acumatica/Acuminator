@@ -88,26 +88,43 @@ namespace Acuminator.Analyzers
 				_context.CancellationToken.ThrowIfCancellationRequested();
 
 				var symbolInfo = _semanticModel.GetSymbolInfo(node);
-				if (!symbolInfo.CandidateSymbols.IsEmpty)
+
+				if (symbolInfo.Symbol is IMethodSymbol methodSymbol)
+				{
+					if (IsDatabaseCall(node, methodSymbol))
+						ReportDiagnostic(node);
+				}
+				else if (!symbolInfo.CandidateSymbols.IsEmpty)
 				{
 					foreach (var candidate in symbolInfo.CandidateSymbols.OfType<IMethodSymbol>())
 					{
-						var containingType = candidate.ContainingType?.OriginalDefinition;
-						if (!_insideConnectionScope
-							&& MethodPrefixes.Any(p => candidate.Name.StartsWith(p, StringComparison.Ordinal))
-							&& containingType != null 
-							&& (containingType.InheritsFromOrEqualsGeneric(_pxContext.PXSelectBaseType)
-								|| containingType.InheritsFromOrEquals(_pxContext.PXViewType)
-								|| containingType.InheritsFromOrEquals(_pxContext.PXSelectorAttribute)
-							    || containingType.Equals(_pxContext.PXDatabase)))
+						if (IsDatabaseCall(node, candidate))
 						{
-							_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1042_ConnectionScopeInRowSelecting, node.GetLocation()));
+							ReportDiagnostic(node);
 							break;
 						}
 					}
 				}
 
 				base.VisitInvocationExpression(node);
+			}
+
+			private bool IsDatabaseCall(InvocationExpressionSyntax node, IMethodSymbol candidate)
+			{
+				var containingType = candidate.ContainingType?.OriginalDefinition;
+				return !_insideConnectionScope
+				       && MethodPrefixes.Any(p => candidate.Name.StartsWith(p, StringComparison.Ordinal))
+				       && containingType != null
+				       && (containingType.InheritsFromOrEqualsGeneric(_pxContext.PXSelectBaseType)
+				           || containingType.InheritsFromOrEquals(_pxContext.PXViewType)
+				           || containingType.InheritsFromOrEquals(_pxContext.PXSelectorAttribute)
+				           || containingType.Equals(_pxContext.PXDatabase));
+			}
+
+			private void ReportDiagnostic(SyntaxNode node)
+			{
+				_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1042_ConnectionScopeInRowSelecting,
+					node.GetLocation()));
 			}
 		}
 
