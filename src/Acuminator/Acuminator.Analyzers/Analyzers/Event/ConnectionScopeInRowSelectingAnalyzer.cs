@@ -47,6 +47,8 @@ namespace Acuminator.Analyzers
 				}
 			}
 
+			private static readonly IEnumerable<string> MethodPrefixes = new[] { "Select", "Search" };
+
 			private SymbolAnalysisContext _context;
 			private readonly PXContext _pxContext;
 			private readonly SemanticModel _semanticModel;
@@ -67,6 +69,8 @@ namespace Acuminator.Analyzers
 
 			public override void VisitUsingStatement(UsingStatementSyntax node)
 			{
+				_context.CancellationToken.ThrowIfCancellationRequested();
+
 				if (_insideConnectionScope)
 				{
 					base.VisitUsingStatement(node);
@@ -90,10 +94,11 @@ namespace Acuminator.Analyzers
 					{
 						var containingType = candidate.ContainingType?.OriginalDefinition;
 						if (!_insideConnectionScope
-							&& candidate.Name.StartsWith("Select", StringComparison.Ordinal) 
+							&& MethodPrefixes.Any(p => candidate.Name.StartsWith(p, StringComparison.Ordinal))
 							&& containingType != null 
 							&& (containingType.InheritsFromOrEqualsGeneric(_pxContext.PXSelectBaseType)
-								|| containingType.InheritsFromOrEquals(_pxContext.PXViewType)))
+								|| containingType.InheritsFromOrEquals(_pxContext.PXViewType)
+								|| containingType.InheritsFromOrEquals(_pxContext.PXSelectorAttribute)))
 						{
 							_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1042_ConnectionScopeInRowSelecting, node.GetLocation()));
 							break;
