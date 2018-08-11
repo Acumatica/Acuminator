@@ -87,9 +87,13 @@ namespace Acuminator.Analyzers
 			{
 				_context.CancellationToken.ThrowIfCancellationRequested();
 
-				var symbolInfo = _semanticModel.GetSymbolInfo(node);
+				if (_insideConnectionScope)
+					return;
 
-				if (symbolInfo.Symbol is IMethodSymbol methodSymbol)
+				var symbolInfo = _semanticModel.GetSymbolInfo(node);
+				var methodSymbol = GetMethodSymbol(symbolInfo);
+
+				if (methodSymbol != null)
 				{
 					if (IsDatabaseCall(methodSymbol))
 					{
@@ -98,28 +102,32 @@ namespace Acuminator.Analyzers
 					else
 					{
 						// Check calls to other methods
-					}
-				}
-				else if (!symbolInfo.CandidateSymbols.IsEmpty)
-				{
-					foreach (var candidate in symbolInfo.CandidateSymbols.OfType<IMethodSymbol>())
-					{
-						if (IsDatabaseCall(candidate))
-						{
-							ReportDiagnostic(node);
-							break;
-						}
+						var externalMethodNode = methodSymbol.GetSyntax(_context.CancellationToken) as MethodDeclarationSyntax;
+						externalMethodNode?.Accept(this);
 					}
 				}
 
 				base.VisitInvocationExpression(node);
 			}
 
+			private IMethodSymbol GetMethodSymbol(SymbolInfo symbolInfo)
+			{
+				if (symbolInfo.Symbol is IMethodSymbol methodSymbol)
+				{
+					return methodSymbol;
+				}
+				if (!symbolInfo.CandidateSymbols.IsEmpty)
+				{
+					return symbolInfo.CandidateSymbols.OfType<IMethodSymbol>().FirstOrDefault();
+				}
+
+				return null;
+			}
+
 			private bool IsDatabaseCall(IMethodSymbol candidate)
 			{
 				var containingType = candidate.ContainingType?.OriginalDefinition;
-				return !_insideConnectionScope
-				       && MethodPrefixes.Any(p => candidate.Name.StartsWith(p, StringComparison.Ordinal))
+				return MethodPrefixes.Any(p => candidate.Name.StartsWith(p, StringComparison.Ordinal))
 				       && containingType != null
 				       && (containingType.InheritsFromOrEqualsGeneric(_pxContext.PXSelectBaseType)
 				           || containingType.InheritsFromOrEquals(_pxContext.PXViewType)
