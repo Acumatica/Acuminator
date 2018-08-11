@@ -46,9 +46,12 @@ namespace Acuminator.Analyzers
 			if (symbolContext.CancellationToken.IsCancellationRequested || attributesWithInfo.IsNullOrEmpty())
 				return;
 
-			if (attributesWithInfo.Count > 0 && attributesWithInfo[0].Info.IsBoundField) //field is DBBound
+			
+			if (attributesWithInfo.First().Info.IsBoundField) //field is DBBound
 			{
-				foreach (var attribute in attributes)
+				if (IsIBqlTableTypeImplementation(property, pxContext)) // BQLTable class bound field
+					return;
+				foreach (var attribute in attributes) 
 				{
 					var typesHierarchy = attribute.AttributeClass.GetBaseTypesAndThis();
 					if (typesHierarchy.Contains(symbolContext.Compilation.GetTypeByMetadataName(typeof(PXDefaultAttribute).FullName)))
@@ -64,13 +67,13 @@ namespace Acuminator.Analyzers
 						if (attributeLocation != null)
 						{
 							var diagnosticProperties = new Dictionary<string, string>
-							{
-								{ DiagnosticProperty.IsBoundField, attributesWithInfo[0].Info.IsBoundField.ToString() }
-							}.ToImmutableDictionary();
+						{
+							{ DiagnosticProperty.IsBoundField, attributesWithInfo[0].Info.IsBoundField.ToString() }
+						}.ToImmutableDictionary();
 
 							symbolContext.ReportDiagnostic(
 								Diagnostic.Create(
-									Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attributeLocation,diagnosticProperties));
+									Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attributeLocation, diagnosticProperties));
 						}
 					}
 					// var allAttr = typesHierarchy.SelectMany(type => type.GetAttributes);
@@ -90,13 +93,13 @@ namespace Acuminator.Analyzers
 						if (attributeLocation != null)
 						{
 							var diagnosticProperties = new Dictionary<string, string>
-							{
-								{ DiagnosticProperty.IsBoundField, attributesWithInfo[0].Info.IsBoundField.ToString() }
-							}.ToImmutableDictionary();
+						{
+							{ DiagnosticProperty.IsBoundField, attributesWithInfo[0].Info.IsBoundField.ToString() }
+						}.ToImmutableDictionary();
 
 							symbolContext.ReportDiagnostic(
 								Diagnostic.Create(
-									Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attributeLocation,diagnosticProperties));
+									Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attributeLocation, diagnosticProperties));
 						}
 					}
 
@@ -109,11 +112,21 @@ namespace Acuminator.Analyzers
         {
             var parent = property?.ContainingType;
 
-            if (parent == null || !parent.InheritsFrom(pxContext.PXCacheExtensionType))
+            if (parent == null || (!parent.ImplementsInterface(pxContext.IBqlTableType) && !parent.InheritsFrom(pxContext.PXCacheExtensionType)))
                 return false;
             return property.Type.TypeKind == TypeKind.Struct ||
                    property.Type.TypeKind == TypeKind.Class ||
                    property.Type.TypeKind == TypeKind.Array;
         }
-    }
+
+		private static bool IsIBqlTableTypeImplementation(IPropertySymbol property, PXContext pxContext)
+		{
+			var parent = property?.ContainingType;
+
+			if (parent == null || !parent.ImplementsInterface(pxContext.IBqlTableType))
+				return false;
+			return true;
+		}
+
+	}
 }

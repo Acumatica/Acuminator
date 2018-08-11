@@ -39,6 +39,12 @@ namespace Acuminator.Tests
 				CreatePX1030DiagnosticResult(line: 23, column: 4),
 				CreatePX1030DiagnosticResult(line: 30, column: 4));
 
+		[Theory]
+		[EmbeddedFileData(@"Dac\PX1030\Diagnostics\DacWithBoundAndUnboundFields.cs")]
+		public virtual void TestDacWithBoundAndUnboundAttribute(string source) =>
+			VerifyCSharpDiagnostic(source,
+				CreatePX1030DiagnosticResult(line: 18, column: 4));
+
 		[Theory(Skip = "Test not implemented. Remove to run test")]
 		[EmbeddedFileData(@"Dac\PX1030\Diagnostics\AggregateAttributeFields.cs")]
 		public virtual void TestDacExtensionWithAggregateAttributeFields(string source) =>
