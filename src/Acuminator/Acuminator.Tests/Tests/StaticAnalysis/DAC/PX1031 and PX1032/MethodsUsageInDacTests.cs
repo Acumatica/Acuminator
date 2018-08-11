@@ -46,7 +46,7 @@ namespace Acuminator.Tests
                 CreatePX1032DiagnosticResult(23, 17),
                 CreatePX1032DiagnosticResult(24, 17),
                 CreatePX1032DiagnosticResult(25, 26),
-                CreatePX1031DiagnosticResult(46, 9));
+                CreatePX1031DiagnosticResult(46, 32));
         }
 
         [Theory]
@@ -57,7 +57,7 @@ namespace Acuminator.Tests
                 CreatePX1032DiagnosticResult(27, 17),
                 CreatePX1032DiagnosticResult(28, 17),
                 CreatePX1032DiagnosticResult(29, 26),
-                CreatePX1031DiagnosticResult(50, 9));
+                CreatePX1031DiagnosticResult(50, 32));
         }
     }
 }

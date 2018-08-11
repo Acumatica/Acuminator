@@ -54,6 +54,7 @@
     <Compile Include="Analyzers\PXGraph\ConstructorInGraphExtensionAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacFields\DacNonAbstractFieldTypeAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacDeclarationAnalyzer.cs" />
+    <Compile Include="Analyzers\DAC\DacGraphUsageAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacMethodsUsageAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacPropertyAttributes\NonNullableTypeForBqlFieldAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacPropertyAttributes\DacPropertyAttributesAnalyzer.cs" />
