@@ -27,9 +27,16 @@ namespace PX.Objects
 	{
 		public static bool IsCCPayment(ARInvoice row)
 		{
+			return HasPaymentMethod(row?.pMInstanceID);
+		}
+
+		private static bool HasPaymentMethod(int? pMInstanceID)
+		{
+			if (pMInstanceID == null) return false;
+
 			return PXDatabase.SelectSingle<CustomerPaymentMethod>(
-					   new PXDataField<CustomerPaymentMethod.cCProcessingCenterID>(),
-					   new PXDataFieldRestrict<CustomerPaymentMethod.pMInstanceID>(row.pMInstanceID)) != null;
+				new PXDataField<CustomerPaymentMethod.cCProcessingCenterID>(),
+				new PXDataFieldRestrict<CustomerPaymentMethod.pMInstanceID>(pMInstanceID)) != null;
 		}
 	}
 }

@@ -48,11 +48,14 @@ namespace Acuminator.Analyzers
 			}
 
 			private static readonly IEnumerable<string> MethodPrefixes = new[] { "Select", "Search" };
+			private const int MaxDepth = 5;
 
 			private SymbolAnalysisContext _context;
 			private readonly PXContext _pxContext;
 			private readonly SemanticModel _semanticModel;
 			private bool _insideConnectionScope;
+			private readonly Stack<bool> _externalCall = new Stack<bool>();
+			private bool _found;
 			private readonly PXConnectionScopeVisitor _connectionScopeVisitor;
 
 			public Walker(SymbolAnalysisContext context, PXContext pxContext, SemanticModel semanticModel)
@@ -87,7 +90,7 @@ namespace Acuminator.Analyzers
 			{
 				_context.CancellationToken.ThrowIfCancellationRequested();
 
-				if (_insideConnectionScope)
+				if (_insideConnectionScope || _found || _externalCall.Count >= MaxDepth)
 					return;
 
 				var symbolInfo = _semanticModel.GetSymbolInfo(node);
@@ -97,13 +100,26 @@ namespace Acuminator.Analyzers
 				{
 					if (IsDatabaseCall(methodSymbol))
 					{
-						ReportDiagnostic(node);
+						if (_externalCall.Count > 0)
+							_found = true; // diagnostic will be reported on the original node in RowSelecting
+						else
+							ReportDiagnostic(node);
 					}
 					else
 					{
 						// Check calls to other methods
 						var externalMethodNode = methodSymbol.GetSyntax(_context.CancellationToken) as MethodDeclarationSyntax;
+						_externalCall.Push(true);
 						externalMethodNode?.Accept(this);
+						_externalCall.Pop();
+
+						if (_found)
+						{
+							if (_externalCall.Count > 0) return;
+
+							ReportDiagnostic(node);
+							_found = false;
+						}
 					}
 				}
 
