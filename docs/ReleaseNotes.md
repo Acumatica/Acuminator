@@ -1,8 +1,8 @@
 # Acuminator Release Notes
-This document provides information about fixes, enhancements, and key features that are available in Acuminator 1.2.
+This document provides information about fixes, enhancements, and key features that are available in Acuminator 1.3.
 
 ## Acuminator 1.3
-Acuminator 1.3 includes the new features and the bug fix described in this section, as well as the features for the previous versions.
+Acuminator 1.3 includes the diagnostics and code fixes, enhancements, and bug fixes described in this section, as well as the features that have been implemented in the previous versions.
 ### New Diagnostics and Code Fixes
 In this version, diagnostics and code fixes for the following issues have been added.
 
@@ -19,43 +19,43 @@ In this version, diagnostics and code fixes for the following issues have been a
 
 ### New Code Navigation
 Acuminator now can navigate between an action and its handler, and between a data view declaration and its delegate. To navigate between these items, do the following:
-1. Place the coursor to an action, an action handler, a data view declaration, or a data view delegate.
-2. Click **Go To Action/View Declaration/Handler** in the context menu or in the **Acuminator** main menu.
+1. Click on an action, an action handler, a data view declaration, or a data view delegate.
+2. Click **Go To Action/View Declaration/Handler** in the context menu or on the **Acuminator** main menu.
 
 ### BQL Formatting Enhancements
-In previous versions of Acuminator, you have to manually add the **Format BQL Statements** command to the context menu of the code editor in Visual Studio. In Acuminator 1.3, this command is available in the context menu by default. Also this command is now available in the **Acuminator** main menu. 
+In previous versions of Acuminator, you had to manually add the **Format BQL Statements** command to the context menu of the code editor in Visual Studio. In Acuminator 1.3, this command is available in the context menu by default. Also this command is now available on the **Acuminator** main menu. 
 
 ### Code Outlining Enhancements
-* Now you can configure Acuminator to outline entire BQL statements. In Visual Studio, set to `False` the value of **Tools > Options > Acuminator > BQL Outlining > Outline parts of BQL commands**.
+* Now you can configure Acuminator to outline entire BQL statements. To do this in Visual Studio, set to `False` the value of **Tools > Options > Acuminator > BQL Outlining > Outline parts of BQL commands**.
 * The **Use BQL outlining** has been moved under **Tools > Options > Acuminator > BQL Outlining**.
 
 ### Code Coloring Enhancements
 * All code coloring options have been grouped under **Tools > Options > Acuminator > BQL Coloring**.
-* Acuminator now colors angle brackets of any level. For coloring, Acuminator uses 14 colors in cycle.
+* Acuminator now colors angle brackets of any level. For coloring, Acuminator cycles through 14 colors.
 * Acuminator now colors type parameters if they represent DACs, graphs, or other types that are colored by Acuminator.
 
 ### Other Enhancements
 * Static code analyzers from Acuminator are now available as a [standalone NuGet package](https://www.nuget.org/packages/Acuminator.Analyzers/).
-* The PX.Objects.HackathonDemo demo solution has been refactored: the files of the solution have been grouped by the diagnostics they illustrate and placed in folders with sensible names.
+* The PX.Objects.HackathonDemo demo solution has been refactored: The files of the solution have been grouped by the diagnostics they illustrate and placed in folders with sensible names.
 
 ### Bug Fixes
 In this version, the following bugs have been fixed.
 
 | Bug | Fix Description |
 | --- | --------------- |
-| The PX1000 diagnostic worked only on graphs. | The PX1000 diagnostic now works also on graph extensions. |
+| The PX1000 diagnostic worked only on graphs. | The PX1000 diagnostic now also works on graph extensions. |
 | The PX1004 and PX1006 diagnostics threw the `InvalidCastException` exception in some cases. | The cast expression in the diagnostic now takes into account the type parameters in the graph views. |
 | The PX1008 diagnostic threw the `NullReferenceException` exception in some cases. | The PX1008 diagnostic now supports the case when a method group from a helper class is passed to `SetProcessingDelegate`. Null checks have been added. |
-| Code fix of the PX1010 diagnostic didn't work for delegates with iterator methods, multiple return statements, and goto statements. | The PX1010 diagnostic now supports iterator methods, multiple return statements, and goto statements. |
+| The code fix of the PX1010 diagnostic didn't work for delegates with iterator methods, multiple return statements, and `goto` statements. | The PX1010 diagnostic now supports iterator methods, multiple return statements, and `goto` statements. |
 | The PX1010 diagnostic threw an exception for abstract BQL delegate declarations. | The PX1010 diagnostic now checks whether the method body exists. |
 | Simple BQL statements, such as `PXSelect<Table>`, were formatted. | Simple BQL statements now are not formatted. |
 | The `PXUpdate` BQL statements were not colorized. | Code coloring is now supported for the `PXUpdate` classes. |
 | The unbound generic BQL types, such as `Select5<,>`, used in BQL compose scenarios were not colorized. | Code coloring now works for the unbound generic BQL types. |
-| Some DACs were not colorized. | The Roslyn SemanticModel was refreshed. Now all DACs are colorized. |
-| Visual Studio showed errors and warnings about failed resource load in **Error List**. | The resource file for the Acuminator diagnostics is now generated correctly. |
+| Some DACs were not colorized. | The Roslyn SemanticModel has been refreshed. Now all DACs are colorized. |
+| Visual Studio showed errors and warnings about a failed resource load in the **Error List**. | The resource file for the Acuminator diagnostics is now generated correctly. |
 
 ## Acuminator 1.2.1
-Acuminator 1.2.1 contains the hotfix for the critical bug found in Version 1.2 that broke static code analysis execution.
+Acuminator 1.2.1 contains the hotfix for the critical bug found in Version 1.2 that broke the execution of static code analysis.
 
 ## Acuminator 1.2
 Acuminator 1.2 includes the new features and the bug fix described in this section, as well as the features for the previous versions, which are described in the Acuminator 1.1 and Acuminator 1.0 sections.
