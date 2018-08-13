@@ -17,7 +17,7 @@ In this version, diagnostics and code fixes for the following issues have been a
 | PX1026 | Underscores cannot be used in the names of DACs and DAC fields. | Error   | Available   | Available |
 | PX1029 | `PXGraph` instances cannot be used inside DAC properties.       | Error   | Available   | Unavailable |
 | PX1031 | DACs cannot contain instance methods.                           | Error   | Available   | Unavailable |
-| PX1032 | DAC properties cannot contain method invocations.               | Error   | Available   | Unavailable |
+| PX1032 | DAC properties cannot contain invocations of instance methods.  | Error   | Available   | Unavailable |
 | PX1040 | Constructors cannot be used in BLC extensions.                  | Error   | Available   | Available | 
 
 ### New Code Navigation
