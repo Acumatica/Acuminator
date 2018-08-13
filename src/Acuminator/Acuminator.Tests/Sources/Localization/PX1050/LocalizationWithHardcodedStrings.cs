@@ -1,13 +1,21 @@
 ﻿using PX.Data;
+using PX.Common;
 
 namespace Acuminator.Tests.Sources
 {
     public class LocalizationWithHardcodedStrings
     {
+        [PXLocalizable]
+        public class MyMessages
+        {
+            public const string CommasInUserName = "Usernames cannot contain commas.";
+            public const string SomeString = "Some string";
+            public const string StringToFormat = "Text with placeholder {0}";
+        }
+
         public string PXMessagesSimple()
         {
             string localizedString;
-
             localizedString = PXMessages.Localize("Usernames cannot contain commas.");
             localizedString = PXMessages.Localize("Usernames cannot contain commas.", out string strPrefix);
             localizedString = PXMessages.LocalizeNoPrefix("Usernames cannot contain commas.");

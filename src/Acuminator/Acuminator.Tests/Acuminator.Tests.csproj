@@ -189,7 +189,7 @@
     <EmbeddedResource Include="Sources\Localization\LocalizationExceptions.cs" />
     <EmbeddedResource Include="Sources\Localization\LocalizationWithConcatenation.cs" />
     <EmbeddedResource Include="Sources\Localization\LocalizationWithIncorrectStringsToFormat.cs" />
-    <EmbeddedResource Include="Sources\Localization\LocalizationWithHardcodedStrings.cs" />
+    <EmbeddedResource Include="Sources\Localization\PX1050\LocalizationWithHardcodedStrings.cs" />
     <EmbeddedResource Include="Sources\Localization\LocalizationWithNonLocalizableStrings.cs" />
     <EmbeddedResource Include="Sources\Localization\LocalizationCorrect.cs" />
     <EmbeddedResource Include="Sources\Localization\Messages.cs" />
@@ -207,6 +207,7 @@
     <Compile Include="Tests\StaticAnalysis\DAC\PX1031 and PX1032\MethodsUsageInDacTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\PX1040\ConstructorInGraphExtensionTests.cs" />
     <Compile Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtensionTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\Localization\PX1050\LocalizationHardcodeTests.cs" />
     <Compile Include="Tests\StaticAnalysis\LongOperationDelegateClosuresTests.cs" />
     <EmbeddedResource Include="Sources\View\Delegate\PX1010\Diagnostics\StartRowResetForPaging.cs" />
     <EmbeddedResource Include="Sources\MissingTypeListAttributeBad_Expected.cs" />

@@ -9,24 +9,9 @@ namespace Acuminator.Tests.Sources
 {
     public class LocalizationExceptions
     {
-        public void ExceptionsLocalization(object a, object b)
+        public void ExceptionsLocalization()
         {
-            if (a == b)
-            {
-                throw new PXArgumentException(nameof(a), ErrorMessages.CommasInUserName);
-            }
-
-            throw new PXArgumentException(nameof(b), "Usernames cannot contain commas.");
-        }
-    }
-
-    public class DetailBypassedException : PXException
-    {
-        public object ItemToBypass { get; }
-        public DetailBypassedException(object itemToBypass)
-            : base(MyMessages.CommasInUserName)
-        {
-            ItemToBypass = itemToBypass;
+            throw new PXArgumentException(nameof(ExceptionsLocalization), "Usernames cannot contain commas.");
         }
     }
 

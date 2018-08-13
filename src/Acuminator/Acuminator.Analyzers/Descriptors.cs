@@ -106,5 +106,20 @@ namespace Acuminator.Analyzers
 
 		internal static DiagnosticDescriptor PX1040_ConstructorInGraphExtension { get; } =
 			Rule("PX1040", nameof(Resources.PX1040Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
-	}
+
+        internal static DiagnosticDescriptor PX1050_HardcodedStringInLocalizationMethod { get; } =
+            Rule("PX1050", nameof(Resources.PX1050Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+        internal static DiagnosticDescriptor PX1051_NonLocalizableString { get; } =
+            Rule("PX1051", nameof(Resources.PX1051Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+        internal static DiagnosticDescriptor PX1052_IncorrectStringToFormat { get; } =
+            Rule("PX1052", nameof(Resources.PX1052Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+        internal static DiagnosticDescriptor PX1053_ConcatinationPriorLocalization { get; } =
+            Rule("PX1053", nameof(Resources.PX1053Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+        internal static DiagnosticDescriptor PX1054_HardcodedStringInPXExceptionConstructor { get; } =
+            Rule("PX1054", nameof(Resources.PX1054Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+    }
 }

@@ -483,5 +483,50 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1040Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hardcoded strings are not allowed as parameters for localization methods. You should use string constants from the appropriate localizable messages class.
+        /// </summary>
+        public static string PX1050Title {
+            get {
+                return ResourceManager.GetString("PX1050Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Non-localizable string are not allowed as parameters for localization methods. You should mark the appropriate messages class with PXLocalizableAttribute..
+        /// </summary>
+        public static string PX1051Title {
+            get {
+                return ResourceManager.GetString("PX1051Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Incorrect string to format in localization method invocation. You should use string constants from the appropriate localizable messages class..
+        /// </summary>
+        public static string PX1052Title {
+            get {
+                return ResourceManager.GetString("PX1052Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Concatenation of strings is not allowed as a parameter for localization methods. You should use string constants from the appropriate localizable messages class..
+        /// </summary>
+        public static string PX1053Title {
+            get {
+                return ResourceManager.GetString("PX1053Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hardcoded strings are not allowed as parameters for exception message. You should use string constants from the appropriate localizable messages class..
+        /// </summary>
+        public static string PX1054Title {
+            get {
+                return ResourceManager.GetString("PX1054Title", resourceCulture);
+            }
+        }
     }
 }

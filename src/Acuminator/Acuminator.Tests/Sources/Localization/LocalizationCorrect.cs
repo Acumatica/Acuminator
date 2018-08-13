@@ -39,5 +39,20 @@ namespace Acuminator.Tests.Sources
 
             return localizedString;
         }
+
+        public void ThrowPXException()
+        {
+            throw new PXArgumentException(nameof(ThrowPXException), MyMessages.CommasInUserName);
+        }
+    }
+
+    public class DetailBypassedException : PXException
+    {
+        public object ItemToBypass { get; }
+        public DetailBypassedException(object itemToBypass)
+            : base(MyMessages.CommasInUserName)
+        {
+            ItemToBypass = itemToBypass;
+        }
     }
 }
