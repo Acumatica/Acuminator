@@ -22,6 +22,7 @@ namespace Acuminator.Tests.Sources
                 this._Hold = value;
                 this.SetStatus();
                 UpdateViaDelegate();
+                Update();
                 Status = new string('A', 5);
             }
         }

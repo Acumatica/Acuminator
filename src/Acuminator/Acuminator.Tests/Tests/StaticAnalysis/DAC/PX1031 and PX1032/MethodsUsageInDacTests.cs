@@ -45,8 +45,8 @@ namespace Acuminator.Tests
             VerifyCSharpDiagnostic(source,
                 CreatePX1032DiagnosticResult(23, 17),
                 CreatePX1032DiagnosticResult(24, 17),
-                CreatePX1032DiagnosticResult(25, 26),
-                CreatePX1031DiagnosticResult(46, 32));
+                CreatePX1032DiagnosticResult(26, 26),
+                CreatePX1031DiagnosticResult(47, 32));
         }
 
         [Theory]
@@ -56,8 +56,8 @@ namespace Acuminator.Tests
             VerifyCSharpDiagnostic(source,
                 CreatePX1032DiagnosticResult(27, 17),
                 CreatePX1032DiagnosticResult(28, 17),
-                CreatePX1032DiagnosticResult(29, 26),
-                CreatePX1031DiagnosticResult(50, 32));
+                CreatePX1032DiagnosticResult(30, 26),
+                CreatePX1031DiagnosticResult(51, 32));
         }
     }
 }

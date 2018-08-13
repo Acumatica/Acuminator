@@ -29,7 +29,7 @@ namespace Acuminator.Analyzers
             ClassDeclarationSyntax classDeclaration = syntaxContext.Node as ClassDeclarationSyntax;
             INamedTypeSymbol typeSymbol = syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration, syntaxContext.CancellationToken);
 
-            if (typeSymbol != null && IsDac(typeSymbol, pxContext) && !syntaxContext.CancellationToken.IsCancellationRequested)
+            if (typeSymbol != null && typeSymbol.IsDacOrExtension(pxContext) && !syntaxContext.CancellationToken.IsCancellationRequested)
             {
                 foreach (SyntaxNode node in classDeclaration.DescendantNodes())
                 {
@@ -59,7 +59,7 @@ namespace Acuminator.Analyzers
                 {
                     SymbolInfo symbol = syntaxContext.SemanticModel.GetSymbolInfo(invocation, syntaxContext.CancellationToken);
 
-                    if (symbol.Symbol != null && symbol.Symbol.Kind == SymbolKind.Method)
+                    if (symbol.Symbol != null && symbol.Symbol.Kind == SymbolKind.Method && !symbol.Symbol.IsStatic)
                     {
                         syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1032_DacPropertyCannotContainMethodInvocations, invocation.GetLocation()));
                     }
@@ -78,12 +78,6 @@ namespace Acuminator.Analyzers
                 Location location = method?.Identifier.GetLocation() ?? method.GetLocation();
                 syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1031_DacCannotContainInstanceMethods, location));
             }
-        }
-
-        private bool IsDac(INamedTypeSymbol typeSymbol, PXContext pxContext)
-        {
-            return typeSymbol.ImplementsInterface(pxContext.IBqlTableType) ||
-                   typeSymbol.InheritsFrom(pxContext.PXCacheExtensionType);
         }
     }
 }
