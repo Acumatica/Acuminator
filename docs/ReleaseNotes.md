@@ -9,7 +9,7 @@ In this version, diagnostics and code fixes for the following issues have been a
 | Code   | Issue Description                                               | Type    | Diagnostics | Code Fix  | 
 | ------ | --------------------------------------------------------------- | ------- | ----------- | --------- | 
 | PX1012 | `PXAction` is declared on a non-primary view.                     | Warning | Available   | Available |
-| PX1015 | For a BQL statement that contains parameters, the number of arguments of a `Select` method must be equal to the number of parameters. | Warning | Available | Unavailable |
+| PX1015 | For a BQL statement that contains parameters, the number of arguments of a `Select` method is different from the number of parameters. | Warning | Available | Unavailable |
 | PX1018 | The graph with the specified primary view type parameter doesn't contain the primary view of the specified type. | Error | Available | Unavailable |
 | PX1021 | The DAC property field has a type that is not compatible with the field attribute assigned to this property. | Error   | Available   | Available |
 | PX1023 | The DAC property is marked with multiple field attributes.      | Error   | Available   | Available |
