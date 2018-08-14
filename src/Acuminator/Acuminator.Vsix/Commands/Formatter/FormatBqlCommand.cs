@@ -66,10 +66,12 @@ namespace Acuminator.Vsix.Formatter
 			BqlFormatter formatter = CreateFormatter(textView);
 
 			SnapshotPoint caretPosition = textView.Caret.Position.BufferPosition;
-			Microsoft.CodeAnalysis.Document document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
+			Document document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
+			if (document == null) return;
 
-			SyntaxNode syntaxRoot = document.GetSyntaxRootAsync().Result;
-			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
+			(SyntaxNode syntaxRoot, SemanticModel semanticModel) = ThreadHelper.JoinableTaskFactory.Run(
+				async () => (await document.GetSyntaxRootAsync(), await document.GetSemanticModelAsync()));
+
 			SyntaxNode formattedRoot;
 			
 			if (textView.Selection.IsActive && !textView.Selection.IsEmpty) // if has selection
