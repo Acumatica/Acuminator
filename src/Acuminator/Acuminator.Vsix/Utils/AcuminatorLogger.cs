@@ -5,11 +5,8 @@ using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Classification;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities;
 
@@ -26,10 +23,7 @@ namespace Acuminator.Vsix.Logger
 		private const string UtilitiesDll = "Acuminator.Utils";
 		private const string VsixDll = "Acuminator.Vsix";
 
-		private const int NOT_DISPOSED = 0, DISPOSED = 1;
-
 		private readonly AcuminatorVSPackage _package;
-		private int _disposed;
 
 		public AcuminatorLogger(AcuminatorVSPackage acuminatorPackage)
 		{
@@ -44,10 +38,8 @@ namespace Acuminator.Vsix.Logger
 		}
 
 		public void LogException(FirstChanceExceptionEventArgs e)
-		{
-			if (Interlocked.CompareExchange(ref _disposed, DISPOSED, DISPOSED) == DISPOSED)
-				return;
-			else if (e.Exception.Source != AnalyzersDll && e.Exception.Source != UtilitiesDll && e.Exception.Source != VsixDll)
+		{		
+			if (e.Exception.Source != AnalyzersDll && e.Exception.Source != UtilitiesDll && e.Exception.Source != VsixDll)
 				return;
 
 			IWpfTextView activeTextView = _package.GetWpfTextView();
@@ -61,7 +53,6 @@ namespace Acuminator.Vsix.Logger
 				return;
 
 			string logMessage = CreateLogMessage(e, currentDocument);
-			string logPath = ActivityLog.LogFilePath;
 			ActivityLog.TryLogError(PackageName, logMessage);
 		}
 
@@ -79,10 +70,7 @@ namespace Acuminator.Vsix.Logger
 
 		public void Dispose()
 		{
-			if (Interlocked.CompareExchange(ref _disposed, DISPOSED, NOT_DISPOSED) == NOT_DISPOSED)
-			{
-				AppDomain.CurrentDomain.FirstChanceException -= Acuminator_FirstChanceException;
-			}
+			AppDomain.CurrentDomain.FirstChanceException -= Acuminator_FirstChanceException;
 		}		
 	}
 }
