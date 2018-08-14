@@ -72,6 +72,9 @@ namespace Acuminator.Vsix.Formatter
 			(SyntaxNode syntaxRoot, SemanticModel semanticModel) = ThreadHelper.JoinableTaskFactory.Run(
 				async () => (await document.GetSyntaxRootAsync(), await document.GetSemanticModelAsync()));
 
+			if (syntaxRoot == null || semanticModel == null)
+				return;
+
 			SyntaxNode formattedRoot;
 			
 			if (textView.Selection.IsActive && !textView.Selection.IsEmpty) // if has selection
