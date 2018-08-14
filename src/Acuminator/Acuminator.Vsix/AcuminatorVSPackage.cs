@@ -12,6 +12,10 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Classification;
 using Acuminator.Vsix.GoToDeclaration;
+using Acuminator.Vsix.Logger;
+
+
+using FirstChanceExceptionEventArgs = System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs;
 
 
 
@@ -95,6 +99,12 @@ namespace Acuminator.Vsix
             }
         }
 
+		internal AcuminatorLogger AcuminatorLogger
+		{
+			get;
+			private set;
+		}
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AcuminatorVSPackage"/> class.
         /// </summary>
@@ -133,19 +143,26 @@ namespace Acuminator.Vsix
 
             if (componentModel == null)
                 return;
-
+			
             try
             {
-                componentModel.DefaultCompositionService.SatisfyImportsOnce(this);             
-            }
+                componentModel.DefaultCompositionService.SatisfyImportsOnce(this);
+				AcuminatorLogger = new AcuminatorLogger(this);
+			}
             catch(Exception e)
             {
                 //TODO Need to log error here
             }
         }
 
-        #region Package Settings         
-        public bool ColoringEnabled => GeneralOptionsPage?.ColoringEnabled ?? true;
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+			AcuminatorLogger.Dispose();
+		}
+
+		#region Package Settings         
+		public bool ColoringEnabled => GeneralOptionsPage?.ColoringEnabled ?? true;
 
 
         public bool UseRegexColoring => GeneralOptionsPage?.UseRegexColoring ?? false;
