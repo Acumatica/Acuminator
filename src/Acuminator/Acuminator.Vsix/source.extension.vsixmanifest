@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="Acumatica.Acuminator.778b19d1-1d5e-4fcb-8edb-eb103feeab7c" Version="1.2.1" Language="en-US" Publisher="Acumatica" />
+    <Identity Id="Acumatica.Acuminator.778b19d1-1d5e-4fcb-8edb-eb103feeab7c" Version="1.3.0" Language="en-US" Publisher="Acumatica" />
     <DisplayName>Acuminator</DisplayName>
     <Description xml:space="preserve">Acuminator is a static code analysis and colorizer tool for Visual Studio that simplifies development with Acumatica Framework. Acuminator provides diagnostics and code fixes for common developer challenges related to Acumatica Framework. Also, Acuminator can colorize and format BQL statements, and can collapse attributes and parts of BQL queries.</Description>
     <MoreInfo>https://github.com/Acumatica/Acuminator</MoreInfo>
