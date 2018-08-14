@@ -64,6 +64,8 @@
     <Compile Include="DAC\Multiple field attributes and DAC field must be abstract\APInvoice.cs" />
     <Compile Include="DAC\APSetup.cs" />
     <Compile Include="Graph\Start row reset for paging\LEPMaint.cs" />
+    <Compile Include="Localization\SOOrderExt.cs" />
+    <Compile Include="Localization\SOOrderEntryWithCustomText.cs" />
     <Compile Include="Properties\GlobalSuppressions.cs" />
     <Compile Include="Graph\GoTo Test\APInvoiceEntry.cs" />
     <Compile Include="Graph\GoTo Test\APInvoiceEntryVoidProcess.cs" />

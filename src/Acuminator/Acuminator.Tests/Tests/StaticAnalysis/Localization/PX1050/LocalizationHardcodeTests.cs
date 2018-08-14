@@ -29,7 +29,7 @@ namespace Acuminator.Tests
 
         [Theory]
         [EmbeddedFileData(@"Localization\PX1050\LocalizationWithHardcodedStrings.cs")]
-        public void Localization_Methods_With_Hardcode_Messages(string source)
+        public void Localization_Methods_With_Hardcoded_Messages(string source)
         {
             VerifyCSharpDiagnostic(source,
                 CreatePX1050DiagnosticResult(19, 51),
