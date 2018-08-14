@@ -191,6 +191,8 @@
     <EmbeddedResource Include="Sources\Dac\PX1030\Diagnostics\AggregateAttributeDefine.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1030\Diagnostics\DacAggregateAttributes.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1030\Diagnostics\DacWithBoundAndUnboundFields.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1030\Unit\AttributeInformationTest.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1030\Unit\AttributeInformationSimpleDacTest.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTypeMismatchCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\MultipleFieldAttributesCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTests.cs" />
@@ -268,6 +270,7 @@
     <EmbeddedResource Include="Sources\View\Delegate\PX1005\Diagnostics\TypoInViewDelegateName_Good_Override.cs" />
     <EmbeddedResource Include="Sources\View\Delegate\PX1005\Diagnostics\TypoInViewDelegateName_Bad.cs" />
     <Compile Include="Tests\StaticAnalysis\View\PX1018\GraphWithPrimaryDacWithoutViewTests.cs" />
+    <Compile Include="Tests\Unit\AttributeInformationTests.cs" />
     <Compile Include="Verifiers\CodeFixVerifier.cs" />
     <Compile Include="Verifiers\DiagnosticVerifier.cs" />
     <Compile Include="Helpers\CodeFixVerifier.Helper.cs" />
@@ -281,6 +284,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Acuminator.Utils\Acuminator.Utils.csproj">
+      <Project>{B902103C-831B-4BBF-A88B-3DAE6F601CF0}</Project>
+      <Name>Acuminator.Utils</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Acuminator.Vsix\Acuminator.Vsix.csproj">
       <Project>{6deb14bb-d8f6-4f5b-bbd7-e756ceb67d42}</Project>
       <Name>Acuminator.Vsix</Name>

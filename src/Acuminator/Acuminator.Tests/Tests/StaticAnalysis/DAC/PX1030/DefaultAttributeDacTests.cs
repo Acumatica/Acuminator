@@ -12,6 +12,7 @@ using Acuminator.Analyzers.FixProviders;
 using Acuminator.Tests.Helpers;
 using FluentAssertions;
 using Xunit;
+using Acuminator.Utilities;
 
 namespace Acuminator.Tests
 {
@@ -60,7 +61,13 @@ namespace Acuminator.Tests
 							@"Dac\PX1030\CodeFixes\DacExtensionWithUnboundFields_Expected.cs")]
 		public virtual void TestCodeFixDacExtensionWithUnboundAttribute(string actual, string expected) =>
 			VerifyCSharpFix(actual, expected);
-
+		[Fact]
+		public virtual void TestAttributeInformation()
+		{
+			/*ITypeSymbol attribute = generator.;
+			AttributeInformation.ContainBaseType();*/
+			Assert.Equal("", "");
+		}
 
 
 		private DiagnosticResult CreatePX1030DiagnosticResult(int line, int column)
