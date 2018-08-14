@@ -2,11 +2,6 @@
 using Acuminator.Tests.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TestHelper;
 using Xunit;
 
@@ -28,21 +23,30 @@ namespace Acuminator.Tests
         }
 
         [Theory]
-        [EmbeddedFileData(@"Localization\PX1050\LocalizationWithHardcodedStrings.cs")]
-        public void Localization_Methods_With_Hardcoded_Messages(string source)
+        [EmbeddedFileData(@"Localization\PX1050\LocalizationWithHardcodedStrings.cs",
+                          @"Localization\Messages.cs")]
+        public void Test_Localization_Methods_With_Hardcoded_Message_Argument(string source, string messages)
         {
-            VerifyCSharpDiagnostic(source,
-                CreatePX1050DiagnosticResult(19, 51),
-                CreatePX1050DiagnosticResult(20, 51),
-                CreatePX1050DiagnosticResult(21, 59),
-                CreatePX1050DiagnosticResult(31, 57),
-                CreatePX1050DiagnosticResult(32, 57),
-                CreatePX1050DiagnosticResult(33, 65),
-                CreatePX1050DiagnosticResult(34, 68),
-                CreatePX1050DiagnosticResult(44, 52),
-                CreatePX1050DiagnosticResult(45, 52),
-                CreatePX1050DiagnosticResult(46, 58),
-                CreatePX1050DiagnosticResult(47, 65));
+            VerifyCSharpDiagnostic(new[] { source, messages },
+                CreatePX1050DiagnosticResult(11, 51),
+                CreatePX1050DiagnosticResult(12, 51),
+                CreatePX1050DiagnosticResult(13, 59),
+                CreatePX1050DiagnosticResult(23, 57),
+                CreatePX1050DiagnosticResult(24, 57),
+                CreatePX1050DiagnosticResult(25, 65),
+                CreatePX1050DiagnosticResult(26, 68),
+                CreatePX1050DiagnosticResult(36, 52),
+                CreatePX1050DiagnosticResult(37, 52),
+                CreatePX1050DiagnosticResult(38, 58),
+                CreatePX1050DiagnosticResult(39, 65));
+        }
+
+        [Theory]
+        [EmbeddedFileData(@"Localization\LocalizationCorrect.cs",
+                          @"Localization\Messages.cs")]
+        public void Test_Correct_Localization_Usage(string source, string messages)
+        {
+            VerifyCSharpDiagnostic(new[] { source, messages });
         }
     }
 }
