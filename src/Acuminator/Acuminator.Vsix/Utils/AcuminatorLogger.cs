@@ -15,6 +15,9 @@ using FirstChanceExceptionEventArgs = System.Runtime.ExceptionServices.FirstChan
 
 namespace Acuminator.Vsix.Logger
 {
+	/// <summary>
+	/// An acuminator logger used to log unhandled exceptions.
+	/// </summary>
 	internal class AcuminatorLogger : IDisposable
 	{
 		private const string PackageName = "Acuminator";
@@ -34,12 +37,12 @@ namespace Acuminator.Vsix.Logger
 
 		private void Acuminator_FirstChanceException(object sender, FirstChanceExceptionEventArgs e)
 		{
-			LogException(e);
+			LogException(e.Exception);
 		}
 
-		public void LogException(FirstChanceExceptionEventArgs e)
+		public void LogException(Exception exception)
 		{		
-			if (e.Exception.Source != AnalyzersDll && e.Exception.Source != UtilitiesDll && e.Exception.Source != VsixDll)
+			if (exception == null || (exception.Source != AnalyzersDll && exception.Source != UtilitiesDll && exception.Source != VsixDll))
 				return;
 
 			IWpfTextView activeTextView = _package.GetWpfTextView();
@@ -52,18 +55,18 @@ namespace Acuminator.Vsix.Logger
 			if (currentDocument == null)
 				return;
 
-			string logMessage = CreateLogMessage(e, currentDocument);
+			string logMessage = CreateLogMessageFromException(exception, currentDocument);
 			ActivityLog.TryLogError(PackageName, logMessage);
 		}
 
-		private string CreateLogMessage(FirstChanceExceptionEventArgs e, Document currentDocument)
+		private string CreateLogMessageFromException(Exception exception, Document currentDocument)
 		{
-			StringBuilder messageBuilder = new StringBuilder();
+			StringBuilder messageBuilder = new StringBuilder(capacity: 256);
 			messageBuilder.AppendLine($"FILE PATH: {currentDocument.FilePath}")
-						  .AppendLine($"MESSAGE: {e.Exception.Message}")
-						  .AppendLine($"STACK TRACE: {e.Exception.StackTrace}")
-						  .AppendLine($"TARGET SITE: {e.Exception.TargetSite}")
-						  .AppendLine($"SOURCE: {e.Exception.Source}");
+						  .AppendLine($"MESSAGE: {exception.Message}")
+						  .AppendLine($"STACK TRACE: {exception.StackTrace}")
+						  .AppendLine($"TARGET SITE: {exception.TargetSite}")
+						  .AppendLine($"SOURCE: {exception.Source}");
 
 			return messageBuilder.ToString();
 		}
