@@ -1,10 +1,10 @@
-using System;
-using System.ComponentModel;
-using System.Collections;
-using System.Collections.Immutable;
+using Acuminator.Utilities;
 using Microsoft.CodeAnalysis;
 using PX.Data;
-using Acuminator.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace Acuminator.Analyzers
 {
@@ -29,8 +29,8 @@ namespace Acuminator.Analyzers
 
 		public PXSystemActionTypes PXSystemActions => systemActionTypes.Value;
 
-
-
+        private readonly Lazy<LocalizationMethods> _localizationMethods;
+        public LocalizationMethods Localization => _localizationMethods.Value;
 
         public INamedTypeSymbol Array => Compilation.GetSpecialType(SpecialType.System_Array);
 
@@ -96,6 +96,8 @@ namespace Acuminator.Analyzers
 										() => new FieldAttributesTypes(Compilation));
             systemActionTypes = new Lazy<PXSystemActionTypes>(
 										() => new PXSystemActionTypes(Compilation));
+            _localizationMethods = new Lazy<LocalizationMethods>(
+                () => new LocalizationMethods(Compilation));
 
 			IsAcumatica2018R2 = PXSelectBase2018R2NewType != null;
 		}

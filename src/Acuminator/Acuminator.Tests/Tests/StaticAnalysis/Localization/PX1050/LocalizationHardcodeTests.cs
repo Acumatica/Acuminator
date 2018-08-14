@@ -32,16 +32,17 @@ namespace Acuminator.Tests
         public void Localization_Methods_With_Hardcode_Messages(string source)
         {
             VerifyCSharpDiagnostic(source,
-                CreatePX1050DiagnosticResult(10, 51),
-                CreatePX1050DiagnosticResult(11, 51),
-                CreatePX1050DiagnosticResult(12, 59),
-                CreatePX1050DiagnosticResult(22, 57),
-                CreatePX1050DiagnosticResult(23, 57),
-                CreatePX1050DiagnosticResult(24, 65),
-                CreatePX1050DiagnosticResult(25, 68),
-                CreatePX1050DiagnosticResult(35, 52),
-                CreatePX1050DiagnosticResult(36, 52),
-                CreatePX1050DiagnosticResult(37, 58));
+                CreatePX1050DiagnosticResult(19, 51),
+                CreatePX1050DiagnosticResult(20, 51),
+                CreatePX1050DiagnosticResult(21, 59),
+                CreatePX1050DiagnosticResult(31, 57),
+                CreatePX1050DiagnosticResult(32, 57),
+                CreatePX1050DiagnosticResult(33, 65),
+                CreatePX1050DiagnosticResult(34, 68),
+                CreatePX1050DiagnosticResult(44, 52),
+                CreatePX1050DiagnosticResult(45, 52),
+                CreatePX1050DiagnosticResult(46, 58),
+                CreatePX1050DiagnosticResult(47, 65));
         }
     }
 }

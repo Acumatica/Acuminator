@@ -2,36 +2,14 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class LocalizationAnalyzer : PXDiagnosticAnalyzer
     {
-        private const string _pxMessagesClass = "PX.Data.PXMessages";
-        private const string _pxLocalizerClass = "PX.Data.PXLocalizer";
-
-        private readonly string[] _pxMessagesMethods = new[]
-        {
-            "Localize",
-            "LocalizeNoPrefix",
-            "LocalizeFormat",
-            "LocalizeFormatNoPrefix",
-            "LocalizeFormatNoPrefixNLA"
-        };
-
-        private readonly string[] _pxLocalizerMethods = new[]
-        {
-            "Localize",
-            "LocalizeFormat"
-        };
-
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create
             (
@@ -52,7 +30,7 @@ namespace Acuminator.Analyzers
             if (!(syntaxContext.Node is InvocationExpressionSyntax node) || syntaxContext.CancellationToken.IsCancellationRequested)
                 return;
 
-            if (!IsLocalizationMethodInvocation(node, syntaxContext, out ExpressionSyntax messageExpression))
+            if (!IsLocalizationMethodInvocation(node, syntaxContext, pxContext, out ExpressionSyntax messageExpression))
                 return;
 
             bool isHardcodedMessage = messageExpression is LiteralExpressionSyntax;
@@ -62,7 +40,8 @@ namespace Acuminator.Analyzers
             }
         }
 
-        private bool IsLocalizationMethodInvocation(InvocationExpressionSyntax node, SyntaxNodeAnalysisContext syntaxContext, out ExpressionSyntax messageExpression)
+        private bool IsLocalizationMethodInvocation(InvocationExpressionSyntax node, SyntaxNodeAnalysisContext syntaxContext,
+            PXContext pxContext, out ExpressionSyntax messageExpression)
         {
             messageExpression = null;
 
@@ -70,30 +49,10 @@ namespace Acuminator.Analyzers
                 return false;
 
             SymbolInfo symbolInfo = syntaxContext.SemanticModel.GetSymbolInfo(node, syntaxContext.CancellationToken);
-            if (symbolInfo.Symbol == null)
-            {
-                if (symbolInfo.CandidateSymbols.IsEmpty)
-                    return false;
-
-                //TODO: Workaround - to refactor after migration to Roslyn for VS2017
-            }
-
-            ISymbol symbol = syntaxContext.SemanticModel.GetSymbolInfo(node, syntaxContext.CancellationToken).Symbol;
-            if (symbol == )
-
-            if (symbol == null || symbol.Kind != SymbolKind.Method)
+            if (symbolInfo.Symbol == null && symbolInfo.CandidateSymbols.IsEmpty)
                 return false;
 
-            string typeName = symbol.ContainingType?.ToDisplayString();
-            string methodName = symbol.Name;
-            if (string.IsNullOrEmpty(typeName) || string.IsNullOrEmpty(methodName))
-                return false;
-
-            bool isMessagesMethod = _pxMessagesClass.Equals(typeName, StringComparison.Ordinal) &&
-                                    _pxMessagesMethods.Any(m => m.Equals(methodName, StringComparison.Ordinal));
-            bool isLocalizerMethod = _pxLocalizerClass.Equals(typeName, StringComparison.Ordinal) &&
-                                     _pxLocalizerMethods.Any(m => m.Equals(methodName, StringComparison.Ordinal));
-            if (!isMessagesMethod && !isLocalizerMethod)
+            if (!IsLocalizationSymbol(symbolInfo, syntaxContext, pxContext))
                 return false;
 
             ArgumentSyntax messageArg = node.ArgumentList?.Arguments.FirstOrDefault();
@@ -106,6 +65,23 @@ namespace Acuminator.Analyzers
 
             messageExpression = messageArg.Expression;
             return true;
+        }
+
+        private bool IsLocalizationSymbol(SymbolInfo symbolInfo, SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+        {
+            if (syntaxContext.CancellationToken.IsCancellationRequested)
+                return false;
+
+            bool isLocalization(ISymbol s) => pxContext.Localization.PXMessagesSimpleMethods.Contains(s) ||
+                                              pxContext.Localization.PXMessagesFormatMethods.Contains(s) ||
+                                              pxContext.Localization.PXLocalizerSimpleMethods.Contains(s) ||
+                                              pxContext.Localization.PXLocalizerFormatMethods.Contains(s);
+            if (symbolInfo.Symbol != null)
+            {
+                return isLocalization(symbolInfo.Symbol);
+            }
+
+            return symbolInfo.CandidateSymbols.Any(c => isLocalization(c));
         }
     }
 }
