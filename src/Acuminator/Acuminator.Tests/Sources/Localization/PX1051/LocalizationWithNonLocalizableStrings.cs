@@ -36,6 +36,7 @@ namespace Acuminator.Tests.Sources
             localizedString = PXLocalizer.Localize(NonLocalizableMessages.CommasInUserName);
             localizedString = PXLocalizer.Localize(NonLocalizableMessages.CommasInUserName, typeof(NonLocalizableMessages).FullName);
             localizedString = PXLocalizer.LocalizeFormat(NonLocalizableMessages.StringToFormat, parameter);
+            localizedString = PXLocalizer.LocalizeFormatWithKey(NonLocalizableMessages.StringToFormat, typeof(NonLocalizableMessages).FullName, parameter);
 
             return localizedString;
         }

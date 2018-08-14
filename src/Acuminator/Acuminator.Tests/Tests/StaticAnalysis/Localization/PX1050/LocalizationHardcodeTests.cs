@@ -40,13 +40,5 @@ namespace Acuminator.Tests
                 CreatePX1050DiagnosticResult(38, 58),
                 CreatePX1050DiagnosticResult(39, 65));
         }
-
-        [Theory]
-        [EmbeddedFileData(@"Localization\LocalizationCorrect.cs",
-                          @"Localization\Messages.cs")]
-        public void Test_Correct_Localization_Usage(string source, string messages)
-        {
-            VerifyCSharpDiagnostic(new[] { source, messages });
-        }
     }
 }
