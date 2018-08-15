@@ -4,7 +4,8 @@ namespace PX.Objects.HackathonDemo
 {
     public class SOOrderExt : PXCacheExtension<SOOrder>
     {
-        public const string SpecialOrderNbr = "SPECIAL";
+        public const string SpecialOrderNbr = "SPECIAL1";
+        public const string SpecialOrderNbr2 = "SPECIAL2";
 
         [PXString]
         [PXUIField(DisplayName = "Custom Text")]
