@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Acuminator.Analyzers
 {
-    public class LocalizationMethods
+    public class LocalizationTypes
     {
         private readonly Compilation _compilation;
         private readonly string[] _pxMessagesSimpleMethodNames = new[]
@@ -32,7 +32,7 @@ namespace Acuminator.Analyzers
         public ImmutableArray<ISymbol> PXLocalizerSimpleMethods { get; private set; }
         public ImmutableArray<ISymbol> PXLocalizerFormatMethods { get; private set; }
 
-        public LocalizationMethods(Compilation compilation)
+        public LocalizationTypes(Compilation compilation)
         {
             _compilation = compilation;
             InitMethods();
@@ -40,6 +40,7 @@ namespace Acuminator.Analyzers
 
         private INamedTypeSymbol PXMessages => _compilation.GetTypeByMetadataName("PX.Data.PXMessages");
         private INamedTypeSymbol PXLocalizer => _compilation.GetTypeByMetadataName("PX.Data.PXLocalizer");
+        public INamedTypeSymbol PXLocalizableAttribute => _compilation.GetTypeByMetadataName("PX.Common.PXLocalizableAttribute");
 
         private void InitMethods()
         {

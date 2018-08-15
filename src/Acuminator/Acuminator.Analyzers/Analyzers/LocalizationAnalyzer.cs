@@ -37,7 +37,40 @@ namespace Acuminator.Analyzers
             if (isHardcodedMessage)
             {
                 syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1050_HardcodedStringInLocalizationMethod, messageExpression.GetLocation()));
+                return;
             }
+
+            if (IsNonLocalizableMessage(messageExpression, syntaxContext, pxContext))
+            {
+                syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1051_NonLocalizableString, messageExpression.GetLocation()));
+            }
+        }
+
+        private bool IsNonLocalizableMessage(ExpressionSyntax messageExpression, SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+        {
+            if (syntaxContext.CancellationToken.IsCancellationRequested)
+                return false;
+
+            if (!(messageExpression is MemberAccessExpressionSyntax memberAccess) ||
+                !(memberAccess.Name is IdentifierNameSyntax messageMember))
+                return false;
+
+            ITypeSymbol messageClassType = memberAccess.Expression
+                                           .DescendantNodesAndSelf()
+                                           .OfType<IdentifierNameSyntax>()
+                                           .Select(i => syntaxContext.SemanticModel.GetTypeInfo(i, syntaxContext.CancellationToken).Type)
+                                           .Where(t => t != null && t.IsReferenceType)
+                                           .FirstOrDefault();
+            if (messageClassType == null)
+                return false;
+
+            ISymbol messageMemberInfo = syntaxContext.SemanticModel.GetSymbolInfo(messageMember, syntaxContext.CancellationToken).Symbol;
+            if (messageMemberInfo == null || messageMemberInfo.Kind != SymbolKind.Field || !messageMemberInfo.IsStatic ||
+                messageMemberInfo.DeclaredAccessibility != Accessibility.Public)
+                return false;
+
+            ImmutableArray<AttributeData> attributes = messageClassType.GetAttributes();
+            return attributes.All(a => !a.AttributeClass.Equals(pxContext.Localization.PXLocalizableAttribute));
         }
 
         private bool IsLocalizationMethodInvocation(InvocationExpressionSyntax node, SyntaxNodeAnalysisContext syntaxContext,

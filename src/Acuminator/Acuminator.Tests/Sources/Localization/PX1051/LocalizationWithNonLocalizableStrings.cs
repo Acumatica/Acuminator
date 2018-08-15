@@ -8,7 +8,7 @@ namespace Acuminator.Tests.Sources
         {
             string localizedString;
 
-            localizedString = PXMessages.Localize(NonLocalizableMessages.CommasInUserName);
+            localizedString = PXMessages.Localize(InnerNamespace.NonLocalizableMessagesInNamespace.CommasInUserName);
             localizedString = PXMessages.Localize(NonLocalizableMessages.CommasInUserName, out string strPrefix);
             localizedString = PXMessages.LocalizeNoPrefix(NonLocalizableMessages.CommasInUserName);
 
@@ -20,7 +20,7 @@ namespace Acuminator.Tests.Sources
             string localizedString;
             object parameter = new object();
 
-            localizedString = PXMessages.LocalizeFormat(NonLocalizableMessages.StringToFormat, parameter);
+            localizedString = PXMessages.LocalizeFormat(InnerNamespace.NonLocalizableMessagesInNamespace.StringToFormat, parameter);
             localizedString = PXMessages.LocalizeFormat(NonLocalizableMessages.StringToFormat, out string prefix, parameter);
             localizedString = PXMessages.LocalizeFormatNoPrefix(NonLocalizableMessages.StringToFormat, parameter);
             localizedString = PXMessages.LocalizeFormatNoPrefixNLA(NonLocalizableMessages.StringToFormat, parameter);
