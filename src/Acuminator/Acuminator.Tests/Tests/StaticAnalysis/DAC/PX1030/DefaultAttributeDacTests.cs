@@ -61,15 +61,7 @@ namespace Acuminator.Tests
 							@"Dac\PX1030\CodeFixes\DacExtensionWithUnboundFields_Expected.cs")]
 		public virtual void TestCodeFixDacExtensionWithUnboundAttribute(string actual, string expected) =>
 			VerifyCSharpFix(actual, expected);
-		[Fact]
-		public virtual void TestAttributeInformation()
-		{
-			/*ITypeSymbol attribute = generator.;
-			AttributeInformation.ContainBaseType();*/
-			Assert.Equal("", "");
-		}
-
-
+		
 		private DiagnosticResult CreatePX1030DiagnosticResult(int line, int column)
         {
             return new DiagnosticResult
