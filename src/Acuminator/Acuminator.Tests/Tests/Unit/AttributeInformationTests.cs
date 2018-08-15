@@ -18,21 +18,30 @@ namespace Acuminator.Tests
 	public class AttributeInformationTests : DiagnosticVerifier
 	{
 
-		public AttributeInformationTests() { }
-
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1030\Unit\AttributeInformationSimpleDacTest.cs")]
-		public void TestAttributeInformation(string source)
-		{
+		public void TestAttributeSimpleInformation(string source) =>
+			TestAttributeInformation(source, new List<bool> { false, true, false, false, true, false } );
 
+		[Theory]
+		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateAttributeInformationTest.cs")]
+		public void TestAggregateAttribute(string source) =>
+			TestAttributeInformation(source, new List<bool> { true });
+
+		[Theory]
+		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateRecursiveAttributeInformationTest.cs")]
+		public void TestAggregateRegursiveAttribute(string source) =>
+			TestAttributeInformation(source, new List<bool> { true, false });
+
+
+
+		private void TestAttributeInformation(string source, List<bool> expected)
+		{
 			Document document = CreateDocument(source);
 			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
 			var syntaxRoot = document.GetSyntaxRootAsync().Result;
-			//var namespaceSyntaxTree = syntaxRoot.DescendantNodes()
-			//						   .OfType<NamespaceDeclarationSyntax>();
 
-			List<bool> expected =	new List<bool>{false, true, false, false, true, false};
-			List<bool> actual	=	new List<bool>();
+			List<bool> actual = new List<bool>();
 			var pxContext = new PXContext(semanticModel.Compilation);
 
 			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
@@ -43,13 +52,13 @@ namespace Acuminator.Tests
 				var attributes = typeSymbol.GetAttributes();
 				foreach (var attribute in attributes)
 				{
-					var ai = new AttributeInformation(pxContext,semanticModel);
+					var attributeInformation = new AttributeInformation(pxContext, semanticModel);
 					var defaultAttribute = semanticModel.Compilation.GetTypeByMetadataName("PX.Data.PXDefaultAttribute");
-					actual.Add(ai.AttributeDerivedFromClass(attribute.AttributeClass,defaultAttribute));
+					actual.Add(attributeInformation.AttributeDerivedFromClass(attribute.AttributeClass, defaultAttribute));
 				}
 			}
-			
 			Assert.Equal(expected, actual);
 		}
+		
 	}
 }

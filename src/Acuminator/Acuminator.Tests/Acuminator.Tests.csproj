@@ -191,8 +191,9 @@
     <EmbeddedResource Include="Sources\Dac\PX1030\Diagnostics\AggregateAttributeDefine.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1030\Diagnostics\DacAggregateAttributes.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1030\Diagnostics\DacWithBoundAndUnboundFields.cs" />
-    <EmbeddedResource Include="Sources\Dac\PX1030\Unit\AttributeInformationTest.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1030\Unit\AggregateAttributeInformationTest.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1030\Unit\AttributeInformationSimpleDacTest.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1030\Unit\AggregateRecursiveAttributeInformationTest.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTypeMismatchCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\MultipleFieldAttributesCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTests.cs" />

@@ -16,6 +16,7 @@ namespace Acuminator.Utilities
 	{
 		private readonly PXContext _context;
 		private readonly SemanticModel _semanticModel;
+		private static int depth = 0; 
 		public ImmutableDictionary<ITypeSymbol, ITypeSymbol> CorrespondingSimpleTypes { get; }
 
 		public ImmutableHashSet<ITypeSymbol> UnboundFieldAttributes { get; }
@@ -37,6 +38,13 @@ namespace Acuminator.Utilities
 			CorrespondingSimpleTypes = GetCorrespondingSimpleTypes(_context).ToImmutableDictionary();
 		}
 
+		public ITypeSymbol GetTypeSymbol(SyntaxNode attribute)
+		{
+			attribute.ThrowOnNull(nameof(attribute));
+
+			return null;
+		}
+
 		public bool ContainsBaseType(ITypeSymbol attributeSymbol, ITypeSymbol type)
 		{
 			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
@@ -48,11 +56,12 @@ namespace Acuminator.Utilities
 			return false;
 		}
 
-		public bool AttributeDerivedFromClass(ITypeSymbol attributeSymbol, ITypeSymbol type)
+		public bool AttributeDerivedFromClass(ITypeSymbol attributeSymbol, ITypeSymbol type,int depth = 10)
 		{
 			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
 			type.ThrowOnNull(nameof(type));
-
+			if (depth <= 0 || depth > 100)
+				return false;
 			if (ContainsBaseType(attributeSymbol, type))
 				return true;
 		//	PX.Data.PXAggregateAttribute
@@ -62,7 +71,18 @@ namespace Acuminator.Utilities
 
 			var dynamicAggregateAttribute = _semanticModel.Compilation.GetTypeByMetadataName("PX.Data.PXDynamicAggregateAttribute");
 			if (ContainsBaseType(attributeSymbol, aggregateAttribute) || ContainsBaseType(attributeSymbol, dynamicAggregateAttribute))
-				return true;//go recursuion
+			{
+				var allAttributes = attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes().ToList();
+				foreach (var attribute in allAttributes)
+				{
+					//go recursuion
+					var result = AttributeDerivedFromClass(attribute, type, --depth);
+					if (depth <= 0 || depth > 100)
+						return false;
+					if (result)
+						return result;
+				}
+			}
 			return false;
 		}
 		
