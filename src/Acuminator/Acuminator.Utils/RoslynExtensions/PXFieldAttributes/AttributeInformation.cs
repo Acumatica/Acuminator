@@ -14,37 +14,57 @@ namespace Acuminator.Utilities
 	/// </summary>
 	public class AttributeInformation
 	{
-		private readonly PXContext context;
+		private readonly PXContext _context;
+		private readonly SemanticModel _semanticModel;
 		public ImmutableDictionary<ITypeSymbol, ITypeSymbol> CorrespondingSimpleTypes { get; }
 
 		public ImmutableHashSet<ITypeSymbol> UnboundFieldAttributes { get; }
 		public ImmutableHashSet<ITypeSymbol> BoundFieldAttributes { get; }
 		public ImmutableHashSet<ITypeSymbol> AllFieldAttributes { get; }
 
-		public AttributeInformation(PXContext pxContext)
+		public AttributeInformation(PXContext pxContext,SemanticModel semanticModel)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			context = pxContext;
-			var unboundFieldAttributes = GetUnboundFieldAttributes(context);
+			_context = pxContext;
+			_semanticModel = semanticModel;
+			var unboundFieldAttributes = GetUnboundFieldAttributes(_context);
 			UnboundFieldAttributes = unboundFieldAttributes.ToImmutableHashSet();
 
-			var boundFieldAttributes = GetBoundFieldAttributes(context);
+			var boundFieldAttributes = GetBoundFieldAttributes(_context);
 			BoundFieldAttributes = boundFieldAttributes.ToImmutableHashSet();
 			AllFieldAttributes = unboundFieldAttributes.Concat(boundFieldAttributes).ToImmutableHashSet();
-			CorrespondingSimpleTypes = GetCorrespondingSimpleTypes(context).ToImmutableDictionary();
+			CorrespondingSimpleTypes = GetCorrespondingSimpleTypes(_context).ToImmutableDictionary();
 		}
 
-		public bool ContainBaseType(ITypeSymbol attributeSymbol, ITypeSymbol type)
+		public bool ContainsBaseType(ITypeSymbol attributeSymbol, ITypeSymbol type)
 		{
 			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
 			type.ThrowOnNull(nameof(type));
 
 			List<ITypeSymbol> attributeTypeHierarchy = attributeSymbol.GetBaseTypesAndThis().ToList();
-			 
+			if (attributeTypeHierarchy.Contains(type))
+				return true;	
 			return false;
 		}
 
+		public bool AttributeDerivedFromClass(ITypeSymbol attributeSymbol, ITypeSymbol type)
+		{
+			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
+			type.ThrowOnNull(nameof(type));
+
+			if (ContainsBaseType(attributeSymbol, type))
+				return true;
+		//	PX.Data.PXAggregateAttribute
+		//	PX.Data.PXDynamicAggregateAttribute
+		
+			var aggregateAttribute = _semanticModel.Compilation.GetTypeByMetadataName("PX.Data.PXAggregateAttribute");
+
+			var dynamicAggregateAttribute = _semanticModel.Compilation.GetTypeByMetadataName("PX.Data.PXDynamicAggregateAttribute");
+			if (ContainsBaseType(attributeSymbol, aggregateAttribute) || ContainsBaseType(attributeSymbol, dynamicAggregateAttribute))
+				return true;//go recursuion
+			return false;
+		}
 		
 		public FieldAttributeInfo GetFieldAttributeInfo(ITypeSymbol attributeSymbol)
 		{
@@ -73,7 +93,7 @@ namespace Acuminator.Utilities
 		private FieldAttributeInfo? CheckAttributeInheritanceChain(ITypeSymbol attributeSymbol, List<ITypeSymbol> attributeTypeHierarchy = null)
 		{
 			var attributeBaseTypesEnum = attributeTypeHierarchy ?? attributeSymbol.GetBaseTypesAndThis();
-			ITypeSymbol fieldAttribute = attributeBaseTypesEnum.TakeWhile(a => !a.Equals(context.FieldAttributes.PXDBScalarAttribute))
+			ITypeSymbol fieldAttribute = attributeBaseTypesEnum.TakeWhile(a => !a.Equals(_context.FieldAttributes.PXDBScalarAttribute))
 															   .FirstOrDefault(a => AllFieldAttributes.Contains(a));
 
 			if (fieldAttribute == null)

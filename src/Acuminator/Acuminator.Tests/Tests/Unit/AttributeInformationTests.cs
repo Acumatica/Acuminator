@@ -1,4 +1,6 @@
-﻿using Acuminator.Tests.Helpers;
+﻿using Acuminator.Analyzers;
+using Acuminator.Tests.Helpers;
+using Acuminator.Utilities;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -22,23 +24,32 @@ namespace Acuminator.Tests
 		[EmbeddedFileData(@"Dac\PX1030\Unit\AttributeInformationSimpleDacTest.cs")]
 		public void TestAttributeInformation(string source)
 		{
-	//		var tree = CSharpSyntaxTree.ParseText(source);
-	//		var syntaxRoot = (CompilationUnitSyntax)tree.GetRoot();
 
 			Document document = CreateDocument(source);
 			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
-			var syntaxRoot = (CompilationUnitSyntax)semanticModel.SyntaxTree.GetRoot();
-			var namespaceSyntaxTree = syntaxRoot.DescendantNodes()
-									   .OfType<NamespaceDeclarationSyntax>().Where(a => a.);
-			 
+			var syntaxRoot = document.GetSyntaxRootAsync().Result;
+			//var namespaceSyntaxTree = syntaxRoot.DescendantNodes()
+			//						   .OfType<NamespaceDeclarationSyntax>();
 
-			foreach (var _class in namespaceSyntaxTree)
+			List<bool> expected =	new List<bool>{false, true, false, false, true, false};
+			List<bool> actual	=	new List<bool>();
+			var pxContext = new PXContext(semanticModel.Compilation);
+
+			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
+
+			foreach (var property in properties)
 			{
-				var variables = _class.DescendantNodes().OfType<ClassDeclarationSyntax>();
-				
+				var typeSymbol = semanticModel.GetDeclaredSymbol(property);
+				var attributes = typeSymbol.GetAttributes();
+				foreach (var attribute in attributes)
+				{
+					var ai = new AttributeInformation(pxContext,semanticModel);
+					var defaultAttribute = semanticModel.Compilation.GetTypeByMetadataName("PX.Data.PXDefaultAttribute");
+					actual.Add(ai.AttributeDerivedFromClass(attribute.AttributeClass,defaultAttribute));
+				}
 			}
-			//Semantic model 
-			Assert.Equal(source,"");
+			
+			Assert.Equal(expected, actual);
 		}
 	}
 }
