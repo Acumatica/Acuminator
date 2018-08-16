@@ -4,12 +4,27 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace Acuminator.Analyzers
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class LocalizationAnalyzer : PXDiagnosticAnalyzer
     {
+        private const string _formatRegExp = @"(?<Par>{(\w+|:+)})";
+        private SyntaxNodeAnalysisContext _syntaxContext;
+        private PXContext _pxContext;
+        private InvocationExpressionSyntax _invocationNode;
+        private bool _isFormatMethod;
+        private ExpressionSyntax _messageExpression;
+        ITypeSymbol _messageType;
+        ISymbol _messageMember;
+
+        private SemanticModel SemanticModel => _syntaxContext.SemanticModel;
+        private CancellationToken Cancellation => _syntaxContext.CancellationToken;
+        private LocalizationTypes Localization => _pxContext.Localization;
+
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create
             (
@@ -27,94 +42,144 @@ namespace Acuminator.Analyzers
 
         private void AnalyzeLocalizationMethodInvocation(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
         {
-            if (!(syntaxContext.Node is InvocationExpressionSyntax node) || syntaxContext.CancellationToken.IsCancellationRequested)
+            _invocationNode = syntaxContext.Node as InvocationExpressionSyntax;
+            if (_invocationNode == null || syntaxContext.CancellationToken.IsCancellationRequested)
                 return;
 
-            if (!IsLocalizationMethodInvocation(node, syntaxContext, pxContext, out ExpressionSyntax messageExpression))
+            _syntaxContext = syntaxContext;
+            _pxContext = pxContext;
+
+            if (!IsLocalizationMethodInvocation())
                 return;
 
-            bool isHardcodedMessage = messageExpression is LiteralExpressionSyntax;
+            bool isHardcodedMessage = _messageExpression is LiteralExpressionSyntax;
             if (isHardcodedMessage)
             {
-                syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1050_HardcodedStringInLocalizationMethod, messageExpression.GetLocation()));
+                syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1050_HardcodedStringInLocalizationMethod, _messageExpression.GetLocation()));
                 return;
             }
 
-            if (IsNonLocalizableMessage(messageExpression, syntaxContext, pxContext))
+            ReadMessageInfo();
+            if (_messageType == null || _messageMember == null)
+                return;
+
+            if (IsNonLocalizableMessageType())
             {
-                syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1051_NonLocalizableString, messageExpression.GetLocation()));
+                syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1051_NonLocalizableString, _messageExpression.GetLocation()));
+            }
+
+            if (IsIncorrectStringToFormat())
+            {
+                syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1052_IncorrectStringToFormat, _messageExpression.GetLocation()));
             }
         }
 
-        private bool IsNonLocalizableMessage(ExpressionSyntax messageExpression, SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+        private bool IsIncorrectStringToFormat()
         {
-            if (syntaxContext.CancellationToken.IsCancellationRequested)
+            if (!_isFormatMethod || Cancellation.IsCancellationRequested)
                 return false;
 
-            if (!(messageExpression is MemberAccessExpressionSyntax memberAccess) ||
+            Optional<object> constString = SemanticModel.GetConstantValue(_messageExpression);
+            if (!constString.HasValue)
+                return false;
+
+            Regex regex = new Regex(_formatRegExp, RegexOptions.CultureInvariant);
+            MatchCollection matchesValue = regex.Matches(constString.Value as string);
+
+            return matchesValue.Count == 0;
+        }
+
+        private void ReadMessageInfo()
+        {
+            if (Cancellation.IsCancellationRequested)
+                return;
+
+            if (!(_messageExpression is MemberAccessExpressionSyntax memberAccess) ||
                 !(memberAccess.Name is IdentifierNameSyntax messageMember))
-                return false;
-
+                return;
+            
             ITypeSymbol messageClassType = memberAccess.Expression
                                            .DescendantNodesAndSelf()
                                            .OfType<IdentifierNameSyntax>()
-                                           .Select(i => syntaxContext.SemanticModel.GetTypeInfo(i, syntaxContext.CancellationToken).Type)
+                                           .Select(i => SemanticModel.GetTypeInfo(i, Cancellation).Type)
                                            .Where(t => t != null && t.IsReferenceType)
                                            .FirstOrDefault();
             if (messageClassType == null)
-                return false;
+                return;
 
-            ISymbol messageMemberInfo = syntaxContext.SemanticModel.GetSymbolInfo(messageMember, syntaxContext.CancellationToken).Symbol;
+            ISymbol messageMemberInfo = SemanticModel.GetSymbolInfo(messageMember, Cancellation).Symbol;
             if (messageMemberInfo == null || messageMemberInfo.Kind != SymbolKind.Field || !messageMemberInfo.IsStatic ||
                 messageMemberInfo.DeclaredAccessibility != Accessibility.Public)
-                return false;
+                return;
 
-            ImmutableArray<AttributeData> attributes = messageClassType.GetAttributes();
-            return attributes.All(a => !a.AttributeClass.Equals(pxContext.Localization.PXLocalizableAttribute));
+            _messageType = messageClassType;
+            _messageMember = messageMemberInfo;
         }
 
-        private bool IsLocalizationMethodInvocation(InvocationExpressionSyntax node, SyntaxNodeAnalysisContext syntaxContext,
-            PXContext pxContext, out ExpressionSyntax messageExpression)
+        private bool IsNonLocalizableMessageType()
         {
-            messageExpression = null;
-
-            if (syntaxContext.CancellationToken.IsCancellationRequested)
+            if (Cancellation.IsCancellationRequested)
                 return false;
 
-            SymbolInfo symbolInfo = syntaxContext.SemanticModel.GetSymbolInfo(node, syntaxContext.CancellationToken);
+            ImmutableArray<AttributeData> attributes = _messageType.GetAttributes();
+            return attributes.All(a => !a.AttributeClass.Equals(Localization.PXLocalizableAttribute));
+        }
+
+        private bool IsLocalizationMethodInvocation()
+        {
+            if (Cancellation.IsCancellationRequested)
+                return false;
+
+            SymbolInfo symbolInfo = SemanticModel.GetSymbolInfo(_invocationNode, Cancellation);
             if (symbolInfo.Symbol == null && symbolInfo.CandidateSymbols.IsEmpty)
                 return false;
 
-            if (!IsLocalizationSymbol(symbolInfo, syntaxContext, pxContext))
+            if (!IsLocalizationSymbolInfo(symbolInfo))
                 return false;
 
-            ArgumentSyntax messageArg = node.ArgumentList?.Arguments.FirstOrDefault();
+            ArgumentSyntax messageArg = _invocationNode.ArgumentList?.Arguments.FirstOrDefault();
             if (messageArg == null || messageArg.Expression == null)
                 return false;
 
-            ITypeSymbol messageArgType = syntaxContext.SemanticModel.GetTypeInfo(messageArg.Expression).Type;
+            ITypeSymbol messageArgType = SemanticModel.GetTypeInfo(messageArg.Expression).Type;
             if (messageArgType == null || messageArgType.SpecialType != SpecialType.System_String)
                 return false;
 
-            messageExpression = messageArg.Expression;
+            _messageExpression = messageArg.Expression;
             return true;
         }
 
-        private bool IsLocalizationSymbol(SymbolInfo symbolInfo, SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+        private bool IsLocalizationSymbolInfo(SymbolInfo symbolInfo)
         {
-            if (syntaxContext.CancellationToken.IsCancellationRequested)
+            if (Cancellation.IsCancellationRequested)
                 return false;
 
-            bool isLocalization(ISymbol s) => pxContext.Localization.PXMessagesSimpleMethods.Contains(s) ||
-                                              pxContext.Localization.PXMessagesFormatMethods.Contains(s) ||
-                                              pxContext.Localization.PXLocalizerSimpleMethods.Contains(s) ||
-                                              pxContext.Localization.PXLocalizerFormatMethods.Contains(s);
             if (symbolInfo.Symbol != null)
             {
-                return isLocalization(symbolInfo.Symbol);
+                return IsLocalizationSymbol(symbolInfo.Symbol);
             }
 
-            return symbolInfo.CandidateSymbols.Any(c => isLocalization(c));
+            foreach (ISymbol s in symbolInfo.CandidateSymbols)
+            {
+                if (IsLocalizationSymbol(s))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private bool IsLocalizationSymbol(ISymbol s)
+        {
+            if (Cancellation.IsCancellationRequested)
+                return false;
+
+            _isFormatMethod = Localization.PXMessagesFormatMethods.Contains(s) ||
+                              Localization.PXLocalizerFormatMethods.Contains(s);
+            if (_isFormatMethod)
+                return true;
+
+            return Localization.PXMessagesSimpleMethods.Contains(s) ||
+                   Localization.PXLocalizerSimpleMethods.Contains(s);
         }
     }
 }
