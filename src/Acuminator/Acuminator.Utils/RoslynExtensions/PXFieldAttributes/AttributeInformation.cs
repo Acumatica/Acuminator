@@ -23,14 +23,7 @@ namespace Acuminator.Utilities
 
 			_context = pxContext;
 		}
-		/*
-		public ITypeSymbol GetTypeSymbol(SyntaxNode attribute)
-		{
-			attribute.ThrowOnNull(nameof(attribute));
 
-			throw new NotImplementedException();
-		}
-		*/
 		public bool ContainsBaseType(ITypeSymbol attributeSymbol, ITypeSymbol type)
 		{
 			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
@@ -38,11 +31,11 @@ namespace Acuminator.Utilities
 
 			List<ITypeSymbol> attributeTypeHierarchy = attributeSymbol.GetBaseTypesAndThis().ToList();
 			if (attributeTypeHierarchy.Contains(type))
-				return true;	
+				return true;
 			return false;
 		}
 
-		public bool AttributeDerivedFromClass(ITypeSymbol attributeSymbol, ITypeSymbol type,int depth = 10)
+		public bool AttributeDerivedFromClass(ITypeSymbol attributeSymbol, ITypeSymbol type, int depth = 10)
 		{
 			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
 			type.ThrowOnNull(nameof(type));
@@ -94,10 +87,11 @@ namespace Acuminator.Utilities
 		{
 			foreach (var attribute in attributesSymbols)
 			{
-				if(IsBoundAttribute(attribute))
+				if (IsBoundAttribute(attribute))
 					return true;
 			}
 			return false;
 		}
 
 	}
+}

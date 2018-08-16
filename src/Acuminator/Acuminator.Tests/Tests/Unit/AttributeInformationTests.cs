@@ -17,7 +17,11 @@ namespace Acuminator.Tests
 	
 	public class AttributeInformationTests : DiagnosticVerifier
 	{
-
+		/* 
+		 * 
+		 *  Tests attribute derived 
+		 * 
+		 * */
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1030\Unit\AttributeInformationSimpleDacTest.cs")]
 		public void TestAttributeSimpleInformation(string source) =>
@@ -53,12 +57,54 @@ namespace Acuminator.Tests
 				foreach (var attribute in attributes)
 				{
 					var attributeInformation = new AttributeInformation(pxContext);
-					var defaultAttribute = semanticModel.Compilation.GetTypeByMetadataName("PX.Data.PXDefaultAttribute");
+					var defaultAttribute = semanticModel.Compilation.GetTypeByMetadataName("PX.Data.PXDefaultAttribute");//rewrite to pxContext.PXDefaultAttribute
 					actual.Add(attributeInformation.AttributeDerivedFromClass(attribute.AttributeClass, defaultAttribute));
 				}
 			}
 			Assert.Equal(expected, actual);
 		}
-		
+
+		/*
+		 * Tests AreBoundAttributes 
+		 */
+
+		[Theory]
+		[EmbeddedFileData(@"Dac\PX1030\Unit\AttributeInformationSimpleDacTest.cs")]
+		public void TestAreBoundAttributes(string source) =>
+			_testAreBoundAttributes(source, new List<bool> { false, false, false ,true, false, false });
+
+		[Theory]
+		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateAttributeInformationTest.cs")]
+		public void TestAreBoundAggregateAttributes(string source) =>
+			_testAreBoundAttributes(source, new List<bool> { true });
+
+		[Theory]
+		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateRecursiveAttributeInformationTest.cs")]
+		public void TestAreBoundAggregateRegursiveAttribute(string source) =>
+			_testAreBoundAttributes(source, new List<bool> { false, true });
+
+		private void _testAreBoundAttributes(string source, List<bool> expected)
+		{
+			Document document = CreateDocument(source);
+			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
+			var syntaxRoot = document.GetSyntaxRootAsync().Result;
+
+			List<bool> actual = new List<bool>();
+			var pxContext = new PXContext(semanticModel.Compilation);
+
+			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
+
+			foreach (var property in properties)
+			{
+				var typeSymbol = semanticModel.GetDeclaredSymbol(property);
+				var attributes = typeSymbol.GetAttributes();
+				foreach (var attribute in attributes)
+				{
+					var attributeInformation = new AttributeInformation(pxContext);
+					actual.Add(attributeInformation.IsBoundAttribute(attribute.AttributeClass));
+				}
+			}
+			Assert.Equal(expected, actual);
+		}
 	}
 }
