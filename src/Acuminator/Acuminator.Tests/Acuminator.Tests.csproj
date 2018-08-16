@@ -187,7 +187,7 @@
     <EmbeddedResource Include="Sources\PXGraph\PX1040\Diagnostics\ConstructorInGraphExtensionWithInitialize.cs" />
     <EmbeddedResource Include="Sources\PXGraph\PX1040\CodeFixes\ConstructorInGraphExtensionWithInitialize_Expected.cs" />
     <EmbeddedResource Include="Sources\Localization\LocalizationExceptions.cs" />
-    <EmbeddedResource Include="Sources\Localization\LocalizationWithConcatenation.cs" />
+    <EmbeddedResource Include="Sources\Localization\PX1053\LocalizationWithConcatenation.cs" />
     <EmbeddedResource Include="Sources\Localization\PX1052\LocalizationWithIncorrectStringsToFormat.cs" />
     <EmbeddedResource Include="Sources\Localization\PX1050\LocalizationWithHardcodedStrings.cs" />
     <EmbeddedResource Include="Sources\Localization\PX1051\LocalizationWithNonLocalizableStrings.cs" />
@@ -211,6 +211,7 @@
     <Compile Include="Tests\StaticAnalysis\Localization\PX1050\LocalizationHardcodeTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Localization\PX1051\LocalizationNonLocalizableStringTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Localization\PX1052\LocalizationWithIncorrectStringToFormatTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\Localization\PX1053\LocalizationWithConcatenationTests.cs" />
     <Compile Include="Tests\StaticAnalysis\LongOperationDelegateClosuresTests.cs" />
     <EmbeddedResource Include="Sources\View\Delegate\PX1010\Diagnostics\StartRowResetForPaging.cs" />
     <EmbeddedResource Include="Sources\MissingTypeListAttributeBad_Expected.cs" />

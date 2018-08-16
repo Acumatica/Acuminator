@@ -18,8 +18,7 @@ namespace Acuminator.Analyzers
         private InvocationExpressionSyntax _invocationNode;
         private bool _isFormatMethod;
         private ExpressionSyntax _messageExpression;
-        ITypeSymbol _messageType;
-        ISymbol _messageMember;
+        private ISymbol _messageMember;
 
         private SemanticModel SemanticModel => _syntaxContext.SemanticModel;
         private CancellationToken Cancellation => _syntaxContext.CancellationToken;
@@ -59,19 +58,47 @@ namespace Acuminator.Analyzers
                 return;
             }
 
-            ReadMessageInfo();
-            if (_messageType == null || _messageMember == null)
-                return;
-
-            if (IsNonLocalizableMessageType())
+            ITypeSymbol messageType = ReadMessageInfo();
+            if (messageType != null && _messageMember != null)
             {
-                syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1051_NonLocalizableString, _messageExpression.GetLocation()));
-            }
+                if (IsNonLocalizableMessageType(messageType))
+                {
+                    syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1051_NonLocalizableString, _messageExpression.GetLocation()));
+                }
 
-            if (IsIncorrectStringToFormat())
-            {
-                syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1052_IncorrectStringToFormat, _messageExpression.GetLocation()));
+                if (IsIncorrectStringToFormat())
+                {
+                    syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1052_IncorrectStringToFormat, _messageExpression.GetLocation()));
+                }
             }
+            else if (IsStringConcatenation())
+            {
+                syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1053_ConcatinationPriorLocalization, _messageExpression.GetLocation()));
+            }
+        }
+
+        private bool IsStringConcatenation()
+        {
+            if (Cancellation.IsCancellationRequested)
+                return false;
+
+            bool isStringAddition = _messageExpression is BinaryExpressionSyntax && _messageExpression.IsKind(SyntaxKind.AddExpression);
+            if (isStringAddition)
+                return true;
+
+            if (!(_messageExpression is InvocationExpressionSyntax i) || !(i.Expression is MemberAccessExpressionSyntax memberAccess) ||
+                !(memberAccess.Expression is PredefinedTypeSyntax predefinedType) || memberAccess.Name == null)
+                return false;
+
+            ITypeSymbol stringType = SemanticModel.GetTypeInfo(predefinedType, Cancellation).Type;
+            if (stringType == null || stringType.SpecialType != SpecialType.System_String)
+                return false;
+
+            ISymbol stringMethod = SemanticModel.GetSymbolInfo(memberAccess.Name, Cancellation).Symbol;
+            if (stringMethod == null || (!_pxContext.StringFormat.Contains(stringMethod) && !_pxContext.StringConcat.Contains(stringMethod)))
+                return false;
+
+            return true;
         }
 
         private bool IsIncorrectStringToFormat()
@@ -89,14 +116,14 @@ namespace Acuminator.Analyzers
             return matchesValue.Count == 0;
         }
 
-        private void ReadMessageInfo()
+        private ITypeSymbol ReadMessageInfo()
         {
             if (Cancellation.IsCancellationRequested)
-                return;
+                return null;
 
             if (!(_messageExpression is MemberAccessExpressionSyntax memberAccess) ||
                 !(memberAccess.Name is IdentifierNameSyntax messageMember))
-                return;
+                return null;
             
             ITypeSymbol messageClassType = memberAccess.Expression
                                            .DescendantNodesAndSelf()
@@ -105,23 +132,23 @@ namespace Acuminator.Analyzers
                                            .Where(t => t != null && t.IsReferenceType)
                                            .FirstOrDefault();
             if (messageClassType == null)
-                return;
+                return null;
 
             ISymbol messageMemberInfo = SemanticModel.GetSymbolInfo(messageMember, Cancellation).Symbol;
             if (messageMemberInfo == null || messageMemberInfo.Kind != SymbolKind.Field || !messageMemberInfo.IsStatic ||
                 messageMemberInfo.DeclaredAccessibility != Accessibility.Public)
-                return;
+                return null;
 
-            _messageType = messageClassType;
             _messageMember = messageMemberInfo;
+            return messageClassType;
         }
 
-        private bool IsNonLocalizableMessageType()
+        private bool IsNonLocalizableMessageType(ITypeSymbol messageType)
         {
             if (Cancellation.IsCancellationRequested)
                 return false;
 
-            ImmutableArray<AttributeData> attributes = _messageType.GetAttributes();
+            ImmutableArray<AttributeData> attributes = messageType.GetAttributes();
             return attributes.All(a => !a.AttributeClass.Equals(Localization.PXLocalizableAttribute));
         }
 
