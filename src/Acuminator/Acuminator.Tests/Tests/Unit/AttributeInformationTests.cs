@@ -18,9 +18,7 @@ namespace Acuminator.Tests
 	public class AttributeInformationTests : DiagnosticVerifier
 	{
 		/* 
-		 * 
 		 *  Tests attribute derived 
-		 * 
 		 * */
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1030\Unit\AttributeInformationSimpleDacTest.cs")]
@@ -36,9 +34,7 @@ namespace Acuminator.Tests
 		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateRecursiveAttributeInformationTest.cs")]
 		public void TestAggregateRegursiveAttribute(string source) =>
 			TestAttributeInformation(source, new List<bool> { true, false });
-
-
-
+		
 		private void TestAttributeInformation(string source, List<bool> expected)
 		{
 			Document document = CreateDocument(source);
@@ -65,25 +61,25 @@ namespace Acuminator.Tests
 		}
 
 		/*
-		 * Tests AreBoundAttributes 
+		 * Tests IsBoundAttribute 
 		 */
 
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1030\Unit\AttributeInformationSimpleDacTest.cs")]
 		public void TestAreBoundAttributes(string source) =>
-			_testAreBoundAttributes(source, new List<bool> { false, false, false ,true, false, false });
+			_testIsBoundAttribute(source, new List<bool> { false, false, false ,true, false, false });
 
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateAttributeInformationTest.cs")]
 		public void TestAreBoundAggregateAttributes(string source) =>
-			_testAreBoundAttributes(source, new List<bool> { true });
+			_testIsBoundAttribute(source, new List<bool> { true });
 
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateRecursiveAttributeInformationTest.cs")]
 		public void TestAreBoundAggregateRegursiveAttribute(string source) =>
-			_testAreBoundAttributes(source, new List<bool> { false, true });
+			_testIsBoundAttribute(source, new List<bool> { false, true });
 
-		private void _testAreBoundAttributes(string source, List<bool> expected)
+		private void _testIsBoundAttribute(string source, List<bool> expected)
 		{
 			Document document = CreateDocument(source);
 			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
@@ -106,5 +102,6 @@ namespace Acuminator.Tests
 			}
 			Assert.Equal(expected, actual);
 		}
+
 	}
 }

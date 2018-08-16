@@ -72,17 +72,7 @@ namespace Acuminator.Utilities
 			var dbFieldAttribute = _context.FieldAttributes.PXDBFieldAttribute;
 			return AttributeDerivedFromClass(attributeSymbol, dbFieldAttribute);
 		}
-
-
-		// hm... Is it nesessary to realize this method? What type of arguments must be here? SyntaxNode, PropertyDeclaratioinSyntax or I...Symbol?
-		// [attribute1]
-		// [attribute2]
-		// int SomeField;
-		public bool IsBoundField()
-		{
-			throw new NotImplementedException();
-		}
-
+		
 		public bool AreBoundAttributes(IEnumerable<ITypeSymbol> attributesSymbols)
 		{
 			foreach (var attribute in attributesSymbols)
