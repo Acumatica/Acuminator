@@ -87,7 +87,10 @@ namespace Acuminator.Analyzers
         public INamedTypeSymbol PXEventSubscriberAttribute => Compilation.GetTypeByMetadataName(typeof(PXEventSubscriberAttribute).FullName);
         public INamedTypeSymbol PXFieldState => Compilation.GetTypeByMetadataName(typeof(PXFieldState).FullName);
         public INamedTypeSymbol PXAttributeFamily => Compilation.GetTypeByMetadataName(typeof(PXAttributeFamilyAttribute).FullName);
-         
+		public INamedTypeSymbol PXAggregateAttribute => Compilation.GetTypeByMetadataName(typeof(PXAggregateAttribute).FullName);
+		public INamedTypeSymbol PXDynamicAggregateAttribute => Compilation.GetTypeByMetadataName(typeof(PXDynamicAggregateAttribute).FullName);
+        
+
         public PXContext(Compilation compilation)
         {
             Compilation = compilation;

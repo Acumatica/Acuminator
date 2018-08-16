@@ -15,36 +15,22 @@ namespace Acuminator.Utilities
 	public class AttributeInformation
 	{
 		private readonly PXContext _context;
-		private readonly SemanticModel _semanticModel;
-		private static int depth = 0; 
-		public ImmutableDictionary<ITypeSymbol, ITypeSymbol> CorrespondingSimpleTypes { get; }
 
-		public ImmutableHashSet<ITypeSymbol> UnboundFieldAttributes { get; }
-		public ImmutableHashSet<ITypeSymbol> BoundFieldAttributes { get; }
-		public ImmutableHashSet<ITypeSymbol> AllFieldAttributes { get; }
 
-		public AttributeInformation(PXContext pxContext,SemanticModel semanticModel)
+		public AttributeInformation(PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
 			_context = pxContext;
-			_semanticModel = semanticModel;
-			var unboundFieldAttributes = GetUnboundFieldAttributes(_context);
-			UnboundFieldAttributes = unboundFieldAttributes.ToImmutableHashSet();
-
-			var boundFieldAttributes = GetBoundFieldAttributes(_context);
-			BoundFieldAttributes = boundFieldAttributes.ToImmutableHashSet();
-			AllFieldAttributes = unboundFieldAttributes.Concat(boundFieldAttributes).ToImmutableHashSet();
-			CorrespondingSimpleTypes = GetCorrespondingSimpleTypes(_context).ToImmutableDictionary();
 		}
-
+		/*
 		public ITypeSymbol GetTypeSymbol(SyntaxNode attribute)
 		{
 			attribute.ThrowOnNull(nameof(attribute));
 
-			return null;
+			throw new NotImplementedException();
 		}
-
+		*/
 		public bool ContainsBaseType(ITypeSymbol attributeSymbol, ITypeSymbol type)
 		{
 			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
@@ -64,18 +50,18 @@ namespace Acuminator.Utilities
 				return false;
 			if (ContainsBaseType(attributeSymbol, type))
 				return true;
-		//	PX.Data.PXAggregateAttribute
-		//	PX.Data.PXDynamicAggregateAttribute
-		
-			var aggregateAttribute = _semanticModel.Compilation.GetTypeByMetadataName("PX.Data.PXAggregateAttribute");
 
-			var dynamicAggregateAttribute = _semanticModel.Compilation.GetTypeByMetadataName("PX.Data.PXDynamicAggregateAttribute");
+			//get symbols from PXContext
+			//PX.Data.PXAggregateAttribute and PX.Data.PXDynamicAggregateAttribute
+			var aggregateAttribute = _context.PXAggregateAttribute;
+			var dynamicAggregateAttribute = _context.PXDynamicAggregateAttribute;
+
 			if (ContainsBaseType(attributeSymbol, aggregateAttribute) || ContainsBaseType(attributeSymbol, dynamicAggregateAttribute))
 			{
 				var allAttributes = attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes().ToList();
 				foreach (var attribute in allAttributes)
 				{
-					//go recursuion
+					//go in recursuion
 					var result = AttributeDerivedFromClass(attribute, type, --depth);
 					if (depth <= 0 || depth > 100)
 						return false;
@@ -85,117 +71,33 @@ namespace Acuminator.Utilities
 			}
 			return false;
 		}
-		
-		public FieldAttributeInfo GetFieldAttributeInfo(ITypeSymbol attributeSymbol)
+
+		public bool IsBoundAttribute(ITypeSymbol attributeSymbol)
 		{
-			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
+			//Get this symbols from PXContext
+			//PX.Data.PXDBFieldAttribute
+			var dbFieldAttribute = _context.FieldAttributes.PXDBFieldAttribute;
+			return AttributeDerivedFromClass(attributeSymbol, dbFieldAttribute);
+		}
 
-			List<ITypeSymbol> attributeTypeHierarchy = attributeSymbol.GetBaseTypesAndThis().ToList();
-			var info = CheckAttributeInheritanceChain(attributeSymbol, attributeTypeHierarchy);
 
-			if (info.HasValue)
-				return info.Value;
+		// hm... Is it nesessary to realize this method? What type of arguments must be here? SyntaxNode, PropertyDeclaratioinSyntax or I...Symbol?
+		// [attribute1]
+		// [attribute2]
+		// int SomeField;
+		public bool IsBoundField()
+		{
+			throw new NotImplementedException();
+		}
 
-			var attributesOnHierarchy = attributeTypeHierarchy.SelectMany(a => a.GetAttributes())
-															  .Select(a => a.AttributeClass);
-														 
-			foreach (ITypeSymbol attribute in attributesOnHierarchy)
+		public bool AreBoundAttributes(IEnumerable<ITypeSymbol> attributesSymbols)
+		{
+			foreach (var attribute in attributesSymbols)
 			{
-				info = CheckAttributeInheritanceChain(attribute);
-
-				if (info.HasValue)
-					return info.Value;
+				if(IsBoundAttribute(attribute))
+					return true;
 			}
-
-			return new FieldAttributeInfo(isFieldAttribute: false, isBoundField: false, fieldType: null);
+			return false;
 		}
 
-		private FieldAttributeInfo? CheckAttributeInheritanceChain(ITypeSymbol attributeSymbol, List<ITypeSymbol> attributeTypeHierarchy = null)
-		{
-			var attributeBaseTypesEnum = attributeTypeHierarchy ?? attributeSymbol.GetBaseTypesAndThis();
-			ITypeSymbol fieldAttribute = attributeBaseTypesEnum.TakeWhile(a => !a.Equals(_context.FieldAttributes.PXDBScalarAttribute))
-															   .FirstOrDefault(a => AllFieldAttributes.Contains(a));
-
-			if (fieldAttribute == null)
-				return null;
-
-			bool isBoundField = BoundFieldAttributes.Contains(fieldAttribute);
-			return CorrespondingSimpleTypes.TryGetValue(fieldAttribute, out var fieldType)
-				? new FieldAttributeInfo(isFieldAttribute: true, isBoundField, fieldType)
-				: new FieldAttributeInfo(isFieldAttribute: true, isBoundField, fieldType: null);
-		}
-
-		private static HashSet<ITypeSymbol> GetUnboundFieldAttributes(PXContext pxContext) =>
-			new HashSet<ITypeSymbol>
-			{
-				pxContext.FieldAttributes.PXLongAttribute,
-				pxContext.FieldAttributes.PXIntAttribute,
-				pxContext.FieldAttributes.PXShortAttribute,
-				pxContext.FieldAttributes.PXStringAttribute,
-				pxContext.FieldAttributes.PXByteAttribute,
-				pxContext.FieldAttributes.PXDecimalAttribute,
-				pxContext.FieldAttributes.PXFloatAttribute,
-				pxContext.FieldAttributes.PXDoubleAttribute,
-				pxContext.FieldAttributes.PXDateAttribute,
-				pxContext.FieldAttributes.PXGuidAttribute,
-				pxContext.FieldAttributes.PXBoolAttribute
-			};
-
-		private static HashSet<ITypeSymbol> GetBoundFieldAttributes(PXContext pxContext) =>
-			new HashSet<ITypeSymbol>
-			{
-				pxContext.FieldAttributes.PXDBFieldAttribute,
-
-				pxContext.FieldAttributes.PXDBLongAttribute,
-				pxContext.FieldAttributes.PXDBIntAttribute,
-				pxContext.FieldAttributes.PXDBShortAttribute,
-				pxContext.FieldAttributes.PXDBStringAttribute,
-				pxContext.FieldAttributes.PXDBByteAttribute,
-				pxContext.FieldAttributes.PXDBDecimalAttribute,
-				pxContext.FieldAttributes.PXDBDoubleAttribute,
-				pxContext.FieldAttributes.PXDBFloatAttribute,
-				pxContext.FieldAttributes.PXDBDateAttribute,
-				pxContext.FieldAttributes.PXDBGuidAttribute,
-				pxContext.FieldAttributes.PXDBBoolAttribute,
-				pxContext.FieldAttributes.PXDBTimestampAttribute,
-				pxContext.FieldAttributes.PXDBIdentityAttribute,
-				pxContext.FieldAttributes.PXDBLongIdentityAttribute,
-				pxContext.FieldAttributes.PXDBBinaryAttribute,
-				pxContext.FieldAttributes.PXDBUserPasswordAttribute,
-			};
-
-		private static Dictionary<ITypeSymbol, ITypeSymbol> GetCorrespondingSimpleTypes(PXContext pxContext) =>
-			new Dictionary<ITypeSymbol, ITypeSymbol>
-			{
-				{ pxContext.FieldAttributes.PXLongAttribute, pxContext.Int64 },
-				{ pxContext.FieldAttributes.PXIntAttribute, pxContext.Int32 },
-				{ pxContext.FieldAttributes.PXShortAttribute, pxContext.Int16 },
-				{ pxContext.FieldAttributes.PXStringAttribute, pxContext.String },
-				{ pxContext.FieldAttributes.PXByteAttribute, pxContext.Byte },
-				{ pxContext.FieldAttributes.PXDecimalAttribute, pxContext.Decimal },
-				{ pxContext.FieldAttributes.PXDoubleAttribute, pxContext.Double },
-				{ pxContext.FieldAttributes.PXFloatAttribute, pxContext.Float },
-				{ pxContext.FieldAttributes.PXDateAttribute, pxContext.DateTime },
-				{ pxContext.FieldAttributes.PXGuidAttribute, pxContext.Guid },
-				{ pxContext.FieldAttributes.PXBoolAttribute, pxContext.Bool },
-
-				{ pxContext.FieldAttributes.PXDBLongAttribute, pxContext.Int64 },
-				{ pxContext.FieldAttributes.PXDBIntAttribute, pxContext.Int32 },
-				{ pxContext.FieldAttributes.PXDBShortAttribute, pxContext.Int16 },
-				{ pxContext.FieldAttributes.PXDBStringAttribute, pxContext.String },
-				{ pxContext.FieldAttributes.PXDBByteAttribute, pxContext.Byte },
-				{ pxContext.FieldAttributes.PXDBDecimalAttribute, pxContext.Decimal },
-				{ pxContext.FieldAttributes.PXDBDoubleAttribute, pxContext.Double },
-				{ pxContext.FieldAttributes.PXDBFloatAttribute, pxContext.Float },
-				{ pxContext.FieldAttributes.PXDBDateAttribute, pxContext.DateTime },
-				{ pxContext.FieldAttributes.PXDBGuidAttribute, pxContext.Guid },
-				{ pxContext.FieldAttributes.PXDBBoolAttribute, pxContext.Bool },
-				{ pxContext.FieldAttributes.PXDBTimestampAttribute, pxContext.ByteArray },
-				{ pxContext.FieldAttributes.PXDBIdentityAttribute, pxContext.Int32 },
-				{ pxContext.FieldAttributes.PXDBLongIdentityAttribute, pxContext.Int64 },
-				{ pxContext.FieldAttributes.PXDBBinaryAttribute, pxContext.ByteArray },
-				{ pxContext.FieldAttributes.PXDBUserPasswordAttribute, pxContext.String },
-			};
 	}
-
-}

@@ -75,15 +75,6 @@ namespace Acuminator.Tests
                         new DiagnosticResultLocation("Test0.cs", line, column)
                     }
             };
-        }
-
-        //        protected override CodeFixProvider GetCSharpCodeFixProvider() => new UnderscoresInDacCodeFix();
-
-        /*
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacDeclarationAnalyzer();
-
-		protected override CodeFixProvider GetCSharpCodeFixProvider() => new UnderscoresInDacCodeFix();
-
-		*/
+        }	
     }
 }

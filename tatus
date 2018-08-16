@@ -1,0 +1,4696 @@
+[33mcommit 24a1bae50d47c9ff79df378e68012630d5e17895[m[33m ([m[1;36mHEAD -> [m[1;32mfeature/ATR-134[m[33m, [m[1;31morigin/feature/ATR-134[m[33m)[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Tue Aug 14 12:06:29 2018 +0300
+
+    ATR-182: Tests for engine that collects all attributes from a symbol.
+
+[33mcommit 5af2feba8cb37e697edaf345546812ae8a1bde1d[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Sat Aug 11 10:51:48 2018 +0300
+
+    ATR-88: Add diagnostic PX1030 for DAC case.
+
+[33mcommit a4f3a9d989f56014cf5f75c2c21258f8707babe0[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Fri Aug 10 15:31:25 2018 +0300
+
+    ATR-134: Renew tests.
+
+[33mcommit d074be1b0851f42efe9fbcf4336d32b341fd912a[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Fri Aug 10 15:26:49 2018 +0300
+
+    ATR-134: Add in CodeFix case where there are several attributes in square brackets.
+
+[33mcommit 5bc1f21c88f9f6347df6daec4ba628ab22a53f38[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Fri Aug 10 12:42:25 2018 +0300
+
+    ATR-134: Add codefix for Bound and Unbound fields within DacExtension.
+    
+    Cases for replace attributes on Bound fields:  [PXDefault],[PXDefault(0)],[PXDefault[0,PersistingCheck = PXPersistingCheck.Null | PXPersistingCheck.NullOrBlank]].
+    Cases for replace attributes on Unbound fields.
+
+[33mcommit de3e616a43ffe1ac8f2497d4eb21c5bd9ecaeaaf[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Wed Aug 8 16:09:46 2018 +0300
+
+    ATR-134: Work on analyzer.
+    
+    Add diagnostic message to unbound field with [PXDefaultAttribute].
+    Add diagnostic message to bound field [PXDefault] without 'PersistiongCheck =PXPersistingCheck.Nothing'.
+
+[33mcommit 87d3bf8ef3ec07ee91f450fe54c684abb0011f26[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Wed Aug 8 11:21:58 2018 +0300
+
+    ATR-134: Regenerate Resources.Designer.cs
+
+[33mcommit 2100007590b035d113e04fdc8d02bb5f4f7f304d[m
+Merge: acdb73b 45025c7
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Wed Aug 8 11:21:15 2018 +0300
+
+    ATR-134: Merge from master.
+
+[33mcommit acdb73b7b8b0aa0e580b1ef1719f74d23a346eb5[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Wed Aug 8 10:51:04 2018 +0300
+
+    ATR-134: Set diagnostic as warning.
+
+[33mcommit 9e2fb9c182872f6bf72b14cfe53f0d3a07e97b5c[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Wed Aug 8 10:41:48 2018 +0300
+
+    ATR-134: Tabulation fix.
+
+[33mcommit 45025c7e599c667eee345959c308fd0384a49e86[m
+Merge: 151c917 897aa1a
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Wed Aug 8 09:43:53 2018 +0300
+
+    Merge pull request #55 from Acumatica/feature/ATR-83-DAC-cannot-contain-or-invoke-any-methods
+    
+    Feature/atr 83 dac cannot contain or invoke any methods
+
+[33mcommit 151c9175f0089a4fbf6394c9a2f9ed1198423cae[m
+Merge: 70cccd1 c988af4
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Wed Aug 8 09:42:33 2018 +0300
+
+    Merge pull request #56 from Acumatica/bugfix/ATR-167-expand-regions-on-navigation
+    
+    Bugfix/atr 167 expand regions on navigation
+
+[33mcommit 70cccd1a4e5cce335f8b9aec6c21dbb5149cc89c[m
+Merge: e21e396 2f8810b
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Wed Aug 8 09:38:01 2018 +0300
+
+    Merge pull request #54 from Acumatica/feature/ATR-35-view-delegate-transition
+    
+    Feature/atr 35 view delegate transition
+
+[33mcommit 08cb093ecd94d76f2aabff277083b61dbfdd6b66[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Tue Aug 7 17:25:00 2018 +0300
+
+    ATR-134: Work on analyzer.
+
+[33mcommit 897aa1a75292d1771dba11227a3942f6182b7c8a[m[33m ([m[1;31morigin/feature/ATR-83-DAC-cannot-contain-or-invoke-any-methods[m[33m)[m
+Merge: ec6d7b3 e21e396
+Author: metallmonster <yakutenko.va@gmail.com>
+Date:   Tue Aug 7 16:05:07 2018 +0300
+
+    Merge branch 'master' into feature/ATR-83-DAC-cannot-contain-or-invoke-any-methods
+    
+    # Conflicts:
+    #       src/Acuminator/Acuminator.Analyzers/Descriptors.cs
+    #       src/Acuminator/Acuminator.Analyzers/Resources.Designer.cs
+    #       src/Acuminator/Acuminator.Analyzers/Resources.resx
+    #       src/Acuminator/Acuminator.Tests/Acuminator.Tests.csproj
+
+[33mcommit ec6d7b3ef121e242da28fd3e75686adeeac51829[m
+Author: metallmonster <yakutenko.va@gmail.com>
+Date:   Tue Aug 7 15:55:20 2018 +0300
+
+    ATR-83: code edit in accordance with pull-request comments
+
+[33mcommit b825607c671a607bde63864da99e5fb48dc7fb9f[m[33m ([m[1;32morigin[m[33m)[m
+Author: Ivan Saloponov <saloponov.ivan@gmail.com>
+Date:   Tue Aug 7 14:02:22 2018 +0300
+
+    ATR-134: Work on Analyzers/DAC/DacPropertyAttributes/DacExtensionDefaultAttributeAnalyzer.cs
+
+[33mcommit c988af4f58ecd16f32d42c7ce529adf101b0ca13[m[33m ([m[1;31morigin/bugfix/ATR-167-expand-regions-on-navigation[m[33m)[m
+Merge: 34cb80c 2f8810b
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Aug 7 11:43:06 2018 +0300
+
+    Merge branch 'feature/ATR-35-view-delegate-transition' of https://github.com/Acumatica/Acuminator into bugfix/ATR-167-expand-regions-on-navigation
+
+[33mcommit 2f8810b008a7908cb66d0e7f7a30345521cc853f[m[33m ([m[1;31morigin/feature/ATR-35-view-delegate-transition[m[33m)[m
+Merge: 9fd3202 e21e396
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Aug 7 11:41:09 2018 +0300
+
+    Merge branch 'master' of https://github.com/Acumatica/Acuminator into feature/ATR-35-view-delegate-transition
+
+[33mcommit e21e396f7a8f899978bbe87a4a8e09f5680bbe0f[m
+Merge: 65faaef 47dde1a
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Tue Aug 7 10:48:34 2018 +0300
+
+    Merge pull request #44 from Acumatica/feature/ATR-108-110-DepricatedFieldsInDac
+    
+    Feature/atr 108 110 depricated fields in DAC
+
+[33mcommit 34cb80ca01d0c023ebb1a360eef76482dc287560[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Aug 6 22:00:13 2018 +0300
+
+    ATR-167: always expand region, even if ther are in the visible range
+
+[33mcommit 75a7a4ba2c942737b137e69fa858c13f08026cc2[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Aug 6 21:10:43 2018 +0300
+
+    ATR-167: set selection after the expansion of regions
+
+[33mcommit 3f3e2f33ad29922b53cfebadd05e3846dd90b4d8[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Aug 6 20:53:49 2018 +0300
+
+    ATR-167: expand regions on navigation
+
+[33mcommit 5a8a123b03da67c798fba06cbbf3edfb041dad37[m
+Merge: 3ebabb1 65faaef
+Author: metallmonster <yakutenko.va@gmail.com>
+Date:   Mon Aug 6 17:36:02 2018 +0300
+
+    Merge branch 'master' into feature/ATR-83-DAC-cannot-contain-or-invoke-any-methods
+
+[33mcommit 3ebabb1f5b422c4aff390dfeb3230c23ca2d65ce[m
+Author: metallmonster <yakutenko.va@gmail.com>
+Date:   Mon Aug 6 17:34:04 2018 +0300
+
+    ATR-83: DAC methods usage analyzer to detect declarations of DAC instance methods and usage of methods inside DAC properties
+
+[33mcommit 47dde1ac18f38d284d3c66b346ef386bd7e2c7ec[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Mon Aug 6 15:54:32 2018 +0300
+
+    ATR-108: Refactoring
+
+[33mcommit 4ad54aa4ae0fc511866dd84f3385283e89d82f49[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Mon Aug 6 15:51:10 2018 +0300
+
+    ATR-108: Key references edit.
+
+[33mcommit 3128f865ac384377f46eedb0bffe2d1168adf78b[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Mon Aug 6 15:50:52 2018 +0300
+
+    ATR-108: Re-implement search forbidden fields and classDeclarations.
+
+[33mcommit 65faaefa4c53701cbba452054aa3ead9d8e8dd2f[m
+Merge: 9a5681b 51d8957
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Mon Aug 6 14:47:46 2018 +0300
+
+    Merge pull request #52 from Acumatica/feature/ATR-73-master-add-bql-format-to-context-menu
+    
+    Feature/atr 73 master add bql format to context menu
+
+[33mcommit 9fd3202227bef3ee15b81cd428a7821d5a335b90[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Aug 6 14:36:55 2018 +0300
+
+    ATR-35: renamed private fields according to code style
+
+[33mcommit acaa718c4d9896774e94f4914c424e87ba689310[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Aug 6 14:26:48 2018 +0300
+
+    ATR-35: finished navigation command implementation
+
+[33mcommit 19dfe867ece6b2b1d2eaf41ff75e300e08f5f5fe[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Aug 6 14:17:17 2018 +0300
+
+    ATR-35: work on navigateion to already opened document
+
+[33mcommit 38780c40abffdb7b99a8750ebbcdef8da5ee9f44[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Mon Aug 6 13:07:55 2018 +0300
+
+    ATR-108: Rename diagnostic messages.
+
+[33mcommit 8c3df134dc4150b532921f865dbabeeabdd99ef3[m
+Author: Ivan Saloponov <saloponov.ivan@gmail.com>
+Date:   Mon Aug 6 11:48:13 2018 +0300
+
+    ATR-134: Tests.
+
+[33mcommit b1837ddc2ac3c0bf080ca6bd9c8b5b82f34554bc[m
+Author: Ivan Saloponov <saloponov.ivan@gmail.com>
+Date:   Mon Aug 6 11:19:51 2018 +0300
+
+    ATR-134: Tests was written.
+
+[33mcommit 1be0303015775aad426d53647ca621596845ba38[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Aug 6 04:23:40 2018 +0300
+
+    ATR-35: navigation from view delegate/ action handler
+
+[33mcommit eebb5c93c556624dc809db8d0cb706f809e2abd7[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Aug 6 03:52:05 2018 +0300
+
+    ATR-35: Action handler navigation fixed
+
+[33mcommit 3adb73e4d29c9526e832a9b0750c2516b54d9c7b[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Aug 6 03:34:09 2018 +0300
+
+    ATR-35: add navigation from pxaction to handler
+
+[33mcommit bd6b99cb90c9ab60383b615009bee3f359abc1d0[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Aug 5 22:23:03 2018 +0300
+
+    ATR-35: Added navigation for views to delegate
+
+[33mcommit 327e3718af3146019d50edfcd3628963c3598170[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Aug 5 20:52:09 2018 +0300
+
+    ATR-35: work on command
+
+[33mcommit 9a3e5462a9b14a2d41bf993c3f3213276e98c2cb[m
+Merge: c3c7cc8 9a5681b
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Aug 5 20:14:44 2018 +0300
+
+    Merge branch 'master' of https://github.com/Acumatica/Acuminator into feature/ATR-35-view-delegate-transition
+
+[33mcommit 51d89579db179b6e0c8e92a1b59815dfe1ac42c8[m[33m ([m[1;31morigin/feature/ATR-73-master-add-bql-format-to-context-menu[m[33m)[m
+Merge: 55e55d5 9a5681b
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Aug 5 20:12:10 2018 +0300
+
+    Merge branch 'master' of https://github.com/Acumatica/Acuminator into feature/ATR-73-master-add-bql-format-to-context-menu
+
+[33mcommit c3c7cc8f012ecd9f5dccdca8c1d5860a0c5891f2[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Aug 5 20:11:42 2018 +0300
+
+    ATR-35: work on command
+
+[33mcommit 91cfae4678486e1cc4bd66a74d21fa21fcdeb7b2[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Aug 5 19:47:43 2018 +0300
+
+    ATR-35: added infrastructure for command
+
+[33mcommit 27942259c4e52ef5033dbd3d36b86b41eeecb4ff[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Aug 5 18:41:54 2018 +0300
+
+    ATR-35: Added new command to vsct file
+
+[33mcommit a35436a5683558da9074e952ab3e5dd6f30c1dea[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Aug 5 04:59:27 2018 +0300
+
+    ATR-35: reworked folder structure for commands + added commands base class
+
+[33mcommit febb1883dc5fef1bbf8e2c588a671ff0521d0003[m[33m ([m[1;31morigin/feature/ATR-108-110-DepricatedFieldsInDac[m[33m, [m[1;32mfeature/ATR-108-110-DepricatedFieldsInDac[m[33m)[m
+Merge: f382583 9a5681b
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Aug 4 17:23:14 2018 +0300
+
+    Merge branch 'master' of https://github.com/Acumatica/Acuminator into feature/ATR-108-110-DepricatedFieldsInDac
+
+[33mcommit f3825835017607aa3523b7256bea825afc88d9cc[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Aug 4 17:15:49 2018 +0300
+
+    ATR-108: small refactoring
+
+[33mcommit d9fdd19d2c35d1a4e2be473427fcab0bdf3e5444[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Aug 4 17:14:12 2018 +0300
+
+    ATR-108: finished dac fix, all unit tests pass
+
+[33mcommit 3f314df533667abedcd15cec4548279fb12e1c17[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Aug 4 16:04:50 2018 +0300
+
+    ATR-108: work on fix
+
+[33mcommit 8fdd1f7509feeed9d2fcf11cd1aac706c2df8fe1[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Aug 4 15:10:37 2018 +0300
+
+    ATR-108: work on fix
+
+[33mcommit 77d9cd9d75d2ae7e837f2085a11fe6e3e18c0c84[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Aug 4 15:10:18 2018 +0300
+
+    ATR-108: fixed indentation of tests
+
+[33mcommit 55e55d5689da0460c45cbbada25ddc87730d5bc0[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Aug 4 02:43:58 2018 +0300
+
+    ATR-73: Separated UI approaches for Edit menu and Context menu. In Edit menu we have now Acuminator submenu and in context menu commands are displayed directly
+
+[33mcommit d0b9eca8a6ce9e0024a8963096c41222a4bb8a1f[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Aug 3 19:28:34 2018 +0300
+
+    ATR-73: work on manifest Icon
+
+[33mcommit 68f76429b5dd376030061ec10151558447829c7c[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Aug 3 18:55:58 2018 +0300
+
+    ATR-73: Add icon to command
+
+[33mcommit 8c883e15f0dd22c129ad779617109e98abf13441[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Fri Aug 3 18:34:15 2018 +0300
+
+    ATR-109: Merge request changes.
+
+[33mcommit f9fd4c0533fcbddac2405a0a1bade8c437489c9a[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Fri Aug 3 17:44:40 2018 +0300
+
+    ATR-109: Merge request changes.
+
+[33mcommit a52d41f5f7ed726922a27b9056384cc75793977f[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Fri Aug 3 16:49:25 2018 +0300
+
+    ATR-109: Work on CodeFix.
+    
+    Replace #region and format next region.
+
+[33mcommit 9a5681bb903be7de849630123e60917c2a3fbaab[m
+Merge: 6adb89a e04467b
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Fri Aug 3 14:02:15 2018 +0300
+
+    Merge pull request #51 from Acumatica/bugfix/ATR-154-PX1015-pxupdate-BQL-method
+    
+    Bugfix/atr 154 px1015 pxupdate bql method
+
+[33mcommit 6adb89a90f87ab9e74d56b241788b086d572b34e[m
+Merge: 90cb42a 069fc85
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Fri Aug 3 14:00:31 2018 +0300
+
+    Merge pull request #50 from Acumatica/bugfix/ATR-163-PX1015-search-BQL-method
+    
+    Bugfix/atr 163 px1015 search bql method
+
+[33mcommit 90cb42a92cc4055fd002e718675c402e009e5069[m
+Merge: 84bade7 e4d082f
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Fri Aug 3 13:59:28 2018 +0300
+
+    Merge pull request #49 from Acumatica/bugfix/ATR-164-PX1012-requisition-graph
+    
+    Bugfix/atr 164 px1012 requisition graph
+
+[33mcommit 84bade7759e88dfc92e51cd4dc9b53f967e32f5d[m
+Merge: 9c5c429 475354b
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Fri Aug 3 13:57:22 2018 +0300
+
+    Merge pull request #48 from Acumatica/bugfix/ATR-162-upgrade-to-2018r2
+    
+    Bugfix/atr 162 upgrade to 2018r2
+
+[33mcommit 9c5c4297ce4b1b1b24f896d4bf9e304a29dfd712[m
+Merge: ac44b82 6042886
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Fri Aug 3 13:54:16 2018 +0300
+
+    Merge pull request #47 from Acumatica/bugfix/ATR-153-bql-update
+    
+    Bugfix/atr 153 bql update
+
+[33mcommit ac44b82a8b2f7f0b9cfc6c2d9654c214ced27230[m
+Merge: 3ebb8d9 5da911b
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Fri Aug 3 13:51:31 2018 +0300
+
+    Merge pull request #46 from Acumatica/bugfix/ATR-147-extend-PX1000-to-graph-extensions
+    
+    Bugfix/atr 147 extend px1000 to graph extensions
+
+[33mcommit 3ebb8d963bee742b161408a4a078e0f6ecbc234e[m
+Merge: 2419e2c dd61685
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Fri Aug 3 13:50:37 2018 +0300
+
+    Merge pull request #45 from Acumatica/feature/ATR-28-master-primary-DAC-finder
+    
+    Feature/atr 28 master primary dac finder
+
+[33mcommit 6fd9ae296ccb778fe4753b5efc580ebd72ac3238[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Aug 3 04:13:12 2018 +0300
+
+    ATR-73: Added format BQL to context menu, added icon to command
+
+[33mcommit 773bcc925b647726329787f0ca5f304c73172804[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Aug 3 03:30:59 2018 +0300
+
+    ATR-73: Added Acuminator submenu to VS
+
+[33mcommit 82671dda6481d02fa58b0bb909d5c2f696be1540[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Aug 3 01:45:41 2018 +0300
+
+    ATR-73: added example of VS command definition
+
+[33mcommit 47ceff6fbbdad60e01d1947474c5e7896a1dce19[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Aug 3 01:45:05 2018 +0300
+
+    ATR-73: Refactored command + moved helper methods to separate extension method class + changed command ID
+
+[33mcommit e04467b7d39fdb3b430067dbf3d12190e31ca268[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Aug 2 16:54:43 2018 +0300
+
+    ATR-154: enhanced check for PXUpdate methods
+
+[33mcommit eb8b321cab80c57472f317bf013cde6be9b6df80[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Aug 2 16:14:37 2018 +0300
+
+    ATR-154: implemented the support for PXUpdate
+
+[33mcommit aded062e9b0263fef42d42ba22034ac66d04b7b8[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Aug 2 15:54:54 2018 +0300
+
+    ATR-154: added unit tests
+
+[33mcommit e4aef90c5a5301b9847c852d41856110eebe9326[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Thu Aug 2 12:24:43 2018 +0300
+
+    ATR-109: Work on codefix.
+    
+    Tests rename.
+    Rewrite CSharpSyntaxRewriter
+
+[33mcommit 069fc851dfcf8fcc692904a7c0bd76a7fe0a98f2[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Aug 2 03:24:46 2018 +0300
+
+    ATR-163: Added unit tests for Search method call
+
+[33mcommit f6043f510cdd574b9d13f57bca87bf95e78749cf[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Aug 2 03:24:17 2018 +0300
+
+    ATR-163: Added correct parameters and arguments counting for Search method
+
+[33mcommit 99f0571b5696ebf3e2c8e9608bedef0a96e5368c[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Wed Aug 1 19:50:48 2018 +0300
+
+    ATR-109: Work on codefix.
+
+[33mcommit da1ff3a798810ed1a87aeb91138fa5c31399a1d2[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Wed Aug 1 17:01:27 2018 +0300
+
+    ATR-109: work on code fix
+
+[33mcommit 0655bdfbcec32f7e71d523c06290ca90fa906dba[m[33m ([m[1;31morigin/bugfix/ATR-163-PX1015-search-BQL-method[m[33m)[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Aug 1 03:13:41 2018 +0300
+
+    ATR-163: Work on Search method support
+
+[33mcommit cccb5cd1d8283b97d9875f6eb6d64ae0e1021a78[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Tue Jul 31 16:17:57 2018 +0300
+
+    ATR-109: Intermediate commit
+
+[33mcommit e4d082f0e08c96d043fb377dad4beb556f38d748[m[33m ([m[1;31morigin/bugfix/ATR-164-PX1012-requisition-graph[m[33m)[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Jul 31 13:32:27 2018 +0300
+
+    ATR-164: Added optimizations to primary DAC calculation
+
+[33mcommit 2a1b13b313c45f5af4f676f06e86688a19a4b37b[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Jul 31 03:10:39 2018 +0300
+
+    ATR-164: Reworked scoring rule system to find primary view instead of primary DAC
+
+[33mcommit b51dd5b441ad86e354ab629fe0d7722a8262d83b[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Mon Jul 30 16:47:06 2018 +0300
+
+    ATR-109: Delete \#region tests bug. Code refactoring.
+
+[33mcommit 475354b31fbc5b8f20604fab04821da1678c8154[m[33m ([m[1;31morigin/bugfix/ATR-162-upgrade-to-2018r2[m[33m)[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jul 30 14:59:06 2018 +0300
+
+    ATR-162: upfraded PX1015 diagnostic to 2018r2
+
+[33mcommit 6042886df0766176d68fbd6a06b728596d207677[m[33m ([m[1;31morigin/bugfix/ATR-153-bql-update[m[33m)[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jul 30 03:29:51 2018 +0300
+
+    ATR-153: Add coloring of PXUpdate statements
+
+[33mcommit c52251eb471565b982ad2448eac70089d154bd19[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jul 30 02:53:50 2018 +0300
+
+    ATR-153: Added coloring for IBqlSet statements
+
+[33mcommit 5da911b9fcc1dc1643a04d221bc5e1008aff60f0[m[33m ([m[1;31morigin/bugfix/ATR-147-extend-PX1000-to-graph-extensions[m[33m)[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jul 30 02:08:07 2018 +0300
+
+    ATR-147: Added unit tests for PX1000 for graph extensions
+
+[33mcommit 15c43d294085027086262ddcbf6e427253e33421[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jul 30 01:50:29 2018 +0300
+
+    ATR-147: refactored code fix
+
+[33mcommit c356580b812f6125eed7408cb1a62bcd8d82e6b8[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jul 30 00:42:24 2018 +0300
+
+    ATR-147: created folders for diagnostics PX1000 and PX1012
+
+[33mcommit e9de1d2f6ec03e61daf7648aae4a40737d8c937a[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jul 30 00:40:32 2018 +0300
+
+    ATR-147: Refactored diagnostic PX1000 and extended it for graph extensions
+
+[33mcommit dd61685e3aea0eaa68b05ee8c6337b63a5bc8c6a[m[33m ([m[1;31morigin/feature/ATR-28-master-primary-DAC-finder[m[33m)[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jul 29 22:58:03 2018 +0300
+
+    ATR-28: added filtered processing rule to rules set and to weights table. Fixed unit tests
+
+[33mcommit 046983143538fbaaebb65a40a2d61a7e3d78c13d[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jul 29 22:12:39 2018 +0300
+
+    ATR-28: Filtered processing rule
+
+[33mcommit caf5fd952ece8b4f03e26a9f3288c9d1b8f33c7e[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jul 29 08:10:03 2018 +0300
+
+    ATR-28: Added rule for Document/CurrentDocument, Entities/CurrentEntity views
+
+[33mcommit c9cc73929404772035c70cd59ab1d9df179896c9[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jul 29 07:36:26 2018 +0300
+
+    ATR-28: view without view name attribute rule added
+
+[33mcommit 30dd2a024e1b7f486865dfe29a5926111aff897e[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Jul 28 17:16:13 2018 +0300
+
+    ATR-28: system action rule fix
+
+[33mcommit 9ebcaef550a9adf21b460376beb65609839d6daa[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Jul 28 16:58:54 2018 +0300
+
+    ATR-28: added view name attribute
+
+[33mcommit 985164744ff80fd63af7f87c500aaa005a8f2b80[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Jul 28 03:36:09 2018 +0300
+
+    ATR-28: refactored rules structure, added separate table with rules weights
+
+[33mcommit 11840a72628a13934640cccd1ed914ace2271527[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jul 27 20:37:24 2018 +0300
+
+    ATR-28: Added rule for DAC from the same or descending namespace +rule  for DAC in system action
+
+[33mcommit 1664c0a0c33f82c8142e7fdd25a48f458ba68b93[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jul 27 20:12:23 2018 +0300
+
+    ATR-28: Added system actions register
+
+[33mcommit 8b53a50d186cee3ed75a9ed8f475b212b01a2c36[m
+Merge: 0197365 f8dbb95
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Thu Jul 26 18:42:12 2018 +0300
+
+    ATR-135: Merge resolve conflicts.
+
+[33mcommit 019736580c4f7fd35722150eeb5724d22f2e8139[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Thu Jul 26 17:17:29 2018 +0300
+
+    ATR-135: Comment unused statements.
+
+[33mcommit 1192935b0f5077d574ccce351de22287a691d573[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Thu Jul 26 16:02:13 2018 +0300
+
+    ATR-109: Add placeholder for field name in PX1027.
+    
+    PX1027 Format message.
+
+[33mcommit e6e8bb6afdd0cac297f632a6aea29c8f5cd89bc1[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Thu Jul 26 14:54:41 2018 +0300
+
+    ATR-109: Refactoring.
+
+[33mcommit dda1fd55cea9eb636def1b13a5c367cd35d513a8[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Thu Jul 26 11:45:22 2018 +0300
+
+    ATR-109: Refactoring. Rename "depricated" to forbidden.
+
+[33mcommit 381210c7b13d81c99f4346001beebda0c4e51648[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Thu Jul 26 10:48:15 2018 +0300
+
+    ATR-109: Remove region with forbidden fields.
+    
+    Created RegionClassRewriter : CSharpSyntaxRewriter which delete forbidden fields, classes and region with forbidden names.
+
+[33mcommit a25b804573ed41a7549cd6a2f2b74e1951b63070[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Tue Jul 24 20:14:46 2018 +0300
+
+    ATR-109: intermediate Commit
+
+[33mcommit f8dbb95c4ca004f4ac5633a61756d2e9599f481b[m[33m ([m[1;31morigin/feature/ATR-135-ConstructorInDac[m[33m, [m[1;32mfeature/ATR-135-ConstructorInDac[m[33m)[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Tue Jul 24 17:02:27 2018 +0300
+
+    ATR-135: Experiment with remove RegionTrivia
+    
+    File: ContructorInDacCodeFix.cs - Expiriments with class CSharpSyntaxWriter;
+    DacDeclarationAnalyzer.cs - code refactoring.
+
+[33mcommit c4c0129f46cd5e10c00074ef8928a3b38355baad[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Mon Jul 23 15:55:12 2018 +0300
+
+    ATR-135: Visitor test implement.
+
+[33mcommit badf18e4dc0756d3d238c6b518b5a4be071e9dc3[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Fri Jul 20 13:10:59 2018 +0300
+
+    ATR-135: Implement CodeFix for constructor in DAC
+
+[33mcommit bb79b09a02220f27b21f9876a262befbfb53b984[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Thu Jul 19 14:52:08 2018 +0300
+
+    ATR-135: Analyzer for detectiong constructors in DAC
+    
+    Tests;
+    Analyzer.
+
+[33mcommit a914e4adccaaaabbedd86758d63ba6c78e3948b6[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Thu Jul 19 11:35:57 2018 +0300
+
+    ATR-109: Depricated Fix test passed.
+
+[33mcommit 1291f848860edca02d884d40ea42b2212f60fc3c[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Wed Jul 18 18:01:49 2018 +0300
+
+    ATR-109: Depricated Field Fix.
+    
+    Error in test "Test_Fix_For_Dac_With_Depricated_Fields"
+
+[33mcommit f60f60bf0986414f582da487c3dd818a1487ac57[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Wed Jul 18 13:36:31 2018 +0300
+
+    ATR-109: BugFix. Add string comparer to properties dictionary.
+
+[33mcommit ca6d0838e44106b65085aa0875d162c373b6aae4[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Wed Jul 18 13:27:52 2018 +0300
+
+    ATR-109: Fix duiblicate fields case error.
+    
+    When dublicate fields, such as in test "DacDepricatedFields.cs" DacDeclarationAnalyzer fallen with exception.
+
+[33mcommit 275cbc2b0747ba3414867d04d5fe729e5b36c19e[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Jul 18 05:42:07 2018 +0300
+
+    ATR-28: work on actions rules
+
+[33mcommit 9ff4da93875be60288aed9957874039ba1d2fbdd[m
+Author: Ivan Saloponov <ivan.saloponov@acumatica.com>
+Date:   Tue Jul 17 21:02:08 2018 +0300
+
+    ATR-109: Added tests with depricated fields.
+    
+    Implementation of DepricatedFields analyzer.
+
+[33mcommit ee54110b08177b06ecf151373456f1b777259e87[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Jul 17 13:59:05 2018 +0300
+
+    ATR-28: small changes to weights
+
+[33mcommit 31d38f5505385bc2d8bde78e46de4fb01cfcb523[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Jul 17 13:41:17 2018 +0300
+
+    ATR-28: fixes in rules weights.
+
+[33mcommit ee8554861cb160acb3a3a893317387b028fb7cea[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Jul 17 13:13:40 2018 +0300
+
+    ATR-28: added rules for graph's actions to infrastructure
+
+[33mcommit 5400aed638b66a824561313058b4a862285cb2e9[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Jul 17 12:31:48 2018 +0300
+
+    ATR-28: Add rule  for hidden attribute  and PXCopyPasteHiddenViewAttribute  on view
+
+[33mcommit ec15b59205e175ec080cffda93bb6bc4ad4d85b6[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Jul 17 12:31:09 2018 +0300
+
+    ATR-28: changes in rules architecture
+
+[33mcommit e58bf7a3fe9f63015f6c54749a422db888818169[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Jul 17 03:50:23 2018 +0300
+
+    ATR-28: Fixed bugs in diagnostic to pass unit tests
+
+[33mcommit 83c09bb2d7ad2220bf060ae9ae2895d6723b940d[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Jul 17 03:34:03 2018 +0300
+
+    ATR-28: Added utils to retrieve action symbols with types from graph/extension
+
+[33mcommit 2ea3813d844804aeccd3e8ce03626fd29fcc1e90[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Jul 17 03:03:46 2018 +0300
+
+    ATR-28: Fixes in diagnostic
+
+[33mcommit ba8db087df0f74f6a0f374420bab6e5b714435cd[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Jul 17 02:55:09 2018 +0300
+
+    ATR-28: PXImport rule moved to graph rules
+
+[33mcommit 254fb8be55974a5cc385e1c10235343e8f338481[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Jul 17 02:52:41 2018 +0300
+
+    ATR-28: PXImport attribute rule
+
+[33mcommit 4af90bd39830aab29ec21ca530caca93b2fe5132[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Jul 17 02:15:57 2018 +0300
+
+    ATR-28: Exclude read only view in graph  with editable views rule
+
+[33mcommit 0243b646a431f7d28c5232b2c41f8d1b07401059[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Jul 17 01:45:14 2018 +0300
+
+    ATR-28: Added rule to exclude PXSetup views
+
+[33mcommit 14d6cadc225f1aae6114fc3013369d619a849c45[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Jul 17 00:43:17 2018 +0300
+
+    ATR-28: added rule for forbidden words in a view
+
+[33mcommit 42445e76b8e974630431a9524dab9b023dd1a2ab[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jul 16 14:59:10 2018 +0300
+
+    ATR-28: Added rules for first N views in graph
+
+[33mcommit 6ae4fa01d43ace2e966bd074f50aa25556bbfaf2[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jul 16 13:58:34 2018 +0300
+
+    ATR-28: work on primary DAC finder. Implemented overflow safe addition of scores
+
+[33mcommit e396adda0f85ff5d4b686088735be70ba5c27861[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jul 16 02:49:04 2018 +0300
+
+    ATR-28: work on utils and diagnostic
+
+[33mcommit 14662b53f0e3df303bd5021ad672240b302a2d88[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Jul 14 23:29:46 2018 +0300
+
+    ATR-28: Added method to get declared primary DAC from graph/extension to utils
+
+[33mcommit 70b19eff854d985581953d175531692738ec404c[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Jul 14 22:18:33 2018 +0300
+
+    ATR-28: Added utils to retrieve view symbols with view types from graph/extension
+
+[33mcommit d906c7af01be952697b4c0bafece8ee8c4c29ec3[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Jul 14 22:01:59 2018 +0300
+
+    ATR-28: Refactored, reorganized and added implementations to util methods related to retrieval of views and pxActions
+
+[33mcommit 07c7297ade8a7236486b1088eac18dad52b6c7c3[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Jul 14 18:28:22 2018 +0300
+
+    ATR-28: work on utils
+
+[33mcommit ee018f7dcfdbfae2eecc7790fabbdd7e7d5d3d33[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Jul 14 15:42:46 2018 +0300
+
+    ATR-28: Added utility to retrieve all views from graph inheritance chain
+
+[33mcommit 7675cb93db5209b88dbc06af3af5971e705c9ad5[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jul 13 15:33:21 2018 +0300
+
+    ATR-28: Added internal implementation of rules  application to the primary DAC finder
+
+[33mcommit 4f448d9c4214ec2627e962a9ed461b9780cb9b4e[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jul 13 13:09:17 2018 +0300
+
+    ATR-28: Re-implemented diagnostic to use primary DAC finder helper class. Register for graph or graph declaration and analyze all declared actions.
+
+[33mcommit 55af4113a836e24f1f7d09facafd40fd8ca713ae[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jul 12 15:25:52 2018 +0300
+
+    ATR-28: Work on primary DAC resolver. Added rules provider to architecture
+
+[33mcommit 5679debad236e146972ac2e400b3492e63368734[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jul 12 15:09:59 2018 +0300
+
+    ATR-28: Work on diagnostic reimplementation
+
+[33mcommit 771d6d084dbb6469e1eeb74a68ae791a7eeb4785[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jul 12 14:59:05 2018 +0300
+
+    ATR-28: Added symbol utils method for graph and graph extension
+
+[33mcommit df4d6cceb65259d1e782eee8ab89677edd947a62[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jul 12 14:26:13 2018 +0300
+
+    ATR-28: refactoring + folder structure reorganization
+
+[33mcommit 50feb00dd307eb2539416d2bd76a73db2a9d59c5[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jul 12 14:20:46 2018 +0300
+
+    ATR-28: Started implementing primary DAC finder. Creating architecture to support different kinds of rules
+
+[33mcommit 2df311788edfb3871ab962aa61e8bcc44fd14d3b[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jul 12 14:19:48 2018 +0300
+
+    ATR-28: started re-implementing PX1012 diagnostic. Now it will register for graph/graph extension symbols and analyze all actions at once
+
+[33mcommit 7ea1e2ba7563d83c0758c9a592c11ff77de8de12[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jul 12 01:18:29 2018 +0300
+
+    ATR-28: work on primary DAC type resolver
+
+[33mcommit f81ce457677fad3309d4e87a54898ae5bf6feb2b[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jul 12 00:15:39 2018 +0300
+
+    ATR-28: folder structure changed for PX1012 diagnostic
+
+[33mcommit 2419e2cf7feed0c68b0132d25b95cfb9bc9afa6c[m[33m ([m[1;32mremote[m[33m)[m
+Merge: f307091 3eaa310
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Tue Jul 10 11:47:37 2018 +0300
+
+    Merge pull request #40 from Acumatica/bugfix/ATR-155-master
+    
+    Bugfix/atr 155 master
+
+[33mcommit f307091392dade45047e26bb1a5bc364cc3b4ae0[m
+Merge: 577dca5 3d88a63
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Tue Jul 10 11:46:25 2018 +0300
+
+    Merge pull request #37 from Acumatica/feature/ATR-111-master-underscores-in-DAC
+    
+    Feature/atr 111 master underscores in dac
+
+[33mcommit 3eaa310bb932156cd3188a2df9d680e90f5f31f3[m
+Merge: 4cc0e27 3d88a63
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Jul 10 11:27:10 2018 +0300
+
+    Merge branch 'feature/ATR-111-master-underscores-in-DAC' of https://github.com/Acumatica/Acuminator into bugfix/ATR-155-master
+
+[33mcommit 3d88a63619bccf9cc187f4c149cac12e33c4b4ff[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Jul 10 11:25:57 2018 +0300
+
+    ATR-111: Updated messages to verified ones
+
+[33mcommit 4cc0e271889301eb82b4f3f10d08ccdf3a11ce53[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jul 6 09:29:46 2018 +0300
+
+    ATR-155: upgraded unit tests
+
+[33mcommit 85162bd3e9548561312780962cb14a41ebf001bf[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jul 6 09:16:22 2018 +0300
+
+    ATR-155: Track return statement nodes for correct fix
+
+[33mcommit 5923d7a1facca56ec6365bb26ae5ca7a310e0d50[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jul 6 08:53:25 2018 +0300
+
+    ATR-155: Added generation of block node for statements without curly braces like "if" with single return statement
+
+[33mcommit 35f678cce0d6ba6966eda2cd88ce674dcfa7f21c[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jul 6 08:52:36 2018 +0300
+
+    ATR-155: do not register code fix with goto statements and goto cases for switch section containing invocation
+
+[33mcommit 78eeb07734a6b3756164efdf184ef5a8c4912e4f[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jul 6 07:26:58 2018 +0300
+
+    ATR-155: work on fix
+
+[33mcommit 45a999c002a482398caa6b210251e4d1b86ed86a[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jul 6 06:39:37 2018 +0300
+
+    ATR-155: Do not register fix for select invocations in return statements
+
+[33mcommit 2b200132856354a2902a062f7b790c6665b29196[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jul 6 06:34:57 2018 +0300
+
+    ATR-155: Added help URL reference to wiki page
+
+[33mcommit ed29fc200bb5f5722ef55df00a4edac9a4e4b22d[m
+Merge: 26720e8 a235f18
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jul 6 05:50:47 2018 +0300
+
+    Merge branch 'feature/ATR-111-master-underscores-in-DAC' of https://github.com/Acumatica/Acuminator into bugfix/ATR-155-master
+
+[33mcommit 26720e85d75711c9bdd394a6ecd82ae3a9596f5c[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jul 6 05:50:43 2018 +0300
+
+    ATR-155: work on fix. Don't register diagnostic for delegates with yield statements + refactoring
+
+[33mcommit a235f1831a64d40e5c4850596118ac09b31973d2[m
+Merge: aa9d531 577dca5
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jul 6 04:42:20 2018 +0300
+
+    Merge branch 'master' of https://github.com/Acumatica/Acuminator into feature/ATR-111-master-underscores-in-DAC
+
+[33mcommit 577dca5890546f8106d83ccb83ed8fca2db0e467[m
+Merge: 24f9eb4 750f15a
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Thu Jul 5 16:46:48 2018 +0300
+
+    Merge pull request #39 from Acumatica/feature/atr-128
+    
+    ATR-128: add compilers to refernse for fixing build
+
+[33mcommit 24f9eb4b690e4fd76241863521e5001992580828[m
+Merge: 4897d7a c749c39
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Thu Jul 5 16:45:13 2018 +0300
+
+    Merge pull request #38 from Acumatica/bugfix/ATR-152-master
+    
+    Bugfix/atr 152 master
+
+[33mcommit 750f15aed2061740bbfda03a196c4a0969e4a741[m
+Author: PaGrom <pagrom23@gmail.com>
+Date:   Thu Jul 5 14:26:57 2018 +0300
+
+    ATR-128: add compilers to refernse for fixing build
+
+[33mcommit aa9d531a2c4e09cd8a5c53b0e0a0211a883a5029[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jul 5 14:07:09 2018 +0300
+
+    ATR-111: Enhanced unit tests
+
+[33mcommit 4922f3aca0c38e82b43aee7d17798bd2015afea5[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jul 5 14:06:55 2018 +0300
+
+    ATR-111: Added case insensitive search in DAC properties
+
+[33mcommit 98190e84abc4f2efa04a612ac284521511ad4af1[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jul 5 13:36:36 2018 +0300
+
+    ATR-111: added check that DAC field class has a corresponding DAC property
+
+[33mcommit dd16a683d1b937bf9a84556361b204a6ff177b92[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Jul 4 13:54:25 2018 +0300
+
+    ATR-155:  work on fix
+
+[33mcommit bc357fd120a1e71d933f7929a22a754adf9fd37d[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Jul 3 14:53:49 2018 +0300
+
+    ATR-111: Changed diagnostic to work only on public methods. Added utils to determine public methods from syntax only, without calls to semantic model
+
+[33mcommit 6f83caccc59a1632571d6bb2f0c05107d2acd12e[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Jul 3 12:35:18 2018 +0300
+
+    ATR-111: refactored roslyn syntax utlis into group of closely related utils classes
+
+[33mcommit d4fd213b246fe3c24e3109a5a1df45c41a5908b7[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jul 2 21:45:15 2018 +0300
+
+    ATR-111: fixed tests
+
+[33mcommit 902d6dc96d97793d18cc283adcadc59f99553db1[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jul 2 21:44:55 2018 +0300
+
+    ATR-111: fixed indentation in test sources
+
+[33mcommit a44dc725238c5e8254eb89e2662567271a5c9725[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jul 2 21:44:20 2018 +0300
+
+    ATR-111: fixed test workspace creation. Added formatting options to test workspace to ensure correct document indentation on apply of codefix.
+
+[33mcommit 3fbeb608e46af4582c61398df26344a847314bec[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jul 2 21:43:06 2018 +0300
+
+    ATR-111: Disabled diagnostic for DAC fields
+
+[33mcommit c749c39124e7fc18839db115857f8a878e7ef75c[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jul 2 16:17:41 2018 +0300
+
+    ATR-152: fixed bug
+
+[33mcommit c314d2c0c9bf234179b8d5b680b67a11c69bccbe[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jul 2 16:09:25 2018 +0300
+
+    ATR-152: Added unit test for the bug case
+
+[33mcommit d9623106968607118d7be7a5cf083afe92e7d543[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jul 1 07:15:55 2018 +0300
+
+    ATR-111:  work on unit tests
+
+[33mcommit 713e4d523e46feba5203c72a5c00a0194aa124ad[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jul 1 06:21:31 2018 +0300
+
+    ATR-111: added tests for code fix
+
+[33mcommit 6cfd270a159733a3eeedaa937ea78ccb30560b39[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jul 1 05:59:13 2018 +0300
+
+    ATR-111: codefix fixes
+
+[33mcommit 6e34f3e5a239773b37a23d647a4c198197a6c1cb[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jul 1 05:01:23 2018 +0300
+
+    ATR-111: added codefix for PX1026 + refactoring
+
+[33mcommit 60bc8f5f04478398216572ec6bc5360a9ae2dc43[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jul 1 03:31:40 2018 +0300
+
+    ATR-111: Added unit test for PX1026 diagnostic for DAC extensions
+
+[33mcommit 70c75a5074af4152f372f72bae42f3cd7a053c0a[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jul 1 03:27:16 2018 +0300
+
+    ATR-111: fixed diagnostic
+
+[33mcommit 7885236c7c31b415cf50664f0546c1a09679cce6[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jul 1 03:27:04 2018 +0300
+
+    ATR-111: added unit test for diagnostic PX1026
+
+[33mcommit 2af056d165d12b16b2691a85075c779a8c00d84c[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jul 1 02:34:02 2018 +0300
+
+    ATR-111: implemented diagnostic
+
+[33mcommit ea78da12348839edd993cf9d41930a1a319640d7[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jul 1 01:06:48 2018 +0300
+
+    ATR-111: Added new diagnostic analyzer, ID and descriptor + small refactoring
+
+[33mcommit 4897d7a4f345d846cc79d34402fc4b6974e3d10a[m
+Merge: 42c8a55 ee80eb9
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Thu Jun 28 14:06:59 2018 +0300
+
+    Merge pull request #36 from Acumatica/feature/ATR-18-master-no-primary-view-for-primary-DAC
+    
+    Feature/atr 18 master no primary view for primary dac
+
+[33mcommit 42c8a5524ad0d6f9f453a2631bdc804c7ab95f0d[m
+Merge: 16ecb15 f9dd1b5
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Thu Jun 28 14:05:58 2018 +0300
+
+    Merge pull request #35 from Acumatica/feature/ATR-28-master-pxAction-non-primary-view
+    
+    Feature/atr 28 master px action non primary view
+
+[33mcommit ee80eb916ce6eb4cb005be12abe84b524c2f180f[m
+Merge: 148dcd6 f9dd1b5
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jun 28 00:43:53 2018 +0300
+
+    Merge branch 'feature/ATR-28-master-pxAction-non-primary-view' of https://github.com/Acumatica/Acuminator into feature/ATR-18-master-no-primary-view-for-primary-DAC
+
+[33mcommit f9dd1b5610e9388cd278f861c1fa767529265c4f[m
+Merge: 8a3ed08 e40ff3f
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jun 28 00:37:13 2018 +0300
+
+    Merge branch 'feature/ATR-28-master-pxAction-non-primary-view' of https://github.com/Acumatica/Acuminator into feature/ATR-28-master-pxAction-non-primary-view
+
+[33mcommit 8a3ed08d15c279d2a1f4671c337ec9420123a4f6[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jun 28 00:35:32 2018 +0300
+
+    ATR-28: fixed merge artifact - thanks unit tests
+
+[33mcommit 32315256068240e584ace0795fb2358d24579975[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Jun 27 23:11:21 2018 +0300
+
+    ATR-28: resolved merge conflict
+
+[33mcommit ef67e35fd15d6524b4384ca9bc356825a34f5dc2[m
+Merge: 20489ee 16ecb15
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Jun 27 23:09:06 2018 +0300
+
+    Merge branch 'master' of https://github.com/Acumatica/Acuminator into feature/ATR-28-master-pxAction-non-primary-view
+
+[33mcommit 16ecb15aafbf0e47555d64fd35f94776fc1f7209[m
+Merge: a0a0d3a b59791b
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Wed Jun 27 15:27:36 2018 +0300
+
+    Merge pull request #34 from Acumatica/feature/ATR-143-master-DAC-field-must-be-abstract
+    
+    Feature/atr 143 master dac field must be abstract
+
+[33mcommit a0a0d3a61c3c636ad163b47348ed657f2784e203[m
+Merge: ce1e17e 05661ee
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Wed Jun 27 15:25:58 2018 +0300
+
+    Merge pull request #33 from Acumatica/bugfix/ATR-125
+    
+    Bugfix/atr 125
+
+[33mcommit ce1e17e2fdf7636975dab9c08a7ff9e68abeaefc[m
+Merge: cc62b9b 0d84bc3
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Wed Jun 27 15:22:47 2018 +0300
+
+    Merge pull request #32 from Acumatica/bugfix/ATR-122-master
+    
+    Bugfix/atr 122 master
+
+[33mcommit 148dcd6eb11dfd3dc6d198c6858f0ebbecacdb26[m[33m ([m[1;31morigin/feature/ATR-18-master-no-primary-view-for-primary-DAC[m[33m)[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 16:18:24 2018 +0300
+
+    ATR-18: fixed merge anomaly
+
+[33mcommit 52040b31d49ccdef3c24f4114f758b37a3e4f56b[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 16:01:51 2018 +0300
+
+    ATR-18: test project fix merge
+
+[33mcommit b3afaee36164ca804c5f903827859a2c0b3535e0[m
+Merge: f0539e7 e40ff3f
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 16:00:05 2018 +0300
+
+    Merge branch 'feature/ATR-28-master-pxAction-non-primary-view' of https://github.com/Acumatica/Acuminator into feature/ATR-18-master-no-primary-view-for-primary-DAC
+
+[33mcommit e40ff3f41e11fdf1a8e8d15cd919f18b1a7b51c7[m[33m ([m[1;31morigin/feature/ATR-28-master-pxAction-non-primary-view[m[33m)[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 15:58:12 2018 +0300
+
+    ATR-28: test project merge conflict resolved
+
+[33mcommit 6c4130776c66e6a283e04a6584e2d7a8f9d13155[m
+Merge: 20489ee b59791b
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 15:55:55 2018 +0300
+
+    Merge branch 'feature/ATR-143-master-DAC-field-must-be-abstract' of https://github.com/Acumatica/Acuminator into feature/ATR-28-master-pxAction-non-primary-view
+
+[33mcommit b59791b23686ff46ab438c523db38f28fbcb7cc9[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 15:53:25 2018 +0300
+
+    ATR-143: resolved merge conflict
+
+[33mcommit 72124dd6fe1925870b7a596f4d38cf0c110db890[m
+Merge: 87ad8fb cc62b9b
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 15:52:08 2018 +0300
+
+    Merge branch 'master' of https://github.com/Acumatica/Acuminator into feature/ATR-143-master-DAC-field-must-be-abstract
+
+[33mcommit cc62b9babad050690ad8c7b6e8efd569e91a5a3c[m
+Merge: a423dc2 272629d
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Mon Jun 25 15:37:28 2018 +0300
+
+    Merge pull request #31 from Acumatica/bugfix/master-PX1021-fixed-nullable-types-handling
+    
+    PX1021: fixed not nullable property type case
+
+[33mcommit a423dc224a2ee9615bced4fe59f0af8dc587384d[m
+Merge: 01111a5 df36b06
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Mon Jun 25 15:36:46 2018 +0300
+
+    Merge pull request #30 from Acumatica/feature/ATR-144-derived-BQL-static-calls
+    
+    Feature/atr 144 derived bql static calls
+
+[33mcommit 01111a51bfabdac4117149edfbd496dfb0c3ad84[m
+Merge: a5c5bc2 4afd24e
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Mon Jun 25 15:35:51 2018 +0300
+
+    Merge pull request #29 from Acumatica/bugfix/ATR-141-analysis-for-BQL-modification
+    
+    Bugfix/atr 141 analysis for bql modification
+
+[33mcommit a5c5bc2e31e9380eccb0ce71343a1cdd5c3f0ed1[m
+Merge: e6f91ca 53a6a51
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Mon Jun 25 15:34:47 2018 +0300
+
+    Merge pull request #28 from Acumatica/bugfix/ATR-146-CustomPredicate-support
+    
+    Bugfix/atr 146 custom predicate support
+
+[33mcommit f0539e757899c9ea73cd8eca2f3e4588ee752bf1[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 14:44:25 2018 +0300
+
+    ATR-18: changed diagnostic message
+
+[33mcommit a1454adf2502d38008412750b038869e38375938[m
+Merge: 5cc26fd 20489ee
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 14:43:25 2018 +0300
+
+    Merge branch 'feature/ATR-28-master-pxAction-non-primary-view' of https://github.com/Acumatica/Acuminator into feature/ATR-18-master-no-primary-view-for-primary-DAC
+
+[33mcommit 20489ee33b8da3909a092d500eb400e441b050da[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 14:42:12 2018 +0300
+
+    ATR-28: changed messages
+
+[33mcommit 5cc26fdc55c1988c7e37549b7d44595e7c73663f[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 06:59:00 2018 +0300
+
+    ATR-18: Fixed unit tests, fixed embeddedfiledata attribute to support whitespaces in file paths, added unit test for PX1018 diagnostic
+
+[33mcommit d3d9d58a478a6e7f756c6c4078f23f49a0711b16[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 06:30:20 2018 +0300
+
+    ATR-18: fixed unit tests
+
+[33mcommit d8d2f4b7a6813e26a141fc8bb428c40a8a9d7018[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 06:16:46 2018 +0300
+
+    ATR-18: changed tests folder structure
+
+[33mcommit a535e3da78ce1ba25da5c86c3bbd32c7b9b84729[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 05:54:41 2018 +0300
+
+    ATR-18: fixes in PX1018 diagnostic
+
+[33mcommit 717096b48a78a5242548fe24c8c309fde34dd48b[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 05:18:44 2018 +0300
+
+    ATR-18: diagnostic PX1018
+
+[33mcommit 3b4e72f7becd36ba1c24a5b8bf78775c95a747a7[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 03:42:40 2018 +0300
+
+    ATR-28: Restructured Analyzers folders structure. Added search for primary DAC type for derived BQLs
+
+[33mcommit b3fa1610f414cc67d2c4b447d108caa09840fa0c[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 03:02:21 2018 +0300
+
+    ATR-28: Added unit test for PX1012 code fix
+
+[33mcommit f806439f80d6779bbedfd67435bd1d738d5ce20c[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 02:14:20 2018 +0300
+
+    ATR-28: Changed tests folder structure
+
+[33mcommit 7b72b77b356b7b94dcc7c99d0e1783b684a2d98b[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 02:10:11 2018 +0300
+
+    ATR-28: reorganized tests folder structure
+
+[33mcommit a19666ef29d795213c5183dfcbcedf547a10ad7a[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 01:49:14 2018 +0300
+
+    ATR-28L sources folder restructured
+
+[33mcommit 3e087a413487db7439281738162f11a189b119c9[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 01:35:17 2018 +0300
+
+    ATR-28: finished code fix for views on non primary DAC
+
+[33mcommit 1703b91e4278dc3b885c37a6a509d703b6921f2d[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 00:40:34 2018 +0300
+
+    ATR-28: Added properties to diagnostic to pass DAC metadata to code fix
+
+[33mcommit 5d563831f47c173d90520584605a4eeb54e7934d[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 25 00:39:58 2018 +0300
+
+    ATR-28: Added utility methods to convert ITypeSymbol names to CLR Type full names which can be used by compillation object to retrieve type symbol by metadata
+
+[33mcommit 1d08af27266f8694b6795093586ffa37f8b6e50b[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jun 24 20:00:48 2018 +0300
+
+    ATR-28: folder restructure
+
+[33mcommit 1e5fb1777c4cbbb8aa6b3069fca541b27e5401dc[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jun 24 19:02:06 2018 +0300
+
+    ATR-28: folder restructure
+
+[33mcommit df1cb05a2c8b67197e92267c3d881ccc08bab6c4[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jun 24 18:09:22 2018 +0300
+
+    ATR-28:  folder restructured
+
+[33mcommit 4848682d7adc4db5a1233920620a79eb3b19ad27[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jun 24 05:50:10 2018 +0300
+
+    ATR-28: Added unit test for new diagnostic on non primary views
+
+[33mcommit b456023cedf2917d3b7d0cce9074aa38895852e4[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jun 24 05:49:45 2018 +0300
+
+    ATR-28: Updated tests for reorganized sources
+
+[33mcommit 5295dd572671f49915e3afddac87102e96a71a49[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jun 24 05:48:55 2018 +0300
+
+    ATR-28: Reorginized pxaction test sources
+
+[33mcommit 3df6b9723ad8f4cfe4d4d367a6079aad06ac29b5[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jun 24 05:11:31 2018 +0300
+
+    ATR-28: Fixed diagnostic to correctly use type parameters from graph and graph extension
+
+[33mcommit 488459b8777523d409b84c2d703d26f04aee81de[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jun 24 04:29:32 2018 +0300
+
+    ATR-28: Added diagnostic for non primary view
+
+[33mcommit e567c9680b472cb77dc5974f42f269c192d8f5e6[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jun 24 02:46:29 2018 +0300
+
+    ATR-28: work on diagnostic
+
+[33mcommit 7d401a35d519e49588d825b65e7aef4dd53c1011[m
+Merge: 7022fc9 87ad8fb
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jun 24 02:12:10 2018 +0300
+
+    Merge branch 'feature/ATR-143-master-DAC-field-must-be-abstract' of https://github.com/Acumatica/Acuminator into feature/ATR-28-master-pxAction-non-primary-view
+
+[33mcommit 7022fc9e0fc4521e0ef7f5991d8feda1f618c7f6[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jun 24 02:12:05 2018 +0300
+
+    ATR-28: Added analyzer class and string resources
+
+[33mcommit 87ad8fb348f095ad2d4425b0d17721d261244181[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jun 24 01:00:55 2018 +0300
+
+    Added unit test for DAC property type not compatible with field attribute code fix
+
+[33mcommit 242cb78685b968215eac0ae324b7491ad6c6a3b0[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jun 24 00:25:17 2018 +0300
+
+    Added and renamed test sources
+
+[33mcommit a3578335bbfc4fa9d115e8392cb1eda7ed6cff04[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jun 24 00:10:00 2018 +0300
+
+    Added test for codefix
+
+[33mcommit 1abc725553cadf161bd39ac05244253390429c03[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jun 24 00:05:06 2018 +0300
+
+    Added code fix for non abstract DAC fields
+
+[33mcommit fca37f528d211df2e6b05a98e71f7854f70afe12[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Jun 23 23:20:57 2018 +0300
+
+    ATR-143: Added unit tests
+
+[33mcommit b43a68884f9fa6ee2c9d4f9b7e24a562ffb2c7ec[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Jun 23 23:20:38 2018 +0300
+
+    ATR-143: Add diagnostic for DAC non abstract field.
+
+[33mcommit 05661eef41d03ad03d51d9cfef12c23aa469ef71[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Jun 23 07:38:01 2018 +0300
+
+    ATR-125: fixed bug for abstract delegate declaration
+
+[33mcommit a7bb72cd411d1751d1b115b6b62622b2da31cc3f[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Jun 23 05:01:32 2018 +0300
+
+    ATR-125: Refactoring for the diagnostic
+
+[33mcommit 0d84bc383cb1ec568e59dc15b18c5bef73a4038f[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Jun 23 02:57:48 2018 +0300
+
+    ATR-122: Enhanced unit test
+
+[33mcommit b0c03cf848fadf8e2356a1d3deff3c2c3c3fa5c6[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Jun 23 02:25:55 2018 +0300
+
+    ATR-122: Fixed LongOperation diagnostic and added missing member access cases to diagnostic
+
+[33mcommit 272629d9ed98d4c1f5bc928087b8548588d75c4f[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jun 22 04:39:30 2018 +0300
+
+    PX1021: fixed not nullable property type case
+
+[33mcommit df36b06eb3a0820d62aa5c249bfb8963213e6bff[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jun 22 04:05:37 2018 +0300
+
+    ATR-144: Changed unit test for new analysis
+
+[33mcommit c3ba7d44be6cf9f6839cd1b42eb88a83b46604a7[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jun 22 04:00:00 2018 +0300
+
+    ATR-144: Added diagnostic for static Select calls on derived BQL types
+
+[33mcommit 4afd24e81c6a923fba42ad3b8484cc0159a5d210[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jun 22 03:15:18 2018 +0300
+
+    ATR-141: Enhanced unit test for fix
+
+[33mcommit 25e648eceedd902562e6ef1e5037ac6534fc37d6[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jun 22 03:10:23 2018 +0300
+
+    ATR-141: Added BQL modification static analysis for non abstract variable types
+
+[33mcommit 53a6a51f0fb2eb45d021d4236774643cf542bdc7[m
+Merge: 1da6cea e6f91ca
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Jun 20 14:02:42 2018 +0300
+
+    Merge branch 'master' of https://github.com/Acumatica/Acuminator into bugfix/ATR-146-CustomPredicate-support
+
+[33mcommit 1da6ceaed3b40def7534cd85c100c3c486aed2b3[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Jun 20 14:01:28 2018 +0300
+
+    ATR-146: fixed diagnostic and added special unit test for custom predicates
+
+[33mcommit e6f91cac9ab383795c6da2af1bff1166e7c963db[m
+Merge: d3a4212 158f048
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Wed Jun 20 13:46:58 2018 +0300
+
+    Merge pull request #27 from Acumatica/bugfix/ATR-142-master-PX1015-static-calls
+    
+    Bugfix/atr 142 master px1015 static calls
+
+[33mcommit 25fb5bddcbb348d02bf06e6483c45a5b7d7dd008[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Jun 20 04:59:08 2018 +0300
+
+    ATR-146: CUstom Predicates support started work
+
+[33mcommit 158f048ba4d7ced28c2d52411f20cd3d28b91a1d[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Jun 19 03:43:43 2018 +0300
+
+    ATR-142: Enhanced unit test for BQL
+
+[33mcommit b12b88bea32dec45ebdedc6a56d544803c371672[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Jun 19 03:38:32 2018 +0300
+
+    ATR-142: Check for static call from derived BQL
+
+[33mcommit 8708cfe7c0b91c3f3e3866b293a4b425b2a145e1[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Jun 19 01:47:19 2018 +0300
+
+    ATR-142: changed diagnostics folder structure
+
+[33mcommit d3a4212ae240e756159b46ab646c36e04fb5d799[m
+Merge: 53c069c c600fd4
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Mon Jun 18 19:12:32 2018 +0300
+
+    Merge pull request #26 from Acumatica/bugfix/ATR-121-master
+    
+    Bugfix/atr 121 master
+
+[33mcommit c600fd4d000a4df92b6e655bdacf137c6c55e138[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 18 18:00:44 2018 +0300
+
+    ATR-121: Refactored the diagnostic and fixed cast expression to support type parameters as the view's main DAC
+
+[33mcommit c7d9793216201cf4c06735c2b93d6651f582783c[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 18 14:26:02 2018 +0300
+
+    ATR-122: fixed null reference exception for PX-1021 diagnostic
+
+[33mcommit 53c069c2eccab4bf3af7c8ba504a3eef6b9e5cde[m
+Merge: 6e2103b 0e60bc1
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Mon Jun 18 13:14:20 2018 +0300
+
+    Merge pull request #25 from Acumatica/feature/ATR-17-master-PXDBFieldAttribute-not-matching-property
+    
+    Feature/atr 17 master pxdb field attribute not matching property
+
+[33mcommit 0e60bc1f1644dcb233162debfcbc6d2b17873207[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 18 13:04:04 2018 +0300
+
+    ATR-17: Changed diagnostic messages
+
+[33mcommit c80768a7f20b06ba86c01c327da4cc6457779a22[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 18 03:46:13 2018 +0300
+
+    ATR-17: Changed the code fix message to be one for all cases
+
+[33mcommit d8faf450749860466d17f78ce003b41a416aad16[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 18 03:38:06 2018 +0300
+
+    ATR-17: Added PXDBScalar diagnostic test
+
+[33mcommit 1ed2c50ac5eb8516f1629525a9cd25dd251e3fed[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 18 03:24:20 2018 +0300
+
+    ATR-17: Added code fix for property type node
+
+[33mcommit b622d492a7d6bdb9f6474595b08ca299605b5097[m
+Merge: 2db384f 582e17a
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jun 10 14:08:14 2018 +0300
+
+    Merge branch 'feature/ATR-17-master-PXDBFieldAttribute-not-matching-property' of https://github.com/Acumatica/Acuminator into feature/ATR-17-master-PXDBFieldAttribute-not-matching-property
+
+[33mcommit 582e17a2d91387cdb1a913d1a601c218dfce74af[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Jun 9 12:26:09 2018 +0300
+
+    ATR-17: fixed PXDBScalar attribute case
+
+[33mcommit 5b263bfc7114e8070872c21d47ea368c28339cee[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jun 8 22:28:23 2018 +0300
+
+    ATR-17: fixed  case when PXDBScalar attribute was recognised as field attribute
+
+[33mcommit 85e34e99d268a83e63995c5c15334285b73d6515[m
+Merge: 9917025 6e2103b
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jun 8 21:16:39 2018 +0300
+
+    Merge branch 'master' of https://github.com/Acumatica/Acuminator into feature/ATR-17-master-PXDBFieldAttribute-not-matching-property
+
+[33mcommit 6e2103b769656fc9d155a3fa12171e3ade35b16e[m
+Merge: 831d40d d1a7a92
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Fri Jun 8 16:40:40 2018 +0300
+
+    Merge pull request #24 from Acumatica/ATR-56-Configure-build-process
+    
+    Atr 56 configure build process
+
+[33mcommit d1a7a923eca1f01e0fcd2166d10ca340f012fd1d[m
+Author: Andrey Popkov <apopkov@acumatica.com>
+Date:   Fri Jun 8 15:12:59 2018 +0300
+
+    Add GitVersion.txt to gitignore
+
+[33mcommit ab551a0151ff4303343ec76bc5f00fb9f46cabaf[m
+Author: Andrey Popkov <apopkov@acumatica.com>
+Date:   Fri Jun 8 15:03:12 2018 +0300
+
+    change vsixmanifest
+
+[33mcommit 831d40d2e9b201a699aecb4a5c5b49e2619c632d[m
+Merge: c8c79a7 a5c798d
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Fri Jun 8 14:02:35 2018 +0300
+
+    Merge pull request #23 from Acumatica/bugfix/master-fixed-unit-test
+    
+    fixed last broken unit test
+
+[33mcommit 2db384fe871f887c72e2373e36cdeb4fffef8ad0[m
+Merge: 9917025 a5c798d
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jun 8 00:44:16 2018 +0300
+
+    Merge branch 'bugfix/master-fixed-unit-test' of https://github.com/Acumatica/Acuminator into feature/ATR-17-master-PXDBFieldAttribute-not-matching-property
+
+[33mcommit a5c798d56270ecb7663d68e51ebc3b1ba530aeac[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jun 8 00:36:06 2018 +0300
+
+    fixed last broken unit test
+
+[33mcommit c8c79a7b7dbfd61e486e26c086676fb1ecbf4d20[m
+Merge: ac68fd1 1847ddc
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Thu Jun 7 15:49:53 2018 +0300
+
+    Merge pull request #22 from Acumatica/bugfix/ATR-127-master
+    
+    ATR-127: changed coloring to not cache semanticmodel
+
+[33mcommit 9917025e0205a3bcb9b585ede8fe0f509f140c48[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jun 7 15:41:34 2018 +0300
+
+    ATR-17: removed old folder
+
+[33mcommit 49b690206b094edcfa31b29b759ac67514c67391[m
+Merge: a8104fa 1847ddc
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jun 7 15:40:39 2018 +0300
+
+    Merge branch 'bugfix/ATR-127-master' of https://github.com/Acumatica/Acuminator into feature/ATR-17-master-PXDBFieldAttribute-not-matching-property
+
+[33mcommit 1847ddc4da3b6c088fdce5dce03624bc5f56307a[m
+Merge: 4217326 ac68fd1
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jun 7 15:38:03 2018 +0300
+
+    Merge branch 'master' of https://github.com/Acumatica/Acuminator into bugfix/ATR-127-master
+
+[33mcommit a8104faf09d71eeb9067bf3e7128747f8e14950d[m
+Merge: 792d4cf 4217326
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jun 7 15:35:34 2018 +0300
+
+    Merge branch 'bugfix/ATR-127-master' of https://github.com/Acumatica/Acuminator into feature/ATR-17-master-PXDBFieldAttribute-not-matching-property
+
+[33mcommit 4217326eee4e03796ab410865f4c56ee6853fb65[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jun 7 15:34:49 2018 +0300
+
+    ATR-127: fix coloring to not color variables of DAC/BQL types
+
+[33mcommit 792d4cf1807f9eaa0c420d85c3a15241da19b86d[m
+Merge: c399865 9dc9477
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jun 7 15:16:18 2018 +0300
+
+    Merge branch 'bugfix/ATR-127-master' of https://github.com/Acumatica/Acuminator into feature/ATR-17-master-PXDBFieldAttribute-not-matching-property
+
+[33mcommit 9dc947772e15a301f612a44bc7d0827b324053d7[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jun 7 15:15:21 2018 +0300
+
+    ATR-127: changed coloring to not cache semanticmodel
+
+[33mcommit ac68fd12b32387fc01e56221549f4051d2865817[m
+Merge: 8efc6aa 24eb151
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Thu Jun 7 14:16:44 2018 +0300
+
+    Merge pull request #21 from Acumatica/ATR-56-Configure-build-process
+    
+    Atr 56 configure build process
+
+[33mcommit 24eb151e4a16f8ce629a21e97dd2656e29226287[m
+Merge: e8a71f4 8efc6aa
+Author: Andrey Popkov <apopkov@acumatica.com>
+Date:   Thu Jun 7 13:45:22 2018 +0300
+
+    Merge branch 'master' into ATR-56-Configure-build-process
+
+[33mcommit 8efc6aa04f5ee147358f0eb952cefddce3cef232[m
+Merge: fba597b 8b38632
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Wed Jun 6 15:08:11 2018 +0300
+
+    Merge pull request #20 from Acumatica/feature/ATR-23-master-bql-parameters-mismatch
+    
+    Feature/atr 23 master bql parameters mismatch
+
+[33mcommit c399865b70b7d867a6fe6ae15b44d88dfcd749b0[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Jun 6 11:31:10 2018 +0300
+
+    ATR-17: refactoring
+
+[33mcommit 2d499718df79bf3fd26604539bec0ae2fd7556c6[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Jun 6 11:15:25 2018 +0300
+
+    ATR-17: removed redundant check from diagnostic
+
+[33mcommit 43f0525d4d9df92a0b4094ed91911541928e74d1[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Jun 6 02:55:40 2018 +0300
+
+    ATR-17: changed flder structure for tests + added test for multiple dac field attributes code fix
+
+[33mcommit b52755d7b4b71f3c15986e1d7242936b4ee1477d[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Jun 6 02:54:56 2018 +0300
+
+    ATR-17:  improved diagnostic to support PXDBFieldAttribute, improved codefix indentation generation
+
+[33mcommit 3f556f22c404abfe08bea4189749f4fa6f83bd15[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Jun 6 01:44:24 2018 +0300
+
+    ATR-17: added support for PXDBFieldAttribute
+
+[33mcommit e8a71f44254c6656b480000133d3d6515b236759[m
+Author: Andrey Popkov <apopkov@acumatica.com>
+Date:   Tue Jun 5 14:02:06 2018 +0300
+
+    set PlatformTarget AnyCPU
+
+[33mcommit c649cb8023b33f8b67ed0f632e37c10356cdbf51[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 4 17:02:07 2018 +0300
+
+    ATR-17: codefix to change property type into attribute type
+
+[33mcommit 76560423de21d8b76705b7bff6bcb94ab7ac9ed2[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 4 13:30:27 2018 +0300
+
+    ATR-17: Work on the bql mismatch code fix
+
+[33mcommit 5e0863a0edbf93e946f39402c69980d80d8d9216[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 4 04:52:18 2018 +0300
+
+    ATR-17: fixed codefix for multiple atrributes in attribute list
+
+[33mcommit 3f1c43ac68732f19d5e28047cd7088f3c95dbedf[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 4 03:44:04 2018 +0300
+
+    ATR-17: minor refactoring
+
+[33mcommit f631b038b31a360c572e5487dd22190d3f263122[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 4 03:40:19 2018 +0300
+
+    ATR-17: improved code fix
+
+[33mcommit 48e1c0df96a11f7b8196f12173e77d31d12a93e9[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jun 4 03:07:07 2018 +0300
+
+    ATR-17: Added code fix for multiple field attributes on property
+
+[33mcommit 954cdef132dceea8f86c9be1ede76717226b8500[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jun 3 23:48:44 2018 +0300
+
+    ATR-17: Added unit tests for PX1021 and PX1023 diagnostics
+
+[33mcommit fbeead29cec0fed7766ec6a9f73c80b11a9a00f0[m
+Merge: 32bab76 8b38632
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jun 3 21:34:47 2018 +0300
+
+    Merge branch 'feature/ATR-23-master-bql-parameters-mismatch' of https://github.com/Acumatica/Acuminator into feature/ATR-17-master-PXDBFieldAttribute-not-matching-property
+
+[33mcommit 8b38632310d4ac6c19a1343339719c372c02f6a3[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jun 3 21:33:56 2018 +0300
+
+    ATR-23: More unit tests for bql args count mismatch analytics
+
+[33mcommit 5ae1d8bbc46f878d3f93cdb686d3a6d56eaa85ff[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jun 3 20:12:25 2018 +0300
+
+    ATR-23: More unit tests for bql mismatch analyzer
+
+[33mcommit 5f89a82295012839230141466263cbde3e0f66b8[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Jun 3 19:43:20 2018 +0300
+
+    ATR-23: More unit tests for bql args count mismatch in static calls
+
+[33mcommit 14b7cc4f62cad33bed3b2c85789ec1e3c1046284[m
+Author: Andrey Popkov <apopkov@acumatica.com>
+Date:   Thu May 31 13:37:39 2018 +0300
+
+    add NuGet.CommandLine version="4.6.2" and change Diagnostic.nuspec
+
+[33mcommit 32bab76a3fa1434db5c55cc1344f3425343078f5[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue May 29 19:05:52 2018 +0300
+
+    ATR-17: Extended attributes register
+
+[33mcommit 3a25a16ab437b810fdce02deec8721634a163a6b[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue May 29 14:38:07 2018 +0300
+
+    ATR-17: name refactoring
+
+[33mcommit d3c85f30a5bc2466cf82f18dde87d3c5b2003630[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue May 29 13:36:55 2018 +0300
+
+    ATR-17: Renaming refactoring for attribute info DTO
+
+[33mcommit 7d912d1f08f5e9a29db73d7c2dd2c7d23bfb9b00[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon May 28 18:53:56 2018 +0300
+
+    ATR-17: Fixed bugs in diagnostic and changed the place of the warning from property identifier to property type
+
+[33mcommit cb77ac4495a904cc55ed3b3c24b2fd64da190320[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon May 28 16:02:10 2018 +0300
+
+    ATR-17: finished ATR-17 and ATR-75 diagnostics.
+
+[33mcommit 9c3adf0a31d2b5ad25477ae62ea9afcdb665dd41[m
+Merge: 1dfa6a0 7c8447a
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon May 28 15:24:17 2018 +0300
+
+    Merge branch 'feature/ATR-17-master-PXDBFieldAttribute-not-matching-property' of https://github.com/Acumatica/Acuminator into feature/ATR-17-master-PXDBFieldAttribute-not-matching-property
+
+[33mcommit 1dfa6a0ef7cfb16539226f43842e50ddd4545fb7[m
+Merge: 7981aa4 ba37669
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon May 28 15:23:45 2018 +0300
+
+    Merge branch 'feature/ATR-23-master-bql-parameters-mismatch' of https://github.com/Acumatica/Acuminator into feature/ATR-17-master-PXDBFieldAttribute-not-matching-property
+
+[33mcommit ba37669e202279eebd932810f5b11e28d62d72e1[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon May 28 15:21:11 2018 +0300
+
+    ATR-23: formatted indentaion (tabified)
+
+[33mcommit 7c8447a59663fa772491d21ba4855c2c22d7334c[m
+Merge: 138188c f9d2e54
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon May 28 09:53:37 2018 +0300
+
+    Merge branch 'feature/ATR-23-master-bql-parameters-mismatch' of https://github.com/Acumatica/Acuminator into feature/ATR-17-master-PXDBFieldAttribute-not-matching-property
+
+[33mcommit f9d2e548084be0ef8a2b3d439773b470aeb781cb[m
+Merge: 45ee41b fba597b
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon May 28 09:50:22 2018 +0300
+
+    Merge branch 'master' of https://github.com/Acumatica/Acuminator into feature/ATR-23-master-bql-parameters-mismatch
+
+[33mcommit 138188c7fc3cd194782f7222c055425a15da12e7[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon May 28 09:31:57 2018 +0300
+
+    ATR-17: more work on diagnostic
+
+[33mcommit 2acb6d0076e3ebe6f8558c901b6b0883015f1ce4[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri May 25 08:06:06 2018 +0300
+
+    ATR-17: added field attrubute info dto
+
+[33mcommit 3f1587f9fd14779735be8bf487272f81dfcec987[m
+Author: Andrey Popkov <apopkov@acumatica.com>
+Date:   Thu May 24 18:12:14 2018 +0300
+
+    set VsixSignTool" version="15.7.27703
+
+[33mcommit 33f757f478b2fccd02761a4b585b3ccf9ad04a39[m
+Author: Andrey Popkov <apopkov@acumatica.com>
+Date:   Mon May 21 17:38:33 2018 +0300
+
+    ATR-56: Configure build process
+
+[33mcommit fba597baf3594c199ce4cfb512881906649ba0de[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Apr 16 10:43:22 2018 +0100
+
+    Update release notes with mention for 1.2.1
+
+[33mcommit 1b9334cd48296c3058dc96c742d37a7f90f78274[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Apr 16 10:42:34 2018 +0100
+
+    Increment version to 1.2.1
+
+[33mcommit d522a9cf32a6771c56dc12f0ca0728ec150cb809[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Apr 16 10:42:15 2018 +0100
+
+    Fix test source file - make it an embedded resource
+
+[33mcommit 7981aa46770d6f7510e4989a690719659295ccef[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon May 7 14:23:42 2018 +0300
+
+    ATR-17: more work on diagnostic
+
+[33mcommit 386389ff21aa59f44338f3b55ce473b156258b19[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon May 7 01:35:25 2018 +0300
+
+    ATR-17: work on diagnostic
+
+[33mcommit 65d853a02515fef7c1204801636a2ccb10d5b8e5[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat May 5 22:06:48 2018 +0300
+
+    ATR-17: Added attribute types to PXContext + names refactoring
+
+[33mcommit c331dbe428ea0cfe9756924e68753de816d6677c[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri May 4 13:56:44 2018 +0300
+
+    ATR-17: Added descriptor for PX1023 diagnostic to resolve ATR-75 too
+
+[33mcommit f4e50652e70ab60dfa01ff76cc41afdb396f0d9a[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri May 4 13:49:14 2018 +0300
+
+    ATR-17:  Started to add attributes mapping to simple types
+
+[33mcommit f8c11e4649a01df50fcad5ac37a0043b20aac2f5[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri May 4 02:34:00 2018 +0300
+
+    ATR-17: work on diagnostic
+
+[33mcommit 49e89a614f447ca0b2f23b945e5a90f2c3f20bbc[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri May 4 01:25:53 2018 +0300
+
+    ATR-17: fixed namespaces + started diagnostic
+
+[33mcommit 45ee41bf8d392bb42c82fbd2c56f8cdcca528a4d[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu May 3 12:19:56 2018 +0300
+
+    ATR-23: Fixed messages for diagnostic
+
+[33mcommit 956433584b018747e9870b3689b79615047d4092[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu May 3 04:46:30 2018 +0300
+
+    ATR-23: Speicified number of arguments required by bql in a message
+
+[33mcommit 11be1bbf3e0979924e77135741cf8d1f72b68baf[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu May 3 04:16:53 2018 +0300
+
+    ATR-23: fixes of data flow analysis for conditional clauses
+
+[33mcommit f38ca366b609959d7d3069bc83ab479318b35aa0[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu May 3 03:41:29 2018 +0300
+
+    ATR-23: implemented more efficient algorithm for array length resolving + fixes for bql variable type resolving
+
+[33mcommit 0d8cff104c229600204f55969175e1ae31437ee0[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu May 3 03:16:51 2018 +0300
+
+    ATR-23: updated bql resolving algorithm
+
+[33mcommit eff83a7bf630dfd24b981b2bed4396e09c69e944[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu May 3 01:59:50 2018 +0300
+
+    ATR-23: started reworking the algorithm
+
+[33mcommit e54b27c8d11e481d0d9b9f2531a831573623b9fb[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu May 3 01:31:23 2018 +0300
+
+    ATR-23: disabled diagnostic if goto is found
+
+[33mcommit 72a271fc5b58825ecd15bcf44259ede53b3330c7[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue May 1 21:58:34 2018 +0300
+
+    ATR-23: data flow analysis for array element count
+
+[33mcommit 6cb77b892baf26d7b470a2a238e31811ca453d8a[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue May 1 14:51:56 2018 +0300
+
+    ATR-23: refactoring + started data flow analysis to cover more array initializing cases
+
+[33mcommit 6a1a261c46d3e410b31c28b928ff4dff030482fa[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue May 1 04:57:03 2018 +0300
+
+    ATR-23: fixes for diagnostic analysis of candidates
+
+[33mcommit ac1bf1507fecb4dd00d0f53e1ee6288bdad7c560[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue May 1 03:34:21 2018 +0300
+
+    ATR-23: fixes for diagnostic
+
+[33mcommit c0e3ed41ef4dd88d3c45df0ccdf39705c0f2d02d[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue May 1 03:11:51 2018 +0300
+
+    ATR-23: changes in data flow analysis
+
+[33mcommit fd20f308cf978b9a8f8573255113e8619b73700e[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue May 1 02:25:29 2018 +0300
+
+    ATR-23: added value tuples to utils package. Added syntax utils and modified CLA algorithm.
+
+[33mcommit 6d7baa587bd2b37ff382392c0d3e7ee7c8315841[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Apr 30 23:10:28 2018 +0300
+
+    ATR-23: Added LCA finder
+
+[33mcommit eb51a840dd19d06ae61628f68aeb74f4fd72ec7a[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Apr 30 22:00:22 2018 +0300
+
+    ATR-23: work on flow analysis
+
+[33mcommit d64b22c70acef3775e9a16bee35cd2cc435dff5b[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Apr 26 16:03:53 2018 +0300
+
+    ATR-23: work on analysis
+
+[33mcommit 0e5798fd200fd436f7a386adec86322719e86407[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Apr 26 12:15:57 2018 +0300
+
+    ATR-23: Improved walkers logic and added type resolver walker
+
+[33mcommit 4a68be3fa10d33d7d2aafffa68113c973e5eedfc[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Apr 26 09:34:20 2018 +0300
+
+    ATR-23: data analysis
+
+[33mcommit 97e9caad852512fe6a351b9506187c415b054951[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Apr 25 20:48:47 2018 +0300
+
+    ATR-23: control flow analysis for variable type resolving
+
+[33mcommit 3e1832888bf4f424d5ebfb2602685e348b4b4a3c[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Apr 25 20:20:51 2018 +0300
+
+    ATR-23: disabled diagnostic for variables of a base type (PXSelectBase for example)
+
+[33mcommit e9c1b833cd317441c00a0df0f7c16379cafc5b3d[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Apr 25 13:20:46 2018 +0300
+
+    ATR-23: disabled diagnostic for custom derived bqls. Fixed arguments counting for arrays
+
+[33mcommit 3e8800777b2a0416848e6c649c260923fe458312[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Apr 25 11:37:25 2018 +0300
+
+    ATR-23: format changes
+
+[33mcommit e46aef58db964b138d58444bc244cb03b47a7f32[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Apr 25 11:33:45 2018 +0300
+
+    ATR-23: changes after review
+
+[33mcommit 1d3db170101935eb1b3fa1fbba206770a3161a6b[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Apr 24 22:25:53 2018 +0300
+
+    ATR-23: Changed diagnostic text to show method name
+
+[33mcommit eba5c1f1ad66dadde323ec2bf86c32f969ca5925[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Apr 24 22:19:01 2018 +0300
+
+    ATR-23: Refactoring
+
+[33mcommit b1250c453580c680e8018f49c2466a7e7192c9f1[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Apr 24 21:52:03 2018 +0300
+
+    ATR-23: Added diagnostic for instance method calls
+
+[33mcommit a707b8dafcb6c60383f63dd7565b5a4e3c8de068[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Apr 24 18:21:10 2018 +0300
+
+    ATR-23: Work on diagnostic. Implemented diagnostic for static calls, handled cases of named arguments syntax and explicit array creation in call.
+
+[33mcommit 7401b8859bc0e155856097952468e38905fa35fc[m
+Merge: 474cf48 ce8c58a
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Tue Apr 24 15:21:02 2018 +0300
+
+    Merge pull request #19 from Acumatica/bugfix/master-changed-default-colors
+    
+    Bugfix/master changed default colors
+
+[33mcommit 43a68aac1f6914c0d620b4f51714ee94533339a8[m
+Merge: ca1e45c ce8c58a
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Apr 24 12:28:59 2018 +0300
+
+    Merge branch 'bugfix/master-changed-default-colors' of https://github.com/Acumatica/Acuminator into feature/ATR-23-master-bql-parameters-mismatch
+
+[33mcommit ca1e45c57be5355514514212442ddb53e618d056[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Apr 24 06:51:10 2018 +0300
+
+    ATR-23: diagnostic
+
+[33mcommit a797242b5c63780274c924dca6f7f1da4b089a98[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Apr 24 05:22:18 2018 +0300
+
+    ATR-23:  Work on diagnostic
+
+[33mcommit 62695bb611a41f1e05610fdada91092783e874d3[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Apr 24 03:43:46 2018 +0300
+
+    ATR-23: changed tests folder structure  to order tests.
+    Added test for BQL parameter mismatch
+
+[33mcommit ce8c58a7b892271894a998ecee50b8250572fa91[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Apr 24 02:50:21 2018 +0300
+
+    Minor fixes to support coloring in non PXSelectBase bql in coloring only inside bql mode
+
+[33mcommit 7d65b45248b9e65573f089ea5ac74cfd31deeb46[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Apr 24 02:44:23 2018 +0300
+
+    Added brace coloring for bql outside of pxselectbase - bql compose scenarios, joins and etc
+
+[33mcommit 2b9390c9280b96db1c1c21d90bb8de40f56598be[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Apr 24 01:58:51 2018 +0300
+
+    changed default colors for graphs, dac extensions and the second level brace
+
+[33mcommit 474cf480fd8d7cd30a8da9440e4d580f196df518[m
+Merge: fcd1145 dae4a33
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Mon Apr 23 11:14:12 2018 +0300
+
+    Merge pull request #18 from Acumatica/feature/ATR-21-refactoring
+    
+    Feature/atr 21 refactoring
+
+[33mcommit fcd1145ce42d5ea814675b0c58a24ac1d2c19dfe[m
+Merge: 83a2ee2 34b275f
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Mon Apr 23 11:08:45 2018 +0300
+
+    Merge pull request #17 from Acumatica/bugfix/ATR-67-master-bql-compose
+    
+    ATR-67: Fixed coloring for unbound generic bql + refactoring and optimization
+
+[33mcommit dae4a33c7d9bc528768b087576a1643fa6645040[m
+Merge: 3670f0a 34b275f
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Apr 23 03:11:43 2018 +0300
+
+    Merge branch 'bugfix/ATR-67-master-bql-compose' of https://github.com/Acumatica/Acuminator into feature/ATR-21-refactoring
+
+[33mcommit 3670f0a1e82b7184774a0e1db440e658cd7b2de6[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Apr 23 03:07:06 2018 +0300
+
+    ATR-21: Refactoring and transfer type resolving logic into utils lib. Required by ATR-23 to use this logic in diagnostic.
+
+[33mcommit ec63d8f1f39c0ceabf2bcc0e4b0d2df9ab1036d5[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Apr 22 06:51:48 2018 +0300
+
+    ATR-23: Refactoring + fixed compilation errors for VSIX
+
+[33mcommit 08a936ab4c04c38b774b332e6912328aeb6c8a4b[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Apr 22 06:32:12 2018 +0300
+
+    ATR-23: refactoring for Analyzers to fix changes in Utils
+
+[33mcommit c40c906d12a82211683afaa4584b71fd8050a781[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Apr 22 05:36:43 2018 +0300
+
+    ATR-23: refactoring
+
+[33mcommit 1b8b8e30872530a948a2df10e534c0dd6ba892f9[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Apr 22 05:34:21 2018 +0300
+
+    ATR-23: Refactoring
+
+[33mcommit 995584de3e49e36e1bc960576c94e1a002280056[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Apr 22 05:28:25 2018 +0300
+
+    ATR-23: Enumerable refactoring
+
+[33mcommit fafdc0722f8bb93f0014b3f1ced2f8fba9210159[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Apr 22 04:52:02 2018 +0300
+
+    ATR-23: Exception helpers refactored into one
+
+[33mcommit caad83cae3a7fee74efcdc3193e48cd990d516c0[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Apr 22 04:46:31 2018 +0300
+
+    ATR-23: Added Utils library, started major utils refactoring
+
+[33mcommit c19e4bd012b2ba9a7498c5b780a6afcf5424ad33[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Apr 22 03:50:00 2018 +0300
+
+    ATR-23: refactoring, removed unused code
+
+[33mcommit 5759bc5813b71dcdb3c9b9edd84fe0b88b7b1b46[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Apr 22 03:43:25 2018 +0300
+
+    ATR-23: changed resources
+
+[33mcommit 34b275ff0c47f6485acf613b60c626ceabad86b5[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Apr 22 03:19:32 2018 +0300
+
+    ATR-67: Fixed coloring for unbound generic bql + refactoring and optimization
+
+[33mcommit 83a2ee29edb534a4a8527614cea0361a953dc306[m
+Merge: 4558fc4 abb6e6e
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Tue Apr 17 15:28:01 2018 +0300
+
+    Merge pull request #16 from Acumatica/feature/ATR-68-master-bql-outlining-option-to-collapse-all
+    
+    Feature/atr 68 master bql outlining option to collapse all
+
+[33mcommit abb6e6e2061b81c24749268706caea8e94b6b793[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Apr 17 12:48:09 2018 +0300
+
+    ATR-68: Changed resource strings according to code review
+
+[33mcommit 791919df2e3ce32f360cfac97879ad6d5a4ccf9c[m
+Merge: 5e7f537 4558fc4
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Apr 17 12:33:17 2018 +0300
+
+    Merge branch 'master' of https://github.com/Acumatica/Acuminator into feature/ATR-68-master-bql-outlining-option-to-collapse-all
+
+[33mcommit 4558fc494ccb15d3d537abf06848a184b3cb6e8b[m
+Merge: 9328089 a06a3b3
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Mon Apr 16 09:02:43 2018 +0300
+
+    Merge pull request #15 from Acumatica/bugfix/ATR-65-master-cycle-braces
+    
+    ATR-65: Looped angle brace colors
+
+[33mcommit 9328089f091cc4a8065c8f6fa4a49e0750d90191[m
+Merge: 2abbd1b 0a87183
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Mon Apr 16 09:01:56 2018 +0300
+
+    Merge pull request #14 from Acumatica/bugfix/ATR-50-master
+    
+    ATR-50: Added check to formatter to not format trivial bql
+
+[33mcommit 5e7f53718842186f5016b45152c26132c1b5462a[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Apr 13 20:19:30 2018 +0300
+
+    ATR-68: Split options UI by categories
+
+[33mcommit c18d03e7a4c2889c7c96afb134643056aff1b591[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Apr 13 20:10:48 2018 +0300
+
+    ATR-68: Added option to outline  bql parts
+
+[33mcommit f3627da6c60fc8a3e7b59cfa38041b688b98b8ee[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Apr 13 20:09:52 2018 +0300
+
+    ATR-68: namespace fixes
+
+[33mcommit f1e3a6df146ab577420e042e0da6b5840652d683[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Apr 13 20:09:25 2018 +0300
+
+    ATR-68: namespace-fixes
+
+[33mcommit a06a3b3b315e944ef1e2f4d077f065ea0a99c976[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Apr 13 19:13:49 2018 +0300
+
+    ATR-65: Looped angle brace colors
+
+[33mcommit 0a871837dd546f1ebd557d437d53e5bc85d8684e[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Apr 13 17:05:30 2018 +0300
+
+    ATR-50: changes in unit tests to conform to the new formatting of simple bql
+
+[33mcommit cb945f6e1f5213180ce624c9115f7c5326e91612[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Apr 13 16:10:33 2018 +0300
+
+    ATR-50: fixed tests and updated xunit packages
+
+[33mcommit e691e265636076e4eb2cf696d8181cad36f29068[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Apr 12 18:58:45 2018 +0300
+
+    ATR-50: Added check to formatter to not format trivial bql
+
+[33mcommit 2abbd1be6c7e6d7e25b655e56c6c48d69dd78f6d[m
+Merge: ca2d807 f2607be
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Thu Apr 12 18:44:24 2018 +0300
+
+    Merge pull request #13 from Acumatica/bugfix/ATR-64-master-resources-fix
+    
+    Bugfix/atr 64 master resources fix
+
+[33mcommit f2607bed2c670d0fed3681c858164580b3643cce[m
+Merge: 3149056 ca2d807
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Apr 12 18:36:33 2018 +0300
+
+    Merge branch 'master' of https://github.com/Acumatica/Acuminator into bugfix/ATR-64-master-resources-fix
+
+[33mcommit 31490569fa948295a57f59e28d8d40043cc8095d[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Apr 12 18:35:57 2018 +0300
+
+    ATR-64: fixed resources for diagnostics
+
+[33mcommit ca2d807356ac66e6451cddc44f5c4af3caa48167[m
+Merge: fc3384b 94bd076
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Mon Apr 9 14:46:23 2018 +0300
+
+    Merge pull request #12 from Acumatica/bugfix/ATR-61-master
+    
+    ATR-61: Fix for generic parameters which represent Dac Extension
+
+[33mcommit 94bd07683a5586050793eb27f05f6f8c1955a1c9[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Apr 9 14:24:16 2018 +0300
+
+    ATR-61: Fix for generic parameters which represent Dac Extension
+
+[33mcommit fc3384bc48c89d3814ea5b17ef9e5fb3d949ead4[m
+Merge: 724f32b 4c9f799
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Mon Apr 9 11:53:21 2018 +0300
+
+    Merge pull request #11 from Acumatica/bugfix/ATR-61-master
+    
+    Bugfix/atr 61 master
+
+[33mcommit 4c9f799e96fdfda091d4178139a49053209be2a3[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Apr 9 03:59:19 2018 +0300
+
+    ATR-61: Added coloring to generic type parameters
+
+[33mcommit b07d527542f01d7f4428058996b67a356c856e3d[m
+Merge: 971ab42 724f32b
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Apr 9 02:18:31 2018 +0300
+
+    Merge branch 'master' of https://github.com/Acumatica/Acuminator
+
+[33mcommit 971ab422734540f40d9f09275bdbaadca034b7e6[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Apr 9 02:18:14 2018 +0300
+
+    master: fixed references
+
+[33mcommit 724f32b72c4d8eab62c7ba11542cdf9cdd3b187f[m[33m ([m[1;33mtag: v1.2.0[m[33m)[m
+Merge: 3e3bd94 ada4b40
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Thu Mar 29 12:12:57 2018 +0300
+
+    Merge pull request #10 from Acumatica/rebranding-fix
+    
+    Fix namespace for resources
+
+[33mcommit ada4b40ddb68b866bd244fae34bc0bb6eb035c19[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Mar 29 09:24:06 2018 +0100
+
+    Fix namespace for resources
+
+[33mcommit 3e3bd94cc13c91d86fbfba8a27023a106230fe48[m
+Merge: b448a78 d55bf52
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Thu Mar 29 10:07:57 2018 +0300
+
+    Merge pull request #9 from Acumatica/feature/ATR-57-master-ReleaseNotes
+    
+    Feature/atr 57 master release notes
+
+[33mcommit d55bf52d173691f53cfe009bf4cabb85a7701598[m
+Author: Kseniya Popova <kpopova@acumatica.com>
+Date:   Thu Mar 29 09:51:49 2018 +0300
+
+    ATR-57: minor changes
+
+[33mcommit e7e461279bd809956f3ac53cfa967ab4b14f5fd9[m
+Author: Kseniya Popova <kpopova@acumatica.com>
+Date:   Wed Mar 28 17:13:33 2018 +0300
+
+    ATR-57: the bug is described in the Bug Fix section, formatting change in readme
+
+[33mcommit b448a788d63a36621f5a8083c49e2fe2c3e5310a[m
+Merge: 2629560 1dd3eae
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Wed Mar 28 13:29:43 2018 +0300
+
+    Merge pull request #8 from Acumatica/rebranding
+    
+    Rebranding
+
+[33mcommit 1dd3eae912df3b186c6927d89531eeeba431ddb0[m
+Merge: b507b63 2629560
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Mar 28 11:28:12 2018 +0100
+
+    Merge branch 'master' of https://github.com/Acumatica/Acuminator into rebranding
+
+[33mcommit b507b63adb145720ea660489b8718a7ecc147867[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Mar 28 10:52:07 2018 +0100
+
+    Update path to Acuminator instead of PX.Analyzers
+
+[33mcommit 9bcf5b2ca4e36120012a063cf3a17eaf54775e86[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Mar 28 10:50:19 2018 +0100
+
+    Rename assembly name to Acuminator
+
+[33mcommit e79080a40be415fd855928c77c6c67c3e05ffeb1[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Mar 28 10:47:48 2018 +0100
+
+    Rename namespaces
+
+[33mcommit 794d380c41e0b24b465ffae95df3b329f3217563[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Mar 28 10:26:29 2018 +0100
+
+    Rename folders, solutions, projects
+
+[33mcommit 26295603b45b649be4a1bf907308d98ac146a83e[m
+Merge: a0bbbf5 9939c6d
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Wed Mar 28 10:23:15 2018 +0300
+
+    Merge pull request #7 from Acumatica/bugfix/ATR-2-master-tests
+    
+    ATR-2: unit tests for using BQL Formatter with spaces instead of tabs
+
+[33mcommit 9939c6db52bf29a0276393cd0613e7880f3809b6[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Mar 28 08:22:37 2018 +0100
+
+    ATR-2: unit tests for using BQL Formatter with spaces instead of tabs
+
+[33mcommit a0bbbf5d65c8d91dbc92a76f1bdb08cd3b3504d6[m
+Merge: ca928df e3f143f
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Tue Mar 27 18:02:34 2018 +0300
+
+    Merge pull request #6 from Acumatica/bugfix/ATR-2-master
+    
+    Bugfix/atr 2 master
+
+[33mcommit e3f143f04486da4a4675b972e45be0b54cede49d[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Mar 27 16:00:49 2018 +0100
+
+    ATR-2: fix for a case when user uses spaces instead of tabs
+
+[33mcommit 76e833dcf8090bae17696c4a51cab3459409471c[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Mar 27 15:47:35 2018 +0100
+
+    More Info URL and Release Notes link
+
+[33mcommit 6be809a864dca3caf59b73c105821e93704ccb6c[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Mar 27 15:42:33 2018 +0100
+
+    Update description with verified one
+
+[33mcommit ca928df7703fdef5a80fbe4a0b9ce415a7ae7988[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Mar 27 15:34:59 2018 +0100
+
+    Fix references on NetTools
+
+[33mcommit 6f168cf3e1da57b38269d948b0bb176196b1a3cc[m
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Tue Mar 27 17:18:13 2018 +0300
+
+    Update README - newer version of NetTools is required for the build
+
+[33mcommit 02178807fb03747040de1460a82ac5adba24a9d1[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Mar 27 17:16:40 2018 +0300
+
+    Increment version
+
+[33mcommit 647ca6cf5fc9f0209f6f6dfb0ff992f26ca7617f[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Mar 27 14:18:19 2018 +0100
+
+    Remove AppVeyor config because it's not suitable for our purposes; return to Mainline in GitVersion
+
+[33mcommit cb9df7891b0e121d5d8ca4925d04f40aff381517[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Mar 27 12:04:21 2018 +0100
+
+    ATR-56: build only master branch
+
+[33mcommit 50109c7766f3b98a7436d51c7308a5aa5587bb8b[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Mar 27 11:55:56 2018 +0100
+
+    ATR-56: use ContinuousDeployment as a temporary replacement for Mainline
+
+[33mcommit fd0376723f2d885fb0f94acf8760645ef9cd740c[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Mar 27 11:41:04 2018 +0100
+
+    Set specific solution for NuGet
+
+[33mcommit def1e27bae5f88f3ee31c03e2bcb65a2f8ebf03c[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Mar 27 11:38:17 2018 +0100
+
+    ATR-56: remove version info from appveyor config
+
+[33mcommit 6ef6075876aa481d55c1668e1453632ce6944302[m
+Merge: 91d03f0 9235056
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Mar 27 11:35:42 2018 +0100
+
+    Merge branch 'master' into ci
+
+[33mcommit 9235056ae2cc2fbc89ec45026e11f824eb94278d[m
+Merge: d63ceb6 fb706a9
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Tue Mar 27 13:31:09 2018 +0300
+
+    Merge pull request #5 from Acumatica/bugfix/ATR-47-master-strings
+    
+    ATR-47: replace original string with verified ones
+
+[33mcommit fb706a98a1ae2649caa7237965058b5a1a25133f[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Mar 27 11:22:16 2018 +0100
+
+    ATR-47: replace original string with verified ones
+
+[33mcommit 91d03f078a56cccf08ca98caac8de5a745fcfd72[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Mar 27 10:48:12 2018 +0100
+
+    ATR-56: initial configuration for AppVeyor and GitVersion
+
+[33mcommit d63ceb65c1c1561ed0a34d236bb0015609bd6934[m
+Merge: e5f27ac af27334
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Mon Mar 26 11:14:58 2018 +0300
+
+    Merge pull request #4 from Acumatica/feature/ATR-44-master-typo-in-docs
+    
+    ATR-44: typo fixed
+
+[33mcommit af27334502baa00418894db585b3f325fe4fd47b[m
+Author: Kseniya Popova <kpopova@acumatica.com>
+Date:   Mon Mar 26 10:31:49 2018 +0300
+
+    ATR-44: typo fixed
+
+[33mcommit e5f27acf13adff577568a3424021b98974bdb9b1[m
+Merge: 66c5423 6cac907
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Fri Mar 23 11:12:54 2018 +0300
+
+    Merge pull request #3 from Acumatica/feature/ATR-44-master-Documentation
+    
+    Feature/atr 44 master documentation
+
+[33mcommit 6cac907921b1262838cd6a4adc43875a68bc2a7b[m
+Author: Kseniya Popova <kpopova@acumatica.com>
+Date:   Wed Mar 21 14:51:29 2018 +0300
+
+    ATR-44: how to extract public key
+
+[33mcommit 7bdf536d24b59990a419482317788d0381d383e5[m
+Author: Kseniya Popova <kpopova@acumatica.com>
+Date:   Wed Mar 21 14:15:35 2018 +0300
+
+    ATR-44: minor change
+
+[33mcommit 7e43fcd46f0c54ce446ec35aa8529d6314bde443[m
+Merge: db4f548 66c5423
+Author: Kseniia Popova <37410255+k-s-popova@users.noreply.github.com>
+Date:   Wed Mar 21 14:12:40 2018 +0300
+
+    Merge branch 'master' into feature/ATR-44-master-Documentation
+
+[33mcommit db4f5486a65965981dae06783d8cd3aa5e6a948d[m
+Author: Kseniya Popova <kpopova@acumatica.com>
+Date:   Wed Mar 21 14:01:11 2018 +0300
+
+    ATR-44: editor's comments processed
+
+[33mcommit 66c54231815bcb32b1a243b6c04d7c0d30589b4b[m
+Merge: 7ced043 998094a
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Wed Mar 21 10:38:36 2018 +0300
+
+    Merge pull request #2 from Acumatica/feature/ATR-51-master-move-strings-to-resx
+    
+    Feature/atr 51 master move strings to resx
+
+[33mcommit 998094ae085d9c7506ffe78f9cb5a9ae96d57b26[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Mar 20 18:01:24 2018 +0300
+
+    ATR-51: moved settings UI string constants to resx
+
+[33mcommit 4ef33595f8d39ab65ce1783dd2dc7a7eb190b21a[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Mar 20 17:49:23 2018 +0300
+
+    ATR-51: moved format definintions' constants to resx + added resource utils extensions + added VSIX resource file
+
+[33mcommit 44f8d3fcaa3cb8efb7be31ae7899e827daae7763[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Mar 20 17:44:49 2018 +0300
+
+    ATR-51: added UI attributes which load strings from resx + changed folder structure
+
+[33mcommit 02173f2437dd1a477c70b0090f5ee1406091178e[m
+Author: Kseniya Popova <kpopova@acumatica.com>
+Date:   Mon Mar 19 16:27:58 2018 +0300
+
+    ATR-44: formatting issue fixed
+
+[33mcommit afadbcf7ee3af41dee3ab8c3c87774b279f09be4[m
+Author: Kseniya Popova <kpopova@acumatica.com>
+Date:   Mon Mar 19 16:26:23 2018 +0300
+
+    ATR-44: release notes updated by comments from vpanchenko
+
+[33mcommit 793216eeb87a46d8e213f79bc09c3003ca7984be[m
+Author: Kseniya Popova <kpopova@acumatica.com>
+Date:   Fri Mar 16 15:59:15 2018 +0300
+
+    ATR-44: release notes added
+
+[33mcommit 7ced043657699fc932d92ff562a8c58f28088374[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Mar 16 08:39:06 2018 +0100
+
+    Fix typo
+
+[33mcommit 46a599a4697fcc3804cd04c29a52c679b23902e1[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Mar 16 08:33:40 2018 +0100
+
+    Add additional info to README about InternalsVisibleTo and public key
+
+[33mcommit 2117c21502f1be1e79636650dcc9da899f0f26ba[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Mar 16 08:33:20 2018 +0100
+
+    Add lib folder to gitignore
+
+[33mcommit af176bdf12071878cfec62cb9ec0fa20c63182cf[m
+Author: Kseniya Popova <kpopova@acumatica.com>
+Date:   Fri Mar 16 10:30:12 2018 +0300
+
+    ATR-44: link removed
+
+[33mcommit d25f9399b9fb20ef51c1e9a01e01f3d432a8263e[m
+Author: Kseniya Popova <kpopova@acumatica.com>
+Date:   Thu Mar 15 17:30:16 2018 +0300
+
+    ATR-45: changes to readme
+
+[33mcommit 37ccabf008216172b348ac9a9cb6a95b575cbd6b[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Mar 14 13:48:34 2018 +0100
+
+    Change references from NetTools to lib folder
+
+[33mcommit e91154aca7dcbf558a1e028c331b97c9be6a86eb[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Mar 14 13:48:21 2018 +0100
+
+    Update README with strong name signing info
+
+[33mcommit e84b60bd6c803af834dfbc4e8d7a53d099f74397[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Mar 14 12:34:20 2018 +0100
+
+    Exclude key files from repo
+
+[33mcommit 93f7a11e2e450946e3d6e0d7922620c86118dde9[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Mar 14 12:33:16 2018 +0100
+
+    Remove key file because it is sensitive info
+
+[33mcommit 98c2ee17933ab3d0e3bc40161ebd286348b439f8[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Mar 14 12:29:06 2018 +0100
+
+    Move key file to a common folder
+
+[33mcommit fb89fd16147b89f210ed14b81607d6a3f181a579[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Mar 13 14:19:05 2018 +0100
+
+    Replace VSIX license with GNU GPL v3
+
+[33mcommit e520b3600490b91ab4466d2c1ea861f8ccc58bc2[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Mar 13 14:16:25 2018 +0100
+
+    Reorganize folder structure
+
+[33mcommit 8cddd0372c2c8d28d3982c61fd822ee4c5ae1bb2[m
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Tue Mar 13 16:13:04 2018 +0300
+
+    Create README file
+
+[33mcommit 69d9d0cf8651391441787b91ab4e02e7bc6abd24[m
+Author: Vladimir Panchenko <dropsonic.pan@gmail.com>
+Date:   Tue Mar 13 16:09:22 2018 +0300
+
+    Create LICENSE file (GNU GPL v3)
+
+[33mcommit 7e4831efc8b69bd6a474ec13fd634e88fc5446df[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Mar 13 13:47:35 2018 +0100
+
+    Add NetTools folder to gitignore
+
+[33mcommit 4d2700be3208550ec9ba5d9eb0835dfc5bf98d1e[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Mar 13 13:28:26 2018 +0100
+
+    Remove obsolete sample project
+
+[33mcommit c7a25af17e97929456eb5b6882ad7e9b9e32c8b1[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Mar 13 13:28:03 2018 +0100
+
+    Remove Acumatica DLLs
+
+[33mcommit f7df8e4fab17bb41521719dcf428f9e476e6a9f9[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Feb 26 19:12:58 2018 +0300
+
+    roslyn-coloriser: fix to disable reset of custom user's colors during theme changes. Taken from F# github
+
+[33mcommit b6ce911c30726e47222a220a4a9cd48b051e544c[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Feb 22 21:00:43 2018 +0300
+
+    roslyn-coloriser: minor refactoring
+
+[33mcommit 2ce2c92ec8393ce4671d5a43d85ad059765346be[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Feb 22 20:48:06 2018 +0300
+
+    roslyn-coloriser: theme support
+
+[33mcommit f2f34e737c88e42aeef500ef764fd0c22847bccc[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Feb 21 15:31:28 2018 +0300
+
+    roslyn-coloriser: perfomance optimization
+
+[33mcommit 4a1fe7f81b7c631f07978cb4ed541a54a3866837[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Feb 21 14:32:29 2018 +0300
+
+    master: bugfixes and optimizations
+
+[33mcommit a88c23f87bd6f5c12e8cfc196043940bd92a5bc6[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Feb 20 16:31:11 2018 +0300
+
+    roslyn-coloriser: optimization - disabled retrieval of outlining tags if the UseBqlOutlining setting is disabled
+
+[33mcommit 6ddb59f482c38093ce2da067a7b1b0d5b83435a3[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Feb 20 16:25:11 2018 +0300
+
+    roslyn-coloriser: mistype fixed in PXActionColoringEnabled setting
+
+[33mcommit bc2c7eeb08208c82fe02bb47bf7e9bd4ef4d3ddf[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Feb 20 16:13:26 2018 +0300
+
+    roslyn-coloriser: Added option to not color outside of the BQL statements
+
+[33mcommit aa8824a1eb72f5544956d649a828a94bb4b6e9fa[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Feb 20 15:53:45 2018 +0300
+
+    roslyn-coloriser: added options for PXAction and PXGraph coloring
+
+[33mcommit 77450860ab3f9cea0efc41008716fefa60dba4a8[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Feb 20 15:13:08 2018 +0300
+
+    roslyn-coloriser: perfomance optimizations - disposed of boxing in AddOutliningTagToAttribute method, enhenced Join outlining
+
+[33mcommit c22a4efa189c1758da3445da9eaaf3050dc51f53[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Feb 20 14:18:37 2018 +0300
+
+    roslyn-coloriser: perfomance optimization
+
+[33mcommit e63c18af2543c3d8d331f06b2a378d9e6f14725c[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Feb 19 04:28:37 2018 +0300
+
+    roslyn-coloriser: refactoring + optimization of parsing
+
+[33mcommit bf39dbd1d58213215e122aa6660d58d054569fdb[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Feb 16 20:06:20 2018 +0300
+
+    roslyn-coloriser: added coloring for PXAction and PXGraph
+
+[33mcommit da70eafffd987ef63939d6abd2a079446df3c294[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Feb 12 23:18:59 2018 +0300
+
+    roslyn-coloriser: Outlining enhancement and perfomance improvements
+
+[33mcommit 1fe0230bd27223bf36e870af076d48dc7740fd78[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Feb 12 22:38:30 2018 +0300
+
+    roslyn-coloriser: Outlining enhancement - reduce the amount of outlining details and added logic for one liner outlinings for logical conditions
+
+[33mcommit 519b3cc429d7dbb7fb4e07f7339dd923aeb59bb8[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Feb 12 18:55:31 2018 +0300
+
+    roslyn-coloriser: Added check for tagger if  opened solution contains reference to Acumatica libs
+
+[33mcommit 3488aa7cb6e3265df6c59219efa4d8e9fe19984b[m[33m ([m[1;33mtag: v1.1.0[m[33m)[m
+Merge: 27210cd 39b7a07
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Feb 1 20:36:24 2018 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains into feature/roslyn-coloriser
+
+[33mcommit 39b7a0781e3c07efa70633db877fe0127060129d[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Feb 1 20:34:54 2018 +0300
+
+    master: Changed default color for DAC extension
+
+[33mcommit 27210cd49cd91d84cca2966bc95ef21165f82407[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jan 29 17:21:30 2018 +0300
+
+    roslyn-coloriser: Perfomance optimization for coloring - removed unneceessary tags' buffer copying
+
+[33mcommit 203ed09638918c12aaf1c5164d07fccc7366a473[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jan 29 17:20:41 2018 +0300
+
+    roslyn-coloriser: Added outlining tagger and tagger provider which reuses parsed tags via textbuffer Properties
+
+[33mcommit 4694a770ec248f891a88014dcd8a4a3fda3d69e6[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jan 29 17:19:53 2018 +0300
+
+    roslyn-coloriser: Reworked taggers architecture. Created base classes for taggers, separated outlining tagger from coloring tagger
+
+[33mcommit 9cdb60b151e8ec28e58cb11298aa2a0cf54d9379[m
+Merge: 11ff5f5 be2fd73
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jan 29 17:08:00 2018 +0300
+
+    Merge branch 'feature/roslyn-coloriser' of https://stash.acumatica.com/scm/hkn/nobrains into feature/roslyn-coloriser
+
+[33mcommit 11ff5f5a562f832875dcf03e40f4f5d66199fc78[m
+Merge: ec76135 eaeb043
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jan 29 12:06:36 2018 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains into feature/roslyn-coloriser
+
+[33mcommit eaeb0431bcddcec5f2ac2e976ba702e42acdc498[m
+Merge: 16ca82e 2e49f67
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Jan 27 22:11:04 2018 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains
+
+[33mcommit 2e49f67b9f778da0d425e0586482a03dcac5093a[m
+Merge: 9310f91 75caeb6
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Sat Jan 27 19:09:05 2018 +0000
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains
+
+[33mcommit 9310f9118af21af878b9965560b55d3e906bfd83[m
+Merge: 1ab6e50 60a251b
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Sat Jan 27 19:08:50 2018 +0000
+
+    Merge branch 'feature/AC-103229-master-bql-formatting'
+
+[33mcommit 60a251b7ae3b9b971e7651a5a269337086222b15[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Sat Jan 27 13:08:12 2018 -0600
+
+    AC-103229: Fix type info - pass accurate position
+
+[33mcommit 530d0f3de70e38c378af297ff1181de9001aaf1e[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Sat Jan 27 10:44:34 2018 -0600
+
+    AC-103229: Tests for applying BQL formatting to selected nodes only
+
+[33mcommit cff8efbb77e1951c289d10e9015bea78af0aa778[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Sat Jan 27 10:44:20 2018 -0600
+
+    AC-103229: New attribute that can utilize both files and input parameters
+
+[33mcommit 6be53d48e25f6e16c2b99bc4d99ddf1cbeac8e03[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Sat Jan 27 10:43:50 2018 -0600
+
+    AC-103229: Use type info from original semantic model in case if node hasn't been changed
+
+[33mcommit 16ca82e7b1e5f22a1f6b2d3c8834f3a20b12074f[m
+Merge: 1662567 75caeb6
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Jan 27 17:08:07 2018 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains
+
+[33mcommit ec76135f8971d49b7c188e243649bfeb0cda111b[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Jan 27 17:05:26 2018 +0300
+
+    roslyn-coloriser: bugfixes
+
+[33mcommit be2fd73b5032e1b2b38b4b63d5eecdc99d8bb8d8[m
+Merge: e68d972 75caeb6
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Sat Jan 27 03:50:34 2018 +0300
+
+    Merge branch 'master' into feature/roslyn-coloriser
+
+[33mcommit 75caeb6ad431856cc21af4f25fe92b4da24b1421[m
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Sat Jan 27 03:29:33 2018 +0300
+
+    string list anaylzer fix
+
+[33mcommit e68d9727c047e2f1077b635f1274ead519b59882[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jan 26 19:33:58 2018 +0300
+
+    roslyn-coloriser: Very BIG optimization in oulining - reduced the number o taggers andf tagging queries twicely due to reuse of existing tagger via buffer's Properties
+
+[33mcommit 6fd20bb1a79913733779282837142c659ab72ac7[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Jan 26 15:14:36 2018 +0300
+
+    AC-103229: New test case for Search with join
+
+[33mcommit 1ab6e5084da745606f8b79358d4c18e234a3ea28[m
+Merge: c0f092e a3bd87b
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Jan 26 11:09:42 2018 +0000
+
+    Merge branch 'feature/AC-103229-master-bql-formatting'
+
+[33mcommit a3bd87ba914ae50259afe031903bcdd84c264561[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Jan 26 14:09:28 2018 +0300
+
+    AC-103229: Fix for leading trivia with multiple empty lines (multiple EOLs)
+
+[33mcommit 0379816fbcac3a24653035eba3d21511e7ce0673[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Jan 26 14:03:51 2018 +0300
+
+    AC-103229: Remove unused code
+
+[33mcommit ccbec709387556cd45c8a291dbf1e8ccaa687039[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Jan 26 14:03:27 2018 +0300
+
+    AC-103229: Test case for complex leading trivia (multiple empty lines before BQL statement)
+
+[33mcommit 18f94c375556655f343b064d5d40d91c6e700cc3[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jan 26 13:50:15 2018 +0300
+
+    roslyn-coloriser: fixed bug in outlining tagging of attributes with qualified names
+
+[33mcommit c0f092e8f9d82f8d47dba489e575e87c38eb404a[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Jan 26 10:03:51 2018 +0000
+
+    Fix mistake in messages
+
+[33mcommit eb6c3dd16f12fb1b2bb2fb41312436719243f267[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jan 26 13:01:23 2018 +0300
+
+    roslun-coloriser: Added outlining to attributes and refactored coloring
+
+[33mcommit 3bf9cb64c1709c40b29cd33d8423fc594b58e4ae[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jan 25 22:46:22 2018 +0300
+
+    roslyn-coloriser: Added BQL outlining!
+
+[33mcommit 1662567e5997499a5320bf8a01aa48fcc4b95eb6[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jan 25 20:14:42 2018 +0300
+
+    roslyn-coloriser: Added extra brace levels for coloring.
+
+[33mcommit fcfd1b7771b73afc69d5b074b3ab8be571baca52[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jan 25 19:42:03 2018 +0300
+
+    roslyn-colorizer: Added Dac extensions coloring
+
+[33mcommit aa677b27540b3ff471b550dc5d337be0c5600106[m
+Merge: d04e148 a644201
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Jan 25 13:29:24 2018 +0000
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains into feature/AC-103229-master-bql-formatting
+
+[33mcommit d04e1489c45a66b736ce2209e5c14e257ed2e7dc[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Jan 25 16:28:40 2018 +0300
+
+    AC-103229: Format conditions within On statement
+
+[33mcommit 906a01ad96759c19447f3a8359edd201fd01ddb0[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Jan 25 16:25:26 2018 +0300
+
+    AC-103229: Rework conditions formatting to match expected test data
+
+[33mcommit a644201de794e8fb0e429d82b8e175dff14188f4[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jan 25 15:29:30 2018 +0300
+
+    master: fixed merge conflict
+
+[33mcommit e3d5a4f0dd57ffaf769847bde6b24552270b66a6[m
+Merge: 358aab7 07af502
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jan 25 15:26:49 2018 +0300
+
+    Merge branch 'feature/roslyn-coloriser' of https://stash.acumatica.com/scm/hkn/nobrains
+
+[33mcommit 07af502eb55400960b800001a26ed276c679f303[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Jan 25 15:23:47 2018 +0300
+
+    roslyn-colorizer: async tagging
+
+[33mcommit 306fa90aef940d9eaf94a9851e314fcb95a6f01e[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Jan 25 15:06:34 2018 +0300
+
+    AC-103229: Tests: new format for conditions
+
+[33mcommit 8b4c26f2c4ef42d5c60c1ced0ed8ef2446d1cd12[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Jan 25 14:31:58 2018 +0300
+
+    AC-103229: Format conditions
+
+[33mcommit 83d8ec3422265888f39f8830860a5c35f36efc48[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Jan 25 14:05:56 2018 +0300
+
+    AC-103229: Increment VSIX version from 1.0 to 1.1
+
+[33mcommit 41ddaf504209d1f919e7b81ffa6ba437189b0d66[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Jan 25 12:35:28 2018 +0300
+
+    AC-103229: Move On statement on new line using nested rewriters
+
+[33mcommit e567d6ee99fb4e02830f13acd85da843cbb267c4[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Jan 24 23:37:48 2018 +0300
+
+    AC-103229: Keep and restore previous trivia when applying trivia scope
+
+[33mcommit 4c96a76af54f0c845bdeb2f59c90db4852499125[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Jan 24 23:28:48 2018 +0300
+
+    AC-103229: Correctly indent several GroupBy and several aggregate functions
+
+[33mcommit 27255c1f7902a8c3753b93d65b5823efa4985e40[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Jan 24 18:54:34 2018 +0300
+
+    roslyn-coloriser: added async and sync tag caches
+
+[33mcommit b0d7f6f3314df59edceb31e1798a5a6784e2390c[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Jan 24 18:29:51 2018 +0300
+
+    AC-103229: Use OriginalDefinition to analyze inheritance for speculative symbols; Aggregate/GroupBy support
+
+[33mcommit ec071529f2f92595e0671d281ad99bd41fd761c7[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Jan 24 18:18:08 2018 +0300
+
+    editor-utils-integration: finished with the EditorUtils integration
+
+[33mcommit f05dc4dd95a7faae3e3781f6109574cc8f9e4b66[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Jan 24 18:13:30 2018 +0300
+
+    editor-utils-integration: Added tags cache
+
+[33mcommit 1d02e46e188869f11cc5210a43ae184692d75c0e[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Jan 24 17:44:15 2018 +0300
+
+    AC-103229: Use Equals to compare type symbols because reference comparison is not valid in this case; special method for generic inheritance
+
+[33mcommit 358aab7a052116330724fbbc08aea98b40ac15d6[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Jan 24 17:18:01 2018 +0300
+
+    master: added extension methods and tools  for VS editor classes
+
+[33mcommit c56221b6b8b80247416e7f57900ce512e67da606[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Jan 24 17:15:02 2018 +0300
+
+    editor-utils-integration: more fixes
+
+[33mcommit fded31bef6dbebeca9e0cfd0b3457b5d51af1eac[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Jan 24 17:07:35 2018 +0300
+
+    editor-utils-integration: switched to C# 7.2. Merged EditorUtils extension methods in project and refactored them
+
+[33mcommit 217acc7bd6dfe50e536aab745b66f5f5f996857e[m
+Merge: f4cd440 9d4d140
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Jan 24 14:14:52 2018 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains into feature/editor-utils-integration
+
+[33mcommit 9d4d1406c81b09c467009370171e450da03da7d8[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Jan 24 14:13:38 2018 +0300
+
+    master: Changed No Brains to Acuminator in color settings
+
+[33mcommit f4cd440ea677014783d720c9d6fa3c959efe2019[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Jan 24 14:10:44 2018 +0300
+
+    editor-utils-integration: more work on async tagging
+
+[33mcommit 39e1c01fb579d51f385e9ecea41a9b1f544e3da3[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Jan 24 13:34:03 2018 +0300
+
+    AC-103229: Aggregate & GroupBy support
+
+[33mcommit b8bcbdf709ab4829afe0bdd34fd5cf1cad912cdf[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Jan 24 13:12:37 2018 +0300
+
+    AC-103229: New test case for group by
+
+[33mcommit 1fb02011bf5c753293aa0ed41ebc7ee36c97a0d9[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Jan 24 12:09:24 2018 +0300
+
+    AC-103229: Do not use common source file because there is no need for DAC definitions to perform formatting
+
+[33mcommit e64d1fb42b4a9e10511d7e4e2a0df75b4b673424[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Jan 24 12:07:05 2018 +0300
+
+    AC-103229: New test case for complex BQL query
+
+[33mcommit 956ca3bef120142e05b66fa3f693e1fb69d12a42[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Jan 24 11:53:52 2018 +0300
+
+    AC-103229: Do not touch variable declarations outside BQL statement calls
+
+[33mcommit 19b11150848e2723e459148b3f3f220478e4a90b[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Jan 24 11:40:51 2018 +0300
+
+    AC-103229: Use Roslyn to update the document - fixes selection restore issue; format all selected nodes instead of parent one
+
+[33mcommit ad6355fccb96cee0ddad38281102288f799ed6e7[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Jan 24 07:27:57 2018 +0300
+
+    AC-103229: Add additional dependencies because VS requires it to run the formatter
+
+[33mcommit 5305363d5239bae63a8087622cc871bcf0f1b1f5[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Jan 23 23:07:43 2018 +0300
+
+    AC-103229: Support for Join statements
+
+[33mcommit c303a08ac8e2ccafb09c8ea1f6895a397f3138f7[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Jan 23 23:07:31 2018 +0300
+
+    AC-103229: Additional test data
+
+[33mcommit f793196e0756167d72f942f377db393277ac81bc[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Jan 23 22:24:05 2018 +0300
+
+    AC-103229: Ability to share the code between the tests
+
+[33mcommit 2d57b2f03bc942741323b5e9157cbb80be5a1811[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Jan 23 21:46:41 2018 +0300
+
+    AC-103229: Avoid double formatting
+
+[33mcommit d90edbda1e6073c91513118abda501d2c93f4c89[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Jan 23 21:11:17 2018 +0300
+
+    AC-103229: Replace whole syntax node with trivia
+
+[33mcommit 9538925d2dda25df889382683da7c749cecb8c4d[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Jan 23 21:08:21 2018 +0300
+
+    AC-103229: Unformatted BQL in demo
+
+[33mcommit c6918c01a6637d4b9df3328b9ed2b51257d3b1db[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Jan 23 19:49:37 2018 +0300
+
+    AC-103229: Fix test data
+
+[33mcommit 8a9291c0dc8cb1ece6541f9f2f8acf290ed31d08[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Jan 23 19:46:22 2018 +0300
+
+    AC-103229: Move function call for static BQL declaration to the next line with the dot token
+
+[33mcommit 44df5c31611a3475b11dd1085d9b7103d35c9f87[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Jan 23 19:25:45 2018 +0300
+
+    AC-103229: Advanced algorithm for calculating default trivia: use tokens instead of nodes because we need ability to work with partial tree
+
+[33mcommit cb5e2a316301889e73d09e8aa9a4c9efced955b0[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Jan 23 18:40:27 2018 +0300
+
+    AC-103229: Move identifier name in view declaration to a new line
+
+[33mcommit 9a38235406a517426b8444bc91d1ced7bfa6bbf9[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Jan 23 17:50:04 2018 +0300
+
+    AC-103229: Use nested rewriters
+
+[33mcommit 63c3581f14a5a8789fdc6fb7c030c84cf884d42f[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Jan 23 16:14:34 2018 +0300
+
+    AC-103229: Use speculative type info and one-step rewriter to format BQL
+
+[33mcommit 6817e118e30b0ddb2bdcd65e009f9252cb2c98df[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Jan 23 11:59:50 2018 +0300
+
+    AC-103229: Organize files with test data
+
+[33mcommit 341cd542b4c86d20e72b2aeebc85c7802ed55c78[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Jan 23 11:56:51 2018 +0300
+
+    AC-103229: Ability to set a proper path to a file with test data
+
+[33mcommit d6d8123c804e45bc8eb1fb6bd32a2a6c41f889b0[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Jan 23 10:40:20 2018 +0300
+
+    AC-103229: Indent Select call
+
+[33mcommit df35a6b6351fd3e41febb1c4231f693652ad132e[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Jan 23 10:35:15 2018 +0300
+
+    AC-103229: Fix test data
+
+[33mcommit 2d796b6344918b4798105248b81d7fc3f2805799[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Jan 23 10:05:59 2018 +0300
+
+    AC-103229: Use stack to provide nested indentation
+
+[33mcommit 83a43c979a45cd4c26006936581fd13bf4bb195b[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Jan 23 08:53:39 2018 +0300
+
+    AC-103229: Get indentation from parent
+
+[33mcommit 8cc24b36a441bc400fe9fd9e1906ca72a2ce9e50[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Jan 22 23:56:27 2018 +0300
+
+    AC-103229: Collect trivia changes to keep ability to map original node to the changes; Asc/Desc support
+
+[33mcommit 552fca059a0cc3135cc44742d7c9e3542cb75615[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Jan 22 16:37:38 2018 +0300
+
+    AC-103229: Fix test data
+
+[33mcommit 1f65db7bb32195dad777a40b3693f3a3f3ba0cf2[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Jan 22 16:29:24 2018 +0300
+
+    AC-103229: Multiple fields for OrderBy statement
+
+[33mcommit 127983337159612df8885eca9951bef1739a3fcc[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Jan 22 16:22:19 2018 +0300
+
+    AC-103229: BQL View - move field name to a new line and indent it
+
+[33mcommit 47006f9ec3a66bd84e3493209fcbaabb36edbb69[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Jan 22 15:48:57 2018 +0300
+
+    AC-103229: Join/OrderBy support
+
+[33mcommit 642967dcd81c121dbb59254eb789ba478c84a646[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Jan 22 15:36:48 2018 +0300
+
+    AC-103229: Remove obsolete code
+
+[33mcommit 4c104c08ba993ef88b16149d6480a9a0d2227e2d[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Jan 22 15:35:36 2018 +0300
+
+    AC-103229: Format BQL in two passes: collect changes on the first pass and apply them on the second pass because we lose semantic model otherwise
+
+[33mcommit 0a5be65d4742f246bc775b7a3a3dca1a480ecc37[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Jan 22 14:06:45 2018 +0300
+
+    AC-103229: Where in BQL Context
+
+[33mcommit c1ec75013a0b00b90758986a3e4deed833bec92e[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Jan 22 10:33:51 2018 +0300
+
+    AC-103229: Fix for gettind default trivia for BQL in attributes
+
+[33mcommit 7ca47e35ee3d0f755eb1ffa366c50082c0e63005[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Jan 22 00:04:15 2018 +0300
+
+    editor-utils-integration: first step to the editor utils integration
+
+[33mcommit 35e6e14caa79e408ce4f579334a907cbfea8b8cb[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Sun Jan 21 18:31:40 2018 +0300
+
+    AC-103229: Check types based on interfaces - see comments in the code
+
+[33mcommit fef402ff6190f5c45b67ed7e808c3dbb34eef1f3[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Sun Jan 21 18:29:36 2018 +0300
+
+    AC-103229: Rename test method
+
+[33mcommit ccc899debe5ba80fafffc52eb3246bc56599de85[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Sun Jan 21 14:43:52 2018 +0300
+
+    AC-103229: Replace original trivia to avoid double formatting
+
+[33mcommit 9cc5d9e616e547abf4996d02f405e0fc97b07e9d[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Sun Jan 21 14:05:44 2018 +0300
+
+    AC-103229: Test data for different cases: view declaration, BQL in attribute and static access to BQL command
+
+[33mcommit ebedef59af4251072a5c25522420660e3d68aba8[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Sun Jan 21 14:05:20 2018 +0300
+
+    AC-103229: When looking for default leading trivia, stop at the right moment
+
+[33mcommit 3541e1a4b805e620cbd87d0b51f43b1920475cc9[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Sun Jan 21 13:51:14 2018 +0300
+
+    AC-103229: Copy leading trivia from BQL declaration to children nodes
+
+[33mcommit 941a2807ad75aa0ff689928e3b95e600642c7a5b[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Sun Jan 21 12:06:17 2018 +0300
+
+    AC-103229: Use non-elastic trivia
+
+[33mcommit 233b26befc02ebe42b2834b33ab1ecbf660199f3[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Sun Jan 21 12:04:53 2018 +0300
+
+    AC-103229: Trivial algorithm for formatting Select/Search/PXSelect node with first DAC reference using nested rewriters
+
+[33mcommit a5a91277e752da2705c6a1cf618d8a7c48fa0df7[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Jan 19 18:36:55 2018 +0300
+
+    AC-103229: Do not use elastic trivia because we want to force our formatting
+
+[33mcommit 78081147cfb0bcfe504fc38f5875048bb7a321e8[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Jan 19 14:50:02 2018 +0300
+
+    master: Changed default colors for BQL coloring and corrected label names
+
+[33mcommit 2f8921089a28a63dae3947bb1245ce75163ac8ff[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Jan 19 13:52:57 2018 +0300
+
+    AC-103229: Use VS text editor settings
+
+[33mcommit fe41912701a0df640a1b791e17f48a4553ceca11[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Jan 19 13:52:47 2018 +0300
+
+    AC-103229: Append/Prepend enumerable & array extension methods
+
+[33mcommit 5c292d2dd38c6e8a233f644639adaa5f6dfe8682[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Jan 19 11:33:26 2018 +0300
+
+    AC-103229: Simple caret position restoration
+
+[33mcommit 2c455927272999130226f1e65084b0e134b18551[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Jan 18 23:54:04 2018 +0300
+
+    AC-103229: Restore selection after formatting
+
+[33mcommit 99bbd51db56b1a987381fbc1307f103121d37d69[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Jan 18 17:40:14 2018 +0300
+
+    AC-103229: Proof of concept for Roslyn infrastructure and tests
+
+[33mcommit 5786806ff12c4eaaa0106b919c6191cdd0cb6e8c[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Jan 18 17:03:05 2018 +0300
+
+    AC-103229: Formatter skeleton; replacement actions
+
+[33mcommit 1f0429fdd9e7f2696eb7f7a269b394b3edddc491[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Jan 18 16:03:54 2018 +0300
+
+    AC-103229: Fix nullref
+
+[33mcommit e5e523b4baa7b4c96f8d9dc61b193e3b8fc595cf[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Jan 18 15:47:30 2018 +0300
+
+    AC-103229: Fix package GUID and command visibility
+
+[33mcommit f92febecbcbea823563647d844d8a553758b3681[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Jan 18 15:27:01 2018 +0300
+
+    AC-103229: Use DynamicVisibility to control command visibility because ProvideAutoLoad attribute doesn't work properly; basic code for getting Roslyn syntax tree
+
+[33mcommit 23fef0accae5cd7eba83815d4edb60d21421375d[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Jan 18 14:17:46 2018 +0300
+
+    AC-103229: Remove merge artifacts
+
+[33mcommit a5e5fa156b982e2d108e31f421ad8806264f3fdf[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Jan 18 14:17:20 2018 +0300
+
+    AC-103229: Ignore git merge artifacts
+
+[33mcommit e4bd1cc4b44ba777019e64174e4c8d69cbef25fb[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Jan 18 14:16:14 2018 +0300
+
+    AC-103229: 'Format BQL Statements' command
+
+[33mcommit 379baa5ed73c5dd5a4d19d284a91fcc3d826fbe1[m
+Merge: 0ab6c65 24a279b
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Jan 17 19:51:40 2018 +0300
+
+    Merge branch 'feature/roslyn-coloriser' of https://stash.acumatica.com/scm/hkn/nobrains
+
+[33mcommit 0ab6c65308206d8cfcae8c1dc9a922126763199e[m[33m ([m[1;31morigin/feature/AC-102912-master[m[33m)[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Jan 15 20:18:11 2018 +0300
+
+    AC-102912: Additional test for false-positive check
+
+[33mcommit 13ee31d89cf1c505d7b120360a5e217d560a4ec7[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Jan 15 20:15:25 2018 +0300
+
+    AC-102912: Code fix for PX1014
+
+[33mcommit 041abd4cea7410f6cc1a2be47833ff846732f3ef[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Jan 15 20:10:21 2018 +0300
+
+    AC-102912: Fix: use another technic for determing nullable types
+
+[33mcommit 34960cfa1261b2854e2e1e0e1304ff723b1673b4[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Jan 15 19:41:24 2018 +0300
+
+    AC-102912: Analyzer implementation
+
+[33mcommit 3e593c99c5ee1d401df4dfd80d054d9b49c46109[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Jan 15 19:41:16 2018 +0300
+
+    AC-102912: Fix test data (add IBqlField interface)
+
+[33mcommit 8f63084651bee0e602fb8989af9d8e4732c65f46[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Jan 15 19:37:20 2018 +0300
+
+    AC-102912: IBqlField symbol
+
+[33mcommit d1247a3abe81fab43ad64eb0e9c84784e7367bc5[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Jan 15 19:37:07 2018 +0300
+
+    AC-102912: Ability to check if type implements an interface
+
+[33mcommit 5c82e348e05cfa0489db226846dbb5e799127d71[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Jan 15 17:05:07 2018 +0300
+
+    AC-102912: Include PX1014 example
+
+[33mcommit b37f613b751b4cb947502ae59bd80be5048c0dbf[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Jan 15 16:38:06 2018 +0300
+
+    AC-102912: PX1014: skeleton
+
+[33mcommit 1ca9f1e23c766e21df40dd7c6d98d926b210511b[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Jan 15 15:06:07 2018 +0300
+
+    AC-103063: Remove diagnostic for PXCache.CreateInstance because it is not completely valid in terms of business application
+
+[33mcommit 24a279b4dca866fed55b125c3080f5a56c75b1e7[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Dec 25 14:39:15 2017 +0300
+
+    roslyn-coloriser: Fixes in taggers to support coloring refresh on settings change
+
+[33mcommit 954e702ebcb87ea8b9d6aed1e29d49d9c38cb3ea[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Dec 20 13:12:59 2017 +0300
+
+    roslyn-coloriser: changes to support miltiple VS versions
+
+[33mcommit 1e072470d68b49826a284fc69cdc6eecb98bd9f0[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Dec 19 15:31:16 2017 +0300
+
+    roslyn-coloriser: added Acuminator options to  VS settings
+
+[33mcommit a3ea08661ffc17cb77b61050c2d45d07bd611a75[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Dec 19 11:40:56 2017 +0300
+
+    Revert "roslun-coloriser: added nuget packages to support extension of settings UI in VS"
+    
+    This reverts commit bb9a581adef91355765573044361d83befd53738.
+
+[33mcommit bb9a581adef91355765573044361d83befd53738[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Dec 18 16:30:05 2017 +0300
+
+    roslun-coloriser: added nuget packages to support extension of settings UI in VS
+
+[33mcommit 31bcae024f7405951e86760d5f263777bc4d183a[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Dec 18 12:53:48 2017 +0300
+
+    roslyn-coloriser: Added settings. Setted specific VSEditor attributes on tagger provider to improve perfomance/disable analysis of not related documents. Changed tagger provider from ITaggerProvider to IViewTaggerProvider with some minor checks to improve perfomance. Disabled tokens cache for parser due to its unstability.
+
+[33mcommit d66404e32dca3bfdd012f9917a795ab2bdfa3a84[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Dec 3 15:26:42 2017 +0300
+
+    roslyn-coloriser: added caching
+
+[33mcommit 8aade2112a409336ac074e8374886377c87a8d82[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Nov 2 19:11:48 2017 +0300
+
+    roslyn-coloriser: minor fixes to skip more xml comment nodes
+
+[33mcommit 6cc1fe40686c598572ba20e6d3e137c0aef7843e[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Nov 2 01:51:23 2017 +0300
+
+    roslyn-coloriser: minor bugfixes - support for non generic BQL operators
+
+[33mcommit 36c83fd39493d26e1e265b0787a85e980eb602dd[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Nov 1 02:17:04 2017 +0300
+
+    roslyn-coloriser: Added brace coloring!!! Fixed minor issue - coloring of xml comments.
+
+[33mcommit 669f41360400ab533df1fbc88cf4d547ada3bf25[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Nov 1 01:03:59 2017 +0300
+
+    roslyn-coloriser: fixed minor bug
+
+[33mcommit 0817a0960564cf413c7fd1d64bbd92c0e0dc414d[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Oct 31 23:57:41 2017 +0300
+
+    roslyn-coloriser: Added support for joins. Minor fixes
+
+[33mcommit 50da87c5950c743ec7f04dfbeee54fb298396b2c[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Oct 31 12:54:23 2017 +0300
+
+    roslyn-coloriser: Added constants support
+
+[33mcommit d859aa7abbccf3d6df2b1428ae835bf0d09af6cd[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Oct 31 05:10:01 2017 +0300
+
+    roslyn-coloriser: added coloring
+
+[33mcommit 2bf298e1945bac83da928d203c441b8a32c98d3c[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Oct 30 18:29:57 2017 +0300
+
+    roslyn-coloriser: Add color for DAC and DAC fields
+
+[33mcommit 05bc6756c7166e5ddbd3cddfb48c3bd5a00b1283[m
+Merge: b857701 eeb1fee
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Oct 29 23:19:33 2017 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains into feature/roslyn-coloriser
+
+[33mcommit b8577010dfbee5b630349c4b201d1582e7a237cc[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Oct 29 23:18:21 2017 +0300
+
+    coloriser: refactor
+
+[33mcommit eeb1feedaf34410272f28c698527ea823d29539b[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Oct 25 12:31:09 2017 +0300
+
+    master: added strong names to assemblies
+
+[33mcommit e63152ae102453f62ad60560fc9e298c3271ce6a[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Oct 25 01:21:58 2017 +0300
+
+    roslyn-coloriser: restore signing
+
+[33mcommit a089eda5df0465d174662fb0d325c61862523f46[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Mon Oct 23 04:39:40 2017 +0300
+
+    roslyn-coloriser: removed dependency on PX.Analysers.Analysers due to requirement for referenced assemblies to have a strong name. Copied needed code to the VSIX project. Added references to PX.Data and PX.Common
+    Reorginised and refactored VSIX project.
+
+[33mcommit 2a253456cb454563850343a6a62b908d6c6d6d12[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Oct 20 04:34:50 2017 +0300
+
+    roslyn-coloriser: Some work on coloring
+
+[33mcommit b7509dd7877723634ad84b2cc435e1aab1464c8e[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Oct 19 04:10:10 2017 +0300
+
+    roslyn-coloriser: added base class
+
+[33mcommit 20e8a883d02957f04707025bf2d533ec677ecdd7[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Oct 11 03:28:44 2017 +0300
+
+    roslyn-coloriser: succesfuly added roslyn
+
+[33mcommit 6ebba38adbb7401bd2bc6cc5684fa6215a6018b0[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Oct 11 03:12:25 2017 +0300
+
+    roslyn-coloriser: Added nuget packages for roslyn and roslyn tagger
+
+[33mcommit 15009a5e124cc84cf3a54d6f40aa7e2f60a79863[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Oct 10 10:09:33 2017 +0300
+
+    master: reorginize vsix
+
+[33mcommit 591e5bf7ab9bc589ba06a1915ec30dc61bdbf28b[m[33m ([m[1;33mtag: v1.0.0[m[33m)[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 22 17:48:35 2017 +0300
+
+    proj changes
+
+[33mcommit 9fd68189751645cccbd3d010e59b591a084bee69[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 22 17:43:21 2017 +0300
+
+    Mark source files as embedded resources
+
+[33mcommit 68307906f9cf1069be706cf4eff008bc360f844f[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 22 17:41:17 2017 +0300
+
+    Fix false-positive diagnostic for PXAction handlers with parameters
+
+[33mcommit 428a67788b3a7fdd2e3f01471e67eb21818be0c4[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 22 17:32:04 2017 +0300
+
+    PX1009 has been included into unit tests
+
+[33mcommit 0967d1bec85f9904c8938392275ba75bf40ddfa4[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 22 17:30:26 2017 +0300
+
+    Fix for false-positive diagnostic for PXMappedCacheExtension and derived types.
+
+[33mcommit 50123fbab8c8a918888271b8da19543472866043[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 22 17:18:41 2017 +0300
+
+    Tests for PXMappedCacheExtension case
+
+[33mcommit 8321209e531dbfec95f3814932c523d96a28e280[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 22 17:18:25 2017 +0300
+
+    Fix unit tests - default severity has been changed
+
+[33mcommit 64cb8ebccd2873dab4dddad0ee80b60503e53f6f[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 22 17:17:21 2017 +0300
+
+    Replace binaries from 5.3 with 2017R2 Beta
+
+[33mcommit b01e91b4b3d5fc1a9d259f3ab3e977a2a067329a[m
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Fri Sep 22 16:33:01 2017 +0300
+
+    love ya, visual studio, love ya to death
+
+[33mcommit f299175d1ba7c8ee1f0188212ac6e8d9b8e588a6[m
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Fri Sep 22 16:30:31 2017 +0300
+
+    samples and severity fix
+
+[33mcommit fb7a61cf3d9ac39a839c53d73c5f29e3127e1994[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 21 15:20:38 2017 +0300
+
+    Sign dll
+
+[33mcommit 006ebdacfb3190f32ee3c992d9228f3f5c133088[m
+Merge: 1b6c991 15c6888
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 21 14:32:05 2017 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains
+
+[33mcommit 1b6c9910192915f3bcc1880612735208fd74b09c[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 21 14:31:54 2017 +0300
+
+    License and key
+
+[33mcommit 15c6888f1f1d9fab6d736546e647948cbf961658[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Sep 19 18:49:40 2017 +0300
+
+    master: commented BQL format diagostic, codefix provider and test to exclude them from release build
+
+[33mcommit d41973dabe47c281880910f85a5d4d839546c0c3[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Sep 18 17:01:47 2017 +0300
+
+    Better description
+
+[33mcommit 2080d10bcfdebb4989157133a69addd9c99ca1fc[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Sep 18 16:53:54 2017 +0300
+
+    Actual information for the manifest (including icon).
+
+[33mcommit 2679f53a19eec30c62361599237e64585d2a639a[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Sep 18 15:28:08 2017 +0300
+
+    Change diagnostic severity for PX1007 (factory method for DAC) from Warning to Info
+
+[33mcommit abadaebffa41fa319262b8acd673f2eb9de0c1d5[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Sep 15 01:51:11 2017 +0300
+
+    master: update of reg expressions
+
+[33mcommit 9e70f557f3ce57dacecb809e1a2ded430668baf4[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Sep 14 16:53:07 2017 +0300
+
+    master: minor changes
+
+[33mcommit 2ea122494ac44d47997d1600dbfba28148425448[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Sep 14 02:15:19 2017 +0300
+
+    master: added support for preprocessor excluded code and refactored multithreading
+
+[33mcommit f346cf66a99b9af4121534f8d0e4b2a7b7e06c13[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Sep 13 21:34:18 2017 +0300
+
+    master: fixed bug in VS with hanging when cursor is on the outlined objects (collapsed regions)
+
+[33mcommit 05f8190779b62ad9bd4b3b8160953e436d3fad51[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Sep 13 04:50:48 2017 +0300
+
+    mater: Bql code fiex - first version, still raw
+
+[33mcommit 914d71b266617afa48010fb0206c6d0da55c7c10[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Wed Sep 13 04:19:57 2017 +0300
+
+    master: Added support for comments - real fix
+
+[33mcommit 2bab97ebb351a550a51565c648d3c31f7a1371ff[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Sep 12 03:57:11 2017 +0300
+
+    master: corrected comments support
+
+[33mcommit befc08c0e3caf58556149f59efdaccadbfb9c173[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Sep 12 01:46:35 2017 +0300
+
+    master: coloriser - changed parallel execution from PLINQ to Parallel.Foreach
+
+[33mcommit 39bda7302d9dab786af7b344cb234d9362d7b6c9[m
+Merge: 70d7ec8 933e9b5
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Sep 12 01:33:07 2017 +0300
+
+    Merge pull request #1 in HKN/nobrains from feature/bql-format to master
+    
+    * commit '933e9b5ddfd65ac89411a2cf2efe1864fad9f165':
+      bql-format: changed regex to compiled
+      bql-format: Improvement in regex
+      bql-format: coloriser improvement
+      bql-format: played with c# 7 features and helpers
+      bql-format: work on bql format
+      bql-format: changed nuget packets version to lower for vs 2015 support.
+      bql-format changes
+      master: regex fix
+
+[33mcommit 933e9b5ddfd65ac89411a2cf2efe1864fad9f165[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Tue Sep 12 01:31:06 2017 +0300
+
+    bql-format: changed regex to compiled
+
+[33mcommit 7f6c04e0eeda5caaeec048daea7b4ed9f544da6e[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Sep 10 19:47:05 2017 +0300
+
+    bql-format: Improvement in regex
+
+[33mcommit f1b8fc4ca612f6cb994d65493b18431d4d507de2[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sun Sep 10 01:48:04 2017 +0300
+
+    bql-format: coloriser improvement
+
+[33mcommit 5675ee0223f55553a0433daaf2c3111b17414aa4[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Sep 9 22:36:52 2017 +0300
+
+    bql-format: played with c# 7 features and helpers
+
+[33mcommit 8e87179b47a509da6540c0d08c8a5a6ad1846d9f[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Sep 9 22:12:09 2017 +0300
+
+    bql-format: work on bql format
+
+[33mcommit bdd6101de77604d751be80c14f39c114e9c179b1[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Sep 9 22:11:15 2017 +0300
+
+    bql-format: changed nuget packets version to lower for vs 2015 support.
+
+[33mcommit 2cf28d25c9422219badc39a37c817ff2539e36e9[m
+Merge: a03b3e2 2eb5fd7
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Sep 9 21:36:06 2017 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains into feature/bql-format
+
+[33mcommit 70d7ec8d30adb1d72a819318ff02a400c1f77f74[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Sat Sep 9 21:18:06 2017 +0300
+
+    master: fixed dependencies to work with 2015 VS
+
+[33mcommit a03b3e25314a82eda7221f017c68c14e16a7e273[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Sep 8 11:55:41 2017 +0300
+
+    bql-format changes
+
+[33mcommit 91e1c01af340194b9b5fc21aa9521b6220b73148[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Sep 8 08:59:01 2017 +0300
+
+    master: regex fix
+
+[33mcommit 2eb5fd72fc53ddbb974f434b038fbfeb6ec27f63[m
+Merge: f77ba99 0b4494a
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 8 08:54:13 2017 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains
+
+[33mcommit f77ba997e003f7435feb8cb9725a82e5c151884c[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 8 08:53:52 2017 +0300
+
+    Additional fixes and samples
+
+[33mcommit 0b4494ad770470374a4cc63ea702a83f4d02da82[m
+Merge: 6ee935f 8bed607
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Sep 8 08:38:35 2017 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains
+
+[33mcommit 6ee935f3b049843dad70e836fba37e87d756364a[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Sep 8 08:38:01 2017 +0300
+
+    master: fixed regex
+
+[33mcommit 8bed607470744c81ac511f68c62f7becc28ebcee[m
+Merge: f86067a 170a903
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 8 07:40:42 2017 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains
+
+[33mcommit f86067abc37542bcee7709bfd1b7cb4ec36b713e[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 8 07:40:28 2017 +0300
+
+    Sample project
+
+[33mcommit 170a903cac3eb2990830aae5dbd5d50a184f3895[m
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Fri Sep 8 07:38:05 2017 +0300
+
+    test
+
+[33mcommit d7bfde2db47f9ab403eff4918accfdfb9e597195[m
+Merge: fdaa36b edba4fe
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Fri Sep 8 07:30:51 2017 +0300
+
+    Merge branch 'master' of ssh://stash.acumatica.com:7999/hkn/nobrains
+
+[33mcommit fdaa36be93ac48aa7c4dda7a94a2619060ba42a6[m
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Fri Sep 8 07:30:48 2017 +0300
+
+    types for view order
+
+[33mcommit edba4fe639833075c063ae486fae59d32ca3b82d[m
+Merge: 5706f9c a73c7ad
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 8 07:18:52 2017 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains
+
+[33mcommit 5706f9c3dc08f4bb596e777115f4bd01581a368c[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 8 07:18:38 2017 +0300
+
+    Fix: Add Cast expression
+
+[33mcommit a73c7add95d2bccd94ccd24f9b6e08278b7c7b96[m
+Merge: ae3cb8c 06aa811
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Sep 8 06:54:34 2017 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains
+
+[33mcommit ae3cb8cd208dbd16002230a60d96fe24d66a7043[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Sep 8 06:53:52 2017 +0300
+
+    master: fixed background
+
+[33mcommit 06aa811f859941d36c459d5e28b7dda541770493[m
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Fri Sep 8 06:49:25 2017 +0300
+
+    mistype
+
+[33mcommit 9577f89153b4b32e502fda45be91cd0706ad0703[m
+Merge: 7d4c6cd 535c562
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 8 05:58:58 2017 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains
+
+[33mcommit 7d4c6cd65ec11fb080d171d7bd5754d56a074ce2[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 8 05:58:45 2017 +0300
+
+    Fix for false-positive PXCacheExtension system types match
+
+[33mcommit 535c56215b6b81b74b7d59059f2dcb5039c0d436[m
+Merge: 8059d66 525f058
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Fri Sep 8 05:57:33 2017 +0300
+
+    Merge branch 'master' of ssh://stash.acumatica.com:7999/hkn/nobrains
+
+[33mcommit 8059d66368e613f0689ed82b8cadef4ba2603d18[m
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Fri Sep 8 05:57:30 2017 +0300
+
+    startswith seledct
+
+[33mcommit f292c0f9523e930c14f83d7c9c467c3aaf927c5b[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 8 05:55:30 2017 +0300
+
+    Fix for false-positive delegate match
+
+[33mcommit 525f058c394004781c931531bd3941da102076e9[m
+Merge: 33897b8 94a4d6b
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Sep 8 05:01:19 2017 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains
+
+[33mcommit 94a4d6b376bc3ff30ed057851ef739b88a0a460e[m
+Merge: a0b0763 bb07459
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Fri Sep 8 05:01:06 2017 +0300
+
+    Merge branch 'master' of ssh://stash.acumatica.com:7999/hkn/nobrains
+
+[33mcommit a0b07639132de7ccb2ac01dfdcc7b13d6f7b11c4[m
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Fri Sep 8 05:01:02 2017 +0300
+
+    handle multiple memeberaccesses
+
+[33mcommit 33897b8d2cc54a0d07af5a4f2ad0abde94aa31e4[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Sep 8 05:00:49 2017 +0300
+
+    master: deleted redundant file
+
+[33mcommit 6b903003b773611e738b9348a75acf0c1a106ab5[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Sep 8 04:59:52 2017 +0300
+
+    master: Fixes and enhancement to Bql diagnostics
+
+[33mcommit bb07459a7c4b95804948f093f3ff4cb15e6cf87a[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 8 04:48:09 2017 +0300
+
+    Fix: don't apply diagnostic for overriden view delegate methods
+
+[33mcommit d82030f1f911c53c3598812a6e44f8d2f29c4254[m
+Merge: 6e2f5a8 736a53a
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Fri Sep 8 04:15:14 2017 +0300
+
+    Merge branch 'master' of ssh://stash.acumatica.com:7999/hkn/nobrains
+
+[33mcommit 6e2f5a8f6e82d790733eec270b2a40494b750268[m
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Fri Sep 8 04:15:12 2017 +0300
+
+    tests
+
+[33mcommit 736a53a414f613967ed71ec5c63336efe9c2b718[m
+Merge: d7d48cf 4fb3d3a
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Sep 8 02:38:54 2017 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains
+
+[33mcommit d7d48cf6948a7c3f8b3e9dc57c54088d5060416f[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Sep 8 02:38:34 2017 +0300
+
+    master: Coloriser regex fixes
+
+[33mcommit 4fb3d3a45f77f3fb8af7077a4df05d9fedccd33d[m
+Merge: 29b6f3c ba8680c
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 8 02:23:41 2017 +0300
+
+    merge
+
+[33mcommit 29b6f3c3731de4c82fff0ca9ba98d95feb3ea183[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 8 02:20:14 2017 +0300
+
+    PX1011: class that inherits from PXCacheExtension should be marked as sealed (diagnostic and code fix)
+
+[33mcommit ba8680c52e4bbbd2c0c52abeb50de9c38bc5b064[m
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Fri Sep 8 02:05:00 2017 +0300
+
+    nameof
+
+[33mcommit 1bd1f2a325630bf0ec51bc52a1e09c90e2240af5[m
+Merge: a5ff379 e304bbb
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Fri Sep 8 01:51:02 2017 +0300
+
+    Merge branch 'master' of ssh://stash.acumatica.com:7999/hkn/nobrains
+
+[33mcommit a5ff3794ecaf8285dd1e78fc3193fbec41c2a9ca[m
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Fri Sep 8 01:48:13 2017 +0300
+
+    start row in delegate check
+
+[33mcommit e304bbbfac9606cb9c083aadd5f265756de3556b[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 8 01:12:06 2017 +0300
+
+    Merge fixes; remove unused file
+
+[33mcommit 81e87d3242d6b228d15ab4009c43632c46af59e8[m
+Merge: 466e968 c4490fe
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 8 01:09:40 2017 +0300
+
+    merge
+
+[33mcommit 466e968fe7c8e43d3b36f6feafb40e1f4f85390a[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Fri Sep 8 01:03:10 2017 +0300
+
+    PX1009 multiple levels of inheritance for PXCacheExtensions: diagnostic and code fix
+
+[33mcommit c4490fe367ed967134e21efa6a57947444f35595[m
+Merge: 454e0b5 3d35bd0
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Sep 8 00:17:38 2017 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains
+
+[33mcommit 454e0b58189b51d7ca1b21dfb5563b6521a2e30e[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Sep 8 00:11:36 2017 +0300
+
+    master: BQL DIagnostic
+
+[33mcommit e3e617c8b201bb317d2253d4ce6f99de177b8280[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Fri Sep 8 00:11:16 2017 +0300
+
+    mater: Enhanced coloriser
+
+[33mcommit 3d35bd0f5dd6a932da02e8e1808d30f5c1513282[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 23:16:24 2017 +0300
+
+    Fix: PX1004 and PX1006 (view declaration order) must be warnings
+
+[33mcommit 1c387ac28e39fbb7207bfe93eb4a38cc23e90ec7[m
+Merge: 121e2fb af71836
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 23:13:52 2017 +0300
+
+    merge
+
+[33mcommit 121e2fb8cbecc48c595e68bc7cfdb332603da4cd[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 22:54:32 2017 +0300
+
+    PX1007 DAC constructor / factory method diagnostic and code fix
+
+[33mcommit af718367d87976478b8e08657ebad7e70e4a0dfa[m
+Merge: 53949e3 64bec87
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Thu Sep 7 22:11:52 2017 +0300
+
+    Merge branch 'master' of ssh://stash.acumatica.com:7999/hkn/nobrains
+
+[33mcommit 53949e359b8c81c18e4003649a745e3791617f3b[m
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Thu Sep 7 22:11:50 2017 +0300
+
+    long operation delegate tests
+
+[33mcommit 64bec8782c53b74654aa94b6f37b75830963aad8[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 19:59:31 2017 +0300
+
+    Add using according to alphabetical sort order
+
+[33mcommit 4f3faca9025085d574b4f33dbe604682c0d440e3[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 19:39:23 2017 +0300
+
+    Use control flow analysis to determine if we need to append return statement
+
+[33mcommit 5f4e5c07653cd9e93db50b0482424d78ad7f4a10[m
+Merge: 7f247fb c5ece58
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 18:19:04 2017 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains
+
+[33mcommit 7f247fbb45caa16e5acbaf1cb9f83001b4b0c9b1[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 18:18:34 2017 +0300
+
+    Fix formatting in PXAction fix
+
+[33mcommit c5ece581b8a214d62d9703bfb929dc551706c091[m
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Thu Sep 7 18:11:49 2017 +0300
+
+    view order tests
+
+[33mcommit 6d75aa1f2ce86125c1f21402a55bc44a549daa87[m
+Merge: 968c97a 337f636
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Thu Sep 7 17:57:39 2017 +0300
+
+    Merge branch 'master' of ssh://stash.acumatica.com:7999/hkn/nobrains
+
+[33mcommit 968c97a98411da976a88f13b5ad29ee456c8e55e[m
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Thu Sep 7 17:56:06 2017 +0300
+
+    view declaratino analyzer
+
+[33mcommit 337f63624fbab17862df3dea36fd4bc97df80e32[m
+Merge: 31d8f75 58ae91a
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 17:36:36 2017 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains
+
+[33mcommit 31d8f755f33eafc6402fb8ec0d618593b5bac90e[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 17:36:21 2017 +0300
+
+    PX1005 diagnostic - code fix
+
+[33mcommit 58ae91a3f8cd3a4f399c391a1b7ae747bdd4b5aa[m
+Merge: dc2360a f03ccbf
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Sep 7 17:04:17 2017 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains
+
+[33mcommit dc2360a8029cb2157bb8abc3c061b2c09ab273a1[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Sep 7 17:03:58 2017 +0300
+
+    master: dirty coloriser
+
+[33mcommit f03ccbf2c0c8cefc3791496ba4989d2fee5bbba3[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 16:54:22 2017 +0300
+
+    PX1005 diagnostic - additional test
+
+[33mcommit 5c3ba6b22663184f018af417d141b5f95f59fe29[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 16:52:05 2017 +0300
+
+    PX1005 diagnostic - complex test
+
+[33mcommit f2c3b25a0880d715ca9a911608e84c2fa0cc849b[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 16:21:21 2017 +0300
+
+    PX1005 diagnostic (typo in view delegate name)
+
+[33mcommit 39895b51b87b3cacb9f4a62a443d1f0b7db58bb5[m
+Merge: 7dcb739 4e0f98e
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 15:19:01 2017 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains
+
+[33mcommit 7dcb739f541f139925751e07f8179701b58a4a30[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 15:18:48 2017 +0300
+
+    Additional warning for non-specific PXGraph creation
+
+[33mcommit 4e0f98eb6f795b0e210bdf90804405c03db23952[m
+Merge: a85451c af0e69a
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Thu Sep 7 15:04:08 2017 +0300
+
+    Merge branch 'master' of ssh://stash.acumatica.com:7999/hkn/nobrains
+
+[33mcommit a85451cfa5fefbb32e4efcf3e5ee4a6026df0df4[m
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Thu Sep 7 15:03:37 2017 +0300
+
+    missing list attr tests
+
+[33mcommit af0e69a0653d3667e5a2a10cb0b99c13fdb82330[m
+Merge: ebdaad1 184a737
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 14:49:05 2017 +0300
+
+    Merge
+
+[33mcommit ebdaad1f12f9375d8f49f6e7e36e1226fffb998d[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 14:47:40 2017 +0300
+
+    PX1001 graph creation - code fix
+
+[33mcommit 184a737e11beed8a0830ee87d07ddde4d4f1793e[m
+Merge: 9b6fb06 e300347
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Thu Sep 7 14:38:33 2017 +0300
+
+    Merge branch 'master' of ssh://stash.acumatica.com:7999/hkn/nobrains
+
+[33mcommit 9b6fb0654345636c463780ac6c62e2e06a3b596f[m
+Author: Ilyas Tazitdinov <itazitdinov@acumatica.com>
+Date:   Thu Sep 7 14:34:12 2017 +0300
+
+    missing list attribute diagnostic
+
+[33mcommit e300347bc9dda9f6a8e962f52cabd14a4521fe1a[m
+Merge: 77f1419 2fadeff
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 13:53:05 2017 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains
+
+[33mcommit 77f1419dd7d66e18f226cfee6282b09bae374aae[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 13:52:57 2017 +0300
+
+    PX1001 diagnostic (create graph with factory method); remove pre-installed diagnostic
+
+[33mcommit 2fadeff3c92c755533e178e8f9635aff038921f3[m
+Merge: 2b7f9a1 6232356
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Sep 7 11:50:20 2017 +0300
+
+    Merge branch 'master' of https://stash.acumatica.com/scm/hkn/nobrains
+
+[33mcommit 2b7f9a1da121456e2aedde84e66bf48a0caf12a4[m
+Author: Sergey Nikomarov <snikomarov@acumatica.com>
+Date:   Thu Sep 7 11:49:32 2017 +0300
+
+    master: Added references for coloriser
+
+[33mcommit 62323561764b81030b1f848b480dcce641a8e268[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 11:39:19 2017 +0300
+
+    Restructure the project
+
+[33mcommit e6b33173dd0cfcbf8a1346d3b836188465f621eb[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 11:35:49 2017 +0300
+
+    Use types instead of hardcoded strings
+
+[33mcommit 12f74686f0784c8efa9dc5bc844294197fe3b44e[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 11:31:40 2017 +0300
+
+    Add references to PX.Data and PX.Common
+
+[33mcommit 6f9ece40720676b0c167321b949424566856e321[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 11:08:02 2017 +0300
+
+    NetTools DLLs (5.3U30)
+
+[33mcommit c16b695b3228d7253e59d5c3d3baec432f1ad8d5[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Thu Sep 7 11:05:31 2017 +0300
+
+    Upgrade solution
+
+[33mcommit 0fb66b39f2ab6ec8998badbcfdfafffaf8cee7e6[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Sep 6 15:15:09 2017 +0100
+
+    Advanced code fix; unit tests
+
+[33mcommit dca518e51e3bcf24981bc5c4e0c4a0b65f034dd8[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Wed Sep 6 12:40:45 2017 +0100
+
+    Check in forgotten files; move unit tests to xUnit
+
+[33mcommit 5846cc9905e8c20119ec349eab099f4d95d85deb[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Tue Sep 5 16:11:26 2017 +0100
+
+    Initial commit - PXAction signature diagnostic & code fix
+
+[33mcommit 1126b00a513b122d8db897b52dc5399bdff2fe25[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Sep 4 16:12:15 2017 +0300
+
+    Add project files.
+
+[33mcommit 9c5e6974e3926d4e4ef77fc3ab3eb365fbe39956[m
+Author: Vladimir Panchenko <vpanchenko@acumatica.com>
+Date:   Mon Sep 4 16:12:13 2017 +0300
+
+    Add .gitignore and .gitattributes.

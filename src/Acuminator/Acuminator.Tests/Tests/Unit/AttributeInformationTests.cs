@@ -52,7 +52,7 @@ namespace Acuminator.Tests
 				var attributes = typeSymbol.GetAttributes();
 				foreach (var attribute in attributes)
 				{
-					var attributeInformation = new AttributeInformation(pxContext, semanticModel);
+					var attributeInformation = new AttributeInformation(pxContext);
 					var defaultAttribute = semanticModel.Compilation.GetTypeByMetadataName("PX.Data.PXDefaultAttribute");
 					actual.Add(attributeInformation.AttributeDerivedFromClass(attribute.AttributeClass, defaultAttribute));
 				}
