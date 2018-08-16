@@ -38,7 +38,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 			if (attributes.Length == 0)
 				return false;
 
-			INamedTypeSymbol hiddenAttribute = dacFinder.PxContext.PXHiddenAttribute;
+			INamedTypeSymbol hiddenAttribute = dacFinder.PxContext.AttributeTypes.PXHiddenAttribute;
 			bool hasHiddenAttribute = attributes.Any(a => a.AttributeClass.Equals(hiddenAttribute));
 
 			if (hasHiddenAttribute)
@@ -46,7 +46,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 			else if (dacFinder.GraphViewSymbolsWithTypes.Length <= 1 || dacFinder.CancellationToken.IsCancellationRequested)
 				return false;
 
-			INamedTypeSymbol copyPasteHiddenViewAttribute = dacFinder.PxContext.PXCopyPasteHiddenViewAttribute;
+			INamedTypeSymbol copyPasteHiddenViewAttribute = dacFinder.PxContext.AttributeTypes.PXCopyPasteHiddenViewAttribute;
 			return attributes.Any(a => a.AttributeClass.InheritsFromOrEquals(copyPasteHiddenViewAttribute));
 		}
 	}

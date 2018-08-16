@@ -22,12 +22,13 @@ namespace Acuminator.Analyzers
 		public BQLSymbols BQL => bql.Value;
 
 		private readonly Lazy<FieldAttributesTypes> fieldAttributes;
-
 		public FieldAttributesTypes FieldAttributes => fieldAttributes.Value;
 
 		private readonly Lazy<PXSystemActionTypes> systemActionTypes;
-
 		public PXSystemActionTypes PXSystemActions => systemActionTypes.Value;
+
+		private readonly Lazy<AttributesTypes> attributes;
+		public AttributesTypes AttributeTypes => attributes.Value;
 
 
 
@@ -76,20 +77,8 @@ namespace Acuminator.Analyzers
 		public INamedTypeSymbol IPXResultsetType => Compilation.GetTypeByMetadataName(typeof(IPXResultset).FullName);
 		public INamedTypeSymbol PXResult => Compilation.GetTypeByMetadataName(typeof(PXResult).FullName);
 
-        public INamedTypeSymbol PXImportAttribute => Compilation.GetTypeByMetadataName(typeof(PXImportAttribute).FullName);
-        public INamedTypeSymbol PXHiddenAttribute => Compilation.GetTypeByMetadataName(typeof(PXHiddenAttribute).FullName);
-        public INamedTypeSymbol PXCopyPasteHiddenViewAttribute => Compilation.GetTypeByMetadataName(typeof(PXCopyPasteHiddenViewAttribute).FullName);
-        
-        public INamedTypeSymbol PXStringListAttribute => Compilation.GetTypeByMetadataName(typeof(PXStringListAttribute).FullName);
-        public INamedTypeSymbol PXIntListAttribute => Compilation.GetTypeByMetadataName(typeof(PXIntListAttribute).FullName);
-        public INamedTypeSymbol IPXLocalizableList => Compilation.GetTypeByMetadataName(typeof(IPXLocalizableList).FullName);
-
-        public INamedTypeSymbol PXEventSubscriberAttribute => Compilation.GetTypeByMetadataName(typeof(PXEventSubscriberAttribute).FullName);
-        public INamedTypeSymbol PXFieldState => Compilation.GetTypeByMetadataName(typeof(PXFieldState).FullName);
-        public INamedTypeSymbol PXAttributeFamily => Compilation.GetTypeByMetadataName(typeof(PXAttributeFamilyAttribute).FullName);
-		public INamedTypeSymbol PXAggregateAttribute => Compilation.GetTypeByMetadataName(typeof(PXAggregateAttribute).FullName);
-		public INamedTypeSymbol PXDynamicAggregateAttribute => Compilation.GetTypeByMetadataName(typeof(PXDynamicAggregateAttribute).FullName);
-        
+		public INamedTypeSymbol PXFieldState => Compilation.GetTypeByMetadataName(typeof(PXFieldState).FullName);
+		public INamedTypeSymbol IPXLocalizableList => Compilation.GetTypeByMetadataName(typeof(IPXLocalizableList).FullName);
 
         public PXContext(Compilation compilation)
         {
@@ -99,6 +88,7 @@ namespace Acuminator.Analyzers
 										() => new FieldAttributesTypes(Compilation));
             systemActionTypes = new Lazy<PXSystemActionTypes>(
 										() => new PXSystemActionTypes(Compilation));
+			attributes = new Lazy<AttributesTypes>(() => new AttributesTypes(Compilation));
 
 			IsAcumatica2018R2 = PXSelectBase2018R2NewType != null;
 		}
@@ -152,6 +142,33 @@ namespace Acuminator.Analyzers
             public INamedTypeSymbol PXDBUserPasswordAttribute => compilation.GetTypeByMetadataName(typeof(PXDBUserPasswordAttribute).FullName);
             #endregion
         }
+		#endregion
+		#region Attributes Types
+		public class AttributesTypes
+		{
+			private readonly Compilation compilation;
+
+			public AttributesTypes(Compilation aCompilation)
+			{
+				compilation = aCompilation;
+			}
+
+
+			public INamedTypeSymbol PXImportAttribute => compilation.GetTypeByMetadataName(typeof(PXImportAttribute).FullName);
+			public INamedTypeSymbol PXHiddenAttribute => compilation.GetTypeByMetadataName(typeof(PXHiddenAttribute).FullName);
+			public INamedTypeSymbol PXCopyPasteHiddenViewAttribute => compilation.GetTypeByMetadataName(typeof(PXCopyPasteHiddenViewAttribute).FullName);
+
+			public INamedTypeSymbol PXStringListAttribute => compilation.GetTypeByMetadataName(typeof(PXStringListAttribute).FullName);
+			public INamedTypeSymbol PXIntListAttribute => compilation.GetTypeByMetadataName(typeof(PXIntListAttribute).FullName);
+
+			public INamedTypeSymbol PXEventSubscriberAttribute => compilation.GetTypeByMetadataName(typeof(PXEventSubscriberAttribute).FullName);
+			public INamedTypeSymbol PXAttributeFamily => compilation.GetTypeByMetadataName(typeof(PXAttributeFamilyAttribute).FullName);
+			public INamedTypeSymbol PXAggregateAttribute => compilation.GetTypeByMetadataName(typeof(PXAggregateAttribute).FullName);
+			public INamedTypeSymbol PXDynamicAggregateAttribute => compilation.GetTypeByMetadataName(typeof(PXDynamicAggregateAttribute).FullName);
+			public INamedTypeSymbol PXDefaultAttribute => compilation.GetTypeByMetadataName(typeof(PXDefaultAttribute).FullName);
+			public INamedTypeSymbol PXUnboundDefaultAttribute => compilation.GetTypeByMetadataName(typeof(PXUnboundDefaultAttribute).FullName);
+
+		}
 		#endregion
 
 		#region System Actions Types

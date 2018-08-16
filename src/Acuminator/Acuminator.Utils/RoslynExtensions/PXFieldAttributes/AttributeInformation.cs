@@ -46,8 +46,8 @@ namespace Acuminator.Utilities
 
 			//get symbols from PXContext
 			//PX.Data.PXAggregateAttribute and PX.Data.PXDynamicAggregateAttribute
-			var aggregateAttribute = _context.PXAggregateAttribute;
-			var dynamicAggregateAttribute = _context.PXDynamicAggregateAttribute;
+			var aggregateAttribute = _context.AttributeTypes.PXAggregateAttribute;
+			var dynamicAggregateAttribute = _context.AttributeTypes.PXDynamicAggregateAttribute;
 
 			if (ContainsBaseType(attributeSymbol, aggregateAttribute) || ContainsBaseType(attributeSymbol, dynamicAggregateAttribute))
 			{

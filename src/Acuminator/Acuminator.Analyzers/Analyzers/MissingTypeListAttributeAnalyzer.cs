@@ -54,7 +54,7 @@ namespace Acuminator.Analyzers
                 return;
 
             var systemObject = context.Compilation.GetTypeByMetadataName(typeof(System.Object).FullName);
-            while (!listAttribute.BaseType.Equals(pxContext.PXEventSubscriberAttribute) &&
+            while (!listAttribute.BaseType.Equals(pxContext.AttributeTypes.PXEventSubscriberAttribute) &&
                    !listAttribute.BaseType.Equals(systemObject))
                 listAttribute = listAttribute.BaseType;
             //hardcode

@@ -43,8 +43,8 @@ namespace Acuminator.Analyzers
             var pxContext = new PXContext(semanticModel.Compilation);
 
             var lists = new List<INamedTypeSymbol> {
-                                    pxContext.PXIntListAttribute,
-                                    pxContext.PXStringListAttribute};
+                                    pxContext.AttributeTypes.PXIntListAttribute,
+                                    pxContext.AttributeTypes.PXStringListAttribute};
 
             var property = semanticModel.GetDeclaredSymbol(propertyDeclaration);
             var attributeClasses = property.GetAttributes().
@@ -53,11 +53,11 @@ namespace Acuminator.Analyzers
                     FirstOrDefault(c => lists.Any(l => c.InheritsFromOrEquals(l, true)));
 
             AttributeSyntax attr = null;
-            if (listAttribute.InheritsFromOrEquals(pxContext.PXIntListAttribute))
+            if (listAttribute.InheritsFromOrEquals(pxContext.AttributeTypes.PXIntListAttribute))
             {
                 attr = SyntaxFactory.Attribute(SyntaxFactory.IdentifierName(pxContext.FieldAttributes.PXIntAttribute.Name));
             }
-            else if (listAttribute.InheritsFromOrEquals(pxContext.PXStringListAttribute))
+            else if (listAttribute.InheritsFromOrEquals(pxContext.AttributeTypes.PXStringListAttribute))
             {
                 attr = SyntaxFactory.Attribute(SyntaxFactory.IdentifierName(pxContext.FieldAttributes.PXStringAttribute.Name));
             }
