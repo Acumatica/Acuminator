@@ -188,8 +188,6 @@
     <EmbeddedResource Include="Sources\Dac\PX1030\CodeFixes\DacExtensionWithBoundFields_Expected.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1030\CodeFixes\DacExtensionWithUnboundFields_Expected.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1030\Diagnostics\DacExtensionWithUnboundFields.cs" />
-    <EmbeddedResource Include="Sources\Dac\PX1030\Diagnostics\AggregateAttributeDefine.cs" />
-    <EmbeddedResource Include="Sources\Dac\PX1030\Diagnostics\DacAggregateAttributes.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1030\Diagnostics\DacWithBoundAndUnboundFields.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1030\Unit\AggregateAttributeInformationTest.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1030\Unit\AttributeInformationSimpleDacTest.cs" />

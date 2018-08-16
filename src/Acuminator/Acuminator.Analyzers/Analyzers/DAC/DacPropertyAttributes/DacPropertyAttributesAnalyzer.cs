@@ -82,7 +82,7 @@ namespace Acuminator.Analyzers
 				   property.Type.TypeKind == TypeKind.Array;
 		}
 
-		public static List<(AttributeData Attribute, FieldAttributeInfo Info)> GetFieldAttributesInfos(PXContext pxContext,
+		private static List<(AttributeData Attribute, FieldAttributeInfo Info)> GetFieldAttributesInfos(PXContext pxContext,
 																									   ImmutableArray<AttributeData> attributes,
 																									   CancellationToken cancellationToken)
 		{
@@ -156,7 +156,7 @@ namespace Acuminator.Analyzers
 			}
 		}
 
-		public static async Task<Location> GetAttributeLocationAsync(AttributeData attribute, CancellationToken cancellationToken)
+		private static async Task<Location> GetAttributeLocationAsync(AttributeData attribute, CancellationToken cancellationToken)
 		{
 			SyntaxNode attributeSyntaxNode = null;
 
@@ -178,7 +178,7 @@ namespace Acuminator.Analyzers
 			return attributeSyntaxNode?.GetLocation();
 		}
 
-		public static async Task<Location> GetPropertyTypeLocationAsync(IPropertySymbol property, CancellationToken cancellationToken)
+		private static async Task<Location> GetPropertyTypeLocationAsync(IPropertySymbol property, CancellationToken cancellationToken)
 		{
 			SyntaxNode propertySyntaxNode = null;
 			var syntaxRefs = property.DeclaringSyntaxReferences;
