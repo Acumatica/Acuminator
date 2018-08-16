@@ -36,14 +36,15 @@ namespace Acuminator.Analyzers
 				return Task.FromResult(false);
 
 			FieldAttributesRegister fieldAttributesRegister = new FieldAttributesRegister(pxContext);
-			var allTasks = dacOrDacExt.GetMembers()
-									  .OfType<IPropertySymbol>()
-									  .Select(property => CheckDacPropertyAsync(property, symbolContext, pxContext, fieldAttributesRegister));
+			Task[] allTasks = dacOrDacExt.GetMembers()
+										 .OfType<IPropertySymbol>()
+										 .Select(property => CheckDacPropertyAsync(property, symbolContext, pxContext, fieldAttributesRegister))
+										 .ToArray();
 
 			return Task.WhenAll(allTasks);
 		}
 
-		private static async Task CheckDacPropertyAsync(IPropertySymbol property, SymbolAnalysisContext symbolContext, PXContext pxContext, 
+		private static async Task CheckDacPropertyAsync(IPropertySymbol property, SymbolAnalysisContext symbolContext, PXContext pxContext,
 														FieldAttributesRegister fieldAttributesRegister)
 		{
 			ImmutableArray<AttributeData> attributes = property.GetAttributes();
@@ -100,8 +101,8 @@ namespace Acuminator.Analyzers
 			return fieldInfosList;
 		}
 
-		private static Task CheckAttributeAndPropertyTypesForCompatibility(IPropertySymbol property, AttributeData fieldAttribute, 
-																		   FieldAttributeInfo fieldAttributeInfo, PXContext pxContext, 
+		private static Task CheckAttributeAndPropertyTypesForCompatibility(IPropertySymbol property, AttributeData fieldAttribute,
+																		   FieldAttributeInfo fieldAttributeInfo, PXContext pxContext,
 																		   SymbolAnalysisContext symbolContext)
 		{
 			if (fieldAttributeInfo.FieldType == null)                                                               //PXDBFieldAttribute case
@@ -116,7 +117,7 @@ namespace Acuminator.Analyzers
 				if (!(property.Type is INamedTypeSymbol namedPropertyType))
 					return null;
 
-				typeToCompare = namedPropertyType.IsNullable(pxContext) 
+				typeToCompare = namedPropertyType.IsNullable(pxContext)
 									? namedPropertyType.GetUnderlyingTypeFromNullable(pxContext)
 									: namedPropertyType;
 			}
@@ -185,7 +186,7 @@ namespace Acuminator.Analyzers
 		{
 			SyntaxNode propertySyntaxNode = await property.GetSyntaxAsync(cancellationToken)
 														  .ConfigureAwait(false);
-			
+
 			return propertySyntaxNode is PropertyDeclarationSyntax propertyDeclarationSyntax
 				? propertyDeclarationSyntax.Type.GetLocation()
 				: property.Locations.FirstOrDefault();
