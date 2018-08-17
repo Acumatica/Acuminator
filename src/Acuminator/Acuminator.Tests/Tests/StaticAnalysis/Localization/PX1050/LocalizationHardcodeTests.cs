@@ -9,7 +9,7 @@ namespace Acuminator.Tests
 {
     public class LocalizationHardcodeTests : DiagnosticVerifier
     {
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new LocalizationAnalyzer();
+        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new LocalizationInvocationAnalyzer();
 
         private DiagnosticResult CreatePX1050DiagnosticResult(int line, int column)
         {

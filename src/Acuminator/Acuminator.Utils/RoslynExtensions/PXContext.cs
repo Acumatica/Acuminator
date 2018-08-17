@@ -88,6 +88,8 @@ namespace Acuminator.Analyzers
         public INamedTypeSymbol PXFieldState => Compilation.GetTypeByMetadataName(typeof(PXFieldState).FullName);
         public INamedTypeSymbol PXAttributeFamily => Compilation.GetTypeByMetadataName(typeof(PXAttributeFamilyAttribute).FullName);
 
+        public INamedTypeSymbol PXException => Compilation.GetTypeByMetadataName(typeof(PXException).FullName);
+
         public ImmutableArray<ISymbol> StringFormat => String.GetMembers(nameof(string.Format));
         public ImmutableArray<ISymbol> StringConcat => String.GetMembers(nameof(string.Concat));
 

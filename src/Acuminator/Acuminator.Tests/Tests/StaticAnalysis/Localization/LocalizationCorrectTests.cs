@@ -8,7 +8,7 @@ namespace Acuminator.Tests
 {
     public class LocalizationCorrectTests : DiagnosticVerifier
     {
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new LocalizationAnalyzer();
+        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new LocalizationInvocationAnalyzer();
 
         [Theory]
         [EmbeddedFileData(@"Localization\LocalizationCorrect.cs",

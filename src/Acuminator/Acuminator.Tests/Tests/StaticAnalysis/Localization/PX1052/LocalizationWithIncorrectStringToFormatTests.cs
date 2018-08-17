@@ -9,7 +9,7 @@ namespace Acuminator.Tests
 {
     public class LocalizationWithIncorrectStringToFormatTests : DiagnosticVerifier
     {
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new LocalizationAnalyzer();
+        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new LocalizationInvocationAnalyzer();
 
         private DiagnosticResult CreatePX1052DiagnosticResult(int line, int column)
         {

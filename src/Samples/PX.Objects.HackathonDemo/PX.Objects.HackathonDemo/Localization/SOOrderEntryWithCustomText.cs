@@ -10,10 +10,16 @@ namespace PX.Objects.HackathonDemo
             if (!(e.Row is SOOrder row) || string.IsNullOrEmpty(row.OrderNbr))
                 return;
 
-            SOOrderExt rowExt = sender.GetExtension<SOOrderExt>(row);
+            ChangeDisplayName(sender, row);
+        }
 
-            if (rowExt == null)
-                return;
+        private void ChangeDisplayName(PXCache cache, SOOrder row)
+        {
+            if (cache == null)
+                throw new PXArgumentException(nameof(cache), "incorrect PXCache value");
+
+            if (row == null)
+                throw new PXArgumentException(nameof(row), "incorrect SOOrder value");
 
             string newDisplayName = null;
 
@@ -37,7 +43,7 @@ namespace PX.Objects.HackathonDemo
             if (string.IsNullOrEmpty(newDisplayName))
                 return;
 
-            PXUIFieldAttribute.SetDisplayName<SOOrderExt.customText>(sender, newDisplayName);
+            PXUIFieldAttribute.SetDisplayName<SOOrderExt.customText>(cache, newDisplayName);
         }
     }
 }

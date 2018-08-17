@@ -10,7 +10,7 @@ using System.Threading;
 namespace Acuminator.Analyzers
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class LocalizationAnalyzer : PXDiagnosticAnalyzer
+    public class LocalizationInvocationAnalyzer : PXDiagnosticAnalyzer
     {
         private const string _formatRegExp = @"(?<Par>{(\w+|:+)})";
         private SyntaxNodeAnalysisContext _syntaxContext;
@@ -30,8 +30,7 @@ namespace Acuminator.Analyzers
                 Descriptors.PX1050_HardcodedStringInLocalizationMethod,
                 Descriptors.PX1051_NonLocalizableString,
                 Descriptors.PX1052_IncorrectStringToFormat,
-                Descriptors.PX1053_ConcatinationPriorLocalization,
-                Descriptors.PX1054_HardcodedStringInPXExceptionConstructor
+                Descriptors.PX1053_ConcatinationPriorLocalization
             );
 
         internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
