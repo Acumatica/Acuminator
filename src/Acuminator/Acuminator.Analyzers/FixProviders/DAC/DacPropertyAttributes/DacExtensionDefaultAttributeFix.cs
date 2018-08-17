@@ -22,28 +22,31 @@ namespace Acuminator.Analyzers.FixProviders
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
 	public class DacExtensionDefaultAttributeFix : CodeFixProvider
 	{
+		private const string _PXUnboundDefaultAttributeName = "PXUnboundDefault";
+		private const string _PXPersistingCheck = nameof(PXPersistingCheck);
+		private const string _PersistingCheck = nameof(PXDefaultAttribute.PersistingCheck);
+		private const string _PersistingCheckNothing = nameof(PXPersistingCheck.Nothing);
+
+
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1030_DefaultAttibuteToExisitingRecords.Id);
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-		public override Task RegisterCodeFixesAsync(CodeFixContext context)
+		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			return Task.Run(() =>
-			{
-				var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1030_DefaultAttibuteToExisitingRecords.Id);
+			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1030_DefaultAttibuteToExisitingRecords.Id);
 
-				if (diagnostic == null)
-					return;
+			if (diagnostic == null)
+				return;
 
-				string codeActionName = nameof(Resources.PX1030Fix).GetLocalized().ToString();
-				CodeAction codeAction =
-					CodeAction.Create(codeActionName,
-									  cToken => ReplaceIncorrectDefaultAttribute(context.Document, context.Span, diagnostic.IsBoundField(),cToken),
-									  equivalenceKey: codeActionName);
+			string codeActionName = nameof(Resources.PX1030Fix).GetLocalized().ToString();
+			CodeAction codeAction =
+				CodeAction.Create(codeActionName,
+									cToken => ReplaceIncorrectDefaultAttribute(context.Document, context.Span, diagnostic.IsBoundField(),cToken),
+									equivalenceKey: codeActionName);
 
-				context.RegisterCodeFix(codeAction, context.Diagnostics);
-			}, context.CancellationToken);
+			context.RegisterCodeFix(codeAction, context.Diagnostics);
 		}
 
 		private async Task<Document> ReplaceIncorrectDefaultAttribute(Document document, TextSpan span, bool isBoundField,CancellationToken cancellationToken)
@@ -52,31 +55,33 @@ namespace Acuminator.Analyzers.FixProviders
 
 			 if (!(root?.FindNode(span) is AttributeSyntax attributeNode))
 				return document;
+
 			if (!(attributeNode.Parent is AttributeListSyntax attributeList))
 				return document;
-			if (cancellationToken.IsCancellationRequested)
-				return document;
+
+			cancellationToken.ThrowIfCancellationRequested();
 
 			SyntaxGenerator generator = SyntaxGenerator.GetGenerator(document);
-			var memberAccessExpression = generator.MemberAccessExpression(generator.IdentifierName("PXPersistingCheck"), generator.IdentifierName("Nothing"));
 
-			var persistingAttributeArgument = generator.AttributeArgument("PersistingCheck", memberAccessExpression) as AttributeArgumentSyntax;
-
-			var pxUnboundDefaultAttribute = generator.Attribute("PXUnboundDefault") as AttributeListSyntax;
+			var memberAccessExpression = generator.MemberAccessExpression(generator.IdentifierName(_PXPersistingCheck),
+																		  generator.IdentifierName(_PersistingCheckNothing));
+			var persistingAttributeArgument = generator.AttributeArgument(_PersistingCheck, 
+																		  memberAccessExpression) as AttributeArgumentSyntax;
+			var pxUnboundDefaultAttribute = generator.Attribute(_PXUnboundDefaultAttributeName) as AttributeListSyntax;
 			
 			SyntaxNode modifiedRoot;
+
 			if (isBoundField)
 			{
 				if (attributeNode.ArgumentList != null)
 				{
 					var persistingCheckArguments = from arguments in attributeNode.ArgumentList.Arguments
-													where arguments.GetText().ToString().Contains("PersistingCheck")
+													where arguments.GetText().ToString().Contains(_PersistingCheck)
 													select arguments;
-					//if attribute contains PersistingCheck
+					
 					if (persistingCheckArguments.Any())
 					{
 						AttributeArgumentSyntax argument = persistingCheckArguments.First();
-						
 						persistingAttributeArgument = argument.ReplaceNode(argument.Expression, memberAccessExpression);
 						var newAttributeNode = attributeNode.ReplaceNode(argument, persistingAttributeArgument);
 						var newAttributeList = attributeList.ReplaceNode(attributeNode, newAttributeNode);
@@ -84,31 +89,20 @@ namespace Acuminator.Analyzers.FixProviders
 					}
 					else
 					{
-						//SyntaxNode newAttributeList = generator.AddAttributes(new AttributeListSyntax(), new SyntaxNode);
 						var newAttributeList = generator.AddAttributeArguments(attributeNode, new SyntaxNode[] { persistingAttributeArgument }) as AttributeListSyntax;
-						//var newAttributeList = attributeList.ReplaceNode(attributeNode, newAttributeNode);
 						modifiedRoot = root.ReplaceNode(attributeNode, newAttributeList.Attributes[0]);
 					}
-
-/*					SyntaxNode newAttributeNode = generator.InsertAttributeArguments(attributeNode, 1, new SyntaxNode[] { persistingAttributeArgument });
-					
-					//var newAttribute = generator.InsertAttributeArguments(attributeNode, 1, new SyntaxNode[] { persistingAttributeArgument });
-					modifiedRoot = root.ReplaceNode(attributeNode, newAttributeNode);*/
 				}
 				else
 				{
 					AttributeListSyntax newAttribute = generator.InsertAttributeArguments(attributeNode, 1, new SyntaxNode[] { persistingAttributeArgument }) as AttributeListSyntax;
 					modifiedRoot = root.ReplaceNode(attributeNode, newAttribute.Attributes[0]);
 				}
-			
-				
 			}
 			else
 			{
 				modifiedRoot = root.ReplaceNode(attributeNode, pxUnboundDefaultAttribute.Attributes[0]);
 			}
-
-			
 
 			return document.WithSyntaxRoot(modifiedRoot);
 		}

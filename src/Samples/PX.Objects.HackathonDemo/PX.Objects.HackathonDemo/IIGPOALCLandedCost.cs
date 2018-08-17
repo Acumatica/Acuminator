@@ -7,7 +7,6 @@ using PX.Data;
 
 namespace PX.Objects.HackathonDemo
 {
-	[PXPrimaryGraph(typeof(IIGPOALCLandedCostEntry)), PXCacheName("Containers")]
 	public class IIGPOALCLandedCost : IBqlTable
 	{
 		#region Selected
