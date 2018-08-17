@@ -253,9 +253,9 @@
     <value>DAC properties cannot contain method invocations</value>
   </data>
   <data name="PX1030Fix" xml:space="preserve">
-    <value>Replace with the PXUnboundDefaultAttribute or set PersistingCheck to Nothing</value>
+    <value>For an unbound field, replace with PXUnboundDefaultAttribute; for a bound field, set PersistingCheck of PXDefaultAttribute to Nothing</value>
   </data>
   <data name="PX1030Title" xml:space="preserve">
-    <value>Incorrect PXDefaultAttribute to exisiting field </value>
+    <value>The PXDefault attribute of the field is used incorrectly</value>
   </data>
 </root>

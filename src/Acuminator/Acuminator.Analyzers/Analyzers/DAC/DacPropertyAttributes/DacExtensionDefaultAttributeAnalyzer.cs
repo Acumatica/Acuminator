@@ -42,21 +42,19 @@ namespace Acuminator.Analyzers
 			if (attributes.Length == 0 || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			//var attributesWithInfo = DacPropertyAttributesAnalyzer.GetFieldAttributesInfos(pxContext, attributes, symbolContext.CancellationToken);
-			//attributes.ToArray()[1].AttributeClass
+			
 
 			if (symbolContext.CancellationToken.IsCancellationRequested)
 				return;
-			//if (attributesWithInfo.First().Info.IsBoundField) 
+			
 			bool isBoundField = attributeInformation.AreBoundAttributes(attributes.Select(a => a.AttributeClass).ToList());
-			if (isBoundField)//field is DBBound
+			if (isBoundField)
 			{
 				if (IsIBqlTableTypeImplementation(property, pxContext)) // BQLTable class bound field
 					return;
 				foreach (var attribute in attributes)
 				{
 					var typesHierarchy = attribute.AttributeClass.GetBaseTypesAndThis();
-					//if (typesHierarchy.Contains(symbolContext.Compilation.GetTypeByMetadataName(typeof(PXDefaultAttribute).FullName)))
 					if(typesHierarchy.Contains(pxContext.AttributeTypes.PXDefaultAttribute))
 					{
 						foreach (var argument in attribute.NamedArguments)
@@ -69,10 +67,9 @@ namespace Acuminator.Analyzers
 
 						if (attributeLocation != null)
 						{
-							var diagnosticProperties = new Dictionary<string, string>
-						{
-							{ DiagnosticProperty.IsBoundField, isBoundField.ToString() }
-						}.ToImmutableDictionary();
+							var diagnosticProperties = new Dictionary<string, string>{
+															{ DiagnosticProperty.IsBoundField,
+															  isBoundField.ToString() }}.ToImmutableDictionary();
 
 							symbolContext.ReportDiagnostic(
 								Diagnostic.Create(
