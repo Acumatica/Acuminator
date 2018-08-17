@@ -29,6 +29,10 @@ namespace PX.Objects.HackathonDemo
             {
                 newDisplayName = PXLocalizer.LocalizeFormat(SOOrderExt.SpecialOrderNbr3, row.OrderNbr);
             }
+            else if (row.OrderNbr.Equals(SOOrderExt.SpecialOrderNbr4, StringComparison.Ordinal))
+            {
+                newDisplayName = PXLocalizer.Localize(string.Format(Messages.SpecialTextToFormat, row.OrderNbr));
+            }
 
             if (string.IsNullOrEmpty(newDisplayName))
                 return;

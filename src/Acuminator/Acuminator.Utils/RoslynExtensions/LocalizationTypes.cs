@@ -45,22 +45,21 @@ namespace Acuminator.Analyzers
         private void InitMethods()
         {
             IEnumerable<ISymbol> pxMessagesMembers = PXMessages.GetMembers();
-            Tuple<ImmutableArray<ISymbol>, ImmutableArray<ISymbol>> pxMessagesMethods =
+            (ImmutableArray<ISymbol> simple, ImmutableArray<ISymbol> format) =
                 GetMethods(pxMessagesMembers, _pxMessagesSimpleMethodNames, _pxMessagesFormatMethodNames);
 
-            PXMessagesSimpleMethods = pxMessagesMethods.Item1;
-            PXMessagesFormatMethods = pxMessagesMethods.Item2;
+            PXMessagesSimpleMethods = simple;
+            PXMessagesFormatMethods = format;
 
             IEnumerable<ISymbol> pxLocalizerMembers = PXLocalizer.GetMembers();
             IEnumerable<string> pxLocalizerSimpleMethodNames = new[] { _pxLocalizerSimpleMethodName };
-            Tuple<ImmutableArray<ISymbol>, ImmutableArray<ISymbol>> pxLocalizerMethods =
-                GetMethods(pxLocalizerMembers, pxLocalizerSimpleMethodNames, _pxLocalizerFormatMethodNames);
+            (simple, format) = GetMethods(pxLocalizerMembers, pxLocalizerSimpleMethodNames, _pxLocalizerFormatMethodNames);
 
-            PXLocalizerSimpleMethods = pxLocalizerMethods.Item1;
-            PXLocalizerFormatMethods = pxLocalizerMethods.Item2;
+            PXLocalizerSimpleMethods = simple;
+            PXLocalizerFormatMethods = format;
         }
 
-        private Tuple<ImmutableArray<ISymbol>, ImmutableArray<ISymbol>> GetMethods(IEnumerable<ISymbol> membersToAnalyze,
+        private (ImmutableArray<ISymbol>, ImmutableArray<ISymbol>) GetMethods(IEnumerable<ISymbol> membersToAnalyze,
             IEnumerable<string> simpleMethodNames, IEnumerable<string> formatMethodNames)
         {
             List<ISymbol> simpleMethods = new List<ISymbol>();
@@ -81,7 +80,7 @@ namespace Acuminator.Analyzers
                 }
             }
 
-            return new Tuple<ImmutableArray<ISymbol>, ImmutableArray<ISymbol>>(simpleMethods.ToImmutableArray(), formatMethods.ToImmutableArray());
+            return (simpleMethods.ToImmutableArray(), formatMethods.ToImmutableArray());
         }
     }
 }
