@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Acuminator.Utilities;
+using Acuminator.Utils.RoslynExtensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -16,20 +17,18 @@ namespace Acuminator.Analyzers
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class ConnectionScopeInRowSelectingAnalyzer : PXDiagnosticAnalyzer
 	{
-		private class Walker : CSharpSyntaxWalker
+		private class Walker : NestedInvocationWalker
 		{
 			private class PXConnectionScopeVisitor : CSharpSyntaxVisitor<bool>
 			{
-				private SymbolAnalysisContext _context;
 				private readonly PXContext _pxContext;
 				private readonly SemanticModel _semanticModel;
 
-				public PXConnectionScopeVisitor(SymbolAnalysisContext context, PXContext pxContext, SemanticModel semanticModel)
+				public PXConnectionScopeVisitor(PXContext pxContext, SemanticModel semanticModel)
 				{
 					pxContext.ThrowOnNull(nameof(pxContext));
 					semanticModel.ThrowOnNull(nameof(semanticModel));
-
-					_context = context;
+					
 					_pxContext = pxContext;
 					_semanticModel = semanticModel;
 				}
@@ -48,26 +47,21 @@ namespace Acuminator.Analyzers
 			}
 
 			private static readonly IEnumerable<string> MethodPrefixes = new[] { "Select", "Search" };
-			private const int MaxDepth = 5;
 
 			private SymbolAnalysisContext _context;
 			private readonly PXContext _pxContext;
-			private readonly SemanticModel _semanticModel;
 			private bool _insideConnectionScope;
-			private readonly Stack<bool> _externalCall = new Stack<bool>();
-			private bool _found;
 			private readonly PXConnectionScopeVisitor _connectionScopeVisitor;
 
 			public Walker(SymbolAnalysisContext context, PXContext pxContext, SemanticModel semanticModel)
+				: base(semanticModel, context.CancellationToken)
 			{
 				pxContext.ThrowOnNull(nameof (pxContext));
-				semanticModel.ThrowOnNull(nameof (semanticModel));
 
 				_context = context;
 				_pxContext = pxContext;
-				_semanticModel = semanticModel;
 
-				_connectionScopeVisitor = new PXConnectionScopeVisitor(context, pxContext, semanticModel);
+				_connectionScopeVisitor = new PXConnectionScopeVisitor(pxContext, semanticModel);
 			}
 
 			public override void VisitUsingStatement(UsingStatementSyntax node)
@@ -90,54 +84,19 @@ namespace Acuminator.Analyzers
 			{
 				_context.CancellationToken.ThrowIfCancellationRequested();
 
-				if (_insideConnectionScope || _found || _externalCall.Count >= MaxDepth)
+				if (_insideConnectionScope)
 					return;
+				
+				var methodSymbol = GetMethodSymbol(node);
 
-				var symbolInfo = _semanticModel.GetSymbolInfo(node);
-				var methodSymbol = GetMethodSymbol(symbolInfo);
-
-				if (methodSymbol != null)
+				if (methodSymbol != null && IsDatabaseCall(methodSymbol))
 				{
-					if (IsDatabaseCall(methodSymbol))
-					{
-						if (_externalCall.Count > 0)
-							_found = true; // diagnostic will be reported on the original node in RowSelecting
-						else
-							ReportDiagnostic(node);
-					}
-					else
-					{
-						// Check calls to other methods
-						var externalMethodNode = methodSymbol.GetSyntax(_context.CancellationToken) as MethodDeclarationSyntax;
-						_externalCall.Push(true);
-						externalMethodNode?.Accept(this);
-						_externalCall.Pop();
-
-						if (_found)
-						{
-							if (_externalCall.Count > 0) return;
-
-							ReportDiagnostic(node);
-							_found = false;
-						}
-					}
+					ReportDiagnostic(OriginalNode);
 				}
-
-				base.VisitInvocationExpression(node);
-			}
-
-			private IMethodSymbol GetMethodSymbol(SymbolInfo symbolInfo)
-			{
-				if (symbolInfo.Symbol is IMethodSymbol methodSymbol)
+				else
 				{
-					return methodSymbol;
+					base.VisitInvocationExpression(node);
 				}
-				if (!symbolInfo.CandidateSymbols.IsEmpty)
-				{
-					return symbolInfo.CandidateSymbols.OfType<IMethodSymbol>().FirstOrDefault();
-				}
-
-				return null;
 			}
 
 			private bool IsDatabaseCall(IMethodSymbol candidate)

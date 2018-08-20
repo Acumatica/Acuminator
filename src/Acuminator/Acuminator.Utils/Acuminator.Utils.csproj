@@ -99,6 +99,7 @@
     <Compile Include="CommonUtils\EnumerableExtensions.cs" />
     <Compile Include="CommonUtils\ConcurrentExtensions.cs" />
     <Compile Include="CommonUtils\EnumerableExtraExtensions.cs" />
+    <Compile Include="RoslynExtensions\NestedInvocationWalker.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\ActionRules\ScoreSystemActionRule.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\ActionRules\ScoreSimpleActionRule.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\Base\ActionRuleBase.cs" />
