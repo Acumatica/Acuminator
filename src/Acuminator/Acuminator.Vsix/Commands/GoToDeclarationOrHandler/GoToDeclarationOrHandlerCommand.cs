@@ -88,8 +88,10 @@ namespace Acuminator.Vsix.GoToDeclaration
 				return;
 
 			Document document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
-			SyntaxNode syntaxRoot = document?.GetSyntaxRootAsync().Result;
-			SemanticModel semanticModel = document?.GetSemanticModelAsync().Result;
+			if (document == null) return;
+
+			(SyntaxNode syntaxRoot, SemanticModel semanticModel) = ThreadHelper.JoinableTaskFactory.Run(
+				async () => (await document.GetSyntaxRootAsync(), await document.GetSemanticModelAsync()));
 
 			if (syntaxRoot == null || semanticModel == null)
 				return;

@@ -447,6 +447,15 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1028Title", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to PXGraph instances cannot be used inside DAC properties.
+        /// </summary>
+        public static string PX1029Title {
+            get {
+                return ResourceManager.GetString("PX1029Title", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to For an unbound field, replace with PXUnboundDefaultAttribute; for a bound field, set PersistingCheck of PXDefaultAttribute to Nothing.
@@ -481,6 +490,24 @@ namespace Acuminator.Analyzers {
         public static string PX1032Title {
             get {
                 return ResourceManager.GetString("PX1032Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Move the code to the Initialize() method.
+        /// </summary>
+        public static string PX1040Fix {
+            get {
+                return ResourceManager.GetString("PX1040Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Constructors in BLC extensions are strictly prohibited. Use the Initialize() method instead..
+        /// </summary>
+        public static string PX1040Title {
+            get {
+                return ResourceManager.GetString("PX1040Title", resourceCulture);
             }
         }
     }

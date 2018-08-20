@@ -549,7 +549,7 @@ namespace Acuminator.Utilities
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private static bool IsGraphExtensionBaseType(this ITypeSymbol type)
+		public static bool IsGraphExtensionBaseType(this ITypeSymbol type)
 		{
 			string typeNameWithoutGenericArgsCount = type.Name.Split('`')[0];
 			return typeNameWithoutGenericArgsCount.Equals(TypeNames.PXGraphExtension, StringComparison.Ordinal);

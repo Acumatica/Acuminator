@@ -26,23 +26,33 @@ namespace Acuminator.Analyzers
 #pragma warning disable CS4014
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSymbolAction(symbolContext => AnalyzePropertyAsync(symbolContext, pxContext), SymbolKind.Property);
+			compilationStartContext.RegisterSymbolAction(symbolContext => AnalyzePropertyAsync(symbolContext, pxContext), SymbolKind.NamedType);
 		}
 #pragma warning restore CS4014
 
-		private static async Task AnalyzePropertyAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
+		private static Task AnalyzePropertyAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
-			IPropertySymbol property = symbolContext.Symbol as IPropertySymbol;
+			if (!(symbolContext.Symbol is INamedTypeSymbol dacOrDacExt) || !dacOrDacExt.IsDacOrExtension(pxContext))
+				return Task.FromResult(false);
 
-			if (!CheckProperty(property, pxContext))
-				return;
+			FieldAttributesRegister fieldAttributesRegister = new FieldAttributesRegister(pxContext);
+			Task[] allTasks = dacOrDacExt.GetMembers()
+										 .OfType<IPropertySymbol>()
+										 .Select(property => CheckDacPropertyAsync(property, symbolContext, pxContext, fieldAttributesRegister))
+										 .ToArray();
 
+			return Task.WhenAll(allTasks);
+		}
+
+		private static async Task CheckDacPropertyAsync(IPropertySymbol property, SymbolAnalysisContext symbolContext, PXContext pxContext,
+														FieldAttributesRegister fieldAttributesRegister)
+		{
 			ImmutableArray<AttributeData> attributes = property.GetAttributes();
 
 			if (attributes.Length == 0 || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			var attributesWithInfo = GetFieldAttributesInfos(pxContext, attributes, symbolContext.CancellationToken);
+			var attributesWithInfo = GetFieldAttributesInfos(pxContext, attributes, fieldAttributesRegister, symbolContext.CancellationToken);
 
 			if (symbolContext.CancellationToken.IsCancellationRequested || attributesWithInfo.IsNullOrEmpty())
 				return;
@@ -50,7 +60,8 @@ namespace Acuminator.Analyzers
 			if (attributesWithInfo.Count > 1)
 			{
 				var locationTasks = attributesWithInfo.Select(info => GetAttributeLocationAsync(info.Attribute, symbolContext.CancellationToken));
-				Location[] attributeLocations = await Task.WhenAll(locationTasks);
+				Location[] attributeLocations = await Task.WhenAll(locationTasks)
+														  .ConfigureAwait(false);
 
 				foreach (Location attrLocation in attributeLocations)
 				{
@@ -65,40 +76,23 @@ namespace Acuminator.Analyzers
 				var (fieldAttribute, fieldAttrInfo) = attributesWithInfo[0];
 
 #pragma warning disable CS4014
-				CheckAttributeAndPropertyTypesForCompatibility(fieldAttribute, fieldAttrInfo, pxContext, symbolContext);
+				CheckAttributeAndPropertyTypesForCompatibility(property, fieldAttribute, fieldAttrInfo, pxContext, symbolContext);
 #pragma warning restore CS4014
 			}
 		}
 
-		private static bool CheckProperty(IPropertySymbol property, PXContext pxContext)
-		{
-			var parent = property?.ContainingType;
-
-			if (parent == null || (!parent.ImplementsInterface(pxContext.IBqlTableType) && !parent.InheritsFrom(pxContext.PXCacheExtensionType)))
-				return false;
-
-			return property.Type.TypeKind == TypeKind.Struct ||
-				   property.Type.TypeKind == TypeKind.Class ||
-				   property.Type.TypeKind == TypeKind.Array;
-		}
-
 		private static List<(AttributeData Attribute, FieldAttributeInfo Info)> GetFieldAttributesInfos(PXContext pxContext,
 																									   ImmutableArray<AttributeData> attributes,
+																									   FieldAttributesRegister fieldAttributesRegister,
 																									   CancellationToken cancellationToken)
 		{
-			FieldAttributesRegister fieldAttributesInfo = new FieldAttributesRegister(pxContext);
-
-			if (cancellationToken.IsCancellationRequested)
-				return null;
-
+			cancellationToken.ThrowIfCancellationRequested();
 			var fieldInfosList = new List<(AttributeData, FieldAttributeInfo)>(capacity: attributes.Length);
 
 			foreach (AttributeData attribute in attributes)
 			{
-				if (cancellationToken.IsCancellationRequested)
-					return null;
-
-				FieldAttributeInfo attrInfo = fieldAttributesInfo.GetFieldAttributeInfo(attribute.AttributeClass);
+				cancellationToken.ThrowIfCancellationRequested();
+				FieldAttributeInfo attrInfo = fieldAttributesRegister.GetFieldAttributeInfo(attribute.AttributeClass);
 
 				if (attrInfo.IsFieldAttribute)
 					fieldInfosList.Add((attribute, attrInfo));
@@ -107,20 +101,30 @@ namespace Acuminator.Analyzers
 			return fieldInfosList;
 		}
 
-		private static Task CheckAttributeAndPropertyTypesForCompatibility(AttributeData fieldAttribute, FieldAttributeInfo fieldAttributeInfo,
-																		   PXContext pxContext, SymbolAnalysisContext symbolContext)
+		private static Task CheckAttributeAndPropertyTypesForCompatibility(IPropertySymbol property, AttributeData fieldAttribute,
+																		   FieldAttributeInfo fieldAttributeInfo, PXContext pxContext,
+																		   SymbolAnalysisContext symbolContext)
 		{
-			IPropertySymbol property = symbolContext.Symbol as IPropertySymbol;
-
-			if (property == null)
-				return null;
-
 			if (fieldAttributeInfo.FieldType == null)                                                               //PXDBFieldAttribute case
+			{
 				return CreateDiagnosticsAsync(property, fieldAttribute, symbolContext, registerCodeFix: false);
+			}
 
-			ITypeSymbol typeToCompare = property.Type.IsValueType
-				? (property.Type as INamedTypeSymbol)?.GetUnderlyingTypeFromNullable(pxContext)
-				: property.Type;
+			ITypeSymbol typeToCompare;
+
+			if (property.Type.IsValueType)
+			{
+				if (!(property.Type is INamedTypeSymbol namedPropertyType))
+					return null;
+
+				typeToCompare = namedPropertyType.IsNullable(pxContext)
+									? namedPropertyType.GetUnderlyingTypeFromNullable(pxContext)
+									: namedPropertyType;
+			}
+			else
+			{
+				typeToCompare = property.Type;
+			}
 
 			if (fieldAttributeInfo.FieldType.Equals(typeToCompare))
 				return null;
@@ -180,25 +184,8 @@ namespace Acuminator.Analyzers
 
 		private static async Task<Location> GetPropertyTypeLocationAsync(IPropertySymbol property, CancellationToken cancellationToken)
 		{
-			SyntaxNode propertySyntaxNode = null;
-			var syntaxRefs = property.DeclaringSyntaxReferences;
-
-			if (syntaxRefs.Length == 0)
-				return property.Locations.FirstOrDefault();
-
-			try
-			{
-				propertySyntaxNode = await syntaxRefs[0].GetSyntaxAsync(cancellationToken).ConfigureAwait(false);
-			}
-			catch (OperationCanceledException)
-			{
-				return null;
-			}
-			catch (Exception e)
-			{
-				//TODO log error here
-				return null;
-			}
+			SyntaxNode propertySyntaxNode = await property.GetSyntaxAsync(cancellationToken)
+														  .ConfigureAwait(false);
 
 			return propertySyntaxNode is PropertyDeclarationSyntax propertyDeclarationSyntax
 				? propertyDeclarationSyntax.Type.GetLocation()
