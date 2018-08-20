@@ -29,7 +29,7 @@ namespace Acuminator.Utilities
 			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
 			type.ThrowOnNull(nameof(type));
 
-			List<ITypeSymbol> attributeTypeHierarchy = attributeSymbol.GetBaseTypesAndThis().ToList();
+			IEnumerable<ITypeSymbol> attributeTypeHierarchy = attributeSymbol.GetBaseTypesAndThis();
 			if (attributeTypeHierarchy.Contains(type))
 				return true;
 			return false;
@@ -51,11 +51,11 @@ namespace Acuminator.Utilities
 
 			if (ContainsBaseType(attributeSymbol, aggregateAttribute) || ContainsBaseType(attributeSymbol, dynamicAggregateAttribute))
 			{
-				var allAttributes = attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes().ToList();
+				var allAttributes = attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
 				foreach (var attribute in allAttributes)
 				{
 					//go in recursuion
-					var result = AttributeDerivedFromClass(attribute, type, --depth);
+					var result = AttributeDerivedFromClass(attribute, type, depth-1);
 					if (depth <= 0 || depth > 100)
 						return false;
 					if (result)
@@ -73,7 +73,7 @@ namespace Acuminator.Utilities
 			return AttributeDerivedFromClass(attributeSymbol, dbFieldAttribute);
 		}
 		
-		public bool AreBoundAttributes(IEnumerable<ITypeSymbol> attributesSymbols)
+		public bool ContainsBoundAttributes(IEnumerable<ITypeSymbol> attributesSymbols)
 		{
 			foreach (var attribute in attributesSymbols)
 			{
