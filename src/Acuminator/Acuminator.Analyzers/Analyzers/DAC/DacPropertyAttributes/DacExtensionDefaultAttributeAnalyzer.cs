@@ -29,8 +29,6 @@ namespace Acuminator.Analyzers
 #pragma warning disable CS4014
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			/*compilationStartContext.RegisterSymbolAction(symbolContext =>
-				AnalyzePropertyAsync(symbolContext, pxContext), SymbolKind.Property);*/
 			compilationStartContext.RegisterSymbolAction(symbolContext =>
 				AnalyzePropertyAsync(symbolContext, pxContext), SymbolKind.NamedType);
 		}

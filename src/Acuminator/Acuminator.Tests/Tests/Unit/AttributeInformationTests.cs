@@ -53,7 +53,7 @@ namespace Acuminator.Tests
 				foreach (var attribute in attributes)
 				{
 					var attributeInformation = new AttributeInformation(pxContext);
-					var defaultAttribute = semanticModel.Compilation.GetTypeByMetadataName("PX.Data.PXDefaultAttribute");//rewrite to pxContext.PXDefaultAttribute
+					var defaultAttribute = pxContext.AttributeTypes.PXDefaultAttribute;
 					actual.Add(attributeInformation.AttributeDerivedFromClass(attribute.AttributeClass, defaultAttribute));
 				}
 			}
@@ -76,7 +76,7 @@ namespace Acuminator.Tests
 
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateRecursiveAttributeInformationTest.cs")]
-		public void TestAreBoundAggregateRegursiveAttribute(string source) =>
+		public void TestAreBoundAggregateRecursiveAttribute(string source) =>
 			_testIsBoundAttribute(source, new List<bool> { false, true });
 
 		private void _testIsBoundAttribute(string source, List<bool> expected)

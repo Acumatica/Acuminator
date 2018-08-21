@@ -35,17 +35,11 @@ namespace Acuminator.Utilities
 			return false;
 		}
 
-		public bool AttributeDerivedFromClass(ITypeSymbol attributeSymbol, ITypeSymbol type, int depth = 10)
+		public bool AttributeDerivedFromClass(ITypeSymbol attributeSymbol, ITypeSymbol type)
 		{
-			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
-			type.ThrowOnNull(nameof(type));
-			if (depth <= 0 || depth > 100)
-				return false;
 			if (ContainsBaseType(attributeSymbol, type))
 				return true;
 
-			//get symbols from PXContext
-			//PX.Data.PXAggregateAttribute and PX.Data.PXDynamicAggregateAttribute
 			var aggregateAttribute = _context.AttributeTypes.PXAggregateAttribute;
 			var dynamicAggregateAttribute = _context.AttributeTypes.PXDynamicAggregateAttribute;
 
@@ -55,20 +49,40 @@ namespace Acuminator.Utilities
 				foreach (var attribute in allAttributes)
 				{
 					//go in recursuion
-					var result = AttributeDerivedFromClass(attribute, type, depth-1);
-					if (depth <= 0 || depth > 100)
-						return false;
+					var result = Recursion(attribute,10);
+
 					if (result)
 						return result;
 				}
 			}
 			return false;
+
+			bool Recursion(ITypeSymbol _attributeSymbol,int depth)
+			{
+				if (depth < 0)
+					return false;
+
+				if (ContainsBaseType(_attributeSymbol, type))
+					return true;
+
+				if (ContainsBaseType(_attributeSymbol, aggregateAttribute) || ContainsBaseType(_attributeSymbol, dynamicAggregateAttribute))
+				{
+					var allAttributes = _attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
+					foreach (var attribute in allAttributes)
+					{
+						//go in recursuion
+						var result = Recursion(attribute,depth-1);
+
+						if (result)
+							return result;
+					}
+				}
+				return false;
+			}
 		}
 
 		public bool IsBoundAttribute(ITypeSymbol attributeSymbol)
 		{
-			//Get this symbols from PXContext
-			//PX.Data.PXDBFieldAttribute
 			var dbFieldAttribute = _context.FieldAttributes.PXDBFieldAttribute;
 			return AttributeDerivedFromClass(attributeSymbol, dbFieldAttribute);
 		}

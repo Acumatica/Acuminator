@@ -119,5 +119,20 @@ namespace Acuminator.Analyzers.FixProviders
 
 			return document.WithSyntaxRoot(modifiedRoot);
 		}
+
+
+	}
+
+	internal static class DiagnosticHelper {
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsBoundField(this Diagnostic diagnostic)
+		{
+			diagnostic.ThrowOnNull(nameof(diagnostic));
+
+			return diagnostic.Properties.TryGetValue(DiagnosticProperty.IsBoundField, out string boundFlag)
+				? boundFlag == bool.TrueString
+				: false;
+		}
 	}
 }

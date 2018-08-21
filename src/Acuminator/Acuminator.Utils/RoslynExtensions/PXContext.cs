@@ -96,77 +96,77 @@ namespace Acuminator.Analyzers
         #region Field Attributes Types
         public class FieldAttributesTypes
         {
-            private readonly Compilation compilation;
+            private readonly Compilation _compilation;
 
             public FieldAttributesTypes(Compilation aCompilation)
             {
-                compilation = aCompilation;
+                _compilation = aCompilation;
             }
 
-			public INamedTypeSymbol PXDBScalarAttribute => compilation.GetTypeByMetadataName(typeof(PXDBScalarAttribute).FullName);
+			public INamedTypeSymbol PXDBScalarAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBScalarAttribute).FullName);
 
 			#region Field Unbound Attributes
-			public INamedTypeSymbol PXLongAttribute => compilation.GetTypeByMetadataName(typeof(PXLongAttribute).FullName);
-            public INamedTypeSymbol PXIntAttribute => compilation.GetTypeByMetadataName(typeof(PXIntAttribute).FullName);
-            public INamedTypeSymbol PXShortAttribute => compilation.GetTypeByMetadataName(typeof(PXShortAttribute).FullName);
-            public INamedTypeSymbol PXStringAttribute => compilation.GetTypeByMetadataName(typeof(PXStringAttribute).FullName);
-            public INamedTypeSymbol PXByteAttribute => compilation.GetTypeByMetadataName(typeof(PXByteAttribute).FullName);
-            public INamedTypeSymbol PXDecimalAttribute => compilation.GetTypeByMetadataName(typeof(PXDecimalAttribute).FullName);
-            public INamedTypeSymbol PXDoubleAttribute => compilation.GetTypeByMetadataName(typeof(PXDoubleAttribute).FullName);
+			public INamedTypeSymbol PXLongAttribute => _compilation.GetTypeByMetadataName(typeof(PXLongAttribute).FullName);
+            public INamedTypeSymbol PXIntAttribute => _compilation.GetTypeByMetadataName(typeof(PXIntAttribute).FullName);
+            public INamedTypeSymbol PXShortAttribute => _compilation.GetTypeByMetadataName(typeof(PXShortAttribute).FullName);
+            public INamedTypeSymbol PXStringAttribute => _compilation.GetTypeByMetadataName(typeof(PXStringAttribute).FullName);
+            public INamedTypeSymbol PXByteAttribute => _compilation.GetTypeByMetadataName(typeof(PXByteAttribute).FullName);
+            public INamedTypeSymbol PXDecimalAttribute => _compilation.GetTypeByMetadataName(typeof(PXDecimalAttribute).FullName);
+            public INamedTypeSymbol PXDoubleAttribute => _compilation.GetTypeByMetadataName(typeof(PXDoubleAttribute).FullName);
 
-			public INamedTypeSymbol PXFloatAttribute => compilation.GetTypeByMetadataName(typeof(PXFloatAttribute).FullName);
-			public INamedTypeSymbol PXDateAttribute => compilation.GetTypeByMetadataName(typeof(PXDateAttribute).FullName);
-            public INamedTypeSymbol PXGuidAttribute => compilation.GetTypeByMetadataName(typeof(PXGuidAttribute).FullName);
-            public INamedTypeSymbol PXBoolAttribute => compilation.GetTypeByMetadataName(typeof(PXBoolAttribute).FullName);			
+			public INamedTypeSymbol PXFloatAttribute => _compilation.GetTypeByMetadataName(typeof(PXFloatAttribute).FullName);
+			public INamedTypeSymbol PXDateAttribute => _compilation.GetTypeByMetadataName(typeof(PXDateAttribute).FullName);
+            public INamedTypeSymbol PXGuidAttribute => _compilation.GetTypeByMetadataName(typeof(PXGuidAttribute).FullName);
+            public INamedTypeSymbol PXBoolAttribute => _compilation.GetTypeByMetadataName(typeof(PXBoolAttribute).FullName);			
             #endregion
 
             #region DBField Attributes
-            public INamedTypeSymbol PXDBFieldAttribute => compilation.GetTypeByMetadataName(typeof(PXDBFieldAttribute).FullName);
+            public INamedTypeSymbol PXDBFieldAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBFieldAttribute).FullName);
 
-            public INamedTypeSymbol PXDBLongAttribute => compilation.GetTypeByMetadataName(typeof(PXDBLongAttribute).FullName);
-            public INamedTypeSymbol PXDBIntAttribute => compilation.GetTypeByMetadataName(typeof(PXDBIntAttribute).FullName);
-            public INamedTypeSymbol PXDBShortAttribute => compilation.GetTypeByMetadataName(typeof(PXDBShortAttribute).FullName);
-            public INamedTypeSymbol PXDBStringAttribute => compilation.GetTypeByMetadataName(typeof(PXDBStringAttribute).FullName);
-            public INamedTypeSymbol PXDBByteAttribute => compilation.GetTypeByMetadataName(typeof(PXDBByteAttribute).FullName);
-            public INamedTypeSymbol PXDBDecimalAttribute => compilation.GetTypeByMetadataName(typeof(PXDBDecimalAttribute).FullName);
-            public INamedTypeSymbol PXDBDoubleAttribute => compilation.GetTypeByMetadataName(typeof(PXDBDoubleAttribute).FullName);
-            public INamedTypeSymbol PXDBFloatAttribute => compilation.GetTypeByMetadataName(typeof(PXDBFloatAttribute).FullName);
-            public INamedTypeSymbol PXDBDateAttribute => compilation.GetTypeByMetadataName(typeof(PXDBDateAttribute).FullName);
-            public INamedTypeSymbol PXDBGuidAttribute => compilation.GetTypeByMetadataName(typeof(PXDBGuidAttribute).FullName);
-            public INamedTypeSymbol PXDBBoolAttribute => compilation.GetTypeByMetadataName(typeof(PXDBBoolAttribute).FullName);
-            public INamedTypeSymbol PXDBTimestampAttribute => compilation.GetTypeByMetadataName(typeof(PXDBTimestampAttribute).FullName);
+            public INamedTypeSymbol PXDBLongAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBLongAttribute).FullName);
+            public INamedTypeSymbol PXDBIntAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBIntAttribute).FullName);
+            public INamedTypeSymbol PXDBShortAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBShortAttribute).FullName);
+            public INamedTypeSymbol PXDBStringAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBStringAttribute).FullName);
+            public INamedTypeSymbol PXDBByteAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBByteAttribute).FullName);
+            public INamedTypeSymbol PXDBDecimalAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBDecimalAttribute).FullName);
+            public INamedTypeSymbol PXDBDoubleAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBDoubleAttribute).FullName);
+            public INamedTypeSymbol PXDBFloatAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBFloatAttribute).FullName);
+            public INamedTypeSymbol PXDBDateAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBDateAttribute).FullName);
+            public INamedTypeSymbol PXDBGuidAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBGuidAttribute).FullName);
+            public INamedTypeSymbol PXDBBoolAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBBoolAttribute).FullName);
+            public INamedTypeSymbol PXDBTimestampAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBTimestampAttribute).FullName);
 
-            public INamedTypeSymbol PXDBIdentityAttribute => compilation.GetTypeByMetadataName(typeof(PXDBIdentityAttribute).FullName);
-            public INamedTypeSymbol PXDBLongIdentityAttribute => compilation.GetTypeByMetadataName(typeof(PXDBLongIdentityAttribute).FullName);
-            public INamedTypeSymbol PXDBBinaryAttribute => compilation.GetTypeByMetadataName(typeof(PXDBBinaryAttribute).FullName);
-            public INamedTypeSymbol PXDBUserPasswordAttribute => compilation.GetTypeByMetadataName(typeof(PXDBUserPasswordAttribute).FullName);
+            public INamedTypeSymbol PXDBIdentityAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBIdentityAttribute).FullName);
+            public INamedTypeSymbol PXDBLongIdentityAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBLongIdentityAttribute).FullName);
+            public INamedTypeSymbol PXDBBinaryAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBBinaryAttribute).FullName);
+            public INamedTypeSymbol PXDBUserPasswordAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBUserPasswordAttribute).FullName);
             #endregion
         }
 		#endregion
 		#region Attributes Types
 		public class AttributesTypes
 		{
-			private readonly Compilation compilation;
+			private readonly Compilation _compilation;
 
 			public AttributesTypes(Compilation aCompilation)
 			{
-				compilation = aCompilation;
+				_compilation = aCompilation;
 			}
 
 
-			public INamedTypeSymbol PXImportAttribute => compilation.GetTypeByMetadataName(typeof(PXImportAttribute).FullName);
-			public INamedTypeSymbol PXHiddenAttribute => compilation.GetTypeByMetadataName(typeof(PXHiddenAttribute).FullName);
-			public INamedTypeSymbol PXCopyPasteHiddenViewAttribute => compilation.GetTypeByMetadataName(typeof(PXCopyPasteHiddenViewAttribute).FullName);
+			public INamedTypeSymbol PXImportAttribute => _compilation.GetTypeByMetadataName(typeof(PXImportAttribute).FullName);
+			public INamedTypeSymbol PXHiddenAttribute => _compilation.GetTypeByMetadataName(typeof(PXHiddenAttribute).FullName);
+			public INamedTypeSymbol PXCopyPasteHiddenViewAttribute => _compilation.GetTypeByMetadataName(typeof(PXCopyPasteHiddenViewAttribute).FullName);
 
-			public INamedTypeSymbol PXStringListAttribute => compilation.GetTypeByMetadataName(typeof(PXStringListAttribute).FullName);
-			public INamedTypeSymbol PXIntListAttribute => compilation.GetTypeByMetadataName(typeof(PXIntListAttribute).FullName);
+			public INamedTypeSymbol PXStringListAttribute => _compilation.GetTypeByMetadataName(typeof(PXStringListAttribute).FullName);
+			public INamedTypeSymbol PXIntListAttribute => _compilation.GetTypeByMetadataName(typeof(PXIntListAttribute).FullName);
 
-			public INamedTypeSymbol PXEventSubscriberAttribute => compilation.GetTypeByMetadataName(typeof(PXEventSubscriberAttribute).FullName);
-			public INamedTypeSymbol PXAttributeFamily => compilation.GetTypeByMetadataName(typeof(PXAttributeFamilyAttribute).FullName);
-			public INamedTypeSymbol PXAggregateAttribute => compilation.GetTypeByMetadataName(typeof(PXAggregateAttribute).FullName);
-			public INamedTypeSymbol PXDynamicAggregateAttribute => compilation.GetTypeByMetadataName(typeof(PXDynamicAggregateAttribute).FullName);
-			public INamedTypeSymbol PXDefaultAttribute => compilation.GetTypeByMetadataName(typeof(PXDefaultAttribute).FullName);
-			public INamedTypeSymbol PXUnboundDefaultAttribute => compilation.GetTypeByMetadataName(typeof(PXUnboundDefaultAttribute).FullName);
+			public INamedTypeSymbol PXEventSubscriberAttribute => _compilation.GetTypeByMetadataName(typeof(PXEventSubscriberAttribute).FullName);
+			public INamedTypeSymbol PXAttributeFamily => _compilation.GetTypeByMetadataName(typeof(PXAttributeFamilyAttribute).FullName);
+			public INamedTypeSymbol PXAggregateAttribute => _compilation.GetTypeByMetadataName(typeof(PXAggregateAttribute).FullName);
+			public INamedTypeSymbol PXDynamicAggregateAttribute => _compilation.GetTypeByMetadataName(typeof(PXDynamicAggregateAttribute).FullName);
+			public INamedTypeSymbol PXDefaultAttribute => _compilation.GetTypeByMetadataName(typeof(PXDefaultAttribute).FullName);
+			public INamedTypeSymbol PXUnboundDefaultAttribute => _compilation.GetTypeByMetadataName(typeof(PXUnboundDefaultAttribute).FullName);
 
 		}
 		#endregion
@@ -174,30 +174,30 @@ namespace Acuminator.Analyzers
 		#region System Actions Types
 		public class PXSystemActionTypes
 		{
-			private readonly Compilation compilation;
+			private readonly Compilation _compilation;
 
 			public PXSystemActionTypes(Compilation aCompilation)
 			{
-				compilation = aCompilation;
+				_compilation = aCompilation;
 			}
 
-			public INamedTypeSymbol PXSave => compilation.GetTypeByMetadataName(typeof(PXSave<>).FullName);
+			public INamedTypeSymbol PXSave => _compilation.GetTypeByMetadataName(typeof(PXSave<>).FullName);
 
-			public INamedTypeSymbol PXCancel => compilation.GetTypeByMetadataName(typeof(PXCancel<>).FullName);
+			public INamedTypeSymbol PXCancel => _compilation.GetTypeByMetadataName(typeof(PXCancel<>).FullName);
 
-			public INamedTypeSymbol PXInsert => compilation.GetTypeByMetadataName(typeof(PXInsert<>).FullName);
+			public INamedTypeSymbol PXInsert => _compilation.GetTypeByMetadataName(typeof(PXInsert<>).FullName);
 
-			public INamedTypeSymbol PXDelete => compilation.GetTypeByMetadataName(typeof(PXDelete<>).FullName);
+			public INamedTypeSymbol PXDelete => _compilation.GetTypeByMetadataName(typeof(PXDelete<>).FullName);
 
-			public INamedTypeSymbol PXCopyPasteAction => compilation.GetTypeByMetadataName(typeof(PXCopyPasteAction<>).FullName);
+			public INamedTypeSymbol PXCopyPasteAction => _compilation.GetTypeByMetadataName(typeof(PXCopyPasteAction<>).FullName);
 
-			public INamedTypeSymbol PXFirst => compilation.GetTypeByMetadataName(typeof(PXFirst<>).FullName);
+			public INamedTypeSymbol PXFirst => _compilation.GetTypeByMetadataName(typeof(PXFirst<>).FullName);
 
-			public INamedTypeSymbol PXPrevious => compilation.GetTypeByMetadataName(typeof(PXPrevious<>).FullName);
+			public INamedTypeSymbol PXPrevious => _compilation.GetTypeByMetadataName(typeof(PXPrevious<>).FullName);
 
-			public INamedTypeSymbol PXNext => compilation.GetTypeByMetadataName(typeof(PXNext<>).FullName);
+			public INamedTypeSymbol PXNext => _compilation.GetTypeByMetadataName(typeof(PXNext<>).FullName);
 
-			public INamedTypeSymbol PXLast => compilation.GetTypeByMetadataName(typeof(PXLast<>).FullName);
+			public INamedTypeSymbol PXLast => _compilation.GetTypeByMetadataName(typeof(PXLast<>).FullName);
 		}
 		#endregion
 
@@ -207,46 +207,46 @@ namespace Acuminator.Analyzers
 		/// </summary>
 		public class BQLSymbols
 		{
-			private readonly Compilation compilation;
+			private readonly Compilation _compilation;
 
 			public BQLSymbols(Compilation aCompilation)
 			{
-				compilation = aCompilation;
+				_compilation = aCompilation;
 			}
 
 			#region CustomDelegates
-			public INamedTypeSymbol CustomPredicate => compilation.GetTypeByMetadataName(typeof(CustomPredicate).FullName);
+			public INamedTypeSymbol CustomPredicate => _compilation.GetTypeByMetadataName(typeof(CustomPredicate).FullName);
 
-			public INamedTypeSymbol AreSame => compilation.GetTypeByMetadataName(typeof(AreSame<,>).FullName);
+			public INamedTypeSymbol AreSame => _compilation.GetTypeByMetadataName(typeof(AreSame<,>).FullName);
 
-			public INamedTypeSymbol AreDistinct => compilation.GetTypeByMetadataName(typeof(AreDistinct<,>).FullName);
+			public INamedTypeSymbol AreDistinct => _compilation.GetTypeByMetadataName(typeof(AreDistinct<,>).FullName);
 			#endregion
 
-			public INamedTypeSymbol Required => compilation.GetTypeByMetadataName(typeof(Required<>).FullName);
+			public INamedTypeSymbol Required => _compilation.GetTypeByMetadataName(typeof(Required<>).FullName);
 
-			public INamedTypeSymbol Argument => compilation.GetTypeByMetadataName(typeof(Argument<>).FullName);
+			public INamedTypeSymbol Argument => _compilation.GetTypeByMetadataName(typeof(Argument<>).FullName);
 
-			public INamedTypeSymbol Optional => compilation.GetTypeByMetadataName(typeof(PX.Data.Optional<>).FullName);
-			public INamedTypeSymbol Optional2 => compilation.GetTypeByMetadataName(typeof(Optional2<>).FullName);
+			public INamedTypeSymbol Optional => _compilation.GetTypeByMetadataName(typeof(PX.Data.Optional<>).FullName);
+			public INamedTypeSymbol Optional2 => _compilation.GetTypeByMetadataName(typeof(Optional2<>).FullName);
 
-			public INamedTypeSymbol BqlCommand => compilation.GetTypeByMetadataName(typeof(BqlCommand).FullName);
+			public INamedTypeSymbol BqlCommand => _compilation.GetTypeByMetadataName(typeof(BqlCommand).FullName);
 
-			public INamedTypeSymbol IBqlParameter => compilation.GetTypeByMetadataName(typeof(IBqlParameter).FullName);
+			public INamedTypeSymbol IBqlParameter => _compilation.GetTypeByMetadataName(typeof(IBqlParameter).FullName);
 			
-			public INamedTypeSymbol PXSelectBaseGenericType => compilation.GetTypeByMetadataName(typeof(PXSelectBase<>).FullName);
+			public INamedTypeSymbol PXSelectBaseGenericType => _compilation.GetTypeByMetadataName(typeof(PXSelectBase<>).FullName);
 
-			public INamedTypeSymbol PXFilter => compilation.GetTypeByMetadataName(typeof(PXFilter<>).FullName);
+			public INamedTypeSymbol PXFilter => _compilation.GetTypeByMetadataName(typeof(PXFilter<>).FullName);
 
-			public INamedTypeSymbol IPXNonUpdateable => compilation.GetTypeByMetadataName(typeof(IPXNonUpdateable).FullName); 
+			public INamedTypeSymbol IPXNonUpdateable => _compilation.GetTypeByMetadataName(typeof(IPXNonUpdateable).FullName); 
 
 			#region PXSetup
-			public INamedTypeSymbol PXSetup => compilation.GetTypeByMetadataName(typeof(PXSetup<>).FullName);
+			public INamedTypeSymbol PXSetup => _compilation.GetTypeByMetadataName(typeof(PXSetup<>).FullName);
 
-			public INamedTypeSymbol PXSetupWhere => compilation.GetTypeByMetadataName(typeof(PXSetup<,>).FullName);
+			public INamedTypeSymbol PXSetupWhere => _compilation.GetTypeByMetadataName(typeof(PXSetup<,>).FullName);
 
-			public INamedTypeSymbol PXSetupJoin => compilation.GetTypeByMetadataName(typeof(PXSetup<,,>).FullName);
+			public INamedTypeSymbol PXSetupJoin => _compilation.GetTypeByMetadataName(typeof(PXSetup<,,>).FullName);
 
-			public INamedTypeSymbol PXSetupSelect => compilation.GetTypeByMetadataName(typeof(PXSetupSelect<>).FullName);
+			public INamedTypeSymbol PXSetupSelect => _compilation.GetTypeByMetadataName(typeof(PXSetupSelect<>).FullName);
 
 			public ImmutableArray<INamedTypeSymbol> GetPXSetupTypes() =>
 				ImmutableArray.Create
