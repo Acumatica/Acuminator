@@ -234,4 +234,13 @@
   <data name="Setting_UseBqlDetailedOutlining_Description" xml:space="preserve">
     <value>Collapse parts of BQL commands (only for Roslyn coloring). If set to false, BQL commands are collapsed only entirely.</value>
   </data>
+  <data name="Setting_CodeAnalysis_RecursiveAnalysisEnabled_Description" xml:space="preserve">
+    <value>Analyse the whole invocation tree in a recursive manner</value>
+  </data>
+  <data name="Setting_CodeAnalysis_RecursiveAnalysisEnabled_Title" xml:space="preserve">
+    <value>Enable recursive code analysis</value>
+  </data>
+  <data name="Category_CodeAnalysis" xml:space="preserve">
+    <value>Code Analysis</value>
+  </data>
 </root>

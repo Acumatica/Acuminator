@@ -1,10 +1,13 @@
 ﻿using System;
 using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
+using System.ComponentModel.Composition.Primitives;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Acuminator.Utilities;
 using Acuminator.Vsix.Formatter;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -12,8 +15,11 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Classification;
 using Acuminator.Vsix.GoToDeclaration;
-
-
+using Acuminator.Vsix.ServiceLocation;
+using CommonServiceLocator;
+using System.Composition.Hosting;
+using System.Composition.Hosting.Core;
+using Acuminator.Vsix.Settings;
 
 namespace Acuminator.Vsix
 {
@@ -134,18 +140,32 @@ namespace Acuminator.Vsix
             if (componentModel == null)
                 return;
 
-            try
-            {
-                componentModel.DefaultCompositionService.SatisfyImportsOnce(this);             
-            }
-            catch(Exception e)
-            {
-                //TODO Need to log error here
-            }
-        }
+			try
+			{
+				componentModel.DefaultCompositionService.SatisfyImportsOnce(this);
+				
+				var container = new CompositionContainer(CompositionOptions.Default, componentModel.DefaultExportProvider);
+				container.ComposeExportedValue<CodeAnalysisSettings>(new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage));
+				//var batch = new CompositionBatch();
+				//batch.AddExport(new Export(nameof (CodeAnalysisSettings), () => new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage)));
+				//container.Compose(batch);
 
-        #region Package Settings         
-        public bool ColoringEnabled => GeneralOptionsPage?.ColoringEnabled ?? true;
+				// Service Locator
+				IServiceLocator serviceLocator = new MefServiceLocator(container);
+
+				if (ServiceLocator.IsLocationProviderSet)
+					serviceLocator = new DelegatingServiceLocator(ServiceLocator.Current, serviceLocator);
+
+				ServiceLocator.SetLocatorProvider(() => serviceLocator);
+			}
+			catch (Exception ex)
+			{
+				//TODO Need to log error here
+			}
+		}
+
+		#region Package Settings         
+		public bool ColoringEnabled => GeneralOptionsPage?.ColoringEnabled ?? true;
 
 
         public bool UseRegexColoring => GeneralOptionsPage?.UseRegexColoring ?? false;

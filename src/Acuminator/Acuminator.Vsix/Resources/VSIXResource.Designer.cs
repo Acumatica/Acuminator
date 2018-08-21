@@ -223,6 +223,15 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Code Analysis.
+        /// </summary>
+        public static string Category_CodeAnalysis {
+            get {
+                return ResourceManager.GetString("Category_CodeAnalysis", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to BQL Coloring.
         /// </summary>
         public static string Category_Coloring {
@@ -282,6 +291,24 @@ namespace Acuminator.Vsix {
         public static string PXGraphFormatLabel {
             get {
                 return ResourceManager.GetString("PXGraphFormatLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Analyse the whole invocation tree in a recursive manner.
+        /// </summary>
+        public static string Setting_CodeAnalysis_RecursiveAnalysisEnabled_Description {
+            get {
+                return ResourceManager.GetString("Setting_CodeAnalysis_RecursiveAnalysisEnabled_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable recursive code analysis.
+        /// </summary>
+        public static string Setting_CodeAnalysis_RecursiveAnalysisEnabled_Title {
+            get {
+                return ResourceManager.GetString("Setting_CodeAnalysis_RecursiveAnalysisEnabled_Title", resourceCulture);
             }
         }
         

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Acuminator.Utilities;
+using CommonServiceLocator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -43,6 +44,8 @@ namespace Acuminator.Utils.RoslynExtensions
 		private SyntaxNode _currentNode;
 		private SyntaxNode _originalNode;
 
+		private readonly CodeAnalysisSettings _settings;
+
 		/// <summary>
 		/// Syntax node in the original tree that is being analyzed.
 		/// Typically it is the node on which a diagnostic should be reported.
@@ -57,6 +60,19 @@ namespace Acuminator.Utils.RoslynExtensions
 
 			_semanticModel = semanticModel;
 			_cancellationToken = cancellationToken;
+
+			try
+			{
+				if (ServiceLocator.IsLocationProviderSet)
+					_settings = ServiceLocator.Current.GetInstance<CodeAnalysisSettings>();
+			}
+			catch
+			{
+				// TODO: log the exception
+			}
+
+			if (_settings == null)
+				_settings = CodeAnalysisSettings.Default;
 		}
 
 		protected void ThrowIfCancellationRequested()
@@ -101,6 +117,11 @@ namespace Acuminator.Utils.RoslynExtensions
 				_originalNode = null;
 		}
 
+		private bool RecursiveAnalysisEnabled()
+		{
+			return _settings.RecursiveAnalysisEnabled && _nodesStack.Count <= MaxDepth;
+		}
+
 		#region Visit
 
 		public override void DefaultVisit(SyntaxNode node)
@@ -114,16 +135,17 @@ namespace Acuminator.Utils.RoslynExtensions
 		{
 			ThrowIfCancellationRequested();
 
-			if (_nodesStack.Count > MaxDepth) return;
-			
-			var methodSymbol = GetMethodSymbol(node);
-
-			var externalMethodNode = methodSymbol?.GetSyntax(_cancellationToken) as MethodDeclarationSyntax;
-			if (externalMethodNode != null)
+			if (RecursiveAnalysisEnabled())
 			{
-				Push(node);
-				externalMethodNode.Accept(this);
-				Pop();
+				var methodSymbol = GetMethodSymbol(node);
+
+				var externalMethodNode = methodSymbol?.GetSyntax(_cancellationToken) as MethodDeclarationSyntax;
+				if (externalMethodNode != null)
+				{
+					Push(node);
+					externalMethodNode.Accept(this);
+					Pop();
+				}
 			}
 
 			base.VisitInvocationExpression(node);
