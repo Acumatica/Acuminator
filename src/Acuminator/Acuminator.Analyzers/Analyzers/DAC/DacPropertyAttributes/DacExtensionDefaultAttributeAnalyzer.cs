@@ -20,6 +20,7 @@ namespace Acuminator.Analyzers
 	{
 
 		private const string _PersistingCheck = "PersistingCheck";
+		
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
 			(
@@ -36,8 +37,6 @@ namespace Acuminator.Analyzers
 #pragma warning restore CS4014
 		private static Task AnalyzePropertyAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
-			//IPropertySymbol property = symbolContext.Symbol as IPropertySymbol;
-
 			if (!(symbolContext.Symbol is INamedTypeSymbol dacOrDacExt) || !dacOrDacExt.IsDacOrExtension(pxContext))
 				return Task.FromResult(false);
 
@@ -57,82 +56,86 @@ namespace Acuminator.Analyzers
 
 			if (attributes.Length == 0)
 				return;
-
+				
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 			
 			bool isBoundField = attributeInformation.ContainsBoundAttributes(attributes.Select(a => a.AttributeClass));
 
 			if (isBoundField)
 			{
-				if (IsIBqlTableTypeImplementation(property)) // BQLTable class bound field
-					return;
-
-				//check 
-				foreach (var attribute in attributes)
-				{
-					var typesHierarchy = attribute.AttributeClass.GetBaseTypesAndThis();
-					if(typesHierarchy.Contains(pxContext.AttributeTypes.PXDefaultAttribute))
-					{
-						foreach (var argument in attribute.NamedArguments)
-						{
-							if (argument.Key.Contains(_PersistingCheck) && (int)argument.Value.Value == (int)PXPersistingCheck.Nothing)
-								return;
-						}
-						Location[] locations = await Task.WhenAll(GetAttributeLocationAsync(attribute, symbolContext.CancellationToken));
-						Location attributeLocation = locations[0];
-
-						if (attributeLocation != null)
-						{
-							var diagnosticProperties = new Dictionary<string, string>{
-															{ DiagnosticProperty.IsBoundField,
-															  isBoundField.ToString() }}.ToImmutableDictionary();
-
-							symbolContext.ReportDiagnostic(
-								Diagnostic.Create(
-									Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attributeLocation, diagnosticProperties));
-						}
-					}
-				}
+				AnalyzeAttributesWithinBoundFieldAsync(property, attributes, pxContext, symbolContext, isBoundField);
 			}
 			else
 			{
-				foreach (var attribute in attributes)
-				{
-					var typesHierarchy = attribute.AttributeClass.GetBaseTypesAndThis();
-					if(typesHierarchy.Contains(pxContext.AttributeTypes.PXDefaultAttribute) &&
-						!typesHierarchy.Contains(pxContext.AttributeTypes.PXUnboundDefaultAttribute))
-					{
-						Location[] locations = await Task.WhenAll(GetAttributeLocationAsync(attribute, symbolContext.CancellationToken));
-						Location attributeLocation = locations[0];
-
-						if (attributeLocation != null)
-						{
-							var diagnosticProperties = new Dictionary<string, string>
-						{
-							{ DiagnosticProperty.IsBoundField, isBoundField.ToString() }
-						}.ToImmutableDictionary();
-
-							symbolContext.ReportDiagnostic(
-								Diagnostic.Create(
-									Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attributeLocation, diagnosticProperties));
-						}
-					}
-
-				}
+				AnalyzeAttributesWithinUnBoundField(property, attributes, pxContext,symbolContext, isBoundField);
 			}
 			return;
 		}
 
-	/*	private static bool CheckProperty(IPropertySymbol property, PXContext pxContext)
+		private static async void AnalyzeAttributesWithinBoundFieldAsync(IPropertySymbol property, ImmutableArray<AttributeData> attributes, PXContext pxContext, SymbolAnalysisContext symbolContext, bool isBoundField)
 		{
-			var parent = property?.ContainingType;
+			if (IsIBqlTableTypeImplementation(property)) // BQLTable class bound field
+				return;
 
-			if (parent == null || (!parent.ImplementsInterface(pxContext.IBqlTableType) && !parent.InheritsFrom(pxContext.PXCacheExtensionType)))
-				return false;
-			return property.Type.TypeKind == TypeKind.Struct ||
-				   property.Type.TypeKind == TypeKind.Class ||
-				   property.Type.TypeKind == TypeKind.Array;
-		}*/
+			foreach (var attribute in attributes)
+			{
+				var typesHierarchy = attribute.AttributeClass.GetBaseTypesAndThis();
+				if (typesHierarchy.Contains(pxContext.AttributeTypes.PXDefaultAttribute))
+				{
+					foreach (KeyValuePair<string, TypedConstant> argument in attribute.NamedArguments)
+					{
+						if (isAttributeContainsPersistingCheckNothing(argument))
+							return;
+					}
+					Location[] locations = await Task.WhenAll(GetAttributeLocationAsync(attribute, symbolContext.CancellationToken));
+					Location attributeLocation = locations[0];
+
+					if (attributeLocation != null)
+					{
+						var diagnosticProperties = new Dictionary<string, string>
+						{
+							{ DiagnosticProperty.IsBoundField,isBoundField.ToString() }
+						}.ToImmutableDictionary();
+
+						symbolContext.ReportDiagnostic(
+							Diagnostic.Create(
+								Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attributeLocation, diagnosticProperties));
+					}
+				}
+			}
+		}
+
+		private static  bool isAttributeContainsPersistingCheckNothing(KeyValuePair<string, TypedConstant> argument)
+		{
+			return (argument.Key.Contains(_PersistingCheck) && (int)argument.Value.Value == (int)PXPersistingCheck.Nothing);
+		}
+
+		private static async void AnalyzeAttributesWithinUnBoundField(IPropertySymbol property, ImmutableArray<AttributeData> attributes, PXContext pxContext, SymbolAnalysisContext symbolContext, bool isBoundField)
+		{
+			foreach (var attribute in attributes)
+			{
+				var typesHierarchy = attribute.AttributeClass.GetBaseTypesAndThis();
+
+				if (typesHierarchy.Contains(pxContext.AttributeTypes.PXDefaultAttribute) &&
+					!typesHierarchy.Contains(pxContext.AttributeTypes.PXUnboundDefaultAttribute))
+				{
+					Location[] locations = await Task.WhenAll(GetAttributeLocationAsync(attribute, symbolContext.CancellationToken));
+					Location attributeLocation = locations[0];
+
+					if (attributeLocation != null)
+					{
+						var diagnosticProperties = new Dictionary<string, string>
+						{
+							{ DiagnosticProperty.IsBoundField, isBoundField.ToString() }
+						}.ToImmutableDictionary();
+
+						symbolContext.ReportDiagnostic(
+							Diagnostic.Create(
+								Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attributeLocation, diagnosticProperties));
+					}
+				}
+			}
+		}
 
 		private static bool IsIBqlTableTypeImplementation(IPropertySymbol property)
 		{

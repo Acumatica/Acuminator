@@ -40,13 +40,26 @@ namespace Acuminator.Analyzers.FixProviders
 			if (diagnostic == null)
 				return;
 
-			string codeActionName = nameof(Resources.PX1030Fix).GetLocalized().ToString();
-			CodeAction codeAction =
-				CodeAction.Create(codeActionName,
-									cToken => ReplaceIncorrectDefaultAttribute(context.Document, context.Span, diagnostic.IsBoundField(),cToken),
-									equivalenceKey: codeActionName);
+			if (diagnostic.IsBoundField())
+			{
+				string codeActionNameBound = nameof(Resources.PX1030FixBound).GetLocalized().ToString();
+				CodeAction codeActionBound =
+					CodeAction.Create(codeActionNameBound,
+							cToken => ReplaceIncorrectDefaultAttribute(context.Document, context.Span, diagnostic.IsBoundField(), cToken),
+							equivalenceKey: codeActionNameBound);
 
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+				context.RegisterCodeFix(codeActionBound, context.Diagnostics);
+			}
+			else
+			{
+				string codeActionNameUnbound = nameof(Resources.PX1030FixUnbound).GetLocalized().ToString();
+				CodeAction codeActionUnbound =
+					CodeAction.Create(codeActionNameUnbound,
+										cToken => ReplaceIncorrectDefaultAttribute(context.Document, context.Span, diagnostic.IsBoundField(), cToken),
+										equivalenceKey: codeActionNameUnbound);
+
+				context.RegisterCodeFix(codeActionUnbound, context.Diagnostics);
+			}
 		}
 
 		private async Task<Document> ReplaceIncorrectDefaultAttribute(Document document, TextSpan span, bool isBoundField,CancellationToken cancellationToken)

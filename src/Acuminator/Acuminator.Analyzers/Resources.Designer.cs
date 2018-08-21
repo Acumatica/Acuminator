@@ -447,7 +447,7 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1028Title", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to PXGraph instances cannot be used inside DAC properties.
         /// </summary>
@@ -458,11 +458,20 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to For an unbound field, replace with PXUnboundDefaultAttribute; for a bound field, set PersistingCheck of PXDefaultAttribute to Nothing.
+        ///   Looks up a localized string similar to For a bound field, set PersistingCheck of PXDefaultAttribute to Nothing.
         /// </summary>
-        public static string PX1030Fix {
+        public static string PX1030FixBound {
             get {
-                return ResourceManager.GetString("PX1030Fix", resourceCulture);
+                return ResourceManager.GetString("PX1030FixBound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For an unbound field, replace with PXUnboundDefaultAttribute.
+        /// </summary>
+        public static string PX1030FixUnbound {
+            get {
+                return ResourceManager.GetString("PX1030FixUnbound", resourceCulture);
             }
         }
         
