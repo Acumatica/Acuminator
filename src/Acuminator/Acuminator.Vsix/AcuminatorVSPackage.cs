@@ -146,9 +146,6 @@ namespace Acuminator.Vsix
 				
 				var container = new CompositionContainer(CompositionOptions.Default, componentModel.DefaultExportProvider);
 				container.ComposeExportedValue<CodeAnalysisSettings>(new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage));
-				//var batch = new CompositionBatch();
-				//batch.AddExport(new Export(nameof (CodeAnalysisSettings), () => new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage)));
-				//container.Compose(batch);
 
 				// Service Locator
 				IServiceLocator serviceLocator = new MefServiceLocator(container);
