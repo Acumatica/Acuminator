@@ -81,18 +81,19 @@ namespace Acuminator.Utils.RoslynExtensions
 		/// Returns a symbol for an invocation expression, or, 
 		/// if the exact symbol cannot be found, returns the first candidate.
 		/// </summary>
-		protected IMethodSymbol GetMethodSymbol(InvocationExpressionSyntax node)
+		protected T GetSymbol<T>(ExpressionSyntax node)
+			where T : class, ISymbol
 		{
 			var symbolInfo = _semanticModel.GetSymbolInfo(node, _cancellationToken);
 
-			if (symbolInfo.Symbol is IMethodSymbol methodSymbol)
+			if (symbolInfo.Symbol is T symbol)
 			{
-				return methodSymbol;
+				return symbol;
 			}
 
 			if (!symbolInfo.CandidateSymbols.IsEmpty)
 			{
-				return symbolInfo.CandidateSymbols.OfType<IMethodSymbol>().FirstOrDefault();
+				return symbolInfo.CandidateSymbols.OfType<T>().FirstOrDefault();
 			}
 
 			return null;
@@ -127,9 +128,9 @@ namespace Acuminator.Utils.RoslynExtensions
 
 			if (RecursiveAnalysisEnabled())
 			{
-				var methodSymbol = GetMethodSymbol(node);
+				var methodSymbol = GetSymbol<IMethodSymbol>(node);
 
-				var externalMethodNode = methodSymbol?.GetSyntax(_cancellationToken) as MethodDeclarationSyntax;
+				var externalMethodNode = methodSymbol?.GetSyntax(_cancellationToken) as CSharpSyntaxNode;
 				if (externalMethodNode != null)
 				{
 					Push(node);
@@ -139,6 +140,25 @@ namespace Acuminator.Utils.RoslynExtensions
 			}
 
 			base.VisitInvocationExpression(node);
+		}
+
+		public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
+		{
+			ThrowIfCancellationRequested();
+
+			if (RecursiveAnalysisEnabled())
+			{
+				var getterSymbol = GetSymbol<IPropertySymbol>(node)?.GetMethod;
+				var externalGetterNode = getterSymbol?.GetSyntax(_cancellationToken) as CSharpSyntaxNode;
+				if (externalGetterNode != null)
+				{
+					Push(node);
+					externalGetterNode.Accept(this);
+					Pop();
+				}
+			}
+
+			base.VisitMemberAccessExpression(node);
 		}
 
 		#endregion

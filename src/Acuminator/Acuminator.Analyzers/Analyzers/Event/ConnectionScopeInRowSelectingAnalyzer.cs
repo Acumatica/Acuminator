@@ -87,7 +87,7 @@ namespace Acuminator.Analyzers
 				if (_insideConnectionScope)
 					return;
 				
-				var methodSymbol = GetMethodSymbol(node);
+				var methodSymbol = GetSymbol<IMethodSymbol>(node);
 
 				if (methodSymbol != null && IsDatabaseCall(methodSymbol))
 				{
