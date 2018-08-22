@@ -347,11 +347,8 @@ namespace Acuminator.Utilities
 				case 1:	
 					return typeParamsListSyntax.Span;
 
-				case 2:
-					var firstTypeArg = typeArgumentsList[0];
-
-					if (!(firstTypeArg is GenericNameSyntax genericSingleArgument) || 
-						!(typeSymbol is INamedTypeSymbol namedTypeSymbol) ||
+				case 2:			
+					if (!(typeSymbol is INamedTypeSymbol namedTypeSymbol) || 
 						!namedTypeSymbol.TypeArguments[0].ImplementsInterface(TypeNames.IBqlCreator))
 					{
 						return typeParamsListSyntax.Span;
