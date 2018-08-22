@@ -11,7 +11,6 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Acuminator.Utilities;
 using System.Collections.Immutable;
 using PX.Data;
-using System.Threading;
 
 namespace Acuminator.Analyzers
 {
@@ -54,23 +53,26 @@ namespace Acuminator.Analyzers
 
 			if (attributes.Length == 0)
 				return;
-				
+
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
-			
+
 			bool isBoundField = attributeInformation.ContainsBoundAttributes(attributes.Select(a => a.AttributeClass));
 
 			if (isBoundField)
 			{
-				AnalyzeAttributesWithinBoundFieldAsync(property, attributes, pxContext, symbolContext, isBoundField);
+				await AnalyzeAttributesWithinBoundFieldAsync(property, attributes, pxContext, symbolContext, isBoundField);
 			}
 			else
 			{
-				AnalyzeAttributesWithinUnBoundField(property, attributes, pxContext,symbolContext, isBoundField);
+				await AnalyzeAttributesWithinUnBoundFieldAsync(property, attributes, pxContext, symbolContext, isBoundField);
 			}
 			return;
 		}
 
-		private static async void AnalyzeAttributesWithinBoundFieldAsync(IPropertySymbol property, ImmutableArray<AttributeData> attributes, PXContext pxContext, SymbolAnalysisContext symbolContext, bool isBoundField)
+		private static async Task AnalyzeAttributesWithinBoundFieldAsync(IPropertySymbol property, ImmutableArray<AttributeData> attributes,
+																			PXContext pxContext,
+																			SymbolAnalysisContext symbolContext,
+																			bool isBoundField)
 		{
 			if (IsIBqlTableTypeImplementation(property)) // BQLTable class bound field
 				return;
@@ -83,8 +85,9 @@ namespace Acuminator.Analyzers
 					foreach (KeyValuePair<string, TypedConstant> argument in attribute.NamedArguments)
 					{
 						if (isAttributeContainsPersistingCheckNothing(argument))
-							return;
+							return ;
 					}
+
 					Location[] locations = await Task.WhenAll(GetAttributeLocationAsync(attribute, symbolContext.CancellationToken));
 					Location attributeLocation = locations[0];
 
@@ -101,6 +104,7 @@ namespace Acuminator.Analyzers
 					}
 				}
 			}
+			return;
 		}
 
 		private static  bool isAttributeContainsPersistingCheckNothing(KeyValuePair<string, TypedConstant> argument)
@@ -108,7 +112,8 @@ namespace Acuminator.Analyzers
 			return (argument.Key.Contains(_PersistingCheck) && (int)argument.Value.Value == (int)PXPersistingCheck.Nothing);
 		}
 
-		private static async void AnalyzeAttributesWithinUnBoundField(IPropertySymbol property, ImmutableArray<AttributeData> attributes, PXContext pxContext, SymbolAnalysisContext symbolContext, bool isBoundField)
+		private static async Task AnalyzeAttributesWithinUnBoundFieldAsync(IPropertySymbol property, ImmutableArray<AttributeData> attributes,
+			PXContext pxContext, SymbolAnalysisContext symbolContext, bool isBoundField)
 		{
 			foreach (var attribute in attributes)
 			{
