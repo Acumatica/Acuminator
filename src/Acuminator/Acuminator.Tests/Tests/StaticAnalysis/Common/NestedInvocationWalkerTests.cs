@@ -30,7 +30,7 @@ namespace Acuminator.Tests
 
 			public override void VisitThrowStatement(ThrowStatementSyntax node)
 			{
-				_locations.Add(node.GetLocation());
+				_locations.Add(OriginalNode.GetLocation());
 			}
 		}
 
@@ -40,11 +40,26 @@ namespace Acuminator.Tests
 		{
 			Document document = CreateDocument(text);
 			SemanticModel semanticModel = await document.GetSemanticModelAsync();
-			var root = (CSharpSyntaxNode) await document.GetSyntaxRootAsync();
 			var walker = new ExceptionWalker(semanticModel, CancellationToken.None);
+			var node = (CSharpSyntaxNode) await document.GetSyntaxRootAsync();
 
-			root.Accept(walker);
+			node.Accept(walker);
 			
+			walker.Locations.Should().BeEquivalentTo((line: 13, column: 4));
+		}
+
+		[Theory]
+		[EmbeddedFileData(@"Common\NestedInvocationWalker\StaticMethod.cs")]
+		public async Task StaticMethod(string text)
+		{
+			Document document = CreateDocument(text);
+			SemanticModel semanticModel = await document.GetSemanticModelAsync();
+			var walker = new ExceptionWalker(semanticModel, CancellationToken.None);
+			var node = (CSharpSyntaxNode) (await document.GetSyntaxRootAsync()).DescendantNodes()
+				.OfType<ClassDeclarationSyntax>().First();
+
+			node.Accept(walker);
+
 			walker.Locations.Should().BeEquivalentTo((line: 13, column: 4));
 		}
 	}
