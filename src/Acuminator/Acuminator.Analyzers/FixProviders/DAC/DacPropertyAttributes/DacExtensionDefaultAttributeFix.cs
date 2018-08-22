@@ -33,33 +33,26 @@ namespace Acuminator.Analyzers.FixProviders
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		public override Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
 			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1030_DefaultAttibuteToExisitingRecords.Id);
 
 			if (diagnostic == null)
-				return;
+				return Task.FromResult(false);
 
-			if (diagnostic.IsBoundField())
-			{
-				string codeActionNameBound = nameof(Resources.PX1030FixBound).GetLocalized().ToString();
-				CodeAction codeActionBound =
-					CodeAction.Create(codeActionNameBound,
-							cToken => ReplaceIncorrectDefaultAttribute(context.Document, context.Span, diagnostic.IsBoundField(), cToken),
-							equivalenceKey: codeActionNameBound);
+			bool isBoundField = IsBoundField(diagnostic);
+			string codeActionNameBound = (isBoundField)
+											? nameof(Resources.PX1030FixBound).GetLocalized().ToString()
+											: nameof(Resources.PX1030FixUnbound).GetLocalized().ToString();
 
-				context.RegisterCodeFix(codeActionBound, context.Diagnostics);
-			}
-			else
-			{
-				string codeActionNameUnbound = nameof(Resources.PX1030FixUnbound).GetLocalized().ToString();
-				CodeAction codeActionUnbound =
-					CodeAction.Create(codeActionNameUnbound,
-										cToken => ReplaceIncorrectDefaultAttribute(context.Document, context.Span, diagnostic.IsBoundField(), cToken),
-										equivalenceKey: codeActionNameUnbound);
+			CodeAction codeActionBound =
+				CodeAction.Create(codeActionNameBound,
+						cToken => ReplaceIncorrectDefaultAttribute(context.Document, context.Span, isBoundField, cToken),
+						equivalenceKey: codeActionNameBound);
 
-				context.RegisterCodeFix(codeActionUnbound, context.Diagnostics);
-			}
+			context.RegisterCodeFix(codeActionBound, context.Diagnostics);
+			return  Task.FromResult(true); ;
+			
 		}
 
 		private async Task<Document> ReplaceIncorrectDefaultAttribute(Document document, TextSpan span, bool isBoundField,CancellationToken cancellationToken)
@@ -88,13 +81,22 @@ namespace Acuminator.Analyzers.FixProviders
 			{
 				if (attributeNode.ArgumentList != null)
 				{
-					var persistingCheckArguments = from arguments in attributeNode.ArgumentList.Arguments
-													where arguments.GetText().ToString().Contains(_PersistingCheck)
-													select arguments;
-					
-					if (persistingCheckArguments.Any())
+					AttributeArgumentSyntax argument = getAttr();
+
+					AttributeArgumentSyntax getAttr(){
+						foreach (AttributeArgumentSyntax _argument in attributeNode.ArgumentList.Arguments)
+						{
+							if (_argument.NameEquals != null 
+								&& _argument.NameEquals.Name.Identifier.Text.Contains(_PersistingCheck))
+							{
+								return _argument;
+							}
+						}
+						return null;
+					}
+
+					if (argument != null )
 					{
-						AttributeArgumentSyntax argument = persistingCheckArguments.First();
 						persistingAttributeArgument = argument.ReplaceNode(argument.Expression, memberAccessExpression);
 						var newAttributeNode = attributeNode.ReplaceNode(argument, persistingAttributeArgument);
 						var newAttributeList = attributeList.ReplaceNode(attributeNode, newAttributeNode);
@@ -120,13 +122,7 @@ namespace Acuminator.Analyzers.FixProviders
 			return document.WithSyntaxRoot(modifiedRoot);
 		}
 
-
-	}
-
-	internal static class DiagnosticHelper {
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsBoundField(this Diagnostic diagnostic)
+		public static bool IsBoundField(Diagnostic diagnostic)
 		{
 			diagnostic.ThrowOnNull(nameof(diagnostic));
 
@@ -135,4 +131,5 @@ namespace Acuminator.Analyzers.FixProviders
 				: false;
 		}
 	}
+
 }

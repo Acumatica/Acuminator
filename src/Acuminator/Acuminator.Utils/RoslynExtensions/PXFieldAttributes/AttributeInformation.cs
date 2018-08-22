@@ -16,7 +16,6 @@ namespace Acuminator.Utilities
 	{
 		private readonly PXContext _context;
 
-
 		public AttributeInformation(PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
@@ -24,26 +23,15 @@ namespace Acuminator.Utilities
 			_context = pxContext;
 		}
 
-		public bool ContainsBaseType(ITypeSymbol attributeSymbol, ITypeSymbol type)
-		{
-			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
-			type.ThrowOnNull(nameof(type));
-
-			IEnumerable<ITypeSymbol> attributeTypeHierarchy = attributeSymbol.GetBaseTypesAndThis();
-			if (attributeTypeHierarchy.Contains(type))
-				return true;
-			return false;
-		}
-
 		public bool AttributeDerivedFromClass(ITypeSymbol attributeSymbol, ITypeSymbol type)
 		{
-			if (ContainsBaseType(attributeSymbol, type))
+			if (attributeSymbol.InheritsFromOrEquals(type))
 				return true;
 
 			var aggregateAttribute = _context.AttributeTypes.PXAggregateAttribute;
 			var dynamicAggregateAttribute = _context.AttributeTypes.PXDynamicAggregateAttribute;
 
-			if (ContainsBaseType(attributeSymbol, aggregateAttribute) || ContainsBaseType(attributeSymbol, dynamicAggregateAttribute))
+			if (attributeSymbol.InheritsFromOrEquals( aggregateAttribute) || attributeSymbol.InheritsFromOrEquals(dynamicAggregateAttribute))
 			{
 				var allAttributes = attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
 				foreach (var attribute in allAttributes)
@@ -62,10 +50,10 @@ namespace Acuminator.Utilities
 				if (depth < 0)
 					return false;
 
-				if (ContainsBaseType(_attributeSymbol, type))
+				if (_attributeSymbol.InheritsFromOrEquals(type))
 					return true;
 
-				if (ContainsBaseType(_attributeSymbol, aggregateAttribute) || ContainsBaseType(_attributeSymbol, dynamicAggregateAttribute))
+				if (_attributeSymbol.InheritsFromOrEquals(aggregateAttribute) || _attributeSymbol.InheritsFromOrEquals(dynamicAggregateAttribute))
 				{
 					var allAttributes = _attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
 					foreach (var attribute in allAttributes)

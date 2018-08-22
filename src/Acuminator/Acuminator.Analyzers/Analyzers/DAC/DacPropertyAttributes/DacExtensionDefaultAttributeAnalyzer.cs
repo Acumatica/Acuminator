@@ -74,13 +74,15 @@ namespace Acuminator.Analyzers
 																			SymbolAnalysisContext symbolContext,
 																			bool isBoundField)
 		{
-			if (IsIBqlTableTypeImplementation(property)) // BQLTable class bound field
+			if (property.ContainingType.IsDAC()) // BQLTable class bound field
 				return;
+
+			AttributeInformation attributeInformation = new AttributeInformation(pxContext);
 
 			foreach (var attribute in attributes)
 			{
-				var typesHierarchy = attribute.AttributeClass.GetBaseTypesAndThis();
-				if (typesHierarchy.Contains(pxContext.AttributeTypes.PXDefaultAttribute))
+				
+				if (attributeInformation.AttributeDerivedFromClass(attribute.AttributeClass, pxContext.AttributeTypes.PXDefaultAttribute))
 				{
 					foreach (KeyValuePair<string, TypedConstant> argument in attribute.NamedArguments)
 					{
@@ -88,8 +90,7 @@ namespace Acuminator.Analyzers
 							return ;
 					}
 
-					Location[] locations = await Task.WhenAll(GetAttributeLocationAsync(attribute, symbolContext.CancellationToken));
-					Location attributeLocation = locations[0];
+					Location attributeLocation = await GetAttributeLocationAsync(attribute,symbolContext.CancellationToken);
 
 					if (attributeLocation != null)
 					{
@@ -104,7 +105,6 @@ namespace Acuminator.Analyzers
 					}
 				}
 			}
-			return;
 		}
 
 		private static  bool isAttributeContainsPersistingCheckNothing(KeyValuePair<string, TypedConstant> argument)
@@ -117,13 +117,12 @@ namespace Acuminator.Analyzers
 		{
 			foreach (var attribute in attributes)
 			{
-				var typesHierarchy = attribute.AttributeClass.GetBaseTypesAndThis();
+				AttributeInformation attributeInformation = new AttributeInformation(pxContext);
 
-				if (typesHierarchy.Contains(pxContext.AttributeTypes.PXDefaultAttribute) &&
-					!typesHierarchy.Contains(pxContext.AttributeTypes.PXUnboundDefaultAttribute))
+				if (attributeInformation.AttributeDerivedFromClass(attribute.AttributeClass, pxContext.AttributeTypes.PXDefaultAttribute) &&
+					!attributeInformation.AttributeDerivedFromClass(attribute.AttributeClass, pxContext.AttributeTypes.PXUnboundDefaultAttribute))
 				{
-					Location[] locations = await Task.WhenAll(GetAttributeLocationAsync(attribute, symbolContext.CancellationToken));
-					Location attributeLocation = locations[0];
+					Location attributeLocation = await GetAttributeLocationAsync(attribute, symbolContext.CancellationToken);
 
 					if (attributeLocation != null)
 					{
@@ -139,16 +138,6 @@ namespace Acuminator.Analyzers
 				}
 			}
 		}
-
-		private static bool IsIBqlTableTypeImplementation(IPropertySymbol property)
-		{
-			var parent = property?.ContainingType;
-
-			if (parent == null || !parent.IsDAC())
-				return false;
-			return true;
-		}
-
 
 		public static async Task<Location> GetAttributeLocationAsync(AttributeData attribute, CancellationToken cancellationToken)
 		{
