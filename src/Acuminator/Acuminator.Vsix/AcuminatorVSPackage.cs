@@ -151,11 +151,11 @@ namespace Acuminator.Vsix
             if (componentModel == null)
                 return;
 
+			InitializeLogger();
+
 			try
 			{
 				componentModel.DefaultCompositionService.SatisfyImportsOnce(this);
-
-				AcuminatorLogger = new AcuminatorLogger(this);
 
 				var container = new CompositionContainer(CompositionOptions.Default, componentModel.DefaultExportProvider);
 				container.ComposeExportedValue<CodeAnalysisSettings>(new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage));
@@ -177,8 +177,21 @@ namespace Acuminator.Vsix
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
-			AcuminatorLogger.Dispose();
+			AcuminatorLogger?.Dispose();
 		}
+
+	    private void InitializeLogger()
+	    {
+		    try
+		    {
+			    AcuminatorLogger = new AcuminatorLogger(this);
+		    }
+		    catch (Exception ex)
+		    {
+			    ActivityLog.TryLogError(AcuminatorLogger.PackageName,
+				    $"An error occurred during the logger initialization ({ex.GetType().Name}, message: \"{ex.Message}\")");
+		    }
+	    }
 
 		#region Package Settings         
 		public bool ColoringEnabled => GeneralOptionsPage?.ColoringEnabled ?? true;
