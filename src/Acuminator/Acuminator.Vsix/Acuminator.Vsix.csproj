@@ -325,6 +325,7 @@
     <Compile Include="ServiceLocation\DelegatingServiceLocator.cs" />
     <Compile Include="ServiceLocation\MefServiceLocator.cs" />
     <Compile Include="Settings\CodeAnalysisSettingsFromOptionsPage.cs" />
+    <Compile Include="Utils\AcuminatorLogger.cs" />
     <Compile Include="Utils\EditorExtensions.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheAsync.cs" />
     <Compile Include="Coloriser\Formats\ClassificationTypeDefinitions.cs" />

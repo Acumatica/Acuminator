@@ -104,6 +104,9 @@ namespace Acuminator.Analyzers
         internal static DiagnosticDescriptor PX1028_ConstructorInDacDeclaration { get; } =
            Rule("PX1028", nameof(Resources.PX1028Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
+        internal static DiagnosticDescriptor PX1029_PXGraphUsageInDac { get; } =
+            Rule("PX1029", nameof(Resources.PX1029Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+            
 		internal static DiagnosticDescriptor PX1040_ConstructorInGraphExtension { get; } =
 			Rule("PX1040", nameof(Resources.PX1040Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 

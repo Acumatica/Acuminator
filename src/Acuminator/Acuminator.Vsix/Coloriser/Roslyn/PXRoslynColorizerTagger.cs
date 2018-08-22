@@ -98,15 +98,20 @@ namespace Acuminator.Vsix.Coloriser
 
             try
             {
-                getDocumentTask.Wait();
-            }
+				//This method is deliberately synchronous so we ignore warnings
+#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
+				getDocumentTask.Wait();
+
+			}
             catch (Exception)
             {
                 return ClassificationTagsCache.ProcessedTags;     // TODO: report this to someone.
             }
 
             ParsedDocument document = getDocumentTask.Result;
-            WalkDocumentSyntaxTreeForTags(document, CancellationToken.None);
+#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
+
+			WalkDocumentSyntaxTreeForTags(document, CancellationToken.None);
             //documentCache = document;
             //isParsed = true;
           

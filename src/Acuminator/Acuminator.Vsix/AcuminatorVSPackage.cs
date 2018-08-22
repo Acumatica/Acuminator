@@ -20,6 +20,11 @@ using CommonServiceLocator;
 using System.Composition.Hosting;
 using System.Composition.Hosting.Core;
 using Acuminator.Vsix.Settings;
+using Acuminator.Vsix.Logger;
+
+using FirstChanceExceptionEventArgs = System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs;
+
+
 
 namespace Acuminator.Vsix
 {
@@ -101,6 +106,12 @@ namespace Acuminator.Vsix
             }
         }
 
+		internal AcuminatorLogger AcuminatorLogger
+		{
+			get;
+			private set;
+		}
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AcuminatorVSPackage"/> class.
         /// </summary>
@@ -143,7 +154,9 @@ namespace Acuminator.Vsix
 			try
 			{
 				componentModel.DefaultCompositionService.SatisfyImportsOnce(this);
-				
+
+				AcuminatorLogger = new AcuminatorLogger(this);
+
 				var container = new CompositionContainer(CompositionOptions.Default, componentModel.DefaultExportProvider);
 				container.ComposeExportedValue<CodeAnalysisSettings>(new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage));
 
@@ -159,6 +172,12 @@ namespace Acuminator.Vsix
 			{
 				// Exception will be logged in FCEL
 			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+			AcuminatorLogger.Dispose();
 		}
 
 		#region Package Settings         

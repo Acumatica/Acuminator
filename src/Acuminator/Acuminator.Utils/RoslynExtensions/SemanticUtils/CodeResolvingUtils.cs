@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Acuminator.Analyzers;
 
-
+using PX.Data;
 
 namespace Acuminator.Utilities
 {
@@ -198,6 +198,15 @@ namespace Acuminator.Utilities
 			return typeSymbol.ImplementsInterface(TypeNames.IBqlTable);
 		}
 
+        public static bool IsDacOrExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
+        {
+            typeSymbol.ThrowOnNull(nameof(typeSymbol));
+            pxContext.ThrowOnNull(nameof(pxContext));
+
+            return typeSymbol.ImplementsInterface(pxContext.IBqlTableType) ||
+                   typeSymbol.InheritsFrom(pxContext.PXCacheExtensionType);
+        }
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsDacExtension(this ITypeSymbol typeSymbol, bool ruleOutBaseTypes = false)
 		{
@@ -233,6 +242,16 @@ namespace Acuminator.Utilities
 
 			return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.PXGraph, includeInterfaces: false);
 		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsPXGraphOrExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
+        {
+            typeSymbol.ThrowOnNull(nameof(typeSymbol));
+            pxContext.ThrowOnNull(nameof(pxContext));
+
+            return typeSymbol.InheritsFromOrEquals(pxContext.PXGraphType) ||
+                   typeSymbol.InheritsFromOrEquals(pxContext.PXGraphExtensionType);
+        }
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsPXAction(this ITypeSymbol typeSymbol)
@@ -294,24 +313,57 @@ namespace Acuminator.Utilities
 
 		public static TextSpan? GetBqlOperatorOutliningTextSpan(this ITypeSymbol typeSymbol, GenericNameSyntax bqlOperatorNode)
 		{
-			List<string> typesAndInterfaces = typeSymbol.AllInterfaces
+			List<string> operatorInterfaces = typeSymbol.AllInterfaces
 														.Select(type => type.Name)
 														.ToList();
 
-			if (typesAndInterfaces.Contains(TypeNames.IBqlComparison) ||
-				typesAndInterfaces.Contains(TypeNames.IBqlFunction) ||
-				typesAndInterfaces.Contains(TypeNames.IBqlSortColumn))
+			if (operatorInterfaces.Contains(TypeNames.IBqlComparison) ||
+				operatorInterfaces.Contains(TypeNames.IBqlFunction) ||
+				operatorInterfaces.Contains(TypeNames.IBqlSortColumn))
+			{
+				return null;
+			}
+			else if (operatorInterfaces.Contains(TypeNames.IBqlAggregate) ||
+					 operatorInterfaces.Contains(TypeNames.IBqlOrderBy))
+			{
+				return bqlOperatorNode.TypeArgumentList.Span;
+			}
+			else if (operatorInterfaces.Contains(TypeNames.IBqlJoin))
+			{
+				return GetOutliningSpanForBqlJoin();
+			}
+			else if (!operatorInterfaces.Contains(TypeNames.IBqlPredicateChain) &&
+					 !operatorInterfaces.Contains(TypeNames.IBqlOn))
 			{
 				return null;
 			}
 
-			if (typesAndInterfaces.Contains(TypeNames.IBqlAggregate) ||
-				typesAndInterfaces.Contains(TypeNames.IBqlOrderBy))
+			TypeArgumentListSyntax typeParamsListSyntax = bqlOperatorNode.TypeArgumentList;
+			var typeArgumentsList = typeParamsListSyntax.Arguments;
+			
+			switch (typeArgumentsList.Count)
 			{
-				return bqlOperatorNode.TypeArgumentList.Span;
+				case 0:
+				case 1:	
+					return typeParamsListSyntax.Span;
+
+				case 2:			
+					if (!(typeSymbol is INamedTypeSymbol namedTypeSymbol) || 
+						!namedTypeSymbol.TypeArguments[0].ImplementsInterface(TypeNames.IBqlCreator))
+					{
+						return typeParamsListSyntax.Span;
+					}
+
+					int twoArgsLength = typeArgumentsList.GetSeparator(0).SpanStart - typeParamsListSyntax.SpanStart;
+					return new TextSpan(typeParamsListSyntax.SpanStart, twoArgsLength);
+
+				default:				
+					int threeArgsLength = typeArgumentsList.GetSeparator(1).SpanStart - typeParamsListSyntax.SpanStart;
+					return new TextSpan(typeParamsListSyntax.SpanStart, threeArgsLength);
 			}
 
-			if (typesAndInterfaces.Contains(TypeNames.IBqlJoin))
+			//************************************Local Functions*************************************************
+			TextSpan? GetOutliningSpanForBqlJoin()
 			{
 				TypeArgumentListSyntax bqlJoinTypeParamsListSyntax = bqlOperatorNode.TypeArgumentList;
 				var bqlJoinTypeArgumentsList = bqlJoinTypeParamsListSyntax.Arguments;
@@ -327,27 +379,6 @@ namespace Acuminator.Utilities
 						int length = bqlJoinTypeArgumentsList.GetSeparator(1).SpanStart - bqlJoinTypeParamsListSyntax.SpanStart;
 						return new TextSpan(bqlJoinTypeParamsListSyntax.SpanStart, length);
 				}
-			}
-
-			if (!typesAndInterfaces.Contains(TypeNames.IBqlPredicateChain) &&
-				!typesAndInterfaces.Contains(TypeNames.IBqlOn))
-			{
-				return null;
-			}
-
-			TypeArgumentListSyntax typeParamsListSyntax = bqlOperatorNode.TypeArgumentList;
-			var typeArgumentsList = typeParamsListSyntax.Arguments;
-
-			switch (typeArgumentsList.Count)
-			{
-				case 0:
-				case 1:
-					return null;
-				case 2:
-					return typeParamsListSyntax.Span;
-				default:
-					int length = typeArgumentsList.GetSeparator(1).SpanStart - typeParamsListSyntax.SpanStart;
-					return new TextSpan(typeParamsListSyntax.SpanStart, length);
 			}
 		}
 	}

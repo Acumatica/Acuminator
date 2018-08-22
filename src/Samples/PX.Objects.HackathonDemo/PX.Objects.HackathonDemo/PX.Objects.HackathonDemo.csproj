@@ -53,6 +53,7 @@
     <Compile Include="Attributes\PXDBBaseCuryAttribute.cs" />
     <Compile Include="Attributes\FinPeriodIDAttribute.cs" />
     <Compile Include="Attributes\PXDBCurrencyAttribute.cs" />
+    <Compile Include="DAC\Graph usage\SOShipmentExt.cs" />
     <Compile Include="DAC\Multiple Levels of inheritance\SOOrderWithTotal.cs" />
     <Compile Include="DAC\Multiple Levels of inheritance\SOOrderWithHold.cs" />
     <Compile Include="DAC\TaxTran.cs" />
