@@ -46,7 +46,7 @@ namespace Acuminator.Analyzers
 				}
 			}
 
-			private static readonly IEnumerable<string> MethodPrefixes = new[] { "Select", "Search" };
+			private static readonly IEnumerable<string> MethodPrefixes = new[] { "Select", "Search", "Update", "Delete" };
 
 			private SymbolAnalysisContext _context;
 			private readonly PXContext _pxContext;
@@ -104,7 +104,7 @@ namespace Acuminator.Analyzers
 				var containingType = candidate.ContainingType?.OriginalDefinition;
 				return MethodPrefixes.Any(p => candidate.Name.StartsWith(p, StringComparison.Ordinal))
 				       && containingType != null
-				       && (containingType.InheritsFromOrEqualsGeneric(_pxContext.PXSelectBaseType)
+				       && (containingType.IsBqlCommand(_pxContext)
 				           || containingType.InheritsFromOrEquals(_pxContext.PXViewType)
 				           || containingType.InheritsFromOrEquals(_pxContext.PXSelectorAttribute)
 				           || containingType.Equals(_pxContext.PXDatabase));
