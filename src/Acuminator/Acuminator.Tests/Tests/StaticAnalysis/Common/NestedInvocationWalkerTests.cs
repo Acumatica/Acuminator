@@ -18,7 +18,7 @@ namespace Acuminator.Tests
 {
 	public class NestedInvocationWalkerTests : DiagnosticVerifier
 	{
-		class ExceptionWalker : NestedInvocationWalker
+		private class ExceptionWalker : NestedInvocationWalker
 		{
 			private readonly List<Location> _locations = new List<Location>();
 			public IReadOnlyList<Location> Locations => _locations;
