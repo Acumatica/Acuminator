@@ -91,7 +91,7 @@ namespace Acuminator.Analyzers
 
 				if (methodSymbol != null && IsDatabaseCall(methodSymbol))
 				{
-					ReportDiagnostic(OriginalNode);
+					ReportDiagnostic(OriginalNode ?? node);
 				}
 				else
 				{

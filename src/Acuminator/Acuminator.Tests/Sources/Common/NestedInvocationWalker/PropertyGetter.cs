@@ -10,7 +10,19 @@ namespace Acuminator
 	{
 		public void DoSomething()
 		{
-			throw new Exception();
+			var bar = new Bar();
+			int count = bar.Count;
+		}
+	}
+
+	public class Bar
+	{
+		public int Count
+		{
+			get
+			{
+				throw new NotSupportedException();
+			}
 		}
 	}
 }

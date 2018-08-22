@@ -40,17 +40,14 @@ namespace Acuminator.Utils.RoslynExtensions
 
 		private readonly SemanticModel _semanticModel;
 		private CancellationToken _cancellationToken;
-
-		private SyntaxNode _currentNode;
-		private SyntaxNode _originalNode;
-
+		
 		private readonly CodeAnalysisSettings _settings;
 
 		/// <summary>
 		/// Syntax node in the original tree that is being analyzed.
 		/// Typically it is the node on which a diagnostic should be reported.
 		/// </summary>
-		protected SyntaxNode OriginalNode => _originalNode ?? _currentNode;
+		protected SyntaxNode OriginalNode { get; private set; }
 
 		private readonly Stack<SyntaxNode> _nodesStack = new Stack<SyntaxNode>();
 
@@ -104,7 +101,7 @@ namespace Acuminator.Utils.RoslynExtensions
 		private void Push(SyntaxNode node)
 		{
 			if (_nodesStack.Count == 0)
-				_originalNode = node;
+				OriginalNode = node;
 
 			_nodesStack.Push(node);
 		}
@@ -114,7 +111,7 @@ namespace Acuminator.Utils.RoslynExtensions
 			_nodesStack.Pop();
 
 			if (_nodesStack.Count == 0)
-				_originalNode = null;
+				OriginalNode = null;
 		}
 
 		private bool RecursiveAnalysisEnabled()
@@ -123,13 +120,6 @@ namespace Acuminator.Utils.RoslynExtensions
 		}
 
 		#region Visit
-
-		public override void DefaultVisit(SyntaxNode node)
-		{
-			_currentNode = node;
-			base.DefaultVisit(node);
-			_currentNode = null;
-		}
 
 		public override void VisitInvocationExpression(InvocationExpressionSyntax node)
 		{
