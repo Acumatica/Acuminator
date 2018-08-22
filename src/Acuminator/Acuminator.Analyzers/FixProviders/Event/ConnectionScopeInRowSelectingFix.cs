@@ -39,12 +39,12 @@ namespace Acuminator.Analyzers.FixProviders
 			{
 				string title = nameof(Resources.PX1042Fix).GetLocalized().ToString();
 				context.RegisterCodeFix(CodeAction.Create(title, 
-					c => AddConnectionScope(context.Document, node, c), title),
+					c => AddConnectionScopeAsync(context.Document, node, c), title),
 					context.Diagnostics);
 			}
 		}
 
-		private async Task<Document> AddConnectionScope(
+		private async Task<Document> AddConnectionScopeAsync(
 			Document document,
 			MethodDeclarationSyntax methodNode,
 			CancellationToken cancellationToken)
