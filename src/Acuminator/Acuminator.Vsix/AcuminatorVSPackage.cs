@@ -155,9 +155,9 @@ namespace Acuminator.Vsix
 
 				ServiceLocator.SetLocatorProvider(() => serviceLocator);
 			}
-			catch (Exception ex)
+			catch
 			{
-				//TODO Need to log error here
+				// Exception will be logged in FCEL
 			}
 		}
 
