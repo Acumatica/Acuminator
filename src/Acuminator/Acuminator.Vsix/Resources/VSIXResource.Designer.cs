@@ -295,7 +295,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Analyse the whole invocation tree in a recursive manner.
+        ///   Looks up a localized string similar to Analyse the whole invocation tree in a recursive manner..
         /// </summary>
         public static string Setting_CodeAnalysis_RecursiveAnalysisEnabled_Description {
             get {
