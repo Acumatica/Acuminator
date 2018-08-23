@@ -129,14 +129,7 @@ namespace Acuminator.Utils.RoslynExtensions
 			if (RecursiveAnalysisEnabled())
 			{
 				var methodSymbol = GetSymbol<IMethodSymbol>(node);
-
-				var externalMethodNode = methodSymbol?.GetSyntax(_cancellationToken) as CSharpSyntaxNode;
-				if (externalMethodNode != null)
-				{
-					Push(node);
-					externalMethodNode.Accept(this);
-					Pop();
-				}
+				VisitMethodSymbol(methodSymbol, node);
 			}
 
 			base.VisitInvocationExpression(node);
@@ -146,19 +139,36 @@ namespace Acuminator.Utils.RoslynExtensions
 		{
 			ThrowIfCancellationRequested();
 
-			if (RecursiveAnalysisEnabled())
+			if (RecursiveAnalysisEnabled() && node.Parent != null
+				&& !node.Parent.IsKind(SyntaxKind.ObjectInitializerExpression)
+			    && !(node.Parent is AssignmentExpressionSyntax))
 			{
-				var getterSymbol = GetSymbol<IPropertySymbol>(node)?.GetMethod;
-				var externalGetterNode = getterSymbol?.GetSyntax(_cancellationToken) as CSharpSyntaxNode;
-				if (externalGetterNode != null)
-				{
-					Push(node);
-					externalGetterNode.Accept(this);
-					Pop();
-				}
+				var propertySymbol = GetSymbol<IPropertySymbol>(node);
+				VisitMethodSymbol(propertySymbol?.GetMethod, node);
 			}
 
 			base.VisitMemberAccessExpression(node);
+		}
+
+		public override void VisitAssignmentExpression(AssignmentExpressionSyntax node)
+		{
+			if (RecursiveAnalysisEnabled())
+			{
+				var propertySymbol = GetSymbol<IPropertySymbol>(node.Left);
+				VisitMethodSymbol(propertySymbol?.SetMethod, node);
+			}
+
+			base.VisitAssignmentExpression(node);
+		}
+
+		private void VisitMethodSymbol(IMethodSymbol symbol, SyntaxNode originalNode)
+		{
+			if (symbol?.GetSyntax(_cancellationToken) is CSharpSyntaxNode methodNode)
+			{
+				Push(originalNode);
+				methodNode.Accept(this);
+				Pop();
+			}
 		}
 
 		#endregion

@@ -78,5 +78,50 @@ namespace Acuminator.Tests
 
 			walker.Locations.Should().BeEquivalentTo((line: 14, column: 16));
 		}
+
+		[Theory]
+		[EmbeddedFileData(@"Common\NestedInvocationWalker\PropertySetter.cs")]
+		public async Task PropertySetter(string text)
+		{
+			Document document = CreateDocument(text);
+			SemanticModel semanticModel = await document.GetSemanticModelAsync();
+			var walker = new ExceptionWalker(semanticModel, CancellationToken.None);
+			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
+				.OfType<ClassDeclarationSyntax>().First();
+
+			node.Accept(walker);
+
+			walker.Locations.Should().BeEquivalentTo((line: 14, column: 4));
+		}
+
+		[Theory]
+		[EmbeddedFileData(@"Common\NestedInvocationWalker\PropertySetterFromInitializer.cs")]
+		public async Task PropertySetterFromInitializer(string text)
+		{
+			Document document = CreateDocument(text);
+			SemanticModel semanticModel = await document.GetSemanticModelAsync();
+			var walker = new ExceptionWalker(semanticModel, CancellationToken.None);
+			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
+				.OfType<ClassDeclarationSyntax>().First();
+
+			node.Accept(walker);
+
+			walker.Locations.Should().BeEquivalentTo((line: 13, column: 26));
+		}
+
+		[Theory]
+		[EmbeddedFileData(@"Common\NestedInvocationWalker\PropertyValid.cs")]
+		public async Task Property_ShouldNotFindAnything(string text)
+		{
+			Document document = CreateDocument(text);
+			SemanticModel semanticModel = await document.GetSemanticModelAsync();
+			var walker = new ExceptionWalker(semanticModel, CancellationToken.None);
+			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
+				.OfType<ClassDeclarationSyntax>().First();
+
+			node.Accept(walker);
+
+			walker.Locations.Should().BeEmpty();
+		}
 	}
 }
