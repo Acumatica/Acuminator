@@ -23,6 +23,11 @@ namespace Acuminator.Utilities
 			_context = pxContext;
 		}
 
+		public IEnumerable<ITypeSymbol> AttributesListDerivedFromClass(ITypeSymbol attributeSymbol)
+		{
+			return null ;
+		}
+
 		public bool AttributeDerivedFromClass(ITypeSymbol attributeSymbol, ITypeSymbol type)
 		{
 			if (attributeSymbol.InheritsFromOrEquals(type))

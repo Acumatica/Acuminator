@@ -44,7 +44,7 @@ namespace Acuminator.Tests
 		[EmbeddedFileData(@"Dac\PX1030\Diagnostics\DacWithBoundAndUnboundFields.cs")]
 		public virtual void TestDacWithBoundAndUnboundAttribute(string source) =>
 			VerifyCSharpDiagnostic(source,
-				CreatePX1030DiagnosticResult(line: 18, column: 4));
+				CreatePX1030DiagnosticResult(line: 16, column: 4));
 
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1030\Diagnostics\AggregateAttributeFields.cs")]
@@ -52,8 +52,7 @@ namespace Acuminator.Tests
 			VerifyCSharpDiagnostic(source,
 				CreatePX1030DiagnosticResult(line: 36, column: 4));
 
-		[Theory(Skip = "Implement" +
-			" this CodeFix correctly")]
+		[Theory]
 		[EmbeddedFileData(@"Dac\PX1030\Diagnostics\AggregateAttributeFields.cs",
 							@"Dac\PX1030\CodeFixes\AggregateAttributeFields_Expected.cs")]
 		public virtual void TestCodeFixDacWithAggregateAttributeFields(string actual,string expected) =>

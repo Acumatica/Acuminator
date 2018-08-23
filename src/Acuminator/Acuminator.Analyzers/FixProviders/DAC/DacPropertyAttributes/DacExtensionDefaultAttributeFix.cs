@@ -26,6 +26,7 @@ namespace Acuminator.Analyzers.FixProviders
 		private const string _PXPersistingCheck = nameof(PXPersistingCheck);
 		private const string _PersistingCheck = nameof(PXDefaultAttribute.PersistingCheck);
 		private const string _PersistingCheckNothing = nameof(PXPersistingCheck.Nothing);
+		private const string _PXDefault = "PXDefault";
 
 
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
@@ -33,25 +34,33 @@ namespace Acuminator.Analyzers.FixProviders
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-		public override Task RegisterCodeFixesAsync(CodeFixContext context)
+		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
 			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1030_DefaultAttibuteToExisitingRecords.Id);
 
 			if (diagnostic == null)
-				return Task.FromResult(false);
+				return ;
 
-			bool isBoundField = IsBoundField(diagnostic);
-			string codeActionNameBound = (isBoundField)
-											? nameof(Resources.PX1030FixBound).GetLocalized().ToString()
-											: nameof(Resources.PX1030FixUnbound).GetLocalized().ToString();
+			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+			SyntaxNode codeFixNode = root?.FindNode(context.Span);
+			AttributeSyntax attributeNode = codeFixNode as AttributeSyntax;
 
-			CodeAction codeActionBound =
-				CodeAction.Create(codeActionNameBound,
-						cToken => ReplaceIncorrectDefaultAttribute(context.Document, context.Span, isBoundField, cToken),
-						equivalenceKey: codeActionNameBound);
+			if (attributeNode != null && (attributeNode.Name as IdentifierNameSyntax).Identifier.Text.Equals(_PXDefault))
+			{
+				bool isBoundField = IsBoundField(diagnostic);
+				string codeActionNameBound = (isBoundField)
+												? nameof(Resources.PX1030FixBound).GetLocalized().ToString()
+												: nameof(Resources.PX1030FixUnbound).GetLocalized().ToString();
 
-			context.RegisterCodeFix(codeActionBound, context.Diagnostics);
-			return  Task.FromResult(true); ;
+				CodeAction codeActionBound =
+					CodeAction.Create(codeActionNameBound,
+							cToken => ReplaceIncorrectDefaultAttribute(context.Document, context.Span, isBoundField, cToken),
+							equivalenceKey: codeActionNameBound);
+
+				context.RegisterCodeFix(codeActionBound, context.Diagnostics);
+			}
+
+			return ;
 			
 		}
 
