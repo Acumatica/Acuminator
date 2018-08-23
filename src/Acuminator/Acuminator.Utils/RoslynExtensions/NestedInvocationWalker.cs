@@ -163,6 +163,19 @@ namespace Acuminator.Utils.RoslynExtensions
 			base.VisitAssignmentExpression(node);
 		}
 
+		public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
+		{
+			ThrowIfCancellationRequested();
+
+			if (RecursiveAnalysisEnabled())
+			{
+				var methodSymbol = GetSymbol<IMethodSymbol>(node);
+				VisitMethodSymbol(methodSymbol, node);
+			}
+
+			base.VisitObjectCreationExpression(node);
+		}
+
 		private void VisitMethodSymbol(IMethodSymbol symbol, SyntaxNode originalNode)
 		{
 			if (symbol?.GetSyntax(_cancellationToken) is CSharpSyntaxNode methodNode)
