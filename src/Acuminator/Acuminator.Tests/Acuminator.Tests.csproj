@@ -47,11 +47,8 @@
     <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FluentAssertions, Version=4.19.4.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\FluentAssertions.4.19.4\lib\net45\FluentAssertions.dll</HintPath>
-    </Reference>
-    <Reference Include="FluentAssertions.Core, Version=4.19.4.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\FluentAssertions.4.19.4\lib\net45\FluentAssertions.Core.dll</HintPath>
+    <Reference Include="FluentAssertions, Version=5.4.1.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FluentAssertions.5.4.1\lib\net45\FluentAssertions.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.CodeAnalysis.Common.1.0.1\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
@@ -117,6 +114,9 @@
       <HintPath>..\..\packages\System.Reflection.Metadata.1.0.21\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -140,6 +140,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\StaticMethod.cs" />
+    <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\PropertyGetter.cs" />
+    <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\PropertySetter.cs" />
+    <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\PropertySetterFromInitializer.cs" />
+    <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\PropertyValid.cs" />
+    <Compile Include="Verifiers\FluentAssertionsExtensions.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1007\Diagnostics\DACCreateInstance.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1007\CodeFixes\DACCreateInstance_Expected.cs" />
     <EmbeddedResource Include="Sources\LongOperationDelegateClosuresAnalyzer.cs" />
@@ -188,6 +194,25 @@
     <EmbeddedResource Include="Sources\PXGraph\PX1040\CodeFixes\ConstructorInGraphExtension_Expected.cs" />
     <EmbeddedResource Include="Sources\PXGraph\PX1040\Diagnostics\ConstructorInGraphExtensionWithInitialize.cs" />
     <EmbeddedResource Include="Sources\PXGraph\PX1040\CodeFixes\ConstructorInGraphExtensionWithInitialize_Expected.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelecting.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelecting_Expected.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingGeneric.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingGeneric_Expected.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingDataView.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingDataView_Expected.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingPXView_Expected.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingPXView.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingNoNamespace.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingNoNamespace_Expected.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingSearch.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingSearch_Expected.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingSelector.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingSelector_Expected.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingPXDatabase.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingPXDatabase_Expected.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingExternalMethod.cs" />
+    <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingExternalMethod_Expected.cs" />
+    <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\SanityCheck.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1030\Diagnostics\DacExtensionWithBoundFields.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1030\CodeFixes\DacExtensionWithBoundFields_Expected.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1030\CodeFixes\DacExtensionWithUnboundFields_Expected.cs" />
@@ -204,6 +229,7 @@
     <Compile Include="Tests\StaticAnalysis\BQL\BqlParameterMismatchTests.cs" />
     <Compile Include="Tests\Formatter\BqlFormatterTests.cs" />
     <Compile Include="Helpers\EmbeddedFileDataWithParamsAttribute.cs" />
+    <Compile Include="Tests\StaticAnalysis\Common\NestedInvocationWalkerTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\DacFields\PX1024\DacFieldNotAbstractCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\DacFields\PX1024\DacFieldNotAbstractTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\PX1026\UnderscoresInDacTests.cs" />
@@ -211,7 +237,8 @@
     <Compile Include="Tests\StaticAnalysis\DAC\PX1028\DacWithConstructorTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\PX1029\PXGraphUsageInDacTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\PX1031 and PX1032\MethodsUsageInDacTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\DAC\PX1040\ConstructorInGraphExtensionTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\PXGraph\PX1040\ConstructorInGraphExtensionTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\Event\PX1042\ConnectionScopeInRowSelectingTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\PX1030\DefaultAttributeDacTests.cs" />
     <Compile Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtensionTests.cs" />
     <Compile Include="Tests\StaticAnalysis\LongOperationDelegateClosuresTests.cs" />

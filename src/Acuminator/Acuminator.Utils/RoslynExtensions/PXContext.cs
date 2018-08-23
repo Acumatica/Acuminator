@@ -18,8 +18,10 @@ namespace Acuminator.Analyzers
         public Compilation Compilation { get; }
 
 		private readonly Lazy<BQLSymbols> bql;
-
 		public BQLSymbols BQL => bql.Value;
+
+	    private readonly Lazy<EventSymbols> events;
+	    public EventSymbols Events => events.Value;
 
 		private readonly Lazy<FieldAttributesTypes> fieldAttributes;
 		public FieldAttributesTypes FieldAttributes => fieldAttributes.Value;
@@ -56,7 +58,8 @@ namespace Acuminator.Analyzers
 
 
         public INamedTypeSymbol PXGraphType => Compilation.GetTypeByMetadataName(typeof(PXGraph).FullName);
-        public INamedTypeSymbol PXProcessingBaseType => Compilation.GetTypeByMetadataName(typeof(PXProcessingBase<>).FullName);
+	    public INamedTypeSymbol PXCacheType => Compilation.GetTypeByMetadataName(typeof(PXCache).FullName);
+		public INamedTypeSymbol PXProcessingBaseType => Compilation.GetTypeByMetadataName(typeof(PXProcessingBase<>).FullName);
         public INamedTypeSymbol PXGraphExtensionType => Compilation.GetTypeByMetadataName(typeof(PXGraphExtension).FullName);
         public INamedTypeSymbol PXCacheExtensionType => Compilation.GetTypeByMetadataName(typeof(PXCacheExtension).FullName);
         public INamedTypeSymbol PXMappedCacheExtensionType => Compilation.GetTypeByMetadataName(typeof(PXMappedCacheExtension).FullName);
@@ -83,7 +86,8 @@ namespace Acuminator.Analyzers
         public PXContext(Compilation compilation)
         {
             Compilation = compilation;
-			bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation)); 
+			bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation));
+	        events = new Lazy<EventSymbols>(() => new EventSymbols(Compilation));
             fieldAttributes = new Lazy<FieldAttributesTypes>(
 										() => new FieldAttributesTypes(Compilation));
             systemActionTypes = new Lazy<PXSystemActionTypes>(
@@ -258,6 +262,23 @@ namespace Acuminator.Analyzers
 				);
 			#endregion
 		}
-        #endregion
-    }
+		#endregion
+
+		#region EventSymbols
+
+	    public class EventSymbols
+	    {
+			private readonly Compilation _compilation;
+
+		    public EventSymbols(Compilation compilation)
+		    {
+			    _compilation = compilation;
+		    }
+
+		    public INamedTypeSymbol PXRowSelectingEventArgs => _compilation.GetTypeByMetadataName(typeof(PXRowSelectingEventArgs).FullName);
+		    public INamedTypeSymbol RowSelecting => _compilation.GetTypeByMetadataName(typeof(Events.RowSelecting<>).FullName);
+		}
+
+		#endregion
+	}
 }

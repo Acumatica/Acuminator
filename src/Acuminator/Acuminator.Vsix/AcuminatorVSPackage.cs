@@ -1,10 +1,13 @@
 ﻿using System;
 using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
+using System.ComponentModel.Composition.Primitives;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Acuminator.Utilities;
 using Acuminator.Vsix.Formatter;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -12,8 +15,12 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Classification;
 using Acuminator.Vsix.GoToDeclaration;
+using Acuminator.Vsix.ServiceLocation;
+using CommonServiceLocator;
+using System.Composition.Hosting;
+using System.Composition.Hosting.Core;
+using Acuminator.Vsix.Settings;
 using Acuminator.Vsix.Logger;
-
 
 using FirstChanceExceptionEventArgs = System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs;
 
@@ -143,23 +150,48 @@ namespace Acuminator.Vsix
 
             if (componentModel == null)
                 return;
-			
-            try
-            {
-                componentModel.DefaultCompositionService.SatisfyImportsOnce(this);
-				AcuminatorLogger = new AcuminatorLogger(this);
+
+			InitializeLogger();
+
+			try
+			{
+				componentModel.DefaultCompositionService.SatisfyImportsOnce(this);
+
+				var container = new CompositionContainer(CompositionOptions.Default, componentModel.DefaultExportProvider);
+				container.ComposeExportedValue<CodeAnalysisSettings>(new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage));
+
+				// Service Locator
+				IServiceLocator serviceLocator = new MefServiceLocator(container);
+
+				if (ServiceLocator.IsLocationProviderSet)
+					serviceLocator = new DelegatingServiceLocator(ServiceLocator.Current, serviceLocator);
+
+				ServiceLocator.SetLocatorProvider(() => serviceLocator);
 			}
-            catch(Exception e)
-            {
-                //TODO Need to log error here
-            }
-        }
+			catch
+			{
+				// Exception will be logged in FCEL
+			}
+		}
 
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
-			AcuminatorLogger.Dispose();
+			AcuminatorLogger?.Dispose();
 		}
+
+	    private void InitializeLogger()
+	    {
+		    try
+		    {
+			    AcuminatorLogger = new AcuminatorLogger(this);
+		    }
+		    catch (Exception ex)
+		    {
+			    ActivityLog.TryLogError(AcuminatorLogger.PackageName,
+				    $"An error occurred during the logger initialization ({ex.GetType().Name}, message: \"{ex.Message}\")");
+		    }
+	    }
 
 		#region Package Settings         
 		public bool ColoringEnabled => GeneralOptionsPage?.ColoringEnabled ?? true;
