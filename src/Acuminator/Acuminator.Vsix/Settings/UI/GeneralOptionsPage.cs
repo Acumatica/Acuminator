@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Acuminator.Utilities;
 using Microsoft.VisualStudio.Shell;
 
 namespace Acuminator.Vsix
@@ -12,6 +13,7 @@ namespace Acuminator.Vsix
 		private const string AllSettings = "All";
 		private const string ColoringCategoryName = "BQL Coloring";
 		private const string OutliningCategoryName = "BQL Outlining";
+		private const string CodeAnalysisCategoryName = "Code Analysis";
 
 		private bool colorSettingsChanged;
 		public event EventHandler<SettingChangedEventArgs> ColoringSettingChanged;
@@ -143,6 +145,11 @@ namespace Acuminator.Vsix
 			}
 		}
 
+		[CategoryFromResources(nameof(VSIXResource.Category_CodeAnalysis), CodeAnalysisCategoryName)]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_RecursiveAnalysisEnabled_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_RecursiveAnalysisEnabled_Description))]
+		public bool RecursiveAnalysisEnabled { get; set; }
+
 		public override void ResetSettings()
 		{
 			coloringEnabled = true;
@@ -152,6 +159,8 @@ namespace Acuminator.Vsix
 			pxActionColoringEnabled = true;
 			pxGraphColoringEnabled = true;
 			colorOnlyInsideBQL = false;
+
+			RecursiveAnalysisEnabled = CodeAnalysisSettings.Default.RecursiveAnalysisEnabled;
 
 			colorSettingsChanged = false;
 			base.ResetSettings();

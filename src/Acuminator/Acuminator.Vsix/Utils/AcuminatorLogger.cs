@@ -20,7 +20,7 @@ namespace Acuminator.Vsix.Logger
 	/// </summary>
 	internal class AcuminatorLogger : IDisposable
 	{
-		private const string PackageName = "Acuminator";
+		public const string PackageName = "Acuminator";
 
 		private const string AnalyzersDll = "Acuminator.Analyzers";
 		private const string UtilitiesDll = "Acuminator.Utils";

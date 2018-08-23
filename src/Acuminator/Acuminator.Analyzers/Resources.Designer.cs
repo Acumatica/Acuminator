@@ -492,5 +492,23 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1040Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Surround the BQL statement execution with a connection scope.
+        /// </summary>
+        public static string PX1042Fix {
+            get {
+                return ResourceManager.GetString("PX1042Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In a RowSelecting handler, BQL statements must be executed only inside a separate connection scope.
+        /// </summary>
+        public static string PX1042Title {
+            get {
+                return ResourceManager.GetString("PX1042Title", resourceCulture);
+            }
+        }
     }
 }
