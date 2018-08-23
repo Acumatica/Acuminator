@@ -46,10 +46,19 @@ namespace Acuminator.Tests
 			VerifyCSharpDiagnostic(source,
 				CreatePX1030DiagnosticResult(line: 18, column: 4));
 
-		[Theory(Skip = "Test not implemented. Remove to run test")]
+		[Theory]
 		[EmbeddedFileData(@"Dac\PX1030\Diagnostics\AggregateAttributeFields.cs")]
-		public virtual void TestDacExtensionWithAggregateAttributeFields(string source) =>
-			VerifyCSharpDiagnostic(source);
+		public virtual void TestDacWithAggregateAttributeFields(string source) =>
+			VerifyCSharpDiagnostic(source,
+				CreatePX1030DiagnosticResult(line: 36, column: 4));
+
+		[Theory(Skip = "Implement" +
+			" this CodeFix correctly")]
+		[EmbeddedFileData(@"Dac\PX1030\Diagnostics\AggregateAttributeFields.cs",
+							@"Dac\PX1030\CodeFixes\AggregateAttributeFields_Expected.cs")]
+		public virtual void TestCodeFixDacWithAggregateAttributeFields(string actual,string expected) =>
+			VerifyCSharpFix(actual,expected);
+
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1030\Diagnostics\DacExtensionWithBoundFields.cs",
 							@"Dac\PX1030\CodeFixes\DacExtensionWithBoundFields_Expected.cs")]
