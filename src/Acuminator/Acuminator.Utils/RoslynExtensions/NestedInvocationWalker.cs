@@ -152,6 +152,8 @@ namespace Acuminator.Utils.RoslynExtensions
 
 		public override void VisitAssignmentExpression(AssignmentExpressionSyntax node)
 		{
+			ThrowIfCancellationRequested();
+
 			if (RecursiveAnalysisEnabled())
 			{
 				var propertySymbol = GetSymbol<IPropertySymbol>(node.Left);
