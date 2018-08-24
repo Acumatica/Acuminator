@@ -145,6 +145,11 @@
     <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\PropertySetter.cs" />
     <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\PropertySetterFromInitializer.cs" />
     <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\PropertyValid.cs" />
+    <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\Constructor.cs" />
+    <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\LocalLambda.cs" />
+    <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\PropertyGetterConditionalAccess.cs" />
+    <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\InstanceMethod.cs" />
+    <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\InstanceMethodConditionalAccess.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1029\Diagnostics\DacWithNestedTypes.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1031 and PX1032\Diagnostics\DacWithNestedTypes.cs" />
     <Compile Include="Verifiers\FluentAssertionsExtensions.cs" />
