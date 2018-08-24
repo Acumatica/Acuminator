@@ -45,5 +45,17 @@ namespace Acuminator.Tests
                 CreatePX1029DiagnosticResult(37, 24),
                 CreatePX1029DiagnosticResult(41, 17));
         }
-    }
+
+		[Theory]
+		[EmbeddedFileData(@"Dac\PX1029\Diagnostics\DacWithNestedTypes.cs")]
+	    public void DacWithNestedTypes(string source)
+	    {
+		    VerifyCSharpDiagnostic(source,
+				CreatePX1029DiagnosticResult(23, 6),
+			    CreatePX1029DiagnosticResult(23, 6),
+				CreatePX1029DiagnosticResult(24, 16),
+			    CreatePX1029DiagnosticResult(24, 16));
+	    }
+
+	}
 }

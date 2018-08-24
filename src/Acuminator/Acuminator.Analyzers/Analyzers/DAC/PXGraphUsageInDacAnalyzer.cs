@@ -45,6 +45,17 @@ namespace Acuminator.Analyzers
                 _pxContext = pxContext;
             }
 
+	        public override void VisitClassDeclaration(ClassDeclarationSyntax node)
+	        {
+		        ThrowIfCancellationRequested();
+
+		        INamedTypeSymbol symbol = _syntaxContext.SemanticModel.GetDeclaredSymbol(node, _syntaxContext.CancellationToken);
+		        if (symbol != null && symbol.IsDacOrExtension(_pxContext))
+		        {
+					base.VisitClassDeclaration(node);
+				}
+	        }
+
 	        public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
             {
                 if (node.IsStatic() || _syntaxContext.CancellationToken.IsCancellationRequested)
