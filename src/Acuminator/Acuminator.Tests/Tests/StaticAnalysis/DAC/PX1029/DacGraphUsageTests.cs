@@ -9,7 +9,7 @@ namespace Acuminator.Tests
 {
     public class PXGraphUsageInDacTests : DiagnosticVerifier
     {
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new PXGraphUsageInDacAnalyzer();
+        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacGraphUsageAnalyzer();
 
         private DiagnosticResult CreatePX1029DiagnosticResult(int line, int column)
         {

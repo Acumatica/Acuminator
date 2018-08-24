@@ -14,7 +14,7 @@ namespace Acuminator.Tests
 {
     public class MethodsUsageInDacTests : DiagnosticVerifier
     {
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacMethodsUsageAnalyzer();
+        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new MethodsUsageInDacAnalyzer();
 
         private DiagnosticResult CreatePX1031DiagnosticResult(int line, int column)
         {

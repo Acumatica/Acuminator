@@ -8,7 +8,7 @@ using System.Collections.Immutable;
 namespace Acuminator.Analyzers
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class DacGraphUsageAnalyzer : PXDiagnosticAnalyzer
+    public class PXGraphUsageInDacAnalyzer : PXDiagnosticAnalyzer
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create
