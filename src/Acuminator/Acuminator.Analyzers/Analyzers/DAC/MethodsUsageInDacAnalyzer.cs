@@ -1,4 +1,5 @@
-﻿using Acuminator.Utilities;
+﻿using System;
+using Acuminator.Utilities;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -6,6 +7,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 
 namespace Acuminator.Analyzers
 {
@@ -34,7 +36,8 @@ namespace Acuminator.Analyzers
 
 			if (typeSymbol != null && typeSymbol.IsDacOrExtension(pxContext))
 			{
-				foreach (SyntaxNode node in classDeclaration.DescendantNodes())
+				foreach (SyntaxNode node in classDeclaration.DescendantNodes(
+					n => !(n is ClassDeclarationSyntax) || IsDacOrExtension(n, pxContext, syntaxContext.SemanticModel, syntaxContext.CancellationToken)))
 				{
 					syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
@@ -83,6 +86,18 @@ namespace Acuminator.Analyzers
 				syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1031_DacCannotContainInstanceMethods,
 					method.Identifier.GetLocation()));
 			}
+		}
+
+		private bool IsDacOrExtension(SyntaxNode node, PXContext pxContext, SemanticModel semanticModel, CancellationToken cancellationToken)
+		{
+			if (node is ClassDeclarationSyntax classDeclaration)
+			{
+				INamedTypeSymbol symbol = semanticModel.GetDeclaredSymbol(classDeclaration, cancellationToken);
+				if (symbol != null)
+					return symbol.IsDacOrExtension(pxContext);
+			}
+
+			return false;
 		}
 	}
 }
