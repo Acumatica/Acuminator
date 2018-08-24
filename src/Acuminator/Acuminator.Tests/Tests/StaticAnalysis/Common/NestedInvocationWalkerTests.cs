@@ -80,6 +80,21 @@ namespace Acuminator.Tests
 		}
 
 		[Theory]
+		[EmbeddedFileData(@"Common\NestedInvocationWalker\PropertyGetterConditionalAccess.cs")]
+		public async Task PropertyGetterConditionalAccess(string text)
+		{
+			Document document = CreateDocument(text);
+			SemanticModel semanticModel = await document.GetSemanticModelAsync();
+			var walker = new ExceptionWalker(semanticModel, CancellationToken.None);
+			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
+				.OfType<ClassDeclarationSyntax>().First();
+
+			node.Accept(walker);
+
+			walker.Locations.Should().BeEquivalentTo((line: 14, column: 16));
+		}
+
+		[Theory]
 		[EmbeddedFileData(@"Common\NestedInvocationWalker\PropertySetter.cs")]
 		public async Task PropertySetter(string text)
 		{
@@ -152,6 +167,36 @@ namespace Acuminator.Tests
 			node.Accept(walker);
 
 			walker.Locations.Should().BeEquivalentTo((line: 13, column: 20));
+		}
+
+		[Theory]
+		[EmbeddedFileData(@"Common\NestedInvocationWalker\InstanceMethod.cs")]
+		public async Task InstanceMethod(string text)
+		{
+			Document document = CreateDocument(text);
+			SemanticModel semanticModel = await document.GetSemanticModelAsync();
+			var walker = new ExceptionWalker(semanticModel, CancellationToken.None);
+			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
+				.OfType<ClassDeclarationSyntax>().First();
+
+			node.Accept(walker);
+
+			walker.Locations.Should().BeEquivalentTo((line: 14, column: 4));
+		}
+
+		[Theory]
+		[EmbeddedFileData(@"Common\NestedInvocationWalker\InstanceMethodConditionalAccess.cs")]
+		public async Task InstanceMethodConditionalAccess(string text)
+		{
+			Document document = CreateDocument(text);
+			SemanticModel semanticModel = await document.GetSemanticModelAsync();
+			var walker = new ExceptionWalker(semanticModel, CancellationToken.None);
+			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
+				.OfType<ClassDeclarationSyntax>().First();
+
+			node.Accept(walker);
+
+			walker.Locations.Should().BeEquivalentTo((line: 14, column: 4));
 		}
 	}
 }

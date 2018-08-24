@@ -126,7 +126,7 @@ namespace Acuminator.Utils.RoslynExtensions
 		{
 			ThrowIfCancellationRequested();
 
-			if (RecursiveAnalysisEnabled())
+			if (RecursiveAnalysisEnabled() && node.Parent?.Kind() != SyntaxKind.ConditionalAccessExpression)
 			{
 				var methodSymbol = GetSymbol<IMethodSymbol>(node);
 				VisitMethodSymbol(methodSymbol, node);
@@ -174,6 +174,23 @@ namespace Acuminator.Utils.RoslynExtensions
 			}
 
 			base.VisitObjectCreationExpression(node);
+		}
+
+		public override void VisitConditionalAccessExpression(ConditionalAccessExpressionSyntax node)
+		{
+			ThrowIfCancellationRequested();
+
+			if (RecursiveAnalysisEnabled() && node.WhenNotNull != null)
+			{
+				var propertySymbol = GetSymbol<IPropertySymbol>(node.WhenNotNull);
+				var methodSymbol = propertySymbol != null 
+					? propertySymbol.GetMethod 
+					: GetSymbol<IMethodSymbol>(node.WhenNotNull);
+
+				VisitMethodSymbol(methodSymbol, node);
+			}
+
+			base.VisitConditionalAccessExpression(node);
 		}
 
 		private void VisitMethodSymbol(IMethodSymbol symbol, SyntaxNode originalNode)
