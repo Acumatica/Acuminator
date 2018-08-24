@@ -24,7 +24,7 @@ namespace Acuminator.Tests
 
         [Theory]
         [EmbeddedFileData(@"Dac\PX1029\Diagnostics\DacWithGraphUsage.cs")]
-        public void Test_PXGraph_Usage_Inside_Dac(string source)
+        public void TestDiagnostic_Dac(string source)
         {
             VerifyCSharpDiagnostic(source,
                 CreatePX1029DiagnosticResult(15, 17),
@@ -36,7 +36,7 @@ namespace Acuminator.Tests
 
         [Theory]
         [EmbeddedFileData(@"Dac\PX1029\Diagnostics\DacExtensionWithGraphUsage.cs")]
-        public void Test_PXGraph_Usage_Inside_CacheExtension(string source)
+        public void TestDiagnostic_CacheExtension(string source)
         {
             VerifyCSharpDiagnostic(source,
                 CreatePX1029DiagnosticResult(15, 17),
@@ -48,7 +48,7 @@ namespace Acuminator.Tests
 
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1029\Diagnostics\DacWithNestedTypes.cs")]
-	    public void DacWithNestedTypes(string source)
+	    public void TestDiagnostic_DacWithNestedTypes(string source)
 	    {
 		    VerifyCSharpDiagnostic(source,
 				CreatePX1029DiagnosticResult(23, 6),
