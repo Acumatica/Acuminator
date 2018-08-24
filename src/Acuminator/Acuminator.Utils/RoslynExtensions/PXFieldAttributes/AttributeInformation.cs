@@ -25,7 +25,46 @@ namespace Acuminator.Utilities
 
 		public IEnumerable<ITypeSymbol> AttributesListDerivedFromClass(ITypeSymbol attributeSymbol)
 		{
-			return null ;
+			var results = attributeSymbol.GetBaseTypesAndThis();
+
+			var aggregateAttribute = _context.AttributeTypes.PXAggregateAttribute;
+			var dynamicAggregateAttribute = _context.AttributeTypes.PXDynamicAggregateAttribute;
+
+			if (attributeSymbol.InheritsFromOrEquals(aggregateAttribute) || attributeSymbol.InheritsFromOrEquals(dynamicAggregateAttribute))
+			{
+				var allAttributes = attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
+				foreach (var attribute in allAttributes)
+				{
+					if (attribute.Name.Equals("AttributeUsageAttribute"))
+						break;
+
+					results = results.Append(attribute);
+					//go in recursuion
+					Recursion(attribute, 10);
+				}
+			}
+			return results.ToHashSet();
+
+			void Recursion(ITypeSymbol _attributeSymbol, int depth)
+			{
+				if (depth < 0)
+					return;
+
+				if (_attributeSymbol.InheritsFromOrEquals(aggregateAttribute) || _attributeSymbol.InheritsFromOrEquals(dynamicAggregateAttribute))
+				{
+					var allAttributes = _attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
+					foreach (var attribute in allAttributes)
+					{
+						if (attribute.Name.Equals("AttributeUsageAttribute"))
+							return;
+
+						results = results.Append(attribute);
+						//go in recursuion
+						Recursion(attribute, depth - 1);
+					}
+				}
+				return;
+			}
 		}
 
 		public bool AttributeDerivedFromClass(ITypeSymbol attributeSymbol, ITypeSymbol type)

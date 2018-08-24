@@ -4,7 +4,10 @@ using Acuminator.Utilities;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Editing;
+using PX.Data;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -102,6 +105,63 @@ namespace Acuminator.Tests
 			}
 			Assert.Equal(expected, actual);
 		}
+
+		[Theory]
+		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateAttributeInformationTest.cs")]
+		private void _testListOfChildrensClass(string source)
+		{
+			Document document = CreateDocument(source);
+			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
+			var syntaxRoot = document.GetSyntaxRootAsync().Result;
+
+			var pxContext = new PXContext(semanticModel.Compilation);
+
+			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
+			IEnumerable<ITypeSymbol> classesArray = null;
+			Dictionary<IEnumerable<ITypeSymbol>, int> result = new Dictionary<IEnumerable<ITypeSymbol>, int>();
+
+			foreach (var property in properties)
+			{
+				var typeSymbol = semanticModel.GetDeclaredSymbol(property);
+				var attributes = typeSymbol.GetAttributes();
+				foreach (var attribute in attributes)
+				{
+					var attributeInformation = new AttributeInformation(pxContext);
+					result.Add(classesArray = attributeInformation.AttributesListDerivedFromClass(attribute.AttributeClass),classesArray.Count());
+					
+				}
+			}
+			Assert.Equal(result, result);
+		}
+
+		[Theory]
+		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateRecursiveAttributeInformationTest.cs")]
+		private void _testListOfChildrensClassRecursive(string source)
+		{
+			Document document = CreateDocument(source);
+			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
+			var syntaxRoot = document.GetSyntaxRootAsync().Result;
+
+			var pxContext = new PXContext(semanticModel.Compilation);
+
+			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
+			IEnumerable<ITypeSymbol> classesArray = null;
+			Dictionary<IEnumerable<ITypeSymbol>, int> result = new Dictionary<IEnumerable<ITypeSymbol>, int>();
+
+			foreach (var property in properties)
+			{
+				var typeSymbol = semanticModel.GetDeclaredSymbol(property);
+				var attributes = typeSymbol.GetAttributes();
+				foreach (var attribute in attributes)
+				{
+					var attributeInformation = new AttributeInformation(pxContext);
+					result.Add(classesArray = attributeInformation.AttributesListDerivedFromClass(attribute.AttributeClass), classesArray.Count());
+
+				}
+			}
+			Assert.Equal(result, result);
+		}
+
 
 	}
 }

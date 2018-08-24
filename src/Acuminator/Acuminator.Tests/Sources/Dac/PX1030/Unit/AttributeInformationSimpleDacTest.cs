@@ -8,7 +8,6 @@ using PX.Data;
 namespace PX.Objects.HackathonDemo
 {
 	/* Class to test get information from*/
-	[PXPrimaryGraph(typeof(IIGPOALCLandedCostEntry)), PXCacheName("Containers")]
 	public class IIGPOALCLandedCost : IBqlTable
 	{
 		#region Selected
