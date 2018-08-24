@@ -138,5 +138,20 @@ namespace Acuminator.Tests
 
 			walker.Locations.Should().BeEquivalentTo((line: 13, column: 14));
 		}
+
+		[Theory]
+		[EmbeddedFileData(@"Common\NestedInvocationWalker\LocalLambda.cs")]
+		public async Task LocalLambda(string text)
+		{
+			Document document = CreateDocument(text);
+			SemanticModel semanticModel = await document.GetSemanticModelAsync();
+			var walker = new ExceptionWalker(semanticModel, CancellationToken.None);
+			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
+				.OfType<ClassDeclarationSyntax>().First();
+
+			node.Accept(walker);
+
+			walker.Locations.Should().BeEquivalentTo((line: 13, column: 20));
+		}
 	}
 }

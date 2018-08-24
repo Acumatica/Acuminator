@@ -146,6 +146,7 @@
     <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\PropertySetterFromInitializer.cs" />
     <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\PropertyValid.cs" />
     <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\Constructor.cs" />
+    <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\LocalLambda.cs" />
     <Compile Include="Verifiers\FluentAssertionsExtensions.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1007\Diagnostics\DACCreateInstance.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1007\CodeFixes\DACCreateInstance_Expected.cs" />
