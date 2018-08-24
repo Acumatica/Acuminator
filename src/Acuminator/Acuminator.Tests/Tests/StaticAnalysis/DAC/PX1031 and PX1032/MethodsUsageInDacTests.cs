@@ -59,5 +59,12 @@ namespace Acuminator.Tests
                 CreatePX1032DiagnosticResult(30, 26),
                 CreatePX1031DiagnosticResult(51, 32));
         }
-    }
+
+	    [Theory]
+	    [EmbeddedFileData(@"Dac\PX1031 and PX1032\Diagnostics\DacWithNestedTypes.cs")]
+	    public void TestDiagnostic_DacWithNestedTypes_ShouldNotShowDiagnostic(string source)
+	    {
+		    VerifyCSharpDiagnostic(source);
+	    }
+	}
 }
