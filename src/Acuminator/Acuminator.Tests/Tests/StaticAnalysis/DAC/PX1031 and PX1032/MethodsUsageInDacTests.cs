@@ -40,7 +40,7 @@ namespace Acuminator.Tests
 
         [Theory]
         [EmbeddedFileData(@"Dac\PX1031 and PX1032\Diagnostics\DacWithMethodsUsage.cs")]
-        public void Test_Methods_Usage_In_Dac(string source)
+        public void TestDiagnostic_Dac(string source)
         {
             VerifyCSharpDiagnostic(source,
                 CreatePX1032DiagnosticResult(23, 17),
@@ -51,7 +51,7 @@ namespace Acuminator.Tests
 
         [Theory]
         [EmbeddedFileData(@"Dac\PX1031 and PX1032\Diagnostics\DacExtensionWithMethodsUsage.cs")]
-        public void Test_Methods_Usage_In_Dac_Extension(string source)
+        public void TestDiagnostic_CacheExtension(string source)
         {
             VerifyCSharpDiagnostic(source,
                 CreatePX1032DiagnosticResult(27, 17),
