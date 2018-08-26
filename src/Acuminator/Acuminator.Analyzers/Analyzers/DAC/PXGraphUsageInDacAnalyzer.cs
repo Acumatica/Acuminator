@@ -8,7 +8,7 @@ using System.Collections.Immutable;
 namespace Acuminator.Analyzers
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class DacGraphUsageAnalyzer : PXDiagnosticAnalyzer
+    public class PXGraphUsageInDacAnalyzer : PXDiagnosticAnalyzer
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create
@@ -45,7 +45,18 @@ namespace Acuminator.Analyzers
                 _pxContext = pxContext;
             }
 
-            public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
+	        public override void VisitClassDeclaration(ClassDeclarationSyntax node)
+	        {
+		        ThrowIfCancellationRequested();
+
+		        INamedTypeSymbol symbol = _syntaxContext.SemanticModel.GetDeclaredSymbol(node, _syntaxContext.CancellationToken);
+		        if (symbol != null && symbol.IsDacOrExtension(_pxContext))
+		        {
+					base.VisitClassDeclaration(node);
+				}
+	        }
+
+	        public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
             {
                 if (node.IsStatic() || _syntaxContext.CancellationToken.IsCancellationRequested)
                     return;
@@ -55,10 +66,9 @@ namespace Acuminator.Analyzers
 
             public override void VisitInvocationExpression(InvocationExpressionSyntax node)
             {
-                if (_syntaxContext.CancellationToken.IsCancellationRequested)
-                    return;
+				ThrowIfCancellationRequested();
 
-                SymbolInfo symbolInfo = _syntaxContext.SemanticModel.GetSymbolInfo(node, _syntaxContext.CancellationToken);
+				SymbolInfo symbolInfo = _syntaxContext.SemanticModel.GetSymbolInfo(node, _syntaxContext.CancellationToken);
 
                 if (symbolInfo.Symbol == null || (symbolInfo.Symbol.Kind == SymbolKind.Method && symbolInfo.Symbol.IsStatic))
                     return;
@@ -68,16 +78,20 @@ namespace Acuminator.Analyzers
 
             public override void VisitIdentifierName(IdentifierNameSyntax node)
             {
-                if (_syntaxContext.CancellationToken.IsCancellationRequested)
-                    return;
+				ThrowIfCancellationRequested();
 
-                TypeInfo typeInfo = _syntaxContext.SemanticModel.GetTypeInfo(node, _syntaxContext.CancellationToken);
+				TypeInfo typeInfo = _syntaxContext.SemanticModel.GetTypeInfo(node, _syntaxContext.CancellationToken);
 
                 if (typeInfo.Type == null || !typeInfo.Type.IsPXGraphOrExtension(_pxContext))
                     return;
 
                 _syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1029_PXGraphUsageInDac, node.GetLocation()));
             }
+
+	        private void ThrowIfCancellationRequested()
+	        {
+				_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+			}
         }
     }
 }

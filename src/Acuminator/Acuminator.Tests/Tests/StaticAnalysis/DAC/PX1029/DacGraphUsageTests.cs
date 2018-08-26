@@ -9,7 +9,7 @@ namespace Acuminator.Tests
 {
     public class PXGraphUsageInDacTests : DiagnosticVerifier
     {
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new PXGraphUsageInDacAnalyzer();
+        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacGraphUsageAnalyzer();
 
         private DiagnosticResult CreatePX1029DiagnosticResult(int line, int column)
         {
@@ -24,7 +24,7 @@ namespace Acuminator.Tests
 
         [Theory]
         [EmbeddedFileData(@"Dac\PX1029\Diagnostics\DacWithGraphUsage.cs")]
-        public void TestDiagnostic_Dac(string source)
+        public void Test_PXGraph_Usage_Inside_Dac(string source)
         {
             VerifyCSharpDiagnostic(source,
                 CreatePX1029DiagnosticResult(15, 17),
@@ -36,7 +36,7 @@ namespace Acuminator.Tests
 
         [Theory]
         [EmbeddedFileData(@"Dac\PX1029\Diagnostics\DacExtensionWithGraphUsage.cs")]
-        public void TestDiagnostic_CacheExtension(string source)
+        public void Test_PXGraph_Usage_Inside_CacheExtension(string source)
         {
             VerifyCSharpDiagnostic(source,
                 CreatePX1029DiagnosticResult(15, 17),
@@ -45,17 +45,5 @@ namespace Acuminator.Tests
                 CreatePX1029DiagnosticResult(37, 24),
                 CreatePX1029DiagnosticResult(41, 17));
         }
-
-		[Theory]
-		[EmbeddedFileData(@"Dac\PX1029\Diagnostics\DacWithNestedTypes.cs")]
-	    public void TestDiagnostic_DacWithNestedTypes(string source)
-	    {
-		    VerifyCSharpDiagnostic(source,
-				CreatePX1029DiagnosticResult(23, 6),
-			    CreatePX1029DiagnosticResult(23, 6),
-				CreatePX1029DiagnosticResult(24, 16),
-			    CreatePX1029DiagnosticResult(24, 16));
-	    }
-
-	}
+    }
 }
