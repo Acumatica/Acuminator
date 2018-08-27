@@ -222,9 +222,9 @@
     <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingExternalMethod.cs" />
     <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingExternalMethod_Expected.cs" />
     <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\SanityCheck.cs" />
-    <Compile Include="Tests\StaticAnalysis\DAC\DacPropertyAttributes\PX1021 and PX1023\Tests\DacFieldAttributesTypeMismatchCodeFixTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\DAC\DacPropertyAttributes\PX1021 and PX1023\Tests\MultipleFieldAttributesCodeFixTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\DAC\DacPropertyAttributes\PX1021 and PX1023\Tests\DacFieldAttributesTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\DAC\DacPropertyAttributes\PX1021 and PX1023\DacFieldAttributesTypeMismatchCodeFixTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\DAC\DacPropertyAttributes\PX1021 and PX1023\MultipleFieldAttributesCodeFixTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\DAC\DacPropertyAttributes\PX1021 and PX1023\DacFieldAttributesTests.cs" />
     <Compile Include="Tests\StaticAnalysis\BQL\BqlParameterMismatchTests.cs" />
     <Compile Include="Tests\Formatter\BqlFormatterTests.cs" />
     <Compile Include="Helpers\EmbeddedFileDataWithParamsAttribute.cs" />
