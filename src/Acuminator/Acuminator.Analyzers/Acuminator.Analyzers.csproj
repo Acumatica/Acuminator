@@ -57,8 +57,8 @@
     <Compile Include="Analyzers\DAC\DacDeclarationAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\PXGraphUsageInDacAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\MethodsUsageInDacAnalyzer.cs" />
-    <Compile Include="Analyzers\DAC\DacPropertyAttributes\NonNullableTypeForBqlFieldAnalyzer.cs" />
-    <Compile Include="Analyzers\DAC\DacPropertyAttributes\DacPropertyAttributesAnalyzer.cs" />
+    <Compile Include="Static Analysis\DAC\DacPropertyAttributes\PX1014\Analyzer\NonNullableTypeForBqlFieldAnalyzer.cs" />
+    <Compile Include="Static Analysis\DAC\DacPropertyAttributes\PX1021 and PX1023\Analyzer\DacPropertyAttributesAnalyzer.cs" />
     <Compile Include="Analyzers\PXAction\PX1012\PXActionOnNonPrimaryViewAnalyzer.cs" />
     <Compile Include="Analyzers\View\Delegate\StartRowResetForPagingAnalyzer.cs" />
     <Compile Include="Analyzers\View\NoPrimaryViewForPrimaryDacAnalyzer.cs" />
@@ -71,9 +71,9 @@
     <Compile Include="FixProviders\PXGraph\ConstructorInGraphExtensionCodeFix.cs" />
     <Compile Include="FixProviders\DAC\UnderscoresInDacCodeFix.cs" />
     <Compile Include="FixProviders\DAC\DacFields\DacNonAbstractFieldTypeFix.cs" />
-    <Compile Include="FixProviders\DAC\DacPropertyAttributes\IncompatibleDacPropertyAndFieldAttributeFix.cs" />
-    <Compile Include="FixProviders\DAC\DacPropertyAttributes\MultipleDacFieldAttributesFix.cs" />
-    <Compile Include="FixProviders\DAC\DacPropertyAttributes\NonNullableTypeForBqlFieldFix.cs" />
+    <Compile Include="Static Analysis\DAC\DacPropertyAttributes\PX1021 and PX1023\CodeFix\IncompatibleDacPropertyAndFieldAttributeFix.cs" />
+    <Compile Include="Static Analysis\DAC\DacPropertyAttributes\PX1021 and PX1023\CodeFix\MultipleDacFieldAttributesFix.cs" />
+    <Compile Include="Static Analysis\DAC\DacPropertyAttributes\PX1014\CodeFix\NonNullableTypeForBqlFieldFix.cs" />
     <Compile Include="Analyzers\InheritanceFromPXCacheExtensionAnalyzer.cs" />
     <Compile Include="Analyzers\LongOperationDelegateClosuresAnalyzer.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\BqlParameterMismatchAnalyzer.cs" />
@@ -189,9 +189,7 @@
       <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\portable-net40+sl4+win8+wp8\System.ValueTuple.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="CodeActions\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Acuminator.Utils\Acuminator.Utils.csproj">
       <Project>{b902103c-831b-4bbf-a88b-3dae6f601cf0}</Project>
