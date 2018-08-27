@@ -247,9 +247,9 @@
     <EmbeddedResource Include="Sources\InheritanceFromPXMappedCacheExtension.cs" />
     <EmbeddedResource Include="Sources\PXAction\PX1000\Diagnostics\InvalidPXActionSignature_ValidParameters.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\DacFields\PX1014\NonNullableTypeForBqlFieldTests.cs" />
-    <EmbeddedResource Include="Sources\Dac\PX1014\CodeFixes\NonNullableTypeForBqlField_Expected.cs" />
-    <EmbeddedResource Include="Sources\Dac\PX1014\Diagnostics\NonNullableTypeForBqlField.cs" />
-    <EmbeddedResource Include="Sources\Dac\PX1014\Diagnostics\NonNullableTypeForBqlField_Valid.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DAC\DacFields\PX1014\Sources\CodeFixes\NonNullableTypeForBqlField_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DAC\DacFields\PX1014\Sources\Diagnostics\NonNullableTypeForBqlField.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DAC\DacFields\PX1014\Sources\Diagnostics\NonNullableTypeForBqlField_Valid.cs" />
     <EmbeddedResource Include="Sources\BQL\Raw\View.cs" />
     <EmbeddedResource Include="Sources\BQL\Formatted\View.cs" />
     <EmbeddedResource Include="Sources\BQL\Raw\StaticCall.cs" />
