@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Acuminator.Tests
 {
-    public class LocalizationHardcodeTests : DiagnosticVerifier
+    public class LocalizationHardcodeInMethodTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new LocalizationInvocationAnalyzer();
 
@@ -23,7 +23,7 @@ namespace Acuminator.Tests
         }
 
         [Theory]
-        [EmbeddedFileData(@"Localization\PX1050\LocalizationWithHardcodedStrings.cs",
+        [EmbeddedFileData(@"Localization\PX1050\LocalizationMethodsWithHardcodedStrings.cs",
                           @"Localization\Messages.cs")]
         public void Test_Localization_Methods_With_Hardcoded_Message_Argument(string source, string messages)
         {

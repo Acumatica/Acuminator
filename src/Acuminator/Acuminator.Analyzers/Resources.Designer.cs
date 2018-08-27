@@ -485,7 +485,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hardcoded strings are not allowed as parameters for localization methods. You should use string constants from the appropriate localizable messages class.
+        ///   Looks up a localized string similar to Hardcoded strings are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class..
         /// </summary>
         public static string PX1050Title {
             get {
@@ -494,7 +494,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Non-localizable string are not allowed as parameters for localization methods. You should mark the appropriate messages class with PXLocalizableAttribute..
+        ///   Looks up a localized string similar to Non-localizable string are not allowed as parameters for localization methods and PXException constructors. You should mark the appropriate messages class with PXLocalizableAttribute..
         /// </summary>
         public static string PX1051Title {
             get {
@@ -503,7 +503,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Incorrect string to format in localization method invocation. You should use string constants from the appropriate localizable messages class..
+        ///   Looks up a localized string similar to Incorrect string to format in localization method. You should use correct string constants from the appropriate localizable messages class..
         /// </summary>
         public static string PX1052Title {
             get {
@@ -512,20 +512,11 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Concatenation of strings is not allowed as a parameter for localization methods. You should use string constants from the appropriate localizable messages class..
+        ///   Looks up a localized string similar to Concatenation of strings is not allowed as a parameter for localization methods and PXException constructors. You should avoid string concatenation in these constructions..
         /// </summary>
         public static string PX1053Title {
             get {
                 return ResourceManager.GetString("PX1053Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Hardcoded strings are not allowed as parameters for exception message. You should use string constants from the appropriate localizable messages class..
-        /// </summary>
-        public static string PX1054Title {
-            get {
-                return ResourceManager.GetString("PX1054Title", resourceCulture);
             }
         }
     }

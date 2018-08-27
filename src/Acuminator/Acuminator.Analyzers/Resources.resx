@@ -259,18 +259,15 @@
     <value>Constructors in BLC extensions are strictly prohibited. Use the Initialize() method instead.</value>
   </data>
   <data name="PX1050Title" xml:space="preserve">
-    <value>Hardcoded strings are not allowed as parameters for localization methods. You should use string constants from the appropriate localizable messages class</value>
+    <value>Hardcoded strings are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class.</value>
   </data>
   <data name="PX1051Title" xml:space="preserve">
-    <value>Non-localizable string are not allowed as parameters for localization methods. You should mark the appropriate messages class with PXLocalizableAttribute.</value>
+    <value>Non-localizable string are not allowed as parameters for localization methods and PXException constructors. You should mark the appropriate messages class with PXLocalizableAttribute.</value>
   </data>
   <data name="PX1052Title" xml:space="preserve">
-    <value>Incorrect string to format in localization method invocation. You should use string constants from the appropriate localizable messages class.</value>
+    <value>Incorrect string to format in localization method. You should use correct string constants from the appropriate localizable messages class.</value>
   </data>
   <data name="PX1053Title" xml:space="preserve">
-    <value>Concatenation of strings is not allowed as a parameter for localization methods. You should use string constants from the appropriate localizable messages class.</value>
-  </data>
-  <data name="PX1054Title" xml:space="preserve">
-    <value>Hardcoded strings are not allowed as parameters for exception message. You should use string constants from the appropriate localizable messages class.</value>
+    <value>Concatenation of strings is not allowed as a parameter for localization methods and PXException constructors. You should avoid string concatenation in these constructions.</value>
   </data>
 </root>

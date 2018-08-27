@@ -2,7 +2,7 @@
 
 namespace Acuminator.Tests.Sources
 {
-    public class LocalizationWithIncorrectStringsToFormat
+    public class LocalizationWithIncorrectStringsToFormatInMethods
     {
         public string All()
         {

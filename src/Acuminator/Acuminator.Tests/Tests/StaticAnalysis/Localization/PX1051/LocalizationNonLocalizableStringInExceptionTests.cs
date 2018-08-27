@@ -7,29 +7,29 @@ using Xunit;
 
 namespace Acuminator.Tests
 {
-    public class LocalizationInExceptionTests : DiagnosticVerifier
+    public class LocalizationNonLocalizableStringInExceptionTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new LocalizationPXExceptionAnalyzer();
 
-        private DiagnosticResult CreatePX1054DiagnosticResult(int line, int column)
+        private DiagnosticResult CreatePX1051DiagnosticResult(int line, int column)
         {
             return new DiagnosticResult
             {
-                Id = Descriptors.PX1054_HardcodedStringInPXExceptionConstructor.Id,
-                Message = Descriptors.PX1054_HardcodedStringInPXExceptionConstructor.Title.ToString(),
+                Id = Descriptors.PX1051_NonLocalizableString.Id,
+                Message = Descriptors.PX1051_NonLocalizableString.Title.ToString(),
                 Severity = DiagnosticSeverity.Error,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }
             };
         }
 
         [Theory]
-        [EmbeddedFileData(@"Localization\PX1054\LocalizationExceptions.cs",
+        [EmbeddedFileData(@"Localization\PX1051\LocalizationWithNonLocalizableStringInExceptions.cs",
                           @"Localization\Messages.cs")]
-        public void Test_Localization_In_PXException_Descendants(string source, string messages)
+        public void Test_Localization_Of_PXException_With_Non_Localizable_Message_Argument(string source, string messages)
         {
             VerifyCSharpDiagnostic(new[] { source, messages },
-                CreatePX1054DiagnosticResult(14, 75),
-                CreatePX1054DiagnosticResult(22, 20));
+                CreatePX1051DiagnosticResult(14, 75),
+                CreatePX1051DiagnosticResult(21, 20));
         }
     }
 }

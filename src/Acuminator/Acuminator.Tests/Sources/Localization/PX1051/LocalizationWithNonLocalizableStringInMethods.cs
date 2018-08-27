@@ -2,7 +2,7 @@
 
 namespace Acuminator.Tests.Sources
 {
-    public class LocalizationWithNonLocalizableStrings
+    public class LocalizationWithNonLocalizableStringInMethods
     {
         public string PXMessagesSimple()
         {

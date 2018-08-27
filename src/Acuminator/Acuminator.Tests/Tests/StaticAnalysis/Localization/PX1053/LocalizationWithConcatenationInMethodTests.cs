@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Acuminator.Tests
 {
-    public class LocalizationWithConcatenationTests : DiagnosticVerifier
+    public class LocalizationWithConcatenationInMethodsTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new LocalizationInvocationAnalyzer();
 
@@ -23,7 +23,7 @@ namespace Acuminator.Tests
         }
 
         [Theory]
-        [EmbeddedFileData(@"Localization\PX1053\LocalizationWithConcatenation.cs",
+        [EmbeddedFileData(@"Localization\PX1053\LocalizationWithConcatenationInMethods.cs",
                           @"Localization\Messages.cs")]
         public void Test_Localization_Methods_With_String_Concatenations(string source, string messages)
         {

@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Acuminator.Tests
 {
-    public class LocalizationWithIncorrectStringToFormatTests : DiagnosticVerifier
+    public class LocalizationWithIncorrectStringToFormatInMethodTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new LocalizationInvocationAnalyzer();
 
@@ -23,7 +23,7 @@ namespace Acuminator.Tests
         }
 
         [Theory]
-        [EmbeddedFileData(@"Localization\PX1052\LocalizationWithIncorrectStringsToFormat.cs",
+        [EmbeddedFileData(@"Localization\PX1052\LocalizationWithIncorrectStringToFormatInMethods.cs",
                           @"Localization\Messages.cs")]
         public void Test_Localization_Methods_With_Incorrect_Strings_To_Format(string source, string messages)
         {

@@ -18,7 +18,9 @@ namespace Acuminator.Analyzers
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create
             (
-                Descriptors.PX1054_HardcodedStringInPXExceptionConstructor
+                Descriptors.PX1050_HardcodedStringInLocalizationMethod,
+                Descriptors.PX1051_NonLocalizableString,
+                Descriptors.PX1053_ConcatinationPriorLocalization
             );
 
         internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
@@ -46,16 +48,17 @@ namespace Acuminator.Analyzers
                     continue;
 
                 ImmutableArray<IParameterSymbol> pars = methodSymbol.Parameters;
-                ArgumentSyntax hardcodedMessage = GetHardcodedMessage(syntaxContext, pars, c.ArgumentList);
+                ExpressionSyntax messageExpression = GetMessageExpression(syntaxContext, pars, c.ArgumentList);
 
-                if (hardcodedMessage == null || hardcodedMessage.Expression == null)
+                if (messageExpression == null)
                     continue;
 
-                syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1054_HardcodedStringInPXExceptionConstructor, hardcodedMessage.Expression.GetLocation()));
+                LocalizationMessageHelper messageHelper = new LocalizationMessageHelper(syntaxContext, pxContext, messageExpression, false);
+                messageHelper.ValidateMessage();
             }
         }
 
-        private ArgumentSyntax GetHardcodedMessage(SyntaxNodeAnalysisContext syntaxContext, ImmutableArray<IParameterSymbol> pars, ArgumentListSyntax args)
+        private ExpressionSyntax GetMessageExpression(SyntaxNodeAnalysisContext syntaxContext, ImmutableArray<IParameterSymbol> pars, ArgumentListSyntax args)
         {
             if (syntaxContext.CancellationToken.IsCancellationRequested)
                 return null;
@@ -76,11 +79,7 @@ namespace Acuminator.Analyzers
             if (messageArg == null || messageArg.Expression == null)
                 return null;
 
-            Optional<object> constMessage = syntaxContext.SemanticModel.GetConstantValue(messageArg.Expression);
-            if (!constMessage.HasValue)
-                return null;
-
-            return messageArg;
+            return messageArg.Expression;
         }
 
         private void AnalyzeThrowOfPXException(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
@@ -99,12 +98,13 @@ namespace Acuminator.Analyzers
                 return;
 
             ImmutableArray<IParameterSymbol> pars = ctorSymbol.Parameters;
-            ArgumentSyntax hardcodedMessage = GetHardcodedMessage(syntaxContext, pars, ctorNode.ArgumentList);
+            ExpressionSyntax messageExpression = GetMessageExpression(syntaxContext, pars, ctorNode.ArgumentList);
 
-            if (hardcodedMessage == null || hardcodedMessage.Expression == null)
+            if (messageExpression == null)
                 return;
 
-            syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1054_HardcodedStringInPXExceptionConstructor, hardcodedMessage.Expression.GetLocation()));
+            LocalizationMessageHelper messageHelper = new LocalizationMessageHelper(syntaxContext, pxContext, messageExpression, false);
+            messageHelper.ValidateMessage();
         }
     }
 }

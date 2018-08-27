@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Acuminator.Tests
 {
-    public class LocalizationNonLocalizableStringTests : DiagnosticVerifier
+    public class LocalizationNonLocalizableStringInMethodTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new LocalizationInvocationAnalyzer();
 
@@ -23,7 +23,7 @@ namespace Acuminator.Tests
         }
 
         [Theory]
-        [EmbeddedFileData(@"Localization\PX1051\LocalizationWithNonLocalizableStrings.cs",
+        [EmbeddedFileData(@"Localization\PX1051\LocalizationWithNonLocalizableStringInMethods.cs",
                           @"Localization\Messages.cs")]
         public void Test_Localization_Methods_With_Non_Localizable_Message_Argument(string source, string messages)
         {
