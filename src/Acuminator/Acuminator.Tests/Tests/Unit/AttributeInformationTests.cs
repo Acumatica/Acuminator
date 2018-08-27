@@ -110,39 +110,19 @@ namespace Acuminator.Tests
 		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateAttributeInformationTest.cs")]
 		private void TestAttributesListDerivedFromClass(string source)
 		{
-			_testListOfChildrensClass(source, 5);
+			_testListOfParents(source, new List<int> { 9 });
 
 		}
 
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateRecursiveAttributeInformationTest.cs")]
-		private void _testListOfChildrensClassRecursive(string source)
+		private void TestListOfParentsRecursive(string source)
 		{
-			Document document = CreateDocument(source);
-			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
-			var syntaxRoot = document.GetSyntaxRootAsync().Result;
-
-			var pxContext = new PXContext(semanticModel.Compilation);
-
-			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
-			IEnumerable<ITypeSymbol> classesArray = null;
-			Dictionary<IEnumerable<ITypeSymbol>, int> result = new Dictionary<IEnumerable<ITypeSymbol>, int>();
-
-			foreach (var property in properties)
-			{
-				var typeSymbol = semanticModel.GetDeclaredSymbol(property);
-				var attributes = typeSymbol.GetAttributes();
-				foreach (var attribute in attributes)
-				{
-					var attributeInformation = new AttributeInformation(pxContext);
-					result.Add(classesArray = attributeInformation.AttributesListDerivedFromClass(attribute.AttributeClass), classesArray.Count());
-				}
-			}
-			Assert.Equal(result, result);
+			_testListOfParents(source, new List<int> { 8, 8 });
 		}
 
 
-		private void _testListOfChildrensClass(string source,int expected)
+		private void _testListOfParents(string source, List<int> expected)
 		{
 			Document document = CreateDocument(source);
 			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
@@ -152,8 +132,9 @@ namespace Acuminator.Tests
 
 			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
 			IEnumerable<ITypeSymbol> classesArray = null;
-			Dictionary<IEnumerable<ITypeSymbol>, int> result = new Dictionary<IEnumerable<ITypeSymbol>, int>();
-
+			///Dictionary<IEnumerable<ITypeSymbol>, int> result = new Dictionary<IEnumerable<ITypeSymbol>, int>();
+			List<int> result = new List<int>();
+			
 			foreach (var property in properties)
 			{
 				var typeSymbol = semanticModel.GetDeclaredSymbol(property);
@@ -161,7 +142,9 @@ namespace Acuminator.Tests
 				foreach (var attribute in attributes)
 				{
 					var attributeInformation = new AttributeInformation(pxContext);
-					result.Add(classesArray = attributeInformation.AttributesListDerivedFromClass(attribute.AttributeClass), classesArray.Count());
+					classesArray = attributeInformation.AttributesListDerivedFromClass(attribute.AttributeClass);
+					classesArray.Count();
+					result.Add(classesArray.Count());
 				}
 			}
 			Assert.Equal(expected, result);

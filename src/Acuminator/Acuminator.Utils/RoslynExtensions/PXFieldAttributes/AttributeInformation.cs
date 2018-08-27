@@ -15,6 +15,7 @@ namespace Acuminator.Utilities
 	public class AttributeInformation
 	{
 		private readonly PXContext _context;
+		private readonly string _attributeUsageAttribute = "AttributeUsageAttribute";
 
 		public AttributeInformation(PXContext pxContext)
 		{
@@ -35,7 +36,7 @@ namespace Acuminator.Utilities
 				var allAttributes = attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
 				foreach (var attribute in allAttributes)
 				{
-					if (attribute.Name.Equals("AttributeUsageAttribute"))
+					if (attribute.Name.Equals(_attributeUsageAttribute))
 						break;
 
 					results = results.Append(attribute);
@@ -55,7 +56,7 @@ namespace Acuminator.Utilities
 					var allAttributes = _attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
 					foreach (var attribute in allAttributes)
 					{
-						if (attribute.Name.Equals("AttributeUsageAttribute"))
+						if (attribute.Name.Equals(_attributeUsageAttribute))
 							return;
 
 						results = results.Append(attribute);
