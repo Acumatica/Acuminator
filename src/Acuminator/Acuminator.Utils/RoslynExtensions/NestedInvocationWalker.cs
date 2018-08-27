@@ -85,16 +85,21 @@ namespace Acuminator.Utils.RoslynExtensions
 		protected virtual T GetSymbol<T>(ExpressionSyntax node)
 			where T : class, ISymbol
 		{
-			var symbolInfo = GetSemanticModel(node.SyntaxTree).GetSymbolInfo(node, _cancellationToken);
+			var semanticModel = GetSemanticModel(node.SyntaxTree);
 
-			if (symbolInfo.Symbol is T symbol)
+			if (semanticModel != null)
 			{
-				return symbol;
-			}
+				var symbolInfo = semanticModel.GetSymbolInfo(node, _cancellationToken);
 
-			if (!symbolInfo.CandidateSymbols.IsEmpty)
-			{
-				return symbolInfo.CandidateSymbols.OfType<T>().FirstOrDefault();
+				if (symbolInfo.Symbol is T symbol)
+				{
+					return symbol;
+				}
+
+				if (!symbolInfo.CandidateSymbols.IsEmpty)
+				{
+					return symbolInfo.CandidateSymbols.OfType<T>().FirstOrDefault();
+				}
 			}
 
 			return null;
@@ -102,6 +107,9 @@ namespace Acuminator.Utils.RoslynExtensions
 
 		protected virtual SemanticModel GetSemanticModel(SyntaxTree syntaxTree)
 		{
+			if (!_compilation.ContainsSyntaxTree(syntaxTree))
+				return null;
+
 			if (_semanticModels.TryGetValue(syntaxTree, out var semanticModel))
 				return semanticModel;
 
