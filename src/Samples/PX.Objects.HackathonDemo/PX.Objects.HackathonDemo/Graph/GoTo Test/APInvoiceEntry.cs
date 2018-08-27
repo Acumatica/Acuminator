@@ -23,6 +23,8 @@ namespace PX.Objects.HackathonDemo
 
 		public PXAction<APInvoice> Release;
 
+		public PXAction<APInvoice> ViewBatch;
+
 		public PXAction<APInvoice> VoidInvoice;
 
 
