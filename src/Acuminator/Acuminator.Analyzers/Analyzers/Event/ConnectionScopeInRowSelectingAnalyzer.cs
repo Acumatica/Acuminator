@@ -51,17 +51,14 @@ namespace Acuminator.Analyzers
 			private SymbolAnalysisContext _context;
 			private readonly PXContext _pxContext;
 			private bool _insideConnectionScope;
-			private readonly PXConnectionScopeVisitor _connectionScopeVisitor;
 
-			public Walker(SymbolAnalysisContext context, PXContext pxContext, SemanticModel semanticModel)
-				: base(semanticModel, context.CancellationToken)
+			public Walker(SymbolAnalysisContext context, PXContext pxContext)
+				: base(context.Compilation, context.CancellationToken)
 			{
 				pxContext.ThrowOnNull(nameof (pxContext));
 
 				_context = context;
 				_pxContext = pxContext;
-
-				_connectionScopeVisitor = new PXConnectionScopeVisitor(pxContext, semanticModel);
 			}
 
 			public override void VisitUsingStatement(UsingStatementSyntax node)
@@ -74,7 +71,8 @@ namespace Acuminator.Analyzers
 				}
 				else
 				{
-					_insideConnectionScope = node.Accept(_connectionScopeVisitor);
+					var connectionScopeVisitor = new PXConnectionScopeVisitor(_pxContext, GetSemanticModel(node.SyntaxTree));
+					_insideConnectionScope = node.Accept(connectionScopeVisitor);
 					base.VisitUsingStatement(node);
 					_insideConnectionScope = false;
 				}
@@ -134,11 +132,7 @@ namespace Acuminator.Analyzers
 			if (methodSymbol != null && IsRowSelectingMethod(methodSymbol, pxContext))
 			{
 				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as MethodDeclarationSyntax;
-				if (methodSyntax != null)
-				{
-					var semanticModel = context.Compilation.GetSemanticModel(methodSyntax.SyntaxTree);
-					methodSyntax.Accept(new Walker(context, pxContext, semanticModel));
-				}
+				methodSyntax?.Accept(new Walker(context, pxContext));
 			}
 		}
 

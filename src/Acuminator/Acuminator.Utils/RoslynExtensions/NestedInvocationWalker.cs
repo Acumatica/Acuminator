@@ -38,10 +38,11 @@ namespace Acuminator.Utils.RoslynExtensions
 	{
 		private const int MaxDepth = 100; // to avoid circular dependencies
 
-		private readonly SemanticModel _semanticModel;
+		private readonly Compilation _compilation;
 		private CancellationToken _cancellationToken;
 		
 		private readonly CodeAnalysisSettings _settings;
+		private readonly Dictionary<SyntaxTree, SemanticModel> _semanticModels = new Dictionary<SyntaxTree, SemanticModel>();
 
 		/// <summary>
 		/// Syntax node in the original tree that is being analyzed.
@@ -51,11 +52,11 @@ namespace Acuminator.Utils.RoslynExtensions
 
 		private readonly Stack<SyntaxNode> _nodesStack = new Stack<SyntaxNode>();
 
-		public NestedInvocationWalker(SemanticModel semanticModel, CancellationToken cancellationToken)
+		public NestedInvocationWalker(Compilation compilation, CancellationToken cancellationToken)
 		{
-			semanticModel.ThrowOnNull(nameof (semanticModel));
+			compilation.ThrowOnNull(nameof (compilation));
 
-			_semanticModel = semanticModel;
+			_compilation = compilation;
 			_cancellationToken = cancellationToken;
 
 			try
@@ -81,10 +82,10 @@ namespace Acuminator.Utils.RoslynExtensions
 		/// Returns a symbol for an invocation expression, or, 
 		/// if the exact symbol cannot be found, returns the first candidate.
 		/// </summary>
-		protected T GetSymbol<T>(ExpressionSyntax node)
+		protected virtual T GetSymbol<T>(ExpressionSyntax node)
 			where T : class, ISymbol
 		{
-			var symbolInfo = _semanticModel.GetSymbolInfo(node, _cancellationToken);
+			var symbolInfo = GetSemanticModel(node.SyntaxTree).GetSymbolInfo(node, _cancellationToken);
 
 			if (symbolInfo.Symbol is T symbol)
 			{
@@ -97,6 +98,16 @@ namespace Acuminator.Utils.RoslynExtensions
 			}
 
 			return null;
+		}
+
+		protected virtual SemanticModel GetSemanticModel(SyntaxTree syntaxTree)
+		{
+			if (_semanticModels.TryGetValue(syntaxTree, out var semanticModel))
+				return semanticModel;
+
+			semanticModel = _compilation.GetSemanticModel(syntaxTree);
+			_semanticModels[syntaxTree] = semanticModel;
+			return semanticModel;
 		}
 
 		private void Push(SyntaxNode node)
