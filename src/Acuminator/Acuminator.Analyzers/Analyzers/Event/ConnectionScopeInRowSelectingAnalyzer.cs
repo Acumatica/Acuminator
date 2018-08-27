@@ -21,16 +21,16 @@ namespace Acuminator.Analyzers
 		{
 			private class PXConnectionScopeVisitor : CSharpSyntaxVisitor<bool>
 			{
+				private readonly Walker _parent;
 				private readonly PXContext _pxContext;
-				private readonly SemanticModel _semanticModel;
 
-				public PXConnectionScopeVisitor(PXContext pxContext, SemanticModel semanticModel)
+				public PXConnectionScopeVisitor(Walker parent, PXContext pxContext)
 				{
-					pxContext.ThrowOnNull(nameof(pxContext));
-					semanticModel.ThrowOnNull(nameof(semanticModel));
-					
+					parent.ThrowOnNull(nameof(parent));
+					pxContext.ThrowOnNull(nameof (pxContext));
+
+					_parent = parent;
 					_pxContext = pxContext;
-					_semanticModel = semanticModel;
 				}
 
 				public override bool VisitUsingStatement(UsingStatementSyntax node)
@@ -40,7 +40,11 @@ namespace Acuminator.Analyzers
 
 				public override bool VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
 				{
-					var symbolInfo = _semanticModel.GetSymbolInfo(node.Type);
+					var semanticModel = _parent.GetSemanticModel(node.SyntaxTree);
+					if (semanticModel == null)
+						return false;
+
+					var symbolInfo = semanticModel.GetSymbolInfo(node.Type);
 					return symbolInfo.Symbol?.OriginalDefinition != null 
 						&& symbolInfo.Symbol.OriginalDefinition.Equals(_pxContext.PXConnectionScope);
 				}
@@ -50,6 +54,7 @@ namespace Acuminator.Analyzers
 
 			private SymbolAnalysisContext _context;
 			private readonly PXContext _pxContext;
+			private readonly PXConnectionScopeVisitor _connectionScopeVisitor;
 			private bool _insideConnectionScope;
 
 			public Walker(SymbolAnalysisContext context, PXContext pxContext)
@@ -59,6 +64,7 @@ namespace Acuminator.Analyzers
 
 				_context = context;
 				_pxContext = pxContext;
+				_connectionScopeVisitor = new PXConnectionScopeVisitor(this, pxContext);
 			}
 
 			public override void VisitUsingStatement(UsingStatementSyntax node)
@@ -71,8 +77,7 @@ namespace Acuminator.Analyzers
 				}
 				else
 				{
-					var connectionScopeVisitor = new PXConnectionScopeVisitor(_pxContext, GetSemanticModel(node.SyntaxTree));
-					_insideConnectionScope = node.Accept(connectionScopeVisitor);
+					_insideConnectionScope = node.Accept(_connectionScopeVisitor);
 					base.VisitUsingStatement(node);
 					_insideConnectionScope = false;
 				}
