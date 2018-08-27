@@ -17,46 +17,30 @@ namespace Acuminator.Tests
 {
     public class NonNullableTypeForBqlFieldTests : CodeFixVerifier
     {
-	    private DiagnosticResult CreatePX1014DiagnosticResult(int line, int column)
-	    {
-			var diagnostic = new DiagnosticResult
-			{
-				Id = Descriptors.PX1014_NonNullableTypeForBqlField.Id,
-				Message = Descriptors.PX1014_NonNullableTypeForBqlField.Title.ToString(),
-				Severity = DiagnosticSeverity.Error,
-				Locations =
-					new[] {
-						new DiagnosticResultLocation("Test0.cs", line, column)
-					}
-			};
-
-		    return diagnostic;
-	    }
-
 	    [Theory]
-	    [EmbeddedFileData(@"Dac\PX1014\Diagnostics\NonNullableTypeForBqlField.cs")] 
+	    [EmbeddedFileData(new[] { @"Diagnostics\NonNullableTypeForBqlField.cs" }, true)] 
 		public void TestDiagnostic(string actual)
 	    {
 		    VerifyCSharpDiagnostic(actual, CreatePX1014DiagnosticResult(16, 14));
 	    }
 
 		[Theory]
-        [EmbeddedFileData(@"Dac\PX1014\CodeFixes\NonNullableTypeForBqlField_Expected.cs")]
+        [EmbeddedFileData(new[] { @"CodeFixes\NonNullableTypeForBqlField_Expected.cs" }, true)]
         public void TestDiagnostic_ShouldNotShowDiagnostic(string actual)
         {
             VerifyCSharpDiagnostic(actual);
         }
 
 	    [Theory]
-	    [EmbeddedFileData(@"Dac\PX1014\Diagnostics\NonNullableTypeForBqlField_Valid.cs")]
+	    [EmbeddedFileData(new[] { @"Diagnostics\NonNullableTypeForBqlField_Valid.cs" }, true)]
 	    public void TestDiagnostic_ShouldNotShowDiagnostic2(string actual)
 	    {
 		    VerifyCSharpDiagnostic(actual);
 	    }
 
 		[Theory]
-	    [EmbeddedFileData(@"Dac\PX1014\Diagnostics\NonNullableTypeForBqlField.cs",
-						  @"Dac\PX1014\CodeFixes\NonNullableTypeForBqlField_Expected.cs")]
+	    [EmbeddedFileData(new[] { @"Diagnostics\NonNullableTypeForBqlField.cs",
+								  @"CodeFixes\NonNullableTypeForBqlField_Expected.cs" }, true)]
 	    public void TestCodeFix(string actual, string expected)
 	    {
 		    VerifyCSharpFix(actual, expected);
@@ -71,5 +55,22 @@ namespace Acuminator.Tests
         {
             return new NonNullableTypeForBqlFieldAnalyzer();
         }
-    }
+
+		private DiagnosticResult CreatePX1014DiagnosticResult(int line, int column)
+		{
+			var diagnostic = new DiagnosticResult
+			{
+				Id = Descriptors.PX1014_NonNullableTypeForBqlField.Id,
+				Message = Descriptors.PX1014_NonNullableTypeForBqlField.Title.ToString(),
+				Severity = DiagnosticSeverity.Error,
+				Locations =
+					new[]
+					{
+						new DiagnosticResultLocation("Test0.cs", line, column)
+					}
+			};
+
+			return diagnostic;
+		}
+	}
 }

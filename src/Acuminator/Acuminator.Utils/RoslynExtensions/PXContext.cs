@@ -24,35 +24,16 @@ namespace Acuminator.Analyzers
 	    public EventSymbols Events => events.Value;
 
 		private readonly Lazy<FieldAttributesTypes> fieldAttributes;
-
 		public FieldAttributesTypes FieldAttributes => fieldAttributes.Value;
 
 		private readonly Lazy<PXSystemActionTypes> systemActionTypes;
-
 		public PXSystemActionTypes PXSystemActions => systemActionTypes.Value;
 
+		private readonly Lazy<SystemTypeSymbols> systemTypes;
+		public SystemTypeSymbols SystemTypes => systemTypes.Value;
 
 
-
-        public INamedTypeSymbol Array => Compilation.GetSpecialType(SpecialType.System_Array);
-
-		public IArrayTypeSymbol ByteArray => Compilation.CreateArrayTypeSymbol(Byte);
-
-        public INamedTypeSymbol String => Compilation.GetSpecialType(SpecialType.System_String);
-        public INamedTypeSymbol Bool => Compilation.GetSpecialType(SpecialType.System_Boolean);
-        public INamedTypeSymbol Int64 => Compilation.GetSpecialType(SpecialType.System_Int64);
-        public INamedTypeSymbol Int32 => Compilation.GetSpecialType(SpecialType.System_Int32);
-        public INamedTypeSymbol Int16 => Compilation.GetSpecialType(SpecialType.System_Int16);
-        public INamedTypeSymbol Byte => Compilation.GetSpecialType(SpecialType.System_Byte);
-        public INamedTypeSymbol Double => Compilation.GetSpecialType(SpecialType.System_Double);
-        public INamedTypeSymbol Float => Compilation.GetSpecialType(SpecialType.System_Single);
-        public INamedTypeSymbol Decimal => Compilation.GetSpecialType(SpecialType.System_Decimal);
-        public INamedTypeSymbol DateTime => Compilation.GetSpecialType(SpecialType.System_DateTime);
-		public INamedTypeSymbol Nullable => Compilation.GetSpecialType(SpecialType.System_Nullable_T);
-
-		public INamedTypeSymbol IEnumerable => Compilation.GetSpecialType(SpecialType.System_Collections_IEnumerable);
-
-		public INamedTypeSymbol Guid => Compilation.GetTypeByMetadataName(typeof(Guid).FullName);
+		
 
 
 
@@ -105,12 +86,47 @@ namespace Acuminator.Analyzers
 										() => new FieldAttributesTypes(Compilation));
             systemActionTypes = new Lazy<PXSystemActionTypes>(
 										() => new PXSystemActionTypes(Compilation));
+			systemTypes = new Lazy<SystemTypeSymbols>(
+										() => new SystemTypeSymbols(Compilation));
 
 			IsAcumatica2018R2 = PXSelectBase2018R2NewType != null;
 		}
 
-        #region Field Attributes Types
-        public class FieldAttributesTypes
+		#region System Types
+		public class SystemTypeSymbols
+		{
+			private readonly Compilation _compilation;
+
+			public SystemTypeSymbols(Compilation aCompilation)
+			{
+				_compilation = aCompilation;
+			}
+
+			public INamedTypeSymbol Array => _compilation.GetSpecialType(SpecialType.System_Array);
+
+			public IArrayTypeSymbol ByteArray => _compilation.CreateArrayTypeSymbol(Byte);
+			public IArrayTypeSymbol StringArray => _compilation.CreateArrayTypeSymbol(String);
+
+			public INamedTypeSymbol String => _compilation.GetSpecialType(SpecialType.System_String);
+			public INamedTypeSymbol Bool => _compilation.GetSpecialType(SpecialType.System_Boolean);
+			public INamedTypeSymbol Int64 => _compilation.GetSpecialType(SpecialType.System_Int64);
+			public INamedTypeSymbol Int32 => _compilation.GetSpecialType(SpecialType.System_Int32);
+			public INamedTypeSymbol Int16 => _compilation.GetSpecialType(SpecialType.System_Int16);
+			public INamedTypeSymbol Byte => _compilation.GetSpecialType(SpecialType.System_Byte);
+			public INamedTypeSymbol Double => _compilation.GetSpecialType(SpecialType.System_Double);
+			public INamedTypeSymbol Float => _compilation.GetSpecialType(SpecialType.System_Single);
+			public INamedTypeSymbol Decimal => _compilation.GetSpecialType(SpecialType.System_Decimal);
+			public INamedTypeSymbol DateTime => _compilation.GetSpecialType(SpecialType.System_DateTime);
+			public INamedTypeSymbol Nullable => _compilation.GetSpecialType(SpecialType.System_Nullable_T);
+
+			public INamedTypeSymbol IEnumerable => _compilation.GetSpecialType(SpecialType.System_Collections_IEnumerable);
+
+			public INamedTypeSymbol Guid => _compilation.GetTypeByMetadataName(typeof(Guid).FullName);
+		}
+		#endregion
+
+		#region Field Attributes Types
+		public class FieldAttributesTypes
         {
             private readonly Compilation compilation;
 
@@ -138,6 +154,7 @@ namespace Acuminator.Analyzers
 
             #region DBField Attributes
             public INamedTypeSymbol PXDBFieldAttribute => compilation.GetTypeByMetadataName(typeof(PXDBFieldAttribute).FullName);
+            public INamedTypeSymbol PXDBCalcedAttribute => compilation.GetTypeByMetadataName(typeof(PXDBCalcedAttribute).FullName);
 
             public INamedTypeSymbol PXDBLongAttribute => compilation.GetTypeByMetadataName(typeof(PXDBLongAttribute).FullName);
             public INamedTypeSymbol PXDBIntAttribute => compilation.GetTypeByMetadataName(typeof(PXDBIntAttribute).FullName);
@@ -156,6 +173,7 @@ namespace Acuminator.Analyzers
             public INamedTypeSymbol PXDBLongIdentityAttribute => compilation.GetTypeByMetadataName(typeof(PXDBLongIdentityAttribute).FullName);
             public INamedTypeSymbol PXDBBinaryAttribute => compilation.GetTypeByMetadataName(typeof(PXDBBinaryAttribute).FullName);
             public INamedTypeSymbol PXDBUserPasswordAttribute => compilation.GetTypeByMetadataName(typeof(PXDBUserPasswordAttribute).FullName);
+            public INamedTypeSymbol PXDBAttributeAttribute => compilation.GetTypeByMetadataName(typeof(PXDBAttributeAttribute).FullName);
             #endregion
         }
 		#endregion

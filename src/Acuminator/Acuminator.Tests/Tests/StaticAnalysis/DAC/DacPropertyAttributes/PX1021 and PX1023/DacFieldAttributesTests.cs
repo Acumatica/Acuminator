@@ -17,24 +17,27 @@ namespace Acuminator.Tests
 	public class DacFieldAttributesTests : DiagnosticVerifier
 	{
 		[Theory]
-		[EmbeddedFileData(@"Attributes\PX1023\Diagnostics\DacWithMultipleFieldAttributes.cs")]
+		[EmbeddedFileData(new string[] { @"PX1023\Diagnostics\DacWithMultipleFieldAttributes.cs" }, true)]
 		public virtual void Test_Dac_With_Multiple_Field_Attributes(string source) =>
-			VerifyCSharpDiagnostic(source,
+			VerifyCSharpDiagnostic(source, 
 				CreatePX1023MultipleFieldAttributesDiagnosticResult(line: 24, column: 4),
 				CreatePX1023MultipleFieldAttributesDiagnosticResult(line: 25, column: 4));
 
 		[Theory]
-		[EmbeddedFileData(@"Attributes\PX1021\Diagnostics\DacFieldAttributesTypeMismatch.cs")]
+		[EmbeddedFileData(new string[] { @"PX1021\Diagnostics\DacFieldAttributesTypeMismatch.cs" }, true)]
 		public virtual void Test_Dac_With_Property_Type_Not_Matching_Field_Attribute_Type(string source) =>
 			VerifyCSharpDiagnostic(source,
 				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 24, column: 4, extraLocationLine: 26, extraLocationColumn: 10),
 				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 26, column: 10, extraLocationLine: 24, extraLocationColumn: 4),
 
 				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 34, column: 4, extraLocationLine: 35, extraLocationColumn: 18),
-				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 35, column: 18, extraLocationLine: 34, extraLocationColumn: 4));
+				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 35, column: 18, extraLocationLine: 34, extraLocationColumn: 4),
+
+				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 53, column: 4, extraLocationLine: 54, extraLocationColumn: 18),
+				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 54, column: 18, extraLocationLine: 53, extraLocationColumn: 4));
 
 		[Theory]
-		[EmbeddedFileData(@"Attributes\PX1021\Diagnostics\DacFieldTypeMismatchPXDBScalarAttr.cs")]
+		[EmbeddedFileData(new string[] { @"PX1021\Diagnostics\DacFieldTypeMismatchPXDBScalarAttr.cs"  }, true)]
 		public virtual void Test_Dac_Property_With_PXDBScalar_Attribute(string source) =>
 			VerifyCSharpDiagnostic(source);	
 
