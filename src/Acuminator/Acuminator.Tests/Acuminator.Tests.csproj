@@ -152,6 +152,8 @@
     <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\InstanceMethodConditionalAccess.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1029\Diagnostics\DacWithNestedTypes.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1031 and PX1032\Diagnostics\DacWithNestedTypes.cs" />
+    <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\SeparateFiles_ExternalClass.cs" />
+    <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\SeparateFiles_AnalyzedClass.cs" />
     <Compile Include="Verifiers\FluentAssertionsExtensions.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1007\Diagnostics\DACCreateInstance.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1007\CodeFixes\DACCreateInstance_Expected.cs" />

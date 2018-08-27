@@ -198,5 +198,21 @@ namespace Acuminator.Tests
 
 			walker.Locations.Should().BeEquivalentTo((line: 14, column: 4));
 		}
+
+		[Theory]
+		[EmbeddedFileData(@"Common\NestedInvocationWalker\SeparateFiles_AnalyzedClass.cs",
+			@"Common\NestedInvocationWalker\SeparateFiles_ExternalClass.cs")]
+		public async Task SeparateFiles(string text1, string text2)
+		{
+			Document document = CreateCSharpDocument(text1, text2);
+			Compilation compilation = await document.Project.GetCompilationAsync();
+			var walker = new ExceptionWalker(compilation, CancellationToken.None);
+			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
+				.OfType<ClassDeclarationSyntax>().First(n => n.Identifier.Text == "Foo");
+
+			node.Accept(walker);
+
+			walker.Locations.Should().BeEquivalentTo((line: 14, column: 4));
+		}
 	}
 }
