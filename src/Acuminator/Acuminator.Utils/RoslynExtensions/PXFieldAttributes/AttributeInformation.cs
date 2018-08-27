@@ -15,7 +15,7 @@ namespace Acuminator.Utilities
 	public class AttributeInformation
 	{
 		private readonly PXContext _context;
-		private readonly string _attributeUsageAttribute = "AttributeUsageAttribute";
+		private static readonly string _attributeUsageAttribute = "AttributeUsageAttribute";
 
 		public AttributeInformation(PXContext pxContext)
 		{
@@ -24,9 +24,17 @@ namespace Acuminator.Utilities
 			_context = pxContext;
 		}
 
-		public IEnumerable<ITypeSymbol> AttributesListDerivedFromClass(ITypeSymbol attributeSymbol)
+		public IEnumerable<ITypeSymbol> AttributesListDerivedFromClass(ITypeSymbol attributeSymbol, bool expand = false)
 		{
-			var results = attributeSymbol.GetBaseTypesAndThis();
+			HashSet<ITypeSymbol> results = new HashSet<ITypeSymbol>();
+
+			foreach (var type in attributeSymbol.GetBaseTypesAndThis())
+			{
+				if (!expand && !type.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute))
+					break;
+
+				results.Add(type);
+			}
 
 			var aggregateAttribute = _context.AttributeTypes.PXAggregateAttribute;
 			var dynamicAggregateAttribute = _context.AttributeTypes.PXDynamicAggregateAttribute;
@@ -39,12 +47,12 @@ namespace Acuminator.Utilities
 					if (attribute.Name.Equals(_attributeUsageAttribute))
 						break;
 
-					results = results.Append(attribute);
+					results.Add(attribute);
 					//go in recursuion
 					Recursion(attribute, 10);
 				}
 			}
-			return results.ToHashSet();
+			return results;
 
 			void Recursion(ITypeSymbol _attributeSymbol, int depth)
 			{
@@ -59,7 +67,7 @@ namespace Acuminator.Utilities
 						if (attribute.Name.Equals(_attributeUsageAttribute))
 							return;
 
-						results = results.Append(attribute);
+						results.Add(attribute);
 						//go in recursuion
 						Recursion(attribute, depth - 1);
 					}

@@ -107,22 +107,128 @@ namespace Acuminator.Tests
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateAttributeInformationTest.cs")]
-		private void TestAttributesListDerivedFromClass(string source)
+		[EmbeddedFileData(@"Dac\PX1030\Unit\AttributeInformationSimpleDacTest.cs")]
+		private void TestListOfParentsSimple(string source)
 		{
-			_testListOfParents(source, new List<int> { 9 });
+			_testListOfParents(source, 
+								new List<List<string>> {
+									new List<string>{ "PX.Data.PXBoolAttribute" },
+									new List<string>{ "PX.Data.PXDefaultAttribute" },
+									new List<string>{ "PX.Data.PXUIFieldAttribute" },
+									new List<string>{ "PX.Data.PXDBDecimalAttribute", "PX.Data.PXDBFieldAttribute"},
+									new List<string>{ "PX.Data.PXDefaultAttribute"},
+									new List<string>{ "PX.Data.PXUIFieldAttribute"}
+								});
+		}
+
+
+		[Theory]
+		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateAttributeInformationTest.cs")]
+		private void TestListOfParentsAggregate(string source)
+		{
+			_testListOfParents(source,
+								new List<List<string>> {
+									new List<string>
+									{
+										"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
+										"PX.Data.PXAggregateAttribute",
+										"PX.Objects.HackathonDemo.NonNullableIntAttribute",
+										"PX.Data.PXDBIntAttribute",
+										"PX.Data.PXDefaultAttribute",
+										"PX.Data.PXIntListAttribute"
+									}
+								});
 
 		}
 
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateRecursiveAttributeInformationTest.cs")]
-		private void TestListOfParentsRecursive(string source)
+		private void TestListOfParentsAggregateRecursive(string source)
 		{
-			_testListOfParents(source, new List<int> { 8, 8 });
+			_testListOfParents(source, new List<List<string>> {
+									new List<string>
+									{
+										"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
+										"PX.Data.PXAggregateAttribute",
+										"PX.Objects.HackathonDemo.NonNullableIntAttribute",
+										"PX.Data.PXDefaultAttribute",
+										"PX.Data.PXIntListAttribute"
+									},
+									new List<string>
+									{
+										"PX.Objects.HackathonDemo._NonNullableIntListAttribute",
+										"PX.Data.PXAggregateAttribute",
+										"PX.Objects.HackathonDemo._NonNullableIntAttribute",
+										"PX.Data.PXDBIntAttribute",
+										"PX.Data.PXIntListAttribute"
+									}
+								});
+		}
+
+		[Theory]
+		[EmbeddedFileData(@"Dac\PX1030\Unit\AttributeInformationSimpleDacTest.cs")]
+		private void TestListOfParentsSimpleExpanded(string source)
+		{
+			_testListOfParents(source,
+								new List<List<string>> {
+									new List<string>{ "PX.Data.PXBoolAttribute" },
+									new List<string>{ "PX.Data.PXDefaultAttribute" },
+									new List<string>{ "PX.Data.PXUIFieldAttribute" },
+									new List<string>{ "PX.Data.PXDBDecimalAttribute", "PX.Data.PXDBFieldAttribute"},
+									new List<string>{ "PX.Data.PXDefaultAttribute"},
+									new List<string>{ "PX.Data.PXUIFieldAttribute"}
+								},
+								true);
 		}
 
 
-		private void _testListOfParents(string source, List<int> expected)
+		[Theory]
+		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateAttributeInformationTest.cs")]
+		private void TestListOfParentsAggregateExpanded(string source)
+		{
+			_testListOfParents(source,
+								new List<List<string>> {
+									new List<string>
+									{
+										"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
+										"PX.Data.PXAggregateAttribute",
+										"PX.Objects.HackathonDemo.NonNullableIntAttribute",
+										"PX.Data.PXDBIntAttribute",
+										"PX.Data.PXDefaultAttribute",
+										"PX.Data.PXIntListAttribute"
+									}
+								},
+								true);
+
+		}
+
+		[Theory]
+		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateRecursiveAttributeInformationTest.cs")]
+		private void TestListOfParentsAggregateRecursiveExpanded(string source)
+		{
+			_testListOfParents(source, new List<List<string>> {
+									new List<string>
+									{
+										"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
+										"PX.Data.PXAggregateAttribute",
+										"PX.Objects.HackathonDemo.NonNullableIntAttribute",
+										"PX.Data.PXDefaultAttribute",
+										"PX.Data.PXIntListAttribute"
+									},
+									new List<string>
+									{
+										"PX.Objects.HackathonDemo._NonNullableIntListAttribute",
+										"PX.Data.PXAggregateAttribute",
+										"PX.Objects.HackathonDemo._NonNullableIntAttribute",
+										"PX.Data.PXDBIntAttribute",
+										"PX.Data.PXIntListAttribute"
+									}
+								},
+								true);
+		}
+
+
+		private void _testListOfParents(string source, List<List<string>> expected, bool expand = false)
 		{
 			Document document = CreateDocument(source);
 			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
@@ -130,24 +236,39 @@ namespace Acuminator.Tests
 
 			var pxContext = new PXContext(semanticModel.Compilation);
 
+			var expectedSymbols = _convertStringsToITypeSymbols(expected, semanticModel);
+		
 			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
-			IEnumerable<ITypeSymbol> classesArray = null;
-			///Dictionary<IEnumerable<ITypeSymbol>, int> result = new Dictionary<IEnumerable<ITypeSymbol>, int>();
-			List<int> result = new List<int>();
+			
+			List<HashSet<ITypeSymbol>> result = new List<HashSet<ITypeSymbol>>();
 			
 			foreach (var property in properties)
 			{
 				var typeSymbol = semanticModel.GetDeclaredSymbol(property);
 				var attributes = typeSymbol.GetAttributes();
+
 				foreach (var attribute in attributes)
 				{
 					var attributeInformation = new AttributeInformation(pxContext);
-					classesArray = attributeInformation.AttributesListDerivedFromClass(attribute.AttributeClass);
-					classesArray.Count();
-					result.Add(classesArray.Count());
+					result.Add(attributeInformation.AttributesListDerivedFromClass(attribute.AttributeClass,expand).ToHashSet());
 				}
 			}
-			Assert.Equal(expected, result);
+			Assert.Equal(expectedSymbols, result);
+		}
+
+		private List<HashSet<ITypeSymbol>> _convertStringsToITypeSymbols(List<List<string>> expected,SemanticModel semanticModel)
+		{
+			var expectedSymbols = new List<HashSet<ITypeSymbol>>();
+			foreach(var symbolsArray in expected)
+			{
+				HashSet<ITypeSymbol> attributesHashSet = new HashSet<ITypeSymbol>();
+				foreach (var symbol in symbolsArray)
+				{
+					attributesHashSet.Add(semanticModel.Compilation.GetTypeByMetadataName(symbol));
+				}
+				expectedSymbols.Add(attributesHashSet);
+			}
+			return expectedSymbols;
 		}
 
 	}
