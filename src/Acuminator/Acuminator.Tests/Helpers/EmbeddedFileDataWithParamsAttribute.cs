@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis.Formatting;
 
 namespace Acuminator.Tests.Helpers
@@ -8,6 +9,20 @@ namespace Acuminator.Tests.Helpers
 	public class EmbeddedFileDataWithParamsAttribute : EmbeddedFileDataAttribute
 	{
 		private readonly object[] _args;
+
+		public EmbeddedFileDataWithParamsAttribute(string fileName1, string fileName2, object[] args, bool overloadResolution,
+												   [CallerFilePath]string testFilePath = null)
+			: base(fileName1, fileName2, overloadResolution, testFilePath)
+		{
+			_args = args;
+		}
+
+		public EmbeddedFileDataWithParamsAttribute(string fileName, bool overloadResolution, object[] args,
+												   [CallerFilePath]string testFilePath = null)
+			: base(fileName, overloadResolution, testFilePath)
+		{
+			_args = args;
+		}
 
 		public EmbeddedFileDataWithParamsAttribute(string fileName1, string fileName2, params object[] args)
 			: base(fileName1, fileName2)
