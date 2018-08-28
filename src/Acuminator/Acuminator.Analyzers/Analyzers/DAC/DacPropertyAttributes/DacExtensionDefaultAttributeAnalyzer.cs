@@ -25,13 +25,11 @@ namespace Acuminator.Analyzers
 			(
 				Descriptors.PX1030_DefaultAttibuteToExisitingRecords
 			);
-#pragma warning disable CS4014
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSymbolAction(symbolContext =>
-				AnalyzePropertyAsync(symbolContext, pxContext), SymbolKind.NamedType);
+			compilationStartContext.RegisterSymbolAction(async symbolContext =>
+				await AnalyzePropertyAsync(symbolContext, pxContext), SymbolKind.NamedType);
 		}
-#pragma warning restore CS4014
 		private static Task AnalyzePropertyAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
 			if (!(symbolContext.Symbol is INamedTypeSymbol dacOrDacExt) || !dacOrDacExt.IsDacOrExtension(pxContext))
@@ -143,21 +141,9 @@ namespace Acuminator.Analyzers
 		{
 			SyntaxNode attributeSyntaxNode = null;
 
-			try
-			{
-				attributeSyntaxNode = await attribute.ApplicationSyntaxReference.GetSyntaxAsync(cancellationToken)
+			attributeSyntaxNode = await attribute.ApplicationSyntaxReference.GetSyntaxAsync(cancellationToken)
 																				.ConfigureAwait(false);
-			}
-			catch (OperationCanceledException)
-			{
-				return null;
-			}
-			catch (Exception e)
-			{
-				//TODO log error here
-				return null;
-			}
-
+			
 			return attributeSyntaxNode?.GetLocation();
 		}
 	}
