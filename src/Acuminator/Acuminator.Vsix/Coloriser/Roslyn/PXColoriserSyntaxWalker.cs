@@ -26,34 +26,35 @@ namespace Acuminator.Vsix.Coloriser
 	{
 		protected class PXColoriserSyntaxWalker : CSharpSyntaxWalker
 		{
-            private const string varKeyword = "var";
+            private const string VarKeyword = "var";
 
-            private long visitedNodesCounter = 0;
-            private readonly PXRoslynColorizerTagger tagger;
-			private readonly ParsedDocument document;
-            private int braceLevel;
-            private int attributeLevel;                  
-            private readonly CancellationToken cancellationToken;
+            private long _visitedNodesCounter = 0;
+            private readonly PXRoslynColorizerTagger _tagger;
+			private readonly ParsedDocument _document;
+            private int _braceLevel;
+            private int _attributeLevel;                  
+            private readonly CancellationToken _cancellationToken;
 
-            private long bqlDeepnessLevel;
-            private bool IsInsideBqlCommand => bqlDeepnessLevel > 0;
+            private long _bqlDeepnessLevel;
 
-            public PXColoriserSyntaxWalker(PXRoslynColorizerTagger aTagger, ParsedDocument parsedDocument, CancellationToken cToken) :
+            private bool IsInsideBqlCommand => _bqlDeepnessLevel > 0;
+
+            public PXColoriserSyntaxWalker(PXRoslynColorizerTagger tagger, ParsedDocument parsedDocument, CancellationToken cToken) :
                                       base(SyntaxWalkerDepth.Node)
 			{
-				aTagger.ThrowOnNull(nameof(aTagger));
+				tagger.ThrowOnNull(nameof(tagger));
 				parsedDocument.ThrowOnNull(nameof(parsedDocument));
 
-				tagger = aTagger;
-				document = parsedDocument;
-                cancellationToken = cToken;
+				_tagger = tagger;
+				_document = parsedDocument;
+                _cancellationToken = cToken;
             }
 
             public async override void VisitIdentifierName(IdentifierNameSyntax node)
             {
-                if (tagger.Provider.Package.ColorOnlyInsideBQL && !IsInsideBqlCommand)
+                if (_tagger.Provider.Package.ColorOnlyInsideBQL && !IsInsideBqlCommand)
                 {
-                    if (!cancellationToken.IsCancellationRequested)
+                    if (!_cancellationToken.IsCancellationRequested)
                         base.VisitIdentifierName(node);
 
                     return;
@@ -62,27 +63,27 @@ namespace Acuminator.Vsix.Coloriser
                 string nodeText = node.Identifier.ValueText;
                 TextSpan span = node.Span;
 
-                if (cancellationToken.IsCancellationRequested || IsVar(nodeText))
+                if (_cancellationToken.IsCancellationRequested || IsVar(nodeText))
                     return;
 
                 ITypeSymbol typeSymbol = await GetTypeSymbolFromIdentifierNode(node);
 
                 if (typeSymbol == null)
                 {
-                    if (!cancellationToken.IsCancellationRequested)                    
+                    if (!_cancellationToken.IsCancellationRequested)                    
                         base.VisitIdentifierName(node);                 
 
                     return;
                 }
 
-                if (cancellationToken.IsCancellationRequested)
+                if (_cancellationToken.IsCancellationRequested)
                     return;
 
 				if (typeSymbol is ITypeParameterSymbol typeParameterSymbol)
 				{
 					AnalyzeTypeParameterNode(node, typeParameterSymbol);
 
-					if (!cancellationToken.IsCancellationRequested)
+					if (!_cancellationToken.IsCancellationRequested)
 						base.VisitIdentifierName(node);
 
 					return;
@@ -90,7 +91,7 @@ namespace Acuminator.Vsix.Coloriser
 
 				ColorIdentifierTypeSymbol(typeSymbol, span, isTypeParameter: false);
 
-                if (!cancellationToken.IsCancellationRequested)
+                if (!_cancellationToken.IsCancellationRequested)
                     base.VisitIdentifierName(node);
 
                 UpdateCodeEditorIfNecessary();				
@@ -98,21 +99,21 @@ namespace Acuminator.Vsix.Coloriser
 
             public async override void VisitGenericName(GenericNameSyntax genericNode)
             {
-                if (cancellationToken.IsCancellationRequested)
+                if (_cancellationToken.IsCancellationRequested)
                     return;
 
-				SemanticModel semanticModel = await document.SemanticModelAsync(cancellationToken);
+				SemanticModel semanticModel = await _document.SemanticModelAsync(_cancellationToken);
                 ITypeSymbol typeSymbol = semanticModel.GetSymbolInfo(genericNode).Symbol as ITypeSymbol;
               
                 if (typeSymbol == null)
                 {
-                    if (!cancellationToken.IsCancellationRequested)
+                    if (!_cancellationToken.IsCancellationRequested)
                         base.VisitGenericName(genericNode);
 
                     return;
                 }
 
-                if (cancellationToken.IsCancellationRequested)
+                if (_cancellationToken.IsCancellationRequested)
                     return;
 
                 if (genericNode.IsUnboundGenericName)
@@ -122,12 +123,12 @@ namespace Acuminator.Vsix.Coloriser
 
                 PXCodeType? coloredCodeType = typeSymbol.GetCodeTypeFromGenericName();
                 IClassificationType classificationType = coloredCodeType.HasValue 
-                    ? tagger.Provider[coloredCodeType.Value]
+                    ? _tagger.Provider[coloredCodeType.Value]
                     : null;
 
                 if (classificationType == null)
                 {
-                    if (!cancellationToken.IsCancellationRequested)
+                    if (!_cancellationToken.IsCancellationRequested)
                         base.VisitGenericName(genericNode);
 
                     UpdateCodeEditorIfNecessary();
@@ -147,7 +148,7 @@ namespace Acuminator.Vsix.Coloriser
             {
                 try
                 {
-                    bqlDeepnessLevel++;
+                    _bqlDeepnessLevel++;
                     var typeArgumentList = genericNode.TypeArgumentList;
 
                     if (typeArgumentList.Arguments.Count > 1)
@@ -157,12 +158,12 @@ namespace Acuminator.Vsix.Coloriser
 
                     AddClassificationTag(genericNode.Identifier.Span, classificationType);
 
-                    if (!cancellationToken.IsCancellationRequested)
+                    if (!_cancellationToken.IsCancellationRequested)
                         base.VisitGenericName(genericNode);
                 }
                 finally
                 {
-                    bqlDeepnessLevel--;
+                    _bqlDeepnessLevel--;
                 }
             }
 
@@ -170,9 +171,9 @@ namespace Acuminator.Vsix.Coloriser
             private void ColorAndOutlineBqlPartsAndPXActions(GenericNameSyntax genericNode, ITypeSymbol typeSymbol, 
 															 IClassificationType classificationType, PXCodeType coloredCodeType)
             {
-                if (tagger.Provider.Package.ColorOnlyInsideBQL && !IsInsideBqlCommand)
+                if (_tagger.Provider.Package.ColorOnlyInsideBQL && !IsInsideBqlCommand)
                 {
-                    if (!cancellationToken.IsCancellationRequested)
+                    if (!_cancellationToken.IsCancellationRequested)
                         base.VisitGenericName(genericNode);
 
                     return;
@@ -188,10 +189,10 @@ namespace Acuminator.Vsix.Coloriser
                         return;
                     case PXCodeType.PXAction:
                         {
-                            if (tagger.Provider.Package.PXActionColoringEnabled)
+                            if (_tagger.Provider.Package.PXActionColoringEnabled)
                                 AddClassificationTag(genericNode.Identifier.Span, classificationType);
 
-                            if (!cancellationToken.IsCancellationRequested)
+                            if (!_cancellationToken.IsCancellationRequested)
                                 base.VisitGenericName(genericNode);
 
                             return;
@@ -202,14 +203,14 @@ namespace Acuminator.Vsix.Coloriser
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void ColorAndOutlineBqlOperator(GenericNameSyntax genericNode, ITypeSymbol typeSymbol, IClassificationType classificationType)
             {
-                if (cancellationToken.IsCancellationRequested)
+                if (_cancellationToken.IsCancellationRequested)
                     return;
 
                 try
                 {
-                    bqlDeepnessLevel++;
+                    _bqlDeepnessLevel++;
 
-                    if (tagger.Provider.Package.UseBqlOutlining && tagger.Provider.Package.UseBqlDetailedOutlining)
+                    if (_tagger.Provider.Package.UseBqlOutlining && _tagger.Provider.Package.UseBqlDetailedOutlining)
                     {
                         TextSpan? outliningSpan = typeSymbol.GetBqlOperatorOutliningTextSpan(genericNode);
 
@@ -221,12 +222,12 @@ namespace Acuminator.Vsix.Coloriser
 
                     AddClassificationTag(genericNode.Identifier.Span, classificationType);
 
-                    if (!cancellationToken.IsCancellationRequested)
+                    if (!_cancellationToken.IsCancellationRequested)
                         base.VisitGenericName(genericNode);
                 }
                 finally
                 {
-                    bqlDeepnessLevel--;
+                    _bqlDeepnessLevel--;
                 }
             }
 
@@ -235,32 +236,32 @@ namespace Acuminator.Vsix.Coloriser
             {
                 try
                 {
-                    bqlDeepnessLevel++;
+                    _bqlDeepnessLevel++;
                     AddClassificationTag(genericNode.Identifier.Span, classificationType);
 
-                    if (!cancellationToken.IsCancellationRequested)
+                    if (!_cancellationToken.IsCancellationRequested)
                         base.VisitGenericName(genericNode);                
                 }
                 finally
                 {
-                    bqlDeepnessLevel--;
+                    _bqlDeepnessLevel--;
                 }
             }
 
             public async override void VisitQualifiedName(QualifiedNameSyntax node)
             {
-                if (cancellationToken.IsCancellationRequested)
+                if (_cancellationToken.IsCancellationRequested)
                     return;
 
-                if (tagger.Provider.Package.ColorOnlyInsideBQL && !IsInsideBqlCommand)
+                if (_tagger.Provider.Package.ColorOnlyInsideBQL && !IsInsideBqlCommand)
                 {
-                    if (!cancellationToken.IsCancellationRequested)
+                    if (!_cancellationToken.IsCancellationRequested)
                         base.VisitQualifiedName(node);
 
                     return;
                 }
 
-				var semanticModel = await document.SemanticModelAsync(cancellationToken);
+				var semanticModel = await _document.SemanticModelAsync(_cancellationToken);
 
 				string nodeText = node.ToString();
                 TextSpan leftSpan = node.Left.Span;
@@ -269,22 +270,22 @@ namespace Acuminator.Vsix.Coloriser
 
                 if (typeSymbol == null)
                 {
-                    if (!cancellationToken.IsCancellationRequested)
+                    if (!_cancellationToken.IsCancellationRequested)
                         base.VisitQualifiedName(node);
 
                     return;
                 }
 
-                if (cancellationToken.IsCancellationRequested)
+                if (_cancellationToken.IsCancellationRequested)
                     return;
 
                 if (typeSymbol.IsBqlConstant())
                 {
-                    AddClassificationTag(leftSpan, tagger.Provider[PXCodeType.BQLConstantPrefix]);
-                    AddClassificationTag(rightSpan, tagger.Provider[PXCodeType.BQLConstantEnding]);
+                    AddClassificationTag(leftSpan, _tagger.Provider[PXCodeType.BQLConstantPrefix]);
+                    AddClassificationTag(rightSpan, _tagger.Provider[PXCodeType.BQLConstantEnding]);
                 }
 
-                if (!cancellationToken.IsCancellationRequested)
+                if (!_cancellationToken.IsCancellationRequested)
                     base.VisitQualifiedName(node);
 
                 UpdateCodeEditorIfNecessary();
@@ -292,37 +293,37 @@ namespace Acuminator.Vsix.Coloriser
           
             public override void VisitTypeArgumentList(TypeArgumentListSyntax node)
             {
-                if (cancellationToken.IsCancellationRequested)
+                if (_cancellationToken.IsCancellationRequested)
                     return;
 
-                if (bqlDeepnessLevel == 0)
+                if (_bqlDeepnessLevel == 0)
                 {
-                    if (!cancellationToken.IsCancellationRequested)
+                    if (!_cancellationToken.IsCancellationRequested)
                         base.VisitTypeArgumentList(node);
 
                     return;
                 }
 
-				IClassificationType braceClassificationType = tagger.Provider[braceLevel];
+				IClassificationType braceClassificationType = _tagger.Provider[_braceLevel];
 
 				try
 				{				
-					braceLevel = (braceLevel + 1) % ColoringConstants.MaxBraceLevel;
+					_braceLevel = (_braceLevel + 1) % ColoringConstants.MaxBraceLevel;
 
-					if (braceClassificationType != null && !cancellationToken.IsCancellationRequested)
+					if (braceClassificationType != null && !_cancellationToken.IsCancellationRequested)
 					{
 						AddClassificationTag(node.LessThanToken.Span, braceClassificationType);
 						AddClassificationTag(node.GreaterThanToken.Span, braceClassificationType);
 					}
 
-					if (!cancellationToken.IsCancellationRequested)
+					if (!_cancellationToken.IsCancellationRequested)
 						base.VisitTypeArgumentList(node);
 				}
 				finally
 				{
-					braceLevel = braceLevel == 0
+					_braceLevel = _braceLevel == 0
 						? ColoringConstants.MaxBraceLevel - 1 
-						: braceLevel - 1;
+						: _braceLevel - 1;
 				}
 
                 UpdateCodeEditorIfNecessary();
@@ -330,36 +331,36 @@ namespace Acuminator.Vsix.Coloriser
 
             public override void VisitAttributeList(AttributeListSyntax node)
             {
-                if (cancellationToken.IsCancellationRequested)
+                if (_cancellationToken.IsCancellationRequested)
                     return;
 
-                attributeLevel++;
+                _attributeLevel++;
 
                 try
                 {
-                    if (attributeLevel <= OutliningConstants.MaxAttributeOutliningLevel)
+                    if (_attributeLevel <= OutliningConstants.MaxAttributeOutliningLevel)
                     {
                         AddOutliningTagToAttribute(node);
                     }
 
-                    if (!cancellationToken.IsCancellationRequested)
+                    if (!_cancellationToken.IsCancellationRequested)
                     {
                         base.VisitAttributeList(node);
                     }
                 }
                 finally
                 {
-                    attributeLevel--;
+                    _attributeLevel--;
                 }
             }
 
             public override void Visit(SyntaxNode node)
             {
-                if (cancellationToken.IsCancellationRequested)
+                if (_cancellationToken.IsCancellationRequested)
                     return;
 
-                if (visitedNodesCounter < long.MaxValue)
-                    visitedNodesCounter++;
+                if (_visitedNodesCounter < long.MaxValue)
+                    _visitedNodesCounter++;
 
                 base.Visit(node);
             }
@@ -388,7 +389,7 @@ namespace Acuminator.Vsix.Coloriser
 
 			private async Task<ITypeSymbol> GetTypeSymbolFromIdentifierNode(SyntaxNode node)
 			{
-				var semanticModel = await document.SemanticModelAsync(cancellationToken);
+				var semanticModel = await _document.SemanticModelAsync(_cancellationToken);
 				var symbolInfo = semanticModel.GetSymbolInfo(node);
 
 				ISymbol symbol = symbolInfo.Symbol;
@@ -417,12 +418,12 @@ namespace Acuminator.Vsix.Coloriser
 				PXCodeType? coloredCodeType = typeSymbol.GetColoringTypeFromIdentifier(skipValidation: isTypeParameter, 
 																							checkItself: isTypeParameter);
 				IClassificationType classificationType = coloredCodeType.HasValue
-					? tagger.Provider[coloredCodeType.Value]
+					? _tagger.Provider[coloredCodeType.Value]
 					: null;
 
 				if (classificationType == null || 
-				   (coloredCodeType.Value == PXCodeType.PXGraph && !tagger.Provider.Package.PXGraphColoringEnabled) ||
-				   (coloredCodeType.Value == PXCodeType.PXAction && !tagger.Provider.Package.PXActionColoringEnabled))
+				   (coloredCodeType.Value == PXCodeType.PXGraph && !_tagger.Provider.Package.PXGraphColoringEnabled) ||
+				   (coloredCodeType.Value == PXCodeType.PXAction && !_tagger.Provider.Package.PXActionColoringEnabled))
 					return;
 
 				AddClassificationTag(span, classificationType);
@@ -430,22 +431,22 @@ namespace Acuminator.Vsix.Coloriser
 
             private void AddClassificationTag(TextSpan span, IClassificationType classificationType)
             {
-                ITagSpan<IClassificationTag> tag = span.ToClassificationTagSpan(tagger.Snapshot, classificationType);
-                tagger.ClassificationTagsCache.AddTag(tag);
+                ITagSpan<IClassificationTag> tag = span.ToClassificationTagSpan(_tagger.Snapshot, classificationType);
+                _tagger.ClassificationTagsCache.AddTag(tag);
             }
 
             private void AddOutliningTagToBQL(TextSpan span)
             {
-                if (!tagger.Provider.Package.UseBqlOutlining)
+                if (!_tagger.Provider.Package.UseBqlOutlining)
                     return;
 
-                ITagSpan<IOutliningRegionTag> tag = span.ToOutliningTagSpan(tagger.Snapshot);
-                tagger.OutliningsTagsCache.AddTag(tag);
+                ITagSpan<IOutliningRegionTag> tag = span.ToOutliningTagSpan(_tagger.Snapshot);
+                _tagger.OutliningsTagsCache.AddTag(tag);
             }
          
             private void AddOutliningTagToAttribute(AttributeListSyntax attributeListNode)
             {
-                if (!tagger.Provider.Package.UseBqlOutlining)
+                if (!_tagger.Provider.Package.UseBqlOutlining)
                     return;
 
                 AttributeSyntax attribute = attributeListNode.ChildNodes()
@@ -453,21 +454,21 @@ namespace Acuminator.Vsix.Coloriser
                                                              .FirstOrDefault();
 
                 if (attribute?.ArgumentList?.Arguments == null || attribute.ArgumentList.Arguments.Count == 0 || 
-                    cancellationToken.IsCancellationRequested)
+                    _cancellationToken.IsCancellationRequested)
                 {
                     return;
                 }
 
                 string collapsedText = GetAttributeName(attribute);
-                ITagSpan<IOutliningRegionTag> tag = attributeListNode.Span.ToOutliningTagSpan(tagger.Snapshot, collapsedText);
-                tagger.OutliningsTagsCache.AddTag(tag);
+                ITagSpan<IOutliningRegionTag> tag = attributeListNode.Span.ToOutliningTagSpan(_tagger.Snapshot, collapsedText);
+                _tagger.OutliningsTagsCache.AddTag(tag);
             }
 
             private string GetAttributeName(AttributeSyntax attribute)
             {
                 foreach (SyntaxNode childNode in attribute.ChildNodes())
                 {
-                    if (cancellationToken.IsCancellationRequested)
+                    if (_cancellationToken.IsCancellationRequested)
                         return null;
 
                     switch (childNode)
@@ -478,7 +479,7 @@ namespace Acuminator.Vsix.Coloriser
                             }
                         case QualifiedNameSyntax qualifiedName:
                             {
-                                string identifierText = tagger.Snapshot.GetText(qualifiedName.Span);
+                                string identifierText = _tagger.Snapshot.GetText(qualifiedName.Span);
                                 return !identifierText.IsNullOrWhiteSpace()
                                     ? $"[{identifierText}]"
                                     : null;
@@ -491,11 +492,11 @@ namespace Acuminator.Vsix.Coloriser
 
             private void UpdateCodeEditorIfNecessary()
             {
-                if (visitedNodesCounter <= ColoringConstants.ChunkSize || cancellationToken.IsCancellationRequested)
+                if (_visitedNodesCounter <= ColoringConstants.ChunkSize || _cancellationToken.IsCancellationRequested)
                     return;
 
-                visitedNodesCounter = 0;               
-                tagger.RaiseTagsChanged();
+                _visitedNodesCounter = 0;               
+                _tagger.RaiseTagsChanged();
             }
 
             /// <summary>
@@ -503,7 +504,7 @@ namespace Acuminator.Vsix.Coloriser
             /// </summary>
             /// <param name="nodeText">The node text.</param>
             /// <returns/>         
-            private bool IsVar(string nodeText) => nodeText == varKeyword;           
+            private bool IsVar(string nodeText) => nodeText == VarKeyword;           
         }
     }
 }

@@ -1,10 +1,10 @@
-using Acuminator.Utilities;
+using System;
+using System.ComponentModel;
+using System.Collections;
+using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using PX.Data;
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
+using Acuminator.Utilities;
 
 namespace Acuminator.Analyzers
 {
@@ -18,8 +18,10 @@ namespace Acuminator.Analyzers
         public Compilation Compilation { get; }
 
 		private readonly Lazy<BQLSymbols> bql;
-
 		public BQLSymbols BQL => bql.Value;
+
+	    private readonly Lazy<EventSymbols> events;
+	    public EventSymbols Events => events.Value;
 
 		private readonly Lazy<FieldAttributesTypes> fieldAttributes;
 
@@ -55,7 +57,8 @@ namespace Acuminator.Analyzers
 
 
         public INamedTypeSymbol PXGraphType => Compilation.GetTypeByMetadataName(typeof(PXGraph).FullName);
-        public INamedTypeSymbol PXProcessingBaseType => Compilation.GetTypeByMetadataName(typeof(PXProcessingBase<>).FullName);
+	    public INamedTypeSymbol PXCacheType => Compilation.GetTypeByMetadataName(typeof(PXCache).FullName);
+		public INamedTypeSymbol PXProcessingBaseType => Compilation.GetTypeByMetadataName(typeof(PXProcessingBase<>).FullName);
         public INamedTypeSymbol PXGraphExtensionType => Compilation.GetTypeByMetadataName(typeof(PXGraphExtension).FullName);
         public INamedTypeSymbol PXCacheExtensionType => Compilation.GetTypeByMetadataName(typeof(PXCacheExtension).FullName);
         public INamedTypeSymbol PXMappedCacheExtensionType => Compilation.GetTypeByMetadataName(typeof(PXMappedCacheExtension).FullName);
@@ -83,20 +86,26 @@ namespace Acuminator.Analyzers
         public INamedTypeSymbol PXStringListAttribute => Compilation.GetTypeByMetadataName(typeof(PXStringListAttribute).FullName);
         public INamedTypeSymbol PXIntListAttribute => Compilation.GetTypeByMetadataName(typeof(PXIntListAttribute).FullName);
         public INamedTypeSymbol IPXLocalizableList => Compilation.GetTypeByMetadataName(typeof(IPXLocalizableList).FullName);
+	    public INamedTypeSymbol PXSelectorAttribute => Compilation.GetTypeByMetadataName(typeof(PXSelectorAttribute).FullName);
 
-        public INamedTypeSymbol PXEventSubscriberAttribute => Compilation.GetTypeByMetadataName(typeof(PXEventSubscriberAttribute).FullName);
+		public INamedTypeSymbol PXEventSubscriberAttribute => Compilation.GetTypeByMetadataName(typeof(PXEventSubscriberAttribute).FullName);
         public INamedTypeSymbol PXFieldState => Compilation.GetTypeByMetadataName(typeof(PXFieldState).FullName);
         public INamedTypeSymbol PXAttributeFamily => Compilation.GetTypeByMetadataName(typeof(PXAttributeFamilyAttribute).FullName);
 
         public INamedTypeSymbol PXException => Compilation.GetTypeByMetadataName(typeof(PXException).FullName);
 
+		public INamedTypeSymbol PXConnectionScope => Compilation.GetTypeByMetadataName(typeof(PXConnectionScope).FullName);
+
+	    public INamedTypeSymbol PXDatabase => Compilation.GetTypeByMetadataName(typeof(PXDatabase).FullName);
+
         public ImmutableArray<ISymbol> StringFormat => String.GetMembers(nameof(string.Format));
         public ImmutableArray<ISymbol> StringConcat => String.GetMembers(nameof(string.Concat));
 
-        public PXContext(Compilation compilation)
+		public PXContext(Compilation compilation)
         {
             Compilation = compilation;
-			bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation)); 
+			bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation));
+	        events = new Lazy<EventSymbols>(() => new EventSymbols(Compilation));
             fieldAttributes = new Lazy<FieldAttributesTypes>(
 										() => new FieldAttributesTypes(Compilation));
             systemActionTypes = new Lazy<PXSystemActionTypes>(
@@ -245,6 +254,23 @@ namespace Acuminator.Analyzers
 				);
 			#endregion
 		}
-        #endregion
-    }
+		#endregion
+
+		#region EventSymbols
+
+	    public class EventSymbols
+	    {
+			private readonly Compilation _compilation;
+
+		    public EventSymbols(Compilation compilation)
+		    {
+			    _compilation = compilation;
+		    }
+
+		    public INamedTypeSymbol PXRowSelectingEventArgs => _compilation.GetTypeByMetadataName(typeof(PXRowSelectingEventArgs).FullName);
+		    public INamedTypeSymbol RowSelecting => _compilation.GetTypeByMetadataName(typeof(Events.RowSelecting<>).FullName);
+		}
+
+		#endregion
+	}
 }

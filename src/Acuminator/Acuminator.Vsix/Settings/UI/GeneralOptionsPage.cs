@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Acuminator.Utilities;
 using Microsoft.VisualStudio.Shell;
 
 namespace Acuminator.Vsix
@@ -12,166 +13,204 @@ namespace Acuminator.Vsix
 		private const string AllSettings = "All";
 		private const string ColoringCategoryName = "BQL Coloring";
 		private const string OutliningCategoryName = "BQL Outlining";
+		private const string CodeAnalysisCategoryName = "Code Analysis";
 
-		private bool colorSettingsChanged;
+		private bool _colorSettingsChanged;
+		private bool _codeAnalysisSettingsChanged;
 		public event EventHandler<SettingChangedEventArgs> ColoringSettingChanged;
+		public event EventHandler<SettingChangedEventArgs> CodeAnalysisSettingChanged;
 		public const string PageTitle = "General";
 
-		private bool coloringEnabled = true;
+		private bool _coloringEnabled = true;
 
 		[CategoryFromResources(nameof(VSIXResource.Category_Coloring), ColoringCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_ColoringEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_ColoringEnabled_Description))]
 		public bool ColoringEnabled
 		{
-			get => coloringEnabled;
+			get => _coloringEnabled;
 			set
 			{
-				if (coloringEnabled != value)
+				if (_coloringEnabled != value)
 				{
-					coloringEnabled = value;
-					colorSettingsChanged = true;
+					_coloringEnabled = value;
+					_colorSettingsChanged = true;
 				}
 			}
 		}
 
-		private bool pxActionColoringEnabled = true;
+		private bool _pxActionColoringEnabled = true;
 
 		[CategoryFromResources(nameof(VSIXResource.Category_Coloring), ColoringCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_PXActionColoringEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_PXActionColoringEnabled_Description))]
 		public bool PXActionColoringEnabled
 		{
-			get => pxActionColoringEnabled;
+			get => _pxActionColoringEnabled;
 			set
 			{
-				if (pxActionColoringEnabled != value)
+				if (_pxActionColoringEnabled != value)
 				{
-					pxActionColoringEnabled = value;
-					colorSettingsChanged = true;
+					_pxActionColoringEnabled = value;
+					_colorSettingsChanged = true;
 				}
 			}
 		}
 
-		private bool pxGraphColoringEnabled = true;
+		private bool _pxGraphColoringEnabled = true;
 
 		[CategoryFromResources(nameof(VSIXResource.Category_Coloring), ColoringCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_PXGraphColoringEnabled_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_PXGraphColoringEnabled_Description))]
 		public bool PXGraphColoringEnabled
 		{
-			get => pxGraphColoringEnabled;
+			get => _pxGraphColoringEnabled;
 			set
 			{
-				if (pxGraphColoringEnabled != value)
+				if (_pxGraphColoringEnabled != value)
 				{
-					pxGraphColoringEnabled = value;
-					colorSettingsChanged = true;
+					_pxGraphColoringEnabled = value;
+					_colorSettingsChanged = true;
 				}
 			}
 		}
 
-		private bool colorOnlyInsideBQL;
+		private bool _colorOnlyInsideBQL;
 
 		[CategoryFromResources(nameof(VSIXResource.Category_Coloring), ColoringCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_ColorOnlyInsideBQL_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_ColorOnlyInsideBQL_Description))]
 		public bool ColorOnlyInsideBQL
 		{
-			get => colorOnlyInsideBQL;
+			get => _colorOnlyInsideBQL;
 			set
 			{
-				if (colorOnlyInsideBQL != value)
+				if (_colorOnlyInsideBQL != value)
 				{
-					colorOnlyInsideBQL = value;
-					colorSettingsChanged = true;
+					_colorOnlyInsideBQL = value;
+					_colorSettingsChanged = true;
 				}
 			}
 		}
 
-		private bool useRegexColoring;
+		private bool _useRegexColoring;
 
 		[CategoryFromResources(nameof(VSIXResource.Category_Coloring), ColoringCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_UseRegexColoring_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_UseRegexColoring_Description))]
 		public bool UseRegexColoring
 		{
-			get => useRegexColoring;
+			get => _useRegexColoring;
 			set
 			{
-				if (useRegexColoring != value)
+				if (_useRegexColoring != value)
 				{
-					useRegexColoring = value;
-					colorSettingsChanged = true;
+					_useRegexColoring = value;
+					_colorSettingsChanged = true;
 				}
 			}
 		}
 
-		private bool useBqlOutlining = true;
+		private bool _useBqlOutlining = true;
 
 		[CategoryFromResources(nameof(VSIXResource.Category_Outlining), OutliningCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlOutlining_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlOutlining_Description))]
 		public bool UseBqlOutlining
 		{
-			get => useBqlOutlining;
+			get => _useBqlOutlining;
 			set
 			{
-				if (useBqlOutlining != value)
+				if (_useBqlOutlining != value)
 				{
-					useBqlOutlining = value;
-					colorSettingsChanged = true;
+					_useBqlOutlining = value;
+					_colorSettingsChanged = true;
 				}
 			}
 		}
 
-		private bool useBqlDetailedOutlining = true;
+		private bool _useBqlDetailedOutlining = true;
 
 		[CategoryFromResources(nameof(VSIXResource.Category_Outlining), OutliningCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlDetailedOutlining_Title))]
 		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_UseBqlDetailedOutlining_Description))]
 		public bool UseBqlDetailedOutlining
 		{
-			get => useBqlDetailedOutlining;
+			get => _useBqlDetailedOutlining;
 			set
 			{
-				if (useBqlDetailedOutlining != value)
+				if (_useBqlDetailedOutlining != value)
 				{
-					useBqlDetailedOutlining = value;
-					colorSettingsChanged = true;
+					_useBqlDetailedOutlining = value;
+					_colorSettingsChanged = true;
+				}
+			}
+		}
+
+		private bool _recursiveAnalysisEnabled = CodeAnalysisSettings.Default.RecursiveAnalysisEnabled;
+
+		[CategoryFromResources(nameof(VSIXResource.Category_CodeAnalysis), CodeAnalysisCategoryName)]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_RecursiveAnalysisEnabled_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_RecursiveAnalysisEnabled_Description))]
+		public bool RecursiveAnalysisEnabled
+		{
+			get => _recursiveAnalysisEnabled;
+			set
+			{
+				if (_recursiveAnalysisEnabled != value)
+				{
+					_recursiveAnalysisEnabled = value;
+					_codeAnalysisSettingsChanged = true;
 				}
 			}
 		}
 
 		public override void ResetSettings()
 		{
-			coloringEnabled = true;
-			useRegexColoring = false;
-			useBqlOutlining = true;
-			useBqlDetailedOutlining = true;
-			pxActionColoringEnabled = true;
-			pxGraphColoringEnabled = true;
-			colorOnlyInsideBQL = false;
+			_coloringEnabled = true;
+			_useRegexColoring = false;
+			_useBqlOutlining = true;
+			_useBqlDetailedOutlining = true;
+			_pxActionColoringEnabled = true;
+			_pxGraphColoringEnabled = true;
+			_colorOnlyInsideBQL = false;
 
-			colorSettingsChanged = false;
+			_recursiveAnalysisEnabled = CodeAnalysisSettings.Default.RecursiveAnalysisEnabled;
+
+			_colorSettingsChanged = false;
+			_codeAnalysisSettingsChanged = false;
+
 			base.ResetSettings();
-			OnSettingsChanged(AllSettings);
+
+			OnColoringSettingChanged(AllSettings);
+			OnCodeAnalysisSettingChanged(AllSettings);
 		}
 
 		public override void SaveSettingsToStorage()
 		{
 			base.SaveSettingsToStorage();
 
-			if (colorSettingsChanged)
+			if (_colorSettingsChanged)
 			{
-				colorSettingsChanged = false;
-				OnSettingsChanged(AllSettings);
+				_colorSettingsChanged = false;
+				OnColoringSettingChanged(AllSettings);
+			}
+
+			if (_codeAnalysisSettingsChanged)
+			{
+				_codeAnalysisSettingsChanged = false;
+				OnCodeAnalysisSettingChanged(AllSettings);
 			}
 		}
 
-		private void OnSettingsChanged(string setting)
+		private void OnColoringSettingChanged(string setting)
 		{
 			ColoringSettingChanged?.Invoke(this, new SettingChangedEventArgs(setting));
+		}
+
+		private void OnCodeAnalysisSettingChanged(string setting)
+		{
+			CodeAnalysisSettingChanged?.Invoke(this, new SettingChangedEventArgs(setting));
 		}
 	}
 }

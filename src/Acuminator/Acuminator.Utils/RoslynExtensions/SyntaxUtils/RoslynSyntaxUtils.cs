@@ -134,6 +134,19 @@ namespace Acuminator.Utilities
 			return declarations[0].GetSyntaxAsync(cancellationToken);
 		}
 
+		public static SyntaxNode GetSyntax(this ISymbol symbol, CancellationToken cancellationToken = default)
+		{
+			if (symbol == null)
+				return null;
+
+			var declarations = symbol.DeclaringSyntaxReferences;
+
+			if (declarations.Length == 0)
+				return null;
+
+			return declarations[0].GetSyntax(cancellationToken);
+		}
+
 		public static IEnumerable<SyntaxToken> GetIdentifiers(this MemberDeclarationSyntax member)
 		{
 			switch (member)

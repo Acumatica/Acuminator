@@ -16,5 +16,10 @@ namespace PX.Objects.HackathonDemo
 		{
 			yield break;
 		}
+
+		public void viewBatch()
+		{
+			
+		}
 	}
 }

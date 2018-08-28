@@ -449,6 +449,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to PXGraph instances cannot be used inside DAC properties.
+        /// </summary>
+        public static string PX1029Title {
+            get {
+                return ResourceManager.GetString("PX1029Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DACs cannot contain instance methods.
         /// </summary>
         public static string PX1031Title {
@@ -481,6 +490,24 @@ namespace Acuminator.Analyzers {
         public static string PX1040Title {
             get {
                 return ResourceManager.GetString("PX1040Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Surround the BQL statement or database query execution with a connection scope.
+        /// </summary>
+        public static string PX1042Fix {
+            get {
+                return ResourceManager.GetString("PX1042Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In a RowSelecting handler, BQL statements and other database queries must be executed only inside a separate connection scope.
+        /// </summary>
+        public static string PX1042Title {
+            get {
+                return ResourceManager.GetString("PX1042Title", resourceCulture);
             }
         }
         

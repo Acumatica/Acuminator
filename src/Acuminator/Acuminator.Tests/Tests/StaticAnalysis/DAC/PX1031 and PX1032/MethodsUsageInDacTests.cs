@@ -14,7 +14,7 @@ namespace Acuminator.Tests
 {
     public class MethodsUsageInDacTests : DiagnosticVerifier
     {
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacMethodsUsageAnalyzer();
+        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new MethodsUsageInDacAnalyzer();
 
         private DiagnosticResult CreatePX1031DiagnosticResult(int line, int column)
         {
@@ -40,24 +40,31 @@ namespace Acuminator.Tests
 
         [Theory]
         [EmbeddedFileData(@"Dac\PX1031 and PX1032\Diagnostics\DacWithMethodsUsage.cs")]
-        public void Test_Methods_Usage_In_Dac(string source)
+        public void TestDiagnostic_Dac(string source)
         {
             VerifyCSharpDiagnostic(source,
                 CreatePX1032DiagnosticResult(23, 17),
                 CreatePX1032DiagnosticResult(24, 17),
-                CreatePX1032DiagnosticResult(25, 26),
-                CreatePX1031DiagnosticResult(46, 9));
+                CreatePX1032DiagnosticResult(26, 26),
+                CreatePX1031DiagnosticResult(47, 32));
         }
 
         [Theory]
         [EmbeddedFileData(@"Dac\PX1031 and PX1032\Diagnostics\DacExtensionWithMethodsUsage.cs")]
-        public void Test_Methods_Usage_In_Dac_Extension(string source)
+        public void TestDiagnostic_CacheExtension(string source)
         {
             VerifyCSharpDiagnostic(source,
                 CreatePX1032DiagnosticResult(27, 17),
                 CreatePX1032DiagnosticResult(28, 17),
-                CreatePX1032DiagnosticResult(29, 26),
-                CreatePX1031DiagnosticResult(50, 9));
+                CreatePX1032DiagnosticResult(30, 26),
+                CreatePX1031DiagnosticResult(51, 32));
         }
-    }
+
+	    [Theory]
+	    [EmbeddedFileData(@"Dac\PX1031 and PX1032\Diagnostics\DacWithNestedTypes.cs")]
+	    public void TestDiagnostic_DacWithNestedTypes_ShouldNotShowDiagnostic(string source)
+	    {
+		    VerifyCSharpDiagnostic(source);
+	    }
+	}
 }

@@ -88,8 +88,10 @@ namespace Acuminator.Vsix.GoToDeclaration
 				return;
 
 			Document document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
-			SyntaxNode syntaxRoot = document?.GetSyntaxRootAsync().Result;
-			SemanticModel semanticModel = document?.GetSemanticModelAsync().Result;
+			if (document == null) return;
+
+			(SyntaxNode syntaxRoot, SemanticModel semanticModel) = ThreadHelper.JoinableTaskFactory.Run(
+				async () => (await document.GetSyntaxRootAsync(), await document.GetSemanticModelAsync()));
 
 			if (syntaxRoot == null || semanticModel == null)
 				return;
@@ -340,10 +342,16 @@ namespace Acuminator.Vsix.GoToDeclaration
 			textView.Selection.Select(selectedSpan, isReversed: false);
 		}
 
-		private static bool IsValidActionHandler(IMethodSymbol method, PXContext pxContext) =>
-			 method.Parameters.Length > 0 &&
-			 method.Parameters[0].Type.InheritsFromOrEquals(pxContext.PXAdapterType) &&
-			 method.ReturnType.InheritsFromOrEquals(pxContext.IEnumerable, includeInterfaces: true);
+		private static bool IsValidActionHandler(IMethodSymbol method, PXContext pxContext)
+		{
+			if (method.Parameters.Length == 0 && method.ReturnsVoid)
+				return true;
+			else
+			{
+				return method.Parameters[0].Type.InheritsFromOrEquals(pxContext.PXAdapterType) &&
+					   method.ReturnType.InheritsFromOrEquals(pxContext.IEnumerable, includeInterfaces: true);
+			}
+		}
 
 		private static bool IsValidViewDelegate(IMethodSymbol method, PXContext pxContext) =>
 			 method.ReturnType.InheritsFromOrEquals(pxContext.IEnumerable, includeInterfaces: true);

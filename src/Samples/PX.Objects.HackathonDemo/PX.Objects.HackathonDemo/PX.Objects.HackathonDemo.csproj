@@ -53,6 +53,7 @@
     <Compile Include="Attributes\PXDBBaseCuryAttribute.cs" />
     <Compile Include="Attributes\FinPeriodIDAttribute.cs" />
     <Compile Include="Attributes\PXDBCurrencyAttribute.cs" />
+    <Compile Include="DAC\Graph usage\SOShipmentExt.cs" />
     <Compile Include="DAC\Multiple Levels of inheritance\SOOrderWithTotal.cs" />
     <Compile Include="DAC\Multiple Levels of inheritance\SOOrderWithHold.cs" />
     <Compile Include="DAC\TaxTran.cs" />
@@ -63,6 +64,7 @@
     <Compile Include="DAC\Forbidden Fields In DAC\POOrder.cs" />
     <Compile Include="DAC\Multiple field attributes and DAC field must be abstract\APInvoice.cs" />
     <Compile Include="DAC\APSetup.cs" />
+    <Compile Include="Graph\Database call inside RowSelecting\SOOrderEntryExt.cs" />
     <Compile Include="Graph\Start row reset for paging\LEPMaint.cs" />
     <Compile Include="Localization\InvalidRowException.cs" />
     <Compile Include="Localization\Messages.cs" />

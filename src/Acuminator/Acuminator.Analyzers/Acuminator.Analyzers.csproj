@@ -51,13 +51,15 @@
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\BqlLocalVariableTypeResolver.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\ParametersCounterSymbolWalker.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\ParametersCounterSyntaxWalker.cs" />
+    <Compile Include="Analyzers\Event\ConnectionScopeInRowSelectingAnalyzer.cs" />
     <Compile Include="Analyzers\Localization\LocalizationMessageHelper.cs" />
     <Compile Include="Analyzers\Localization\LocalizationInvocationAnalyzer.cs" />
     <Compile Include="Analyzers\Localization\LocalizationPXExceptionAnalyzer.cs" />
     <Compile Include="Analyzers\PXGraph\ConstructorInGraphExtensionAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacFields\DacNonAbstractFieldTypeAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacDeclarationAnalyzer.cs" />
-    <Compile Include="Analyzers\DAC\DacMethodsUsageAnalyzer.cs" />
+    <Compile Include="Analyzers\DAC\PXGraphUsageInDacAnalyzer.cs" />
+    <Compile Include="Analyzers\DAC\MethodsUsageInDacAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacPropertyAttributes\NonNullableTypeForBqlFieldAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacPropertyAttributes\DacPropertyAttributesAnalyzer.cs" />
     <Compile Include="Analyzers\PXAction\PX1012\PXActionOnNonPrimaryViewAnalyzer.cs" />
@@ -68,6 +70,7 @@
     <Compile Include="FixProviders\DAC\DacFields\ForbiddenFieldsInDAC\RegionsVisitor.cs" />
     <Compile Include="FixProviders\DAC\DacFields\ForbiddenFieldsInDAC\ForbiddenFieldsInDacFix.cs" />
     <Compile Include="FixProviders\DAC\ConstructorInDacCodeFix.cs" />
+    <Compile Include="FixProviders\Event\ConnectionScopeInRowSelectingFix.cs" />
     <Compile Include="FixProviders\PXGraph\ConstructorInGraphExtensionCodeFix.cs" />
     <Compile Include="FixProviders\DAC\UnderscoresInDacCodeFix.cs" />
     <Compile Include="FixProviders\DAC\DacFields\DacNonAbstractFieldTypeFix.cs" />
@@ -129,6 +132,9 @@
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="CommonServiceLocator, Version=2.0.4.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\CommonServiceLocator.2.0.4\lib\netstandard1.0\CommonServiceLocator.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CodeAnalysis, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.CodeAnalysis.Common.1.0.1\lib\portable-net45+win8\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>False</Private>
@@ -178,6 +184,9 @@
     <Reference Include="System.Reflection.Metadata, Version=1.0.21.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Reflection.Metadata.1.0.21\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\netstandard1.1\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
     </Reference>
     <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\portable-net40+sl4+win8+wp8\System.ValueTuple.dll</HintPath>
