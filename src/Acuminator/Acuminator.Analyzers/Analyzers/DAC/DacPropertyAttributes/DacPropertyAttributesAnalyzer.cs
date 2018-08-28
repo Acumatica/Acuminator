@@ -23,12 +23,10 @@ namespace Acuminator.Analyzers
 				Descriptors.PX1023_DacPropertyMultipleFieldAttributes
 			);
 
-#pragma warning disable CS4014
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
 			compilationStartContext.RegisterSymbolAction(symbolContext => AnalyzePropertyAsync(symbolContext, pxContext), SymbolKind.NamedType);
 		}
-#pragma warning restore CS4014
 
 		private static Task AnalyzePropertyAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
@@ -74,10 +72,7 @@ namespace Acuminator.Analyzers
 			else
 			{
 				var (fieldAttribute, fieldAttrInfo) = attributesWithInfo[0];
-
-#pragma warning disable CS4014
-				CheckAttributeAndPropertyTypesForCompatibility(property, fieldAttribute, fieldAttrInfo, pxContext, symbolContext);
-#pragma warning restore CS4014
+				await CheckAttributeAndPropertyTypesForCompatibility(property, fieldAttribute, fieldAttrInfo, pxContext, symbolContext);
 			}
 		}
 
