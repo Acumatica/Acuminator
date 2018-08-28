@@ -16,6 +16,7 @@ namespace Acuminator.Utilities
 	public class FieldAttributesRegister
 	{
 		private readonly PXContext context;
+		private readonly AttributeInformation attributeInformation;
 
 		public ImmutableDictionary<ITypeSymbol, ITypeSymbol> CorrespondingSimpleTypes { get; }
 
@@ -28,6 +29,7 @@ namespace Acuminator.Utilities
 			pxContext.ThrowOnNull(nameof(pxContext));
 
 			context = pxContext;
+			attributeInformation = new AttributeInformation(context);
 			var unboundFieldAttributes = GetUnboundFieldAttributes(context);
 			UnboundFieldAttributes = unboundFieldAttributes.ToImmutableHashSet();
 
@@ -41,7 +43,10 @@ namespace Acuminator.Utilities
 		{
 			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
 
-			List<ITypeSymbol> attributeTypeHierarchy = attributeSymbol.GetBaseTypesAndThis().ToList();
+			
+			List<ITypeSymbol> attributeTypeHierarchy = attributeInformation.AttributesListDerivedFromClass(attributeSymbol, true)
+																		   .ToList();
+
 			var info = CheckAttributeInheritanceChain(attributeSymbol, attributeTypeHierarchy);
 
 			if (info.HasValue)
@@ -63,7 +68,9 @@ namespace Acuminator.Utilities
 
 		private FieldAttributeInfo? CheckAttributeInheritanceChain(ITypeSymbol attributeSymbol, List<ITypeSymbol> attributeTypeHierarchy = null)
 		{
-			var attributeBaseTypesEnum = attributeTypeHierarchy ?? attributeSymbol.GetBaseTypesAndThis();
+			var attributeBaseTypesEnum = attributeTypeHierarchy ?? attributeInformation.AttributesListDerivedFromClass( attributeSymbol,true)
+																						.ToList();
+
 			ITypeSymbol fieldAttribute = attributeBaseTypesEnum.TakeWhile(a => !a.Equals(context.FieldAttributes.PXDBScalarAttribute))
 															   .FirstOrDefault(a => AllFieldAttributes.Contains(a));
 
