@@ -271,9 +271,9 @@
     <value>For an unbound field, replace with PXUnboundDefaultAttribute</value>
   </data>
   <data name="PX1042Fix" xml:space="preserve">
-    <value>Surround the BQL statement execution with a connection scope</value>
+    <value>Surround the BQL statement or database query execution with a connection scope</value>
   </data>
   <data name="PX1042Title" xml:space="preserve">
-    <value>In a RowSelecting handler, BQL statements must be executed only inside a separate connection scope</value>
+    <value>In a RowSelecting handler, BQL statements and other database queries must be executed only inside a separate connection scope</value>
   </data>
 </root>

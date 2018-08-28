@@ -342,10 +342,16 @@ namespace Acuminator.Vsix.GoToDeclaration
 			textView.Selection.Select(selectedSpan, isReversed: false);
 		}
 
-		private static bool IsValidActionHandler(IMethodSymbol method, PXContext pxContext) =>
-			 method.Parameters.Length > 0 &&
-			 method.Parameters[0].Type.InheritsFromOrEquals(pxContext.PXAdapterType) &&
-			 method.ReturnType.InheritsFromOrEquals(pxContext.IEnumerable, includeInterfaces: true);
+		private static bool IsValidActionHandler(IMethodSymbol method, PXContext pxContext)
+		{
+			if (method.Parameters.Length == 0 && method.ReturnsVoid)
+				return true;
+			else
+			{
+				return method.Parameters[0].Type.InheritsFromOrEquals(pxContext.PXAdapterType) &&
+					   method.ReturnType.InheritsFromOrEquals(pxContext.IEnumerable, includeInterfaces: true);
+			}
+		}
 
 		private static bool IsValidViewDelegate(IMethodSymbol method, PXContext pxContext) =>
 			 method.ReturnType.InheritsFromOrEquals(pxContext.IEnumerable, includeInterfaces: true);
