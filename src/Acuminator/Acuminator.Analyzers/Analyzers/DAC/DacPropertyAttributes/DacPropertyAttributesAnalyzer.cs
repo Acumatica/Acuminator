@@ -157,23 +157,8 @@ namespace Acuminator.Analyzers
 
 		private static async Task<Location> GetAttributeLocationAsync(AttributeData attribute, CancellationToken cancellationToken)
 		{
-			SyntaxNode attributeSyntaxNode = null;
-
-			try
-			{
-				attributeSyntaxNode = await attribute.ApplicationSyntaxReference.GetSyntaxAsync(cancellationToken)
-																				.ConfigureAwait(false);
-			}
-			catch (OperationCanceledException)
-			{
-				return null;
-			}
-			catch (Exception e)
-			{
-				//TODO log error here
-				return null;
-			}
-
+			SyntaxNode attributeSyntaxNode = await attribute.ApplicationSyntaxReference.GetSyntaxAsync(cancellationToken)
+																					   .ConfigureAwait(false);
 			return attributeSyntaxNode?.GetLocation();
 		}
 
