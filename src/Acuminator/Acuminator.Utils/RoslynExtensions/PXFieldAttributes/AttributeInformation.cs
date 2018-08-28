@@ -28,12 +28,17 @@ namespace Acuminator.Utilities
 		{
 			HashSet<ITypeSymbol> results = new HashSet<ITypeSymbol>();
 
-			foreach (var type in attributeSymbol.GetBaseTypesAndThis())
-			{
-				if (!expand && !type.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute))
-					break;
+			results.Add(attributeSymbol);
 
-				results.Add(type);
+			if (expand)
+			{
+				foreach (var type in attributeSymbol.GetBaseTypesAndThis())
+				{
+					if (!type.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute))
+						break;
+
+					results.Add(type);
+				}
 			}
 
 			var aggregateAttribute = _context.AttributeTypes.PXAggregateAttribute;
@@ -58,6 +63,17 @@ namespace Acuminator.Utilities
 			{
 				if (depth < 0)
 					return;
+
+				if (expand)
+				{
+					foreach (var type in _attributeSymbol.GetBaseTypesAndThis())
+					{
+						if (!type.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute))
+							break;
+
+						results.Add(type);
+					}
+				}
 
 				if (_attributeSymbol.InheritsFromOrEquals(aggregateAttribute) || _attributeSymbol.InheritsFromOrEquals(dynamicAggregateAttribute))
 				{

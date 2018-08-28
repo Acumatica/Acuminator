@@ -19,10 +19,23 @@ namespace PX.Objects.HackathonDemo
 	{
 	}
 
+	public class PXCustomDefaultAttribute : PXDefaultAttribute
+	{
+	}
+
+	[PXCustomDefault]
+	public class PXAccountAttribute : PXAggregateAttribute
+	{
+	}
+	
 	public class Foo : IBqlTable
 	{
 		public abstract class someField : IBqlField { }
 		[NonNullableIntList]
 		public int? SomeField { get; set; }
+
+		public abstract class someAccoundField : IBqlField { }
+		[PXAccount]
+		public int? SomeAccountField { get; set; }
 	}
 }

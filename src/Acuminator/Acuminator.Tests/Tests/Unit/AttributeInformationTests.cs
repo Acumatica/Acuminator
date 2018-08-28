@@ -31,7 +31,7 @@ namespace Acuminator.Tests
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateAttributeInformationTest.cs")]
 		public void TestAggregateAttribute(string source) =>
-			TestAttributeInformation(source, new List<bool> { true });
+			TestAttributeInformation(source, new List<bool> { true, true });
 
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateRecursiveAttributeInformationTest.cs")]
@@ -75,7 +75,7 @@ namespace Acuminator.Tests
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateAttributeInformationTest.cs")]
 		public void TestAreBoundAggregateAttributes(string source) =>
-			_testIsBoundAttribute(source, new List<bool> { true });
+			_testIsBoundAttribute(source, new List<bool> { true, false });
 
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateRecursiveAttributeInformationTest.cs")]
@@ -115,7 +115,7 @@ namespace Acuminator.Tests
 									new List<string>{ "PX.Data.PXBoolAttribute" },
 									new List<string>{ "PX.Data.PXDefaultAttribute" },
 									new List<string>{ "PX.Data.PXUIFieldAttribute" },
-									new List<string>{ "PX.Data.PXDBDecimalAttribute", "PX.Data.PXDBFieldAttribute"},
+									new List<string>{ "PX.Data.PXDBDecimalAttribute" },
 									new List<string>{ "PX.Data.PXDefaultAttribute"},
 									new List<string>{ "PX.Data.PXUIFieldAttribute"}
 								});
@@ -131,11 +131,15 @@ namespace Acuminator.Tests
 									new List<string>
 									{
 										"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
-										"PX.Data.PXAggregateAttribute",
 										"PX.Objects.HackathonDemo.NonNullableIntAttribute",
 										"PX.Data.PXDBIntAttribute",
 										"PX.Data.PXDefaultAttribute",
 										"PX.Data.PXIntListAttribute"
+									},
+									new List<string>
+									{
+										"PX.Objects.HackathonDemo.PXAccountAttribute",
+										"PX.Objects.HackathonDemo.PXCustomDefaultAttribute"
 									}
 								});
 
@@ -149,7 +153,6 @@ namespace Acuminator.Tests
 									new List<string>
 									{
 										"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
-										"PX.Data.PXAggregateAttribute",
 										"PX.Objects.HackathonDemo.NonNullableIntAttribute",
 										"PX.Data.PXDefaultAttribute",
 										"PX.Data.PXIntListAttribute"
@@ -157,7 +160,6 @@ namespace Acuminator.Tests
 									new List<string>
 									{
 										"PX.Objects.HackathonDemo._NonNullableIntListAttribute",
-										"PX.Data.PXAggregateAttribute",
 										"PX.Objects.HackathonDemo._NonNullableIntAttribute",
 										"PX.Data.PXDBIntAttribute",
 										"PX.Data.PXIntListAttribute"
@@ -194,8 +196,16 @@ namespace Acuminator.Tests
 										"PX.Data.PXAggregateAttribute",
 										"PX.Objects.HackathonDemo.NonNullableIntAttribute",
 										"PX.Data.PXDBIntAttribute",
+										"PX.Data.PXDBFieldAttribute",
 										"PX.Data.PXDefaultAttribute",
 										"PX.Data.PXIntListAttribute"
+									},
+									new List<string>
+									{
+										"PX.Objects.HackathonDemo.PXAccountAttribute",
+										"PX.Data.PXAggregateAttribute",
+										"PX.Objects.HackathonDemo.PXCustomDefaultAttribute",
+										"PX.Data.PXDefaultAttribute"
 									}
 								},
 								true);
@@ -221,6 +231,7 @@ namespace Acuminator.Tests
 										"PX.Data.PXAggregateAttribute",
 										"PX.Objects.HackathonDemo._NonNullableIntAttribute",
 										"PX.Data.PXDBIntAttribute",
+										"PX.Data.PXDBFieldAttribute",
 										"PX.Data.PXIntListAttribute"
 									}
 								},
