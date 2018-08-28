@@ -18,29 +18,29 @@ namespace Acuminator.Tests
     public class NonNullableTypeForBqlFieldTests : CodeFixVerifier
     {
 	    [Theory]
-	    [EmbeddedFileData(new[] { @"Diagnostics\NonNullableTypeForBqlField.cs" }, true)] 
+	    [EmbeddedFileData(@"Diagnostics\NonNullableTypeForBqlField.cs", true)] 
 		public void TestDiagnostic(string actual)
 	    {
 		    VerifyCSharpDiagnostic(actual, CreatePX1014DiagnosticResult(16, 14));
 	    }
 
 		[Theory]
-        [EmbeddedFileData(new[] { @"CodeFixes\NonNullableTypeForBqlField_Expected.cs" }, true)]
+        [EmbeddedFileData(@"CodeFixes\NonNullableTypeForBqlField_Expected.cs", true)]
         public void TestDiagnostic_ShouldNotShowDiagnostic(string actual)
         {
             VerifyCSharpDiagnostic(actual);
         }
 
 	    [Theory]
-	    [EmbeddedFileData(new[] { @"Diagnostics\NonNullableTypeForBqlField_Valid.cs" }, true)]
+	    [EmbeddedFileData(@"Diagnostics\NonNullableTypeForBqlField_Valid.cs", true)]
 	    public void TestDiagnostic_ShouldNotShowDiagnostic2(string actual)
 	    {
 		    VerifyCSharpDiagnostic(actual);
 	    }
 
 		[Theory]
-	    [EmbeddedFileData(new[] { @"Diagnostics\NonNullableTypeForBqlField.cs",
-								  @"CodeFixes\NonNullableTypeForBqlField_Expected.cs" }, true)]
+	    [EmbeddedFileData(@"Diagnostics\NonNullableTypeForBqlField.cs",
+						  @"CodeFixes\NonNullableTypeForBqlField_Expected.cs", true)]
 	    public void TestCodeFix(string actual, string expected)
 	    {
 		    VerifyCSharpFix(actual, expected);

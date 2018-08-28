@@ -20,13 +20,24 @@ namespace Acuminator.Tests.Helpers
 		private readonly string _prefix; 
 		private readonly string[] _fileNames;
 
-		public EmbeddedFileDataAttribute(string[] fileNames, bool paramForOverloadResolution, [CallerFilePath]string testFilePath = null)
+		public EmbeddedFileDataAttribute(string fileName, bool overloadResolution, [CallerFilePath]string testFilePath = null)
 		{
-			if (fileNames.IsNullOrEmpty())
-				throw new ArgumentNullException(nameof(fileNames));
+			if (fileName.IsNullOrWhiteSpace())
+				throw new ArgumentNullException(nameof(fileName));
 
 			_prefix = GetPrefixFromTestFilePath(testFilePath);
-			_fileNames = fileNames;
+			_fileNames = new[] { fileName };
+		}
+
+		public EmbeddedFileDataAttribute(string fileName1, string fileName2, bool overloadResolution, [CallerFilePath]string testFilePath = null)
+		{
+			if (fileName1.IsNullOrWhiteSpace())
+				throw new ArgumentNullException(nameof(fileName1));
+			else if (fileName2.IsNullOrWhiteSpace())
+				throw new ArgumentNullException(nameof(fileName2));
+
+			_prefix = GetPrefixFromTestFilePath(testFilePath);
+			_fileNames = new[] { fileName1, fileName2 };
 		}
 
 		public EmbeddedFileDataAttribute(params string[] fileNames)

@@ -17,14 +17,14 @@ namespace Acuminator.Tests
 	public class DacFieldAttributesTests : DiagnosticVerifier
 	{
 		[Theory]
-		[EmbeddedFileData(new string[] { @"PX1023\Diagnostics\DacWithMultipleFieldAttributes.cs" }, true)]
+		[EmbeddedFileData(@"PX1023\Diagnostics\DacWithMultipleFieldAttributes.cs", true)]
 		public virtual void Test_Dac_With_Multiple_Field_Attributes(string source) =>
 			VerifyCSharpDiagnostic(source, 
 				CreatePX1023MultipleFieldAttributesDiagnosticResult(line: 24, column: 4),
 				CreatePX1023MultipleFieldAttributesDiagnosticResult(line: 25, column: 4));
 
 		[Theory]
-		[EmbeddedFileData(new string[] { @"PX1021\Diagnostics\DacFieldAttributesTypeMismatch.cs" }, true)]
+		[EmbeddedFileData(@"PX1021\Diagnostics\DacFieldAttributesTypeMismatch.cs", true)]
 		public virtual void Test_Dac_With_Property_Type_Not_Matching_Field_Attribute_Type(string source) =>
 			VerifyCSharpDiagnostic(source,
 				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 24, column: 4, extraLocationLine: 26, extraLocationColumn: 10),
@@ -37,7 +37,7 @@ namespace Acuminator.Tests
 				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 54, column: 18, extraLocationLine: 53, extraLocationColumn: 4));
 
 		[Theory]
-		[EmbeddedFileData(new string[] { @"PX1021\Diagnostics\DacFieldTypeMismatchPXDBScalarAttr.cs"  }, true)]
+		[EmbeddedFileData(@"PX1021\Diagnostics\DacFieldTypeMismatchPXDBScalarAttr.cs", true)]
 		public virtual void Test_Dac_Property_With_PXDBScalar_Attribute(string source) =>
 			VerifyCSharpDiagnostic(source);	
 
