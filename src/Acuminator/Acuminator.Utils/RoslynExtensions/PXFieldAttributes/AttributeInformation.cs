@@ -141,7 +141,6 @@ namespace Acuminator.Utilities
 
 		public bool IsBoundAttribute(ITypeSymbol attributeSymbol)
 		{
-			//var dbFieldAttribute = _context.FieldAttributes.PXDBFieldAttribute;
 			var parentSymbols = AttributesListDerivedFromClass(attributeSymbol, true);
 			var boundTypes = new FieldAttributesRegister(_context).BoundFieldAttributes;
 
