@@ -15,8 +15,7 @@ namespace Acuminator.Utilities
 	public class AttributeInformation
 	{
 		private readonly PXContext _context;
-		private static readonly string _attributeUsageAttribute = "AttributeUsageAttribute";
-
+		
 		public AttributeInformation(PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
@@ -49,17 +48,16 @@ namespace Acuminator.Utilities
 				var allAttributes = attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
 				foreach (var attribute in allAttributes)
 				{
-					if (attribute.Name.Equals(_attributeUsageAttribute))
-						break;
+					if (!attribute.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute)) 
+						continue;
 
 					results.Add(attribute);
-					//go in recursuion
-					Recursion(attribute, 10);
+					VisitAggregateAttribute(attribute, 10);
 				}
 			}
 			return results;
 
-			void Recursion(ITypeSymbol _attributeSymbol, int depth)
+			void VisitAggregateAttribute(ITypeSymbol _attributeSymbol, int depth)
 			{
 				if (depth < 0)
 					return;
@@ -80,12 +78,11 @@ namespace Acuminator.Utilities
 					var allAttributes = _attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
 					foreach (var attribute in allAttributes)
 					{
-						if (attribute.Name.Equals(_attributeUsageAttribute))
-							return;
+						if (!attribute.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute))
+							continue;
 
 						results.Add(attribute);
-						//go in recursuion
-						Recursion(attribute, depth - 1);
+						VisitAggregateAttribute(attribute, depth - 1);
 					}
 				}
 				return;
@@ -105,8 +102,10 @@ namespace Acuminator.Utilities
 				var allAttributes = attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
 				foreach (var attribute in allAttributes)
 				{
-					//go in recursuion
-					var result = Recursion(attribute,10);
+					if (!attribute.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute))
+						continue;
+
+					var result = VisitAggregateAttribute(attribute,10);
 
 					if (result)
 						return result;
@@ -114,7 +113,7 @@ namespace Acuminator.Utilities
 			}
 			return false;
 
-			bool Recursion(ITypeSymbol _attributeSymbol,int depth)
+			bool VisitAggregateAttribute(ITypeSymbol _attributeSymbol,int depth)
 			{
 				if (depth < 0)
 					return false;
@@ -127,8 +126,10 @@ namespace Acuminator.Utilities
 					var allAttributes = _attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
 					foreach (var attribute in allAttributes)
 					{
-						//go in recursuion
-						var result = Recursion(attribute,depth-1);
+						if (!attribute.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute))
+							continue;
+
+						var result = VisitAggregateAttribute(attribute,depth-1);
 
 						if (result)
 							return result;
@@ -146,12 +147,7 @@ namespace Acuminator.Utilities
 		
 		public bool ContainsBoundAttributes(IEnumerable<ITypeSymbol> attributesSymbols)
 		{
-			foreach (var attribute in attributesSymbols)
-			{
-				if (IsBoundAttribute(attribute))
-					return true;
-			}
-			return false;
+			return attributesSymbols.Any(IsBoundAttribute);
 		}
 
 	}

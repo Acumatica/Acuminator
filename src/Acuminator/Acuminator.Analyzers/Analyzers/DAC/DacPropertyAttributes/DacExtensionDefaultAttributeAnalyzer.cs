@@ -58,24 +58,22 @@ namespace Acuminator.Analyzers
 
 			if (isBoundField)
 			{
-				await AnalyzeAttributesWithinBoundFieldAsync(property, attributes, pxContext, symbolContext, isBoundField);
+				await AnalyzeAttributesWithinBoundFieldAsync(property, attributes, pxContext, symbolContext, isBoundField, attributeInformation);
 			}
 			else
 			{
-				await AnalyzeAttributesWithinUnBoundFieldAsync(property, attributes, pxContext, symbolContext, isBoundField);
+				await AnalyzeAttributesWithinUnBoundFieldAsync(property, attributes, pxContext, symbolContext, isBoundField, attributeInformation);
 			}
-			return;
 		}
 
 		private static async Task AnalyzeAttributesWithinBoundFieldAsync(IPropertySymbol property, ImmutableArray<AttributeData> attributes,
 																			PXContext pxContext,
 																			SymbolAnalysisContext symbolContext,
-																			bool isBoundField)
+																			bool isBoundField,
+																			AttributeInformation attributeInformation)
 		{
 			if (property.ContainingType.IsDAC()) // BQLTable class bound field
 				return;
-
-			AttributeInformation attributeInformation = new AttributeInformation(pxContext);
 
 			foreach (var attribute in attributes)
 			{
@@ -111,11 +109,10 @@ namespace Acuminator.Analyzers
 		}
 
 		private static async Task AnalyzeAttributesWithinUnBoundFieldAsync(IPropertySymbol property, ImmutableArray<AttributeData> attributes,
-			PXContext pxContext, SymbolAnalysisContext symbolContext, bool isBoundField)
+			PXContext pxContext, SymbolAnalysisContext symbolContext, bool isBoundField, AttributeInformation attributeInformation)
 		{
 			foreach (var attribute in attributes)
 			{
-				AttributeInformation attributeInformation = new AttributeInformation(pxContext);
 
 				if (attributeInformation.AttributeDerivedFromClass(attribute.AttributeClass, pxContext.AttributeTypes.PXDefaultAttribute) &&
 					!attributeInformation.AttributeDerivedFromClass(attribute.AttributeClass, pxContext.AttributeTypes.PXUnboundDefaultAttribute))
