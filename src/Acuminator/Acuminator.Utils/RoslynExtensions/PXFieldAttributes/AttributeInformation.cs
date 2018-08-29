@@ -141,15 +141,9 @@ namespace Acuminator.Utilities
 
 		public bool IsBoundAttribute(ITypeSymbol attributeSymbol)
 		{
-			var parentSymbols = AttributesListDerivedFromClass(attributeSymbol, true);
-			var boundTypes = new FieldAttributesRegister(_context).BoundFieldAttributes;
-
-			foreach (var symbol in parentSymbols)
-			{
-				if(boundTypes.Contains(symbol))
-					return true;
-			}
-			return false;
+			var dbFieldAttribute = _context.FieldAttributes.PXDBFieldAttribute;
+			var dbCalcedAttribute = _context.FieldAttributes.PXDBCalcedAttribute;
+			return AttributeDerivedFromClass(attributeSymbol, dbFieldAttribute) || AttributeDerivedFromClass(attributeSymbol,dbCalcedAttribute);
 		}
 		
 		public bool ContainsBoundAttributes(IEnumerable<ITypeSymbol> attributesSymbols)
