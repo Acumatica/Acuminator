@@ -26,7 +26,7 @@ namespace Acuminator.Analyzers
                 Descriptors.PX1050_HardcodedStringInLocalizationMethod,
                 Descriptors.PX1051_NonLocalizableString,
                 Descriptors.PX1052_IncorrectStringToFormat,
-                Descriptors.PX1053_ConcatinationPriorLocalization
+                Descriptors.PX1053_ConcatenationPriorLocalization
             );
 
         internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
@@ -36,8 +36,10 @@ namespace Acuminator.Analyzers
 
         private void AnalyzeLocalizationMethodInvocation(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
         {
+            Cancellation.ThrowIfCancellationRequested();
+
             _invocationNode = syntaxContext.Node as InvocationExpressionSyntax;
-            if (_invocationNode == null || syntaxContext.CancellationToken.IsCancellationRequested)
+            if (_invocationNode == null)
                 return;
 
             _syntaxContext = syntaxContext;
@@ -52,8 +54,7 @@ namespace Acuminator.Analyzers
 
         private bool IsLocalizationMethodInvocation()
         {
-            if (Cancellation.IsCancellationRequested)
-                return false;
+            Cancellation.ThrowIfCancellationRequested();
 
             SymbolInfo symbolInfo = SemanticModel.GetSymbolInfo(_invocationNode, Cancellation);
             if (symbolInfo.Symbol == null && symbolInfo.CandidateSymbols.IsEmpty)
@@ -66,7 +67,7 @@ namespace Acuminator.Analyzers
             if (messageArg == null || messageArg.Expression == null)
                 return false;
 
-            ITypeSymbol messageArgType = SemanticModel.GetTypeInfo(messageArg.Expression).Type;
+            ITypeSymbol messageArgType = SemanticModel.GetTypeInfo(messageArg.Expression, Cancellation).Type;
             if (messageArgType == null || messageArgType.SpecialType != SpecialType.System_String)
                 return false;
 
@@ -76,8 +77,7 @@ namespace Acuminator.Analyzers
 
         private bool IsLocalizationSymbolInfo(SymbolInfo symbolInfo)
         {
-            if (Cancellation.IsCancellationRequested)
-                return false;
+            Cancellation.ThrowIfCancellationRequested();
 
             if (symbolInfo.Symbol != null)
             {
@@ -95,8 +95,7 @@ namespace Acuminator.Analyzers
 
         private bool IsLocalizationSymbol(ISymbol s)
         {
-            if (Cancellation.IsCancellationRequested)
-                return false;
+            Cancellation.ThrowIfCancellationRequested();
 
             _isFormatMethod = Localization.PXMessagesFormatMethods.Contains(s) ||
                               Localization.PXLocalizerFormatMethods.Contains(s);

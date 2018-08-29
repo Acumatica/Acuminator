@@ -4,8 +4,15 @@ namespace Acuminator.Tests.Sources
 {
     public class LocalizationExceptions
     {
-        public void ExceptionsLocalization()
+        public void ExceptionsLocalization(bool condition)
         {
+            PXException e = new PXException("Usernames cannot contain spaces.");
+
+            if (condition)
+            {
+                throw e;
+            }
+
             throw new PXArgumentException(nameof(ExceptionsLocalization), "Usernames cannot contain commas.");
         }
     }

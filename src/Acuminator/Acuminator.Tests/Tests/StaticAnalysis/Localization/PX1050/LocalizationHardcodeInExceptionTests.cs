@@ -27,8 +27,9 @@ namespace Acuminator.Tests
         public void Test_Localization_Of_PXException_With_Hardcoded_Message_Argument(string source)
         {
             VerifyCSharpDiagnostic(source,
-                CreatePX1050DiagnosticResult(9, 75),
-                CreatePX1050DiagnosticResult(17, 20));
+                CreatePX1050DiagnosticResult(9, 45),
+                CreatePX1050DiagnosticResult(16, 75),
+                CreatePX1050DiagnosticResult(24, 20));
         }
     }
 }

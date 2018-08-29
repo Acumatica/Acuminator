@@ -11,7 +11,8 @@ namespace Acuminator.Analyzers
 {
     internal class LocalizationMessageHelper
     {
-        private const string _formatRegExp = @"(?<Par>{(\w+|:+)})";
+        private const string _formatRegexString = @"(?<Par>{(\w+|:+)})";
+        private static readonly Regex _formatRegex = new Regex(_formatRegexString, RegexOptions.CultureInvariant);
         private readonly SyntaxNodeAnalysisContext _syntaxContext;
         private readonly PXContext _pxContext;
         private readonly ExpressionSyntax _messageExpression;
@@ -54,14 +55,13 @@ namespace Acuminator.Analyzers
             }
             else if (IsStringConcatenation())
             {
-                _syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1053_ConcatinationPriorLocalization, _messageExpression.GetLocation()));
+                _syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1053_ConcatenationPriorLocalization, _messageExpression.GetLocation()));
             }
         }
 
         private ITypeSymbol ReadMessageInfo()
         {
-            if (Cancellation.IsCancellationRequested)
-                return null;
+            Cancellation.ThrowIfCancellationRequested();
 
             if (!(_messageExpression is MemberAccessExpressionSyntax memberAccess) ||
                 !(memberAccess.Name is IdentifierNameSyntax messageMember))
@@ -76,9 +76,8 @@ namespace Acuminator.Analyzers
             if (messageClassType == null)
                 return null;
 
-            ISymbol messageMemberInfo = SemanticModel.GetSymbolInfo(messageMember, Cancellation).Symbol;
-            if (messageMemberInfo == null || messageMemberInfo.Kind != SymbolKind.Field || !messageMemberInfo.IsStatic ||
-                messageMemberInfo.DeclaredAccessibility != Accessibility.Public)
+            IFieldSymbol messageMemberInfo = SemanticModel.GetSymbolInfo(messageMember, Cancellation).Symbol as IFieldSymbol;
+            if (messageMemberInfo == null || !messageMemberInfo.IsConst || messageMemberInfo.DeclaredAccessibility != Accessibility.Public)
                 return null;
 
             _messageMember = messageMemberInfo;
@@ -87,8 +86,7 @@ namespace Acuminator.Analyzers
 
         private bool IsNonLocalizableMessageType(ITypeSymbol messageType)
         {
-            if (Cancellation.IsCancellationRequested)
-                return false;
+            Cancellation.ThrowIfCancellationRequested();
 
             ImmutableArray<AttributeData> attributes = messageType.GetAttributes();
             return attributes.All(a => !a.AttributeClass.Equals(Localization.PXLocalizableAttribute));
@@ -96,33 +94,33 @@ namespace Acuminator.Analyzers
 
         private bool IsIncorrectStringToFormat()
         {
-            if (!_isFormatMethod || Cancellation.IsCancellationRequested)
+            Cancellation.ThrowIfCancellationRequested();
+
+            if (!_isFormatMethod)
                 return false;
 
-            Optional<object> constString = SemanticModel.GetConstantValue(_messageExpression);
+            Optional<object> constString = SemanticModel.GetConstantValue(_messageExpression, Cancellation);
             if (!constString.HasValue)
                 return false;
 
-            Regex regex = new Regex(_formatRegExp, RegexOptions.CultureInvariant);
-            MatchCollection matchesValue = regex.Matches(constString.Value as string);
+            MatchCollection matchesValue = _formatRegex.Matches(constString.Value as string);
 
             return matchesValue.Count == 0;
         }
 
         private bool IsStringConcatenation()
         {
-            if (Cancellation.IsCancellationRequested)
-                return false;
+            Cancellation.ThrowIfCancellationRequested();
 
             bool isStringAddition = _messageExpression is BinaryExpressionSyntax && _messageExpression.IsKind(SyntaxKind.AddExpression);
             if (isStringAddition)
                 return true;
 
             if (!(_messageExpression is InvocationExpressionSyntax i) || !(i.Expression is MemberAccessExpressionSyntax memberAccess) ||
-                !(memberAccess.Expression is PredefinedTypeSyntax predefinedType) || memberAccess.Name == null)
+                memberAccess.Expression == null || memberAccess.Name == null)
                 return false;
 
-            ITypeSymbol stringType = SemanticModel.GetTypeInfo(predefinedType, Cancellation).Type;
+            ITypeSymbol stringType = SemanticModel.GetTypeInfo(memberAccess.Expression, Cancellation).Type;
             if (stringType == null || stringType.SpecialType != SpecialType.System_String)
                 return false;
 

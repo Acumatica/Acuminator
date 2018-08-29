@@ -16,7 +16,11 @@ namespace PX.Objects.HackathonDemo
         private void ChangeDisplayName(PXCache cache, SOOrder row)
         {
             if (cache == null)
-                throw new PXArgumentException(nameof(cache), "incorrect PXCache value");
+            {
+                PXArgumentException e = new PXArgumentException(nameof(cache), "incorrect PXCache value");
+
+                throw e;
+            }
 
             if (row == null)
                 throw new PXArgumentException(nameof(row), "incorrect SOOrder value");

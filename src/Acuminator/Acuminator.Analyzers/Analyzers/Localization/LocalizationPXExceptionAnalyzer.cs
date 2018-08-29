@@ -20,18 +20,20 @@ namespace Acuminator.Analyzers
             (
                 Descriptors.PX1050_HardcodedStringInLocalizationMethod,
                 Descriptors.PX1051_NonLocalizableString,
-                Descriptors.PX1053_ConcatinationPriorLocalization
+                Descriptors.PX1053_ConcatenationPriorLocalization
             );
 
         internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
         {
-            compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzeThrowOfPXException(syntaxContext, pxContext), SyntaxKind.ThrowStatement);
+            compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzeThrowOfPXException(syntaxContext, pxContext), SyntaxKind.ObjectCreationExpression);
             compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzePXExceptionCtorInitializer(syntaxContext, pxContext), SyntaxKind.ClassDeclaration);
         }
 
         private void AnalyzePXExceptionCtorInitializer(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
         {
-            if (!(syntaxContext.Node is ClassDeclarationSyntax classDeclaration) || syntaxContext.CancellationToken.IsCancellationRequested)
+            syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+
+            if (!(syntaxContext.Node is ClassDeclarationSyntax classDeclaration))
                 return;
 
             INamedTypeSymbol type = syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration);
@@ -60,8 +62,7 @@ namespace Acuminator.Analyzers
 
         private ExpressionSyntax GetMessageExpression(SyntaxNodeAnalysisContext syntaxContext, ImmutableArray<IParameterSymbol> pars, ArgumentListSyntax args)
         {
-            if (syntaxContext.CancellationToken.IsCancellationRequested)
-                return null;
+            syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
             ArgumentSyntax messageArg = null;
 
@@ -69,7 +70,7 @@ namespace Acuminator.Analyzers
             {
                 IParameterSymbol p = a.DetermineParameter(pars, false, syntaxContext.CancellationToken);
 
-                if (p != null && !string.IsNullOrEmpty(p.Name) && _messageArgNames.Contains(p.Name, StringComparer.Ordinal))
+                if (_messageArgNames.Contains(p?.Name, StringComparer.Ordinal))
                 {
                     messageArg = a;
                     break;
@@ -84,17 +85,18 @@ namespace Acuminator.Analyzers
 
         private void AnalyzeThrowOfPXException(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
         {
-            if (!(syntaxContext.Node is ThrowStatementSyntax throwNode) || !(throwNode.Expression is ObjectCreationExpressionSyntax ctorNode) ||
-                ctorNode.ArgumentList == null || syntaxContext.CancellationToken.IsCancellationRequested)
+            syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+
+            if (!(syntaxContext.Node is ObjectCreationExpressionSyntax ctorNode) || ctorNode.ArgumentList == null)
                 return;
 
-            ITypeSymbol type = syntaxContext.SemanticModel.GetTypeInfo(ctorNode).Type;
+            ITypeSymbol type = syntaxContext.SemanticModel.GetTypeInfo(ctorNode, syntaxContext.CancellationToken).Type;
             bool isPXException = type != null && type.InheritsFromOrEquals(pxContext.PXException);
 
             if (!isPXException)
                 return;
 
-            if (!(syntaxContext.SemanticModel.GetSymbolInfo(ctorNode).Symbol is IMethodSymbol ctorSymbol))
+            if (!(syntaxContext.SemanticModel.GetSymbolInfo(ctorNode, syntaxContext.CancellationToken).Symbol is IMethodSymbol ctorSymbol))
                 return;
 
             ImmutableArray<IParameterSymbol> pars = ctorSymbol.Parameters;

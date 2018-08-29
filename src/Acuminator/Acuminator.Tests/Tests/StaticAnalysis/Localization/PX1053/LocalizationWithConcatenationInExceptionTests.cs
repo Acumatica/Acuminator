@@ -15,8 +15,8 @@ namespace Acuminator.Tests
         {
             return new DiagnosticResult
             {
-                Id = Descriptors.PX1053_ConcatinationPriorLocalization.Id,
-                Message = Descriptors.PX1053_ConcatinationPriorLocalization.Title.ToString(),
+                Id = Descriptors.PX1053_ConcatenationPriorLocalization.Id,
+                Message = Descriptors.PX1053_ConcatenationPriorLocalization.Title.ToString(),
                 Severity = DiagnosticSeverity.Error,
                 Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }
             };

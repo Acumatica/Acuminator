@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using Acuminator.Utilities;
+using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -8,6 +9,10 @@ namespace Acuminator.Analyzers
 {
     public class LocalizationTypes
     {
+        private const string _pxMessagesMetadataName = "PX.Data.PXMessages";
+        private const string _pxLocalizerMetadataName = "PX.Data.PXLocalizer";
+        private const string _pxLocalizableAttributeMetadataName = "PX.Common.PXLocalizableAttribute";
+
         private readonly Compilation _compilation;
         private readonly string[] _pxMessagesSimpleMethodNames = new[]
         {
@@ -38,9 +43,9 @@ namespace Acuminator.Analyzers
             InitMethods();
         }
 
-        private INamedTypeSymbol PXMessages => _compilation.GetTypeByMetadataName("PX.Data.PXMessages");
-        private INamedTypeSymbol PXLocalizer => _compilation.GetTypeByMetadataName("PX.Data.PXLocalizer");
-        public INamedTypeSymbol PXLocalizableAttribute => _compilation.GetTypeByMetadataName("PX.Common.PXLocalizableAttribute");
+        private INamedTypeSymbol PXMessages => _compilation.GetTypeByMetadataName(_pxMessagesMetadataName);
+        private INamedTypeSymbol PXLocalizer => _compilation.GetTypeByMetadataName(_pxLocalizerMetadataName);
+        public INamedTypeSymbol PXLocalizableAttribute => _compilation.GetTypeByMetadataName(_pxLocalizableAttributeMetadataName);
 
         private void InitMethods()
         {
@@ -52,7 +57,7 @@ namespace Acuminator.Analyzers
             PXMessagesFormatMethods = format;
 
             IEnumerable<ISymbol> pxLocalizerMembers = PXLocalizer.GetMembers();
-            IEnumerable<string> pxLocalizerSimpleMethodNames = new[] { _pxLocalizerSimpleMethodName };
+            IEnumerable<string> pxLocalizerSimpleMethodNames = _pxLocalizerSimpleMethodName.ToEnumerable();
             (simple, format) = GetMethods(pxLocalizerMembers, pxLocalizerSimpleMethodNames, _pxLocalizerFormatMethodNames);
 
             PXLocalizerSimpleMethods = simple;

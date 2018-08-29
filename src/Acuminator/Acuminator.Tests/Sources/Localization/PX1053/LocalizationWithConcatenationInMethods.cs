@@ -1,4 +1,5 @@
 ﻿using PX.Data;
+using System;
 
 namespace Acuminator.Tests.Sources.Localization
 {
@@ -11,7 +12,7 @@ namespace Acuminator.Tests.Sources.Localization
 
             localizedString = PXLocalizer.Localize(MyMessages.CommasInUserName + MyMessages.SomeString);
             localizedString = PXLocalizer.Localize(string.Format(MyMessages.StringToFormat, parameter), typeof(MyMessages).FullName);
-            localizedString = PXLocalizer.LocalizeFormat(string.Concat(MyMessages.CommasInUserName, MyMessages.SomeString), parameter);
+            localizedString = PXLocalizer.LocalizeFormat(String.Concat(MyMessages.CommasInUserName, MyMessages.SomeString), parameter);
 
             localizedString = PXMessages.Localize(MyMessages.CommasInUserName + "123");
             localizedString = PXMessages.Localize(string.Format(MyMessages.StringToFormat, 123), out string strPrefix);
