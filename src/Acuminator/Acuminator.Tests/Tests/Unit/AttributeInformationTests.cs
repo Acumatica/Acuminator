@@ -115,7 +115,7 @@ namespace Acuminator.Tests
 									new List<string>{ "PX.Data.PXBoolAttribute" },
 									new List<string>{ "PX.Data.PXDefaultAttribute" },
 									new List<string>{ "PX.Data.PXUIFieldAttribute" },
-									new List<string>{ "PX.Data.PXDBDecimalAttribute" },
+									new List<string>{ "PX.Data.PXDBCalcedAttribute" },
 									new List<string>{ "PX.Data.PXDefaultAttribute"},
 									new List<string>{ "PX.Data.PXUIFieldAttribute"}
 								});
@@ -176,7 +176,7 @@ namespace Acuminator.Tests
 									new List<string>{ "PX.Data.PXBoolAttribute" },
 									new List<string>{ "PX.Data.PXDefaultAttribute" },
 									new List<string>{ "PX.Data.PXUIFieldAttribute" },
-									new List<string>{ "PX.Data.PXDBDecimalAttribute", "PX.Data.PXDBFieldAttribute"},
+									new List<string>{ "PX.Data.PXDBCalcedAttribute"},
 									new List<string>{ "PX.Data.PXDefaultAttribute"},
 									new List<string>{ "PX.Data.PXUIFieldAttribute"}
 								},
