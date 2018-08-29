@@ -25,7 +25,7 @@ namespace Acuminator.Analyzers
 
         internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
         {
-            compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzeThrowOfPXException(syntaxContext, pxContext), SyntaxKind.ObjectCreationExpression);
+            compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzePXExceptionCtorInvocation(syntaxContext, pxContext), SyntaxKind.ObjectCreationExpression);
             compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzePXExceptionCtorInitializer(syntaxContext, pxContext), SyntaxKind.ClassDeclaration);
         }
 
@@ -83,7 +83,7 @@ namespace Acuminator.Analyzers
             return messageArg.Expression;
         }
 
-        private void AnalyzeThrowOfPXException(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+        private void AnalyzePXExceptionCtorInvocation(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
         {
             syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
