@@ -148,8 +148,9 @@ namespace Acuminator.Analyzers
             public INamedTypeSymbol PXDBLongIdentityAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBLongIdentityAttribute).FullName);
             public INamedTypeSymbol PXDBBinaryAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBBinaryAttribute).FullName);
             public INamedTypeSymbol PXDBUserPasswordAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBUserPasswordAttribute).FullName);
-            #endregion
-        }
+			public INamedTypeSymbol PXDBCalcedAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBCalcedAttribute).FullName);
+			#endregion
+		}
 		#endregion
 		#region Attributes Types
 		public class AttributesTypes

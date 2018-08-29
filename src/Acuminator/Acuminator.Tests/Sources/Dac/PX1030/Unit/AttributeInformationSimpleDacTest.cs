@@ -7,9 +7,9 @@ using PX.Data;
 
 namespace PX.Objects.HackathonDemo
 {
-	/* Class to test get information from*/
 	public class IIGPOALCLandedCost : IBqlTable
 	{
+
 		#region Selected
 		public abstract class selected : PX.Data.IBqlField { }
 		protected bool? _Selected;
@@ -32,7 +32,7 @@ namespace PX.Objects.HackathonDemo
 		#region Cost
 		public abstract class cost : PX.Data.IBqlField { }
 		protected decimal? _Cost;
-		[PXDBDecimal]
+		[PXDBCalced]
 		[PXDefault]
 		[PXUIField(DisplayName = "Cost")]
 		public virtual decimal? Cost { get; set; }
