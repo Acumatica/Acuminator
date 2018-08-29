@@ -166,6 +166,7 @@ namespace Acuminator.Analyzers
 
 			public INamedTypeSymbol PXDBIdentityAttribute => compilation.GetTypeByMetadataName(typeof(PXDBIdentityAttribute).FullName);
 			public INamedTypeSymbol PXDBLongIdentityAttribute => compilation.GetTypeByMetadataName(typeof(PXDBLongIdentityAttribute).FullName);
+			public INamedTypeSymbol PXDBDataLengthAttribute => compilation.GetTypeByMetadataName(typeof(PXDBDataLengthAttribute).FullName);
 			public INamedTypeSymbol PXDBBinaryAttribute => compilation.GetTypeByMetadataName(typeof(PXDBBinaryAttribute).FullName);
 			public INamedTypeSymbol PXDBUserPasswordAttribute => compilation.GetTypeByMetadataName(typeof(PXDBUserPasswordAttribute).FullName);
 			public INamedTypeSymbol PXDBAttributeAttribute => compilation.GetTypeByMetadataName(typeof(PXDBAttributeAttribute).FullName);
