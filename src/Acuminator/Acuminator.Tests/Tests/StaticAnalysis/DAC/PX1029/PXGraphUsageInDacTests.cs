@@ -52,8 +52,6 @@ namespace Acuminator.Tests
 	    {
 		    VerifyCSharpDiagnostic(source,
 				CreatePX1029DiagnosticResult(23, 6),
-			    CreatePX1029DiagnosticResult(23, 6),
-				CreatePX1029DiagnosticResult(24, 16),
 			    CreatePX1029DiagnosticResult(24, 16));
 	    }
 
