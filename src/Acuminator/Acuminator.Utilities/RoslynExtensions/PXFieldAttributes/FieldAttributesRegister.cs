@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using PX.Data;
 using Acuminator.Analyzers;
+using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities
 {

@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix

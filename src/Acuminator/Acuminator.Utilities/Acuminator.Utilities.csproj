@@ -99,13 +99,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeAnalysisSettings.cs" />
-    <Compile Include="CommonUtils\ExceptionExtensions.cs" />
-    <Compile Include="CommonUtils\StringExtensions.cs" />
+    <Compile Include="Common\ExceptionExtensions.cs" />
+    <Compile Include="Common\StringExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CommonUtils\ArrayExtensions.cs" />
-    <Compile Include="CommonUtils\EnumerableExtensions.cs" />
-    <Compile Include="CommonUtils\ConcurrentExtensions.cs" />
-    <Compile Include="CommonUtils\EnumerableExtraExtensions.cs" />
+    <Compile Include="Common\ArrayExtensions.cs" />
+    <Compile Include="Common\EnumerableExtensions.cs" />
+    <Compile Include="Common\ConcurrentExtensions.cs" />
+    <Compile Include="Common\EnumerableExtraExtensions.cs" />
     <Compile Include="RoslynExtensions\LocalizationTypes.cs" />
     <Compile Include="RoslynExtensions\NestedInvocationWalker.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\ActionRules\ScoreSystemActionRule.cs" />

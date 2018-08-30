@@ -8,6 +8,7 @@ using System.Linq;
 using Acuminator.Utilities;
 using System.Threading;
 using System.Threading.Tasks;
+using Acuminator.Utilities.Common;
 
 namespace Acuminator.Vsix.Coloriser
 {

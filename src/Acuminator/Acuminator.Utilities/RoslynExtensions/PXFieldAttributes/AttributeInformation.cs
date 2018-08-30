@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Acuminator.Analyzers;
+using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities

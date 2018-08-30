@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities;
-
+using Acuminator.Utilities.Common;
 using FirstChanceExceptionEventArgs = System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs;
 
 

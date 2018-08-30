@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities
 {

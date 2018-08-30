@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Acuminator.Utilities.Extra
+namespace Acuminator.Utilities.Common
 {
 	public static class ArrayExtensions
 	{

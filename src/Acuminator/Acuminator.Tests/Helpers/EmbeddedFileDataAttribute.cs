@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using Xunit.Sdk;
 using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
 
 namespace Acuminator.Tests.Helpers
 {

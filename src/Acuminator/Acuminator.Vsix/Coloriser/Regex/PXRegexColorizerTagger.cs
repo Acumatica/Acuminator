@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using Acuminator.Utilities;
 using System.Threading;
+using Acuminator.Utilities.Common;
 
 namespace Acuminator.Vsix.Coloriser
 {

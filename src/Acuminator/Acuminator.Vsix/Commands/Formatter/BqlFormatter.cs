@@ -7,6 +7,7 @@ using Acuminator.Analyzers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
 
 namespace Acuminator.Vsix.Formatter
 {

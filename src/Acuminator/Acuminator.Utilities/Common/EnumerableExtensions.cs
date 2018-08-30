@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-namespace Acuminator.Utilities
+namespace Acuminator.Utilities.Common
 {
-	public static partial class EnumerableExtensions
+	public static class EnumerableExtensions
 	{
 		[DebuggerStepThrough]
 		public static IEnumerable<T> ToEnumerable<T>(this T item)

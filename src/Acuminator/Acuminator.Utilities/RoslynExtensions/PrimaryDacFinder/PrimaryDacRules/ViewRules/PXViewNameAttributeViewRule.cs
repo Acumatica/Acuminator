@@ -15,6 +15,7 @@ using Microsoft.CodeAnalysis.Editing;
 using PX.Data;
 using Acuminator.Analyzers;
 using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
 
 
 namespace Acuminator.Utilities.PrimaryDAC

@@ -14,6 +14,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.Editing;
 using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
 
 
 namespace Acuminator.Analyzers.FixProviders

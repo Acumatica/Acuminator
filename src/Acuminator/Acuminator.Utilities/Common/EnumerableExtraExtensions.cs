@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
 using System.Diagnostics;
 using System.Linq;
 
-
-namespace Acuminator.Utilities.Extra
+namespace Acuminator.Utilities.Common
 {
 	public static class EnumerableExtraExtensions
 	{

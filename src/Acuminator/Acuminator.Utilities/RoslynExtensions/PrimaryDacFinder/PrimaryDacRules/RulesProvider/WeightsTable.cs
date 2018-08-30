@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Acuminator.Analyzers;
+using Acuminator.Utilities.Common;
 
 
 namespace Acuminator.Utilities.PrimaryDAC

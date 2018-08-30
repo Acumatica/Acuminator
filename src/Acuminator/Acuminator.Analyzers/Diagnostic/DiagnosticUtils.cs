@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
 
 
 namespace Acuminator.Analyzers

@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Runtime.CompilerServices;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
-
-
-namespace Acuminator.Utilities
+namespace Acuminator.Utilities.Common
 {
 	public static class ExceptionExtensions
 	{
