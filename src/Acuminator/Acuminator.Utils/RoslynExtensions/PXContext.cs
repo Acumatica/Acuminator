@@ -74,7 +74,10 @@ namespace Acuminator.Analyzers
 										() => new FieldAttributesTypes(Compilation));
 			systemActionTypes = new Lazy<PXSystemActionTypes>(
 										() => new PXSystemActionTypes(Compilation));
-			attributes = new Lazy<AttributesTypes>(() => new AttributesTypes(Compilation));
+			attributes = new Lazy<AttributesTypes>(
+										() => new AttributesTypes(Compilation));
+			systemTypes = new Lazy<SystemTypeSymbols>(
+										() => new SystemTypeSymbols(Compilation));
 
 			IsAcumatica2018R2 = PXSelectBase2018R2NewType != null;
 		}
@@ -115,7 +118,7 @@ namespace Acuminator.Analyzers
 		#region Field Attributes Types
 		public class FieldAttributesTypes
 		{
-			private readonly Compilation compilation;
+			private readonly Compilation _compilation;
 
             public FieldAttributesTypes(Compilation aCompilation)
             {
@@ -160,6 +163,8 @@ namespace Acuminator.Analyzers
             public INamedTypeSymbol PXDBBinaryAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBBinaryAttribute).FullName);
             public INamedTypeSymbol PXDBUserPasswordAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBUserPasswordAttribute).FullName);
 			public INamedTypeSymbol PXDBCalcedAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBCalcedAttribute).FullName);
+			public INamedTypeSymbol PXDBAttributeAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBAttributeAttribute).FullName);
+			public INamedTypeSymbol PXDBDataLengthAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBDataLengthAttribute).FullName);
 			#endregion
 		}
 		#endregion

@@ -15,13 +15,24 @@ namespace Acuminator.Utilities
 	public class AttributeInformation
 	{
 		private readonly PXContext _context;
-		
+		public ImmutableHashSet<ITypeSymbol> BoundBaseTypes { get; }
+
 		public AttributeInformation(PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
 			_context = pxContext;
+
+			var boundBaseTypes = GetBoundBaseTypes(_context);
+			BoundBaseTypes = boundBaseTypes.ToImmutableHashSet();
 		}
+
+		private static HashSet<ITypeSymbol> GetBoundBaseTypes(PXContext context) =>
+			new HashSet<ITypeSymbol>
+			{
+				context.FieldAttributes.PXDBFieldAttribute,
+				context.FieldAttributes.PXDBCalcedAttribute
+			};
 
 		public IEnumerable<ITypeSymbol> AttributesListDerivedFromClass(ITypeSymbol attributeSymbol, bool expand = false)
 		{
@@ -141,9 +152,12 @@ namespace Acuminator.Utilities
 
 		public bool IsBoundAttribute(ITypeSymbol attributeSymbol)
 		{
-			var dbFieldAttribute = _context.FieldAttributes.PXDBFieldAttribute;
-			var dbCalcedAttribute = _context.FieldAttributes.PXDBCalcedAttribute;
-			return AttributeDerivedFromClass(attributeSymbol, dbFieldAttribute) || AttributeDerivedFromClass(attributeSymbol,dbCalcedAttribute);
+			foreach (var baseType in BoundBaseTypes)
+			{
+				if (AttributeDerivedFromClass(attributeSymbol, baseType))
+					return true;
+			}
+			return false;
 		}
 		
 		public bool ContainsBoundAttributes(IEnumerable<ITypeSymbol> attributesSymbols)

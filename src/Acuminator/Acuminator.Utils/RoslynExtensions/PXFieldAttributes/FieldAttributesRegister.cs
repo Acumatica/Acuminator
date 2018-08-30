@@ -120,9 +120,9 @@ namespace Acuminator.Utilities
 				pxContext.FieldAttributes.PXDBLongIdentityAttribute,
 				pxContext.FieldAttributes.PXDBBinaryAttribute,
 				pxContext.FieldAttributes.PXDBUserPasswordAttribute,
-				pxContext.FieldAttributes.PXDBCalcedAttribute
+				pxContext.FieldAttributes.PXDBCalcedAttribute,
 				pxContext.FieldAttributes.PXDBAttributeAttribute,
-				pxContext.FieldAttributes.PXDBDataLengthAttribute,
+				pxContext.FieldAttributes.PXDBDataLengthAttribute
 			};
 
 		private static Dictionary<ITypeSymbol, ITypeSymbol> GetCorrespondingSimpleTypes(PXContext pxContext) =>
