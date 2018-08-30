@@ -16,6 +16,7 @@ using PX.Data;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
 
 
 namespace Acuminator.Utilities.PrimaryDAC

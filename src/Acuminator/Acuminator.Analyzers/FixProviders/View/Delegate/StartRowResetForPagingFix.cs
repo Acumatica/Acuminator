@@ -14,6 +14,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Syntax;
 using PX.Data;
 
 namespace Acuminator.Analyzers

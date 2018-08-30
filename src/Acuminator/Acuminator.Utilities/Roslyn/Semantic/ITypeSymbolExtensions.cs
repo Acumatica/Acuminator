@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
+using Microsoft.CodeAnalysis;
 
-
-namespace Acuminator.Utilities
+namespace Acuminator.Utilities.Roslyn.Semantic
 {
 	public static class ITypeSymbolExtensions
 	{

@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Syntax;
 using PX.Data;
 
 

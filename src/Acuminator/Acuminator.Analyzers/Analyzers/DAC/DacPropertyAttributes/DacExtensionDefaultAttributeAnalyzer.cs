@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Acuminator.Utilities;
 using System.Collections.Immutable;
 using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
 using PX.Data;
 
 namespace Acuminator.Analyzers

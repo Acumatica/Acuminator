@@ -1,11 +1,11 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using Acuminator.Utilities.Common;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Acuminator.Utilities
+namespace Acuminator.Utilities.Roslyn.Syntax
 {
     public static class ArgumentSyntaxExtensions
     {

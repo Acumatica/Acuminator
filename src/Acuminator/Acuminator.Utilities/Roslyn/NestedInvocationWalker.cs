@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Syntax;
 using CommonServiceLocator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;

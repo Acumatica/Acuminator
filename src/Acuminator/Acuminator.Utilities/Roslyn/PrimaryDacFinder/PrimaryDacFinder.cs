@@ -14,6 +14,7 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.Editing;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
 
 
 namespace Acuminator.Utilities.PrimaryDAC

@@ -13,6 +13,8 @@ using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.PrimaryDAC;
 using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Syntax;
 
 
 namespace Acuminator.Analyzers
