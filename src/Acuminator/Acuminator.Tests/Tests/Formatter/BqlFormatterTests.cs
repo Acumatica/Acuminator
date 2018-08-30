@@ -9,12 +9,12 @@ using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Text;
-using TestHelper;
 using Xunit;
+using DiagnosticVerifier = Acuminator.Tests.Verification.DiagnosticVerifier;
 
 namespace Acuminator.Tests
 {
-	public class BqlFormatterTests : DiagnosticVerifier
+	public class BqlFormatterTests : Verification.DiagnosticVerifier
 	{
 		protected const string EndOfLine = "\r\n";
 

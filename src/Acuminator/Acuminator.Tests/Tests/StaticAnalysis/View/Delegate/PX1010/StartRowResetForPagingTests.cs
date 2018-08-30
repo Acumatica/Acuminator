@@ -9,13 +9,13 @@ using Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging;
 using Acuminator.Tests.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
 using Xunit;
 using Microsoft.CodeAnalysis.CodeFixes;
+using CodeFixVerifier = Acuminator.Tests.Verification.CodeFixVerifier;
 
 namespace Acuminator.Tests
 {
-	public class StartRowResetForPagingTests : CodeFixVerifier
+	public class StartRowResetForPagingTests : Verification.CodeFixVerifier
 	{
 		[Theory]
 		[EmbeddedFileData(@"View\Delegate\PX1010\Diagnostics\StartRowResetForPaging.cs")]

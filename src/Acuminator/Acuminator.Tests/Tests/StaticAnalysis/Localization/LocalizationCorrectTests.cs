@@ -2,12 +2,12 @@
 using Acuminator.Analyzers.StaticAnalysis.Localization;
 using Acuminator.Tests.Helpers;
 using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
 using Xunit;
+using DiagnosticVerifier = Acuminator.Tests.Verification.DiagnosticVerifier;
 
 namespace Acuminator.Tests
 {
-    public class LocalizationCorrectTests : DiagnosticVerifier
+    public class LocalizationCorrectTests : Verification.DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new LocalizationInvocationAnalyzer();
 

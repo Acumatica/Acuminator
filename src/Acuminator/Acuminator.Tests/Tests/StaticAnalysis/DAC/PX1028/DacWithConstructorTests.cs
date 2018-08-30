@@ -5,12 +5,12 @@ using Acuminator.Tests.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
 using Xunit;
+using CodeFixVerifier = Acuminator.Tests.Verification.CodeFixVerifier;
 
 namespace Acuminator.Tests
 {
-    public class DacWithConstructorTests : CodeFixVerifier
+    public class DacWithConstructorTests : Verification.CodeFixVerifier
     {
         [Theory]
         [EmbeddedFileData(@"Dac\PX1028\Diagnostics\DacWithConstructor.cs")]

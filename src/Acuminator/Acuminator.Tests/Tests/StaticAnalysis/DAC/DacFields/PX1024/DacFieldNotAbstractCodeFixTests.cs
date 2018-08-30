@@ -7,18 +7,18 @@ using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
 using Xunit;
 
 using Acuminator.Analyzers;
 using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType;
 using Acuminator.Tests.Helpers;
+using CodeFixVerifier = Acuminator.Tests.Verification.CodeFixVerifier;
 
 
 namespace Acuminator.Tests
 {
-	public class DacFieldNotAbstractCodeFixTests : CodeFixVerifier
+	public class DacFieldNotAbstractCodeFixTests : Verification.CodeFixVerifier
 	{
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1024\Diagnostics\SOOrderNotAbstractField.cs",

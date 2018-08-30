@@ -154,7 +154,7 @@
     <EmbeddedResource Include="Sources\Dac\PX1031 and PX1032\Diagnostics\DacWithNestedTypes.cs" />
     <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\SeparateFiles_ExternalClass.cs" />
     <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\SeparateFiles_AnalyzedClass.cs" />
-    <Compile Include="Verifiers\FluentAssertionsExtensions.cs" />
+    <Compile Include="Verification\FluentAssertionsExtensions.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1007\Diagnostics\DACCreateInstance.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1007\CodeFixes\DACCreateInstance_Expected.cs" />
     <EmbeddedResource Include="Sources\LongOperationDelegateClosuresAnalyzer.cs" />
@@ -331,11 +331,11 @@
     <EmbeddedResource Include="Sources\View\Delegate\PX1005\Diagnostics\TypoInViewDelegateName_Bad.cs" />
     <Compile Include="Tests\StaticAnalysis\View\PX1018\GraphWithPrimaryDacWithoutViewTests.cs" />
     <Compile Include="Tests\Unit\AttributeInformationTests.cs" />
-    <Compile Include="Verifiers\CodeFixVerifier.cs" />
-    <Compile Include="Verifiers\DiagnosticVerifier.cs" />
-    <Compile Include="Helpers\CodeFixVerifier.Helper.cs" />
-    <Compile Include="Helpers\DiagnosticResult.cs" />
-    <Compile Include="Helpers\DiagnosticVerifier.Helper.cs" />
+    <Compile Include="Verification\CodeFixVerifier.cs" />
+    <Compile Include="Verification\DiagnosticVerifier.cs" />
+    <Compile Include="Verification\CodeFixVerifier.Helper.cs" />
+    <Compile Include="Verification\DiagnosticResult.cs" />
+    <Compile Include="Verification\DiagnosticVerifier.Helper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

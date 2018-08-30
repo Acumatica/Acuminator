@@ -10,12 +10,12 @@ using Acuminator.Tests.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
 using Xunit;
+using CodeFixVerifier = Acuminator.Tests.Verification.CodeFixVerifier;
 
 namespace Acuminator.Tests
 {
-    public partial class DacForbiddenFieldsTests : CodeFixVerifier
+    public partial class DacForbiddenFieldsTests : Verification.CodeFixVerifier
     {
         [Theory]
         [EmbeddedFileData(@"Dac\PX1027\Diagnostics\DacForbiddenFields.cs")]
@@ -60,7 +60,7 @@ namespace Acuminator.Tests
 
         protected override CodeFixProvider GetCSharpCodeFixProvider() => new ForbiddenFieldsInDacFix();
     }
-    public partial class DacForbiddenFieldsTests : CodeFixVerifier
+    public partial class DacForbiddenFieldsTests : Verification.CodeFixVerifier
     {
         private DiagnosticResult CreatePX1027ForbiddenDacFieldDiagnosticResult(int line, int column, string fieldName)
         {

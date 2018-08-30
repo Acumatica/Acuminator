@@ -7,16 +7,16 @@ using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
 using Xunit;
 using Acuminator.Analyzers;
 using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac;
 using Acuminator.Tests.Helpers;
+using DiagnosticVerifier = Acuminator.Tests.Verification.DiagnosticVerifier;
 
 namespace Acuminator.Tests
 {
-	public class GraphWithPrimaryDacWithoutViewTests : DiagnosticVerifier
+	public class GraphWithPrimaryDacWithoutViewTests : Verification.DiagnosticVerifier
 	{
 		[Theory]
 		[EmbeddedFileData(@"View\PX1018\Diagnostics\GraphWithPrimaryDacWithoutView.cs")]

@@ -10,12 +10,12 @@ using Acuminator.Tests.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
 using Xunit;
+using CodeFixVerifier = Acuminator.Tests.Verification.CodeFixVerifier;
 
 namespace Acuminator.Tests
 {
-    public class InheritanceFromPXCacheExtensionTests : CodeFixVerifier
+    public class InheritanceFromPXCacheExtensionTests : Verification.CodeFixVerifier
     {
 	    private DiagnosticResult CreatePX1009DiagnosticResult(int line, int column)
 	    {
@@ -91,7 +91,7 @@ namespace Acuminator.Tests
         }
     }
 
-	public class InheritanceFromPXCacheExtensionMakeSealedTests : CodeFixVerifier
+	public class InheritanceFromPXCacheExtensionMakeSealedTests : Verification.CodeFixVerifier
 	{
 		[Theory]
 		[EmbeddedFileData("InheritanceFromPXCacheExtensionMakeSealed_Bad.cs", "InheritanceFromPXCacheExtensionMakeSealed_Bad_Expected.cs")]

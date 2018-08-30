@@ -1,12 +1,12 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 
-namespace TestHelper
+namespace Acuminator.Tests.Verification
 {
 	/// <summary>
 	/// Diagnostic Producer class with extra methods dealing with applying codefixes

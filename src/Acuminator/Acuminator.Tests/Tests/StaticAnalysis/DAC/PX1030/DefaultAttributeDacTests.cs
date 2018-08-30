@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
 using Acuminator.Analyzers;
 using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute;
@@ -14,10 +13,11 @@ using Acuminator.Tests.Helpers;
 using FluentAssertions;
 using Xunit;
 using Acuminator.Utilities;
+using CodeFixVerifier = Acuminator.Tests.Verification.CodeFixVerifier;
 
 namespace Acuminator.Tests
 {
-	public class DefaultAttributeInDacTests : CodeFixVerifier
+	public class DefaultAttributeInDacTests : Verification.CodeFixVerifier
 	{
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacExtensionDefaultAttributeAnalyzer();
 

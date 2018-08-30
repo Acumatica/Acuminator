@@ -9,12 +9,12 @@ using Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures;
 using Acuminator.Tests.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
 using Xunit;
+using CodeFixVerifier = Acuminator.Tests.Verification.CodeFixVerifier;
 
 namespace Acuminator.Tests
 {
-    public class LongOperationDelegateClosuresTests : CodeFixVerifier
+    public class LongOperationDelegateClosuresTests : Verification.CodeFixVerifier
     {
         [Theory]
         [EmbeddedFileData("LongOperationDelegateClosuresAnalyzer.cs")]

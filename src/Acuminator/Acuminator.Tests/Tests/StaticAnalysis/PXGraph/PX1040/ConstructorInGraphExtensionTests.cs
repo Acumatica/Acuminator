@@ -10,12 +10,12 @@ using Acuminator.Tests.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
 using Xunit;
+using CodeFixVerifier = Acuminator.Tests.Verification.CodeFixVerifier;
 
 namespace Acuminator.Tests
 {
-	public class ConstructorInGraphExtensionTests : CodeFixVerifier
+	public class ConstructorInGraphExtensionTests : Verification.CodeFixVerifier
 	{
 		private DiagnosticResult CreatePX1040DiagnosticResult(int line, int column)
 		{

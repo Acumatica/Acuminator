@@ -11,12 +11,12 @@ using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
 using Xunit;
+using DiagnosticVerifier = Acuminator.Tests.Verification.DiagnosticVerifier;
 
 namespace Acuminator.Tests
 {
-	public class DacFieldNotAbstractTests : DiagnosticVerifier
+	public class DacFieldNotAbstractTests : Verification.DiagnosticVerifier
 	{
 		[Theory]
 		[EmbeddedFileData(@"Dac\PX1024\Diagnostics\SOOrderNotAbstractField.cs")]

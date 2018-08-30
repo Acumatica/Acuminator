@@ -5,18 +5,18 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Acuminator.Tests.Helpers;
-using Acuminator.Tests.Verifiers;
+using Acuminator.Tests.Verification;
 using Acuminator.Utilities.Roslyn;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using TestHelper;
 using Xunit;
+using DiagnosticVerifier = Acuminator.Tests.Verification.DiagnosticVerifier;
 
 namespace Acuminator.Tests
 {
-	public class NestedInvocationWalkerTests : DiagnosticVerifier
+	public class NestedInvocationWalkerTests : Verification.DiagnosticVerifier
 	{
 		private class ExceptionWalker : NestedInvocationWalker
 		{

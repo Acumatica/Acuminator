@@ -1,12 +1,12 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Acuminator.Tests.Helpers;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
 
-namespace TestHelper
+namespace Acuminator.Tests.Verification
 {
 	/// <summary>
 	/// Superclass of all Unit Tests for DiagnosticAnalyzers

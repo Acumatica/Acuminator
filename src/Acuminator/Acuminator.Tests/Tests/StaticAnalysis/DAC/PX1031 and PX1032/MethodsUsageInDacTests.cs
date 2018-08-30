@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 using Acuminator.Analyzers;
 using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac;
-using TestHelper;
 using Microsoft.CodeAnalysis;
 using Xunit;
 using Acuminator.Tests.Helpers;
+using DiagnosticVerifier = Acuminator.Tests.Verification.DiagnosticVerifier;
 
 namespace Acuminator.Tests
 {
-    public class MethodsUsageInDacTests : DiagnosticVerifier
+    public class MethodsUsageInDacTests : Verification.DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new MethodsUsageInDacAnalyzer();
 

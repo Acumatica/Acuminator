@@ -4,15 +4,15 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
 using Xunit;
 using Acuminator.Analyzers;
 using Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes;
 using Acuminator.Tests.Helpers;
+using CodeFixVerifier = Acuminator.Tests.Verification.CodeFixVerifier;
 
 namespace Acuminator.Tests
 {
-	public class DacFieldAttributesTypeMismatchCodeFixTests : CodeFixVerifier
+	public class DacFieldAttributesTypeMismatchCodeFixTests : Verification.CodeFixVerifier
 	{
 		[Theory]
 		[EmbeddedFileData(@"Attributes\PX1021\Diagnostics\DacFieldAttributesTypeMismatch.cs",

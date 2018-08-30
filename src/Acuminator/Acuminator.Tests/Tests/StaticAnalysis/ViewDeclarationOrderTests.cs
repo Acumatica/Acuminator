@@ -9,12 +9,12 @@ using Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder;
 using Acuminator.Tests.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
 using Xunit;
+using CodeFixVerifier = Acuminator.Tests.Verification.CodeFixVerifier;
 
 namespace Acuminator.Tests
 {
-    public class ViewDeclarationOrderTests : CodeFixVerifier
+    public class ViewDeclarationOrderTests : Verification.CodeFixVerifier
     {
 	    private DiagnosticResult[] CreateDiagnosticResults()
 	    {

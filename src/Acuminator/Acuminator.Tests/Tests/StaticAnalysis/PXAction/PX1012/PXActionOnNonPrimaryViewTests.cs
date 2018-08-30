@@ -7,16 +7,16 @@ using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
 using Xunit;
 using Acuminator.Analyzers;
 using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView;
 using Acuminator.Tests.Helpers;
+using CodeFixVerifier = Acuminator.Tests.Verification.CodeFixVerifier;
 
 namespace Acuminator.Tests
 {
-	public class PXActionOnNonPrimaryViewTests : CodeFixVerifier
+	public class PXActionOnNonPrimaryViewTests : Verification.CodeFixVerifier
 	{
 		[Theory]
 		[EmbeddedFileData(@"PXAction\PX1012\Diagnostics\GraphWithNonPrimaryDacView.cs")] 

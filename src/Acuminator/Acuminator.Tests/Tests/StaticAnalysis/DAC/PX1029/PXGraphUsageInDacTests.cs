@@ -4,12 +4,12 @@ using Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac;
 using Acuminator.Tests.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
 using Xunit;
+using DiagnosticVerifier = Acuminator.Tests.Verification.DiagnosticVerifier;
 
 namespace Acuminator.Tests
 {
-    public class PXGraphUsageInDacTests : DiagnosticVerifier
+    public class PXGraphUsageInDacTests : Verification.DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new PXGraphUsageInDacAnalyzer();
 

@@ -7,7 +7,7 @@ using FluentAssertions;
 using FluentAssertions.Collections;
 using Microsoft.CodeAnalysis;
 
-namespace Acuminator.Tests.Verifiers
+namespace Acuminator.Tests.Verification
 {
 	public static class FluentAssertionsExtensions
 	{

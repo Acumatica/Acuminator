@@ -9,13 +9,13 @@ using Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute;
 using Acuminator.Tests.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using TestHelper;
 using Xunit;
 using Microsoft.CodeAnalysis.CodeFixes;
+using CodeFixVerifier = Acuminator.Tests.Verification.CodeFixVerifier;
 
 namespace Acuminator.Tests
 {
-    public class MissingTypeListAttributeTests : CodeFixVerifier
+    public class MissingTypeListAttributeTests : Verification.CodeFixVerifier
     {
 	    private DiagnosticResult CreateDiagnosticResult(int line, int column)
 	    {

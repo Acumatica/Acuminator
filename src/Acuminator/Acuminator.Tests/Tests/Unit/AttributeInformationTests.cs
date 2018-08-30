@@ -15,13 +15,13 @@ using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
-using TestHelper;
 using Xunit;
+using DiagnosticVerifier = Acuminator.Tests.Verification.DiagnosticVerifier;
 
 namespace Acuminator.Tests
 {
 	
-	public class AttributeInformationTests : DiagnosticVerifier
+	public class AttributeInformationTests : Verification.DiagnosticVerifier
 	{
 		/* 
 		 *  Tests attribute derived 
