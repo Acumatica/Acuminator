@@ -14,7 +14,7 @@ namespace Acuminator.Tests.Helpers
 	public class EmbeddedFileDataAttribute : DataAttribute
 	{
 		private const string SourcesPrefix = "Sources";
-		private static readonly string TestsRoot = Assembly.GetExecutingAssembly().GetName().Name;	
+		private static readonly string TestsRoot = typeof(EmbeddedFileDataAttribute).Assembly.GetName().Name;	
 		private static readonly string DefaultPrefix = TestsRoot + "." + SourcesPrefix;
 
 		private readonly string _prefix;
