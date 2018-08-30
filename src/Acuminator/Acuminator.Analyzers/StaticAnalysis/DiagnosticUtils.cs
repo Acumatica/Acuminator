@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Acuminator.Utilities;
+﻿using System.Runtime.CompilerServices;
 using Acuminator.Utilities.Common;
+using Microsoft.CodeAnalysis;
 
-
-namespace Acuminator.Analyzers
+namespace Acuminator.Analyzers.StaticAnalysis
 {
 	internal static class DiagnosticUtils
 	{

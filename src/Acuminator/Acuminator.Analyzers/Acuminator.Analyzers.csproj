@@ -66,8 +66,8 @@
     <Compile Include="Analyzers\PXAction\PX1012\PXActionOnNonPrimaryViewAnalyzer.cs" />
     <Compile Include="Analyzers\View\Delegate\StartRowResetForPagingAnalyzer.cs" />
     <Compile Include="Analyzers\View\NoPrimaryViewForPrimaryDacAnalyzer.cs" />
-    <Compile Include="Diagnostic\DiagnosticProperty.cs" />
-    <Compile Include="Diagnostic\DiagnosticUtils.cs" />
+    <Compile Include="StaticAnalysis\DiagnosticProperty.cs" />
+    <Compile Include="StaticAnalysis\DiagnosticUtils.cs" />
     <Compile Include="FixProviders\DAC\DacFields\ForbiddenFieldsInDAC\RegionsVisitor.cs" />
     <Compile Include="FixProviders\DAC\DacFields\ForbiddenFieldsInDAC\ForbiddenFieldsInDacFix.cs" />
     <Compile Include="FixProviders\DAC\ConstructorInDacCodeFix.cs" />
