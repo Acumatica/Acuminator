@@ -52,6 +52,9 @@
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\ParametersCounterSymbolWalker.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\Helpers\ParametersCounterSyntaxWalker.cs" />
     <Compile Include="Analyzers\Event\ConnectionScopeInRowSelectingAnalyzer.cs" />
+    <Compile Include="Analyzers\Localization\LocalizationMessageHelper.cs" />
+    <Compile Include="Analyzers\Localization\LocalizationInvocationAnalyzer.cs" />
+    <Compile Include="Analyzers\Localization\LocalizationPXExceptionAnalyzer.cs" />
     <Compile Include="Analyzers\PXGraph\ConstructorInGraphExtensionAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacFields\DacNonAbstractFieldTypeAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacDeclarationAnalyzer.cs" />

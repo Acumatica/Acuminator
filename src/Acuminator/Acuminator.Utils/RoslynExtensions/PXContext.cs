@@ -32,6 +32,9 @@ namespace Acuminator.Analyzers
 		private readonly Lazy<SystemTypeSymbols> systemTypes;
 		public SystemTypeSymbols SystemTypes => systemTypes.Value;
 
+        private readonly Lazy<LocalizationTypes> _localizationMethods;
+        public LocalizationTypes Localization => _localizationMethods.Value;
+
 
 		public INamedTypeSymbol PXGraphType => Compilation.GetTypeByMetadataName(typeof(PXGraph).FullName);
 		public INamedTypeSymbol PXCacheType => Compilation.GetTypeByMetadataName(typeof(PXCache).FullName);
@@ -68,9 +71,14 @@ namespace Acuminator.Analyzers
 		public INamedTypeSymbol PXFieldState => Compilation.GetTypeByMetadataName(typeof(PXFieldState).FullName);
 		public INamedTypeSymbol PXAttributeFamily => Compilation.GetTypeByMetadataName(typeof(PXAttributeFamilyAttribute).FullName);
 
+        public INamedTypeSymbol PXException => Compilation.GetTypeByMetadataName(typeof(PXException).FullName);
+
 		public INamedTypeSymbol PXConnectionScope => Compilation.GetTypeByMetadataName(typeof(PXConnectionScope).FullName);
 
 		public INamedTypeSymbol PXDatabase => Compilation.GetTypeByMetadataName(typeof(PXDatabase).FullName);
+
+        public ImmutableArray<ISymbol> StringFormat => SystemTypes.String.GetMembers(nameof(string.Format));
+        public ImmutableArray<ISymbol> StringConcat => SystemTypes.String.GetMembers(nameof(string.Concat));
 
 		public PXContext(Compilation compilation)
 		{
@@ -83,6 +91,8 @@ namespace Acuminator.Analyzers
 										() => new PXSystemActionTypes(Compilation));
 			systemTypes = new Lazy<SystemTypeSymbols>(
 										() => new SystemTypeSymbols(Compilation));
+            _localizationMethods = new Lazy<LocalizationTypes>(
+                () => new LocalizationTypes(Compilation));
 
 			IsAcumatica2018R2 = PXSelectBase2018R2NewType != null;
 		}
