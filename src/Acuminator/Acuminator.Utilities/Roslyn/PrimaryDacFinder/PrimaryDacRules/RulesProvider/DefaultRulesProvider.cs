@@ -3,8 +3,8 @@ using System.Composition;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Acuminator.Analyzers;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn;
 
 
 namespace Acuminator.Utilities.PrimaryDAC

@@ -7,8 +7,8 @@ using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Acuminator.Analyzers;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn;
 using PX.Data;
 
 namespace Acuminator.Utilities

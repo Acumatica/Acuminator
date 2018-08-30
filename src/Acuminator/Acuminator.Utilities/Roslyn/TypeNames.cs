@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using Microsoft.CodeAnalysis;
 using PX.Data;
 
-
-namespace Acuminator.Utilities
+namespace Acuminator.Utilities.Roslyn
 {
 	public static class TypeNames
 	{

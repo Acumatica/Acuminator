@@ -6,8 +6,8 @@ using System.Text;
 using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using PX.Data;
-using Acuminator.Analyzers;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn;
 
 namespace Acuminator.Utilities
 {

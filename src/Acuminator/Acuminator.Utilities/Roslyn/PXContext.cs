@@ -1,12 +1,9 @@
 using System;
-using System.ComponentModel;
-using System.Collections;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using PX.Data;
-using Acuminator.Utilities;
 
-namespace Acuminator.Analyzers
+namespace Acuminator.Utilities.Roslyn
 {
 	public class PXContext
 	{

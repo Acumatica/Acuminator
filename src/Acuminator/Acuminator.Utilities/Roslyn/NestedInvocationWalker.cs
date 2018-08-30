@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using CommonServiceLocator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Acuminator.Utilities.RoslynExtensions
+namespace Acuminator.Utilities.Roslyn
 {
 	/// <summary>
 	/// Syntax walker that follows method invocations, property getters, etc.,

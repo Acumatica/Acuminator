@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+using Acuminator.Utilities.Roslyn;
 
 namespace Acuminator.Analyzers
 {

@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Acuminator.Utilities;
 using System.Collections.Immutable;
+using Acuminator.Utilities.Roslyn;
 using PX.Data;
 
 namespace Acuminator.Analyzers

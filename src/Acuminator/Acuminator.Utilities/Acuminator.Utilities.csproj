@@ -137,16 +137,16 @@
     <Compile Include="Roslyn\PXFieldAttributes\FieldAttributeInfo.cs" />
     <Compile Include="Roslyn\PXFieldAttributes\FieldAttributesRegister.cs" />
     <Compile Include="Roslyn\PXSystemActions\PXSystemActionsRegister.cs" />
-    <Compile Include="Roslyn\SyntaxUtils\ArgumentSyntaxExtensions.cs" />
-    <Compile Include="Roslyn\SemanticUtils\GraphSymbolUtils.cs" />
-    <Compile Include="Roslyn\SemanticUtils\IMethodSymbolExtensions.cs" />
-    <Compile Include="Roslyn\SyntaxUtils\MethodDeclarationUtils.cs" />
-    <Compile Include="Roslyn\SyntaxUtils\SyntaxTreeUtils.cs" />
-    <Compile Include="Roslyn\SyntaxUtils\RoslynSyntaxUtils.cs" />
+    <Compile Include="Roslyn\Syntax\ArgumentSyntaxExtensions.cs" />
+    <Compile Include="Roslyn\Semantic\GraphSymbolUtils.cs" />
+    <Compile Include="Roslyn\Semantic\IMethodSymbolExtensions.cs" />
+    <Compile Include="Roslyn\Syntax\MethodDeclarationUtils.cs" />
+    <Compile Include="Roslyn\Syntax\SyntaxTreeUtils.cs" />
+    <Compile Include="Roslyn\Syntax\RoslynSyntaxUtils.cs" />
     <Compile Include="Roslyn\BqlModifyingMethods.cs" />
     <Compile Include="Roslyn\PXCodeType.cs" />
-    <Compile Include="Roslyn\SemanticUtils\ITypeSymbolExtensions.cs" />
-    <Compile Include="Roslyn\SemanticUtils\CodeResolvingUtils.cs" />
+    <Compile Include="Roslyn\Semantic\ITypeSymbolExtensions.cs" />
+    <Compile Include="Roslyn\Semantic\CodeResolvingUtils.cs" />
     <Compile Include="Roslyn\PXContext.cs" />
     <Compile Include="Roslyn\TypeNames.cs" />
   </ItemGroup>

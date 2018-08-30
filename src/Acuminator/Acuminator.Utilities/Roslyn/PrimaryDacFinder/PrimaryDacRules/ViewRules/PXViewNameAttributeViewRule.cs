@@ -13,9 +13,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.Editing;
 using PX.Data;
-using Acuminator.Analyzers;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn;
 
 
 namespace Acuminator.Utilities.PrimaryDAC

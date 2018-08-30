@@ -13,6 +13,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Acuminator.Utilities;
+using Acuminator.Utilities.Roslyn;
 
 namespace Acuminator.Analyzers
 {

@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Acuminator.Analyzers;
 using Acuminator.Utilities.Common;
+using Microsoft.CodeAnalysis;
 using PX.Data;
 
-namespace Acuminator.Utilities
+namespace Acuminator.Utilities.Roslyn
 {
 	internal class DummyDac : IBqlTable { }
 

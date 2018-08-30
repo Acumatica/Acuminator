@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using Acuminator.Utilities;
+using Acuminator.Utilities.Roslyn;
 
 namespace Acuminator.Vsix.Coloriser
 {

@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Acuminator.Utilities;
+using Acuminator.Utilities.Roslyn;
 
 namespace Acuminator.Analyzers
 {

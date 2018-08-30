@@ -4,8 +4,8 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Acuminator.Analyzers;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn;
 using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities

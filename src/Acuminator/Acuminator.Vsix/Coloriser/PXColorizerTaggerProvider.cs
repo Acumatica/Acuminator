@@ -14,7 +14,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Acuminator.Utilities;
-
+using Acuminator.Utilities.Roslyn;
 
 
 namespace Acuminator.Vsix.Coloriser

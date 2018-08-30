@@ -22,6 +22,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using Acuminator.Utilities;
 using Acuminator.Analyzers;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn;
 using Acuminator.Vsix;
 using Acuminator.Vsix.Utilities;
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;

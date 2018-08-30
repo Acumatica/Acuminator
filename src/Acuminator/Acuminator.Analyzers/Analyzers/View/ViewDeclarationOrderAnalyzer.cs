@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp;
 using Acuminator.Utilities;
+using Acuminator.Utilities.Roslyn;
 
 
 namespace Acuminator.Analyzers

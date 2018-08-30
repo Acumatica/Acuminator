@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using PX.Data;
-using Acuminator.Analyzers;
 
 namespace Acuminator.Utilities
 {

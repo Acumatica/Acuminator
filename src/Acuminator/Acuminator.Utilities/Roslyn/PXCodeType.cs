@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-
-namespace Acuminator.Utilities
+﻿namespace Acuminator.Utilities.Roslyn
 {
 	/// <summary>
 	/// Values that represent Acumatica specific classification types for the coloring of code fragments and other purposes.

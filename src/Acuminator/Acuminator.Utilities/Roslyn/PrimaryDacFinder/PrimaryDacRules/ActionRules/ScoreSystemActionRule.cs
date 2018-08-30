@@ -12,7 +12,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.Editing;
-using Acuminator.Analyzers;
+using Acuminator.Utilities.Roslyn;
 
 
 namespace Acuminator.Utilities.PrimaryDAC

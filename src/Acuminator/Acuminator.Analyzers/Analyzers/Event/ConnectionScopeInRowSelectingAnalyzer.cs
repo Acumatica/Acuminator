@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.RoslynExtensions;
+using Acuminator.Utilities.Roslyn;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;

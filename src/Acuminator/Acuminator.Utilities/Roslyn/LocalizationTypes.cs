@@ -1,12 +1,10 @@
-﻿using Acuminator.Utilities;
-using Microsoft.CodeAnalysis;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Acuminator.Utilities.Common;
+using Microsoft.CodeAnalysis;
 
-namespace Acuminator.Analyzers
+namespace Acuminator.Utilities.Roslyn
 {
     public class LocalizationTypes
     {
