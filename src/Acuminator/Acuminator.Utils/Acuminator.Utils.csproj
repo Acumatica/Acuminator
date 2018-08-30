@@ -106,6 +106,7 @@
     <Compile Include="CommonUtils\EnumerableExtensions.cs" />
     <Compile Include="CommonUtils\ConcurrentExtensions.cs" />
     <Compile Include="CommonUtils\EnumerableExtraExtensions.cs" />
+    <Compile Include="RoslynExtensions\LocalizationTypes.cs" />
     <Compile Include="RoslynExtensions\NestedInvocationWalker.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\ActionRules\ScoreSystemActionRule.cs" />
     <Compile Include="RoslynExtensions\PrimaryDacFinder\PrimaryDacRules\ActionRules\ScoreSimpleActionRule.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="RoslynExtensions\PXFieldAttributes\FieldAttributeInfo.cs" />
     <Compile Include="RoslynExtensions\PXFieldAttributes\FieldAttributesRegister.cs" />
     <Compile Include="RoslynExtensions\PXSystemActions\PXSystemActionsRegister.cs" />
+    <Compile Include="RoslynExtensions\SyntaxUtils\ArgumentSyntaxExtensions.cs" />
     <Compile Include="RoslynExtensions\SemanticUtils\GraphSymbolUtils.cs" />
     <Compile Include="RoslynExtensions\SemanticUtils\IMethodSymbolExtensions.cs" />
     <Compile Include="RoslynExtensions\SyntaxUtils\MethodDeclarationUtils.cs" />

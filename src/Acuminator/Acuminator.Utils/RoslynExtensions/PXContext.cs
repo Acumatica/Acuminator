@@ -34,6 +34,9 @@ namespace Acuminator.Analyzers
 		private readonly Lazy<AttributesTypes> attributes;
 		public AttributesTypes AttributeTypes => attributes.Value;
 
+        private readonly Lazy<LocalizationTypes> _localizationMethods;
+        public LocalizationTypes Localization => _localizationMethods.Value;
+
 
 
 		public INamedTypeSymbol PXGraphType => Compilation.GetTypeByMetadataName(typeof(PXGraph).FullName);
@@ -59,11 +62,17 @@ namespace Acuminator.Analyzers
 		public INamedTypeSymbol PXResult => Compilation.GetTypeByMetadataName(typeof(PXResult).FullName);
 
 		public INamedTypeSymbol PXFieldState => Compilation.GetTypeByMetadataName(typeof(PXFieldState).FullName);
+		public INamedTypeSymbol PXAttributeFamily => Compilation.GetTypeByMetadataName(typeof(PXAttributeFamilyAttribute).FullName);
+
+        public INamedTypeSymbol PXException => Compilation.GetTypeByMetadataName(typeof(PXException).FullName);
+
 		public INamedTypeSymbol IPXLocalizableList => Compilation.GetTypeByMetadataName(typeof(IPXLocalizableList).FullName);
 		public INamedTypeSymbol PXConnectionScope => Compilation.GetTypeByMetadataName(typeof(PXConnectionScope).FullName);
 		public INamedTypeSymbol PXDatabase => Compilation.GetTypeByMetadataName(typeof(PXDatabase).FullName);
 		public INamedTypeSymbol PXSelectorAttribute => Compilation.GetTypeByMetadataName(typeof(PXSelectorAttribute).FullName);
 
+        public ImmutableArray<ISymbol> StringFormat => SystemTypes.String.GetMembers(nameof(string.Format));
+        public ImmutableArray<ISymbol> StringConcat => SystemTypes.String.GetMembers(nameof(string.Concat));
 
 		public PXContext(Compilation compilation)
 		{
@@ -78,6 +87,8 @@ namespace Acuminator.Analyzers
 										() => new AttributesTypes(Compilation));
 			systemTypes = new Lazy<SystemTypeSymbols>(
 										() => new SystemTypeSymbols(Compilation));
+            _localizationMethods = new Lazy<LocalizationTypes>(
+                () => new LocalizationTypes(Compilation));
 
 			IsAcumatica2018R2 = PXSelectBase2018R2NewType != null;
 		}

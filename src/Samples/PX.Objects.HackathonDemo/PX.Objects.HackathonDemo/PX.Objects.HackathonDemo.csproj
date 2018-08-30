@@ -66,6 +66,10 @@
     <Compile Include="DAC\APSetup.cs" />
     <Compile Include="Graph\Database call inside RowSelecting\SOOrderEntryExt.cs" />
     <Compile Include="Graph\Start row reset for paging\LEPMaint.cs" />
+    <Compile Include="Localization\InvalidRowException.cs" />
+    <Compile Include="Localization\Messages.cs" />
+    <Compile Include="Localization\SOOrderExt.cs" />
+    <Compile Include="Localization\SOOrderEntryWithCustomText.cs" />
     <Compile Include="Properties\GlobalSuppressions.cs" />
     <Compile Include="Graph\GoTo Test\APInvoiceEntry.cs" />
     <Compile Include="Graph\GoTo Test\APInvoiceEntryVoidProcess.cs" />
