@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 
 namespace Acuminator.Tests.Sources
 {
+    [Serializable]
     [PXPrimaryGraph(typeof(CFHistoryMaint))]
+    [PXCacheName("My DAC Class")]
     public class DacWithGraphUsageInAttribute : IBqlTable
     {
         [PXUIField(DisplayName = "Reference Nbr.")]
