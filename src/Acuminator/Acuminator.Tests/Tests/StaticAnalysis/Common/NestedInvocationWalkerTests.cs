@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verifiers;
-using Acuminator.Utils.RoslynExtensions;
+using Acuminator.Utilities.RoslynExtensions;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;

@@ -80,9 +80,9 @@
       <Project>{984DBFAC-91A7-4059-A5B2-CDE33CD93EA0}</Project>
       <Name>Acuminator.Analyzers</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Acuminator.Utils\Acuminator.Utils.csproj">
+    <ProjectReference Include="..\Acuminator.Utilities\Acuminator.Utilities.csproj">
       <Project>{b902103c-831b-4bbf-a88b-3dae6f601cf0}</Project>
-      <Name>Acuminator.Utils</Name>
+      <Name>Acuminator.Utilities</Name>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>

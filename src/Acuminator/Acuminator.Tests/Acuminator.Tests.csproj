@@ -344,9 +344,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Acuminator.Utils\Acuminator.Utils.csproj">
+    <ProjectReference Include="..\Acuminator.Utilities\Acuminator.Utilities.csproj">
       <Project>{B902103C-831B-4BBF-A88B-3DAE6F601CF0}</Project>
-      <Name>Acuminator.Utils</Name>
+      <Name>Acuminator.Utilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\Acuminator.Vsix\Acuminator.Vsix.csproj">
       <Project>{6deb14bb-d8f6-4f5b-bbd7-e756ceb67d42}</Project>

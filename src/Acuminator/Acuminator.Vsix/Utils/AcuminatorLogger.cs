@@ -23,7 +23,7 @@ namespace Acuminator.Vsix.Logger
 		public const string PackageName = "Acuminator";
 
 		private const string AnalyzersDll = "Acuminator.Analyzers";
-		private const string UtilitiesDll = "Acuminator.Utils";
+		private const string UtilitiesDll = "Acuminator.Utilities";
 		private const string VsixDll = "Acuminator.Vsix";
 
 		private readonly AcuminatorVSPackage _package;

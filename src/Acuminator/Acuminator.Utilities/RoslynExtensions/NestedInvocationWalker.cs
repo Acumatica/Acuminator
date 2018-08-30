@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Acuminator.Utils.RoslynExtensions
+namespace Acuminator.Utilities.RoslynExtensions
 {
 	/// <summary>
 	/// Syntax walker that follows method invocations, property getters, etc.,

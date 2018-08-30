@@ -198,9 +198,9 @@
     <Folder Include="CodeActions\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Acuminator.Utils\Acuminator.Utils.csproj">
+    <ProjectReference Include="..\Acuminator.Utilities\Acuminator.Utilities.csproj">
       <Project>{b902103c-831b-4bbf-a88b-3dae6f601cf0}</Project>
-      <Name>Acuminator.Utils</Name>
+      <Name>Acuminator.Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="..\GitVersionDump.targets" />
