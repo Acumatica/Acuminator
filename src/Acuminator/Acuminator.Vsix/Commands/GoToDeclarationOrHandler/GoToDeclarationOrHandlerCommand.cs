@@ -349,12 +349,12 @@ namespace Acuminator.Vsix.GoToDeclaration
 			else
 			{
 				return method.Parameters[0].Type.InheritsFromOrEquals(pxContext.PXAdapterType) &&
-					   method.ReturnType.InheritsFromOrEquals(pxContext.IEnumerable, includeInterfaces: true);
+					   method.ReturnType.InheritsFromOrEquals(pxContext.SystemTypes.IEnumerable, includeInterfaces: true);
 			}
 		}
 
 		private static bool IsValidViewDelegate(IMethodSymbol method, PXContext pxContext) =>
-			 method.ReturnType.InheritsFromOrEquals(pxContext.IEnumerable, includeInterfaces: true);
+			 method.ReturnType.InheritsFromOrEquals(pxContext.SystemTypes.IEnumerable, includeInterfaces: true);
 
 		private void ExpandAllRegionsContainingSpan(SnapshotSpan selectedSpan, IWpfTextView textView)
 		{

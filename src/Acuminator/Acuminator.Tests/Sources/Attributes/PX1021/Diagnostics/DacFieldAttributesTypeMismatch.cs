@@ -46,5 +46,12 @@ namespace PX.Objects.HackathonDemo
 		[PXUIField(DisplayName = "Total")]
 		public decimal Total { get; set; }   //not nullable field shouldn't show diagnostic
 		#endregion
+
+		#region Attributes
+		public abstract class attributes : IBqlField { }
+
+		[PXDBAttributeAttribute(null, null)]
+		public virtual string Attributes { get; set; }
+		#endregion
 	}
 }

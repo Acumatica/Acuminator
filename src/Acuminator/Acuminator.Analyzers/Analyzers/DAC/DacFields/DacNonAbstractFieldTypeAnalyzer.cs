@@ -22,12 +22,11 @@ namespace Acuminator.Analyzers
 				Descriptors.PX1024_DacNonAbstractFieldType
 			);
 
-#pragma warning disable CS4014
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSymbolAction(symbolContext => AnalyzeDacFieldTypeAsync(symbolContext, pxContext), SymbolKind.NamedType);
+			compilationStartContext.RegisterSymbolAction(async symbolContext =>
+														 await AnalyzeDacFieldTypeAsync(symbolContext, pxContext), SymbolKind.NamedType);
 		}
-#pragma warning restore CS4014
 
 		private static async Task AnalyzeDacFieldTypeAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
