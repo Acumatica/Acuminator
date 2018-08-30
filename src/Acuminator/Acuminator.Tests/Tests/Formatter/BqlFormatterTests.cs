@@ -65,7 +65,8 @@ namespace Acuminator.Tests
 		}
 
 		[Theory]
-		[EmbeddedFileDataWithParams(@"BQL\Raw\Search_Join.cs", @"BQL\Formatted\Search_Join.cs", 28, 28, 28, 35)]
+		[EmbeddedFileDataWithParams(@"BQL\Raw\Search_Join.cs", @"BQL\Formatted\Search_Join.cs",
+			new object[] { 28, 28, 28, 35 })]
 		public virtual void FormatSelection(string text, string expected,  
 			int startLine, int endLine,
 			int expectedStartLine, int expectedEndLine)

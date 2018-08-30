@@ -1,24 +1,15 @@
-﻿using Acuminator.Analyzers;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Acuminator.Tests.Helpers;
-using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Editing;
-using PX.Data;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
-using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Xunit;
-using DiagnosticVerifier = Acuminator.Tests.Verification.DiagnosticVerifier;
 
-namespace Acuminator.Tests
+namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 {
 	
 	public class AttributeInformationTests : Verification.DiagnosticVerifier
@@ -27,17 +18,17 @@ namespace Acuminator.Tests
 		 *  Tests attribute derived 
 		 * */
 		[Theory]
-		[EmbeddedFileData(@"Dac\PX1030\Unit\AttributeInformationSimpleDacTest.cs")]
+		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
 		public async void TestAttributeSimpleInformation(string source) =>
 			await TestAttributeInformationAsync(source, new List<bool> { false, true, false, false, true, false });
 
 		[Theory]
-		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateAttributeInformationTest.cs")]
+		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
 		public async void TestAggregateAttributeAsync(string source) =>
 			await TestAttributeInformationAsync(source, new List<bool> { true, true });
 
 		[Theory]
-		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateRecursiveAttributeInformationTest.cs")]
+		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
 		public async void TestAggregateRegursiveAttributeAsync(string source) =>
 			await TestAttributeInformationAsync(source, new List<bool> { true, false });
 		
@@ -58,7 +49,7 @@ namespace Acuminator.Tests
 				var attributes = typeSymbol.GetAttributes();
 				foreach (var attribute in attributes)
 				{
-					var attributeInformation = new AttributeInformation(pxContext);
+					var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
 					var defaultAttribute = pxContext.AttributeTypes.PXDefaultAttribute;
 					actual.Add(attributeInformation.AttributeDerivedFromClass(attribute.AttributeClass, defaultAttribute));
 				}
@@ -71,17 +62,17 @@ namespace Acuminator.Tests
 		 */
 
 		[Theory]
-		[EmbeddedFileData(@"Dac\PX1030\Unit\AttributeInformationSimpleDacTest.cs")]
+		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
 		public void TestAreBoundAttributes(string source) =>
 			_testIsBoundAttribute(source, new List<bool> { false, false, false ,true, false, false });
 
 		[Theory]
-		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateAttributeInformationTest.cs")]
+		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
 		public void TestAreBoundAggregateAttributes(string source) =>
 			_testIsBoundAttribute(source, new List<bool> { true, false });
 
 		[Theory]
-		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateRecursiveAttributeInformationTest.cs")]
+		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
 		public void TestAreBoundAggregateRecursiveAttribute(string source) =>
 			_testIsBoundAttribute(source, new List<bool> { false, true });
 
@@ -102,7 +93,7 @@ namespace Acuminator.Tests
 				var attributes = typeSymbol.GetAttributes();
 				foreach (var attribute in attributes)
 				{
-					var attributeInformation = new AttributeInformation(pxContext);
+					var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
 					actual.Add(attributeInformation.IsBoundAttribute(attribute.AttributeClass));
 				}
 			}
@@ -110,7 +101,7 @@ namespace Acuminator.Tests
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Dac\PX1030\Unit\AttributeInformationSimpleDacTest.cs")]
+		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
 		private void TestListOfParentsSimple(string source)
 		{
 			_testListOfParents(source, 
@@ -126,7 +117,7 @@ namespace Acuminator.Tests
 
 
 		[Theory]
-		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateAttributeInformationTest.cs")]
+		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
 		private void TestListOfParentsAggregate(string source)
 		{
 			_testListOfParents(source,
@@ -149,7 +140,7 @@ namespace Acuminator.Tests
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateRecursiveAttributeInformationTest.cs")]
+		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
 		private void TestListOfParentsAggregateRecursive(string source)
 		{
 			_testListOfParents(source, new List<List<string>> {
@@ -171,7 +162,7 @@ namespace Acuminator.Tests
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Dac\PX1030\Unit\AttributeInformationSimpleDacTest.cs")]
+		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
 		private void TestListOfParentsSimpleExpanded(string source)
 		{
 			_testListOfParents(source,
@@ -188,7 +179,7 @@ namespace Acuminator.Tests
 
 
 		[Theory]
-		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateAttributeInformationTest.cs")]
+		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
 		private void TestListOfParentsAggregateExpanded(string source)
 		{
 			_testListOfParents(source,
@@ -216,7 +207,7 @@ namespace Acuminator.Tests
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Dac\PX1030\Unit\AggregateRecursiveAttributeInformationTest.cs")]
+		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
 		private void TestListOfParentsAggregateRecursiveExpanded(string source)
 		{
 			_testListOfParents(source, new List<List<string>> {
@@ -263,7 +254,7 @@ namespace Acuminator.Tests
 
 				foreach (var attribute in attributes)
 				{
-					var attributeInformation = new AttributeInformation(pxContext);
+					var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
 					result.Add(attributeInformation.AttributesListDerivedFromClass(attribute.AttributeClass,expand).ToHashSet());
 				}
 			}
