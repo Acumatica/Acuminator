@@ -50,7 +50,7 @@ namespace Acuminator.Tests
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacDeclarationAnalyzer();
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider() => new UnderscoresInDacCodeFix();
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new UnderscoresInDacFix();
 
 		private DiagnosticResult CreatePX1026DiagnosticResult(int line, int column)
 		{

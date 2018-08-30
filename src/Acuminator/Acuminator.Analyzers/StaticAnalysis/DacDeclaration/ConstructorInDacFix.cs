@@ -19,7 +19,7 @@ namespace Acuminator.Analyzers.FixProviders
 {
     [Shared]
     [ExportCodeFixProvider(LanguageNames.CSharp)]
-    public class ConstructorInDacCodeFix : CodeFixProvider
+    public class ConstructorInDacFix : CodeFixProvider
     {
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(Descriptors.PX1028_ConstructorInDacDeclaration.Id);

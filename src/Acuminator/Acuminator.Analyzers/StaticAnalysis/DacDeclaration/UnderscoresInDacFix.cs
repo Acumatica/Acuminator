@@ -21,7 +21,7 @@ namespace Acuminator.Analyzers.FixProviders
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public class UnderscoresInDacCodeFix : CodeFixProvider
+	public class UnderscoresInDacFix : CodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1026_UnderscoresInDacDeclaration.Id);

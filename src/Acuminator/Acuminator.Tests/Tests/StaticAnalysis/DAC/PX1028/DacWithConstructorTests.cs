@@ -28,7 +28,7 @@ namespace Acuminator.Tests
             VerifyCSharpFix(actual,expected);
 
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacDeclarationAnalyzer();
-        protected override CodeFixProvider GetCSharpCodeFixProvider() => new ConstructorInDacCodeFix();
+        protected override CodeFixProvider GetCSharpCodeFixProvider() => new ConstructorInDacFix();
 
         private DiagnosticResult CreatePX1028DacConstructorDiagnosticResult(int line, int column)
         {
