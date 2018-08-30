@@ -32,13 +32,13 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.BqlParameterMismatch
 			CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 28, column: 31, expectedMethodName: "Select", expectedArgsCount: 2));
 
 		[Theory]
-		[EmbeddedFileData("FieldInstanceCall.cs", @"Dac\SOOrder.cs")]
+		[EmbeddedFileData("FieldInstanceCall.cs", "SOOrder.cs")]
 		public virtual void Test_Field_Instance_Calls(string source, string dacSource) =>
 			VerifyCSharpDiagnostic(new[] { source, dacSource },
 				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 20, column: 24, expectedMethodName: "SelectSingle", expectedArgsCount: 2));
 
 		[Theory]
-		[EmbeddedFileData("SearchCall.cs", @"Dac\SOOrder.cs")]
+		[EmbeddedFileData("SearchCall.cs", "SOOrder.cs")]
 		public virtual void Test_Search_Calls(string source, string dacSource) =>
 			VerifyCSharpDiagnostic(new[] { source, dacSource },
 				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 22, column: 24, expectedMethodName: "Search", expectedArgsCount: 1),
@@ -47,14 +47,14 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.BqlParameterMismatch
 				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 46, column: 6, expectedMethodName: "Search", expectedArgsCount: 3));
 
 		[Theory]
-		[EmbeddedFileData("PXUpdateCall.cs", @"Dac\SOOrder.cs")]
+		[EmbeddedFileData("PXUpdateCall.cs", "SOOrder.cs")]
 		public virtual void Test_PXUpdate_Calls(string source, string dacSource) =>
 			VerifyCSharpDiagnostic(new[] { source, dacSource },
 				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 43, column: 7, expectedMethodName: "Update", expectedArgsCount: 3),
 				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 54, column: 7, expectedMethodName: "Update", expectedArgsCount: 3));
 
 		[Theory]
-		[EmbeddedFileData("VariableInstanceCall.cs", @"Dac\SOOrder.cs")]
+		[EmbeddedFileData("VariableInstanceCall.cs", "SOOrder.cs")]
 		public virtual void Test_Variable_Instance_Calls(string source, string dacSource) =>
 			VerifyCSharpDiagnostic(new[] { source, dacSource },
 				CreatePX1015RequiredAndOptionalArgsDiagnosticResult(line: 24, column: 27, expectedMethodName: "Select",

@@ -31,7 +31,7 @@ namespace PX.Objects.HackathonDemo
 		[PXUIField(DisplayName = "Status")]
 		public string Status { get; set; }
 		#endregion
-		
+
 		#region OrderDate
 		public abstract class orderDate : IBqlField { }
 

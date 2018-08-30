@@ -2,18 +2,18 @@
 using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.DacDeclaration;
 using Acuminator.Tests.Helpers;
+using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
-using CodeFixVerifier = Acuminator.Tests.Verification.CodeFixVerifier;
 
-namespace Acuminator.Tests
+namespace Acuminator.Tests.Tests.StaticAnalysis.DacDeclaration
 {
-    public class DacWithConstructorTests : Verification.CodeFixVerifier
+    public class DacWithConstructorTests : CodeFixVerifier
     {
         [Theory]
-        [EmbeddedFileData(@"Dac\PX1028\Diagnostics\DacWithConstructor.cs")]
+        [EmbeddedFileData("DacWithConstructor.cs")]
         public virtual void TestDacWithConstructor(string source) =>
             VerifyCSharpDiagnostic(source,
                 CreatePX1028DacConstructorDiagnosticResult(line: 13, column: 16),
@@ -23,8 +23,8 @@ namespace Acuminator.Tests
                 CreatePX1028DacConstructorDiagnosticResult(line: 92, column: 16));
 
         [Theory]
-        [EmbeddedFileData(@"Dac\PX1028\Diagnostics\DacWithConstructor.cs",
-                          @"Dac\PX1028\CodeFixes\DacWithConstructor_Expected.cs")]
+        [EmbeddedFileData("DacWithConstructor.cs",
+                          "DacWithConstructor_Expected.cs")]
         public virtual void TestCodeFixDacWithConstructor(string actual, string expected) =>
             VerifyCSharpFix(actual,expected);
 

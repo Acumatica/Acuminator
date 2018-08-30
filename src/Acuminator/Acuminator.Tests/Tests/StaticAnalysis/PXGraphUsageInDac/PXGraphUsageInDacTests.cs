@@ -1,15 +1,14 @@
-﻿using Acuminator.Analyzers;
-using Acuminator.Analyzers.StaticAnalysis;
+﻿using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac;
 using Acuminator.Tests.Helpers;
+using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
-using DiagnosticVerifier = Acuminator.Tests.Verification.DiagnosticVerifier;
 
-namespace Acuminator.Tests
+namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphUsageInDac
 {
-    public class PXGraphUsageInDacTests : Verification.DiagnosticVerifier
+    public class PXGraphUsageInDacTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new PXGraphUsageInDacAnalyzer();
 
@@ -25,7 +24,7 @@ namespace Acuminator.Tests
         }
 
         [Theory]
-        [EmbeddedFileData(@"Dac\PX1029\Diagnostics\DacWithGraphUsage.cs")]
+        [EmbeddedFileData("DacWithGraphUsage.cs")]
         public void TestDiagnostic_Dac(string source)
         {
             VerifyCSharpDiagnostic(source,
@@ -37,7 +36,7 @@ namespace Acuminator.Tests
         }
 
         [Theory]
-        [EmbeddedFileData(@"Dac\PX1029\Diagnostics\DacExtensionWithGraphUsage.cs")]
+        [EmbeddedFileData("DacExtensionWithGraphUsage.cs")]
         public void TestDiagnostic_CacheExtension(string source)
         {
             VerifyCSharpDiagnostic(source,
@@ -49,7 +48,7 @@ namespace Acuminator.Tests
         }
 
 		[Theory]
-		[EmbeddedFileData(@"Dac\PX1029\Diagnostics\DacWithNestedTypes.cs")]
+		[EmbeddedFileData("DacWithNestedTypes.cs")]
 	    public void TestDiagnostic_DacWithNestedTypes(string source)
 	    {
 		    VerifyCSharpDiagnostic(source,

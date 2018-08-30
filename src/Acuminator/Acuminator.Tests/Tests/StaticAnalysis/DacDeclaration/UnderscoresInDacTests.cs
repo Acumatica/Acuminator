@@ -10,16 +10,16 @@ using Acuminator.Analyzers;
 using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.DacDeclaration;
 using Acuminator.Tests.Helpers;
+using Acuminator.Tests.Verification;
 using FluentAssertions;
 using Xunit;
-using CodeFixVerifier = Acuminator.Tests.Verification.CodeFixVerifier;
 
-namespace Acuminator.Tests
+namespace Acuminator.Tests.Tests.StaticAnalysis.DacDeclaration
 {
-	public class UnderscoresInDacTests : Verification.CodeFixVerifier
+	public class UnderscoresInDacTests : CodeFixVerifier
 	{
 		[Theory]
-		[EmbeddedFileData(@"Dac\PX1026\Diagnostics\DacWithUnderscores.cs")]
+		[EmbeddedFileData("DacWithUnderscores.cs")]
 		public virtual void Test_Dac_With_Underscores_In_Declaration(string source) =>
 			VerifyCSharpDiagnostic(source,
 				CreatePX1026DiagnosticResult(line: 10, column: 15),
@@ -28,7 +28,7 @@ namespace Acuminator.Tests
 				CreatePX1026DiagnosticResult(line: 44, column: 25));
 
 		[Theory]
-		[EmbeddedFileData(@"Dac\PX1026\Diagnostics\DacExtensionWithUnderscores.cs")]
+		[EmbeddedFileData("DacExtensionWithUnderscores.cs")]
 		public virtual void Test_Dac_Extension_With_Underscores_In_Declaration(string source) =>
 			VerifyCSharpDiagnostic(source,
 				CreatePX1026DiagnosticResult(line: 10, column: 15),
@@ -38,14 +38,14 @@ namespace Acuminator.Tests
 				CreatePX1026DiagnosticResult(line: 24, column: 18));
 
 		[Theory]
-		[EmbeddedFileData(@"Dac\PX1026\Diagnostics\DacWithUnderscores.cs",
-						  @"Dac\PX1026\CodeFixes\DacWithUnderscores_Expected.cs")]
+		[EmbeddedFileData("DacWithUnderscores.cs",
+						  "DacWithUnderscores_Expected.cs")]
 		public virtual void Test__Fix_For_Dac_With_Underscores_In_Declaration(string actual, string expected) =>
 			VerifyCSharpFix(actual, expected);
 
 		[Theory]
-		[EmbeddedFileData(@"Dac\PX1026\Diagnostics\DacExtensionWithUnderscores.cs",
-						  @"Dac\PX1026\CodeFixes\DacExtensionWithUnderscores_Expected.cs")]
+		[EmbeddedFileData("DacExtensionWithUnderscores.cs",
+						  "DacExtensionWithUnderscores_Expected.cs")]
 		public virtual void Test__Fix_For_Dac_Extension_With_Underscores_In_Declaration(string actual, string expected) =>
 			VerifyCSharpFix(actual, expected);
 

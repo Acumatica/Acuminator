@@ -1,28 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType;
+using Acuminator.Tests.Helpers;
+using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
 
-using Acuminator.Analyzers;
-using Acuminator.Analyzers.StaticAnalysis;
-using Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType;
-using Acuminator.Tests.Helpers;
-using CodeFixVerifier = Acuminator.Tests.Verification.CodeFixVerifier;
 
-
-namespace Acuminator.Tests
+namespace Acuminator.Tests.Tests.StaticAnalysis.DacNonAbstractFieldType
 {
-	public class DacFieldNotAbstractCodeFixTests : Verification.CodeFixVerifier
+	public class DacFieldNotAbstractCodeFixTests : CodeFixVerifier
 	{
 		[Theory]
-		[EmbeddedFileData(@"Dac\PX1024\Diagnostics\SOOrderNotAbstractField.cs",
-						  @"Dac\PX1024\CodeFixes\SOOrderNotAbstractFieldExpected.cs")]
+		[EmbeddedFileData(@"SOOrderNotAbstractField.cs",
+						  @"SOOrderNotAbstractField_Expected.cs")]
 		public virtual void Test_Fix_For_Dac_With_Not_Abstract_Fields(string actual, string expected) =>
 			VerifyCSharpFix(actual, expected);
 

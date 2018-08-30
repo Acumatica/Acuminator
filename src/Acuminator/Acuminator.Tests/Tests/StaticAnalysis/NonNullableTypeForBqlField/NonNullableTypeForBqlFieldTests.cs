@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Acuminator.Analyzers;
-using Acuminator.Analyzers.StaticAnalysis;
+﻿using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.NonNullableTypeForBqlField;
 using Acuminator.Tests.Helpers;
+using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
-using CodeFixVerifier = Acuminator.Tests.Verification.CodeFixVerifier;
 
-namespace Acuminator.Tests
+namespace Acuminator.Tests.Tests.StaticAnalysis.NonNullableTypeForBqlField
 {
-    public class NonNullableTypeForBqlFieldTests : Verification.CodeFixVerifier
+    public class NonNullableTypeForBqlFieldTests : CodeFixVerifier
     {
 	    private DiagnosticResult CreatePX1014DiagnosticResult(int line, int column)
 	    {
@@ -34,29 +28,29 @@ namespace Acuminator.Tests
 	    }
 
 	    [Theory]
-	    [EmbeddedFileData(@"Dac\PX1014\Diagnostics\NonNullableTypeForBqlField.cs")] 
+	    [EmbeddedFileData("NonNullableTypeForBqlField.cs")] 
 		public void TestDiagnostic(string actual)
 	    {
 		    VerifyCSharpDiagnostic(actual, CreatePX1014DiagnosticResult(16, 14));
 	    }
 
 		[Theory]
-        [EmbeddedFileData(@"Dac\PX1014\CodeFixes\NonNullableTypeForBqlField_Expected.cs")]
+        [EmbeddedFileData("NonNullableTypeForBqlField_Expected.cs")]
         public void TestDiagnostic_ShouldNotShowDiagnostic(string actual)
         {
             VerifyCSharpDiagnostic(actual);
         }
 
 	    [Theory]
-	    [EmbeddedFileData(@"Dac\PX1014\Diagnostics\NonNullableTypeForBqlField_Valid.cs")]
+	    [EmbeddedFileData("NonNullableTypeForBqlField_Valid.cs")]
 	    public void TestDiagnostic_ShouldNotShowDiagnostic2(string actual)
 	    {
 		    VerifyCSharpDiagnostic(actual);
 	    }
 
 		[Theory]
-	    [EmbeddedFileData(@"Dac\PX1014\Diagnostics\NonNullableTypeForBqlField.cs",
-						  @"Dac\PX1014\CodeFixes\NonNullableTypeForBqlField_Expected.cs")]
+	    [EmbeddedFileData("NonNullableTypeForBqlField.cs",
+						  "NonNullableTypeForBqlField_Expected.cs")]
 	    public void TestCodeFix(string actual, string expected)
 	    {
 		    VerifyCSharpFix(actual, expected);

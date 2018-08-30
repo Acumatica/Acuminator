@@ -1,20 +1,14 @@
-﻿using Microsoft.CodeAnalysis.Diagnostics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Acuminator.Analyzers;
-using Acuminator.Analyzers.StaticAnalysis;
+﻿using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac;
-using Microsoft.CodeAnalysis;
-using Xunit;
 using Acuminator.Tests.Helpers;
-using DiagnosticVerifier = Acuminator.Tests.Verification.DiagnosticVerifier;
+using Acuminator.Tests.Verification;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Xunit;
 
-namespace Acuminator.Tests
+namespace Acuminator.Tests.Tests.StaticAnalysis.MethodsUsageInDac
 {
-    public class MethodsUsageInDacTests : Verification.DiagnosticVerifier
+    public class MethodsUsageInDacTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new MethodsUsageInDacAnalyzer();
 
@@ -41,7 +35,7 @@ namespace Acuminator.Tests
         }
 
         [Theory]
-        [EmbeddedFileData(@"Dac\PX1031 and PX1032\Diagnostics\DacWithMethodsUsage.cs")]
+        [EmbeddedFileData("DacWithMethodsUsage.cs")]
         public void TestDiagnostic_Dac(string source)
         {
             VerifyCSharpDiagnostic(source,
@@ -52,7 +46,7 @@ namespace Acuminator.Tests
         }
 
         [Theory]
-        [EmbeddedFileData(@"Dac\PX1031 and PX1032\Diagnostics\DacExtensionWithMethodsUsage.cs")]
+        [EmbeddedFileData("DacExtensionWithMethodsUsage.cs")]
         public void TestDiagnostic_CacheExtension(string source)
         {
             VerifyCSharpDiagnostic(source,
@@ -63,7 +57,7 @@ namespace Acuminator.Tests
         }
 
 	    [Theory]
-	    [EmbeddedFileData(@"Dac\PX1031 and PX1032\Diagnostics\DacWithNestedTypes.cs")]
+	    [EmbeddedFileData("DacWithNestedTypes.cs")]
 	    public void TestDiagnostic_DacWithNestedTypes_ShouldNotShowDiagnostic(string source)
 	    {
 		    VerifyCSharpDiagnostic(source);
