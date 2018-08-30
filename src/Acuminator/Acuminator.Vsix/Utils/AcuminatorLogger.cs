@@ -2,6 +2,7 @@
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Acuminator.Analyzers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio;
@@ -22,9 +23,9 @@ namespace Acuminator.Vsix.Logger
 	{
 		public const string PackageName = "Acuminator";
 
-		private const string AnalyzersDll = "Acuminator.Analyzers";
-		private const string UtilitiesDll = "Acuminator.Utilities";
-		private const string VsixDll = "Acuminator.Vsix";
+		private readonly string AnalyzersDll = typeof(PXDiagnosticAnalyzer).Assembly.GetName().Name;
+		private readonly string UtilitiesDll = typeof(CodeAnalysisSettings).Assembly.GetName().Name;
+		private readonly string VsixDll = typeof(AcuminatorLogger).Assembly.GetName().Name;
 
 		private readonly AcuminatorVSPackage _package;
 
