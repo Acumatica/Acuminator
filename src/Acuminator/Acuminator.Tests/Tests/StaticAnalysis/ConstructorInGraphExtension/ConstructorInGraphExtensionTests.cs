@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Acuminator.Analyzers;
-using Acuminator.Analyzers.StaticAnalysis;
+﻿using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.ConstructorInGraphExtension;
 using Acuminator.Tests.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
-using CodeFixVerifier = Acuminator.Tests.Verification.CodeFixVerifier;
 
-namespace Acuminator.Tests
+namespace Acuminator.Tests.Tests.StaticAnalysis.ConstructorInGraphExtension
 {
 	public class ConstructorInGraphExtensionTests : Verification.CodeFixVerifier
 	{
@@ -34,44 +27,44 @@ namespace Acuminator.Tests
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"PXGraph\PX1040\Diagnostics\ConstructorInGraphExtension.cs")]
+		[EmbeddedFileData("ConstructorInGraphExtension.cs")]
 		public void TestDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, CreatePX1040DiagnosticResult(18, 10));
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"PXGraph\PX1040\Diagnostics\ConstructorInGraphExtensionWithInitialize.cs")]
+		[EmbeddedFileData("ConstructorInGraphExtensionWithInitialize.cs")]
 		public void TestDiagnostic_WithInitialize(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, CreatePX1040DiagnosticResult(18, 10));
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"PXGraph\PX1040\CodeFixes\ConstructorInGraphExtension_Expected.cs")]
+		[EmbeddedFileData("ConstructorInGraphExtension_Expected.cs")]
 		public void TestDiagnostic_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"PXGraph\PX1040\CodeFixes\ConstructorInGraphExtensionWithInitialize_Expected.cs")]
+		[EmbeddedFileData("ConstructorInGraphExtensionWithInitialize_Expected.cs")]
 		public void TestDiagnostic_WithInitialize_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"PXGraph\PX1040\Diagnostics\ConstructorInGraphExtension.cs",
-			@"PXGraph\PX1040\CodeFixes\ConstructorInGraphExtension_Expected.cs")]
+		[EmbeddedFileData("ConstructorInGraphExtension.cs",
+			"ConstructorInGraphExtension_Expected.cs")]
 		public void TestCodeFix(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"PXGraph\PX1040\Diagnostics\ConstructorInGraphExtensionWithInitialize.cs",
-			@"PXGraph\PX1040\CodeFixes\ConstructorInGraphExtensionWithInitialize_Expected.cs")]
+		[EmbeddedFileData("ConstructorInGraphExtensionWithInitialize.cs",
+			"ConstructorInGraphExtensionWithInitialize_Expected.cs")]
 		public void TestCodeFix_WithInitialize(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);

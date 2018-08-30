@@ -50,52 +50,52 @@ namespace Acuminator.Tests
 	    }
 
 		[Theory]
-        [EmbeddedFileData(@"PXGraph\PX1001 and PX1003\Diagnostics\PXGraphCreateInstanceMethod.cs")] 
+        [EmbeddedFileData("PXGraphCreateInstanceMethod.cs")] 
 		public void TestDiagnostic_Method(string actual)
         {
             VerifyCSharpDiagnostic(actual, CreatePX1001DiagnosticResult(14, 25));
         }
 
         [Theory]
-        [EmbeddedFileData(@"PXGraph\PX1001 and PX1003\Diagnostics\PXGraphCreateInstanceField.cs")]
+        [EmbeddedFileData("PXGraphCreateInstanceField.cs")]
         public void TestDiagnostic_Field(string actual)
         {
             VerifyCSharpDiagnostic(actual, CreatePX1001DiagnosticResult(12, 43));
         }
 
 	    [Theory]
-	    [EmbeddedFileData(@"PXGraph\PX1001 and PX1003\Diagnostics\PXGraphCreateInstanceProperty.cs")]
+	    [EmbeddedFileData("PXGraphCreateInstanceProperty.cs")]
 	    public void TestDiagnostic_Property(string actual)
 	    {
 		    VerifyCSharpDiagnostic(actual, CreatePX1001DiagnosticResult(14, 17));
 	    }
 
 		[Theory]
-		[EmbeddedFileData(@"PXGraph\PX1001 and PX1003\Diagnostics\NonSpecificPXGraphCreateInstanceMethod.cs")]
+		[EmbeddedFileData("NonSpecificPXGraphCreateInstanceMethod.cs")]
 	    public void TestDiagnosticNonSpecificPXGraph_Method(string actual)
 	    {
 			VerifyCSharpDiagnostic(actual, CreatePX1003DiagnosticResult(14, 16));
 		}
 
 	    [Theory]
-	    [EmbeddedFileData(@"PXGraph\PX1001 and PX1003\Diagnostics\PXGraphCreateInstanceMethod.cs",
-						  @"PXGraph\PX1001 and PX1003\CodeFixes\PXGraphCreateInstanceMethod_Expected.cs")]
+	    [EmbeddedFileData("PXGraphCreateInstanceMethod.cs",
+						  "PXGraphCreateInstanceMethod_Expected.cs")]
 	    public void TestCodeFix_Method(string actual, string expected)
 	    {
 		    VerifyCSharpFix(actual, expected);
 	    }
 
 	    [Theory]
-	    [EmbeddedFileData(@"PXGraph\PX1001 and PX1003\Diagnostics\PXGraphCreateInstanceField.cs",
-						  @"PXGraph\PX1001 and PX1003\CodeFixes\PXGraphCreateInstanceField_Expected.cs")]
+	    [EmbeddedFileData("PXGraphCreateInstanceField.cs",
+						  "PXGraphCreateInstanceField_Expected.cs")]
 	    public void TestCodeFix_Field(string actual, string expected)
 	    {
 		    VerifyCSharpFix(actual, expected);
 	    }
 
 	    [Theory]
-	    [EmbeddedFileData(@"PXGraph\PX1001 and PX1003\Diagnostics\PXGraphCreateInstanceProperty.cs",
-						  @"PXGraph\PX1001 and PX1003\CodeFixes\PXGraphCreateInstanceProperty_Expected.cs")]
+	    [EmbeddedFileData("PXGraphCreateInstanceProperty.cs",
+						  "PXGraphCreateInstanceProperty_Expected.cs")]
 	    public void TestCodeFix_Property(string actual, string expected)
 	    {
 		    VerifyCSharpFix(actual, expected);
