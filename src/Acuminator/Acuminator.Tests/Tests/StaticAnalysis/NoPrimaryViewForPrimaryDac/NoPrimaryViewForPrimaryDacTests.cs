@@ -1,25 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.Diagnostics;
-using Xunit;
-using Acuminator.Analyzers;
-using Acuminator.Analyzers.StaticAnalysis;
+﻿using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac;
 using Acuminator.Tests.Helpers;
-using DiagnosticVerifier = Acuminator.Tests.Verification.DiagnosticVerifier;
+using Acuminator.Tests.Verification;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Xunit;
 
-namespace Acuminator.Tests
+namespace Acuminator.Tests.Tests.StaticAnalysis.NoPrimaryViewForPrimaryDac
 {
-	public class GraphWithPrimaryDacWithoutViewTests : Verification.DiagnosticVerifier
+	public class NoPrimaryViewForPrimaryDacTests : DiagnosticVerifier
 	{
 		[Theory]
-		[EmbeddedFileData(@"View\PX1018\Diagnostics\GraphWithPrimaryDacWithoutView.cs")]
+		[EmbeddedFileData("NoPrimaryViewForPrimaryDac.cs")]
 		public virtual void Test_Graph_With_Primary_Dac_Without_Primary_View(string source) =>
 			VerifyCSharpDiagnostic(source,
 				CreatePX1018DiagnosticResult(line: 17, column: 56),

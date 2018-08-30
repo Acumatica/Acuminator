@@ -1,24 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Acuminator.Analyzers;
-using Acuminator.Analyzers.StaticAnalysis;
+﻿using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging;
 using Acuminator.Tests.Helpers;
+using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
-using Microsoft.CodeAnalysis.CodeFixes;
-using CodeFixVerifier = Acuminator.Tests.Verification.CodeFixVerifier;
 
-namespace Acuminator.Tests
+namespace Acuminator.Tests.Tests.StaticAnalysis.StartRowResetForPaging
 {
-	public class StartRowResetForPagingTests : Verification.CodeFixVerifier
+	public class StartRowResetForPagingTests : CodeFixVerifier
 	{
 		[Theory]
-		[EmbeddedFileData(@"View\Delegate\PX1010\Diagnostics\StartRowResetForPaging.cs")]
+		[EmbeddedFileData("StartRowResetForPaging.cs")]
 		public void Test_StartRow_Reset_Diagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, new[]
@@ -30,8 +24,8 @@ namespace Acuminator.Tests
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"View\Delegate\PX1010\Diagnostics\StartRowResetForPaging.cs",
-						  @"View\Delegate\PX1010\CodeFixes\StartRowResetForPaging_Expected.cs")]
+		[EmbeddedFileData("StartRowResetForPaging.cs",
+						  "StartRowResetForPaging_Expected.cs")]
 		public void Test_StartRow_Reset_CodeFix(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
