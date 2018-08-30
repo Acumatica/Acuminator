@@ -248,7 +248,7 @@ namespace Acuminator.Utilities
 		public static bool IsNullable(this INamedTypeSymbol typeSymbol, PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
-			return typeSymbol?.OriginalDefinition?.Equals(pxContext.Nullable) ?? false;
+			return typeSymbol?.OriginalDefinition?.Equals(pxContext.SystemTypes.Nullable) ?? false;
 		}
 		
 		/// <summary>

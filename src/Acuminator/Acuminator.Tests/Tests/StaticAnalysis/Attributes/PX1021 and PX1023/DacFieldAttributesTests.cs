@@ -31,7 +31,10 @@ namespace Acuminator.Tests
 				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 26, column: 10, extraLocationLine: 24, extraLocationColumn: 4),
 
 				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 34, column: 4, extraLocationLine: 35, extraLocationColumn: 18),
-				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 35, column: 18, extraLocationLine: 34, extraLocationColumn: 4));
+				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 35, column: 18, extraLocationLine: 34, extraLocationColumn: 4),
+
+				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 53, column: 4, extraLocationLine: 54, extraLocationColumn: 18),
+				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 54, column: 18, extraLocationLine: 53, extraLocationColumn: 4));
 
 		[Theory]
 		[EmbeddedFileData(@"Attributes\PX1021\Diagnostics\DacFieldTypeMismatchPXDBScalarAttr.cs")]
