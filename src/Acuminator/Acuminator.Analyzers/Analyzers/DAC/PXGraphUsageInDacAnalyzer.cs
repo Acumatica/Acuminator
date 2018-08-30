@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
+using System.Linq;
 
 namespace Acuminator.Analyzers
 {
@@ -38,6 +39,7 @@ namespace Acuminator.Analyzers
         {
             private readonly SyntaxNodeAnalysisContext _syntaxContext;
             private readonly PXContext _pxContext;
+            private bool _inDac;
 
             public GraphUsageInDacWalker(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
             {
@@ -50,15 +52,19 @@ namespace Acuminator.Analyzers
 		        ThrowIfCancellationRequested();
 
 		        INamedTypeSymbol symbol = _syntaxContext.SemanticModel.GetDeclaredSymbol(node, _syntaxContext.CancellationToken);
-		        if (symbol != null && symbol.IsDacOrExtension(_pxContext))
+		        if (symbol != null && symbol.IsDacOrExtension(_pxContext) && !_inDac)
 		        {
-					base.VisitClassDeclaration(node);
+                    _inDac = true;
+                    base.VisitClassDeclaration(node);
+                    _inDac = false;
 				}
 	        }
 
 	        public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
             {
-                if (node.IsStatic() || _syntaxContext.CancellationToken.IsCancellationRequested)
+                ThrowIfCancellationRequested();
+
+                if (node.IsStatic())
                     return;
 
                 base.VisitMethodDeclaration(node);
@@ -86,6 +92,8 @@ namespace Acuminator.Analyzers
                     return;
 
                 _syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1029_PXGraphUsageInDac, node.GetLocation()));
+
+                base.VisitIdentifierName(node);
             }
 
 	        private void ThrowIfCancellationRequested()
