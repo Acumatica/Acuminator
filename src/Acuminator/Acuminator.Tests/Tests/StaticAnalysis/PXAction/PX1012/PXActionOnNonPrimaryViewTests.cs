@@ -52,7 +52,7 @@ namespace Acuminator.Tests
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new PXActionOnNonPrimaryViewAnalyzer();
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider() => new PXActionOnNonPrimaryViewCodeFix();
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new PXActionOnNonPrimaryViewFix();
 
 		private DiagnosticResult CreatePX1012ActionOnNonPrimaryViewDiagnosticResult(int line, int column, string actionName, 
 																					string mainDacName)

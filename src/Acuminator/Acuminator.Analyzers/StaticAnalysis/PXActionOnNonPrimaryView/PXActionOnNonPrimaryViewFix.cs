@@ -20,7 +20,7 @@ namespace Acuminator.Analyzers.FixProviders
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public class PXActionOnNonPrimaryViewCodeFix : CodeFixProvider
+	public class PXActionOnNonPrimaryViewFix : CodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1012_PXActionOnNonPrimaryView.Id);

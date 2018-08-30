@@ -20,7 +20,7 @@ using Acuminator.Utilities.Roslyn;
 namespace Acuminator.Analyzers.FixProviders
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class CorrectPXActionSignatureFix : CodeFixProvider
+	public class InvalidPXActionSignatureFix : CodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1000_InvalidPXActionHandlerSignature.Id);

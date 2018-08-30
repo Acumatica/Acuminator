@@ -49,7 +49,7 @@ namespace Acuminator.Tests
 			VerifyCSharpDiagnostic(actual);
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider() => new CorrectPXActionSignatureFix();	
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new InvalidPXActionSignatureFix();	
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new InvalidPXActionSignatureAnalyzer();
 
