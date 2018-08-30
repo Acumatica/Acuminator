@@ -84,29 +84,32 @@ namespace Acuminator.Analyzers
             Rule("PX1021", nameof(Resources.PX1021Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
 		internal static DiagnosticDescriptor PX1023_DacPropertyMultipleFieldAttributes { get; } =
-		   Rule("PX1023", nameof(Resources.PX1023Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+			Rule("PX1023", nameof(Resources.PX1023Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
 		internal static DiagnosticDescriptor PX1024_DacNonAbstractFieldType { get; } =
-		   Rule("PX1024", nameof(Resources.PX1024Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+			Rule("PX1024", nameof(Resources.PX1024Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
 		internal static DiagnosticDescriptor PX1026_UnderscoresInDacDeclaration { get; } =
-		   Rule("PX1026", nameof(Resources.PX1026Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+			Rule("PX1026", nameof(Resources.PX1026Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
-        internal static DiagnosticDescriptor PX1031_DacCannotContainInstanceMethods { get; } =
-            Rule("PX1031", nameof(Resources.PX1031Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
-        
-        internal static DiagnosticDescriptor PX1027_ForbiddenFieldsInDacDeclaration { get; } =
-           Rule("PX1027", nameof(Resources.PX1027Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+		internal static DiagnosticDescriptor PX1027_ForbiddenFieldsInDacDeclaration { get; } =
+			Rule("PX1027", nameof(Resources.PX1027Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
-        internal static DiagnosticDescriptor PX1032_DacPropertyCannotContainMethodInvocations { get; } =
-            Rule("PX1032", nameof(Resources.PX1032Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
-            
-        internal static DiagnosticDescriptor PX1028_ConstructorInDacDeclaration { get; } =
-           Rule("PX1028", nameof(Resources.PX1028Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+		internal static DiagnosticDescriptor PX1028_ConstructorInDacDeclaration { get; } =
+			Rule("PX1028", nameof(Resources.PX1028Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
-        internal static DiagnosticDescriptor PX1029_PXGraphUsageInDac { get; } =
-            Rule("PX1029", nameof(Resources.PX1029Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
-            
+		internal static DiagnosticDescriptor PX1029_PXGraphUsageInDac { get; } =
+			Rule("PX1029", nameof(Resources.PX1029Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+		internal static DiagnosticDescriptor PX1030_DefaultAttibuteToExisitingRecords { get; } =
+			Rule("PX1030", nameof(Resources.PX1030Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+
+		internal static DiagnosticDescriptor PX1031_DacCannotContainInstanceMethods { get; } =
+			Rule("PX1031", nameof(Resources.PX1031Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+		internal static DiagnosticDescriptor PX1032_DacPropertyCannotContainMethodInvocations { get; } =
+			Rule("PX1032", nameof(Resources.PX1032Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
 		internal static DiagnosticDescriptor PX1040_ConstructorInGraphExtension { get; } =
 			Rule("PX1040", nameof(Resources.PX1040Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 

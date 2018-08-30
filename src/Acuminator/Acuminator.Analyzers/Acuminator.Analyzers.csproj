@@ -60,6 +60,7 @@
     <Compile Include="Analyzers\DAC\DacDeclarationAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\PXGraphUsageInDacAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\MethodsUsageInDacAnalyzer.cs" />
+    <Compile Include="Analyzers\DAC\DacPropertyAttributes\DacExtensionDefaultAttributeAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacPropertyAttributes\NonNullableTypeForBqlFieldAnalyzer.cs" />
     <Compile Include="Analyzers\DAC\DacPropertyAttributes\DacPropertyAttributesAnalyzer.cs" />
     <Compile Include="Analyzers\PXAction\PX1012\PXActionOnNonPrimaryViewAnalyzer.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="FixProviders\DAC\ConstructorInDacCodeFix.cs" />
     <Compile Include="FixProviders\Event\ConnectionScopeInRowSelectingFix.cs" />
     <Compile Include="FixProviders\PXGraph\ConstructorInGraphExtensionCodeFix.cs" />
+    <Compile Include="FixProviders\DAC\DacPropertyAttributes\DacExtensionDefaultAttributeFix.cs" />
     <Compile Include="FixProviders\DAC\UnderscoresInDacCodeFix.cs" />
     <Compile Include="FixProviders\DAC\DacFields\DacNonAbstractFieldTypeFix.cs" />
     <Compile Include="FixProviders\DAC\DacPropertyAttributes\IncompatibleDacPropertyAndFieldAttributeFix.cs" />

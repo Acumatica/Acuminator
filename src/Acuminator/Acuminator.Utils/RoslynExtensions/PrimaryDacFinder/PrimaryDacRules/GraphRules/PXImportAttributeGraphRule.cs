@@ -45,7 +45,7 @@ namespace Acuminator.Utilities.PrimaryDAC
 				if (attributes.Length == 0)
 					continue;
 
-				var importAttributeType = dacFinder.PxContext.PXImportAttribute;
+				var importAttributeType = dacFinder.PxContext.AttributeTypes.PXImportAttribute;
 				var importAttributeData = attributes.FirstOrDefault(a => a.AttributeClass.Equals(importAttributeType));
 
 				if (importAttributeData == null)

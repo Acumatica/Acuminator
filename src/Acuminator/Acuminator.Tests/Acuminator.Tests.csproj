@@ -231,6 +231,16 @@
     <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingExternalMethod.cs" />
     <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingExternalMethod_Expected.cs" />
     <EmbeddedResource Include="Sources\Common\NestedInvocationWalker\SanityCheck.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1030\Diagnostics\DacExtensionWithBoundFields.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1030\CodeFixes\DacExtensionWithBoundFields_Expected.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1030\CodeFixes\DacExtensionWithUnboundFields_Expected.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1030\Diagnostics\DacExtensionWithUnboundFields.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1030\Diagnostics\DacWithBoundAndUnboundFields.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1030\Unit\AggregateAttributeInformationTest.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1030\Unit\AttributeInformationSimpleDacTest.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1030\Unit\AggregateRecursiveAttributeInformationTest.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1030\Diagnostics\AggregateAttributeFields.cs" />
+    <EmbeddedResource Include="Sources\Dac\PX1030\CodeFixes\AggregateAttributeFields_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTypeMismatchCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\MultipleFieldAttributesCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Attributes\PX1021 and PX1023\DacFieldAttributesTests.cs" />
@@ -247,6 +257,7 @@
     <Compile Include="Tests\StaticAnalysis\DAC\PX1031 and PX1032\MethodsUsageInDacTests.cs" />
     <Compile Include="Tests\StaticAnalysis\PXGraph\PX1040\ConstructorInGraphExtensionTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Event\PX1042\ConnectionScopeInRowSelectingTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\DAC\PX1030\DefaultAttributeDacTests.cs" />
     <Compile Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtensionTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Localization\LocalizationCorrectTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Localization\PX1050\LocalizationHardcodeInExceptionTests.cs" />
@@ -319,6 +330,7 @@
     <EmbeddedResource Include="Sources\View\Delegate\PX1005\Diagnostics\TypoInViewDelegateName_Good_Override.cs" />
     <EmbeddedResource Include="Sources\View\Delegate\PX1005\Diagnostics\TypoInViewDelegateName_Bad.cs" />
     <Compile Include="Tests\StaticAnalysis\View\PX1018\GraphWithPrimaryDacWithoutViewTests.cs" />
+    <Compile Include="Tests\Unit\AttributeInformationTests.cs" />
     <Compile Include="Verifiers\CodeFixVerifier.cs" />
     <Compile Include="Verifiers\DiagnosticVerifier.cs" />
     <Compile Include="Helpers\CodeFixVerifier.Helper.cs" />
@@ -333,7 +345,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Acuminator.Utils\Acuminator.Utils.csproj">
-      <Project>{b902103c-831b-4bbf-a88b-3dae6f601cf0}</Project>
+      <Project>{B902103C-831B-4BBF-A88B-3DAE6F601CF0}</Project>
       <Name>Acuminator.Utils</Name>
     </ProjectReference>
     <ProjectReference Include="..\Acuminator.Vsix\Acuminator.Vsix.csproj">
