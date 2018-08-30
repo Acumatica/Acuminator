@@ -79,10 +79,10 @@
     <Compile Include="FixProviders\DAC\DacPropertyAttributes\IncompatibleDacPropertyAndFieldAttributeFix.cs" />
     <Compile Include="FixProviders\DAC\DacPropertyAttributes\MultipleDacFieldAttributesFix.cs" />
     <Compile Include="FixProviders\DAC\DacPropertyAttributes\NonNullableTypeForBqlFieldFix.cs" />
-    <Compile Include="Analyzers\InheritanceFromPXCacheExtensionAnalyzer.cs" />
-    <Compile Include="Analyzers\LongOperationDelegateClosuresAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\InheritanceFromPXCacheExtension\InheritanceFromPXCacheExtensionAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\LongOperationDelegateClosures\LongOperationDelegateClosuresAnalyzer.cs" />
     <Compile Include="Analyzers\BQL\BqlParameterMismatch\BqlParameterMismatchAnalyzer.cs" />
-    <Compile Include="Analyzers\MissingTypeListAttributeAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\MissingTypeListAttribute\MissingTypeListAttributeAnalyzer.cs" />
     <Compile Include="Analyzers\View\Delegate\TypoInViewDelegateNameAnalyzer.cs" />
     <Compile Include="Analyzers\PXGraph\PXGraphCreateInstanceAnalyzer.cs" />
     <Compile Include="Analyzers\View\ViewDeclarationOrderAnalyzer.cs" />
@@ -90,9 +90,9 @@
     <Compile Include="FixProviders\PXAction\PX1000\CorrectPXActionSignatureFix.cs" />
     <Compile Include="Descriptors.cs" />
     <Compile Include="Analyzers\PXAction\PX1000\InvalidPXActionSignatureAnalyzer.cs" />
-    <Compile Include="FixProviders\InheritanceFromPXCacheExtensionMakeSealedFix.cs" />
-    <Compile Include="FixProviders\InheritanceFromPXCacheExtensionFix.cs" />
-    <Compile Include="FixProviders\MissingTypeListAttributeFix.cs" />
+    <Compile Include="StaticAnalysis\InheritanceFromPXCacheExtension\InheritanceFromPXCacheExtensionMakeSealedFix.cs" />
+    <Compile Include="StaticAnalysis\InheritanceFromPXCacheExtension\InheritanceFromPXCacheExtensionFix.cs" />
+    <Compile Include="StaticAnalysis\MissingTypeListAttribute\MissingTypeListAttributeFix.cs" />
     <Compile Include="FixProviders\PXAction\PX1012\PXActionOnNonPrimaryViewCodeFix.cs" />
     <Compile Include="FixProviders\View\Delegate\StartRowResetForPagingFix.cs" />
     <Compile Include="FixProviders\View\Delegate\TypoInViewDelegateNameFix.cs" />

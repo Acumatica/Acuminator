@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Acuminator.Analyzers;
-using Acuminator.Analyzers.Analyzers;
 using Acuminator.Analyzers.FixProviders;
 using Acuminator.Tests.Helpers;
 using Microsoft.CodeAnalysis;
