@@ -55,8 +55,10 @@ namespace Acuminator.Analyzers
 		        if (symbol != null && symbol.IsDacOrExtension(_pxContext) && !_inDac)
 		        {
                     _inDac = true;
+
                     ClassDeclarationSyntax nodeWithoutAttributes = node.WithAttributeLists(new SyntaxList<AttributeListSyntax>());
                     base.VisitClassDeclaration(nodeWithoutAttributes);
+
                     _inDac = false;
 				}
 	        }
