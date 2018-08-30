@@ -1,25 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView;
+using Acuminator.Tests.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
-using Acuminator.Analyzers;
-using Acuminator.Analyzers.StaticAnalysis;
-using Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView;
-using Acuminator.Tests.Helpers;
-using CodeFixVerifier = Acuminator.Tests.Verification.CodeFixVerifier;
 
-namespace Acuminator.Tests
+namespace Acuminator.Tests.Tests.StaticAnalysis.PXActionOnNonPrimaryView
 {
 	public class PXActionOnNonPrimaryViewTests : Verification.CodeFixVerifier
 	{
 		[Theory]
-		[EmbeddedFileData(@"PXAction\PX1012\Diagnostics\GraphWithNonPrimaryDacView.cs")] 
+		[EmbeddedFileData("GraphWithNonPrimaryDacView.cs")] 
 		public virtual void Test_Diagnostic_For_Graph_And_Graph_Extension(string source) =>
 			VerifyCSharpDiagnostic(source,
 				CreatePX1012ActionOnNonPrimaryViewDiagnosticResult(line: 23, column: 10, actionName: "Release1", mainDacName: "SOOrder"),
@@ -30,22 +22,22 @@ namespace Acuminator.Tests
 				CreatePX1012ActionOnNonPrimaryViewDiagnosticResult(line: 49, column: 10, actionName: "Release2", mainDacName: "SOOrder"));
 
 		[Theory]
-		[EmbeddedFileData(@"PXAction\PX1012\Diagnostics\DerivedGraphWithBaseGraphPrimaryDac.cs")]
+		[EmbeddedFileData("DerivedGraphWithBaseGraphPrimaryDac.cs")]
 		public virtual void Test_Diagnostic_For_Derived_Graph(string source) =>
 			VerifyCSharpDiagnostic(source,
 				CreatePX1012ActionOnNonPrimaryViewDiagnosticResult(line: 26, column: 10, actionName: "Release1", mainDacName: "SOOrder"));
 
 		[Theory]
-		[EmbeddedFileData(@"PXAction\PX1012\Diagnostics\GraphWithNonPrimaryDacView.cs",
-						  @"PXAction\PX1012\CodeFixes\GraphWithNonPrimaryDacViewExpected.cs")]
+		[EmbeddedFileData("GraphWithNonPrimaryDacView.cs",
+						  "GraphWithNonPrimaryDacView_Expected.cs")]
 		public void Test_Code_Fix_For_Graph_And_Graph_Extension(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"PXAction\PX1012\Diagnostics\DerivedGraphWithBaseGraphPrimaryDac.cs",
-						  @"PXAction\PX1012\CodeFixes\DerivedGraphWithBaseGraphPrimaryDacExpected.cs")]
+		[EmbeddedFileData("DerivedGraphWithBaseGraphPrimaryDac.cs",
+						  "DerivedGraphWithBaseGraphPrimaryDac_Expected.cs")]
 		public void Test_Code_Fix_For_Derived_Graph(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);

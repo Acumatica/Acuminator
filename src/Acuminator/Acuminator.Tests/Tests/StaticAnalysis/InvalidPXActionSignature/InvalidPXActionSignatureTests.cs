@@ -1,50 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Acuminator.Analyzers;
-using Acuminator.Analyzers.StaticAnalysis;
+﻿using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature;
 using Acuminator.Tests.Helpers;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
-using CodeFixVerifier = Acuminator.Tests.Verification.CodeFixVerifier;
 
-namespace Acuminator.Tests
+namespace Acuminator.Tests.Tests.StaticAnalysis.InvalidPXActionSignature
 {
 	public class InvalidPXActionSignatureTests : Verification.CodeFixVerifier
 	{
 		[Theory]
-		[EmbeddedFileData(@"PXAction\PX1000\Diagnostics\InvalidPXActionSignature.cs")]
+		[EmbeddedFileData("InvalidPXActionSignature.cs")]
 		public void Test_Invalid_Action_Signature_In_PXGraph(string actual) =>
 			VerifyCSharpDiagnostic(actual, CreatePX100DiagnosticResult(line: 17, column: 15));
 
 		[Theory]
-		[EmbeddedFileData(@"PXAction\PX1000\Diagnostics\InvalidPXActionSignatureGraphExtension.cs")]
+		[EmbeddedFileData("InvalidPXActionSignatureGraphExtension.cs")]
 		public void Test_Invalid_Action_Signature_In_PXGraph_Extension(string actual) =>
 			VerifyCSharpDiagnostic(actual, CreatePX100DiagnosticResult(line: 35, column: 15));
 
 		[Theory]
-		[EmbeddedFileData(@"PXAction\PX1000\Diagnostics\InvalidPXActionSignature.cs",
-						  @"PXAction\PX1000\CodeFixes\InvalidPXActionSignature_Expected.cs")]
+		[EmbeddedFileData("InvalidPXActionSignature.cs",
+						  "InvalidPXActionSignature_Expected.cs")]
 		public void Test_Invalid_Action_Signature_In_PXGraph_CodeFix(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"PXAction\PX1000\Diagnostics\InvalidPXActionSignatureGraphExtension.cs",
-						  @"PXAction\PX1000\CodeFixes\InvalidPXActionSignatureGraphExtension_Expected.cs")]
+		[EmbeddedFileData("InvalidPXActionSignatureGraphExtension.cs",
+						  "InvalidPXActionSignatureGraphExtension_Expected.cs")]
 		public void Test_Invalid_Action_Signature_In_PXGraph_Extension_CodeFix(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"PXAction\PX1000\Diagnostics\InvalidPXActionSignature_ValidParameters.cs")]
+		[EmbeddedFileData("InvalidPXActionSignature_ValidParameters.cs")]
 		public void TestDiagnostic_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
