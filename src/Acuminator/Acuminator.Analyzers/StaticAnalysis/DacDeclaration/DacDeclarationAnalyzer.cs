@@ -2,20 +2,15 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Acuminator.Utilities;
-using Acuminator.Utilities.Roslyn;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Syntax;
 
-
-namespace Acuminator.Analyzers
+namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class DacDeclarationAnalyzer : PXDiagnosticAnalyzer

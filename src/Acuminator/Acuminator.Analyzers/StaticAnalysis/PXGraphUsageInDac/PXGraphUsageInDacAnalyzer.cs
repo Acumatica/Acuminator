@@ -1,15 +1,13 @@
-﻿using Acuminator.Utilities;
+﻿using System.Collections.Immutable;
+using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
-using System.Linq;
-using Acuminator.Utilities.Roslyn;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Syntax;
 
-namespace Acuminator.Analyzers
+namespace Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class PXGraphUsageInDacAnalyzer : PXDiagnosticAnalyzer

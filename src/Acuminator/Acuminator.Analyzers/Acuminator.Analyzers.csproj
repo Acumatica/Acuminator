@@ -87,7 +87,7 @@
     <Compile Include="StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceAnalyzer.cs" />
     <Compile Include="StaticAnalysis\ViewDeclarationOrder\ViewDeclarationOrderAnalyzer.cs" />
     <Compile Include="StaticAnalysis\InvalidPXActionSignature\InvalidPXActionSignatureFix.cs" />
-    <Compile Include="Descriptors.cs" />
+    <Compile Include="StaticAnalysis\Descriptors.cs" />
     <Compile Include="StaticAnalysis\InvalidPXActionSignature\InvalidPXActionSignatureAnalyzer.cs" />
     <Compile Include="StaticAnalysis\InheritanceFromPXCacheExtension\InheritanceFromPXCacheExtensionMakeSealedFix.cs" />
     <Compile Include="StaticAnalysis\InheritanceFromPXCacheExtension\InheritanceFromPXCacheExtensionFix.cs" />
@@ -97,7 +97,7 @@
     <Compile Include="StaticAnalysis\TypoInViewDelegateName\TypoInViewDelegateNameFix.cs" />
     <Compile Include="StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceFix.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PXDiagnosticAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\PXDiagnosticAnalyzer.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Acuminator.Analyzers;
+using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac;
 using TestHelper;
 using Microsoft.CodeAnalysis;
 using Xunit;

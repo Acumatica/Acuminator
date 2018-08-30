@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Immutable;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Concurrent;
 using Microsoft.CodeAnalysis;
 
-namespace Acuminator.Analyzers
+namespace Acuminator.Analyzers.StaticAnalysis
 {
 	internal enum Category
 	{

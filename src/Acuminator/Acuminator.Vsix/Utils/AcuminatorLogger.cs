@@ -3,6 +3,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Acuminator.Analyzers;
+using Acuminator.Analyzers.StaticAnalysis;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio;

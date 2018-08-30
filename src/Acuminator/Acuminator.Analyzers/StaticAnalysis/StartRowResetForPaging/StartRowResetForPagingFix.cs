@@ -1,24 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Editing;
-using Acuminator.Utilities;
-using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Syntax;
 using PX.Data;
 
-namespace Acuminator.Analyzers
+namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 {
     [ExportCodeFixProvider(LanguageNames.CSharp), Shared]
     public class StartRowResetForPagingFix : CodeFixProvider

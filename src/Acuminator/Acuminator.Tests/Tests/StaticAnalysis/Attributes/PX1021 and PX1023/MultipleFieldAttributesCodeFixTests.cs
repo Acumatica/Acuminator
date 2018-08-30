@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using TestHelper;
 using Xunit;
 using Acuminator.Analyzers;
-using Acuminator.Analyzers.FixProviders;
+using Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes;
 using Acuminator.Tests.Helpers;
 
 namespace Acuminator.Tests

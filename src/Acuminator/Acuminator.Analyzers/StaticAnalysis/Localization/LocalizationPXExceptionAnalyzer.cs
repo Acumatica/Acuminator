@@ -1,17 +1,16 @@
-﻿using Acuminator.Utilities;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Acuminator.Analyzers
+namespace Acuminator.Analyzers.StaticAnalysis.Localization
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class LocalizationPXExceptionAnalyzer : PXDiagnosticAnalyzer

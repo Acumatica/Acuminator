@@ -1,5 +1,6 @@
 ﻿using Acuminator.Analyzers;
-using Acuminator.Analyzers.FixProviders;
+using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Analyzers.StaticAnalysis.DacDeclaration;
 using Acuminator.Tests.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;

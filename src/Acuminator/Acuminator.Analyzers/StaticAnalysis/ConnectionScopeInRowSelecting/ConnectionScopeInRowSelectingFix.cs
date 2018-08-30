@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -16,7 +11,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Formatting;
 
-namespace Acuminator.Analyzers.FixProviders
+namespace Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]

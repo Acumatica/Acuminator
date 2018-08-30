@@ -1,23 +1,15 @@
-﻿using System;
-using System.Collections.Immutable;
-using System.Collections.Generic;
+﻿using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
-using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
-using PX.Data;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
 
-
-namespace Acuminator.Analyzers
+namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public partial class BqlParameterMismatchAnalyzer : PXDiagnosticAnalyzer
@@ -121,7 +113,7 @@ namespace Acuminator.Analyzers
 			if (argsCount == null || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			ParametersCounterSyntaxWalker walker = new ParametersCounterSyntaxWalker(syntaxContext, pxContext);
+			BqlParameterMismatchAnalyzer.ParametersCounterSyntaxWalker walker = new BqlParameterMismatchAnalyzer.ParametersCounterSyntaxWalker(syntaxContext, pxContext);
 
 			if (!walker.CountParametersInNode(invocationNode))
 				return;
@@ -145,7 +137,7 @@ namespace Acuminator.Analyzers
 			if (argsCount == null || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			ParametersCounterSymbolWalker walker = new ParametersCounterSymbolWalker(syntaxContext, pxContext);
+			BqlParameterMismatchAnalyzer.ParametersCounterSymbolWalker walker = new BqlParameterMismatchAnalyzer.ParametersCounterSymbolWalker(syntaxContext, pxContext);
 
 			if (!walker.CountParametersInTypeSymbol(containingType))
 				return;
@@ -171,7 +163,7 @@ namespace Acuminator.Analyzers
 			if (containingType == null)
 				return;
 
-			ParametersCounterSymbolWalker walker = new ParametersCounterSymbolWalker(syntaxContext, pxContext);
+			BqlParameterMismatchAnalyzer.ParametersCounterSymbolWalker walker = new BqlParameterMismatchAnalyzer.ParametersCounterSymbolWalker(syntaxContext, pxContext);
 
 			if (!walker.CountParametersInTypeSymbol(containingType))
 				return;
@@ -252,7 +244,7 @@ namespace Acuminator.Analyzers
 
 			if (argumentWhichCanBeArray.Expression is IdentifierNameSyntax arrayVariable)
 			{
-				var elementsCountResolver = new ArrayElemCountLocalVariableResolver(syntaxContext, pxContext, arrayVariable);
+				var elementsCountResolver = new BqlParameterMismatchAnalyzer.ArrayElemCountLocalVariableResolver(syntaxContext, pxContext, arrayVariable);
 				return elementsCountResolver.GetArrayElementsCount();
 			}
 
@@ -272,7 +264,7 @@ namespace Acuminator.Analyzers
 			if (!(accessExpression is IdentifierNameSyntax identifierNode) || syntaxContext.CancellationToken.IsCancellationRequested)
 				return null;
 
-			BqlLocalVariableTypeResolver resolver = new BqlLocalVariableTypeResolver(syntaxContext, pxContext, identifierNode);
+			BqlParameterMismatchAnalyzer.BqlLocalVariableTypeResolver resolver = new BqlParameterMismatchAnalyzer.BqlLocalVariableTypeResolver(syntaxContext, pxContext, identifierNode);
 
 			return containingType.IsAbstract 
 				? resolver.ResolveVariableType()
@@ -281,7 +273,7 @@ namespace Acuminator.Analyzers
 					: null;
 		}
 
-		private static void VerifyBqlArgumentsCount(int argsCount, ParametersCounter parametersCounter, SyntaxNodeAnalysisContext syntaxContext,
+		private static void VerifyBqlArgumentsCount(int argsCount, BqlParameterMismatchAnalyzer.ParametersCounter parametersCounter, SyntaxNodeAnalysisContext syntaxContext,
 													InvocationExpressionSyntax invocationNode, IMethodSymbol methodSymbol)
 		{
 			if (syntaxContext.CancellationToken.IsCancellationRequested || !parametersCounter.IsCountingValid)

@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
+﻿using System.Collections.Immutable;
+using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Acuminator.Utilities;
-using Acuminator.Utilities.Roslyn;
-using Acuminator.Utilities.Roslyn.Semantic;
 
-
-namespace Acuminator.Analyzers
+namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class PXGraphCreateInstanceAnalyzer : PXDiagnosticAnalyzer

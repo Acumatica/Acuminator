@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
-using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Acuminator.Analyzers
+namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class InvalidPXActionSignatureAnalyzer : PXDiagnosticAnalyzer

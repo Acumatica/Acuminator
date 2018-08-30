@@ -10,7 +10,8 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using TestHelper;
 using Xunit;
 using Acuminator.Analyzers;
-using Acuminator.Analyzers.FixProviders;
+using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView;
 using Acuminator.Tests.Helpers;
 
 namespace Acuminator.Tests

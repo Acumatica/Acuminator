@@ -1,12 +1,12 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Collections.Immutable;
+using System.Threading;
+using Acuminator.Utilities.Roslyn;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
-using System.Threading;
-using Acuminator.Utilities.Roslyn;
 
-namespace Acuminator.Analyzers
+namespace Acuminator.Analyzers.StaticAnalysis.Localization
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class LocalizationInvocationAnalyzer : PXDiagnosticAnalyzer

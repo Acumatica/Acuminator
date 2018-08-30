@@ -1,23 +1,16 @@
-﻿using System;
+﻿using System.Collections.Immutable;
 using System.Composition;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Acuminator.Analyzers.StaticAnalysis;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.Editing;
-using Acuminator.Utilities;
 
-
-namespace Acuminator.Analyzers.FixProviders
+namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]

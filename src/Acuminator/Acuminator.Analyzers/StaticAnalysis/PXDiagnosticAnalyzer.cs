@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Acuminator.Utilities.Roslyn;
+﻿using Acuminator.Utilities.Roslyn;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Acuminator.Analyzers
+namespace Acuminator.Analyzers.StaticAnalysis
 {
 	public abstract class PXDiagnosticAnalyzer : DiagnosticAnalyzer
 	{

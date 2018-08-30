@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Acuminator.Analyzers;
+using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch;
 using Acuminator.Tests.Helpers;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;

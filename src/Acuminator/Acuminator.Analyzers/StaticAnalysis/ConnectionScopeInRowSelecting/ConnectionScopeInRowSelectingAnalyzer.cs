@@ -2,10 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -15,7 +11,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Acuminator.Analyzers
+namespace Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class ConnectionScopeInRowSelectingAnalyzer : PXDiagnosticAnalyzer

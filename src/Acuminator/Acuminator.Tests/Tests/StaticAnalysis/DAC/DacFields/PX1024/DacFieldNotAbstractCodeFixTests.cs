@@ -11,8 +11,9 @@ using TestHelper;
 using Xunit;
 
 using Acuminator.Analyzers;
+using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType;
 using Acuminator.Tests.Helpers;
-using Acuminator.Analyzers.FixProviders;
 
 
 namespace Acuminator.Tests

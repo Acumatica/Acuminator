@@ -1,19 +1,10 @@
-﻿using System;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using System.Linq;
 using System.Threading;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
-using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn;
-using PX.Data;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 
-
-namespace Acuminator.Analyzers
+namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 {
 	public partial class BqlParameterMismatchAnalyzer : PXDiagnosticAnalyzer
 	{

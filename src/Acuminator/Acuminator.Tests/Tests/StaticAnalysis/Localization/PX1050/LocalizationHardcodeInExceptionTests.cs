@@ -1,4 +1,6 @@
 ﻿using Acuminator.Analyzers;
+using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Analyzers.StaticAnalysis.Localization;
 using Acuminator.Tests.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;

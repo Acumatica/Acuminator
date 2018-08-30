@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Acuminator.Utilities.Roslyn;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -13,11 +13,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Simplification;
-using Acuminator.Utilities;
-using Acuminator.Utilities.Roslyn;
 
-namespace Acuminator.Analyzers.FixProviders
+namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 	public class InvalidPXActionSignatureFix : CodeFixProvider
