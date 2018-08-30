@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Acuminator.Utilities.PrimaryDAC
+﻿namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base
 {
 	/// <summary>
 	/// Values that represent kinds of rule of the graph's primary DAC.

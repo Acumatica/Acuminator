@@ -1,25 +1,12 @@
-﻿using System;
-using System.Composition;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.Editing;
-using PX.Data;
-using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Microsoft.CodeAnalysis;
+using PX.Data;
 
-
-namespace Acuminator.Utilities.PrimaryDAC
+namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 {
 	/// <summary>
 	/// A rule for views with PXViewNameAttribute attribute.

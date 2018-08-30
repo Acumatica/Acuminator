@@ -1,11 +1,7 @@
-﻿using System;
-using System.Composition;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
+﻿using System.Collections.Immutable;
+using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base;
 
-
-namespace Acuminator.Utilities.PrimaryDAC
+namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.RulesProvider
 {
 	/// <summary>
 	/// An interface for factory used to create primary DAC rules.

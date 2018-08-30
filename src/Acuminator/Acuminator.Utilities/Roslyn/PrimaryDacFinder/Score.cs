@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Acuminator.Utilities.PrimaryDAC
+namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 {
 	public class Score : IEquatable<Score>, IComparable<Score>
 	{

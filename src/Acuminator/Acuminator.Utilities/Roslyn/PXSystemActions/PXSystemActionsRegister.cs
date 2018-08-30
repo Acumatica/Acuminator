@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
-using System.Runtime.CompilerServices;
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using PX.Data;
-using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
-using Acuminator.Utilities.Roslyn.Semantic;
 
-namespace Acuminator.Utilities
+namespace Acuminator.Utilities.Roslyn.PXSystemActions
 {
 	/// <summary>
 	/// Information about the Acumatica system actions. The list of system actions is taken from the <see cref="PXGraph{TGraph, TPrimary}"/>.

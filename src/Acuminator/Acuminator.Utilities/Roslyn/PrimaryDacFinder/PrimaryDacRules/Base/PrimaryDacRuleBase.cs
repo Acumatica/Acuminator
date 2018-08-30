@@ -1,20 +1,6 @@
-﻿using System;
-using System.Composition;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.Editing;
+﻿using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.RulesProvider;
 
-
-namespace Acuminator.Utilities.PrimaryDAC
+namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base
 {
 	/// <summary>
 	/// A base class for primary DAC rule.

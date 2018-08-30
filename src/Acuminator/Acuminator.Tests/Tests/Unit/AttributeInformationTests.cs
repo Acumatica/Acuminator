@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using TestHelper;
 using Xunit;
 

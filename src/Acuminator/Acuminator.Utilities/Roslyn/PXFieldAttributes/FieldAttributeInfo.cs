@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
-using PX.Data;
+﻿using Microsoft.CodeAnalysis;
 
-namespace Acuminator.Utilities
+namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 {
 	/// <summary>
 	/// Information about the Acumatica field attributes.

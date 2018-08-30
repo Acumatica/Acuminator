@@ -1,12 +1,12 @@
-﻿using System;
-using System.Composition;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ActionRules;
+using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.DacRules;
+using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRules;
+using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules;
 
-
-namespace Acuminator.Utilities.PrimaryDAC
+namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.RulesProvider
 {
 	/// <summary>
 	/// A table with weights for rules to determine primary DAC. The purpose of this class is to store all weights in one place for the ease of comparison and edit of weigths.

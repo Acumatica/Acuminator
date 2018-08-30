@@ -1,13 +1,13 @@
-﻿using System;
-using System.Composition;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ActionRules;
+using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base;
+using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.DacRules;
+using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRules;
+using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules;
 
-
-namespace Acuminator.Utilities.PrimaryDAC
+namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.RulesProvider
 {
 	/// <summary>
 	/// A default factory to create primary DAC rules.
