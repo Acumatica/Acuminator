@@ -212,24 +212,24 @@
     <EmbeddedResource Include="Sources\Localization\Messages.cs" />
     <EmbeddedResource Include="Sources\Localization\PX1050\LocalizationExceptionWithHardcodedStrings.cs" />
     <EmbeddedResource Include="Sources\Localization\PX1053\LocalizationWithConcatenationInExceptions.cs" />
-    <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelecting.cs" />
-    <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelecting_Expected.cs" />
-    <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingGeneric.cs" />
-    <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingGeneric_Expected.cs" />
-    <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingDataView.cs" />
-    <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingDataView_Expected.cs" />
-    <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingPXView_Expected.cs" />
-    <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingPXView.cs" />
-    <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingNoNamespace.cs" />
-    <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingNoNamespace_Expected.cs" />
-    <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingSearch.cs" />
-    <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingSearch_Expected.cs" />
-    <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingSelector.cs" />
-    <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingSelector_Expected.cs" />
-    <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingPXDatabase.cs" />
-    <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingPXDatabase_Expected.cs" />
-    <EmbeddedResource Include="Sources\Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingExternalMethod.cs" />
-    <EmbeddedResource Include="Sources\Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingExternalMethod_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\ConnectionScopeInRowSelecting.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\ConnectionScopeInRowSelecting_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\ConnectionScopeInRowSelectingGeneric.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\ConnectionScopeInRowSelectingGeneric_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\ConnectionScopeInRowSelectingDataView.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\ConnectionScopeInRowSelectingDataView_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\ConnectionScopeInRowSelectingPXView_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\ConnectionScopeInRowSelectingPXView.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\ConnectionScopeInRowSelectingNoNamespace.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\ConnectionScopeInRowSelectingNoNamespace_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\ConnectionScopeInRowSelectingSearch.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\ConnectionScopeInRowSelectingSearch_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\ConnectionScopeInRowSelectingSelector.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\ConnectionScopeInRowSelectingSelector_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\ConnectionScopeInRowSelectingPXDatabase.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\ConnectionScopeInRowSelectingPXDatabase_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\ConnectionScopeInRowSelectingExternalMethod.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\ConnectionScopeInRowSelectingExternalMethod_Expected.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\SanityCheck.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1030\Diagnostics\DacExtensionWithBoundFields.cs" />
     <EmbeddedResource Include="Sources\Dac\PX1030\CodeFixes\DacExtensionWithBoundFields_Expected.cs" />
@@ -256,7 +256,7 @@
     <Compile Include="Tests\StaticAnalysis\DAC\PX1029\PXGraphUsageInDacTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\PX1031 and PX1032\MethodsUsageInDacTests.cs" />
     <Compile Include="Tests\StaticAnalysis\PXGraph\PX1040\ConstructorInGraphExtensionTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\Event\PX1042\ConnectionScopeInRowSelectingTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\ConnectionScopeInRowSelectingTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DAC\PX1030\DefaultAttributeDacTests.cs" />
     <Compile Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtension\InheritanceFromPXCacheExtensionTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Localization\LocalizationCorrectTests.cs" />
@@ -364,9 +364,7 @@
     <Analyzer Include="..\..\packages\xunit.analyzers.0.8.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
   </ItemGroup>
   <Import Project="..\..\packages\GitVersionTask.3.6.5\build\portable-net+sl+win+wpa+wp\GitVersionTask.targets" Condition="Exists('..\..\packages\GitVersionTask.3.6.5\build\portable-net+sl+win+wpa+wp\GitVersionTask.targets')" />
-  <ItemGroup>
-    <Folder Include="Tests\StaticAnalysis\Common\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

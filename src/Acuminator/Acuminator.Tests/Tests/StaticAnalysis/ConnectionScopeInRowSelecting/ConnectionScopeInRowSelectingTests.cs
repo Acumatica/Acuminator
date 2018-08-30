@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Acuminator.Analyzers;
-using Acuminator.Analyzers.StaticAnalysis;
+﻿using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting;
 using Acuminator.Tests.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
-using CodeFixVerifier = Acuminator.Tests.Verification.CodeFixVerifier;
 
-namespace Acuminator.Tests
+namespace Acuminator.Tests.Tests.StaticAnalysis.ConnectionScopeInRowSelecting
 {
 	public class ConnectionScopeInRowSelectingTests : Verification.CodeFixVerifier
 	{
@@ -34,198 +27,198 @@ namespace Acuminator.Tests
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelecting.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelecting.cs")]
 		public void TestDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(19, 9));
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingGeneric.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingGeneric.cs")]
 		public void TestDiagnostic_GenericEventDeclaration(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(19, 9));
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingDataView.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingDataView.cs")]
 		public void TestDiagnostic_DataView(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(32, 9));
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingPXView.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingPXView.cs")]
 		public void TestDiagnostic_PXView(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(32, 9));
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingNoNamespace.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingNoNamespace.cs")]
 		public void TestDiagnostic_NoNamespace(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(18, 9));
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingSearch.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingSearch.cs")]
 		public void TestDiagnostic_Search(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(30, 9));
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingSelector.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingSelector.cs")]
 		public void TestDiagnostic_Selector(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(20, 6));
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingPXDatabase.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingPXDatabase.cs")]
 		public void TestDiagnostic_PXDatabase(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(19, 9));
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingExternalMethod.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingExternalMethod.cs")]
 		public void TestDiagnostic_ExternalMethod(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(18, 23));
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelecting_Expected.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelecting_Expected.cs")]
 		public void TestDiagnostic_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingGeneric_Expected.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingGeneric_Expected.cs")]
 		public void TestDiagnostic_GenericEventDeclaration_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingDataView_Expected.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingDataView_Expected.cs")]
 		public void TestDiagnostic_DataView_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingPXView_Expected.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingPXView_Expected.cs")]
 		public void TestDiagnostic_PXView_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingNoNamespace_Expected.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingNoNamespace_Expected.cs")]
 		public void TestDiagnostic_NoNamespace_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingSelector_Expected.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingSelector_Expected.cs")]
 		public void TestDiagnostic_Selector_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingSearch_Expected.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingSearch_Expected.cs")]
 		public void TestDiagnostic_Search_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingPXDatabase_Expected.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingPXDatabase_Expected.cs")]
 		public void TestDiagnostic_PXDatabase_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingExternalMethod_Expected.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingExternalMethod_Expected.cs")]
 		public void TestDiagnostic_ExternalMethod_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelecting.cs",
-			@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelecting_Expected.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelecting.cs",
+			"ConnectionScopeInRowSelecting_Expected.cs")]
 		public void TestCodeFix(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingGeneric.cs",
-			@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingGeneric_Expected.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingGeneric.cs",
+			"ConnectionScopeInRowSelectingGeneric_Expected.cs")]
 		public void TestCodeFix_GenericEventDeclaration(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingDataView.cs",
-			@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingDataView_Expected.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingDataView.cs",
+			"ConnectionScopeInRowSelectingDataView_Expected.cs")]
 		public void TestCodeFix_DataView(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingPXView.cs",
-			@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingPXView_Expected.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingPXView.cs",
+			"ConnectionScopeInRowSelectingPXView_Expected.cs")]
 		public void TestCodeFix_PXView(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingNoNamespace.cs",
-			@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingNoNamespace_Expected.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingNoNamespace.cs",
+			"ConnectionScopeInRowSelectingNoNamespace_Expected.cs")]
 		public void TestCodeFix_NoNamespace(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingSelector.cs",
-			@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingSelector_Expected.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingSelector.cs",
+			"ConnectionScopeInRowSelectingSelector_Expected.cs")]
 		public void TestCodeFix_Selector(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingSearch.cs",
-			@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingSearch_Expected.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingSearch.cs",
+			"ConnectionScopeInRowSelectingSearch_Expected.cs")]
 		public void TestCodeFix_Search(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingPXDatabase.cs",
-			@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingPXDatabase_Expected.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingPXDatabase.cs",
+			"ConnectionScopeInRowSelectingPXDatabase_Expected.cs")]
 		public void TestCodeFix_PXDatabase(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Event\PX1042\Diagnostics\ConnectionScopeInRowSelectingExternalMethod.cs",
-			@"Event\PX1042\CodeFixes\ConnectionScopeInRowSelectingExternalMethod_Expected.cs")]
+		[EmbeddedFileData("ConnectionScopeInRowSelectingExternalMethod.cs",
+			"ConnectionScopeInRowSelectingExternalMethod_Expected.cs")]
 		public void TestCodeFix_ExternalMethod(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
