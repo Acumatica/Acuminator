@@ -55,5 +55,11 @@ namespace Acuminator.Tests
 			    CreatePX1029DiagnosticResult(24, 16));
 	    }
 
-	}
+        [Theory]
+        [EmbeddedFileData(@"Dac\PX1029\Diagnostics\DacWithGraphUsageInAttribute.cs")]
+        public void TestDiagnostic_DacWithGraphUsageInAttributeIsIgnored(string source)
+        {
+            VerifyCSharpDiagnostic(source);
+        }
+    }
 }
