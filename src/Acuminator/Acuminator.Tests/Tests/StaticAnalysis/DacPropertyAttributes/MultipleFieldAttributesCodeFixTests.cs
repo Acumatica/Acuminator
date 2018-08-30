@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.CodeAnalysis;
+﻿using Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes;
+using Acuminator.Tests.Helpers;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
-using Acuminator.Analyzers;
-using Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes;
-using Acuminator.Tests.Helpers;
-using CodeFixVerifier = Acuminator.Tests.Verification.CodeFixVerifier;
 
-namespace Acuminator.Tests
+namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 {
 	public class MultipleFieldAttributesCodeFixTests : Verification.CodeFixVerifier
 	{
 		[Theory]
-		[EmbeddedFileData(@"Attributes\PX1023\Diagnostics\DacWithMultipleFieldAttributes.cs",
-						  @"Attributes\PX1023\CodeFixes\DacWithMultipleFieldAttributes_Expected.cs")]
+		[EmbeddedFileData("DacWithMultipleFieldAttributes.cs",
+						  "DacWithMultipleFieldAttributes_Expected.cs")]
 		public void Test_Multiple_Field_Attributes_On_DAC_Property_CodeFix(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);

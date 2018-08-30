@@ -1,32 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Acuminator.Analyzers;
-using Acuminator.Analyzers.StaticAnalysis;
+﻿using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes;
 using Acuminator.Tests.Helpers;
-using FluentAssertions;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
-using DiagnosticVerifier = Acuminator.Tests.Verification.DiagnosticVerifier;
 
-namespace Acuminator.Tests
+namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 {
 	public class DacFieldAttributesTests : Verification.DiagnosticVerifier
 	{
 		[Theory]
-		[EmbeddedFileData(@"Attributes\PX1023\Diagnostics\DacWithMultipleFieldAttributes.cs")]
+		[EmbeddedFileData("DacWithMultipleFieldAttributes.cs")]
 		public virtual void Test_Dac_With_Multiple_Field_Attributes(string source) =>
 			VerifyCSharpDiagnostic(source,
 				CreatePX1023MultipleFieldAttributesDiagnosticResult(line: 24, column: 4),
 				CreatePX1023MultipleFieldAttributesDiagnosticResult(line: 25, column: 4));
 
 		[Theory]
-		[EmbeddedFileData(@"Attributes\PX1021\Diagnostics\DacFieldAttributesTypeMismatch.cs")]
+		[EmbeddedFileData("DacFieldAttributesTypeMismatch.cs")]
 		public virtual void Test_Dac_With_Property_Type_Not_Matching_Field_Attribute_Type(string source) =>
 			VerifyCSharpDiagnostic(source,
 				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 24, column: 4, extraLocationLine: 26, extraLocationColumn: 10),
@@ -39,7 +30,7 @@ namespace Acuminator.Tests
 				CreatePX1021FieldAttributeNotMatchingDacPropertyDiagnosticResult(line: 54, column: 18, extraLocationLine: 53, extraLocationColumn: 4));
 
 		[Theory]
-		[EmbeddedFileData(@"Attributes\PX1021\Diagnostics\DacFieldTypeMismatchPXDBScalarAttr.cs")]
+		[EmbeddedFileData("DacFieldTypeMismatchPXDBScalarAttr.cs")]
 		public virtual void Test_Dac_Property_With_PXDBScalar_Attribute(string source) =>
 			VerifyCSharpDiagnostic(source);	
 
