@@ -1,25 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Acuminator.Analyzers;
-using Acuminator.Analyzers.StaticAnalysis;
+﻿using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch;
 using Acuminator.Tests.Helpers;
-using FluentAssertions;
+using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
-using DiagnosticVerifier = Acuminator.Tests.Verification.DiagnosticVerifier;
 
-namespace Acuminator.Tests
+namespace Acuminator.Tests.Tests.StaticAnalysis.BqlParameterMismatch
 {
-	public class BqlParameterMismatchTests : Verification.DiagnosticVerifier
+	public class BqlParameterMismatchTests : DiagnosticVerifier
 	{
 		[Theory]
-		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\StaticCall.cs")]
+		[EmbeddedFileData("StaticCall.cs")]
 		public virtual void Test_Static_Calls(string source) =>
 			VerifyCSharpDiagnostic(source, 
 				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 20, column: 6, expectedMethodName: "SelectSingleBound", expectedArgsCount: 2),
@@ -29,24 +21,24 @@ namespace Acuminator.Tests
 																	minExpectedArgsCount: 1, maxExpectedArgsCount: 2));
 
 		[Theory]
-		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\StaticCallWithCustomPredicate.cs")]
+		[EmbeddedFileData("StaticCallWithCustomPredicate.cs")]
 		public virtual void Test_Static_Call_With_Custom_Predicates(string source) =>
 			VerifyCSharpDiagnostic(source,
 				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 28, column: 6, expectedMethodName: "SelectSingleBound", expectedArgsCount: 4));
 
 		[Theory]
-		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\InheritanceCall.cs")]
+		[EmbeddedFileData("InheritanceCall.cs")]
 		public virtual void Test_Inheritance_Calls_Instance_And_Static(string source) => VerifyCSharpDiagnostic(source,
 			CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 28, column: 31, expectedMethodName: "Select", expectedArgsCount: 2));
 
 		[Theory]
-		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\FieldInstanceCall.cs", @"Dac\SOOrder.cs")]
+		[EmbeddedFileData("FieldInstanceCall.cs", @"Dac\SOOrder.cs")]
 		public virtual void Test_Field_Instance_Calls(string source, string dacSource) =>
 			VerifyCSharpDiagnostic(new[] { source, dacSource },
 				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 20, column: 24, expectedMethodName: "SelectSingle", expectedArgsCount: 2));
 
 		[Theory]
-		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\SearchCall.cs", @"Dac\SOOrder.cs")]
+		[EmbeddedFileData("SearchCall.cs", @"Dac\SOOrder.cs")]
 		public virtual void Test_Search_Calls(string source, string dacSource) =>
 			VerifyCSharpDiagnostic(new[] { source, dacSource },
 				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 22, column: 24, expectedMethodName: "Search", expectedArgsCount: 1),
@@ -55,14 +47,14 @@ namespace Acuminator.Tests
 				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 46, column: 6, expectedMethodName: "Search", expectedArgsCount: 3));
 
 		[Theory]
-		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\PXUpdateCall.cs", @"Dac\SOOrder.cs")]
+		[EmbeddedFileData("PXUpdateCall.cs", @"Dac\SOOrder.cs")]
 		public virtual void Test_PXUpdate_Calls(string source, string dacSource) =>
 			VerifyCSharpDiagnostic(new[] { source, dacSource },
 				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 43, column: 7, expectedMethodName: "Update", expectedArgsCount: 3),
 				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 54, column: 7, expectedMethodName: "Update", expectedArgsCount: 3));
 
 		[Theory]
-		[EmbeddedFileData(@"BQL\Diagnostics\ArgumentsMismatch\VariableInstanceCall.cs", @"Dac\SOOrder.cs")]
+		[EmbeddedFileData("VariableInstanceCall.cs", @"Dac\SOOrder.cs")]
 		public virtual void Test_Variable_Instance_Calls(string source, string dacSource) =>
 			VerifyCSharpDiagnostic(new[] { source, dacSource },
 				CreatePX1015RequiredAndOptionalArgsDiagnosticResult(line: 24, column: 27, expectedMethodName: "Select",
