@@ -9,36 +9,31 @@ using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.ConstructorInGraphExtension
 {
-	public class ConstructorInGraphExtensionTests : Verification.CodeFixVerifier
+	public class ConstructorInGraphExtensionTests : CodeFixVerifier
 	{
-		private DiagnosticResult CreatePX1040DiagnosticResult(int line, int column)
+		protected override CodeFixProvider GetCSharpCodeFixProvider()
 		{
-			var diagnostic = new DiagnosticResult
-			{
-				Id = Descriptors.PX1040_ConstructorInGraphExtension.Id,
-				Message = Descriptors.PX1040_ConstructorInGraphExtension.Title.ToString(),
-				Severity = DiagnosticSeverity.Error,
-				Locations =
-					new[] {
-						new DiagnosticResultLocation("Test0.cs", line, column)
-					}
-			};
-
-			return diagnostic;
+			return new ConstructorInGraphExtensionCodeFix();
 		}
+
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		{
+			return new ConstructorInGraphExtensionAnalyzer();
+		}
+
 
 		[Theory]
 		[EmbeddedFileData("ConstructorInGraphExtension.cs")]
 		public void TestDiagnostic(string actual)
 		{
-			VerifyCSharpDiagnostic(actual, CreatePX1040DiagnosticResult(18, 10));
+			VerifyCSharpDiagnostic(actual, Descriptors.PX1040_ConstructorInGraphExtension.CreateFor(18, 10));
 		}
 
 		[Theory]
 		[EmbeddedFileData("ConstructorInGraphExtensionWithInitialize.cs")]
 		public void TestDiagnostic_WithInitialize(string actual)
 		{
-			VerifyCSharpDiagnostic(actual, CreatePX1040DiagnosticResult(18, 10));
+			VerifyCSharpDiagnostic(actual, Descriptors.PX1040_ConstructorInGraphExtension.CreateFor(18, 10));
 		}
 
 		[Theory]
@@ -69,16 +64,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ConstructorInGraphExtension
 		public void TestCodeFix_WithInitialize(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
-		}
-
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
-		{
-			return new ConstructorInGraphExtensionCodeFix();
-		}
-
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-		{
-			return new ConstructorInGraphExtensionAnalyzer();
 		}
 	}
 }
