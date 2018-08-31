@@ -13,9 +13,8 @@ using PX.Data;
 namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	class DacExtensionDefaultAttributeAnalyzer : PXDiagnosticAnalyzer
+	public class DacExtensionDefaultAttributeAnalyzer : PXDiagnosticAnalyzer
 	{
-
 		private const string _PersistingCheck = "PersistingCheck";
 		
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
