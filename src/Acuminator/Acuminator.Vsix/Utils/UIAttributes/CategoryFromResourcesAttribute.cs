@@ -8,6 +8,7 @@ using System.Reflection;
 using Microsoft.VisualStudio.Shell;
 
 using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
 
 

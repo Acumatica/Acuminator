@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Acuminator.Utilities;
+using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Vsix.Formatter
 {

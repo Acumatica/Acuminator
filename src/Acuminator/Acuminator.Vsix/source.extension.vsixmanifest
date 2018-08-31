@@ -23,7 +23,7 @@
     <Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="Acuminator.Analyzers" Path="|Acuminator.Analyzers|" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
     <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
-    <Asset d:Source="Project" Type="Microsoft.VisualStudio.Assembly" d:ProjectName="Acuminator.Utils" Path="|Acuminator.Utils|" AssemblyName="|Acuminator.Utils;AssemblyName|" />
+    <Asset d:Source="Project" Type="Microsoft.VisualStudio.Assembly" d:ProjectName="Acuminator.Utilities" Path="|Acuminator.Utilities|" AssemblyName="|Acuminator.Utilities;AssemblyName|" />
   </Assets>
   <Prerequisites>
     <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,16.0)" DisplayName="Visual Studio core editor" />

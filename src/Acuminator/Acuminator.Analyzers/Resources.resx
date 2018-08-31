@@ -201,10 +201,10 @@
   <data name="PX1014Title" xml:space="preserve">
     <value>A DAC field must have a nullable type</value>
   </data>
-  <data name="PX1015TitleSuffixWithOnlyRequiredParams" xml:space="preserve">
+  <data name="PX1015MessageFormatWithOnlyRequiredParams" xml:space="preserve">
     <value>The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of required arguments is {1}.</value>
   </data>
-  <data name="PX1015TitleSuffixWithRequiredAndOptionalParams" xml:space="preserve">
+  <data name="PX1015MessageFormatWithRequiredAndOptionalParams" xml:space="preserve">
     <value>The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of arguments should be from {1} to {2}.</value>
   </data>
   <data name="PX1018Title" xml:space="preserve">
@@ -237,7 +237,7 @@
   <data name="PX1027Fix" xml:space="preserve">
     <value>Remove the forbidden field from the DAC declaration</value>
   </data>
-  <data name="PX1027Title" xml:space="preserve">
+  <data name="PX1027MessageFormat" xml:space="preserve">
     <value>The {0} field cannot be declared within a DAC declaration</value>
   </data>
   <data name="PX1028Fix" xml:space="preserve">
@@ -255,11 +255,20 @@
   <data name="PX1032Title" xml:space="preserve">
     <value>DAC properties cannot contain method invocations</value>
   </data>
+  <data name="PX1030FixBound" xml:space="preserve">
+    <value>For a bound field, set PersistingCheck of PXDefaultAttribute to Nothing</value>
+  </data>
+  <data name="PX1030Title" xml:space="preserve">
+    <value>The PXDefault attribute of the field is used incorrectly</value>
+  </data>
   <data name="PX1040Fix" xml:space="preserve">
     <value>Move the code to the Initialize() method</value>
   </data>
   <data name="PX1040Title" xml:space="preserve">
     <value>Constructors in BLC extensions are strictly prohibited. Use the Initialize() method instead.</value>
+  </data>
+  <data name="PX1030FixUnbound" xml:space="preserve">
+    <value>For an unbound field, replace with PXUnboundDefaultAttribute</value>
   </data>
   <data name="PX1042Fix" xml:space="preserve">
     <value>Surround the BQL statement or database query execution with a connection scope</value>
@@ -278,5 +287,11 @@
   </data>
   <data name="PX1053Title" xml:space="preserve">
     <value>Concatenation of strings is not allowed as a parameter for localization methods and PXException constructors. You should avoid string concatenation in these constructions.</value>
+  </data>
+  <data name="PX1015Title" xml:space="preserve">
+    <value>The number of arguments passed to the method does not match the number of BQL statement parameters</value>
+  </data>
+  <data name="PX1027Title" xml:space="preserve">
+    <value>System fields cannot be declared within a DAC declaration</value>
   </data>
 </root>
