@@ -56,7 +56,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac
 		        if (symbol != null && symbol.IsDacOrExtension(_pxContext) && !_inDac)
 		        {
                     _inDac = true;
+
                     base.VisitClassDeclaration(node);
+
                     _inDac = false;
 				}
 	        }
@@ -81,6 +83,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac
                     return;
 
                 base.VisitInvocationExpression(node);
+            }
+
+            public override void VisitAttributeList(AttributeListSyntax node)
+            {
             }
 
             public override void VisitIdentifierName(IdentifierNameSyntax node)
