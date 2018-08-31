@@ -1,25 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Acuminator.Analyzers;
-using Acuminator.Analyzers.StaticAnalysis;
+﻿using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType;
 using Acuminator.Tests.Helpers;
-using FluentAssertions;
+using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
-using DiagnosticVerifier = Acuminator.Tests.Verification.DiagnosticVerifier;
 
-namespace Acuminator.Tests
+namespace Acuminator.Tests.Tests.StaticAnalysis.DacNonAbstractFieldType
 {
-	public class DacFieldNotAbstractTests : Verification.DiagnosticVerifier
+	public class DacFieldNotAbstractTests : DiagnosticVerifier
 	{
 		[Theory]
-		[EmbeddedFileData(@"Dac\PX1024\Diagnostics\SOOrderNotAbstractField.cs")]
+		[EmbeddedFileData("SOOrderNotAbstractField.cs")]
 		public virtual void Test_Dac_With_Not_Abstract_Fields(string source) =>
 			VerifyCSharpDiagnostic(source,
 				CreatePX1024NotAbstractDacFieldDiagnosticResult(line: 22, column: 16),

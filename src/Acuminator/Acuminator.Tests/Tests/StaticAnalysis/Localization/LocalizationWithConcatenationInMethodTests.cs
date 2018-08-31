@@ -1,15 +1,14 @@
-﻿using Acuminator.Analyzers;
-using Acuminator.Analyzers.StaticAnalysis;
+﻿using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.Localization;
 using Acuminator.Tests.Helpers;
+using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
-using DiagnosticVerifier = Acuminator.Tests.Verification.DiagnosticVerifier;
 
-namespace Acuminator.Tests
+namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
 {
-    public class LocalizationWithConcatenationInMethodsTests : Verification.DiagnosticVerifier
+    public class LocalizationWithConcatenationInMethodsTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new LocalizationInvocationAnalyzer();
 
@@ -25,8 +24,8 @@ namespace Acuminator.Tests
         }
 
         [Theory]
-        [EmbeddedFileData(@"Localization\PX1053\LocalizationWithConcatenationInMethods.cs",
-                          @"Localization\Messages.cs")]
+        [EmbeddedFileData("LocalizationWithConcatenationInMethods.cs",
+                          "Messages.cs")]
         public void Test_Localization_Methods_With_String_Concatenations(string source, string messages)
         {
             VerifyCSharpDiagnostic(new[] { source, messages },

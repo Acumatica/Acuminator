@@ -1,15 +1,14 @@
-﻿using Acuminator.Analyzers;
-using Acuminator.Analyzers.StaticAnalysis;
+﻿using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.Localization;
 using Acuminator.Tests.Helpers;
+using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
-using DiagnosticVerifier = Acuminator.Tests.Verification.DiagnosticVerifier;
 
-namespace Acuminator.Tests
+namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
 {
-    public class LocalizationHardcodeInMethodTests : Verification.DiagnosticVerifier
+    public class LocalizationHardcodeInMethodTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new LocalizationInvocationAnalyzer();
 
@@ -25,8 +24,8 @@ namespace Acuminator.Tests
         }
 
         [Theory]
-        [EmbeddedFileData(@"Localization\PX1050\LocalizationMethodsWithHardcodedStrings.cs",
-                          @"Localization\Messages.cs")]
+        [EmbeddedFileData("LocalizationMethodsWithHardcodedStrings.cs",
+                          "Messages.cs")]
         public void Test_Localization_Methods_With_Hardcoded_Message_Argument(string source, string messages)
         {
             VerifyCSharpDiagnostic(new[] { source, messages },
