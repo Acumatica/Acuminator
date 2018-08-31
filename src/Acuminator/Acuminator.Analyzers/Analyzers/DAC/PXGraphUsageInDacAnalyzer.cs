@@ -39,7 +39,6 @@ namespace Acuminator.Analyzers
         {
             private readonly SyntaxNodeAnalysisContext _syntaxContext;
             private readonly PXContext _pxContext;
-            private ClassDeclarationSyntax _dacNode;
             private bool _inDac;
 
             public GraphUsageInDacWalker(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
@@ -56,11 +55,9 @@ namespace Acuminator.Analyzers
 		        if (symbol != null && symbol.IsDacOrExtension(_pxContext) && !_inDac)
 		        {
                     _inDac = true;
-                    _dacNode = node;
 
                     base.VisitClassDeclaration(node);
 
-                    _dacNode = null;
                     _inDac = false;
 				}
 	        }
@@ -89,11 +86,6 @@ namespace Acuminator.Analyzers
 
             public override void VisitAttributeList(AttributeListSyntax node)
             {
-                bool isAttrOnDac = _dacNode != null && _dacNode.Equals(node.Parent);
-                if (isAttrOnDac)
-                    return;
-
-                base.VisitAttributeList(node);
             }
 
             public override void VisitIdentifierName(IdentifierNameSyntax node)
