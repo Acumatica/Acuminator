@@ -64,12 +64,14 @@ namespace Acuminator.Analyzers.StaticAnalysis
             Rule("PX1014", nameof(Resources.PX1014Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
 		public static DiagnosticDescriptor PX1015_PXBqlParametersMismatchWithOnlyRequiredParams { get; } = 
-            Rule("PX1015", nameof(Resources.PX1015TitleSuffixWithOnlyRequiredParams).GetLocalized(), 
-                Category.Default, DiagnosticSeverity.Warning);
+            Rule("PX1015", nameof(Resources.PX1015Title).GetLocalized(), 
+                Category.Default, DiagnosticSeverity.Warning,
+	            nameof(Resources.PX1015MessageFormatWithOnlyRequiredParams).GetLocalized());
 
         public static DiagnosticDescriptor PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams { get; } =
-            Rule("PX1015", nameof(Resources.PX1015TitleSuffixWithRequiredAndOptionalParams).GetLocalized(), 
-                 Category.Default, DiagnosticSeverity.Warning);
+            Rule("PX1015", nameof(Resources.PX1015Title).GetLocalized(), 
+                 Category.Default, DiagnosticSeverity.Warning,
+	            nameof(Resources.PX1015MessageFormatWithRequiredAndOptionalParams).GetLocalized());
 
 		public static DiagnosticDescriptor PX1018_NoPrimaryViewForPrimaryDac { get; } =
 			Rule("PX1018", nameof(Resources.PX1018Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);

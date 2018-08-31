@@ -316,18 +316,27 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of required arguments is {1}..
         /// </summary>
-        public static string PX1015TitleSuffixWithOnlyRequiredParams {
+        public static string PX1015MessageFormatWithOnlyRequiredParams {
             get {
-                return ResourceManager.GetString("PX1015TitleSuffixWithOnlyRequiredParams", resourceCulture);
+                return ResourceManager.GetString("PX1015MessageFormatWithOnlyRequiredParams", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of arguments should be from {1} to {2}..
         /// </summary>
-        public static string PX1015TitleSuffixWithRequiredAndOptionalParams {
+        public static string PX1015MessageFormatWithRequiredAndOptionalParams {
             get {
-                return ResourceManager.GetString("PX1015TitleSuffixWithRequiredAndOptionalParams", resourceCulture);
+                return ResourceManager.GetString("PX1015MessageFormatWithRequiredAndOptionalParams", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of arguments passed to the method does not match the number of BQL statement parameters.
+        /// </summary>
+        public static string PX1015Title {
+            get {
+                return ResourceManager.GetString("PX1015Title", resourceCulture);
             }
         }
         

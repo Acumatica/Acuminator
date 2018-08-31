@@ -201,10 +201,10 @@
   <data name="PX1014Title" xml:space="preserve">
     <value>A DAC field must have a nullable type</value>
   </data>
-  <data name="PX1015TitleSuffixWithOnlyRequiredParams" xml:space="preserve">
+  <data name="PX1015MessageFormatWithOnlyRequiredParams" xml:space="preserve">
     <value>The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of required arguments is {1}.</value>
   </data>
-  <data name="PX1015TitleSuffixWithRequiredAndOptionalParams" xml:space="preserve">
+  <data name="PX1015MessageFormatWithRequiredAndOptionalParams" xml:space="preserve">
     <value>The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of arguments should be from {1} to {2}.</value>
   </data>
   <data name="PX1018Title" xml:space="preserve">
@@ -287,5 +287,8 @@
   </data>
   <data name="PX1053Title" xml:space="preserve">
     <value>Concatenation of strings is not allowed as a parameter for localization methods and PXException constructors. You should avoid string concatenation in these constructions.</value>
+  </data>
+  <data name="PX1015Title" xml:space="preserve">
+    <value>The number of arguments passed to the method does not match the number of BQL statement parameters</value>
   </data>
 </root>

@@ -9,15 +9,15 @@ namespace Acuminator.Tests.Verification
 {
 	public static class DiagnosticResultExtensions
 	{
-		public static DiagnosticResult CreateFor(this DiagnosticDescriptor descriptor, int column, int line,
+		public static DiagnosticResult CreateFor(this DiagnosticDescriptor descriptor, int line, int column,
 			params object[] messageArgs)
 		{
-			return CreateDiagnosticResult(descriptor, messageArgs, (column, line));
+			return CreateDiagnosticResult(descriptor, messageArgs, (line, column));
 		}
 
 		public static DiagnosticResult CreateFor(this DiagnosticDescriptor descriptor, 
-			(int column, int line) location,
-			(int column, int line) extraLocation,
+			(int line, int column) location,
+			(int line, int column) extraLocation,
 			params object[] messageArgs)
 		{
 			return CreateDiagnosticResult(descriptor, messageArgs, location, extraLocation);
@@ -25,7 +25,7 @@ namespace Acuminator.Tests.Verification
 
 		private static DiagnosticResult CreateDiagnosticResult(DiagnosticDescriptor descriptor,
 			object[] messageArgs, 
-			params (int column, int line)[] locations)
+			params (int line, int column)[] locations)
 		{
 			return new DiagnosticResult()
 			{
@@ -34,7 +34,7 @@ namespace Acuminator.Tests.Verification
 				Message = messageArgs == null || messageArgs.Length == 0 
 					? descriptor.Title.ToString() 
 					: String.Format(descriptor.MessageFormat.ToString(), messageArgs),
-				Locations = locations.Select(l => new DiagnosticResultLocation("Test0.cs", l.column, l.line)).ToArray()
+				Locations = locations.Select(l => new DiagnosticResultLocation("Test0.cs", l.line, l.column)).ToArray()
 			};
 		}
 	}

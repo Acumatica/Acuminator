@@ -10,92 +10,56 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.BqlParameterMismatch
 {
 	public class BqlParameterMismatchTests : DiagnosticVerifier
 	{
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new BqlParameterMismatchAnalyzer();
+
 		[Theory]
 		[EmbeddedFileData("StaticCall.cs")]
 		public virtual void Test_Static_Calls(string source) =>
 			VerifyCSharpDiagnostic(source, 
-				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 20, column: 6, expectedMethodName: "SelectSingleBound", expectedArgsCount: 2),
-				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 33, column: 6, expectedMethodName: "SelectSingleBound", expectedArgsCount: 2),
-				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 47, column: 6, expectedMethodName: "SelectSingleBound", expectedArgsCount: 2),
-				CreatePX1015RequiredAndOptionalArgsDiagnosticResult(line: 62, column: 6, expectedMethodName: "SelectSingleBound",
-																	minExpectedArgsCount: 1, maxExpectedArgsCount: 2));
+				Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.CreateFor(20, 6, "SelectSingleBound", 2),
+				Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.CreateFor(33, 6, "SelectSingleBound", 2),
+				Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.CreateFor(47, 6, "SelectSingleBound", 2),
+				Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.CreateFor(62, 6, "SelectSingleBound", 1, 2));
 
 		[Theory]
 		[EmbeddedFileData("StaticCallWithCustomPredicate.cs")]
 		public virtual void Test_Static_Call_With_Custom_Predicates(string source) =>
 			VerifyCSharpDiagnostic(source,
-				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 28, column: 6, expectedMethodName: "SelectSingleBound", expectedArgsCount: 4));
+				Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.CreateFor(28, 6, "SelectSingleBound", 4));
 
 		[Theory]
 		[EmbeddedFileData("InheritanceCall.cs")]
 		public virtual void Test_Inheritance_Calls_Instance_And_Static(string source) => VerifyCSharpDiagnostic(source,
-			CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 28, column: 31, expectedMethodName: "Select", expectedArgsCount: 2));
+			Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.CreateFor(28, 31, "Select", 2));
 
 		[Theory]
 		[EmbeddedFileData("FieldInstanceCall.cs", "SOOrder.cs")]
 		public virtual void Test_Field_Instance_Calls(string source, string dacSource) =>
 			VerifyCSharpDiagnostic(new[] { source, dacSource },
-				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 20, column: 24, expectedMethodName: "SelectSingle", expectedArgsCount: 2));
+				Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.CreateFor(20, 24, "SelectSingle", 2));
 
 		[Theory]
 		[EmbeddedFileData("SearchCall.cs", "SOOrder.cs")]
 		public virtual void Test_Search_Calls(string source, string dacSource) =>
 			VerifyCSharpDiagnostic(new[] { source, dacSource },
-				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 22, column: 24, expectedMethodName: "Search", expectedArgsCount: 1),
-				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 24, column: 24, expectedMethodName: "Search", expectedArgsCount: 3),
-				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 34, column: 7, expectedMethodName: "Search", expectedArgsCount: 1),
-				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 46, column: 6, expectedMethodName: "Search", expectedArgsCount: 3));
+				Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.CreateFor(22, 24, "Search", 1),
+				Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.CreateFor(24, 24, "Search", 3),
+				Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.CreateFor(34, 7, "Search", 1),
+				Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.CreateFor(46, 6, "Search", 3));
 
 		[Theory]
 		[EmbeddedFileData("PXUpdateCall.cs", "SOOrder.cs")]
 		public virtual void Test_PXUpdate_Calls(string source, string dacSource) =>
 			VerifyCSharpDiagnostic(new[] { source, dacSource },
-				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 43, column: 7, expectedMethodName: "Update", expectedArgsCount: 3),
-				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 54, column: 7, expectedMethodName: "Update", expectedArgsCount: 3));
+				Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.CreateFor(43, 7, "Update", 3),
+				Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.CreateFor(54, 7, "Update", 3));
 
 		[Theory]
 		[EmbeddedFileData("VariableInstanceCall.cs", "SOOrder.cs")]
 		public virtual void Test_Variable_Instance_Calls(string source, string dacSource) =>
 			VerifyCSharpDiagnostic(new[] { source, dacSource },
-				CreatePX1015RequiredAndOptionalArgsDiagnosticResult(line: 24, column: 27, expectedMethodName: "Select",
-																	minExpectedArgsCount: 1, maxExpectedArgsCount: 2),
-
-				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 38, column: 27, expectedMethodName: "Select", expectedArgsCount: 1),
-
-				CreatePX1015RequiredArgsOnlyDiagnosticResult(line: 57, column: 54, expectedMethodName: "Select", expectedArgsCount: 2));
-
-
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new BqlParameterMismatchAnalyzer();
-
-		private DiagnosticResult CreatePX1015RequiredArgsOnlyDiagnosticResult(int line, int column, string expectedMethodName,
-																			  int expectedArgsCount)
-		{
-			string format = Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.Title.ToString();
-			string expectedMessage = string.Format(format, expectedMethodName, expectedArgsCount);
-			return CreatePX1015DiagnosticResult(line, column, expectedMessage);
-		}
-
-		private DiagnosticResult CreatePX1015RequiredAndOptionalArgsDiagnosticResult(int line, int column, string expectedMethodName,
-																					 int minExpectedArgsCount, int maxExpectedArgsCount)
-		{
-			string format = Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.Title.ToString();
-			string expectedMessage = string.Format(format, expectedMethodName, minExpectedArgsCount, maxExpectedArgsCount);
-			return CreatePX1015DiagnosticResult(line, column, expectedMessage);
-		}
-
-		private DiagnosticResult CreatePX1015DiagnosticResult(int line, int column, string expectedMessage)
-		{
-			return new DiagnosticResult
-			{
-				Id = Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.Id,
-				Message = expectedMessage,
-				Severity = DiagnosticSeverity.Warning,
-				Locations =
-					new[]
-					{
-						new DiagnosticResultLocation("Test0.cs", line, column)
-					}
-			};
-		}
+				Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams.CreateFor(24, 27, "Select", 1, 2),
+				Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.CreateFor(38, 27, "Select", 1),
+				Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams.CreateFor(57, 54, "Select", 2));
 	}
 }
