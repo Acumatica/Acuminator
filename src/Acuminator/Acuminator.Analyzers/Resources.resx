@@ -271,12 +271,12 @@
     <value>Hardcoded strings are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class.</value>
   </data>
   <data name="PX1051Title" xml:space="preserve">
-    <value>Non-localizable string are not allowed as parameters for localization methods and PXException constructors. You should mark the appropriate messages class with PXLocalizableAttribute.</value>
+    <value>Non-localizable strings are not allowed as parameters for localization methods and PXException constructors. You should mark the appropriate messages class with PXLocalizableAttribute.</value>
   </data>
   <data name="PX1052Title" xml:space="preserve">
-    <value>Incorrect string to format in localization method. You should use correct string constants from the appropriate localizable messages class.</value>
+    <value>Incorrect format string in the localization method. You should use correct format string constants from the appropriate localizable messages class.</value>
   </data>
   <data name="PX1053Title" xml:space="preserve">
-    <value>Concatenation of strings is not allowed as a parameter for localization methods and PXException constructors. You should avoid string concatenation in these constructions.</value>
+    <value>Strings concatenation is not allowed as a parameter for localization methods and PXException constructors. You should use localization format methods instead.</value>
   </data>
 </root>
