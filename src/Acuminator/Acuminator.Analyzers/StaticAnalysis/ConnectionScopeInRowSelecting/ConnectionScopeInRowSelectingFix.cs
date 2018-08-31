@@ -31,7 +31,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting
 				.ConfigureAwait(false);
 			var node = root?.FindNode(context.Span)?.FirstAncestorOrSelf<MethodDeclarationSyntax>();
 
-			if (node != null)
+			if (node?.Body != null) // do not suggest the code fix for expression-bodied methods
 			{
 				string title = nameof(Resources.PX1042Fix).GetLocalized().ToString();
 				context.RegisterCodeFix(CodeAction.Create(title, 
