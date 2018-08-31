@@ -1,16 +1,15 @@
-﻿using System.Collections.Immutable;
-using System.Threading;
-using Acuminator.Utilities.Roslyn;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Syntax;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Threading;
 
 namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
 {
-	[DiagnosticAnalyzer(LanguageNames.CSharp)]
+    [DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class MethodsUsageInDacAnalyzer : PXDiagnosticAnalyzer
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
@@ -35,6 +34,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
 
 			if (typeSymbol != null && typeSymbol.IsDacOrExtension(pxContext))
 			{
+                IEnumerable<INamedTypeSymbol> whiteList = GetWhitelist(pxContext);
+
 				foreach (SyntaxNode node in classDeclaration.DescendantNodes(
 					n => !(n is ClassDeclarationSyntax) || IsDacOrExtension(n, pxContext, syntaxContext.SemanticModel, syntaxContext.CancellationToken)))
 				{
@@ -46,14 +47,33 @@ namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
 					}
 					else if (node is PropertyDeclarationSyntax property)
 					{
-						AnalyzeMethodInvocationInDacProperty(property, syntaxContext, pxContext);
+						AnalyzeMethodInvocationInDacProperty(property, whiteList, syntaxContext, pxContext);
 					}
 				}
 			}
 		}
 
-		private void AnalyzeMethodInvocationInDacProperty(PropertyDeclarationSyntax property,
-			SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+        private IEnumerable<INamedTypeSymbol> GetWhitelist(PXContext pxContext)
+        {
+            return new[]
+            {
+                pxContext.SystemTypes.Bool,
+                pxContext.SystemTypes.Byte,
+                pxContext.SystemTypes.Int16,
+                pxContext.SystemTypes.Int32,
+                pxContext.SystemTypes.Int64,
+                pxContext.SystemTypes.Decimal,
+                pxContext.SystemTypes.Double,
+                pxContext.SystemTypes.String,
+                pxContext.SystemTypes.Guid,
+                pxContext.SystemTypes.DateTime,
+                pxContext.SystemTypes.TimeSpan,
+                pxContext.SystemTypes.Nullable
+            };
+        }
+
+		private void AnalyzeMethodInvocationInDacProperty(PropertyDeclarationSyntax property, IEnumerable<INamedTypeSymbol> whiteList,
+            SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
 		{
 			foreach (SyntaxNode node in property.DescendantNodes())
 			{
@@ -61,14 +81,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
 
 				if (node is InvocationExpressionSyntax invocation)
 				{
-					SymbolInfo symbol = syntaxContext.SemanticModel.GetSymbolInfo(invocation, syntaxContext.CancellationToken);
+					ISymbol symbol = syntaxContext.SemanticModel.GetSymbolInfo(invocation, syntaxContext.CancellationToken).Symbol;
 
-					if (symbol.Symbol != null && symbol.Symbol.Kind == SymbolKind.Method && !symbol.Symbol.IsStatic)
-					{
-						syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1032_DacPropertyCannotContainMethodInvocations,
-							invocation.GetLocation()));
-					}
-				}
+                    if (symbol == null || !(symbol is IMethodSymbol method) || method.IsStatic)
+                        continue;
+
+                    bool inWhitelist = whiteList.Any(t => method.ContainingType.InheritsFromOrEquals(t));
+                    if (inWhitelist)
+                        continue;
+
+                    syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1032_DacPropertyCannotContainMethodInvocations,
+                        invocation.GetLocation()));
+                }
 				else if (node is ObjectCreationExpressionSyntax)
 				{
 					syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1032_DacPropertyCannotContainMethodInvocations,

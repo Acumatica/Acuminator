@@ -120,7 +120,8 @@ namespace Acuminator.Utilities.Roslyn
 			public INamedTypeSymbol IEnumerable => _compilation.GetSpecialType(SpecialType.System_Collections_IEnumerable);
 
 			public INamedTypeSymbol Guid => _compilation.GetTypeByMetadataName(typeof(Guid).FullName);
-		}
+            public INamedTypeSymbol TimeSpan => _compilation.GetTypeByMetadataName(typeof(TimeSpan).FullName);
+        }
 		#endregion
 
 		#region Field Attributes Types
