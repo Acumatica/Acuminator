@@ -10,17 +10,21 @@ using Xunit;
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacDeclaration
 {
     public class DacForbiddenFieldsTests : CodeFixVerifier
-    {
-        [Theory]
+	{
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacDeclarationAnalyzer();
+
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new ForbiddenFieldsInDacFix();
+
+		[Theory]
         [EmbeddedFileData("DacForbiddenFields.cs")]
         public virtual void TestDacWithForbiddenFields(string source) =>
             VerifyCSharpDiagnostic(source,           
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 13, column: 25, fieldName: "companyId"),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 17, column: 17, fieldName: "CompanyID"),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 27, column: 25, fieldName: "deletedDatabaseRecord"),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 30, column: 17, fieldName: "DeletedDatabaseRecord"),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 39, column: 25, fieldName: "companyMask"),
-                CreatePX1027ForbiddenDacFieldDiagnosticResult(line: 42, column: 17, fieldName: "CompanyMask"));
+                Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(13, 25, "companyId"),
+                Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(17, 17, "CompanyID"),
+                Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(27, 25, "deletedDatabaseRecord"),
+                Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(30, 17, "DeletedDatabaseRecord"),
+                Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(39, 25, "companyMask"),
+                Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(42, 17, "CompanyMask"));
                 
         [Theory]
         [EmbeddedFileData("DacForbiddenFields.cs",
@@ -50,25 +54,5 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacDeclaration
                             "DacForbiddenFieldsRegions_Case3_Expected.cs")]
         public virtual void TestFixForDacWithForbiddenFieldsWithRegions_Case3(string actual, string expected) =>
             VerifyCSharpFix(actual, expected);
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacDeclarationAnalyzer();
-
-        protected override CodeFixProvider GetCSharpCodeFixProvider() => new ForbiddenFieldsInDacFix();
-
-	    private DiagnosticResult CreatePX1027ForbiddenDacFieldDiagnosticResult(int line, int column, string fieldName)
-	    {
-		    string format = Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.Title.ToString();
-		    string expectedMessage = string.Format(format, fieldName);
-
-		    return new DiagnosticResult
-		    {
-			    Id = Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.Id,
-			    Message = expectedMessage,
-			    Severity = DiagnosticSeverity.Error,
-			    Locations =
-				    new[]
-					    { new DiagnosticResultLocation ("Test0.cs", line, column) }
-		    };
-
-	    }
 	}
 }

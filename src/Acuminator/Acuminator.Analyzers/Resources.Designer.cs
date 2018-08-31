@@ -433,6 +433,15 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to The {0} field cannot be declared within a DAC declaration.
         /// </summary>
+        public static string PX1027MessageFormat {
+            get {
+                return ResourceManager.GetString("PX1027MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to System fields cannot be declared within a DAC declaration.
+        /// </summary>
         public static string PX1027Title {
             get {
                 return ResourceManager.GetString("PX1027Title", resourceCulture);

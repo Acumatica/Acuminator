@@ -237,7 +237,7 @@
   <data name="PX1027Fix" xml:space="preserve">
     <value>Remove the forbidden field from the DAC declaration</value>
   </data>
-  <data name="PX1027Title" xml:space="preserve">
+  <data name="PX1027MessageFormat" xml:space="preserve">
     <value>The {0} field cannot be declared within a DAC declaration</value>
   </data>
   <data name="PX1028Fix" xml:space="preserve">
@@ -290,5 +290,8 @@
   </data>
   <data name="PX1015Title" xml:space="preserve">
     <value>The number of arguments passed to the method does not match the number of BQL statement parameters</value>
+  </data>
+  <data name="PX1027Title" xml:space="preserve">
+    <value>System fields cannot be declared within a DAC declaration</value>
   </data>
 </root>
