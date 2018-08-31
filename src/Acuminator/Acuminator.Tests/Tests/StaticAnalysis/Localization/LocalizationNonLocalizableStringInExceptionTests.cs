@@ -12,25 +12,14 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new LocalizationPXExceptionAnalyzer();
 
-        private DiagnosticResult CreatePX1051DiagnosticResult(int line, int column)
-        {
-            return new DiagnosticResult
-            {
-                Id = Descriptors.PX1051_NonLocalizableString.Id,
-                Message = Descriptors.PX1051_NonLocalizableString.Title.ToString(),
-                Severity = DiagnosticSeverity.Error,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }
-            };
-        }
-
         [Theory]
         [EmbeddedFileData("LocalizationWithNonLocalizableStringInExceptions.cs",
                           "Messages.cs")]
         public void Test_Localization_Of_PXException_With_Non_Localizable_Message_Argument(string source, string messages)
         {
             VerifyCSharpDiagnostic(new[] { source, messages },
-                CreatePX1051DiagnosticResult(14, 75),
-                CreatePX1051DiagnosticResult(21, 20));
+	            Descriptors.PX1051_NonLocalizableString.CreateFor(14, 75),
+	            Descriptors.PX1051_NonLocalizableString.CreateFor(21, 20));
         }
     }
 }

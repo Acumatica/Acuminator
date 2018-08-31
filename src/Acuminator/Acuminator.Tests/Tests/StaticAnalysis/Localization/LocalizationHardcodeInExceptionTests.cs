@@ -12,25 +12,14 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new LocalizationPXExceptionAnalyzer();
 
-        private DiagnosticResult CreatePX1050DiagnosticResult(int line, int column)
-        {
-            return new DiagnosticResult
-            {
-                Id = Descriptors.PX1050_HardcodedStringInLocalizationMethod.Id,
-                Message = Descriptors.PX1050_HardcodedStringInLocalizationMethod.Title.ToString(),
-                Severity = DiagnosticSeverity.Error,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }
-            };
-        }
-
         [Theory]
         [EmbeddedFileData("LocalizationExceptionWithHardcodedStrings.cs")]
         public void Test_Localization_Of_PXException_With_Hardcoded_Message_Argument(string source)
         {
             VerifyCSharpDiagnostic(source,
-                CreatePX1050DiagnosticResult(9, 45),
-                CreatePX1050DiagnosticResult(16, 75),
-                CreatePX1050DiagnosticResult(24, 20));
+                Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(9, 45),
+	            Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(16, 75),
+	            Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(24, 20));
         }
     }
 }

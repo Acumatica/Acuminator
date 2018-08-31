@@ -12,34 +12,23 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new LocalizationInvocationAnalyzer();
 
-        private DiagnosticResult CreatePX1050DiagnosticResult(int line, int column)
-        {
-            return new DiagnosticResult
-            {
-                Id = Descriptors.PX1050_HardcodedStringInLocalizationMethod.Id,
-                Message = Descriptors.PX1050_HardcodedStringInLocalizationMethod.Title.ToString(),
-                Severity = DiagnosticSeverity.Error,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }
-            };
-        }
-
         [Theory]
         [EmbeddedFileData("LocalizationMethodsWithHardcodedStrings.cs",
                           "Messages.cs")]
         public void Test_Localization_Methods_With_Hardcoded_Message_Argument(string source, string messages)
         {
             VerifyCSharpDiagnostic(new[] { source, messages },
-                CreatePX1050DiagnosticResult(11, 51),
-                CreatePX1050DiagnosticResult(12, 51),
-                CreatePX1050DiagnosticResult(13, 59),
-                CreatePX1050DiagnosticResult(23, 57),
-                CreatePX1050DiagnosticResult(24, 57),
-                CreatePX1050DiagnosticResult(25, 65),
-                CreatePX1050DiagnosticResult(26, 68),
-                CreatePX1050DiagnosticResult(36, 52),
-                CreatePX1050DiagnosticResult(37, 52),
-                CreatePX1050DiagnosticResult(38, 58),
-                CreatePX1050DiagnosticResult(39, 65));
+                Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(11, 51),
+                Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(12, 51),
+                Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(13, 59),
+                Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(23, 57),
+                Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(24, 57),
+                Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(25, 65),
+                Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(26, 68),
+                Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(36, 52),
+                Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(37, 52),
+                Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(38, 58),
+                Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(39, 65));
         }
     }
 }

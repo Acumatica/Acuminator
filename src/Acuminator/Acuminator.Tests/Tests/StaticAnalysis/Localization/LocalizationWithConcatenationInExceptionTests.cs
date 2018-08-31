@@ -12,25 +12,14 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new LocalizationPXExceptionAnalyzer();
 
-        private DiagnosticResult CreatePX1053DiagnosticResult(int line, int column)
-        {
-            return new DiagnosticResult
-            {
-                Id = Descriptors.PX1053_ConcatenationPriorLocalization.Id,
-                Message = Descriptors.PX1053_ConcatenationPriorLocalization.Title.ToString(),
-                Severity = DiagnosticSeverity.Error,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }
-            };
-        }
-
         [Theory]
         [EmbeddedFileData("LocalizationWithConcatenationInExceptions.cs",
                           "Messages.cs")]
         public void Test_Localization_Of_PXException_With_Concatenations(string source, string messages)
         {
             VerifyCSharpDiagnostic(new[] { source, messages },
-                CreatePX1053DiagnosticResult(14, 75),
-                CreatePX1053DiagnosticResult(21, 20));
+	            Descriptors.PX1053_ConcatenationPriorLocalization.CreateFor(14, 75),
+	            Descriptors.PX1053_ConcatenationPriorLocalization.CreateFor(21, 20));
         }
     }
 }
