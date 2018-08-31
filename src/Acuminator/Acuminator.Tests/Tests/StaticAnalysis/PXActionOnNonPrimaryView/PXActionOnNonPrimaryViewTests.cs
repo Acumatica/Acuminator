@@ -9,24 +9,28 @@ using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.PXActionOnNonPrimaryView
 {
-	public class PXActionOnNonPrimaryViewTests : Verification.CodeFixVerifier
+	public class PXActionOnNonPrimaryViewTests : CodeFixVerifier
 	{
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new PXActionOnNonPrimaryViewAnalyzer();
+
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new PXActionOnNonPrimaryViewFix();
+
 		[Theory]
 		[EmbeddedFileData("GraphWithNonPrimaryDacView.cs")] 
 		public virtual void Test_Diagnostic_For_Graph_And_Graph_Extension(string source) =>
 			VerifyCSharpDiagnostic(source,
-				CreatePX1012ActionOnNonPrimaryViewDiagnosticResult(line: 23, column: 10, actionName: "Release1", mainDacName: "SOOrder"),
-				CreatePX1012ActionOnNonPrimaryViewDiagnosticResult(line: 25, column: 10, actionName: "Release2", mainDacName: "SOOrder"),
-				CreatePX1012ActionOnNonPrimaryViewDiagnosticResult(line: 34, column: 10, actionName: "Action1", mainDacName: "SOOrder"),
-				CreatePX1012ActionOnNonPrimaryViewDiagnosticResult(line: 38, column: 10, actionName: "Action3", mainDacName: "SOOrder"),
-				CreatePX1012ActionOnNonPrimaryViewDiagnosticResult(line: 47, column: 10, actionName: "Release1", mainDacName: "SOOrder"),
-				CreatePX1012ActionOnNonPrimaryViewDiagnosticResult(line: 49, column: 10, actionName: "Release2", mainDacName: "SOOrder"));
+				Descriptors.PX1012_PXActionOnNonPrimaryView.CreateFor(23, 10, "Release1", "SOOrder"),
+				Descriptors.PX1012_PXActionOnNonPrimaryView.CreateFor(25, 10, "Release2", "SOOrder"),
+				Descriptors.PX1012_PXActionOnNonPrimaryView.CreateFor(34, 10, "Action1", "SOOrder"),
+				Descriptors.PX1012_PXActionOnNonPrimaryView.CreateFor(38, 10, "Action3", "SOOrder"),
+				Descriptors.PX1012_PXActionOnNonPrimaryView.CreateFor(47, 10, "Release1", "SOOrder"),
+				Descriptors.PX1012_PXActionOnNonPrimaryView.CreateFor(49, 10, "Release2", "SOOrder"));
 
 		[Theory]
 		[EmbeddedFileData("DerivedGraphWithBaseGraphPrimaryDac.cs")]
 		public virtual void Test_Diagnostic_For_Derived_Graph(string source) =>
 			VerifyCSharpDiagnostic(source,
-				CreatePX1012ActionOnNonPrimaryViewDiagnosticResult(line: 26, column: 10, actionName: "Release1", mainDacName: "SOOrder"));
+				Descriptors.PX1012_PXActionOnNonPrimaryView.CreateFor(26, 10, "Release1", "SOOrder"));
 
 		[Theory]
 		[EmbeddedFileData("GraphWithNonPrimaryDacView.cs",
@@ -42,29 +46,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXActionOnNonPrimaryView
 		public void Test_Code_Fix_For_Derived_Graph(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
-		}
-
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new PXActionOnNonPrimaryViewAnalyzer();
-
-		protected override CodeFixProvider GetCSharpCodeFixProvider() => new PXActionOnNonPrimaryViewFix();
-
-		private DiagnosticResult CreatePX1012ActionOnNonPrimaryViewDiagnosticResult(int line, int column, string actionName, 
-																					string mainDacName)
-		{
-			string format = Descriptors.PX1012_PXActionOnNonPrimaryView.Title.ToString();
-			string expectedMessage = string.Format(format, actionName, mainDacName);
-
-			return new DiagnosticResult
-			{
-				Id = Descriptors.PX1012_PXActionOnNonPrimaryView.Id,
-				Message = expectedMessage,
-				Severity = DiagnosticSeverity.Warning,
-				Locations =
-					new[]
-					{
-						new DiagnosticResultLocation("Test0.cs", line, column)
-					}
-			};
 		}
 	}
 }
