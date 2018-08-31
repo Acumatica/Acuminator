@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.CodeAnalysis;
 
-namespace Acuminator.Tests.Helpers
+namespace Acuminator.Tests.Verification
 {
 	/// <summary>
 	/// Location where the diagnostic appears, as determined by path, line number, and column number.

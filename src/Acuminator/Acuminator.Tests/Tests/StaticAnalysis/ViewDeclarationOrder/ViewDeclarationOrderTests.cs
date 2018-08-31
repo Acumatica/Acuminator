@@ -1,6 +1,7 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder;
 using Acuminator.Tests.Helpers;
+using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
 

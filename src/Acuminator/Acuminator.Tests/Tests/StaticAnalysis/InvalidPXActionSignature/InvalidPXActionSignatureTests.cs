@@ -1,6 +1,7 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature;
 using Acuminator.Tests.Helpers;
+using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;

@@ -1,6 +1,7 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting;
 using Acuminator.Tests.Helpers;
+using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -8,85 +9,79 @@ using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.ConnectionScopeInRowSelecting
 {
-	public class ConnectionScopeInRowSelectingTests : Verification.CodeFixVerifier
+	public class ConnectionScopeInRowSelectingTests : CodeFixVerifier
 	{
-		private DiagnosticResult CreatePX1042DiagnosticResult(int line, int column)
+		protected override CodeFixProvider GetCSharpCodeFixProvider()
 		{
-			var diagnostic = new DiagnosticResult
-			{
-				Id = Descriptors.PX1042_ConnectionScopeInRowSelecting.Id,
-				Message = Descriptors.PX1042_ConnectionScopeInRowSelecting.Title.ToString(),
-				Severity = DiagnosticSeverity.Error,
-				Locations =
-					new[] {
-						new DiagnosticResultLocation("Test0.cs", line, column)
-					}
-			};
+			return new ConnectionScopeInRowSelectingFix();
+		}
 
-			return diagnostic;
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		{
+			return new ConnectionScopeInRowSelectingAnalyzer();
 		}
 
 		[Theory]
 		[EmbeddedFileData("ConnectionScopeInRowSelecting.cs")]
 		public void TestDiagnostic(string actual)
 		{
-			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(19, 9));
+			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(19, 9));
 		}
 
 		[Theory]
 		[EmbeddedFileData("ConnectionScopeInRowSelectingGeneric.cs")]
 		public void TestDiagnostic_GenericEventDeclaration(string actual)
 		{
-			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(19, 9));
+			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(19, 9));
 		}
 
 		[Theory]
 		[EmbeddedFileData("ConnectionScopeInRowSelectingDataView.cs")]
 		public void TestDiagnostic_DataView(string actual)
 		{
-			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(32, 9));
+			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(32, 9));
 		}
 
 		[Theory]
 		[EmbeddedFileData("ConnectionScopeInRowSelectingPXView.cs")]
 		public void TestDiagnostic_PXView(string actual)
 		{
-			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(32, 9));
+			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(32, 9));
 		}
 
 		[Theory]
 		[EmbeddedFileData("ConnectionScopeInRowSelectingNoNamespace.cs")]
 		public void TestDiagnostic_NoNamespace(string actual)
 		{
-			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(18, 9));
+			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(18, 9));
 		}
 
 		[Theory]
 		[EmbeddedFileData("ConnectionScopeInRowSelectingSearch.cs")]
 		public void TestDiagnostic_Search(string actual)
 		{
-			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(30, 9));
+			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(30, 9));
 		}
 
 		[Theory]
 		[EmbeddedFileData("ConnectionScopeInRowSelectingSelector.cs")]
 		public void TestDiagnostic_Selector(string actual)
 		{
-			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(20, 6));
+			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(20, 6));
 		}
 
 		[Theory]
 		[EmbeddedFileData("ConnectionScopeInRowSelectingPXDatabase.cs")]
 		public void TestDiagnostic_PXDatabase(string actual)
 		{
-			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(19, 9));
+			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(19, 9));
 		}
 
 		[Theory]
 		[EmbeddedFileData("ConnectionScopeInRowSelectingExternalMethod.cs")]
 		public void TestDiagnostic_ExternalMethod(string actual)
 		{
-			VerifyCSharpDiagnostic(actual, CreatePX1042DiagnosticResult(18, 23));
+			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(18, 23));
 		}
 
 		[Theory]
@@ -222,16 +217,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ConnectionScopeInRowSelecting
 		public void TestCodeFix_ExternalMethod(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
-		}
-
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
-		{
-			return new ConnectionScopeInRowSelectingFix();
-		}
-
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-		{
-			return new ConnectionScopeInRowSelectingAnalyzer();
 		}
 	}
 }
