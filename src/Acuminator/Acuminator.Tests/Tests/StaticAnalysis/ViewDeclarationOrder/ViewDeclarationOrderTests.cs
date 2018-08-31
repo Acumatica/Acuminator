@@ -7,42 +7,17 @@ using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.ViewDeclarationOrder
 {
-    public class ViewDeclarationOrderTests : Verification.CodeFixVerifier
+    public class ViewDeclarationOrderTests : CodeFixVerifier
     {
-	    private DiagnosticResult[] CreateDiagnosticResults()
-	    {
-		    return new DiagnosticResult[] 
-            {
-                new DiagnosticResult
-                {
-                    Id = Descriptors.PX1006_ViewDeclarationOrder.Id,
-                    Message = string.Format(Descriptors.PX1006_ViewDeclarationOrder.Title.ToString(), "Vendor", "BAccount"),
-                    Severity = Descriptors.PX1004_ViewDeclarationOrder.DefaultSeverity,
-                    Locations =
-                        new[] { new DiagnosticResultLocation("Test0.cs", 7, 14)},
-                },
+	    protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new ViewDeclarationOrderAnalyzer();
 
-                new DiagnosticResult
-                {
-                    Id = Descriptors.PX1004_ViewDeclarationOrder.Id,
-                    Message = string.Format(Descriptors.PX1004_ViewDeclarationOrder.Title.ToString(), "Customer", "BAccount"),
-                    Severity = Descriptors.PX1004_ViewDeclarationOrder.DefaultSeverity,
-                    Locations =
-                        new[] { new DiagnosticResultLocation("Test0.cs", 15, 14) }
-                },
-            };
-	    }
-
-        [Theory]
+		[Theory]
         [EmbeddedFileData("ViewDeclarationOrder.cs")]
         public void TestDiagnostic(string actual)
         {
-            VerifyCSharpDiagnostic(actual, CreateDiagnosticResults());
-        }
-
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-        {
-            return new ViewDeclarationOrderAnalyzer();
+            VerifyCSharpDiagnostic(actual, 
+				Descriptors.PX1006_ViewDeclarationOrder.CreateFor(7, 14, "Vendor", "BAccount"),
+	            Descriptors.PX1004_ViewDeclarationOrder.CreateFor(15, 14, "Customer", "BAccount"));
         }
     }
 }

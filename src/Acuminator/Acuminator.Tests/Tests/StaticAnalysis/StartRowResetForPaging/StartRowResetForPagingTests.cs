@@ -11,15 +11,20 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.StartRowResetForPaging
 {
 	public class StartRowResetForPagingTests : CodeFixVerifier
 	{
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new StartRowResetForPagingAnalyzer();
+
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new StartRowResetForPagingFix();
+
+
 		[Theory]
 		[EmbeddedFileData("StartRowResetForPaging.cs")]
 		public void Test_StartRow_Reset_Diagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, new[]
 			{
-				CreatePX1010DiagnosticResult(line: 20, column: 38),
-				CreatePX1010DiagnosticResult(line: 48, column: 38),
-				CreatePX1010DiagnosticResult(line: 65, column: 10)
+				Descriptors.PX1010_StartRowResetForPaging.CreateFor(line: 20, column: 38),
+				Descriptors.PX1010_StartRowResetForPaging.CreateFor(line: 48, column: 38),
+				Descriptors.PX1010_StartRowResetForPaging.CreateFor(line: 65, column: 10)
 			});
 		}
 
@@ -30,27 +35,5 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.StartRowResetForPaging
 		{
 			VerifyCSharpFix(actual, expected);
 		}
-
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-		{
-			return new StartRowResetForPagingAnalyzer();
-		}
-
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
-		{
-			return new StartRowResetForPagingFix();
-		}
-
-		private DiagnosticResult CreatePX1010DiagnosticResult(int line, int column) =>
-			new DiagnosticResult
-			{
-				Id = Descriptors.PX1010_StartRowResetForPaging.Id,
-				Message = Descriptors.PX1010_StartRowResetForPaging.Title.ToString(),
-				Severity = DiagnosticSeverity.Warning,
-				Locations = new[]
-				{
-					new DiagnosticResultLocation("Test0.cs", line, column)
-				}
-			};
 	}
 }
