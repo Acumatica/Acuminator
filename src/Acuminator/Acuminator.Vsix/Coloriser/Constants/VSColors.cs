@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Acuminator.Utilities;
-
+using Acuminator.Utilities.Common;
 
 
 namespace Acuminator.Vsix.Coloriser

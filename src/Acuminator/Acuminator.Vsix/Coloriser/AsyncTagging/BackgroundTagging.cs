@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.Text.Tagging;
 using System.Collections;
 using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
 
 
 namespace Acuminator.Vsix.Coloriser

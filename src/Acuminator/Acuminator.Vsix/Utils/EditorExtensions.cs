@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.Utilities;
 using Acuminator.Utilities;
-
+using Acuminator.Utilities.Common;
 
 
 namespace Acuminator.Vsix.Utilities

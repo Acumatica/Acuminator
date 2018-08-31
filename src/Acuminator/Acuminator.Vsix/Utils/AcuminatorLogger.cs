@@ -2,6 +2,8 @@
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Acuminator.Analyzers;
+using Acuminator.Analyzers.StaticAnalysis;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio;
@@ -9,7 +11,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities;
-
+using Acuminator.Utilities.Common;
 using FirstChanceExceptionEventArgs = System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs;
 
 
@@ -22,9 +24,9 @@ namespace Acuminator.Vsix.Logger
 	{
 		public const string PackageName = "Acuminator";
 
-		private const string AnalyzersDll = "Acuminator.Analyzers";
-		private const string UtilitiesDll = "Acuminator.Utils";
-		private const string VsixDll = "Acuminator.Vsix";
+		private readonly string AnalyzersDll = typeof(PXDiagnosticAnalyzer).Assembly.GetName().Name;
+		private readonly string UtilitiesDll = typeof(CodeAnalysisSettings).Assembly.GetName().Name;
+		private readonly string VsixDll = typeof(AcuminatorLogger).Assembly.GetName().Name;
 
 		private readonly AcuminatorVSPackage _package;
 

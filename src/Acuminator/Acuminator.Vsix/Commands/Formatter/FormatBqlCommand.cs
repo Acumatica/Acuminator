@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
 using Acuminator.Vsix;
 using Acuminator.Vsix.Utilities;
 
