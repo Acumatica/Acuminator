@@ -1,4 +1,7 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Syntax;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -86,7 +89,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
                     if (symbol == null || !(symbol is IMethodSymbol method) || method.IsStatic)
                         continue;
 
-                    bool inWhitelist = whiteList.Any(t => method.ContainingType.InheritsFromOrEquals(t));
+                    bool inWhitelist = whiteList.Any(t => method.ContainingType.Equals(t) ||
+                                                          method.ContainingType.ConstructedFrom.Equals(t));
                     if (inWhitelist)
                         continue;
 
