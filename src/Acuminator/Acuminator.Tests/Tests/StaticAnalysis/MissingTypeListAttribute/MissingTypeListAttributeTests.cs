@@ -9,24 +9,8 @@ using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.MissingTypeListAttribute
 {
-    public class MissingTypeListAttributeTests : Verification.CodeFixVerifier
+    public class MissingTypeListAttributeTests : CodeFixVerifier
     {
-	    private DiagnosticResult CreateDiagnosticResult(int line, int column)
-	    {
-			var diagnostic = new DiagnosticResult
-			{
-				Id = Descriptors.PX1002_MissingTypeListAttributeAnalyzer.Id,
-				Message = Descriptors.PX1002_MissingTypeListAttributeAnalyzer.Title.ToString(),
-				Severity = DiagnosticSeverity.Error,
-				Locations =
-					new[] {
-						new DiagnosticResultLocation("Test0.cs", line, column)
-					}
-			};
-
-		    return diagnostic;
-	    }
-
         [Theory]
         [EmbeddedFileData("MissingTypeListAttributeGood.cs")]
         public void TestDiagnostic_Good(string actual)
@@ -45,7 +29,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.MissingTypeListAttribute
         [EmbeddedFileData("MissingTypeListAttributeBad.cs")]
         public void TestDiagnostic_Bad(string actual)
         {
-            VerifyCSharpDiagnostic(actual, CreateDiagnosticResult(14, 17));
+            VerifyCSharpDiagnostic(actual, Descriptors.PX1002_MissingTypeListAttributeAnalyzer.CreateFor(14, 17));
         }
 
         [Theory]

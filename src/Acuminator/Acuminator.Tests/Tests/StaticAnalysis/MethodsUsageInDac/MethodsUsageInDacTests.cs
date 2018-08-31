@@ -12,37 +12,15 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.MethodsUsageInDac
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new MethodsUsageInDacAnalyzer();
 
-        private DiagnosticResult CreatePX1031DiagnosticResult(int line, int column)
-        {
-            return new DiagnosticResult
-            {
-                Id = Descriptors.PX1031_DacCannotContainInstanceMethods.Id,
-                Message = Descriptors.PX1031_DacCannotContainInstanceMethods.Title.ToString(),
-                Severity = DiagnosticSeverity.Error,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }
-            };
-        }
-
-        private DiagnosticResult CreatePX1032DiagnosticResult(int line, int column)
-        {
-            return new DiagnosticResult
-            {
-                Id = Descriptors.PX1032_DacPropertyCannotContainMethodInvocations.Id,
-                Message = Descriptors.PX1032_DacPropertyCannotContainMethodInvocations.Title.ToString(),
-                Severity = DiagnosticSeverity.Error,
-                Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }
-            };
-        }
-
         [Theory]
         [EmbeddedFileData("DacWithMethodsUsage.cs")]
         public void TestDiagnostic_Dac(string source)
         {
             VerifyCSharpDiagnostic(source,
-                CreatePX1032DiagnosticResult(23, 17),
-                CreatePX1032DiagnosticResult(24, 17),
-                CreatePX1032DiagnosticResult(26, 26),
-                CreatePX1031DiagnosticResult(47, 32));
+                Descriptors.PX1032_DacPropertyCannotContainMethodInvocations.CreateFor(23, 17),
+                Descriptors.PX1032_DacPropertyCannotContainMethodInvocations.CreateFor(24, 17),
+                Descriptors.PX1032_DacPropertyCannotContainMethodInvocations.CreateFor(26, 26),
+	            Descriptors.PX1031_DacCannotContainInstanceMethods.CreateFor(47, 32));
         }
 
         [Theory]
@@ -50,10 +28,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.MethodsUsageInDac
         public void TestDiagnostic_CacheExtension(string source)
         {
             VerifyCSharpDiagnostic(source,
-                CreatePX1032DiagnosticResult(27, 17),
-                CreatePX1032DiagnosticResult(28, 17),
-                CreatePX1032DiagnosticResult(30, 26),
-                CreatePX1031DiagnosticResult(51, 32));
+                Descriptors.PX1032_DacPropertyCannotContainMethodInvocations.CreateFor(27, 17),
+                Descriptors.PX1032_DacPropertyCannotContainMethodInvocations.CreateFor(28, 17),
+                Descriptors.PX1032_DacPropertyCannotContainMethodInvocations.CreateFor(30, 26),
+	            Descriptors.PX1031_DacCannotContainInstanceMethods.CreateFor(51, 32));
         }
 
 	    [Theory]

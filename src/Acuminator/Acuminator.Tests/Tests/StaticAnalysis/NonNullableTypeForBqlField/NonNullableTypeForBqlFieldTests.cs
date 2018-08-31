@@ -11,27 +11,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonNullableTypeForBqlField
 {
     public class NonNullableTypeForBqlFieldTests : CodeFixVerifier
     {
-	    private DiagnosticResult CreatePX1014DiagnosticResult(int line, int column)
-	    {
-			var diagnostic = new DiagnosticResult
-			{
-				Id = Descriptors.PX1014_NonNullableTypeForBqlField.Id,
-				Message = Descriptors.PX1014_NonNullableTypeForBqlField.Title.ToString(),
-				Severity = DiagnosticSeverity.Error,
-				Locations =
-					new[] {
-						new DiagnosticResultLocation("Test0.cs", line, column)
-					}
-			};
-
-		    return diagnostic;
-	    }
-
 	    [Theory]
 	    [EmbeddedFileData("NonNullableTypeForBqlField.cs")] 
 		public void TestDiagnostic(string actual)
 	    {
-		    VerifyCSharpDiagnostic(actual, CreatePX1014DiagnosticResult(16, 14));
+		    VerifyCSharpDiagnostic(actual, Descriptors.PX1014_NonNullableTypeForBqlField.CreateFor(16, 14));
 	    }
 
 		[Theory]
