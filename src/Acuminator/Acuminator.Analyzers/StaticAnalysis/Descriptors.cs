@@ -10,8 +10,6 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 	public static class Descriptors
 	{
-		private const string HelpLink = @"https://wiki.acumatica.com/pages/viewpage.action?spaceKey=ENG&title=Acuminator%3A+static+code+analysis+and+coloriser+tool+for+Acumatica+Framework"; 
-
 		private static readonly ConcurrentDictionary<Category, string> categoryMapping = new ConcurrentDictionary<Category, string>();
 
         private static DiagnosticDescriptor Rule(string id, LocalizableString title, Category category, DiagnosticSeverity defaultSeverity, 
@@ -20,7 +18,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			bool isEnabledByDefault = true;
 			messageFormat = messageFormat ?? title;
 			return new DiagnosticDescriptor(id, title, messageFormat, categoryMapping.GetOrAdd(category, c => c.ToString()), defaultSeverity,
-											isEnabledByDefault, description, HelpLink);
+											isEnabledByDefault, description);
 		}
 
 		public static DiagnosticDescriptor PX1000_InvalidPXActionHandlerSignature { get; } = 
