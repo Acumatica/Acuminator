@@ -1,13 +1,18 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes;
 using Acuminator.Tests.Helpers;
+using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 {
-	public class MultipleFieldAttributesCodeFixTests : Verification.CodeFixVerifier
+	public class MultipleFieldAttributesCodeFixTests : CodeFixVerifier
 	{
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacPropertyAttributesAnalyzer();
+
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new MultipleDacFieldAttributesFix();
+
 		[Theory]
 		[EmbeddedFileData("DacWithMultipleFieldAttributes.cs",
 						  "DacWithMultipleFieldAttributes_Expected.cs")]
@@ -15,9 +20,5 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 		{
 			VerifyCSharpFix(actual, expected);
 		}
-
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacPropertyAttributesAnalyzer();
-
-		protected override CodeFixProvider GetCSharpCodeFixProvider() => new MultipleDacFieldAttributesFix();
 	}
 }

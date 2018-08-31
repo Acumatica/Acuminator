@@ -19,31 +19,31 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacExtensionDefaultAttribute
 		[EmbeddedFileData("DacExtensionWithBoundFields.cs")]
 		public virtual void TestDacExtensionWithBoundAttribute(string source) =>
 			VerifyCSharpDiagnostic(source,
-				CreatePX1030DiagnosticResult(line: 23, column: 4),
-				CreatePX1030DiagnosticResult(line: 30, column: 4),
-				CreatePX1030DiagnosticResult(line: 44, column: 4),
-				CreatePX1030DiagnosticResult(line: 50, column: 13),
-				CreatePX1030DiagnosticResult(line: 56, column: 13),
-				CreatePX1030DiagnosticResult(line: 62, column: 4));
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 23, column: 4),
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 30, column: 4),
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 44, column: 4),
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 50, column: 13),
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 56, column: 13),
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 62, column: 4));
 
 		[Theory]
 		[EmbeddedFileData("DacExtensionWithUnboundFields.cs")]
 		public virtual void TestDacExtensionWithUnboundFields(string source) =>
 			VerifyCSharpDiagnostic(source,
-				CreatePX1030DiagnosticResult(line: 23, column: 4),
-				CreatePX1030DiagnosticResult(line: 30, column: 4));
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 23, column: 4),
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 30, column: 4));
 
 		[Theory]
 		[EmbeddedFileData("DacWithBoundAndUnboundFields.cs")]
 		public virtual void TestDacWithBoundAndUnboundAttribute(string source) =>
 			VerifyCSharpDiagnostic(source,
-				CreatePX1030DiagnosticResult(line: 16, column: 4));
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 16, column: 4));
 
 		[Theory]
 		[EmbeddedFileData("AggregateAttributeFields.cs")]
 		public virtual void TestDacWithAggregateAttributeFields(string source) =>
 			VerifyCSharpDiagnostic(source,
-				CreatePX1030DiagnosticResult(line: 36, column: 4));
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 36, column: 4));
 
 		[Theory]
 		[EmbeddedFileData("AggregateAttributeFields.cs",
@@ -62,20 +62,5 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacExtensionDefaultAttribute
 							"DacExtensionWithUnboundFields_Expected.cs")]
 		public virtual void TestCodeFixDacExtensionWithUnboundAttribute(string actual, string expected) =>
 			VerifyCSharpFix(actual, expected);
-
-		private DiagnosticResult CreatePX1030DiagnosticResult(int line, int column)
-		{
-			return new DiagnosticResult
-			{
-				Id = Descriptors.PX1030_DefaultAttibuteToExisitingRecords.Id,
-				Message = Descriptors.PX1030_DefaultAttibuteToExisitingRecords.Title.ToString(),
-				Severity = DiagnosticSeverity.Warning,
-				Locations =
-					new[]
-					{
-						new DiagnosticResultLocation("Test0.cs", line, column)
-					}
-			};
-		}
 	}
 }
