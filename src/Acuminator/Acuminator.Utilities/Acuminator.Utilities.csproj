@@ -106,6 +106,7 @@
     <Compile Include="Common\EnumerableExtensions.cs" />
     <Compile Include="Common\ConcurrentExtensions.cs" />
     <Compile Include="Common\EnumerableExtraExtensions.cs" />
+    <Compile Include="Roslyn\EventType.cs" />
     <Compile Include="Roslyn\LocalizationTypes.cs" />
     <Compile Include="Roslyn\NestedInvocationWalker.cs" />
     <Compile Include="Roslyn\PrimaryDacFinder\PrimaryDacRules\ActionRules\ScoreSystemActionRule.cs" />
