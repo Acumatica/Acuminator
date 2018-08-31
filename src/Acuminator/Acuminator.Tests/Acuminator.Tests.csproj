@@ -154,7 +154,6 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\MethodsUsageInDac\Sources\DacWithNestedTypes.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\SeparateFiles_ExternalClass.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\SeparateFiles_AnalyzedClass.cs" />
-    <EmbeddedResource Include="Sources\Dac\PX1029\Diagnostics\DacWithGraphUsageInAttribute.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\BqlParameterMismatch\Sources\SOOrder.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphUsageInDac\Sources\DacWithGraphUsageInAttribute.cs" />
     <Compile Include="Verification\DiagnosticResultExtensions.cs" />
