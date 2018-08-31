@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 {
-	public class NestedInvocationWalkerTests : Verification.DiagnosticVerifier
+	public class NestedInvocationWalkerTests : DiagnosticVerifier
 	{
 		private class ExceptionWalker : Acuminator.Utilities.Roslyn.NestedInvocationWalker
 		{
@@ -31,7 +31,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"SanityCheck.cs")]
+		[EmbeddedFileData("SanityCheck.cs")]
 		public async Task SanityCheck(string text)
 		{
 			Document document = CreateDocument(text);
@@ -45,7 +45,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"StaticMethod.cs")]
+		[EmbeddedFileData("StaticMethod.cs")]
 		public async Task StaticMethod(string text)
 		{
 			Document document = CreateDocument(text);
@@ -60,7 +60,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"PropertyGetter.cs")]
+		[EmbeddedFileData("PropertyGetter.cs")]
 		public async Task PropertyGetter(string text)
 		{
 			Document document = CreateDocument(text);
@@ -75,7 +75,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"PropertyGetterConditionalAccess.cs")]
+		[EmbeddedFileData("PropertyGetterConditionalAccess.cs")]
 		public async Task PropertyGetterConditionalAccess(string text)
 		{
 			Document document = CreateDocument(text);
@@ -90,7 +90,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"PropertySetter.cs")]
+		[EmbeddedFileData("PropertySetter.cs")]
 		public async Task PropertySetter(string text)
 		{
 			Document document = CreateDocument(text);
@@ -105,7 +105,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"PropertySetterFromInitializer.cs")]
+		[EmbeddedFileData("PropertySetterFromInitializer.cs")]
 		public async Task PropertySetterFromInitializer(string text)
 		{
 			Document document = CreateDocument(text);
@@ -120,7 +120,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"PropertyValid.cs")]
+		[EmbeddedFileData("PropertyValid.cs")]
 		public async Task Property_ShouldNotFindAnything(string text)
 		{
 			Document document = CreateDocument(text);
@@ -135,7 +135,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"Constructor.cs")]
+		[EmbeddedFileData("Constructor.cs")]
 		public async Task Constructor(string text)
 		{
 			Document document = CreateDocument(text);
@@ -150,7 +150,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"LocalLambda.cs")]
+		[EmbeddedFileData("LocalLambda.cs")]
 		public async Task LocalLambda(string text)
 		{
 			Document document = CreateDocument(text);
@@ -165,7 +165,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"InstanceMethod.cs")]
+		[EmbeddedFileData("InstanceMethod.cs")]
 		public async Task InstanceMethod(string text)
 		{
 			Document document = CreateDocument(text);
@@ -179,8 +179,23 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 			walker.Locations.Should().BeEquivalentTo((line: 14, column: 4));
 		}
 
+		[Theory(Skip = "Expression-bodied methods are not supported by Roslyn v1")]
+		[EmbeddedFileData("InstanceExpressionBodiedMethod.cs")]
+		public async Task InstanceExpressionBodiedMethod(string text)
+		{
+			Document document = CreateDocument(text);
+			Compilation compilation = await document.Project.GetCompilationAsync();
+			var walker = new ExceptionWalker(compilation, CancellationToken.None);
+			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
+				.OfType<ClassDeclarationSyntax>().First();
+
+			node.Accept(walker);
+
+			walker.Locations.Should().BeEquivalentTo((line: 14, column: 4));
+		}
+
 		[Theory]
-		[EmbeddedFileData(@"InstanceMethodConditionalAccess.cs")]
+		[EmbeddedFileData("InstanceMethodConditionalAccess.cs")]
 		public async Task InstanceMethodConditionalAccess(string text)
 		{
 			Document document = CreateDocument(text);
@@ -195,8 +210,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"SeparateFiles_AnalyzedClass.cs",
-			@"SeparateFiles_ExternalClass.cs")]
+		[EmbeddedFileData("SeparateFiles_AnalyzedClass.cs", "SeparateFiles_ExternalClass.cs")]
 		public async Task SeparateFiles(string text1, string text2)
 		{
 			Document document = CreateCSharpDocument(text1, text2);
