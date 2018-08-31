@@ -1,0 +1,45 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base;
+using Acuminator.Utilities.Roslyn.Semantic;
+using Microsoft.CodeAnalysis;
+
+namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRules
+{
+	/// <summary>
+	/// A rule to filter out views which are read only if graph has non read only views.
+	/// </summary>
+	public class NoReadOnlyViewGraphRule : GraphRuleBase
+	{
+		public sealed override bool IsAbsolute => false;
+
+		public NoReadOnlyViewGraphRule(double? weight = null) : base(weight)
+		{
+		}
+
+		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder)
+		{
+			if (dacFinder == null || dacFinder.CancellationToken.IsCancellationRequested)
+				return Enumerable.Empty<ITypeSymbol>();
+
+			List<INamedTypeSymbol> readOnlyViews = new List<INamedTypeSymbol>(capacity: 4);
+			List<INamedTypeSymbol> editableViews = new List<INamedTypeSymbol>(capacity: dacFinder.GraphViewSymbolsWithTypes.Length);
+
+			foreach (var viewWithType in dacFinder.GraphViewSymbolsWithTypes)
+			{
+				if (dacFinder.CancellationToken.IsCancellationRequested)
+					return Enumerable.Empty<ITypeSymbol>();
+
+				if (viewWithType.ViewType.IsReadOnlyBqlCommand(dacFinder.PxContext))
+					readOnlyViews.Add(viewWithType.ViewType);
+				else
+					editableViews.Add(viewWithType.ViewType);
+			}
+
+			if (editableViews.Count == 0 || dacFinder.CancellationToken.IsCancellationRequested)
+				return Enumerable.Empty<ITypeSymbol>();
+
+			return readOnlyViews.Select(viewType => viewType.GetDacFromView(dacFinder.PxContext));
+		}
+	}
+}

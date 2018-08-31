@@ -316,18 +316,27 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of required arguments is {1}..
         /// </summary>
-        public static string PX1015TitleSuffixWithOnlyRequiredParams {
+        public static string PX1015MessageFormatWithOnlyRequiredParams {
             get {
-                return ResourceManager.GetString("PX1015TitleSuffixWithOnlyRequiredParams", resourceCulture);
+                return ResourceManager.GetString("PX1015MessageFormatWithOnlyRequiredParams", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The number of arguments passed to the {0} method does not match the number of BQL statement parameters. The number of arguments should be from {1} to {2}..
         /// </summary>
-        public static string PX1015TitleSuffixWithRequiredAndOptionalParams {
+        public static string PX1015MessageFormatWithRequiredAndOptionalParams {
             get {
-                return ResourceManager.GetString("PX1015TitleSuffixWithRequiredAndOptionalParams", resourceCulture);
+                return ResourceManager.GetString("PX1015MessageFormatWithRequiredAndOptionalParams", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of arguments passed to the method does not match the number of BQL statement parameters.
+        /// </summary>
+        public static string PX1015Title {
+            get {
+                return ResourceManager.GetString("PX1015Title", resourceCulture);
             }
         }
         
@@ -424,6 +433,15 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to The {0} field cannot be declared within a DAC declaration.
         /// </summary>
+        public static string PX1027MessageFormat {
+            get {
+                return ResourceManager.GetString("PX1027MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to System fields cannot be declared within a DAC declaration.
+        /// </summary>
         public static string PX1027Title {
             get {
                 return ResourceManager.GetString("PX1027Title", resourceCulture);
@@ -454,6 +472,33 @@ namespace Acuminator.Analyzers {
         public static string PX1029Title {
             get {
                 return ResourceManager.GetString("PX1029Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For a bound field, set PersistingCheck of PXDefaultAttribute to Nothing.
+        /// </summary>
+        public static string PX1030FixBound {
+            get {
+                return ResourceManager.GetString("PX1030FixBound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For an unbound field, replace with PXUnboundDefaultAttribute.
+        /// </summary>
+        public static string PX1030FixUnbound {
+            get {
+                return ResourceManager.GetString("PX1030FixUnbound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The PXDefault attribute of the field is used incorrectly.
+        /// </summary>
+        public static string PX1030Title {
+            get {
+                return ResourceManager.GetString("PX1030Title", resourceCulture);
             }
         }
         

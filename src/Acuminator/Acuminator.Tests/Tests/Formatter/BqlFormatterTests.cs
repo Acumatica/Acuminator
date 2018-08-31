@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Acuminator.Vsix.Formatter;
 using Acuminator.Tests.Helpers;
+using Acuminator.Tests.Verification;
+using Acuminator.Vsix.Formatter;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Text;
-using TestHelper;
 using Xunit;
 
-namespace Acuminator.Tests
+namespace Acuminator.Tests.Tests.Formatter
 {
 	public class BqlFormatterTests : DiagnosticVerifier
 	{
@@ -31,16 +28,16 @@ namespace Acuminator.Tests
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"BQL\Raw\View.cs", @"BQL\Formatted\View.cs")]
-		[EmbeddedFileData(@"BQL\Raw\StaticCall.cs", @"BQL\Formatted\StaticCall.cs")]
-		[EmbeddedFileData(@"BQL\Raw\StaticCall_GroupBy.cs", @"BQL\Formatted\StaticCall_GroupBy.cs")]
-		[EmbeddedFileData(@"BQL\Raw\SearchInAttribute.cs", @"BQL\Formatted\SearchInAttribute.cs")]
-		[EmbeddedFileData(@"BQL\Raw\View_JoinWhere2.cs", @"BQL\Formatted\View_JoinWhere2.cs")]
-		[EmbeddedFileData(@"BQL\Raw\View_MultipleJoins.cs", @"BQL\Formatted\View_MultipleJoins.cs")]
-		[EmbeddedFileData(@"BQL\Raw\View_Complex.cs", @"BQL\Formatted\View_Complex.cs")]
-		[EmbeddedFileData(@"BQL\Raw\View_NestedWhere.cs", @"BQL\Formatted\View_NestedWhere.cs")]
-		[EmbeddedFileData(@"BQL\Raw\View_EmptyLines.cs", @"BQL\Formatted\View_EmptyLines.cs")]
-		[EmbeddedFileData(@"BQL\Raw\Search_Join.cs", @"BQL\Formatted\Search_Join.cs")]
+		[EmbeddedFileData(@"Raw\View.cs", @"Formatted\View.cs")]
+		[EmbeddedFileData(@"Raw\StaticCall.cs", @"Formatted\StaticCall.cs")]
+		[EmbeddedFileData(@"Raw\StaticCall_GroupBy.cs", @"Formatted\StaticCall_GroupBy.cs")]
+		[EmbeddedFileData(@"Raw\SearchInAttribute.cs", @"Formatted\SearchInAttribute.cs")]
+		[EmbeddedFileData(@"Raw\View_JoinWhere2.cs", @"Formatted\View_JoinWhere2.cs")]
+		[EmbeddedFileData(@"Raw\View_MultipleJoins.cs", @"Formatted\View_MultipleJoins.cs")]
+		[EmbeddedFileData(@"Raw\View_Complex.cs", @"Formatted\View_Complex.cs")]
+		[EmbeddedFileData(@"Raw\View_NestedWhere.cs", @"Formatted\View_NestedWhere.cs")]
+		[EmbeddedFileData(@"Raw\View_EmptyLines.cs", @"Formatted\View_EmptyLines.cs")]
+		[EmbeddedFileData(@"Raw\Search_Join.cs", @"Formatted\Search_Join.cs")]
 		public virtual void FormatDocument(string text, string expected)
 		{
 			string actual = Format(text); 
@@ -48,16 +45,16 @@ namespace Acuminator.Tests
 		}
 
 		[Theory]
-		[EmbeddedFileData(@"BQL\Formatted\View.cs")]
-		[EmbeddedFileData(@"BQL\Formatted\StaticCall.cs")]
-		[EmbeddedFileData(@"BQL\Formatted\StaticCall_GroupBy.cs")]
-		[EmbeddedFileData(@"BQL\Formatted\SearchInAttribute.cs")]
-		[EmbeddedFileData(@"BQL\Formatted\View_JoinWhere2.cs")]
-		[EmbeddedFileData(@"BQL\Formatted\View_MultipleJoins.cs")]
-		[EmbeddedFileData(@"BQL\Formatted\View_Complex.cs")]
-		[EmbeddedFileData(@"BQL\Formatted\View_NestedWhere.cs")]
-		[EmbeddedFileData(@"BQL\Formatted\View_EmptyLines.cs")]
-		[EmbeddedFileData(@"BQL\Formatted\Search_Join.cs")]
+		[EmbeddedFileData(@"Formatted\View.cs")]
+		[EmbeddedFileData(@"Formatted\StaticCall.cs")]
+		[EmbeddedFileData(@"Formatted\StaticCall_GroupBy.cs")]
+		[EmbeddedFileData(@"Formatted\SearchInAttribute.cs")]
+		[EmbeddedFileData(@"Formatted\View_JoinWhere2.cs")]
+		[EmbeddedFileData(@"Formatted\View_MultipleJoins.cs")]
+		[EmbeddedFileData(@"Formatted\View_Complex.cs")]
+		[EmbeddedFileData(@"Formatted\View_NestedWhere.cs")]
+		[EmbeddedFileData(@"Formatted\View_EmptyLines.cs")]
+		[EmbeddedFileData(@"Formatted\Search_Join.cs")]
 		public virtual void ShouldNotDoubleFormat(string expected)
 		{
 			string actual = Format(expected); 
@@ -65,7 +62,8 @@ namespace Acuminator.Tests
 		}
 
 		[Theory]
-		[EmbeddedFileDataWithParams(@"BQL\Raw\Search_Join.cs", @"BQL\Formatted\Search_Join.cs", 28, 28, 28, 35)]
+		[EmbeddedFileDataWithParams(@"Raw\Search_Join.cs", @"Formatted\Search_Join.cs",
+			new object[] { 28, 28, 28, 35 })]
 		public virtual void FormatSelection(string text, string expected,  
 			int startLine, int endLine,
 			int expectedStartLine, int expectedEndLine)
@@ -107,7 +105,7 @@ namespace Acuminator.Tests
 			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
 			SyntaxNode formattedNode = _formatter.Format(syntaxRoot, semanticModel);
 
-			formattedNode = formattedNode.WithAdditionalAnnotations(Formatter.Annotation);
+			formattedNode = formattedNode.WithAdditionalAnnotations(Microsoft.CodeAnalysis.Formatting.Formatter.Annotation);
 			string actual = formattedNode.ToFullString(); 
 
 			return actual;

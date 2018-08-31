@@ -21,11 +21,11 @@ using Microsoft.VisualStudio.Text.Outlining;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Acuminator.Utilities;
 using Acuminator.Analyzers;
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Vsix;
 using Acuminator.Vsix.Utilities;
-using Acuminator.Utilities.Extra;
-
-
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 using Document = Microsoft.CodeAnalysis.Document;
 
@@ -349,12 +349,12 @@ namespace Acuminator.Vsix.GoToDeclaration
 			else
 			{
 				return method.Parameters[0].Type.InheritsFromOrEquals(pxContext.PXAdapterType) &&
-					   method.ReturnType.InheritsFromOrEquals(pxContext.IEnumerable, includeInterfaces: true);
+					   method.ReturnType.InheritsFromOrEquals(pxContext.SystemTypes.IEnumerable, includeInterfaces: true);
 			}
 		}
 
 		private static bool IsValidViewDelegate(IMethodSymbol method, PXContext pxContext) =>
-			 method.ReturnType.InheritsFromOrEquals(pxContext.IEnumerable, includeInterfaces: true);
+			 method.ReturnType.InheritsFromOrEquals(pxContext.SystemTypes.IEnumerable, includeInterfaces: true);
 
 		private void ExpandAllRegionsContainingSpan(SnapshotSpan selectedSpan, IWpfTextView textView)
 		{

@@ -15,6 +15,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
 
 
 namespace Acuminator.Vsix.Coloriser
