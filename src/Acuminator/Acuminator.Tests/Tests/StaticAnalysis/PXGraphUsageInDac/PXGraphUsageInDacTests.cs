@@ -44,5 +44,12 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphUsageInDac
 				Descriptors.PX1029_PXGraphUsageInDac.CreateFor(23, 6),
 			    Descriptors.PX1029_PXGraphUsageInDac.CreateFor(24, 16));
 	    }
-	}
+
+        [Theory]
+        [EmbeddedFileData(@"DacWithGraphUsageInAttribute.cs")]
+        public void TestDiagnostic_DacWithGraphUsageInAttributeIsIgnored(string source)
+        {
+            VerifyCSharpDiagnostic(source);
+        }
+    }
 }
