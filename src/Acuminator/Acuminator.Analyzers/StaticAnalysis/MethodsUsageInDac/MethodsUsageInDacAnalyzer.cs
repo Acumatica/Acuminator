@@ -66,6 +66,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
                 pxContext.SystemTypes.Int32,
                 pxContext.SystemTypes.Int64,
                 pxContext.SystemTypes.Decimal,
+                pxContext.SystemTypes.Float,
                 pxContext.SystemTypes.Double,
                 pxContext.SystemTypes.String,
                 pxContext.SystemTypes.Guid,
