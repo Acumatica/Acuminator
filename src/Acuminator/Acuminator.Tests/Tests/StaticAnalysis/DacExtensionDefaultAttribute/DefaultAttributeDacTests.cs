@@ -30,8 +30,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacExtensionDefaultAttribute
 		[EmbeddedFileData("DacExtensionWithUnboundFields.cs")]
 		public virtual void TestDacExtensionWithUnboundFields(string source) =>
 			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 23, column: 4),
-				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 30, column: 4));
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 23, column: 4));
 
 		[Theory]
 		[EmbeddedFileData("DacWithBoundAndUnboundFields.cs")]
