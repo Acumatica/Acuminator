@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -393,7 +394,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				// Old syntax
 				if (symbol.Parameters[0].Type.OriginalDefinition.InheritsFromOrEquals(pxContext.PXCacheType))
 				{
-					if (symbol.Name == "CacheAttached")
+					if (symbol.Name.EndsWith("CacheAttached", StringComparison.Ordinal))
 						return EventType.CacheAttached;
 
 					if (symbol.Parameters.Length >= 2)
