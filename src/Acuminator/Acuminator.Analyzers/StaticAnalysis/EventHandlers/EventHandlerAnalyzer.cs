@@ -52,6 +52,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 				{
 					foreach (var innerAnalyzer in _innerAnalyzers)
 					{
+						context.CancellationToken.ThrowIfCancellationRequested();
 						innerAnalyzer.Analyze(context, pxContext, eventType);
 					}
 				}
