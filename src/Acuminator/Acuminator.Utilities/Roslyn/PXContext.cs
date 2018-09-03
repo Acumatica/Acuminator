@@ -116,6 +116,7 @@ namespace Acuminator.Utilities.Roslyn
 			public INamedTypeSymbol Decimal => _compilation.GetSpecialType(SpecialType.System_Decimal);
 			public INamedTypeSymbol DateTime => _compilation.GetSpecialType(SpecialType.System_DateTime);
 			public INamedTypeSymbol Nullable => _compilation.GetSpecialType(SpecialType.System_Nullable_T);
+            public INamedTypeSymbol Enum => _compilation.GetSpecialType(SpecialType.System_Enum);
 
 			public INamedTypeSymbol IEnumerable => _compilation.GetSpecialType(SpecialType.System_Collections_IEnumerable);
 

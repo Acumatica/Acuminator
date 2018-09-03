@@ -68,5 +68,15 @@ namespace Acuminator.Tests.Sources
             }
         }
         public abstract class endDateUI : PX.Data.IBqlField { }
+
+        public string Property
+        {
+            get
+            {
+                return MyEnum.Val.ToString();
+            }
+        }
+
+        public enum MyEnum { Val };
     }
 }

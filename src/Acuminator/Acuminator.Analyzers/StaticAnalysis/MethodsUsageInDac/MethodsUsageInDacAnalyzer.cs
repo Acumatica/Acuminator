@@ -72,6 +72,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
                 pxContext.SystemTypes.Guid,
                 pxContext.SystemTypes.DateTime,
                 pxContext.SystemTypes.TimeSpan,
+                pxContext.SystemTypes.Enum,
                 pxContext.SystemTypes.Nullable
             };
         }
