@@ -12,7 +12,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 {
     internal class LocalizationMessageHelper
     {
-        private const string _formatRegexString = @"(?<Par>{(\w+|:+)})";
+        private const string _formatRegexString = @"(?<Par>{[\w:,-]+})";
         private static readonly Regex _formatRegex = new Regex(_formatRegexString, RegexOptions.CultureInvariant);
         private readonly SyntaxNodeAnalysisContext _syntaxContext;
         private readonly PXContext _pxContext;
