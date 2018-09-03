@@ -21,8 +21,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
 
-		public EventHandlerAnalyzer()
-			: this(new ConnectionScopeInRowSelectingAnalyzer())
+		public EventHandlerAnalyzer() : this(
+			new ConnectionScopeInRowSelectingAnalyzer()) // can be replaced with DI from ServiceLocator if DI-container is used
 		{
 		}
 
