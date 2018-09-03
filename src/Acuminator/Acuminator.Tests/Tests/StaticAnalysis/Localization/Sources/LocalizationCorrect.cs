@@ -1,4 +1,5 @@
 ﻿using PX.Data;
+using System;
 
 namespace Acuminator.Tests.Sources
 {
@@ -25,6 +26,7 @@ namespace Acuminator.Tests.Sources
             localizedString = PXMessages.LocalizeFormatNoPrefix(MyMessages.StringToFormat, parameter);
             localizedString = PXMessages.LocalizeFormatNoPrefixNLA(MyMessages.StringToFormat, parameter);
             localizedString = PXMessages.LocalizeFormatNoPrefix(ComplexMessages.DocDiscountExceedLimit, parameter);
+            localizedString = PXMessages.LocalizeFormatNoPrefix(ComplexMessages.DateTimeStr, DateTime.Now);
 
             return localizedString;
         }
