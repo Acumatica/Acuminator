@@ -117,19 +117,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 			if (attributeNode.ArgumentList != null)
 			{
 				AttributeArgumentSyntax argument = getAttr();
-
-				AttributeArgumentSyntax getAttr(){
-					foreach (AttributeArgumentSyntax _argument in attributeNode.ArgumentList.Arguments)
-					{
-						if (_argument.NameEquals != null 
-							&& _argument.NameEquals.Name.Identifier.Text.Contains(_PersistingCheck))
-						{
-							return _argument;
-						}
-					}
-					return null;
-				}
-
+				
 				if (argument != null )
 				{
 					persistingAttributeArgument = argument.ReplaceNode(argument.Expression, memberAccessExpression);
@@ -150,6 +138,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 			}
 
 			return document.WithSyntaxRoot(modifiedRoot);
+
+			AttributeArgumentSyntax getAttr()
+			{
+				foreach (AttributeArgumentSyntax _argument in attributeNode.ArgumentList.Arguments)
+				{
+					if (_argument.NameEquals != null
+						&& _argument.NameEquals.Name.Identifier.Text.Contains(_PersistingCheck))
+					{
+						return _argument;
+					}
+				}
+				return null;
+			}
+
 		}
 
 		public static bool IsBoundField(Diagnostic diagnostic)
