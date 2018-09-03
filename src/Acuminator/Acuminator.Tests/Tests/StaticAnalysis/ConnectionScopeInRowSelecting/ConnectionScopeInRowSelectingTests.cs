@@ -81,6 +81,13 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ConnectionScopeInRowSelecting
 		}
 
 		[Theory]
+		[EmbeddedFileData("Lambda.cs")]
+		public void TestDiagnostic_Lambda(string actual)
+		{
+			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(14, 77));
+		}
+
+		[Theory]
 		[EmbeddedFileData("BQLSelect_Expected.cs")]
 		public void TestDiagnostic_BQLSelect_ShouldNotShowDiagnostic(string actual)
 		{
