@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
 {
-    public class LocalizationCorrectTests : DiagnosticVerifier
+    public class LocalizationInvocationCorrectTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new LocalizationInvocationAnalyzer();
 
