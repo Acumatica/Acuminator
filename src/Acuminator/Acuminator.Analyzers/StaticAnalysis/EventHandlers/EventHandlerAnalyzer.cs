@@ -40,7 +40,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
 			compilationStartContext.RegisterSymbolAction(c => AnalyzeMethod(c, pxContext), SymbolKind.Method);
-			compilationStartContext.RegisterOperationAction(c => AnalyzeLambda(c, pxContext), OperationKind.LambdaExpression);
+			// TODO: Enable this operation action after migration to Roslyn v2
+			//compilationStartContext.RegisterOperationAction(c => AnalyzeLambda(c, pxContext), OperationKind.LambdaExpression);
 		}
 
 		private void AnalyzeMethod(SymbolAnalysisContext context, PXContext pxContext)

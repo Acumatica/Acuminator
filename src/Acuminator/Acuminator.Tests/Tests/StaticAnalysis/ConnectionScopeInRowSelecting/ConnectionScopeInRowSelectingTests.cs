@@ -80,14 +80,16 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ConnectionScopeInRowSelecting
 			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(18, 23));
 		}
 
-		[Theory]
+		// TODO: Enable this test after migration to Roslyn v2
+		[Theory(Skip = "IOperation feature (Operation Actions) is experimental in Roslyn v1")]
 		[EmbeddedFileData("Lambda.cs")]
 		public void TestDiagnostic_Lambda(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(14, 66));
 		}
 
-		[Theory]
+		// TODO: Enable this test after migration to Roslyn v2
+		[Theory(Skip = "IOperation feature (Operation Actions) is experimental in Roslyn v1")]
 		[EmbeddedFileData("LambdaWithBody.cs")]
 		public void TestDiagnostic_LambdaWithBody(string actual)
 		{
