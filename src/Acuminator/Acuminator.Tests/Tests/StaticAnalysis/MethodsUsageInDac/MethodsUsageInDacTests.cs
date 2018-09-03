@@ -40,5 +40,13 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.MethodsUsageInDac
 	    {
 		    VerifyCSharpDiagnostic(source);
 	    }
-	}
+
+        [Theory]
+        [EmbeddedFileData("DacWithSystemTypesUsage.cs")]
+        public void TestDiagnostic_DacWithSystemTypesUsage_ShouldNotShowDiagnostic(string source)
+        {
+            VerifyCSharpDiagnostic(source);
+        }
+
+    }
 }
