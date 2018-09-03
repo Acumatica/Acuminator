@@ -1,5 +1,6 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting;
+using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis;
@@ -13,7 +14,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ConnectionScopeInRowSelecting
 	{
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new ConnectionScopeInRowSelectingFix();
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new ConnectionScopeInRowSelectingAnalyzer();
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => 
+			new EventHandlerAnalyzer(new ConnectionScopeInRowSelectingAnalyzer());
 
 		[Theory]
 		[EmbeddedFileData("BQLSelect.cs")]
