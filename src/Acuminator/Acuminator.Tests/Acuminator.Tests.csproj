@@ -157,7 +157,9 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\BqlParameterMismatch\Sources\SOOrder.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\MethodsUsageInDac\Sources\DacWithSystemTypesUsage.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphUsageInDac\Sources\DacWithGraphUsageInAttribute.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\Localization\Sources\LocalizationNonLocalizationException.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\InstanceExpressionBodiedMethod.cs" />
+    <Compile Include="Tests\StaticAnalysis\Localization\LocalizationPXExceptionCorrectTests.cs" />
     <Compile Include="Verification\DiagnosticResultExtensions.cs" />
     <Compile Include="Verification\FluentAssertionsExtensions.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\LongOperationDelegateClosures.cs" />
@@ -261,7 +263,7 @@
     <Compile Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\ConnectionScopeInRowSelectingTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\DefaultAttributeDacTests.cs" />
     <Compile Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtension\InheritanceFromPXCacheExtensionTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\Localization\LocalizationCorrectTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\Localization\LocalizationInvocationCorrectTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Localization\LocalizationHardcodeInExceptionTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Localization\LocalizationHardcodeInMethodTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Localization\LocalizationNonLocalizableStringInExceptionTests.cs" />
