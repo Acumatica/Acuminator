@@ -39,9 +39,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
                 return;
 
             INamedTypeSymbol type = syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration);
-            bool isPXException = type != null && type.InheritsFromOrEquals(pxContext.PXException);
+            bool isLocalizableException = type != null && IsLocalizableException(syntaxContext, pxContext, type);
 
-            if (!isPXException)
+            if (!isLocalizableException)
                 return;
 
             IEnumerable<ConstructorInitializerSyntax> baseCtors = classDeclaration.DescendantNodes()
@@ -93,9 +93,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
                 return;
 
             ITypeSymbol type = syntaxContext.SemanticModel.GetTypeInfo(ctorNode, syntaxContext.CancellationToken).Type;
-            bool isPXException = type != null && type.InheritsFromOrEquals(pxContext.PXException);
+            bool isLocalizableException = type != null && IsLocalizableException(syntaxContext, pxContext, type);
 
-            if (!isPXException)
+            if (!isLocalizableException)
                 return;
 
             if (!(syntaxContext.SemanticModel.GetSymbolInfo(ctorNode, syntaxContext.CancellationToken).Symbol is IMethodSymbol ctorSymbol))
@@ -109,6 +109,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 
             LocalizationMessageHelper messageHelper = new LocalizationMessageHelper(syntaxContext, pxContext, messageExpression, false);
             messageHelper.ValidateMessage();
+        }
+
+        private bool IsLocalizableException(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext, ITypeSymbol type)
+        {
+            syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+
+            return type.InheritsFromOrEquals(pxContext.PXException) && !type.InheritsFromOrEquals(pxContext.PXBaseRedirectException);
         }
     }
 }
