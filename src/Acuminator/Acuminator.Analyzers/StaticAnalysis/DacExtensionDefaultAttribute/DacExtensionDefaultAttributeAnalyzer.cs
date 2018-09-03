@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -75,16 +74,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 			foreach (var attribute in attributes)
 			{
-				
+
 				if (attributeInformation.AttributeDerivedFromClass(attribute.AttributeClass, pxContext.AttributeTypes.PXDefaultAttribute))
 				{
 					foreach (KeyValuePair<string, TypedConstant> argument in attribute.NamedArguments)
 					{
 						if (isAttributeContainsPersistingCheckNothing(argument))
-							return ;
+							return;
 					}
 
-					Location attributeLocation = await GetAttributeLocationAsync(attribute,symbolContext.CancellationToken);
+					Location attributeLocation = await GetAttributeLocationAsync(attribute, symbolContext.CancellationToken);
 
 					if (attributeLocation != null)
 					{
@@ -96,7 +95,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 						symbolContext.ReportDiagnostic(
 							Diagnostic.Create(
 								Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attributeLocation, diagnosticProperties));
- 					}
+					}
 				}
 			}
 		}
@@ -112,7 +111,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 			foreach (AttributeData attribute in attributes)
 			{
 
-				if (attributeInformation.AttributeDerivedFromClass(attribute.AttributeClass, pxContext.AttributeTypes.PXDefaultAttribute) && 
+				if (attributeInformation.AttributeDerivedFromClass(attribute.AttributeClass, pxContext.AttributeTypes.PXDefaultAttribute) &&
 					!attributeInformation.AttributeDerivedFromClass(attribute.AttributeClass, pxContext.AttributeTypes.PXUnboundDefaultAttribute))
 				{
 					foreach (KeyValuePair<string, TypedConstant> argument in attribute.NamedArguments)

@@ -476,7 +476,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to For a bound field, set PersistingCheck of PXDefaultAttribute to Nothing.
+        ///   Looks up a localized string similar to For a bound and unbound field, set PersistingCheck of PXDefaultAttribute to Nothing.
         /// </summary>
         public static string PX1030FixBound {
             get {
@@ -494,7 +494,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The PXDefault attribute of the field is used incorrectly.
+        ///   Looks up a localized string similar to The PXDefault attribute of the existing field is used incorrectly.
         /// </summary>
         public static string PX1030Title {
             get {
