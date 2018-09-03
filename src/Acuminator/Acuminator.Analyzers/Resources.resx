@@ -259,7 +259,7 @@
     <value>Set PersistingCheck of PXDefaultAttribute to Nothing</value>
   </data>
   <data name="PX1030Title" xml:space="preserve">
-    <value>The PXDefault attribute of the existing field is used incorrectly. PXDefaultAttribute used on a custom field defined in PXCacheExtension can potentially prevent updates to existing records when used without PersistingCheck property set to Nothing</value>
+    <value>The PXDefault attribute of the field is used incorrectly. PXDefaultAttribute used on a custom field defined in PXCacheExtension can potentially prevent updates to existing records when used without PersistingCheck property set to Nothing</value>
   </data>
   <data name="PX1040Fix" xml:space="preserve">
     <value>Move the code to the Initialize() method</value>
