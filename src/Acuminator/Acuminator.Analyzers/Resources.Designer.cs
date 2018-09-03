@@ -476,7 +476,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to For a bound and unbound field, set PersistingCheck of PXDefaultAttribute to Nothing.
+        ///   Looks up a localized string similar to Set PersistingCheck of PXDefaultAttribute to Nothing.
         /// </summary>
         public static string PX1030FixBound {
             get {
@@ -485,7 +485,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to For an unbound field, replace with PXUnboundDefaultAttribute.
+        ///   Looks up a localized string similar to Replace with PXUnboundDefaultAttribute.
         /// </summary>
         public static string PX1030FixUnbound {
             get {
@@ -494,7 +494,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The PXDefault attribute of the existing field is used incorrectly.
+        ///   Looks up a localized string similar to The PXDefault attribute of the existing field is used incorrectly. PXDefaultAttribute used on a custom field defined in PXCacheExtension can potentially prevent updates to existing records when used without PersistingCheck property set to Nothing.
         /// </summary>
         public static string PX1030Title {
             get {
