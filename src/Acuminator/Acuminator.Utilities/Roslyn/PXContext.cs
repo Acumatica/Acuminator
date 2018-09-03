@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using PX.Data;
@@ -304,7 +305,12 @@ namespace Acuminator.Utilities.Roslyn
 			public EventSymbols(Compilation compilation)
 			{
 				_compilation = compilation;
+				_eventTypeMap = new Lazy<IReadOnlyDictionary<ITypeSymbol, EventType>>(
+					() => CreateEventTypeMap(this));
 			}
+
+			private readonly Lazy<IReadOnlyDictionary<ITypeSymbol, EventType>> _eventTypeMap;
+			public IReadOnlyDictionary<ITypeSymbol, EventType> EventTypeMap => _eventTypeMap.Value;
 
 			public INamedTypeSymbol PXRowSelectingEventArgs => _compilation.GetTypeByMetadataName(typeof(PXRowSelectingEventArgs).FullName);
 			public INamedTypeSymbol PXRowSelectedEventArgs => _compilation.GetTypeByMetadataName(typeof(PXRowSelectedEventArgs).FullName);
@@ -344,6 +350,49 @@ namespace Acuminator.Utilities.Roslyn
 			public INamedTypeSymbol FieldUpdated => _compilation.GetTypeByMetadataName(typeof(Events.FieldUpdated<>).FullName);
 			public INamedTypeSymbol CommandPreparing => _compilation.GetTypeByMetadataName(typeof(Events.CommandPreparing<>).FullName);
 			public INamedTypeSymbol ExceptionHandling => _compilation.GetTypeByMetadataName(typeof(Events.ExceptionHandling<>).FullName);
+
+			private static IReadOnlyDictionary<ITypeSymbol, EventType> CreateEventTypeMap(EventSymbols eventSymbols)
+			{
+				return new Dictionary<ITypeSymbol, EventType>()
+				{
+					{ eventSymbols.PXRowSelectingEventArgs, EventType.RowSelecting },
+					{ eventSymbols.PXRowSelectedEventArgs, EventType.RowSelected },
+					{ eventSymbols.PXRowInsertingEventArgs, EventType.RowInserting },
+					{ eventSymbols.PXRowInsertedEventArgs, EventType.RowInserted },
+					{ eventSymbols.PXRowUpdatingEventArgs, EventType.RowUpdating },
+					{ eventSymbols.PXRowUpdatedEventArgs, EventType.RowUpdated },
+					{ eventSymbols.PXRowDeletingEventArgs, EventType.RowDeleting },
+					{ eventSymbols.PXRowDeletedEventArgs, EventType.RowDeleted },
+					{ eventSymbols.PXRowPersistingEventArgs, EventType.RowPersisting },
+					{ eventSymbols.PXRowPersistedEventArgs, EventType.RowPersisted },
+					{ eventSymbols.PXFieldSelectingEventArgs, EventType.FieldSelecting },
+					{ eventSymbols.PXFieldDefaultingEventArgs, EventType.FieldDefaulting },
+					{ eventSymbols.PXFieldVerifyingEventArgs, EventType.FieldVerifying },
+					{ eventSymbols.PXFieldUpdatingEventArgs, EventType.FieldUpdating },
+					{ eventSymbols.PXFieldUpdatedEventArgs, EventType.FieldUpdated },
+					{ eventSymbols.PXCommandPreparingEventArgs, EventType.CommandPreparing },
+					{ eventSymbols.PXExceptionHandlingEventArgs, EventType.ExceptionHandling },
+
+					{ eventSymbols.CacheAttached, EventType.CacheAttached },
+					{ eventSymbols.RowSelecting, EventType.RowSelecting },
+					{ eventSymbols.RowSelected, EventType.RowSelected },
+					{ eventSymbols.RowInserting, EventType.RowInserting },
+					{ eventSymbols.RowInserted, EventType.RowInserted },
+					{ eventSymbols.RowUpdating, EventType.RowUpdating },
+					{ eventSymbols.RowUpdated, EventType.RowUpdated },
+					{ eventSymbols.RowDeleting, EventType.RowDeleting },
+					{ eventSymbols.RowDeleted, EventType.RowDeleted },
+					{ eventSymbols.RowPersisting, EventType.RowPersisting },
+					{ eventSymbols.RowPersisted, EventType.RowPersisted },
+					{ eventSymbols.FieldSelecting, EventType.FieldSelecting },
+					{ eventSymbols.FieldDefaulting, EventType.FieldDefaulting },
+					{ eventSymbols.FieldVerifying, EventType.FieldVerifying },
+					{ eventSymbols.FieldUpdating, EventType.FieldUpdating },
+					{ eventSymbols.FieldUpdated, EventType.FieldUpdated },
+					{ eventSymbols.CommandPreparing, EventType.CommandPreparing },
+					{ eventSymbols.ExceptionHandling, EventType.ExceptionHandling },
+				};
+			}
 		}
 
 		#endregion

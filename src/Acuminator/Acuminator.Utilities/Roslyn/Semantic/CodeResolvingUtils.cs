@@ -389,7 +389,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		{
 			if (symbol.ReturnsVoid && symbol.TypeParameters.IsEmpty && !symbol.Parameters.IsEmpty)
 			{
-				// Loosely check method signature because sometimes business logic from event handler calls is extracted to a separate method
+				// Loosely check method signature because sometimes business logic 
+				// is extracted from event handler calls to a separate method
 
 				// Old syntax
 				if (symbol.Parameters[0].Type.OriginalDefinition.InheritsFromOrEquals(pxContext.PXCacheType))
@@ -397,54 +398,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 					if (symbol.Name.EndsWith("CacheAttached", StringComparison.Ordinal))
 						return EventType.CacheAttached;
 
-					if (symbol.Parameters.Length >= 2)
+					if (symbol.Parameters.Length >= 2 && pxContext.Events.EventTypeMap.TryGetValue(
+						symbol.Parameters[1].Type.OriginalDefinition, out EventType eventType))
 					{
-						switch (symbol.Parameters[1].Type.OriginalDefinition)
-						{
-							case var t when t.Equals(pxContext.Events.PXRowSelectingEventArgs): return EventType.RowSelecting;
-							case var t when t.Equals(pxContext.Events.PXRowSelectedEventArgs): return EventType.RowSelected;
-							case var t when t.Equals(pxContext.Events.PXRowInsertingEventArgs): return EventType.RowInserting;
-							case var t when t.Equals(pxContext.Events.PXRowInsertedEventArgs): return EventType.RowInserted;
-							case var t when t.Equals(pxContext.Events.PXRowUpdatingEventArgs): return EventType.RowUpdating;
-							case var t when t.Equals(pxContext.Events.PXRowUpdatedEventArgs): return EventType.RowUpdated;
-							case var t when t.Equals(pxContext.Events.PXRowDeletingEventArgs): return EventType.RowDeleting;
-							case var t when t.Equals(pxContext.Events.PXRowDeletedEventArgs): return EventType.RowDeleted;
-							case var t when t.Equals(pxContext.Events.PXRowPersistingEventArgs): return EventType.RowPersisting;
-							case var t when t.Equals(pxContext.Events.PXRowPersistedEventArgs): return EventType.RowPersisted;
-							case var t when t.Equals(pxContext.Events.PXFieldSelectingEventArgs): return EventType.FieldSelecting;
-							case var t when t.Equals(pxContext.Events.PXFieldDefaultingEventArgs): return EventType.FieldDefaulting;
-							case var t when t.Equals(pxContext.Events.PXFieldVerifyingEventArgs): return EventType.FieldVerifying;
-							case var t when t.Equals(pxContext.Events.PXFieldUpdatingEventArgs): return EventType.FieldUpdating;
-							case var t when t.Equals(pxContext.Events.PXFieldUpdatedEventArgs): return EventType.FieldUpdated;
-							case var t when t.Equals(pxContext.Events.PXCommandPreparingEventArgs): return EventType.CommandPreparing;
-							case var t when t.Equals(pxContext.Events.PXExceptionHandlingEventArgs): return EventType.ExceptionHandling;
-						}
+						return eventType;
 					}
 				}
-				else
+				else if (pxContext.Events.EventTypeMap.TryGetValue(
+					symbol.Parameters[0].Type.OriginalDefinition, out EventType eventType)) // New generic event handler syntax
 				{
-					// New generic event syntax
-					switch (symbol.Parameters[0].Type.OriginalDefinition)
-					{
-						case var t when t.Equals(pxContext.Events.CacheAttached): return EventType.CacheAttached;
-						case var t when t.Equals(pxContext.Events.RowSelecting): return EventType.RowSelecting;
-						case var t when t.Equals(pxContext.Events.RowSelected): return EventType.RowSelected;
-						case var t when t.Equals(pxContext.Events.RowInserting): return EventType.RowInserting;
-						case var t when t.Equals(pxContext.Events.RowInserted): return EventType.RowInserted;
-						case var t when t.Equals(pxContext.Events.RowUpdating): return EventType.RowUpdating;
-						case var t when t.Equals(pxContext.Events.RowUpdated): return EventType.RowUpdated;
-						case var t when t.Equals(pxContext.Events.RowDeleting): return EventType.RowDeleting;
-						case var t when t.Equals(pxContext.Events.RowDeleted): return EventType.RowDeleted;
-						case var t when t.Equals(pxContext.Events.RowPersisting): return EventType.RowPersisting;
-						case var t when t.Equals(pxContext.Events.RowPersisted): return EventType.RowPersisted;
-						case var t when t.Equals(pxContext.Events.FieldSelecting): return EventType.FieldSelecting;
-						case var t when t.Equals(pxContext.Events.FieldDefaulting): return EventType.FieldDefaulting;
-						case var t when t.Equals(pxContext.Events.FieldVerifying): return EventType.FieldVerifying;
-						case var t when t.Equals(pxContext.Events.FieldUpdating): return EventType.FieldUpdating;
-						case var t when t.Equals(pxContext.Events.FieldUpdated): return EventType.FieldUpdated;
-						case var t when t.Equals(pxContext.Events.CommandPreparing): return EventType.CommandPreparing;
-						case var t when t.Equals(pxContext.Events.ExceptionHandling): return EventType.ExceptionHandling;
-					}
+					return eventType;
 				}
 			}
 
