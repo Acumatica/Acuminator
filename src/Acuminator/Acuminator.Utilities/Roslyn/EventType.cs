@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Acuminator.Utilities.Roslyn
 {
+	/// <summary>
+	/// Represents an event type in Acumatica Event Model.
+	/// </summary>
 	public enum EventType
 	{
 		None,

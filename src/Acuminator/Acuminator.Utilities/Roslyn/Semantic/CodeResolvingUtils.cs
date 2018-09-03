@@ -378,6 +378,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			}
 		}
 
+		/// <summary>
+		/// Returns event handler type for the provided method symbol.
+		/// </summary>
+		/// <param name="symbol">Method symbol for the event handler</param>
+		/// <param name="pxContext">PXContext instance</param>
+		/// <returns>Event Type (e.g. RowSelecting). If method is not an event handler, returns <code>EventType.None</code>.</returns>
 		public static EventType GetEventHandlerType(this IMethodSymbol symbol, PXContext pxContext)
 		{
 			if (symbol.ReturnsVoid && symbol.TypeParameters.IsEmpty && !symbol.Parameters.IsEmpty)
