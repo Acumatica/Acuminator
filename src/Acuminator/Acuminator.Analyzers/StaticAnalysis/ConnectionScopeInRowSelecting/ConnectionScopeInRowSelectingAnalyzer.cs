@@ -129,7 +129,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting
 			if (eventType == EventType.RowSelecting)
 			{
 				var methodSymbol = (IMethodSymbol) context.Symbol;
-				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as MethodDeclarationSyntax;
+				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
 				methodSyntax?.Accept(new Walker(context, pxContext));
 			}
 		}

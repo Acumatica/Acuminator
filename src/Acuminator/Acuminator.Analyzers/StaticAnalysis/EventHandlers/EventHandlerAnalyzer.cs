@@ -9,8 +9,10 @@ using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Semantics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 {
@@ -38,6 +40,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
 			compilationStartContext.RegisterSymbolAction(c => AnalyzeMethod(c, pxContext), SymbolKind.Method);
+			compilationStartContext.RegisterOperationAction(c => AnalyzeLambda(c, pxContext), OperationKind.LambdaExpression);
 		}
 
 		private void AnalyzeMethod(SymbolAnalysisContext context, PXContext pxContext)
@@ -56,6 +59,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 						innerAnalyzer.Analyze(context, pxContext, eventType);
 					}
 				}
+			}
+		}
+
+		private void AnalyzeLambda(OperationAnalysisContext context, PXContext pxContext)
+		{
+			if (context.Operation is ILambdaExpression lambdaExpression)
+			{
+				AnalyzeMethod(new SymbolAnalysisContext(
+					lambdaExpression.Signature, 
+					context.Compilation,
+					context.Options, 
+					context.ReportDiagnostic, 
+					d => true, // this check is covered inside context.ReportDiagnostic
+					context.CancellationToken),
+					pxContext);
 			}
 		}
 	}

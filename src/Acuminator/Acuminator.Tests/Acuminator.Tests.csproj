@@ -199,6 +199,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphUsageInDac\Sources\DacWithGraphUsageInAttribute.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\InstanceExpressionBodiedMethod.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\Lambda.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\LambdaWithBody.cs" />
     <Compile Include="Verification\DiagnosticResultExtensions.cs" />
     <Compile Include="Verification\FluentAssertionsExtensions.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\LongOperationDelegateClosures.cs" />

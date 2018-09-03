@@ -11,7 +11,13 @@ namespace PX.Objects
 	{
 		protected virtual void ARInvoice_CacheAttached(PXCache cache)
 		{
-			cache.Graph.RowSelecting.AddHandler<ARInvoice>((sender, e) => PXDatabase.SelectTimeStamp());
+			cache.Graph.RowSelecting.AddHandler<ARInvoice>((sender, e) =>
+			{
+				if (!e.IsReadOnly)
+				{
+					PXDatabase.SelectTimeStamp();
+				}
+			});
 		}
 	}
 }
