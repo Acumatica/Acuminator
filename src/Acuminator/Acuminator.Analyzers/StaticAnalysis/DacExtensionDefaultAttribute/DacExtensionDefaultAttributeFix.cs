@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
@@ -44,27 +45,60 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 			if (attributeNode != null && (attributeNode.Name as IdentifierNameSyntax).Identifier.Text.Equals(_PXDefault))
 			{
 				bool isBoundField = IsBoundField(diagnostic);
-				string codeActionNameBound = (isBoundField)
-												? nameof(Resources.PX1030FixBound).GetLocalized().ToString()
-												: nameof(Resources.PX1030FixUnbound).GetLocalized().ToString();
+				string codeActionNameBound = nameof(Resources.PX1030FixBound).GetLocalized().ToString() ;
+				string codeActionNameUnbound = nameof(Resources.PX1030FixUnbound).GetLocalized().ToString();
 
 				CodeAction codeActionBound =
 					CodeAction.Create(codeActionNameBound,
-							cToken => ReplaceIncorrectDefaultAttribute(context.Document, context.Span, isBoundField, cToken),
+							cToken => AddToAttributePersistingCheckNothing(context.Document, context.Span, isBoundField, cToken),
 							equivalenceKey: codeActionNameBound);
-
 				context.RegisterCodeFix(codeActionBound, context.Diagnostics);
+
+
+				if (!isBoundField)
+				{
+					CodeAction codeActionUnbound =
+						CodeAction.Create(codeActionNameUnbound,
+							cToken => ReplaceAttributeToPXUnboundDefault(context.Document, context.Span, cToken),
+							equivalenceKey: codeActionNameUnbound);
+					context.RegisterCodeFix(codeActionUnbound,context.Diagnostics);
+				}
+
 			}
 
 			return ;
 			
 		}
-
-		private async Task<Document> ReplaceIncorrectDefaultAttribute(Document document, TextSpan span, bool isBoundField,CancellationToken cancellationToken)
+				
+		private async Task<Document> ReplaceAttributeToPXUnboundDefault(Document document, TextSpan span, CancellationToken cancellationToken)
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
-			 if (!(root?.FindNode(span) is AttributeSyntax attributeNode))
+			if (!(root?.FindNode(span) is AttributeSyntax attributeNode))
+				return document;
+
+			if (!(attributeNode.Parent is AttributeListSyntax attributeList))
+				return document;
+
+			cancellationToken.ThrowIfCancellationRequested();
+
+			SyntaxGenerator generator = SyntaxGenerator.GetGenerator(document);
+
+			var pxUnboundDefaultAttribute = generator.Attribute(_PXUnboundDefaultAttributeName) as AttributeListSyntax;
+
+			SyntaxNode modifiedRoot;
+
+			modifiedRoot = root.ReplaceNode(attributeNode, pxUnboundDefaultAttribute.Attributes[0]);
+
+			return document.WithSyntaxRoot(modifiedRoot);
+
+		}
+
+		private async Task<Document> AddToAttributePersistingCheckNothing(Document document, TextSpan span, bool isBoundField,CancellationToken cancellationToken)
+		{
+			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+
+			if (!(root?.FindNode(span) is AttributeSyntax attributeNode))
 				return document;
 
 			if (!(attributeNode.Parent is AttributeListSyntax attributeList))
@@ -78,50 +112,42 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 																		  generator.IdentifierName(_PersistingCheckNothing));
 			var persistingAttributeArgument = generator.AttributeArgument(_PersistingCheck, 
 																		  memberAccessExpression) as AttributeArgumentSyntax;
-			var pxUnboundDefaultAttribute = generator.Attribute(_PXUnboundDefaultAttributeName) as AttributeListSyntax;
 			
 			SyntaxNode modifiedRoot;
 
-			if (isBoundField)
+			if (attributeNode.ArgumentList != null)
 			{
-				if (attributeNode.ArgumentList != null)
-				{
-					AttributeArgumentSyntax argument = getAttr();
+				AttributeArgumentSyntax argument = getAttr();
 
-					AttributeArgumentSyntax getAttr(){
-						foreach (AttributeArgumentSyntax _argument in attributeNode.ArgumentList.Arguments)
+				AttributeArgumentSyntax getAttr(){
+					foreach (AttributeArgumentSyntax _argument in attributeNode.ArgumentList.Arguments)
+					{
+						if (_argument.NameEquals != null 
+							&& _argument.NameEquals.Name.Identifier.Text.Contains(_PersistingCheck))
 						{
-							if (_argument.NameEquals != null 
-								&& _argument.NameEquals.Name.Identifier.Text.Contains(_PersistingCheck))
-							{
-								return _argument;
-							}
+							return _argument;
 						}
-						return null;
 					}
+					return null;
+				}
 
-					if (argument != null )
-					{
-						persistingAttributeArgument = argument.ReplaceNode(argument.Expression, memberAccessExpression);
-						var newAttributeNode = attributeNode.ReplaceNode(argument, persistingAttributeArgument);
-						var newAttributeList = attributeList.ReplaceNode(attributeNode, newAttributeNode);
-						modifiedRoot = root.ReplaceNode(attributeList, newAttributeList);
-					}
-					else
-					{
-						var newAttributeList = generator.AddAttributeArguments(attributeNode, new SyntaxNode[] { persistingAttributeArgument }) as AttributeListSyntax;
-						modifiedRoot = root.ReplaceNode(attributeNode, newAttributeList.Attributes[0]);
-					}
+				if (argument != null )
+				{
+					persistingAttributeArgument = argument.ReplaceNode(argument.Expression, memberAccessExpression);
+					var newAttributeNode = attributeNode.ReplaceNode(argument, persistingAttributeArgument);
+					var newAttributeList = attributeList.ReplaceNode(attributeNode, newAttributeNode);
+					modifiedRoot = root.ReplaceNode(attributeList, newAttributeList);
 				}
 				else
 				{
-					AttributeListSyntax newAttribute = generator.InsertAttributeArguments(attributeNode, 1, new SyntaxNode[] { persistingAttributeArgument }) as AttributeListSyntax;
-					modifiedRoot = root.ReplaceNode(attributeNode, newAttribute.Attributes[0]);
+					var newAttributeList = generator.AddAttributeArguments(attributeNode, new SyntaxNode[] { persistingAttributeArgument }) as AttributeListSyntax;
+					modifiedRoot = root.ReplaceNode(attributeNode, newAttributeList.Attributes[0]);
 				}
 			}
 			else
 			{
-				modifiedRoot = root.ReplaceNode(attributeNode, pxUnboundDefaultAttribute.Attributes[0]);
+				AttributeListSyntax newAttribute = generator.InsertAttributeArguments(attributeNode, 1, new SyntaxNode[] { persistingAttributeArgument }) as AttributeListSyntax;
+				modifiedRoot = root.ReplaceNode(attributeNode, newAttribute.Attributes[0]);
 			}
 
 			return document.WithSyntaxRoot(modifiedRoot);

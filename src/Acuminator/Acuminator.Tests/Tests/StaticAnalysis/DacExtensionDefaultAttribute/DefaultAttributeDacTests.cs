@@ -60,6 +60,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacExtensionDefaultAttribute
 		[EmbeddedFileData("DacExtensionWithUnboundFields.cs",
 							"DacExtensionWithUnboundFields_Expected.cs")]
 		public virtual void TestCodeFixDacExtensionWithUnboundAttribute(string actual, string expected) =>
-			VerifyCSharpFix(actual, expected);
+			VerifyCSharpFix(actual, expected,1);
 	}
 }
