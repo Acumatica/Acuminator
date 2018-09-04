@@ -54,6 +54,13 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.SavingChanges
 		}
 
 		[Theory]
+		[EmbeddedFileData(@"EventHandlers\PressSaveInExternalMethod.cs")]
+		public void TestDiagnostic_PressSaveInExternalMethod(string actual)
+		{
+			VerifyCSharpDiagnostic(actual, Descriptors.PX1043_SavingChangesInEventHandlers.CreateFor(14, 4));
+		}
+
+		[Theory]
 		[EmbeddedFileData(@"EventHandlers\PressSaveInsideRowPersisting.cs")]
 		public void TestDiagnostic_PressSaveInsideRowPersisting(string actual)
 		{

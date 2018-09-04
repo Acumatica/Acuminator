@@ -53,17 +53,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 
 				var methodSymbol = GetSymbol<IMethodSymbol>(node);
 
-				if (methodSymbol != null)
-				{
-					AnalyzeMethod(methodSymbol, node);
-				}
-				else
+				if (methodSymbol == null || !AnalyzeAndReportDiagnostic(methodSymbol, node))
 				{
 					base.VisitInvocationExpression(node);
 				}
 			}
 
-			private void AnalyzeMethod(IMethodSymbol symbol, InvocationExpressionSyntax node)
+			private bool AnalyzeAndReportDiagnostic(IMethodSymbol symbol, InvocationExpressionSyntax node)
 			{
 				var semanticModel = GetSemanticModel(node.SyntaxTree);
 				SaveOperationKind saveOperationKind = SaveOperationHelper.GetSaveOperationKind(
@@ -79,13 +75,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 							Descriptors.PX1043_SavingChangesInRowPerstisting,
 							nodeForDiagnostic.GetLocation()));
 					}
+
+					return true;
 				}
-				else if (saveOperationKind != SaveOperationKind.None)
+
+				if (saveOperationKind != SaveOperationKind.None)
 				{
 					_context.ReportDiagnostic(Diagnostic.Create(
 						Descriptors.PX1043_SavingChangesInEventHandlers, 
 						nodeForDiagnostic.GetLocation()));
+
+					return true;
 				}
+
+				return false;
 			}
 		}
 	}
