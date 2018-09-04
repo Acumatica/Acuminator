@@ -38,17 +38,17 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		public FieldAttributeInfo GetFieldAttributeInfo(ITypeSymbol attributeSymbol)
 		{
 			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
+		
+			var expandedAttributesList = _attributeInformation.AttributesListDerivedFromClass(attributeSymbol, expand: true).ToList();
 
-			
-			List<ITypeSymbol> attributeTypeHierarchy = _attributeInformation.AttributesListDerivedFromClass(attributeSymbol, true)
-																		   .ToList();
 
-			var info = CheckAttributeInheritanceChain(attributeSymbol, attributeTypeHierarchy);
+
+			var info = CheckAttributeInheritanceChain(attributeSymbol, expandedAttributesList);
 
 			if (info.HasValue)
 				return info.Value;
 
-			var attributesOnHierarchy = attributeTypeHierarchy.SelectMany(a => a.GetAttributes())
+			var attributesOnHierarchy = expandedAttributesList.SelectMany(a => a.GetAttributes())
 															  .Select(a => a.AttributeClass);
 														 
 			foreach (ITypeSymbol attribute in attributesOnHierarchy)

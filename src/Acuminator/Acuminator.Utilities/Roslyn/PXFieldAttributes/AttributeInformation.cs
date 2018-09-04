@@ -35,29 +35,23 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				context.FieldAttributes.PXDBDataLengthAttribute,
 			};
 
-		public HashSet<ITypeSymbol> AttributesListDerivedFromClass(ITypeSymbol attributeSymbol, bool expand = false)
+		public HashSet<ITypeSymbol> AttributesListDerivedFromClass(ITypeSymbol attributeType, bool expand = false)
 		{
 			HashSet<ITypeSymbol> results = new HashSet<ITypeSymbol>();
-
-			results.Add(attributeSymbol);
+			results.Add(attributeType);
 
 			if (expand)
 			{
-				foreach (var type in attributeSymbol.GetBaseTypesAndThis())
-				{
-					if (!type.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute))
-						break;
-
-					results.Add(type);
-				}
+				var baseAcumaticaAttributeTypes = GetBaseAcumaticaAttributeTypes(attributeType);
+				baseAcumaticaAttributeTypes.ForEach(aType => results.Add(aType));
 			}
 
 			var aggregateAttribute = _context.AttributeTypes.PXAggregateAttribute;
 			var dynamicAggregateAttribute = _context.AttributeTypes.PXDynamicAggregateAttribute;
 
-			if (attributeSymbol.InheritsFromOrEquals(aggregateAttribute) || attributeSymbol.InheritsFromOrEquals(dynamicAggregateAttribute))
+			if (attributeType.InheritsFromOrEquals(aggregateAttribute) || attributeType.InheritsFromOrEquals(dynamicAggregateAttribute))
 			{
-				var allAttributes = attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
+				var allAttributes = attributeType.GetAllAttributesDefinedOnThisAndBaseTypes();
 
 				foreach (var attribute in allAttributes)
 				{
@@ -70,7 +64,6 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			}
 
 			return results;
-
 
 			void VisitAggregateAttribute(ITypeSymbol _attributeSymbol, int depth)
 			{
@@ -170,6 +163,27 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		public bool ContainsBoundAttributes(IEnumerable<ITypeSymbol> attributesSymbols)
 		{
 			return attributesSymbols.Any(IsBoundAttribute);
+		}
+
+		private IEnumerable<ITypeSymbol> GetBaseAcumaticaAttributeTypes(ITypeSymbol attributeType)
+		{
+			bool isAcumaticaAttribute = false;
+			List<ITypeSymbol> baseAcumaticaAttributeTypes = new List<ITypeSymbol>(capacity: 4);
+
+			foreach (ITypeSymbol baseAttributeType in attributeType.GetBaseTypesAndThis())
+			{
+				if (baseAttributeType.Equals(_context.AttributeTypes.PXEventSubscriberAttribute))
+				{
+					isAcumaticaAttribute = true;
+					break;
+				}
+
+				baseAcumaticaAttributeTypes.Add(baseAttributeType);
+			}
+
+			return isAcumaticaAttribute 
+				? baseAcumaticaAttributeTypes
+				: Enumerable.Empty<ITypeSymbol>();
 		}
 	}
 }
