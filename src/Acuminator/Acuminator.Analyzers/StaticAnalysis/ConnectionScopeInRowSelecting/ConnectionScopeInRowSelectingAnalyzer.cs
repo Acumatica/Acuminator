@@ -68,7 +68,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting
 
 			public override void VisitUsingStatement(UsingStatementSyntax node)
 			{
-				_context.CancellationToken.ThrowIfCancellationRequested();
+				ThrowIfCancellationRequested();
 
 				if (_insideConnectionScope)
 				{
@@ -84,7 +84,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting
 
 			public override void VisitInvocationExpression(InvocationExpressionSyntax node)
 			{
-				_context.CancellationToken.ThrowIfCancellationRequested();
+				ThrowIfCancellationRequested();
 
 				if (_insideConnectionScope)
 					return;
