@@ -116,7 +116,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 			if (attributeNode.ArgumentList != null)
 			{
-				AttributeArgumentSyntax argument = getAttr();
+				AttributeArgumentSyntax argument = GetArgumentFromAttribute();
 				
 				if (argument != null )
 				{
@@ -139,7 +139,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 			return document.WithSyntaxRoot(modifiedRoot);
 
-			AttributeArgumentSyntax getAttr()
+			AttributeArgumentSyntax GetArgumentFromAttribute()
 			{
 				foreach (AttributeArgumentSyntax _argument in attributeNode.ArgumentList.Arguments)
 				{
