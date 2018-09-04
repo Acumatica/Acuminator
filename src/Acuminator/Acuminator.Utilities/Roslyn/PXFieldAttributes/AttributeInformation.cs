@@ -12,7 +12,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 	/// </summary>
 	public class AttributeInformation
 	{
+		private const int DefaultRecursionDepth = 10;
 		private readonly PXContext _context;
+
 		public ImmutableHashSet<ITypeSymbol> BoundBaseTypes { get; }
 
 		public AttributeInformation(PXContext pxContext)
@@ -33,7 +35,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				context.FieldAttributes.PXDBDataLengthAttribute,
 			};
 
-		public IEnumerable<ITypeSymbol> AttributesListDerivedFromClass(ITypeSymbol attributeSymbol, bool expand = false)
+		public HashSet<ITypeSymbol> AttributesListDerivedFromClass(ITypeSymbol attributeSymbol, bool expand = false)
 		{
 			HashSet<ITypeSymbol> results = new HashSet<ITypeSymbol>();
 
@@ -56,16 +58,19 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			if (attributeSymbol.InheritsFromOrEquals(aggregateAttribute) || attributeSymbol.InheritsFromOrEquals(dynamicAggregateAttribute))
 			{
 				var allAttributes = attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
+
 				foreach (var attribute in allAttributes)
 				{
-					if (!attribute.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute)) 
+					if (!attribute.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute))
 						continue;
 
 					results.Add(attribute);
-					VisitAggregateAttribute(attribute, 10);
+					VisitAggregateAttribute(attribute, DefaultRecursionDepth);
 				}
 			}
+
 			return results;
+
 
 			void VisitAggregateAttribute(ITypeSymbol _attributeSymbol, int depth)
 			{
@@ -95,7 +100,6 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 						VisitAggregateAttribute(attribute, depth - 1);
 					}
 				}
-				return;
 			}
 		}
 
@@ -107,23 +111,25 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			var aggregateAttribute = _context.AttributeTypes.PXAggregateAttribute;
 			var dynamicAggregateAttribute = _context.AttributeTypes.PXDynamicAggregateAttribute;
 
-			if (attributeSymbol.InheritsFromOrEquals( aggregateAttribute) || attributeSymbol.InheritsFromOrEquals(dynamicAggregateAttribute))
+			if (attributeSymbol.InheritsFromOrEquals(aggregateAttribute) || attributeSymbol.InheritsFromOrEquals(dynamicAggregateAttribute))
 			{
 				var allAttributes = attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
+
 				foreach (var attribute in allAttributes)
 				{
 					if (!attribute.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute))
 						continue;
 
-					var result = VisitAggregateAttribute(attribute,10);
+					var result = VisitAggregateAttribute(attribute, DefaultRecursionDepth);
 
 					if (result)
 						return result;
 				}
 			}
+
 			return false;
 
-			bool VisitAggregateAttribute(ITypeSymbol _attributeSymbol,int depth)
+			bool VisitAggregateAttribute(ITypeSymbol _attributeSymbol, int depth)
 			{
 				if (depth < 0)
 					return false;
@@ -134,17 +140,19 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				if (_attributeSymbol.InheritsFromOrEquals(aggregateAttribute) || _attributeSymbol.InheritsFromOrEquals(dynamicAggregateAttribute))
 				{
 					var allAttributes = _attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
+
 					foreach (var attribute in allAttributes)
 					{
 						if (!attribute.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute))
 							continue;
 
-						var result = VisitAggregateAttribute(attribute,depth-1);
+						var result = VisitAggregateAttribute(attribute, depth - 1);
 
 						if (result)
 							return result;
 					}
 				}
+
 				return false;
 			}
 		}
@@ -158,11 +166,10 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			}
 			return false;
 		}
-		
+
 		public bool ContainsBoundAttributes(IEnumerable<ITypeSymbol> attributesSymbols)
 		{
 			return attributesSymbols.Any(IsBoundAttribute);
 		}
-
 	}
 }
