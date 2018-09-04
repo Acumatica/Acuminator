@@ -73,7 +73,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 				{
 					_context.ReportDiagnostic(Diagnostic.Create(
 						Descriptors.PX1043_SavingChangesInEventHandlers, 
-						node.GetLocation()));
+						(OriginalNode ?? node).GetLocation()));
 				}
 			}
 		}
