@@ -76,6 +76,11 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		public void TestAreBoundAggregateRecursiveAttribute(string source) =>
 			_testIsBoundAttribute(source, new List<bool> { false, true });
 
+		[Theory]
+		[EmbeddedFileData(@"PropertyIsDBBoundFieldAttribute.cs")]
+		public void TestAreBoundIsDBFieldAttribute(string source) =>
+			_testIsBoundAttribute(source, new List<bool> { false, true });
+
 		private void _testIsBoundAttribute(string source, List<bool> expected)
 		{
 			Document document = CreateDocument(source);

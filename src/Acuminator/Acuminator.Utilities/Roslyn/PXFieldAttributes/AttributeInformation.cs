@@ -102,7 +102,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			if (attributeSymbol.InheritsFromOrEquals(type))
 				return true;
-
+			
 			var aggregateAttribute = _context.AttributeTypes.PXAggregateAttribute;
 			var dynamicAggregateAttribute = _context.AttributeTypes.PXDynamicAggregateAttribute;
 
@@ -150,6 +150,15 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		public bool IsBoundAttribute(ITypeSymbol attributeSymbol)
 		{
+
+			var IsDBFieldMembers = attributeSymbol.GetMembers()
+												  .Where(b => b.Name.Equals("IsDBField"))
+												  .Select(a => a);
+			foreach (var isDBField in IsDBFieldMembers)
+			{
+
+			}
+
 			foreach (var baseType in BoundBaseTypes)
 			{
 				if (AttributeDerivedFromClass(attributeSymbol, baseType))
