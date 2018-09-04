@@ -45,5 +45,12 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ChangesInPXCache
 				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(39, 4),
 				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(44, 4));
 		}
+
+		[Theory]
+		[EmbeddedFileData("ValidEventHandlers.cs")]
+		public void TestDiagnostic_EventHandlers_ShouldNotShowDiagnostic(string actual)
+		{
+			VerifyCSharpDiagnostic(actual);
+		}
 	}
 }

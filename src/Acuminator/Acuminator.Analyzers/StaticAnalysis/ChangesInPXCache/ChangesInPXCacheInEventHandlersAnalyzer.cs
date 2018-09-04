@@ -14,6 +14,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 {
 	public class ChangesInPXCacheInEventHandlersAnalyzer : IEventHandlerAnalyzer
 	{
+		private static readonly ISet<EventType> AnalyzedEventTypes = new HashSet<EventType>()
+		{
+			EventType.FieldDefaulting,
+			EventType.FieldVerifying,
+			EventType.RowSelected,
+			EventType.RowSelecting,
+			EventType.RowInserting,
+			EventType.RowUpdating,
+			EventType.RowDeleting,
+		};
+
 		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
 			ImmutableArray.Create(Descriptors.PX1044_ChangesInPXCacheInEventHandlers);
 
@@ -21,9 +32,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var methodSymbol = (IMethodSymbol) context.Symbol;
-			var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
-			methodSyntax?.Accept(new Walker(context, pxContext, Descriptors.PX1044_ChangesInPXCacheInEventHandlers));
+			if (AnalyzedEventTypes.Contains(eventType))
+			{
+				var methodSymbol = (IMethodSymbol) context.Symbol;
+				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
+				methodSyntax?.Accept(new Walker(context, pxContext, Descriptors.PX1044_ChangesInPXCacheInEventHandlers));
+			}
 		}
 	}
 }

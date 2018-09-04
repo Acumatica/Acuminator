@@ -202,6 +202,7 @@
     <Compile Include="Tests\StaticAnalysis\ChangesInPXCache\ChangesInPXCacheInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlers.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlersWithExternalMethod.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\ValidEventHandlers.cs" />
     <Compile Include="Tests\StaticAnalysis\Localization\LocalizationPXExceptionCorrectTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\Lambda.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\LambdaWithBody.cs" />
