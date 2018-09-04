@@ -78,7 +78,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			
 			private readonly Document document;
 			private readonly SemanticModel semanticModel;
-			private readonly FieldAttributesRegister attributesRegister;
+			private readonly FieldTypeAttributesRegister attributesRegister;
 			private readonly AttributeSyntax remainingAttribute;
 			private readonly CancellationToken cancellationToken;
 
@@ -91,7 +91,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				remainingAttribute = aRemainingAttribute;
 
 				PXContext pxContext = new PXContext(semanticModel.Compilation);
-				attributesRegister = new FieldAttributesRegister(pxContext);
+				attributesRegister = new FieldTypeAttributesRegister(pxContext);
 			}
             public override SyntaxNode VisitAttributeList(AttributeListSyntax attributeListNode)
 			{

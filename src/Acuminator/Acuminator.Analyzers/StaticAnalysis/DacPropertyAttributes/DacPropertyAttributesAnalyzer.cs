@@ -34,7 +34,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			if (!(symbolContext.Symbol is INamedTypeSymbol dacOrDacExt) || !dacOrDacExt.IsDacOrExtension(pxContext))
 				return Task.FromResult(false);
 
-			FieldAttributesRegister fieldAttributesRegister = new FieldAttributesRegister(pxContext);
+			FieldTypeAttributesRegister fieldAttributesRegister = new FieldTypeAttributesRegister(pxContext);
 			Task[] allTasks = dacOrDacExt.GetMembers()
 										 .OfType<IPropertySymbol>()
 										 .Select(property => CheckDacPropertyAsync(property, symbolContext, pxContext, fieldAttributesRegister))
@@ -44,7 +44,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		}
 
 		private static async Task CheckDacPropertyAsync(IPropertySymbol property, SymbolAnalysisContext symbolContext, PXContext pxContext,
-														FieldAttributesRegister fieldAttributesRegister)
+														FieldTypeAttributesRegister fieldAttributesRegister)
 		{
 			ImmutableArray<AttributeData> attributes = property.GetAttributes();
 
@@ -79,7 +79,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 		private static List<(AttributeData Attribute, FieldAttributeInfo Info)> GetFieldAttributesInfos(PXContext pxContext,
 																									   ImmutableArray<AttributeData> attributes,
-																									   FieldAttributesRegister fieldAttributesRegister,
+																									   FieldTypeAttributesRegister fieldAttributesRegister,
 																									   CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();

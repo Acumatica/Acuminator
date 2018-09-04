@@ -7,32 +7,32 @@ using Microsoft.CodeAnalysis;
 namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 {
 	/// <summary>
-	/// Information about the Acumatica field attributes.
+	/// Information about the Acumatica field type attributes.
 	/// </summary>
-	public class FieldAttributesRegister
+	public class FieldTypeAttributesRegister
 	{
-		private readonly PXContext context;
-		private readonly AttributeInformation attributeInformation;
+		private readonly PXContext _context;
+		private readonly AttributeInformation _attributeInformation;
 
 		public ImmutableDictionary<ITypeSymbol, ITypeSymbol> CorrespondingSimpleTypes { get; }
 
-		public ImmutableHashSet<ITypeSymbol> UnboundFieldAttributes { get; }
-		public ImmutableHashSet<ITypeSymbol> BoundFieldAttributes { get; }
-		public ImmutableHashSet<ITypeSymbol> AllFieldAttributes { get; }
+		public ImmutableHashSet<ITypeSymbol> UnboundTypeAttributes { get; }
+		public ImmutableHashSet<ITypeSymbol> BoundTypeAttributes { get; }
+		public ImmutableHashSet<ITypeSymbol> AllTypeAttributes { get; }
 
-		public FieldAttributesRegister(PXContext pxContext)
+		public FieldTypeAttributesRegister(PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			context = pxContext;
-			attributeInformation = new AttributeInformation(context);
-			var unboundFieldAttributes = GetUnboundFieldAttributes(context);
-			UnboundFieldAttributes = unboundFieldAttributes.ToImmutableHashSet();
+			_context = pxContext;
+			_attributeInformation = new AttributeInformation(_context);
+			var unboundFieldAttributes = GetUnboundTypeAttributes(_context);
+			UnboundTypeAttributes = unboundFieldAttributes.ToImmutableHashSet();
 
-			var boundFieldAttributes = GetBoundFieldAttributes(context);
-			BoundFieldAttributes = boundFieldAttributes.ToImmutableHashSet();
-			AllFieldAttributes = unboundFieldAttributes.Concat(boundFieldAttributes).ToImmutableHashSet();
-			CorrespondingSimpleTypes = GetCorrespondingSimpleTypes(context).ToImmutableDictionary();
+			var boundFieldAttributes = GetBoundTypeAttributes(_context);
+			BoundTypeAttributes = boundFieldAttributes.ToImmutableHashSet();
+			AllTypeAttributes = unboundFieldAttributes.Concat(boundFieldAttributes).ToImmutableHashSet();
+			CorrespondingSimpleTypes = GetCorrespondingSimpleTypes(_context).ToImmutableDictionary();
 		}
 
 		public FieldAttributeInfo GetFieldAttributeInfo(ITypeSymbol attributeSymbol)
@@ -40,7 +40,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
 
 			
-			List<ITypeSymbol> attributeTypeHierarchy = attributeInformation.AttributesListDerivedFromClass(attributeSymbol, true)
+			List<ITypeSymbol> attributeTypeHierarchy = _attributeInformation.AttributesListDerivedFromClass(attributeSymbol, true)
 																		   .ToList();
 
 			var info = CheckAttributeInheritanceChain(attributeSymbol, attributeTypeHierarchy);
@@ -64,22 +64,22 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		private FieldAttributeInfo? CheckAttributeInheritanceChain(ITypeSymbol attributeSymbol, List<ITypeSymbol> attributeTypeHierarchy = null)
 		{
-			var attributeBaseTypesEnum = attributeTypeHierarchy ?? attributeInformation.AttributesListDerivedFromClass( attributeSymbol,true)
+			var attributeBaseTypesEnum = attributeTypeHierarchy ?? _attributeInformation.AttributesListDerivedFromClass( attributeSymbol,true)
 																						.ToList();
 
-			ITypeSymbol fieldAttribute = attributeBaseTypesEnum.TakeWhile(a => !a.Equals(context.FieldAttributes.PXDBScalarAttribute))
-															   .FirstOrDefault(a => AllFieldAttributes.Contains(a));
+			ITypeSymbol fieldAttribute = attributeBaseTypesEnum.TakeWhile(a => !a.Equals(_context.FieldAttributes.PXDBScalarAttribute))
+															   .FirstOrDefault(a => AllTypeAttributes.Contains(a));
 
 			if (fieldAttribute == null)
 				return null;
 
-			bool isBoundField = BoundFieldAttributes.Contains(fieldAttribute);
+			bool isBoundField = BoundTypeAttributes.Contains(fieldAttribute);
 			return CorrespondingSimpleTypes.TryGetValue(fieldAttribute, out var fieldType)
 				? new FieldAttributeInfo(isFieldAttribute: true, isBoundField, fieldType)
 				: new FieldAttributeInfo(isFieldAttribute: true, isBoundField, fieldType: null);
 		}
 
-		private static HashSet<ITypeSymbol> GetUnboundFieldAttributes(PXContext pxContext) =>
+		private static HashSet<ITypeSymbol> GetUnboundTypeAttributes(PXContext pxContext) =>
 			new HashSet<ITypeSymbol>
 			{
 				pxContext.FieldAttributes.PXLongAttribute,
@@ -95,7 +95,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				pxContext.FieldAttributes.PXBoolAttribute
 			};
 
-		private static HashSet<ITypeSymbol> GetBoundFieldAttributes(PXContext pxContext) =>
+		private static HashSet<ITypeSymbol> GetBoundTypeAttributes(PXContext pxContext) =>
 			new HashSet<ITypeSymbol>
 			{
 				pxContext.FieldAttributes.PXDBFieldAttribute,
