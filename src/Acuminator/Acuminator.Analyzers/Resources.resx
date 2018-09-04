@@ -294,4 +294,7 @@
   <data name="PX1027Title" xml:space="preserve">
     <value>System fields cannot be declared within a DAC declaration</value>
   </data>
+  <data name="PX1043Title" xml:space="preserve">
+    <value>Saving changes to the database from event handlers is prohibited, except for PXCache.Persist method family invoked within RowPersisting event handler</value>
+  </data>
 </root>

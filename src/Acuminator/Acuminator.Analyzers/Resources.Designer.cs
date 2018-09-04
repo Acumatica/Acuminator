@@ -557,6 +557,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Saving changes to the database from event handlers is prohibited, except for PXCache.Persist method family invoked within RowPersisting event handler.
+        /// </summary>
+        public static string PX1043Title {
+            get {
+                return ResourceManager.GetString("PX1043Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hardcoded strings are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class..
         /// </summary>
         public static string PX1050Title {

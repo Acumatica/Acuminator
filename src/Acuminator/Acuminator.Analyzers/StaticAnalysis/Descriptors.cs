@@ -111,7 +111,10 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1042_ConnectionScopeInRowSelecting { get; } =
 			Rule("PX1042", nameof(Resources.PX1042Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
-        public static DiagnosticDescriptor PX1050_HardcodedStringInLocalizationMethod { get; } =
+		public static DiagnosticDescriptor PX1043_SavingChangesInEventHandlers { get; } =
+			Rule("PX1043", nameof(Resources.PX1043Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+		public static DiagnosticDescriptor PX1050_HardcodedStringInLocalizationMethod { get; } =
             Rule("PX1050", nameof(Resources.PX1050Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
         public static DiagnosticDescriptor PX1051_NonLocalizableString { get; } =
