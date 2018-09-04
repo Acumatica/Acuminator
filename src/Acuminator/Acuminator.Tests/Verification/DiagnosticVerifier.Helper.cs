@@ -170,6 +170,12 @@ namespace Acuminator.Tests.Verification
 									.AddMetadataReference(projectId, CodeAnalysisReference)
 									.AddMetadataReference(projectId, PXDataReference)
 									.AddMetadataReference(projectId, PXCommonReference);
+
+			var project = solution.GetProject(projectId);
+			var parseOptions = project.ParseOptions.WithFeatures(
+				project.ParseOptions.Features.Union(new[] { new KeyValuePair<string, string>("IOperation", "true") }));
+			solution = solution.WithProjectParseOptions(projectId, parseOptions);
+
 			int count = 0;
 
 			foreach (var source in sources)

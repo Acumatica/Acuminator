@@ -1,5 +1,6 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting;
+using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis;
@@ -13,7 +14,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ConnectionScopeInRowSelecting
 	{
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new ConnectionScopeInRowSelectingFix();
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new ConnectionScopeInRowSelectingAnalyzer();
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => 
+			new EventHandlerAnalyzer(new ConnectionScopeInRowSelectingAnalyzer());
 
 		[Theory]
 		[EmbeddedFileData("BQLSelect.cs")]
@@ -76,6 +78,22 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ConnectionScopeInRowSelecting
 		public void TestDiagnostic_ExternalMethod(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(18, 23));
+		}
+
+		// TODO: Enable this test after migration to Roslyn v2
+		[Theory(Skip = "IOperation feature (Operation Actions) is experimental in Roslyn v1")]
+		[EmbeddedFileData("Lambda.cs")]
+		public void TestDiagnostic_Lambda(string actual)
+		{
+			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(14, 66));
+		}
+
+		// TODO: Enable this test after migration to Roslyn v2
+		[Theory(Skip = "IOperation feature (Operation Actions) is experimental in Roslyn v1")]
+		[EmbeddedFileData("LambdaWithBody.cs")]
+		public void TestDiagnostic_LambdaWithBody(string actual)
+		{
+			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(18, 6));
 		}
 
 		[Theory]

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -376,6 +377,41 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 						return new TextSpan(bqlJoinTypeParamsListSyntax.SpanStart, length);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Returns event handler type for the provided method symbol.
+		/// </summary>
+		/// <param name="symbol">Method symbol for the event handler</param>
+		/// <param name="pxContext">PXContext instance</param>
+		/// <returns>Event Type (e.g. RowSelecting). If method is not an event handler, returns <code>EventType.None</code>.</returns>
+		public static EventType GetEventHandlerType(this IMethodSymbol symbol, PXContext pxContext)
+		{
+			if (symbol.ReturnsVoid && symbol.TypeParameters.IsEmpty && !symbol.Parameters.IsEmpty)
+			{
+				// Loosely check method signature because sometimes business logic 
+				// is extracted from event handler calls to a separate method
+
+				// Old syntax
+				if (symbol.Parameters[0].Type.OriginalDefinition.InheritsFromOrEquals(pxContext.PXCacheType))
+				{
+					if (symbol.Name.EndsWith("CacheAttached", StringComparison.Ordinal))
+						return EventType.CacheAttached;
+
+					if (symbol.Parameters.Length >= 2 && pxContext.Events.EventTypeMap.TryGetValue(
+						symbol.Parameters[1].Type.OriginalDefinition, out EventType eventType))
+					{
+						return eventType;
+					}
+				}
+				else if (pxContext.Events.EventTypeMap.TryGetValue(
+					symbol.Parameters[0].Type.OriginalDefinition, out EventType eventType)) // New generic event handler syntax
+				{
+					return eventType;
+				}
+			}
+
+			return EventType.None;
 		}
 	}
 }
