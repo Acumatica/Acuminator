@@ -36,7 +36,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 			{
 				var methodSymbol = (IMethodSymbol) context.Symbol;
 				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
-				methodSyntax?.Accept(new Walker(context, pxContext, Descriptors.PX1044_ChangesInPXCacheInEventHandlers));
+				var walker = new Walker(context, pxContext, 
+					Descriptors.PX1044_ChangesInPXCacheInEventHandlers, eventType);
+
+				methodSyntax?.Accept(walker);
 			}
 		}
 	}

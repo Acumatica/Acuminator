@@ -575,7 +575,16 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Changes in PXCache are prohibited in this event handler.
+        ///   Looks up a localized string similar to Changing PXCache is prohibited in the {0} event handler.
+        /// </summary>
+        public static string PX1044MessageFormat {
+            get {
+                return ResourceManager.GetString("PX1044MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Changing PXCache is prohibited in this event handler.
         /// </summary>
         public static string PX1044Title {
             get {

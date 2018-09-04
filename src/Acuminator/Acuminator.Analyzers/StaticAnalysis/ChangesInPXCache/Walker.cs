@@ -24,15 +24,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 		private SymbolAnalysisContext _context;
 		private readonly PXContext _pxContext;
 		private readonly DiagnosticDescriptor _diagnosticDescriptor;
+		private readonly object[] _messageArgs;
 
-		public Walker(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor diagnosticDescriptor)
+		public Walker(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor diagnosticDescriptor,
+			params object[] messageArgs)
 			: base(context.Compilation, context.CancellationToken)
 		{
-			pxContext.ThrowOnNull(nameof(pxContext));
+			pxContext.ThrowOnNull(nameof (pxContext));
+			diagnosticDescriptor.ThrowOnNull(nameof (diagnosticDescriptor));
 
 			_context = context;
 			_pxContext = pxContext;
 			_diagnosticDescriptor = diagnosticDescriptor;
+			_messageArgs = messageArgs;
 		}
 
 		public override void VisitInvocationExpression(InvocationExpressionSyntax node)
@@ -62,7 +66,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 		{
 			_context.ReportDiagnostic(Diagnostic.Create(
 				_diagnosticDescriptor,
-				(OriginalNode ?? node).GetLocation()));
+				(OriginalNode ?? node).GetLocation(),
+				_messageArgs));
 		}
 	}
 }
