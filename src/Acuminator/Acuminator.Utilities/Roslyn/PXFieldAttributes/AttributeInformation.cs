@@ -29,7 +29,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			new HashSet<ITypeSymbol>
 			{
 				context.FieldAttributes.PXDBFieldAttribute,
-				context.FieldAttributes.PXDBCalcedAttribute
+				context.FieldAttributes.PXDBCalcedAttribute,
+				context.FieldAttributes.PXDBDataLengthAttribute,
 			};
 
 		public IEnumerable<ITypeSymbol> AttributesListDerivedFromClass(ITypeSymbol attributeSymbol, bool expand = false)
