@@ -48,7 +48,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 
 			public override void VisitInvocationExpression(InvocationExpressionSyntax node)
 			{
-				_context.CancellationToken.ThrowIfCancellationRequested();
+				ThrowIfCancellationRequested();
 
 				var methodSymbol = GetSymbol<IMethodSymbol>(node);
 
