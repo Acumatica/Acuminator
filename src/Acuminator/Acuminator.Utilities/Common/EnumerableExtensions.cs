@@ -17,8 +17,8 @@ namespace Acuminator.Utilities.Common
 				yield return item;
 		}
 
-		//[DebuggerStepThrough]
-		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
 		{
 			source.ThrowOnNull(nameof(source));
