@@ -48,8 +48,6 @@ namespace PX.Objects
 		{
 			var cache = this.Caches[typeof (SOInvoice)];
 			var row = (SOInvoice) cache.Insert();
-			row.RefNbr = "<NEW>";
-			cache.Update(row);
 		}
 	}
 
