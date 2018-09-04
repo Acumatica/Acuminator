@@ -14,6 +14,11 @@ namespace PX.Objects.HackathonDemo
 			var setup = SelectSetup();
 		}
 
+		protected virtual void SOOrder_CacheAttached(PXCache cache)
+		{
+			cache.Graph.RowSelecting.AddHandler<SOOrder>((sender, e) => PXDatabase.SelectTimeStamp());
+		}
+
 		private SOSetup SelectSetup()
 		{
 			return PXSelect<SOSetup>.SelectSingleBound(Base, null);

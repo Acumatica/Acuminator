@@ -1,5 +1,6 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting;
+using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis;
@@ -11,209 +12,220 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ConnectionScopeInRowSelecting
 {
 	public class ConnectionScopeInRowSelectingTests : CodeFixVerifier
 	{
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
-		{
-			return new ConnectionScopeInRowSelectingFix();
-		}
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new ConnectionScopeInRowSelectingFix();
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-		{
-			return new ConnectionScopeInRowSelectingAnalyzer();
-		}
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => 
+			new EventHandlerAnalyzer(new ConnectionScopeInRowSelectingAnalyzer());
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelecting.cs")]
-		public void TestDiagnostic(string actual)
+		[EmbeddedFileData("BQLSelect.cs")]
+		public void TestDiagnostic_BQLSelect(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(19, 9));
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingGeneric.cs")]
-		public void TestDiagnostic_GenericEventDeclaration(string actual)
+		[EmbeddedFileData("GenericEventHandlerSignature.cs")]
+		public void TestDiagnostic_GenericEventHandlerSignature(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(19, 9));
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingDataView.cs")]
+		[EmbeddedFileData("DataView.cs")]
 		public void TestDiagnostic_DataView(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(32, 9));
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingPXView.cs")]
+		[EmbeddedFileData("PXView.cs")]
 		public void TestDiagnostic_PXView(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(32, 9));
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingNoNamespace.cs")]
+		[EmbeddedFileData("NoNamespace.cs")]
 		public void TestDiagnostic_NoNamespace(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(18, 9));
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingSearch.cs")]
-		public void TestDiagnostic_Search(string actual)
+		[EmbeddedFileData("BQLSearch.cs")]
+		public void TestDiagnostic_BQLSearch(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(30, 9));
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingSelector.cs")]
-		public void TestDiagnostic_Selector(string actual)
+		[EmbeddedFileData("PXSelector.cs")]
+		public void TestDiagnostic_PXSelector(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(20, 6));
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingPXDatabase.cs")]
+		[EmbeddedFileData("PXDatabase.cs")]
 		public void TestDiagnostic_PXDatabase(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(19, 9));
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingExternalMethod.cs")]
+		[EmbeddedFileData("ExternalMethod.cs")]
 		public void TestDiagnostic_ExternalMethod(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(18, 23));
 		}
 
+		// TODO: Enable this test after migration to Roslyn v2
+		[Theory(Skip = "IOperation feature (Operation Actions) is experimental in Roslyn v1")]
+		[EmbeddedFileData("Lambda.cs")]
+		public void TestDiagnostic_Lambda(string actual)
+		{
+			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(14, 66));
+		}
+
+		// TODO: Enable this test after migration to Roslyn v2
+		[Theory(Skip = "IOperation feature (Operation Actions) is experimental in Roslyn v1")]
+		[EmbeddedFileData("LambdaWithBody.cs")]
+		public void TestDiagnostic_LambdaWithBody(string actual)
+		{
+			VerifyCSharpDiagnostic(actual, Descriptors.PX1042_ConnectionScopeInRowSelecting.CreateFor(18, 6));
+		}
+
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelecting_Expected.cs")]
-		public void TestDiagnostic_ShouldNotShowDiagnostic(string actual)
+		[EmbeddedFileData("BQLSelect_Expected.cs")]
+		public void TestDiagnostic_BQLSelect_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingGeneric_Expected.cs")]
-		public void TestDiagnostic_GenericEventDeclaration_ShouldNotShowDiagnostic(string actual)
+		[EmbeddedFileData("GenericEventHandlerSignature_Expected.cs")]
+		public void TestDiagnostic_GenericEventHandlerSignature_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingDataView_Expected.cs")]
+		[EmbeddedFileData("DataView_Expected.cs")]
 		public void TestDiagnostic_DataView_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingPXView_Expected.cs")]
+		[EmbeddedFileData("PXView_Expected.cs")]
 		public void TestDiagnostic_PXView_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingNoNamespace_Expected.cs")]
+		[EmbeddedFileData("NoNamespace_Expected.cs")]
 		public void TestDiagnostic_NoNamespace_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingSelector_Expected.cs")]
-		public void TestDiagnostic_Selector_ShouldNotShowDiagnostic(string actual)
+		[EmbeddedFileData("PXSelector_Expected.cs")]
+		public void TestDiagnostic_PXSelector_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingSearch_Expected.cs")]
-		public void TestDiagnostic_Search_ShouldNotShowDiagnostic(string actual)
+		[EmbeddedFileData("BQLSearch_Expected.cs")]
+		public void TestDiagnostic_BQLSearch_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingPXDatabase_Expected.cs")]
+		[EmbeddedFileData("PXDatabase_Expected.cs")]
 		public void TestDiagnostic_PXDatabase_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingExternalMethod_Expected.cs")]
+		[EmbeddedFileData("ExternalMethod_Expected.cs")]
 		public void TestDiagnostic_ExternalMethod_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelecting.cs",
-			"ConnectionScopeInRowSelecting_Expected.cs")]
-		public void TestCodeFix(string actual, string expected)
+		[EmbeddedFileData("BQLSelect.cs",
+			"BQLSelect_Expected.cs")]
+		public void TestCodeFix_BQLSelect(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingGeneric.cs",
-			"ConnectionScopeInRowSelectingGeneric_Expected.cs")]
-		public void TestCodeFix_GenericEventDeclaration(string actual, string expected)
+		[EmbeddedFileData("GenericEventHandlerSignature.cs",
+			"GenericEventHandlerSignature_Expected.cs")]
+		public void TestCodeFix_GenericEventHandlerSignature(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingDataView.cs",
-			"ConnectionScopeInRowSelectingDataView_Expected.cs")]
+		[EmbeddedFileData("DataView.cs",
+			"DataView_Expected.cs")]
 		public void TestCodeFix_DataView(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingPXView.cs",
-			"ConnectionScopeInRowSelectingPXView_Expected.cs")]
+		[EmbeddedFileData("PXView.cs",
+			"PXView_Expected.cs")]
 		public void TestCodeFix_PXView(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingNoNamespace.cs",
-			"ConnectionScopeInRowSelectingNoNamespace_Expected.cs")]
+		[EmbeddedFileData("NoNamespace.cs",
+			"NoNamespace_Expected.cs")]
 		public void TestCodeFix_NoNamespace(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingSelector.cs",
-			"ConnectionScopeInRowSelectingSelector_Expected.cs")]
-		public void TestCodeFix_Selector(string actual, string expected)
+		[EmbeddedFileData("PXSelector.cs",
+			"PXSelector_Expected.cs")]
+		public void TestCodeFix_PXSelector(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingSearch.cs",
-			"ConnectionScopeInRowSelectingSearch_Expected.cs")]
-		public void TestCodeFix_Search(string actual, string expected)
+		[EmbeddedFileData("BQLSearch.cs",
+			"BQLSearch_Expected.cs")]
+		public void TestCodeFix_BQLSearch(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingPXDatabase.cs",
-			"ConnectionScopeInRowSelectingPXDatabase_Expected.cs")]
+		[EmbeddedFileData("PXDatabase.cs",
+			"PXDatabase_Expected.cs")]
 		public void TestCodeFix_PXDatabase(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
 
 		[Theory]
-		[EmbeddedFileData("ConnectionScopeInRowSelectingExternalMethod.cs",
-			"ConnectionScopeInRowSelectingExternalMethod_Expected.cs")]
+		[EmbeddedFileData("ExternalMethod.cs",
+			"ExternalMethod_Expected.cs")]
 		public void TestCodeFix_ExternalMethod(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);

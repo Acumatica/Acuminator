@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -13,8 +14,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting
 {
-	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class ConnectionScopeInRowSelectingAnalyzer : PXDiagnosticAnalyzer
+	public class ConnectionScopeInRowSelectingAnalyzer : IEventHandlerAnalyzer
 	{
 		private class Walker : NestedInvocationWalker
 		{
@@ -119,46 +119,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting
 			}
 		}
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1042_ConnectionScopeInRowSelecting);
-
-		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
-		{
-			compilationStartContext.RegisterSymbolAction(c => AnalyzeMethod(c, pxContext), SymbolKind.Method);
-		}
-
-		private void AnalyzeMethod(SymbolAnalysisContext context, PXContext pxContext)
+		
+		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
-
-			var methodSymbol = (IMethodSymbol) context.Symbol;
 			
-			if (methodSymbol != null && IsRowSelectingMethod(methodSymbol, pxContext))
+			if (eventType == EventType.RowSelecting)
 			{
-				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as MethodDeclarationSyntax;
+				var methodSymbol = (IMethodSymbol) context.Symbol;
+				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
 				methodSyntax?.Accept(new Walker(context, pxContext));
 			}
-		}
-
-		private bool IsRowSelectingMethod(IMethodSymbol symbol, PXContext pxContext)
-		{
-			if (symbol.ReturnsVoid && symbol.TypeParameters.IsEmpty && !symbol.Parameters.IsEmpty)
-			{
-				// Loosely check method signature because sometimes business logic from event handler calls is extracted to a separate method
-
-				// New generic event syntax
-				if (symbol.Parameters[0].Type.OriginalDefinition.Equals(pxContext.Events.RowSelecting))
-					return true;
-
-				// Old syntax
-				if (symbol.Parameters.Length >= 2
-				    && symbol.Parameters[0].Type.OriginalDefinition.InheritsFromOrEquals(pxContext.PXCacheType)
-				    && symbol.Parameters[1].Type.OriginalDefinition.InheritsFromOrEquals(pxContext.Events.PXRowSelectingEventArgs))
-					return true;
-			}
-
-			
-			return false;
 		}
 	}
 }
