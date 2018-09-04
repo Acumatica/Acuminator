@@ -208,6 +208,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\GraphPersist.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\CachePersist.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\CachePersistInsideRowPersisting.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PressSaveInsideRowPersisting.cs" />
     <Compile Include="Verification\DiagnosticResultExtensions.cs" />
     <Compile Include="Verification\FluentAssertionsExtensions.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\LongOperationDelegateClosures.cs" />

@@ -18,8 +18,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 {
 	public class SavingChangesInEventHandlersAnalyzer : IEventHandlerAnalyzer
 	{
-		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
-			ImmutableArray.Create(Descriptors.PX1043_SavingChangesInEventHandlers);
+		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
+			Descriptors.PX1043_SavingChangesInEventHandlers,
+			Descriptors.PX1043_SavingChangesInRowPerstisting);
 
 		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 		{
@@ -68,12 +69,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 				SaveOperationKind saveOperationKind = SaveOperationHelper.GetSaveOperationKind(
 					symbol, node, semanticModel, _pxContext);
 
-				if (saveOperationKind != SaveOperationKind.None 
-					&& !(_eventType == EventType.RowPersisting && saveOperationKind == SaveOperationKind.CachePersist))
+				SyntaxNode nodeForDiagnostic = OriginalNode ?? node;
+
+				if (_eventType == EventType.RowPersisting)
+				{
+					if (saveOperationKind != SaveOperationKind.CachePersist)
+					{
+						_context.ReportDiagnostic(Diagnostic.Create(
+							Descriptors.PX1043_SavingChangesInRowPerstisting,
+							nodeForDiagnostic.GetLocation()));
+					}
+				}
+				else if (saveOperationKind != SaveOperationKind.None)
 				{
 					_context.ReportDiagnostic(Diagnostic.Create(
 						Descriptors.PX1043_SavingChangesInEventHandlers, 
-						(OriginalNode ?? node).GetLocation()));
+						nodeForDiagnostic.GetLocation()));
 				}
 			}
 		}

@@ -557,11 +557,20 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Saving changes to the database from event handlers is prohibited, except for PXCache.Persist method family invoked within RowPersisting event handler.
+        ///   Looks up a localized string similar to Changes cannot be saved to the database from the event handler.
         /// </summary>
         public static string PX1043Title {
             get {
                 return ResourceManager.GetString("PX1043Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only the methods of the PXCache.Persist family can be used to save changes to the database from a RowPersisting event handler.
+        /// </summary>
+        public static string PX1043TitleRowPersisting {
+            get {
+                return ResourceManager.GetString("PX1043TitleRowPersisting", resourceCulture);
             }
         }
         
