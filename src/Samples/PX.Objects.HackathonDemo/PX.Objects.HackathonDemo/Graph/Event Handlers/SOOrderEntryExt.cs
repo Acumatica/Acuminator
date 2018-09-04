@@ -23,5 +23,15 @@ namespace PX.Objects.HackathonDemo
 		{
 			return PXSelect<SOSetup>.SelectSingleBound(Base, null);
 		}
+
+		protected virtual void _(Events.RowInserted<SOOrder> e)
+		{
+			Base.Actions.PressSave();
+		}
+
+		protected virtual void _(Events.RowUpdated<SOOrder> e)
+		{
+			Base.Persist();
+		}
 	}
 }
