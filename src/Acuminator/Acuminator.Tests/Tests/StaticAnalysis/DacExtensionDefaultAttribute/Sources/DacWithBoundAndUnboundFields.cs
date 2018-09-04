@@ -36,5 +36,24 @@ namespace PX.Objects.HackathonDemo
 		[PXUIField(DisplayName = "Cost")]
 		public virtual decimal? Cost { get; set; }
 		#endregion
+
+		#region UnboundField1
+		public abstract class selected : PX.Data.IBqlField { }
+		protected bool? _UnboundField1;
+		[PXBool]
+		[PXDefault(PersistingCheck = PXPersistingCheck.Nothing)]
+		[PXUIField(DisplayName = "Unbound Field 1")]
+		public virtual bool? UnboundField
+		{
+			get
+			{
+				return _UnboundField1;
+			}
+			set
+			{
+				_UnboundField1 = value;
+			}
+		}
+		#endregion
 	}
 }
