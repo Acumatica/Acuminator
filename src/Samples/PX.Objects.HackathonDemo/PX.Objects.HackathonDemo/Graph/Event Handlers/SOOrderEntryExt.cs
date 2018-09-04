@@ -12,6 +12,7 @@ namespace PX.Objects.HackathonDemo
 		protected virtual void _(Events.RowSelecting<SOOrder> e)
 		{
 			var setup = SelectSetup();
+			Base.Caches[typeof(SOSetup)].Insert(setup);
 		}
 
 		protected virtual void SOOrder_CacheAttached(PXCache cache)
