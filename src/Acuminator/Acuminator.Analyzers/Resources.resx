@@ -300,4 +300,7 @@
   <data name="PX1043TitleRowPersisting" xml:space="preserve">
     <value>Only the methods of the PXCache.Persist family can be used to save changes to the database from a RowPersisting event handler</value>
   </data>
+  <data name="PX1044Title" xml:space="preserve">
+    <value>Changes in PXCache are prohibited in this event handler</value>
+  </data>
 </root>
