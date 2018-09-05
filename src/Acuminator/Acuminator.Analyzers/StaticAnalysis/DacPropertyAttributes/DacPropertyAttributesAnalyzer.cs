@@ -77,18 +77,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			}
 		}
 
-		private static List<(AttributeData Attribute, FieldAttributeInfo Info)> GetFieldAttributesInfos(PXContext pxContext,
+		private static List<(AttributeData Attribute, FieldTypeAttributeInfo Info)> GetFieldAttributesInfos(PXContext pxContext,
 																									   ImmutableArray<AttributeData> attributes,
 																									   FieldTypeAttributesRegister fieldAttributesRegister,
 																									   CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			var fieldInfosList = new List<(AttributeData, FieldAttributeInfo)>(capacity: attributes.Length);
+			var fieldInfosList = new List<(AttributeData, FieldTypeAttributeInfo)>(capacity: attributes.Length);
 
 			foreach (AttributeData attribute in attributes)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				FieldAttributeInfo attrInfo = fieldAttributesRegister.GetFieldAttributeInfo(attribute.AttributeClass);
+				FieldTypeAttributeInfo attrInfo = fieldAttributesRegister.GetFieldTypeAttributeInfo(attribute.AttributeClass);
 
 				if (attrInfo.IsFieldAttribute)
 					fieldInfosList.Add((attribute, attrInfo));
@@ -98,7 +98,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		}
 
 		private static Task CheckAttributeAndPropertyTypesForCompatibilityAsync(IPropertySymbol property, AttributeData fieldAttribute,
-																				FieldAttributeInfo fieldAttributeInfo, PXContext pxContext,
+																				FieldTypeAttributeInfo fieldAttributeInfo, PXContext pxContext,
 																				SymbolAnalysisContext symbolContext)
 		{
 			if (fieldAttributeInfo.FieldType == null)                                                               //PXDBFieldAttribute case

@@ -18,6 +18,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		public ImmutableHashSet<ITypeSymbol> UnboundTypeAttributes { get; }
 		public ImmutableHashSet<ITypeSymbol> BoundTypeAttributes { get; }
+		public ImmutableHashSet<ITypeSymbol> SpecialAttributes { get; }
 		public ImmutableHashSet<ITypeSymbol> AllTypeAttributes { get; }
 
 		public FieldTypeAttributesRegister(PXContext pxContext)
@@ -31,52 +32,55 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 			var boundFieldAttributes = GetBoundTypeAttributes(_context);
 			BoundTypeAttributes = boundFieldAttributes.ToImmutableHashSet();
-			AllTypeAttributes = unboundFieldAttributes.Concat(boundFieldAttributes).ToImmutableHashSet();
+
+			var specialAttributes = GetSpecialAttributes(_context);
+			SpecialAttributes = specialAttributes.ToImmutableHashSet();
+			AllTypeAttributes = unboundFieldAttributes.Concat(boundFieldAttributes)
+													  .Concat(specialAttributes)
+													  .ToImmutableHashSet();
+
 			CorrespondingSimpleTypes = GetCorrespondingSimpleTypes(_context).ToImmutableDictionary();
 		}
 
-		public FieldAttributeInfo GetFieldAttributeInfo(ITypeSymbol attributeSymbol)
+		public IEnumerable<FieldTypeAttributeInfo> GetFieldTypeAttributeInfos(ITypeSymbol attributeSymbol)
 		{
 			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
-		
-			var expandedAttributesList = _attributeInformation.GetAcumaticaAttributesFullList(attributeSymbol, includeBaseTypes: true).ToList();
 
+			var expandedAttributes = _attributeInformation.GetAcumaticaAttributesFullList(attributeSymbol);
 
+			if (expandedAttributes.IsNullOrEmpty())
+				return Enumerable.Empty<FieldTypeAttributeInfo>();
 
-			var info = CheckAttributeInheritanceChain(attributeSymbol, expandedAttributesList);
+			List<FieldTypeAttributeInfo> typeAttributeInfos = new List<FieldTypeAttributeInfo>(capacity: 2);
 
-			if (info.HasValue)
-				return info.Value;
-
-			var attributesOnHierarchy = expandedAttributesList.SelectMany(a => a.GetAttributes())
-															  .Select(a => a.AttributeClass);
-														 
-			foreach (ITypeSymbol attribute in attributesOnHierarchy)
+			foreach (ITypeSymbol attribute in expandedAttributes)
 			{
-				info = CheckAttributeInheritanceChain(attribute);
+				FieldTypeAttributeInfo? attributeInfo = GetTypeAttributeInfo(attribute);
 
-				if (info.HasValue)
-					return info.Value;
+				if (attributeInfo != null)
+				{
+					typeAttributeInfos.Add(attributeInfo.Value);
+				}
 			}
 
-			return new FieldAttributeInfo(isFieldAttribute: false, isBoundField: false, fieldType: null);
+			return typeAttributeInfos;
 		}
 
-		private FieldAttributeInfo? CheckAttributeInheritanceChain(ITypeSymbol attributeSymbol, List<ITypeSymbol> attributeTypeHierarchy = null)
+		
+		private FieldTypeAttributeInfo? GetTypeAttributeInfo(ITypeSymbol typeAttribute)
 		{
-			var attributeBaseTypesEnum = attributeTypeHierarchy ?? _attributeInformation.GetAcumaticaAttributesFullList( attributeSymbol,true)
-																						.ToList();
+			HashSet<ITypeSymbol> aggregatedTypeSymbols
+		}
 
-			ITypeSymbol fieldAttribute = attributeBaseTypesEnum.TakeWhile(a => !a.Equals(_context.FieldAttributes.PXDBScalarAttribute))
-															   .FirstOrDefault(a => AllTypeAttributes.Contains(a));
 
-			if (fieldAttribute == null)
-				return null;
+		private FieldTypeAttributeInfo CreateTypeAttributeInfo(ITypeSymbol typeAttribute)
+		{
+			if (typeAttribute.Equals(_context.FieldAttributes.PXDBCalcedAttribute))
+				return new FieldTypeAttributeInfo(isFieldTypeAttribute: false, isDBCalcAttribute: true, fieldType: null);
 
-			bool isBoundField = BoundTypeAttributes.Contains(fieldAttribute);
-			return CorrespondingSimpleTypes.TryGetValue(fieldAttribute, out var fieldType)
-				? new FieldAttributeInfo(isFieldAttribute: true, isBoundField, fieldType)
-				: new FieldAttributeInfo(isFieldAttribute: true, isBoundField, fieldType: null);
+			return CorrespondingSimpleTypes.TryGetValue(typeAttribute, out var fieldType)
+				? new FieldTypeAttributeInfo(isFieldTypeAttribute: true, isDBCalcAttribute: false, fieldType)
+				: new FieldTypeAttributeInfo(isFieldTypeAttribute: true, isDBCalcAttribute: false, fieldType: null);
 		}
 
 		private static HashSet<ITypeSymbol> GetUnboundTypeAttributes(PXContext pxContext) =>
@@ -116,9 +120,15 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				pxContext.FieldAttributes.PXDBLongIdentityAttribute,
 				pxContext.FieldAttributes.PXDBBinaryAttribute,
 				pxContext.FieldAttributes.PXDBUserPasswordAttribute,
-				pxContext.FieldAttributes.PXDBCalcedAttribute,
 				pxContext.FieldAttributes.PXDBAttributeAttribute,
 				pxContext.FieldAttributes.PXDBDataLengthAttribute
+			};
+
+		private static HashSet<ITypeSymbol> GetSpecialAttributes(PXContext pxContext) =>
+			new HashSet<ITypeSymbol>
+			{
+				pxContext.FieldAttributes.PXDBScalarAttribute,
+				pxContext.FieldAttributes.PXDBCalcedAttribute
 			};
 
 		private static Dictionary<ITypeSymbol, ITypeSymbol> GetCorrespondingSimpleTypes(PXContext pxContext) =>

@@ -135,7 +135,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 			if (!attributeType.InheritsFromOrEquals(_eventSubscriberAttribute))
 				throw new ArgumentException("Attribute must be derived from PXEventSubscriber", nameof(attributeType));
-			if (!typeToCheck.InheritsFromOrEquals(_eventSubscriberAttribute))
+			else if (!typeToCheck.InheritsFromOrEquals(_eventSubscriberAttribute))
 				throw new ArgumentException("Attribute must be derived from PXEventSubscriber", nameof(typeToCheck));
 			
 			return IsAttributeDerivedFromClassInternal(attributeType, typeToCheck);

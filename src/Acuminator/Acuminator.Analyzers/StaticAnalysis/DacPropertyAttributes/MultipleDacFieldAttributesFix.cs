@@ -152,7 +152,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				if (attributeType == null)
 					return false;
 				
-				FieldAttributeInfo info = attributesRegister.GetFieldAttributeInfo(attributeType);
+				FieldTypeAttributeInfo info = attributesRegister.GetFieldTypeAttributeInfo(attributeType);
 				return info.IsFieldAttribute;
 			}
 		}
