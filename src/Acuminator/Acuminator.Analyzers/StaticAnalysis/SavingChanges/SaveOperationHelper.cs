@@ -18,9 +18,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 		private const string PressSaveMethodName = "PressSave"; // PXActionCollection.PressSave
 		private const string PressMethodName = "Press"; // PXAction.Press
 		private const string CachePersistMethodName = "Persist"; // PXCache.Persist
-		private const string CachePersistInserted = "PersistInserted"; // PXCache.PersistInserted
-		private const string CachePersistUpdated = "PersistUpdated"; // PXCache.PersistUpdated
-		private const string CachePersistDeleted = "PersistDeleted"; // PXCache.PersistDeleted
+		private const string CachePersistInsertedMethodName = "PersistInserted"; // PXCache.PersistInserted
+		private const string CachePersistUpdatedMethodName = "PersistUpdated"; // PXCache.PersistUpdated
+		private const string CachePersistDeletedMethodName = "PersistDeleted"; // PXCache.PersistDeleted
 
 		public static SaveOperationKind GetSaveOperationKind(IMethodSymbol symbol, InvocationExpressionSyntax syntaxNode, 
 			SemanticModel semanticModel, PXContext pxContext)
@@ -56,9 +56,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 					
 				// PXCache.Persist / PXCache.PersistInserted / PXCache.PersistUpdated / PXCache.PersistDeleted
 				if ((String.Equals(symbol.Name, CachePersistMethodName, StringComparison.Ordinal)
-					|| String.Equals(symbol.Name, CachePersistInserted, StringComparison.Ordinal)
-					|| String.Equals(symbol.Name, CachePersistUpdated, StringComparison.Ordinal)
-					|| String.Equals(symbol.Name, CachePersistDeleted, StringComparison.Ordinal))
+					|| String.Equals(symbol.Name, CachePersistInsertedMethodName, StringComparison.Ordinal)
+					|| String.Equals(symbol.Name, CachePersistUpdatedMethodName, StringComparison.Ordinal)
+					|| String.Equals(symbol.Name, CachePersistDeletedMethodName, StringComparison.Ordinal))
 					&& symbol.ContainingType.OriginalDefinition.InheritsFromOrEquals(pxContext.PXCacheType))
 				{
 					return SaveOperationKind.CachePersist;
