@@ -89,8 +89,8 @@ namespace Acuminator.Vsix.Coloriser
             return hasMetadataRefs;
 
             //*********************************************************************************************************************************
-            bool IsAcumaticaAssemblyName(string dllName) => ColoringConstants.PlatformDllName.Equals(dllName, StringComparison.Ordinal) ||
-                                                            ColoringConstants.AppDllName.Equals(dllName, StringComparison.Ordinal);
+            bool IsAcumaticaAssemblyName(string dllName) => ColoringConstants.PlatformDllName == dllName ||
+                                                            ColoringConstants.AppDllName == dllName;
         }
     }
 }

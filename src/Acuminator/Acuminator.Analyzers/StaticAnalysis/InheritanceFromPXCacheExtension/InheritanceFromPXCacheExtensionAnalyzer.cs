@@ -25,13 +25,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
         {
 	        var symbol = (INamedTypeSymbol) context.Symbol;
 	        if (!symbol.InheritsFrom(pxContext.PXCacheExtensionType)
-	            || String.Equals(nameof(PXCacheExtension), symbol.Name, StringComparison.Ordinal)
+	            || symbol.Name == nameof(PXCacheExtension)
 				|| symbol.InheritsFromOrEquals(pxContext.PXMappedCacheExtensionType))
 	        {
 		        return;
 	        }
 
-	        if (String.Equals(nameof(PXCacheExtension), symbol.BaseType.Name, StringComparison.Ordinal))
+	        if (symbol.BaseType.Name == nameof(PXCacheExtension))
 	        {
 		        if (!symbol.IsSealed)
 		        {
