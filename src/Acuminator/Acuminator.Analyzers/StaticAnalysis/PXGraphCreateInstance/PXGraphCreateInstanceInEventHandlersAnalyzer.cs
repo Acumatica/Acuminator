@@ -25,7 +25,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var methodSymbol = (IMethodSymbol)context.Symbol;
+			var methodSymbol = (IMethodSymbol) context.Symbol;
 			var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
 			var walker = new Walker(context);
 
