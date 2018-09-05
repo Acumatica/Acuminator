@@ -120,6 +120,18 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 								});
 		}
 
+		[Theory]
+		[EmbeddedFileData(@"NotAcumaticaAttributeDac.cs")]
+		private void TestDacWithNonAcumaticaAttribute(string source)
+		{
+			TestListOfParents(source,
+								new List<List<string>>
+								{
+									new List<string>{ "PX.Data.PXDBIntAttribute", },
+									new List<string>{ "PX.Data.PXDBIntAttribute", }
+								});
+		}
+
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
@@ -263,7 +275,12 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 				foreach (var attribute in attributes)
 				{
-					result.Add(attributeInformation.GetAcumaticaAttributesFullList(attribute.AttributeClass, expand).ToHashSet());
+					var fullAttributesSet = attributeInformation.GetAcumaticaAttributesFullList(attribute.AttributeClass, expand).ToHashSet();
+
+					if (fullAttributesSet.Count > 0)
+					{
+						result.Add(fullAttributesSet);
+					}
 				}
 			}
 

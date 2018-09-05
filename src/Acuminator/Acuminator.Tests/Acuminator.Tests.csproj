@@ -202,6 +202,7 @@
     <Compile Include="Tests\StaticAnalysis\Localization\LocalizationPXExceptionCorrectTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\Lambda.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\LambdaWithBody.cs" />
+    <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\NotAcumaticaAttributeDac.cs" />
     <Compile Include="Verification\DiagnosticResultExtensions.cs" />
     <Compile Include="Verification\FluentAssertionsExtensions.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\LongOperationDelegateClosures.cs" />
