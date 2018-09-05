@@ -30,38 +30,31 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 			semanticModel.ThrowOnNull(nameof (semanticModel));
 			pxContext.ThrowOnNull(nameof (pxContext));
 
-			if (symbol.ContainingType != null)
+			var containingType = symbol.ContainingType?.OriginalDefinition;
+
+			if (containingType != null)
 			{
-				// PXGraph.Actions.PressSave or PXSave.Press
-				if (String.Equals(symbol.Name, PressSaveMethodName, StringComparison.Ordinal)
-				    && symbol.ContainingType.OriginalDefinition.InheritsFromOrEquals(pxContext.PXActionCollection))
+				switch (symbol.Name)
 				{
-					return SaveOperationKind.PressSave;
-				}
-
-				if (String.Equals(symbol.Name, PressMethodName, StringComparison.Ordinal)
-				    && symbol.ContainingType.OriginalDefinition.InheritsFromOrEquals(pxContext.PXActionType))
-				{
-					var walker = new SavePressWalker(semanticModel, pxContext);
-					syntaxNode.Accept(walker);
-					return walker.Found ? SaveOperationKind.PressSave : SaveOperationKind.None;
-				}
-
-				// PXGraph.Persist
-				if (String.Equals(symbol.Name, GraphPersistMethodName, StringComparison.Ordinal)
-				    && symbol.ContainingType.OriginalDefinition.IsPXGraph())
-				{
-					return SaveOperationKind.GraphPersist;
-				}
-					
-				// PXCache.Persist / PXCache.PersistInserted / PXCache.PersistUpdated / PXCache.PersistDeleted
-				if ((String.Equals(symbol.Name, CachePersistMethodName, StringComparison.Ordinal)
-					|| String.Equals(symbol.Name, CachePersistInsertedMethodName, StringComparison.Ordinal)
-					|| String.Equals(symbol.Name, CachePersistUpdatedMethodName, StringComparison.Ordinal)
-					|| String.Equals(symbol.Name, CachePersistDeletedMethodName, StringComparison.Ordinal))
-					&& symbol.ContainingType.OriginalDefinition.InheritsFromOrEquals(pxContext.PXCacheType))
-				{
-					return SaveOperationKind.CachePersist;
+					// PXGraph.Actions.PressSave
+					case PressSaveMethodName when containingType.InheritsFromOrEquals(pxContext.PXActionCollection):
+						return SaveOperationKind.PressSave;
+					// PXSave.press
+					case PressMethodName when containingType.InheritsFromOrEquals(pxContext.PXActionType):
+						var walker = new SavePressWalker(semanticModel, pxContext);
+						syntaxNode.Accept(walker);
+						return walker.Found ? SaveOperationKind.PressSave : SaveOperationKind.None;
+					// PXGraph.Persist
+					case GraphPersistMethodName when containingType.IsPXGraph():
+						return SaveOperationKind.GraphPersist;
+					// PXCache.Persist / PXCache.PersistInserted / PXCache.PersistUpdated / PXCache.PersistDeleted
+					case CachePersistMethodName:
+					case CachePersistInsertedMethodName:
+					case CachePersistUpdatedMethodName:
+					case CachePersistDeletedMethodName:
+						if (containingType.InheritsFromOrEquals(pxContext.PXCacheType))
+							return SaveOperationKind.CachePersist;
+						break;
 				}
 			}
 
