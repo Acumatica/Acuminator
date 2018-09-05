@@ -53,7 +53,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 				{
 					var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
 					var defaultAttribute = pxContext.AttributeTypes.PXDefaultAttribute;
-					actual.Add(attributeInformation.AttributeDerivedFromClass(attribute.AttributeClass, defaultAttribute));
+					actual.Add(attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, defaultAttribute));
 				}
 			}
 
@@ -263,7 +263,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 				foreach (var attribute in attributes)
 				{
-					result.Add(attributeInformation.AttributesListDerivedFromClass(attribute.AttributeClass, expand).ToHashSet());
+					result.Add(attributeInformation.GetAcumaticaAttributesFullList(attribute.AttributeClass, expand).ToHashSet());
 				}
 			}
 

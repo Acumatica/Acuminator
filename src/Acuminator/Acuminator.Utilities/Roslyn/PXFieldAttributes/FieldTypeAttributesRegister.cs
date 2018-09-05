@@ -39,7 +39,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
 		
-			var expandedAttributesList = _attributeInformation.AttributesListDerivedFromClass(attributeSymbol, expand: true).ToList();
+			var expandedAttributesList = _attributeInformation.GetAcumaticaAttributesFullList(attributeSymbol, includeBaseTypes: true).ToList();
 
 
 
@@ -64,7 +64,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		private FieldAttributeInfo? CheckAttributeInheritanceChain(ITypeSymbol attributeSymbol, List<ITypeSymbol> attributeTypeHierarchy = null)
 		{
-			var attributeBaseTypesEnum = attributeTypeHierarchy ?? _attributeInformation.AttributesListDerivedFromClass( attributeSymbol,true)
+			var attributeBaseTypesEnum = attributeTypeHierarchy ?? _attributeInformation.GetAcumaticaAttributesFullList( attributeSymbol,true)
 																						.ToList();
 
 			ITypeSymbol fieldAttribute = attributeBaseTypesEnum.TakeWhile(a => !a.Equals(_context.FieldAttributes.PXDBScalarAttribute))

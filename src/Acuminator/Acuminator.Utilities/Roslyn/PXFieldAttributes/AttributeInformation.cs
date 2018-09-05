@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Acuminator.Utilities.Common;
@@ -8,12 +9,19 @@ using Microsoft.CodeAnalysis;
 namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 {
 	/// <summary>
-	/// Information about the Acumatica field attributes.
+	/// Helper used to retrieve information about the Acumatica attributes.
 	/// </summary>
+	/// <remarks>
+	/// By Acumatica atribute we mean an attribute derived from PXEventSubscriberAttribute.
+	/// </remarks>
 	public class AttributeInformation
 	{
 		private const int DefaultRecursionDepth = 10;
 		private readonly PXContext _context;
+
+		private readonly INamedTypeSymbol _eventSubscriberAttribute;
+		private readonly INamedTypeSymbol _dynamicAggregateAttribute;
+		private readonly INamedTypeSymbol _aggregateAttribute;
 
 		public ImmutableHashSet<ITypeSymbol> BoundBaseTypes { get; }
 
@@ -25,6 +33,10 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 			var boundBaseTypes = GetBoundBaseTypes(_context);
 			BoundBaseTypes = boundBaseTypes.ToImmutableHashSet();
+
+			_eventSubscriberAttribute = _context.AttributeTypes.PXEventSubscriberAttribute;
+			_dynamicAggregateAttribute = _context.AttributeTypes.PXDynamicAggregateAttribute;
+			_aggregateAttribute = _context.AttributeTypes.PXAggregateAttribute;
 		}
 
 		private static HashSet<ITypeSymbol> GetBoundBaseTypes(PXContext context) =>
@@ -35,155 +47,143 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				context.FieldAttributes.PXDBDataLengthAttribute,
 			};
 
-		public HashSet<ITypeSymbol> AttributesListDerivedFromClass(ITypeSymbol attributeType, bool expand = false)
+		/// <summary>
+		/// Get the collection of Acumatica attributes defined by the <paramref name="attributeType"/> including attributes on aggregates.
+		/// </summary>
+		/// <param name="attributeType">Type of the attribute.</param>
+		/// <param name="includeBaseTypes">(Optional) True to include, false to exclude the base Acumatica types.</param>
+		/// <returns/>
+		public IEnumerable<ITypeSymbol> GetAcumaticaAttributesFullList(ITypeSymbol attributeType, bool includeBaseTypes = false)
 		{
-			HashSet<ITypeSymbol> results = new HashSet<ITypeSymbol>();
-			results.Add(attributeType);
+			if (attributeType == null || attributeType.Equals(_eventSubscriberAttribute))
+				return Enumerable.Empty<ITypeSymbol>();
 
-			if (expand)
+			var baseAcumaticaAttributeTypes = attributeType.GetBaseTypesAndThis().ToList();
+
+			if (!baseAcumaticaAttributeTypes.Contains(_eventSubscriberAttribute))
+				return Enumerable.Empty<ITypeSymbol>();
+
+			HashSet<ITypeSymbol> results;
+
+			if (includeBaseTypes)
 			{
-				var baseAcumaticaAttributeTypes = GetBaseAcumaticaAttributeTypes(attributeType);
-				baseAcumaticaAttributeTypes.ForEach(aType => results.Add(aType));
+				results = baseAcumaticaAttributeTypes.TakeWhile(a => !a.Equals(_eventSubscriberAttribute))
+													 .ToHashSet();
+			}
+			else
+			{
+				results = new HashSet<ITypeSymbol>() { attributeType };
 			}
 
-			var aggregateAttribute = _context.AttributeTypes.PXAggregateAttribute;
-			var dynamicAggregateAttribute = _context.AttributeTypes.PXDynamicAggregateAttribute;
+			bool isAggregateAttribute = baseAcumaticaAttributeTypes.Contains(_aggregateAttribute) ||
+										baseAcumaticaAttributeTypes.Contains(_dynamicAggregateAttribute);
 
-			if (attributeType.InheritsFromOrEquals(aggregateAttribute) || attributeType.InheritsFromOrEquals(dynamicAggregateAttribute))
+			if (isAggregateAttribute)
 			{
-				var allAttributes = attributeType.GetAllAttributesDefinedOnThisAndBaseTypes();
+				var allAcumaticaAttributes = attributeType.GetAllAttributesDefinedOnThisAndBaseTypes()
+														  .Where(attribute => attribute.InheritsFrom(_eventSubscriberAttribute));
 
-				foreach (var attribute in allAttributes)
-				{
-					if (!attribute.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute))
-						continue;
-
-					results.Add(attribute);
-					VisitAggregateAttribute(attribute, DefaultRecursionDepth);
+				foreach (var attribute in allAcumaticaAttributes)
+				{				
+					CollectAggregatedAttribute(attribute, DefaultRecursionDepth);
 				}
 			}
 
 			return results;
 
-			void VisitAggregateAttribute(ITypeSymbol _attributeSymbol, int depth)
+
+			void CollectAggregatedAttribute(ITypeSymbol aggregatedAttribute, int depth)
 			{
+				results.Add(aggregatedAttribute);
+
 				if (depth < 0)
 					return;
 
-				if (expand)
+				if (includeBaseTypes)
 				{
-					foreach (var type in _attributeSymbol.GetBaseTypesAndThis())
-					{
-						if (!type.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute))
-							break;
-
-						results.Add(type);
-					}
+					aggregatedAttribute.GetBaseTypes()
+									   .TakeWhile(baseType => !baseType.Equals(_eventSubscriberAttribute))
+									   .ForEach(baseType => results.Add(baseType));
 				}
 
-				if (_attributeSymbol.InheritsFromOrEquals(aggregateAttribute) || _attributeSymbol.InheritsFromOrEquals(dynamicAggregateAttribute))
+				if (IsAggregatorAttribute(aggregatedAttribute))
 				{
-					var allAttributes = _attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
-					foreach (var attribute in allAttributes)
-					{
-						if (!attribute.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute))
-							continue;
+					var allAcumaticaAttributes = aggregatedAttribute.GetAllAttributesDefinedOnThisAndBaseTypes()
+																	.Where(attribute => attribute.InheritsFrom(_eventSubscriberAttribute));
 
-						results.Add(attribute);
-						VisitAggregateAttribute(attribute, depth - 1);
+					foreach (var attribute in allAcumaticaAttributes)
+					{
+						CollectAggregatedAttribute(attribute, depth - 1);
 					}
 				}
 			}
 		}
 
-		public bool AttributeDerivedFromClass(ITypeSymbol attributeSymbol, ITypeSymbol type)
+		/// <summary>
+		/// Check if Acumatica attribute is derived from the specified Acumatica attribute type. The exception will be thrown if non Acumatica attributes are passed.
+		/// </summary>
+		/// <exception cref="ArgumentException">Thrown when one or more arguments is non Acumatica attribute.</exception>
+		/// <param name="attributeType">Type of the attribute.</param>
+		/// <param name="typeToCheck">The base attribute type to check.</param>
+		/// <returns>
+		/// True if attribute derived from <paramref name="typeToCheck"/>, false if not.
+		/// </returns>
+		public bool IsAttributeDerivedFromClass(ITypeSymbol attributeType, ITypeSymbol typeToCheck)
 		{
-			if (attributeSymbol.InheritsFromOrEquals(type))
+			attributeType.ThrowOnNull(nameof(attributeType));
+			typeToCheck.ThrowOnNull(nameof(typeToCheck));
+
+			if (!attributeType.InheritsFromOrEquals(_eventSubscriberAttribute))
+				throw new ArgumentException("Attribute must be derived from PXEventSubscriber", nameof(attributeType));
+			if (!typeToCheck.InheritsFromOrEquals(_eventSubscriberAttribute))
+				throw new ArgumentException("Attribute must be derived from PXEventSubscriber", nameof(typeToCheck));
+			
+			return IsAttributeDerivedFromClassInternal(attributeType, typeToCheck);
+		}
+
+		/// <summary>
+		/// Query if Acumatica attribute is bound.
+		/// </summary>
+		/// <param name="attributeType">Type of the attribute.</param>
+		/// <returns/>
+		public bool IsBoundAttribute(ITypeSymbol attributeType)
+		{
+			attributeType.ThrowOnNull(nameof(attributeType));
+
+			if (!attributeType.InheritsFromOrEquals(_eventSubscriberAttribute))
+				return false;
+
+			return BoundBaseTypes.Any(boundBaseType => IsAttributeDerivedFromClassInternal(attributeType, boundBaseType));		
+		}
+
+		/// <summary>
+		/// Query if collection of attributes contains bound attribute.
+		/// </summary>
+		/// <param name="attributeTypes">The attributes collection.</param>
+		/// <returns/>
+		public bool ContainsBoundAttributes(IEnumerable<ITypeSymbol> attributeTypes)
+		{
+			return attributeTypes.Any(IsBoundAttribute);
+		}
+
+		private bool IsAttributeDerivedFromClassInternal(ITypeSymbol attributeType, ITypeSymbol typeToCheck, int depth = DefaultRecursionDepth)
+		{
+			if (depth < 0)
+				return false;
+			else if (attributeType.InheritsFromOrEquals(typeToCheck))
 				return true;
 
-			var aggregateAttribute = _context.AttributeTypes.PXAggregateAttribute;
-			var dynamicAggregateAttribute = _context.AttributeTypes.PXDynamicAggregateAttribute;
-
-			if (attributeSymbol.InheritsFromOrEquals(aggregateAttribute) || attributeSymbol.InheritsFromOrEquals(dynamicAggregateAttribute))
+			if (IsAggregatorAttribute(attributeType))
 			{
-				var allAttributes = attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
-
-				foreach (var attribute in allAttributes)
-				{
-					if (!attribute.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute))
-						continue;
-
-					var result = VisitAggregateAttribute(attribute, DefaultRecursionDepth);
-
-					if (result)
-						return result;
-				}
+				return attributeType.GetAllAttributesDefinedOnThisAndBaseTypes()
+									.Where(attribute => attribute.InheritsFrom(_eventSubscriberAttribute))
+									.Any(attribute => IsAttributeDerivedFromClassInternal(attribute, typeToCheck, depth - 1));
 			}
 
 			return false;
-
-			bool VisitAggregateAttribute(ITypeSymbol _attributeSymbol, int depth)
-			{
-				if (depth < 0)
-					return false;
-
-				if (_attributeSymbol.InheritsFromOrEquals(type))
-					return true;
-
-				if (_attributeSymbol.InheritsFromOrEquals(aggregateAttribute) || _attributeSymbol.InheritsFromOrEquals(dynamicAggregateAttribute))
-				{
-					var allAttributes = _attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
-
-					foreach (var attribute in allAttributes)
-					{
-						if (!attribute.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute))
-							continue;
-
-						var result = VisitAggregateAttribute(attribute, depth - 1);
-
-						if (result)
-							return result;
-					}
-				}
-
-				return false;
-			}
 		}
 
-		public bool IsBoundAttribute(ITypeSymbol attributeSymbol)
-		{
-			foreach (var baseType in BoundBaseTypes)
-			{
-				if (AttributeDerivedFromClass(attributeSymbol, baseType))
-					return true;
-			}
-			return false;
-		}
-
-		public bool ContainsBoundAttributes(IEnumerable<ITypeSymbol> attributesSymbols)
-		{
-			return attributesSymbols.Any(IsBoundAttribute);
-		}
-
-		private IEnumerable<ITypeSymbol> GetBaseAcumaticaAttributeTypes(ITypeSymbol attributeType)
-		{
-			bool isAcumaticaAttribute = false;
-			List<ITypeSymbol> baseAcumaticaAttributeTypes = new List<ITypeSymbol>(capacity: 4);
-
-			foreach (ITypeSymbol baseAttributeType in attributeType.GetBaseTypesAndThis())
-			{
-				if (baseAttributeType.Equals(_context.AttributeTypes.PXEventSubscriberAttribute))
-				{
-					isAcumaticaAttribute = true;
-					break;
-				}
-
-				baseAcumaticaAttributeTypes.Add(baseAttributeType);
-			}
-
-			return isAcumaticaAttribute 
-				? baseAcumaticaAttributeTypes
-				: Enumerable.Empty<ITypeSymbol>();
-		}
+		private bool IsAggregatorAttribute(ITypeSymbol attributeType) => 
+			attributeType.InheritsFromOrEquals(_aggregateAttribute) || attributeType.InheritsFromOrEquals(_dynamicAggregateAttribute);
 	}
 }
