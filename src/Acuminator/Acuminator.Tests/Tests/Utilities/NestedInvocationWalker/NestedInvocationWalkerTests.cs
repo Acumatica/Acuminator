@@ -15,6 +15,9 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 	{
 		private class ExceptionWalker : Acuminator.Utilities.Roslyn.NestedInvocationWalker
 		{
+			private static readonly DiagnosticDescriptor DiagnosticDescriptor =
+				new DiagnosticDescriptor("PX9999", "Test", "Test", "Default", DiagnosticSeverity.Error, true);
+
 			private readonly List<Location> _locations = new List<Location>();
 			public IReadOnlyList<Location> Locations => _locations;
 
@@ -26,7 +29,12 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 			public override void VisitThrowStatement(ThrowStatementSyntax node)
 			{
 				base.VisitThrowStatement(node);
-				_locations.Add((OriginalNode ?? node).GetLocation());
+				ReportDiagnostic(AddDiagnostic, DiagnosticDescriptor, node);
+			}
+
+			private void AddDiagnostic(Diagnostic diagnostic)
+			{
+				_locations.Add(diagnostic.Location);
 			}
 		}
 
