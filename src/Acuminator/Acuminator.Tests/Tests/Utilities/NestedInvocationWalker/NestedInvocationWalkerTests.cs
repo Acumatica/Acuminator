@@ -223,5 +223,20 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 
 			walker.Locations.Should().BeEquivalentTo((line: 14, column: 4));
 		}
+
+		[Theory]
+		[EmbeddedFileData("MultipleReportedDiagnostics.cs")]
+		public async Task MultipleReportedDiagnostics(string text)
+		{
+			Document document = CreateDocument(text);
+			Compilation compilation = await document.Project.GetCompilationAsync();
+			var walker = new ExceptionWalker(compilation, CancellationToken.None);
+			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
+				.OfType<ClassDeclarationSyntax>().First();
+
+			node.Accept(walker);
+
+			walker.Locations.Should().BeEquivalentTo((line: 14, column: 4));
+		}
 	}
 }
