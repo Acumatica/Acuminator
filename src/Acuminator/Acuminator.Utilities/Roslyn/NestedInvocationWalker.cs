@@ -127,10 +127,11 @@ namespace Acuminator.Utilities.Roslyn
 		/// <param name="reportDiagnostic">Action that reports a diagnostic in the current context (e.g., <code>SymbolAnalysisContext.ReportDiagnostic</code>)</param>
 		/// <param name="diagnosticDescriptor">Diagnostic descriptor</param>
 		/// <param name="node">Current syntax node that is being analyzed. Diagnostic will be reported on the original node.</param>
+		/// <param name="messageArgs">Arguments to the message of the diagnostic</param>
 		/// <remarks>This method takes a report diagnostic method as a parameter because it is different for each analyzer type 
 		/// (<code>SymbolAnalysisContext.ReportDiagnostic</code>, <code>SyntaxNodeAnalysisContext.ReportDiagnostic</code>, etc.)</remarks>
 		protected virtual void ReportDiagnostic(Action<Diagnostic> reportDiagnostic, 
-			DiagnosticDescriptor diagnosticDescriptor, SyntaxNode node)
+			DiagnosticDescriptor diagnosticDescriptor, SyntaxNode node, params object[] messageArgs)
 		{
 			var nodeToReport = OriginalNode ?? node;
 
@@ -138,7 +139,7 @@ namespace Acuminator.Utilities.Roslyn
 
 			if (!_reportedDiagnostics.Contains(diagnosticKey))
 			{
-				reportDiagnostic(Diagnostic.Create(diagnosticDescriptor, nodeToReport.GetLocation()));
+				reportDiagnostic(Diagnostic.Create(diagnosticDescriptor, nodeToReport.GetLocation(), messageArgs));
 				_reportedDiagnostics.Add(diagnosticKey);
 			}
 		}

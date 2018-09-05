@@ -47,7 +47,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 
 			if (methodSymbol != null && IsMethodForbidden(methodSymbol))
 			{
-				ReportDiagnostic(OriginalNode ?? node);
+				ReportDiagnostic(_context.ReportDiagnostic, _diagnosticDescriptor, node, _messageArgs);
 			}
 			else
 			{
@@ -60,14 +60,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 			return symbol.ContainingType?.OriginalDefinition != null
 			       && symbol.ContainingType.OriginalDefinition.InheritsFromOrEquals(_pxContext.PXCacheType)
 			       && MethodNames.Contains(symbol.Name);
-		}
-
-		private void ReportDiagnostic(SyntaxNode node)
-		{
-			_context.ReportDiagnostic(Diagnostic.Create(
-				_diagnosticDescriptor,
-				(OriginalNode ?? node).GetLocation(),
-				_messageArgs));
 		}
 	}
 }
