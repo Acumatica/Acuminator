@@ -4,7 +4,9 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
 using Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting;
+using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
@@ -24,7 +26,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
 
 		public EventHandlerAnalyzer() : this(
-			new ConnectionScopeInRowSelectingAnalyzer()) // can be replaced with DI from ServiceLocator if DI-container is used
+			// can be replaced with DI from ServiceLocator if DI-container is used
+			new ConnectionScopeInRowSelectingAnalyzer(),
+			new SavingChangesInEventHandlersAnalyzer(),
+			new ChangesInPXCacheInEventHandlersAnalyzer())
 		{
 		}
 
