@@ -122,7 +122,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 				nameof(Resources.PX1044MessageFormat).GetLocalized());
 
 		public static DiagnosticDescriptor PX1045_PXGraphCreateInstanceInEventHandlers { get; } =
-			Rule("PX1044", nameof(Resources.PX1045Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+			Rule("PX1045", nameof(Resources.PX1045Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
 		public static DiagnosticDescriptor PX1050_HardcodedStringInLocalizationMethod { get; } =
             Rule("PX1050", nameof(Resources.PX1050Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
