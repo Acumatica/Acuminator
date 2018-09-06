@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
@@ -65,22 +66,28 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 			return typeAttributeInfos;
 		}
-
-		
+	
 		private FieldTypeAttributeInfo? GetTypeAttributeInfo(ITypeSymbol typeAttribute)
 		{
-			HashSet<ITypeSymbol> aggregatedTypeSymbols
-		}
+			var firstTypeAttribute = typeAttribute.GetBaseTypesAndThis()
+												  .FirstOrDefault(type => AllTypeAttributes.Contains(type));
+			if (firstTypeAttribute == null)
+				return null;
 
-
-		private FieldTypeAttributeInfo CreateTypeAttributeInfo(ITypeSymbol typeAttribute)
-		{
-			if (typeAttribute.Equals(_context.FieldAttributes.PXDBCalcedAttribute))
-				return new FieldTypeAttributeInfo(isFieldTypeAttribute: false, isDBCalcAttribute: true, fieldType: null);
+			if (firstTypeAttribute.Equals(_context.FieldAttributes.PXDBScalarAttribute))
+			{
+				return new FieldTypeAttributeInfo(isFieldTypeAttribute: false, attributeKind: FieldTypeAttributeKind.PXDBScalarAttribute,
+												  fieldType: null);
+			}
+			else if (firstTypeAttribute.Equals(_context.FieldAttributes.PXDBCalcedAttribute))
+			{
+				return new FieldTypeAttributeInfo(isFieldTypeAttribute: false, attributeKind: FieldTypeAttributeKind.PXDBCalcedAttribute,
+												  fieldType: null);
+			}
 
 			return CorrespondingSimpleTypes.TryGetValue(typeAttribute, out var fieldType)
-				? new FieldTypeAttributeInfo(isFieldTypeAttribute: true, isDBCalcAttribute: false, fieldType)
-				: new FieldTypeAttributeInfo(isFieldTypeAttribute: true, isDBCalcAttribute: false, fieldType: null);
+				? new FieldTypeAttributeInfo(isFieldTypeAttribute: true, attributeKind: FieldTypeAttributeKind.TypeAttribute, fieldType)
+				: new FieldTypeAttributeInfo(isFieldTypeAttribute: true, attributeKind: FieldTypeAttributeKind.TypeAttribute, fieldType: null);
 		}
 
 		private static HashSet<ITypeSymbol> GetUnboundTypeAttributes(PXContext pxContext) =>

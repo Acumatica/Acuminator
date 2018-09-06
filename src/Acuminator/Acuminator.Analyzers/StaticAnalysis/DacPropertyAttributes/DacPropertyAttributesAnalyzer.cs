@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -21,7 +22,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			ImmutableArray.Create
 			(
 				Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty,
-				Descriptors.PX1023_DacPropertyMultipleFieldAttributes
+				Descriptors.PX1023_MultipleTypeAttributesOnProperty,
+				Descriptors.PX1023_MultipleTypeAttributesOnAggregators,
+				Descriptors.PX1023_MultipleSpecialTypeAttributesOnAggregators
 			);
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
@@ -51,14 +54,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			if (attributes.Length == 0 || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			var attributesWithInfo = GetFieldAttributesInfos(pxContext, attributes, fieldAttributesRegister, symbolContext.CancellationToken);
+			var attributesWithInfos = GetFieldTypeAttributesInfos(pxContext, attributes, fieldAttributesRegister, symbolContext.CancellationToken);
 
-			if (symbolContext.CancellationToken.IsCancellationRequested || attributesWithInfo.IsNullOrEmpty())
+			if (symbolContext.CancellationToken.IsCancellationRequested || attributesWithInfos.Count == 0)
 				return;
 
-			if (attributesWithInfo.Count > 1)
+			bool validSpecialTypes = await CheckIfNoMultipleSpecialAttributesAsync(attributesWithInfos, symbolContext).ConfigureAwait(false);
+
+			if (!validSpecialTypes || symbolContext.CancellationToken.IsCancellationRequested)
+				return;
+
+			if (attributesWithInfos.Count > 1)
 			{
-				var locationTasks = attributesWithInfo.Select(info => GetAttributeLocationAsync(info.Attribute, symbolContext.CancellationToken));
+				var locationTasks = attributesWithInfos.Select(info => GetAttributeLocationAsync(info.Attribute, symbolContext.CancellationToken));
 				Location[] attributeLocations = await Task.WhenAll(locationTasks)
 														  .ConfigureAwait(false);
 
@@ -72,29 +80,57 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			}
 			else
 			{
-				var (fieldAttribute, fieldAttrInfo) = attributesWithInfo[0];
+				var (fieldAttribute, fieldAttrInfo) = attributesWithInfos[0];
 				await CheckAttributeAndPropertyTypesForCompatibilityAsync(property, fieldAttribute, fieldAttrInfo, pxContext, symbolContext);
 			}
 		}
 
-		private static List<(AttributeData Attribute, FieldTypeAttributeInfo Info)> GetFieldAttributesInfos(PXContext pxContext,
+		private static List<(AttributeData Attribute, List<FieldTypeAttributeInfo> Infos)> GetFieldTypeAttributesInfos(PXContext pxContext,
 																									   ImmutableArray<AttributeData> attributes,
 																									   FieldTypeAttributesRegister fieldAttributesRegister,
 																									   CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			var fieldInfosList = new List<(AttributeData, FieldTypeAttributeInfo)>(capacity: attributes.Length);
+			var fieldInfosList = new List<(AttributeData, List<FieldTypeAttributeInfo>)>(capacity: attributes.Length);
 
 			foreach (AttributeData attribute in attributes)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				FieldTypeAttributeInfo attrInfo = fieldAttributesRegister.GetFieldTypeAttributeInfo(attribute.AttributeClass);
+				var attributeInfos = fieldAttributesRegister.GetFieldTypeAttributeInfos(attribute.AttributeClass).ToList();
 
-				if (attrInfo.IsFieldAttribute)
-					fieldInfosList.Add((attribute, attrInfo));
+				if (attributeInfos.Count > 0)
+				{
+					fieldInfosList.Add((attribute, attributeInfos));
+				}
 			}
 
 			return fieldInfosList;
+		}
+
+		private static async Task<bool> CheckIfNoMultipleSpecialAttributesAsync(
+															List<(AttributeData Attribute, List<FieldTypeAttributeInfo> Infos)> attributesWithInfos,
+															SymbolAnalysisContext symbolContext)
+		{
+			var attributesWithMultipleSpecialAttribute = from attrWithInfos in attributesWithInfos
+														 where attrWithInfos.Infos.Count(info => info.IsSpecial) > 1
+														 select attrWithInfos.Attribute;
+
+			if (attributesWithMultipleSpecialAttribute.IsEmpty())
+				return true;
+
+			var locationTasks = attributesWithMultipleSpecialAttribute.Select(a => GetAttributeLocationAsync(a, symbolContext.CancellationToken))
+																	  .ToArray();
+			Location[] attributeLocations = await Task.WhenAll(locationTasks)
+													  .ConfigureAwait(false);
+
+			foreach (Location attrLocation in attributeLocations.Where(location => location != null))
+			{
+				symbolContext.ReportDiagnostic(
+					Diagnostic.Create(
+						Descriptors.PX1023_MultipleSpecialTypeAttributesOnAggregators, attrLocation));
+			}
+
+			return false;
 		}
 
 		private static Task CheckAttributeAndPropertyTypesForCompatibilityAsync(IPropertySymbol property, AttributeData fieldAttribute,

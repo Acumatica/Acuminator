@@ -216,8 +216,14 @@
   <data name="PX1021PropertyFix" xml:space="preserve">
     <value>Change the property type so that it corresponds to the attribute type</value>
   </data>
-  <data name="PX1023Title" xml:space="preserve">
-    <value>The DAC property cannot be marked with multiple field attributes</value>
+  <data name="PX1023MultipleTypeAttributesOnProperty" xml:space="preserve">
+    <value>The DAC property cannot be marked with multiple field type attributes</value>
+  </data>
+	<data name="PX1023MultipleTypeAttributesOnAggregators" xml:space="preserve">
+    <value>The attribute contains multiple field type attributes declared on aggregators</value>
+  </data>
+	<data name="PX1023MultipleSpecialTypeAttributesOnAggregators" xml:space="preserve">
+    <value>The attribute contains multiple PXDBScalar/PXDBCalced attributes declared on aggregators</value>
   </data>
   <data name="PX1023Fix" xml:space="preserve">
     <value>Leave the selected field attribute and remove other field attributes from the property</value>

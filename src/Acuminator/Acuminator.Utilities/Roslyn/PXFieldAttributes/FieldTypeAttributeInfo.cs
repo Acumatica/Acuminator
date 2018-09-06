@@ -11,13 +11,15 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		public ITypeSymbol FieldType { get; }
 
-		public bool IsDBCalcAttribute { get; }
+		public FieldTypeAttributeKind Kind { get; }
 
-		public FieldTypeAttributeInfo(bool isFieldTypeAttribute, bool isDBCalcAttribute, ITypeSymbol fieldType)
+		public bool IsSpecial => Kind != FieldTypeAttributeKind.TypeAttribute;
+
+		public FieldTypeAttributeInfo(bool isFieldTypeAttribute, FieldTypeAttributeKind attributeKind, ITypeSymbol fieldType)
 		{
 			IsFieldAttribute = isFieldTypeAttribute;
 			FieldType = fieldType;
-			IsDBCalcAttribute = isDBCalcAttribute;
-		}		
+			Kind = attributeKind;
+		}
 	}
 }
