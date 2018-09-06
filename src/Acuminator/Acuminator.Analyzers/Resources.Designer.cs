@@ -602,6 +602,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A long-running operation cannot be started within an event handler.
+        /// </summary>
+        public static string PX1046Title {
+            get {
+                return ResourceManager.GetString("PX1046Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hardcoded strings are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class..
         /// </summary>
         public static string PX1050Title {

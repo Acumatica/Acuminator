@@ -207,6 +207,10 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\Lambda.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\LambdaWithBody.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\EventHandlers\CreateInstance.cs" />
+    <Compile Include="Tests\StaticAnalysis\LongOperationInEventHandlers\LongOperationInEventHandlersTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationInEventHandlers\Sources\Valid.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationInEventHandlers\Sources\Invalid.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationInEventHandlers\Sources\InvalidWithExternalMethod.cs" />
     <Compile Include="Tests\StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\EventHandlers\Constructor.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\EventHandlers\ConstructorForNonSpecificPXGraph.cs" />
