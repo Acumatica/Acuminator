@@ -64,16 +64,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 				var semanticModel = GetSemanticModel(node.SyntaxTree);
 				SaveOperationKind saveOperationKind = SaveOperationHelper.GetSaveOperationKind(
 					symbol, node, semanticModel, _pxContext);
-
-				SyntaxNode nodeForDiagnostic = OriginalNode ?? node;
-
+				
 				if (_eventType == EventType.RowPersisting)
 				{
 					if (saveOperationKind != SaveOperationKind.CachePersist)
 					{
-						_context.ReportDiagnostic(Diagnostic.Create(
-							Descriptors.PX1043_SavingChangesInRowPerstisting,
-							nodeForDiagnostic.GetLocation()));
+						ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1043_SavingChangesInRowPerstisting, node);
 					}
 
 					return true;
@@ -81,9 +77,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 
 				if (saveOperationKind != SaveOperationKind.None)
 				{
-					_context.ReportDiagnostic(Diagnostic.Create(
-						Descriptors.PX1043_SavingChangesInEventHandlers, 
-						nodeForDiagnostic.GetLocation()));
+					ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1043_SavingChangesInEventHandlers, node);
 
 					return true;
 				}

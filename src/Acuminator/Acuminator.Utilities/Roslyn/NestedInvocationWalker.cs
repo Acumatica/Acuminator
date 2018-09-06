@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Acuminator.Utilities.Common;
@@ -41,6 +42,8 @@ namespace Acuminator.Utilities.Roslyn
 		
 		private readonly CodeAnalysisSettings _settings;
 		private readonly Dictionary<SyntaxTree, SemanticModel> _semanticModels = new Dictionary<SyntaxTree, SemanticModel>();
+
+		private readonly ISet<(SyntaxNode, DiagnosticDescriptor)> _reportedDiagnostics = new HashSet<(SyntaxNode, DiagnosticDescriptor)>();
 
 		/// <summary>
 		/// Syntax node in the original tree that is being analyzed.
@@ -114,6 +117,31 @@ namespace Acuminator.Utilities.Roslyn
 			semanticModel = _compilation.GetSemanticModel(syntaxTree);
 			_semanticModels[syntaxTree] = semanticModel;
 			return semanticModel;
+		}
+
+		/// <summary>
+		/// Reports a diagnostic for the provided descriptor on the original syntax node from which recursive analysis started.
+		/// This method must be used for all diagnostic reporting within the walker
+		/// because it does diagnostic deduplication and determine the right syntax node to perform diagnostic reporting.
+		/// </summary>
+		/// <param name="reportDiagnostic">Action that reports a diagnostic in the current context (e.g., <code>SymbolAnalysisContext.ReportDiagnostic</code>)</param>
+		/// <param name="diagnosticDescriptor">Diagnostic descriptor</param>
+		/// <param name="node">Current syntax node that is being analyzed. Diagnostic will be reported on the original node.</param>
+		/// <param name="messageArgs">Arguments to the message of the diagnostic</param>
+		/// <remarks>This method takes a report diagnostic method as a parameter because it is different for each analyzer type 
+		/// (<code>SymbolAnalysisContext.ReportDiagnostic</code>, <code>SyntaxNodeAnalysisContext.ReportDiagnostic</code>, etc.)</remarks>
+		protected virtual void ReportDiagnostic(Action<Diagnostic> reportDiagnostic, 
+			DiagnosticDescriptor diagnosticDescriptor, SyntaxNode node, params object[] messageArgs)
+		{
+			var nodeToReport = OriginalNode ?? node;
+
+			var diagnosticKey = (nodeToReport, diagnosticDescriptor);
+
+			if (!_reportedDiagnostics.Contains(diagnosticKey))
+			{
+				reportDiagnostic(Diagnostic.Create(diagnosticDescriptor, nodeToReport.GetLocation(), messageArgs));
+				_reportedDiagnostics.Add(diagnosticKey);
+			}
 		}
 
 		private void Push(SyntaxNode node)
