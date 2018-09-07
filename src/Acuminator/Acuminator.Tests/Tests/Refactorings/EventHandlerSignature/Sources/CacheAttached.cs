@@ -9,7 +9,7 @@ namespace PX.Objects
 {
 	public class SOInvoiceEntry : PXGraph<SOInvoiceEntry, SOInvoice>
 	{
-		protected virtual void SOInvoice_CacheAttached(PXCache cache)
+		protected virtual void SOInvoice_RefNbr_CacheAttached(PXCache cache)
 		{
 			
 		}

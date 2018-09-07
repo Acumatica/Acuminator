@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Acuminator.Utilities.Roslyn;
@@ -46,12 +47,12 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 							(eventHandlerInfo.eventType, EventHandlerSignatureType.Generic), out var genericArgsSymbol)
 						&& methodSymbol.Name.EndsWith("_" + eventHandlerInfo.eventType, StringComparison.Ordinal))
 					{
-						string dacName = methodSymbol.Name.Substring(0, methodSymbol.Name.IndexOf("_", StringComparison.Ordinal));
+						(string dacName, string fieldName) = ParseMethodName(methodSymbol.Name, eventHandlerInfo.eventType);
 
 						string title = nameof (Resources.EventHandlerSignatureCodeActionTitle).GetLocalized().ToString();
 						context.RegisterRefactoring(CodeAction.Create(title,
 							ct => ChangeSignatureAsync(context, root, semanticModel, pxContext, methodNode, 
-								eventHandlerInfo.eventType, genericArgsSymbol, dacName, ct), title));
+								eventHandlerInfo.eventType, genericArgsSymbol, dacName, fieldName, ct), title));
 					}
 				}
 			}
@@ -60,7 +61,7 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 		private async Task<Document> ChangeSignatureAsync(CodeRefactoringContext context, 
 			SyntaxNode root, SemanticModel semanticModel,
 			PXContext pxContext, MethodDeclarationSyntax methodDeclaration, 
-			EventType eventType, INamedTypeSymbol genericArgsSymbol, string dacName,
+			EventType eventType, INamedTypeSymbol genericArgsSymbol, string dacName, string fieldName,
 			CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -78,7 +79,7 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 
 			//var syntaxGenerator = SyntaxGenerator.GetGenerator(context.Document);
 
-			newParameters = newParameters.Replace(argsParameter, CreateArgsParameter(genericArgsSymbol, dacName));
+			newParameters = newParameters.Replace(argsParameter, CreateArgsParameter(genericArgsSymbol, dacName, fieldName));
 
 			var newMethodDeclaration = methodDeclaration
 				.WithIdentifier(Identifier(EventHandlerMethodName))
@@ -87,8 +88,15 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 			return context.Document.WithSyntaxRoot(root.ReplaceNode(methodDeclaration, newMethodDeclaration));
 		}
 
-		private ParameterSyntax CreateArgsParameter(INamedTypeSymbol genericArgsSymbol, string dacName)
+		private ParameterSyntax CreateArgsParameter(INamedTypeSymbol genericArgsSymbol, string dacName, string fieldName)
 		{
+			TypeSyntax identifier;
+
+			if (String.IsNullOrEmpty(fieldName))
+				identifier = IdentifierName(dacName);
+			else
+				identifier = QualifiedName(IdentifierName(dacName), IdentifierName(fieldName));
+
 			return Parameter(
 				Identifier(ArgsParameterName))
 				.WithType(
@@ -99,7 +107,24 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 							.WithTypeArgumentList(
 								TypeArgumentList(
 									SingletonSeparatedList<TypeSyntax>(
-										IdentifierName(dacName))))));
+										identifier)))));
+		}
+
+		private (string dacName, string fieldName) ParseMethodName(string methodName, EventType eventType)
+		{
+			var match = Regex.Match(methodName, @"([\w-[_]]+)_(\w+_){0,1}" + eventType,
+				RegexOptions.CultureInvariant | RegexOptions.Singleline);
+
+			if (match.Success)
+			{
+				string dacName = match.Groups[1].Value;
+				string fieldName = match.Groups[2].Success ? match.Groups[2].Value.TrimEnd('_') : null;
+				if (!String.IsNullOrEmpty(fieldName))
+					fieldName = Char.ToLowerInvariant(fieldName[0]) + fieldName.Substring(1, fieldName.Length - 1);
+				return (dacName, fieldName);
+			}
+
+			return (null, null);
 		}
 	}
 }
