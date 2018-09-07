@@ -36,7 +36,8 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 			{
 				IMethodSymbol methodSymbol = semanticModel.GetDeclaredSymbol(methodNode, context.CancellationToken);
 
-				if (methodSymbol != null)
+				if (methodSymbol?.ContainingType?.OriginalDefinition != null 
+					&& methodSymbol.ContainingType.OriginalDefinition.IsPXGraphOrExtension(pxContext))
 				{
 					var eventHandlerInfo = methodSymbol.GetEventHandlerInfo(pxContext);
 

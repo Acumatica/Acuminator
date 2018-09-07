@@ -7,6 +7,8 @@ using Acuminator.Analyzers.Refactorings.EventHandlerSignature;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis.CodeRefactorings;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 using Xunit;
 
 namespace Acuminator.Tests.Tests.Refactorings.EventHandlerSignature
@@ -19,21 +21,35 @@ namespace Acuminator.Tests.Tests.Refactorings.EventHandlerSignature
 		[EmbeddedFileData("CacheAttached.cs", "CacheAttached_Expected.cs")]
 		public void CacheAttached(string actual, string expected)
 		{
-			VerifyCSharpRefactoring(actual, expected);
+			VerifyCSharpRefactoring(actual, expected, root => root.DescendantNodes().OfType<MethodDeclarationSyntax>().First());
 		}
 
 		[Theory]
-		[EmbeddedFileData("RowEventHandlers.cs", "RowEventHandlers_Expected.cs")]
-		public void RowEventHandlers(string actual, string expected)
+		[EmbeddedFileData("RowEventHandler.cs", "RowEventHandler_Expected.cs")]
+		public void RowEventHandler(string actual, string expected)
 		{
-			VerifyCSharpRefactoring(actual, expected);
+			VerifyCSharpRefactoring(actual, expected, root => root.DescendantNodes().OfType<MethodDeclarationSyntax>().First());
 		}
 
 		[Theory]
-		[EmbeddedFileData("FieldEventHandlers.cs", "FieldEventHandlers_Expected.cs")]
-		public void FieldEventHandlers(string actual, string expected)
+		[EmbeddedFileData("FieldEventHandler.cs", "FieldEventHandler_Expected.cs")]
+		public void FieldEventHandler(string actual, string expected)
 		{
-			VerifyCSharpRefactoring(actual, expected);
+			VerifyCSharpRefactoring(actual, expected, root => root.DescendantNodes().OfType<MethodDeclarationSyntax>().First());
+		}
+
+		[Theory]
+		[EmbeddedFileData("CacheAttachedWithArgUsages.cs", "CacheAttachedWithArgUsages_Expected.cs")]
+		public void CacheAttachedWithArgUsages(string actual, string expected)
+		{
+			VerifyCSharpRefactoring(actual, expected, root => root.DescendantNodes().OfType<MethodDeclarationSyntax>().First());
+		}
+
+		[Theory]
+		[EmbeddedFileData("EventHandlerWithArgsUsages.cs", "EventHandlerWithArgsUsages_Expected.cs")]
+		public void EventHandlerWithArgsUsages(string actual, string expected)
+		{
+			VerifyCSharpRefactoring(actual, expected, root => root.DescendantNodes().OfType<MethodDeclarationSyntax>().First());
 		}
 	}
 }
