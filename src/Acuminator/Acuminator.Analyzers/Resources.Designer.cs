@@ -62,6 +62,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Convert event handler signature to the generic one.
+        /// </summary>
+        public static string EventHandlerSignatureCodeActionTitle {
+            get {
+                return ResourceManager.GetString("EventHandlerSignatureCodeActionTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fix PXAction handler signature.
         /// </summary>
         public static string PX1000Fix {

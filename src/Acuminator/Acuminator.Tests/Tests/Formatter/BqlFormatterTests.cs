@@ -8,6 +8,7 @@ using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Xunit;
+using static Acuminator.Tests.Verification.VerificationHelper;
 
 namespace Acuminator.Tests.Tests.Formatter
 {

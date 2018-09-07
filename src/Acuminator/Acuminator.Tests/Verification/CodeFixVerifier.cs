@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Formatting;
 using Xunit;
+using static Acuminator.Tests.Verification.VerificationHelper;
 
 namespace Acuminator.Tests.Verification
 {
@@ -14,7 +15,7 @@ namespace Acuminator.Tests.Verification
 	/// Superclass of all Unit tests made for diagnostics with codefixes.
 	/// Contains methods used to verify correctness of codefixes
 	/// </summary>
-	public abstract partial class CodeFixVerifier : DiagnosticVerifier
+	public abstract class CodeFixVerifier : DiagnosticVerifier
 	{
 		/// <summary>
 		/// Returns the codefix being tested (C#) - to be implemented in non-abstract class
@@ -73,7 +74,7 @@ namespace Acuminator.Tests.Verification
 		/// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
 		private void VerifyFix(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string newSource, int? codeFixIndex, bool allowNewCompilerDiagnostics)
 		{
-			var document = CreateDocument(oldSource, language);
+			var document = VerificationHelper.CreateDocument(oldSource, language);
 			var analyzerDiagnostics = GetSortedDiagnosticsFromDocuments(analyzer, new[] { document });
 			var compilerDiagnostics = GetCompilerDiagnostics(document);
 			var attempts = analyzerDiagnostics.Length;
@@ -91,11 +92,11 @@ namespace Acuminator.Tests.Verification
 
 				if (codeFixIndex != null)
 				{
-					document = ApplyFix(document, actions.ElementAt((int)codeFixIndex));
+					document = ApplyCodeAction(document, actions.ElementAt((int)codeFixIndex));
 					break;
 				}
 
-				document = ApplyFix(document, actions.ElementAt(0));
+				document = ApplyCodeAction(document, actions.ElementAt(0));
 				analyzerDiagnostics = GetSortedDiagnosticsFromDocuments(analyzer, new[] { document });
 
 				var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, GetCompilerDiagnostics(document));

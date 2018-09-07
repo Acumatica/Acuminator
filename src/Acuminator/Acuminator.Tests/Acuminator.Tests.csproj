@@ -180,6 +180,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Tests\Refactorings\EventHandlerSignature\EventHandlerSignatureTests.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\CacheAttached.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\CacheAttached_Expected.cs" />
+    <Compile Include="Verification\CodeRefactoringVerifier.cs" />
+    <Compile Include="Verification\VerificationHelper.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\StaticMethod.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\PropertyGetter.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\PropertySetter.cs" />
@@ -400,9 +405,7 @@
     <Compile Include="Tests\Utilities\AttributeInformation\AttributeInformationTests.cs" />
     <Compile Include="Verification\CodeFixVerifier.cs" />
     <Compile Include="Verification\DiagnosticVerifier.cs" />
-    <Compile Include="Verification\CodeFixVerifier.Helper.cs" />
     <Compile Include="Verification\DiagnosticResult.cs" />
-    <Compile Include="Verification\DiagnosticVerifier.Helper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
