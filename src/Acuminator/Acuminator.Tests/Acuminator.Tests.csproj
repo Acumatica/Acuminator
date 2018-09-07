@@ -183,6 +183,10 @@
     <Compile Include="Tests\Refactorings\EventHandlerSignature\EventHandlerSignatureTests.cs" />
     <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\CacheAttached.cs" />
     <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\CacheAttached_Expected.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\RowEventHandlers.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\RowEventHandlers_Expected.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\FieldEventHandlers.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\FieldEventHandlers_Expected.cs" />
     <Compile Include="Verification\CodeRefactoringVerifier.cs" />
     <Compile Include="Verification\VerificationHelper.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\StaticMethod.cs" />

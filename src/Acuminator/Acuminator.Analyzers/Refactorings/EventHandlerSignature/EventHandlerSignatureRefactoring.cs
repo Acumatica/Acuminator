@@ -62,6 +62,8 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 			EventType eventType, INamedTypeSymbol genericArgsSymbol, string dacName,
 			CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
+
 			var newParameters = methodDeclaration.ParameterList.Parameters;
 
 			var cacheParameter = newParameters[0];
