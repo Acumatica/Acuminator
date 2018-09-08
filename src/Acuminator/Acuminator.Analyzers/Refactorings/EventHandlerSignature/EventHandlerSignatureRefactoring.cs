@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
@@ -50,7 +51,7 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 
 						string title = nameof (Resources.EventHandlerSignatureCodeActionTitle).GetLocalized().ToString();
 						context.RegisterRefactoring(CodeAction.Create(title,
-							ct => ChangeSignatureAsync(context, root, semanticModel, pxContext, methodNode, 
+							ct => ChangeSignatureAsync(context, root, semanticModel, methodNode, methodSymbol,
 								eventHandlerInfo.eventType, genericArgsSymbol, dacName, fieldName, ct), title));
 					}
 				}
@@ -67,37 +68,49 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 					   attr => attr.AttributeClass != null && attr.AttributeClass.Equals(pxContext.AttributeTypes.PXOverrideAttribute));
 		}
 
-		private async Task<Document> ChangeSignatureAsync(CodeRefactoringContext context, 
+		private Task<Document> ChangeSignatureAsync(CodeRefactoringContext context, 
 			SyntaxNode root, SemanticModel semanticModel,
-			PXContext pxContext, MethodDeclarationSyntax methodDeclaration, 
-			EventType eventType, INamedTypeSymbol genericArgsSymbol, string dacName, string fieldName,
+			MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol,
+			EventType eventType, INamedTypeSymbol genericArgsSymbol,
+			string dacName, string fieldName,
 			CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 
 			var newParameters = methodDeclaration.ParameterList.Parameters;
+			var cacheParameterSymbol = methodSymbol.Parameters[0];
+			ParameterSyntax argsParameter;
+			SyntaxToken parameterName;
 
-			var cacheParameter = newParameters[0];
-
-			if (eventType != EventType.CacheAttached)
+			if (eventType == EventType.CacheAttached)
+			{
+				parameterName = Identifier(ArgsParameterName);
+				argsParameter = newParameters[0];
+			}
+			else
 			{
 				newParameters = newParameters.RemoveAt(0); // "PXCache sender" parameter
+				argsParameter = newParameters[0];
+				parameterName = argsParameter.Identifier;
 			}
-			
-			var argsParameter = newParameters[0];
 
-			//var syntaxGenerator = SyntaxGenerator.GetGenerator(context.Document);
+			newParameters = newParameters.Replace(argsParameter, 
+				CreateArgsParameter(genericArgsSymbol, parameterName, dacName, fieldName));
 
-			newParameters = newParameters.Replace(argsParameter, CreateArgsParameter(genericArgsSymbol, dacName, fieldName));
-
-			var newMethodDeclaration = methodDeclaration
+			var newMethodDeclaration = 
+				ReplaceParameterUsages(methodDeclaration, cacheParameterSymbol,
+					MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, 
+						IdentifierName(parameterName), IdentifierName("Cache")), semanticModel)
 				.WithIdentifier(Identifier(EventHandlerMethodName))
 				.WithParameterList(methodDeclaration.ParameterList.WithParameters(newParameters));
 
-			return context.Document.WithSyntaxRoot(root.ReplaceNode(methodDeclaration, newMethodDeclaration));
+			root = root.ReplaceNode(methodDeclaration, newMethodDeclaration);
+
+			return Task.FromResult(context.Document.WithSyntaxRoot(root));
 		}
 
-		private ParameterSyntax CreateArgsParameter(INamedTypeSymbol genericArgsSymbol, string dacName, string fieldName)
+		private ParameterSyntax CreateArgsParameter(INamedTypeSymbol genericArgsSymbol, SyntaxToken parameterName, 
+			string dacName, string fieldName)
 		{
 			TypeSyntax identifier;
 
@@ -106,8 +119,7 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 			else
 				identifier = QualifiedName(IdentifierName(dacName), IdentifierName(fieldName));
 
-			return Parameter(
-				Identifier(ArgsParameterName))
+			return Parameter(parameterName)
 				.WithType(
 					QualifiedName(
 						IdentifierName(genericArgsSymbol.ContainingType.Name),
@@ -134,6 +146,13 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 			}
 
 			return (null, null);
+		}
+
+		private MethodDeclarationSyntax ReplaceParameterUsages(MethodDeclarationSyntax methodDeclaration, 
+			IParameterSymbol parameterSymbol, SyntaxNode replaceWith, SemanticModel semanticModel)
+		{
+			var rewriter = new ParameterUsagesRewriter(parameterSymbol, replaceWith, semanticModel);
+			return (MethodDeclarationSyntax) methodDeclaration.Accept(rewriter);
 		}
 	}
 }

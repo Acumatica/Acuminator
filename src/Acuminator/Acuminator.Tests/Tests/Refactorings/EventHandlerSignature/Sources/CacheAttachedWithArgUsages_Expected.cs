@@ -9,7 +9,7 @@ namespace PX.Objects
 {
 	public class SOInvoiceEntry : PXGraph<SOInvoiceEntry, SOInvoice>
 	{
-		protected virtual void _(Events.CacheAttached<SOInvoice> e)
+		protected virtual void _(Events.CacheAttached<SOInvoice.refNbr> e)
 		{
 			e.Cache.AutoSave = true;
 		}
