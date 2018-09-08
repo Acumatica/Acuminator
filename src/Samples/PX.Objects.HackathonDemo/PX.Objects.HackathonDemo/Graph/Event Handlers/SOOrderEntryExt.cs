@@ -34,5 +34,10 @@ namespace PX.Objects.HackathonDemo
 		{
 			Base.Persist();
 		}
+
+		protected virtual void _(Events.RowSelected<SOOrder> e)
+		{
+			var graph = PXGraph.CreateInstance<SOOrderEntry>();
+		}
 	}
 }
