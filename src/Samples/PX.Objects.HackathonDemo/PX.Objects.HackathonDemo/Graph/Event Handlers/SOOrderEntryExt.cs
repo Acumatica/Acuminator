@@ -15,7 +15,7 @@ namespace PX.Objects.HackathonDemo
 			Base.Caches[typeof(SOSetup)].Insert(setup);
 		}
 
-		protected virtual void SOOrder_CacheAttached(PXCache cache)
+		protected virtual void SOOrder_OrderNbr_CacheAttached(PXCache cache)
 		{
 			cache.Graph.RowSelecting.AddHandler<SOOrder>((sender, e) => PXDatabase.SelectTimeStamp());
 		}
