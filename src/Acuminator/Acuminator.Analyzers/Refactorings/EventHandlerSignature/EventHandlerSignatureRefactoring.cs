@@ -37,8 +37,7 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 			{
 				IMethodSymbol methodSymbol = semanticModel.GetDeclaredSymbol(methodNode, context.CancellationToken);
 
-				if (methodSymbol?.ContainingType?.OriginalDefinition != null 
-					&& methodSymbol.ContainingType.OriginalDefinition.IsPXGraphOrExtension(pxContext))
+				if (IsSuitableForRefactoring(methodSymbol, pxContext))
 				{
 					var eventHandlerInfo = methodSymbol.GetEventHandlerInfo(pxContext);
 
@@ -56,6 +55,16 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 					}
 				}
 			}
+		}
+
+		private bool IsSuitableForRefactoring(IMethodSymbol symbol, PXContext pxContext)
+		{
+			return symbol?.ContainingType?.OriginalDefinition != null
+			       && symbol.ContainingType.OriginalDefinition.IsPXGraphOrExtension(pxContext)
+			       && symbol.Parameters.Length <= 2
+			       && !symbol.IsOverride
+				   && !symbol.GetAttributes().Any(
+					   attr => attr.AttributeClass != null && attr.AttributeClass.Equals(pxContext.AttributeTypes.PXOverrideAttribute));
 		}
 
 		private async Task<Document> ChangeSignatureAsync(CodeRefactoringContext context, 

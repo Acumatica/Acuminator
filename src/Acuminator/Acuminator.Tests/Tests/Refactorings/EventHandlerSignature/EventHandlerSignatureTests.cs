@@ -51,5 +51,26 @@ namespace Acuminator.Tests.Tests.Refactorings.EventHandlerSignature
 		{
 			VerifyCSharpRefactoring(actual, expected, root => root.DescendantNodes().OfType<MethodDeclarationSyntax>().First());
 		}
+
+		[Theory]
+		[EmbeddedFileData("AdditionalParameters.cs")]
+		public void AdditionalParameters_ShouldNotSuggestRefactoring(string actual)
+		{
+			VerifyCSharpRefactoring(actual, actual, root => root.DescendantNodes().OfType<MethodDeclarationSyntax>().First());
+		}
+
+		[Theory]
+		[EmbeddedFileData("Override.cs")]
+		public void Override_ShouldNotSuggestRefactoring(string actual)
+		{
+			VerifyCSharpRefactoring(actual, actual, root => root.DescendantNodes().OfType<MethodDeclarationSyntax>().First());
+		}
+
+		[Theory]
+		[EmbeddedFileData("PXOverride.cs")]
+		public void PXOverride_ShouldNotSuggestRefactoring(string actual)
+		{
+			VerifyCSharpRefactoring(actual, actual, root => root.DescendantNodes().OfType<MethodDeclarationSyntax>().First());
+		}
 	}
 }

@@ -191,6 +191,9 @@
     <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\CacheAttachedWithArgUsages_Expected.cs" />
     <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\EventHandlerWithArgsUsages.cs" />
     <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\EventHandlerWithArgsUsages_Expected.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\Override.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\PXOverride.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\AdditionalParameters.cs" />
     <Compile Include="Verification\CodeRefactoringVerifier.cs" />
     <Compile Include="Verification\VerificationHelper.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\StaticMethod.cs" />
