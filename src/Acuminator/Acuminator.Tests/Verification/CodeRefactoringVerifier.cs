@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -43,13 +44,14 @@ namespace Acuminator.Tests.Verification
 		/// </summary>
 		/// <param name="oldSource">A class in the form of a string before the refactoring was applied to it</param>
 		/// <param name="newSource">A class in the form of a string after the refactoring was applied to it</param>
+		/// <param name="nodeToRefactor">A function that finds selected node for refactoring accepting the root node as an argument</param>
 		/// <param name="codeRefactoringIndex">Index determining which refactoring to apply if there are multiple</param>
 		/// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the refactoring introduces other warnings after being applied</param>
-		protected void VerifyCSharpRefactoring(string oldSource, string newSource,
+		protected Task VerifyCSharpRefactoringAsync(string oldSource, string newSource,
 			Func<SyntaxNode, SyntaxNode> nodeToRefactor,
 			int? codeRefactoringIndex = null, bool allowNewCompilerDiagnostics = false)
 		{
-			VerifyRefactoring(LanguageNames.CSharp, GetCSharpCodeRefactoringProvider(), oldSource, newSource, nodeToRefactor, 
+			return VerifyRefactoringAsync(LanguageNames.CSharp, GetCSharpCodeRefactoringProvider(), oldSource, newSource, nodeToRefactor, 
 				codeRefactoringIndex, allowNewCompilerDiagnostics);
 		}
 
@@ -58,13 +60,14 @@ namespace Acuminator.Tests.Verification
 		/// </summary>
 		/// <param name="oldSource">A class in the form of a string before the refactoring was applied to it</param>
 		/// <param name="newSource">A class in the form of a string after the refactoring was applied to it</param>
+		/// <param name="nodeToRefactor">A function that finds selected node for refactoring accepting the root node as an argument</param>
 		/// <param name="codeRefactoringIndex">Index determining which refactoring to apply if there are multiple</param>
 		/// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the refactoring introduces other warnings after being applied</param>
-		protected void VerifyBasicRefactoring(string oldSource, string newSource,
+		protected Task VerifyBasicRefactoringAsync(string oldSource, string newSource,
 			Func<SyntaxNode, SyntaxNode> nodeToRefactor,
 			int? codeRefactoringIndex = null, bool allowNewCompilerDiagnostics = false)
 		{
-			VerifyRefactoring(LanguageNames.VisualBasic, GetBasicCodeRefactoringProvider(), oldSource, newSource, nodeToRefactor, 
+			return VerifyRefactoringAsync(LanguageNames.VisualBasic, GetBasicCodeRefactoringProvider(), oldSource, newSource, nodeToRefactor, 
 				codeRefactoringIndex, allowNewCompilerDiagnostics);
 		}
 
@@ -78,47 +81,51 @@ namespace Acuminator.Tests.Verification
 		/// <param name="codeRefactoringProvider">The refactoring to be applied to the code</param>
 		/// <param name="oldSource">A class in the form of a string before the refactoring was applied to it</param>
 		/// <param name="newSource">A class in the form of a string after the refactoring was applied to it</param>
+		/// <param name="nodeToRefactor">A function that finds selected node for refactoring accepting the root node as an argument</param>
 		/// <param name="codeRefactoringIndex">Index determining which refactoring to apply if there are multiple</param>
 		/// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the refactoring introduces other warnings after being applied</param>
-		private void VerifyRefactoring(string language, CodeRefactoringProvider codeRefactoringProvider,
+		private async Task VerifyRefactoringAsync(string language, CodeRefactoringProvider codeRefactoringProvider,
 			string oldSource, string newSource, Func<SyntaxNode, SyntaxNode> nodeToRefactor, 
 			int? codeRefactoringIndex, bool allowNewCompilerDiagnostics)
 		{
 			var document = CreateDocument(oldSource, language);
-			var compilerDiagnostics = GetCompilerDiagnostics(document);
+			var compilerDiagnostics = GetCompilerDiagnostics(document).ToArray();
 
 			var actions = new List<CodeAction>();
-			var root = document.GetSyntaxRootAsync().Result;
+			var root = await document.GetSyntaxRootAsync().ConfigureAwait(false);
 			var node = nodeToRefactor(root);
 			var context = new CodeRefactoringContext(document, node.FullSpan, a => actions.Add(a),
 				CancellationToken.None);
-			codeRefactoringProvider.ComputeRefactoringsAsync(context).Wait();
+
+			await codeRefactoringProvider.ComputeRefactoringsAsync(context).ConfigureAwait(false);
 
 			if (actions.Count > 0)
 			{
-				document = ApplyCodeAction(document, codeRefactoringIndex != null
+				document = await ApplyCodeActionAsync(document, codeRefactoringIndex != null
 					? actions[(int)codeRefactoringIndex]
-					: actions[0]);
+					: actions[0]).ConfigureAwait(false);
 
-				var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, GetCompilerDiagnostics(document));
+				var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, 
+					await GetCompilerDiagnosticsAsync(document).ConfigureAwait(false));
 
 				//check if applying the code fix introduced any new compiler diagnostics
 				if (!allowNewCompilerDiagnostics && newCompilerDiagnostics.Any())
 				{
 					// Format and get the compiler diagnostics again so that the locations make sense in the output
-					document = document.WithSyntaxRoot(Formatter.Format(document.GetSyntaxRootAsync().Result, Formatter.Annotation,
-						document.Project.Solution.Workspace));
-					newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, GetCompilerDiagnostics(document));
+					document = document.WithSyntaxRoot(Formatter.Format(await document.GetSyntaxRootAsync().ConfigureAwait(false), 
+						Formatter.Annotation, document.Project.Solution.Workspace));
+					newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, 
+						await GetCompilerDiagnosticsAsync(document).ConfigureAwait(false));
 
+					var newSyntaxRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
 					Assert.True(false,
 						string.Format("Refactoring introduced new compiler diagnostics:\r\n{0}\r\n\r\nNew document:\r\n{1}\r\n",
-							string.Join("\r\n", newCompilerDiagnostics.Select(d => d.ToString())),
-							document.GetSyntaxRootAsync().Result.ToFullString()));
+							string.Join("\r\n", newCompilerDiagnostics.Select(d => d.ToString())), newSyntaxRoot.ToFullString()));
 				}
 			}
 
 			//after applying all of the refactorings, compare the resulting string to the inputted one
-			var actual = GetStringFromDocument(document);
+			var actual = await GetStringFromDocumentAsync(document).ConfigureAwait(false);
 			Assert.Equal(newSource, actual);
 		}
 	}

@@ -124,8 +124,18 @@ namespace Acuminator.Tests.Verification
 		/// <returns>A string containing the syntax of the Document after formatting</returns>
 		public static string GetStringFromDocument(Document document)
 		{
-			var simplifiedDoc = Simplifier.ReduceAsync(document, Simplifier.Annotation).Result;
-			var root = simplifiedDoc.GetSyntaxRootAsync().Result;
+			return GetStringFromDocumentAsync(document).Result;
+		}
+
+		/// <summary>
+		/// Given a document, turn it into a string based on the syntax root
+		/// </summary>
+		/// <param name="document">The Document to be converted to a string</param>
+		/// <returns>A string containing the syntax of the Document after formatting</returns>
+		public static async Task<string> GetStringFromDocumentAsync(Document document)
+		{
+			var simplifiedDoc = await Simplifier.ReduceAsync(document, Simplifier.Annotation).ConfigureAwait(false);
+			var root = await simplifiedDoc.GetSyntaxRootAsync().ConfigureAwait(false);
 			root = Formatter.Format(root, Formatter.Annotation, simplifiedDoc.Project.Solution.Workspace);
 			return root.GetText().ToString();
 		}
@@ -138,7 +148,18 @@ namespace Acuminator.Tests.Verification
 		/// <returns>A Document with the changes from the CodeAction</returns>
 		public static Document ApplyCodeAction(Document document, CodeAction codeAction)
 		{
-			var operations = codeAction.GetOperationsAsync(CancellationToken.None).Result;
+			return ApplyCodeActionAsync(document, codeAction).Result;
+		}
+
+		/// <summary>
+		/// Apply the inputted CodeAction to the inputted document.
+		/// </summary>
+		/// <param name="document">The Document to apply the fix on</param>
+		/// <param name="codeAction">A CodeAction that will be applied to the Document.</param>
+		/// <returns>A Document with the changes from the CodeAction</returns>
+		public static async Task<Document> ApplyCodeActionAsync(Document document, CodeAction codeAction)
+		{
+			var operations = await codeAction.GetOperationsAsync(CancellationToken.None).ConfigureAwait(false);
 			var solution = operations.OfType<ApplyChangesOperation>().Single().ChangedSolution;
 			return solution.GetDocument(document.Id);
 		}
@@ -181,7 +202,18 @@ namespace Acuminator.Tests.Verification
 		/// <returns>The compiler diagnostics that were found in the code</returns>
 		public static IEnumerable<Diagnostic> GetCompilerDiagnostics(Document document)
 		{
-			return document.GetSemanticModelAsync().Result.GetDiagnostics();
+			return GetCompilerDiagnosticsAsync(document).Result;
+		}
+
+		/// <summary>
+		/// Get the existing compiler diagnostics on the inputted document.
+		/// </summary>
+		/// <param name="document">The Document to run the compiler diagnostic analyzers on</param>
+		/// <returns>The compiler diagnostics that were found in the code</returns>
+		public static async Task<IEnumerable<Diagnostic>> GetCompilerDiagnosticsAsync(Document document)
+		{
+			var semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
+			return semanticModel.GetDiagnostics();
 		}
 	}
 }
