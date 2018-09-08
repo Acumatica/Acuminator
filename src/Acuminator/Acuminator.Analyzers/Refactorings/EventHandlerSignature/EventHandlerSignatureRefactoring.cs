@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Composition;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -19,6 +20,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 {
+	[ExportCodeRefactoringProvider(LanguageNames.CSharp), Shared]
 	public class EventHandlerSignatureRefactoring : CodeRefactoringProvider
 	{
 		private const string ArgsParameterName = "e";
