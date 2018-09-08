@@ -37,9 +37,12 @@ namespace PX.Objects.HackathonDemo
 			Base.Persist();
 		}
 
-		protected virtual void _(Events.RowSelected<SOOrder> e)
+		protected virtual void SOOrder_RowSelected(PXCache sender, PXRowSelectedEventArgs e)
 		{
-			Base.Actions.PressSave();
+			if (e.Row != null && sender.GetStatus(e.Row) == PXEntryStatus.Updated)
+			{
+				Base.Actions.PressSave();
+			}
 		}
 	}
 }
