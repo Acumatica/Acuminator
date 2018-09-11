@@ -32,10 +32,7 @@ namespace PX.Objects.HackathonDemo
 			PXLongOperation.StartOperation(graph, () => graph.Release.Press());
 		}
 
-		protected virtual void _(Events.RowUpdated<SOOrder> e)
-		{
-			Base.Persist();
-		}
+		protected virtual void SOOrder_RowUpdated(PXCache sender, PXRowUpdatedEventArgs e) => Base.Persist();
 
 		protected virtual void SOOrder_RowSelected(PXCache sender, PXRowSelectedEventArgs e)
 		{
