@@ -9,7 +9,7 @@ namespace PX.Objects
 {
 	public class SOInvoiceEntry : PXGraph<SOInvoiceEntry, SOInvoice>
 	{
-		protected virtual void _(Events.FieldDefaulting<SOInvoice.refNbr> e)
+		protected virtual void _(Events.FieldDefaulting<SOInvoice, SOInvoice.refNbr> e)
 		{
 			e.Cache.Update(e.Row);
 		}
