@@ -194,6 +194,8 @@
     <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\Override.cs" />
     <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\PXOverride.cs" />
     <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\AdditionalParameters.cs" />
+    <Compile Include="Tests\StaticAnalysis\RowChangesInEventHandlers\RowChangesInEventHandlersTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\ValidEventHandlers.cs" />
     <Compile Include="Verification\CodeRefactoringVerifier.cs" />
     <Compile Include="Verification\VerificationHelper.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\StaticMethod.cs" />

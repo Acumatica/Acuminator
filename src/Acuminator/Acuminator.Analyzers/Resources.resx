@@ -315,4 +315,10 @@
   <data name="EventHandlerSignatureCodeActionTitle" xml:space="preserve">
     <value>Convert event handler signature to the generic one</value>
   </data>
+  <data name="PX1047MessageFormat" xml:space="preserve">
+    <value>Values cannot be directly assigned to a DAC field within the {0} event handler</value>
+  </data>
+  <data name="PX1047Title" xml:space="preserve">
+    <value>Values cannot be directly assigned to a DAC field within some event handlers</value>
+  </data>
 </root>

@@ -8,6 +8,7 @@ using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
 using Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting;
 using Acuminator.Analyzers.StaticAnalysis.LongOperationInEventHandlers;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance;
+using Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers;
 using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -33,7 +34,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 			new SavingChangesInEventHandlersAnalyzer(),
 			new ChangesInPXCacheInEventHandlersAnalyzer(),
 			new PXGraphCreateInstanceInEventHandlersAnalyzer(),
-			new LongOperationInEventHandlersAnalyzer())
+			new LongOperationInEventHandlersAnalyzer(),
+			new RowChangesInEventHandlersAnalyzer())
 		{
 		}
 
