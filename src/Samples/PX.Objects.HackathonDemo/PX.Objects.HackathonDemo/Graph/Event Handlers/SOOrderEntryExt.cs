@@ -27,7 +27,9 @@ namespace PX.Objects.HackathonDemo
 
 		protected virtual void _(Events.RowInserted<SOOrder> e)
 		{
-			Base.Actions.PressSave();
+			var graph = PXGraph.CreateInstance<SOOrderEntry>();
+			graph.Orders.Current = e.Row;
+			PXLongOperation.StartOperation(graph, () => graph.Release.Press());
 		}
 
 		protected virtual void _(Events.RowUpdated<SOOrder> e)
@@ -37,7 +39,7 @@ namespace PX.Objects.HackathonDemo
 
 		protected virtual void _(Events.RowSelected<SOOrder> e)
 		{
-			var graph = PXGraph.CreateInstance<SOOrderEntry>();
+			Base.Actions.PressSave();
 		}
 	}
 }

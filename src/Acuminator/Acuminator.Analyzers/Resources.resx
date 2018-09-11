@@ -309,4 +309,7 @@
   <data name="PX1045Title" xml:space="preserve">
     <value>A PXGraph instance cannot be created within an event handler</value>
   </data>
+  <data name="PX1046Title" xml:space="preserve">
+    <value>A long-running operation cannot be started within an event handler</value>
+  </data>
 </root>
