@@ -359,6 +359,13 @@ namespace Acuminator.Utilities.Roslyn
 			public INamedTypeSymbol CommandPreparing => _compilation.GetTypeByMetadataName(typeof(Events.CommandPreparing<>).FullName);
 			public INamedTypeSymbol ExceptionHandling => _compilation.GetTypeByMetadataName(typeof(Events.ExceptionHandling<>).FullName);
 
+			public INamedTypeSymbol FieldSelectingTypedRow => _compilation.GetTypeByMetadataName(typeof(Events.FieldSelecting<,>).FullName);
+			public INamedTypeSymbol FieldDefaultingTypedRow => _compilation.GetTypeByMetadataName(typeof(Events.FieldDefaulting<,>).FullName);
+			public INamedTypeSymbol FieldVerifyingTypedRow => _compilation.GetTypeByMetadataName(typeof(Events.FieldVerifying<,>).FullName);
+			public INamedTypeSymbol FieldUpdatingTypedRow => _compilation.GetTypeByMetadataName(typeof(Events.FieldUpdating<,>).FullName);
+			public INamedTypeSymbol FieldUpdatedTypedRow => _compilation.GetTypeByMetadataName(typeof(Events.FieldUpdated<,>).FullName);
+			public INamedTypeSymbol ExceptionHandlingTypedRow => _compilation.GetTypeByMetadataName(typeof(Events.ExceptionHandling<,>).FullName);
+
 			private static IReadOnlyDictionary<ITypeSymbol, EventType> CreateEventTypeMap(EventSymbols eventSymbols)
 			{
 				return new Dictionary<ITypeSymbol, EventType>()
@@ -399,6 +406,12 @@ namespace Acuminator.Utilities.Roslyn
 					{ eventSymbols.FieldUpdated, EventType.FieldUpdated },
 					{ eventSymbols.CommandPreparing, EventType.CommandPreparing },
 					{ eventSymbols.ExceptionHandling, EventType.ExceptionHandling },
+					{ eventSymbols.FieldSelectingTypedRow, EventType.FieldSelecting },
+					{ eventSymbols.FieldDefaultingTypedRow, EventType.FieldDefaulting },
+					{ eventSymbols.FieldVerifyingTypedRow, EventType.FieldVerifying },
+					{ eventSymbols.FieldUpdatingTypedRow, EventType.FieldUpdating },
+					{ eventSymbols.FieldUpdatedTypedRow, EventType.FieldUpdated },
+					{ eventSymbols.ExceptionHandlingTypedRow, EventType.ExceptionHandling },
 				};
 			}
 
@@ -436,13 +449,13 @@ namespace Acuminator.Utilities.Roslyn
 					{ (EventType.RowDeleted, EventHandlerSignatureType.Generic), eventSymbols.RowDeleted },
 					{ (EventType.RowPersisting, EventHandlerSignatureType.Generic), eventSymbols.RowPersisting },
 					{ (EventType.RowPersisted, EventHandlerSignatureType.Generic), eventSymbols.RowPersisted },
-					{ (EventType.FieldSelecting, EventHandlerSignatureType.Generic), eventSymbols.FieldSelecting },
-					{ (EventType.FieldDefaulting, EventHandlerSignatureType.Generic), eventSymbols.FieldDefaulting },
-					{ (EventType.FieldVerifying, EventHandlerSignatureType.Generic), eventSymbols.FieldVerifying },
-					{ (EventType.FieldUpdating, EventHandlerSignatureType.Generic), eventSymbols.FieldUpdating },
-					{ (EventType.FieldUpdated, EventHandlerSignatureType.Generic), eventSymbols.FieldUpdated },
+					{ (EventType.FieldSelecting, EventHandlerSignatureType.Generic), eventSymbols.FieldSelectingTypedRow },
+					{ (EventType.FieldDefaulting, EventHandlerSignatureType.Generic), eventSymbols.FieldDefaultingTypedRow },
+					{ (EventType.FieldVerifying, EventHandlerSignatureType.Generic), eventSymbols.FieldVerifyingTypedRow },
+					{ (EventType.FieldUpdating, EventHandlerSignatureType.Generic), eventSymbols.FieldUpdatingTypedRow },
+					{ (EventType.FieldUpdated, EventHandlerSignatureType.Generic), eventSymbols.FieldUpdatedTypedRow },
 					{ (EventType.CommandPreparing, EventHandlerSignatureType.Generic), eventSymbols.CommandPreparing },
-					{ (EventType.ExceptionHandling, EventHandlerSignatureType.Generic), eventSymbols.ExceptionHandling },
+					{ (EventType.ExceptionHandling, EventHandlerSignatureType.Generic), eventSymbols.ExceptionHandlingTypedRow },
 				};
 			}
 		}

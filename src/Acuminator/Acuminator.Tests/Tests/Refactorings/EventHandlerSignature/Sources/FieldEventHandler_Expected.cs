@@ -9,7 +9,7 @@ namespace PX.Objects
 {
 	public class SOInvoiceEntry : PXGraph<SOInvoiceEntry, SOInvoice>
 	{
-		protected virtual void _(Events.FieldVerifying<SOInvoice.refNbr> e)
+		protected virtual void _(Events.FieldVerifying<SOInvoice, SOInvoice.refNbr> e)
 		{
 
 		}
