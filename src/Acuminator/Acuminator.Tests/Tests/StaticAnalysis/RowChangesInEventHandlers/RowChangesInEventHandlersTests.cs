@@ -18,12 +18,42 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.RowChangesInEventHandlers
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new EventHandlerAnalyzer(new RowChangesInEventHandlersAnalyzer());
-		
+
+		[Theory]
+		[EmbeddedFileData("DirectAssignment.cs")]
+		public Task DirectAssignment(string actual)
+		{
+			return VerifyCSharpDiagnosticAsync(actual,
+				Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(14, 4, EventType.RowSelected),
+				Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(19, 4, EventType.FieldDefaulting),
+				Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(24, 4, EventType.FieldVerifying));
+		}
+
+		[Theory]
+		[EmbeddedFileData("SetValue.cs")]
+		public Task SetValue(string actual)
+		{
+			return VerifyCSharpDiagnosticAsync(actual,
+				Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(14, 4, EventType.RowSelected),
+				Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(19, 4, EventType.FieldDefaulting),
+				Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(24, 4, EventType.FieldVerifying));
+		}
+
+		[Theory]
+		[EmbeddedFileData("SetValueExt.cs")]
+		public Task SetValueExt(string actual)
+		{
+			return VerifyCSharpDiagnosticAsync(actual,
+				Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(14, 4, EventType.RowSelected),
+				Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(19, 4, EventType.FieldDefaulting),
+				Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(24, 4, EventType.FieldVerifying));
+		}
+
 		[Theory]
 		[EmbeddedFileData("ValidEventHandlers.cs")]
-		public void ValidEventHandlers_ShouldNotShowDiagnostic(string actual)
+		public Task ValidEventHandlers_ShouldNotShowDiagnostic(string actual)
 		{
-			VerifyCSharpDiagnostic(actual);
+			return VerifyCSharpDiagnosticAsync(actual);
 		}
 	}
 }

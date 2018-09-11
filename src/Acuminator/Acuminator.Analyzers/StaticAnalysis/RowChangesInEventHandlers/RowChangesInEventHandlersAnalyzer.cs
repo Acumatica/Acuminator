@@ -4,10 +4,13 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
@@ -32,11 +35,59 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 			{
 				var methodSymbol = (IMethodSymbol) context.Symbol;
 				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
-				//var walker = new Walker(context, pxContext,
-				//	Descriptors.PX1044_ChangesInPXCacheInEventHandlers, eventType);
+				var walker = new Walker(context, pxContext, eventType);
 
-				//methodSyntax?.Accept(walker);
+				methodSyntax?.Accept(walker);
 			}
 		}
+
+		private class Walker : NestedInvocationWalker
+		{
+			private static readonly ISet<string> MethodNames = new HashSet<string>(StringComparer.Ordinal)
+			{
+				"SetValue" ,
+				"SetValueExt",
+				"SetDefaultExt",
+			};
+
+			private SymbolAnalysisContext _context;
+			private readonly PXContext _pxContext;
+			private readonly object[] _messageArgs;
+
+			public Walker(SymbolAnalysisContext context, PXContext pxContext, params object[] messageArgs)
+				: base(context.Compilation, context.CancellationToken)
+			{
+				pxContext.ThrowOnNull(nameof (pxContext));
+
+				_context = context;
+				_pxContext = pxContext;
+				_messageArgs = messageArgs;
+			}
+
+			public override void VisitInvocationExpression(InvocationExpressionSyntax node)
+			{
+				ThrowIfCancellationRequested();
+
+				var methodSymbol = GetSymbol<IMethodSymbol>(node);
+
+				if (methodSymbol != null && IsMethodForbidden(methodSymbol))
+				{
+					ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1047_RowChangesInEventHandlers, 
+						node, _messageArgs);
+				}
+				else
+				{
+					base.VisitInvocationExpression(node);
+				}
+			}
+
+			private bool IsMethodForbidden(IMethodSymbol symbol)
+			{
+				return symbol.ContainingType?.OriginalDefinition != null
+				       && symbol.ContainingType.OriginalDefinition.InheritsFromOrEquals(_pxContext.PXCacheType)
+				       && MethodNames.Contains(symbol.Name);
+			}
+		}
+
 	}
 }
