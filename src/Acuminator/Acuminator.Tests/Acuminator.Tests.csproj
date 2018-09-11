@@ -180,20 +180,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Tests\Refactorings\EventHandlerSignature\EventHandlerSignatureTests.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\CacheAttached.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\CacheAttached_Expected.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\RowEventHandler.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\RowEventHandler_Expected.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\FieldEventHandler.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\FieldEventHandler_Expected.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\CacheAttachedWithArgUsages.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\CacheAttachedWithArgUsages_Expected.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\EventHandlerWithArgsUsages.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\EventHandlerWithArgsUsages_Expected.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\Override.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\PXOverride.cs" />
-    <EmbeddedResource Include="Tests\Refactorings\EventHandlerSignature\Sources\AdditionalParameters.cs" />
+    <Compile Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\ChangeEventHandlerSignatureToGenericTests.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\CacheAttached.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\CacheAttached_Expected.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\RowEventHandler.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\RowEventHandler_Expected.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\FieldEventHandler.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\FieldEventHandler_Expected.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\CacheAttachedWithArgUsages.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\CacheAttachedWithArgUsages_Expected.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\EventHandlerWithArgsUsages.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\EventHandlerWithArgsUsages_Expected.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\Override.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\PXOverride.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\AdditionalParameters.cs" />
     <Compile Include="Verification\CodeRefactoringVerifier.cs" />
     <Compile Include="Verification\VerificationHelper.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\StaticMethod.cs" />
