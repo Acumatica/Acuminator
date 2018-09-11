@@ -44,17 +44,17 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 				{
 					var eventHandlerInfo = methodSymbol.GetEventHandlerInfo(pxContext);
 
-					if (eventHandlerInfo.eventSignatureType == EventHandlerSignatureType.Default
+					if (eventHandlerInfo.EventSignatureType == EventHandlerSignatureType.Default
 						&& pxContext.Events.EventHandlerSignatureTypeMap.TryGetValue(
-							(eventHandlerInfo.eventType, EventHandlerSignatureType.Generic), out var genericArgsSymbol)
-						&& methodSymbol.Name.EndsWith("_" + eventHandlerInfo.eventType, StringComparison.Ordinal))
+							(eventHandlerInfo.EventType, EventHandlerSignatureType.Generic), out var genericArgsSymbol)
+						&& methodSymbol.Name.EndsWith("_" + eventHandlerInfo.EventType, StringComparison.Ordinal))
 					{
-						(string dacName, string fieldName) = ParseMethodName(methodSymbol.Name, eventHandlerInfo.eventType);
+						(string dacName, string fieldName) = ParseMethodName(methodSymbol.Name, eventHandlerInfo.EventType);
 
 						string title = nameof (Resources.EventHandlerSignatureCodeActionTitle).GetLocalized().ToString();
 						context.RegisterRefactoring(CodeAction.Create(title,
 							ct => ChangeSignatureAsync(context, root, semanticModel, methodNode, methodSymbol,
-								eventHandlerInfo.eventType, genericArgsSymbol, dacName, fieldName, ct), title));
+								eventHandlerInfo.EventType, genericArgsSymbol, dacName, fieldName, ct), title));
 					}
 				}
 			}
@@ -133,7 +133,7 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 										identifier)))));
 		}
 
-		private (string dacName, string fieldName) ParseMethodName(string methodName, EventType eventType)
+		private (string DacName, string FieldName) ParseMethodName(string methodName, EventType eventType)
 		{
 			var match = Regex.Match(methodName, @"([\w-[_]]+)_(\w+_){0,1}" + eventType,
 				RegexOptions.CultureInvariant | RegexOptions.Singleline);
