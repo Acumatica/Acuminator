@@ -449,13 +449,13 @@ namespace Acuminator.Utilities.Roslyn
 					{ (EventType.RowDeleted, EventHandlerSignatureType.Generic), eventSymbols.RowDeleted },
 					{ (EventType.RowPersisting, EventHandlerSignatureType.Generic), eventSymbols.RowPersisting },
 					{ (EventType.RowPersisted, EventHandlerSignatureType.Generic), eventSymbols.RowPersisted },
-					{ (EventType.FieldSelecting, EventHandlerSignatureType.Generic), eventSymbols.FieldSelecting },
-					{ (EventType.FieldDefaulting, EventHandlerSignatureType.Generic), eventSymbols.FieldDefaulting },
-					{ (EventType.FieldVerifying, EventHandlerSignatureType.Generic), eventSymbols.FieldVerifying },
-					{ (EventType.FieldUpdating, EventHandlerSignatureType.Generic), eventSymbols.FieldUpdating },
-					{ (EventType.FieldUpdated, EventHandlerSignatureType.Generic), eventSymbols.FieldUpdated },
+					{ (EventType.FieldSelecting, EventHandlerSignatureType.Generic), eventSymbols.FieldSelectingTypedRow },
+					{ (EventType.FieldDefaulting, EventHandlerSignatureType.Generic), eventSymbols.FieldDefaultingTypedRow },
+					{ (EventType.FieldVerifying, EventHandlerSignatureType.Generic), eventSymbols.FieldVerifyingTypedRow },
+					{ (EventType.FieldUpdating, EventHandlerSignatureType.Generic), eventSymbols.FieldUpdatingTypedRow },
+					{ (EventType.FieldUpdated, EventHandlerSignatureType.Generic), eventSymbols.FieldUpdatedTypedRow },
 					{ (EventType.CommandPreparing, EventHandlerSignatureType.Generic), eventSymbols.CommandPreparing },
-					{ (EventType.ExceptionHandling, EventHandlerSignatureType.Generic), eventSymbols.ExceptionHandling },
+					{ (EventType.ExceptionHandling, EventHandlerSignatureType.Generic), eventSymbols.ExceptionHandlingTypedRow },
 				};
 			}
 		}

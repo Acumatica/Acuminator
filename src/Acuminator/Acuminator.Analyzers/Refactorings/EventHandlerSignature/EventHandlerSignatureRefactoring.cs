@@ -118,12 +118,25 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 		private ParameterSyntax CreateArgsParameter(INamedTypeSymbol genericArgsSymbol, SyntaxToken parameterName, 
 			string dacName, string fieldName)
 		{
-			TypeSyntax identifier;
+			SeparatedSyntaxList<TypeSyntax> syntaxList;
 
 			if (String.IsNullOrEmpty(fieldName))
-				identifier = IdentifierName(dacName);
+			{
+				syntaxList = SingletonSeparatedList<TypeSyntax>(IdentifierName(dacName));
+			}
 			else
-				identifier = QualifiedName(IdentifierName(dacName), IdentifierName(fieldName));
+			{
+				if (genericArgsSymbol.TypeParameters.Length == 2)
+				{
+					syntaxList = SeparatedList<TypeSyntax>(new TypeSyntax[] { IdentifierName(dacName),
+						QualifiedName(IdentifierName(dacName), IdentifierName(fieldName)) });
+				}
+				else
+				{
+					syntaxList = SingletonSeparatedList<TypeSyntax>(
+						QualifiedName(IdentifierName(dacName), IdentifierName(fieldName)));
+				}
+			}
 
 			return Parameter(parameterName)
 				.WithType(
@@ -132,9 +145,7 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 						GenericName(
 								Identifier(genericArgsSymbol.Name))
 							.WithTypeArgumentList(
-								TypeArgumentList(
-									SingletonSeparatedList<TypeSyntax>(
-										identifier)))));
+								TypeArgumentList(syntaxList))));
 		}
 
 		private (string DacName, string FieldName) ParseMethodName(string methodName, EventType eventType)
