@@ -359,6 +359,13 @@ namespace Acuminator.Utilities.Roslyn
 			public INamedTypeSymbol CommandPreparing => _compilation.GetTypeByMetadataName(typeof(Events.CommandPreparing<>).FullName);
 			public INamedTypeSymbol ExceptionHandling => _compilation.GetTypeByMetadataName(typeof(Events.ExceptionHandling<>).FullName);
 
+			public INamedTypeSymbol FieldSelectingTypedRow => _compilation.GetTypeByMetadataName(typeof(Events.FieldSelecting<,>).FullName);
+			public INamedTypeSymbol FieldDefaultingTypedRow => _compilation.GetTypeByMetadataName(typeof(Events.FieldDefaulting<,>).FullName);
+			public INamedTypeSymbol FieldVerifyingTypedRow => _compilation.GetTypeByMetadataName(typeof(Events.FieldVerifying<,>).FullName);
+			public INamedTypeSymbol FieldUpdatingTypedRow => _compilation.GetTypeByMetadataName(typeof(Events.FieldUpdating<,>).FullName);
+			public INamedTypeSymbol FieldUpdatedTypedRow => _compilation.GetTypeByMetadataName(typeof(Events.FieldUpdated<,>).FullName);
+			public INamedTypeSymbol ExceptionHandlingTypedRow => _compilation.GetTypeByMetadataName(typeof(Events.ExceptionHandling<,>).FullName);
+
 			private static IReadOnlyDictionary<ITypeSymbol, EventType> CreateEventTypeMap(EventSymbols eventSymbols)
 			{
 				return new Dictionary<ITypeSymbol, EventType>()
@@ -399,6 +406,12 @@ namespace Acuminator.Utilities.Roslyn
 					{ eventSymbols.FieldUpdated, EventType.FieldUpdated },
 					{ eventSymbols.CommandPreparing, EventType.CommandPreparing },
 					{ eventSymbols.ExceptionHandling, EventType.ExceptionHandling },
+					{ eventSymbols.FieldSelectingTypedRow, EventType.FieldSelecting },
+					{ eventSymbols.FieldDefaultingTypedRow, EventType.FieldDefaulting },
+					{ eventSymbols.FieldVerifyingTypedRow, EventType.FieldVerifying },
+					{ eventSymbols.FieldUpdatingTypedRow, EventType.FieldUpdating },
+					{ eventSymbols.FieldUpdatedTypedRow, EventType.FieldUpdated },
+					{ eventSymbols.ExceptionHandlingTypedRow, EventType.ExceptionHandling },
 				};
 			}
 
