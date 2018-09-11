@@ -45,9 +45,9 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 					var eventHandlerInfo = methodSymbol.GetEventHandlerInfo(pxContext);
 
 					if (eventHandlerInfo.EventSignatureType == EventHandlerSignatureType.Default
-						&& pxContext.Events.EventHandlerSignatureTypeMap.TryGetValue(
-							(eventHandlerInfo.EventType, EventHandlerSignatureType.Generic), out var genericArgsSymbol)
-						&& methodSymbol.Name.EndsWith("_" + eventHandlerInfo.EventType, StringComparison.Ordinal))
+					    && methodSymbol.Name.EndsWith("_" + eventHandlerInfo.EventType, StringComparison.Ordinal)
+						&& pxContext.Events.EventHandlerSignatureTypeMap.TryGetValue( // check that there is a corresponding generic event args symbol
+							(eventHandlerInfo.EventType, EventHandlerSignatureType.Generic), out var genericArgsSymbol))
 					{
 						(string dacName, string fieldName) = ParseMethodName(methodSymbol.Name, eventHandlerInfo.EventType);
 
