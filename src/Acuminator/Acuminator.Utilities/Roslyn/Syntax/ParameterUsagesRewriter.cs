@@ -35,8 +35,10 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			if (symbolInfo.Symbol != null && symbolInfo.Symbol.Equals(_parameter))
 			{
 				var replacement = _replaceWith;
+
 				if (node.HasLeadingTrivia)
 					replacement = replacement.WithLeadingTrivia(node.GetLeadingTrivia());
+
 				if (node.HasTrailingTrivia)
 					replacement = replacement.WithTrailingTrivia(node.GetTrailingTrivia());
 
