@@ -25,6 +25,7 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 	{
 		private const string ArgsParameterName = "e";
 		private const string EventHandlerMethodName = "_";
+		private const string EventArgsCachePropertyName = "Cache"; // Events.[EventType]<T>.Cache
 
 		public override async Task ComputeRefactoringsAsync(CodeRefactoringContext context)
 		{
@@ -105,7 +106,7 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 			var newMethodDeclaration = 
 				ReplaceParameterUsages(methodDeclaration, cacheParameterSymbol,
 					MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, 
-						IdentifierName(parameterName), IdentifierName("Cache")), semanticModel)
+						IdentifierName(parameterName), IdentifierName(EventArgsCachePropertyName)), semanticModel)
 				.WithIdentifier(Identifier(EventHandlerMethodName))
 				.WithParameterList(methodDeclaration.ParameterList.WithParameters(newParameters));
 
