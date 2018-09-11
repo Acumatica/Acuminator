@@ -53,7 +53,7 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 
 						string title = nameof (Resources.EventHandlerSignatureCodeActionTitle).GetLocalized().ToString();
 						context.RegisterRefactoring(CodeAction.Create(title,
-							ct => ChangeSignatureAsync(context, root, semanticModel, methodNode, methodSymbol,
+							ct => ChangeSignatureAsync(context.Document, root, semanticModel, methodNode, methodSymbol,
 								eventHandlerInfo.EventType, genericArgsSymbol, dacName, fieldName, ct), title));
 					}
 				}
@@ -70,7 +70,7 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 					   attr => attr.AttributeClass != null && attr.AttributeClass.Equals(pxContext.AttributeTypes.PXOverrideAttribute));
 		}
 
-		private Task<Document> ChangeSignatureAsync(CodeRefactoringContext context, 
+		private Task<Document> ChangeSignatureAsync(Document document, 
 			SyntaxNode root, SemanticModel semanticModel,
 			MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol,
 			EventType eventType, INamedTypeSymbol genericArgsSymbol,
@@ -108,7 +108,7 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 
 			root = root.ReplaceNode(methodDeclaration, newMethodDeclaration);
 
-			return Task.FromResult(context.Document.WithSyntaxRoot(root));
+			return Task.FromResult(document.WithSyntaxRoot(root));
 		}
 
 		private ParameterSyntax CreateArgsParameter(INamedTypeSymbol genericArgsSymbol, SyntaxToken parameterName, 
