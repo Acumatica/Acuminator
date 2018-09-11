@@ -33,6 +33,9 @@ namespace Acuminator.Analyzers.Refactorings.EventHandlerSignature
 			var semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
 			var pxContext = new PXContext(semanticModel.Compilation);
 
+			if (pxContext.PXGraphType == null)
+				return;
+
 			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			var methodNode = root?.FindNode(context.Span)?.GetDeclaringMethodNode();
 
