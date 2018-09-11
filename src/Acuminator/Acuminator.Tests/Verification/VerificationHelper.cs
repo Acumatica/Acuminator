@@ -116,17 +116,6 @@ namespace Acuminator.Tests.Verification
 			return solution.GetProject(projectId);
 		}
 
-
-		/// <summary>
-		/// Given a document, turn it into a string based on the syntax root
-		/// </summary>
-		/// <param name="document">The Document to be converted to a string</param>
-		/// <returns>A string containing the syntax of the Document after formatting</returns>
-		public static string GetStringFromDocument(Document document)
-		{
-			return GetStringFromDocumentAsync(document).Result;
-		}
-
 		/// <summary>
 		/// Given a document, turn it into a string based on the syntax root
 		/// </summary>
@@ -139,18 +128,7 @@ namespace Acuminator.Tests.Verification
 			root = Formatter.Format(root, Formatter.Annotation, simplifiedDoc.Project.Solution.Workspace);
 			return root.GetText().ToString();
 		}
-
-		/// <summary>
-		/// Apply the inputted CodeAction to the inputted document.
-		/// </summary>
-		/// <param name="document">The Document to apply the fix on</param>
-		/// <param name="codeAction">A CodeAction that will be applied to the Document.</param>
-		/// <returns>A Document with the changes from the CodeAction</returns>
-		public static Document ApplyCodeAction(Document document, CodeAction codeAction)
-		{
-			return ApplyCodeActionAsync(document, codeAction).Result;
-		}
-
+		
 		/// <summary>
 		/// Apply the inputted CodeAction to the inputted document.
 		/// </summary>
@@ -194,17 +172,7 @@ namespace Acuminator.Tests.Verification
 				}
 			}
 		}
-
-		/// <summary>
-		/// Get the existing compiler diagnostics on the inputted document.
-		/// </summary>
-		/// <param name="document">The Document to run the compiler diagnostic analyzers on</param>
-		/// <returns>The compiler diagnostics that were found in the code</returns>
-		public static IEnumerable<Diagnostic> GetCompilerDiagnostics(Document document)
-		{
-			return GetCompilerDiagnosticsAsync(document).Result;
-		}
-
+		
 		/// <summary>
 		/// Get the existing compiler diagnostics on the inputted document.
 		/// </summary>

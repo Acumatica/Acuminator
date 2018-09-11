@@ -89,7 +89,7 @@ namespace Acuminator.Tests.Verification
 			int? codeRefactoringIndex, bool allowNewCompilerDiagnostics)
 		{
 			var document = CreateDocument(oldSource, language);
-			var compilerDiagnostics = GetCompilerDiagnostics(document).ToArray();
+			var compilerDiagnostics = (await GetCompilerDiagnosticsAsync(document).ConfigureAwait(false)).ToArray();
 
 			var actions = new List<CodeAction>();
 			var root = await document.GetSyntaxRootAsync().ConfigureAwait(false);
