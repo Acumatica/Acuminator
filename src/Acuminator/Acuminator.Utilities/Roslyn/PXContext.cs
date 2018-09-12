@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using PX.Data;
 
@@ -73,8 +74,11 @@ namespace Acuminator.Utilities.Roslyn
 
         public ImmutableArray<ISymbol> StringFormat => SystemTypes.String.GetMembers(nameof(string.Format));
         public ImmutableArray<ISymbol> StringConcat => SystemTypes.String.GetMembers(nameof(string.Concat));
+        public IMethodSymbol PXGraphExtensionInitializeMethod => PXGraphExtensionType.GetMembers(nameof(PXGraphExtension.Initialize))
+                                                                 .OfType<IMethodSymbol>()
+                                                                 .First();
 
-		public PXContext(Compilation compilation)
+        public PXContext(Compilation compilation)
 		{
 			Compilation = compilation;
 			bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation));

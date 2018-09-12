@@ -7,6 +7,8 @@ using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
 using ViewSymbolWithTypeCollection = System.Collections.Generic.IEnumerable<(Microsoft.CodeAnalysis.ISymbol ViewSymbol, Microsoft.CodeAnalysis.INamedTypeSymbol ViewType)>;
 using ActionSymbolWithTypeCollection = System.Collections.Generic.IEnumerable<(Microsoft.CodeAnalysis.ISymbol ActionSymbol, Microsoft.CodeAnalysis.INamedTypeSymbol ActionType)>;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Threading;
 
 namespace Acuminator.Utilities.Roslyn.Semantic
 {
@@ -554,5 +556,26 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static bool IsGraphWithPrimaryDacBaseGenericType(INamedTypeSymbol type) =>
 			type.TypeArguments.Length >= 2 && type.Name == TypeNames.PXGraph;
+
+        public static Tuple<MethodDeclarationSyntax,IMethodSymbol> GetGraphExtensionInitialization(this INamedTypeSymbol typeSymbol, PXContext pxContext, CancellationToken cancellation = default)
+        {
+            typeSymbol.ThrowOnNull(nameof(typeSymbol));
+
+            IMethodSymbol initialize = typeSymbol.GetMembers()
+                                       .OfType<IMethodSymbol>()
+                                       .Where(m => pxContext.PXGraphExtensionInitializeMethod.Equals(m.OverriddenMethod))
+                                       .FirstOrDefault();
+            if (initialize == null)
+                return null;
+
+            SyntaxReference reference = initialize.DeclaringSyntaxReferences.FirstOrDefault();
+            if (reference == null)
+                return null;
+
+            if (!(reference.GetSyntax(cancellation) is MethodDeclarationSyntax node))
+                return null;
+
+            return new Tuple<MethodDeclarationSyntax, IMethodSymbol>(node, initialize);
+        }
 	}
 }
