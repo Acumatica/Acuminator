@@ -83,7 +83,11 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1023_MultipleTypeAttributesOnAggregators { get; } =
 			Rule("PX1023", nameof(Resources.PX1023MultipleTypeAttributesOnAggregators).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
-		public static DiagnosticDescriptor PX1023_MultipleSpecialTypeAttributesOnAggregators { get; } =
+        public static DiagnosticDescriptor PX1023_MultipleSpecialTypeAttributesOnProperty { get; } =
+            Rule("PX1023", nameof(Resources.PX1023MultipleSpecialTypeAttributesOnProperty).GetLocalized(),
+                 Category.Default, DiagnosticSeverity.Error);
+
+        public static DiagnosticDescriptor PX1023_MultipleSpecialTypeAttributesOnAggregators { get; } =
 			Rule("PX1023", nameof(Resources.PX1023MultipleSpecialTypeAttributesOnAggregators).GetLocalized(),
 				 Category.Default, DiagnosticSeverity.Error);
 

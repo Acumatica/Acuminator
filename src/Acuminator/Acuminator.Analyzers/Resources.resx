@@ -222,6 +222,9 @@
 	<data name="PX1023MultipleTypeAttributesOnAggregators" xml:space="preserve">
     <value>The attribute contains multiple field type attributes declared on aggregators</value>
   </data>
+  <data name="PX1023MultipleSpecialTypeAttributesOnProperty" xml:space="preserve">
+    <value>The DAC property cannot be marked with multiple PXDBScalar/PXDBCalced attributes</value>
+  </data>
 	<data name="PX1023MultipleSpecialTypeAttributesOnAggregators" xml:space="preserve">
     <value>The attribute contains multiple PXDBScalar/PXDBCalced attributes declared on aggregators</value>
   </data>

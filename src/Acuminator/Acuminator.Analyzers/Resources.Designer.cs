@@ -395,6 +395,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The DAC property cannot be marked with multiple PXDBScalar/PXDBCalced attributes.
+        /// </summary>
+        public static string PX1023MultipleSpecialTypeAttributesOnProperty {
+            get {
+                return ResourceManager.GetString("PX1023MultipleSpecialTypeAttributesOnProperty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The attribute contains multiple field type attributes declared on aggregators.
         /// </summary>
         public static string PX1023MultipleTypeAttributesOnAggregators {
