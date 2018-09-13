@@ -180,6 +180,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\ChangeEventHandlerSignatureToGenericTests.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\CacheAttached.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\CacheAttached_Expected.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\RowEventHandler.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\RowEventHandler_Expected.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\FieldEventHandler.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\FieldEventHandler_Expected.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\CacheAttachedWithArgUsages.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\CacheAttachedWithArgUsages_Expected.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\EventHandlerWithArgsUsages.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\EventHandlerWithArgsUsages_Expected.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\Override.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\PXOverride.cs" />
+    <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\AdditionalParameters.cs" />
+    <Compile Include="Verification\CodeRefactoringVerifier.cs" />
+    <Compile Include="Verification\VerificationHelper.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\StaticMethod.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\PropertyGetter.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\PropertySetter.cs" />
@@ -199,10 +215,30 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphUsageInDac\Sources\DacWithGraphUsageInAttribute.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\Localization\Sources\LocalizationNonLocalizationException.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\InstanceExpressionBodiedMethod.cs" />
+    <Compile Include="Tests\StaticAnalysis\ChangesInPXCache\ChangesInPXCacheInEventHandlersTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlers.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlersWithExternalMethod.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\ValidEventHandlers.cs" />
     <Compile Include="Tests\StaticAnalysis\Localization\LocalizationPXExceptionCorrectTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\Lambda.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\LambdaWithBody.cs" />
-    <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\NotAcumaticaAttributeDac.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\EventHandlers\CreateInstance.cs" />
+    <Compile Include="Tests\StaticAnalysis\LongOperationInEventHandlers\LongOperationInEventHandlersTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationInEventHandlers\Sources\Valid.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationInEventHandlers\Sources\Invalid.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationInEventHandlers\Sources\InvalidWithExternalMethod.cs" />
+    <Compile Include="Tests\StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceInEventHandlersTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\EventHandlers\Constructor.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\EventHandlers\ConstructorForNonSpecificPXGraph.cs" />
+    <Compile Include="Tests\StaticAnalysis\SavingChanges\SavingChangesInEventHandlersTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PressSave.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\SavePress.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\GraphPersist.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\CachePersist.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\CachePersistInsideRowPersisting.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PressSaveInsideRowPersisting.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PressSaveInExternalMethod.cs" />
+    <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\MultipleReportedDiagnostics.cs" />
     <Compile Include="Verification\DiagnosticResultExtensions.cs" />
     <Compile Include="Verification\FluentAssertionsExtensions.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationDelegateClosures\Sources\LongOperationDelegateClosures.cs" />
@@ -364,15 +400,15 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_Bad_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\TypoInViewDelegateName\TypoInViewDelegateNameTests.cs" />
     <Compile Include="Tests\StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceTests.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\PXGraphCreateInstanceField.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\PXGraphCreateInstanceMethod.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\PXGraphCreateInstanceProperty.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\Field.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\Method.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\Property.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\MissingTypeListAttribute\Sources\MissingTypeListAttributeBad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\MissingTypeListAttribute\Sources\MissingTypeListAttributeGood.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\PXGraphCreateInstanceMethod_Expected.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\PXGraphCreateInstanceField_Expected.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\PXGraphCreateInstanceProperty_Expected.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\NonSpecificPXGraphCreateInstanceMethod.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\Method_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\Field_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\Property_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\MethodWithNonSpecificPXGraph.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ViewDeclarationOrder\Sources\ViewDeclarationOrder.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_Good_Override.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_Bad.cs" />
@@ -380,9 +416,7 @@
     <Compile Include="Tests\Utilities\AttributeInformation\AttributeInformationTests.cs" />
     <Compile Include="Verification\CodeFixVerifier.cs" />
     <Compile Include="Verification\DiagnosticVerifier.cs" />
-    <Compile Include="Verification\CodeFixVerifier.Helper.cs" />
     <Compile Include="Verification\DiagnosticResult.cs" />
-    <Compile Include="Verification\DiagnosticVerifier.Helper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

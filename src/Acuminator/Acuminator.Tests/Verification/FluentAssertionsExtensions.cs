@@ -25,17 +25,17 @@ namespace Acuminator.Tests.Verification
 		}
 
 		public AndConstraint<GenericCollectionAssertions<Location>> BeEquivalentTo(
-			params (int line, int column)[] expected)
+			params (int Line, int Column)[] expected)
 		{
-			void Assert((int line, int column) expectedLocation, Location actualLocation)
+			void Assert((int Line, int Column) expectedLocation, Location actualLocation)
 			{
 				var actualSpan = actualLocation.GetLineSpan();
 				var actualLinePosition = actualSpan.StartLinePosition;
 				int actualLine = actualLinePosition.Line + 1;
 				int actualColumn = actualLinePosition.Character + 1;
 
-				actualLine.Should().Be(expectedLocation.line);
-				actualColumn.Should().Be(expectedLocation.column);
+				actualLine.Should().Be(expectedLocation.Line);
+				actualColumn.Should().Be(expectedLocation.Column);
 			}
 
 			var actual = Subject.ToArray();

@@ -106,6 +106,7 @@
     <Compile Include="Common\EnumerableExtensions.cs" />
     <Compile Include="Common\ConcurrentExtensions.cs" />
     <Compile Include="Common\EnumerableExtraExtensions.cs" />
+    <Compile Include="Roslyn\EventHandlerSignatureType.cs" />
     <Compile Include="Roslyn\EventType.cs" />
     <Compile Include="Roslyn\LocalizationTypes.cs" />
     <Compile Include="Roslyn\NestedInvocationWalker.cs" />
@@ -143,6 +144,7 @@
     <Compile Include="Roslyn\Semantic\GraphSymbolUtils.cs" />
     <Compile Include="Roslyn\Semantic\IMethodSymbolExtensions.cs" />
     <Compile Include="Roslyn\Syntax\MethodDeclarationUtils.cs" />
+    <Compile Include="Roslyn\Syntax\ParameterUsagesRewriter.cs" />
     <Compile Include="Roslyn\Syntax\SyntaxTreeUtils.cs" />
     <Compile Include="Roslyn\Syntax\RoslynSyntaxUtils.cs" />
     <Compile Include="Roslyn\BqlModifyingMethods.cs" />

@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Xunit;
+using static Acuminator.Tests.Verification.VerificationHelper;
 
 namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 {
@@ -15,6 +16,9 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 	{
 		private class ExceptionWalker : Acuminator.Utilities.Roslyn.NestedInvocationWalker
 		{
+			private static readonly DiagnosticDescriptor DiagnosticDescriptor =
+				new DiagnosticDescriptor("PX9999", "Test", "Test", "Default", DiagnosticSeverity.Error, true);
+
 			private readonly List<Location> _locations = new List<Location>();
 			public IReadOnlyList<Location> Locations => _locations;
 
@@ -26,7 +30,12 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 			public override void VisitThrowStatement(ThrowStatementSyntax node)
 			{
 				base.VisitThrowStatement(node);
-				_locations.Add((OriginalNode ?? node).GetLocation());
+				ReportDiagnostic(AddDiagnostic, DiagnosticDescriptor, node);
+			}
+
+			private void AddDiagnostic(Diagnostic diagnostic)
+			{
+				_locations.Add(diagnostic.Location);
 			}
 		}
 
@@ -218,6 +227,21 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 			var walker = new ExceptionWalker(compilation, CancellationToken.None);
 			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
 				.OfType<ClassDeclarationSyntax>().First(n => n.Identifier.Text == "Foo");
+
+			node.Accept(walker);
+
+			walker.Locations.Should().BeEquivalentTo((line: 14, column: 4));
+		}
+
+		[Theory]
+		[EmbeddedFileData("MultipleReportedDiagnostics.cs")]
+		public async Task MultipleReportedDiagnostics(string text)
+		{
+			Document document = CreateDocument(text);
+			Compilation compilation = await document.Project.GetCompilationAsync();
+			var walker = new ExceptionWalker(compilation, CancellationToken.None);
+			var node = (CSharpSyntaxNode)(await document.GetSyntaxRootAsync()).DescendantNodes()
+				.OfType<ClassDeclarationSyntax>().First();
 
 			node.Accept(walker);
 
