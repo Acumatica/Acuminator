@@ -199,6 +199,10 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\DirectAssignment.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\SetValue.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\SetValueExt.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\NonRowAssignment.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\IndirectAssignment.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\IndirectSetValue.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\AssignmentInExternalMethod.cs" />
     <Compile Include="Verification\CodeRefactoringVerifier.cs" />
     <Compile Include="Verification\VerificationHelper.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\StaticMethod.cs" />

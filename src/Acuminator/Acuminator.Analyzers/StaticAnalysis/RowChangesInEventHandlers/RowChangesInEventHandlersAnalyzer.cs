@@ -34,10 +34,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 			if (AnalyzedEventTypes.Contains(eventType))
 			{
 				var methodSymbol = (IMethodSymbol) context.Symbol;
-				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
-				var walker = new Walker(context, pxContext, eventType);
+				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as MethodDeclarationSyntax;
 
-				methodSyntax?.Accept(walker);
+				if (methodSyntax != null && (methodSyntax.Body != null || methodSyntax.ExpressionBody?.Expression != null))
+				{
+					var walker = new Walker(context, pxContext, eventType);
+					methodSyntax.Accept(walker);
+				}
 			}
 		}
 
@@ -50,7 +53,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				"SetDefaultExt",
 			};
 
-			private SymbolAnalysisContext _context;
+			private readonly SymbolAnalysisContext _context;
 			private readonly PXContext _pxContext;
 			private readonly object[] _messageArgs;
 

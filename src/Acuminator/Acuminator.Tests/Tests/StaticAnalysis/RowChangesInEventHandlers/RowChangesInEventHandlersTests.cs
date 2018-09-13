@@ -30,6 +30,16 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.RowChangesInEventHandlers
 		}
 
 		[Theory]
+		[EmbeddedFileData("IndirectAssignment.cs")]
+		public Task IndirectAssignment(string actual)
+		{
+			return VerifyCSharpDiagnosticAsync(actual,
+				Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(15, 4, EventType.RowSelected),
+				Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(20, 4, EventType.FieldDefaulting),
+				Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(25, 4, EventType.FieldVerifying));
+		}
+
+		[Theory]
 		[EmbeddedFileData("SetValue.cs")]
 		public Task SetValue(string actual)
 		{
@@ -50,8 +60,35 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.RowChangesInEventHandlers
 		}
 
 		[Theory]
+		[EmbeddedFileData("IndirectSetValue.cs")]
+		public Task IndirectSetValue(string actual)
+		{
+			return VerifyCSharpDiagnosticAsync(actual,
+				Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(15, 4, EventType.RowSelected),
+				Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(20, 4, EventType.FieldDefaulting),
+				Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(25, 4, EventType.FieldVerifying));
+		}
+
+		[Theory]
+		[EmbeddedFileData("AssignmentInExternalMethod.cs")]
+		public Task AssignmentInExternalMethod(string actual)
+		{
+			return VerifyCSharpDiagnosticAsync(actual,
+				Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(16, 4, EventType.RowSelected),
+				Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(22, 4, EventType.FieldDefaulting),
+				Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(27, 4, EventType.FieldVerifying));
+		}
+
+		[Theory]
 		[EmbeddedFileData("ValidEventHandlers.cs")]
 		public Task ValidEventHandlers_ShouldNotShowDiagnostic(string actual)
+		{
+			return VerifyCSharpDiagnosticAsync(actual);
+		}
+
+		[Theory]
+		[EmbeddedFileData("NonRowAssignment.cs")]
+		public Task NonRowAssignment_ShouldNotShowDiagnostic(string actual)
 		{
 			return VerifyCSharpDiagnosticAsync(actual);
 		}
