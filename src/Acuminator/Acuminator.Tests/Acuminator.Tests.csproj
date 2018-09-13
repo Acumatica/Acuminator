@@ -206,6 +206,10 @@
     <Compile Include="Tests\StaticAnalysis\Localization\LocalizationPXExceptionCorrectTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\Lambda.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\LambdaWithBody.cs" />
+    <Compile Include="Tests\StaticAnalysis\PXGraphCreationDuringInitialization\PXGraphCreationDuringInitializationTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationDuringInitialization\Sources\PXGraphWithCreateInstanceInInstanceConstructor.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationDuringInitialization\Sources\PXGraphWithCreateInstanceInStaticConstructor.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationDuringInitialization\Sources\PXGraphExtensionWithCreateInstanceInInitMethod.cs" />
     <Compile Include="Tests\StaticAnalysis\SavingChanges\SavingChangesInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PressSave.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\SavePress.cs" />

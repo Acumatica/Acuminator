@@ -1,6 +1,10 @@
-﻿using Acuminator.Utilities.Roslyn;
+﻿using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization;
+using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
@@ -14,7 +18,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
 
-        public PXGraphAnalyzer()// : this()
+        public PXGraphAnalyzer() : this(
+            new PXGraphCreationDuringInitializationAnalyzer())
         {
         }
 
@@ -29,24 +34,28 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 
         internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
         {
-            compilationStartContext.RegisterSymbolAction(t => AnalyzeType(t, pxContext), SymbolKind.NamedType);
+            compilationStartContext.RegisterSyntaxNodeAction(context => AnalyzeGraph(context, pxContext), SyntaxKind.ClassDeclaration);
         }
 
-        private void AnalyzeType(SymbolAnalysisContext context, PXContext pxContext)
+        private void AnalyzeGraph(SyntaxNodeAnalysisContext context, PXContext pxContext)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
-            if (!(context.Symbol is INamedTypeSymbol type))
+            if (!(context.Node is ClassDeclarationSyntax node))
                 return;
 
-            PXGraphSemanticModel pxGrpah = PXGraphSemanticModel.GetModel(context, pxContext, type);
-            if (pxGrpah == null)
+            INamedTypeSymbol type = context.SemanticModel.GetDeclaredSymbol(node, context.CancellationToken);
+            if (type == null)
+                return;
+
+            PXGraphSemanticModel pxGraph = PXGraphSemanticModel.GetModel(pxContext, type, context.CancellationToken);
+            if (pxGraph == null)
                 return;
 
             foreach(IPXGraphAnalyzer innerAnalyzer in _innerAnalyzers)
             {
                 context.CancellationToken.ThrowIfCancellationRequested();
-                innerAnalyzer.Analyze(context, pxContext, pxGrpah);
+                innerAnalyzer.Analyze(context, pxContext, pxGraph);
             }
         }
     }

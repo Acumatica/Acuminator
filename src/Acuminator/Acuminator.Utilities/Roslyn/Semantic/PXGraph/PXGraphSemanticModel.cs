@@ -1,19 +1,14 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
+using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
-    //Initializers
-    //Data views and delegates
-    //Actions and handlers
-
     public class PXGraphSemanticModel
     {
         public ImmutableArray<GraphInitializerInfo> Initializers { get; private set; }
@@ -22,9 +17,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         {
         }
 
-        public static PXGraphSemanticModel GetModel(SymbolAnalysisContext context, PXContext pxContext, INamedTypeSymbol typeSymbol)
+        public static PXGraphSemanticModel GetModel(PXContext pxContext, INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
         {
-            context.CancellationToken.ThrowIfCancellationRequested();
+            cancellation.ThrowIfCancellationRequested();
+            pxContext.ThrowOnNull(nameof(pxContext));
+            typeSymbol.ThrowOnNull(nameof(typeSymbol));
 
             GraphType graphType = GraphType.PXGraph;
 
@@ -39,20 +36,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
             PXGraphSemanticModel pxGraph = new PXGraphSemanticModel
             {
-                Initializers = GetInitializers(context, pxContext, typeSymbol, graphType)
+                Initializers = GetInitializers(cancellation, pxContext, typeSymbol, graphType)
             };
 
             return pxGraph;
         }
 
-        private static ImmutableArray<GraphInitializerInfo> GetInitializers(SymbolAnalysisContext context, PXContext pxContext, INamedTypeSymbol typeSymbol, GraphType graphType)
+        private static ImmutableArray<GraphInitializerInfo> GetInitializers(CancellationToken cancellation, PXContext pxContext, INamedTypeSymbol typeSymbol, GraphType graphType)
         {
-            context.CancellationToken.ThrowIfCancellationRequested();
+            cancellation.ThrowIfCancellationRequested();
 
-            List<GraphInitializerInfo> initializers = typeSymbol.GetDeclaredInstanceConstructors(context.CancellationToken)
+            List<GraphInitializerInfo> initializers = typeSymbol.GetDeclaredInstanceConstructors(cancellation)
                                                       .Select(ctr => new GraphInitializerInfo(GraphInitializerType.InstanceCtr, ctr.Item1, ctr.Item2))
                                                       .ToList();
-            Tuple<MethodDeclarationSyntax, IMethodSymbol> staticCtrInfo = typeSymbol.GetDeclaredStaticConstructor(context.CancellationToken);
+            Tuple<ConstructorDeclarationSyntax, IMethodSymbol> staticCtrInfo = typeSymbol.GetDeclaredStaticConstructor(cancellation);
 
             if (staticCtrInfo != null)
             {
@@ -61,7 +58,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
             if (graphType == GraphType.PXGraphExtension)
             {
-                Tuple<MethodDeclarationSyntax, IMethodSymbol> initialization = typeSymbol.GetGraphExtensionInitialization(pxContext, context.CancellationToken);
+                Tuple<MethodDeclarationSyntax, IMethodSymbol> initialization = typeSymbol.GetGraphExtensionInitialization(pxContext, cancellation);
 
                 if (initialization != null)
                 {

@@ -7,16 +7,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
     public class GraphInitializerInfo
     {
         public GraphInitializerType Type { get; private set; }
-        public MethodDeclarationSyntax Declaration { get; private set; }
+        public BaseMethodDeclarationSyntax Node { get; private set; }
         public IMethodSymbol Symbol { get; private set; }
 
-        public GraphInitializerInfo(GraphInitializerType type, MethodDeclarationSyntax declaration, IMethodSymbol symbol)
+        public GraphInitializerInfo(GraphInitializerType type, BaseMethodDeclarationSyntax node, IMethodSymbol symbol)
         {
-            declaration.ThrowOnNull(nameof(declaration));
+            node.ThrowOnNull(nameof(node));
             symbol.ThrowOnNull(nameof(symbol));
 
             Type = type;
-            Declaration = declaration;
+            Node = node;
             Symbol = symbol;
         }
     }

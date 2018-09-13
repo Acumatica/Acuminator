@@ -62,6 +62,7 @@
     <Compile Include="StaticAnalysis\ConstructorInGraphExtension\ConstructorInGraphExtensionAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DacNonAbstractFieldType\DacNonAbstractFieldTypeAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DacDeclaration\DacDeclarationAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\PXGraphCreationDuringInitialization\PXGraphCreationDuringInitializationAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphUsageInDac\PXGraphUsageInDacAnalyzer.cs" />
     <Compile Include="StaticAnalysis\MethodsUsageInDac\MethodsUsageInDacAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DacExtensionDefaultAttribute\DacExtensionDefaultAttributeAnalyzer.cs" />

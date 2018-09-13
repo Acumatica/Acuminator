@@ -36,7 +36,8 @@ namespace Acuminator.Utilities.Roslyn
         private readonly Lazy<LocalizationTypes> _localizationMethods;
         public LocalizationTypes Localization => _localizationMethods.Value;
 
-
+        private readonly Lazy<PXGraphCreationMethods> _pxGraphCreationMethods;
+        public PXGraphCreationMethods PXGraphCreationMethods => _pxGraphCreationMethods.Value;
 
 		public INamedTypeSymbol PXGraphType => Compilation.GetTypeByMetadataName(typeof(PXGraph).FullName);
 		public INamedTypeSymbol PXCacheType => Compilation.GetTypeByMetadataName(typeof(PXCache).FullName);
@@ -93,8 +94,10 @@ namespace Acuminator.Utilities.Roslyn
 										() => new SystemTypeSymbols(Compilation));
             _localizationMethods = new Lazy<LocalizationTypes>(
                 () => new LocalizationTypes(Compilation));
+            _pxGraphCreationMethods = new Lazy<PXGraphCreationMethods>(
+                () => new PXGraphCreationMethods(this));
 
-			IsAcumatica2018R2 = PXSelectBase2018R2NewType != null;
+            IsAcumatica2018R2 = PXSelectBase2018R2NewType != null;
 		}
 
 		#region System Types
