@@ -15,9 +15,9 @@ namespace PX.Objects.HackathonDemo
 			Base.Caches[typeof(SOSetup)].Insert(setup);
 		}
 
-		protected virtual void SOOrder_CacheAttached(PXCache cache)
+		protected virtual void SOOrder_OrderNbr_CacheAttached(PXCache cache)
 		{
-			cache.Graph.RowSelecting.AddHandler<SOOrder>((sender, e) => PXDatabase.SelectTimeStamp());
+			cache.Graph.RowSelecting.AddHandler<SOOrder>((sender, args) => PXDatabase.SelectTimeStamp());
 		}
 
 		private SOSetup SelectSetup()
@@ -32,14 +32,14 @@ namespace PX.Objects.HackathonDemo
 			PXLongOperation.StartOperation(graph, () => graph.Release.Press());
 		}
 
-		protected virtual void _(Events.RowUpdated<SOOrder> e)
-		{
-			Base.Persist();
-		}
+		protected virtual void SOOrder_OrderNbr_FieldUpdated(PXCache sender, PXFieldUpdatedEventArgs e) => Base.Persist();
 
-		protected virtual void _(Events.RowSelected<SOOrder> e)
+		protected virtual void SOOrder_RowSelected(PXCache sender, PXRowSelectedEventArgs e)
 		{
-			Base.Actions.PressSave();
+			if (e.Row != null && sender.GetStatus(e.Row) == PXEntryStatus.Updated)
+			{
+				Base.Actions.PressSave();
+			}
 		}
 	}
 }
