@@ -51,7 +51,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			bool isBoundField = attributeInformation.ContainsBoundAttributes(attributes.Select(a => a.AttributeClass));
+			bool isBoundField = attributeInformation.ContainsBoundAttributes(attributes.Select(a => a));
 
 			if (isBoundField)
 			{

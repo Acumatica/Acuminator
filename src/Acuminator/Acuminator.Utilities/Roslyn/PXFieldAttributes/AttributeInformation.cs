@@ -4,6 +4,7 @@ using System.Linq;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 {
@@ -148,28 +149,55 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			}
 		}
 
-		public bool IsBoundAttribute(ITypeSymbol attributeSymbol)
+		public bool IsBoundAttribute(AttributeData attribute)
 		{
+            foreach (var baseType in BoundBaseTypes)
+			{
+				if (AttributeDerivedFromClass(attribute.AttributeClass, baseType))
+					return true;
+			}
+			return false;
+		}
 
-			var IsDBFieldMembers = attributeSymbol.GetMembers()
+        ///TODO: refactoring arguments -> remove semanticModel to constructor? Is it nessesary.
+        public bool IsBoundField(PropertyDeclarationSyntax property,SemanticModel semanticModel)
+        {
+            var attributes = property.AttributeLists;
+            foreach(var attribute in attributes)
+            {
+
+            }
+
+            var typeSymbol = semanticModel.GetDeclaredSymbol(property);
+            var attributesData = typeSymbol.GetAttributes();
+
+            foreach(var attribute in attributesData)
+            {
+                if (IsBoundAttribute(attribute))
+                    return true;
+                foreach(var argument in attribute.NamedArguments)
+                {
+
+                    //attribute.NamedArguments.Contains(("IsDBField",));
+                    if(argument.Key.Equals("IsDBField") && argument.Value.Value.Equals(true))
+                        return true;
+                }
+            }
+        	/*		var IsDBFieldMembers = attributeSymbol.GetMembers()
 												  .Where(b => b.Name.Equals("IsDBField"))
 												  .Select(a => a);
 			foreach (var isDBField in IsDBFieldMembers)
 			{
 
 			}
+            */
 
-			foreach (var baseType in BoundBaseTypes)
-			{
-				if (AttributeDerivedFromClass(attributeSymbol, baseType))
-					return true;
-			}
-			return false;
-		}
+            return false; 
+        }
 		
-		public bool ContainsBoundAttributes(IEnumerable<ITypeSymbol> attributesSymbols)
+		public bool ContainsBoundAttributes(IEnumerable<AttributeData> attributes)
 		{
-			return attributesSymbols.Any(IsBoundAttribute);
+			return attributes.Any(IsBoundAttribute);
 		}
 
 	}
