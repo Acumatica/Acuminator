@@ -313,6 +313,6 @@
     <value>A long-running operation cannot be started within an event handler</value>
   </data>
   <data name="EventHandlerSignatureCodeActionTitle" xml:space="preserve">
-    <value>Convert event handler signature to the generic one</value>
+    <value>Convert an event handler signature to the generic one. Please, be careful because an event handler can be overwritten somewhere else.</value>
   </data>
 </root>
