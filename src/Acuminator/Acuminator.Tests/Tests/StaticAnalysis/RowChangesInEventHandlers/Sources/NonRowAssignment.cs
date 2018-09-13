@@ -9,6 +9,13 @@ namespace PX.Objects
 {
 	public class SOInvoiceEntry : PXGraph<SOInvoiceEntry, SOInvoice>
 	{
+		protected virtual void _(Events.RowSelected<SOInvoice> e)
+		{
+			var row = new SOInvoice();
+			e.Cache.SetValue<SOInvoice.refNbr>(row, "<NEW>");
+			row.RefNbr = "0000001";
+		}
+
 		protected virtual void _(Events.FieldDefaulting<SOInvoice, SOInvoice.refNbr> e)
 		{
 			e.NewValue = "<NEW>";
