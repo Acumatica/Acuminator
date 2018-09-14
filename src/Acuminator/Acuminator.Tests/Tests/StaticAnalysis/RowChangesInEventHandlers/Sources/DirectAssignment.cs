@@ -11,7 +11,7 @@ namespace PX.Objects
 	{
 		protected virtual void _(Events.RowSelected<SOInvoice> e)
 		{
-			e.Row.RefNbr = "<NEW>";
+			e.Row?.RefNbr = "<NEW>";
 		}
 
 		protected virtual void _(Events.FieldDefaulting<SOInvoice, SOInvoice.refNbr> e)
