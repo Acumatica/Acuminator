@@ -602,15 +602,6 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A PXGraph instance cannot be created within an event handler.
-        /// </summary>
-        public static string PX1045Title {
-            get {
-                return ResourceManager.GetString("PX1045Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to A long-running operation cannot be started within an event handler.
         /// </summary>
         public static string PX1046Title {
@@ -656,7 +647,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PXGraph instances cannot be initialized during another PXGraph instance initialization.
+        ///   Looks up a localized string similar to A PXGraph instance cannot be initialized while another PXGraph instance is being initialized.
         /// </summary>
         public static string PX1057Title {
             get {
