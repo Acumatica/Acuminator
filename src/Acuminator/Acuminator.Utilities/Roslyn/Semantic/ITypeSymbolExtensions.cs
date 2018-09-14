@@ -303,11 +303,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			return typeNameWithoutGeneric + DefaultGenericArgsCountSeparator + typeArgs.Length;
 		}
 
-        public static IEnumerable<Tuple<ConstructorDeclarationSyntax, IMethodSymbol>> GetDeclaredInstanceConstructors(this INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
+        public static IEnumerable<(ConstructorDeclarationSyntax node, IMethodSymbol symbol)> GetDeclaredInstanceConstructors(
+            this INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
         {
             typeSymbol.ThrowOnNull(nameof(typeSymbol));
 
-            List<Tuple<ConstructorDeclarationSyntax, IMethodSymbol>> initializers = new List<Tuple<ConstructorDeclarationSyntax, IMethodSymbol>>();
+            List<(ConstructorDeclarationSyntax, IMethodSymbol)> initializers = new List<(ConstructorDeclarationSyntax, IMethodSymbol)>();
 
             foreach (IMethodSymbol ctr in typeSymbol.InstanceConstructors)
             {
@@ -329,7 +330,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
             return initializers;
         }
 
-        public static Tuple<ConstructorDeclarationSyntax, IMethodSymbol> GetDeclaredStaticConstructor(this INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
+        public static (ConstructorDeclarationSyntax node, IMethodSymbol symbol) GetDeclaredStaticConstructor
+            (this INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
         {
             typeSymbol.ThrowOnNull(nameof(typeSymbol));
 
@@ -347,10 +349,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
                 if (!(reference.GetSyntax(cancellation) is ConstructorDeclarationSyntax node))
                     continue;
 
-                return new Tuple<ConstructorDeclarationSyntax, IMethodSymbol>(node, ctr);
+                return (node, ctr);
             }
 
-            return null;
+            return (null, null);
         }
     }
 }

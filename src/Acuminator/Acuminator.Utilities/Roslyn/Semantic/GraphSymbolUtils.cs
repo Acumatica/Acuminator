@@ -557,7 +557,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		private static bool IsGraphWithPrimaryDacBaseGenericType(INamedTypeSymbol type) =>
 			type.TypeArguments.Length >= 2 && type.Name == TypeNames.PXGraph;
 
-        public static Tuple<MethodDeclarationSyntax,IMethodSymbol> GetGraphExtensionInitialization(this INamedTypeSymbol typeSymbol, PXContext pxContext, CancellationToken cancellation = default)
+        public static (MethodDeclarationSyntax node, IMethodSymbol symbol) GetGraphExtensionInitialization(this INamedTypeSymbol typeSymbol, PXContext pxContext, CancellationToken cancellation = default)
         {
             typeSymbol.ThrowOnNull(nameof(typeSymbol));
 
@@ -566,16 +566,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic
                                        .Where(m => pxContext.PXGraphExtensionInitializeMethod.Equals(m.OverriddenMethod))
                                        .FirstOrDefault();
             if (initialize == null)
-                return null;
+                return (null, null);
 
             SyntaxReference reference = initialize.DeclaringSyntaxReferences.FirstOrDefault();
             if (reference == null)
-                return null;
+                return (null, null);
 
             if (!(reference.GetSyntax(cancellation) is MethodDeclarationSyntax node))
-                return null;
+                return (null, null);
 
-            return new Tuple<MethodDeclarationSyntax, IMethodSymbol>(node, initialize);
+            return (node, initialize);
         }
 	}
 }

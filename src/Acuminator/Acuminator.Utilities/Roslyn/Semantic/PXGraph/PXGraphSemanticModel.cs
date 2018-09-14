@@ -18,7 +18,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
         public GraphType Type { get; private set; }
         public INamedTypeSymbol Symbol { get; private set; }
-        public Tuple<ConstructorDeclarationSyntax, IMethodSymbol> StaticCtrInfo { get; private set; }
+        public (ConstructorDeclarationSyntax node, IMethodSymbol symbol) StaticCtrInfo { get; private set; }
         public ImmutableArray<GraphInitializerInfo> Initializers { get; private set; }
 
         private PXGraphSemanticModel(SemanticModel semanticModel, CancellationToken cancellation, PXContext pxContext, GraphType type, INamedTypeSymbol symbol)
@@ -51,22 +51,30 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             if (Type == GraphType.PXGraph)
             {
                 IEnumerable<GraphInitializerInfo> ctrs = Symbol.GetDeclaredInstanceConstructors(_cancellation)
-                                                         .Select(ctr => new GraphInitializerInfo(GraphInitializerType.InstanceCtr, ctr.Item1, ctr.Item2));
+                                                         .Select(ctr => new GraphInitializerInfo(GraphInitializerType.InstanceCtr, ctr.node, ctr.symbol));
                 initializers.AddRange(ctrs);
             }
             else if (Type == GraphType.PXGraphExtension)
             {
-                Tuple<MethodDeclarationSyntax, IMethodSymbol> initialization = Symbol.GetGraphExtensionInitialization(_pxContext, _cancellation);
+                (MethodDeclarationSyntax node, IMethodSymbol symbol) = Symbol.GetGraphExtensionInitialization(_pxContext, _cancellation);
 
-                if (initialization != null)
+                if (node != null && symbol != null)
                 {
-                    initializers.Add(new GraphInitializerInfo(GraphInitializerType.InitializeMethod, initialization.Item1, initialization.Item2));
+                    initializers.Add(new GraphInitializerInfo(GraphInitializerType.InitializeMethod, node, symbol));
                 }
             }
 
             Initializers = initializers.ToImmutableArray();
         }
 
+        /// <summary>
+        /// Returns one or multiple semantic models of PXGraph and PXGraphExtension descendants which are inferred from <paramref name="typeSymbol"/>
+        /// </summary>
+        /// <param name="pxContext">Context instance</param>
+        /// <param name="typeSymbol">Symbol which is PXGraph or PXGraphExtension descendant and/or which uses PXGraph.InstanceCreated AddHandler method</param>
+        /// <param name="semanticModel">Semantic model</param>
+        /// <param name="cancellation">Cancellation</param>
+        /// <returns></returns>
         public static IEnumerable<PXGraphSemanticModel> InferModels(PXContext pxContext, INamedTypeSymbol typeSymbol, SemanticModel semanticModel,
                                                                     CancellationToken cancellation = default)
         {
@@ -89,9 +97,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
             if (graphType != GraphType.None)
             {
-                PXGraphSemanticModel explisitModel = new PXGraphSemanticModel(semanticModel, cancellation, pxContext, graphType, typeSymbol);
+                PXGraphSemanticModel explicitModel = new PXGraphSemanticModel(semanticModel, cancellation, pxContext, graphType, typeSymbol);
 
-                models.Add(explisitModel);
+                models.Add(explicitModel);
             }
 
             IEnumerable<InitDelegateInfo> delegates = GetInitDelegates(semanticModel, cancellation, pxContext, typeSymbol);
@@ -100,19 +108,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             {
                 GraphInitializerInfo info = new GraphInitializerInfo(GraphInitializerType.InstanceCreatedDelegate, d.DelegateNode, d.DelegateSymbol);
                 PXGraphSemanticModel existingModel = models.FirstOrDefault(m => m.Symbol.Equals(d.GraphTypeSymbol));
-                PXGraphSemanticModel implisitModel;
+                PXGraphSemanticModel implicitModel;
 
                 if (existingModel != null)
                 {
-                    implisitModel = existingModel;
+                    implicitModel = existingModel;
                 }
                 else
                 {
-                    implisitModel = new PXGraphSemanticModel(semanticModel, cancellation, pxContext, d.GraphType, d.GraphTypeSymbol);
-                    models.Add(implisitModel);
+                    implicitModel = new PXGraphSemanticModel(semanticModel, cancellation, pxContext, d.GraphType, d.GraphTypeSymbol);
+                    models.Add(implicitModel);
                 }
 
-                implisitModel.Initializers = implisitModel.Initializers.Add(info);
+                implicitModel.Initializers = implicitModel.Initializers.Add(info);
             }
 
             return models;
