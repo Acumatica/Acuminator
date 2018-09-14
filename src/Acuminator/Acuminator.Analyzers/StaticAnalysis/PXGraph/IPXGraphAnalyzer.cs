@@ -9,6 +9,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
     public interface IPXGraphAnalyzer
     {
         ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
-        void Analyze(SyntaxNodeAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph);
+        void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph);
     }
 }

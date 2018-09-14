@@ -22,7 +22,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
                 Descriptors.PX1057_PXGraphCreationDuringInitialization
             );
 
-        public void Analyze(SyntaxNodeAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
+        public void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -40,10 +40,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
 
         private class PXGraphCreateInstanceWalker : CSharpSyntaxWalker
         {
-            private readonly SyntaxNodeAnalysisContext _context;
+            private readonly SymbolAnalysisContext _context;
             private readonly PXContext _pxContext;
 
-            public PXGraphCreateInstanceWalker(SyntaxNodeAnalysisContext context, PXContext pxContext)
+            public PXGraphCreateInstanceWalker(SymbolAnalysisContext context, PXContext pxContext)
             {
                 _context = context;
                 _pxContext = pxContext;
@@ -53,7 +53,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
             {
                 _context.CancellationToken.ThrowIfCancellationRequested();
 
-                if (_context.SemanticModel.GetSymbolInfo(node, _context.CancellationToken).Symbol is IMethodSymbol symbol)
+                SemanticModel semanticModel = _context.Compilation.GetSemanticModel(node.SyntaxTree);
+
+                if (semanticModel.GetSymbolInfo(node, _context.CancellationToken).Symbol is IMethodSymbol symbol)
                 {
                     bool isCreationInstance = _pxContext.PXGraphRelatedMethods.CreateInstance.Contains(symbol.ConstructedFrom);
 

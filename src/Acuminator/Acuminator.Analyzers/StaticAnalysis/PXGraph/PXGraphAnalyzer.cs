@@ -35,21 +35,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 
         internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
         {
-            compilationStartContext.RegisterSyntaxNodeAction(context => AnalyzeGraph(context, pxContext), SyntaxKind.ClassDeclaration);
+            compilationStartContext.RegisterSymbolAction(context => AnalyzeGraph(context, pxContext), SymbolKind.NamedType);
         }
 
-        private void AnalyzeGraph(SyntaxNodeAnalysisContext context, PXContext pxContext)
+        private void AnalyzeGraph(SymbolAnalysisContext context, PXContext pxContext)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
-            if (!(context.Node is ClassDeclarationSyntax node))
+            if (!(context.Symbol is INamedTypeSymbol type))
                 return;
 
-            INamedTypeSymbol type = context.SemanticModel.GetDeclaredSymbol(node, context.CancellationToken);
-            if (type == null)
-                return;
-
-            IEnumerable<PXGraphSemanticModel> graphs = PXGraphSemanticModel.InferModels(pxContext, type, context.SemanticModel, context.CancellationToken);
+            IEnumerable<PXGraphSemanticModel> graphs = PXGraphSemanticModel.InferModels(pxContext, type, context.CancellationToken);
 
             foreach (IPXGraphAnalyzer innerAnalyzer in _innerAnalyzers)
             {

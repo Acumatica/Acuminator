@@ -12,7 +12,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
     public class PXGraphSemanticModel
     {
-        private readonly SemanticModel _semanticModel;
         private readonly CancellationToken _cancellation;
         private readonly PXContext _pxContext;
 
@@ -21,11 +20,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         public (ConstructorDeclarationSyntax node, IMethodSymbol symbol) StaticCtrInfo { get; private set; }
         public ImmutableArray<GraphInitializerInfo> Initializers { get; private set; }
 
-        private PXGraphSemanticModel(SemanticModel semanticModel, CancellationToken cancellation, PXContext pxContext, GraphType type, INamedTypeSymbol symbol)
+        private PXGraphSemanticModel(PXContext pxContext, GraphType type, INamedTypeSymbol symbol, CancellationToken cancellation = default)
         {
             cancellation.ThrowIfCancellationRequested();
 
-            _semanticModel = semanticModel;
             _cancellation = cancellation;
             _pxContext = pxContext;
             Type = type;
@@ -75,13 +73,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         /// <param name="semanticModel">Semantic model</param>
         /// <param name="cancellation">Cancellation</param>
         /// <returns></returns>
-        public static IEnumerable<PXGraphSemanticModel> InferModels(PXContext pxContext, INamedTypeSymbol typeSymbol, SemanticModel semanticModel,
+        public static IEnumerable<PXGraphSemanticModel> InferModels(PXContext pxContext, INamedTypeSymbol typeSymbol,
                                                                     CancellationToken cancellation = default)
         {
             cancellation.ThrowIfCancellationRequested();
             pxContext.ThrowOnNull(nameof(pxContext));
             typeSymbol.ThrowOnNull(nameof(typeSymbol));
-            semanticModel.ThrowOnNull(nameof(semanticModel));
 
             List<PXGraphSemanticModel> models = new List<PXGraphSemanticModel>();
             GraphType graphType = GraphType.None;
@@ -97,12 +94,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
             if (graphType != GraphType.None)
             {
-                PXGraphSemanticModel explicitModel = new PXGraphSemanticModel(semanticModel, cancellation, pxContext, graphType, typeSymbol);
+                PXGraphSemanticModel explicitModel = new PXGraphSemanticModel(pxContext, graphType, typeSymbol, cancellation);
 
                 models.Add(explicitModel);
             }
 
-            IEnumerable<InitDelegateInfo> delegates = GetInitDelegates(semanticModel, cancellation, pxContext, typeSymbol);
+            IEnumerable<InitDelegateInfo> delegates = GetInitDelegates(cancellation, pxContext, typeSymbol);
 
             foreach (InitDelegateInfo d in delegates)
             {
@@ -116,7 +113,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
                 }
                 else
                 {
-                    implicitModel = new PXGraphSemanticModel(semanticModel, cancellation, pxContext, d.GraphType, d.GraphTypeSymbol);
+                    implicitModel = new PXGraphSemanticModel(pxContext, d.GraphType, d.GraphTypeSymbol, cancellation);
                     models.Add(implicitModel);
                 }
 
@@ -126,14 +123,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             return models;
         }
 
-        private static IEnumerable<InitDelegateInfo> GetInitDelegates(SemanticModel semanticModel, CancellationToken cancellation, PXContext pxContext,
-                                                                         INamedTypeSymbol typeSymbol)
+        private static IEnumerable<InitDelegateInfo> GetInitDelegates(CancellationToken cancellation, PXContext pxContext, INamedTypeSymbol typeSymbol)
         {
             cancellation.ThrowIfCancellationRequested();
 
             IEnumerable<SyntaxNode> declaringNodes = typeSymbol.DeclaringSyntaxReferences
                                                      .Select(r => r.GetSyntax(cancellation));
-            InstanceCreatedEventsAddHandlerWalker walker = new InstanceCreatedEventsAddHandlerWalker(semanticModel, cancellation, pxContext);
+            InstanceCreatedEventsAddHandlerWalker walker = new InstanceCreatedEventsAddHandlerWalker(cancellation, pxContext);
 
             foreach (SyntaxNode node in declaringNodes)
             {
@@ -146,15 +142,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
         private class InstanceCreatedEventsAddHandlerWalker : CSharpSyntaxWalker
         {
-            private readonly SemanticModel _semanticModel;
             private readonly CancellationToken _cancellation;
             private readonly PXContext _pxContext;
 
             public List<InitDelegateInfo> GraphInitDelegates { get; private set; } = new List<InitDelegateInfo>();
 
-            public InstanceCreatedEventsAddHandlerWalker(SemanticModel semanticModel, CancellationToken cancellation, PXContext pxContext)
+            public InstanceCreatedEventsAddHandlerWalker(CancellationToken cancellation, PXContext pxContext)
             {
-                _semanticModel = semanticModel;
                 _cancellation = cancellation;
                 _pxContext = pxContext;
             }
@@ -163,7 +157,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             {
                 _cancellation.ThrowIfCancellationRequested();
 
-                if (_semanticModel.GetSymbolInfo(node, _cancellation).Symbol is IMethodSymbol symbol)
+                SemanticModel semanticModel = _pxContext.Compilation.GetSemanticModel(node.SyntaxTree);
+
+                if (semanticModel.GetSymbolInfo(node, _cancellation).Symbol is IMethodSymbol symbol)
                 {
                     bool isCreationDelegateAddition = _pxContext.PXGraphRelatedMethods.InstanceCreatedEventsAddHandler.Equals(symbol.ConstructedFrom);
 
@@ -171,7 +167,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
                     {
                         INamedTypeSymbol graphSymbol = symbol.TypeArguments[0] as INamedTypeSymbol;
                         ExpressionSyntax delegateNode = node.ArgumentList.Arguments.First().Expression;
-                        ISymbol delegateSymbol = _semanticModel.GetSymbolInfo(delegateNode).Symbol;
+                        ISymbol delegateSymbol = semanticModel.GetSymbolInfo(delegateNode).Symbol;
 
                         GraphInitDelegates.Add(new InitDelegateInfo(graphSymbol, delegateSymbol, delegateNode));
                     }
