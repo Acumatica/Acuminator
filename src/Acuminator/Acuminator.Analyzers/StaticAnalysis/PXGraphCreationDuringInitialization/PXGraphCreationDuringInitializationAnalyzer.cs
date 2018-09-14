@@ -19,7 +19,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create
             (
-                Descriptors.PX1099_PXGraphCreationDuringInitialization
+                Descriptors.PX1057_PXGraphCreationDuringInitialization
             );
 
         public void Analyze(SyntaxNodeAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
@@ -59,7 +59,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
 
                     if (isCreationInstance)
                     {
-                        _context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1099_PXGraphCreationDuringInitialization, node.GetLocation()));
+                        _context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1057_PXGraphCreationDuringInitialization, node.GetLocation()));
                     }
                 }
 
