@@ -377,15 +377,6 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Leave the selected field attribute and remove other field attributes from the property.
-        /// </summary>
-        public static string PX1023Fix {
-            get {
-                return ResourceManager.GetString("PX1023Fix", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The attribute contains multiple PXDBScalar/PXDBCalced attributes declared on aggregators.
         /// </summary>
         public static string PX1023MultipleSpecialTypeAttributesOnAggregators {
@@ -418,6 +409,24 @@ namespace Acuminator.Analyzers {
         public static string PX1023MultipleTypeAttributesOnProperty {
             get {
                 return ResourceManager.GetString("PX1023MultipleTypeAttributesOnProperty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leave the selected attribute and remove other PXDBScalar/PXDBCalced attributes from the property.
+        /// </summary>
+        public static string PX1023SpecialAttributesFix {
+            get {
+                return ResourceManager.GetString("PX1023SpecialAttributesFix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leave the selected attribute and remove other field type attributes from the property.
+        /// </summary>
+        public static string PX1023TypeAttributesFix {
+            get {
+                return ResourceManager.GetString("PX1023TypeAttributesFix", resourceCulture);
             }
         }
         
