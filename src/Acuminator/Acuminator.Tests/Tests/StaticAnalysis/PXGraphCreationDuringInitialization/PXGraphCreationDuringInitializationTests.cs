@@ -21,17 +21,17 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphCreationDuringInitializat
         }
 
         [Theory]
-        [EmbeddedFileData("PXGraphWithCreateInstanceInStaticConstructor.cs")]
-        public void PXGraph_Static_Constructor_Cannot_Invoke_CreateInstance_Method(string source)
-        {
-            VerifyCSharpDiagnostic(source, Descriptors.PX1099_PXGraphCreationDuringInitialization.CreateFor(15, 41));
-        }
-
-        [Theory]
         [EmbeddedFileData("PXGraphExtensionWithCreateInstanceInInitMethod.cs")]
         public void PXGraphExtension_Initialize_Method_Cannot_Invoke_CreateInstance_Method(string source)
         {
             VerifyCSharpDiagnostic(source, Descriptors.PX1099_PXGraphCreationDuringInitialization.CreateFor(14, 41));
+        }
+
+        [Theory]
+        [EmbeddedFileData("PXGrapWithCreateInstanceInInitDelegate.cs")]
+        public void PXGraph_Init_Delegate_Cannot_Invoke_CreateInstance_Method(string source)
+        {
+            VerifyCSharpDiagnostic(source, Descriptors.PX1099_PXGraphCreationDuringInitialization.CreateFor(20, 14));
         }
     }
 }

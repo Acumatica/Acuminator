@@ -10,14 +10,14 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphCreationDuringInitializat
 {
     public class SWKMapadocCustomerExtensionMaint : PXGraph<SWKMapadocCustomerExtensionMaint>
     {
-        static SWKMapadocCustomerExtensionMaint()
-        {
-            SWKMapadocConnMaint maint = PXGraph.CreateInstance<SWKMapadocConnMaint>();
-            int key = maint.GetHashCode();
-        }
     }
 
     public class SWKMapadocConnMaint : PXGraph<SWKMapadocConnMaint>
     {
+        public void AddInitHandlerToExtension()
+        {
+            PXGraph.InstanceCreated.AddHandler<SWKMapadocCustomerExtensionMaint>(graph =>
+             PXGraph.CreateInstance<SWKMapadocConnMaint>());
+        }
     }
 }

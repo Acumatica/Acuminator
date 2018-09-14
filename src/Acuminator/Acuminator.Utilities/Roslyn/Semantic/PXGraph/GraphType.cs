@@ -3,6 +3,7 @@
     public enum GraphType
     {
         PXGraph,
-        PXGraphExtension
+        PXGraphExtension,
+        None
     }
 }

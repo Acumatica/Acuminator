@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -48,14 +49,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
             if (type == null)
                 return;
 
-            PXGraphSemanticModel pxGraph = PXGraphSemanticModel.GetModel(pxContext, type, context.CancellationToken);
-            if (pxGraph == null)
-                return;
+            IEnumerable<PXGraphSemanticModel> graphs = PXGraphSemanticModel.InferModels(pxContext, type, context.SemanticModel, context.CancellationToken);
 
-            foreach(IPXGraphAnalyzer innerAnalyzer in _innerAnalyzers)
+            foreach (IPXGraphAnalyzer innerAnalyzer in _innerAnalyzers)
             {
-                context.CancellationToken.ThrowIfCancellationRequested();
-                innerAnalyzer.Analyze(context, pxContext, pxGraph);
+                foreach (PXGraphSemanticModel g in graphs)
+                {
+                    context.CancellationToken.ThrowIfCancellationRequested();
+                    innerAnalyzer.Analyze(context, pxContext, g);
+                }
             }
         }
     }

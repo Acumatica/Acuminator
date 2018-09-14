@@ -24,6 +24,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
 
         public void Analyze(SyntaxNodeAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
         {
+            context.CancellationToken.ThrowIfCancellationRequested();
+
+            if (pxGraph.Initializers == null)
+                return;
+
             PXGraphCreateInstanceWalker walker = new PXGraphCreateInstanceWalker(context, pxContext);
 
             foreach(GraphInitializerInfo initializer in pxGraph.Initializers)
@@ -48,14 +53,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
             {
                 _context.CancellationToken.ThrowIfCancellationRequested();
 
-                if (!(_context.SemanticModel.GetSymbolInfo(node, _context.CancellationToken).Symbol is IMethodSymbol symbol))
-                    return;
+                if (_context.SemanticModel.GetSymbolInfo(node, _context.CancellationToken).Symbol is IMethodSymbol symbol)
+                {
+                    bool isCreationInstance = _pxContext.PXGraphRelatedMethods.CreateInstance.Contains(symbol.ConstructedFrom);
 
-                bool isCreationInstance = _pxContext.PXGraphCreationMethods.CreateInstance.Contains(symbol.ConstructedFrom);
-                if (!isCreationInstance)
-                    return;
-
-                _context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1099_PXGraphCreationDuringInitialization, node.GetLocation()));
+                    if (isCreationInstance)
+                    {
+                        _context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1099_PXGraphCreationDuringInitialization, node.GetLocation()));
+                    }
+                }
 
                 base.VisitMemberAccessExpression(node);
             }

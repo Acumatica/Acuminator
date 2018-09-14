@@ -107,7 +107,7 @@
     <Compile Include="Common\ConcurrentExtensions.cs" />
     <Compile Include="Common\EnumerableExtraExtensions.cs" />
     <Compile Include="Roslyn\EventType.cs" />
-    <Compile Include="Roslyn\PXGraphCreationMethods.cs" />
+    <Compile Include="Roslyn\PXGraphRelatedMethods.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphInitializerInfo.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphInitializerType.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphType.cs" />

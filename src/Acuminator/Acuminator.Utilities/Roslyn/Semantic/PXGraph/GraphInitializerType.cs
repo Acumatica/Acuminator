@@ -2,8 +2,8 @@
 {
     public enum GraphInitializerType
     {
-        StaticCtr,
         InstanceCtr,
-        InitializeMethod
+        InitializeMethod,
+        InstanceCreatedDelegate
     }
 }
