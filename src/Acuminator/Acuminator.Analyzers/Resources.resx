@@ -315,4 +315,7 @@
   <data name="EventHandlerSignatureCodeActionTitle" xml:space="preserve">
     <value>Convert an event handler signature to the generic one. Please, be careful because an event handler can be overwritten somewhere else.</value>
   </data>
+  <data name="PX1045Title" xml:space="preserve">
+    <value>A PXGraph instance cannot be created within an event handler</value>
+  </data>
 </root>
