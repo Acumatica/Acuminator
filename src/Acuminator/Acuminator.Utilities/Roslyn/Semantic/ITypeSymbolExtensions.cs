@@ -303,7 +303,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			return typeNameWithoutGeneric + DefaultGenericArgsCountSeparator + typeArgs.Length;
 		}
 
-        public static IEnumerable<(ConstructorDeclarationSyntax node, IMethodSymbol symbol)> GetDeclaredInstanceConstructors(
+        public static IEnumerable<(ConstructorDeclarationSyntax Node, IMethodSymbol Symbol)> GetDeclaredInstanceConstructors(
             this INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
         {
             typeSymbol.ThrowOnNull(nameof(typeSymbol));
@@ -330,7 +330,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
             return initializers;
         }
 
-        public static (ConstructorDeclarationSyntax node, IMethodSymbol symbol) GetDeclaredStaticConstructor
+        public static (ConstructorDeclarationSyntax Node, IMethodSymbol Symbol) GetDeclaredStaticConstructor
             (this INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
         {
             typeSymbol.ThrowOnNull(nameof(typeSymbol));

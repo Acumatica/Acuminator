@@ -17,7 +17,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
         public GraphType Type { get; private set; }
         public INamedTypeSymbol Symbol { get; private set; }
-        public (ConstructorDeclarationSyntax node, IMethodSymbol symbol) StaticCtrInfo { get; private set; }
+        public (ConstructorDeclarationSyntax Node, IMethodSymbol Symbol) StaticCtrInfo { get; private set; }
         public ImmutableArray<GraphInitializerInfo> Initializers { get; private set; }
 
         private PXGraphSemanticModel(PXContext pxContext, GraphType type, INamedTypeSymbol symbol, CancellationToken cancellation = default)
@@ -49,7 +49,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             if (Type == GraphType.PXGraph)
             {
                 IEnumerable<GraphInitializerInfo> ctrs = Symbol.GetDeclaredInstanceConstructors(_cancellation)
-                                                         .Select(ctr => new GraphInitializerInfo(GraphInitializerType.InstanceCtr, ctr.node, ctr.symbol));
+                                                         .Select(ctr => new GraphInitializerInfo(GraphInitializerType.InstanceCtr, ctr.Node, ctr.Symbol));
                 initializers.AddRange(ctrs);
             }
             else if (Type == GraphType.PXGraphExtension)
