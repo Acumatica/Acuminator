@@ -62,6 +62,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Convert an event handler signature to the generic one. Please, be careful because an event handler can be overwritten somewhere else..
+        /// </summary>
+        public static string EventHandlerSignatureCodeActionTitle {
+            get {
+                return ResourceManager.GetString("EventHandlerSignatureCodeActionTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fix PXAction handler signature.
         /// </summary>
         public static string PX1000Fix {
@@ -589,6 +598,24 @@ namespace Acuminator.Analyzers {
         public static string PX1044Title {
             get {
                 return ResourceManager.GetString("PX1044Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A PXGraph instance cannot be created within an event handler.
+        /// </summary>
+        public static string PX1045Title {
+            get {
+                return ResourceManager.GetString("PX1045Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A long-running operation cannot be started within an event handler.
+        /// </summary>
+        public static string PX1046Title {
+            get {
+                return ResourceManager.GetString("PX1046Title", resourceCulture);
             }
         }
         

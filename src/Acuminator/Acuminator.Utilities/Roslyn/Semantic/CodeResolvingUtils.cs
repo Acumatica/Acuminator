@@ -404,31 +404,44 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// <returns>Event Type (e.g. RowSelecting). If method is not an event handler, returns <code>EventType.None</code>.</returns>
 		public static EventType GetEventHandlerType(this IMethodSymbol symbol, PXContext pxContext)
 		{
+			return symbol.GetEventHandlerInfo(pxContext).EventType;
+		}
+
+		/// <summary>
+		/// Returns information about an event handler for the provided method symbol.
+		/// </summary>
+		/// <param name="symbol">Method symbol for the event handler</param>
+		/// <param name="pxContext">PXContext instance</param>
+		/// <returns>Event Type (e.g. RowSelecting) and Event Signature Type (default or generic).
+		/// If method is not an event handler, returns <code>(EventType.None, EventHandlerSignatureType.None)</code>.</returns>
+		public static (EventType EventType, EventHandlerSignatureType EventSignatureType) GetEventHandlerInfo(
+			this IMethodSymbol symbol, PXContext pxContext)
+		{
 			if (symbol.ReturnsVoid && symbol.TypeParameters.IsEmpty && !symbol.Parameters.IsEmpty)
 			{
 				// Loosely check method signature because sometimes business logic 
 				// is extracted from event handler calls to a separate method
 
-				// Old syntax
+				// Old non-generic syntax
 				if (symbol.Parameters[0].Type.OriginalDefinition.InheritsFromOrEquals(pxContext.PXCacheType))
 				{
 					if (symbol.Name.EndsWith("CacheAttached", StringComparison.Ordinal))
-						return EventType.CacheAttached;
+						return (EventType.CacheAttached, EventHandlerSignatureType.Default);
 
 					if (symbol.Parameters.Length >= 2 && pxContext.Events.EventTypeMap.TryGetValue(
-						symbol.Parameters[1].Type.OriginalDefinition, out EventType eventType))
+						    symbol.Parameters[1].Type.OriginalDefinition, out EventType eventType))
 					{
-						return eventType;
+						return (eventType, EventHandlerSignatureType.Default);
 					}
 				}
 				else if (pxContext.Events.EventTypeMap.TryGetValue(
 					symbol.Parameters[0].Type.OriginalDefinition, out EventType eventType)) // New generic event handler syntax
 				{
-					return eventType;
+					return (eventType, EventHandlerSignatureType.Generic);
 				}
 			}
 
-			return EventType.None;
+			return (EventType.None, EventHandlerSignatureType.None);
 		}
 	}
 }

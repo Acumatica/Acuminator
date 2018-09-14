@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
 using Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting;
+using Acuminator.Analyzers.StaticAnalysis.LongOperationInEventHandlers;
+using Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance;
 using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -29,7 +31,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 			// can be replaced with DI from ServiceLocator if DI-container is used
 			new ConnectionScopeInRowSelectingAnalyzer(),
 			new SavingChangesInEventHandlersAnalyzer(),
-			new ChangesInPXCacheInEventHandlersAnalyzer())
+			new ChangesInPXCacheInEventHandlersAnalyzer(),
+			new PXGraphCreateInstanceInEventHandlersAnalyzer(),
+			new LongOperationInEventHandlersAnalyzer())
 		{
 		}
 

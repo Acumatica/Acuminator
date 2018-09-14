@@ -309,4 +309,13 @@
   <data name="PX1057Title" xml:space="preserve">
     <value>PXGraph instances cannot be initialized during another PXGraph instance initialization</value>
   </data>
+  <data name="PX1046Title" xml:space="preserve">
+    <value>A long-running operation cannot be started within an event handler</value>
+  </data>
+  <data name="EventHandlerSignatureCodeActionTitle" xml:space="preserve">
+    <value>Convert an event handler signature to the generic one. Please, be careful because an event handler can be overwritten somewhere else.</value>
+  </data>
+  <data name="PX1057Title" xml:space="preserve">
+    <value>PXGraph instances cannot be initialized during another PXGraph instance initialization</value>
+  </data>
 </root>

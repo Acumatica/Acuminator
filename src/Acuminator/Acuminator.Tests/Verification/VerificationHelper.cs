@@ -1,114 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Simplification;
 using Microsoft.CodeAnalysis.Text;
 using PX.Data;
 
 namespace Acuminator.Tests.Verification
 {
-	/// <summary>
-	/// Class for turning strings into documents and getting the diagnostics on them
-	/// All methods are static
-	/// </summary>
-	public abstract partial class DiagnosticVerifier
+	public static class VerificationHelper
 	{
 		private static readonly MetadataReference CorlibReference = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
 		private static readonly MetadataReference SystemCoreReference = MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location);
 		private static readonly MetadataReference CSharpSymbolsReference = MetadataReference.CreateFromFile(typeof(CSharpCompilation).Assembly.Location);
 		private static readonly MetadataReference CodeAnalysisReference = MetadataReference.CreateFromFile(typeof(Compilation).Assembly.Location);
-	    private static readonly MetadataReference PXDataReference = MetadataReference.CreateFromFile(typeof(PXGraph).Assembly.Location);
-	    private static readonly MetadataReference PXCommonReference = MetadataReference.CreateFromFile(typeof(PX.Common.PXContext).Assembly.Location);
+		private static readonly MetadataReference PXDataReference = MetadataReference.CreateFromFile(typeof(PXGraph).Assembly.Location);
+		private static readonly MetadataReference PXCommonReference = MetadataReference.CreateFromFile(typeof(PX.Common.PXContext).Assembly.Location);
 
-        internal static string DefaultFilePathPrefix = "Test";
+		internal static string DefaultFilePathPrefix = "Test";
 		internal static string CSharpDefaultFileExt = "cs";
 		internal static string VisualBasicDefaultExt = "vb";
 		internal static string TestProjectName = "TestProject";
 
-		#region  Get Diagnostics
 
-		/// <summary>
-		/// Given classes in the form of strings, their language, and an IDiagnosticAnlayzer to apply to it, return the diagnostics found in the string after converting it to a document.
-		/// </summary>
-		/// <param name="sources">Classes in the form of strings</param>
-		/// <param name="language">The language the source classes are in</param>
-		/// <param name="analyzer">The analyzer to be run on the sources</param>
-		/// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
-		private static Diagnostic[] GetSortedDiagnostics(string[] sources, string language, DiagnosticAnalyzer analyzer)
-		{
-			return GetSortedDiagnosticsFromDocuments(analyzer, GetDocuments(sources, language));
-		}
-
-		/// <summary>
-		/// Given an analyzer and a document to apply it to, run the analyzer and gather an array of diagnostics found in it.
-		/// The returned diagnostics are then ordered by location in the source document.
-		/// </summary>
-		/// <param name="analyzer">The analyzer to run on the documents</param>
-		/// <param name="documents">The Documents that the analyzer will be run on</param>
-		/// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
-		protected static Diagnostic[] GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer analyzer, Document[] documents)
-		{
-			var projects = new HashSet<Project>();
-			foreach (var document in documents)
-			{
-				projects.Add(document.Project);
-			}
-
-			var diagnostics = new List<Diagnostic>();
-			foreach (var project in projects)
-			{
-				var compilationWithAnalyzers = project.GetCompilationAsync().Result.WithAnalyzers(ImmutableArray.Create(analyzer));
-				var diags = compilationWithAnalyzers.GetAnalyzerDiagnosticsAsync().Result;
-				foreach (var diag in diags)
-				{
-					if (diag.Location == Location.None || diag.Location.IsInMetadata)
-					{
-						diagnostics.Add(diag);
-					}
-					else
-					{
-						for (int i = 0; i < documents.Length; i++)
-						{
-							var document = documents[i];
-							var tree = document.GetSyntaxTreeAsync().Result;
-							if (tree == diag.Location.SourceTree)
-							{
-								diagnostics.Add(diag);
-							}
-						}
-					}
-				}
-			}
-
-			var results = SortDiagnostics(diagnostics);
-			diagnostics.Clear();
-			return results;
-		}
-
-		/// <summary>
-		/// Sort diagnostics by location in source document
-		/// </summary>
-		/// <param name="diagnostics">The list of Diagnostics to be sorted</param>
-		/// <returns>An IEnumerable containing the Diagnostics in order of Location</returns>
-		private static Diagnostic[] SortDiagnostics(IEnumerable<Diagnostic> diagnostics)
-		{
-			return diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
-		}
-
-		#endregion
-
-		#region Set up compilation and documents
 		/// <summary>
 		/// Given an array of strings as sources and a language, turn them into a project and return the documents and spans of it.
 		/// </summary>
 		/// <param name="sources">Classes in the form of strings</param>
 		/// <param name="language">The language the source code is in</param>
 		/// <returns>A Tuple containing the Documents produced from the sources and their TextSpans if relevant</returns>
-		private static Document[] GetDocuments(string[] sources, string language)
+		public static Document[] GetDocuments(string[] sources, string language)
 		{
 			if (language != LanguageNames.CSharp && language != LanguageNames.VisualBasic)
 			{
@@ -132,12 +59,12 @@ namespace Acuminator.Tests.Verification
 		/// <param name="source">Classes in the form of a string</param>
 		/// <param name="language">The language the source code is in</param>
 		/// <returns>A Document created from the source string</returns>
-		protected static Document CreateDocument(string source, string language = LanguageNames.CSharp)
+		public static Document CreateDocument(string source, string language = LanguageNames.CSharp)
 		{
 			return CreateProject(new[] { source }, language).Documents.First();
 		}
 
-		protected static Document CreateCSharpDocument(string source, params string[] additionalSources)
+		public static Document CreateCSharpDocument(string source, params string[] additionalSources)
 		{
 			var sources = new List<string>(additionalSources) { source };
 			return CreateProject(sources.ToArray()).Documents.Last();
@@ -188,7 +115,73 @@ namespace Acuminator.Tests.Verification
 
 			return solution.GetProject(projectId);
 		}
-		#endregion
+
+		/// <summary>
+		/// Given a document, turn it into a string based on the syntax root
+		/// </summary>
+		/// <param name="document">The Document to be converted to a string</param>
+		/// <returns>A string containing the syntax of the Document after formatting</returns>
+		public static async Task<string> GetStringFromDocumentAsync(Document document)
+		{
+			var simplifiedDoc = await Simplifier.ReduceAsync(document, Simplifier.Annotation).ConfigureAwait(false);
+			var root = await simplifiedDoc.GetSyntaxRootAsync().ConfigureAwait(false);
+			root = Formatter.Format(root, Formatter.Annotation, simplifiedDoc.Project.Solution.Workspace);
+			return root.GetText().ToString();
+		}
+		
+		/// <summary>
+		/// Apply the inputted CodeAction to the inputted document.
+		/// </summary>
+		/// <param name="document">The Document to apply the fix on</param>
+		/// <param name="codeAction">A CodeAction that will be applied to the Document.</param>
+		/// <returns>A Document with the changes from the CodeAction</returns>
+		public static async Task<Document> ApplyCodeActionAsync(Document document, CodeAction codeAction)
+		{
+			var operations = await codeAction.GetOperationsAsync(CancellationToken.None).ConfigureAwait(false);
+			var solution = operations.OfType<ApplyChangesOperation>().Single().ChangedSolution;
+			return solution.GetDocument(document.Id);
+		}
+
+
+		/// <summary>
+		/// Compare two collections of Diagnostics,and return a list of any new diagnostics that appear only in the second collection.
+		/// Note: Considers Diagnostics to be the same if they have the same Ids.  In the case of multiple diagnostics with the same Id in a row,
+		/// this method may not necessarily return the new one.
+		/// </summary>
+		/// <param name="diagnostics">The Diagnostics that existed in the code before the CodeFix was applied</param>
+		/// <param name="newDiagnostics">The Diagnostics that exist in the code after the CodeFix was applied</param>
+		/// <returns>A list of Diagnostics that only surfaced in the code after the CodeFix was applied</returns>
+		public static IEnumerable<Diagnostic> GetNewDiagnostics(IEnumerable<Diagnostic> diagnostics, IEnumerable<Diagnostic> newDiagnostics)
+		{
+			var oldArray = diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
+			var newArray = newDiagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
+
+			int oldIndex = 0;
+			int newIndex = 0;
+
+			while (newIndex < newArray.Length)
+			{
+				if (oldIndex < oldArray.Length && oldArray[oldIndex].Id == newArray[newIndex].Id)
+				{
+					++oldIndex;
+					++newIndex;
+				}
+				else
+				{
+					yield return newArray[newIndex++];
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Get the existing compiler diagnostics on the inputted document.
+		/// </summary>
+		/// <param name="document">The Document to run the compiler diagnostic analyzers on</param>
+		/// <returns>The compiler diagnostics that were found in the code</returns>
+		public static async Task<IEnumerable<Diagnostic>> GetCompilerDiagnosticsAsync(Document document)
+		{
+			var semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
+			return semanticModel.GetDiagnostics();
+		}
 	}
 }
-

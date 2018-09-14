@@ -11,45 +11,67 @@ namespace PX.Objects
 	{
 		protected virtual void _(Events.FieldDefaulting<SOInvoice.refNbr> e)
 		{
-			InsertNewRecord();
+			StartOperation();
 		}
 
 		protected virtual void _(Events.FieldVerifying<SOInvoice.refNbr> e)
 		{
-			InsertNewRecord();
+			StartOperation();
 		}
 
 		protected virtual void _(Events.RowSelecting<SOInvoice> e)
 		{
-			InsertNewRecord();
+			StartOperation();
 		}
 
 		protected virtual void _(Events.RowSelected<SOInvoice> e)
 		{
-			InsertNewRecord();
+			StartOperation();
 		}
 
 		protected virtual void _(Events.RowInserting<SOInvoice> e)
 		{
-			InsertNewRecord();
+			StartOperation();
 		}
 
 		protected virtual void _(Events.RowUpdating<SOInvoice> e)
 		{
-			InsertNewRecord();
+			StartOperation();
 		}
 
 		protected virtual void _(Events.RowDeleting<SOInvoice> e)
 		{
-			InsertNewRecord();
+			StartOperation();
 		}
 
-		private void InsertNewRecord()
+		protected virtual void _(Events.RowInserted<SOInvoice> e)
 		{
-			var cache = this.Caches[typeof (SOInvoice)];
-			var row = (SOInvoice) cache.Insert();
-			row.RefNbr = "<NEW>";
-			cache.Update(row);
+			StartOperation();
+		}
+
+		protected virtual void _(Events.RowUpdated<SOInvoice> e)
+		{
+			StartOperation();
+		}
+
+		protected virtual void _(Events.RowDeleted<SOInvoice> e)
+		{
+			StartOperation();
+		}
+
+		protected virtual void _(Events.RowPersisting<SOInvoice> e)
+		{
+			StartOperation();
+		}
+
+		protected virtual void _(Events.RowPersisted<SOInvoice> e)
+		{
+			StartOperation();
+		}
+
+		private void StartOperation()
+		{
+			PXLongOperation.StartOperation(this, null);
 		}
 	}
 
