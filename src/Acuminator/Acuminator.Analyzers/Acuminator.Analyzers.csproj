@@ -71,7 +71,11 @@
     <Compile Include="StaticAnalysis\NonNullableTypeForBqlField\NonNullableTypeForBqlFieldAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DacPropertyAttributes\DacPropertyAttributesAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXActionOnNonPrimaryView\PXActionOnNonPrimaryViewAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\RowChangesInEventHandlers\DiagnosticWalker.cs" />
+    <Compile Include="StaticAnalysis\RowChangesInEventHandlers\EventArgsRowWalker.cs" />
     <Compile Include="StaticAnalysis\RowChangesInEventHandlers\RowChangesInEventHandlersAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\RowChangesInEventHandlers\VariableAccessWalker.cs" />
+    <Compile Include="StaticAnalysis\RowChangesInEventHandlers\VariablesWalker.cs" />
     <Compile Include="StaticAnalysis\SavingChanges\SaveOperationHelper.cs" />
     <Compile Include="StaticAnalysis\SavingChanges\SaveOperationKind.cs" />
     <Compile Include="StaticAnalysis\SavingChanges\SavingChangesInEventHandlersAnalyzer.cs" />
