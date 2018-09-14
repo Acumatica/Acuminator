@@ -75,19 +75,13 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				return null;
 
 			if (firstTypeAttribute.Equals(_context.FieldAttributes.PXDBScalarAttribute))
-			{
-				return new FieldTypeAttributeInfo(isFieldTypeAttribute: false, attributeKind: FieldTypeAttributeKind.PXDBScalarAttribute,
-												  fieldType: null);
-			}
+				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.PXDBScalarAttribute, fieldType: null);
 			else if (firstTypeAttribute.Equals(_context.FieldAttributes.PXDBCalcedAttribute))
-			{
-				return new FieldTypeAttributeInfo(isFieldTypeAttribute: false, attributeKind: FieldTypeAttributeKind.PXDBCalcedAttribute,
-												  fieldType: null);
-			}
+				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.PXDBCalcedAttribute, fieldType: null);
 
 			return CorrespondingSimpleTypes.TryGetValue(typeAttribute, out var fieldType)
-				? new FieldTypeAttributeInfo(isFieldTypeAttribute: true, attributeKind: FieldTypeAttributeKind.TypeAttribute, fieldType)
-				: new FieldTypeAttributeInfo(isFieldTypeAttribute: true, attributeKind: FieldTypeAttributeKind.TypeAttribute, fieldType: null);
+				? new FieldTypeAttributeInfo(FieldTypeAttributeKind.TypeAttribute, fieldType)
+				: new FieldTypeAttributeInfo(FieldTypeAttributeKind.TypeAttribute, fieldType: null);
 		}
 
 		private static HashSet<ITypeSymbol> GetUnboundTypeAttributes(PXContext pxContext) =>
