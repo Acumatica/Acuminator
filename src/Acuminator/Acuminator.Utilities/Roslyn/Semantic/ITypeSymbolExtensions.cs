@@ -324,7 +324,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
                 if (!(reference.GetSyntax(cancellation) is ConstructorDeclarationSyntax node))
                     continue;
 
-                initializers.Add(new Tuple<ConstructorDeclarationSyntax, IMethodSymbol>(node, ctr));
+                initializers.Add((node, ctr));
             }
 
             return initializers;
