@@ -33,5 +33,12 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphCreationDuringInitializat
         {
             VerifyCSharpDiagnostic(source, Descriptors.PX1057_PXGraphCreationDuringInitialization.CreateFor(20, 14));
         }
+
+        [Theory]
+        [EmbeddedFileData("PXGraphWithCreateInstanceOutsideOfInitialization.cs")]
+        public void PXGraph_CreateInstance_Method_Can_Be_Invoked_Outside_Of_Initialization(string source)
+        {
+            VerifyCSharpDiagnostic(source);
+        }
     }
 }
