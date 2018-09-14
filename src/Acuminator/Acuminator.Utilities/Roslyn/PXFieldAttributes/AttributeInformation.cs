@@ -84,7 +84,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 														  .Where(attribute => attribute.InheritsFrom(_eventSubscriberAttribute));
 
 				foreach (var attribute in allAcumaticaAttributes)
-				{				
+				{
 					CollectAggregatedAttribute(attribute, DefaultRecursionDepth);
 				}
 			}
@@ -137,7 +137,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				throw new ArgumentException("Attribute must be derived from PXEventSubscriber", nameof(attributeType));
 			else if (!typeToCheck.InheritsFromOrEquals(_eventSubscriberAttribute))
 				throw new ArgumentException("Attribute must be derived from PXEventSubscriber", nameof(typeToCheck));
-			
+
 			return IsAttributeDerivedFromClassInternal(attributeType, typeToCheck);
 		}
 
@@ -153,7 +153,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			if (!attributeType.InheritsFromOrEquals(_eventSubscriberAttribute))
 				return false;
 
-			return BoundBaseTypes.Any(boundBaseType => IsAttributeDerivedFromClassInternal(attributeType, boundBaseType));		
+			return BoundBaseTypes.Any(boundBaseType => IsAttributeDerivedFromClassInternal(attributeType, boundBaseType));
 		}
 
 		/// <summary>
@@ -183,7 +183,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			return false;
 		}
 
-		private bool IsAggregatorAttribute(ITypeSymbol attributeType) => 
+		private bool IsAggregatorAttribute(ITypeSymbol attributeType) =>
 			attributeType.InheritsFromOrEquals(_aggregateAttribute) || attributeType.InheritsFromOrEquals(_dynamicAggregateAttribute);
 	}
 }

@@ -13,9 +13,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		public bool IsSpecial => Kind != FieldTypeAttributeKind.TypeAttribute;
 
-        public bool IsFieldAttribute => Kind == FieldTypeAttributeKind.TypeAttribute;
+		public bool IsFieldAttribute => Kind == FieldTypeAttributeKind.TypeAttribute;
 
-        public FieldTypeAttributeInfo(FieldTypeAttributeKind attributeKind, ITypeSymbol fieldType)
+		public FieldTypeAttributeInfo(FieldTypeAttributeKind attributeKind, ITypeSymbol fieldType)
 		{
 			FieldType = fieldType;
 			Kind = attributeKind;

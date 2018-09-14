@@ -66,7 +66,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 			return typeAttributeInfos;
 		}
-	
+
 		private FieldTypeAttributeInfo? GetTypeAttributeInfo(ITypeSymbol typeAttribute)
 		{
 			var firstTypeAttribute = typeAttribute.GetBaseTypesAndThis()
