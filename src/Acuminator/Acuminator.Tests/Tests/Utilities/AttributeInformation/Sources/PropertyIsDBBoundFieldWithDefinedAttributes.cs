@@ -75,15 +75,5 @@ namespace PX.Objects.HackathonDemo
         [PXUIField(DisplayName = "Bound 2")]
         public virtual decimal? Bound2 { get; set; }
         #endregion
-
-        #region AcctSub2
-        public abstract class cost : PX.Data.IBqlField { }
-        protected decimal? _Bound3;
-        [AcctSub2]
-        [PXDefault]
-        [PXUIField(DisplayName = "Bound 2")]
-        public virtual decimal? Bound2 { get; set; }
-        #endregion
-
     }
 }

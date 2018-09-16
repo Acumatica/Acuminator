@@ -82,17 +82,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
 		public void TestAreBoundAggregateRecursiveAttribute(string source) =>
 			_testIsBoundAttribute(source, new List<bool> { false, true });
-
-		[Theory]
-		[EmbeddedFileData(@"PropertyIsDBBoundFieldAttribute.cs")]
-		public void TestAreBoundIsDBFieldAttribute(string source) =>
-            _testIsDBFieldProperty(source, new List<bool> { false,
-                                                            false,
-                                                            false,
-                                                            false,
-                                                            true,
-                                                            true});
-
+        
 		private void _testIsBoundAttribute(string source, List<bool> expected)
 		{
             Document document = CreateDocument(source);
@@ -118,10 +108,22 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 			Assert.Equal(expected, actual);
 		}
 
+        [Theory]
+        [EmbeddedFileData(@"PropertyIsDBBoundFieldAttribute.cs")]
+        public void TestAreBoundIsDBFieldAttribute(string source) =>
+            _testIsDBFieldProperty(source, new List<bool> { false,
+                                                            false,
+                                                            false,
+                                                            false,
+                                                            true,
+                                                            true});
+
+
         private void _testIsDBFieldProperty(string source,List<bool> expected)
         {
             string code = @"
                 using System;
+                using PX.Data;
 
                 namespace PX.Objects.HackathonDemo
                 {
@@ -132,58 +134,18 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
                 }
              ";
 
-            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code);
-
-            string assemblyName = Path.GetRandomFileName();
             MetadataReference[] references = new MetadataReference[]
             {
-               // MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(PXGraph).Assembly.Location)
             };
 
-            CSharpCompilation compilation = CSharpCompilation.Create(
-                assemblyName,
-                syntaxTrees: new[] { syntaxTree },
-                references: references,
-                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-            using (var ms = new MemoryStream())
-            {
-                EmitResult result = compilation.Emit(ms);
 
-                if (!result.Success)
-                {
-                    IEnumerable<Diagnostic> failures = result.Diagnostics.Where(diagnostic =>
-                        diagnostic.IsWarningAsError ||
-                        diagnostic.Severity == DiagnosticSeverity.Error);
-
-                    foreach (Diagnostic diagnostic in failures)
-                    {
-                        Assert..Error.WriteLine("{0}: {1}", diagnostic.Id, diagnostic.GetMessage());
-                    }
-                }
-                else
-                {
-                    ms.Seek(0, SeekOrigin.Begin);
-                    Assembly assembly = Assembly.Load(ms.ToArray());
-
-                    Type type = assembly.GetType("RoslynCompileSample.Writer");
-                    object obj = Activator.CreateInstance(type);
-                    type.InvokeMember("Write",
-                        BindingFlags.Default | BindingFlags.InvokeMethod,
-                        null,
-                        obj,
-                        new object[] { "Hello World" });
-                }
-
-            }
-                /*CSharpCodeProvider provider = new CSharpCodeProvider();
-                CompilerParameters parameters = new CompilerParameters();
-                */
-                Document document = CreateDocument(source);
+            Document document = CreateDocument(source, code, references);
             SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
             var syntaxRoot = document.GetSyntaxRootAsync().Result;
-            document.
+            //document.
             List<bool> actual = new List<bool>();
             var pxContext = new PXContext(semanticModel.Compilation);
             var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
