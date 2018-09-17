@@ -194,6 +194,7 @@
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\Override.cs" />
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\PXOverride.cs" />
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\AdditionalParameters.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationDuringInitialization\Sources\PXGraphWithCreateInstanceOutsideOfInitialization.cs" />
     <Compile Include="Verification\CodeRefactoringVerifier.cs" />
     <Compile Include="Verification\VerificationHelper.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\StaticMethod.cs" />
@@ -222,6 +223,10 @@
     <Compile Include="Tests\StaticAnalysis\Localization\LocalizationPXExceptionCorrectTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\Lambda.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ConnectionScopeInRowSelecting\Sources\LambdaWithBody.cs" />
+    <Compile Include="Tests\StaticAnalysis\PXGraphCreationDuringInitialization\PXGraphCreationDuringInitializationTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationDuringInitialization\Sources\PXGraphWithCreateInstanceInInstanceConstructor.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationDuringInitialization\Sources\PXGraphExtensionWithCreateInstanceInInitMethod.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationDuringInitialization\Sources\PXGrapWithCreateInstanceInInitDelegate.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\EventHandlers\CreateInstance.cs" />
     <Compile Include="Tests\StaticAnalysis\LongOperationInEventHandlers\LongOperationInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationInEventHandlers\Sources\Valid.cs" />
