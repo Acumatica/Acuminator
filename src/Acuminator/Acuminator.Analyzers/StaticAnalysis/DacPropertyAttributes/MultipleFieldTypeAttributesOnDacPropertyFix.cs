@@ -28,6 +28,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				Descriptors.PX1023_MultipleTypeAttributesOnProperty.Id
 			);
 
-		protected override string GetCodeActionName() => nameof(Resources.PX1023TypeAttributesFix).GetLocalized().ToString();	
+		protected override string GetCodeActionName() => nameof(Resources.PX1023TypeAttributesFix).GetLocalized().ToString();
+
+		protected override Func<FieldTypeAttributeInfo, bool> GetRemoveAttributeByAttributeInfoPredicate() =>
+			attributeInfo => attributeInfo.IsFieldAttribute;
 	}
 }

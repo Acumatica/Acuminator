@@ -19,15 +19,19 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 {
+	/// <summary>
+	/// A multiple attributes on DAC property fix base class.
+	/// </summary>
 	public abstract class MultipleAttributesOnDacPropertyFixBase : CodeFixProvider
 	{
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			string codeActionName = GetCodeActionName(); 
+			string codeActionName = GetCodeActionName();
+			Func<FieldTypeAttributeInfo, bool> removePredicate = GetRemoveAttributeByAttributeInfoPredicate();
 
-			if (codeActionName.IsNullOrWhiteSpace())
+			if (codeActionName.IsNullOrWhiteSpace() || removePredicate == null)
 				return;
 
 			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken)
@@ -49,7 +53,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			CodeAction codeAction =
 				CodeAction.Create(codeActionName,
 								  cToken => RemoveAllOtherAttributesFromPropertyAsync(context.Document, root, attributeNode,
-																					  propertyDeclaration, semanticModel, cToken),
+																					  propertyDeclaration, semanticModel, 
+																					  removePredicate, cToken),
 								  equivalenceKey: codeActionName);
 
 			context.RegisterCodeFix(codeAction, context.Diagnostics);
@@ -57,13 +62,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 		protected abstract string GetCodeActionName();
 
+		protected abstract Func<FieldTypeAttributeInfo, bool> GetRemoveAttributeByAttributeInfoPredicate();
+
 		private Task<Document> RemoveAllOtherAttributesFromPropertyAsync(Document document, SyntaxNode root, AttributeSyntax attributeNode,
-																			   PropertyDeclarationSyntax propertyDeclaration, SemanticModel semanticModel,
-																			   CancellationToken cancellationToken)
+																		 PropertyDeclarationSyntax propertyDeclaration, SemanticModel semanticModel,
+																		 Func<FieldTypeAttributeInfo, bool> removePredicate, CancellationToken cancellationToken)
 		{
 			return Task.Run(() =>
 			{
-				var rewriterWalker = new MultipleAttributesRemover(document, semanticModel, attributeNode, cancellationToken);
+				var rewriterWalker = new MultipleAttributesRemover(document, semanticModel, attributeNode, removePredicate, cancellationToken);
 				var propertyModified = rewriterWalker.Visit(propertyDeclaration) as PropertyDeclarationSyntax;
 
 				cancellationToken.ThrowIfCancellationRequested();
@@ -85,15 +92,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			private readonly SemanticModel _semanticModel;
 			private readonly FieldTypeAttributesRegister _attributesRegister;
 			private readonly AttributeSyntax _remainingAttribute;
+			private readonly Func<FieldTypeAttributeInfo, bool> _attributeToRemovePredicate;
 			private readonly CancellationToken _cancellationToken;
 
 			public MultipleAttributesRemover(Document aDocument, SemanticModel aSemanticModel, AttributeSyntax aRemainingAttribute,
-											 Func<AttributeSyntax, bool> attributeToRemovePredicate, CancellationToken cToken)
+											 Func<FieldTypeAttributeInfo, bool> attributeToRemovePredicate, CancellationToken cToken)
 			{
 				_document = aDocument;
 				_semanticModel = aSemanticModel;
 				_cancellationToken = cToken;
 				_remainingAttribute = aRemainingAttribute;
+				_attributeToRemovePredicate = attributeToRemovePredicate;
 
 				PXContext pxContext = new PXContext(_semanticModel.Compilation);
 				_attributesRegister = new FieldTypeAttributesRegister(pxContext);
@@ -155,7 +164,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 					return false;
 				
 				var attributeInfos = _attributesRegister.GetFieldTypeAttributeInfos(attributeType);
-				return attributeInfos.Any(info => info.IsFieldAttribute);
+				return attributeInfos.Any(_attributeToRemovePredicate);
 			}
 		}
 	}
