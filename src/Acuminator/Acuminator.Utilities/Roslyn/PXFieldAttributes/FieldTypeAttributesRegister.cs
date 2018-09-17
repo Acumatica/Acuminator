@@ -79,7 +79,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			else if (firstTypeAttribute.Equals(_context.FieldAttributes.PXDBCalcedAttribute))
 				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.PXDBCalcedAttribute, fieldType: null);
 
-			return CorrespondingSimpleTypes.TryGetValue(typeAttribute, out var fieldType)
+			return CorrespondingSimpleTypes.TryGetValue(firstTypeAttribute, out var fieldType)
 				? new FieldTypeAttributeInfo(FieldTypeAttributeKind.TypeAttribute, fieldType)
 				: new FieldTypeAttributeInfo(FieldTypeAttributeKind.TypeAttribute, fieldType: null);
 		}
