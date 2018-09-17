@@ -10,9 +10,11 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Xunit;
 using static Acuminator.Tests.Verification.VerificationHelper;
 
+
+
 namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 {
-	
+
 	public class AttributeInformationTests : Verification.DiagnosticVerifier
 	{
 		/* 
@@ -32,29 +34,30 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
 		public async void TestAggregateRegursiveAttributeAsync(string source) =>
 			await TestAttributeInformationAsync(source, new List<bool> { true, false });
-		
+
 		private async Task TestAttributeInformationAsync(string source, List<bool> expected)
 		{
 			Document document = CreateDocument(source);
 			SemanticModel semanticModel = await document.GetSemanticModelAsync();
-			var syntaxRoot = document.GetSyntaxRootAsync().Result;
 
+			var syntaxRoot = document.GetSyntaxRootAsync().Result;
 			List<bool> actual = new List<bool>();
 			var pxContext = new PXContext(semanticModel.Compilation);
-
 			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
 
 			foreach (var property in properties)
 			{
 				var typeSymbol = semanticModel.GetDeclaredSymbol(property);
 				var attributes = typeSymbol.GetAttributes();
+
 				foreach (var attribute in attributes)
 				{
 					var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
 					var defaultAttribute = pxContext.AttributeTypes.PXDefaultAttribute;
-					actual.Add(attributeInformation.AttributeDerivedFromClass(attribute.AttributeClass, defaultAttribute));
+					actual.Add(attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, defaultAttribute));
 				}
 			}
+
 			Assert.Equal(expected, actual);
 		}
 
@@ -65,19 +68,19 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		[Theory]
 		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
 		public void TestAreBoundAttributes(string source) =>
-			_testIsBoundAttribute(source, new List<bool> { false, false, false ,true, false, false });
+			TestIsBoundAttribute(source, new List<bool> { false, false, false, true, false, false });
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
 		public void TestAreBoundAggregateAttributes(string source) =>
-			_testIsBoundAttribute(source, new List<bool> { true, false });
+			TestIsBoundAttribute(source, new List<bool> { true, false });
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
 		public void TestAreBoundAggregateRecursiveAttribute(string source) =>
-			_testIsBoundAttribute(source, new List<bool> { false, true });
+			TestIsBoundAttribute(source, new List<bool> { false, true });
 
-		private void _testIsBoundAttribute(string source, List<bool> expected)
+		private void TestIsBoundAttribute(string source, List<bool> expected)
 		{
 			Document document = CreateDocument(source);
 			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
@@ -85,19 +88,20 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 			List<bool> actual = new List<bool>();
 			var pxContext = new PXContext(semanticModel.Compilation);
-
 			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
+			var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
 
 			foreach (var property in properties)
 			{
 				var typeSymbol = semanticModel.GetDeclaredSymbol(property);
 				var attributes = typeSymbol.GetAttributes();
+
 				foreach (var attribute in attributes)
 				{
-					var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
 					actual.Add(attributeInformation.IsBoundAttribute(attribute.AttributeClass));
 				}
 			}
+
 			Assert.Equal(expected, actual);
 		}
 
@@ -105,8 +109,9 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
 		private void TestListOfParentsSimple(string source)
 		{
-			_testListOfParents(source, 
-								new List<List<string>> {
+			TestListOfParents(source,
+								new List<List<string>>
+								{
 									new List<string>{ "PX.Data.PXBoolAttribute" },
 									new List<string>{ "PX.Data.PXDefaultAttribute" },
 									new List<string>{ "PX.Data.PXUIFieldAttribute" },
@@ -116,13 +121,26 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 								});
 		}
 
+		[Theory]
+		[EmbeddedFileData(@"NotAcumaticaAttributeDac.cs")]
+		private void TestDacWithNonAcumaticaAttribute(string source)
+		{
+			TestListOfParents(source,
+								new List<List<string>>
+								{
+									new List<string>{ "PX.Data.PXDBIntAttribute", },
+									new List<string>{ "PX.Data.PXDBIntAttribute", }
+								});
+		}
+
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
 		private void TestListOfParentsAggregate(string source)
 		{
-			_testListOfParents(source,
-								new List<List<string>> {
+			TestListOfParents(source,
+								new List<List<string>>
+								{
 									new List<string>
 									{
 										"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
@@ -144,7 +162,8 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
 		private void TestListOfParentsAggregateRecursive(string source)
 		{
-			_testListOfParents(source, new List<List<string>> {
+			TestListOfParents(source, new List<List<string>>
+								{
 									new List<string>
 									{
 										"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
@@ -166,14 +185,15 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
 		private void TestListOfParentsSimpleExpanded(string source)
 		{
-			_testListOfParents(source,
-								new List<List<string>> {
+			TestListOfParents(source,
+								new List<List<string>>
+								{
 									new List<string>{ "PX.Data.PXBoolAttribute" },
 									new List<string>{ "PX.Data.PXDefaultAttribute" },
 									new List<string>{ "PX.Data.PXUIFieldAttribute" },
-									new List<string>{ "PX.Data.PXDBCalcedAttribute"},
-									new List<string>{ "PX.Data.PXDefaultAttribute"},
-									new List<string>{ "PX.Data.PXUIFieldAttribute"}
+									new List<string>{ "PX.Data.PXDBCalcedAttribute" },
+									new List<string>{ "PX.Data.PXDefaultAttribute" },
+									new List<string>{ "PX.Data.PXUIFieldAttribute" }
 								},
 								true);
 		}
@@ -183,8 +203,9 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
 		private void TestListOfParentsAggregateExpanded(string source)
 		{
-			_testListOfParents(source,
-								new List<List<string>> {
+			TestListOfParents(source,
+								new List<List<string>>
+								{
 									new List<string>
 									{
 										"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
@@ -203,7 +224,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 										"PX.Data.PXDefaultAttribute"
 									}
 								},
-								true);
+								expand: true);
 
 		}
 
@@ -211,7 +232,8 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
 		private void TestListOfParentsAggregateRecursiveExpanded(string source)
 		{
-			_testListOfParents(source, new List<List<string>> {
+			TestListOfParents(source, new List<List<string>>
+								{
 									new List<string>
 									{
 										"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
@@ -230,24 +252,23 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 										"PX.Data.PXIntListAttribute"
 									}
 								},
-								true);
+								expand: true);
 		}
 
 
-		private void _testListOfParents(string source, List<List<string>> expected, bool expand = false)
+		private void TestListOfParents(string source, List<List<string>> expected, bool expand = false)
 		{
 			Document document = CreateDocument(source);
 			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
+
 			var syntaxRoot = document.GetSyntaxRootAsync().Result;
-
 			var pxContext = new PXContext(semanticModel.Compilation);
-
-			var expectedSymbols = _convertStringsToITypeSymbols(expected, semanticModel);
-		
+			var expectedSymbols = ConvertStringsToITypeSymbols(expected, semanticModel);
 			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
-			
+
 			List<HashSet<ITypeSymbol>> result = new List<HashSet<ITypeSymbol>>();
-			
+			var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
+
 			foreach (var property in properties)
 			{
 				var typeSymbol = semanticModel.GetDeclaredSymbol(property);
@@ -255,27 +276,35 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 				foreach (var attribute in attributes)
 				{
-					var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
-					result.Add(attributeInformation.AttributesListDerivedFromClass(attribute.AttributeClass,expand).ToHashSet());
+					var fullAttributesSet = attributeInformation.GetAcumaticaAttributesFullList(attribute.AttributeClass, expand).ToHashSet();
+
+					if (fullAttributesSet.Count > 0)
+					{
+						result.Add(fullAttributesSet);
+					}
 				}
 			}
+
 			Assert.Equal(expectedSymbols, result);
 		}
 
-		private List<HashSet<ITypeSymbol>> _convertStringsToITypeSymbols(List<List<string>> expected,SemanticModel semanticModel)
+		private List<HashSet<ITypeSymbol>> ConvertStringsToITypeSymbols(List<List<string>> expectedSymbolNamesSets, SemanticModel semanticModel)
 		{
-			var expectedSymbols = new List<HashSet<ITypeSymbol>>();
-			foreach(var symbolsArray in expected)
+			var expectedSymbols = new List<HashSet<ITypeSymbol>>(capacity: expectedSymbolNamesSets.Count);
+
+			foreach (List<string> symbolNamesSet in expectedSymbolNamesSets)
 			{
-				HashSet<ITypeSymbol> attributesHashSet = new HashSet<ITypeSymbol>();
-				foreach (var symbol in symbolsArray)
+				HashSet<ITypeSymbol> expectedSymbolsSet = new HashSet<ITypeSymbol>();
+
+				foreach (string symbolName in symbolNamesSet)
 				{
-					attributesHashSet.Add(semanticModel.Compilation.GetTypeByMetadataName(symbol));
+					expectedSymbolsSet.Add(semanticModel.Compilation.GetTypeByMetadataName(symbolName));
 				}
-				expectedSymbols.Add(attributesHashSet);
+
+				expectedSymbols.Add(expectedSymbolsSet);
 			}
+
 			return expectedSymbols;
 		}
-
 	}
 }

@@ -140,8 +140,9 @@
     <Compile Include="Roslyn\PrimaryDacFinder\PrimaryDacRules\GraphRules\PXImportAttributeGraphRule.cs" />
     <Compile Include="Roslyn\PrimaryDacFinder\Score.cs" />
     <Compile Include="Roslyn\PXFieldAttributes\AttributeInformation.cs" />
-    <Compile Include="Roslyn\PXFieldAttributes\FieldAttributeInfo.cs" />
-    <Compile Include="Roslyn\PXFieldAttributes\FieldAttributesRegister.cs" />
+    <Compile Include="Roslyn\PXFieldAttributes\FieldTypeAttributeInfo.cs" />
+    <Compile Include="Roslyn\PXFieldAttributes\FieldTypeAttributeKind.cs" />
+    <Compile Include="Roslyn\PXFieldAttributes\FieldTypeAttributesRegister.cs" />
     <Compile Include="Roslyn\PXSystemActions\PXSystemActionsRegister.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\PXGraphSemanticModel.cs" />
     <Compile Include="Roslyn\Syntax\ArgumentSyntaxExtensions.cs" />

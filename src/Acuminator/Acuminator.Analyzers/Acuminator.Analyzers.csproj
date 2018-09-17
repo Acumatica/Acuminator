@@ -55,6 +55,9 @@
     <Compile Include="StaticAnalysis\ChangesInPXCache\ChangesInPXCacheInEventHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\ChangesInPXCache\Walker.cs" />
     <Compile Include="StaticAnalysis\ConnectionScopeInRowSelecting\ConnectionScopeInRowSelectingAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\DacPropertyAttributes\MultipleSpecialAttributesOnDacPropertyFix.cs" />
+    <Compile Include="StaticAnalysis\DacPropertyAttributes\MultipleFieldTypeAttributesOnDacPropertyFix.cs" />
+    <Compile Include="StaticAnalysis\DacPropertyAttributes\MultipleAttributesOnDacPropertyFixBase.cs" />
     <Compile Include="StaticAnalysis\EventHandlers\EventHandlerAnalyzer.cs" />
     <Compile Include="StaticAnalysis\EventHandlers\IEventHandlerAnalyzer.cs" />
     <Compile Include="StaticAnalysis\Localization\LocalizationMessageHelper.cs" />
@@ -90,7 +93,6 @@
     <Compile Include="StaticAnalysis\DacDeclaration\UnderscoresInDacFix.cs" />
     <Compile Include="StaticAnalysis\DacNonAbstractFieldType\DacNonAbstractFieldTypeFix.cs" />
     <Compile Include="StaticAnalysis\DacPropertyAttributes\IncompatibleDacPropertyAndFieldAttributeFix.cs" />
-    <Compile Include="StaticAnalysis\DacPropertyAttributes\MultipleDacFieldAttributesFix.cs" />
     <Compile Include="StaticAnalysis\NonNullableTypeForBqlField\NonNullableTypeForBqlFieldFix.cs" />
     <Compile Include="StaticAnalysis\InheritanceFromPXCacheExtension\InheritanceFromPXCacheExtensionAnalyzer.cs" />
     <Compile Include="StaticAnalysis\LongOperationDelegateClosures\LongOperationDelegateClosuresAnalyzer.cs" />

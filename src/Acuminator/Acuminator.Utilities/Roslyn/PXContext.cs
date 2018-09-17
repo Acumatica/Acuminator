@@ -148,8 +148,6 @@ namespace Acuminator.Utilities.Roslyn
                 _compilation = aCompilation;
             }
 
-			public INamedTypeSymbol PXDBScalarAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBScalarAttribute).FullName);
-
 			#region Field Unbound Attributes
 			public INamedTypeSymbol PXLongAttribute => _compilation.GetTypeByMetadataName(typeof(PXLongAttribute).FullName);
             public INamedTypeSymbol PXIntAttribute => _compilation.GetTypeByMetadataName(typeof(PXIntAttribute).FullName);
@@ -185,9 +183,14 @@ namespace Acuminator.Utilities.Roslyn
             public INamedTypeSymbol PXDBLongIdentityAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBLongIdentityAttribute).FullName);
             public INamedTypeSymbol PXDBBinaryAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBBinaryAttribute).FullName);
             public INamedTypeSymbol PXDBUserPasswordAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBUserPasswordAttribute).FullName);
-			public INamedTypeSymbol PXDBCalcedAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBCalcedAttribute).FullName);
+			
 			public INamedTypeSymbol PXDBAttributeAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBAttributeAttribute).FullName);
 			public INamedTypeSymbol PXDBDataLengthAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBDataLengthAttribute).FullName);
+			#endregion
+
+			#region Special attributes
+			public INamedTypeSymbol PXDBCalcedAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBCalcedAttribute).FullName);
+			public INamedTypeSymbol PXDBScalarAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBScalarAttribute).FullName);
 			#endregion
 		}
 		#endregion
@@ -200,7 +203,6 @@ namespace Acuminator.Utilities.Roslyn
 			{
 				_compilation = aCompilation;
 			}
-
 
 			public INamedTypeSymbol PXImportAttribute => _compilation.GetTypeByMetadataName(typeof(PXImportAttribute).FullName);
 			public INamedTypeSymbol PXHiddenAttribute => _compilation.GetTypeByMetadataName(typeof(PXHiddenAttribute).FullName);

@@ -27,10 +27,6 @@ namespace Acuminator.Utilities.Common
 			// perf optimization. try to not use enumerator if possible
 			switch (source)
 			{
-				case List<T> list:
-					list.ForEach(action);
-					return;
-
 				case IList<T> iList:
 					for (int i = 0; i < iList.Count; i++)
 					{

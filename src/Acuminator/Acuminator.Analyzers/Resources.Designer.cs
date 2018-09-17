@@ -377,20 +377,56 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Leave the selected field attribute and remove other field attributes from the property.
+        ///   Looks up a localized string similar to The attribute contains multiple PXDBScalar/PXDBCalced attributes declared on aggregators.
         /// </summary>
-        public static string PX1023Fix {
+        public static string PX1023MultipleSpecialTypeAttributesOnAggregators {
             get {
-                return ResourceManager.GetString("PX1023Fix", resourceCulture);
+                return ResourceManager.GetString("PX1023MultipleSpecialTypeAttributesOnAggregators", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The DAC property cannot be marked with multiple field attributes.
+        ///   Looks up a localized string similar to The DAC property cannot be marked with multiple PXDBScalar/PXDBCalced attributes.
         /// </summary>
-        public static string PX1023Title {
+        public static string PX1023MultipleSpecialTypeAttributesOnProperty {
             get {
-                return ResourceManager.GetString("PX1023Title", resourceCulture);
+                return ResourceManager.GetString("PX1023MultipleSpecialTypeAttributesOnProperty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The attribute contains multiple field type attributes declared on aggregators.
+        /// </summary>
+        public static string PX1023MultipleTypeAttributesOnAggregators {
+            get {
+                return ResourceManager.GetString("PX1023MultipleTypeAttributesOnAggregators", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DAC property cannot be marked with multiple field type attributes.
+        /// </summary>
+        public static string PX1023MultipleTypeAttributesOnProperty {
+            get {
+                return ResourceManager.GetString("PX1023MultipleTypeAttributesOnProperty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leave the selected attribute and remove other PXDBScalar/PXDBCalced attributes from the property.
+        /// </summary>
+        public static string PX1023SpecialAttributesFix {
+            get {
+                return ResourceManager.GetString("PX1023SpecialAttributesFix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leave the selected attribute and remove other field type attributes from the property.
+        /// </summary>
+        public static string PX1023TypeAttributesFix {
+            get {
+                return ResourceManager.GetString("PX1023TypeAttributesFix", resourceCulture);
             }
         }
         
