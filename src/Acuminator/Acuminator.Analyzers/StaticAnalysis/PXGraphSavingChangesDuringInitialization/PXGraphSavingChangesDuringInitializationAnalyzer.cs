@@ -33,6 +33,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphSavingChangesDuringInitiali
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
+            if (initializer.Node == null)
+                return;
+
             SaveChangesWalker walker = new SaveChangesWalker(context, pxContext);
 
             walker.Visit(initializer.Node);
@@ -55,7 +58,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphSavingChangesDuringInitiali
 
                 SemanticModel semanticModel = _context.Compilation.GetSemanticModel(node.SyntaxTree);
 
-                if (semanticModel != null && semanticModel.GetSymbolInfo(node, _context.CancellationToken).Symbol is IMethodSymbol method)
+                if (semanticModel?.GetSymbolInfo(node, _context.CancellationToken).Symbol is IMethodSymbol method)
                 {
                     SaveOperationKind saveOperation = SaveOperationHelper.GetSaveOperationKind(method, node, semanticModel, _pxContext);
 
