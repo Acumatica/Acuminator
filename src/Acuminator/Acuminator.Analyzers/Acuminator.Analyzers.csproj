@@ -66,6 +66,7 @@
     <Compile Include="StaticAnalysis\PXGraphCreationDuringInitialization\PXGraphCreationDuringInitializationAnalyzer.cs" />
     <Compile Include="StaticAnalysis\LongOperationInEventHandlers\LongOperationInEventHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceInEventHandlersAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\PXGraphSavingChangesDuringInitialization\PXGraphSavingChangesDuringInitializationAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphUsageInDac\PXGraphUsageInDacAnalyzer.cs" />
     <Compile Include="StaticAnalysis\MethodsUsageInDac\MethodsUsageInDacAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DacExtensionDefaultAttribute\DacExtensionDefaultAttributeAnalyzer.cs" />

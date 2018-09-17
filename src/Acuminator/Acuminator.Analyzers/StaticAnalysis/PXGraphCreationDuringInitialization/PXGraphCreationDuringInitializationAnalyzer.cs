@@ -21,9 +21,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
-            if (pxGraph.Initializers == null)
-                return;
-
             PXGraphCreateInstanceWalker walker = new PXGraphCreateInstanceWalker(context, pxContext);
 
             foreach(GraphInitializerInfo initializer in pxGraph.Initializers)

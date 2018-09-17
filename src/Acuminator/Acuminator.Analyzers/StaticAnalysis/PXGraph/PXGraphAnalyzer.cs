@@ -1,4 +1,5 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization;
+using Acuminator.Analyzers.StaticAnalysis.PXGraphSavingChangesDuringInitialization;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
@@ -20,7 +21,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
 
         public PXGraphAnalyzer() : this(
-            new PXGraphCreationDuringInitializationAnalyzer())
+            new PXGraphCreationDuringInitializationAnalyzer(),
+            new PXGraphSavingChangesDuringInitializationAnalyzer())
         {
         }
 
