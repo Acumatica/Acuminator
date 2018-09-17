@@ -6,9 +6,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
     public class GraphInitializerInfo
     {
-        public GraphInitializerType Type { get; private set; }
-        public CSharpSyntaxNode Node { get; private set; }
-        public ISymbol Symbol { get; private set; }
+        public GraphInitializerType Type { get; }
+        public CSharpSyntaxNode Node { get; }
+        public ISymbol Symbol { get; }
 
         public GraphInitializerInfo(GraphInitializerType type, CSharpSyntaxNode node, ISymbol symbol)
         {

@@ -145,7 +145,7 @@
     <Compile Include="Roslyn\PXSystemActions\PXSystemActionsRegister.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\PXGraphSemanticModel.cs" />
     <Compile Include="Roslyn\Syntax\ArgumentSyntaxExtensions.cs" />
-    <Compile Include="Roslyn\Semantic\GraphSymbolUtils.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\GraphSymbolUtils.cs" />
     <Compile Include="Roslyn\Semantic\IMethodSymbolExtensions.cs" />
     <Compile Include="Roslyn\Syntax\MethodDeclarationUtils.cs" />
     <Compile Include="Roslyn\Syntax\ParameterUsagesRewriter.cs" />

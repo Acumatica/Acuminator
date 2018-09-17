@@ -10,7 +10,7 @@ using ActionSymbolWithTypeCollection = System.Collections.Generic.IEnumerable<(M
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Threading;
 
-namespace Acuminator.Utilities.Roslyn.Semantic
+namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
 	public static class GraphSymbolUtils
 	{
