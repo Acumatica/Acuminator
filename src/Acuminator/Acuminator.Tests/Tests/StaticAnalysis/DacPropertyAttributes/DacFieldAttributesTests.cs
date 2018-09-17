@@ -16,8 +16,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 		[EmbeddedFileData("DacWithMultipleFieldAttributes.cs")]
 		public virtual void Test_Dac_With_Multiple_Field_Attributes(string source) =>
 			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1023_DacPropertyMultipleFieldAttributes.CreateFor(line: 24, column: 4),
-				Descriptors.PX1023_DacPropertyMultipleFieldAttributes.CreateFor(line: 25, column: 4));
+				Descriptors.PX1023_MultipleTypeAttributesOnProperty.CreateFor(line: 24, column: 4),
+				Descriptors.PX1023_MultipleTypeAttributesOnProperty.CreateFor(line: 25, column: 4));
 
 		[Theory]
 		[EmbeddedFileData("DacFieldAttributesTypeMismatch.cs")]

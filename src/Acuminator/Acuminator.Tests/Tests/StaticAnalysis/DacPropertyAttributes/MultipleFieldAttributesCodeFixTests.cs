@@ -11,7 +11,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacPropertyAttributesAnalyzer();
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider() => new MultipleAttributesOnDacPropertyFixBase();
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new MultipleFieldTypeAttributesOnDacPropertyFix();
 
 		[Theory]
 		[EmbeddedFileData("DacWithMultipleFieldAttributes.cs",

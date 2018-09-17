@@ -194,6 +194,7 @@
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\Override.cs" />
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\PXOverride.cs" />
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\AdditionalParameters.cs" />
+    <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\NotAcumaticaAttributeDac.cs" />
     <Compile Include="Verification\CodeRefactoringVerifier.cs" />
     <Compile Include="Verification\VerificationHelper.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\StaticMethod.cs" />
