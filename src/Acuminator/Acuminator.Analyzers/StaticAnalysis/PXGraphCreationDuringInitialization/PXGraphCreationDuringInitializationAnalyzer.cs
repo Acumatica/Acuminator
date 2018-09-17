@@ -21,9 +21,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
-            if (pxGraph.Initializers == null)
-                return;
-
             PXGraphCreateInstanceWalker walker = new PXGraphCreateInstanceWalker(context, pxContext);
 
             foreach(GraphInitializerInfo initializer in pxGraph.Initializers)
@@ -33,12 +30,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
             }
         }
 
-        private class PXGraphCreateInstanceWalker : CSharpSyntaxWalker
+        private class PXGraphCreateInstanceWalker : NestedInvocationWalker
         {
             private readonly SymbolAnalysisContext _context;
             private readonly PXContext _pxContext;
 
             public PXGraphCreateInstanceWalker(SymbolAnalysisContext context, PXContext pxContext)
+                : base(context.Compilation, context.CancellationToken)
             {
                 _context = context;
                 _pxContext = pxContext;

@@ -15,9 +15,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         private readonly CancellationToken _cancellation;
         private readonly PXContext _pxContext;
 
-        public GraphType Type { get; private set; }
-        public INamedTypeSymbol Symbol { get; private set; }
-        public (ConstructorDeclarationSyntax Node, IMethodSymbol Symbol) StaticCtrInfo { get; private set; }
+        public GraphType Type { get; }
+        public INamedTypeSymbol Symbol { get; }
+        public (ConstructorDeclarationSyntax Node, IMethodSymbol Symbol) StaticCtrInfo { get; }
         public ImmutableArray<GraphInitializerInfo> Initializers { get; private set; }
 
         private PXGraphSemanticModel(PXContext pxContext, GraphType type, INamedTypeSymbol symbol, CancellationToken cancellation = default)
@@ -28,16 +28,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             _pxContext = pxContext;
             Type = type;
             Symbol = symbol;
-
-            InitStaticCtr();
-            InitDeclaredInitializers();
-        }
-
-        private void InitStaticCtr()
-        {
-            _cancellation.ThrowIfCancellationRequested();
-
             StaticCtrInfo = Symbol.GetDeclaredStaticConstructor(_cancellation);
+
+            InitDeclaredInitializers();
         }
 
         private void InitDeclaredInitializers()
@@ -180,9 +173,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         private class InitDelegateInfo
         {
             public GraphType GraphType => GraphType.PXGraph;
-            public INamedTypeSymbol GraphTypeSymbol { get; private set; }
-            public ISymbol DelegateSymbol { get; private set; }
-            public ExpressionSyntax DelegateNode { get; private set; }
+            public INamedTypeSymbol GraphTypeSymbol { get; }
+            public ISymbol DelegateSymbol { get; }
+            public ExpressionSyntax DelegateNode { get; }
 
             public InitDelegateInfo(INamedTypeSymbol graphSymbol, ISymbol delegateSymbol, ExpressionSyntax delegateNode)
             {
