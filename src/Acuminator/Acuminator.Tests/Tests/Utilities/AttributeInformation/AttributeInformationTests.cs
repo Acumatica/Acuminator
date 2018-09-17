@@ -110,29 +110,35 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
         }
 
         [Theory]
-        [EmbeddedFileData(@"PropertyIsDBBoundFieldAttribute.cs", internalCodeFileNames: new string[] { @"ExternalAttributes1.cs", @"ExternalAttributes2.cs" })]
-        public void TestAreBoundIsDBFieldAttribute(string source, string externalAttribute1, string externalAttribute2) =>
+        [EmbeddedFileData(@"PropertyIsDBBoundFieldAttribute.cs")]
+        public void TestAreBoundIsDBFieldAttribute(string source) =>
             _testIsDBFieldProperty(source,
-                                   new List<bool> { false,
-                                                    false,
-                                                    false,
-                                                    false,
-                                                    true,
-                                                    true},
-                                   new string[] { externalAttribute1, externalAttribute2 } );
+                                   new List<bool> { true, false });
 
+        [Theory]
+        [EmbeddedFileData(@"PropertyIsDBBoundFieldWithDefinedAttributes.cs")]
+        public void TestAreBoundIsDBFieldWithDefinedAttributes(string source) =>
+           _testIsDBFieldProperty(source,
+                                  new List<bool> { false, false, true, true});
 
-        private void _testIsDBFieldProperty(string source,List<bool> expected,string[] code)
+        [Theory]
+        [EmbeddedFileData(@"PropertyIsDBBoundFieldWithoutDefinedAttributes.cs", internalCodeFileNames: new string[] { @"ExternalAttributes1.cs", @"ExternalAttributes2.cs" })]
+        public void TestAreBoundIsDBFieldWithoutDefinedAttributes(string source, string externalAttribute1, string externalAttribute2) =>
+           _testIsDBFieldProperty(source,
+                                  new List<bool> { false, true, false },
+                                  new string[] { externalAttribute1, externalAttribute2 });
+
+        private void _testIsDBFieldProperty(string source,List<bool> expected,string[] code = null)
         {
             Document document = CreateDocument(source, InternalCode: code);
             SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
             var syntaxRoot = document.GetSyntaxRootAsync().Result;
-            //document.
+
             List<bool> actual = new List<bool>();
             var pxContext = new PXContext(semanticModel.Compilation);
             var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
 
-            IEnumerable<PropertyDeclarationSyntax> properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
+            IEnumerable<PropertyDeclarationSyntax> properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>().Where(a => !a.AttributeLists.IsNullOrEmpty());
 
             foreach(PropertyDeclarationSyntax property in  properties)
             {

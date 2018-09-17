@@ -8,13 +8,21 @@ namespace PX.Objects.HackathonDemo
 
     public class IIGPOALCLandedCost : IBqlTable
     {
-        #region AcctSub
+        #region AcctSubBound
         public abstract class cost : PX.Data.IBqlField { }
         protected decimal? _Bound;
-        [AcctSub]
+        [AcctSub(IsDBField = true)]
         [PXDefault]
         [PXUIField(DisplayName = "Bound ")]
         public virtual decimal? Bound { get; set; }
+        #endregion
+        #region AcctSubUnbound
+        public abstract class cost : PX.Data.IBqlField { }
+        protected decimal? _Unbound;
+        [AcctSub(IsDBField = false)]
+        [PXDefault]
+        [PXUIField(DisplayName = "Unbound ")]
+        public virtual decimal? Unbound { get; set; }
         #endregion
     }
 }

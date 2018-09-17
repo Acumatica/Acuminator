@@ -177,12 +177,12 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
                     return true;
                 foreach(var argument in attribute.NamedArguments)
                 {
-
-                    //attribute.NamedArguments.Contains(("IsDBField",));
                     if(argument.Key.Equals("IsDBField") && argument.Value.Value.Equals(true))
-                        return true;
+                        return (bool) argument.Value.Value;
+                   
                 }
             }
+
         	/*		var IsDBFieldMembers = attributeSymbol.GetMembers()
 												  .Where(b => b.Name.Equals("IsDBField"))
 												  .Select(a => a);
