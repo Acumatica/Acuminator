@@ -122,7 +122,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
         private void _testIsDBFieldProperty(string source,List<bool> expected)
         {
-            string code = @"
+            string[] code = { @"
                 using System;
                 using PX.Data;
 
@@ -133,7 +133,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
                         public bool IsDBField { get; set; } = true;
                     }
                 }
-             ";
+             " };
 
             MetadataReference[] references = new MetadataReference[]
             {
@@ -143,7 +143,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 
 
-            Document document = CreateDocument(source, code, references);
+            Document document = CreateDocument(source, InternalCode: code, references: references);
             SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
             var syntaxRoot = document.GetSyntaxRootAsync().Result;
             //document.
