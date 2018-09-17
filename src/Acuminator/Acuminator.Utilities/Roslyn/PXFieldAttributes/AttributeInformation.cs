@@ -182,8 +182,13 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
                    
                 }
             }
+            
+            
+            //var model = semanticModel.Compilation.GetSemanticModel(property.SyntaxTree);
+            //DataFlowAnalysis result = model.AnalyzeDataFlow(property);
 
-        	/*		var IsDBFieldMembers = attributeSymbol.GetMembers()
+
+            /*		var IsDBFieldMembers = attributeSymbol.GetMembers()
 												  .Where(b => b.Name.Equals("IsDBField"))
 												  .Select(a => a);
 			foreach (var isDBField in IsDBFieldMembers)
