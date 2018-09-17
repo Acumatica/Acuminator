@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using PX.Data;
 
@@ -35,7 +36,8 @@ namespace Acuminator.Utilities.Roslyn
         private readonly Lazy<LocalizationTypes> _localizationMethods;
         public LocalizationTypes Localization => _localizationMethods.Value;
 
-
+        private readonly Lazy<PXGraphRelatedMethods> _pxGraphRelatedMethods;
+        public PXGraphRelatedMethods PXGraphRelatedMethods => _pxGraphRelatedMethods.Value;
 
 		public INamedTypeSymbol PXGraphType => Compilation.GetTypeByMetadataName(typeof(PXGraph).FullName);
 		public INamedTypeSymbol PXCacheType => Compilation.GetTypeByMetadataName(typeof(PXCache).FullName);
@@ -72,10 +74,15 @@ namespace Acuminator.Utilities.Roslyn
 		public INamedTypeSymbol PXDatabase => Compilation.GetTypeByMetadataName(typeof(PXDatabase).FullName);
 		public INamedTypeSymbol PXSelectorAttribute => Compilation.GetTypeByMetadataName(typeof(PXSelectorAttribute).FullName);
 
+        public INamedTypeSymbol InstanceCreatedEvents => Compilation.GetTypeByMetadataName(typeof(PXGraph.InstanceCreatedEvents).FullName);
+
         public ImmutableArray<ISymbol> StringFormat => SystemTypes.String.GetMembers(nameof(string.Format));
         public ImmutableArray<ISymbol> StringConcat => SystemTypes.String.GetMembers(nameof(string.Concat));
+        public IMethodSymbol PXGraphExtensionInitializeMethod => PXGraphExtensionType.GetMembers(nameof(PXGraphExtension.Initialize))
+                                                                 .OfType<IMethodSymbol>()
+                                                                 .First();
 
-		public PXContext(Compilation compilation)
+        public PXContext(Compilation compilation)
 		{
 			Compilation = compilation;
 			bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation));
@@ -90,8 +97,10 @@ namespace Acuminator.Utilities.Roslyn
 										() => new SystemTypeSymbols(Compilation));
             _localizationMethods = new Lazy<LocalizationTypes>(
                 () => new LocalizationTypes(Compilation));
+            _pxGraphRelatedMethods = new Lazy<PXGraphRelatedMethods>(
+                () => new PXGraphRelatedMethods(this));
 
-			IsAcumatica2018R2 = PXSelectBase2018R2NewType != null;
+            IsAcumatica2018R2 = PXSelectBase2018R2NewType != null;
 		}
 
 		#region System Types

@@ -108,6 +108,10 @@
     <Compile Include="Common\EnumerableExtraExtensions.cs" />
     <Compile Include="Roslyn\EventHandlerSignatureType.cs" />
     <Compile Include="Roslyn\EventType.cs" />
+    <Compile Include="Roslyn\PXGraphRelatedMethods.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\GraphInitializerInfo.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\GraphInitializerType.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\GraphType.cs" />
     <Compile Include="Roslyn\LocalizationTypes.cs" />
     <Compile Include="Roslyn\NestedInvocationWalker.cs" />
     <Compile Include="Roslyn\PrimaryDacFinder\PrimaryDacRules\ActionRules\ScoreSystemActionRule.cs" />
@@ -140,8 +144,9 @@
     <Compile Include="Roslyn\PXFieldAttributes\FieldTypeAttributeKind.cs" />
     <Compile Include="Roslyn\PXFieldAttributes\FieldTypeAttributesRegister.cs" />
     <Compile Include="Roslyn\PXSystemActions\PXSystemActionsRegister.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\PXGraphSemanticModel.cs" />
     <Compile Include="Roslyn\Syntax\ArgumentSyntaxExtensions.cs" />
-    <Compile Include="Roslyn\Semantic\GraphSymbolUtils.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\GraphSymbolUtils.cs" />
     <Compile Include="Roslyn\Semantic\IMethodSymbolExtensions.cs" />
     <Compile Include="Roslyn\Syntax\MethodDeclarationUtils.cs" />
     <Compile Include="Roslyn\Syntax\ParameterUsagesRewriter.cs" />

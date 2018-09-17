@@ -690,5 +690,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1053Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A PXGraph instance cannot be initialized while another PXGraph instance is being initialized.
+        /// </summary>
+        public static string PX1057Title {
+            get {
+                return ResourceManager.GetString("PX1057Title", resourceCulture);
+            }
+        }
     }
 }
