@@ -200,6 +200,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithMultipleSpecialTypeAttributes_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\DacPropertyAttributes\MultipleSpecialAttributesCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacPropertyAttributes\MultipleFieldTypeAttributesCodeFixTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithInvalidAggregatorAttributes.cs" />
     <Compile Include="Verification\CodeRefactoringVerifier.cs" />
     <Compile Include="Verification\VerificationHelper.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\StaticMethod.cs" />

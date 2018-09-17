@@ -62,6 +62,13 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 					extraLocation: (line: 53, column: 4)));
 
 		[Theory]
+		[EmbeddedFileData("DacWithInvalidAggregatorAttributes.cs")]
+		public virtual void DacProperty_With_Invalid_AggregatorAttributes(string source) =>
+			VerifyCSharpDiagnostic(source,
+				Descriptors.PX1023_MultipleSpecialTypeAttributesOnAggregators.CreateFor(line: 35, column: 4),
+				Descriptors.PX1023_MultipleTypeAttributesOnAggregators.CreateFor(line: 40, column: 4));
+
+		[Theory]
 		[EmbeddedFileData("DacFieldTypeMismatchPXDBScalarAttr.cs")]
 		public virtual void Dac_Property_With_PXDBScalar_Attribute(string source) =>
 			VerifyCSharpDiagnostic(source);	
