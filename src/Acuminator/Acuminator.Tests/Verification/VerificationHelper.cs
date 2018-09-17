@@ -62,9 +62,9 @@ namespace Acuminator.Tests.Verification
 		/// <param name="source">Classes in the form of a string</param>
 		/// <param name="language">The language the source code is in</param>
 		/// <returns>A Document created from the source string</returns>
-		public static Document CreateDocument(string source, string language = LanguageNames.CSharp, string[] InternalCode = null, MetadataReference[] references = null)
+		public static Document CreateDocument(string source, string language = LanguageNames.CSharp, string[] InternalCode = null)
 		{
-			return CreateProject(new[] { source }, language, InternalCode, references).Documents.First();
+			return CreateProject(new[] { source }, language, InternalCode).Documents.First();
 		}
 
 		public static Document CreateCSharpDocument(string source, params string[] additionalSources)
@@ -81,7 +81,7 @@ namespace Acuminator.Tests.Verification
         /// <param name="sourceCodes">The source codes for new memory compilation</param>
         /// <param name="references">The references for new memory compilation</param>
         /// <returns>A Project created out of the Documents created from the source strings</returns>
-        private static Project CreateProject(string[] sources, string language = LanguageNames.CSharp, string[] sourceCodes = null, MetadataReference[] references = null)
+        private static Project CreateProject(string[] sources, string language = LanguageNames.CSharp, string[] sourceCodes = null)
 		{
 			string fileNamePrefix = DefaultFilePathPrefix;
 			string fileExt = language == LanguageNames.CSharp ? CSharpDefaultFileExt : VisualBasicDefaultExt;
@@ -106,7 +106,7 @@ namespace Acuminator.Tests.Verification
             //add check result execution BuildReferenceFromSource
             if(sourceCodes != null && sourceCodes.Length > 0)
             {
-                ImmutableArray<byte> DynamicAssembly = BuildReferenceFromSources(sourceCodes, references).ToImmutableArray();
+                ImmutableArray<byte> DynamicAssembly = BuildAssemblyFromSources(sourceCodes).ToImmutableArray();
                 MetadataReference DynamicReference = MetadataReference.CreateFromImage(DynamicAssembly);
                 solution = solution.AddMetadataReference(projectId, DynamicReference);
             }
@@ -203,14 +203,19 @@ namespace Acuminator.Tests.Verification
         /// <param name="code">Source codes of library</param>
         /// <param name="references">Library references</param>
         /// <returns>Byte array from compiled binary dll assembly</returns>
-        private static byte[] BuildReferenceFromSources(string[] sourceCodes, MetadataReference[] references = null)
+        private static byte[] BuildAssemblyFromSources(string[] sourceCodes)
         {
             string assemblyName = Path.GetRandomFileName();
 
             CSharpCompilation compilation = CSharpCompilation.Create(
                     assemblyName,
                     syntaxTrees: sourceCodes.Select(code => CSharpSyntaxTree.ParseText(text: code)),
-                    references: references,
+                    references: new MetadataReference[] { CorlibReference,
+                                                          SystemCoreReference,
+                                                          CSharpSymbolsReference,
+                                                          CodeAnalysisReference,
+                                                          PXDataReference,
+                                                          PXCommonReference },
                     options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
             // Emit the image of this assembly 

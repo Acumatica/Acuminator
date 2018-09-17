@@ -19,131 +19,112 @@ using System;
 
 namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 {
-	
-	public class AttributeInformationTests : Verification.DiagnosticVerifier
-	{
-		/* 
+
+    public class AttributeInformationTests : Verification.DiagnosticVerifier
+    {
+        /* 
 		 *  Tests attribute derived 
 		 * */
-		[Theory]
-		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
-		public async void TestAttributeSimpleInformation(string source) =>
-			await TestAttributeInformationAsync(source, new List<bool> { false, true, false, false, true, false });
+        [Theory]
+        [EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
+        public async void TestAttributeSimpleInformation(string source) =>
+            await TestAttributeInformationAsync(source, new List<bool> { false, true, false, false, true, false });
 
-		[Theory]
-		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
-		public async void TestAggregateAttributeAsync(string source) =>
-			await TestAttributeInformationAsync(source, new List<bool> { true, true });
+        [Theory]
+        [EmbeddedFileData(@"AggregateAttributeInformation.cs")]
+        public async void TestAggregateAttributeAsync(string source) =>
+            await TestAttributeInformationAsync(source, new List<bool> { true, true });
 
-		[Theory]
-		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
-		public async void TestAggregateRegursiveAttributeAsync(string source) =>
-			await TestAttributeInformationAsync(source, new List<bool> { true, false });
-		
-		private async Task TestAttributeInformationAsync(string source, List<bool> expected)
-		{
-			Document document = CreateDocument(source);
-			SemanticModel semanticModel = await document.GetSemanticModelAsync();
-			var syntaxRoot = document.GetSyntaxRootAsync().Result;
+        [Theory]
+        [EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
+        public async void TestAggregateRegursiveAttributeAsync(string source) =>
+            await TestAttributeInformationAsync(source, new List<bool> { true, false });
 
-			List<bool> actual = new List<bool>();
-			var pxContext = new PXContext(semanticModel.Compilation);
+        private async Task TestAttributeInformationAsync(string source, List<bool> expected)
+        {
+            Document document = CreateDocument(source);
+            SemanticModel semanticModel = await document.GetSemanticModelAsync();
+            var syntaxRoot = document.GetSyntaxRootAsync().Result;
 
-			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
+            List<bool> actual = new List<bool>();
+            var pxContext = new PXContext(semanticModel.Compilation);
 
-			foreach (var property in properties)
-			{
-				var typeSymbol = semanticModel.GetDeclaredSymbol(property);
-				var attributes = typeSymbol.GetAttributes();
-				foreach (var attribute in attributes)
-				{
-					var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
-					var defaultAttribute = pxContext.AttributeTypes.PXDefaultAttribute;
-					actual.Add(attributeInformation.AttributeDerivedFromClass(attribute.AttributeClass, defaultAttribute));
-				}
-			}
-			Assert.Equal(expected, actual);
-		}
+            var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
 
-		/*
+            foreach (var property in properties)
+            {
+                var typeSymbol = semanticModel.GetDeclaredSymbol(property);
+                var attributes = typeSymbol.GetAttributes();
+                foreach (var attribute in attributes)
+                {
+                    var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
+                    var defaultAttribute = pxContext.AttributeTypes.PXDefaultAttribute;
+                    actual.Add(attributeInformation.AttributeDerivedFromClass(attribute.AttributeClass, defaultAttribute));
+                }
+            }
+            Assert.Equal(expected, actual);
+        }
+
+        /*
 		 * Tests IsBoundAttribute 
 		 */
 
-		[Theory]
-		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
-		public void TestAreBoundAttributes(string source) =>
-			_testIsBoundAttribute(source, new List<bool> { false, false, false ,true, false, false });
+        [Theory]
+        [EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
+        public void TestAreBoundAttributes(string source) =>
+            _testIsBoundAttribute(source, new List<bool> { false, false, false, true, false, false });
 
-		[Theory]
-		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
-		public void TestAreBoundAggregateAttributes(string source) =>
-			_testIsBoundAttribute(source, new List<bool> { true, false });
+        [Theory]
+        [EmbeddedFileData(@"AggregateAttributeInformation.cs")]
+        public void TestAreBoundAggregateAttributes(string source) =>
+            _testIsBoundAttribute(source, new List<bool> { true, false });
 
-		[Theory]
-		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
-		public void TestAreBoundAggregateRecursiveAttribute(string source) =>
-			_testIsBoundAttribute(source, new List<bool> { false, true });
-        
-		private void _testIsBoundAttribute(string source, List<bool> expected)
-		{
+        [Theory]
+        [EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
+        public void TestAreBoundAggregateRecursiveAttribute(string source) =>
+            _testIsBoundAttribute(source, new List<bool> { false, true });
+
+        private void _testIsBoundAttribute(string source, List<bool> expected)
+        {
             Document document = CreateDocument(source);
-			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
-			var syntaxRoot = document.GetSyntaxRootAsync().Result;
-            
-			List<bool> actual = new List<bool>();
-			var pxContext = new PXContext(semanticModel.Compilation);
+            SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
+            var syntaxRoot = document.GetSyntaxRootAsync().Result;
 
-			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
+            List<bool> actual = new List<bool>();
+            var pxContext = new PXContext(semanticModel.Compilation);
+
+            var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
 
             var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
 
             foreach (var property in properties)
-			{
-				var typeSymbol = semanticModel.GetDeclaredSymbol(property);
-				var attributes = typeSymbol.GetAttributes();
-				foreach (var attribute in attributes)
-				{
-					actual.Add(attributeInformation.IsBoundAttribute(attribute));
-				}
-			}
-			Assert.Equal(expected, actual);
-		}
+            {
+                var typeSymbol = semanticModel.GetDeclaredSymbol(property);
+                var attributes = typeSymbol.GetAttributes();
+                foreach (var attribute in attributes)
+                {
+                    actual.Add(attributeInformation.IsBoundAttribute(attribute));
+                }
+            }
+            Assert.Equal(expected, actual);
+        }
 
         [Theory]
-        [EmbeddedFileData(@"PropertyIsDBBoundFieldAttribute.cs")]
-        public void TestAreBoundIsDBFieldAttribute(string source) =>
-            _testIsDBFieldProperty(source, new List<bool> { false,
-                                                            false,
-                                                            false,
-                                                            false,
-                                                            true,
-                                                            true});
+        [EmbeddedFileData(@"PropertyIsDBBoundFieldAttribute.cs", internalCodeFileNames: new string[] { @"ExternalAttributes1.cs", @"ExternalAttributes2.cs" })]
+        public void TestAreBoundIsDBFieldAttribute(string source, string externalAttribute1, string externalAttribute2) =>
+            _testIsDBFieldProperty(source,
+                                   new List<bool> { false,
+                                                    false,
+                                                    false,
+                                                    false,
+                                                    true,
+                                                    true},
+                                   new string[] { externalAttribute1, externalAttribute2 } );
 
 
-        private void _testIsDBFieldProperty(string source,List<bool> expected)
+        private void _testIsDBFieldProperty(string source,List<bool> expected,string[] code)
         {
-            string[] code = { @"
-                using System;
-                using PX.Data;
-
-                namespace PX.Objects.HackathonDemo
-                {
-                    public class AcctSub2Attribute : PXAggregateAttribute
-                    {
-                        public bool IsDBField { get; set; } = true;
-                    }
-                }
-             " };
-
-            MetadataReference[] references = new MetadataReference[]
-            {
-                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(PXGraph).Assembly.Location)
-            };
-
-
-
-            Document document = CreateDocument(source, InternalCode: code, references: references);
+            Document document = CreateDocument(source, InternalCode: code);
             SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
             var syntaxRoot = document.GetSyntaxRootAsync().Result;
             //document.
