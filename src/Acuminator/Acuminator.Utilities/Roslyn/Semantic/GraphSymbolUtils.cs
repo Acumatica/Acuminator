@@ -533,26 +533,26 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		private static bool IsGraphOrGraphExtensionBaseType(this ITypeSymbol type)
 		{
 			string typeNameWithoutGenericArgsCount = type.Name.Split('`')[0];
-			return typeNameWithoutGenericArgsCount.Equals(TypeNames.PXGraph, StringComparison.Ordinal) ||
-				   typeNameWithoutGenericArgsCount.Equals(TypeNames.PXGraphExtension, StringComparison.Ordinal);
+			return typeNameWithoutGenericArgsCount == TypeNames.PXGraph ||
+				   typeNameWithoutGenericArgsCount == TypeNames.PXGraphExtension;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static bool IsGraphBaseType(this ITypeSymbol type)
 		{
 			string typeNameWithoutGenericArgsCount = type.Name.Split('`')[0];
-			return typeNameWithoutGenericArgsCount.Equals(TypeNames.PXGraph, StringComparison.Ordinal);
+			return typeNameWithoutGenericArgsCount == TypeNames.PXGraph;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsGraphExtensionBaseType(this ITypeSymbol type)
 		{
 			string typeNameWithoutGenericArgsCount = type.Name.Split('`')[0];
-			return typeNameWithoutGenericArgsCount.Equals(TypeNames.PXGraphExtension, StringComparison.Ordinal);
+			return typeNameWithoutGenericArgsCount == TypeNames.PXGraphExtension;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static bool IsGraphWithPrimaryDacBaseGenericType(INamedTypeSymbol type) =>
-			type.TypeArguments.Length >= 2 && type.Name.Equals(TypeNames.PXGraph, StringComparison.Ordinal);
+			type.TypeArguments.Length >= 2 && type.Name == TypeNames.PXGraph;
 	}
 }

@@ -42,7 +42,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 						while (currentType != null
 							&& !currentType.Equals(pxContext.PXCacheExtensionType))
 						{
-							if (String.Equals(nameof(PXCacheExtension), currentType.Name, StringComparison.Ordinal))
+							if (currentType.Name == nameof(PXCacheExtension))
 							{
 								genericArgs.AddRange(currentType.TypeArguments);
 								break;

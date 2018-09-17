@@ -45,12 +45,15 @@
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Refactorings\ChangeEventHandlerSignatureToGeneric\ChangeEventHandlerSignatureToGenericRefactoring.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\ArrayElemCountLocalVariableResolver.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\BqlInvocationDataFlowAnalyserBase.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\ParametersCounter.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\BqlLocalVariableTypeResolver.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\ParametersCounterSymbolWalker.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\ParametersCounterSyntaxWalker.cs" />
+    <Compile Include="StaticAnalysis\ChangesInPXCache\ChangesInPXCacheInEventHandlersAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\ChangesInPXCache\Walker.cs" />
     <Compile Include="StaticAnalysis\ConnectionScopeInRowSelecting\ConnectionScopeInRowSelectingAnalyzer.cs" />
     <Compile Include="StaticAnalysis\EventHandlers\EventHandlerAnalyzer.cs" />
     <Compile Include="StaticAnalysis\EventHandlers\IEventHandlerAnalyzer.cs" />
@@ -60,12 +63,17 @@
     <Compile Include="StaticAnalysis\ConstructorInGraphExtension\ConstructorInGraphExtensionAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DacNonAbstractFieldType\DacNonAbstractFieldTypeAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DacDeclaration\DacDeclarationAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\LongOperationInEventHandlers\LongOperationInEventHandlersAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceInEventHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphUsageInDac\PXGraphUsageInDacAnalyzer.cs" />
     <Compile Include="StaticAnalysis\MethodsUsageInDac\MethodsUsageInDacAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DacExtensionDefaultAttribute\DacExtensionDefaultAttributeAnalyzer.cs" />
     <Compile Include="StaticAnalysis\NonNullableTypeForBqlField\NonNullableTypeForBqlFieldAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DacPropertyAttributes\DacPropertyAttributesAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXActionOnNonPrimaryView\PXActionOnNonPrimaryViewAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\SavingChanges\SaveOperationHelper.cs" />
+    <Compile Include="StaticAnalysis\SavingChanges\SaveOperationKind.cs" />
+    <Compile Include="StaticAnalysis\SavingChanges\SavingChangesInEventHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\StartRowResetForPaging\StartRowResetForPagingAnalyzer.cs" />
     <Compile Include="StaticAnalysis\NoPrimaryViewForPrimaryDac\NoPrimaryViewForPrimaryDacAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DiagnosticProperty.cs" />
@@ -190,9 +198,7 @@
       <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\portable-net40+sl4+win8+wp8\System.ValueTuple.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="CodeActions\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Acuminator.Utilities\Acuminator.Utilities.csproj">
       <Project>{b902103c-831b-4bbf-a88b-3dae6f601cf0}</Project>

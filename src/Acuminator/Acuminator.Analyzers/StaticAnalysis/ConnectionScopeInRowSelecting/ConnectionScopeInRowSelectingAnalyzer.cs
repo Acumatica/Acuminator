@@ -68,7 +68,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting
 
 			public override void VisitUsingStatement(UsingStatementSyntax node)
 			{
-				_context.CancellationToken.ThrowIfCancellationRequested();
+				ThrowIfCancellationRequested();
 
 				if (_insideConnectionScope)
 				{
@@ -84,7 +84,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting
 
 			public override void VisitInvocationExpression(InvocationExpressionSyntax node)
 			{
-				_context.CancellationToken.ThrowIfCancellationRequested();
+				ThrowIfCancellationRequested();
 
 				if (_insideConnectionScope)
 					return;
@@ -93,7 +93,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting
 
 				if (methodSymbol != null && IsDatabaseCall(methodSymbol))
 				{
-					ReportDiagnostic(OriginalNode ?? node);
+					ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1042_ConnectionScopeInRowSelecting, node);
 				}
 				else
 				{
@@ -110,12 +110,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting
 				           || containingType.InheritsFromOrEquals(_pxContext.PXViewType)
 				           || containingType.InheritsFromOrEquals(_pxContext.PXSelectorAttribute)
 				           || containingType.Equals(_pxContext.PXDatabase));
-			}
-
-			private void ReportDiagnostic(SyntaxNode node)
-			{
-				_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1042_ConnectionScopeInRowSelecting,
-					node.GetLocation()));
 			}
 		}
 

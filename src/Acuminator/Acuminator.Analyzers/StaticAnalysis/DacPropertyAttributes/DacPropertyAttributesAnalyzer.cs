@@ -73,7 +73,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			else
 			{
 				var (fieldAttribute, fieldAttrInfo) = attributesWithInfo[0];
-				await CheckAttributeAndPropertyTypesForCompatibility(property, fieldAttribute, fieldAttrInfo, pxContext, symbolContext);
+				await CheckAttributeAndPropertyTypesForCompatibilityAsync(property, fieldAttribute, fieldAttrInfo, pxContext, symbolContext);
 			}
 		}
 
@@ -97,9 +97,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			return fieldInfosList;
 		}
 
-		private static Task CheckAttributeAndPropertyTypesForCompatibility(IPropertySymbol property, AttributeData fieldAttribute,
-																		   FieldAttributeInfo fieldAttributeInfo, PXContext pxContext,
-																		   SymbolAnalysisContext symbolContext)
+		private static Task CheckAttributeAndPropertyTypesForCompatibilityAsync(IPropertySymbol property, AttributeData fieldAttribute,
+																				FieldAttributeInfo fieldAttributeInfo, PXContext pxContext,
+																				SymbolAnalysisContext symbolContext)
 		{
 			if (fieldAttributeInfo.FieldType == null)                                                               //PXDBFieldAttribute case
 			{
@@ -111,7 +111,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			if (property.Type.IsValueType)
 			{
 				if (!(property.Type is INamedTypeSymbol namedPropertyType))
-					return null;
+				{
+					return Task.FromResult(false);
+				}
 
 				typeToCompare = namedPropertyType.IsNullable(pxContext)
 									? namedPropertyType.GetUnderlyingTypeFromNullable(pxContext)
@@ -123,7 +125,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			}
 
 			if (fieldAttributeInfo.FieldType.Equals(typeToCompare))
-				return null;
+			{
+				return Task.FromResult(false);
+			}
 
 			return CreateDiagnosticsAsync(property, fieldAttribute, symbolContext, registerCodeFix: true);
 		}

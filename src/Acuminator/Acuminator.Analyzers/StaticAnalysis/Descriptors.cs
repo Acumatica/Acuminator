@@ -111,7 +111,23 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1042_ConnectionScopeInRowSelecting { get; } =
 			Rule("PX1042", nameof(Resources.PX1042Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
-        public static DiagnosticDescriptor PX1050_HardcodedStringInLocalizationMethod { get; } =
+		public static DiagnosticDescriptor PX1043_SavingChangesInEventHandlers { get; } =
+			Rule("PX1043", nameof(Resources.PX1043Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+		public static DiagnosticDescriptor PX1043_SavingChangesInRowPerstisting { get; } =
+			Rule("PX1043", nameof(Resources.PX1043TitleRowPersisting).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+		public static DiagnosticDescriptor PX1044_ChangesInPXCacheInEventHandlers { get; } =
+			Rule("PX1044", nameof(Resources.PX1044Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error,
+				nameof(Resources.PX1044MessageFormat).GetLocalized());
+
+		public static DiagnosticDescriptor PX1045_PXGraphCreateInstanceInEventHandlers { get; } =
+			Rule("PX1045", nameof(Resources.PX1045Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+		public static DiagnosticDescriptor PX1046_LongOperationInEventHandlers { get; } =
+			Rule("PX1046", nameof(Resources.PX1046Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+		public static DiagnosticDescriptor PX1050_HardcodedStringInLocalizationMethod { get; } =
             Rule("PX1050", nameof(Resources.PX1050Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
         public static DiagnosticDescriptor PX1051_NonLocalizableString { get; } =

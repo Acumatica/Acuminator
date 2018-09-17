@@ -62,6 +62,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Convert an event handler signature to the generic one. Please, be careful because an event handler can be overwritten somewhere else..
+        /// </summary>
+        public static string EventHandlerSignatureCodeActionTitle {
+            get {
+                return ResourceManager.GetString("EventHandlerSignatureCodeActionTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fix PXAction handler signature.
         /// </summary>
         public static string PX1000Fix {
@@ -553,6 +562,60 @@ namespace Acuminator.Analyzers {
         public static string PX1042Title {
             get {
                 return ResourceManager.GetString("PX1042Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Changes cannot be saved to the database from the event handler.
+        /// </summary>
+        public static string PX1043Title {
+            get {
+                return ResourceManager.GetString("PX1043Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only the methods of the PXCache.Persist family can be used to save changes to the database from a RowPersisting event handler.
+        /// </summary>
+        public static string PX1043TitleRowPersisting {
+            get {
+                return ResourceManager.GetString("PX1043TitleRowPersisting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Changing PXCache is prohibited in the {0} event handler.
+        /// </summary>
+        public static string PX1044MessageFormat {
+            get {
+                return ResourceManager.GetString("PX1044MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Changing PXCache is prohibited in this event handler.
+        /// </summary>
+        public static string PX1044Title {
+            get {
+                return ResourceManager.GetString("PX1044Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A PXGraph instance cannot be created within an event handler.
+        /// </summary>
+        public static string PX1045Title {
+            get {
+                return ResourceManager.GetString("PX1045Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A long-running operation cannot be started within an event handler.
+        /// </summary>
+        public static string PX1046Title {
+            get {
+                return ResourceManager.GetString("PX1046Title", resourceCulture);
             }
         }
         

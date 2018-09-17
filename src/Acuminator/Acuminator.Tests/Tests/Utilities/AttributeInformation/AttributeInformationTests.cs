@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CSharp;
 using Xunit;
+using static Acuminator.Tests.Verification.VerificationHelper;
 using PX.Data;
 using Microsoft.CodeAnalysis.Emit;
 using System.Reflection;
