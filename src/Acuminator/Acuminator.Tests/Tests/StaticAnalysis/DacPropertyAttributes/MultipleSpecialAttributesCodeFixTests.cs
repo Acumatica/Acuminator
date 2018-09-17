@@ -7,16 +7,16 @@ using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 {
-	public class MultipleFieldAttributesCodeFixTests : CodeFixVerifier
+	public class MultipleSpecialAttributesCodeFixTests : CodeFixVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacPropertyAttributesAnalyzer();
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider() => new MultipleFieldTypeAttributesOnDacPropertyFix();
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new MultipleSpecialAttributesOnDacPropertyFix();
 
 		[Theory]
-		[EmbeddedFileData("DacWithMultipleFieldAttributes.cs",
-						  "DacWithMultipleFieldAttributes_Expected.cs")]
-		public void Test_Multiple_Field_Attributes_On_DAC_Property_CodeFix(string actual, string expected)
+		[EmbeddedFileData("DacWithMultipleSpecialTypeAttributes.cs",
+						  "DacWithMultipleSpecialTypeAttributes_Expected.cs")]
+		public void DAC_Property_CodeFix(string actual, string expected)
 		{
 			VerifyCSharpFix(actual, expected);
 		}
