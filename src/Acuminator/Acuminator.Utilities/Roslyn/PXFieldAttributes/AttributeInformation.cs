@@ -16,7 +16,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		private readonly PXContext _context;
 		public ImmutableHashSet<ITypeSymbol> BoundBaseTypes { get; }
 
-		public AttributeInformation(PXContext pxContext)
+        private readonly string _IsDBField = "IsDBField";
+
+        public AttributeInformation(PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
@@ -149,82 +151,56 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			}
 		}
 
-		public bool IsBoundAttribute(AttributeData attribute)
+		public BoundAttribute IsBoundAttribute(AttributeData attribute)
 		{
             foreach (var baseType in BoundBaseTypes)
 			{
 				if (AttributeDerivedFromClass(attribute.AttributeClass, baseType))
-					return true;
+					return BoundAttribute.DbBound;
 			}
-			return false;
+            if (attribute.AttributeClass.GetMembers().Select(a => a.Name).Contains(_IsDBField))
+            {
+                foreach (var argument in attribute.NamedArguments)
+                {
+                    if (argument.Key.Equals(_IsDBField) && argument.Value.Value.Equals(true))
+                        return BoundAttribute.DbBound;
+                }
+                return BoundAttribute.Unknown;
+            }
+            return BoundAttribute.Unbound;
 		}
 
         ///TODO: refactoring arguments -> remove semanticModel to constructor? Is it nessesary.
-        public bool IsBoundField(PropertyDeclarationSyntax property,SemanticModel semanticModel)
+        public bool? IsBoundField(PropertyDeclarationSyntax property,SemanticModel semanticModel)
         {
-           /* var attributes = property.AttributeLists;
-            foreach(var attribute in attributes)
-            {
-
-            }*/
-
             var typeSymbol = semanticModel.GetDeclaredSymbol(property);
             var attributesData = typeSymbol.GetAttributes();
 
             foreach(var attribute in attributesData)
             {
-                if (IsBoundAttribute(attribute))
+                if (IsBoundAttribute(attribute) == BoundAttribute.DbBound)
                     return true;
                 foreach(var argument in attribute.NamedArguments)
                 {
                     if(argument.Key.Equals("IsDBField") && argument.Value.Value.Equals(true))
                         return (bool) argument.Value.Value;
                    
-                }
-                if (attribute.AttributeClass.DeclaringSyntaxReferences.Length > 0)
-                {//DataFlowAnalyze
-                    var syntaxTrees = attribute.AttributeClass.DeclaringSyntaxReferences;
-                    foreach(var syntax in syntaxTrees)
-                    {
-                        var attributeProperty = syntax.GetSyntax().DescendantNodes()
-                                                               .OfType<PropertyDeclarationSyntax>()
-                                                               .Where(a => a.Identifier.ValueText.Equals("IsDBField")).Single();
-                        var statementProperties = attributeProperty.DescendantNodes().OfType<StatementSyntax>();
-                        foreach(var statement in statementProperties)
-                        {
-                            ControlFlowAnalysis result = semanticModel.AnalyzeControlFlow(statement);
-                        }
-                      
-                    }
-                }
-                else
-                    continue;
-                
-                //IsBoundAttribute(attribute);
-                //attribute.AttributeClass.GetMembers().First().DeclaringSyntaxReferences.First().SyntaxTree
+                }    
             }
-
-
-            //var model = semanticModel.Compilation.GetSemanticModel(property.SyntaxTree);
-            //DataFlowAnalysis result = model.AnalyzeDataFlow(property);
-
-
-            /*		var IsDBFieldMembers = attributeSymbol.GetMembers()
-												  .Where(b => b.Name.Equals("IsDBField"))
-												  .Select(a => a);
-			foreach (var isDBField in IsDBFieldMembers)
-			{
-
-			}
-            */
-
             return false; 
         }
 		
 		public bool ContainsBoundAttributes(IEnumerable<AttributeData> attributes)
 		{
-			return attributes.Any(IsBoundAttribute);
+			return attributes.Any(IsBoundAttribute == BoundAttribute.DbBound);
 		}
 
 	}
+
+    public enum BoundAttribute
+    {
+        Unbound = 0,
+        DbBound = 1,
+        Unknown = 2
+    }
 }
