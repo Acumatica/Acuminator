@@ -56,10 +56,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
             {
                 _context.CancellationToken.ThrowIfCancellationRequested();
 
+                IMethodSymbol symbol = GetSymbol<IMethodSymbol>(node);
                 SemanticModel semanticModel = GetSemanticModel(node.SyntaxTree);
 
-                if (semanticModel?.GetSymbolInfo(node, _context.CancellationToken).Symbol is IMethodSymbol method &&
-                    SaveOperationHelper.GetSaveOperationKind(method, node, semanticModel, _pxContext) != SaveOperationKind.None)
+                if (symbol != null && SaveOperationHelper.GetSaveOperationKind(symbol, node, semanticModel, _pxContext) != SaveOperationKind.None)
                 {
                     ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1058_PXGraphSavingChangesDuringInitialization, node);
                 }
