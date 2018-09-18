@@ -41,12 +41,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphSavingChangesDuringInitiali
             walker.Visit(initializer.Node);
         }
 
-        private class SaveChangesWalker : CSharpSyntaxWalker
+        private class SaveChangesWalker : NestedInvocationWalker
         {
             private readonly SymbolAnalysisContext _context;
             private readonly PXContext _pxContext;
 
             public SaveChangesWalker(SymbolAnalysisContext context, PXContext pxContext)
+                : base(context.Compilation, context.CancellationToken)
             {
                 _context = context;
                 _pxContext = pxContext;
