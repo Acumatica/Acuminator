@@ -55,11 +55,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
             if (isBoundField == BoundAttribute.DbBound)
             {
-                await AnalyzeAttributesWithinBoundFieldAsync(property, attributes, pxContext, symbolContext, true, attributeInformation);
+                await AnalyzeAttributesWithinBoundFieldAsync(property, attributes, pxContext, symbolContext, true, attributeInformation).ConfigureAwait(false);
             }
             else if (isBoundField == BoundAttribute.Unbound)
             {
-                await AnalyzeAttributesWithinUnBoundFieldAsync(property, attributes, pxContext, symbolContext, false, attributeInformation);
+                await AnalyzeAttributesWithinUnBoundFieldAsync(property, attributes, pxContext, symbolContext, false, attributeInformation).ConfigureAwait(false);
             }
             
 		}

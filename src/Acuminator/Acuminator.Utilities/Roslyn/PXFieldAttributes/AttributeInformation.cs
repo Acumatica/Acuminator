@@ -16,7 +16,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		private readonly PXContext _context;
 		public ImmutableHashSet<ITypeSymbol> BoundBaseTypes { get; }
 
-		private readonly string _IsDBField = "IsDBField";
+		private const string IsDBField = "IsDBField";
 
 		public AttributeInformation(PXContext pxContext)
 		{
@@ -158,25 +158,25 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				if (AttributeDerivedFromClass(attribute.AttributeClass, baseType))
 					return BoundAttribute.DbBound;
 			}
-			if (attribute.AttributeClass.GetMembers().Select(a => a.Name).Contains(_IsDBField))
+
+			if (attribute.AttributeClass.GetMembers().Select(a => a.Name).Contains(IsDBField))
 			{
 				foreach (var argument in attribute.NamedArguments)
 				{
-					if (argument.Key.Equals(_IsDBField))
+					if (argument.Key.Equals(IsDBField))
 					{
 						if (argument.Value.Value.Equals(true))
 							return BoundAttribute.DbBound;
 						else
 							return BoundAttribute.Unbound;
 					}
-
 				}
 				return BoundAttribute.Unknown;
 			}
 			return BoundAttribute.Unbound;
 		}
 
-		///TODO: refactoring arguments -> remove semanticModel to constructor? Is it nessesary.
+		///TODO: refactoring arguments -> remove semanticModel to constructor? Is it nessesary?
 		///TODO: Add DataFlow analyze to corner cases with defaul IsDBBound assigment.
 		public bool? IsBoundField(PropertyDeclarationSyntax property, SemanticModel semanticModel)
 		{
@@ -189,7 +189,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 					return true;
 				foreach (var argument in attribute.NamedArguments)
 				{
-					if (argument.Key.Equals("IsDBField") && argument.Value.Value.Equals(true))
+					if (argument.Key.Equals(IsDBField) && argument.Value.Value.Equals(true))
 						return (bool)argument.Value.Value;
 				}
 			}

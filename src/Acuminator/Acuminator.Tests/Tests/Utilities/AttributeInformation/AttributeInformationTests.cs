@@ -65,8 +65,8 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		 */
 		[Theory]
 		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
-		public void TestAreBoundAttributes(string source) =>
-		 _testIsBoundAttribute(source, new List<BoundAttribute> { BoundAttribute.Unbound,
+		public async void TestAreBoundAttributesAsync(string source) =>
+			await _testIsBoundAttributeAsync(source, new List<BoundAttribute> { BoundAttribute.Unbound,
 														  BoundAttribute.Unbound,
 														  BoundAttribute.Unbound,
 														  BoundAttribute.DbBound,
@@ -75,18 +75,18 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
-		public void TestAreBoundAggregateAttributes(string source) =>
-			_testIsBoundAttribute(source, new List<BoundAttribute> { BoundAttribute.DbBound, BoundAttribute.Unbound });
+		public async void TestAreBoundAggregateAttributesAsync(string source) =>
+			await _testIsBoundAttributeAsync(source, new List<BoundAttribute> { BoundAttribute.DbBound, BoundAttribute.Unbound });
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
-		public void TestAreBoundAggregateRecursiveAttribute(string source) =>
-			_testIsBoundAttribute(source, new List<BoundAttribute> { BoundAttribute.Unbound, BoundAttribute.DbBound });
+		public async void TestAreBoundAggregateRecursiveAttributeAsync(string source) =>
+			await _testIsBoundAttributeAsync(source, new List<BoundAttribute> { BoundAttribute.Unbound, BoundAttribute.DbBound });
 
-		private void _testIsBoundAttribute(string source, List<BoundAttribute> expected)
+		private async Task _testIsBoundAttributeAsync(string source, List<BoundAttribute> expected)
 		{
 			Document document = CreateDocument(source);
-			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
+			SemanticModel semanticModel = await document.GetSemanticModelAsync();
 			var syntaxRoot = document.GetSyntaxRootAsync().Result;
 
 			List<BoundAttribute> actual = new List<BoundAttribute>();
@@ -110,27 +110,27 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"PropertyIsDBBoundFieldAttribute.cs")]
-		public void TestAreBoundIsDBFieldAttribute(string source) =>
-			_testIsDBFieldProperty(source,
+		public async void FieldBoundAttributesWithDynamicIsDBFieldSetInConstructorAsync(string source) =>
+			await _testIsDBFieldPropertyAsync(source,
 								   new List<BoundAttribute> { BoundAttribute.DbBound, BoundAttribute.Unbound });
 
 		[Theory]
 		[EmbeddedFileData(@"PropertyIsDBBoundFieldWithDefinedAttributes.cs")]
-		public void TestAreBoundIsDBFieldWithDefinedAttributes(string source) =>
-		   _testIsDBFieldProperty(source,
+		public async void FieldBoundAttributesWithDynamicIsDBFieldSetInAttributeDefinitionAsync(string source) =>
+		   await _testIsDBFieldPropertyAsync(source,
 								  new List<BoundAttribute> { BoundAttribute.Unknown, BoundAttribute.Unknown, BoundAttribute.Unknown, BoundAttribute.Unknown });
 
 		[Theory]
 		[EmbeddedFileData(@"PropertyIsDBBoundFieldWithoutDefinedAttributes.cs", internalCodeFileNames: new string[] { @"ExternalAttributes1.cs", @"ExternalAttributes2.cs" })]
-		public void TestAreBoundIsDBFieldWithoutDefinedAttributes(string source, string externalAttribute1, string externalAttribute2) =>
-		   _testIsDBFieldProperty(source,
+		public async void FieldBoundAttributesWithDynamicIsDBFieldSetInExternalAttributeDefinitionAsync(string source, string externalAttribute1, string externalAttribute2) =>
+		   await _testIsDBFieldPropertyAsync(source,
 								  new List<BoundAttribute> { BoundAttribute.Unknown, BoundAttribute.Unknown },
 								  new string[] { externalAttribute1, externalAttribute2 });
 
-		private void _testIsDBFieldProperty(string source, List<BoundAttribute> expected, string[] code = null)
+		private async Task _testIsDBFieldPropertyAsync(string source, List<BoundAttribute> expected, string[] code = null)
 		{
-			Document document = CreateDocument(source, InternalCode: code);
-			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
+			Document document = CreateDocument(source, externalCode: code);
+			SemanticModel semanticModel = await document.GetSemanticModelAsync();
 			var syntaxRoot = document.GetSyntaxRootAsync().Result;
 
 			List<BoundAttribute> actual = new List<BoundAttribute>();
@@ -151,9 +151,9 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
-		private void TestListOfParentsSimple(string source)
+		private async void TestListOfParentsSimpleAsync(string source)
 		{
-			_testListOfParents(source,
+			await _testListOfParentsAsync(source,
 								new List<List<string>> {
 									new List<string>{ "PX.Data.PXBoolAttribute" },
 									new List<string>{ "PX.Data.PXDefaultAttribute" },
@@ -167,9 +167,9 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
-		private void TestListOfParentsAggregate(string source)
+		private async void TestListOfParentsAggregateAsync(string source)
 		{
-			_testListOfParents(source,
+			await _testListOfParentsAsync(source,
 								new List<List<string>> {
 									new List<string>
 									{
@@ -190,9 +190,9 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
-		private void TestListOfParentsAggregateRecursive(string source)
+		private async void TestListOfParentsAggregateRecursiveAsync(string source)
 		{
-			_testListOfParents(source, new List<List<string>> {
+			await _testListOfParentsAsync(source, new List<List<string>> {
 									new List<string>
 									{
 										"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
@@ -212,9 +212,9 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
-		private void TestListOfParentsSimpleExpanded(string source)
+		private async void TestListOfParentsSimpleExpandedAsync(string source)
 		{
-			_testListOfParents(source,
+			await _testListOfParentsAsync(source,
 								new List<List<string>> {
 									new List<string>{ "PX.Data.PXBoolAttribute" },
 									new List<string>{ "PX.Data.PXDefaultAttribute" },
@@ -229,9 +229,9 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
-		private void TestListOfParentsAggregateExpanded(string source)
+		private async void TestListOfParentsAggregateExpandedAsync(string source)
 		{
-			_testListOfParents(source,
+			await _testListOfParentsAsync(source,
 								new List<List<string>> {
 									new List<string>
 									{
@@ -257,9 +257,9 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
-		private void TestListOfParentsAggregateRecursiveExpanded(string source)
+		private async void TestListOfParentsAggregateRecursiveExpandedAsync(string source)
 		{
-			_testListOfParents(source, new List<List<string>> {
+			await _testListOfParentsAsync(source, new List<List<string>> {
 									new List<string>
 									{
 										"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
@@ -282,10 +282,10 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		}
 
 
-		private void _testListOfParents(string source, List<List<string>> expected, bool expand = false)
+		private async Task _testListOfParentsAsync(string source, List<List<string>> expected, bool expand = false)
 		{
 			Document document = CreateDocument(source);
-			SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
+			SemanticModel semanticModel = await document.GetSemanticModelAsync();
 			var syntaxRoot = document.GetSyntaxRootAsync().Result;
 
 			var pxContext = new PXContext(semanticModel.Compilation);

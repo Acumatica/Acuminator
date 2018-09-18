@@ -29,7 +29,7 @@ namespace Acuminator.Tests.Verification
 		internal static string CSharpDefaultFileExt = "cs";
 		internal static string VisualBasicDefaultExt = "vb";
 		internal static string TestProjectName = "TestProject";
-		internal static string BuildFailMessage = "Internal assembly build failure";
+		internal static string BuildFailMessage = "External assembly build failure";
 
 
 		/// <summary>
@@ -62,9 +62,9 @@ namespace Acuminator.Tests.Verification
 		/// <param name="source">Classes in the form of a string</param>
 		/// <param name="language">The language the source code is in</param>
 		/// <returns>A Document created from the source string</returns>
-		public static Document CreateDocument(string source, string language = LanguageNames.CSharp, string[] InternalCode = null)
+		public static Document CreateDocument(string source, string language = LanguageNames.CSharp, string[] externalCode = null)
 		{
-			return CreateProject(new[] { source }, language, InternalCode).Documents.First();
+			return CreateProject(new[] { source }, language, externalCode).Documents.First();
 		}
 
 		public static Document CreateCSharpDocument(string source, params string[] additionalSources)
@@ -78,10 +78,10 @@ namespace Acuminator.Tests.Verification
 		/// </summary>
 		/// <param name="sources">Classes in the form of strings</param>
 		/// <param name="language">The language the source code is in</param>
-		/// <param name="sourceCodes">The source codes for new memory compilation</param>
+		/// <param name="externalCodes">The source codes for new memory compilation</param>
 		/// <param name="references">The references for new memory compilation</param>
 		/// <returns>A Project created out of the Documents created from the source strings</returns>
-		private static Project CreateProject(string[] sources, string language = LanguageNames.CSharp, string[] sourceCodes = null)
+		private static Project CreateProject(string[] sources, string language = LanguageNames.CSharp, string[] externalCodes = null)
 		{
 			string fileNamePrefix = DefaultFilePathPrefix;
 			string fileExt = language == LanguageNames.CSharp ? CSharpDefaultFileExt : VisualBasicDefaultExt;
@@ -103,11 +103,11 @@ namespace Acuminator.Tests.Verification
 									.AddMetadataReference(projectId, PXDataReference)
 									.AddMetadataReference(projectId, PXCommonReference);
 
-			if (sourceCodes != null && sourceCodes.Length > 0)
+			if (externalCodes != null && externalCodes.Length > 0)
 			{
-				ImmutableArray<byte> DynamicAssembly = BuildAssemblyFromSources(sourceCodes).ToImmutableArray();
-				MetadataReference DynamicReference = MetadataReference.CreateFromImage(DynamicAssembly);
-				solution = solution.AddMetadataReference(projectId, DynamicReference);
+				IEnumerable<byte> dynamicAssembly = BuildAssemblyFromSources(externalCodes);
+				MetadataReference dynamicReference = MetadataReference.CreateFromImage(dynamicAssembly);
+				solution = solution.AddMetadataReference(projectId, dynamicReference);
 			}
 
 			var project = solution.GetProject(projectId);
