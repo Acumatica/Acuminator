@@ -10,7 +10,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphLongOperationDuringInitia
 {
     public class PXGraphLongOperationDuringInitializationTests : DiagnosticVerifier
     {
-        protected override DiagnosticAnalyzer CSharpDiagnosticAnalyzer =>
+        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer () =>
             new PXGraphAnalyzer(new PXGraphLongOperationDuringInitializationAnalyzer());
 
         [Theory]
