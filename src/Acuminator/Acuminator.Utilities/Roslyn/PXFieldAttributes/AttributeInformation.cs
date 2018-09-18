@@ -162,11 +162,11 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
         ///TODO: refactoring arguments -> remove semanticModel to constructor? Is it nessesary.
         public bool IsBoundField(PropertyDeclarationSyntax property,SemanticModel semanticModel)
         {
-            var attributes = property.AttributeLists;
+           /* var attributes = property.AttributeLists;
             foreach(var attribute in attributes)
             {
 
-            }
+            }*/
 
             var typeSymbol = semanticModel.GetDeclaredSymbol(property);
             var attributesData = typeSymbol.GetAttributes();
@@ -181,9 +181,30 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
                         return (bool) argument.Value.Value;
                    
                 }
+                if (attribute.AttributeClass.DeclaringSyntaxReferences.Length > 0)
+                {//DataFlowAnalyze
+                    var syntaxTrees = attribute.AttributeClass.DeclaringSyntaxReferences;
+                    foreach(var syntax in syntaxTrees)
+                    {
+                        var attributeProperty = syntax.GetSyntax().DescendantNodes()
+                                                               .OfType<PropertyDeclarationSyntax>()
+                                                               .Where(a => a.Identifier.ValueText.Equals("IsDBField")).Single();
+                        var statementProperties = attributeProperty.DescendantNodes().OfType<StatementSyntax>();
+                        foreach(var statement in statementProperties)
+                        {
+                            ControlFlowAnalysis result = semanticModel.AnalyzeControlFlow(statement);
+                        }
+                      
+                    }
+                }
+                else
+                    continue;
+                
+                //IsBoundAttribute(attribute);
+                //attribute.AttributeClass.GetMembers().First().DeclaringSyntaxReferences.First().SyntaxTree
             }
-            
-            
+
+
             //var model = semanticModel.Compilation.GetSemanticModel(property.SyntaxTree);
             //DataFlowAnalysis result = model.AnalyzeDataFlow(property);
 
