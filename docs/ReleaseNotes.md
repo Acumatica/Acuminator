@@ -15,7 +15,7 @@ In this version, diagnostics and code fixes for the following issues have been a
 | PX1044 | Changes to `PXCache` cannot be performed in event handlers. | Error | Available | Unavailable |
 | PX1045 | `PXGraph` instances cannot be created in event handlers. | Error | Available | Unavailable |
 | PX1046 | Long-running operations cannot be started within event handlers. | Error | Available | Unavailable |
-| PX1050 | Hardcorded strings cannot be used as parameters for localization methods and `PXException` constructors. | Error | Available | Unavailable |
+| PX1050 | Hardcoded strings cannot be used as parameters for localization methods and `PXException` constructors. | Error | Available | Unavailable |
 | PX1051 | The strings defined in a class without the `PXLocalizable` attribute cannot be used as parameters for localization methods and `PXException` constructors. | Error | Available | Unavailable |
 | PX1052 | The strings without formatted string arguments cannot be used in the methods of the `LocalizeFormat` family. | Error | Available | Unavailable |
 | PX1053 | Concatenated strings cannot be used as parameters for localization methods and `PXException` constructors. | Error | Available | Unavailable |
@@ -25,7 +25,7 @@ In this version, diagnostics and code fixes for the following issues have been a
 Acuminator 1.4 suggests one type of code refactoring: replacement of standard event handler signature with the generic signature. Because an event handler can be overridden in derived classes or graph extensions, after you have applied this refactoring to your code, you have to manually update all possible overrides. 
 
 ### Code Analysis Enhancements
-Now Acuminator can analyse the code recursively (that is, analyse the whole tree of method invocations in a recursive manner). For example, for the PX1042 diagnostic, the code of a `RowSelecting` event handler can contain no direct requests to the database but can contain a call to another method that performs a request to the database. Acuminator 1.4 can find this indirect request to the database.
+Now Acuminator can analyze the code recursively (that is, analyze the whole tree of method invocations in a recursive manner). For example, for the PX1042 diagnostic, the code of a `RowSelecting` event handler can contain no direct requests to the database but can contain a call to another method that performs a request to the database. Acuminator 1.4 can find this indirect request to the database.
 By default, Acuminator analyses the code recursively. You can turn this behavior off by setting to `False` the value of **Tools > Options > Acuminator > Code Analysis > Enable recursive code analysis**.
 
 ### Bug Fixes
@@ -34,7 +34,7 @@ In this version, the following bugs have been fixed.
 | Bug | Fix Description |
 | --- | --------------- |
 | The PX1021 error was displayed for the DAC fields of the `string[]` type that had an attribute inherited from `PXDBAttributeAttribute`. | The error is not displayed for these fields. |
-| The PX1021 error was displayed for the DAC property fields with non-nullable types along with the PX1014 error. | Only the PX1014 error is displayed for the DAC propery fields with non-nullable types. |
+| The PX1021 error was displayed for the DAC property fields with non-nullable types along with the PX1014 error. | Only the PX1014 error is displayed for the DAC property fields with non-nullable types. |
 | The PX1029 error was displayed for DACs with the `PXPrimaryGraph` attribute. | Use of `PXGraph` instances in DAC attributes is ignored. `PXGraph` instances can be used in `typeof` expressions. |
 | The PX1029 diagnostic could be displayed twice for the same code. | Duplicate analysis of DACs has been removed. |
 | The PX1029, PX1031, and PX1032 diagnostics displayed errors for custom attributes and helpers declared in DACs. | The PX1029, PX1031, and PX1032 diagnostics do not check the nested DAC classes that had the type other than IBqlField. |
