@@ -53,7 +53,7 @@ namespace Acuminator.Utilities.Roslyn
 
 		private readonly Stack<SyntaxNode> _nodesStack = new Stack<SyntaxNode>();
 
-		public NestedInvocationWalker(Compilation compilation, CancellationToken cancellationToken)
+		protected NestedInvocationWalker(Compilation compilation, CancellationToken cancellationToken)
 		{
 			compilation.ThrowOnNull(nameof (compilation));
 
