@@ -27,3 +27,6 @@ To build the solution, do the following:
 
 ## Developer Documentation
 [Recursive Code Analysis](docs/dev/RecursiveCodeAnalysis/RecursiveCodeAnalysis.md)
+
+## Release Notes
+[Release Notes](docs/ReleaseNotes.md)
