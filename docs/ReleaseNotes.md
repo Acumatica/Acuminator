@@ -1,26 +1,28 @@
 # Acuminator Release Notes
-This document provides information about fixes, enhancements, and key features that are available in Acuminator 1.3.
+This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
 ## Acuminator 1.4
 Acuminator 1.4 includes the diagnostics and code fixes, suggestions of code refactoring, and bug fixes described in this section, as well as the features that have been implemented in the previous versions.
+
 ### New Diagnostics and Code Fixes
 In this version, diagnostics and code fixes for the following issues have been added.
+
 | Code   | Issue Description                                               | Type    | Diagnostics | Code Fix  | 
 | ------ | --------------------------------------------------------------- | ------- | ----------- | --------- | 
 | PX1030 | The `PXDefault` attribute of the field is used incorrectly. `PXDefaultAttribute` used on a custom field defined in `PXCacheExtension` can potentially prevent updates to existing records when used without `PersistingCheck` property set to `Nothing`. | Warning | Available | Available |
-| PX1042 | In a RowSelecting handler, BQL statements and other database queries must be executed only inside a separate connection scope | Error | Available | Available |
-| PX1043 | Only the methods of the PXCache.Persist family can be used to save changes to the database from RowPersisting event handlers. Changes cannot be saved to the database from other event handlers.  | Error | Available | Unavailable |
-| PX1044 | Changes in `PXCache` cannot be performed in event handlers. | Error | Available | Unavailable |
+| PX1042 | In a RowSelecting handler, BQL statements and other database queries must be executed only inside a separate connection scope. | Error | Available | Available |
+| PX1043 | Only the methods of the `PXCache.Persist` family can be used to save changes to the database from `RowPersisting` event handlers. Changes cannot be saved to the database from other event handlers.  | Error | Available | Unavailable |
+| PX1044 | Changes to `PXCache` cannot be performed in event handlers. | Error | Available | Unavailable |
 | PX1045 | `PXGraph` instances cannot be created in event handlers. | Error | Available | Unavailable |
 | PX1046 | Long-running operations cannot be started within event handlers. | Error | Available | Unavailable |
 | PX1050 | Hardcorded strings cannot be used as parameters for localization methods and `PXException` constructors. | Error | Available | Unavailable |
 | PX1051 | The strings defined in a class without the `PXLocalizable` attribute cannot be used as parameters for localization methods and `PXException` constructors. | Error | Available | Unavailable |
-| PX1052 | The strings without formatted string arguments cannot be used in the LocalizeFormat methods. | Error | Available | Unavailable |
+| PX1052 | The strings without formatted string arguments cannot be used in the methods of the `LocalizeFormat` family. | Error | Available | Unavailable |
 | PX1053 | Concatenated strings cannot be used as parameters for localization methods and `PXException` constructors. | Error | Available | Unavailable |
 | PX1057 | A `PXGraph` instance cannot be initialized while another `PXGraph` instance is being initialized. | Error | Available | Unavailable |
 
 ### New Suggestions of Code Refactoring 
-Acuminator 1.4 suggests one type of code refactoring: replacement of standard event handler signature with the generic signature. Because the event handler can be overridden in derived classes or graph extensions, after you have applied this refactoring to your code, you have to manually update all possible overrides. 
+Acuminator 1.4 suggests one type of code refactoring: replacement of standard event handler signature with the generic signature. Because an event handler can be overridden in derived classes or graph extensions, after you have applied this refactoring to your code, you have to manually update all possible overrides. 
 
 ### Bug Fixes
 In this version, the following bugs have been fixed.
@@ -28,7 +30,7 @@ In this version, the following bugs have been fixed.
 | Bug | Fix Description |
 | --- | --------------- |
 | The PX1021 error was displayed for the DAC fields of the `string[]` type that had an attribute inherited from `PXDBAttributeAttribute`. | The error is not displayed for these fields. |
-| The PX1021 error was displayed for the DAC property fields with not nullable types along with the PX1014 error. | Only the PX1014 error is displayed for the DAC propery fields with non nullable types. |
+| The PX1021 error was displayed for the DAC property fields with non-nullable types along with the PX1014 error. | Only the PX1014 error is displayed for the DAC propery fields with non-nullable types. |
 | The PX1029 error was displayed for DACs with the `PXPrimaryGraph` attribute. | Use of `PXGraph` instances in DAC attributes is ignored. `PXGraph` instances can be used in `typeof` expressions. |
 | The PX1029 diagnostic could be displayed twice for the same code. | Duplicate analysis of DACs has been removed. |
 | The PX1029, PX1031, and PX1032 diagnostics displayed errors for custom attributes and helpers declared in DACs. | The PX1029, PX1031, and PX1032 diagnostics do not check the nested DAC classes that had the type other than IBqlField. |
@@ -40,6 +42,7 @@ In this version, the following bugs have been fixed.
 
 ## Acuminator 1.3
 Acuminator 1.3 includes the diagnostics and code fixes, enhancements, and bug fixes described in this section, as well as the features that have been implemented in the previous versions.
+
 ### New Diagnostics and Code Fixes
 In this version, diagnostics and code fixes for the following issues have been added.
 
