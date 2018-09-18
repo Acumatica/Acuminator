@@ -31,10 +31,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
 
             IMethodSymbol methodSymbol = GetSymbol<IMethodSymbol>(node);
 
-            if (!_pxContext.StartOperation.Contains(methodSymbol))
-                return;
-
-            ReportDiagnostic(_reportDiagnostic, _descriptor, node);
+            if (_pxContext.StartOperation.Contains(methodSymbol))
+            {
+                ReportDiagnostic(_reportDiagnostic, _descriptor, node);
+            }
+            else
+            {
+                base.VisitInvocationExpression(node);
+            }
         }
     }
 }

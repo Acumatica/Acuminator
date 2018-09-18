@@ -58,15 +58,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 
                 SemanticModel semanticModel = GetSemanticModel(node.SyntaxTree);
 
-                if (!(semanticModel?.GetSymbolInfo(node, _context.CancellationToken).Symbol is IMethodSymbol method))
-                    return;
-
-                SaveOperationKind saveOperation = SaveOperationHelper.GetSaveOperationKind(method, node, semanticModel, _pxContext);
-
-                if (saveOperation == SaveOperationKind.None)
-                    return;
-
-                ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1058_PXGraphSavingChangesDuringInitialization, node);
+                if (semanticModel?.GetSymbolInfo(node, _context.CancellationToken).Symbol is IMethodSymbol method &&
+                    SaveOperationHelper.GetSaveOperationKind(method, node, semanticModel, _pxContext) != SaveOperationKind.None)
+                {
+                    ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1058_PXGraphSavingChangesDuringInitialization, node);
+                }
+                else
+                {
+                    base.VisitInvocationExpression(node);
+                }
             }
         }
     }
