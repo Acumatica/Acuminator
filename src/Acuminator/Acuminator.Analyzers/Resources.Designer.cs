@@ -663,5 +663,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1057Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A PXGraph instance should not save changes to the database during the initialization phase.
+        /// </summary>
+        public static string PX1058Title {
+            get {
+                return ResourceManager.GetString("PX1058Title", resourceCulture);
+            }
+        }
     }
 }

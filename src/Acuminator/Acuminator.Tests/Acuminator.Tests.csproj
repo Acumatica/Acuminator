@@ -195,6 +195,10 @@
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\PXOverride.cs" />
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\AdditionalParameters.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationDuringInitialization\Sources\PXGraphWithCreateInstanceOutsideOfInitialization.cs" />
+    <Compile Include="Tests\StaticAnalysis\SavingChanges\PXGraphSavingChangesDuringInitializationTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\PXGraphIsSavingChangesInInstanceConstructor.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\PXGraphExtensionIsSavingChangesInInitializationMethod.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\PXGraphIsntSavingChangesInInstanceConstructor.cs" />
     <Compile Include="Verification\CodeRefactoringVerifier.cs" />
     <Compile Include="Verification\VerificationHelper.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\StaticMethod.cs" />
