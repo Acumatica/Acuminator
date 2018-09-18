@@ -306,13 +306,19 @@
   <data name="PX1044MessageFormat" xml:space="preserve">
     <value>Changing PXCache is prohibited in the {0} event handler</value>
   </data>
-  <data name="PX1045Title" xml:space="preserve">
-    <value>A PXGraph instance cannot be created within an event handler</value>
+  <data name="PX1057Title" xml:space="preserve">
+    <value>A PXGraph instance cannot be initialized while another PXGraph instance is being initialized</value>
   </data>
   <data name="PX1046Title" xml:space="preserve">
     <value>A long-running operation cannot be started within an event handler</value>
   </data>
   <data name="EventHandlerSignatureCodeActionTitle" xml:space="preserve">
     <value>Convert an event handler signature to the generic one. Please, be careful because an event handler can be overwritten somewhere else.</value>
+  </data>
+  <data name="PX1045Title" xml:space="preserve">
+    <value>A PXGraph instance cannot be created within an event handler</value>
+  </data>
+  <data name="PX1058Title" xml:space="preserve">
+    <value>A PXGraph instance should not save changes to the database during the initialization phase</value>
   </data>
 </root>

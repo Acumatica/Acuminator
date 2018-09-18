@@ -4,8 +4,10 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.Semantic
 {
@@ -300,5 +302,57 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			string typeNameWithoutGeneric = namedType.ToDisplayString(displayFormat);
 			return typeNameWithoutGeneric + DefaultGenericArgsCountSeparator + typeArgs.Length;
 		}
-	}
+
+        public static IEnumerable<(ConstructorDeclarationSyntax Node, IMethodSymbol Symbol)> GetDeclaredInstanceConstructors(
+            this INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
+        {
+            typeSymbol.ThrowOnNull(nameof(typeSymbol));
+
+            List<(ConstructorDeclarationSyntax, IMethodSymbol)> initializers = new List<(ConstructorDeclarationSyntax, IMethodSymbol)>();
+
+            foreach (IMethodSymbol ctr in typeSymbol.InstanceConstructors)
+            {
+                cancellation.ThrowIfCancellationRequested();
+
+                if (!ctr.IsDefinition)
+                    continue;
+
+                SyntaxReference reference = ctr.DeclaringSyntaxReferences.FirstOrDefault();
+                if (reference == null)
+                    continue;
+
+                if (!(reference.GetSyntax(cancellation) is ConstructorDeclarationSyntax node))
+                    continue;
+
+                initializers.Add((node, ctr));
+            }
+
+            return initializers;
+        }
+
+        public static (ConstructorDeclarationSyntax Node, IMethodSymbol Symbol) GetDeclaredStaticConstructor
+            (this INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
+        {
+            typeSymbol.ThrowOnNull(nameof(typeSymbol));
+
+            foreach(IMethodSymbol ctr in typeSymbol.StaticConstructors)
+            {
+                cancellation.ThrowIfCancellationRequested();
+
+                if (!ctr.IsDefinition)
+                    continue;
+
+                SyntaxReference reference = ctr.DeclaringSyntaxReferences.FirstOrDefault();
+                if (reference == null)
+                    continue;
+
+                if (!(reference.GetSyntax(cancellation) is ConstructorDeclarationSyntax node))
+                    continue;
+
+                return (node, ctr);
+            }
+
+            return (null, null);
+        }
+    }
 }
