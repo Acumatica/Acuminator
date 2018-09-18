@@ -94,8 +94,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		private static async Task<bool> CheckForMultipleSpecialAttributesAsync(SymbolAnalysisContext symbolContext,
 															List<(AttributeData Attribute, List<FieldTypeAttributeInfo> Infos)> attributesWithInfos)
 		{
-			var (specialAttributesDeclaredOnDacProperty, specialAttributesWithConflictingAggregatorDeclarations) =
-				FilterAttributesWithInfos(attributesWithInfos, atrInfo => atrInfo.IsSpecial);
+			var (specialAttributesDeclaredOnDacProperty, specialAttributesWithConflictingAggregatorDeclarations) = FilterSpecialAttributes();
 
 			if (specialAttributesDeclaredOnDacProperty.Count == 0 ||
 				(specialAttributesDeclaredOnDacProperty.Count == 1 && specialAttributesWithConflictingAggregatorDeclarations.Count == 0))
@@ -118,13 +117,36 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			}
 
 			return false;
+
+			//-----------------------------------------------Local Functions---------------------------------------
+			(List<AttributeData>, List<AttributeData>) FilterSpecialAttributes()
+			{
+				List<AttributeData> specialAttributesOnDacProperty = new List<AttributeData>(2);
+				List<AttributeData> specialAttributesInvalidAggregatorDeclarations = new List<AttributeData>(2);
+
+				foreach (var attrWithInfos in attributesWithInfos)
+				{
+					int countOfSpecialAttributeInfos = attrWithInfos.Infos.Count(atrInfo => atrInfo.IsSpecial);
+
+					if (countOfSpecialAttributeInfos > 0)
+					{
+						specialAttributesOnDacProperty.Add(attrWithInfos.Attribute);
+					}
+
+					if (countOfSpecialAttributeInfos > 1)
+					{
+						specialAttributesInvalidAggregatorDeclarations.Add(attrWithInfos.Attribute);
+					}
+				}
+
+				return (specialAttributesOnDacProperty, specialAttributesInvalidAggregatorDeclarations);
+			}
 		}
 
 		private static async Task CheckForFieldTypeAttributesAsync(IPropertySymbol property, SymbolAnalysisContext symbolContext, PXContext pxContext,
 														List<(AttributeData Attribute, List<FieldTypeAttributeInfo> Infos)> attributesWithInfos)
 		{
-			var (typeAttributesDeclaredOnDacProperty, typeAttributesWithConflictingAggregatorDeclarations) =
-				FilterAttributesWithInfos(attributesWithInfos, atrInfo => atrInfo.IsFieldAttribute);
+			var (typeAttributesDeclaredOnDacProperty, typeAttributesWithConflictingAggregatorDeclarations) = FilterTypeAttributes();
 
 			if (typeAttributesDeclaredOnDacProperty.Count == 0)
 				return;
@@ -151,31 +173,36 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		
 				await CheckAttributeAndPropertyTypesForCompatibilityAsync(property, typeAttribute, attributeInfo, pxContext, symbolContext);
 			}
-		}
 
-		private static (List<AttributeData>, List<AttributeData>) FilterAttributesWithInfos(
-																List<(AttributeData Attribute, List<FieldTypeAttributeInfo> Infos)> attributesWithInfos,
-																Func<FieldTypeAttributeInfo, bool> predicate)
-		{
-			List<AttributeData> filteredAttributesDeclaredOnDacProperty = new List<AttributeData>(2);
-			List<AttributeData> filteredAttributesWithConflictingAggregatorDeclarations = new List<AttributeData>(2);
-
-			foreach (var attrWithInfos in attributesWithInfos)
+			//-----------------------------------------------Local Functions---------------------------------------
+			(List<AttributeData>, List<AttributeData>) FilterTypeAttributes()
 			{
-				int countOfFilteredAttributeInfos = attrWithInfos.Infos.Count(predicate);
+				List<AttributeData> typeAttributesOnDacProperty = new List<AttributeData>(2);
+				List<AttributeData> typeAttributesWithInvalidAggregatorDeclarations = new List<AttributeData>(2);
 
-				if (countOfFilteredAttributeInfos > 0)
+				foreach (var attrWithInfos in attributesWithInfos)
 				{
-					filteredAttributesDeclaredOnDacProperty.Add(attrWithInfos.Attribute);
+					int countOfTypeAttributeInfos = attrWithInfos.Infos.Count(info => info.IsFieldAttribute);
+
+					if (countOfTypeAttributeInfos == 0)
+						continue;
+
+					typeAttributesOnDacProperty.Add(attrWithInfos.Attribute);
+
+					if (countOfTypeAttributeInfos == 1)
+						continue;
+
+					int countOfDeclaredFieldTypes = attrWithInfos.Infos.Select(info => info.FieldType)
+																	   .Distinct()
+																	   .Count();
+					if (countOfDeclaredFieldTypes > 1)
+					{
+						typeAttributesWithInvalidAggregatorDeclarations.Add(attrWithInfos.Attribute);
+					}
 				}
 
-				if (countOfFilteredAttributeInfos > 1)
-				{
-					filteredAttributesWithConflictingAggregatorDeclarations.Add(attrWithInfos.Attribute);
-				}
+				return (typeAttributesOnDacProperty, typeAttributesWithInvalidAggregatorDeclarations);
 			}
-
-			return (filteredAttributesDeclaredOnDacProperty, filteredAttributesWithConflictingAggregatorDeclarations);
 		}
 
 		private static Task CheckAttributeAndPropertyTypesForCompatibilityAsync(IPropertySymbol property, AttributeData fieldAttribute,

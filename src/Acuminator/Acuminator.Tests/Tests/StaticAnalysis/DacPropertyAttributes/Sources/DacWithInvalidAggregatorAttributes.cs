@@ -17,6 +17,11 @@ namespace PX.Objects.HackathonDemo
 	{
 	}
 
+	[PXDBString]
+	public class StringDerivedAggregatorAttribute : IntDerivedAggregatorAttribute
+	{
+	}
+
 	[PXDBScalar(typeof(Search<DacWithInvalidAggregatorAttributes.someField>))]
 	public class SpecialAttributesAggregatorAttribute : PXAggregateAttribute
 	{
@@ -30,14 +35,25 @@ namespace PX.Objects.HackathonDemo
 
 	public class DacWithInvalidAggregatorAttributes : IBqlTable
 	{
+		#region SomeField
 		public abstract class someField : IBqlField { }
 		
 		[SpecialAttributesDerivedAggregator]
 		public int? SomeField { get; set; }
+		#endregion
 
+		#region OtherField
 		public abstract class otherField : IBqlField { }
 
 		[IntDerivedAggregator]
 		public int? OtherField { get; set; }
+		#endregion
+
+		#region RefNbr
+		public abstract class refNbr : IBqlField { }
+
+		[StringDerivedAggregator]
+		public string? RefNbr { get; set; }
+		#endregion
 	}
 }
