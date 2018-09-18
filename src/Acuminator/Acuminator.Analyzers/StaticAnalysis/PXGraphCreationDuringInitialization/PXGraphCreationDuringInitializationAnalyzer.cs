@@ -46,19 +46,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
             {
                 _context.CancellationToken.ThrowIfCancellationRequested();
 
-                SemanticModel semanticModel = _context.Compilation.GetSemanticModel(node.SyntaxTree);
+                IMethodSymbol symbol = GetSymbol<IMethodSymbol>(node);
 
-                if (semanticModel.GetSymbolInfo(node, _context.CancellationToken).Symbol is IMethodSymbol symbol)
+                if (symbol != null && _pxContext.PXGraphRelatedMethods.CreateInstance.Contains(symbol.ConstructedFrom))
                 {
-                    bool isCreationInstance = _pxContext.PXGraphRelatedMethods.CreateInstance.Contains(symbol.ConstructedFrom);
-
-                    if (isCreationInstance)
-                    {
-                        _context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1057_PXGraphCreationDuringInitialization, node.GetLocation()));
-                    }
+                    ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1057_PXGraphCreationDuringInitialization, node);
                 }
-
-                base.VisitMemberAccessExpression(node);
+                else
+                {
+                    base.VisitMemberAccessExpression(node);
+                }
             }
         }
     }

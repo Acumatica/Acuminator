@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
 using Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting;
-using Acuminator.Analyzers.StaticAnalysis.LongOperationInEventHandlers;
+using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance;
 using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
 using Acuminator.Utilities.Roslyn;
