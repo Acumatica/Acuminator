@@ -1,7 +1,7 @@
 ﻿using PX.Data;
 using PX.SM;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphSavingChangesDuringInitialization.Sources
+namespace Acuminator.Tests.Tests.StaticAnalysis.SavingChanges.Sources
 {
     public class SMAccessExt : PXGraphExtension<SMAccessPersonalMaint>
     {

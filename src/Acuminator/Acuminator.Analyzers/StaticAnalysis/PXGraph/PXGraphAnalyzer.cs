@@ -1,11 +1,8 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization;
-using Acuminator.Analyzers.StaticAnalysis.PXGraphSavingChangesDuringInitialization;
+using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
 using Acuminator.Utilities.Roslyn;
-using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.Immutable;
