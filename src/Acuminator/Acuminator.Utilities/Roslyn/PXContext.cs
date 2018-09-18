@@ -16,22 +16,22 @@ namespace Acuminator.Utilities.Roslyn
 
 		public Compilation Compilation { get; }
 
-		private readonly Lazy<BQLSymbols> bql;
-		public BQLSymbols BQL => bql.Value;
+		private readonly Lazy<BQLSymbols> _bql;
+		public BQLSymbols BQL => _bql.Value;
 
-		private readonly Lazy<EventSymbols> events;
-		public EventSymbols Events => events.Value;
+		private readonly Lazy<EventSymbols> _events;
+		public EventSymbols Events => _events.Value;
 
-		private readonly Lazy<FieldAttributesTypes> fieldAttributes;
-		public FieldAttributesTypes FieldAttributes => fieldAttributes.Value;
+		private readonly Lazy<FieldAttributesTypes> _fieldAttributes;
+		public FieldAttributesTypes FieldAttributes => _fieldAttributes.Value;
 
-		private readonly Lazy<PXSystemActionTypes> systemActionTypes;
-		public PXSystemActionTypes PXSystemActions => systemActionTypes.Value;
+		private readonly Lazy<PXSystemActionTypes> _systemActionTypes;
+		public PXSystemActionTypes PXSystemActions => _systemActionTypes.Value;
 
-		private readonly Lazy<SystemTypeSymbols> systemTypes;
-		public SystemTypeSymbols SystemTypes => systemTypes.Value;
-		private readonly Lazy<AttributesTypes> attributes;
-		public AttributesTypes AttributeTypes => attributes.Value;
+		private readonly Lazy<SystemTypeSymbols> _systemTypes;
+		public SystemTypeSymbols SystemTypes => _systemTypes.Value;
+		private readonly Lazy<AttributesTypes> _attributes;
+		public AttributesTypes AttributeTypes => _attributes.Value;
 
         private readonly Lazy<LocalizationTypes> _localizationMethods;
         public LocalizationTypes Localization => _localizationMethods.Value;
@@ -88,15 +88,16 @@ namespace Acuminator.Utilities.Roslyn
         public PXContext(Compilation compilation)
 		{
 			Compilation = compilation;
-			bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation));
-			events = new Lazy<EventSymbols>(() => new EventSymbols(Compilation));
-			fieldAttributes = new Lazy<FieldAttributesTypes>(
+
+			_bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation));
+			_events = new Lazy<EventSymbols>(() => new EventSymbols(Compilation));
+			_fieldAttributes = new Lazy<FieldAttributesTypes>(
 										() => new FieldAttributesTypes(Compilation));
-			systemActionTypes = new Lazy<PXSystemActionTypes>(
+			_systemActionTypes = new Lazy<PXSystemActionTypes>(
 										() => new PXSystemActionTypes(Compilation));
-			attributes = new Lazy<AttributesTypes>(
+			_attributes = new Lazy<AttributesTypes>(
 										() => new AttributesTypes(Compilation));
-			systemTypes = new Lazy<SystemTypeSymbols>(
+			_systemTypes = new Lazy<SystemTypeSymbols>(
 										() => new SystemTypeSymbols(Compilation));
             _localizationMethods = new Lazy<LocalizationTypes>(
                 () => new LocalizationTypes(Compilation));
