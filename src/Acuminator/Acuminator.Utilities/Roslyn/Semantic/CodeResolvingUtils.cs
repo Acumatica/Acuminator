@@ -241,6 +241,23 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsPXGraph(this ITypeSymbol typeSymbol, PXContext pxContext)
+        {
+            typeSymbol.ThrowOnNull(nameof(typeSymbol));
+            pxContext.ThrowOnNull(nameof(pxContext));
+
+            return typeSymbol.InheritsFromOrEquals(pxContext.PXGraphType);
+        }
+
+        public static bool IsPXGraphExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
+        {
+            typeSymbol.ThrowOnNull(nameof(typeSymbol));
+            pxContext.ThrowOnNull(nameof(pxContext));
+
+            return typeSymbol.InheritsFromOrEquals(pxContext.PXGraphExtensionType);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsPXGraphOrExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
         {
             typeSymbol.ThrowOnNull(nameof(typeSymbol));

@@ -4,6 +4,7 @@ using System.Linq;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
 using PX.Data;
 

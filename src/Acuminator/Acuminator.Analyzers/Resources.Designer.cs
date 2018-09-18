@@ -62,7 +62,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Convert event handler signature to the generic one.
+        ///   Looks up a localized string similar to Convert an event handler signature to the generic one. Please, be careful because an event handler can be overwritten somewhere else..
         /// </summary>
         public static string EventHandlerSignatureCodeActionTitle {
             get {
@@ -670,6 +670,24 @@ namespace Acuminator.Analyzers {
         public static string PX1053Title {
             get {
                 return ResourceManager.GetString("PX1053Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A PXGraph instance cannot be initialized while another PXGraph instance is being initialized.
+        /// </summary>
+        public static string PX1057Title {
+            get {
+                return ResourceManager.GetString("PX1057Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A PXGraph instance should not save changes to the database during the initialization phase.
+        /// </summary>
+        public static string PX1058Title {
+            get {
+                return ResourceManager.GetString("PX1058Title", resourceCulture);
             }
         }
     }
