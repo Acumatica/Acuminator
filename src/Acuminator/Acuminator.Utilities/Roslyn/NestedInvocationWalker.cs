@@ -33,7 +33,7 @@ namespace Acuminator.Utilities.Roslyn
 	///	</code>
 	/// </example>
 	// ReSharper disable once InheritdocConsiderUsage
-	public class NestedInvocationWalker : CSharpSyntaxWalker
+	public abstract class NestedInvocationWalker : CSharpSyntaxWalker
 	{
 		private const int MaxDepth = 100; // to avoid circular dependencies
 
