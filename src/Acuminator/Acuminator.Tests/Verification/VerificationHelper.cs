@@ -29,7 +29,7 @@ namespace Acuminator.Tests.Verification
 		internal static string CSharpDefaultFileExt = "cs";
 		internal static string VisualBasicDefaultExt = "vb";
 		internal static string TestProjectName = "TestProject";
-        internal static string BuildFailMessage = "Internal assembly build failure";
+		internal static string BuildFailMessage = "Internal assembly build failure";
 
 
 		/// <summary>
@@ -73,28 +73,28 @@ namespace Acuminator.Tests.Verification
 			return CreateProject(sources.ToArray()).Documents.Last();
 		}
 
-        /// <summary>
-        /// Create a project using the inputted strings as sources.
-        /// </summary>
-        /// <param name="sources">Classes in the form of strings</param>
-        /// <param name="language">The language the source code is in</param>
-        /// <param name="sourceCodes">The source codes for new memory compilation</param>
-        /// <param name="references">The references for new memory compilation</param>
-        /// <returns>A Project created out of the Documents created from the source strings</returns>
-        private static Project CreateProject(string[] sources, string language = LanguageNames.CSharp, string[] sourceCodes = null)
+		/// <summary>
+		/// Create a project using the inputted strings as sources.
+		/// </summary>
+		/// <param name="sources">Classes in the form of strings</param>
+		/// <param name="language">The language the source code is in</param>
+		/// <param name="sourceCodes">The source codes for new memory compilation</param>
+		/// <param name="references">The references for new memory compilation</param>
+		/// <returns>A Project created out of the Documents created from the source strings</returns>
+		private static Project CreateProject(string[] sources, string language = LanguageNames.CSharp, string[] sourceCodes = null)
 		{
 			string fileNamePrefix = DefaultFilePathPrefix;
 			string fileExt = language == LanguageNames.CSharp ? CSharpDefaultFileExt : VisualBasicDefaultExt;
 
 			var projectId = ProjectId.CreateNewId(debugName: TestProjectName);
-            
-            var workspace = new AdhocWorkspace();
+
+			var workspace = new AdhocWorkspace();
 			workspace.Options = workspace.Options.WithChangedOption(FormattingOptions.UseTabs, LanguageNames.CSharp, true)
 												 .WithChangedOption(FormattingOptions.SmartIndent, LanguageNames.CSharp, FormattingOptions.IndentStyle.Smart)
 												 .WithChangedOption(FormattingOptions.TabSize, LanguageNames.CSharp, 4)
 												 .WithChangedOption(FormattingOptions.IndentationSize, LanguageNames.CSharp, 4);
 
-            var solution = workspace.CurrentSolution
+			var solution = workspace.CurrentSolution
 									.AddProject(projectId, TestProjectName, TestProjectName, language)
 									.AddMetadataReference(projectId, CorlibReference)
 									.AddMetadataReference(projectId, SystemCoreReference)
@@ -103,15 +103,14 @@ namespace Acuminator.Tests.Verification
 									.AddMetadataReference(projectId, PXDataReference)
 									.AddMetadataReference(projectId, PXCommonReference);
 
-            //add check result execution BuildReferenceFromSource
-            if(sourceCodes != null && sourceCodes.Length > 0)
-            {
-                ImmutableArray<byte> DynamicAssembly = BuildAssemblyFromSources(sourceCodes).ToImmutableArray();
-                MetadataReference DynamicReference = MetadataReference.CreateFromImage(DynamicAssembly);
-                solution = solution.AddMetadataReference(projectId, DynamicReference);
-            }
+			if (sourceCodes != null && sourceCodes.Length > 0)
+			{
+				ImmutableArray<byte> DynamicAssembly = BuildAssemblyFromSources(sourceCodes).ToImmutableArray();
+				MetadataReference DynamicReference = MetadataReference.CreateFromImage(DynamicAssembly);
+				solution = solution.AddMetadataReference(projectId, DynamicReference);
+			}
 
-            var project = solution.GetProject(projectId);
+			var project = solution.GetProject(projectId);
 			var parseOptions = project.ParseOptions.WithFeatures(
 				project.ParseOptions.Features.Union(new[] { new KeyValuePair<string, string>("IOperation", "true") }));
 			solution = solution.WithProjectParseOptions(projectId, parseOptions);
@@ -141,7 +140,7 @@ namespace Acuminator.Tests.Verification
 			root = Formatter.Format(root, Formatter.Annotation, simplifiedDoc.Project.Solution.Workspace);
 			return root.GetText().ToString();
 		}
-		
+
 		/// <summary>
 		/// Apply the inputted CodeAction to the inputted document.
 		/// </summary>
@@ -185,7 +184,7 @@ namespace Acuminator.Tests.Verification
 				}
 			}
 		}
-		
+
 		/// <summary>
 		/// Get the existing compiler diagnostics on the inputted document.
 		/// </summary>
@@ -197,49 +196,48 @@ namespace Acuminator.Tests.Verification
 			return semanticModel.GetDiagnostics();
 		}
 
-        /// <summary>
-        /// Compile internal source code into memory array 
-        /// </summary>
-        /// <param name="code">Source codes of library</param>
-        /// <param name="references">Library references</param>
-        /// <returns>Byte array from compiled binary dll assembly</returns>
-        private static byte[] BuildAssemblyFromSources(string[] sourceCodes)
-        {
-            string assemblyName = Path.GetRandomFileName();
+		/// <summary>
+		/// Compile internal source code into memory array 
+		/// </summary>
+		/// <param name="sourceCodes">Source codes of library</param>
+		/// <returns>Byte array from compiled binary dll assembly</returns>
+		private static byte[] BuildAssemblyFromSources(string[] sourceCodes)
+		{
+			string assemblyName = Path.GetRandomFileName();
 
-            CSharpCompilation compilation = CSharpCompilation.Create(
-                    assemblyName,
-                    syntaxTrees: sourceCodes.Select(code => CSharpSyntaxTree.ParseText(text: code)),
-                    references: new MetadataReference[] { CorlibReference,
-                                                          SystemCoreReference,
-                                                          CSharpSymbolsReference,
-                                                          CodeAnalysisReference,
-                                                          PXDataReference,
-                                                          PXCommonReference },
-                    options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+			CSharpCompilation compilation = CSharpCompilation.Create(
+					assemblyName,
+					syntaxTrees: sourceCodes.Select(code => CSharpSyntaxTree.ParseText(text: code)),
+					references: new MetadataReference[] { CorlibReference,
+														  SystemCoreReference,
+														  CSharpSymbolsReference,
+														  CodeAnalysisReference,
+														  PXDataReference,
+														  PXCommonReference },
+					options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-            // Emit the image of this assembly 
-            byte[] image = null;
-            using (var ms = new MemoryStream())
-            {
-                var emitResult = compilation.Emit(ms);
-                if (!emitResult.Success)
-                {
-                    List<Exception> failtureMessages = new List<Exception>();
-                    IEnumerable<Diagnostic> failures = emitResult.Diagnostics.Where(diagnostic =>
-                                   diagnostic.IsWarningAsError ||
-                                   diagnostic.Severity == DiagnosticSeverity.Error);
-                    
-                    foreach (Diagnostic diagnostic in failures)
-                    {
-                        failtureMessages.Add(new ArgumentException(string.Format("{0}: {1}", diagnostic.Id, diagnostic.GetMessage())));
-                    }
+			// Emit the image of this assembly 
+			byte[] image = null;
+			using (var ms = new MemoryStream())
+			{
+				var emitResult = compilation.Emit(ms);
+				if (!emitResult.Success)
+				{
+					List<Exception> failtureMessages = new List<Exception>();
+					IEnumerable<Diagnostic> failures = emitResult.Diagnostics.Where(diagnostic =>
+								   diagnostic.IsWarningAsError ||
+								   diagnostic.Severity == DiagnosticSeverity.Error);
 
-                    throw new ArgumentException(BuildFailMessage, new AggregateException(failtureMessages));
-                }
-                image = ms.ToArray();
-            }
-            return image;
-        }
-    }
+					foreach (Diagnostic diagnostic in failures)
+					{
+						failtureMessages.Add(new ArgumentException(string.Format("{0}: {1}", diagnostic.Id, diagnostic.GetMessage())));
+					}
+
+					throw new ArgumentException(BuildFailMessage, new AggregateException(failtureMessages));
+				}
+				image = ms.ToArray();
+			}
+			return image;
+		}
+	}
 }

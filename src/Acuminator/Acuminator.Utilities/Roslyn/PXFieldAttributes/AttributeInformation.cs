@@ -16,9 +16,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		private readonly PXContext _context;
 		public ImmutableHashSet<ITypeSymbol> BoundBaseTypes { get; }
 
-        private readonly string _IsDBField = "IsDBField";
+		private readonly string _IsDBField = "IsDBField";
 
-        public AttributeInformation(PXContext pxContext)
+		public AttributeInformation(PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
@@ -60,7 +60,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				var allAttributes = attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
 				foreach (var attribute in allAttributes)
 				{
-					if (!attribute.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute)) 
+					if (!attribute.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute))
 						continue;
 
 					results.Add(attribute);
@@ -105,11 +105,11 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			if (attributeSymbol.InheritsFromOrEquals(type))
 				return true;
-			
+
 			var aggregateAttribute = _context.AttributeTypes.PXAggregateAttribute;
 			var dynamicAggregateAttribute = _context.AttributeTypes.PXDynamicAggregateAttribute;
 
-			if (attributeSymbol.InheritsFromOrEquals( aggregateAttribute) || attributeSymbol.InheritsFromOrEquals(dynamicAggregateAttribute))
+			if (attributeSymbol.InheritsFromOrEquals(aggregateAttribute) || attributeSymbol.InheritsFromOrEquals(dynamicAggregateAttribute))
 			{
 				var allAttributes = attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
 				foreach (var attribute in allAttributes)
@@ -117,7 +117,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 					if (!attribute.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute))
 						continue;
 
-					var result = VisitAggregateAttribute(attribute,10);
+					var result = VisitAggregateAttribute(attribute, 10);
 
 					if (result)
 						return result;
@@ -125,7 +125,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			}
 			return false;
 
-			bool VisitAggregateAttribute(ITypeSymbol _attributeSymbol,int depth)
+			bool VisitAggregateAttribute(ITypeSymbol _attributeSymbol, int depth)
 			{
 				if (depth < 0)
 					return false;
@@ -141,7 +141,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 						if (!attribute.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute))
 							continue;
 
-						var result = VisitAggregateAttribute(attribute,depth-1);
+						var result = VisitAggregateAttribute(attribute, depth - 1);
 
 						if (result)
 							return result;
@@ -153,66 +153,66 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		public BoundAttribute IsBoundAttribute(AttributeData attribute)
 		{
-            foreach (var baseType in BoundBaseTypes)
+			foreach (var baseType in BoundBaseTypes)
 			{
 				if (AttributeDerivedFromClass(attribute.AttributeClass, baseType))
 					return BoundAttribute.DbBound;
 			}
-            if (attribute.AttributeClass.GetMembers().Select(a => a.Name).Contains(_IsDBField))
-            {
-                foreach (var argument in attribute.NamedArguments)
-                {
-                    if (argument.Key.Equals(_IsDBField))
-                    {
-                        if (argument.Value.Value.Equals(true))
-                            return BoundAttribute.DbBound;
-                        else
-                            return BoundAttribute.Unbound;
-                    }
-                        
-                }
-                return BoundAttribute.Unknown;
-            }
-            return BoundAttribute.Unbound;
+			if (attribute.AttributeClass.GetMembers().Select(a => a.Name).Contains(_IsDBField))
+			{
+				foreach (var argument in attribute.NamedArguments)
+				{
+					if (argument.Key.Equals(_IsDBField))
+					{
+						if (argument.Value.Value.Equals(true))
+							return BoundAttribute.DbBound;
+						else
+							return BoundAttribute.Unbound;
+					}
+
+				}
+				return BoundAttribute.Unknown;
+			}
+			return BoundAttribute.Unbound;
 		}
 
-        ///TODO: refactoring arguments -> remove semanticModel to constructor? Is it nessesary.
-        ///TODO: Add DataFlow analyze to corner cases with defaul IsDBBound assigment.
-        public bool? IsBoundField(PropertyDeclarationSyntax property,SemanticModel semanticModel)
-        {
-            var typeSymbol = semanticModel.GetDeclaredSymbol(property);
-            var attributesData = typeSymbol.GetAttributes();
+		///TODO: refactoring arguments -> remove semanticModel to constructor? Is it nessesary.
+		///TODO: Add DataFlow analyze to corner cases with defaul IsDBBound assigment.
+		public bool? IsBoundField(PropertyDeclarationSyntax property, SemanticModel semanticModel)
+		{
+			var typeSymbol = semanticModel.GetDeclaredSymbol(property);
+			var attributesData = typeSymbol.GetAttributes();
 
-            foreach(var attribute in attributesData)
-            {
-                if (IsBoundAttribute(attribute) == BoundAttribute.DbBound)
-                    return true;
-                foreach(var argument in attribute.NamedArguments)
-                {
-                    if(argument.Key.Equals("IsDBField") && argument.Value.Value.Equals(true))
-                        return (bool) argument.Value.Value;
-                }    
-            }
-            return false; 
-        }
+			foreach (var attribute in attributesData)
+			{
+				if (IsBoundAttribute(attribute) == BoundAttribute.DbBound)
+					return true;
+				foreach (var argument in attribute.NamedArguments)
+				{
+					if (argument.Key.Equals("IsDBField") && argument.Value.Value.Equals(true))
+						return (bool)argument.Value.Value;
+				}
+			}
+			return false;
+		}
 
-        public BoundAttribute ContainsBoundAttributes(IEnumerable<AttributeData> attributes)
-        {
-            foreach (var attribute in attributes)
-            {
-                BoundAttribute result = IsBoundAttribute(attribute);
-                if (result == BoundAttribute.DbBound || result == BoundAttribute.Unknown)
-                    return result;
-            }
+		public BoundAttribute ContainsBoundAttributes(IEnumerable<AttributeData> attributes)
+		{
+			foreach (var attribute in attributes)
+			{
+				BoundAttribute result = IsBoundAttribute(attribute);
+				if (result == BoundAttribute.DbBound || result == BoundAttribute.Unknown)
+					return result;
+			}
 			return BoundAttribute.Unbound;
 		}
 
 	}
 
-    public enum BoundAttribute
-    {
-        Unbound = 0,
-        DbBound = 1,
-        Unknown = 2
-    }
+	public enum BoundAttribute
+	{
+		Unbound = 0,
+		DbBound = 1,
+		Unknown = 2
+	}
 }
