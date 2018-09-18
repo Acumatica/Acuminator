@@ -1,26 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Acuminator.Analyzers.StaticAnalysis;
+﻿using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
-using Acuminator.Analyzers.StaticAnalysis.LongOperationInEventHandlers;
+using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
-using Acuminator.Utilities.Roslyn;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationInEventHandlers
+namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationStart
 {
-	public class LongOperationInEventHandlersTests : DiagnosticVerifier
+    public class LongOperationInEventHandlersTests : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new EventHandlerAnalyzer(new LongOperationInEventHandlersAnalyzer());
 
 		[Theory]
-		[EmbeddedFileData("Invalid.cs")]
+		[EmbeddedFileData(@"EventHandlers\Invalid.cs")]
 		public void TestDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, 
@@ -39,7 +33,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationInEventHandlers
 		}
 
 		[Theory]
-		[EmbeddedFileData("InvalidWithExternalMethod.cs")]
+		[EmbeddedFileData(@"EventHandlers\InvalidWithExternalMethod.cs")]
 		public void TestDiagnostic_WithExternalMethod(string actual)
 		{
 			VerifyCSharpDiagnostic(actual,
@@ -58,7 +52,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationInEventHandlers
 		}
 
 		[Theory]
-		[EmbeddedFileData("Valid.cs")]
+		[EmbeddedFileData(@"EventHandlers\Valid.cs")]
 		public void TestDiagnostic_EventHandlers_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);

@@ -63,11 +63,11 @@
     <Compile Include="StaticAnalysis\ConstructorInGraphExtension\ConstructorInGraphExtensionAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DacNonAbstractFieldType\DacNonAbstractFieldTypeAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DacDeclaration\DacDeclarationAnalyzer.cs" />
-    <Compile Include="StaticAnalysis\LongOperationInEventHandlers\StartLongOperationWalker.cs" />
+    <Compile Include="StaticAnalysis\LongOperationStart\StartLongOperationWalker.cs" />
     <Compile Include="StaticAnalysis\PXGraphCreationDuringInitialization\PXGraphCreationDuringInitializationAnalyzer.cs" />
-    <Compile Include="StaticAnalysis\LongOperationInEventHandlers\LongOperationInEventHandlersAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\LongOperationStart\LongOperationInEventHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceInEventHandlersAnalyzer.cs" />
-    <Compile Include="StaticAnalysis\PXGraphLongOperationDuringInitialization\PXGraphLongOperationDuringInitializationAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\LongOperationStart\PXGraphLongOperationDuringInitializationAnalyzer.cs" />
     <Compile Include="StaticAnalysis\SavingChanges\PXGraphSavingChangesDuringInitializationAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphUsageInDac\PXGraphUsageInDacAnalyzer.cs" />
     <Compile Include="StaticAnalysis\MethodsUsageInDac\MethodsUsageInDacAnalyzer.cs" />

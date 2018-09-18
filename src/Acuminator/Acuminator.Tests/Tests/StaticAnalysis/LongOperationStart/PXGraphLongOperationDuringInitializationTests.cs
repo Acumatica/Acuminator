@@ -1,12 +1,12 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
-using Acuminator.Analyzers.StaticAnalysis.PXGraphLongOperationDuringInitialization;
+using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphLongOperationDuringInitialization
+namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationStart
 {
     public class PXGraphLongOperationDuringInitializationTests : DiagnosticVerifier
     {
@@ -14,21 +14,21 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphLongOperationDuringInitia
             new PXGraphAnalyzer(new PXGraphLongOperationDuringInitializationAnalyzer());
 
         [Theory]
-        [EmbeddedFileData("PXGraphStartsLongOperationInInstanceConstructor.cs")]
+        [EmbeddedFileData(@"PXGraph\PXGraphStartsLongOperationInInstanceConstructor.cs")]
         public void GraphInstanceConstructor_ReportsDiagnostic(string source)
         {
             VerifyCSharpDiagnostic(source, Descriptors.PX1054_PXGraphLongRunOperationDuringInitialization.CreateFor(17, 17));
         }
 
         [Theory]
-        [EmbeddedFileData("PXGraphExtensionStartsLongOperationInInitializationMethod.cs")]
+        [EmbeddedFileData(@"PXGraph\PXGraphExtensionStartsLongOperationInInitializationMethod.cs")]
         public void GraphExtensionInitializationMethod_ReportsDiagnostic(string source)
         {
             VerifyCSharpDiagnostic(source, Descriptors.PX1054_PXGraphLongRunOperationDuringInitialization.CreateFor(15, 17));
         }
 
         [Theory]
-        [EmbeddedFileData("PXGraphDoesntStartLongOperationInInstanceConstructor.cs")]
+        [EmbeddedFileData(@"PXGraph\PXGraphDoesntStartLongOperationInInstanceConstructor.cs")]
         public void GraphInstanceConstructor_DoesntReportsDiagnostic(string source)
         {
             VerifyCSharpDiagnostic(source);

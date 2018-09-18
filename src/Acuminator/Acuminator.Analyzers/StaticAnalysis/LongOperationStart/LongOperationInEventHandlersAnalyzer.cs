@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
-namespace Acuminator.Analyzers.StaticAnalysis.LongOperationInEventHandlers
+namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
 {
     public class LongOperationInEventHandlersAnalyzer : IEventHandlerAnalyzer
 	{

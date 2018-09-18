@@ -1,12 +1,11 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.LongOperationInEventHandlers;
-using Acuminator.Analyzers.StaticAnalysis.PXGraph;
+﻿using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
-namespace Acuminator.Analyzers.StaticAnalysis.PXGraphLongOperationDuringInitialization
+namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
 {
     public class PXGraphLongOperationDuringInitializationAnalyzer : IPXGraphAnalyzer
     {

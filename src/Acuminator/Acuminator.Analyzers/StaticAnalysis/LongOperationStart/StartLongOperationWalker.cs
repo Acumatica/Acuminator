@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 
-namespace Acuminator.Analyzers.StaticAnalysis.LongOperationInEventHandlers
+namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
 {
     public class StartLongOperationWalker : NestedInvocationWalker
     {
@@ -31,12 +31,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationInEventHandlers
 
             IMethodSymbol methodSymbol = GetSymbol<IMethodSymbol>(node);
 
-            if (_pxContext.StartOperation.Contains(methodSymbol))
-            {
-                ReportDiagnostic(_reportDiagnostic, _descriptor, node);
-            }
+            if (!_pxContext.StartOperation.Contains(methodSymbol))
+                return;
 
-            base.VisitInvocationExpression(node);
+            ReportDiagnostic(_reportDiagnostic, _descriptor, node);
         }
     }
 }
