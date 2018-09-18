@@ -620,7 +620,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Values cannot be directly assigned to a DAC field within the {0} event handler.
+        ///   Looks up a localized string similar to A DAC instance passed to the {0} event handler cannot be modified inside this event handler.
         /// </summary>
         public static string PX1047MessageFormat {
             get {
@@ -629,7 +629,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Values cannot be directly assigned to a DAC field within some event handlers.
+        ///   Looks up a localized string similar to A DAC instance passed to the event handler cannot be modified inside the event handler.
         /// </summary>
         public static string PX1047Title {
             get {
