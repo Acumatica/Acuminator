@@ -24,6 +24,10 @@ In this version, diagnostics and code fixes for the following issues have been a
 ### New Suggestions of Code Refactoring 
 Acuminator 1.4 suggests one type of code refactoring: replacement of standard event handler signature with the generic signature. Because an event handler can be overridden in derived classes or graph extensions, after you have applied this refactoring to your code, you have to manually update all possible overrides. 
 
+### Code Analysis Enhancements
+Now Acuminator can analyse the code recursively (that is, analyse the whole tree of method invocations in a recursive manner). For example, for the PX1042 diagnostic, the code of a `RowSelecting` event handler can contain no direct requests to the database but can contain a call to another method that performs a request to the database. Acuminator 1.4 can find this indirect request to the database.
+By default, Acuminator analyses the code recursively. You can turn this behavior off by setting to `False` the value of **Tools > Options > Acuminator > Code Analysis > Enable recursive code analysis**.
+
 ### Bug Fixes
 In this version, the following bugs have been fixed.
 
@@ -36,9 +40,6 @@ In this version, the following bugs have been fixed.
 | The PX1029, PX1031, and PX1032 diagnostics displayed errors for custom attributes and helpers declared in DACs. | The PX1029, PX1031, and PX1032 diagnostics do not check the nested DAC classes that had the type other than IBqlField. |
 | The PX1032 error was displayed for invocations of methods declared on the system types, such as `string`, `int`, `DateTime`, `Guid`, `TimeSpan`. | Invocations of methods declared on the system types are skipped by the PX1032 diagnostic. |
 | Code navigation didn't support action handlers with no parameters and `void` return type. | Action handlers with no parameters and `void` return type are now supported by code navigation. |
-
-### Other Enhancements
-* Acuminator now supports logging.
 
 ## Acuminator 1.3
 Acuminator 1.3 includes the diagnostics and code fixes, enhancements, and bug fixes described in this section, as well as the features that have been implemented in the previous versions.
@@ -55,6 +56,7 @@ In this version, diagnostics and code fixes for the following issues have been a
 | PX1023 | The DAC property is marked with multiple field attributes.      | Error   | Available   | Available |
 | PX1024 | The DAC nested class is not declared as an abstract class.      | Error   | Available   | Available |
 | PX1026 | Underscores cannot be used in the names of DACs and DAC fields. | Error   | Available   | Available |
+| PX1028 | Constructors cannot be used in DACs.                            | Error   | Available   | Available |
 | PX1029 | `PXGraph` instances cannot be used inside DAC properties.       | Error   | Available   | Unavailable |
 | PX1031 | DACs cannot contain instance methods.                           | Error   | Available   | Unavailable |
 | PX1032 | DAC properties cannot contain invocations of instance methods.  | Error   | Available   | Unavailable |
