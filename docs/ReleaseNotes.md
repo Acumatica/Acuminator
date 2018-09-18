@@ -10,7 +10,7 @@ In this version, diagnostics and code fixes for the following issues have been a
 | Code   | Issue Description                                               | Type    | Diagnostics | Code Fix  | 
 | ------ | --------------------------------------------------------------- | ------- | ----------- | --------- | 
 | PX1030 | The `PXDefault` attribute of the field is used incorrectly. `PXDefaultAttribute` used on a custom field defined in `PXCacheExtension` can potentially prevent updates to existing records when used without `PersistingCheck` property set to `Nothing`. | Warning | Available | Available |
-| PX1042 | In a RowSelecting handler, BQL statements and other database queries must be executed only inside a separate connection scope. | Error | Available | Available |
+| PX1042 | In a `RowSelecting` handler, BQL statements and other database queries must be executed only inside a separate connection scope. | Error | Available | Available |
 | PX1043 | Only the methods of the `PXCache.Persist` family can be used to save changes to the database from `RowPersisting` event handlers. Changes cannot be saved to the database from other event handlers.  | Error | Available | Unavailable |
 | PX1044 | Changes to `PXCache` cannot be performed in event handlers. | Error | Available | Unavailable |
 | PX1045 | `PXGraph` instances cannot be created in event handlers. | Error | Available | Unavailable |
