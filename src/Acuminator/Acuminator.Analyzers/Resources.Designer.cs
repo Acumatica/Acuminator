@@ -674,7 +674,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A PXGraph instance should never save changes to the database during the initialization phase.
+        ///   Looks up a localized string similar to A PXGraph instance should not save changes to the database during the initialization phase.
         /// </summary>
         public static string PX1058Title {
             get {

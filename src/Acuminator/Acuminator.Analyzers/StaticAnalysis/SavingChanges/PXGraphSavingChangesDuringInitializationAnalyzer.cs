@@ -1,5 +1,4 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.PXGraph;
-using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
@@ -8,7 +7,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
-namespace Acuminator.Analyzers.StaticAnalysis.PXGraphSavingChangesDuringInitialization
+namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 {
     public class PXGraphSavingChangesDuringInitializationAnalyzer : IPXGraphAnalyzer
     {
@@ -33,17 +32,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphSavingChangesDuringInitiali
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
+            if (initializer.Node == null)
+                return;
+
             SaveChangesWalker walker = new SaveChangesWalker(context, pxContext);
 
             walker.Visit(initializer.Node);
         }
 
-        private class SaveChangesWalker : CSharpSyntaxWalker
+        private class SaveChangesWalker : NestedInvocationWalker
         {
             private readonly SymbolAnalysisContext _context;
             private readonly PXContext _pxContext;
 
             public SaveChangesWalker(SymbolAnalysisContext context, PXContext pxContext)
+                : base(context.Compilation, context.CancellationToken)
             {
                 _context = context;
                 _pxContext = pxContext;
@@ -53,19 +56,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphSavingChangesDuringInitiali
             {
                 _context.CancellationToken.ThrowIfCancellationRequested();
 
-                SemanticModel semanticModel = _context.Compilation.GetSemanticModel(node.SyntaxTree);
+                SemanticModel semanticModel = GetSemanticModel(node.SyntaxTree);
 
-                if (semanticModel != null && semanticModel.GetSymbolInfo(node, _context.CancellationToken).Symbol is IMethodSymbol method)
-                {
-                    SaveOperationKind saveOperation = SaveOperationHelper.GetSaveOperationKind(method, node, semanticModel, _pxContext);
+                if (!(semanticModel?.GetSymbolInfo(node, _context.CancellationToken).Symbol is IMethodSymbol method))
+                    return;
 
-                    if (saveOperation != SaveOperationKind.None)
-                    {
-                        _context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1058_PXGraphSavingChangesDuringInitialization, node.GetLocation()));
-                    }
-                }
+                SaveOperationKind saveOperation = SaveOperationHelper.GetSaveOperationKind(method, node, semanticModel, _pxContext);
 
-                base.VisitInvocationExpression(node);
+                if (saveOperation == SaveOperationKind.None)
+                    return;
+
+                ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1058_PXGraphSavingChangesDuringInitialization, node);
             }
         }
     }

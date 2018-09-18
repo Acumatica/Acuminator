@@ -1,6 +1,5 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization;
-using Acuminator.Analyzers.StaticAnalysis.PXGraphLongOperationDuringInitialization;
-using Acuminator.Analyzers.StaticAnalysis.PXGraphSavingChangesDuringInitialization;
+using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
