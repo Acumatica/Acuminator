@@ -162,8 +162,14 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
             {
                 foreach (var argument in attribute.NamedArguments)
                 {
-                    if (argument.Key.Equals(_IsDBField) && argument.Value.Value.Equals(true))
-                        return BoundAttribute.DbBound;
+                    if (argument.Key.Equals(_IsDBField))
+                    {
+                        if (argument.Value.Value.Equals(true))
+                            return BoundAttribute.DbBound;
+                        else
+                            return BoundAttribute.Unbound;
+                    }
+                        
                 }
                 return BoundAttribute.Unknown;
             }
@@ -171,6 +177,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		}
 
         ///TODO: refactoring arguments -> remove semanticModel to constructor? Is it nessesary.
+        ///TODO: Add DataFlow analyze to corner cases with defaul IsDBBound assigment.
         public bool? IsBoundField(PropertyDeclarationSyntax property,SemanticModel semanticModel)
         {
             var typeSymbol = semanticModel.GetDeclaredSymbol(property);
@@ -184,15 +191,20 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
                 {
                     if(argument.Key.Equals("IsDBField") && argument.Value.Value.Equals(true))
                         return (bool) argument.Value.Value;
-                   
                 }    
             }
             return false; 
         }
-		
-		public bool ContainsBoundAttributes(IEnumerable<AttributeData> attributes)
-		{
-			return attributes.Any(IsBoundAttribute == BoundAttribute.DbBound);
+
+        public BoundAttribute ContainsBoundAttributes(IEnumerable<AttributeData> attributes)
+        {
+            foreach (var attribute in attributes)
+            {
+                BoundAttribute result = IsBoundAttribute(attribute);
+                if (result == BoundAttribute.DbBound || result == BoundAttribute.Unknown)
+                    return result;
+            }
+			return BoundAttribute.Unbound;
 		}
 
 	}

@@ -6,7 +6,7 @@ namespace PX.Objects.HackathonDemo
         #region AcctSubTrue
         public abstract class cost : PX.Data.IBqlField { }
         protected decimal? _Bound;
-        [AcctSubUnbound]
+        [AcctSubBound]
         [PXDefault]
         [PXUIField(DisplayName = "Bound")]
         public virtual decimal? Bound { get; set; }

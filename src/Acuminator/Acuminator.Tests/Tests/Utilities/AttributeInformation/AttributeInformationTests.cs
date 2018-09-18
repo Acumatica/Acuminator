@@ -1,6 +1,4 @@
-﻿using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Acuminator.Tests.Helpers;
@@ -9,13 +7,10 @@ using Acuminator.Utilities.Roslyn;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CSharp;
 using Xunit;
 using static Acuminator.Tests.Verification.VerificationHelper;
-using PX.Data;
-using Microsoft.CodeAnalysis.Emit;
-using System.Reflection;
-using System;
+
+using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 
 namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 {
@@ -68,29 +63,33 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
         /*
 		 * Tests IsBoundAttribute 
 		 */
-
         [Theory]
         [EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
         public void TestAreBoundAttributes(string source) =>
-            _testIsBoundAttribute(source, new List<bool> { false, false, false, true, false, false });
+ _testIsBoundAttribute(source, new List<BoundAttribute> { BoundAttribute.Unbound,
+                                                          BoundAttribute.Unbound,
+                                                          BoundAttribute.Unbound,
+                                                          BoundAttribute.DbBound,
+                                                          BoundAttribute.Unbound,
+                                                          BoundAttribute.Unbound });
 
         [Theory]
         [EmbeddedFileData(@"AggregateAttributeInformation.cs")]
         public void TestAreBoundAggregateAttributes(string source) =>
-            _testIsBoundAttribute(source, new List<bool> { true, false });
+            _testIsBoundAttribute(source, new List<BoundAttribute> { BoundAttribute.DbBound, BoundAttribute.Unbound });
 
         [Theory]
         [EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
         public void TestAreBoundAggregateRecursiveAttribute(string source) =>
-            _testIsBoundAttribute(source, new List<bool> { false, true });
+            _testIsBoundAttribute(source, new List<BoundAttribute> { BoundAttribute.Unbound, BoundAttribute.DbBound });
 
-        private void _testIsBoundAttribute(string source, List<bool> expected)
+        private void _testIsBoundAttribute(string source, List<BoundAttribute> expected)
         {
             Document document = CreateDocument(source);
             SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
             var syntaxRoot = document.GetSyntaxRootAsync().Result;
 
-            List<bool> actual = new List<bool>();
+            List<BoundAttribute> actual = new List<BoundAttribute>();
             var pxContext = new PXContext(semanticModel.Compilation);
 
             var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
@@ -113,36 +112,38 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
         [EmbeddedFileData(@"PropertyIsDBBoundFieldAttribute.cs")]
         public void TestAreBoundIsDBFieldAttribute(string source) =>
             _testIsDBFieldProperty(source,
-                                   new List<bool> { true, false });
+                                   new List<BoundAttribute> { BoundAttribute.DbBound, BoundAttribute.Unbound});
 
         [Theory]
         [EmbeddedFileData(@"PropertyIsDBBoundFieldWithDefinedAttributes.cs")]
         public void TestAreBoundIsDBFieldWithDefinedAttributes(string source) =>
            _testIsDBFieldProperty(source,
-                                  new List<bool> { false, false, true, true});
+                                  new List<BoundAttribute> { BoundAttribute.Unknown, BoundAttribute.Unknown, BoundAttribute.Unknown, BoundAttribute.Unknown });
 
         [Theory]
         [EmbeddedFileData(@"PropertyIsDBBoundFieldWithoutDefinedAttributes.cs", internalCodeFileNames: new string[] { @"ExternalAttributes1.cs", @"ExternalAttributes2.cs" })]
         public void TestAreBoundIsDBFieldWithoutDefinedAttributes(string source, string externalAttribute1, string externalAttribute2) =>
            _testIsDBFieldProperty(source,
-                                  new List<bool> { false, true, false },
+                                  new List<BoundAttribute> { BoundAttribute.Unknown, BoundAttribute.Unknown },
                                   new string[] { externalAttribute1, externalAttribute2 });
 
-        private void _testIsDBFieldProperty(string source,List<bool> expected,string[] code = null)
+        private void _testIsDBFieldProperty(string source,List<BoundAttribute> expected,string[] code = null)
         {
             Document document = CreateDocument(source, InternalCode: code);
             SemanticModel semanticModel = document.GetSemanticModelAsync().Result;
             var syntaxRoot = document.GetSyntaxRootAsync().Result;
 
-            List<bool> actual = new List<bool>();
+            List<BoundAttribute> actual = new List<BoundAttribute>();
             var pxContext = new PXContext(semanticModel.Compilation);
             var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
 
-            IEnumerable<PropertyDeclarationSyntax> properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>().Where(a => !a.AttributeLists.IsNullOrEmpty());
+            IEnumerable<PropertyDeclarationSyntax> properties = syntaxRoot.DescendantNodes()
+                                                                          .OfType<PropertyDeclarationSyntax>()
+                                                                          .Where(a => !a.AttributeLists.IsNullOrEmpty());
 
             foreach(PropertyDeclarationSyntax property in  properties)
             {
-                actual.Add(attributeInformation.IsBoundField(property,semanticModel));
+                actual.Add(attributeInformation.ContainsBoundAttributes(semanticModel.GetDeclaredSymbol(property).GetAttributes()));
             }
 
             Assert.Equal(expected, actual);

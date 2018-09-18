@@ -2,7 +2,7 @@
 using PX.Data;
 namespace PX.Objects.HackathonDemo
 {
-    public class AcctSub1Attribute : PXAggregateAttribute
+    public class AcctSubBoundAttribute : PXAggregateAttribute
     {
         public bool IsDBField { get; set; } = true;
     }

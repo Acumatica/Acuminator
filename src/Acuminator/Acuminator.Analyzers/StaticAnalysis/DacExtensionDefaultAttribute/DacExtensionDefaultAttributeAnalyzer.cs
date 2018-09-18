@@ -51,16 +51,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			bool isBoundField = attributeInformation.ContainsBoundAttributes(attributes.Select(a => a));
+            BoundAttribute isBoundField = attributeInformation.ContainsBoundAttributes(attributes.Select(a => a));
 
-			if (isBoundField)
-			{
-				await AnalyzeAttributesWithinBoundFieldAsync(property, attributes, pxContext, symbolContext, isBoundField, attributeInformation);
-			}
-			else
-			{
-				await AnalyzeAttributesWithinUnBoundFieldAsync(property, attributes, pxContext, symbolContext, isBoundField, attributeInformation);
-			}
+            if (isBoundField == BoundAttribute.DbBound)
+            {
+                await AnalyzeAttributesWithinBoundFieldAsync(property, attributes, pxContext, symbolContext, true, attributeInformation);
+            }
+            else if (isBoundField == BoundAttribute.Unbound)
+            {
+                await AnalyzeAttributesWithinUnBoundFieldAsync(property, attributes, pxContext, symbolContext, false, attributeInformation);
+            }
+            
 		}
 
 		private static async Task AnalyzeAttributesWithinBoundFieldAsync(IPropertySymbol property, ImmutableArray<AttributeData> attributes,
