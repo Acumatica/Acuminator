@@ -151,29 +151,29 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			}
 		}
 
-		public BoundFlag IsBoundAttribute(AttributeData attribute)
+		public BoundType IsBoundAttribute(AttributeData attribute)
 		{
 			foreach (var baseType in BoundBaseTypes)
 			{
 				if (AttributeDerivedFromClass(attribute.AttributeClass, baseType))
-					return BoundFlag.DbBound;
+					return BoundType.DbBound;
 			}
 
 			if (attribute.AttributeClass.GetMembers().Select(a => a.Name).Contains(IsDBField))
 			{
 				foreach (var argument in attribute.NamedArguments)
 				{
-					if (argument.Key.Equals(IsDBField))
+					if (argument.Key == IsDBField)
 					{
-						if (argument.Value.Value.Equals(true))
-							return BoundFlag.DbBound;
+						if ((bool)argument.Value.Value == true)
+							return BoundType.DbBound;
 						else
-							return BoundFlag.Unbound;
+							return BoundType.Unbound;
 					}
 				}
-				return BoundFlag.Unknown;
+				return BoundType.Unknown;
 			}
-			return BoundFlag.Unbound;
+			return BoundType.Unbound;
 		}
 
 		///TODO: refactoring arguments -> remove semanticModel to constructor? Is it nessesary?
@@ -181,35 +181,38 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		public bool? IsBoundField(PropertyDeclarationSyntax property, SemanticModel semanticModel)
 		{
 			var typeSymbol = semanticModel.GetDeclaredSymbol(property);
+			typeSymbol.ThrowOnNull();
+
 			var attributesData = typeSymbol.GetAttributes();
 
 			foreach (var attribute in attributesData)
 			{
-				if (IsBoundAttribute(attribute) == BoundFlag.DbBound)
+				if (IsBoundAttribute(attribute) == BoundType.DbBound)
 					return true;
+
 				foreach (var argument in attribute.NamedArguments)
 				{
-					if (argument.Key.Equals(IsDBField) && argument.Value.Value.Equals(true))
+					if (argument.Key == IsDBField && (bool)argument.Value.Value == true)
 						return (bool)argument.Value.Value;
 				}
 			}
 			return false;
 		}
 
-		public BoundFlag ContainsBoundAttributes(IEnumerable<AttributeData> attributes)
+		public BoundType ContainsBoundAttributes(IEnumerable<AttributeData> attributes)
 		{
 			foreach (var attribute in attributes)
 			{
-				BoundFlag result = IsBoundAttribute(attribute);
-				if (result == BoundFlag.DbBound || result == BoundFlag.Unknown)
+				BoundType result = IsBoundAttribute(attribute);
+				if (result == BoundType.DbBound || result == BoundType.Unknown)
 					return result;
 			}
-			return BoundFlag.Unbound;
+			return BoundType.Unbound;
 		}
 
 	}
 
-	public enum BoundFlag
+	public enum BoundType
 	{
 		Unknown = 0,
 		Unbound = 1,
