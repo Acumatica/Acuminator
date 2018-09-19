@@ -1,7 +1,7 @@
 # Recursive Code Analysis
 Acuminator can analyze the code recursively (that is, it can analyze the whole tree of method invocations in a recursive manner).
 
-By default, Acuminator perfoms recursive code analysis. In Visual Studio, you can turn off this behavior by setting to `False` the value of **Tools > Options > Acuminator > Code Analysis > Enable recursive code analysis**. (The option is shown in the following screenshot.) 
+By default, Acuminator performs recursive code analysis. In Visual Studio, you can turn off this behavior by setting to `False` the value of **Tools > Options > Acuminator > Code Analysis > Enable recursive code analysis**. (The option is shown in the following screenshot.) 
 
 ![Options Page](Options.png)
 
@@ -19,7 +19,7 @@ protected virtual void _(Events.RowSelected<SOOrder> e)
 }
 ```
 
-However, a part of the logic can be moved to a separate method or class, as shown in the following example. You want to shown the diagnostic in the original syntax node.
+However, a part of the logic can be moved to a separate method or class, as shown in the following example. You want to show the diagnostic in the original syntax node.
 
 ```C#
 private void PerformRelease(SOOrder row)
