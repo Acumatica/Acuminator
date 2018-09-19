@@ -25,6 +25,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				_pxContext = pxContext;
 			}
 
+			public void Reset()
+			{
+				Success = false;
+			}
+
 			public override void Visit(SyntaxNode node)
 			{
 				if (!Success)

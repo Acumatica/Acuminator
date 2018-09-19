@@ -21,6 +21,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 			private readonly PXContext _pxContext;
 			private CancellationToken _cancellationToken;
 			private readonly ImmutableHashSet<ILocalSymbol> _variables;
+			private readonly EventArgsRowWalker _eventArgsRowWalker;
 
 			private readonly ISet<ILocalSymbol> _result = new HashSet<ILocalSymbol>();
 			public ImmutableArray<ILocalSymbol> Result => _result.ToImmutableArray();
@@ -35,6 +36,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				_semanticModel = semanticModel;
 				_pxContext = pxContext;
 				_cancellationToken = cancellationToken;
+
+				_eventArgsRowWalker = new EventArgsRowWalker(semanticModel, pxContext);
 
 				if (methodSyntax.Body != null || methodSyntax.ExpressionBody?.Expression != null)
 				{
@@ -63,10 +66,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 
 					if (variableSymbol != null && _variables.Contains(variableSymbol))
 					{
-						var walker = new EventArgsRowWalker(_semanticModel, _pxContext);
-						node.Right.Accept(walker);
+						_eventArgsRowWalker.Reset();
+						node.Right.Accept(_eventArgsRowWalker);
 
-						if (walker.Success)
+						if (_eventArgsRowWalker.Success)
 							_result.Add(variableSymbol);
 					}
 				}
@@ -81,10 +84,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 
 					if (variableSymbol != null && _variables.Contains(variableSymbol))
 					{
-						var walker = new EventArgsRowWalker(_semanticModel, _pxContext);
-						variableDeclarator.Initializer.Value.Accept(walker);
+						_eventArgsRowWalker.Reset();
+						variableDeclarator.Initializer.Value.Accept(_eventArgsRowWalker);
 
-						if (walker.Success)
+						if (_eventArgsRowWalker.Success)
 							_result.Add(variableSymbol);
 					}
 				}
