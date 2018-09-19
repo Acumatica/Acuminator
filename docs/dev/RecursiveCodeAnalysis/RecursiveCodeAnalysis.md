@@ -1,8 +1,16 @@
 # Recursive Code Analysis
-## Problem Statement
-For many diagnostics, it is very useful to check not only the original syntax node, but also all the code that is invoked within that node.
+Acuminator can analyze the code recursively (that is, it can analyze the whole tree of method invocations in a recursive manner).
 
-A quick example. Let's assume that we want to show a diagnostic if a user starts a long operation from an event handler:
+By default, Acuminator perfoms recursive code analysis. In Visual Studio, you can turn off this behavior by setting to `False` the value of **Tools > Options > Acuminator > Code Analysis > Enable recursive code analysis**. (The option is shown in the following screenshot.) 
+
+![Options Page](Options.png)
+
+Recursive code analysis is always turned on if the analyzers are used as a NuGet package. 
+
+## Development of Recursive Code Analysis
+For many diagnostics, Acuminator should check not only the original syntax node, but also all the code that is invoked within that node.
+
+For example, suppose that you want to show a diagnostic if a long-running operation is started from an event handler, as shown in the following code example.
 
 ```C#
 protected virtual void _(Events.RowSelected<SOOrder> e)
@@ -11,7 +19,7 @@ protected virtual void _(Events.RowSelected<SOOrder> e)
 }
 ```
 
-It is very typical to extract some parts of the logic to a separate method / class / etc. like in this example:
+However, a part of the logic can be moved to a separate method or class, as shown in the following example. You want to shown the diagnostic in the original syntax node.
 
 ```C#
 private void PerformRelease(SOOrder row)
@@ -25,37 +33,29 @@ protected virtual void _(Events.RowSelected<SOOrder> e)
 }
 ```
 
-But such analysis is quite complex, and it is not convenient to write it for every diagnostic you create.
+Because the analysis of the whole tree of invocations is quite complex and it is not convenient to write this analysis for every diagnostic you create, the code of Acuminator includes the special class (`NestedInvocationWalker`) that incapsulates this logic. With this class, you can reuse the logic in every new diagnostic.
 
-So, there is a special class that incapsulates this logic and allows you to re-use it in every new diagnostic. It is called `NestedInvocationWalker`.
+## `NestedInvocationWalker` Class
+`NestedInvocationWalker` is a C# syntax walker that follows any code invocations found in the original syntax node being analyzed. `NestedInvocationWalker` directly inherits from `CSharpSyntaxWalker`.
 
-## NestedInvocationWalker
-`NestedInvocationWalker` is a C# syntax walker that follows any code invocations found in the original syntax node being analyzed. It directly inherits from `CSharpSyntaxWalker`.
+For each invocation, `NestedInvocationWalker` obtains a linked symbol, founds declaration syntax reference (if a source code for the symbol is available), and analyzes the referenced code recursively.
 
-For each invocation, it retrieves a linked symbol, founds declaring syntax reference (if a source code for the symbol is available) and analyzes it recursively.
-
-It supports the following invocations:
+`NestedInvocationWalker` supports the following invocations:
 
  - Constructors
  - Method invocations (including expression-bodied methods)
  - Property getters and setters (both from assignment and from object initializers)
  - Local lambda functions
 
-This behavior can be enabled or disabled depending on the corresponding setting on the Options page. It is enabled by default, and it is always enabled if the analyzers are used as a NuGet package.
+## The Use of the `NestedInvocationWalker` Class
+If you need to use the recursive code analysis in a new diagnostic, you derive a syntax walker class from `NestedInvocationWalker`. You must use the special methods from the base `NestedInvocationWalker` class, which are listed below, instead of the `CSharpSyntaxWalker` methods.
 
-![Options Page](Options.png)
+### `SemanticModel GetSemanticModel(SyntaxTree syntaxTree)`
+Obtains a `SemanticModel` for a node. `NestedInvocationWalker` walks across different syntax trees and different documents; the returned `SemanticModel` is tied to the current `SyntaxTree`. 
+Use this method each time you need the `SemanticModel` for a node.
 
-
-### How to Use
-When writing a new diagnostic, you can derive from `NestedInvocationWalker` to obtain recursive analysis behavior.
-In this case, special methods from the base class must be used instead of default ones:
-
-#### `SemanticModel GetSemanticModel(SyntaxTree syntaxTree)`
-`NestedInvocationWalker` walks across different syntax trees and different documents, and `SemanticModel` is tied to the current `SyntaxTree`. This method must be used every time when you need a `SemanticModel` for a node.
-
-#### `void ReportDiagnostic(Action<Diagnostic> reportDiagnostic, DiagnosticDescriptor diagnosticDescriptor, SyntaxNode node, params object[] messageArgs)`
-Reports a diagnostic for the provided descriptor on the original syntax node from which recursive analysis started.
-This method must be used for all diagnostic reporting within the walker because it does diagnostic deduplication and determines the right syntax node to perform diagnostic reporting.
+### `void ReportDiagnostic(Action<Diagnostic> reportDiagnostic, DiagnosticDescriptor diagnosticDescriptor, SyntaxNode node, params object[] messageArgs)`
+Reports a diagnostic for the provided descriptor on the syntax node from which the recursive analysis has been started. This method excludes diagnostic duplication and determines the correct syntax node to report the diagnostic, as shown in the following code example.
 
 ```C#
 private void PerformRelease(SOOrder row)
@@ -72,16 +72,21 @@ protected virtual void _(Events.RowSelected<SOOrder> e)
 }
 ```
 
-#### `T GetSymbol<T>(ExpressionSyntax node) where T : class, ISymbol`
-Helper method that returns either a precise symbol or the most appropriate candidate, and tries to cast it to the requested symbol type.
+Use this method for each diagnostic report within the walker.
 
-#### `void ThrowIfCancellationRequested()`
-Helper method that checks a cancellation token that has been passed to the constructor. Should be preferred over the manual checks on a cancellation token.
+### `T GetSymbol<T>(ExpressionSyntax node) where T : class, ISymbol`
+Returns a precise symbol or the most appropriate candidate and tries to cast it to the requested symbol type.
 
-#### Overriding `VisitXXX` Methods
-When you override some of the `Visit` methods, don't forget to call the `base` implementation in case if diagnostic is not reported. But if a diagnostic has already been reported for the current node, don't call `base` implementation to avoid unneccessary visits.
+### `void ThrowIfCancellationRequested()`
+Verifies a cancellation token that has been passed to the constructor. Use this method instead of the manual verifications of a cancellation token.
 
-A typical pattern looks as follows:
+## Overriding of the Methods of the `Visit` Family
+If you override any of the `Visit` methods, you have to do the following:
+
+ - If the diagnostic has not been reported for the current node yet, call the `base` implementation. 
+ - If the diagnostic has already been reported for the current node, don't call `base` implementation to avoid unnecessary visits.
+
+The following code example shows a typical pattern.
 
 ```C#
 public override void VisitInvocationExpression(InvocationExpressionSyntax node)
