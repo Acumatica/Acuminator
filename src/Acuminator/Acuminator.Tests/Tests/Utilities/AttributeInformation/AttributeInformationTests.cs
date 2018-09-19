@@ -22,18 +22,19 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		 * */
 		[Theory]
 		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
-		public async Task TestAttributeSimpleInformation(string source) =>
-			await TestAttributeInformationAsync(source, new List<bool> { false, true, false, false, true, false });
+		public Task TestAttributeSimpleInformation(string source) =>
+			TestAttributeInformationAsync(source, new List<bool> { false, true, false, false, true, false });
+		
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
-		public async Task TestAggregateAttributeAsync(string source) =>
-			await TestAttributeInformationAsync(source, new List<bool> { true, true });
+		public Task TestAggregateAttributeAsync(string source) =>
+			TestAttributeInformationAsync(source, new List<bool> { true, true });
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
-		public async void TestAggregateRegursiveAttributeAsync(string source) =>
-			await TestAttributeInformationAsync(source, new List<bool> { true, false });
+		public Task TestAggregateRegursiveAttributeAsync(string source) =>
+			TestAttributeInformationAsync(source, new List<bool> { true, false });
 
 		private async Task TestAttributeInformationAsync(string source, List<bool> expected)
 		{
@@ -65,8 +66,8 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		 */
 		[Theory]
 		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
-		public async Task TestAreBoundAttributesAsync(string source) =>
-			await _testIsBoundAttributeAsync(source, 
+		public Task TestAreBoundAttributesAsync(string source) =>
+			_testIsBoundAttributeAsync(source, 
 											new List<BoundFlag>
 											{
 												BoundFlag.Unbound,
@@ -79,13 +80,13 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
-		public async Task TestAreBoundAggregateAttributesAsync(string source) =>
-			await _testIsBoundAttributeAsync(source, new List<BoundFlag> { BoundFlag.DbBound, BoundFlag.Unbound });
+		public Task TestAreBoundAggregateAttributesAsync(string source) =>
+			_testIsBoundAttributeAsync(source, new List<BoundFlag> { BoundFlag.DbBound, BoundFlag.Unbound });
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
-		public async Task TestAreBoundAggregateRecursiveAttributeAsync(string source) =>
-			await _testIsBoundAttributeAsync(source, new List<BoundFlag> { BoundFlag.Unbound, BoundFlag.DbBound });
+		public Task TestAreBoundAggregateRecursiveAttributeAsync(string source) =>
+			_testIsBoundAttributeAsync(source, new List<BoundFlag> { BoundFlag.Unbound, BoundFlag.DbBound });
 
 		private async Task _testIsBoundAttributeAsync(string source, List<BoundFlag> expected)
 		{
@@ -114,20 +115,20 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"PropertyIsDBBoundFieldAttribute.cs")]
-		public async Task FieldBoundAttributesWithDynamicIsDBFieldSetInConstructorAsync(string source) =>
-			await _testIsDBFieldPropertyAsync(source,
+		public Task FieldBoundAttributesWithDynamicIsDBFieldSetInConstructorAsync(string source) =>
+			_testIsDBFieldPropertyAsync(source,
 								   new List<BoundFlag> { BoundFlag.DbBound, BoundFlag.Unbound });
 
 		[Theory]
 		[EmbeddedFileData(@"PropertyIsDBBoundFieldWithDefinedAttributes.cs")]
-		public async Task FieldBoundAttributesWithDynamicIsDBFieldSetInAttributeDefinitionAsync(string source) =>
-		   await _testIsDBFieldPropertyAsync(source,
+		public Task FieldBoundAttributesWithDynamicIsDBFieldSetInAttributeDefinitionAsync(string source) =>
+		   _testIsDBFieldPropertyAsync(source,
 								  new List<BoundFlag> { BoundFlag.Unknown, BoundFlag.Unknown, BoundFlag.Unknown, BoundFlag.Unknown });
 
 		[Theory]
 		[EmbeddedFileData(@"PropertyIsDBBoundFieldWithoutDefinedAttributes.cs", internalCodeFileNames: new string[] { @"ExternalAttributes1.cs", @"ExternalAttributes2.cs" })]
-		public async Task FieldBoundAttributesWithDynamicIsDBFieldSetInExternalAttributeDefinitionAsync(string source, string externalAttribute1, string externalAttribute2) =>
-		   await _testIsDBFieldPropertyAsync(source,
+		public Task FieldBoundAttributesWithDynamicIsDBFieldSetInExternalAttributeDefinitionAsync(string source, string externalAttribute1, string externalAttribute2) =>
+		   _testIsDBFieldPropertyAsync(source,
 								  new List<BoundFlag> { BoundFlag.Unknown, BoundFlag.Unknown },
 								  new string[] { externalAttribute1, externalAttribute2 });
 
@@ -155,9 +156,9 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
-		private async Task TestListOfParentsSimpleAsync(string source)
+		private  Task TestListOfParentsSimpleAsync(string source)
 		{
-			await _testListOfParentsAsync(source,
+			return _testListOfParentsAsync(source,
 								new List<List<string>> {
 									new List<string>{ "PX.Data.PXBoolAttribute" },
 									new List<string>{ "PX.Data.PXDefaultAttribute" },
@@ -171,9 +172,9 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
-		private async Task TestListOfParentsAggregateAsync(string source)
+		private  Task TestListOfParentsAggregateAsync(string source)
 		{
-			await _testListOfParentsAsync(source,
+			return _testListOfParentsAsync(source,
 								new List<List<string>> {
 									new List<string>
 									{
@@ -194,9 +195,9 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
-		private async Task TestListOfParentsAggregateRecursiveAsync(string source)
+		private Task TestListOfParentsAggregateRecursiveAsync(string source)
 		{
-			await _testListOfParentsAsync(source, new List<List<string>> {
+			return _testListOfParentsAsync(source, new List<List<string>> {
 									new List<string>
 									{
 										"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
@@ -216,9 +217,9 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
-		private async Task TestListOfParentsSimpleExpandedAsync(string source)
+		private Task TestListOfParentsSimpleExpandedAsync(string source)
 		{
-			await _testListOfParentsAsync(source,
+			return _testListOfParentsAsync(source,
 								new List<List<string>> {
 									new List<string>{ "PX.Data.PXBoolAttribute" },
 									new List<string>{ "PX.Data.PXDefaultAttribute" },
@@ -233,9 +234,9 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
-		private async Task TestListOfParentsAggregateExpandedAsync(string source)
+		private Task TestListOfParentsAggregateExpandedAsync(string source)
 		{
-			await _testListOfParentsAsync(source,
+			return _testListOfParentsAsync(source,
 								new List<List<string>> {
 									new List<string>
 									{
@@ -261,9 +262,9 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
-		private async Task TestListOfParentsAggregateRecursiveExpandedAsync(string source)
+		private Task TestListOfParentsAggregateRecursiveExpandedAsync(string source)
 		{
-			await _testListOfParentsAsync(source, new List<List<string>> {
+			return _testListOfParentsAsync(source, new List<List<string>> {
 									new List<string>
 									{
 										"PX.Objects.HackathonDemo.NonNullableIntListAttribute",
