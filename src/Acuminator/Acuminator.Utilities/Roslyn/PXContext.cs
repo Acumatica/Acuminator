@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
 using PX.Data;
 
@@ -375,7 +376,7 @@ namespace Acuminator.Utilities.Roslyn
 
 			private static IReadOnlyDictionary<ITypeSymbol, EventType> CreateEventTypeMap(EventSymbols eventSymbols)
 			{
-				return new Dictionary<ITypeSymbol, EventType>()
+				var map =  new Dictionary<ITypeSymbol, EventType>()
 				{
 					{ eventSymbols.PXRowSelectingEventArgs, EventType.RowSelecting },
 					{ eventSymbols.PXRowSelectedEventArgs, EventType.RowSelected },
@@ -413,13 +414,17 @@ namespace Acuminator.Utilities.Roslyn
 					{ eventSymbols.FieldUpdated, EventType.FieldUpdated },
 					{ eventSymbols.CommandPreparing, EventType.CommandPreparing },
 					{ eventSymbols.ExceptionHandling, EventType.ExceptionHandling },
-					{ eventSymbols.FieldSelectingTypedRow, EventType.FieldSelecting },
-					{ eventSymbols.FieldDefaultingTypedRow, EventType.FieldDefaulting },
-					{ eventSymbols.FieldVerifyingTypedRow, EventType.FieldVerifying },
-					{ eventSymbols.FieldUpdatingTypedRow, EventType.FieldUpdating },
-					{ eventSymbols.FieldUpdatedTypedRow, EventType.FieldUpdated },
-					{ eventSymbols.ExceptionHandlingTypedRow, EventType.ExceptionHandling },
 				};
+
+				// These symbols can be absent on some versions of Acumatica
+				map.TryAdd(eventSymbols.FieldSelectingTypedRow, EventType.FieldSelecting);
+				map.TryAdd(eventSymbols.FieldDefaultingTypedRow, EventType.FieldDefaulting);
+				map.TryAdd(eventSymbols.FieldVerifyingTypedRow, EventType.FieldVerifying);
+				map.TryAdd(eventSymbols.FieldUpdatingTypedRow, EventType.FieldUpdating);
+				map.TryAdd(eventSymbols.FieldUpdatedTypedRow, EventType.FieldUpdated);
+				map.TryAdd(eventSymbols.ExceptionHandlingTypedRow, EventType.ExceptionHandling);
+
+				return map;
 			}
 
 			private static IReadOnlyDictionary<(EventType, EventHandlerSignatureType), INamedTypeSymbol>
@@ -456,13 +461,13 @@ namespace Acuminator.Utilities.Roslyn
 					{ (EventType.RowDeleted, EventHandlerSignatureType.Generic), eventSymbols.RowDeleted },
 					{ (EventType.RowPersisting, EventHandlerSignatureType.Generic), eventSymbols.RowPersisting },
 					{ (EventType.RowPersisted, EventHandlerSignatureType.Generic), eventSymbols.RowPersisted },
-					{ (EventType.FieldSelecting, EventHandlerSignatureType.Generic), eventSymbols.FieldSelectingTypedRow },
-					{ (EventType.FieldDefaulting, EventHandlerSignatureType.Generic), eventSymbols.FieldDefaultingTypedRow },
-					{ (EventType.FieldVerifying, EventHandlerSignatureType.Generic), eventSymbols.FieldVerifyingTypedRow },
-					{ (EventType.FieldUpdating, EventHandlerSignatureType.Generic), eventSymbols.FieldUpdatingTypedRow },
-					{ (EventType.FieldUpdated, EventHandlerSignatureType.Generic), eventSymbols.FieldUpdatedTypedRow },
+					{ (EventType.FieldSelecting, EventHandlerSignatureType.Generic), eventSymbols.FieldSelectingTypedRow ?? eventSymbols.FieldSelecting },
+					{ (EventType.FieldDefaulting, EventHandlerSignatureType.Generic), eventSymbols.FieldDefaultingTypedRow ?? eventSymbols.FieldDefaulting },
+					{ (EventType.FieldVerifying, EventHandlerSignatureType.Generic), eventSymbols.FieldVerifyingTypedRow ?? eventSymbols.FieldVerifying },
+					{ (EventType.FieldUpdating, EventHandlerSignatureType.Generic), eventSymbols.FieldUpdatingTypedRow ?? eventSymbols.FieldUpdating },
+					{ (EventType.FieldUpdated, EventHandlerSignatureType.Generic), eventSymbols.FieldUpdatedTypedRow ?? eventSymbols.FieldUpdated },
 					{ (EventType.CommandPreparing, EventHandlerSignatureType.Generic), eventSymbols.CommandPreparing },
-					{ (EventType.ExceptionHandling, EventHandlerSignatureType.Generic), eventSymbols.ExceptionHandlingTypedRow },
+					{ (EventType.ExceptionHandling, EventHandlerSignatureType.Generic), eventSymbols.ExceptionHandlingTypedRow ?? eventSymbols.ExceptionHandlingTypedRow },
 				};
 			}
 		}
