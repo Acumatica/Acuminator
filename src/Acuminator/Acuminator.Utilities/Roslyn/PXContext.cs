@@ -81,6 +81,9 @@ namespace Acuminator.Utilities.Roslyn
         public IMethodSymbol PXGraphExtensionInitializeMethod => PXGraphExtensionType.GetMembers(nameof(PXGraphExtension.Initialize))
                                                                  .OfType<IMethodSymbol>()
                                                                  .First();
+        public ImmutableArray<IMethodSymbol> StartOperation => PXLongOperation.GetMembers(nameof(PX.Data.PXLongOperation.StartOperation))
+                                                               .OfType<IMethodSymbol>()
+                                                               .ToImmutableArray();
 
         public PXContext(Compilation compilation)
 		{

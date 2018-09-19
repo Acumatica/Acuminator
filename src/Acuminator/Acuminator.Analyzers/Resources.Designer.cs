@@ -656,6 +656,24 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A DAC instance passed to the {0} event handler cannot be modified inside this event handler.
+        /// </summary>
+        public static string PX1047MessageFormat {
+            get {
+                return ResourceManager.GetString("PX1047MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A DAC instance passed to the event handler cannot be modified inside the event handler.
+        /// </summary>
+        public static string PX1047Title {
+            get {
+                return ResourceManager.GetString("PX1047Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hardcoded strings are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class..
         /// </summary>
         public static string PX1050Title {
@@ -692,11 +710,29 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A PXGraph instance should not start PXLongOperation during the initialization phase.
+        /// </summary>
+        public static string PX1054Title {
+            get {
+                return ResourceManager.GetString("PX1054Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A PXGraph instance cannot be initialized while another PXGraph instance is being initialized.
         /// </summary>
         public static string PX1057Title {
             get {
                 return ResourceManager.GetString("PX1057Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A PXGraph instance should not save changes to the database during the initialization phase.
+        /// </summary>
+        public static string PX1058Title {
+            get {
+                return ResourceManager.GetString("PX1058Title", resourceCulture);
             }
         }
     }

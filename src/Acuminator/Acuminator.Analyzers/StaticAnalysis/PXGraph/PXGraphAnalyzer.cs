@@ -1,10 +1,9 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization;
+using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
+using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
 using Acuminator.Utilities.Roslyn;
-using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -20,7 +19,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
 
         public PXGraphAnalyzer() : this(
-            new PXGraphCreationDuringInitializationAnalyzer())
+            new PXGraphCreationDuringInitializationAnalyzer(),
+            new PXGraphSavingChangesDuringInitializationAnalyzer(),
+            new PXGraphLongOperationDuringInitializationAnalyzer())
         {
         }
 
