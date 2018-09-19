@@ -91,18 +91,12 @@ namespace Acuminator.Utilities.Roslyn
 
 			_bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation));
 			_events = new Lazy<EventSymbols>(() => new EventSymbols(Compilation));
-			_fieldAttributes = new Lazy<FieldAttributesTypes>(
-										() => new FieldAttributesTypes(Compilation));
-			_systemActionTypes = new Lazy<PXSystemActionTypes>(
-										() => new PXSystemActionTypes(Compilation));
-			_attributes = new Lazy<AttributesTypes>(
-										() => new AttributesTypes(Compilation));
-			_systemTypes = new Lazy<SystemTypeSymbols>(
-										() => new SystemTypeSymbols(Compilation));
-            _localizationMethods = new Lazy<LocalizationTypes>(
-                () => new LocalizationTypes(Compilation));
-            _pxGraphRelatedMethods = new Lazy<PXGraphRelatedMethods>(
-                () => new PXGraphRelatedMethods(this));
+			_fieldAttributes = new Lazy<FieldAttributesTypes>(() => new FieldAttributesTypes(Compilation));
+			_systemActionTypes = new Lazy<PXSystemActionTypes>(() => new PXSystemActionTypes(Compilation));
+			_attributes = new Lazy<AttributesTypes>(() => new AttributesTypes(Compilation));
+			_systemTypes = new Lazy<SystemTypeSymbols>(() => new SystemTypeSymbols(Compilation));
+            _localizationMethods = new Lazy<LocalizationTypes>(() => new LocalizationTypes(Compilation));
+            _pxGraphRelatedMethods = new Lazy<PXGraphRelatedMethods>(() => new PXGraphRelatedMethods(this));
 
             IsAcumatica2018R2 = PXSelectBase2018R2NewType != null;
 		}
