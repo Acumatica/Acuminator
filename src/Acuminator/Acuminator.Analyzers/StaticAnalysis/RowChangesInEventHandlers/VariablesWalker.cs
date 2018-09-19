@@ -79,7 +79,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				{
 					var variableSymbol = _semanticModel.GetDeclaredSymbol(variableDeclarator) as ILocalSymbol;
 
-					if (variableSymbol != null)
+					if (variableSymbol != null && _variables.Contains(variableSymbol))
 					{
 						var walker = new EventArgsRowWalker(_semanticModel, _pxContext);
 						variableDeclarator.Initializer.Value.Accept(walker);
