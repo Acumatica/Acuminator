@@ -151,12 +151,12 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			}
 		}
 
-		public BoundAttribute IsBoundAttribute(AttributeData attribute)
+		public BoundFlag IsBoundAttribute(AttributeData attribute)
 		{
 			foreach (var baseType in BoundBaseTypes)
 			{
 				if (AttributeDerivedFromClass(attribute.AttributeClass, baseType))
-					return BoundAttribute.DbBound;
+					return BoundFlag.DbBound;
 			}
 
 			if (attribute.AttributeClass.GetMembers().Select(a => a.Name).Contains(IsDBField))
@@ -166,14 +166,14 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 					if (argument.Key.Equals(IsDBField))
 					{
 						if (argument.Value.Value.Equals(true))
-							return BoundAttribute.DbBound;
+							return BoundFlag.DbBound;
 						else
-							return BoundAttribute.Unbound;
+							return BoundFlag.Unbound;
 					}
 				}
-				return BoundAttribute.Unknown;
+				return BoundFlag.Unknown;
 			}
-			return BoundAttribute.Unbound;
+			return BoundFlag.Unbound;
 		}
 
 		///TODO: refactoring arguments -> remove semanticModel to constructor? Is it nessesary?
@@ -185,7 +185,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 			foreach (var attribute in attributesData)
 			{
-				if (IsBoundAttribute(attribute) == BoundAttribute.DbBound)
+				if (IsBoundAttribute(attribute) == BoundFlag.DbBound)
 					return true;
 				foreach (var argument in attribute.NamedArguments)
 				{
@@ -196,23 +196,23 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			return false;
 		}
 
-		public BoundAttribute ContainsBoundAttributes(IEnumerable<AttributeData> attributes)
+		public BoundFlag ContainsBoundAttributes(IEnumerable<AttributeData> attributes)
 		{
 			foreach (var attribute in attributes)
 			{
-				BoundAttribute result = IsBoundAttribute(attribute);
-				if (result == BoundAttribute.DbBound || result == BoundAttribute.Unknown)
+				BoundFlag result = IsBoundAttribute(attribute);
+				if (result == BoundFlag.DbBound || result == BoundFlag.Unknown)
 					return result;
 			}
-			return BoundAttribute.Unbound;
+			return BoundFlag.Unbound;
 		}
 
 	}
 
-	public enum BoundAttribute
+	public enum BoundFlag
 	{
-		Unbound = 0,
-		DbBound = 1,
-		Unknown = 2
+		Unknown = 0,
+		Unbound = 1,
+		DbBound = 2
 	}
 }

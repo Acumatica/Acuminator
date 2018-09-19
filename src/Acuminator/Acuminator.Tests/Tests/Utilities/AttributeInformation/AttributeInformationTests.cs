@@ -18,16 +18,16 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 	public class AttributeInformationTests : Verification.DiagnosticVerifier
 	{
 		/* 
-		*  Tests attribute derived 
-		* */
+		 *  Tests attribute derived 
+		 * */
 		[Theory]
 		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
-		public async void TestAttributeSimpleInformation(string source) =>
+		public async Task TestAttributeSimpleInformation(string source) =>
 			await TestAttributeInformationAsync(source, new List<bool> { false, true, false, false, true, false });
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
-		public async void TestAggregateAttributeAsync(string source) =>
+		public async Task TestAggregateAttributeAsync(string source) =>
 			await TestAttributeInformationAsync(source, new List<bool> { true, true });
 
 		[Theory]
@@ -65,31 +65,35 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		 */
 		[Theory]
 		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
-		public async void TestAreBoundAttributesAsync(string source) =>
-			await _testIsBoundAttributeAsync(source, new List<BoundAttribute> { BoundAttribute.Unbound,
-														  BoundAttribute.Unbound,
-														  BoundAttribute.Unbound,
-														  BoundAttribute.DbBound,
-														  BoundAttribute.Unbound,
-														  BoundAttribute.Unbound });
+		public async Task TestAreBoundAttributesAsync(string source) =>
+			await _testIsBoundAttributeAsync(source, 
+											new List<BoundFlag>
+											{
+												BoundFlag.Unbound,
+												BoundFlag.Unbound,
+												BoundFlag.Unbound,
+												BoundFlag.DbBound,
+												BoundFlag.Unbound,
+												BoundFlag.Unbound
+											});
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
-		public async void TestAreBoundAggregateAttributesAsync(string source) =>
-			await _testIsBoundAttributeAsync(source, new List<BoundAttribute> { BoundAttribute.DbBound, BoundAttribute.Unbound });
+		public async Task TestAreBoundAggregateAttributesAsync(string source) =>
+			await _testIsBoundAttributeAsync(source, new List<BoundFlag> { BoundFlag.DbBound, BoundFlag.Unbound });
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
-		public async void TestAreBoundAggregateRecursiveAttributeAsync(string source) =>
-			await _testIsBoundAttributeAsync(source, new List<BoundAttribute> { BoundAttribute.Unbound, BoundAttribute.DbBound });
+		public async Task TestAreBoundAggregateRecursiveAttributeAsync(string source) =>
+			await _testIsBoundAttributeAsync(source, new List<BoundFlag> { BoundFlag.Unbound, BoundFlag.DbBound });
 
-		private async Task _testIsBoundAttributeAsync(string source, List<BoundAttribute> expected)
+		private async Task _testIsBoundAttributeAsync(string source, List<BoundFlag> expected)
 		{
 			Document document = CreateDocument(source);
 			SemanticModel semanticModel = await document.GetSemanticModelAsync();
 			var syntaxRoot = document.GetSyntaxRootAsync().Result;
 
-			List<BoundAttribute> actual = new List<BoundAttribute>();
+			List<BoundFlag> actual = new List<BoundFlag>();
 			var pxContext = new PXContext(semanticModel.Compilation);
 
 			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
@@ -110,30 +114,30 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"PropertyIsDBBoundFieldAttribute.cs")]
-		public async void FieldBoundAttributesWithDynamicIsDBFieldSetInConstructorAsync(string source) =>
+		public async Task FieldBoundAttributesWithDynamicIsDBFieldSetInConstructorAsync(string source) =>
 			await _testIsDBFieldPropertyAsync(source,
-								   new List<BoundAttribute> { BoundAttribute.DbBound, BoundAttribute.Unbound });
+								   new List<BoundFlag> { BoundFlag.DbBound, BoundFlag.Unbound });
 
 		[Theory]
 		[EmbeddedFileData(@"PropertyIsDBBoundFieldWithDefinedAttributes.cs")]
-		public async void FieldBoundAttributesWithDynamicIsDBFieldSetInAttributeDefinitionAsync(string source) =>
+		public async Task FieldBoundAttributesWithDynamicIsDBFieldSetInAttributeDefinitionAsync(string source) =>
 		   await _testIsDBFieldPropertyAsync(source,
-								  new List<BoundAttribute> { BoundAttribute.Unknown, BoundAttribute.Unknown, BoundAttribute.Unknown, BoundAttribute.Unknown });
+								  new List<BoundFlag> { BoundFlag.Unknown, BoundFlag.Unknown, BoundFlag.Unknown, BoundFlag.Unknown });
 
 		[Theory]
 		[EmbeddedFileData(@"PropertyIsDBBoundFieldWithoutDefinedAttributes.cs", internalCodeFileNames: new string[] { @"ExternalAttributes1.cs", @"ExternalAttributes2.cs" })]
-		public async void FieldBoundAttributesWithDynamicIsDBFieldSetInExternalAttributeDefinitionAsync(string source, string externalAttribute1, string externalAttribute2) =>
+		public async Task FieldBoundAttributesWithDynamicIsDBFieldSetInExternalAttributeDefinitionAsync(string source, string externalAttribute1, string externalAttribute2) =>
 		   await _testIsDBFieldPropertyAsync(source,
-								  new List<BoundAttribute> { BoundAttribute.Unknown, BoundAttribute.Unknown },
+								  new List<BoundFlag> { BoundFlag.Unknown, BoundFlag.Unknown },
 								  new string[] { externalAttribute1, externalAttribute2 });
 
-		private async Task _testIsDBFieldPropertyAsync(string source, List<BoundAttribute> expected, string[] code = null)
+		private async Task _testIsDBFieldPropertyAsync(string source, List<BoundFlag> expected, string[] code = null)
 		{
 			Document document = CreateDocument(source, externalCode: code);
 			SemanticModel semanticModel = await document.GetSemanticModelAsync();
 			var syntaxRoot = document.GetSyntaxRootAsync().Result;
 
-			List<BoundAttribute> actual = new List<BoundAttribute>();
+			List<BoundFlag> actual = new List<BoundFlag>();
 			var pxContext = new PXContext(semanticModel.Compilation);
 			var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
 
@@ -151,7 +155,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
-		private async void TestListOfParentsSimpleAsync(string source)
+		private async Task TestListOfParentsSimpleAsync(string source)
 		{
 			await _testListOfParentsAsync(source,
 								new List<List<string>> {
@@ -167,7 +171,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
-		private async void TestListOfParentsAggregateAsync(string source)
+		private async Task TestListOfParentsAggregateAsync(string source)
 		{
 			await _testListOfParentsAsync(source,
 								new List<List<string>> {
@@ -190,7 +194,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
-		private async void TestListOfParentsAggregateRecursiveAsync(string source)
+		private async Task TestListOfParentsAggregateRecursiveAsync(string source)
 		{
 			await _testListOfParentsAsync(source, new List<List<string>> {
 									new List<string>
@@ -212,7 +216,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
-		private async void TestListOfParentsSimpleExpandedAsync(string source)
+		private async Task TestListOfParentsSimpleExpandedAsync(string source)
 		{
 			await _testListOfParentsAsync(source,
 								new List<List<string>> {
@@ -229,7 +233,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
-		private async void TestListOfParentsAggregateExpandedAsync(string source)
+		private async Task TestListOfParentsAggregateExpandedAsync(string source)
 		{
 			await _testListOfParentsAsync(source,
 								new List<List<string>> {
@@ -257,7 +261,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
-		private async void TestListOfParentsAggregateRecursiveExpandedAsync(string source)
+		private async Task TestListOfParentsAggregateRecursiveExpandedAsync(string source)
 		{
 			await _testListOfParentsAsync(source, new List<List<string>> {
 									new List<string>

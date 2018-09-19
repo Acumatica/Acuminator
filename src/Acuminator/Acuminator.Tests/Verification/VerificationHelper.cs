@@ -61,6 +61,7 @@ namespace Acuminator.Tests.Verification
 		/// </summary>
 		/// <param name="source">Classes in the form of a string</param>
 		/// <param name="language">The language the source code is in</param>
+		/// <param name="externalCode">The source codes for new memory compilation</param>
 		/// <returns>A Document created from the source string</returns>
 		public static Document CreateDocument(string source, string language = LanguageNames.CSharp, string[] externalCode = null)
 		{
@@ -78,10 +79,10 @@ namespace Acuminator.Tests.Verification
 		/// </summary>
 		/// <param name="sources">Classes in the form of strings</param>
 		/// <param name="language">The language the source code is in</param>
-		/// <param name="externalCodes">The source codes for new memory compilation</param>
+		/// <param name="externalCode">The source codes for new memory compilation</param>
 		/// <param name="references">The references for new memory compilation</param>
 		/// <returns>A Project created out of the Documents created from the source strings</returns>
-		private static Project CreateProject(string[] sources, string language = LanguageNames.CSharp, string[] externalCodes = null)
+		private static Project CreateProject(string[] sources, string language = LanguageNames.CSharp, string[] externalCode = null)
 		{
 			string fileNamePrefix = DefaultFilePathPrefix;
 			string fileExt = language == LanguageNames.CSharp ? CSharpDefaultFileExt : VisualBasicDefaultExt;
@@ -103,9 +104,9 @@ namespace Acuminator.Tests.Verification
 									.AddMetadataReference(projectId, PXDataReference)
 									.AddMetadataReference(projectId, PXCommonReference);
 
-			if (externalCodes != null && externalCodes.Length > 0)
+			if (externalCode != null && externalCode.Length > 0)
 			{
-				IEnumerable<byte> dynamicAssembly = BuildAssemblyFromSources(externalCodes);
+				IEnumerable<byte> dynamicAssembly = BuildAssemblyFromSources(externalCode);
 				MetadataReference dynamicReference = MetadataReference.CreateFromImage(dynamicAssembly);
 				solution = solution.AddMetadataReference(projectId, dynamicReference);
 			}
@@ -218,22 +219,25 @@ namespace Acuminator.Tests.Verification
 
 			// Emit the image of this assembly 
 			byte[] image = null;
+
 			using (var ms = new MemoryStream())
 			{
 				var emitResult = compilation.Emit(ms);
+
 				if (!emitResult.Success)
 				{
-					List<Exception> failtureMessages = new List<Exception>();
+					StringBuilder failtureMessages = new StringBuilder(BuildFailMessage + " ", 4096);
+					
 					IEnumerable<Diagnostic> failures = emitResult.Diagnostics.Where(diagnostic =>
 								   diagnostic.IsWarningAsError ||
 								   diagnostic.Severity == DiagnosticSeverity.Error);
 
 					foreach (Diagnostic diagnostic in failures)
 					{
-						failtureMessages.Add(new ArgumentException(string.Format("{0}: {1}", diagnostic.Id, diagnostic.GetMessage())));
+						failtureMessages.Append(string.Format("{0}: {1}", diagnostic.Id, diagnostic.GetMessage()));
 					}
 
-					throw new ArgumentException(BuildFailMessage, new AggregateException(failtureMessages));
+					throw new ArgumentException(BuildFailMessage.ToString());
 				}
 				image = ms.ToArray();
 			}
