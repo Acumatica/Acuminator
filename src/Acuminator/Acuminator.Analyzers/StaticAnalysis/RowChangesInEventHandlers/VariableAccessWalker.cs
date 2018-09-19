@@ -23,6 +23,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				_semanticModel = semanticModel;
 			}
 
+			public void Reset()
+			{
+				Success = false;
+			}
+
 			public override void Visit(SyntaxNode node)
 			{
 				if (!Success)

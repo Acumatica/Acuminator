@@ -29,6 +29,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 			private readonly ImmutableHashSet<ILocalSymbol> _rowVariables;
 			private readonly object[] _messageArgs;
 
+			private readonly VariableMemberAccessWalker _variableMemberAccessWalker;
+
 			public DiagnosticWalker(SymbolAnalysisContext context, SemanticModel semanticModel, PXContext pxContext, 
 				ImmutableArray<ILocalSymbol> rowVariables, // variables which were assigned with e.Row
 				params object[] messageArgs)
@@ -40,6 +42,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				_pxContext = pxContext;
 				_rowVariables = rowVariables.ToImmutableHashSet();
 				_messageArgs = messageArgs;
+
+				_variableMemberAccessWalker = new VariableMemberAccessWalker(_rowVariables, semanticModel);
 			}
 
 			public override void VisitInvocationExpression(InvocationExpressionSyntax node)
@@ -81,9 +85,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 
 					if (!found)
 					{
-						var varWalker = new VariableMemberAccessWalker(_rowVariables, _semanticModel);
-						node.Left.Accept(varWalker);
-						found = varWalker.Success;
+						_variableMemberAccessWalker.Reset();
+						node.Left.Accept(_variableMemberAccessWalker);
+						found = _variableMemberAccessWalker.Success;
 					}
 					
 					if (found)
