@@ -51,13 +51,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			BoundFlag isBoundField = attributeInformation.ContainsBoundAttributes(attributes.Select(a => a));
+			BoundType isBoundField = attributeInformation.ContainsBoundAttributes(attributes.Select(a => a));
 
-			if (isBoundField == BoundFlag.DbBound)
+			if (isBoundField == BoundType.DbBound)
 			{
 				await AnalyzeAttributesWithinBoundFieldAsync(property, attributes, pxContext, symbolContext, true, attributeInformation).ConfigureAwait(false);
 			}
-			else if (isBoundField == BoundFlag.Unbound)
+			else if (isBoundField == BoundType.Unbound)
 			{
 				await AnalyzeAttributesWithinUnBoundFieldAsync(property, attributes, pxContext, symbolContext, false, attributeInformation).ConfigureAwait(false);
 			}
