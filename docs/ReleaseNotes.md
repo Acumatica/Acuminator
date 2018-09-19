@@ -2,14 +2,14 @@
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
 ## Acuminator 1.4
-Acuminator 1.4 includes the diagnostics and code fixes, suggestions of code refactoring, and bug fixes described in this section, as well as the features that have been implemented in the previous versions.
+Acuminator 1.4 includes the diagnostics and code fixes, suggestions for refactoring code, and bug fixes described in this section, as well as the features that have been implemented in previous versions.
 
 ### New Diagnostics and Code Fixes
 In this version, diagnostics and code fixes for the following issues have been added.
 
 | Code   | Issue Description                                               | Type    | Diagnostics | Code Fix  | 
 | ------ | --------------------------------------------------------------- | ------- | ----------- | --------- | 
-| PX1030 | The `PXDefault` attribute of the field is used incorrectly. `PXDefaultAttribute` used on a custom field defined in `PXCacheExtension` can potentially prevent updates to existing records when used without `PersistingCheck` property set to `Nothing`. | Warning | Available | Available |
+| PX1030 | The `PXDefault` attribute of the field is used incorrectly. `PXDefaultAttribute` used on a custom field defined in `PXCacheExtension` can potentially prevent updates to existing records when it is used without the `PersistingCheck` property set to `Nothing`. | Warning | Available | Available |
 | PX1042 | In a `RowSelecting` handler, BQL statements and other database queries must be executed only inside a separate connection scope. | Error | Available | Available |
 | PX1043 | Only the methods of the `PXCache.Persist` family can be used to save changes to the database from `RowPersisting` event handlers. Changes cannot be saved to the database from other event handlers.  | Error | Available | Unavailable |
 | PX1044 | Changes to `PXCache` cannot be performed in event handlers. | Error | Available | Unavailable |
@@ -21,25 +21,25 @@ In this version, diagnostics and code fixes for the following issues have been a
 | PX1053 | Concatenated strings cannot be used as parameters for localization methods and `PXException` constructors. | Error | Available | Unavailable |
 | PX1057 | A `PXGraph` instance cannot be initialized while another `PXGraph` instance is being initialized. | Error | Available | Unavailable |
 
-### New Suggestions of Code Refactoring 
-Acuminator 1.4 suggests one type of code refactoring: replacement of standard event handler signature with the generic signature. Because an event handler can be overridden in derived classes or graph extensions, after you have applied this refactoring to your code, you have to manually update all possible overrides. 
+### New Suggestions for Refactoring Code
+Acuminator 1.4 suggests one type of code refactoring: replacement of the standard event handler signature with the generic signature. Because an event handler can be overridden in derived classes or graph extensions, after you have applied this refactoring to your code, you have to manually update all possible overrides. 
 
 ### Code Analysis Enhancements
-Now Acuminator can analyze the code recursively (that is, analyze the whole tree of method invocations in a recursive manner). For example, for the PX1042 diagnostic, the code of a `RowSelecting` event handler can contain no direct requests to the database but can contain a call to another method that performs a request to the database. Acuminator 1.4 can find this indirect request to the database.
-By default, Acuminator analyses the code recursively. You can turn this behavior off by setting to `False` the value of **Tools > Options > Acuminator > Code Analysis > Enable recursive code analysis**.
+Now Acuminator can analyze the code recursively (that is, it can analyze the whole tree of method invocations in a recursive manner). For example, for the PX1042 diagnostic, the code of a `RowSelecting` event handler can contain no direct requests to the database but can contain a call to another method that performs a request to the database. Acuminator 1.4 can find this indirect request to the database.
+By default, Acuminator analyzes the code recursively. You can turn off this behavior by setting to `False` the value of **Tools > Options > Acuminator > Code Analysis > Enable recursive code analysis**.
 
 ### Bug Fixes
-In this version, the following bugs have been fixed.
+In this version of Acuminator, the following bugs have been fixed.
 
 | Bug | Fix Description |
 | --- | --------------- |
 | The PX1021 error was displayed for the DAC fields of the `string[]` type that had an attribute inherited from `PXDBAttributeAttribute`. | The error is not displayed for these fields. |
 | The PX1021 error was displayed for the DAC property fields with non-nullable types along with the PX1014 error. | Only the PX1014 error is displayed for the DAC property fields with non-nullable types. |
-| The PX1029 error was displayed for DACs with the `PXPrimaryGraph` attribute. | Use of `PXGraph` instances in DAC attributes is ignored. `PXGraph` instances can be used in `typeof` expressions. |
+| The PX1029 error was displayed for DACs with the `PXPrimaryGraph` attribute. | The use of `PXGraph` instances in DAC attributes is ignored. `PXGraph` instances can be used in `typeof` expressions. |
 | The PX1029 diagnostic could be displayed twice for the same code. | Duplicate analysis of DACs has been removed. |
-| The PX1029, PX1031, and PX1032 diagnostics displayed errors for custom attributes and helpers declared in DACs. | The PX1029, PX1031, and PX1032 diagnostics do not check the nested DAC classes that had the type other than IBqlField. |
-| The PX1032 error was displayed for invocations of methods declared on the system types, such as `string`, `int`, `DateTime`, `Guid`, `TimeSpan`. | Invocations of methods declared on the system types are skipped by the PX1032 diagnostic. |
-| Code navigation didn't support action handlers with no parameters and `void` return type. | Action handlers with no parameters and `void` return type are now supported by code navigation. |
+| The PX1029, PX1031, and PX1032 diagnostics displayed errors for custom attributes and helpers declared in DACs. | The PX1029, PX1031, and PX1032 diagnostics do not check the nested DAC classes that had a type other than IBqlField. |
+| The PX1032 error was displayed for invocations of methods declared on the system types, such as `string`, `int`, `DateTime`, `Guid`, and `TimeSpan`. | Invocations of methods declared on the system types are skipped by the PX1032 diagnostic. |
+| Code navigation didn't support action handlers with no parameters and the `void` return type. | Action handlers with no parameters and the `void` return type are now supported by code navigation. |
 
 ## Acuminator 1.3
 Acuminator 1.3 includes the diagnostics and code fixes, enhancements, and bug fixes described in this section, as well as the features that have been implemented in the previous versions.
