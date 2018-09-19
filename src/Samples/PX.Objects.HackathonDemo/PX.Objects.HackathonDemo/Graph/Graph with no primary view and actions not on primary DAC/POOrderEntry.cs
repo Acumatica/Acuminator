@@ -19,4 +19,22 @@ namespace PX.Objects.HackathonDemo
 	{
 		public PXAction<SOOrder> RefreshOrder;
 	}
+
+    public class SomeEntry : PXGraph<SomeEntry, POOrder>
+    {
+        public PXSelect<POOrder> Orders;
+
+        public PXAction<POOrder> release;
+        public PXAction<POOrder> Report;
+
+        public IEnumerable Release(PXAdapter adapter)
+        {
+            return adapter.Get();
+        }
+
+        public IEnumerable report(PXAdapter adapter)
+        {
+            return adapter.Get();
+        }
+    }
 }
