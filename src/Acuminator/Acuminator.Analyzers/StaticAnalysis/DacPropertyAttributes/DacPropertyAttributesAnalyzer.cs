@@ -167,11 +167,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			else if (typeAttributesWithConflictingAggregatorDeclarations.Count == 0)
 			{
 				var typeAttribute = typeAttributesDeclaredOnDacProperty[0];
-				var attributeInfo = attributesWithInfos.First(attrWithInfo => attrWithInfo.Attribute.Equals(typeAttribute))
-													   .Infos
-													   .Single(info => info.IsFieldAttribute);
+				var fieldType = attributesWithInfos.First(attrWithInfo => attrWithInfo.Attribute.Equals(typeAttribute))
+												   .Infos
+												   .Where(info => info.IsFieldAttribute)
+												   .Select(info => info.FieldType)
+												   .Distinct()
+												   .SingleOrDefault();
 		
-				await CheckAttributeAndPropertyTypesForCompatibilityAsync(property, typeAttribute, attributeInfo, pxContext, symbolContext);
+				await CheckAttributeAndPropertyTypesForCompatibilityAsync(property, typeAttribute, fieldType, pxContext, symbolContext);
 			}
 
 			//-----------------------------------------------Local Functions---------------------------------------
@@ -206,10 +209,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		}
 
 		private static Task CheckAttributeAndPropertyTypesForCompatibilityAsync(IPropertySymbol property, AttributeData fieldAttribute,
-																				FieldTypeAttributeInfo fieldAttributeInfo, PXContext pxContext,
+																				ITypeSymbol fieldType, PXContext pxContext,
 																				SymbolAnalysisContext symbolContext)
 		{
-			if (fieldAttributeInfo.FieldType == null)                                                               //PXDBFieldAttribute case
+			if (fieldType == null)                                                               //PXDBFieldAttribute case
 			{
 				return ReportIncompatibleTypesDiagnosticsAsync(property, fieldAttribute, symbolContext, registerCodeFix: false);
 			}
@@ -232,7 +235,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				typeToCompare = property.Type;
 			}
 
-			if (fieldAttributeInfo.FieldType.Equals(typeToCompare))
+			if (fieldType.Equals(typeToCompare))
 			{
 				return Task.FromResult(false);
 			}

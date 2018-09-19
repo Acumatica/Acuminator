@@ -120,9 +120,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		}
 
 		/// <summary>
-		/// Check if Acumatica attribute is derived from the specified Acumatica attribute type. The exception will be thrown if non Acumatica attributes are passed.
+		/// Check if Acumatica attribute is derived from the specified Acumatica attribute type. If non Acumatica attributes are passed then <c>flase</c> is returned.
 		/// </summary>
-		/// <exception cref="ArgumentException">Thrown when one or more arguments is non Acumatica attribute.</exception>
 		/// <param name="attributeType">Type of the attribute.</param>
 		/// <param name="typeToCheck">The base attribute type to check.</param>
 		/// <returns>
@@ -133,10 +132,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			attributeType.ThrowOnNull(nameof(attributeType));
 			typeToCheck.ThrowOnNull(nameof(typeToCheck));
 
-			if (!attributeType.InheritsFromOrEquals(_eventSubscriberAttribute))
-				throw new ArgumentException("Attribute must be derived from PXEventSubscriber", nameof(attributeType));
-			else if (!typeToCheck.InheritsFromOrEquals(_eventSubscriberAttribute))
-				throw new ArgumentException("Attribute must be derived from PXEventSubscriber", nameof(typeToCheck));
+			if (!attributeType.InheritsFromOrEquals(_eventSubscriberAttribute) || !typeToCheck.InheritsFromOrEquals(_eventSubscriberAttribute))
+				return false;
 
 			return IsAttributeDerivedFromClassInternal(attributeType, typeToCheck);
 		}
