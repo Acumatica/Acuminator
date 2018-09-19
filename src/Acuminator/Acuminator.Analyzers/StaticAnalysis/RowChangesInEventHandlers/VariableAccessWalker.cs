@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -19,6 +20,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 
 			public VariableMemberAccessWalker(ImmutableHashSet<ILocalSymbol> variables, SemanticModel semanticModel)
 			{
+				semanticModel.ThrowOnNull(nameof (semanticModel));
+
 				_variables = variables;
 				_semanticModel = semanticModel;
 			}
