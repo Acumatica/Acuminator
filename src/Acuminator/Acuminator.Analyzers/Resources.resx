@@ -220,19 +220,19 @@
     <value>The DAC property cannot be marked with multiple field type attributes</value>
   </data>
 	<data name="PX1023MultipleTypeAttributesOnAggregators" xml:space="preserve">
-    <value>The attribute contains multiple field type attributes declared on aggregators</value>
+    <value>The attribute aggregates incompatible field type attributes</value>
   </data>
   <data name="PX1023MultipleSpecialTypeAttributesOnProperty" xml:space="preserve">
-    <value>The DAC property cannot be marked with multiple PXDBScalar/PXDBCalced attributes</value>
+    <value>The DAC property cannot be marked with multiple PXDBScalar or PXDBCalced attributes</value>
   </data>
 	<data name="PX1023MultipleSpecialTypeAttributesOnAggregators" xml:space="preserve">
-    <value>The attribute contains multiple PXDBScalar/PXDBCalced attributes declared on aggregators</value>
+    <value>The attribute aggregates multiple PXDBScalar or PXDBCalced attributes</value>
   </data>
   <data name="PX1023TypeAttributesFix" xml:space="preserve">
     <value>Leave the selected attribute and remove other field type attributes from the property</value>
   </data>
   <data name="PX1023SpecialAttributesFix" xml:space="preserve">
-    <value>Leave the selected attribute and remove other PXDBScalar/PXDBCalced attributes from the property</value>
+    <value>Leave the selected attribute and remove other PXDBScalar or PXDBCalced attributes from the property</value>
   </data>
   <data name="PX1024Title" xml:space="preserve">
     <value>The DAC field type must be abstract</value>

@@ -377,7 +377,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The attribute contains multiple PXDBScalar/PXDBCalced attributes declared on aggregators.
+        ///   Looks up a localized string similar to The attribute aggregates multiple PXDBScalar or PXDBCalced attributes.
         /// </summary>
         public static string PX1023MultipleSpecialTypeAttributesOnAggregators {
             get {
@@ -386,7 +386,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The DAC property cannot be marked with multiple PXDBScalar/PXDBCalced attributes.
+        ///   Looks up a localized string similar to The DAC property cannot be marked with multiple PXDBScalar or PXDBCalced attributes.
         /// </summary>
         public static string PX1023MultipleSpecialTypeAttributesOnProperty {
             get {
@@ -395,7 +395,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The attribute contains multiple field type attributes declared on aggregators.
+        ///   Looks up a localized string similar to The attribute aggregates incompatible field type attributes.
         /// </summary>
         public static string PX1023MultipleTypeAttributesOnAggregators {
             get {
@@ -413,7 +413,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Leave the selected attribute and remove other PXDBScalar/PXDBCalced attributes from the property.
+        ///   Looks up a localized string similar to Leave the selected attribute and remove other PXDBScalar or PXDBCalced attributes from the property.
         /// </summary>
         public static string PX1023SpecialAttributesFix {
             get {
