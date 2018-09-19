@@ -321,6 +321,12 @@
   <data name="PX1058Title" xml:space="preserve">
     <value>A PXGraph instance should not save changes to the database during the initialization phase</value>
   </data>
+  <data name="PX1047MessageFormat" xml:space="preserve">
+    <value>A DAC instance passed to the {0} event handler cannot be modified inside this event handler</value>
+  </data>
+  <data name="PX1047Title" xml:space="preserve">
+    <value>A DAC instance passed to the event handler cannot be modified inside the event handler</value>
+  </data>
   <data name="PX1054Title" xml:space="preserve">
     <value>A PXGraph instance should not start PXLongOperation during the initialization phase</value>
   </data>
