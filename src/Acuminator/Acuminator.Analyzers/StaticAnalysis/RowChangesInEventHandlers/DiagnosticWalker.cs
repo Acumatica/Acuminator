@@ -36,6 +36,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				params object[] messageArgs)
 			{
 				pxContext.ThrowOnNull(nameof (pxContext));
+				semanticModel.ThrowOnNull(nameof (semanticModel));
 
 				_context = context;
 				_semanticModel = semanticModel;
