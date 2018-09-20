@@ -99,6 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeAnalysisSettings.cs" />
+    <Compile Include="Common\DictionaryExtensions.cs" />
     <Compile Include="Common\ExceptionExtensions.cs" />
     <Compile Include="Common\StringExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

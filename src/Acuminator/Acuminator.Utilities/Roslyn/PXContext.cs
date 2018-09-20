@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
 using PX.Data;
 
@@ -16,22 +17,22 @@ namespace Acuminator.Utilities.Roslyn
 
 		public Compilation Compilation { get; }
 
-		private readonly Lazy<BQLSymbols> bql;
-		public BQLSymbols BQL => bql.Value;
+		private readonly Lazy<BQLSymbols> _bql;
+		public BQLSymbols BQL => _bql.Value;
 
-		private readonly Lazy<EventSymbols> events;
-		public EventSymbols Events => events.Value;
+		private readonly Lazy<EventSymbols> _events;
+		public EventSymbols Events => _events.Value;
 
-		private readonly Lazy<FieldAttributesTypes> fieldAttributes;
-		public FieldAttributesTypes FieldAttributes => fieldAttributes.Value;
+		private readonly Lazy<FieldAttributesTypes> _fieldAttributes;
+		public FieldAttributesTypes FieldAttributes => _fieldAttributes.Value;
 
-		private readonly Lazy<PXSystemActionTypes> systemActionTypes;
-		public PXSystemActionTypes PXSystemActions => systemActionTypes.Value;
+		private readonly Lazy<PXSystemActionTypes> _systemActionTypes;
+		public PXSystemActionTypes PXSystemActions => _systemActionTypes.Value;
 
-		private readonly Lazy<SystemTypeSymbols> systemTypes;
-		public SystemTypeSymbols SystemTypes => systemTypes.Value;
-		private readonly Lazy<AttributesTypes> attributes;
-		public AttributesTypes AttributeTypes => attributes.Value;
+		private readonly Lazy<SystemTypeSymbols> _systemTypes;
+		public SystemTypeSymbols SystemTypes => _systemTypes.Value;
+		private readonly Lazy<AttributesTypes> _attributes;
+		public AttributesTypes AttributeTypes => _attributes.Value;
 
         private readonly Lazy<LocalizationTypes> _localizationMethods;
         public LocalizationTypes Localization => _localizationMethods.Value;
@@ -88,20 +89,15 @@ namespace Acuminator.Utilities.Roslyn
         public PXContext(Compilation compilation)
 		{
 			Compilation = compilation;
-			bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation));
-			events = new Lazy<EventSymbols>(() => new EventSymbols(Compilation));
-			fieldAttributes = new Lazy<FieldAttributesTypes>(
-										() => new FieldAttributesTypes(Compilation));
-			systemActionTypes = new Lazy<PXSystemActionTypes>(
-										() => new PXSystemActionTypes(Compilation));
-			attributes = new Lazy<AttributesTypes>(
-										() => new AttributesTypes(Compilation));
-			systemTypes = new Lazy<SystemTypeSymbols>(
-										() => new SystemTypeSymbols(Compilation));
-            _localizationMethods = new Lazy<LocalizationTypes>(
-                () => new LocalizationTypes(Compilation));
-            _pxGraphRelatedMethods = new Lazy<PXGraphRelatedMethods>(
-                () => new PXGraphRelatedMethods(this));
+
+			_bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation));
+			_events = new Lazy<EventSymbols>(() => new EventSymbols(Compilation));
+			_fieldAttributes = new Lazy<FieldAttributesTypes>(() => new FieldAttributesTypes(Compilation));
+			_systemActionTypes = new Lazy<PXSystemActionTypes>(() => new PXSystemActionTypes(Compilation));
+			_attributes = new Lazy<AttributesTypes>(() => new AttributesTypes(Compilation));
+			_systemTypes = new Lazy<SystemTypeSymbols>(() => new SystemTypeSymbols(Compilation));
+            _localizationMethods = new Lazy<LocalizationTypes>(() => new LocalizationTypes(Compilation));
+            _pxGraphRelatedMethods = new Lazy<PXGraphRelatedMethods>(() => new PXGraphRelatedMethods(this));
 
             IsAcumatica2018R2 = PXSelectBase2018R2NewType != null;
 		}
@@ -380,7 +376,7 @@ namespace Acuminator.Utilities.Roslyn
 
 			private static IReadOnlyDictionary<ITypeSymbol, EventType> CreateEventTypeMap(EventSymbols eventSymbols)
 			{
-				return new Dictionary<ITypeSymbol, EventType>()
+				var map =  new Dictionary<ITypeSymbol, EventType>()
 				{
 					{ eventSymbols.PXRowSelectingEventArgs, EventType.RowSelecting },
 					{ eventSymbols.PXRowSelectedEventArgs, EventType.RowSelected },
@@ -418,13 +414,17 @@ namespace Acuminator.Utilities.Roslyn
 					{ eventSymbols.FieldUpdated, EventType.FieldUpdated },
 					{ eventSymbols.CommandPreparing, EventType.CommandPreparing },
 					{ eventSymbols.ExceptionHandling, EventType.ExceptionHandling },
-					{ eventSymbols.FieldSelectingTypedRow, EventType.FieldSelecting },
-					{ eventSymbols.FieldDefaultingTypedRow, EventType.FieldDefaulting },
-					{ eventSymbols.FieldVerifyingTypedRow, EventType.FieldVerifying },
-					{ eventSymbols.FieldUpdatingTypedRow, EventType.FieldUpdating },
-					{ eventSymbols.FieldUpdatedTypedRow, EventType.FieldUpdated },
-					{ eventSymbols.ExceptionHandlingTypedRow, EventType.ExceptionHandling },
 				};
+
+				// These symbols can be absent on some versions of Acumatica
+				map.TryAdd(eventSymbols.FieldSelectingTypedRow, EventType.FieldSelecting);
+				map.TryAdd(eventSymbols.FieldDefaultingTypedRow, EventType.FieldDefaulting);
+				map.TryAdd(eventSymbols.FieldVerifyingTypedRow, EventType.FieldVerifying);
+				map.TryAdd(eventSymbols.FieldUpdatingTypedRow, EventType.FieldUpdating);
+				map.TryAdd(eventSymbols.FieldUpdatedTypedRow, EventType.FieldUpdated);
+				map.TryAdd(eventSymbols.ExceptionHandlingTypedRow, EventType.ExceptionHandling);
+
+				return map;
 			}
 
 			private static IReadOnlyDictionary<(EventType, EventHandlerSignatureType), INamedTypeSymbol>
@@ -461,13 +461,13 @@ namespace Acuminator.Utilities.Roslyn
 					{ (EventType.RowDeleted, EventHandlerSignatureType.Generic), eventSymbols.RowDeleted },
 					{ (EventType.RowPersisting, EventHandlerSignatureType.Generic), eventSymbols.RowPersisting },
 					{ (EventType.RowPersisted, EventHandlerSignatureType.Generic), eventSymbols.RowPersisted },
-					{ (EventType.FieldSelecting, EventHandlerSignatureType.Generic), eventSymbols.FieldSelectingTypedRow },
-					{ (EventType.FieldDefaulting, EventHandlerSignatureType.Generic), eventSymbols.FieldDefaultingTypedRow },
-					{ (EventType.FieldVerifying, EventHandlerSignatureType.Generic), eventSymbols.FieldVerifyingTypedRow },
-					{ (EventType.FieldUpdating, EventHandlerSignatureType.Generic), eventSymbols.FieldUpdatingTypedRow },
-					{ (EventType.FieldUpdated, EventHandlerSignatureType.Generic), eventSymbols.FieldUpdatedTypedRow },
+					{ (EventType.FieldSelecting, EventHandlerSignatureType.Generic), eventSymbols.FieldSelectingTypedRow ?? eventSymbols.FieldSelecting },
+					{ (EventType.FieldDefaulting, EventHandlerSignatureType.Generic), eventSymbols.FieldDefaultingTypedRow ?? eventSymbols.FieldDefaulting },
+					{ (EventType.FieldVerifying, EventHandlerSignatureType.Generic), eventSymbols.FieldVerifyingTypedRow ?? eventSymbols.FieldVerifying },
+					{ (EventType.FieldUpdating, EventHandlerSignatureType.Generic), eventSymbols.FieldUpdatingTypedRow ?? eventSymbols.FieldUpdating },
+					{ (EventType.FieldUpdated, EventHandlerSignatureType.Generic), eventSymbols.FieldUpdatedTypedRow ?? eventSymbols.FieldUpdated },
 					{ (EventType.CommandPreparing, EventHandlerSignatureType.Generic), eventSymbols.CommandPreparing },
-					{ (EventType.ExceptionHandling, EventHandlerSignatureType.Generic), eventSymbols.ExceptionHandlingTypedRow },
+					{ (EventType.ExceptionHandling, EventHandlerSignatureType.Generic), eventSymbols.ExceptionHandlingTypedRow ?? eventSymbols.ExceptionHandlingTypedRow },
 				};
 			}
 		}
