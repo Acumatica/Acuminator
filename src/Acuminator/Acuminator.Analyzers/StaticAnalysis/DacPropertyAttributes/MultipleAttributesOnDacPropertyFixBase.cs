@@ -28,16 +28,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
+			context.CancellationToken.ThrowIfCancellationRequested();
+
 			string codeActionName = GetCodeActionName();
 			Func<FieldTypeAttributeInfo, bool> removePredicate = GetRemoveAttributeByAttributeInfoPredicate();
 
 			if (codeActionName.IsNullOrWhiteSpace() || removePredicate == null)
 				return;
 
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken)
-													.ConfigureAwait(false);
+			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!(root?.FindNode(context.Span) is AttributeSyntax attributeNode) || context.CancellationToken.IsCancellationRequested)
+			if (!(root?.FindNode(context.Span) is AttributeSyntax attributeNode))
 				return;
 
 			var propertyDeclaration = attributeNode.Parent<PropertyDeclarationSyntax>();

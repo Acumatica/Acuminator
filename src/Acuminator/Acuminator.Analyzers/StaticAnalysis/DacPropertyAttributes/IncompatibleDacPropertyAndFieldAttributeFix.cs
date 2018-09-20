@@ -50,14 +50,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 		private void RegisterCodeFixForPropertyType(SyntaxNode root, SyntaxNode codeFixNode, CodeFixContext context, Diagnostic diagnostic)
 		{
+			context.CancellationToken.ThrowIfCancellationRequested();
 			Location attributeLocation = diagnostic.AdditionalLocations.FirstOrDefault();
 
-			if (attributeLocation == null || context.CancellationToken.IsCancellationRequested)
+			if (attributeLocation == null)
 				return;
 
 			AttributeSyntax attributeNode = root.FindNode(attributeLocation.SourceSpan) as AttributeSyntax;
-
-			if (attributeNode == null || context.CancellationToken.IsCancellationRequested)
+			
+			if (attributeNode == null)
 				return;
 			
 			RegisterCodeFix(root, attributeNode, context);
@@ -66,8 +67,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		private void RegisterCodeFix(SyntaxNode root, AttributeSyntax attributeNode, CodeFixContext context)
 		{
 			PropertyDeclarationSyntax propertyNode = attributeNode.Parent<PropertyDeclarationSyntax>();
+			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (propertyNode == null || context.CancellationToken.IsCancellationRequested)
+			if (propertyNode == null)
 				return;
 
 			string codeActionName = nameof(Resources.PX1021PropertyFix).GetLocalized().ToString();
