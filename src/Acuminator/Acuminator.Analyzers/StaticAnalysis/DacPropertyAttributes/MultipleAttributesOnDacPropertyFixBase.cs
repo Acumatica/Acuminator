@@ -95,13 +95,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			private readonly Func<FieldTypeAttributeInfo, bool> _attributeToRemovePredicate;
 			private readonly CancellationToken _cancellationToken;
 
-			public MultipleAttributesRemover(Document aDocument, SemanticModel aSemanticModel, AttributeSyntax aRemainingAttribute,
+			public MultipleAttributesRemover(Document document, SemanticModel semanticModel, AttributeSyntax remainingAttribute,
 											 Func<FieldTypeAttributeInfo, bool> attributeToRemovePredicate, CancellationToken cToken)
 			{
-				_document = aDocument;
-				_semanticModel = aSemanticModel;
+				_document = document;
+				_semanticModel = semanticModel;
 				_cancellationToken = cToken;
-				_remainingAttribute = aRemainingAttribute;
+				_remainingAttribute = remainingAttribute;
 				_attributeToRemovePredicate = attributeToRemovePredicate;
 
 				PXContext pxContext = new PXContext(_semanticModel.Compilation);
