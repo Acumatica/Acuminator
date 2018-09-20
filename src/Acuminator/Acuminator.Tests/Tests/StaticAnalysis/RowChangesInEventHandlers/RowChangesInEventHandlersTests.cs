@@ -74,28 +74,27 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.RowChangesInEventHandlers
 		[Theory]
 		[EmbeddedFileData(@"RowInserting\DirectAssignment.cs")]
 		public Task RowInserting_DirectAssignment(string actual) => VerifyCSharpDiagnosticAsync(actual, 
-			Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(17, 4, EventType.RowInserting));
-		
+			Descriptors.PX1048_RowChangesInEventHandlers.CreateFor(17, 4, EventType.RowInserting));
 
 		[Theory]
 		[EmbeddedFileData(@"RowInserting\IndirectAssignment.cs")]
 		public Task RowInserting_IndirectAssignment(string actual) => VerifyCSharpDiagnosticAsync(actual,
-			Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(18, 4, EventType.RowInserting));
+			Descriptors.PX1048_RowChangesInEventHandlers.CreateFor(18, 4, EventType.RowInserting));
 
 		[Theory]
 		[EmbeddedFileData(@"RowInserting\SetValue.cs")]
 		public Task RowInserting_SetValue(string actual) => VerifyCSharpDiagnosticAsync(actual,
-			Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(17, 4, EventType.RowInserting));
+			Descriptors.PX1048_RowChangesInEventHandlers.CreateFor(17, 4, EventType.RowInserting));
 
 		[Theory]
 		[EmbeddedFileData(@"RowInserting\SetValueExt.cs")]
 		public Task RowInserting_SetValueExt(string actual) => VerifyCSharpDiagnosticAsync(actual,
-			Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(17, 4, EventType.RowInserting));
+			Descriptors.PX1048_RowChangesInEventHandlers.CreateFor(17, 4, EventType.RowInserting));
 
 		[Theory]
 		[EmbeddedFileData(@"RowInserting\IndirectSetValue.cs")]
 		public Task RowInserting_IndirectSetValue(string actual) => VerifyCSharpDiagnosticAsync(actual,
-			Descriptors.PX1047_RowChangesInEventHandlers.CreateFor(19, 4, EventType.RowInserting));
+			Descriptors.PX1048_RowChangesInEventHandlers.CreateFor(19, 4, EventType.RowInserting));
 
 		#endregion
 	}

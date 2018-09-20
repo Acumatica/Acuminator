@@ -19,10 +19,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 			EventType.FieldDefaulting,
 			EventType.FieldVerifying,
 			EventType.RowSelected,
+			EventType.RowInserting // treated in a special ("reversed") way
 		};
 
-		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
-			ImmutableArray.Create(Descriptors.PX1047_RowChangesInEventHandlers);
+		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
+			Descriptors.PX1047_RowChangesInEventHandlers,
+			Descriptors.PX1048_RowChangesInEventHandlers);
 
 		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 		{
@@ -43,7 +45,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 					methodSyntax.Accept(variablesWalker);
 
 					// Perform analysis
-					var diagnosticWalker = new DiagnosticWalker(context, semanticModel, pxContext, variablesWalker.Result, eventType);
+					var diagnosticWalker = new DiagnosticWalker(context, semanticModel, pxContext, variablesWalker.Result,
+						eventType == EventType.RowInserting, eventType);
 					methodSyntax.Accept(diagnosticWalker);
 				}
 			}

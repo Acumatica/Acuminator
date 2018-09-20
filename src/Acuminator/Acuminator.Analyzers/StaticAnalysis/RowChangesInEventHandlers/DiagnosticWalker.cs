@@ -26,13 +26,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 			private SymbolAnalysisContext _context;
 			private readonly SemanticModel _semanticModel;
 			private readonly PXContext _pxContext;
+			private readonly bool _reversed;
 			private readonly ImmutableHashSet<ILocalSymbol> _rowVariables;
 			private readonly object[] _messageArgs;
 
 			private readonly VariableMemberAccessWalker _variableMemberAccessWalker;
+			private readonly DacInstanceAccessWalker _dacInstanceAccessWalker;
 
 			public DiagnosticWalker(SymbolAnalysisContext context, SemanticModel semanticModel, PXContext pxContext, 
 				ImmutableArray<ILocalSymbol> rowVariables, // variables which were assigned with e.Row
+				bool reversed,
 				params object[] messageArgs)
 			{
 				pxContext.ThrowOnNull(nameof (pxContext));
@@ -41,10 +44,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				_context = context;
 				_semanticModel = semanticModel;
 				_pxContext = pxContext;
+				_reversed = reversed;
 				_rowVariables = rowVariables.ToImmutableHashSet();
 				_messageArgs = messageArgs;
 
 				_variableMemberAccessWalker = new VariableMemberAccessWalker(_rowVariables, semanticModel);
+				_dacInstanceAccessWalker = new DacInstanceAccessWalker(semanticModel);
 			}
 
 			public override void VisitInvocationExpression(InvocationExpressionSyntax node)
@@ -68,9 +73,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 						found = walker.Success;
 					}
 
-					if (found)
+					if (found && !_reversed)
 					{
 						_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1047_RowChangesInEventHandlers, 
+							node.GetLocation(), _messageArgs));
+					}
+					else if (!found && _reversed)
+					{
+						_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1048_RowChangesInEventHandlers, 
 							node.GetLocation(), _messageArgs));
 					}
 				}
@@ -91,10 +101,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 						found = _variableMemberAccessWalker.Success;
 					}
 					
-					if (found)
+					if (found && !_reversed)
 					{
 						_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1047_RowChangesInEventHandlers, 
 							node.GetLocation(), _messageArgs));
+					}
+					else if (!found && _reversed)
+					{
+						_dacInstanceAccessWalker.Reset();
+						node.Left.Accept(_dacInstanceAccessWalker);
+
+						if (_dacInstanceAccessWalker.Success)
+						{
+							_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1048_RowChangesInEventHandlers,
+								node.GetLocation(), _messageArgs));
+						}
 					}
 				}
 			}

@@ -638,6 +638,24 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The only DAC instance that can be modified within the {0} event handler is the one that passed in the event arguments.
+        /// </summary>
+        public static string PX1048MessageFormat {
+            get {
+                return ResourceManager.GetString("PX1048MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The only DAC instance that can be modified within this event handler is the one that passed in the event arguments.
+        /// </summary>
+        public static string PX1048Title {
+            get {
+                return ResourceManager.GetString("PX1048Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hardcoded strings are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class..
         /// </summary>
         public static string PX1050Title {
