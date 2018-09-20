@@ -38,9 +38,10 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		private async Task TestAttributeInformationAsync(string source, List<bool> expected)
 		{
 			Document document = CreateDocument(source);
-			SemanticModel semanticModel = await document.GetSemanticModelAsync();
 
-			var syntaxRoot = document.GetSyntaxRootAsync().Result;
+			SemanticModel semanticModel = await document.GetSemanticModelAsync();
+			SyntaxNode syntaxRoot = await document.GetSyntaxRootAsync();
+
 			List<bool> actual = new List<bool>();
 			var pxContext = new PXContext(semanticModel.Compilation);
 			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
