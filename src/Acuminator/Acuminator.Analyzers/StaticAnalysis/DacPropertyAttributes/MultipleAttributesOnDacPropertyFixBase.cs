@@ -69,18 +69,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		private Task<Document> RemoveAllOtherAttributesFromPropertyAsync(Document document, SyntaxNode root, AttributeSyntax attributeNode,
 																		 PropertyDeclarationSyntax propertyDeclaration, SemanticModel semanticModel,
 																		 Func<FieldTypeAttributeInfo, bool> removePredicate, CancellationToken cancellationToken)
-		{
-			return Task.Run(() =>
-			{
-				var rewriterWalker = new MultipleAttributesRemover(document, semanticModel, attributeNode, removePredicate, cancellationToken);
-				var propertyModified = rewriterWalker.Visit(propertyDeclaration) as PropertyDeclarationSyntax;
+		{	
+			var rewriterWalker = new MultipleAttributesRemover(document, semanticModel, attributeNode, removePredicate, cancellationToken);
+			var propertyModified = rewriterWalker.Visit(propertyDeclaration) as PropertyDeclarationSyntax;
 
-				cancellationToken.ThrowIfCancellationRequested();
+			cancellationToken.ThrowIfCancellationRequested();
 
-				var modifiedRoot = root.ReplaceNode(propertyDeclaration, propertyModified);
-				return document.WithSyntaxRoot(modifiedRoot);
-
-			}, cancellationToken);
+			var modifiedRoot = root.ReplaceNode(propertyDeclaration, propertyModified);
+			return Task.FromResult(document.WithSyntaxRoot(modifiedRoot));		
 		}
 
 
