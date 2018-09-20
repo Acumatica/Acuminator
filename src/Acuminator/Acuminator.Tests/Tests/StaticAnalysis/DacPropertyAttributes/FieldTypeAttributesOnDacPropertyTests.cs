@@ -15,14 +15,14 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 
 		[Theory]
 		[EmbeddedFileData("DacWithMultipleFieldTypeAttributes.cs")]
-		public virtual void Property_With_Multiple_FieldTypeAttributes(string source) =>
+		public virtual void PropertyWithMultipleFieldTypeAttributes(string source) =>
 			VerifyCSharpDiagnostic(source,
 				Descriptors.PX1023_MultipleTypeAttributesOnProperty.CreateFor(line: 24, column: 4),
 				Descriptors.PX1023_MultipleTypeAttributesOnProperty.CreateFor(line: 25, column: 4));
 
 		[Theory]
 		[EmbeddedFileData("DacWithMultipleSpecialTypeAttributes.cs")]
-		public virtual void Property_With_MultipleSpecialAttributes(string source) =>
+		public virtual void PropertyWithMultipleSpecialAttributes(string source) =>
 			VerifyCSharpDiagnostic(source,
 				Descriptors.PX1023_MultipleSpecialTypeAttributesOnProperty.CreateFor(line: 16, column: 4),
 				Descriptors.PX1023_MultipleSpecialTypeAttributesOnProperty.CreateFor(line: 17, column: 4));
@@ -39,12 +39,12 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 
 		[Theory]
 		[EmbeddedFileData("DacFieldAttributesTypeMismatch_Expected.cs")]
-		public virtual Task DacPropertyType_NotMatching_AttributeType_ShouldNotShowDiagnostic(string source) =>
+		public virtual Task DacPropertyTypeNotMatchingAttributeType_ShouldNotShowDiagnostic(string source) =>
 			VerifyCSharpDiagnosticAsync(source);	
 
 		[Theory]
 		[EmbeddedFileData("DacFieldAttributesTypeMismatch.cs")]
-		public virtual void DacPropertyType_NotMatching_AttributeType(string source) =>
+		public virtual void DacPropertyTypeNotMatchingAttributeType(string source) =>
 			VerifyCSharpDiagnostic(source,
 				Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty.CreateFor((line: 24, column: 4), 
 					extraLocation: (line: 26, column: 10)),
@@ -63,14 +63,14 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 
 		[Theory]
 		[EmbeddedFileData("DacWithInvalidAggregatorAttributes.cs")]
-		public virtual void DacProperty_With_Invalid_AggregatorAttributes(string source) =>
+		public virtual void DacPropertyWithInvalidAggregatorAttributes(string source) =>
 			VerifyCSharpDiagnostic(source,
 				Descriptors.PX1023_MultipleSpecialTypeAttributesOnAggregators.CreateFor(line: 41, column: 4),
 				Descriptors.PX1023_MultipleTypeAttributesOnAggregators.CreateFor(line: 55, column: 4));
 
 		[Theory]
 		[EmbeddedFileData("DacFieldTypeMismatchPXDBScalarAttr.cs")]
-		public virtual void Dac_Property_With_PXDBScalar_Attribute(string source) =>
+		public virtual void DacPropertyWithPXDBScalarAttribute(string source) =>
 			VerifyCSharpDiagnostic(source);	
 	}
 }
