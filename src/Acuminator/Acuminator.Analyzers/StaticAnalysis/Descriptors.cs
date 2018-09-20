@@ -127,6 +127,10 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1046_LongOperationInEventHandlers { get; } =
 			Rule("PX1046", nameof(Resources.PX1046Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
+		public static DiagnosticDescriptor PX1047_RowChangesInEventHandlers { get; } =
+			Rule("PX1047", nameof(Resources.PX1047Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error,
+				nameof(Resources.PX1047MessageFormat).GetLocalized());
+
 		public static DiagnosticDescriptor PX1050_HardcodedStringInLocalizationMethod { get; } =
             Rule("PX1050", nameof(Resources.PX1050Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
@@ -138,6 +142,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
         public static DiagnosticDescriptor PX1053_ConcatenationPriorLocalization { get; } =
             Rule("PX1053", nameof(Resources.PX1053Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+        public static DiagnosticDescriptor PX1054_PXGraphLongRunOperationDuringInitialization { get; } =
+            Rule("PX1054", nameof(Resources.PX1054Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
         public static DiagnosticDescriptor PX1057_PXGraphCreationDuringInitialization { get; } =
             Rule("PX1057", nameof(Resources.PX1057Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
