@@ -83,6 +83,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 		private class MultipleAttributesRemover : CSharpSyntaxRewriter
 		{
+			private const int MaxVisitedAttributesCount = 100;
+			private const int MaxRemovedAttributesCount = 100;
+
 			private int _visitedAttributeListCounter;
 			private int _attributeListsRemovedCounter;
 			
@@ -110,7 +113,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			{
 				_cancellationToken.ThrowIfCancellationRequested();
 
-				if (_visitedAttributeListCounter < Int32.MaxValue)
+				if (_visitedAttributeListCounter < MaxVisitedAttributesCount)
 					_visitedAttributeListCounter++;
 
 				var attributesToCheck = attributeListNode.Attributes;
@@ -131,7 +134,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 					return attributeListNode;
 				else if (modifiedAttributes.Count == 0)
 				{
-					if (_attributeListsRemovedCounter < Int32.MaxValue)
+					if (_attributeListsRemovedCounter < MaxRemovedAttributesCount)
 					{
 						_attributeListsRemovedCounter++;
 					}
