@@ -52,7 +52,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 					case CachePersistInsertedMethodName:
 					case CachePersistUpdatedMethodName:
 					case CachePersistDeletedMethodName:
-						if (containingType.InheritsFromOrEquals(pxContext.PXCacheType))
+						if (containingType.InheritsFromOrEquals(pxContext.PXCache.Type))
 							return SaveOperationKind.CachePersist;
 						break;
 				}

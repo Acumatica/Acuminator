@@ -109,6 +109,7 @@
     <Compile Include="Common\EnumerableExtraExtensions.cs" />
     <Compile Include="Roslyn\EventHandlerSignatureType.cs" />
     <Compile Include="Roslyn\EventType.cs" />
+    <Compile Include="Roslyn\PXCache.cs" />
     <Compile Include="Roslyn\PXGraphRelatedMethods.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphInitializerInfo.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphInitializerType.cs" />

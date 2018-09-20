@@ -14,13 +14,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 {
 	internal class Walker : NestedInvocationWalker
 	{
-		private static readonly ISet<string> MethodNames = new HashSet<string>(StringComparer.Ordinal)
-		{
-			"Insert" ,
-			"Update",
-			"Delete",
-		};
-
 		private SymbolAnalysisContext _context;
 		private readonly PXContext _pxContext;
 		private readonly DiagnosticDescriptor _diagnosticDescriptor;
@@ -57,9 +50,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 
 		private bool IsMethodForbidden(IMethodSymbol symbol)
 		{
-			return symbol.ContainingType?.OriginalDefinition != null
-			       && symbol.ContainingType.OriginalDefinition.InheritsFromOrEquals(_pxContext.PXCacheType)
-			       && MethodNames.Contains(symbol.Name);
+			return _pxContext.PXCache.Insert.Any(i => symbol.ConstructedFrom.Equals(i)) ||
+                   _pxContext.PXCache.Update.Any(u => symbol.ConstructedFrom.Equals(u)) ||
+                   _pxContext.PXCache.Delete.Any(d => symbol.ConstructedFrom.Equals(d));
 		}
 	}
 }
