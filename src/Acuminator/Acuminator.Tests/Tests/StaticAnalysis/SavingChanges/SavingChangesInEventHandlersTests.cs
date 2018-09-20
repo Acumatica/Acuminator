@@ -73,5 +73,12 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.SavingChanges
 		{
 			VerifyCSharpDiagnostic(actual);
 		}
+
+		[Theory]
+		[EmbeddedFileData(@"EventHandlers\ArbitraryCodeInsideRowPersisting.cs")]
+		public void TestDiagnostic_ArbitraryCodeInsideRowPersisting_ShouldNotShowDiagnostic(string actual)
+		{
+			VerifyCSharpDiagnostic(actual);
+		}
 	}
 }

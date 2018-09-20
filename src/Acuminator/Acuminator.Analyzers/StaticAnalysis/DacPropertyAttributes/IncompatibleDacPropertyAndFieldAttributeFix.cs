@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
@@ -49,14 +50,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 		private void RegisterCodeFixForPropertyType(SyntaxNode root, SyntaxNode codeFixNode, CodeFixContext context, Diagnostic diagnostic)
 		{
+			context.CancellationToken.ThrowIfCancellationRequested();
 			Location attributeLocation = diagnostic.AdditionalLocations.FirstOrDefault();
 
-			if (attributeLocation == null || context.CancellationToken.IsCancellationRequested)
+			if (attributeLocation == null)
 				return;
 
 			AttributeSyntax attributeNode = root.FindNode(attributeLocation.SourceSpan) as AttributeSyntax;
-
-			if (attributeNode == null || context.CancellationToken.IsCancellationRequested)
+			
+			if (attributeNode == null)
 				return;
 			
 			RegisterCodeFix(root, attributeNode, context);
@@ -64,59 +66,52 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 		private void RegisterCodeFix(SyntaxNode root, AttributeSyntax attributeNode, CodeFixContext context)
 		{
+			PropertyDeclarationSyntax propertyNode = attributeNode.Parent<PropertyDeclarationSyntax>();
+			context.CancellationToken.ThrowIfCancellationRequested();
+
+			if (propertyNode == null)
+				return;
+
 			string codeActionName = nameof(Resources.PX1021PropertyFix).GetLocalized().ToString();
 
 			CodeAction codeAction =
 				CodeAction.Create(codeActionName,
-								  cToken => ChangePropertyTypeToAttributeType(context.Document, root, attributeNode, cToken),
+								  cToken => ChangePropertyTypeToAttributeType(context.Document, root, attributeNode, propertyNode, cToken),
 								  equivalenceKey: codeActionName);
 
 			context.RegisterCodeFix(codeAction, context.Diagnostics);		
 		}
 
 		private async Task<Document> ChangePropertyTypeToAttributeType(Document document, SyntaxNode root, AttributeSyntax attributeNode,
-																	   CancellationToken cancellationToken)
-		{
-			PropertyDeclarationSyntax propertyNode = attributeNode.Parent<PropertyDeclarationSyntax>();
-
-			if (propertyNode == null || cancellationToken.IsCancellationRequested)
-				return document;
-
+																	   PropertyDeclarationSyntax propertyNode, CancellationToken cancellationToken)
+		{		
 			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+			ITypeSymbol attributeType = semanticModel.GetTypeInfo(attributeNode, cancellationToken).Type;
+			cancellationToken.ThrowIfCancellationRequested();
 
-			if (semanticModel == null || cancellationToken.IsCancellationRequested)
-				return document;
-
-			ITypeSymbol attributeType = semanticModel.GetTypeInfo(attributeNode).Type;
-
-			if (attributeType == null || cancellationToken.IsCancellationRequested)
+			if (attributeType == null)
 				return document;
 			
 			PXContext pxContext = new PXContext(semanticModel.Compilation);
-			FieldAttributesRegister attributesRegister = new FieldAttributesRegister(pxContext);
-			FieldAttributeInfo info = attributesRegister.GetFieldAttributeInfo(attributeType);
+			FieldTypeAttributesRegister typeAttributesRegister = new FieldTypeAttributesRegister(pxContext);
+			FieldTypeAttributeInfo? attributeInfo = typeAttributesRegister.GetFieldTypeAttributeInfos(attributeType)
+																		  .FirstOrDefault(attrInfo => attrInfo.IsFieldAttribute);
 
-			if (!info.IsFieldAttribute || info.FieldType == null)
+			if (attributeInfo?.FieldType == null)
 				return document;
 
 			SyntaxGenerator generator = SyntaxGenerator.GetGenerator(document);
-			TypeSyntax replacingTypeNode = generator.TypeExpression(info.FieldType) as TypeSyntax;
+			TypeSyntax replacingTypeNode = generator.TypeExpression(attributeInfo.Value.FieldType) as TypeSyntax;
 
-			if (info.FieldType.IsValueType)
+			if (attributeInfo.Value.FieldType.IsValueType)
 			{
 				replacingTypeNode = generator.NullableTypeExpression(replacingTypeNode) as TypeSyntax;
 			}
 
-			replacingTypeNode = replacingTypeNode.WithTrailingTrivia(propertyNode.Type.GetTrailingTrivia());
-	
-			if (replacingTypeNode == null || cancellationToken.IsCancellationRequested)
-				return document;
-;
+			cancellationToken.ThrowIfCancellationRequested();
+
+			replacingTypeNode = replacingTypeNode.WithTrailingTrivia(propertyNode.Type.GetTrailingTrivia());		
 			var propertyModified = propertyNode.WithType(replacingTypeNode);
-
-			if (propertyModified == null || cancellationToken.IsCancellationRequested)
-				return document;
-
 			var modifiedRoot = root.ReplaceNode(propertyNode, propertyModified);
 			return document.WithSyntaxRoot(modifiedRoot);
 		}

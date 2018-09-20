@@ -7,7 +7,7 @@ using PX.Data;
 
 namespace PX.Objects.HackathonDemo
 {
-	public class DacExampleWithMultipleFieldAttributes : IBqlTable
+	public class DacWithMultipleFieldTypeAttributes : IBqlTable
 	{
 		#region OrderType
 		public abstract class orderType : IBqlField { }
@@ -22,6 +22,7 @@ namespace PX.Objects.HackathonDemo
 		public abstract class status : IBqlField { }
 
 		[PXDBString]
+		[PXDBInt]
 		[PXStringList(new[] { "N", "O" }, new[] { "New", "Open" })]
 		[PXUIField(DisplayName = "Status")]
 		public string Status { get; set; }
