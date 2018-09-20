@@ -20,7 +20,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 
         public PXGraphAnalyzer() : this(
             new PXGraphCreationDuringInitializationAnalyzer(),
-            new PXGraphSavingChangesDuringInitializationAnalyzer(),
+            new SavingChangesDuringPXGraphInitializationAnalyzer(),
             new PXGraphLongOperationDuringInitializationAnalyzer())
         {
         }
