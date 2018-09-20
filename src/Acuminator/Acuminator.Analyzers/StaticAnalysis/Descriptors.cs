@@ -78,17 +78,17 @@ namespace Acuminator.Analyzers.StaticAnalysis
             Rule("PX1021", nameof(Resources.PX1021Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
 		public static DiagnosticDescriptor PX1023_MultipleTypeAttributesOnProperty { get; } =
-			Rule("PX1023", nameof(Resources.PX1023MultipleTypeAttributesOnProperty).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+			Rule("PX1023", nameof(Resources.PX1023MultipleTypeAttributesOnPropertyTitle).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
 		public static DiagnosticDescriptor PX1023_MultipleTypeAttributesOnAggregators { get; } =
-			Rule("PX1023", nameof(Resources.PX1023MultipleTypeAttributesOnAggregators).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+			Rule("PX1023", nameof(Resources.PX1023MultipleTypeAttributesOnAggregatorsTitle).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
         public static DiagnosticDescriptor PX1023_MultipleSpecialTypeAttributesOnProperty { get; } =
-            Rule("PX1023", nameof(Resources.PX1023MultipleSpecialTypeAttributesOnProperty).GetLocalized(),
+            Rule("PX1023", nameof(Resources.PX1023MultipleSpecialTypeAttributesOnPropertyTitle).GetLocalized(),
                  Category.Default, DiagnosticSeverity.Error);
 
         public static DiagnosticDescriptor PX1023_MultipleSpecialTypeAttributesOnAggregators { get; } =
-			Rule("PX1023", nameof(Resources.PX1023MultipleSpecialTypeAttributesOnAggregators).GetLocalized(),
+			Rule("PX1023", nameof(Resources.PX1023MultipleSpecialTypeAttributesOnAggregatorsTitle).GetLocalized(),
 				 Category.Default, DiagnosticSeverity.Error);
 
 		public static DiagnosticDescriptor PX1024_DacNonAbstractFieldType { get; } =

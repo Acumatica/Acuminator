@@ -379,36 +379,36 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to The attribute aggregates multiple PXDBScalar or PXDBCalced attributes.
         /// </summary>
-        public static string PX1023MultipleSpecialTypeAttributesOnAggregators {
+        public static string PX1023MultipleSpecialTypeAttributesOnAggregatorsTitle {
             get {
-                return ResourceManager.GetString("PX1023MultipleSpecialTypeAttributesOnAggregators", resourceCulture);
+                return ResourceManager.GetString("PX1023MultipleSpecialTypeAttributesOnAggregatorsTitle", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The DAC property cannot be marked with multiple PXDBScalar or PXDBCalced attributes.
         /// </summary>
-        public static string PX1023MultipleSpecialTypeAttributesOnProperty {
+        public static string PX1023MultipleSpecialTypeAttributesOnPropertyTitle {
             get {
-                return ResourceManager.GetString("PX1023MultipleSpecialTypeAttributesOnProperty", resourceCulture);
+                return ResourceManager.GetString("PX1023MultipleSpecialTypeAttributesOnPropertyTitle", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The attribute aggregates incompatible field type attributes.
         /// </summary>
-        public static string PX1023MultipleTypeAttributesOnAggregators {
+        public static string PX1023MultipleTypeAttributesOnAggregatorsTitle {
             get {
-                return ResourceManager.GetString("PX1023MultipleTypeAttributesOnAggregators", resourceCulture);
+                return ResourceManager.GetString("PX1023MultipleTypeAttributesOnAggregatorsTitle", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The DAC property cannot be marked with multiple field type attributes.
         /// </summary>
-        public static string PX1023MultipleTypeAttributesOnProperty {
+        public static string PX1023MultipleTypeAttributesOnPropertyTitle {
             get {
-                return ResourceManager.GetString("PX1023MultipleTypeAttributesOnProperty", resourceCulture);
+                return ResourceManager.GetString("PX1023MultipleTypeAttributesOnPropertyTitle", resourceCulture);
             }
         }
         
