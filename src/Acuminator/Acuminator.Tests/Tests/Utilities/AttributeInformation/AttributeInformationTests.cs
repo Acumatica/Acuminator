@@ -67,7 +67,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		[Theory]
 		[EmbeddedFileData(@"AttributeInformationSimpleDac.cs")]
 		public Task TestAreBoundAttributesAsync(string source) =>
-			_testIsBoundAttributeAsync(source, 
+			TestIsBoundAttributeAsync(source, 
 											new List<BoundType>
 											{
 												BoundType.Unbound,
@@ -81,14 +81,14 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
 		public Task TestAreBoundAggregateAttributesAsync(string source) =>
-			_testIsBoundAttributeAsync(source, new List<BoundType> { BoundType.DbBound, BoundType.Unbound });
+			TestIsBoundAttributeAsync(source, new List<BoundType> { BoundType.DbBound, BoundType.Unbound });
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateRecursiveAttributeInformation.cs")]
 		public Task TestAreBoundAggregateRecursiveAttributeAsync(string source) =>
-			_testIsBoundAttributeAsync(source, new List<BoundType> { BoundType.Unbound, BoundType.DbBound });
+			TestIsBoundAttributeAsync(source, new List<BoundType> { BoundType.Unbound, BoundType.DbBound });
 
-		private async Task _testIsBoundAttributeAsync(string source, List<BoundType> expected)
+		private async Task TestIsBoundAttributeAsync(string source, List<BoundType> expected)
 		{
 			Document document = CreateDocument(source);
 			SemanticModel semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
@@ -148,7 +148,11 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 			foreach (PropertyDeclarationSyntax property in properties)
 			{
-				actual.Add(attributeInformation.ContainsBoundAttributes(semanticModel.GetDeclaredSymbol(property).GetAttributes()));
+				IPropertySymbol propertySymbol =  semanticModel.GetDeclaredSymbol(property);
+				
+				actual.Add((propertySymbol != null)?
+								attributeInformation.ContainsBoundAttributes(propertySymbol.GetAttributes()):
+								BoundType.Unknown);
 			}
 
 			actual.Should().BeEquivalentTo(expected);
@@ -325,10 +329,12 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 			foreach (var symbolsArray in expected)
 			{
 				HashSet<ITypeSymbol> attributesHashSet = new HashSet<ITypeSymbol>();
+
 				foreach (var symbol in symbolsArray)
 				{
 					attributesHashSet.Add(semanticModel.Compilation.GetTypeByMetadataName(symbol));
 				}
+
 				expectedSymbols.Add(attributesHashSet);
 			}
 			return expectedSymbols;

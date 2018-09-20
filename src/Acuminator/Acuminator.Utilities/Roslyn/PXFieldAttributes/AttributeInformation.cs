@@ -165,7 +165,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				{
 					if (argument.Key == IsDBField)
 					{
-						if ((bool)argument.Value.Value == true)
+						if (!argument.Value.IsNull && argument.Value.Value is bool boolValue && boolValue == true)
 							return BoundType.DbBound;
 						else
 							return BoundType.Unbound;
@@ -192,8 +192,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 				foreach (var argument in attribute.NamedArguments)
 				{
-					if (argument.Key == IsDBField && (bool)argument.Value.Value == true)
-						return (bool)argument.Value.Value;
+					if (argument.Key == IsDBField && !argument.Value.IsNull && argument.Value.Value is bool boolValue && boolValue == true)
+						return boolValue;
 				}
 			}
 			return false;
