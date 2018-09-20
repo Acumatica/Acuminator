@@ -25,6 +25,12 @@ namespace PX.Objects.HackathonDemo
 			return PXSelect<SOSetup>.SelectSingleBound(Base, null);
 		}
 
+        protected virtual void _(Events.RowInserting<SOOrder> e)
+        {
+            e.Row.OrderDate = DateTime.UtcNow;
+            Base.Orders.Current.OrderBal = 0;
+        }
+
 		protected virtual void _(Events.RowInserted<SOOrder> e)
 		{
 			var graph = PXGraph.CreateInstance<SOOrderEntry>();
