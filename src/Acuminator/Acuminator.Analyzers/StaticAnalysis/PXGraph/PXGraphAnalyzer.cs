@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 {
@@ -21,7 +22,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
         public PXGraphAnalyzer() : this(
             new PXGraphCreationDuringInitializationAnalyzer(),
             new PXGraphSavingChangesDuringInitializationAnalyzer(),
-            new PXGraphLongOperationDuringInitializationAnalyzer())
+            new PXGraphLongOperationDuringInitializationAnalyzer(),
+            new PXGraphChangesInPXCacheDuringInitializationAnalyzer())
         {
         }
 

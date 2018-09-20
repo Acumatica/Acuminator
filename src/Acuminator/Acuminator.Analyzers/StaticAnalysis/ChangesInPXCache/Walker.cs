@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Acuminator.Utilities.Common;
+﻿using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
-using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 {
-	internal class Walker : NestedInvocationWalker
+    internal class Walker : NestedInvocationWalker
 	{
 		private SymbolAnalysisContext _context;
 		private readonly PXContext _pxContext;
