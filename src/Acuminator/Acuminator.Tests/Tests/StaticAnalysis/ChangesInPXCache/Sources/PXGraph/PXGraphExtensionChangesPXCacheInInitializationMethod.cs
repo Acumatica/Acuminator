@@ -14,6 +14,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphLongOperationDuringInitia
                 Base.Identities.Cache.Insert(Base.Identities.Current);
                 Base.Identities.Cache.Update(Base.Identities.Current);
                 Base.Identities.Cache.Delete(Base.Identities.Current);
+
+                Base.Identities.Insert(Base.Identities.Current);
+                Base.Identities.Update(Base.Identities.Current);
+                Base.Identities.Delete(Base.Identities.Current);
             }
         }
     }

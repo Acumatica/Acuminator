@@ -16,6 +16,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ChangesInPXCache.Sources.PXGraph
                 Users.Cache.Insert(Users.Current);
                 Users.Cache.Update(Users.Current);
                 Users.Cache.Delete(Users.Current);
+
+                Users.Insert(Users.Current);
+                Users.Update(Users.Current);
+                Users.Delete(Users.Current);
             }
         }
     }

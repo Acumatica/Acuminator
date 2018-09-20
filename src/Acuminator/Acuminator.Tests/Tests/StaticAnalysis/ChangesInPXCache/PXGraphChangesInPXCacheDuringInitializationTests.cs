@@ -20,7 +20,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ChangesInPXCache
             VerifyCSharpDiagnostic(source,
                 Descriptors.PX1059_PXGraphChangesPXCacheDuringInitialization.CreateFor(16, 17),
                 Descriptors.PX1059_PXGraphChangesPXCacheDuringInitialization.CreateFor(17, 17),
-                Descriptors.PX1059_PXGraphChangesPXCacheDuringInitialization.CreateFor(18, 17));
+                Descriptors.PX1059_PXGraphChangesPXCacheDuringInitialization.CreateFor(18, 17),
+                Descriptors.PX1059_PXGraphChangesPXCacheDuringInitialization.CreateFor(20, 17),
+                Descriptors.PX1059_PXGraphChangesPXCacheDuringInitialization.CreateFor(21, 17),
+                Descriptors.PX1059_PXGraphChangesPXCacheDuringInitialization.CreateFor(22, 17));
         }
 
         [Theory]
@@ -37,7 +40,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ChangesInPXCache
             VerifyCSharpDiagnostic(source,
                 Descriptors.PX1059_PXGraphChangesPXCacheDuringInitialization.CreateFor(14, 17),
                 Descriptors.PX1059_PXGraphChangesPXCacheDuringInitialization.CreateFor(15, 17),
-                Descriptors.PX1059_PXGraphChangesPXCacheDuringInitialization.CreateFor(16, 17));
+                Descriptors.PX1059_PXGraphChangesPXCacheDuringInitialization.CreateFor(16, 17),
+                Descriptors.PX1059_PXGraphChangesPXCacheDuringInitialization.CreateFor(18, 17),
+                Descriptors.PX1059_PXGraphChangesPXCacheDuringInitialization.CreateFor(19, 17),
+                Descriptors.PX1059_PXGraphChangesPXCacheDuringInitialization.CreateFor(20, 17));
         }
 
         [Theory]

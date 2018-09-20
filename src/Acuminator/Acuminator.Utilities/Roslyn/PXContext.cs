@@ -43,6 +43,9 @@ namespace Acuminator.Utilities.Roslyn
         private readonly Lazy<PXCache> _pxCache;
         public PXCache PXCache => _pxCache.Value;
 
+        private readonly Lazy<PXSelectBaseGeneric> _pxSelectBaseGeneric;
+        public PXSelectBaseGeneric PXSelectBaseGeneric => _pxSelectBaseGeneric.Value;
+
         public INamedTypeSymbol PXGraphType => Compilation.GetTypeByMetadataName(typeof(PXGraph).FullName);
 		public INamedTypeSymbol PXProcessingBaseType => Compilation.GetTypeByMetadataName(typeof(PXProcessingBase<>).FullName);
 		public INamedTypeSymbol PXGraphExtensionType => Compilation.GetTypeByMetadataName(typeof(PXGraphExtension).FullName);
@@ -101,6 +104,7 @@ namespace Acuminator.Utilities.Roslyn
             _localizationMethods = new Lazy<LocalizationTypes>(() => new LocalizationTypes(Compilation));
             _pxGraphRelatedMethods = new Lazy<PXGraphRelatedMethods>(() => new PXGraphRelatedMethods(this));
             _pxCache = new Lazy<PXCache>(() => new PXCache(Compilation));
+            _pxSelectBaseGeneric = new Lazy<PXSelectBaseGeneric>(() => new PXSelectBaseGeneric(Compilation));
             IsAcumatica2018R2 = PXSelectBase2018R2NewType != null;
 		}
 
