@@ -51,7 +51,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			BoundType isBoundField = attributeInformation.ContainsBoundAttributes(attributes.Select(a => a));
+			BoundType isBoundField = attributeInformation.ContainsBoundAttributes(attributes);
 
 			if (isBoundField == BoundType.DbBound)
 			{
@@ -103,7 +103,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 		private static bool isAttributeContainsPersistingCheckNothing(KeyValuePair<string, TypedConstant> argument)
 		{
-			return (argument.Key.Contains(_PersistingCheck) && (int)argument.Value.Value == (int)PXPersistingCheck.Nothing);
+			return (
+				argument.Key.Contains(_PersistingCheck) &&
+					!argument.Value.IsNull && 
+					argument.Value.Value is int intValue &&
+					intValue == (int)PXPersistingCheck.Nothing
+				);
 		}
 
 		private static async Task AnalyzeAttributesWithinUnBoundFieldAsync(IPropertySymbol property, ImmutableArray<AttributeData> attributes,
@@ -141,8 +146,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 		{
 			SyntaxNode attributeSyntaxNode = null;
 
-			attributeSyntaxNode = await attribute.ApplicationSyntaxReference.GetSyntaxAsync(cancellationToken)
-																				.ConfigureAwait(false);
+			attributeSyntaxNode = await attribute.ApplicationSyntaxReference.GetSyntaxAsync(cancellationToken).ConfigureAwait(false);
 
 			return attributeSyntaxNode?.GetLocation();
 		}
