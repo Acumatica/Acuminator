@@ -674,7 +674,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Changing PXCache is prohibited during PXGraph initialization.
+        ///   Looks up a localized string similar to Changes to PXCache cannot be performed during PXGraph initialization.
         /// </summary>
         public static string PX1059Title {
             get {
