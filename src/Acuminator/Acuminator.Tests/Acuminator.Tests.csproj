@@ -194,6 +194,10 @@
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\Override.cs" />
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\PXOverride.cs" />
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\AdditionalParameters.cs" />
+    <Compile Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\KeyFieldDacTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\DacKeyFieldUnbound.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\DacKeyFieldsDeclaration.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\KNSIConfigItemStore.cs" />
     <Compile Include="Tests\StaticAnalysis\RowChangesInEventHandlers\RowChangesInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\ValidEventHandlers.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\DirectAssignment.cs" />

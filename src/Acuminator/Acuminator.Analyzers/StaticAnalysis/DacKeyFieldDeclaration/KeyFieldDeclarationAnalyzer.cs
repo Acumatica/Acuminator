@@ -8,7 +8,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
+namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class KeyFieldDeclarationAnalyzer : PXDiagnosticAnalyzer
