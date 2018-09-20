@@ -8,10 +8,10 @@ using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.SavingChanges
 {
-    public class PXGraphSaveChangesDuringInitializationTests : DiagnosticVerifier
+    public class SavingChangesDuringPXGraphInitializationTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-            new PXGraphAnalyzer(new PXGraphSavingChangesDuringInitializationAnalyzer());
+            new PXGraphAnalyzer(new SavingChangesDuringPXGraphInitializationAnalyzer());
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\PXGraphIsSavingChangesInInstanceConstructor.cs")]
