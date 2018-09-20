@@ -50,19 +50,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		private static async Task CheckDacPropertyAsync(IPropertySymbol property, SymbolAnalysisContext symbolContext, PXContext pxContext,
 														FieldTypeAttributesRegister fieldAttributesRegister)
 		{
+			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 			ImmutableArray<AttributeData> attributes = property.GetAttributes();
 
-			if (attributes.Length == 0 || symbolContext.CancellationToken.IsCancellationRequested)
+			if (attributes.Length == 0)
 				return;
 
 			var attributesWithInfos = GetFieldTypeAttributesInfos(pxContext, attributes, fieldAttributesRegister, symbolContext.CancellationToken);
 
-			if (symbolContext.CancellationToken.IsCancellationRequested || attributesWithInfos.Count == 0)
+			if (attributesWithInfos.Count == 0)
 				return;
 
 			bool validSpecialTypes = await CheckForMultipleSpecialAttributesAsync(symbolContext, attributesWithInfos).ConfigureAwait(false);
+			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!validSpecialTypes || symbolContext.CancellationToken.IsCancellationRequested)
+			if (!validSpecialTypes)
 				return;
 
 			await CheckForFieldTypeAttributesAsync(property, symbolContext, pxContext, attributesWithInfos)
