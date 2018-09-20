@@ -330,4 +330,16 @@
   <data name="PX1054Title" xml:space="preserve">
     <value>A PXGraph instance should not start PXLongOperation during the initialization phase</value>
   </data>
+  <data name="PX1055Fix1" xml:space="preserve">
+    <value>Make the field bound to identity column the only key field in the DAC</value>
+  </data>
+  <data name="PX1055Fix2" xml:space="preserve">
+    <value>Alter the definition of the field bound to identity column to make it a non-key field and leave all other key fields untouched</value>
+  </data>
+  <data name="PX1055Fix3" xml:space="preserve">
+    <value>Remove the definition of the field bound to identity column and leave all other key fields untouched (it will be also very helpful to show a hint suggesting to drop the identity column, to which this key field is bound, from database)</value>
+  </data>
+  <data name="PX1055Title" xml:space="preserve">
+    <value>Invalid primary key of the DAC. Use a single identity field or one or multiple natural fields for the key.</value>
+  </data>
 </root>
