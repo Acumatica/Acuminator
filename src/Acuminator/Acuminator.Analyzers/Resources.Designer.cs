@@ -638,7 +638,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The only DAC instance that can be modified within the {0} event handler is the one that passed in the event arguments.
+        ///   Looks up a localized string similar to Only the DAC instance that is passed in the event arguments can be modified in the {0} event handler.
         /// </summary>
         public static string PX1048MessageFormat {
             get {
@@ -647,7 +647,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The only DAC instance that can be modified within this event handler is the one that passed in the event arguments.
+        ///   Looks up a localized string similar to Only the DAC instance that is passed in the event arguments can be modified in this event handler.
         /// </summary>
         public static string PX1048Title {
             get {
