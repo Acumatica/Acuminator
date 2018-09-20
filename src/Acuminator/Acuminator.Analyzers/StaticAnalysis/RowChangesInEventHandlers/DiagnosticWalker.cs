@@ -75,12 +75,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 
 					if (found && !_reversed)
 					{
-						_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1047_RowChangesInEventHandlers, 
+						_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs, 
 							node.GetLocation(), _messageArgs));
 					}
 					else if (!found && _reversed)
 					{
-						_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1048_RowChangesInEventHandlers, 
+						_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1048_RowChangesInEventHandlersAllowedForArgsOnly, 
 							node.GetLocation(), _messageArgs));
 					}
 				}
@@ -103,7 +103,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 					
 					if (found && !_reversed)
 					{
-						_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1047_RowChangesInEventHandlers, 
+						_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs, 
 							node.GetLocation(), _messageArgs));
 					}
 					else if (!found && _reversed)
@@ -113,7 +113,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 
 						if (_dacInstanceAccessWalker.Success)
 						{
-							_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1048_RowChangesInEventHandlers,
+							_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1048_RowChangesInEventHandlersAllowedForArgsOnly,
 								node.GetLocation(), _messageArgs));
 						}
 					}

@@ -212,11 +212,11 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithInvalidAggregatorAttributes.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationDuringInitialization\Sources\PXGraphWithCreateInstanceOutsideOfInitialization.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\PXGraphStartsLongOperationInInstanceConstructorViaMethod.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\RowInserting\DirectAssignment.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\RowInserting\IndirectAssignment.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\RowInserting\IndirectSetValue.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\RowInserting\SetValue.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\RowInserting\SetValueExt.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\DirectAssignment.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\IndirectAssignment.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\IndirectSetValue.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\SetValue.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\SetValueExt.cs" />
     <Compile Include="Tests\StaticAnalysis\SavingChanges\SavingChangesDuringPXGraphInitializationTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\PXGraphIsSavingChangesInInstanceConstructor.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\PXGraphExtensionIsSavingChangesInInitializationMethod.cs" />

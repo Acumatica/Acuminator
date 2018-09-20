@@ -14,23 +14,26 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 {
 	public partial class RowChangesInEventHandlersAnalyzer : IEventHandlerAnalyzer
 	{
-		private static readonly ISet<EventType> AnalyzedEventTypes = new HashSet<EventType>()
+		private static readonly IReadOnlyDictionary<EventType, bool> AnalyzedEventTypes = new Dictionary<EventType, bool>()
 		{
-			EventType.FieldDefaulting,
-			EventType.FieldVerifying,
-			EventType.RowSelected,
-			EventType.RowInserting // treated in a special ("reversed") way
+			// Changes to e.Row are not allowed
+			{ EventType.FieldDefaulting, false },
+			{ EventType.FieldVerifying, false },
+			{ EventType.RowSelected, false },
+			// Changes are allowed for e.Row only
+			{ EventType.RowInserting, true },
+			{ EventType.RowSelecting, true },
 		};
 
 		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
-			Descriptors.PX1047_RowChangesInEventHandlers,
-			Descriptors.PX1048_RowChangesInEventHandlers);
+			Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs,
+			Descriptors.PX1048_RowChangesInEventHandlersAllowedForArgsOnly);
 
 		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (AnalyzedEventTypes.Contains(eventType))
+			if (AnalyzedEventTypes.TryGetValue(eventType, out bool reversed))
 			{
 				var methodSymbol = (IMethodSymbol) context.Symbol;
 				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as MethodDeclarationSyntax;
@@ -46,7 +49,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 
 					// Perform analysis
 					var diagnosticWalker = new DiagnosticWalker(context, semanticModel, pxContext, variablesWalker.Result,
-						eventType == EventType.RowInserting, eventType);
+						reversed, eventType);
 					methodSyntax.Accept(diagnosticWalker);
 				}
 			}

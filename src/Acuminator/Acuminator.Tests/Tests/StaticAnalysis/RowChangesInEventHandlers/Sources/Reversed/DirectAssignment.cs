@@ -13,8 +13,14 @@ namespace PX.Objects
 
 		protected virtual void _(Events.RowInserting<SOInvoice> e)
 		{
-			e.Cache.SetValue<SOInvoice.refNbr>(e.Row, "<NEW>"); // OK
-			e.Cache.SetValue<SOInvoice.refNbr>(Documents.Current, "<NEW>"); // not OK
+			e.Row?.RefNbr = "<NEW>"; // OK
+			Documents.Current.RefNbr = "<NEW>"; // not OK
+		}
+
+		protected virtual void _(Events.RowSelecting<SOInvoice> e)
+		{
+			e.Row?.RefNbr = "<NEW>"; // OK
+			Documents.Current.RefNbr = "<NEW>"; // not OK
 		}
 	}
 
