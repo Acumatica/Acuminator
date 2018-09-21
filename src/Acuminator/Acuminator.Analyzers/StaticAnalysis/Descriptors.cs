@@ -146,6 +146,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			Rule("PX1048", nameof(Resources.PX1048Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error,
 				nameof(Resources.PX1048MessageFormat).GetLocalized());
 
+		public static DiagnosticDescriptor PX1049_DatabaseQueriesInRowSelected { get; } =
+			Rule("PX1049", nameof(Resources.PX1049Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+
 		public static DiagnosticDescriptor PX1050_HardcodedStringInLocalizationMethod { get; } =
             Rule("PX1050", nameof(Resources.PX1050Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 

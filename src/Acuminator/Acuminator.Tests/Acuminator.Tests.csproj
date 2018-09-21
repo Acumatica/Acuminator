@@ -199,6 +199,17 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\PXGraph\PXGraphChangesPXCacheInInstanceConstructorViaMethod.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\PXGraph\PXGraphDoesntChangePXCacheInInstanceConstructor.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\PXGraph\PXGraphExtensionChangesPXCacheInInitializationMethod.cs" />
+    <Compile Include="Tests\StaticAnalysis\DatabaseQueries\DatabaseQueriesInRowSelectedTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\BQLSearch.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\BQLSelect.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\DataView.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\ExternalMethod.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\GenericEventHandlerSignature.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\Lambda.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\LambdaWithBody.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\PXDatabase.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\PXSelector.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\PXView.cs" />
     <Compile Include="Tests\StaticAnalysis\RowChangesInEventHandlers\RowChangesInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\ValidEventHandlers.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\DirectAssignment.cs" />
