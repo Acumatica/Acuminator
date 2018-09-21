@@ -14,21 +14,32 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 {
 	public partial class RowChangesInEventHandlersAnalyzer : IEventHandlerAnalyzer
 	{
-		private static readonly ISet<EventType> AnalyzedEventTypes = new HashSet<EventType>()
+		private enum RowChangesAnalysisMode
 		{
-			EventType.FieldDefaulting,
-			EventType.FieldVerifying,
-			EventType.RowSelected,
+			ChangesForbiddenForRowFromEventArgs,
+			ChangesAllowedOnlyForRowFromEventArgs,
+		}
+
+		private static readonly IReadOnlyDictionary<EventType, RowChangesAnalysisMode> AnalyzedEventTypes = new Dictionary<EventType, RowChangesAnalysisMode>()
+		{
+			// Changes to e.Row are not allowed
+			{ EventType.FieldDefaulting, RowChangesAnalysisMode.ChangesForbiddenForRowFromEventArgs },
+			{ EventType.FieldVerifying, RowChangesAnalysisMode.ChangesForbiddenForRowFromEventArgs  },
+			{ EventType.RowSelected, RowChangesAnalysisMode.ChangesForbiddenForRowFromEventArgs  },
+			// Changes are allowed for e.Row only
+			{ EventType.RowInserting, RowChangesAnalysisMode.ChangesAllowedOnlyForRowFromEventArgs  },
+			{ EventType.RowSelecting, RowChangesAnalysisMode.ChangesAllowedOnlyForRowFromEventArgs },
 		};
 
-		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
-			ImmutableArray.Create(Descriptors.PX1047_RowChangesInEventHandlers);
+		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
+			Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs,
+			Descriptors.PX1048_RowChangesInEventHandlersAllowedForArgsOnly);
 
 		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (AnalyzedEventTypes.Contains(eventType))
+			if (AnalyzedEventTypes.TryGetValue(eventType, out RowChangesAnalysisMode analysisMode))
 			{
 				var methodSymbol = (IMethodSymbol) context.Symbol;
 				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as MethodDeclarationSyntax;
@@ -43,7 +54,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 					methodSyntax.Accept(variablesWalker);
 
 					// Perform analysis
-					var diagnosticWalker = new DiagnosticWalker(context, semanticModel, pxContext, variablesWalker.Result, eventType);
+					var diagnosticWalker = new DiagnosticWalker(context, semanticModel, pxContext, variablesWalker.Result,
+						analysisMode, eventType);
 					methodSyntax.Accept(diagnosticWalker);
 				}
 			}
