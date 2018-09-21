@@ -42,9 +42,11 @@ namespace PX.Objects.HackathonDemo
 
 		protected virtual void SOOrder_RowSelected(PXCache sender, PXRowSelectedEventArgs e)
 		{
-			if (e.Row != null && sender.GetStatus(e.Row) == PXEntryStatus.Updated)
+            var row = e.Row as SOOrder;
+			if (row != null && sender.GetStatus(row) == PXEntryStatus.Updated)
 			{
 				Base.Actions.PressSave();
+                PXDatabase.SelectTimeStamp();
 			}
 		}
 	}
