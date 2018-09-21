@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Acuminator.Analyzers.StaticAnalysis;
-using Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting;
 using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
 using Acuminator.Tests.Helpers;

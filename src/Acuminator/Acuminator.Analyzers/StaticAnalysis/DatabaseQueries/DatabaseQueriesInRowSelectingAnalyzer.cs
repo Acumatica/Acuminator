@@ -12,9 +12,9 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting
+namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 {
-	public class ConnectionScopeInRowSelectingAnalyzer : IEventHandlerAnalyzer
+	public class DatabaseQueriesInRowSelectingAnalyzer : IEventHandlerAnalyzer
 	{
 		private class Walker : NestedInvocationWalker
 		{
@@ -93,7 +93,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting
 
 				if (methodSymbol != null && IsDatabaseCall(methodSymbol))
 				{
-					ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1042_ConnectionScopeInRowSelecting, node);
+					ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1042_DatabaseQueriesInRowSelecting, node);
 				}
 				else
 				{
@@ -114,7 +114,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting
 		}
 
 		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-			ImmutableArray.Create(Descriptors.PX1042_ConnectionScopeInRowSelecting);
+			ImmutableArray.Create(Descriptors.PX1042_DatabaseQueriesInRowSelecting);
 		
 		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 		{
