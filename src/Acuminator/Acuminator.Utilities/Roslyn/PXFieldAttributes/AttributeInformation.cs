@@ -183,7 +183,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			foreach (var attribute in attributes)
 			{
 				BoundType result = IsBoundAttribute(attribute);
-				if (result == BoundType.DbBound || result == BoundType.Unknown)
+
+				if (result == BoundType.DbBound)
 					return result;
 			}
 			return BoundType.Unbound;

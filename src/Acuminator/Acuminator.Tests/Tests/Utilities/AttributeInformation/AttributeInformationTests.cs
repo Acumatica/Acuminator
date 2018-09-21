@@ -126,13 +126,13 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		[EmbeddedFileData(@"PropertyIsDBBoundFieldWithDefinedAttributes.cs")]
 		public Task FieldBoundAttributesWithDynamicIsDBFieldSetInAttributeDefinitionAsync(string source) =>
 		   TestIsDBFieldPropertyAsync(source,
-								  new List<BoundType> { BoundType.Unknown, BoundType.Unknown, BoundType.Unknown, BoundType.Unknown });
+								  new List<BoundType> { BoundType.Unbound, BoundType.Unbound, BoundType.Unbound, BoundType.Unbound });
 
 		[Theory]
 		[EmbeddedFileData(@"PropertyIsDBBoundFieldWithoutDefinedAttributes.cs", internalCodeFileNames: new string[] { @"ExternalAttributes1.cs", @"ExternalAttributes2.cs" })]
 		public Task FieldBoundAttributesWithDynamicIsDBFieldSetInExternalAttributeDefinitionAsync(string source, string externalAttribute1, string externalAttribute2) =>
 		   TestIsDBFieldPropertyAsync(source,
-								  new List<BoundType> { BoundType.Unknown, BoundType.Unknown },
+								  new List<BoundType> { BoundType.Unbound, BoundType.Unbound, BoundType.DbBound },
 								  new string[] { externalAttribute1, externalAttribute2 });
 
 		private async Task TestIsDBFieldPropertyAsync(string source, List<BoundType> expected, string[] code = null)
