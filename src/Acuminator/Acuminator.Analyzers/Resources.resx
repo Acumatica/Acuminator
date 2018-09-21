@@ -336,6 +336,9 @@
   <data name="PX1047MessageFormat" xml:space="preserve">
     <value>A DAC instance passed to the {0} event handler cannot be modified inside this event handler</value>
   </data>
+  <data name="PX1059Title" xml:space="preserve">
+    <value>Changes to PXCache cannot be performed during PXGraph initialization</value>
+  </data>
   <data name="PX1047Title" xml:space="preserve">
     <value>A DAC instance passed to the event handler cannot be modified inside the event handler</value>
   </data>

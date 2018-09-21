@@ -735,5 +735,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1058Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Changes to PXCache cannot be performed during PXGraph initialization.
+        /// </summary>
+        public static string PX1059Title {
+            get {
+                return ResourceManager.GetString("PX1059Title", resourceCulture);
+            }
+        }
     }
 }

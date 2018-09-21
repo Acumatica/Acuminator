@@ -20,7 +20,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ChangesInPXCache
 			new EventHandlerAnalyzer(new ChangesInPXCacheInEventHandlersAnalyzer());
 
 		[Theory]
-		[EmbeddedFileData("EventHandlers.cs")]
+		[EmbeddedFileData(@"EventHandlers\EventHandlers.cs")]
 		public void TestDiagnostic_EventHandlers(string actual)
 		{
 			VerifyCSharpDiagnostic(actual, 
@@ -34,7 +34,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ChangesInPXCache
 		}
 
 		[Theory]
-		[EmbeddedFileData("EventHandlersWithExternalMethod.cs")]
+		[EmbeddedFileData(@"EventHandlers\EventHandlersWithExternalMethod.cs")]
 		public void TestDiagnostic_EventHandlersWithExternalMethod(string actual)
 		{
 			VerifyCSharpDiagnostic(actual,
@@ -48,7 +48,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ChangesInPXCache
 		}
 
 		[Theory]
-		[EmbeddedFileData("ValidEventHandlers.cs")]
+		[EmbeddedFileData(@"EventHandlers\ValidEventHandlers.cs")]
 		public void TestDiagnostic_EventHandlers_ShouldNotShowDiagnostic(string actual)
 		{
 			VerifyCSharpDiagnostic(actual);
