@@ -1,4 +1,5 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization;
+using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
 using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
@@ -19,7 +20,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 
         public PXGraphAnalyzer() : this(
             new PXGraphCreationDuringInitializationAnalyzer(),
-            new PXGraphSavingChangesDuringInitializationAnalyzer())
+            new SavingChangesDuringPXGraphInitializationAnalyzer(),
+            new PXGraphLongOperationDuringInitializationAnalyzer())
         {
         }
 

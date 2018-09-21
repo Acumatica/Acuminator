@@ -76,7 +76,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 			foreach (var attribute in attributes)
 			{
 
-				if (attributeInformation.AttributeDerivedFromClass(attribute.AttributeClass, pxContext.AttributeTypes.PXDefaultAttribute))
+				if (attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, pxContext.AttributeTypes.PXDefaultAttribute))
 				{
 					foreach (KeyValuePair<string, TypedConstant> argument in attribute.NamedArguments)
 					{
@@ -117,8 +117,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 			foreach (AttributeData attribute in attributes)
 			{
 
-				if (attributeInformation.AttributeDerivedFromClass(attribute.AttributeClass, pxContext.AttributeTypes.PXDefaultAttribute) &&
-					!attributeInformation.AttributeDerivedFromClass(attribute.AttributeClass, pxContext.AttributeTypes.PXUnboundDefaultAttribute))
+				if (attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, pxContext.AttributeTypes.PXDefaultAttribute) &&
+					!attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, pxContext.AttributeTypes.PXUnboundDefaultAttribute))
 				{
 					foreach (KeyValuePair<string, TypedConstant> argument in attribute.NamedArguments)
 					{

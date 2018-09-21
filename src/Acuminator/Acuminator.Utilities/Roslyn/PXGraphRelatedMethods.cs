@@ -9,8 +9,8 @@ namespace Acuminator.Utilities.Roslyn
         private const string CreateInstanceMethodsName = "CreateInstance";
         private const string InstanceCreatedEventsAddHandlerName = "AddHandler";
 
-        public ImmutableArray<IMethodSymbol> CreateInstance { get; private set; }
-        public IMethodSymbol InstanceCreatedEventsAddHandler { get; private set; }
+        public ImmutableArray<IMethodSymbol> CreateInstance { get; }
+        public IMethodSymbol InstanceCreatedEventsAddHandler { get; }
 
         internal PXGraphRelatedMethods(PXContext pxContext)
         {

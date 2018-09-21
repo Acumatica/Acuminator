@@ -15,7 +15,7 @@ namespace PX.Objects.HackathonDemo
 		}
 
 		[PXDBInt]
-		[Branch]
+		[APBranch]                  //Here the APBranch Attribute has PXDBString and PXDBInt on aggregators which is not correct. Moreover, there is another PXDBInt type attributes on the property
 		public virtual int? BranchID { get; set; }
 		#endregion
 

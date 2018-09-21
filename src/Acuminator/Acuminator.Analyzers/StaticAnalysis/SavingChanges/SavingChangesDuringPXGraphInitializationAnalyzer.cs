@@ -9,7 +9,7 @@ using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 {
-    public class PXGraphSavingChangesDuringInitializationAnalyzer : IPXGraphAnalyzer
+    public class SavingChangesDuringPXGraphInitializationAnalyzer : IPXGraphAnalyzer
     {
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create
@@ -56,17 +56,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
             {
                 _context.CancellationToken.ThrowIfCancellationRequested();
 
+                IMethodSymbol symbol = GetSymbol<IMethodSymbol>(node);
                 SemanticModel semanticModel = GetSemanticModel(node.SyntaxTree);
 
-                if (!(semanticModel?.GetSymbolInfo(node, _context.CancellationToken).Symbol is IMethodSymbol method))
-                    return;
-
-                SaveOperationKind saveOperation = SaveOperationHelper.GetSaveOperationKind(method, node, semanticModel, _pxContext);
-
-                if (saveOperation == SaveOperationKind.None)
-                    return;
-
-                ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1058_PXGraphSavingChangesDuringInitialization, node);
+                if (symbol != null && SaveOperationHelper.GetSaveOperationKind(symbol, node, semanticModel, _pxContext) != SaveOperationKind.None)
+                {
+                    ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1058_PXGraphSavingChangesDuringInitialization, node);
+                }
+                else
+                {
+                    base.VisitInvocationExpression(node);
+                }
             }
         }
     }

@@ -12,6 +12,8 @@ using static Acuminator.Tests.Verification.VerificationHelper;
 using FluentAssertions;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 
+
+
 namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 {
 
@@ -44,20 +46,21 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 			List<bool> actual = new List<bool>();
 			var pxContext = new PXContext(semanticModel.Compilation);
-
 			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
 
 			foreach (var property in properties)
 			{
 				var typeSymbol = semanticModel.GetDeclaredSymbol(property);
 				var attributes = typeSymbol.GetAttributes();
+
 				foreach (var attribute in attributes)
 				{
 					var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
 					var defaultAttribute = pxContext.AttributeTypes.PXDefaultAttribute;
-					actual.Add(attributeInformation.AttributeDerivedFromClass(attribute.AttributeClass, defaultAttribute));
+					actual.Add(attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, defaultAttribute));
 				}
 			}
+
 			Assert.Equal(expected, actual);
 		}
 
@@ -96,8 +99,8 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 			List<BoundType> actual = new List<BoundType>();
 			var pxContext = new PXContext(semanticModel.Compilation);
-
 			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
+			var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
 
 			var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
 
@@ -105,11 +108,13 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 			{
 				var typeSymbol = semanticModel.GetDeclaredSymbol(property);
 				var attributes = typeSymbol.GetAttributes();
+
 				foreach (var attribute in attributes)
 				{
 					actual.Add(attributeInformation.IsBoundAttribute(attribute));
 				}
 			}
+
 			Assert.Equal(expected, actual);
 		}
 
@@ -173,6 +178,18 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 								});
 		}
 
+		[Theory]
+		[EmbeddedFileData(@"NotAcumaticaAttributeDac.cs")]
+		private void TestDacWithNonAcumaticaAttribute(string source)
+		{
+			TestListOfParents(source,
+								new List<List<string>>
+								{
+									new List<string>{ "PX.Data.PXDBIntAttribute", },
+									new List<string>{ "PX.Data.PXDBIntAttribute", }
+								});
+		}
+
 
 		[Theory]
 		[EmbeddedFileData(@"AggregateAttributeInformation.cs")]
@@ -228,9 +245,9 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 									new List<string>{ "PX.Data.PXBoolAttribute" },
 									new List<string>{ "PX.Data.PXDefaultAttribute" },
 									new List<string>{ "PX.Data.PXUIFieldAttribute" },
-									new List<string>{ "PX.Data.PXDBCalcedAttribute"},
-									new List<string>{ "PX.Data.PXDefaultAttribute"},
-									new List<string>{ "PX.Data.PXUIFieldAttribute"}
+									new List<string>{ "PX.Data.PXDBCalcedAttribute" },
+									new List<string>{ "PX.Data.PXDefaultAttribute" },
+									new List<string>{ "PX.Data.PXUIFieldAttribute" }
 								},
 								true);
 		}
@@ -260,7 +277,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 										"PX.Data.PXDefaultAttribute"
 									}
 								},
-								true);
+								expand: true);
 
 		}
 
@@ -287,7 +304,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 										"PX.Data.PXIntListAttribute"
 									}
 								},
-								true);
+								expand: true);
 		}
 
 
@@ -296,7 +313,6 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 			Document document = CreateDocument(source);
 			SemanticModel semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
 			var syntaxRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
-
 			var pxContext = new PXContext(semanticModel.Compilation);
 
 			var expectedSymbols = ConvertStringsToITypeSymbols(expected, semanticModel);
@@ -320,25 +336,27 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 					result.Add(attributeInformation.AttributesListDerivedFromClass(attribute.AttributeClass, expand).ToHashSet());
 				}
 			}
+
 			Assert.Equal(expectedSymbols, result);
 		}
 
-		private List<HashSet<ITypeSymbol>> ConvertStringsToITypeSymbols(List<List<string>> expected, SemanticModel semanticModel)
+		private List<HashSet<ITypeSymbol>> ConvertStringsToITypeSymbols(List<List<string>> expectedSymbolNamesSets, SemanticModel semanticModel)
 		{
-			var expectedSymbols = new List<HashSet<ITypeSymbol>>();
-			foreach (var symbolsArray in expected)
-			{
-				HashSet<ITypeSymbol> attributesHashSet = new HashSet<ITypeSymbol>();
+			var expectedSymbols = new List<HashSet<ITypeSymbol>>(capacity: expectedSymbolNamesSets.Count);
 
-				foreach (var symbol in symbolsArray)
+			foreach (List<string> symbolNamesSet in expectedSymbolNamesSets)
+			{
+				HashSet<ITypeSymbol> expectedSymbolsSet = new HashSet<ITypeSymbol>();
+
+				foreach (string symbolName in symbolNamesSet)
 				{
-					attributesHashSet.Add(semanticModel.Compilation.GetTypeByMetadataName(symbol));
+					expectedSymbolsSet.Add(semanticModel.Compilation.GetTypeByMetadataName(symbolName));
 				}
 
-				expectedSymbols.Add(attributesHashSet);
+				expectedSymbols.Add(expectedSymbolsSet);
 			}
+
 			return expectedSymbols;
 		}
-
 	}
 }
