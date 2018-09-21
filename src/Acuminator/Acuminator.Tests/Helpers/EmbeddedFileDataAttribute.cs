@@ -64,7 +64,7 @@ namespace Acuminator.Tests.Helpers
 
 			_prefix = GetPrefixFromTestFilePath(testFilePath);
 
-			_fileNames = internalCodeFileNames.IsNullOrEmpty() ? fileNames : fileNames.ToList().Concat(internalCodeFileNames.ToList()).ToArray();
+			_fileNames = internalCodeFileNames.IsNullOrEmpty() ? fileNames :  fileNames.Concat(internalCodeFileNames).ToArray();
 		}
 
 		public override IEnumerable<object[]> GetData(MethodInfo testMethod)

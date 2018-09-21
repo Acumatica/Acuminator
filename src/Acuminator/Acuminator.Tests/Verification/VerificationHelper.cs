@@ -80,7 +80,6 @@ namespace Acuminator.Tests.Verification
 		/// <param name="sources">Classes in the form of strings</param>
 		/// <param name="language">The language the source code is in</param>
 		/// <param name="externalCode">The source codes for new memory compilation</param>
-		/// <param name="references">The references for new memory compilation</param>
 		/// <returns>A Project created out of the Documents created from the source strings</returns>
 		private static Project CreateProject(string[] sources, string language = LanguageNames.CSharp, string[] externalCode = null)
 		{
@@ -226,7 +225,7 @@ namespace Acuminator.Tests.Verification
 
 				if (!emitResult.Success)
 				{
-					StringBuilder failtureMessages = new StringBuilder(BuildFailMessage + " ", 4096);
+					StringBuilder diagnosticMessages = new StringBuilder(BuildFailMessage + "\r\n");
 					
 					IEnumerable<Diagnostic> failures = emitResult.Diagnostics.Where(diagnostic =>
 								   diagnostic.IsWarningAsError ||
@@ -234,10 +233,10 @@ namespace Acuminator.Tests.Verification
 
 					foreach (Diagnostic diagnostic in failures)
 					{
-						failtureMessages.Append(string.Format("{0}: {1}", diagnostic.Id, diagnostic.GetMessage()));
+						diagnosticMessages.Append(string.Format("{0}: {1} \r\n", diagnostic.Id, diagnostic.GetMessage()));
 					}
 
-					throw new ArgumentException(BuildFailMessage.ToString());
+					throw new ArgumentException(diagnosticMessages.ToString());
 				}
 				image = ms.ToArray();
 			}

@@ -9,7 +9,7 @@ using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 {
-    public class PXGraphSavingChangesDuringInitializationAnalyzer : IPXGraphAnalyzer
+    public class SavingChangesDuringPXGraphInitializationAnalyzer : IPXGraphAnalyzer
     {
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create
