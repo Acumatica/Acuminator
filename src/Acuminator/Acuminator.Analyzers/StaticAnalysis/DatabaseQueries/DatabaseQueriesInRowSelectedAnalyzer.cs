@@ -23,11 +23,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 			
-			if (eventType == EventType.RowSelecting)
+			if (eventType == EventType.RowSelected)
 			{
 				var methodSymbol = (IMethodSymbol) context.Symbol;
 				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
-				//methodSyntax?.Accept(new Walker(context, pxContext));
+				methodSyntax?.Accept(new Walker(context, pxContext, Descriptors.PX1049_DatabaseQueriesInRowSelected));
 			}
 		}
 	}

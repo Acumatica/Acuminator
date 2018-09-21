@@ -16,17 +16,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 {
 	public class DatabaseQueriesInRowSelectingAnalyzer : IEventHandlerAnalyzer
 	{
-		private class Walker : NestedInvocationWalker
+		private class DiagnosticWalker : Walker
 		{
 			private class PXConnectionScopeVisitor : CSharpSyntaxVisitor<bool>
 			{
-				private readonly Walker _parent;
+				private readonly DiagnosticWalker _parent;
 				private readonly PXContext _pxContext;
 
-				public PXConnectionScopeVisitor(Walker parent, PXContext pxContext)
+				public PXConnectionScopeVisitor(DiagnosticWalker parent, PXContext pxContext)
 				{
 					parent.ThrowOnNull(nameof(parent));
-					pxContext.ThrowOnNull(nameof (pxContext));
+					pxContext.ThrowOnNull(nameof(pxContext));
 
 					_parent = parent;
 					_pxContext = pxContext;
@@ -44,25 +44,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 						return false;
 
 					var symbolInfo = semanticModel.GetSymbolInfo(node.Type);
-					return symbolInfo.Symbol?.OriginalDefinition != null 
-						&& symbolInfo.Symbol.OriginalDefinition.Equals(_pxContext.PXConnectionScope);
+					return symbolInfo.Symbol?.OriginalDefinition != null
+					       && symbolInfo.Symbol.OriginalDefinition.Equals(_pxContext.PXConnectionScope);
 				}
 			}
 
-			private static readonly IEnumerable<string> MethodPrefixes = new[] { "Select", "Search", "Update", "Delete" };
-
-			private SymbolAnalysisContext _context;
-			private readonly PXContext _pxContext;
 			private readonly PXConnectionScopeVisitor _connectionScopeVisitor;
 			private bool _insideConnectionScope;
 
-			public Walker(SymbolAnalysisContext context, PXContext pxContext)
-				: base(context.Compilation, context.CancellationToken)
+			public DiagnosticWalker(SymbolAnalysisContext context, PXContext pxContext)
+				: base(context, pxContext, Descriptors.PX1042_DatabaseQueriesInRowSelecting)
 			{
-				pxContext.ThrowOnNull(nameof (pxContext));
-
-				_context = context;
-				_pxContext = pxContext;
 				_connectionScopeVisitor = new PXConnectionScopeVisitor(this, pxContext);
 			}
 
@@ -84,32 +76,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 
 			public override void VisitInvocationExpression(InvocationExpressionSyntax node)
 			{
-				ThrowIfCancellationRequested();
-
-				if (_insideConnectionScope)
-					return;
-				
-				var methodSymbol = GetSymbol<IMethodSymbol>(node);
-
-				if (methodSymbol != null && IsDatabaseCall(methodSymbol))
-				{
-					ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1042_DatabaseQueriesInRowSelecting, node);
-				}
-				else
-				{
+				if (!_insideConnectionScope)
 					base.VisitInvocationExpression(node);
-				}
-			}
-
-			private bool IsDatabaseCall(IMethodSymbol candidate)
-			{
-				var containingType = candidate.ContainingType?.OriginalDefinition;
-				return MethodPrefixes.Any(p => candidate.Name.StartsWith(p, StringComparison.Ordinal))
-				       && containingType != null
-				       && (containingType.IsBqlCommand(_pxContext)
-				           || containingType.InheritsFromOrEquals(_pxContext.PXViewType)
-				           || containingType.InheritsFromOrEquals(_pxContext.PXSelectorAttribute)
-				           || containingType.Equals(_pxContext.PXDatabase));
 			}
 		}
 
@@ -124,7 +92,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 			{
 				var methodSymbol = (IMethodSymbol) context.Symbol;
 				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
-				methodSyntax?.Accept(new Walker(context, pxContext));
+				methodSyntax?.Accept(new DiagnosticWalker(context, pxContext));
 			}
 		}
 	}
