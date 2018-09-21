@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
+using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -16,6 +17,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 {
 	public class DatabaseQueriesInRowSelectingAnalyzer : IEventHandlerAnalyzer
 	{
+		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+			ImmutableArray.Create(Descriptors.PX1042_DatabaseQueriesInRowSelecting);
+		
+		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
+			EventType eventType)
+		{
+			context.CancellationToken.ThrowIfCancellationRequested();
+			
+			if (eventType == EventType.RowSelecting)
+			{
+				var methodSymbol = (IMethodSymbol) context.Symbol;
+				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
+				methodSyntax?.Accept(new DiagnosticWalker(context, pxContext));
+			}
+		}
+
+
 		private class DiagnosticWalker : Walker
 		{
 			private class PXConnectionScopeVisitor : CSharpSyntaxVisitor<bool>
@@ -78,21 +96,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 			{
 				if (!_insideConnectionScope)
 					base.VisitInvocationExpression(node);
-			}
-		}
-
-		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-			ImmutableArray.Create(Descriptors.PX1042_DatabaseQueriesInRowSelecting);
-		
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
-		{
-			context.CancellationToken.ThrowIfCancellationRequested();
-			
-			if (eventType == EventType.RowSelecting)
-			{
-				var methodSymbol = (IMethodSymbol) context.Symbol;
-				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
-				methodSyntax?.Accept(new DiagnosticWalker(context, pxContext));
 			}
 		}
 	}

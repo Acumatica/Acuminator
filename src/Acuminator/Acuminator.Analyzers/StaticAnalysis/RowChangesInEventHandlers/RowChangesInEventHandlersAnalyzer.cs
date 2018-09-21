@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.Text;
 using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
+using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
@@ -35,7 +36,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 			Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs,
 			Descriptors.PX1048_RowChangesInEventHandlersAllowedForArgsOnly);
 
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
+		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
+			EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 

@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
+using Acuminator.Utilities;
 
 namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
 {
@@ -13,7 +14,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
 		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
 			ImmutableArray.Create(Descriptors.PX1046_LongOperationInEventHandlers);
 
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
+		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
+			EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 

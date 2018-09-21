@@ -295,6 +295,24 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enable additional diagnostics for ISV Solution Certification.
+        /// </summary>
+        public static string Setting_CodeAnalysis_IsvSpecificAnalyzersEnabled_Description {
+            get {
+                return ResourceManager.GetString("Setting_CodeAnalysis_IsvSpecificAnalyzersEnabled_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable additional diagnostics for ISV Solution Certification.
+        /// </summary>
+        public static string Setting_CodeAnalysis_IsvSpecificAnalyzersEnabled_Title {
+            get {
+                return ResourceManager.GetString("Setting_CodeAnalysis_IsvSpecificAnalyzersEnabled_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Analyse the whole invocation tree in a recursive manner..
         /// </summary>
         public static string Setting_CodeAnalysis_RecursiveAnalysisEnabled_Description {

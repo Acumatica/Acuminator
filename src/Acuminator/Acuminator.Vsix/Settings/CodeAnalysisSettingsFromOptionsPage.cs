@@ -23,5 +23,6 @@ namespace Acuminator.Vsix.Settings
 		}
 
 		public override bool RecursiveAnalysisEnabled => _optionsPage.RecursiveAnalysisEnabled;
+		public override bool IsvSpecificAnalyzersEnabled => _optionsPage.IsvSpecificAnalyzersEnabled;
 	}
 }

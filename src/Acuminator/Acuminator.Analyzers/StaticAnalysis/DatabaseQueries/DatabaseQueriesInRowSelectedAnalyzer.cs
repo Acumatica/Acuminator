@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
+using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
+using CommonServiceLocator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -19,11 +21,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1049_DatabaseQueriesInRowSelected);
 		
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
+		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
+			EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 			
-			if (eventType == EventType.RowSelected)
+			if (codeAnalysisSettings.IsvSpecificAnalyzersEnabled && eventType == EventType.RowSelected)
 			{
 				var methodSymbol = (IMethodSymbol) context.Symbol;
 				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;

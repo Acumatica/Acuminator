@@ -10,9 +10,11 @@ using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance;
 using Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers;
 using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
+using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
+using CommonServiceLocator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -50,12 +52,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSymbolAction(c => AnalyzeMethod(c, pxContext), SymbolKind.Method);
+			var codeAnalysisSettings = GetCodeAnalysisSettings();
+
+			compilationStartContext.RegisterSymbolAction(c => AnalyzeMethod(c, pxContext, codeAnalysisSettings), SymbolKind.Method);
 			// TODO: Enable this operation action after migration to Roslyn v2
-			//compilationStartContext.RegisterOperationAction(c => AnalyzeLambda(c, pxContext), OperationKind.LambdaExpression);
+			//compilationStartContext.RegisterOperationAction(c => AnalyzeLambda(c, pxContext, codeAnalysisSettings), OperationKind.LambdaExpression);
 		}
 
-		private void AnalyzeMethod(SymbolAnalysisContext context, PXContext pxContext)
+		private void AnalyzeMethod(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 			
@@ -68,13 +72,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 					foreach (var innerAnalyzer in _innerAnalyzers)
 					{
 						context.CancellationToken.ThrowIfCancellationRequested();
-						innerAnalyzer.Analyze(context, pxContext, eventType);
+						innerAnalyzer.Analyze(context, pxContext, codeAnalysisSettings, eventType);
 					}
 				}
 			}
 		}
 
-		private void AnalyzeLambda(OperationAnalysisContext context, PXContext pxContext)
+		private void AnalyzeLambda(OperationAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings)
 		{
 			if (context.Operation is ILambdaExpression lambdaExpression)
 			{
@@ -85,8 +89,26 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 					context.ReportDiagnostic, 
 					d => true, // this check is covered inside context.ReportDiagnostic
 					context.CancellationToken),
-					pxContext);
+					pxContext,
+					codeAnalysisSettings);
 			}
+		}
+
+		private CodeAnalysisSettings GetCodeAnalysisSettings()
+		{
+			CodeAnalysisSettings settings = null;
+
+			try
+			{
+				if (ServiceLocator.IsLocationProviderSet)
+					settings = ServiceLocator.Current.GetInstance<CodeAnalysisSettings>();
+			}
+			catch
+			{
+				// TODO: log the exception
+			}
+
+			return settings ?? CodeAnalysisSettings.Default;
 		}
 	}
 }
