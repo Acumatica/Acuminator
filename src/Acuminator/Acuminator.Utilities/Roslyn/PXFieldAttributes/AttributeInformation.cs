@@ -4,6 +4,7 @@ using System.Linq;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 {
@@ -14,6 +15,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 	{
 		private readonly PXContext _context;
 		public ImmutableHashSet<ITypeSymbol> BoundBaseTypes { get; }
+
+		private const string IsDBField = "IsDBField";
 
 		public AttributeInformation(PXContext pxContext)
 		{
@@ -57,7 +60,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				var allAttributes = attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
 				foreach (var attribute in allAttributes)
 				{
-					if (!attribute.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute)) 
+					if (!attribute.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute))
 						continue;
 
 					results.Add(attribute);
@@ -106,7 +109,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			var aggregateAttribute = _context.AttributeTypes.PXAggregateAttribute;
 			var dynamicAggregateAttribute = _context.AttributeTypes.PXDynamicAggregateAttribute;
 
-			if (attributeSymbol.InheritsFromOrEquals( aggregateAttribute) || attributeSymbol.InheritsFromOrEquals(dynamicAggregateAttribute))
+			if (attributeSymbol.InheritsFromOrEquals(aggregateAttribute) || attributeSymbol.InheritsFromOrEquals(dynamicAggregateAttribute))
 			{
 				var allAttributes = attributeSymbol.GetAllAttributesDefinedOnThisAndBaseTypes();
 				foreach (var attribute in allAttributes)
@@ -114,7 +117,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 					if (!attribute.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute))
 						continue;
 
-					var result = VisitAggregateAttribute(attribute,10);
+					var result = VisitAggregateAttribute(attribute, 10);
 
 					if (result)
 						return result;
@@ -122,7 +125,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			}
 			return false;
 
-			bool VisitAggregateAttribute(ITypeSymbol _attributeSymbol,int depth)
+			bool VisitAggregateAttribute(ITypeSymbol _attributeSymbol, int depth)
 			{
 				if (depth < 0)
 					return false;
@@ -138,7 +141,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 						if (!attribute.GetBaseTypes().Contains(_context.AttributeTypes.PXEventSubscriberAttribute))
 							continue;
 
-						var result = VisitAggregateAttribute(attribute,depth-1);
+						var result = VisitAggregateAttribute(attribute, depth - 1);
 
 						if (result)
 							return result;
@@ -148,20 +151,68 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			}
 		}
 
-		public bool IsBoundAttribute(ITypeSymbol attributeSymbol)
+		public BoundFlag IsBoundAttribute(AttributeData attribute)
 		{
 			foreach (var baseType in BoundBaseTypes)
 			{
-				if (AttributeDerivedFromClass(attributeSymbol, baseType))
+				if (AttributeDerivedFromClass(attribute.AttributeClass, baseType))
+					return BoundFlag.DbBound;
+			}
+
+			if (attribute.AttributeClass.GetMembers().Select(a => a.Name).Contains(IsDBField))
+			{
+				foreach (var argument in attribute.NamedArguments)
+				{
+					if (argument.Key.Equals(IsDBField))
+					{
+						if (argument.Value.Value.Equals(true))
+							return BoundFlag.DbBound;
+						else
+							return BoundFlag.Unbound;
+					}
+				}
+				return BoundFlag.Unknown;
+			}
+			return BoundFlag.Unbound;
+		}
+
+		///TODO: refactoring arguments -> remove semanticModel to constructor? Is it nessesary?
+		///TODO: Add DataFlow analyze to corner cases with defaul IsDBBound assigment.
+		public bool? IsBoundField(PropertyDeclarationSyntax property, SemanticModel semanticModel)
+		{
+			var typeSymbol = semanticModel.GetDeclaredSymbol(property);
+			var attributesData = typeSymbol.GetAttributes();
+
+			foreach (var attribute in attributesData)
+			{
+				if (IsBoundAttribute(attribute) == BoundFlag.DbBound)
 					return true;
+				foreach (var argument in attribute.NamedArguments)
+				{
+					if (argument.Key.Equals(IsDBField) && argument.Value.Value.Equals(true))
+						return (bool)argument.Value.Value;
+				}
 			}
 			return false;
 		}
-		
-		public bool ContainsBoundAttributes(IEnumerable<ITypeSymbol> attributesSymbols)
+
+		public BoundFlag ContainsBoundAttributes(IEnumerable<AttributeData> attributes)
 		{
-			return attributesSymbols.Any(IsBoundAttribute);
+			foreach (var attribute in attributes)
+			{
+				BoundFlag result = IsBoundAttribute(attribute);
+				if (result == BoundFlag.DbBound || result == BoundFlag.Unknown)
+					return result;
+			}
+			return BoundFlag.Unbound;
 		}
 
+	}
+
+	public enum BoundFlag
+	{
+		Unknown = 0,
+		Unbound = 1,
+		DbBound = 2
 	}
 }

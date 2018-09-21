@@ -66,9 +66,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			var IsBoundField = attributeInformation.ContainsBoundAttributes(attributes.Select(a => a.AttributeClass));
+			var IsBoundField = attributeInformation.ContainsBoundAttributes(attributes.Select(a => a));
 
-			if (!IsBoundField)
+			if (IsBoundField == BoundFlag.DbBound)
 			{
 				foreach (var attribute in attributes)
 				{
@@ -79,11 +79,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 							argument.Value.Value is bool boolValue &&
 							boolValue == true )
 						{
-							Location attributeLocation = await AttributeInformation.GetAttributeLocationAsync(attribute, symbolContext.CancellationToken);
+							/*Location attributeLocation = await AttributeInformation.GetAttributeLocationAsync(attribute, symbolContext.CancellationToken);
 							
 							symbolContext.ReportDiagnostic(
 							Diagnostic.Create(
 								Descriptors.PX1055_DacKeyFieldBound, attributeLocation));
+						*/
 						}
 					}
 				}
