@@ -8,6 +8,7 @@ using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
+using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
@@ -17,7 +18,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.RowChangesInEventHandlers
 	public class RowChangesInEventHandlersTests : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-			new EventHandlerAnalyzer(new RowChangesInEventHandlersAnalyzer());
+			new EventHandlerAnalyzer(CodeAnalysisSettings.Default.WithRecursiveAnalysisEnabled(), 
+				new RowChangesInEventHandlersAnalyzer());
 
 		[Theory]
 		[EmbeddedFileData("DirectAssignment.cs")]

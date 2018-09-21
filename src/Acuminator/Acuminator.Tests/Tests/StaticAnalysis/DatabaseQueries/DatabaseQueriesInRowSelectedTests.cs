@@ -3,6 +3,7 @@ using Acuminator.Analyzers.StaticAnalysis.DatabaseQueries;
 using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
+using Acuminator.Utilities;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -13,7 +14,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DatabaseQueries
 	public class DatabaseQueriesInRowSelectedTests : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => 
-			new EventHandlerAnalyzer(new DatabaseQueriesInRowSelectedAnalyzer());
+			new EventHandlerAnalyzer(CodeAnalysisSettings.Default
+					.WithRecursiveAnalysisEnabled()
+					.WithIsvSpecificAnalyzersEnabled(),
+				new DatabaseQueriesInRowSelectedAnalyzer());
 
 		[Theory]
 		[EmbeddedFileData(@"RowSelected\BQLSelect.cs")]

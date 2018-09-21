@@ -26,11 +26,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class EventHandlerAnalyzer : PXDiagnosticAnalyzer
 	{
+		private readonly CodeAnalysisSettings _codeAnalysisSettings;
 		private readonly ImmutableArray<IEventHandlerAnalyzer> _innerAnalyzers;
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
 
-		public EventHandlerAnalyzer() : this(
+		public EventHandlerAnalyzer() : this(null,
 			// can be replaced with DI from ServiceLocator if DI-container is used
 			new DatabaseQueriesInRowSelectingAnalyzer(),
 			new SavingChangesInEventHandlersAnalyzer(),
@@ -44,8 +45,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 		/// <summary>
 		/// Constructor for the unit tests.
 		/// </summary>
-		public EventHandlerAnalyzer(params IEventHandlerAnalyzer[] innerAnalyzers)
+		public EventHandlerAnalyzer(CodeAnalysisSettings codeAnalysisSettings, params IEventHandlerAnalyzer[] innerAnalyzers)
 		{
+			_codeAnalysisSettings = codeAnalysisSettings;
 			_innerAnalyzers = ImmutableArray.CreateRange(innerAnalyzers);
 			SupportedDiagnostics = ImmutableArray.CreateRange(innerAnalyzers.SelectMany(a => a.SupportedDiagnostics));
 		}
@@ -96,6 +98,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 
 		private CodeAnalysisSettings GetCodeAnalysisSettings()
 		{
+			if (_codeAnalysisSettings != null)
+				return _codeAnalysisSettings; // for unit tests
+
 			CodeAnalysisSettings settings = null;
 
 			try
