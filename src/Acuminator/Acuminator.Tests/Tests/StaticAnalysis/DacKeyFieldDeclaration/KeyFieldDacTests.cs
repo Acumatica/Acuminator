@@ -17,15 +17,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacKeyFieldDeclaration
 //		protected override CodeFixProvider GetCSharpCodeFixProvider() => new DacKeyFieldDeclarationFix();
 
 		[Theory]
-		[EmbeddedFileData("DacExtensionWithBoundFields.cs")]
+		[EmbeddedFileData("DacKeyFieldsUnbound.cs")]
 		public virtual void TestDacKeyFieldWithBoundAttribute(string source) =>
 			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1055_DacKeyFieldBound.CreateFor(line: 23, column: 4),
-				Descriptors.PX1055_DacKeyFieldBound.CreateFor(line: 30, column: 4),
-				Descriptors.PX1055_DacKeyFieldBound.CreateFor(line: 44, column: 4),
-				Descriptors.PX1055_DacKeyFieldBound.CreateFor(line: 50, column: 13),
-				Descriptors.PX1055_DacKeyFieldBound.CreateFor(line: 56, column: 13),
-				Descriptors.PX1055_DacKeyFieldBound.CreateFor(line: 62, column: 4));
+				Descriptors.PX1055_DacKeyFieldBound.CreateFor(line: 11, column: 4),
+				Descriptors.PX1055_DacKeyFieldBound.CreateFor(line: 19, column: 4));
 
 	}
 }

@@ -2,10 +2,13 @@
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
@@ -13,15 +16,29 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class KeyFieldDeclarationAnalyzer : PXDiagnosticAnalyzer
 	{
+		private const string IsKey = "IsKey";
+
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
 			(
 				Descriptors.PX1055_DacKeyFieldBound
 			);
-
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSymbolAction(async symbolContext => await AnalyzePropertyAsync(symbolContext, pxContext), SymbolKind.NamedType);
+			compilationStartContext.RegisterSyntaxNodeAction(syntaxContext =>
+				AnalyzeDacOrDacExtensionDeclaration(syntaxContext, pxContext), SyntaxKind.ClassDeclaration);
+		}
+
+		private static void AnalyzeDacOrDacExtensionDeclaration(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+		{
+			if (!(syntaxContext.Node is ClassDeclarationSyntax dacOrDacExtNode) || syntaxContext.CancellationToken.IsCancellationRequested)
+				return;
+
+			INamedTypeSymbol dacOrDacExt = syntaxContext.SemanticModel.GetDeclaredSymbol(dacOrDacExtNode, syntaxContext.CancellationToken);
+
+			if (dacOrDacExt == null || (!dacOrDacExt.IsDAC() && !dacOrDacExt.IsDacExtension()) ||
+				syntaxContext.CancellationToken.IsCancellationRequested)
+				return;
 		}
 
 		private Task AnalyzePropertyAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
@@ -49,7 +66,28 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
+			var IsBoundField = attributeInformation.ContainsBoundAttributes(attributes.Select(a => a.AttributeClass));
 
+			if (!IsBoundField)
+			{
+				foreach (var attribute in attributes)
+				{
+					foreach(var argument in attribute.NamedArguments)
+					{
+						if(argument.Key == IsKey &&
+							!argument.Value.IsNull &&
+							argument.Value.Value is bool boolValue &&
+							boolValue == true )
+						{
+							Location attributeLocation = await AttributeInformation.GetAttributeLocationAsync(attribute, symbolContext.CancellationToken);
+							
+							symbolContext.ReportDiagnostic(
+							Diagnostic.Create(
+								Descriptors.PX1055_DacKeyFieldBound, attributeLocation));
+						}
+					}
+				}
+			}
 		}
 	}
 
