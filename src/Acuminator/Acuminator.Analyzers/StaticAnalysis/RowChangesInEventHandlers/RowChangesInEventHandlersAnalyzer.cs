@@ -14,15 +14,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 {
 	public partial class RowChangesInEventHandlersAnalyzer : IEventHandlerAnalyzer
 	{
-		private static readonly IReadOnlyDictionary<EventType, bool> AnalyzedEventTypes = new Dictionary<EventType, bool>()
+		private enum RowChangesAnalysisMode
+		{
+			ChangesForbiddenForRowFromEventArgs,
+			ChangesAllowedOnlyForRowFromEventArgs,
+		}
+
+		private static readonly IReadOnlyDictionary<EventType, RowChangesAnalysisMode> AnalyzedEventTypes = new Dictionary<EventType, RowChangesAnalysisMode>()
 		{
 			// Changes to e.Row are not allowed
-			{ EventType.FieldDefaulting, false },
-			{ EventType.FieldVerifying, false },
-			{ EventType.RowSelected, false },
+			{ EventType.FieldDefaulting, RowChangesAnalysisMode.ChangesForbiddenForRowFromEventArgs },
+			{ EventType.FieldVerifying, RowChangesAnalysisMode.ChangesForbiddenForRowFromEventArgs  },
+			{ EventType.RowSelected, RowChangesAnalysisMode.ChangesForbiddenForRowFromEventArgs  },
 			// Changes are allowed for e.Row only
-			{ EventType.RowInserting, true },
-			{ EventType.RowSelecting, true },
+			{ EventType.RowInserting, RowChangesAnalysisMode.ChangesAllowedOnlyForRowFromEventArgs  },
+			{ EventType.RowSelecting, RowChangesAnalysisMode.ChangesAllowedOnlyForRowFromEventArgs },
 		};
 
 		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
@@ -33,7 +39,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (AnalyzedEventTypes.TryGetValue(eventType, out bool reversed))
+			if (AnalyzedEventTypes.TryGetValue(eventType, out RowChangesAnalysisMode analysisMode))
 			{
 				var methodSymbol = (IMethodSymbol) context.Symbol;
 				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as MethodDeclarationSyntax;
@@ -49,7 +55,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 
 					// Perform analysis
 					var diagnosticWalker = new DiagnosticWalker(context, semanticModel, pxContext, variablesWalker.Result,
-						reversed, eventType);
+						analysisMode, eventType);
 					methodSyntax.Accept(diagnosticWalker);
 				}
 			}

@@ -26,7 +26,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 			private SymbolAnalysisContext _context;
 			private readonly SemanticModel _semanticModel;
 			private readonly PXContext _pxContext;
-			private readonly bool _reversed;
+			private readonly RowChangesAnalysisMode _analysisMode;
 			private readonly ImmutableHashSet<ILocalSymbol> _rowVariables;
 			private readonly object[] _messageArgs;
 
@@ -35,7 +35,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 
 			public DiagnosticWalker(SymbolAnalysisContext context, SemanticModel semanticModel, PXContext pxContext, 
 				ImmutableArray<ILocalSymbol> rowVariables, // variables which were assigned with e.Row
-				bool reversed,
+				RowChangesAnalysisMode analysisMode,
 				params object[] messageArgs)
 			{
 				pxContext.ThrowOnNull(nameof (pxContext));
@@ -44,7 +44,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				_context = context;
 				_semanticModel = semanticModel;
 				_pxContext = pxContext;
-				_reversed = reversed;
+				_analysisMode = analysisMode;
 				_rowVariables = rowVariables.ToImmutableHashSet();
 				_messageArgs = messageArgs;
 
@@ -73,12 +73,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 						found = walker.Success;
 					}
 
-					if (found && !_reversed)
+					if (found && _analysisMode == RowChangesAnalysisMode.ChangesForbiddenForRowFromEventArgs)
 					{
 						_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs, 
 							node.GetLocation(), _messageArgs));
 					}
-					else if (!found && _reversed)
+					else if (!found && _analysisMode == RowChangesAnalysisMode.ChangesAllowedOnlyForRowFromEventArgs)
 					{
 						_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1048_RowChangesInEventHandlersAllowedForArgsOnly, 
 							node.GetLocation(), _messageArgs));
@@ -101,12 +101,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 						found = _variableMemberAccessWalker.Success;
 					}
 					
-					if (found && !_reversed)
+					if (found && _analysisMode == RowChangesAnalysisMode.ChangesForbiddenForRowFromEventArgs)
 					{
 						_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs, 
 							node.GetLocation(), _messageArgs));
 					}
-					else if (!found && _reversed)
+					else if (!found && _analysisMode == RowChangesAnalysisMode.ChangesAllowedOnlyForRowFromEventArgs)
 					{
 						_dacInstanceAccessWalker.Reset();
 						node.Left.Accept(_dacInstanceAccessWalker);
