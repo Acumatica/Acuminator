@@ -102,8 +102,6 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
 			var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
 
-			var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
-
 			foreach (var property in properties)
 			{
 				var typeSymbol = semanticModel.GetDeclaredSymbol(property);
@@ -180,9 +178,9 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 		[Theory]
 		[EmbeddedFileData(@"NotAcumaticaAttributeDac.cs")]
-		private void TestDacWithNonAcumaticaAttribute(string source)
+		private Task TestDacWithNonAcumaticaAttribute(string source)
 		{
-			TestListOfParents(source,
+			return TestListOfParentsAsync(source,
 								new List<List<string>>
 								{
 									new List<string>{ "PX.Data.PXDBIntAttribute", },
@@ -321,6 +319,8 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 			List<HashSet<ITypeSymbol>> result = new List<HashSet<ITypeSymbol>>();
 
+			var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
+
 			foreach (var property in properties)
 			{
 				var typeSymbol = semanticModel.GetDeclaredSymbol(property);
@@ -332,8 +332,12 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 				foreach (var attribute in attributes)
 				{
-					var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
-					result.Add(attributeInformation.AttributesListDerivedFromClass(attribute.AttributeClass, expand).ToHashSet());
+					var fullAttributesSet = attributeInformation.GetAcumaticaAttributesFullList(attribute.AttributeClass, expand).ToHashSet();
+
+					if (fullAttributesSet.Count > 0)
+					{
+						result.Add(fullAttributesSet);
+					}
 				}
 			}
 
