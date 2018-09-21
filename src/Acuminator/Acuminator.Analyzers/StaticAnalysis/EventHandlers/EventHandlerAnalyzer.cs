@@ -38,7 +38,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 			new ChangesInPXCacheInEventHandlersAnalyzer(),
 			new PXGraphCreateInstanceInEventHandlersAnalyzer(),
 			new LongOperationInEventHandlersAnalyzer(),
-			new RowChangesInEventHandlersAnalyzer())
+			new RowChangesInEventHandlersAnalyzer(),
+			new DatabaseQueriesInRowSelectedAnalyzer())
 		{
 		}
 
