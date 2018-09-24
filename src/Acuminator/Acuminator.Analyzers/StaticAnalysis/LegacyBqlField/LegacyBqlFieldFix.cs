@@ -16,7 +16,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 	public class LegacyBqlFieldFix : CodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-			ImmutableArray.Create(Descriptors.PX1059_LegacyBqlField.Id);
+			ImmutableArray.Create(Descriptors.PX1060_LegacyBqlField.Id);
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
@@ -26,7 +26,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 			var classNode = root.FindNode(context.Span).FirstAncestorOrSelf<ClassDeclarationSyntax>();
 			if (classNode == null) return;
 
-			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1059_LegacyBqlField.Id);
+			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1060_LegacyBqlField.Id);
 			if (diagnostic == null) return;
 
 			if (diagnostic.Properties == null
@@ -37,7 +37,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 				return;
 			}
 
-			string title = nameof(Resources.PX1059Fix).GetLocalized().ToString();
+			string title = nameof(Resources.PX1060Fix).GetLocalized().ToString();
 
 			context.RegisterCodeFix(
 				CodeAction.Create(

@@ -3,6 +3,7 @@ using System.Composition;
 using System.Threading;
 using System.Threading.Tasks;
 using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -11,14 +12,14 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Formatting;
 
-namespace Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting
+namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public class ConnectionScopeInRowSelectingFix : CodeFixProvider
+	public class DatabaseQueriesInRowSelectingFix : CodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-			ImmutableArray.Create(Descriptors.PX1042_ConnectionScopeInRowSelecting.Id);
+			ImmutableArray.Create(Descriptors.PX1042_DatabaseQueriesInRowSelecting.Id);
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 

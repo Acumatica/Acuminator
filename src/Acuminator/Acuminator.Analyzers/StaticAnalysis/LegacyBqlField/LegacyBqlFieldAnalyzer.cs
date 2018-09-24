@@ -13,7 +13,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 	{
 		public const string CorrespondingPropertyType = "CorrespondingPropertyType";
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
-			Descriptors.PX1059_LegacyBqlField);
+			Descriptors.PX1060_LegacyBqlField);
 
 	    protected override bool ShouldAnalyze(PXContext pxContext) => pxContext.IsAcumatica2019R1;
 
@@ -51,7 +51,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 
 					var properties = ImmutableDictionary.CreateBuilder<string, string>();
 					properties.Add(CorrespondingPropertyType, propertyTypeName);
-					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1059_LegacyBqlField, dacFieldType.Locations.First(), properties.ToImmutable(), dacFieldType.Name));
+					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1060_LegacyBqlField, dacFieldType.Locations.First(), properties.ToImmutable(), dacFieldType.Name));
 				}
 			}
 		}

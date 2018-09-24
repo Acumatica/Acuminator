@@ -674,6 +674,33 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Only the DAC instance that is passed in the event arguments can be modified in the {0} event handler.
+        /// </summary>
+        public static string PX1048MessageFormat {
+            get {
+                return ResourceManager.GetString("PX1048MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only the DAC instance that is passed in the event arguments can be modified in this event handler.
+        /// </summary>
+        public static string PX1048Title {
+            get {
+                return ResourceManager.GetString("PX1048Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In a RowSelected handler, BQL statements and other database queries should be avoided.
+        /// </summary>
+        public static string PX1049Title {
+            get {
+                return ResourceManager.GetString("PX1049Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hardcoded strings are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class..
         /// </summary>
         public static string PX1050Title {
@@ -737,20 +764,38 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Changes to PXCache cannot be performed during PXGraph initialization.
+        /// </summary>
+        public static string PX1059Title {
+            get {
+                return ResourceManager.GetString("PX1059Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Make field strongly typed.
         /// </summary>
-        public static string PX1059Fix {
+        public static string PX1060Fix {
             get {
-                return ResourceManager.GetString("PX1059Fix", resourceCulture);
+                return ResourceManager.GetString("PX1060Fix", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The {0} field could be made strongly typed.
         /// </summary>
-        public static string PX1059Title {
+        public static string PX1060Title {
             get {
-                return ResourceManager.GetString("PX1059Title", resourceCulture);
+                return ResourceManager.GetString("PX1060Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The state of fields and actions can be configured only in the RowSelected event handler.
+        /// </summary>
+        public static string PX1070Title {
+            get {
+                return ResourceManager.GetString("PX1070Title", resourceCulture);
             }
         }
     }

@@ -423,7 +423,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				// is extracted from event handler calls to a separate method
 
 				// Old non-generic syntax
-				if (symbol.Parameters[0].Type.OriginalDefinition.InheritsFromOrEquals(pxContext.PXCacheType))
+				if (symbol.Parameters[0].Type.OriginalDefinition.InheritsFromOrEquals(pxContext.PXCache.Type))
 				{
 					if (symbol.Name.EndsWith("CacheAttached", StringComparison.Ordinal))
 						return (EventType.CacheAttached, EventHandlerSignatureType.Default);

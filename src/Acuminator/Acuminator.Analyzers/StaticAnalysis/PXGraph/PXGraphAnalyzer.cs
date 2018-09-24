@@ -8,6 +8,8 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
+using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 {
@@ -21,7 +23,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
         public PXGraphAnalyzer() : this(
             new PXGraphCreationDuringInitializationAnalyzer(),
             new SavingChangesDuringPXGraphInitializationAnalyzer(),
-            new PXGraphLongOperationDuringInitializationAnalyzer())
+            new PXGraphLongOperationDuringInitializationAnalyzer(),
+            new ChangesInPXCacheDuringPXGraphInitializationAnalyzer())
         {
         }
 
