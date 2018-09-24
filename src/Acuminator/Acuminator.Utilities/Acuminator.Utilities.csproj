@@ -110,6 +110,8 @@
     <Compile Include="Roslyn\EventHandlerSignatureType.cs" />
     <Compile Include="Roslyn\EventType.cs" />
     <Compile Include="Roslyn\PXGraphRelatedMethods.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\DataViewDelegateInfo.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\DataViewInfo.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphInitializerInfo.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphInitializerType.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphType.cs" />
@@ -146,6 +148,7 @@
     <Compile Include="Roslyn\PXFieldAttributes\FieldTypeAttributesRegister.cs" />
     <Compile Include="Roslyn\PXSystemActions\PXSystemActionsRegister.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\PXGraphSemanticModel.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\StaticCtrInfo.cs" />
     <Compile Include="Roslyn\Syntax\ArgumentSyntaxExtensions.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphSymbolUtils.cs" />
     <Compile Include="Roslyn\Semantic\IMethodSymbolExtensions.cs" />

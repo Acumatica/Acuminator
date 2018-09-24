@@ -17,8 +17,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
         public GraphType Type { get; }
         public INamedTypeSymbol Symbol { get; }
-        public (ConstructorDeclarationSyntax Node, IMethodSymbol Symbol) StaticCtrInfo { get; }
+        public StaticCtrInfo? StaticCtr { get; }
         public ImmutableArray<GraphInitializerInfo> Initializers { get; private set; }
+        public ImmutableArray<DataViewInfo> Views { get; }
+        public ImmutableArray<DataViewDelegateInfo> ViewDelegates { get; }
 
         private PXGraphSemanticModel(PXContext pxContext, GraphType type, INamedTypeSymbol symbol, CancellationToken cancellation = default)
         {
@@ -28,9 +30,28 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             _pxContext = pxContext;
             Type = type;
             Symbol = symbol;
-            StaticCtrInfo = Symbol.GetDeclaredStaticConstructor(_cancellation);
+            StaticCtr = Symbol.GetDeclaredStaticConstructor(_cancellation);
+            Views = GetDataViews();
+            ViewDelegates = GetDataViewDelegates();
 
             InitDeclaredInitializers();
+        }
+
+        private ImmutableArray<DataViewInfo> GetDataViews()
+        {
+            IEnumerable<(ISymbol, INamedTypeSymbol)> views = Type == GraphType.PXGraph
+                ? Symbol.GetViewsWithSymbolsFromPXGraph(_pxContext)
+                : Symbol.GetViewsFromGraphExtensionAndBaseGraph(_pxContext);
+
+            return views
+                   .Select(v => new DataViewInfo(v.Item1, v.Item2))
+                   .ToImmutableArray();
+        }
+
+        private ImmutableArray<DataViewDelegateInfo> GetDataViewDelegates()
+        {
+            //GraphSymbolUtils.GetViewDelegates
+            return ImmutableArray.Create<DataViewDelegateInfo>();
         }
 
         private void InitDeclaredInitializers()
@@ -74,23 +95,17 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             typeSymbol.ThrowOnNull(nameof(typeSymbol));
 
             List<PXGraphSemanticModel> models = new List<PXGraphSemanticModel>();
-            GraphType graphType = GraphType.None;
 
-            if (typeSymbol.IsPXGraph(pxContext))
-            {
-                graphType = GraphType.PXGraph;
-            }
-            else if (typeSymbol.IsPXGraphExtension(pxContext))
-            {
-                graphType = GraphType.PXGraphExtension;
-            }
+            InferExplicitModel(pxContext, typeSymbol, cancellation, models);
+            InferImplicitModels(pxContext, typeSymbol, cancellation, models);
 
-            if (graphType != GraphType.None)
-            {
-                PXGraphSemanticModel explicitModel = new PXGraphSemanticModel(pxContext, graphType, typeSymbol, cancellation);
+            return models;
+        }
 
-                models.Add(explicitModel);
-            }
+        private static void InferImplicitModels(PXContext pxContext, INamedTypeSymbol typeSymbol, CancellationToken cancellation,
+                                                List<PXGraphSemanticModel> models)
+        {
+            cancellation.ThrowIfCancellationRequested();
 
             IEnumerable<InitDelegateInfo> delegates = GetInitDelegates(cancellation, pxContext, typeSymbol);
 
@@ -112,8 +127,30 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
                 implicitModel.Initializers = implicitModel.Initializers.Add(info);
             }
+        }
 
-            return models;
+        private static void InferExplicitModel(PXContext pxContext, INamedTypeSymbol typeSymbol, CancellationToken cancellation,
+                                               List<PXGraphSemanticModel> models)
+        {
+            cancellation.ThrowIfCancellationRequested();
+
+            GraphType graphType = GraphType.None;
+
+            if (typeSymbol.IsPXGraph(pxContext))
+            {
+                graphType = GraphType.PXGraph;
+            }
+            else if (typeSymbol.IsPXGraphExtension(pxContext))
+            {
+                graphType = GraphType.PXGraphExtension;
+            }
+
+            if (graphType != GraphType.None)
+            {
+                PXGraphSemanticModel explicitModel = new PXGraphSemanticModel(pxContext, graphType, typeSymbol, cancellation);
+
+                models.Add(explicitModel);
+            }
         }
 
         private static IEnumerable<InitDelegateInfo> GetInitDelegates(CancellationToken cancellation, PXContext pxContext, INamedTypeSymbol typeSymbol)

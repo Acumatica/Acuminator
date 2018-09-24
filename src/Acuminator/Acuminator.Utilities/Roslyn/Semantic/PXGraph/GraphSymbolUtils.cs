@@ -143,7 +143,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				}
 			}
 		}
-		#endregion
+        #endregion
+
+        /*public static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetViewDelegates(
+            this ITypeSymbol graph, IEnumerable<ISymbol> views, PXContext pxContext, bool inheritance = true)
+        {
+
+        }*/
 
 		#region View Symbol And Types
 		/// <summary>
@@ -173,16 +179,82 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				return GetAllViewSymbolsWithTypesFromPXGraphOrPXGraphExtensionImpl(graph, pxContext);
 		}
 
-		/// <summary>
-		/// Gets all declared view symbols with view types from graph extension and its base graph extensions,
-		/// if there is a class hierarchy and <paramref name="includeViewsFromInheritanceChain"/> parameter is <c>true</c>.
-		/// Does not include views from extension's graph.
-		/// </summary>
-		/// <param name="graphExtension">The graph extension to act on.</param>
-		/// <param name="pxContext">Context.</param>
-		/// <param name="includeViewsFromInheritanceChain">(Optional) True to include, false to exclude the views from inheritance chain.</param>
-		/// <returns/>
-		public static ViewSymbolWithTypeCollection GetViewSymbolsWithTypesFromGraphExtension(this ITypeSymbol graphExtension, PXContext pxContext,
+        public static ViewSymbolWithTypeCollection GetViewsFromGraphExtensionAndBaseGraph(this ITypeSymbol graphExtension, PXContext pxContext)
+        {
+            graphExtension.ThrowOnNull(nameof(graphExtension));
+            pxContext.ThrowOnNull(nameof(pxContext));
+
+            ViewSymbolWithTypeCollection empty = Enumerable.Empty<(ISymbol, INamedTypeSymbol)>();
+
+            if (!graphExtension.InheritsFrom(pxContext.PXGraphExtensionType) || !graphExtension.BaseType.IsGenericType)
+            {
+                return empty;
+            }
+
+            INamedTypeSymbol baseType = graphExtension.BaseType;
+            Dictionary<string, (ISymbol, INamedTypeSymbol)> views = new Dictionary<string, (ISymbol, INamedTypeSymbol)>();
+
+            for (int i = baseType.TypeArguments.Length - 1; i >= 0; i--)
+            {
+                ITypeSymbol argType = baseType.TypeArguments[i];
+
+                if (i == baseType.TypeArguments.Length - 1)
+                {
+                    if (!argType.IsPXGraph(pxContext))
+                    {
+                        return empty;
+                    }
+
+                    AddGraphViews(views, argType, pxContext);
+                }
+                else
+                {
+                    if (!argType.IsPXGraphExtension(pxContext))
+                    {
+                        return empty;
+                    }
+
+                    AddGraphExtensionViews(views, argType, pxContext);
+                }
+            }
+
+            AddGraphExtensionViews(views, graphExtension, pxContext);
+
+            return views.Values;
+        }
+
+        private static void AddGraphExtensionViews(Dictionary<string, (ISymbol, INamedTypeSymbol)> views, ITypeSymbol graphExtType, PXContext pxContext)
+        {
+            IEnumerable<KeyValuePair<string, (ISymbol, INamedTypeSymbol)>> extViews = GetAllViewSymbolsWithTypesFromPXGraphOrPXGraphExtensionImpl(graphExtType, pxContext)
+                                                                                      .Select(v => new KeyValuePair<string, (ISymbol, INamedTypeSymbol)>(
+                                                                                          v.ViewSymbol.Name, v));
+            foreach (KeyValuePair<string, (ISymbol, INamedTypeSymbol)> v in extViews)
+            {
+                views[v.Key] = v.Value;
+            }
+        }
+
+        private static void AddGraphViews(Dictionary<string, (ISymbol, INamedTypeSymbol)> views, ITypeSymbol graphType, PXContext pxContext)
+        {
+            IEnumerable<KeyValuePair<string, (ISymbol, INamedTypeSymbol)>> graphViews = graphType.GetViewsWithSymbolsFromPXGraph(pxContext)
+                                                                                        .Select(v => new KeyValuePair<string, (ISymbol, INamedTypeSymbol)>(
+                                                                                            v.ViewSymbol.Name, v));
+            foreach (KeyValuePair<string, (ISymbol, INamedTypeSymbol)> v in graphViews)
+            {
+                views.Add(v.Key, v.Value);
+            }
+        }
+
+        /// <summary>
+        /// Gets all declared view symbols with view types from graph extension and its base graph extensions,
+        /// if there is a class hierarchy and <paramref name="includeViewsFromInheritanceChain"/> parameter is <c>true</c>.
+        /// Does not include views from extension's graph.
+        /// </summary>
+        /// <param name="graphExtension">The graph extension to act on.</param>
+        /// <param name="pxContext">Context.</param>
+        /// <param name="includeViewsFromInheritanceChain">(Optional) True to include, false to exclude the views from inheritance chain.</param>
+        /// <returns/>
+        public static ViewSymbolWithTypeCollection GetViewSymbolsWithTypesFromGraphExtension(this ITypeSymbol graphExtension, PXContext pxContext,
 																							 bool includeViewsFromInheritanceChain = true)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
@@ -228,20 +300,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		private static ViewSymbolWithTypeCollection GetAllViewSymbolsWithTypesFromPXGraphOrPXGraphExtensionImpl(ITypeSymbol graphOrExtension,
 																												 PXContext pxContext)
 		{
-			foreach (ISymbol member in graphOrExtension.GetMembers())
-			{
-				switch (member)
-				{
-					case IFieldSymbol field
-					when field.Type is INamedTypeSymbol fieldType && fieldType.InheritsFrom(pxContext.PXSelectBaseType):
-						yield return (field, fieldType);
-						continue;
-					case IPropertySymbol property
-					when property.Type is INamedTypeSymbol propertyType && propertyType.InheritsFrom(pxContext.PXSelectBaseType):
-						yield return (property, propertyType);
-						continue;
-				}
-			}
+            foreach (ISymbol member in graphOrExtension.GetMembers())
+            {
+                if (!(member is IFieldSymbol field) || field.DeclaredAccessibility != Accessibility.Public)
+                    continue;
+
+                if (!(field.Type is INamedTypeSymbol fieldType) || !fieldType.InheritsFrom(pxContext.PXSelectBaseType))
+                    continue;
+
+                yield return (field, fieldType);
+            }
 		}
 		#endregion
 

@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -330,7 +331,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
             return initializers;
         }
 
-        public static (ConstructorDeclarationSyntax Node, IMethodSymbol Symbol) GetDeclaredStaticConstructor
+        public static StaticCtrInfo? GetDeclaredStaticConstructor
             (this INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
         {
             typeSymbol.ThrowOnNull(nameof(typeSymbol));
@@ -349,10 +350,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
                 if (!(reference.GetSyntax(cancellation) is ConstructorDeclarationSyntax node))
                     continue;
 
-                return (node, ctr);
+                return new StaticCtrInfo(node, ctr);
             }
 
-            return (null, null);
+            return null;
         }
     }
 }
