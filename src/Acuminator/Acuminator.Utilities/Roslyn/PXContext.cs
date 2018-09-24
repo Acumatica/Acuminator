@@ -14,11 +14,15 @@ namespace Acuminator.Utilities.Roslyn
 		private const string IViewConfig_Acumatica2018R2 = "PX.Data.PXSelectBase`2+IViewConfig";
 
 		public bool IsAcumatica2018R2 { get; }
+		public bool IsAcumatica2019R1 { get; }
 
 		public Compilation Compilation { get; }
 
 		private readonly Lazy<BQLSymbols> _bql;
 		public BQLSymbols BQL => _bql.Value;
+
+		private readonly Lazy<BqlDataTypeSymbols> _bqlTypes;
+		public BqlDataTypeSymbols BqlTypes => _bqlTypes.Value;
 
 		private readonly Lazy<EventSymbols> _events;
 		public EventSymbols Events => _events.Value;
@@ -86,11 +90,15 @@ namespace Acuminator.Utilities.Roslyn
                                                                .OfType<IMethodSymbol>()
                                                                .ToImmutableArray();
 
-        public PXContext(Compilation compilation)
+
+	    public INamedTypeSymbol IImplementType => Compilation.GetTypeByMetadataName("PX.Common.IImplement`1");
+
+		public PXContext(Compilation compilation)
 		{
 			Compilation = compilation;
 
 			_bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation));
+			_bqlTypes = new Lazy<BqlDataTypeSymbols>(() => new BqlDataTypeSymbols(Compilation));
 			_events = new Lazy<EventSymbols>(() => new EventSymbols(Compilation));
 			_fieldAttributes = new Lazy<FieldAttributesTypes>(() => new FieldAttributesTypes(Compilation));
 			_systemActionTypes = new Lazy<PXSystemActionTypes>(() => new PXSystemActionTypes(Compilation));
@@ -100,6 +108,7 @@ namespace Acuminator.Utilities.Roslyn
             _pxGraphRelatedMethods = new Lazy<PXGraphRelatedMethods>(() => new PXGraphRelatedMethods(this));
 
             IsAcumatica2018R2 = PXSelectBase2018R2NewType != null;
+            IsAcumatica2019R1 = IImplementType != null;
 		}
 
 		#region System Types
@@ -308,6 +317,44 @@ namespace Acuminator.Utilities.Roslyn
 			#endregion
 		}
 		#endregion
+
+		public class BqlDataTypeSymbols
+		{
+			private const string BqlDataTypeType = "PX.Data.BQL.IBqlDataType";
+			private const string BqlStringType = "PX.Data.BQL.IBqlString";
+			private const string BqlGuidType = "PX.Data.BQL.IBqlGuid";
+			private const string BqlDateTimeType = "PX.Data.BQL.IBqlDateTime";
+			private const string BqlBoolType = "PX.Data.BQL.IBqlBool";
+			private const string BqlByteType = "PX.Data.BQL.IBqlByte";
+			private const string BqlShortType = "PX.Data.BQL.IBqlShort";
+			private const string BqlIntType = "PX.Data.BQL.IBqlInt";
+			private const string BqlLongType = "PX.Data.BQL.IBqlLong";
+			private const string BqlFloatType = "PX.Data.BQL.IBqlFloat";
+			private const string BqlDoubleType = "PX.Data.BQL.IBqlDouble";
+			private const string BqlDecimalType = "PX.Data.BQL.IBqlDecimal";
+			private const string BqlByteArrayType = "PX.Data.BQL.IBqlByteArray";
+
+			private readonly Compilation _compilation;
+
+			public BqlDataTypeSymbols(Compilation aCompilation)
+			{
+				_compilation = aCompilation;
+			}
+
+			public INamedTypeSymbol BqlDataType => _compilation.GetTypeByMetadataName(BqlDataTypeType);
+			public INamedTypeSymbol BqlString => _compilation.GetTypeByMetadataName(BqlStringType);
+			public INamedTypeSymbol BqlGuid => _compilation.GetTypeByMetadataName(BqlGuidType);
+			public INamedTypeSymbol BqlDateTime => _compilation.GetTypeByMetadataName(BqlDateTimeType);
+			public INamedTypeSymbol BqlBool => _compilation.GetTypeByMetadataName(BqlBoolType);
+			public INamedTypeSymbol BqlByte => _compilation.GetTypeByMetadataName(BqlByteType);
+			public INamedTypeSymbol BqlShort => _compilation.GetTypeByMetadataName(BqlShortType);
+			public INamedTypeSymbol BqlInt => _compilation.GetTypeByMetadataName(BqlIntType);
+			public INamedTypeSymbol BqlLong => _compilation.GetTypeByMetadataName(BqlLongType);
+			public INamedTypeSymbol BqlFloat => _compilation.GetTypeByMetadataName(BqlFloatType);
+			public INamedTypeSymbol BqlDouble => _compilation.GetTypeByMetadataName(BqlDoubleType);
+			public INamedTypeSymbol BqlDecimal => _compilation.GetTypeByMetadataName(BqlDecimalType);
+			public INamedTypeSymbol BqlByteArray => _compilation.GetTypeByMetadataName(BqlByteArrayType);
+		}
 
 		#region EventSymbols
 

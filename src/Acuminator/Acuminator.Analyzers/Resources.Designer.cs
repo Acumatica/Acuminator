@@ -735,5 +735,23 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1058Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Make field strongly typed.
+        /// </summary>
+        public static string PX1059Fix {
+            get {
+                return ResourceManager.GetString("PX1059Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} field could be made strongly typed.
+        /// </summary>
+        public static string PX1059Title {
+            get {
+                return ResourceManager.GetString("PX1059Title", resourceCulture);
+            }
+        }
     }
 }
