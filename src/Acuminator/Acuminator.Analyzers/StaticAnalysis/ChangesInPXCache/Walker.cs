@@ -47,6 +47,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 		private bool IsMethodForbidden(IMethodSymbol symbol)
 		{
 			var methodSymbol = symbol.OriginalDefinition?.OverriddenMethod ?? symbol.OriginalDefinition;
+
 			return methodSymbol != null &&
 				   (_pxContext.PXCache.Insert.Any(i => methodSymbol.Equals(i)) ||
                    _pxContext.PXCache.Update.Any(u => methodSymbol.Equals(u)) ||
