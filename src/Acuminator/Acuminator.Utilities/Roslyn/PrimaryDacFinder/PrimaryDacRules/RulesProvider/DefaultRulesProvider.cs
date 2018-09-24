@@ -6,6 +6,7 @@ using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base;
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.DacRules;
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRules;
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules;
+using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.RulesProvider
 {

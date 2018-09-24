@@ -762,5 +762,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1059Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The state of fields and actions can be configured only in the RowSelected event handler.
+        /// </summary>
+        public static string PX1070Title {
+            get {
+                return ResourceManager.GetString("PX1070Title", resourceCulture);
+            }
+        }
     }
 }
