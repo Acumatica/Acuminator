@@ -24,6 +24,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			(
 				Descriptors.PX1055_DacKeyFieldBound
 			);
+
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
 			compilationStartContext.RegisterSymbolAction(async symbolContext =>
@@ -73,10 +74,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 						flagIsKeyIdentity = true;
 						keyAttributes.Add(attribute);
 					}
-					
 				}
-				
 			}
+
 			if(flagIsKey && flagIsKeyIdentity)
 			{
 				foreach(var attribute in keyAttributes)
@@ -86,10 +86,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 					symbolContext.ReportDiagnostic(
 					Diagnostic.Create(
 						Descriptors.PX1055_DacKeyFieldBound, attributeLocation));
-				}
-				
+				}	
 			}
-			
 		}
 
 

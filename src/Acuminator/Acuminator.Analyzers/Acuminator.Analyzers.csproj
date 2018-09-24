@@ -55,6 +55,7 @@
     <Compile Include="StaticAnalysis\ChangesInPXCache\ChangesInPXCacheInEventHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\ChangesInPXCache\Walker.cs" />
     <Compile Include="StaticAnalysis\ConnectionScopeInRowSelecting\ConnectionScopeInRowSelectingAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\DacKeyFieldDeclaration\KeyFieldDeclarationFix.cs" />
     <Compile Include="StaticAnalysis\DacPropertyAttributes\MultipleSpecialAttributesOnDacPropertyFix.cs" />
     <Compile Include="StaticAnalysis\DacPropertyAttributes\MultipleFieldTypeAttributesOnDacPropertyFix.cs" />
     <Compile Include="StaticAnalysis\DacPropertyAttributes\MultipleAttributesOnDacPropertyFixBase.cs" />
