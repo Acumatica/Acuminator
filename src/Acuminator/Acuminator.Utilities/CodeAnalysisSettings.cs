@@ -15,7 +15,7 @@ namespace Acuminator.Utilities
 				recursiveAnalysisEnabled: true, 
 				isvSpecificAnalyzersEnabled: false);
 
-		public CodeAnalysisSettings()
+		protected CodeAnalysisSettings()
 		{
 		}
 
