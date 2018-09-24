@@ -151,7 +151,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			attribute.ThrowOnNull(nameof(attribute));
 
 			if (!attribute.AttributeClass.InheritsFromOrEquals(_eventSubscriberAttribute))
-				return BoundType.Unknown;
+				return BoundType.NotDefined;
 
 			if (BoundBaseTypes.Any(boundBaseType => IsAttributeDerivedFromClassInternal(attribute.AttributeClass, boundBaseType)))
 				return BoundType.DbBound;
@@ -240,6 +240,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 	{
 		Unknown = 0,
 		Unbound = 1,
-		DbBound = 2
+		DbBound = 2,
+		NotDefined = 3
 	}
 }
