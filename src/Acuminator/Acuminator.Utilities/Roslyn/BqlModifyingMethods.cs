@@ -70,7 +70,7 @@ namespace Acuminator.Utilities.Roslyn
 			{
 				return PXSelectbaseBqlModifiers.Contains(methodSymbol.Name);
 			}
-			else if (containingType.Equals(context.PXViewType))
+			else if (containingType.Equals(context.PXView.Type))
 				return PXViewBqlModifiers.Contains(methodSymbol.Name);
 			else
 				return false;

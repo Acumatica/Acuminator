@@ -53,12 +53,14 @@
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\ParametersCounterSymbolWalker.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\ParametersCounterSyntaxWalker.cs" />
     <Compile Include="StaticAnalysis\ChangesInPXCache\ChangesInPXCacheInEventHandlersAnalyzer.cs" />
-    <Compile Include="StaticAnalysis\ChangesInPXCache\PXGraphChangesInPXCacheDuringInitializationAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\ChangesInPXCache\ChangesInPXCacheDuringPXGraphInitializationAnalyzer.cs" />
     <Compile Include="StaticAnalysis\ChangesInPXCache\Walker.cs" />
-    <Compile Include="StaticAnalysis\ConnectionScopeInRowSelecting\ConnectionScopeInRowSelectingAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\DatabaseQueries\DatabaseQueriesInRowSelectedAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\DatabaseQueries\DatabaseQueriesInRowSelectingAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DacPropertyAttributes\MultipleSpecialAttributesOnDacPropertyFix.cs" />
     <Compile Include="StaticAnalysis\DacPropertyAttributes\MultipleFieldTypeAttributesOnDacPropertyFix.cs" />
     <Compile Include="StaticAnalysis\DacPropertyAttributes\MultipleAttributesOnDacPropertyFixBase.cs" />
+    <Compile Include="StaticAnalysis\DatabaseQueries\Walker.cs" />
     <Compile Include="StaticAnalysis\EventHandlers\EventHandlerAnalyzer.cs" />
     <Compile Include="StaticAnalysis\EventHandlers\IEventHandlerAnalyzer.cs" />
     <Compile Include="StaticAnalysis\Localization\LocalizationMessageHelper.cs" />
@@ -98,7 +100,7 @@
     <Compile Include="StaticAnalysis\DacDeclaration\RegionsVisitor.cs" />
     <Compile Include="StaticAnalysis\DacDeclaration\ForbiddenFieldsInDacFix.cs" />
     <Compile Include="StaticAnalysis\DacDeclaration\ConstructorInDacFix.cs" />
-    <Compile Include="StaticAnalysis\ConnectionScopeInRowSelecting\ConnectionScopeInRowSelectingFix.cs" />
+    <Compile Include="StaticAnalysis\DatabaseQueries\DatabaseQueriesInRowSelectingFix.cs" />
     <Compile Include="StaticAnalysis\ConstructorInGraphExtension\ConstructorInGraphExtensionCodeFix.cs" />
     <Compile Include="StaticAnalysis\DacExtensionDefaultAttribute\DacExtensionDefaultAttributeFix.cs" />
     <Compile Include="StaticAnalysis\DacDeclaration\UnderscoresInDacFix.cs" />

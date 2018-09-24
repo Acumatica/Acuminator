@@ -692,6 +692,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to In a RowSelected handler, BQL statements and other database queries should be avoided.
+        /// </summary>
+        public static string PX1049Title {
+            get {
+                return ResourceManager.GetString("PX1049Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hardcoded strings are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class..
         /// </summary>
         public static string PX1050Title {

@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
+using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
@@ -18,7 +19,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic
 		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
 			ImmutableArray.Create(Descriptors.PX1070_UiPresentationLogicInEventHandlers);
 
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
+		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
+			EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -26,8 +28,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic
 			{
 				var methodSymbol = (IMethodSymbol) context.Symbol;
 				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
-				var walker = new Walker(context, pxContext, 
-					Descriptors.PX1070_UiPresentationLogicInEventHandlers);
+				var walker = new Walker(context, pxContext, Descriptors.PX1070_UiPresentationLogicInEventHandlers);
 
 				methodSyntax?.Accept(walker);
 			}

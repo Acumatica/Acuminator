@@ -8,6 +8,7 @@ using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
 using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
+using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -18,7 +19,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ChangesInPXCache
 	public class ChangesInPXCacheInEventHandlersTests : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-			new EventHandlerAnalyzer(new ChangesInPXCacheInEventHandlersAnalyzer());
+			new EventHandlerAnalyzer(CodeAnalysisSettings.Default.WithRecursiveAnalysisEnabled(), 
+				new ChangesInPXCacheInEventHandlersAnalyzer());
 
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\EventHandlers.cs")]
