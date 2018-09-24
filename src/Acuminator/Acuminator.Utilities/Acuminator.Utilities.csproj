@@ -107,15 +107,20 @@
     <Compile Include="Common\EnumerableExtensions.cs" />
     <Compile Include="Common\ConcurrentExtensions.cs" />
     <Compile Include="Common\EnumerableExtraExtensions.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\EventSymbols.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\BQLSymbols.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\PXSystemActionSymbols.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\FieldAttributeSymbols.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\AttributeSymbols.cs" />
     <Compile Include="Roslyn\EventHandlerSignatureType.cs" />
     <Compile Include="Roslyn\EventType.cs" />
-    <Compile Include="Roslyn\PXCache.cs" />
-    <Compile Include="Roslyn\PXGraphRelatedMethods.cs" />
-    <Compile Include="Roslyn\PXSelectBaseGeneric.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\PXCacheSymbols.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\PXGraphRelatedMethodSymbols.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\PXSelectBaseGenericSymbols.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphInitializerInfo.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphInitializerType.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphType.cs" />
-    <Compile Include="Roslyn\LocalizationTypes.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\LocalizationSymbols.cs" />
     <Compile Include="Roslyn\NestedInvocationWalker.cs" />
     <Compile Include="Roslyn\PrimaryDacFinder\PrimaryDacRules\ActionRules\ScoreSystemActionRule.cs" />
     <Compile Include="Roslyn\PrimaryDacFinder\PrimaryDacRules\ActionRules\ScoreSimpleActionRule.cs" />
@@ -159,7 +164,8 @@
     <Compile Include="Roslyn\PXCodeType.cs" />
     <Compile Include="Roslyn\Semantic\ITypeSymbolExtensions.cs" />
     <Compile Include="Roslyn\Semantic\CodeResolvingUtils.cs" />
-    <Compile Include="Roslyn\PXContext.cs" />
+    <Compile Include="Roslyn\Semantic\PXContext.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\SystemTypeSymbols.cs" />
     <Compile Include="Roslyn\TypeNames.cs" />
   </ItemGroup>
   <ItemGroup>

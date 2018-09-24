@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System;
+using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
 {

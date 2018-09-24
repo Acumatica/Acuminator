@@ -1,10 +1,10 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
 using PX.Data;
-using System.Collections.Immutable;
 
-namespace Acuminator.Utilities.Roslyn
+namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-    public class PXSelectBaseGeneric
+    public class PXSelectBaseGenericSymbols
     {
         private const string InsertMethodName = "Insert";
         private const string UpdateMethodName = "Update";
@@ -15,7 +15,7 @@ namespace Acuminator.Utilities.Roslyn
         public ImmutableArray<IMethodSymbol> Update { get; }
         public ImmutableArray<IMethodSymbol> Delete { get; }
 
-        internal PXSelectBaseGeneric(Compilation compilation)
+        internal PXSelectBaseGenericSymbols(Compilation compilation)
         {
             Type = compilation.GetTypeByMetadataName(typeof(PXSelectBase<>).FullName);
             Insert = Type.GetMembers(InsertMethodName)

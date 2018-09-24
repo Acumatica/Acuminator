@@ -4,9 +4,9 @@ using System.Linq;
 using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
 
-namespace Acuminator.Utilities.Roslyn
+namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-    public class LocalizationTypes
+    public class LocalizationSymbols
     {
         private const string _pxMessagesMetadataName = "PX.Data.PXMessages";
         private const string _pxLocalizerMetadataName = "PX.Data.PXLocalizer";
@@ -36,7 +36,7 @@ namespace Acuminator.Utilities.Roslyn
         public ImmutableArray<ISymbol> PXLocalizerSimpleMethods { get; private set; }
         public ImmutableArray<ISymbol> PXLocalizerFormatMethods { get; private set; }
 
-        public LocalizationTypes(Compilation compilation)
+        internal LocalizationSymbols(Compilation compilation)
         {
             _compilation = compilation;
             InitMethods();

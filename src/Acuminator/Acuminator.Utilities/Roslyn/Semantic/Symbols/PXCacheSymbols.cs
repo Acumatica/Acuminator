@@ -1,16 +1,16 @@
-﻿using Microsoft.CodeAnalysis;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
 
-namespace Acuminator.Utilities.Roslyn
+namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-    public class PXCache
+    public class PXCacheSymbols
     {
         public INamedTypeSymbol Type { get; }
         public ImmutableArray<IMethodSymbol> Insert { get; }
         public ImmutableArray<IMethodSymbol> Update { get; }
         public ImmutableArray<IMethodSymbol> Delete { get; }
 
-        internal PXCache(Compilation compilation)
+        internal PXCacheSymbols(Compilation compilation)
         {
             Type = compilation.GetTypeByMetadataName(typeof(PX.Data.PXCache).FullName);
             Insert = Type.GetMembers(nameof(PX.Data.PXCache.Insert))
