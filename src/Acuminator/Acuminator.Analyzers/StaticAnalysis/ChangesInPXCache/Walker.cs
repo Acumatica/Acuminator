@@ -46,12 +46,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 
 		private bool IsMethodForbidden(IMethodSymbol symbol)
 		{
-			return _pxContext.PXCache.Insert.Any(i => symbol.OriginalDefinition.Equals(i)) ||
-                   _pxContext.PXCache.Update.Any(u => symbol.OriginalDefinition.Equals(u)) ||
-                   _pxContext.PXCache.Delete.Any(d => symbol.OriginalDefinition.Equals(d)) ||
-                   _pxContext.PXSelectBaseGeneric.Insert.Any(i => symbol.OriginalDefinition.Equals(i)) ||
-                   _pxContext.PXSelectBaseGeneric.Update.Any(u => symbol.OriginalDefinition.Equals(u)) ||
-                   _pxContext.PXSelectBaseGeneric.Delete.Any(d => symbol.OriginalDefinition.Equals(d));
+			var methodSymbol = symbol.OriginalDefinition?.OverriddenMethod ?? symbol.OriginalDefinition;
+			return methodSymbol != null &&
+				   (_pxContext.PXCache.Insert.Any(i => methodSymbol.Equals(i)) ||
+                   _pxContext.PXCache.Update.Any(u => methodSymbol.Equals(u)) ||
+                   _pxContext.PXCache.Delete.Any(d => methodSymbol.Equals(d)) ||
+                   _pxContext.PXSelectBaseGeneric.Insert.Any(i => methodSymbol.Equals(i)) ||
+                   _pxContext.PXSelectBaseGeneric.Update.Any(u => methodSymbol.Equals(u)) ||
+                   _pxContext.PXSelectBaseGeneric.Delete.Any(d => methodSymbol.Equals(d)));
 		}
 	}
 }
