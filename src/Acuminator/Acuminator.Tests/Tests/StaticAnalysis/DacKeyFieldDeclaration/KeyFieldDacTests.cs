@@ -17,11 +17,30 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacKeyFieldDeclaration
 //		protected override CodeFixProvider GetCSharpCodeFixProvider() => new DacKeyFieldDeclarationFix();
 
 		[Theory]
-		[EmbeddedFileData("DacKeyFieldsUnbound.cs")]
-		public virtual void TestDacKeyFieldWithBoundAttribute(string source) =>
+		[EmbeddedFileData("DacKeyFields_CompoundKey.cs")]
+		public virtual void TestDacKeyFields_CompoundKey(string source) =>
+			VerifyCSharpDiagnostic(source);
+
+		[Theory]
+		[EmbeddedFileData("DacKeyFields_Identity+Key.cs")]
+		public virtual void TestDacKeyFields_Identity_Key(string source) =>
 			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1055_DacKeyFieldBound.CreateFor(line: 11, column: 4),
-				Descriptors.PX1055_DacKeyFieldBound.CreateFor(line: 19, column: 4));
+				Descriptors.PX1055_DacKeyFieldBound.CreateFor(line: 10, column: 4),
+				Descriptors.PX1055_DacKeyFieldBound.CreateFor(line: 16, column: 4));
+
+		
+		[Theory]
+		[EmbeddedFileData("DacKeyFields_IdentityKey+CompoundKey.cs")]
+		public virtual void TestDacKeyFields_IdentityKey_CompoundKey(string source) =>
+			VerifyCSharpDiagnostic(source,
+				Descriptors.PX1055_DacKeyFieldBound.CreateFor(line: 9, column: 4),
+				Descriptors.PX1055_DacKeyFieldBound.CreateFor(line: 17, column: 4),
+				Descriptors.PX1055_DacKeyFieldBound.CreateFor(line: 27, column: 4));
+
+		[Theory]
+		[EmbeddedFileData("DacKeyFields_IdentityNoKey+Key.cs")]
+		public virtual void TestDacKeyFields_IdentityNoKey_CompoundKey(string source) =>
+			VerifyCSharpDiagnostic(source);
 
 	}
 }

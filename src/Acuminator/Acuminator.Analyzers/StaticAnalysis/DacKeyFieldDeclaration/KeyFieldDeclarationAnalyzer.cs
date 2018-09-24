@@ -49,22 +49,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			{
 				foreach (var attribute in property.GetAttributes())
 				{
-					if (attribute.NamedArguments.Select(a => a.Key.Contains(IsKey) &&
+					if (!attribute.NamedArguments.IsEmpty &&
+						attribute.NamedArguments.Where(a => a.Key.Contains(IsKey) &&
 															!a.Value.IsNull &&
 															a.Value.Value is bool boolValue &&
 															boolValue == true)
-												.First() && 
+												.Any() && 
 												!attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, identityAttributeType))
 					{
 						flagIsKey = true;
 						keyAttributes.Add(attribute);
 					}
 
-					if (attribute.NamedArguments.Select(a => a.Key.Contains(IsKey) &&
+					if (!attribute.NamedArguments.IsEmpty &&
+						attribute.NamedArguments.Where(a => a.Key.Contains(IsKey) &&
 															!a.Value.IsNull &&
 															a.Value.Value is bool boolValue &&
 															boolValue == true)
-												.First() &&
+												.Any() &&
 												attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, identityAttributeType))
 					{
 						flagIsKeyIdentity = true;

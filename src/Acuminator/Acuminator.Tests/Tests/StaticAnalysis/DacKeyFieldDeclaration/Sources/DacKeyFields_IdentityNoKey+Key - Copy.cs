@@ -14,7 +14,7 @@ namespace PX.Objects.HackathonDemo
 		public abstract class itemReqID : PX.Data.IBqlField
 		{
 		}
-		[PXDBIdentity(IsKey = true)]
+		[PXDBIdentity]
 		[PXUIField(DisplayName = "Item Req ID", Enabled = false, Visibility = PXUIVisibility.Invisible)]
 		public virtual int? ItemReqID { get; set; }
 		#endregion
