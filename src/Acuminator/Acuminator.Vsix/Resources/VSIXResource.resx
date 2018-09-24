@@ -244,7 +244,7 @@
     <value>Code Analysis</value>
   </data>
   <data name="Setting_CodeAnalysis_IsvSpecificAnalyzersEnabled_Description" xml:space="preserve">
-    <value>Enable additional diagnostics for ISV Solution Certification</value>
+    <value>Display the diagnostics that are necessary only for ISV Solution Certification. For non-ISV solutions, these diagnostics are informational.</value>
   </data>
   <data name="Setting_CodeAnalysis_IsvSpecificAnalyzersEnabled_Title" xml:space="preserve">
     <value>Enable additional diagnostics for ISV Solution Certification</value>

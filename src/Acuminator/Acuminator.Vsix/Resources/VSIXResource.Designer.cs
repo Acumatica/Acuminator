@@ -295,7 +295,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enable additional diagnostics for ISV Solution Certification.
+        ///   Looks up a localized string similar to Display the diagnostics that are necessary only for ISV Solution Certification. For non-ISV solutions, these diagnostics are informational..
         /// </summary>
         public static string Setting_CodeAnalysis_IsvSpecificAnalyzersEnabled_Description {
             get {
