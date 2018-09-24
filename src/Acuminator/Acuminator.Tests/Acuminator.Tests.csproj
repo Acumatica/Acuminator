@@ -210,6 +210,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\PXDatabase.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\PXSelector.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\PXView.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlers\TypedCache.cs" />
     <Compile Include="Tests\StaticAnalysis\RowChangesInEventHandlers\RowChangesInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\ValidEventHandlers.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\DirectAssignment.cs" />
@@ -242,6 +243,10 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\PXGraphExtensionStartsLongOperationInInitializationMethod.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\PXGraphDoesntStartLongOperationInInstanceConstructor.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\ArbitraryCodeInsideRowPersisting.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\EventHandlers\EventHandlers.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\EventHandlers\EventHandlersWithExternalMethod.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\EventHandlers\ValidEventHandlers.cs" />
+    <Compile Include="Tests\StaticAnalysis\UiPresentationLogic\UiPresentationLogicInEventHandlersTests.cs" />
     <Compile Include="Verification\CodeRefactoringVerifier.cs" />
     <Compile Include="Verification\VerificationHelper.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\StaticMethod.cs" />

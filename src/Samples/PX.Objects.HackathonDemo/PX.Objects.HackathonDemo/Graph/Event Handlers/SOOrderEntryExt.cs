@@ -11,6 +11,9 @@ namespace PX.Objects.HackathonDemo
 	{
 		protected virtual void _(Events.RowSelecting<SOOrder> e)
 		{
+            Base.Release.SetEnabled(e.Row.OrderBal > 0);
+            PXUIFieldAttribute.SetEnabled<SOOrder.orderType>(e.Cache, e.Row, false);
+
 			var setup = SelectSetup();
 			Base.Caches[typeof(SOSetup)].Insert(setup);
 		}

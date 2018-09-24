@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using Acuminator.Utilities;
+using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
 {

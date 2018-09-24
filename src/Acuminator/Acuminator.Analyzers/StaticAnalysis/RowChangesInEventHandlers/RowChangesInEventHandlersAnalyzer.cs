@@ -4,6 +4,7 @@ using System.Text;
 using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
