@@ -112,8 +112,8 @@
     <Compile Include="Roslyn\Semantic\Symbols\PXSystemActionSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\FieldAttributeSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\AttributeSymbols.cs" />
-    <Compile Include="Roslyn\EventHandlerSignatureType.cs" />
-    <Compile Include="Roslyn\EventType.cs" />
+    <Compile Include="Roslyn\Semantic\EventHandlerSignatureType.cs" />
+    <Compile Include="Roslyn\Semantic\EventType.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXCacheSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXGraphRelatedMethodSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXSelectBaseGenericSymbols.cs" />
