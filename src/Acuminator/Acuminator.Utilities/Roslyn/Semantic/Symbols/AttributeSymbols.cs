@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System;
+using Microsoft.CodeAnalysis;
 using PX.Data;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
@@ -7,9 +8,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 	{
 		private readonly Compilation _compilation;
 
-		internal AttributeSymbols(Compilation aCompilation)
+		internal AttributeSymbols(Compilation compilation)
 		{
-			_compilation = aCompilation;
+			_compilation = compilation;
+			_pxUiFieldAttribute = new Lazy<PXUIFieldAttributeSymbols>(() => new PXUIFieldAttributeSymbols(compilation));
 		}
 
 		public INamedTypeSymbol PXImportAttribute => _compilation.GetTypeByMetadataName(typeof(PXImportAttribute).FullName);
@@ -26,5 +28,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		public INamedTypeSymbol PXDynamicAggregateAttribute => _compilation.GetTypeByMetadataName(typeof(PXDynamicAggregateAttribute).FullName);
 		public INamedTypeSymbol PXDefaultAttribute => _compilation.GetTypeByMetadataName(typeof(PXDefaultAttribute).FullName);
 		public INamedTypeSymbol PXUnboundDefaultAttribute => _compilation.GetTypeByMetadataName(typeof(PXUnboundDefaultAttribute).FullName);
+
+		private readonly Lazy<PXUIFieldAttributeSymbols> _pxUiFieldAttribute;
+		public PXUIFieldAttributeSymbols PXUIFieldAttribute => _pxUiFieldAttribute.Value;
 	}
 }

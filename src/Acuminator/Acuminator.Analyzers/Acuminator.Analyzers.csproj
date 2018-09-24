@@ -111,6 +111,8 @@
     <Compile Include="StaticAnalysis\MissingTypeListAttribute\MissingTypeListAttributeAnalyzer.cs" />
     <Compile Include="StaticAnalysis\TypoInViewDelegateName\TypoInViewDelegateNameAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\UiPresentationLogic\UiPresentationLogicInEventHandlersAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\UiPresentationLogic\Walker.cs" />
     <Compile Include="StaticAnalysis\ViewDeclarationOrder\ViewDeclarationOrderAnalyzer.cs" />
     <Compile Include="StaticAnalysis\InvalidPXActionSignature\InvalidPXActionSignatureFix.cs" />
     <Compile Include="StaticAnalysis\Descriptors.cs" />
@@ -213,9 +215,7 @@
       <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\portable-net40+sl4+win8+wp8\System.ValueTuple.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="StaticAnalysis\UiLogic\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Acuminator.Utilities\Acuminator.Utilities.csproj">
       <Project>{b902103c-831b-4bbf-a88b-3dae6f601cf0}</Project>

@@ -42,8 +42,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic
         private readonly Lazy<PXCacheSymbols> _pxCache;
         public PXCacheSymbols PXCache => _pxCache.Value;
 
+		private readonly Lazy<PXActionSymbols> _pxAction;
+		public PXActionSymbols PXAction => _pxAction.Value;
+
         private readonly Lazy<PXSelectBaseGenericSymbols> _pxSelectBaseGeneric;
         public PXSelectBaseGenericSymbols PXSelectBaseGeneric => _pxSelectBaseGeneric.Value;
+
+		private readonly Lazy<ImmutableHashSet<IMethodSymbol>> _uiPresentationLogicMethods;
+		public ImmutableHashSet<IMethodSymbol> UiPresentationLogicMethods => _uiPresentationLogicMethods.Value;
 
         public INamedTypeSymbol PXGraphType => Compilation.GetTypeByMetadataName(typeof(PX.Data.PXGraph).FullName);
 		public INamedTypeSymbol PXProcessingBaseType => Compilation.GetTypeByMetadataName(typeof(PXProcessingBase<>).FullName);
@@ -57,8 +63,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public INamedTypeSymbol PXSelectBase2018R2NewType => Compilation.GetTypeByMetadataName(PXSelectBase_Acumatica2018R2);
 		public INamedTypeSymbol IViewConfig2018R2 => Compilation.GetTypeByMetadataName(IViewConfig_Acumatica2018R2);
 
-
-		public INamedTypeSymbol PXActionType => Compilation.GetTypeByMetadataName(typeof(PXAction).FullName);
 		public INamedTypeSymbol PXActionCollection => Compilation.GetTypeByMetadataName(typeof(PXActionCollection).FullName);
 
 		public INamedTypeSymbol PXAdapterType => Compilation.GetTypeByMetadataName(typeof(PXAdapter).FullName);
@@ -103,9 +107,28 @@ namespace Acuminator.Utilities.Roslyn.Semantic
             _localizationMethods = new Lazy<LocalizationSymbols>(() => new LocalizationSymbols(Compilation));
             _pxGraphRelatedMethods = new Lazy<PXGraphRelatedMethodSymbols>(() => new PXGraphRelatedMethodSymbols(this));
             _pxCache = new Lazy<PXCacheSymbols>(() => new PXCacheSymbols(Compilation));
+			_pxAction = new Lazy<PXActionSymbols>(() => new PXActionSymbols(Compilation));
             _pxSelectBaseGeneric = new Lazy<PXSelectBaseGenericSymbols>(() => new PXSelectBaseGenericSymbols(Compilation));
 
+			_uiPresentationLogicMethods = new Lazy<ImmutableHashSet<IMethodSymbol>>(GetUiPresentationLogicMethods);
+
             IsAcumatica2018R2 = PXSelectBase2018R2NewType != null;
+		}
+
+		private ImmutableHashSet<IMethodSymbol> GetUiPresentationLogicMethods()
+		{
+			return PXAction.SetVisible
+				.Concat(PXAction.SetEnabled)
+				.Concat(PXAction.SetCaption)
+				.Concat(PXAction.SetTooltip)
+				.Concat(AttributeTypes.PXUIFieldAttribute.SetVisible)
+				.Concat(AttributeTypes.PXUIFieldAttribute.SetVisibility)
+				.Concat(AttributeTypes.PXUIFieldAttribute.SetEnabled)
+				.Concat(AttributeTypes.PXUIFieldAttribute.SetRequired)
+				.Concat(AttributeTypes.PXUIFieldAttribute.SetReadOnly)
+				.Concat(AttributeTypes.PXUIFieldAttribute.SetDisplayName)
+				.Concat(AttributeTypes.PXUIFieldAttribute.SetNeutralDisplayName)
+				.ToImmutableHashSet();
 		}
 	}
 }

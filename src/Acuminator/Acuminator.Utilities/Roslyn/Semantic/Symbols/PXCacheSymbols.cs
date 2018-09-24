@@ -13,15 +13,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
         internal PXCacheSymbols(Compilation compilation)
         {
             Type = compilation.GetTypeByMetadataName(typeof(PX.Data.PXCache).FullName);
-            Insert = Type.GetMembers(nameof(PX.Data.PXCache.Insert))
-                     .OfType<IMethodSymbol>()
-                     .ToImmutableArray();
-            Update = Type.GetMembers(nameof(PX.Data.PXCache.Update))
-                     .OfType<IMethodSymbol>()
-                     .ToImmutableArray();
-            Delete = Type.GetMembers(nameof(PX.Data.PXCache.Delete))
-                     .OfType<IMethodSymbol>()
-                     .ToImmutableArray();
+	        Insert = Type.GetMethods(nameof(PX.Data.PXCache.Insert));
+	        Update = Type.GetMethods(nameof(PX.Data.PXCache.Update));
+	        Delete = Type.GetMethods(nameof(PX.Data.PXCache.Delete));
         }
     }
 }

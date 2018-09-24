@@ -14,13 +14,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
         internal PXGraphRelatedMethodSymbols(PXContext pxContext)
         {
-            CreateInstance = pxContext.PXGraphType.GetMembers(CreateInstanceMethodsName)
-                             .OfType<IMethodSymbol>()
-                             .ToImmutableArray();
+	        CreateInstance = pxContext.PXGraphType.GetMethods(CreateInstanceMethodsName);
 
-            InstanceCreatedEventsAddHandler = pxContext.InstanceCreatedEvents.GetMembers(InstanceCreatedEventsAddHandlerName)
-                                              .OfType<IMethodSymbol>()
-                                              .First();
+            InstanceCreatedEventsAddHandler = pxContext.InstanceCreatedEvents
+	            .GetMethods(InstanceCreatedEventsAddHandlerName)
+	            .First();
         }
     }
 }

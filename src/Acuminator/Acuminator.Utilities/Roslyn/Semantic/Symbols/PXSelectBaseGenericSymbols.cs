@@ -18,15 +18,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
         internal PXSelectBaseGenericSymbols(Compilation compilation)
         {
             Type = compilation.GetTypeByMetadataName(typeof(PXSelectBase<>).FullName);
-            Insert = Type.GetMembers(InsertMethodName)
-                     .OfType<IMethodSymbol>()
-                     .ToImmutableArray();
-            Update = Type.GetMembers(UpdateMethodName)
-                     .OfType<IMethodSymbol>()
-                     .ToImmutableArray();
-            Delete = Type.GetMembers(DeleteMethodName)
-                     .OfType<IMethodSymbol>()
-                     .ToImmutableArray();
+	        Insert = Type.GetMethods(InsertMethodName);
+	        Update = Type.GetMethods(UpdateMethodName);
+	        Delete = Type.GetMethods(DeleteMethodName);
         }
     }
 }
