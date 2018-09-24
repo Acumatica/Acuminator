@@ -11,7 +11,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		internal AttributeSymbols(Compilation compilation)
 		{
 			_compilation = compilation;
+
 			_pxUiFieldAttribute = new Lazy<PXUIFieldAttributeSymbols>(() => new PXUIFieldAttributeSymbols(compilation));
+			_pxSelectorAttribute = new Lazy<PXSelectorAttributeSymbols>(() => new PXSelectorAttributeSymbols(compilation));
 		}
 
 		public INamedTypeSymbol PXImportAttribute => _compilation.GetTypeByMetadataName(typeof(PXImportAttribute).FullName);
@@ -31,5 +33,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		private readonly Lazy<PXUIFieldAttributeSymbols> _pxUiFieldAttribute;
 		public PXUIFieldAttributeSymbols PXUIFieldAttribute => _pxUiFieldAttribute.Value;
+
+		private readonly Lazy<PXSelectorAttributeSymbols> _pxSelectorAttribute;
+		public PXSelectorAttributeSymbols PXSelectorAttribute => _pxSelectorAttribute.Value;
 	}
 }
