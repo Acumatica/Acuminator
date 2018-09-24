@@ -33,7 +33,7 @@ namespace Acuminator.Utilities.Roslyn
 	///	</code>
 	/// </example>
 	// ReSharper disable once InheritdocConsiderUsage
-	public class NestedInvocationWalker : CSharpSyntaxWalker
+	public abstract class NestedInvocationWalker : CSharpSyntaxWalker
 	{
 		private const int MaxDepth = 100; // to avoid circular dependencies
 
@@ -53,7 +53,7 @@ namespace Acuminator.Utilities.Roslyn
 
 		private readonly Stack<SyntaxNode> _nodesStack = new Stack<SyntaxNode>();
 
-		public NestedInvocationWalker(Compilation compilation, CancellationToken cancellationToken)
+		protected NestedInvocationWalker(Compilation compilation, CancellationToken cancellationToken)
 		{
 			compilation.ThrowOnNull(nameof (compilation));
 
