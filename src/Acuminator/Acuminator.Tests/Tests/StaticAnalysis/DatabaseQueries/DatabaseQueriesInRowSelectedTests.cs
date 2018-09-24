@@ -1,4 +1,5 @@
-﻿using Acuminator.Analyzers.StaticAnalysis;
+﻿using System.Threading.Tasks;
+using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.DatabaseQueries;
 using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Tests.Helpers;
@@ -21,74 +22,54 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DatabaseQueries
 
 		[Theory]
 		[EmbeddedFileData(@"RowSelected\BQLSelect.cs")]
-		public void BQLSelect(string actual)
-		{
-			VerifyCSharpDiagnostic(actual, Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(19, 9));
-		}
+		public Task BQLSelect(string actual) => VerifyCSharpDiagnosticAsync(actual, 
+			Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(19, 9));
 
 		[Theory]
 		[EmbeddedFileData(@"RowSelected\GenericEventHandlerSignature.cs")]
-		public void GenericEventHandlerSignature(string actual)
-		{
-			VerifyCSharpDiagnostic(actual, Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(19, 9));
-		}
+		public Task GenericEventHandlerSignature(string actual) => VerifyCSharpDiagnosticAsync(actual, 
+			Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(19, 9));
 
 		[Theory]
 		[EmbeddedFileData(@"RowSelected\DataView.cs")]
-		public void DataView(string actual)
-		{
-			VerifyCSharpDiagnostic(actual, Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(32, 9));
-		}
+		public Task DataView(string actual) => VerifyCSharpDiagnosticAsync(actual, 
+			Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(32, 9));
 
 		[Theory]
 		[EmbeddedFileData(@"RowSelected\PXView.cs")]
-		public void PXView(string actual)
-		{
-			VerifyCSharpDiagnostic(actual, Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(32, 9));
-		}
-		
+		public Task PXView(string actual) => VerifyCSharpDiagnosticAsync(actual, 
+			Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(32, 9));
+
 		[Theory]
 		[EmbeddedFileData(@"RowSelected\BQLSearch.cs")]
-		public void BQLSearch(string actual)
-		{
-			VerifyCSharpDiagnostic(actual, Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(30, 9));
-		}
+		public Task BQLSearch(string actual) => VerifyCSharpDiagnosticAsync(actual, 
+			Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(30, 9));
 
 		[Theory]
 		[EmbeddedFileData(@"RowSelected\PXSelector.cs")]
-		public void PXSelector(string actual)
-		{
-			VerifyCSharpDiagnostic(actual, Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(20, 6));
-		}
+		public Task PXSelector(string actual) => VerifyCSharpDiagnosticAsync(actual, 
+			Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(20, 6));
 
 		[Theory]
 		[EmbeddedFileData(@"RowSelected\PXDatabase.cs")]
-		public void PXDatabase(string actual)
-		{
-			VerifyCSharpDiagnostic(actual, Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(19, 9));
-		}
+		public Task PXDatabase(string actual) => VerifyCSharpDiagnosticAsync(actual, 
+			Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(19, 9));
 
 		[Theory]
 		[EmbeddedFileData(@"RowSelected\ExternalMethod.cs")]
-		public void ExternalMethod(string actual)
-		{
-			VerifyCSharpDiagnostic(actual, Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(18, 23));
-		}
+		public Task ExternalMethod(string actual) => VerifyCSharpDiagnosticAsync(actual, 
+			Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(18, 23));
 
 		// TODO: Enable this test after migration to Roslyn v2
 		[Theory(Skip = "IOperation feature (Operation Actions) is experimental in Roslyn v1")]
 		[EmbeddedFileData(@"RowSelected\Lambda.cs")]
-		public void Lambda(string actual)
-		{
-			VerifyCSharpDiagnostic(actual, Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(14, 66));
-		}
+		public Task Lambda(string actual) => VerifyCSharpDiagnosticAsync(actual, 
+			Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(14, 66));
 
 		// TODO: Enable this test after migration to Roslyn v2
 		[Theory(Skip = "IOperation feature (Operation Actions) is experimental in Roslyn v1")]
 		[EmbeddedFileData(@"RowSelected\LambdaWithBody.cs")]
-		public void LambdaWithBody(string actual)
-		{
-			VerifyCSharpDiagnostic(actual, Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(18, 6));
-		}
+		public Task LambdaWithBody(string actual) => VerifyCSharpDiagnosticAsync(actual, 
+			Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(18, 6));
 	}
 }
