@@ -194,7 +194,7 @@
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\Override.cs" />
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\PXOverride.cs" />
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\AdditionalParameters.cs" />
-    <Compile Include="Tests\StaticAnalysis\ChangesInPXCache\PXGraphChangesInPXCacheDuringInitializationTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\ChangesInPXCache\ChangesInPXCacheDuringPXGraphInitializationTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\PXGraph\PXGraphChangesPXCacheInInstanceConstructor.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\PXGraph\PXGraphChangesPXCacheInInstanceConstructorViaMethod.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\PXGraph\PXGraphDoesntChangePXCacheInInstanceConstructor.cs" />
