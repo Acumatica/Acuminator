@@ -38,7 +38,7 @@ Because the analysis of the whole tree of invocations is quite complex and it is
 ## `NestedInvocationWalker` Class
 `NestedInvocationWalker` is a C# syntax walker that follows any code invocations found in the original syntax node being analyzed. `NestedInvocationWalker` directly inherits from `CSharpSyntaxWalker`.
 
-For each invocation, `NestedInvocationWalker` obtains a linked symbol, founds declaration syntax reference (if a source code for the symbol is available), and analyzes the referenced code recursively.
+For each invocation, `NestedInvocationWalker` obtains a linked symbol, founds declaring syntax reference (if a source code for the symbol is available), and analyzes the referenced code recursively.
 
 `NestedInvocationWalker` supports the following invocations:
 
@@ -48,7 +48,7 @@ For each invocation, `NestedInvocationWalker` obtains a linked symbol, founds de
  - Local lambda functions
 
 ## The Use of the `NestedInvocationWalker` Class
-If you need to use the recursive code analysis in a new diagnostic, you derive a syntax walker class from `NestedInvocationWalker`. You must use the special methods from the base `NestedInvocationWalker` class, which are listed below, instead of the `CSharpSyntaxWalker` methods.
+If you need to use the recursive code analysis in a new diagnostic, you derive a syntax walker class from `NestedInvocationWalker`. You must use the special methods from the base `NestedInvocationWalker` class, which are listed below.
 
 ### `SemanticModel GetSemanticModel(SyntaxTree syntaxTree)`
 Obtains a `SemanticModel` for a node. `NestedInvocationWalker` walks across different syntax trees and different documents; the returned `SemanticModel` is tied to the current `SyntaxTree`. 
