@@ -35,15 +35,15 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacKeyFieldDeclaration
 		[EmbeddedFileData("DacKeyFields_IdentityKey+Key.cs")]
 		public virtual void TestDacKeyFields_IdentityKey_Key(string source) =>
 			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1055_DacKeyFieldBound.CreateFor(line: 10, column: 4),
-				Descriptors.PX1055_DacKeyFieldBound.CreateFor(line: 16, column: 4));
+				Descriptors.PX1055_DacKeyFieldBound.CreateDiagnosticResult(location: (line: 10, column: 4), extraLocation: (line: 16, column: 4)),
+				Descriptors.PX1055_DacKeyFieldBound.CreateDiagnosticResult(location: (line: 16, column: 4), extraLocation: (line: 10, column: 4)));
 
 		
 		[Theory]
 		[EmbeddedFileData("DacKeyFields_IdentityKey+CompoundKey.cs")]
 		public virtual void TestDacKeyFields_IdentityKey_CompoundKey(string source) =>
 			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1055_DacKeyFieldBound.CreateFor(line: 9, column: 4),
+				Descriptors.PX1055_DacKeyFieldBound.CreateDiagnosticResult(line: 9, column: 4),
 				Descriptors.PX1055_DacKeyFieldBound.CreateFor(line: 17, column: 4),
 				Descriptors.PX1055_DacKeyFieldBound.CreateFor(line: 27, column: 4));
 

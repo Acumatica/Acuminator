@@ -41,13 +41,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 		private async Task<Document> MakeIdentityFieldKeyAsync(Document document, TextSpan span, CancellationToken cToken)
 		{
+			cToken.ThrowIfCancellationRequested();
+
 			SyntaxNode root = await document.GetSyntaxRootAsync(cToken).ConfigureAwait(false);
 			SyntaxNode diagnosticNode = root?.FindNode(span);
 
-			if (diagnosticNode == null || cToken.IsCancellationRequested)
+			
+			if (diagnosticNode == null)
 				return document;
 
 			var dacSyntaxNode = diagnosticNode.Parent;
+
+			if (!(dacSyntaxNode is ClassDeclarationSyntax dacOrDacExtNode))
+				return document;
 
 
 			return document.WithSyntaxRoot(root);
