@@ -18,7 +18,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 	/// </summary>
 	internal class Walker : NestedInvocationWalker
 	{
-		private static readonly IEnumerable<string> MethodPrefixes = new[] { "Select", "Search", "Update", "Delete" };
+		private static readonly IEnumerable<string> MethodPrefixes = new[] { "Select", "Search", "Update", "Delete", "Insert" };
 
 		private readonly SymbolAnalysisContext _context;
 		private readonly PXContext _pxContext;
