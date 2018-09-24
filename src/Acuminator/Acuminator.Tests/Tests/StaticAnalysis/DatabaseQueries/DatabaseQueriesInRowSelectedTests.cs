@@ -53,7 +53,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DatabaseQueries
 		[Theory]
 		[EmbeddedFileData(@"RowSelected\PXDatabase.cs")]
 		public Task PXDatabase(string actual) => VerifyCSharpDiagnosticAsync(actual, 
-			Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(19, 9));
+			Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(19, 9),
+			Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(26, 5));
 
 		[Theory]
 		[EmbeddedFileData(@"RowSelected\ExternalMethod.cs")]
@@ -71,5 +72,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DatabaseQueries
 		[EmbeddedFileData(@"RowSelected\LambdaWithBody.cs")]
 		public Task LambdaWithBody(string actual) => VerifyCSharpDiagnosticAsync(actual, 
 			Descriptors.PX1049_DatabaseQueriesInRowSelected.CreateFor(18, 6));
+
+		[Theory]
+		[EmbeddedFileData(@"RowSelected\NonDbCrudOperations.cs")]
+		public Task NonDbCrudOperations_ShouldNotShowDiagnostic(string actual) => VerifyCSharpDiagnosticAsync(actual);
 	}
 }

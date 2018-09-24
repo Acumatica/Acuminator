@@ -22,6 +22,8 @@ namespace PX.Objects
 				{
 					row.IsCCPayment = true;
 				}
+
+				PXDatabase.Ensure<ARInvoice>(null, null);
 			}
 		}
 	}

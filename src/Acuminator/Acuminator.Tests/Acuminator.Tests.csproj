@@ -211,6 +211,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\PXSelector.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\PXView.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlers\TypedCache.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\NonDbCrudOperations.cs" />
     <Compile Include="Tests\StaticAnalysis\RowChangesInEventHandlers\RowChangesInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\ValidEventHandlers.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\DirectAssignment.cs" />
