@@ -22,9 +22,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.UiPresentationLogic
 
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\EventHandlers.cs")]
-		public void EventHandlers(string actual)
-		{
-			VerifyCSharpDiagnostic(actual, 
+		public Task EventHandlers(string actual) =>
+			VerifyCSharpDiagnosticAsync(actual, 
 				Descriptors.PX1070_UiPresentationLogicInEventHandlers.CreateFor(16, 4, EventType.FieldDefaulting),
 				Descriptors.PX1070_UiPresentationLogicInEventHandlers.CreateFor(21, 4, EventType.FieldVerifying),
 				Descriptors.PX1070_UiPresentationLogicInEventHandlers.CreateFor(26, 4, EventType.RowSelecting),
@@ -36,13 +35,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.UiPresentationLogic
 				Descriptors.PX1070_UiPresentationLogicInEventHandlers.CreateFor(56, 4, EventType.RowDeleted),
 				Descriptors.PX1070_UiPresentationLogicInEventHandlers.CreateFor(61, 4, EventType.RowPersisting),
 				Descriptors.PX1070_UiPresentationLogicInEventHandlers.CreateFor(66, 4, EventType.RowPersisted));
-		}
 
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\EventHandlersWithExternalMethod.cs")]
-		public void EventHandlersWithExternalMethod(string actual)
-		{
-			VerifyCSharpDiagnostic(actual,
+		public Task EventHandlersWithExternalMethod(string actual) =>
+			VerifyCSharpDiagnosticAsync(actual,
 				Descriptors.PX1070_UiPresentationLogicInEventHandlers.CreateFor(16, 4, EventType.FieldDefaulting),
 				Descriptors.PX1070_UiPresentationLogicInEventHandlers.CreateFor(21, 4, EventType.FieldVerifying),
 				Descriptors.PX1070_UiPresentationLogicInEventHandlers.CreateFor(26, 4, EventType.RowSelecting),
@@ -54,13 +51,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.UiPresentationLogic
 				Descriptors.PX1070_UiPresentationLogicInEventHandlers.CreateFor(56, 4, EventType.RowDeleted),
 				Descriptors.PX1070_UiPresentationLogicInEventHandlers.CreateFor(61, 4, EventType.RowPersisting),
 				Descriptors.PX1070_UiPresentationLogicInEventHandlers.CreateFor(66, 4, EventType.RowPersisted));
-		}
-
+		
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\ValidEventHandlers.cs")]
-		public void ValidEventHandlers_ShouldNotShowDiagnostic(string actual)
-		{
-			VerifyCSharpDiagnostic(actual);
-		}
+		public Task ValidEventHandlers_ShouldNotShowDiagnostic(string actual) =>
+			VerifyCSharpDiagnosticAsync(actual);
 	}
 }
