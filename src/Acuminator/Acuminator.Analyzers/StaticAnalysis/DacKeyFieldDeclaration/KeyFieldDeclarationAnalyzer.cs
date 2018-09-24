@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -25,71 +26,82 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			);
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSyntaxNodeAction(syntaxContext =>
-				AnalyzeDacOrDacExtensionDeclaration(syntaxContext, pxContext), SyntaxKind.ClassDeclaration);
+			compilationStartContext.RegisterSymbolAction(async symbolContext =>
+				await AnalyzeDacOrDacExtensionDeclarationAsync(symbolContext, pxContext), SymbolKind.NamedType);
 		}
 
-		private static void AnalyzeDacOrDacExtensionDeclaration(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+		private static async Task AnalyzeDacOrDacExtensionDeclarationAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
-			if (!(syntaxContext.Node is ClassDeclarationSyntax dacOrDacExtNode) || syntaxContext.CancellationToken.IsCancellationRequested)
+			if (!(symbolContext.Symbol is INamedTypeSymbol dacOrDacExtSymbol) || !dacOrDacExtSymbol.IsDacOrExtension(pxContext) || 
+				symbolContext.CancellationToken.IsCancellationRequested)
 				return;
-
-			INamedTypeSymbol dacOrDacExt = syntaxContext.SemanticModel.GetDeclaredSymbol(dacOrDacExtNode, syntaxContext.CancellationToken);
-
-			if (dacOrDacExt == null || (!dacOrDacExt.IsDAC() && !dacOrDacExt.IsDacExtension()) ||
-				syntaxContext.CancellationToken.IsCancellationRequested)
-				return;
-		}
-
-		private Task AnalyzePropertyAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
-		{
-			if (!(symbolContext.Symbol is INamedTypeSymbol dacOrDacExt) || !dacOrDacExt.IsDacOrExtension(pxContext))
-				return Task.FromResult(false);
+			
+			var dacPropertiesDeclarations  = dacOrDacExtSymbol.GetMembers().OfType<IPropertySymbol>();
 
 			AttributeInformation attributeInformation = new AttributeInformation(pxContext);
 
-			Task[] allTasks = dacOrDacExt.GetMembers()
-				.OfType<IPropertySymbol>()
-				.Select(property => CheckDacPropertyAsync(property, symbolContext, pxContext, attributeInformation))
-				.ToArray();
+			bool flagIsKey = false;
+			bool flagIsKeyIdentity = false;
+			List<AttributeData> keyAttributes = new List<AttributeData>();
+			var identityAttributeType = pxContext.FieldAttributes.PXDBIdentityAttribute;
 
-			return Task.WhenAll(allTasks);
-		}
-
-		private static async Task CheckDacPropertyAsync(IPropertySymbol property, SymbolAnalysisContext symbolContext, PXContext pxContext,
-														AttributeInformation attributeInformation)
-		{
-			ImmutableArray<AttributeData> attributes = property.GetAttributes();
-
-			if (attributes.Length == 0)
-				return;
-
-			symbolContext.CancellationToken.ThrowIfCancellationRequested();
-
-			var IsBoundField = attributeInformation.ContainsBoundAttributes(attributes.Select(a => a));
-
-			if (IsBoundField == BoundFlag.DbBound)
+			foreach (var property in dacPropertiesDeclarations)
 			{
-				foreach (var attribute in attributes)
+				foreach (var attribute in property.GetAttributes())
 				{
-					foreach(var argument in attribute.NamedArguments)
+					if (attribute.NamedArguments.Select(a => a.Key.Contains(IsKey) &&
+															!a.Value.IsNull &&
+															a.Value.Value is bool boolValue &&
+															boolValue == true)
+												.First() && 
+												!attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, identityAttributeType))
 					{
-						if(argument.Key == IsKey &&
-							!argument.Value.IsNull &&
-							argument.Value.Value is bool boolValue &&
-							boolValue == true )
-						{
-							/*Location attributeLocation = await AttributeInformation.GetAttributeLocationAsync(attribute, symbolContext.CancellationToken);
-							
-							symbolContext.ReportDiagnostic(
-							Diagnostic.Create(
-								Descriptors.PX1055_DacKeyFieldBound, attributeLocation));
-						*/
-						}
+						flagIsKey = true;
+						keyAttributes.Add(attribute);
 					}
+
+					if (attribute.NamedArguments.Select(a => a.Key.Contains(IsKey) &&
+															!a.Value.IsNull &&
+															a.Value.Value is bool boolValue &&
+															boolValue == true)
+												.First() &&
+												attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, identityAttributeType))
+					{
+						flagIsKeyIdentity = true;
+						keyAttributes.Add(attribute);
+					}
+					
 				}
+				
 			}
+			if(flagIsKey && flagIsKeyIdentity)
+			{
+				foreach(var attribute in keyAttributes)
+				{
+					Location attributeLocation = await GetAttributeLocationAsync(attribute, symbolContext.CancellationToken);
+
+					symbolContext.ReportDiagnostic(
+					Diagnostic.Create(
+						Descriptors.PX1055_DacKeyFieldBound, attributeLocation));
+				}
+				
+			}
+			
 		}
+
+
+		public static async Task<Location> GetAttributeLocationAsync(AttributeData attribute, CancellationToken cancellationToken)
+		{
+			SyntaxNode attributeSyntaxNode = null;
+
+			attributeSyntaxNode = await attribute.ApplicationSyntaxReference.GetSyntaxAsync(cancellationToken).ConfigureAwait(false);
+
+			return attributeSyntaxNode?.GetLocation();
+		}
+
+
+
+
 	}
 
 
