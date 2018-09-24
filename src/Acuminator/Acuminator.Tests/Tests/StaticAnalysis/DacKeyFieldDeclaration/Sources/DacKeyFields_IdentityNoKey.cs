@@ -22,7 +22,7 @@ namespace PX.Objects.HackathonDemo
 		public abstract class projectID : PX.Data.IBqlField
 		{
 		}
-		[Project(DisplayName = "Project ID", Enabled = false, DirtyRead = true, IsKey = true)]
+		[Project(DisplayName = "Project ID", Enabled = false, DirtyRead = true)]
 		public virtual int? ProjectID { get; set; }
 		#endregion
 		#region TaskID

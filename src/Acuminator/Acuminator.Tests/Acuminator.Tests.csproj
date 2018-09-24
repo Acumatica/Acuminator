@@ -195,11 +195,14 @@
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\PXOverride.cs" />
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\AdditionalParameters.cs" />
     <Compile Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\KeyFieldDacTests.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\DacKeyFields_Identity+Key.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\DacKeyFields_IdentityKey+Key.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\DacKeyFields_IdentityNoKey+Key.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\DacKeyFields_IdentityKey+CompoundKey.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\DacKeyFields_CompoundKey.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\DacKeyFields_IdentityNoKey+Key - Copy.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\DacKeyFields_IdentityNoKey+CompoundKey.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\DacKeyFields_Key.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\DacKeyFields_IdentityKey.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\DacKeyFields_IdentityNoKey.cs" />
     <Compile Include="Tests\StaticAnalysis\RowChangesInEventHandlers\RowChangesInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\ValidEventHandlers.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\DirectAssignment.cs" />

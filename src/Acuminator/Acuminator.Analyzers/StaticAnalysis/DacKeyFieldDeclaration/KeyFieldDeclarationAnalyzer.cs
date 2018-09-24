@@ -40,11 +40,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 			AttributeInformation attributeInformation = new AttributeInformation(pxContext);
 
-			bool flagIsKey = false;
-			bool flagIsKeyIdentity = false;
 			List<AttributeData> keyAttributes = new List<AttributeData>();
 			var identityAttributeType = pxContext.FieldAttributes.PXDBIdentityAttribute;
 
+			bool flagIsKey = false;
+			bool flagIsKeyIdentity = false;
+			
 			foreach (var property in dacPropertiesDeclarations)
 			{
 				foreach (var attribute in property.GetAttributes())
@@ -100,33 +101,5 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 			return attributeSyntaxNode?.GetLocation();
 		}
-
-
-
-
 	}
-
-
-	/*
-	 * public override ImmutableArray<string> FixableDiagnosticIds { get; } = ImmutableArray.Create(Descriptors.PX1055_DacKeyFieldBound.Id);
-		
-		public override FixAllProvider GetFixAllProvider()
-		{
-			return base.GetFixAllProvider();
-		}
-	
-	public override Task RegisterCodeFixesAsync(CodeFixContext context)
-	{
-		return Task.Run(() =>
-		{
-			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1055_DacKeyFieldBound.Id);
-
-			if (diagnostic == null || context.CancellationToken.IsCancellationRequested)
-				return;
-
-			string codeActionName = nameof(Resources.PX1055)
-
-		}, context.CancellationToken);
-	}
-	 * */
 }
