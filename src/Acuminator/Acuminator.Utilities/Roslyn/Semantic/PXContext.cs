@@ -136,6 +136,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				.Concat(AttributeTypes.PXUIFieldAttribute.SetReadOnly)
 				.Concat(AttributeTypes.PXUIFieldAttribute.SetDisplayName)
 				.Concat(AttributeTypes.PXUIFieldAttribute.SetNeutralDisplayName)
+				.Concat(AttributeTypes.PXStringListAttribute.SetList)
+				.Concat(AttributeTypes.PXStringListAttribute.AppendList)
+				.Concat(AttributeTypes.PXStringListAttribute.SetLocalizable)
+				.Concat(AttributeTypes.PXIntListAttribute.SetList)
 				.ToImmutableHashSet();
 		}
 	}
