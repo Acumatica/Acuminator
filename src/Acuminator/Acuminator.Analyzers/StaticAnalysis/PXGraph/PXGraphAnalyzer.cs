@@ -1,15 +1,14 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization;
+﻿using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
 using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
+using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization;
 using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
-using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
-using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 {
@@ -23,7 +22,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
         public PXGraphAnalyzer() : this(
             new PXGraphCreationDuringInitializationAnalyzer(),
             new SavingChangesDuringPXGraphInitializationAnalyzer(),
-            new ChangesInPXCacheDuringPXGraphInitializationAnalyzer()
+            new ChangesInPXCacheDuringPXGraphInitializationAnalyzer(),
             new LongOperationInPXGraphDuringInitializationAnalyzer(),
             new LongOperationInDataViewDelegateAnalyzer())
         {
