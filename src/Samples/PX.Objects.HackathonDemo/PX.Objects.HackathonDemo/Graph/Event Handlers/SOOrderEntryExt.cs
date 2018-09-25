@@ -49,6 +49,7 @@ namespace PX.Objects.HackathonDemo
 			if (row != null && sender.GetStatus(row) == PXEntryStatus.Updated)
 			{
 				Base.Actions.PressSave();
+                Base.Release.Press();
                 PXDatabase.SelectTimeStamp();
 			}
 		}
