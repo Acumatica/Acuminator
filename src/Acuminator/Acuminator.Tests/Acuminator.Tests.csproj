@@ -204,6 +204,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\DacKeyFields_IdentityKey.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\DacKeyFields_IdentityNoKey.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\DacKeyFields_IdentityKey+Key_OnlyIdentity_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\DacKeyFields_IdentityKey+CompoundKey_OnlyIdentity_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\RowChangesInEventHandlers\RowChangesInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\ValidEventHandlers.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\DirectAssignment.cs" />
