@@ -7,7 +7,7 @@ using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
 {
-    public class PXGraphLongOperationDuringInitializationAnalyzer : IPXGraphAnalyzer
+    public class LongOperationInPXGraphDuringInitializationAnalyzer : IPXGraphAnalyzer
     {
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1054_PXGraphLongRunOperationDuringInitialization);

@@ -219,13 +219,13 @@
   <data name="PX1023MultipleTypeAttributesOnPropertyTitle" xml:space="preserve">
     <value>The DAC property cannot be marked with multiple field type attributes</value>
   </data>
-	<data name="PX1023MultipleTypeAttributesOnAggregatorsTitle" xml:space="preserve">
+  <data name="PX1023MultipleTypeAttributesOnAggregatorsTitle" xml:space="preserve">
     <value>The attribute aggregates incompatible field type attributes</value>
   </data>
   <data name="PX1023MultipleSpecialTypeAttributesOnPropertyTitle" xml:space="preserve">
     <value>The DAC property cannot be marked with multiple PXDBScalar or PXDBCalced attributes</value>
   </data>
-	<data name="PX1023MultipleSpecialTypeAttributesOnAggregatorsTitle" xml:space="preserve">
+  <data name="PX1023MultipleSpecialTypeAttributesOnAggregatorsTitle" xml:space="preserve">
     <value>The attribute aggregates multiple PXDBScalar or PXDBCalced attributes</value>
   </data>
   <data name="PX1023TypeAttributesFix" xml:space="preserve">
@@ -341,5 +341,8 @@
   </data>
   <data name="PX1054Title" xml:space="preserve">
     <value>A PXGraph instance should not start PXLongOperation during the initialization phase</value>
+  </data>
+  <data name="PX1080Title" xml:space="preserve">
+    <value>A data view delegate should not start PXLongOperation</value>
   </data>
 </root>

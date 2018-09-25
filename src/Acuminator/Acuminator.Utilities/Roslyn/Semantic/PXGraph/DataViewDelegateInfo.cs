@@ -5,8 +5,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
     public readonly struct DataViewDelegateInfo
     {
-        MethodDeclarationSyntax Node { get; }
-        IMethodSymbol Symbol { get; }
+        public MethodDeclarationSyntax Node { get; }
+        public IMethodSymbol Symbol { get; }
 
         public DataViewDelegateInfo(MethodDeclarationSyntax node, IMethodSymbol symbol)
         {
