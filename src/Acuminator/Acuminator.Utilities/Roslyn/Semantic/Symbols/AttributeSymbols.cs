@@ -14,15 +14,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 			_pxUiFieldAttribute = new Lazy<PXUIFieldAttributeSymbols>(() => new PXUIFieldAttributeSymbols(compilation));
 			_pxSelectorAttribute = new Lazy<PXSelectorAttributeSymbols>(() => new PXSelectorAttributeSymbols(compilation));
+			_pxStringListAttribute = new Lazy<PXStringListAttributeSymbols>(() => new PXStringListAttributeSymbols(compilation));
+			_pxIntListAttribute = new Lazy<PXIntListAttributeSymbols>(() => new PXIntListAttributeSymbols(compilation));
 		}
 
 		public INamedTypeSymbol PXImportAttribute => _compilation.GetTypeByMetadataName(typeof(PXImportAttribute).FullName);
 		public INamedTypeSymbol PXHiddenAttribute => _compilation.GetTypeByMetadataName(typeof(PXHiddenAttribute).FullName);
 		public INamedTypeSymbol PXCopyPasteHiddenViewAttribute => _compilation.GetTypeByMetadataName(typeof(PXCopyPasteHiddenViewAttribute).FullName);
 		public INamedTypeSymbol PXOverrideAttribute => _compilation.GetTypeByMetadataName(typeof(PXOverrideAttribute).FullName);
-
-		public INamedTypeSymbol PXStringListAttribute => _compilation.GetTypeByMetadataName(typeof(PXStringListAttribute).FullName);
-		public INamedTypeSymbol PXIntListAttribute => _compilation.GetTypeByMetadataName(typeof(PXIntListAttribute).FullName);
 
 		public INamedTypeSymbol PXEventSubscriberAttribute => _compilation.GetTypeByMetadataName(typeof(PXEventSubscriberAttribute).FullName);
 		public INamedTypeSymbol PXAttributeFamily => _compilation.GetTypeByMetadataName(typeof(PXAttributeFamilyAttribute).FullName);
@@ -36,5 +35,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		private readonly Lazy<PXSelectorAttributeSymbols> _pxSelectorAttribute;
 		public PXSelectorAttributeSymbols PXSelectorAttribute => _pxSelectorAttribute.Value;
+
+		private readonly Lazy<PXStringListAttributeSymbols> _pxStringListAttribute;
+		public PXStringListAttributeSymbols PXStringListAttribute => _pxStringListAttribute.Value;
+
+		private readonly Lazy<PXIntListAttributeSymbols> _pxIntListAttribute;
+		public PXIntListAttributeSymbols PXIntListAttribute => _pxIntListAttribute.Value;
 	}
 }

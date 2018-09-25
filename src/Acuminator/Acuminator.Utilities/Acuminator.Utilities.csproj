@@ -109,6 +109,8 @@
     <Compile Include="Common\EnumerableExtraExtensions.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\EventSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\BQLSymbols.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\PXIntListAttributeSymbols.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\PXStringListAttributeSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXViewSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXSelectorAttributeSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXDatabaseSymbols.cs" />
