@@ -35,11 +35,11 @@ The diagnostic description contains the following sections:
 -   Has the following title: _Summary_
 -   Contains a table in the following format:
 
-    `| Code   | Short Description                                      | Type  | Code Fix  |`
+    `| Code   | Short Description                                       | Type  | Code Fix  |`
 
-    `| ------ | ------------------------------------------------------ | ----- | --------- |`
-    
-    `| PX1000 | An invalid signature of the `PXAction` handler is used | Error | Available |`
+    `| ------ | ------------------------------------------------------- | ----- | --------- |`
+
+    ``| PX1000 | An invalid signature of the `PXAction` handler is used. | Error | Available |``
 
 The values of the table columns are described below.
 
