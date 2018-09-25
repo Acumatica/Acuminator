@@ -28,7 +28,8 @@ To build the solution, do the following:
 4. Build _Acuminator.sln_.
 
 ## Developer Documentation
-[Recursive Code Analysis](docs/dev/RecursiveCodeAnalysis/RecursiveCodeAnalysis.md)
+* [Coding Guidelines](docs/dev/CodingGuidelines/CodingGuidelines.md)
+* [Recursive Code Analysis](docs/dev/RecursiveCodeAnalysis/RecursiveCodeAnalysis.md)
 
 ## Release Notes
 [Release Notes](docs/ReleaseNotes.md)
