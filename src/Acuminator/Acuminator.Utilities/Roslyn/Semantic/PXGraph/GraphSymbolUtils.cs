@@ -145,22 +145,196 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		}
         #endregion
 
-        /*public static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetViewDelegates(
-            this ITypeSymbol graph, IEnumerable<ISymbol> views, PXContext pxContext, bool inheritance = true)
+        public static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetViewDelegatesFromGraph(
+            this ITypeSymbol graph, IEnumerable<ISymbol> views, PXContext pxContext, CancellationToken cancellation, bool inheritance = true)
         {
+            graph.ThrowOnNull(nameof(graph));
+            views.ThrowOnNull(nameof(views));
+            pxContext.ThrowOnNull(nameof(pxContext));
 
-        }*/
+            if (!graph.IsPXGraph(pxContext))
+            {
+                return Enumerable.Empty<(MethodDeclarationSyntax, IMethodSymbol)>();
+            }
 
-		#region View Symbol And Types
-		/// <summary>
-		/// Gets all declared view symbols and types from the graph and its base graphs,
-		/// if there is a graphs class hierarchy and <paramref name="includeViewsFromInheritanceChain"/> parameter is <c>true</c>.
-		/// </summary>
-		/// <param name="graph">The graph to act on.</param>
-		/// <param name="pxContext">Context.</param>
-		/// <param name="includeViewsFromInheritanceChain">(Optional) True to include, false to exclude the views from inheritance chain.</param>
-		/// <returns/>
-		public static ViewSymbolWithTypeCollection GetViewsWithSymbolsFromPXGraph(this ITypeSymbol graph, PXContext pxContext,
+            if (inheritance)
+            {
+                return graph.GetBaseTypesAndThis()
+                            .TakeWhile(baseGraph => !baseGraph.IsGraphBaseType())
+                            .SelectMany(baseGraph => GetViewDelegatesFromGraphOrGraphExtension(baseGraph, views, pxContext, cancellation));
+            }
+            else
+            {
+                return GetViewDelegatesFromGraphOrGraphExtension(graph, views, pxContext, cancellation);
+            }
+        }
+
+        public static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetViewDelegatesFromGraphExtensionAndBaseGraph(
+            this ITypeSymbol graphExtension, IEnumerable<ISymbol> views, PXContext pxContext, CancellationToken cancellation)
+        {
+            graphExtension.ThrowOnNull(nameof(graphExtension));
+            views.ThrowOnNull(nameof(views));
+            pxContext.ThrowOnNull(nameof(pxContext));
+
+            return GetViewInfoFromGraphExtension<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)>(
+                graphExtension, pxContext, AddDelegatesFromGraph, AddDelegatesFromGraphExtension);
+
+            void AddDelegatesFromGraph(Dictionary<string, (MethodDeclarationSyntax, IMethodSymbol)> d, ITypeSymbol t, PXContext c) =>
+                AddGraphViewDelegates(d, t, views, c, cancellation);
+            void AddDelegatesFromGraphExtension(Dictionary<string, (MethodDeclarationSyntax, IMethodSymbol)> d, ITypeSymbol t, PXContext c) =>
+                AddGraphExtensionViewDelegates(d, t, views, c, cancellation);
+
+            /*IEnumerable<(MethodDeclarationSyntax, IMethodSymbol)> empty = Enumerable.Empty<(MethodDeclarationSyntax, IMethodSymbol)>();
+
+            if (!graphExtension.InheritsFrom(pxContext.PXGraphExtensionType) || !graphExtension.BaseType.IsGenericType)
+            {
+                return empty;
+            }
+
+            INamedTypeSymbol baseType = graphExtension.BaseType;
+            Dictionary<string, (MethodDeclarationSyntax, IMethodSymbol)> delegates = new Dictionary<string, (MethodDeclarationSyntax, IMethodSymbol)>(
+                StringComparer.OrdinalIgnoreCase);
+
+            for (int i = baseType.TypeArguments.Length - 1; i >= 0; i--)
+            {
+                ITypeSymbol argType = baseType.TypeArguments[i];
+
+                if (i == baseType.TypeArguments.Length - 1)
+                {
+                    if (!argType.IsPXGraph(pxContext))
+                    {
+                        return empty;
+                    }
+
+                    AddGraphViewDelegates(delegates, argType, views, pxContext, cancellation);
+                }
+                else
+                {
+                    if (!argType.IsPXGraphExtension(pxContext))
+                    {
+                        return empty;
+                    }
+
+                    AddGraphExtensionViewDelegates(delegates, argType, views, pxContext, cancellation);
+                }
+            }
+
+            AddGraphExtensionViewDelegates(delegates, graphExtension, views, pxContext, cancellation);
+
+            return delegates.Values;*/
+        }
+
+        private static IEnumerable<T> GetViewInfoFromGraphExtension<T>(ITypeSymbol graphExtension, PXContext pxContext,
+            Action<Dictionary<string, T>, ITypeSymbol, PXContext> addGraphViewInfo,
+            Action<Dictionary<string, T>, ITypeSymbol, PXContext> addGraphExtensionViewInfo)
+        {
+            IEnumerable<T> empty = Enumerable.Empty<T>();
+
+            if (!graphExtension.InheritsFrom(pxContext.PXGraphExtensionType) || !graphExtension.BaseType.IsGenericType)
+            {
+                return empty;
+            }
+
+            INamedTypeSymbol baseType = graphExtension.BaseType;
+            Dictionary<string, T> infoByView = new Dictionary<string, T>(StringComparer.OrdinalIgnoreCase);
+
+            for (int i = baseType.TypeArguments.Length - 1; i >= 0; i--)
+            {
+                ITypeSymbol argType = baseType.TypeArguments[i];
+
+                if (i == baseType.TypeArguments.Length - 1)
+                {
+                    if (!argType.IsPXGraph(pxContext))
+                    {
+                        return empty;
+                    }
+
+                    addGraphViewInfo(infoByView, argType, pxContext);
+                }
+                else
+                {
+                    if (!argType.IsPXGraphExtension(pxContext))
+                    {
+                        return empty;
+                    }
+
+                    addGraphExtensionViewInfo(infoByView, argType, pxContext);
+                }
+            }
+
+            addGraphExtensionViewInfo(infoByView, graphExtension, pxContext);
+
+            return infoByView.Values;
+        }
+
+        private static void AddGraphViewDelegates(Dictionary<string, (MethodDeclarationSyntax, IMethodSymbol)> delegates, ITypeSymbol graph,
+            IEnumerable<ISymbol> views, PXContext pxContext, CancellationToken cancellation)
+        {
+            IEnumerable<(MethodDeclarationSyntax, IMethodSymbol)> dels = graph.GetViewDelegatesFromGraph(views, pxContext, cancellation);
+
+            foreach ((MethodDeclarationSyntax, IMethodSymbol) d in dels)
+            {
+                delegates.Add(d.Item2.Name, d);
+            }
+        }
+
+        private static void AddGraphExtensionViewDelegates(Dictionary<string, (MethodDeclarationSyntax, IMethodSymbol)> delegates, ITypeSymbol graph,
+            IEnumerable<ISymbol> views, PXContext pxContext, CancellationToken cancellation)
+        {
+            IEnumerable<(MethodDeclarationSyntax, IMethodSymbol)> dels = graph.GetViewDelegatesFromGraphOrGraphExtension(views, pxContext, cancellation);
+
+            foreach ((MethodDeclarationSyntax, IMethodSymbol) d in dels)
+            {
+                delegates[d.Item2.Name] = d;
+            }
+        }
+
+        private static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetViewDelegatesFromGraphOrGraphExtension(
+            this ITypeSymbol graphOrExtension, IEnumerable<ISymbol> views, PXContext pxContext, CancellationToken cancellation)
+        {
+            foreach (ISymbol member in graphOrExtension.GetMembers())
+            {
+                cancellation.ThrowIfCancellationRequested();
+
+                if (!(member is IMethodSymbol method))
+                {
+                    continue;
+                }
+
+                bool correctName = views.Any(v => v.Name.Equals(member.Name, StringComparison.OrdinalIgnoreCase));
+                if (!correctName)
+                {
+                    continue;
+                }
+
+                bool correctReturnType = pxContext.SystemTypes.IEnumerable.Equals(method.ReturnType);
+                if (!correctReturnType)
+                {
+                    continue;
+                }
+
+                bool hasReferencePar = method.Parameters.Any(p => p.Type.IsReferenceType);
+                if (hasReferencePar)
+                {
+                    continue;
+                }
+
+                MethodDeclarationSyntax node = method.DeclaringSyntaxReferences.First().GetSyntax(cancellation) as MethodDeclarationSyntax;
+
+                yield return (node, method);
+            }
+        }
+
+        #region View Symbol And Types
+        /// <summary>
+        /// Gets all declared view symbols and types from the graph and its base graphs,
+        /// if there is a graphs class hierarchy and <paramref name="includeViewsFromInheritanceChain"/> parameter is <c>true</c>.
+        /// </summary>
+        /// <param name="graph">The graph to act on.</param>
+        /// <param name="pxContext">Context.</param>
+        /// <param name="includeViewsFromInheritanceChain">(Optional) True to include, false to exclude the views from inheritance chain.</param>
+        /// <returns/>
+        public static ViewSymbolWithTypeCollection GetViewsWithSymbolsFromPXGraph(this ITypeSymbol graph, PXContext pxContext,
 																				  bool includeViewsFromInheritanceChain = true)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
@@ -184,7 +358,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             graphExtension.ThrowOnNull(nameof(graphExtension));
             pxContext.ThrowOnNull(nameof(pxContext));
 
-            ViewSymbolWithTypeCollection empty = Enumerable.Empty<(ISymbol, INamedTypeSymbol)>();
+            return GetViewInfoFromGraphExtension<(ISymbol, INamedTypeSymbol)>(graphExtension, pxContext, AddViewsFromGraph, AddViewsFromGraphExtension);
+
+            void AddViewsFromGraph(Dictionary<string, (ISymbol, INamedTypeSymbol)> v, ITypeSymbol t, PXContext c) =>
+                AddGraphViews(v, t, c);
+            void AddViewsFromGraphExtension(Dictionary<string, (ISymbol, INamedTypeSymbol)> v, ITypeSymbol t, PXContext c) =>
+                AddGraphViews(v, t, c);
+
+            /*ViewSymbolWithTypeCollection empty = Enumerable.Empty<(ISymbol, INamedTypeSymbol)>();
 
             if (!graphExtension.InheritsFrom(pxContext.PXGraphExtensionType) || !graphExtension.BaseType.IsGenericType)
             {
@@ -220,28 +401,26 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
             AddGraphExtensionViews(views, graphExtension, pxContext);
 
-            return views.Values;
+            return views.Values;*/
         }
 
         private static void AddGraphExtensionViews(Dictionary<string, (ISymbol, INamedTypeSymbol)> views, ITypeSymbol graphExtType, PXContext pxContext)
         {
-            IEnumerable<KeyValuePair<string, (ISymbol, INamedTypeSymbol)>> extViews = GetAllViewSymbolsWithTypesFromPXGraphOrPXGraphExtensionImpl(graphExtType, pxContext)
-                                                                                      .Select(v => new KeyValuePair<string, (ISymbol, INamedTypeSymbol)>(
-                                                                                          v.ViewSymbol.Name, v));
-            foreach (KeyValuePair<string, (ISymbol, INamedTypeSymbol)> v in extViews)
+            IEnumerable<(ISymbol, INamedTypeSymbol)> extViews = GetAllViewSymbolsWithTypesFromPXGraphOrPXGraphExtensionImpl(graphExtType, pxContext);
+
+            foreach ((ISymbol, INamedTypeSymbol) v in extViews)
             {
-                views[v.Key] = v.Value;
+                views[v.Item1.Name] = v;
             }
         }
 
         private static void AddGraphViews(Dictionary<string, (ISymbol, INamedTypeSymbol)> views, ITypeSymbol graphType, PXContext pxContext)
         {
-            IEnumerable<KeyValuePair<string, (ISymbol, INamedTypeSymbol)>> graphViews = graphType.GetViewsWithSymbolsFromPXGraph(pxContext)
-                                                                                        .Select(v => new KeyValuePair<string, (ISymbol, INamedTypeSymbol)>(
-                                                                                            v.ViewSymbol.Name, v));
-            foreach (KeyValuePair<string, (ISymbol, INamedTypeSymbol)> v in graphViews)
+            IEnumerable<(ISymbol, INamedTypeSymbol)> graphViews = graphType.GetViewsWithSymbolsFromPXGraph(pxContext);
+
+            foreach ((ISymbol, INamedTypeSymbol) v in graphViews)
             {
-                views.Add(v.Key, v.Value);
+                views.Add(v.Item1.Name, v);
             }
         }
 
@@ -298,7 +477,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		}
 
 		private static ViewSymbolWithTypeCollection GetAllViewSymbolsWithTypesFromPXGraphOrPXGraphExtensionImpl(ITypeSymbol graphOrExtension,
-																												 PXContext pxContext)
+																												PXContext pxContext)
 		{
             foreach (ISymbol member in graphOrExtension.GetMembers())
             {
