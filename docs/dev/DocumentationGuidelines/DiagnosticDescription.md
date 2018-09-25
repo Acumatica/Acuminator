@@ -36,7 +36,9 @@ The diagnostic description contains the following sections:
 -   Contains a table in the following format:
 
     `| Code   | Short Description                                      | Type  | Code Fix  |`
+
     `| ------ | ------------------------------------------------------ | ----- | --------- |`
+    
     `| PX1000 | An invalid signature of the `PXAction` handler is used | Error | Available |`
 
 The values of the table columns are described below.
