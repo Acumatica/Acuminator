@@ -42,6 +42,7 @@ The diagnostic description contains the following sections:
 ``| PX1000 | An invalid signature of the `PXAction` handler is used | Error | Available |``
 
 The values of the table columns are described below.
+
 | Column            | Description                                                                                          |
 | ----------------- | -----------------------------------------------------------------------------------------------------|
 | Code              | The ID of the diagnostic.                                                                            |
