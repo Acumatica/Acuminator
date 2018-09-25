@@ -355,5 +355,33 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
             return null;
         }
+
+		/// <summary>Get all the methods of this symbol.</summary>
+		/// <returns>An ImmutableArray containing all the methods of this symbol. If this symbol has no methods,
+		/// returns an empty ImmutableArray. Never returns Null.</returns>
+		public static ImmutableArray<IMethodSymbol> GetMethods(this ITypeSymbol type)
+		{
+			type.ThrowOnNull(nameof (type));
+
+			return type
+				.GetMembers()
+				.OfType<IMethodSymbol>()
+				.ToImmutableArray();
+		}
+
+		/// <summary>
+		/// Get all the methods of this symbol that have a particular name.
+		/// </summary>
+		/// <returns>An ImmutableArray containing all the methods of this symbol with the given name. If there are
+		/// no methods with this name, returns an empty ImmutableArray. Never returns Null.</returns>
+		public static ImmutableArray<IMethodSymbol> GetMethods(this ITypeSymbol type, string methodName)
+		{
+			type.ThrowOnNull(nameof (type));
+
+			return type
+				.GetMembers(methodName)
+				.OfType<IMethodSymbol>()
+				.ToImmutableArray();
+		}
     }
 }

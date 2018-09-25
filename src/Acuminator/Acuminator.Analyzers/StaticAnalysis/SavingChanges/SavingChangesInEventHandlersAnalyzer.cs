@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
+using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -22,7 +23,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 			Descriptors.PX1043_SavingChangesInEventHandlers,
 			Descriptors.PX1043_SavingChangesInRowPerstisting);
 
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
+		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings,
+			EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
