@@ -77,8 +77,19 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1021_PXDBFieldAttributeNotMatchingDacProperty { get; } =
             Rule("PX1021", nameof(Resources.PX1021Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
-		public static DiagnosticDescriptor PX1023_DacPropertyMultipleFieldAttributes { get; } =
-			Rule("PX1023", nameof(Resources.PX1023Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+		public static DiagnosticDescriptor PX1023_MultipleTypeAttributesOnProperty { get; } =
+			Rule("PX1023", nameof(Resources.PX1023MultipleTypeAttributesOnPropertyTitle).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+		public static DiagnosticDescriptor PX1023_MultipleTypeAttributesOnAggregators { get; } =
+			Rule("PX1023", nameof(Resources.PX1023MultipleTypeAttributesOnAggregatorsTitle).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+        public static DiagnosticDescriptor PX1023_MultipleSpecialTypeAttributesOnProperty { get; } =
+            Rule("PX1023", nameof(Resources.PX1023MultipleSpecialTypeAttributesOnPropertyTitle).GetLocalized(),
+                 Category.Default, DiagnosticSeverity.Error);
+
+        public static DiagnosticDescriptor PX1023_MultipleSpecialTypeAttributesOnAggregators { get; } =
+			Rule("PX1023", nameof(Resources.PX1023MultipleSpecialTypeAttributesOnAggregatorsTitle).GetLocalized(),
+				 Category.Default, DiagnosticSeverity.Error);
 
 		public static DiagnosticDescriptor PX1024_DacNonAbstractFieldType { get; } =
 			Rule("PX1024", nameof(Resources.PX1024Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
@@ -126,6 +137,10 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 		public static DiagnosticDescriptor PX1046_LongOperationInEventHandlers { get; } =
 			Rule("PX1046", nameof(Resources.PX1046Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+		public static DiagnosticDescriptor PX1047_RowChangesInEventHandlers { get; } =
+			Rule("PX1047", nameof(Resources.PX1047Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error,
+				nameof(Resources.PX1047MessageFormat).GetLocalized());
 
 		public static DiagnosticDescriptor PX1050_HardcodedStringInLocalizationMethod { get; } =
             Rule("PX1050", nameof(Resources.PX1050Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);

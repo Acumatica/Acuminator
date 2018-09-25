@@ -377,20 +377,56 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Leave the selected field attribute and remove other field attributes from the property.
+        ///   Looks up a localized string similar to The attribute aggregates multiple PXDBScalar or PXDBCalced attributes.
         /// </summary>
-        public static string PX1023Fix {
+        public static string PX1023MultipleSpecialTypeAttributesOnAggregatorsTitle {
             get {
-                return ResourceManager.GetString("PX1023Fix", resourceCulture);
+                return ResourceManager.GetString("PX1023MultipleSpecialTypeAttributesOnAggregatorsTitle", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The DAC property cannot be marked with multiple field attributes.
+        ///   Looks up a localized string similar to The DAC property cannot be marked with multiple PXDBScalar or PXDBCalced attributes.
         /// </summary>
-        public static string PX1023Title {
+        public static string PX1023MultipleSpecialTypeAttributesOnPropertyTitle {
             get {
-                return ResourceManager.GetString("PX1023Title", resourceCulture);
+                return ResourceManager.GetString("PX1023MultipleSpecialTypeAttributesOnPropertyTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The attribute aggregates incompatible field type attributes.
+        /// </summary>
+        public static string PX1023MultipleTypeAttributesOnAggregatorsTitle {
+            get {
+                return ResourceManager.GetString("PX1023MultipleTypeAttributesOnAggregatorsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DAC property cannot be marked with multiple field type attributes.
+        /// </summary>
+        public static string PX1023MultipleTypeAttributesOnPropertyTitle {
+            get {
+                return ResourceManager.GetString("PX1023MultipleTypeAttributesOnPropertyTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leave the selected attribute and remove other PXDBScalar or PXDBCalced attributes from the property.
+        /// </summary>
+        public static string PX1023SpecialAttributesFix {
+            get {
+                return ResourceManager.GetString("PX1023SpecialAttributesFix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leave the selected attribute and remove other field type attributes from the property.
+        /// </summary>
+        public static string PX1023TypeAttributesFix {
+            get {
+                return ResourceManager.GetString("PX1023TypeAttributesFix", resourceCulture);
             }
         }
         
@@ -616,6 +652,24 @@ namespace Acuminator.Analyzers {
         public static string PX1046Title {
             get {
                 return ResourceManager.GetString("PX1046Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A DAC instance passed to the {0} event handler cannot be modified inside this event handler.
+        /// </summary>
+        public static string PX1047MessageFormat {
+            get {
+                return ResourceManager.GetString("PX1047MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A DAC instance passed to the event handler cannot be modified inside the event handler.
+        /// </summary>
+        public static string PX1047Title {
+            get {
+                return ResourceManager.GetString("PX1047Title", resourceCulture);
             }
         }
         

@@ -216,11 +216,23 @@
   <data name="PX1021PropertyFix" xml:space="preserve">
     <value>Change the property type so that it corresponds to the attribute type</value>
   </data>
-  <data name="PX1023Title" xml:space="preserve">
-    <value>The DAC property cannot be marked with multiple field attributes</value>
+  <data name="PX1023MultipleTypeAttributesOnPropertyTitle" xml:space="preserve">
+    <value>The DAC property cannot be marked with multiple field type attributes</value>
   </data>
-  <data name="PX1023Fix" xml:space="preserve">
-    <value>Leave the selected field attribute and remove other field attributes from the property</value>
+	<data name="PX1023MultipleTypeAttributesOnAggregatorsTitle" xml:space="preserve">
+    <value>The attribute aggregates incompatible field type attributes</value>
+  </data>
+  <data name="PX1023MultipleSpecialTypeAttributesOnPropertyTitle" xml:space="preserve">
+    <value>The DAC property cannot be marked with multiple PXDBScalar or PXDBCalced attributes</value>
+  </data>
+	<data name="PX1023MultipleSpecialTypeAttributesOnAggregatorsTitle" xml:space="preserve">
+    <value>The attribute aggregates multiple PXDBScalar or PXDBCalced attributes</value>
+  </data>
+  <data name="PX1023TypeAttributesFix" xml:space="preserve">
+    <value>Leave the selected attribute and remove other field type attributes from the property</value>
+  </data>
+  <data name="PX1023SpecialAttributesFix" xml:space="preserve">
+    <value>Leave the selected attribute and remove other PXDBScalar or PXDBCalced attributes from the property</value>
   </data>
   <data name="PX1024Title" xml:space="preserve">
     <value>The DAC field type must be abstract</value>
@@ -320,6 +332,12 @@
   </data>
   <data name="PX1058Title" xml:space="preserve">
     <value>A PXGraph instance should not save changes to the database during the initialization phase</value>
+  </data>
+  <data name="PX1047MessageFormat" xml:space="preserve">
+    <value>A DAC instance passed to the {0} event handler cannot be modified inside this event handler</value>
+  </data>
+  <data name="PX1047Title" xml:space="preserve">
+    <value>A DAC instance passed to the event handler cannot be modified inside the event handler</value>
   </data>
   <data name="PX1054Title" xml:space="preserve">
     <value>A PXGraph instance should not start PXLongOperation during the initialization phase</value>
