@@ -46,16 +46,8 @@ The values of the table columns are described below.
 | ----------------- | -----------------------------------------------------------------------------------------------------|
 | Code              | The ID of the diagnostic.                                                                            |
 | Short Description | A short description of the issue. You can use the message displayed by Visual Studio in this column. |
-| Type              | The type of the issue, which can have one of the following values:
-
-                      -   Error
-                      -   Warning (Level 1: Significant)
-                      -   Warning (Level 2: Production quality)
-                      -   Warning (Level 3: Informational)                                                                 |
-| Code Fix          | A value that specifies whether the code fix for the issue is implemented. The value can be one of the following:
-
-                      -   Available
-                      -   Unavailable                                                                                      |
+| Type              | The type of the issue, which can have one of the following values:<ul><li>Error</li><li>Warning (Level 1: Significant)</li><li>Warning (Level 2: Production quality)</li><li>Warning (Level 3: Informational)</li></ul> |
+| Code Fix          | A value that specifies whether the code fix for the issue is implemented. The value can be one of the following:<ul><li>Available</li><li>Unavailable</li></ul> |
 
 ### Diagnostic Description
 
