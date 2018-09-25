@@ -7,4 +7,3 @@ protected virtual void _(Events.FieldUpdating<ARInvoice, ARInvoice.refNbr> e) //
 ```
 
 Because an event handler can be overridden in derived classes or graph extensions, after you have applied this refactoring to your code, you have to manually update all possible overrides.
-
