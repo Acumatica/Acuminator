@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
 using Acuminator.Analyzers.StaticAnalysis.DatabaseQueries;
 using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
+using Acuminator.Analyzers.StaticAnalysis.PXActionExecution;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance;
 using Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers;
 using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
@@ -41,7 +42,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 			new LongOperationInEventHandlersAnalyzer(),
 			new RowChangesInEventHandlersAnalyzer(),
 			new DatabaseQueriesInRowSelectedAnalyzer(),
-			new UiPresentationLogicInEventHandlersAnalyzer())
+			new UiPresentationLogicInEventHandlersAnalyzer(),
+			new PXActionExecutionInEventHandlersAnalyzer())
 		{
 		}
 

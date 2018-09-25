@@ -357,4 +357,7 @@
   <data name="PX1070Title" xml:space="preserve">
     <value>The state of fields and actions can be configured only in the RowSelected event handler</value>
   </data>
+  <data name="PX1071Title" xml:space="preserve">
+    <value>Actions cannot be executed within event handlers</value>
+  </data>
 </root>

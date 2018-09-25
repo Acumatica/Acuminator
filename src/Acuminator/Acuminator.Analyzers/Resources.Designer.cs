@@ -780,5 +780,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1070Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Actions cannot be executed within event handlers.
+        /// </summary>
+        public static string PX1071Title {
+            get {
+                return ResourceManager.GetString("PX1071Title", resourceCulture);
+            }
+        }
     }
 }
