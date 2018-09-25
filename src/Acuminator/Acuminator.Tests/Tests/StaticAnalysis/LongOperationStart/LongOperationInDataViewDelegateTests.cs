@@ -5,6 +5,7 @@ using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationStart
 {
@@ -15,23 +16,17 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationStart
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\DataViewFromGraphStartsLongOperation.cs")]
-        public void GraphInstanceConstructor_ReportsDiagnostic(string source)
-        {
-            VerifyCSharpDiagnostic(source, Descriptors.PX1080_DataViewDelegateLongOperationStart.CreateFor(17, 13));
-        }
+        public async Task DataViewDelegateFromGraph_ReportsDiagnostic(string source) =>
+            await VerifyCSharpDiagnosticAsync(source, Descriptors.PX1080_DataViewDelegateLongOperationStart.CreateFor(17, 13));
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\DataViewFromGraphStartsLongOperationViaMethod.cs")]
-        public void GraphInstanceConstructorViaMethod_ReportsDiagnostic(string source)
-        {
-            VerifyCSharpDiagnostic(source, Descriptors.PX1080_DataViewDelegateLongOperationStart.CreateFor(17, 13));
-        }
+        public async Task DataViewDelegateWithMethodFromGraph_ReportsDiagnostic(string source) =>
+            await VerifyCSharpDiagnosticAsync(source, Descriptors.PX1080_DataViewDelegateLongOperationStart.CreateFor(17, 13));
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\DataViewFromGraphExtensionStartsLongOperation.cs")]
-        public void GraphExtensionInitializationMethod_ReportsDiagnostic(string source)
-        {
-            VerifyCSharpDiagnostic(source, Descriptors.PX1080_DataViewDelegateLongOperationStart.CreateFor(15, 13));
-        }
+        public async Task DataViewDelegateFromGraphExtension_ReportsDiagnostic(string source) =>
+            await VerifyCSharpDiagnosticAsync(source, Descriptors.PX1080_DataViewDelegateLongOperationStart.CreateFor(15, 13));
     }
 }
