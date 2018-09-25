@@ -58,7 +58,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 
 		private static bool IsDacFieldType(ITypeSymbol dacFieldType)
 		{
-			if (dacFieldType == null || dacFieldType.TypeKind != TypeKind.Class || !dacFieldType.IsDacField() && dacFieldType.ContainingType != null)
+			if (dacFieldType == null || dacFieldType.TypeKind != TypeKind.Class || !dacFieldType.IsDacField() && dacFieldType.ContainingType != null || dacFieldType.BaseType.SpecialType != SpecialType.System_Object)
 				return false;
 
 			return dacFieldType.ContainingType.IsDAC() || dacFieldType.ContainingType.IsDacExtension();
