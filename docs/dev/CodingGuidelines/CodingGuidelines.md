@@ -12,6 +12,7 @@
     * [Control Flow Statements](#control-flow-statements)
     * [Local Functions](#local-functions)
 * [Best Practices](#best-practices)
+    * [Unit Tests](#unit-tests)
     * [Cancellation Support](#cancellation-support)
     * [Demo Solution](#demo-solution)
     * [Code Reuse](#code-reuse)
@@ -170,6 +171,10 @@ public IEnumerable<int> Generator(string parameter)
 
 General [C# Coding Conventions](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/inside-a-program/coding-conventions) should be considered besides our own.
 
+### Unit Tests
+
+Each analyzer, code fix or refactoring should be covered with unit tests.
+
 ### Cancellation Support
 
 The cancellation support should be added to Acuminator diagnostics and code fixes.
@@ -190,7 +195,7 @@ We use the demo solution for two purposes.
 
 First, we can use it as a lightweight VS solution for debugging.
 
-Secondly, we use it to show the demos of the Acuminator. Therefore, we need to maintain it in a consistent state — it should compile without errors, and it should contain examples similar to the real business cases.
+Secondly, we use it to show the demos of the Acuminator. Therefore, we need to maintain it in a consistent state â€” it should compile without errors, and it should contain examples similar to the real business cases.
 
 ### Code Reuse
 
