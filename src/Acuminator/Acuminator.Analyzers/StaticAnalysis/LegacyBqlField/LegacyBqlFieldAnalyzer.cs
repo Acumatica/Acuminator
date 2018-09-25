@@ -12,8 +12,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 	public class LegacyBqlFieldAnalyzer : PXDiagnosticAnalyzer
 	{
 		public const string CorrespondingPropertyType = "CorrespondingPropertyType";
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
-			Descriptors.PX1060_LegacyBqlField);
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(Descriptors.PX1060_LegacyBqlField);
 
 	    protected override bool ShouldAnalyze(PXContext pxContext) => pxContext.IsAcumatica2019R1;
 
@@ -64,7 +63,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 			return dacFieldType.ContainingType.IsDAC() || dacFieldType.ContainingType.IsDacExtension();
 		}
 
-		private static bool AlreadyStronglyTyped(INamedTypeSymbol dacFieldType, PXContext pxContext)
+		internal static bool AlreadyStronglyTyped(INamedTypeSymbol dacFieldType, PXContext pxContext)
 			=> dacFieldType.AllInterfaces.Any(t =>
 				t.IsGenericType
 				&& t.ConstructUnboundGenericType().Name == pxContext.IImplementType.Name

@@ -363,4 +363,10 @@
   <data name="PX1060Fix" xml:space="preserve">
     <value>Make field strongly typed</value>
   </data>
+  <data name="PX1061Fix" xml:space="preserve">
+    <value>Make constant strongly typed</value>
+  </data>
+  <data name="PX1061Title" xml:space="preserve">
+    <value>The {0} constant could be made strongly typed</value>
+  </data>
 </root>

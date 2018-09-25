@@ -63,6 +63,8 @@
     <Compile Include="StaticAnalysis\DatabaseQueries\Walker.cs" />
     <Compile Include="StaticAnalysis\EventHandlers\EventHandlerAnalyzer.cs" />
     <Compile Include="StaticAnalysis\EventHandlers\IEventHandlerAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\LegacyBqlConstant\LegacyBqlConstantAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\LegacyBqlConstant\LegacyBqlConstantFix.cs" />
     <Compile Include="StaticAnalysis\LegacyBqlField\LegacyBqlFieldAnalyzer.cs" />
     <Compile Include="StaticAnalysis\LegacyBqlField\LegacyBqlFieldFix.cs" />
     <Compile Include="StaticAnalysis\Localization\LocalizationMessageHelper.cs" />

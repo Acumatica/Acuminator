@@ -791,6 +791,24 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Make constant strongly typed.
+        /// </summary>
+        public static string PX1061Fix {
+            get {
+                return ResourceManager.GetString("PX1061Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} constant could be made strongly typed.
+        /// </summary>
+        public static string PX1061Title {
+            get {
+                return ResourceManager.GetString("PX1061Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The state of fields and actions can be configured only in the RowSelected event handler.
         /// </summary>
         public static string PX1070Title {

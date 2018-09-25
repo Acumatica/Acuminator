@@ -176,6 +176,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 	    public static DiagnosticDescriptor PX1060_LegacyBqlField { get; } =
 	        Rule("PX1060", nameof(Resources.PX1060Title).GetLocalized(), Category.Default, DiagnosticSeverity.Info);
 
+	    public static DiagnosticDescriptor PX1061_LegacyBqlConstant { get; } =
+	        Rule("PX1061", nameof(Resources.PX1061Title).GetLocalized(), Category.Default, DiagnosticSeverity.Info);
+
         public static DiagnosticDescriptor PX1070_UiPresentationLogicInEventHandlers { get; } =
 			Rule("PX1070", nameof(Resources.PX1070Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 	}
