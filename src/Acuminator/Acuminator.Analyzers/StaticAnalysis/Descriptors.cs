@@ -174,7 +174,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
             Rule("PX1059", nameof(Resources.PX1059Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
 	    public static DiagnosticDescriptor PX1060_LegacyBqlField { get; } =
-	        Rule("PX1060", nameof(Resources.PX1060Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+	        Rule("PX1060", nameof(Resources.PX1060Title).GetLocalized(), Category.Default, DiagnosticSeverity.Info);
 
         public static DiagnosticDescriptor PX1070_UiPresentationLogicInEventHandlers { get; } =
 			Rule("PX1070", nameof(Resources.PX1070Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
