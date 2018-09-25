@@ -55,11 +55,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 			if (isBoundField == BoundType.DbBound)
 			{
-				await AnalyzeAttributesWithinBoundFieldAsync(property, attributes, pxContext, symbolContext, true, attributeInformation).ConfigureAwait(false);
+				await AnalyzeAttributesWithinBoundFieldAsync(property, attributes, pxContext, symbolContext, attributeInformation).ConfigureAwait(false);
 			}
 			else if (isBoundField == BoundType.Unbound)
 			{
-				await AnalyzeAttributesWithinUnBoundFieldAsync(property, attributes, pxContext, symbolContext, false, attributeInformation).ConfigureAwait(false);
+				await AnalyzeAttributesWithinUnBoundFieldAsync(property, attributes, pxContext, symbolContext, attributeInformation).ConfigureAwait(false);
 			}
 
 		}
@@ -67,7 +67,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 		private static async Task AnalyzeAttributesWithinBoundFieldAsync(IPropertySymbol property, ImmutableArray<AttributeData> attributes,
 																			PXContext pxContext,
 																			SymbolAnalysisContext symbolContext,
-																			bool isBoundField,
 																			AttributeInformation attributeInformation)
 		{
 			if (property.ContainingType.IsDAC()) // BQLTable class bound field
@@ -90,7 +89,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 					{
 						var diagnosticProperties = new Dictionary<string, string>
 						{
-							{ DiagnosticProperty.IsBoundField,isBoundField.ToString() }
+							{ DiagnosticProperty.IsBoundField,true.ToString() }
 						}.ToImmutableDictionary();
 
 						symbolContext.ReportDiagnostic(
@@ -103,16 +102,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 		private static bool isAttributeContainsPersistingCheckNothing(KeyValuePair<string, TypedConstant> argument)
 		{
-			return (
-				argument.Key.Contains(_PersistingCheck) &&
+			return argument.Key.Contains(_PersistingCheck) &&
 					!argument.Value.IsNull && 
 					argument.Value.Value is int intValue &&
-					intValue == (int)PXPersistingCheck.Nothing
-				);
+					intValue == (int)PXPersistingCheck.Nothing;
 		}
 
 		private static async Task AnalyzeAttributesWithinUnBoundFieldAsync(IPropertySymbol property, ImmutableArray<AttributeData> attributes,
-			PXContext pxContext, SymbolAnalysisContext symbolContext, bool isBoundField, AttributeInformation attributeInformation)
+			PXContext pxContext, SymbolAnalysisContext symbolContext, AttributeInformation attributeInformation)
 		{
 			foreach (AttributeData attribute in attributes)
 			{
@@ -131,7 +128,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 					{
 						var diagnosticProperties = new Dictionary<string, string>
 						{
-							{ DiagnosticProperty.IsBoundField, isBoundField.ToString() }
+							{ DiagnosticProperty.IsBoundField, false.ToString() }
 						}.ToImmutableDictionary();
 
 						symbolContext.ReportDiagnostic(
@@ -144,9 +141,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 		public static async Task<Location> GetAttributeLocationAsync(AttributeData attribute, CancellationToken cancellationToken)
 		{
-			SyntaxNode attributeSyntaxNode = null;
-
-			attributeSyntaxNode = await attribute.ApplicationSyntaxReference.GetSyntaxAsync(cancellationToken).ConfigureAwait(false);
+			SyntaxNode attributeSyntaxNode = await attribute.ApplicationSyntaxReference.GetSyntaxAsync(cancellationToken).ConfigureAwait(false);
 
 			return attributeSyntaxNode?.GetLocation();
 		}

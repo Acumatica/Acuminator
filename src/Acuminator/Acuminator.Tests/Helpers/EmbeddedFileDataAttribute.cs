@@ -42,7 +42,7 @@ namespace Acuminator.Tests.Helpers
 			[CallerFilePath] string testFilePath = null)
 			: this(new[] { fileName }, testFilePath, internalCodeFileNames)
 		{ }
-		protected EmbeddedFileDataAttribute(string[] fileNames, string testFilePath, string[] internalCodeFileNames = null)
+		protected EmbeddedFileDataAttribute(string[] fileNames, string testFilePath, string[] externalCodeFileNames = null)
 		{
 			if (fileNames.IsNullOrEmpty())
 				throw new ArgumentNullException(nameof(fileNames));
@@ -53,9 +53,9 @@ namespace Acuminator.Tests.Helpers
 					// ReSharper disable once LocalizableElement
 					throw new ArgumentException("File name cannot be empty", nameof(fileNames));
 			}
-			if (!internalCodeFileNames.IsNullOrEmpty())
+			if (!externalCodeFileNames.IsNullOrEmpty())
 			{
-				foreach (string internalCodeFileName in internalCodeFileNames)
+				foreach (string internalCodeFileName in externalCodeFileNames)
 				{
 					if (String.IsNullOrWhiteSpace(internalCodeFileName))
 						throw new ArgumentException("File name cannot be empty", nameof(internalCodeFileName));
@@ -64,7 +64,7 @@ namespace Acuminator.Tests.Helpers
 
 			_prefix = GetPrefixFromTestFilePath(testFilePath);
 
-			_fileNames = internalCodeFileNames.IsNullOrEmpty() ? fileNames :  fileNames.Concat(internalCodeFileNames).ToArray();
+			_fileNames = externalCodeFileNames.IsNullOrEmpty() ? fileNames :  fileNames.Concat(externalCodeFileNames).ToArray();
 		}
 
 		public override IEnumerable<object[]> GetData(MethodInfo testMethod)

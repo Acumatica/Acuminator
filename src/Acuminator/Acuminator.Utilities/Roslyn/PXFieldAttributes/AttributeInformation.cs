@@ -10,6 +10,20 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 {
 	/// <summary>
+	/// Helper used to classify Acumatica attributes.
+	/// </summary>
+	/// <remarks>
+	/// By Acumatica atribute we mean an attribute derived from PXEventSubscriberAttribute.
+	/// </remarks>
+	
+	public enum BoundType
+	{
+		Unknown = 0,
+		Unbound = 1,
+		DbBound = 2,
+		NotDefined = 3
+	}
+	/// <summary>
 	/// Helper used to retrieve information about the Acumatica attributes.
 	/// </summary>
 	/// <remarks>
@@ -160,7 +174,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			{
 				foreach (var argument in attribute.NamedArguments)
 				{
-					if (argument.Key == IsDBField)
+					if (argument.Key.Equals(IsDBField,StringComparison.OrdinalIgnoreCase))
 					{
 						if (!argument.Value.IsNull && argument.Value.Value is bool boolValue && boolValue == true)
 							return BoundType.DbBound;
@@ -180,6 +194,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// <returns/>
 		public BoundType ContainsBoundAttributes(IEnumerable<AttributeData> attributes)
 		{
+			attributes.ThrowOnNull();
+
 			foreach (var attribute in attributes)
 			{
 				BoundType result = IsBoundAttribute(attribute);
@@ -210,37 +226,5 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		private bool IsAggregatorAttribute(ITypeSymbol attributeType) =>
 			attributeType.InheritsFromOrEquals(_aggregateAttribute) || attributeType.InheritsFromOrEquals(_dynamicAggregateAttribute);
 
-
-		///TODO: refactoring arguments -> remove semanticModel to constructor? Is it nessesary?
-		///TODO: Add DataFlow analyze to corner cases with defaul IsDBBound assigment.
-		public bool? IsBoundField(PropertyDeclarationSyntax property, SemanticModel semanticModel)
-		{
-			var typeSymbol = semanticModel.GetDeclaredSymbol(property);
-			typeSymbol.ThrowOnNull();
-
-			var attributesData = typeSymbol.GetAttributes();
-
-			foreach (var attribute in attributesData)
-			{
-				if (IsBoundAttribute(attribute) == BoundType.DbBound)
-					return true;
-
-				foreach (var argument in attribute.NamedArguments)
-				{
-					if (argument.Key == IsDBField && !argument.Value.IsNull && argument.Value.Value is bool boolValue && boolValue == true)
-						return boolValue;
-				}
-			}
-			return false;
-		}
-
-	}
-
-	public enum BoundType
-	{
-		Unknown = 0,
-		Unbound = 1,
-		DbBound = 2,
-		NotDefined = 3
 	}
 }
