@@ -4,12 +4,12 @@ using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
-    public readonly struct StaticCtrInfo
+    public readonly struct StaticConstructorInfo
     {
         public ConstructorDeclarationSyntax Node { get; }
         public IMethodSymbol Symbol { get; }
 
-        public StaticCtrInfo(ConstructorDeclarationSyntax node, IMethodSymbol symbol)
+        public StaticConstructorInfo(ConstructorDeclarationSyntax node, IMethodSymbol symbol)
         {
             node.ThrowOnNull(nameof(node));
             symbol.ThrowOnNull(nameof(symbol));

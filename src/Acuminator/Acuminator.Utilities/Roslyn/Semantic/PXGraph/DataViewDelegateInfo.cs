@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using Acuminator.Utilities.Common;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
@@ -10,6 +11,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
         public DataViewDelegateInfo(MethodDeclarationSyntax node, IMethodSymbol symbol)
         {
+            node.ThrowOnNull(nameof(node));
+            symbol.ThrowOnNull(nameof(symbol));
+
             Node = node;
             Symbol = symbol;
         }

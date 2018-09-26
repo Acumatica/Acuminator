@@ -28,5 +28,15 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationStart
         [EmbeddedFileData(@"PXGraph\DataViewFromGraphExtensionStartsLongOperation.cs")]
         public async Task DataViewDelegateFromGraphExtension_ReportsDiagnostic(string source) =>
             await VerifyCSharpDiagnosticAsync(source, Descriptors.PX1080_DataViewDelegateLongOperationStart.CreateFor(15, 13));
+
+        [Theory]
+        [EmbeddedFileData(@"PXGraph\DataViewWithParameterStartsLongOperation.cs")]
+        public async Task DataViewDelegateWithParameter_ReportsDiagnostic(string source) =>
+            await VerifyCSharpDiagnosticAsync(source, Descriptors.PX1080_DataViewDelegateLongOperationStart.CreateFor(19, 17));
+
+        [Theory]
+        [EmbeddedFileData(@"PXGraph\StaticDataViewStartsLongOperation.cs")]
+        public async Task StaticDataViewDelegate_ReportsDiagnostic(string source) =>
+            await VerifyCSharpDiagnosticAsync(source, Descriptors.PX1080_DataViewDelegateLongOperationStart.CreateFor(15, 13));
     }
 }

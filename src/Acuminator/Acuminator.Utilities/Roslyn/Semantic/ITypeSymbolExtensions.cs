@@ -331,29 +331,26 @@ namespace Acuminator.Utilities.Roslyn.Semantic
             return initializers;
         }
 
-        public static StaticCtrInfo? GetDeclaredStaticConstructor
+        public static ImmutableArray<StaticConstructorInfo> GetStaticConstructors
             (this INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
         {
             typeSymbol.ThrowOnNull(nameof(typeSymbol));
+
+            List<StaticConstructorInfo> staticCtrs = new List<StaticConstructorInfo>();
 
             foreach(IMethodSymbol ctr in typeSymbol.StaticConstructors)
             {
                 cancellation.ThrowIfCancellationRequested();
 
-                if (!ctr.IsDefinition)
-                    continue;
-
                 SyntaxReference reference = ctr.DeclaringSyntaxReferences.FirstOrDefault();
-                if (reference == null)
+
+                if (!(reference?.GetSyntax(cancellation) is ConstructorDeclarationSyntax node))
                     continue;
 
-                if (!(reference.GetSyntax(cancellation) is ConstructorDeclarationSyntax node))
-                    continue;
-
-                return new StaticCtrInfo(node, ctr);
+                staticCtrs.Add(new StaticConstructorInfo(node, ctr));
             }
 
-            return null;
+            return staticCtrs.ToImmutableArray(); ;
         }
 
 		/// <summary>Get all the methods of this symbol.</summary>

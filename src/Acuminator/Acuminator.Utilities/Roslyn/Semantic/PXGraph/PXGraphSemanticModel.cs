@@ -17,7 +17,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
         public GraphType Type { get; }
         public INamedTypeSymbol Symbol { get; }
-        public StaticCtrInfo? StaticCtr { get; }
+        public ImmutableArray<StaticConstructorInfo> StaticConstructors { get; }
         public ImmutableArray<GraphInitializerInfo> Initializers { get; private set; }
         public ImmutableArray<DataViewInfo> Views { get; }
         public ImmutableArray<DataViewDelegateInfo> ViewDelegates { get; }
@@ -30,7 +30,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             Type = type;
             Symbol = symbol;
             _cancellation = cancellation;
-            StaticCtr = Symbol.GetDeclaredStaticConstructor(_cancellation);
+            StaticConstructors = Symbol.GetStaticConstructors(_cancellation);
             Views = GetDataViews();
             ViewDelegates = GetDataViewDelegates();
 
