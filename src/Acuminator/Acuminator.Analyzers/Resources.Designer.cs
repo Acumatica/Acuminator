@@ -789,5 +789,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1071Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Data view delegates should not start long-running operations.
+        /// </summary>
+        public static string PX1080Title {
+            get {
+                return ResourceManager.GetString("PX1080Title", resourceCulture);
+            }
+        }
     }
 }
