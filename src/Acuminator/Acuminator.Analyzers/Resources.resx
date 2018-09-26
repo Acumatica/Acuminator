@@ -360,6 +360,9 @@
   <data name="PX1071Title" xml:space="preserve">
     <value>Actions cannot be executed within event handlers</value>
   </data>
+  <data name="PX1080Title" xml:space="preserve">
+    <value>Data view delegates should not start long-running operations</value>
+  </data>
   <data name="PX1081Title" xml:space="preserve">
     <value>Actions cannot be executed during the PXGraph initialization</value>
   </data>
