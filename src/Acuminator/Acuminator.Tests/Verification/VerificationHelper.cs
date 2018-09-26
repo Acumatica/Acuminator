@@ -204,7 +204,6 @@ namespace Acuminator.Tests.Verification
 		private static byte[] BuildAssemblyFromSources(string[] sourceCodes)
 		{
 			string assemblyName = Path.GetRandomFileName();
-
 			CSharpCompilation compilation = CSharpCompilation.Create(
 					assemblyName,
 					syntaxTrees: sourceCodes.Select(code => CSharpSyntaxTree.ParseText(text: code)),
@@ -228,8 +227,8 @@ namespace Acuminator.Tests.Verification
 					StringBuilder diagnosticMessages = new StringBuilder(BuildFailMessage + "\r\n");
 					
 					IEnumerable<Diagnostic> failures = emitResult.Diagnostics.Where(diagnostic =>
-								   diagnostic.IsWarningAsError ||
-								   diagnostic.Severity == DiagnosticSeverity.Error);
+															diagnostic.IsWarningAsError ||
+															diagnostic.Severity == DiagnosticSeverity.Error);
 
 					foreach (Diagnostic diagnostic in failures)
 					{
@@ -238,8 +237,10 @@ namespace Acuminator.Tests.Verification
 
 					throw new ArgumentException(diagnosticMessages.ToString());
 				}
+
 				image = ms.ToArray();
 			}
+
 			return image;
 		}
 	}
