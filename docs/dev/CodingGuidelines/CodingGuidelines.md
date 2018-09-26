@@ -209,11 +209,11 @@ You should try to reuse existing Acuminator's helper methods. The Acuminator cod
 * Syntax manipulation helpers, such as a helper that gets the next statement node in a method
 * Semantic helpers
 
-When you write a piece of functionality for a diagnostic (such as a generic check), you should add the `Acuminator.Utilities` namespace to the list of usings and review the existing helpers in the `Acuminator.Utilities` namespace. If there are no helpers appropriate for your task, you should add a new helper to the `Acuminator.Utilities` project.
+When you write a piece of functionality for a diagnostic (such as a generic check), you should add the `Acuminator.Utilities` namespace to the list of `using` directives and review the existing helpers in the `Acuminator.Utilities` namespace. If there are no helpers appropriate for your task, you should add a new helper to the `Acuminator.Utilities` project.
 
 ### Task Blocking
 
-You should avoid the use of `Task.Result` and `Task.Wait()` because this can cause deadlocks and thread pool exhaustion. Instead you should consider using `ThreadHelper.JoinableTaskFactory.Run()`.
+You should avoid the use of `Task.Result` and `Task.Wait()` because this can cause deadlocks and thread pool exhaustion. You should consider using `ThreadHelper.JoinableTaskFactory.Run()` istead.
 
 For details, see the following articles: 
 
