@@ -170,19 +170,23 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			if (BoundBaseTypes.Any(boundBaseType => IsAttributeDerivedFromClassInternal(attribute.AttributeClass, boundBaseType)))
 				return BoundType.DbBound;
 
-			if (attribute.AttributeClass.GetMembers().Select(a => a.Name).Contains(IsDBField))
+			bool containsIsDbFieldproperty =
+					attribute.AttributeClass.GetMembers().OfType<IPropertySymbol>()  //only properties considered
+														 .Any(property => IsDBField.Equals(property.Name, StringComparison.OrdinalIgnoreCase));
+			
+			if (containsIsDbFieldproperty)
 			{
-				foreach (var argument in attribute.NamedArguments)
-				{
-					if (argument.Key.Equals(IsDBField,StringComparison.OrdinalIgnoreCase))
-					{
-						if (!argument.Value.IsNull && argument.Value.Value is bool boolValue && boolValue == true)
-							return BoundType.DbBound;
-						else
-							return BoundType.Unbound;
-					}
-				}
-				return BoundType.Unknown;
+				var isDbPropertyAttributeArgs = attribute.NamedArguments.Where(arg => IsDBField.Equals(arg.Key, StringComparison.OrdinalIgnoreCase)).ToList();    //case insensitive check
+
+				if (isDbPropertyAttributeArgs.Count != 1)  //rare case when there are multiple different "IsDBField" considered
+					return BoundType.Unknown;
+
+				if (!(isDbPropertyAttributeArgs[0].Value.Value is bool isDbPropertyAttributeArgument))
+					return BoundType.Unknown;  //if there is null or values of type other than bool then we don't know if attribute is bound
+
+				return isDbPropertyAttributeArgument
+					? BoundType.DbBound
+					: BoundType.Unbound;
 			}
 			return BoundType.Unbound;
 		}
