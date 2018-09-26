@@ -60,7 +60,7 @@ public async Task Execute() { } // incorrect
 
 ### Value Tuples Naming
 
-Names of properties in `ValueTuple` must use *PascalCase*.
+Names of properties in `ValueTuple` must use *PascalCase*, except the case when the tuple is a local variable.
 
 ```C#
 public (int Line, int Column) GetPosition() { } // right
