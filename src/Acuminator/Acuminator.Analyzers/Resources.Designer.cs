@@ -791,7 +791,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A data view delegate should not start PXLongOperation.
+        ///   Looks up a localized string similar to Data view delegates should not start long-running operations.
         /// </summary>
         public static string PX1080Title {
             get {

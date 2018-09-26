@@ -218,6 +218,8 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelected\NonDbCrudOperations.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\EventHandlers\Press.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\EventHandlers\PressWithExternalMethod.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\DataViewWithParameterStartsLongOperation.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\StaticDataViewStartsLongOperation.cs" />
     <Compile Include="Tests\StaticAnalysis\PXActionExecution\PXActionExecutionInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\EventHandlers\PressWithAdapter.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\EventHandlers\PressOnDerivedType.cs" />

@@ -361,6 +361,6 @@
     <value>Actions cannot be executed within event handlers</value>
   </data>
   <data name="PX1080Title" xml:space="preserve">
-    <value>A data view delegate should not start PXLongOperation</value>
+    <value>Data view delegates should not start long-running operations</value>
   </data>
 </root>
