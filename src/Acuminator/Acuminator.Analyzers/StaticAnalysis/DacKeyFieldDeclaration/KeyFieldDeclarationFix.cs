@@ -22,7 +22,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 	public class KeyFieldDeclarationFix : CodeFixProvider
 	{
 		private const string IsKey = "IsKey";
-		private const string @true = "true";
+		private const string True = "true";
 			
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1055_DacKeyFieldBound.Id);
@@ -36,16 +36,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 				if (diagnostic == null || context.CancellationToken.IsCancellationRequested)
 					return;
 
-				string codeActionName = nameof(Resources.PX1055Fix1).GetLocalized().ToString();
-				CodeAction codeAction = CodeAction.Create(codeActionName,
-															  cToken => MakeIdentityFieldKeyAsync(context.Document, context, context.Span, cToken, diagnostic),
-															  equivalenceKey: codeActionName);
-				context.RegisterCodeFix(codeAction, context.Diagnostics);
+				string codeActionIdentityKeyName = nameof(Resources.PX1055Fix1).GetLocalized().ToString();
+				CodeAction codeActionIdentityKey = CodeAction.Create(codeActionIdentityKeyName,
+																	cToken => RemoveKeysFromFieldsAsync(context.Document, context, context.Span, cToken, diagnostic, false),
+																	equivalenceKey: codeActionIdentityKeyName);
+
+				string codeActionBoundKeysName = nameof(Resources.PX1055Fix2).GetLocalized().ToString();
+				CodeAction codeActionBoundKeys = CodeAction.Create(	codeActionBoundKeysName,
+																	cToken => RemoveKeysFromFieldsAsync(context.Document, context, context.Span, cToken, diagnostic, true),
+																	equivalenceKey: codeActionBoundKeysName);
+				context.RegisterCodeFix(codeActionIdentityKey, context.Diagnostics);
+				context.RegisterCodeFix(codeActionBoundKeys, context.Diagnostics);
 			}, context.CancellationToken);
 			
 		}
 
-		private async Task<Document> MakeIdentityFieldKeyAsync(Document document,CodeFixContext context, TextSpan span, CancellationToken cToken, Diagnostic diagnostic)
+		private async Task<Document> RemoveKeysFromFieldsAsync(Document document,CodeFixContext context, TextSpan span, CancellationToken cToken, Diagnostic diagnostic, bool editIdentityAttribute)
 		{
 
 			SemanticModel semanticModel = await document.GetSemanticModelAsync(cToken).ConfigureAwait(false);
@@ -79,10 +85,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 				if (attributeType == null)
 					return document;
 
-				if (!(attributeInformation.IsAttributeDerivedFromClass(attributeType, identityAttributeType) || attributeInformation.IsAttributeDerivedFromClass(attributeType, longIdentityAttributeType)))
+				bool isIdentityAttribute = attributeInformation.IsAttributeDerivedFromClass(attributeType, identityAttributeType) || 
+										   attributeInformation.IsAttributeDerivedFromClass(attributeType, longIdentityAttributeType);
+
+				if (!isIdentityAttribute ^ editIdentityAttribute)
 				{
 					var deletedNode = attributeNode.ArgumentList.Arguments.Where(a => a.NameEquals?.Name.Identifier.ValueText.Equals(IsKey)??false && 
-																					  (a.Expression as LiteralExpressionSyntax).Token.ValueText.Equals(@true));
+																					  (a.Expression as LiteralExpressionSyntax).Token.ValueText.Equals(True));
 
 					deletedNodes.AddRange(deletedNode);
 				}

@@ -66,14 +66,26 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacKeyFieldDeclaration
 
 		[Theory]
 		[EmbeddedFileData("DacKeyFields_IdentityKey+Key.cs",
-						"DacKeyFields_IdentityKey+Key_OnlyIdentity_Expected.cs")]
+						"DacKeyFields_IdentityKey+Key_EditFieldsAttr_Expected.cs")]
 		public virtual void TestFixForDacKeyFields_IdentityKey_Key(string actual, string expected) =>
 		  VerifyCSharpFix(actual, expected);
 
 		[Theory]
 		[EmbeddedFileData("DacKeyFields_IdentityKey+CompoundKey.cs",
-							"DacKeyFields_IdentityKey+CompoundKey_OnlyIdentity_Expected.cs")]
+							"DacKeyFields_IdentityKey+CompoundKey_EditFiedlsAttr_Expected.cs")]
 		public virtual void TestFixForDacKeyFields_IdentityKey_CompoundKey(string actual, string expected) =>
 			VerifyCSharpFix(actual, expected);
+
+		[Theory]
+		[EmbeddedFileData("DacKeyFields_IdentityKey+Key.cs",
+						"DacKeyFields_IdentityKey+Key_EditIdentityAttr_Expected.cs")]
+		public virtual void TestFixForDacKeyFields_IdentityKey_Key_EditIdentityAttribute(string actual, string expected) =>
+		  VerifyCSharpFix(actual, expected,1);
+
+		[Theory]
+		[EmbeddedFileData("DacKeyFields_IdentityKey+CompoundKey.cs",
+							"DacKeyFields_IdentityKey+CompoundKey_EditIdentityAttr_Expected.cs")]
+		public virtual void TestFixForDacKeyFields_IdentityKey_CompoundKey_EditIdentityAttribute(string actual, string expected) =>
+			VerifyCSharpFix(actual, expected,1);
 	}
 }
