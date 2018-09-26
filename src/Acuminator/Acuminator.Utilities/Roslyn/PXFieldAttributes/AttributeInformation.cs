@@ -192,7 +192,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// </summary>
 		/// <param name="attributes">The attributes collection.</param>
 		/// <returns/>
-		public BoundType ContainsBoundAttributes(IEnumerable<AttributeData> attributes)
+		public bool ContainsBoundAttributes(IEnumerable<AttributeData> attributes)
 		{
 			attributes.ThrowOnNull();
 
@@ -201,9 +201,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				BoundType result = IsBoundAttribute(attribute);
 
 				if (result == BoundType.DbBound)
-					return result;
+					return true;
 			}
-			return BoundType.Unbound;
+			return false;
 		}
 
 		private bool IsAttributeDerivedFromClassInternal(ITypeSymbol attributeType, ITypeSymbol typeToCheck, int depth = DefaultRecursionDepth)

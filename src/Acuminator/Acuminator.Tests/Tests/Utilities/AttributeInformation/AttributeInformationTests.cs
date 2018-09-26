@@ -120,28 +120,28 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		[EmbeddedFileData(@"PropertyIsDBBoundFieldAttribute.cs")]
 		public Task FieldBoundAttributesWithDynamicIsDBFieldSetInConstructorAsync(string source) =>
 			TestIsDBFieldPropertyAsync(source,
-								   new List<BoundType> { BoundType.DbBound, BoundType.Unbound });
+								   new List<bool> { true, false });
 
 		[Theory]
 		[EmbeddedFileData(@"PropertyIsDBBoundFieldWithDefinedAttributes.cs")]
 		public Task FieldBoundAttributesWithDynamicIsDBFieldSetInAttributeDefinitionAsync(string source) =>
 		   TestIsDBFieldPropertyAsync(source,
-								  new List<BoundType> { BoundType.Unbound, BoundType.Unbound, BoundType.Unbound, BoundType.Unbound });
+								  new List<bool> { false, false, false, false });
 
 		[Theory]
 		[EmbeddedFileData(@"PropertyIsDBBoundFieldWithoutDefinedAttributes.cs", internalCodeFileNames: new string[] { @"ExternalAttributes1.cs", @"ExternalAttributes2.cs" })]
 		public Task FieldBoundAttributesWithDynamicIsDBFieldSetInExternalAttributeDefinitionAsync(string source, string externalAttribute1, string externalAttribute2) =>
 		   TestIsDBFieldPropertyAsync(source,
-								  new List<BoundType> { BoundType.Unbound, BoundType.Unbound, BoundType.DbBound },
+								  new List<bool> { false, false, true },
 								  new string[] { externalAttribute1, externalAttribute2 });
 
-		private async Task TestIsDBFieldPropertyAsync(string source, List<BoundType> expected, string[] code = null)
+		private async Task TestIsDBFieldPropertyAsync(string source, List<bool> expected, string[] code = null)
 		{
 			Document document = CreateDocument(source, externalCode: code);
 			SemanticModel semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
 			var syntaxRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
 
-			List<BoundType> actual = new List<BoundType>();
+			List<bool> actual = new List<bool>(capacity: expected.Capacity);
 			var pxContext = new PXContext(semanticModel.Compilation);
 			var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
 
@@ -155,7 +155,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 				
 				actual.Add((propertySymbol != null)?
 								attributeInformation.ContainsBoundAttributes(propertySymbol.GetAttributes()):
-								BoundType.Unknown);
+								false);
 			}
 
 			actual.Should().BeEquivalentTo(expected);
