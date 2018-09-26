@@ -23,67 +23,67 @@
 
 ## Code Style
 
-General [.NET Framework Naming Guidelines](https://docs.microsoft.com/en-us/dotnet/standard/design-guidelines/naming-guidelines) must be used beside our own.
+The [.NET Framework Naming Guidelines](https://docs.microsoft.com/en-us/dotnet/standard/design-guidelines/naming-guidelines) must be used in addition to our own.
 
-### Private and Protected Fields Naming
+### Naming of Private and Protected Fields
 
-Use underscore prefix for private and protected fields in classes.
+An underscore must be used as a prefix for private and protected fields in classes.
 
 ```C#
 public class MyClass
 {
-  private object wronglyNamedField;       //Bad naming
+  private object wronglyNamedField;       //Incorrect naming
  
   protected object _correctlyNamedField;  //Correct naming
 }
 ```
 
-### Constants Naming
+### Naming of Constants
 
 Names of constants must begin with a capital letter.
 
 ```C#
-private const string SetValueMethodName = "SetValue"; // right
-private const string _setValueMethodName = "SetValue"; // wrong
+private const string SetValueMethodName = "SetValue"; // Correct
+private const string _setValueMethodName = "SetValue"; // Incorrect
 ```
 
-### Asynchronous Methods Naming
+### Naming of Asynchronous Methods
 
-Asynchronous methods must have `Async` postfix.
+Asynchronous methods must have the `Async` postfix.
 
 ```C#
-public Task<int> GetCountAsync() { } // correct
-public Task<int> GetCount() { } // incorrect
-public async Task ExecuteAsync() { } // correct
-public async Task Execute() { } // incorrect
+public Task<int> GetCountAsync() { } // Correct
+public Task<int> GetCount() { } // Incorrect
+public async Task ExecuteAsync() { } // Correct
+public async Task Execute() { } // Incorrect
 ```
 
-### Value Tuples Naming
+### Naming of Value Tuples
 
-Names of properties in `ValueTuple` must use *PascalCase*, except the case when the tuple is a local variable.
+The names of the properties in `ValueTuple` must use *PascalCase*, except the case when the tuple is a local variable.
 
 ```C#
-public (int Line, int Column) GetPosition() { } // right
-public (int line, int column) GetPosition() { } // wrong
+public (int Line, int Column) GetPosition() { } // Correct
+public (int line, int column) GetPosition() { } // Incorrect
 ```
 
-### Test Methods Naming
+### Naming of Test Methods
 
-Test methods should be named in *PascalCase*, with underscore character as a separator between logical statements.
+Test methods should be named in *PascalCase* with the underscore character as a separator between logical statements.
 
 ```C#
-public Task EventHandlersWithExternalMethod(string actual) { } // valid
-public Task EventHandlers_ShouldNotShowDiagnostic(string actual) { } // valid
-public Task TestCodeFix_RowSelected(string actual, string expected) { } // valid
-public Task TestDiagnostic_RowSelected(string actual) { } // valid in case if there are also some tests for the code fix in the same class
+public Task EventHandlersWithExternalMethod(string actual) { } // Valid
+public Task EventHandlers_ShouldNotShowDiagnostic(string actual) { } // Valid
+public Task TestCodeFix_RowSelected(string actual, string expected) { } // Valid
+public Task TestDiagnostic_RowSelected(string actual) { } // Valid if the same class also contains the tests for the code fix
 
-public Task No_Connection_Scope_In_Row_Selected(string actual) { } // invalid
-public Task Test_CodeFix_For_RowSelecting(string actual) { } // invalid
+public Task No_Connection_Scope_In_Row_Selected(string actual) { } // Invalid
+public Task Test_CodeFix_For_RowSelecting(string actual) { } // Invalid
 ```
 
 ### Indentation Depth
 
-Indentation depth (brace block levels) should be no more than 3.
+Indentation depth (brace block levels) should be no more than three.
 
 ```C#
 public void Foo(bool flag, IEnumerable collection)
@@ -111,7 +111,7 @@ public void Foo(bool flag, IEnumerable collection)
 
 ### Control Flow Statements
 
-Separate control flow statements (if / while / for / foreach / switch / do-while) with empty lines.
+Control flow statements (such as `if `, `while`, `for`, `foreach`, `switch`, `do`-`while`) should be separated with empty lines.
 
 ```C#
 public bool Foo(bool flag)
@@ -125,7 +125,7 @@ public bool Foo(bool flag)
 }
 ```
 
-There are few possible exceptions to this rule when there is a logical grouping in the code which makes more sense:
+A logical grouping of the code can be an exception to this rule.
 
 ```C#
 public bool Foo(bool flag)
@@ -144,44 +144,44 @@ public bool Foo(bool flag)
 
 The local functions from C# 7 should be used with caution. A general recommendation is to not overuse this feature.
 
-There are three possible use cases:
+The local functions can be used in the following three cases:
 
-* Implementing a generator method with the argument check made immediately:
+* If you implement a generator method with the argument check that is made immediately.
 
-```C#
-public IEnumerable<int> Generator(string parameter)
-{
-    if (parameter == null)
-       throw new ArgumentNullException(nameof(parameter));   //Check is performed immediately
+  ```C#
+  public IEnumerable<int> Generator(string parameter)
+  {
+      if (parameter == null)
+         throw new ArgumentNullException(nameof(parameter));   //The check is performed immediately.
     
-    return GeneratorInternal();
+      return GeneratorInternal();
  
-     IEnumerable<int> GeneratorInternal()
-     {
-         int i = parameter == "Y" ? 1 : 0;
-         yield return i; 
-     }
-}
-```
+       IEnumerable<int> GeneratorInternal()
+       {
+           int i = parameter == "Y" ? 1 : 0;
+          yield return i; 
+       }
+  }
+  ```
 
-* Implementing an async method with argument check. Similar to the previous case.
-* Better grouping of the public method with the private methods which only this method use. General .NET convention recommends putting all public methods above the private ones. However, you can improve readability a little bit by grouping private methods related to only one public method as its local functions. The number of such local methods shouldn't be too big - no more than 3 local functions.
+* If you implement an async method with the argument check.
+* If you need better grouping of the public method with the private methods that only this public method uses. The general .NET convention recommends that you put all public methods above the private ones. However, you can improve readability by grouping private methods that are related to only one public method as its local functions. The number of these local functions should be no more than three.
 
 ## Best Practices
 
-General [C# Coding Conventions](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/inside-a-program/coding-conventions) should be considered besides our own.
+The [C# Coding Conventions](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/inside-a-program/coding-conventions) should be considered in addition to our own.
 
 ### Unit Tests
 
-Each analyzer, code fix or refactoring should be covered with unit tests.
+Each analyzer, code fix, or refactoring should be covered with unit tests.
 
 ### Cancellation Support
 
 The cancellation support should be added to Acuminator diagnostics and code fixes.
 
-This means that the cancellation token which is passed in some way to every Roslyn diagnostic and code fix should be checked between big calculation steps. Also, the token should be passed to every Roslyn framework method which supports cancellation, for example, `Document.GetSyntaxRootAsync()`, etc.
+This means that the cancellation token, which is passed to every Roslyn diagnostic and code fix, should be checked between big calculation steps. Also, the token should be passed to every Roslyn framework method that supports cancellation, such as `Document.GetSyntaxRootAsync()`.
 
-The check for cancellation via cancellation token must be done using the following construction:
+The check for cancellation via cancellation token must be done using the following construction.
 
 ```C#
 cancellationToken.ThrowIfCancellationRequested();
@@ -189,44 +189,49 @@ cancellationToken.ThrowIfCancellationRequested();
 
 ### Demo Solution
 
-If you add a new diagnostic or other functionality to the Acuminator, you also should add corresponding examples to the demo solution located under */src/Samples* folder.
+If you add a new diagnostic or other functionality to the Acuminator, you also should add corresponding examples to the demo solution, which is located under the */src/Samples* folder.
 
-We use the demo solution for two purposes.
+We use the demo solution for the following two purposes:
 
-First, we can use it as a lightweight VS solution for debugging.
+1. As a lightweight Visual Studio solution for debugging.
+2. As a demo of Acuminator. 
 
-Secondly, we use it to show the demos of the Acuminator. Therefore, we need to maintain it in a consistent state — it should compile without errors, and it should contain examples similar to the real business cases.
+Because the solution is used for demo purposes, we need to maintain it in the consistent state — that is, it should compile without errors, and it should contain examples that are similar to the real business cases.
 
 ### Code Reuse
 
-Try to re-use existing Acuminator's helper methods. There are already existing utilities for many common tasks related to Acumatica specific objects:
+You should try to reuse existing Acuminator's helper methods. The Acuminator code already includes the utilities for many common tasks related to the Acumatica-specific objects, such as the following:
 
-* [Recursive Code Analysis](../RecursiveCodeAnalysis/RecursiveCodeAnalysis.md)
-* Check if a type is a DAC, DAC extension, graph, graph extension, View, BQL, PXAction and etc
-* Get views/actions from graph/graph extension
-* Get field attributes from DAC property and resolve if it is bound or unbound
-* Syntax manipulation helpers, like get next statement node in a method
+* The utility for the [recursive code analysis](../RecursiveCodeAnalysis/RecursiveCodeAnalysis.md)
+* The utility that checks whether the type is an Acumatica-specific type, such as a DAC, DAC extension, graph, graph extension, view, BQL statement, or PXAction
+* The utility that obtains the views or actions from a graph or graph extension
+* The utility that obtains the field attributes from a DAC property and finds out whether the field is bound or unbound
+* Syntax manipulation helpers, such as a helper that gets the next statement node in a method
 * Semantic helpers
 
-When you write a piece of functionality for a diagnostic (e.g., a generic check), please check existing helpers inside Acuminator.Utilities namespace. Make sure it is added to the usings list. If there are no helpers appropriate for your task, please add a new helper to the Acuminator.Utilities project.
+When you write a piece of functionality for a diagnostic (such as a generic check), you should add the `Acuminator.Utilities` namespace to the list of usings and review the existing helpers in the `Acuminator.Utilities` namespace. If there are no helpers appropriate for your task, you should add a new helper to the `Acuminator.Utilities` project.
 
 ### Task Blocking
 
-Avoid using `Task.Result` and `Task.Wait()` because it can cause deadlocks and thread pool exhaustion. Consider using `ThreadHelper.JoinableTaskFactory.Run()` instead.
+You should avoid the use of `Task.Result` and `Task.Wait()` because this can cause deadlocks and thread pool exhaustion. Instead you should consider using `ThreadHelper.JoinableTaskFactory.Run()`.
 
-See [this article](https://docs.microsoft.com/en-us/visualstudio/extensibility/managing-multiple-threads-in-managed-code) for more details. Additional information can be found [here](https://github.com/Microsoft/vs-threading/blob/master/doc/cookbook_vs.md) and [here](https://github.com/Microsoft/vs-threading/blob/master/doc/threading_rules.md).
+For details, see the following articles: 
+
+* [How to: Manage multiple threads in managed code](https://docs.microsoft.com/en-us/visualstudio/extensibility/managing-multiple-threads-in-managed-code) 
+* [Cookbook for Visual Studio](https://github.com/Microsoft/vs-threading/blob/master/doc/cookbook_vs.md)
+* [Three Threading Rules](https://github.com/Microsoft/vs-threading/blob/master/doc/threading_rules.md)
 
 ### Task Awaiting
 
-Use `Task.ConfigureAwait(false)` within analyzers, code fixes and refactorings to improve the performance and avoid potential deadlocks.
+You should use `Task.ConfigureAwait(false)` within analyzers, code fixes, and refactorings to improve the performance and avoid potential deadlocks.
 
-Be aware that using `ConfigureAwait(false)` in other places (such as VSIX) without any additional statements like `await TaskScheduler.Default` should be avoided; see [this article](https://github.com/Microsoft/vs-threading/blob/master/doc/cookbook_vs.md) for more details.
+The use of `ConfigureAwait(false)` in other places (such as VSIX) without additional statements, such as `await TaskScheduler.Default`, should be avoided. For more information, see [Cookbook for Visual Studio](https://github.com/Microsoft/vs-threading/blob/master/doc/cookbook_vs.md).
 
 ### Parametrized Diagnostic Messages
 
-If a message for a diagnostic must be parameterized (e.g. "The {0} field cannot be declared within a DAC declaration"), this parametrized message should be passed to the diagnostic descriptor in `MessageFormat` property, not in `Title`. The `Title` property must contain a brief description without any parameters.
+If a message for a diagnostic must be parameterized (such as "The {0} field cannot be declared within a DAC declaration"), this parametrized message should be passed to the diagnostic descriptor in the `MessageFormat` property instead of the `Title` property. The `Title` property must contain a brief description without parameters.
 
-This rule is described inside the `DiagnosticDescriptor` class:
+This rule is described inside the `DiagnosticDescriptor` class, which fragment is shown in the following code.
 
 ```C#
 /// <summary>A short localizable title describing the diagnostic.</summary>
@@ -238,7 +243,7 @@ public LocalizableString Title { get; }
 public LocalizableString MessageFormat { get; }
 ```
 
-`MessageFormat` can be set using an optional parameter when creating a new `DiagnosticDescriptor` instance:
+You can set the `MessageFormat` property by using an optional parameter during creation of a new `DiagnosticDescriptor` instance, as shown in the following code.
 
 ```C#
 public static DiagnosticDescriptor PX1027_ForbiddenFieldsInDacDeclaration { get; } =
@@ -248,15 +253,13 @@ public static DiagnosticDescriptor PX1027_ForbiddenFieldsInDacDeclaration { get;
 
 ### Test Methods
 
-Test methods should be asynchronous.
-
-It improves overall test performance and avoids potential deadlocks for some test runners.
+Test methods should be asynchronous. This improves overall test performance and avoids potential deadlocks for test runners.
 
 ```C#
 public Task TestDiagnostic(string actual) => VerifyCSharpDiagnosticAsync(actual);
 ```
 
-Use `async` / `await` pattern to avoid wrapping exceptions in `AggregateException` and make the test output more readable.
+You should use the `async` / `await` pattern to avoid wrapping exceptions in `AggregateException` and make the test output more readable.
 
 ```C#
 public async Task TestDiagnostic(string actual) => await VerifyCSharpDiagnosticAsync(actual);
