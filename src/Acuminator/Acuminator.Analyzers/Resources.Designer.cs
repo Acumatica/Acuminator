@@ -789,5 +789,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1071Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BQL queries must be executed within the context of an existing PXGraph instance.
+        /// </summary>
+        public static string PX1072Title {
+            get {
+                return ResourceManager.GetString("PX1072Title", resourceCulture);
+            }
+        }
     }
 }

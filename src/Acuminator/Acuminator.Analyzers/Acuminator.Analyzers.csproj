@@ -76,6 +76,7 @@
     <Compile Include="StaticAnalysis\LongOperationStart\LongOperationInEventHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceInEventHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\LongOperationStart\PXGraphLongOperationDuringInitializationAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\PXGraphCreationForBqlQueries\PXGraphCreationForBqlQueriesAnalyzer.cs" />
     <Compile Include="StaticAnalysis\RowChangesInEventHandlers\AccessWalkerBase.cs" />
     <Compile Include="StaticAnalysis\RowChangesInEventHandlers\DacInstanceAccessWalker.cs" />
     <Compile Include="StaticAnalysis\SavingChanges\SavingChangesDuringPXGraphInitializationAnalyzer.cs" />
