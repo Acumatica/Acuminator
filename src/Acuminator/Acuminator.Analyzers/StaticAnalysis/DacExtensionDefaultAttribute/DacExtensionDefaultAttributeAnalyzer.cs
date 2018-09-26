@@ -103,9 +103,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 		private static bool isAttributeContainsPersistingCheckNothing(KeyValuePair<string, TypedConstant> argument)
 		{
 			return argument.Key.Contains(_PersistingCheck) &&
-					!argument.Value.IsNull && 
-					argument.Value.Value is int intValue &&
-					intValue == (int)PXPersistingCheck.Nothing;
+					argument.Value.Value is int persistingCheckValue &&
+					persistingCheckValue == (int)PXPersistingCheck.Nothing;
 		}
 
 		private static async Task AnalyzeAttributesWithinUnBoundFieldAsync(IPropertySymbol property, ImmutableArray<AttributeData> attributes,
