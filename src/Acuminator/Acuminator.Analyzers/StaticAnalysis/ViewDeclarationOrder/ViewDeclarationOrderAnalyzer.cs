@@ -19,17 +19,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
             ImmutableArray.Create(Descriptors.PX1004_ViewDeclarationOrder, Descriptors.PX1006_ViewDeclarationOrder);
 
 		
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
+		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel graph)
 		{
-			INamedTypeSymbol graph = (INamedTypeSymbol)context.Symbol;
-
-			if (graph == null || context.CancellationToken.IsCancellationRequested ||
-			   !graph.InheritsFromOrEquals(pxContext.PXGraphType) && !graph.InheritsFromOrEquals(pxContext.PXGraphExtensionType))
-			{
-				return;
-			}
-
-            graph.GetViewsWithSymbolsFromPXGraph(pxContext);
+            graph.
             var graphViews = graph.GetMembers()
 								  .OfType<IFieldSymbol>()
 								  .Select(field => field.Type as INamedTypeSymbol)
