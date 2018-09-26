@@ -11,48 +11,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 		/// <summary>
 		/// Searches for a member access (conditional and unconditional) on a local variable
 		/// </summary>
-		private class VariableMemberAccessWalker : CSharpSyntaxWalker
+		private class VariableMemberAccessWalker : AccessWalkerBase
 		{
 			private readonly ImmutableHashSet<ILocalSymbol> _variables;
-			private readonly SemanticModel _semanticModel;
-
-			public bool Success { get; private set; }
-
+			
 			public VariableMemberAccessWalker(ImmutableHashSet<ILocalSymbol> variables, SemanticModel semanticModel)
+				:base(semanticModel)
 			{
-				semanticModel.ThrowOnNull(nameof (semanticModel));
-
 				_variables = variables;
-				_semanticModel = semanticModel;
 			}
-
-			public void Reset()
-			{
-				Success = false;
-			}
-
-			public override void Visit(SyntaxNode node)
-			{
-				if (!Success)
-					base.Visit(node);
-			}
-
-			public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
-			{
-				if (IsVariable(node.Expression))
-					Success = true;
-			}
-
-			public override void VisitConditionalAccessExpression(ConditionalAccessExpressionSyntax node)
-			{
-				if (IsVariable(node.Expression))
-					Success = true;
-			}
-
-			private bool IsVariable(ExpressionSyntax node)
+			
+			protected override bool Predicate(ExpressionSyntax node)
 			{
 				return node != null
-				       && _semanticModel.GetSymbolInfo(node).Symbol is ILocalSymbol variable
+				       && SemanticModel.GetSymbolInfo(node).Symbol is ILocalSymbol variable
 				       && _variables.Contains(variable);
 			}
 		}
