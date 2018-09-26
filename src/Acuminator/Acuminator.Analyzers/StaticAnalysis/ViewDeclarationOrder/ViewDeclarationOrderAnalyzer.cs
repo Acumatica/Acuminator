@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
@@ -19,51 +20,37 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
             ImmutableArray.Create(Descriptors.PX1004_ViewDeclarationOrder, Descriptors.PX1006_ViewDeclarationOrder);
 
 		
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel graph)
+		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel graphSemanticModel)
 		{
-            graph.
-            var graphViews = graph.GetMembers()
-								  .OfType<IFieldSymbol>()
-								  .Select(field => field.Type as INamedTypeSymbol)
-								  .Where(fieldType => fieldType != null &&
-													   fieldType.InheritsFrom(pxContext.PXSelectBaseType) && 
-													   fieldType.IsGenericType &&
-													   fieldType.TypeArguments.Length > 0).
-								   ToImmutableList();
-
-			Location graphLocation = graph.Locations.FirstOrDefault();
-
-			if (graphLocation == null || context.CancellationToken.IsCancellationRequested)
+			if (graphSemanticModel.Views.Length == 0)
 				return;
-
+			
 			//forward pass
-			CheckGraphViews(context, graphLocation, graphViews, Descriptors.PX1004_ViewDeclarationOrder);
-
-			if (context.CancellationToken.IsCancellationRequested)
-				return;
-
+			CheckGraphViews(context, graphSemanticModel.Views, Descriptors.PX1004_ViewDeclarationOrder);
+					
 			//backward pass
-			CheckGraphViews(context, graphLocation, graphViews.Reverse(), Descriptors.PX1006_ViewDeclarationOrder);
+			CheckGraphViews(context, graphSemanticModel.Views.Reverse(), Descriptors.PX1006_ViewDeclarationOrder);
 		}
 
-		private static void CheckGraphViews(SymbolAnalysisContext context, Location graphLocation, ImmutableList<INamedTypeSymbol> graphViews,
+		private static void CheckGraphViews(SymbolAnalysisContext context, ImmutableArray<DataViewInfo> graphViews, 
 											DiagnosticDescriptor diagnosticDescriptor)
 		{
-			var visitedViews = new HashSet<ITypeSymbol>();
+			context.CancellationToken.ThrowIfCancellationRequested();
+			var visitedViewDacTypes = new HashSet<ITypeSymbol>();
 
-			foreach (INamedTypeSymbol view in graphViews)
+			foreach (DataViewInfo viewInfo in graphViews.Where(vInfo => vInfo.Type.TypeArguments.Any() && vInfo.Symbol.Locations.Any()))
 			{
-				ITypeSymbol viewType = view.TypeArguments[0] as ITypeSymbol;
+				ITypeSymbol viewDacType = viewInfo.Type.TypeArguments[0];
 
-				if (viewType == null || visitedViews.Contains(viewType))
+				if (!viewDacType.IsDAC())
 					continue;
-
-				foreach (INamedTypeSymbol parentType in viewType.GetBaseTypes().Where(pType => visitedViews.Contains(pType)))
-				{
-					context.ReportDiagnostic(Diagnostic.Create(diagnosticDescriptor, graphLocation, viewType.Name, parentType.Name));
-				}
-
-				visitedViews.Add(viewType);
+	
+				Location viewLocation = viewInfo.Symbol.Locations[0];
+				viewDacType.GetBaseTypes()
+						   .Where(baseDac => visitedViewDacTypes.Contains(baseDac))
+						   .ForEach(baseDac => context.ReportDiagnostic(
+														Diagnostic.Create(diagnosticDescriptor, viewLocation, viewDacType.Name, baseDac.Name)));
+				visitedViewDacTypes.Add(viewDacType);
 			}
 		}
 	}
