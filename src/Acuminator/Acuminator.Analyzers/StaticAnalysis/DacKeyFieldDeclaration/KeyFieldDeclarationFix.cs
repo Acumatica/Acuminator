@@ -38,20 +38,39 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 				string codeActionIdentityKeyName = nameof(Resources.PX1055Fix1).GetLocalized().ToString();
 				CodeAction codeActionIdentityKey = CodeAction.Create(codeActionIdentityKeyName,
-																	cToken => RemoveKeysFromFieldsAsync(context.Document, context, context.Span, cToken, diagnostic, false),
+																	cToken => RemoveKeysFromFieldsAsync(context.Document,
+																										context,
+																										cToken, 
+																										diagnostic, 
+																										editIdentityAttribute:false),
 																	equivalenceKey: codeActionIdentityKeyName);
 
 				string codeActionBoundKeysName = nameof(Resources.PX1055Fix2).GetLocalized().ToString();
 				CodeAction codeActionBoundKeys = CodeAction.Create(	codeActionBoundKeysName,
-																	cToken => RemoveKeysFromFieldsAsync(context.Document, context, context.Span, cToken, diagnostic, true),
+																	cToken => RemoveKeysFromFieldsAsync(context.Document, 
+																										context,
+																										cToken, 
+																										diagnostic, 
+																										editIdentityAttribute: true),
 																	equivalenceKey: codeActionBoundKeysName);
+
+				string codeActionRemoveIdentityColumnName = nameof(Resources.PX1055Fix3).GetLocalized().ToString();
+				CodeAction codeActionRemoveIdentityColumn = CodeAction.Create(codeActionRemoveIdentityColumnName,
+																				cToken => RemoveKeysFromFieldsAsync(context.Document, 
+																													context, 
+																													cToken, 
+																													diagnostic,
+																													removeIdentityAttribute: true),
+																				equivalenceKey: codeActionRemoveIdentityColumnName);
+
 				context.RegisterCodeFix(codeActionIdentityKey, context.Diagnostics);
 				context.RegisterCodeFix(codeActionBoundKeys, context.Diagnostics);
+				context.RegisterCodeFix(codeActionRemoveIdentityColumn, context.Diagnostics);
 			}, context.CancellationToken);
 			
 		}
 
-		private async Task<Document> RemoveKeysFromFieldsAsync(Document document,CodeFixContext context, TextSpan span, CancellationToken cToken, Diagnostic diagnostic, bool editIdentityAttribute)
+		private async Task<Document> RemoveKeysFromFieldsAsync(Document document,CodeFixContext context, CancellationToken cToken, Diagnostic diagnostic, bool editIdentityAttribute = false, bool removeIdentityAttribute = false)
 		{
 
 			SemanticModel semanticModel = await document.GetSemanticModelAsync(cToken).ConfigureAwait(false);
@@ -71,7 +90,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 			Document tempDocument = document;
 
-			List<AttributeArgumentSyntax> deletedNodes = new List<AttributeArgumentSyntax>();
+			List<SyntaxNode> deletedNodes = new List<SyntaxNode>();
 
 			foreach (var attributeLocation in attributeLocations)
 			{
@@ -88,22 +107,26 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 				bool isIdentityAttribute = attributeInformation.IsAttributeDerivedFromClass(attributeType, identityAttributeType) || 
 										   attributeInformation.IsAttributeDerivedFromClass(attributeType, longIdentityAttributeType);
 
-				if (!isIdentityAttribute ^ editIdentityAttribute)
+				if (removeIdentityAttribute == false && !isIdentityAttribute ^ editIdentityAttribute)
 				{
 					var deletedNode = attributeNode.ArgumentList.Arguments.Where(a => a.NameEquals?.Name.Identifier.ValueText.Equals(IsKey)??false && 
 																					  (a.Expression as LiteralExpressionSyntax).Token.ValueText.Equals(True));
 
 					deletedNodes.AddRange(deletedNode);
 				}
+				if (removeIdentityAttribute && isIdentityAttribute)
+				{
+					if ((attributeNode.Parent as AttributeListSyntax).Attributes.Count == 1)
+						deletedNodes.Add(attributeNode.Parent);
+					else
+						deletedNodes.Add(attributeNode);
+				}
 
 			}
-
 
 			var newRoot = root.RemoveNodes(deletedNodes,SyntaxRemoveOptions.KeepNoTrivia);
 
 			return document.WithSyntaxRoot(newRoot);
 		}
-
-		
 	}
 }
