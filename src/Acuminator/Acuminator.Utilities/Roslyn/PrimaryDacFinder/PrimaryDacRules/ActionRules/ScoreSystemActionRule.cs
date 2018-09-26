@@ -1,4 +1,5 @@
 ﻿using Acuminator.Utilities.Roslyn.PXSystemActions;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ActionRules

@@ -165,6 +165,24 @@ namespace Acuminator.Vsix
 			}
 		}
 
+		private bool _isvSpecificAnalyzersEnabled = CodeAnalysisSettings.Default.IsvSpecificAnalyzersEnabled;
+
+		[CategoryFromResources(nameof(VSIXResource.Category_CodeAnalysis), CodeAnalysisCategoryName)]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_IsvSpecificAnalyzersEnabled_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_IsvSpecificAnalyzersEnabled_Description))]
+		public bool IsvSpecificAnalyzersEnabled
+		{
+			get => _isvSpecificAnalyzersEnabled;
+			set
+			{
+				if (_isvSpecificAnalyzersEnabled != value)
+				{
+					_isvSpecificAnalyzersEnabled = value;
+					_codeAnalysisSettingsChanged = true;
+				}
+			}
+		}
+
 		public override void ResetSettings()
 		{
 			_coloringEnabled = true;

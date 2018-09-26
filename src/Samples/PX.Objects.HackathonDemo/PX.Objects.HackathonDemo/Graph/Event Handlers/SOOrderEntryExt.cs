@@ -11,6 +11,9 @@ namespace PX.Objects.HackathonDemo
 	{
 		protected virtual void _(Events.RowSelecting<SOOrder> e)
 		{
+            Base.Release.SetEnabled(e.Row.OrderBal > 0);
+            PXUIFieldAttribute.SetEnabled<SOOrder.orderType>(e.Cache, e.Row, false);
+
 			var setup = SelectSetup();
 			Base.Caches[typeof(SOSetup)].Insert(setup);
 		}
@@ -25,6 +28,12 @@ namespace PX.Objects.HackathonDemo
 			return PXSelect<SOSetup>.SelectSingleBound(Base, null);
 		}
 
+        protected virtual void _(Events.RowInserting<SOOrder> e)
+        {
+            e.Row.OrderDate = DateTime.UtcNow;
+            Base.Orders.Current.OrderBal = 0;
+        }
+
 		protected virtual void _(Events.RowInserted<SOOrder> e)
 		{
 			var graph = PXGraph.CreateInstance<SOOrderEntry>();
@@ -36,9 +45,12 @@ namespace PX.Objects.HackathonDemo
 
 		protected virtual void SOOrder_RowSelected(PXCache sender, PXRowSelectedEventArgs e)
 		{
-			if (e.Row != null && sender.GetStatus(e.Row) == PXEntryStatus.Updated)
+            var row = e.Row as SOOrder;
+			if (row != null && sender.GetStatus(row) == PXEntryStatus.Updated)
 			{
 				Base.Actions.PressSave();
+                Base.Release.Press();
+                PXDatabase.SelectTimeStamp();
 			}
 		}
 	}
