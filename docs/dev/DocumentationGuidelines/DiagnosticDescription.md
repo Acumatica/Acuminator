@@ -35,20 +35,18 @@ The diagnostic description contains the following sections:
 -   Has the following title: _Summary_
 -   Contains a table in the following format:
 
-    `| Code   | Short Description                                       | Type  | Code Fix  |`
+    | Code   | Short Description                                       | Type  | Code Fix  |
+    | ------ | ------------------------------------------------------- | ----- | --------- |
+    | PX1000 | An invalid signature of the `PXAction` handler is used. | Error | Available |
 
-    `| ------ | ------------------------------------------------------- | ----- | --------- |`
+    The values of the table columns are described below.
 
-    ``| PX1000 | An invalid signature of the `PXAction` handler is used. | Error | Available |``
-
-The values of the table columns are described below.
-
-| Column            | Description                                                                                          |
-| ----------------- | -----------------------------------------------------------------------------------------------------|
-| Code              | The ID of the diagnostic.                                                                            |
-| Short Description | A short description of the issue. You can use the message displayed by Visual Studio in this column. |
-| Type              | The type of the issue, which can have one of the following values:<ul><li>_Error_</li><li>_Warning (Level 1: Significant)_</li><li>_Warning (Level 2: Production Quality)_</li><li>_Warning (Level 3: Informational)_</li></ul> |
-| Code Fix          | A value that specifies whether the code fix for the issue is available. The value can be one of the following:<ul><li>_Available_</li><li>_Unavailable_</li></ul> |
+    | Column            | Description                                                                                          |
+    | ----------------- | -----------------------------------------------------------------------------------------------------|
+    | Code              | The ID of the diagnostic.                                                                            |
+    | Short Description | A short description of the issue. You can use the message displayed by Visual Studio in this column. |
+    | Type              | The type of the issue, which can have one of the following values:<ul><li>_Error_</li><li>_Warning (Level 1: Significant)_</li><li>_Warning (Level 2: Production Quality)_</li><li>_Warning (Level 3: Informational)_</li></ul> |
+    | Code Fix          | A value that specifies whether the code fix for the issue is available. The value can be one of the following:<ul><li>_Available_</li><li>_Unavailable_</li></ul> |
 
 ### Diagnostic Description
 
