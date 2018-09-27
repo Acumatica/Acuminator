@@ -110,6 +110,7 @@
     <Compile Include="Roslyn\Semantic\PXGraph\GraphViewSymbolUtils.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\EventSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\BQLSymbols.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\ExceptionSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXIntListAttributeSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXStringListAttributeSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXViewSymbols.cs" />

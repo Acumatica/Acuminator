@@ -791,6 +791,33 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Exceptions cannot be thrown in the RowPersisted event handler.
+        /// </summary>
+        public static string PX1073Title {
+            get {
+                return ResourceManager.GetString("PX1073Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown in the {0} event handler. Use the RowSelected event handler instead.
+        /// </summary>
+        public static string PX1074MessageFormat {
+            get {
+                return ResourceManager.GetString("PX1074MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown in this event handler. Use the RowSelected event handler instead.
+        /// </summary>
+        public static string PX1074Title {
+            get {
+                return ResourceManager.GetString("PX1074Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Data view delegates should not start long-running operations.
         /// </summary>
         public static string PX1080Title {
