@@ -30,5 +30,14 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ViewDeclarationOrder
 				Descriptors.PX1004_ViewDeclarationOrder.CreateFor(25, 29, "SOInvoice", "ARInvoice"),
 	            Descriptors.PX1006_ViewDeclarationOrder.CreateFor(27, 26, "SOTran", "ARTran"));
         }
+
+		[Theory]
+        [EmbeddedFileData("ViewDeclarationOrderWithGraphExtension.cs")]
+        public void GraphExtension(string actual)
+        {
+            VerifyCSharpDiagnostic(actual, 
+				Descriptors.PX1004_ViewDeclarationOrder.CreateFor(25, 29, "SOInvoice", "ARInvoice"),
+	            Descriptors.PX1006_ViewDeclarationOrder.CreateFor(27, 26, "SOTran", "ARTran"));
+        }
     }
 }
