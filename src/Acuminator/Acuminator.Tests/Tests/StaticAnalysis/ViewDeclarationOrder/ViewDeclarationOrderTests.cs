@@ -15,11 +15,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ViewDeclarationOrder
 
 		[Theory]
         [EmbeddedFileData("ViewDeclarationOrder.cs")]
-        public void TestDiagnostic(string actual)
+        public void SimpleGraph(string actual)
         {
             VerifyCSharpDiagnostic(actual, 
-				Descriptors.PX1006_ViewDeclarationOrder.CreateFor(7, 14, "Vendor", "BAccount"),
-	            Descriptors.PX1004_ViewDeclarationOrder.CreateFor(15, 14, "Customer", "BAccount"));
+				Descriptors.PX1006_ViewDeclarationOrder.CreateFor(9, 29, "Vendor", "BAccount"),
+	            Descriptors.PX1004_ViewDeclarationOrder.CreateFor(18, 28, "Customer", "BAccount"));
         }
     }
 }
