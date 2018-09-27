@@ -1,8 +1,11 @@
-﻿using Acuminator.Utilities.Common;
+﻿using System.Diagnostics;
+using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
+
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
+	[DebuggerDisplay("{DebuggerDisplay,nq}")]
     public readonly struct DataViewInfo
     {
         /// <summary>
@@ -15,7 +18,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         /// </summary>
         public INamedTypeSymbol Type { get; }
 
-        public DataViewInfo(ISymbol symbol, INamedTypeSymbol type)
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private string DebuggerDisplay => $"Symbol: {Symbol.Name} | Type: {Type.ToString()}";
+
+		public DataViewInfo(ISymbol symbol, INamedTypeSymbol type)
         {
             symbol.ThrowOnNull(nameof(symbol));
             type.ThrowOnNull(nameof(type));
