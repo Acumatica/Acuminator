@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions;
-using Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
