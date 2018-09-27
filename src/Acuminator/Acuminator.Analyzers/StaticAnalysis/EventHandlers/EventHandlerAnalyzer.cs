@@ -11,6 +11,7 @@ using Acuminator.Analyzers.StaticAnalysis.PXActionExecution;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance;
 using Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers;
 using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
+using Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions;
 using Acuminator.Utilities;
 using Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic;
 using Acuminator.Utilities.Roslyn;
@@ -43,7 +44,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 			new RowChangesInEventHandlersAnalyzer(),
 			new DatabaseQueriesInRowSelectedAnalyzer(),
 			new UiPresentationLogicInEventHandlersAnalyzer(),
-			new PXActionExecutionInEventHandlersAnalyzer())
+			new PXActionExecutionInEventHandlersAnalyzer(),
+			new ThrowingExceptionsInEventHandlersAnalyzer())
 		{
 		}
 

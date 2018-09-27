@@ -260,6 +260,11 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\EventHandlers\EventHandlers.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\EventHandlers\EventHandlersWithExternalMethod.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\EventHandlers\ValidEventHandlers.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\EventHandlers\ExceptionInRowPersisted.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\EventHandlers\SetupNotEnteredExceptionInInvalidEventHandlers.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\EventHandlers\SetupNotEnteredExceptionInRowSelected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\EventHandlers\ExceptionInValidEventHandlers.cs" />
+    <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInEventHandlersTests.cs" />
     <Compile Include="Tests\StaticAnalysis\UiPresentationLogic\UiPresentationLogicInEventHandlersTests.cs" />
     <Compile Include="Verification\CodeRefactoringVerifier.cs" />
     <Compile Include="Verification\VerificationHelper.cs" />
