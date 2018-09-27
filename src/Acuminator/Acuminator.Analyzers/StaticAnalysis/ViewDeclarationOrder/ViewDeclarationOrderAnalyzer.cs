@@ -1,77 +1,93 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Acuminator.Utilities.Roslyn;
-using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Analyzers.StaticAnalysis.PXGraph;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class ViewDeclarationOrderAnalyzer : PXDiagnosticAnalyzer
-    {
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+	/// <summary>
+	/// An analyzer for the order of view declaration in graph/graph extension.
+	/// </summary>
+	public class ViewDeclarationOrderAnalyzer : IPXGraphAnalyzer
+	{
+        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1004_ViewDeclarationOrder, Descriptors.PX1006_ViewDeclarationOrder);
 
-		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		
+		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel graphSemanticModel)
 		{
-            compilationStartContext.RegisterSymbolAction(c => AnalyzeGraphViews(c, pxContext), SymbolKind.NamedType);
-		}
-
-		private static void AnalyzeGraphViews(SymbolAnalysisContext context, PXContext pxContext)
-		{
-			INamedTypeSymbol graph = (INamedTypeSymbol)context.Symbol;
-
-			if (graph == null || context.CancellationToken.IsCancellationRequested ||
-			   !graph.InheritsFromOrEquals(pxContext.PXGraphType) && !graph.InheritsFromOrEquals(pxContext.PXGraphExtensionType))
-			{
+			if (graphSemanticModel.Views.Length == 0)
 				return;
-			}
-        
-            var graphViews = graph.GetMembers()
-								  .OfType<IFieldSymbol>()
-								  .Select(field => field.Type as INamedTypeSymbol)
-								  .Where(fieldType => fieldType != null &&
-													   fieldType.InheritsFrom(pxContext.PXSelectBaseType) && 
-													   fieldType.IsGenericType &&
-													   fieldType.TypeArguments.Length > 0).
-								   ToImmutableList();
-
-			Location graphLocation = graph.Locations.FirstOrDefault();
-
-			if (graphLocation == null || context.CancellationToken.IsCancellationRequested)
-				return;
-
+			
 			//forward pass
-			CheckGraphViews(context, graphLocation, graphViews, Descriptors.PX1004_ViewDeclarationOrder);
-
-			if (context.CancellationToken.IsCancellationRequested)
-				return;
-
+			CheckGraphViews(context, graphSemanticModel, Descriptors.PX1004_ViewDeclarationOrder, isForwardPass: true);
+					
 			//backward pass
-			CheckGraphViews(context, graphLocation, graphViews.Reverse(), Descriptors.PX1006_ViewDeclarationOrder);
+			CheckGraphViews(context, graphSemanticModel, Descriptors.PX1006_ViewDeclarationOrder, isForwardPass: false);
 		}
 
-		private static void CheckGraphViews(SymbolAnalysisContext context, Location graphLocation, ImmutableList<INamedTypeSymbol> graphViews,
-											DiagnosticDescriptor diagnosticDescriptor)
+		private static void CheckGraphViews(SymbolAnalysisContext context, PXGraphSemanticModel graphSemanticModel, 
+											DiagnosticDescriptor diagnosticDescriptor, bool isForwardPass)
 		{
-			var visitedViews = new HashSet<ITypeSymbol>();
+			context.CancellationToken.ThrowIfCancellationRequested();
 
-			foreach (INamedTypeSymbol view in graphViews)
+			var visitedViewDacTypesWithViews = new Dictionary<ITypeSymbol, List<DataViewInfo>>();
+			var graphViews = isForwardPass 
+				? graphSemanticModel.Views
+				: graphSemanticModel.Views.Reverse();
+			
+			foreach (DataViewInfo viewInfo in graphViews.Where(vInfo => vInfo.Type.TypeArguments.Any() && vInfo.Symbol.Locations.Any()))
 			{
-				ITypeSymbol viewType = view.TypeArguments[0] as ITypeSymbol;
+				ITypeSymbol viewDacType = viewInfo.Type.TypeArguments[0];
 
-				if (viewType == null || visitedViews.Contains(viewType))
+				if (!viewDacType.IsDAC())
 					continue;
 
-				foreach (INamedTypeSymbol parentType in viewType.GetBaseTypes().Where(pType => visitedViews.Contains(pType)))
-				{
-					context.ReportDiagnostic(Diagnostic.Create(diagnosticDescriptor, graphLocation, viewType.Name, parentType.Name));
-				}
+				CheckGraphView(viewInfo, viewDacType);
 
-				visitedViews.Add(viewType);
+				if (visitedViewDacTypesWithViews.TryGetValue(viewDacType, out var visitedDataViews))
+				{
+					visitedDataViews.Add(viewInfo);
+				}
+				else
+				{
+					visitedViewDacTypesWithViews[viewDacType] = new List<DataViewInfo> { viewInfo };
+				}
 			}
-		}
+
+			//---------------------------------------------------Local Functions-----------------------------------------------
+			void CheckGraphView(DataViewInfo viewInfo, ITypeSymbol viewDacType)
+			{		
+				var visitedBaseDACs = viewDacType.GetBaseTypes()
+												 .Where(baseDac => visitedViewDacTypesWithViews.ContainsKey(baseDac));
+
+				if (GraphContainsViewDeclaration(graphSemanticModel, viewInfo))
+				{
+					Location viewLocation = viewInfo.Symbol.Locations[0];
+					visitedBaseDACs.ForEach(baseDac => context.ReportDiagnostic(
+															Diagnostic.Create(diagnosticDescriptor, viewLocation, viewDacType.Name, baseDac.Name)));
+				}
+				else
+				{
+					foreach (INamedTypeSymbol baseDac in visitedBaseDACs)
+					{
+						visitedViewDacTypesWithViews[baseDac]
+							.Where(visitedView => GraphContainsViewDeclaration(graphSemanticModel, visitedView))
+							.ForEach(visitedView => context.ReportDiagnostic(
+														Diagnostic.Create(diagnosticDescriptor, visitedView.Symbol.Locations[0],
+																		  viewDacType.Name, baseDac.Name)));
+					}
+				}
+			}
+		} 
+
+		private static bool GraphContainsViewDeclaration(PXGraphSemanticModel graphSemanticModel, DataViewInfo viewInfo) =>
+			graphSemanticModel.Symbol.OriginalDefinition?.Equals(viewInfo.Symbol.ContainingType?.OriginalDefinition) ?? false;
 	}
 }

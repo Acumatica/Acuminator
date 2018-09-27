@@ -73,6 +73,13 @@
     <Compile Include="Graph\Graph starts long operaton from incorrect places\SMUserProcess.cs" />
     <Compile Include="Graph\Graph with creation of other graph during initialization\ARTranEntry.cs" />
     <Compile Include="Graph\Start row reset for paging\LEPMaint.cs" />
+    <Compile Include="Graph\View Order\DAC\ARTran.cs" />
+    <Compile Include="Graph\View Order\DAC\SOTran.cs" />
+    <Compile Include="Graph\View Order\DAC\SOInvoice.cs" />
+    <Compile Include="Graph\View Order\DAC\ARInvoice.cs" />
+    <Compile Include="Graph\View Order\ARInvoiceEntry.cs" />
+    <Compile Include="Graph\View Order\SOInvoiceEntry.cs" />
+    <Compile Include="IIGPOALCLandedCost.cs" />
     <Compile Include="Localization\InvalidRowException.cs" />
     <Compile Include="Localization\Messages.cs" />
     <Compile Include="Localization\SOOrderExt.cs" />

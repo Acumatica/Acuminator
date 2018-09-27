@@ -2,6 +2,7 @@
 using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization;
 using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
+using Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
@@ -24,7 +25,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
             new SavingChangesDuringPXGraphInitializationAnalyzer(),
             new ChangesInPXCacheDuringPXGraphInitializationAnalyzer(),
             new LongOperationInPXGraphDuringInitializationAnalyzer(),
-            new LongOperationInDataViewDelegateAnalyzer())
+            new LongOperationInDataViewDelegateAnalyzer(),
+            new ViewDeclarationOrderAnalyzer())
         {
         }
 
