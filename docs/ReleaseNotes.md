@@ -44,6 +44,9 @@ In this version of Acuminator, the following bugs have been fixed.
 | The PX1032 error was displayed for invocations of methods declared on the system types, such as `string`, `int`, `DateTime`, `Guid`, and `TimeSpan`. | Invocations of methods declared on the system types are skipped by the PX1032 diagnostic. |
 | Code navigation didn't support action handlers with no parameters and the `void` return type. | Action handlers with no parameters and the `void` return type are now supported by code navigation. |
 
+### Other Enhancements
+Acuminator now includes detailed descriptions of the diagnostics. You can open the description by clicking the link in the diagnostic message.
+
 ## Acuminator 1.3
 Acuminator 1.3 includes the diagnostics and code fixes, enhancements, and bug fixes described in this section, as well as the features that have been implemented in the previous versions.
 
@@ -59,6 +62,7 @@ In this version, diagnostics and code fixes for the following issues have been a
 | PX1023 | The DAC property is marked with multiple field attributes.      | Error   | Available   | Available |
 | PX1024 | The DAC nested class is not declared as an abstract class.      | Error   | Available   | Available |
 | PX1026 | Underscores cannot be used in the names of DACs and DAC fields. | Error   | Available   | Available |
+| PX1027 | The `CompanyMask`, `CompanyID`, and `DeletedDatabaseRecord` fields cannot be declared in DACs. | Error   | Available   | Available | 
 | PX1028 | Constructors cannot be used in DACs.                            | Error   | Available   | Available |
 | PX1029 | `PXGraph` instances cannot be used inside DAC properties.       | Error   | Available   | Unavailable |
 | PX1031 | DACs cannot contain instance methods.                           | Error   | Available   | Unavailable |
@@ -152,14 +156,14 @@ In the code based on Acumatica Framework, Acuminator finds common mistakes and t
 | PX1000 | An invalid signature of the `PXAction` handler is used.                                                                                         | Error   | Available   | Available     |
 | PX1001 | A `PXGraph` instance must be created with the `PXGraph.CreateInstance()` factory method.                                                        | Error   | Available   | Available     | 
 | PX1002 | The field must have the type attribute corresponding to the list attribute.                                                                     | Error   | Available   | Available     | 
-| PX1003 | A `PXGraph` instance must be created with the `PXGraph.CreateInstance()` factory method. Consider using a specific implementation of `PXGraph`. | Error   | Available   | Available     | 
+| PX1003 | Consider using a specific implementation of `PXGraph`.                                                                                          | Warning | Available   | Unavailable   | 
 | PX1004 | The order of view declarations will cause the creation of two cache instances.                                                                  | Warning | Available   | Unavailable   | 
 | PX1005 | There is probably a typo in the view delegate name.                                                                                             | Warning | Available   | Available     | 
 | PX1006 | The order of view declarations will cause the creation of one cache instance for multiple DACs.                                                 | Warning | Available   | Unavailable   | 
 | PX1008 | The reference of `@this` graph in the delegate will cause synchronous delegate execution.                                                       | Warning | Available   | Unavailable   | 
 | PX1009 | Multiple levels of inheritance are not supported for `PXCacheExtension`.                                                                        | Error   | Available   | Available     | 
 | PX1010 | If a delegate applies paging in an inner select, `StartRow` must be reset. (If `StartRow` is not reset, paging will be applied twice.)          | Warning | Available   | Available     | 
-| PX1011 | Because multiple levels of inheritance are not supported for `PXCacheExtension`, the derived type can be marked as sealed.                      | Error   | Available   | Available     | 
+| PX1011 | Because multiple levels of inheritance are not supported for `PXCacheExtension`, the derived type can be marked as sealed.                      | Warning | Available   | Available     | 
 
 ### Code Coloring
 Acuminator colorizes BQL statements, thus improving the readability of long BQL queries. 
