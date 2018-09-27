@@ -22,7 +22,7 @@ public class ARInvoiceEntry : PXGraph<ARInvoiceEntry, ARInvoice>
 
 public class SOInvoiceEntry : ARInvoiceEntry
 {
-	public PXSelect<SOInvoice> SOInvoices;  // There are two cache instances: PXCache<BAccount> and PXCache<Customer>
+	public PXSelect<SOInvoice> SOInvoices;  // There are two cache instances: PXCache<ARInvoice> and PXCache<SOInvoice>
 
 	public PXSelect<ARTran> ARTrans;  // There is one cache : PXCache<ARTran>
 }
