@@ -15,6 +15,10 @@ namespace PX.Objects.HackathonDemo
             PXUIFieldAttribute.SetEnabled<SOOrder.orderType>(e.Cache, e.Row, false);
 
 			var setup = SelectSetup();
+
+            if (setup == null)
+                throw new PXSetupNotEnteredException<SOSetup>("Setup is not entered");
+
 			Base.Caches[typeof(SOSetup)].Insert(setup);
 		}
 
@@ -53,5 +57,10 @@ namespace PX.Objects.HackathonDemo
                 PXDatabase.SelectTimeStamp();
 			}
 		}
+
+        protected virtual void _(Events.RowPersisted<SOOrder> e)
+        {
+            throw new NotSupportedException();
+        }
 	}
 }
