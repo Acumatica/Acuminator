@@ -3,6 +3,7 @@ using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
+using Acuminator.Utilities;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
 
@@ -11,7 +12,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationStart
     public class LongOperationInEventHandlersTests : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-			new EventHandlerAnalyzer(new LongOperationInEventHandlersAnalyzer());
+			new EventHandlerAnalyzer(CodeAnalysisSettings.Default.WithRecursiveAnalysisEnabled(),
+				new LongOperationInEventHandlersAnalyzer());
 
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\Invalid.cs")]
