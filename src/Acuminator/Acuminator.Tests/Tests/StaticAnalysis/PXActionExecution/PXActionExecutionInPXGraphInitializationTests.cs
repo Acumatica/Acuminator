@@ -16,42 +16,42 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXActionExecution
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\PressInGraph.cs")]
-        public Task Press_PXGraphInitialization(string actual) =>
-            VerifyCSharpDiagnosticAsync(actual, Descriptors.PX1081_PXGraphExecutesActionDuringInitialization.CreateFor(11, 13));
+        public async Task Press_PXGraphInitialization(string actual) =>
+            await VerifyCSharpDiagnosticAsync(actual, Descriptors.PX1081_PXGraphExecutesActionDuringInitialization.CreateFor(11, 13));
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\PressInGraphExtension.cs")]
-        public Task Press_PXGraphExtensionInitialization(string actual) =>
-            VerifyCSharpDiagnosticAsync(actual, Descriptors.PX1081_PXGraphExecutesActionDuringInitialization.CreateFor(9, 13));
+        public async Task Press_PXGraphExtensionInitialization(string actual) =>
+            await VerifyCSharpDiagnosticAsync(actual, Descriptors.PX1081_PXGraphExecutesActionDuringInitialization.CreateFor(9, 13));
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\PressOnDerivedTypeInGraph.cs")]
-        public Task PressOnDerivedType_PXGraphInitialization(string actual) =>
-            VerifyCSharpDiagnosticAsync(actual, Descriptors.PX1081_PXGraphExecutesActionDuringInitialization.CreateFor(9, 13));
+        public async Task PressOnDerivedType_PXGraphInitialization(string actual) =>
+            await VerifyCSharpDiagnosticAsync(actual, Descriptors.PX1081_PXGraphExecutesActionDuringInitialization.CreateFor(9, 13));
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\PressOnDerivedTypeInGraphExtension.cs")]
-        public Task PressOnDerivedType_PXGraphExtensionInitialization(string actual) =>
-            VerifyCSharpDiagnosticAsync(actual, Descriptors.PX1081_PXGraphExecutesActionDuringInitialization.CreateFor(9, 13));
+        public async Task PressOnDerivedType_PXGraphExtensionInitialization(string actual) =>
+            await VerifyCSharpDiagnosticAsync(actual, Descriptors.PX1081_PXGraphExecutesActionDuringInitialization.CreateFor(9, 13));
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\PressWithAdapterInGraph.cs")]
-        public Task PressWithAdapter_PXGraphInitialization(string actual) =>
-            VerifyCSharpDiagnosticAsync(actual, Descriptors.PX1081_PXGraphExecutesActionDuringInitialization.CreateFor(11, 13));
+        public async Task PressWithAdapter_PXGraphInitialization(string actual) =>
+            await VerifyCSharpDiagnosticAsync(actual, Descriptors.PX1081_PXGraphExecutesActionDuringInitialization.CreateFor(11, 13));
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\PressWithAdapterInGraphExtension.cs")]
-        public Task PressWithAdapter_PXGraphExtensionInitialization(string actual) =>
-            VerifyCSharpDiagnosticAsync(actual, Descriptors.PX1081_PXGraphExecutesActionDuringInitialization.CreateFor(9, 13));
+        public async Task PressWithAdapter_PXGraphExtensionInitialization(string actual) =>
+            await VerifyCSharpDiagnosticAsync(actual, Descriptors.PX1081_PXGraphExecutesActionDuringInitialization.CreateFor(9, 13));
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\PressWithExternalMethodInGraph.cs")]
-        public Task PressWithExternalMethod_PXGraphInitialization(string actual) =>
-            VerifyCSharpDiagnosticAsync(actual, Descriptors.PX1081_PXGraphExecutesActionDuringInitialization.CreateFor(11, 13));
+        public async Task PressWithExternalMethod_PXGraphInitialization(string actual) =>
+            await VerifyCSharpDiagnosticAsync(actual, Descriptors.PX1081_PXGraphExecutesActionDuringInitialization.CreateFor(11, 13));
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\PressWithExternalMethodInGraphExtension.cs")]
-        public Task PressWithExternalMethod_PXGraphExtensionInitialization(string actual) =>
-            VerifyCSharpDiagnosticAsync(actual, Descriptors.PX1081_PXGraphExecutesActionDuringInitialization.CreateFor(9, 13));
+        public async Task PressWithExternalMethod_PXGraphExtensionInitialization(string actual) =>
+            await VerifyCSharpDiagnosticAsync(actual, Descriptors.PX1081_PXGraphExecutesActionDuringInitialization.CreateFor(9, 13));
     }
 }
