@@ -32,6 +32,15 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ViewDeclarationOrder
         }
 
 		[Theory]
+		[EmbeddedFileData("ViewDeclarationOrderWithGraphInheritance_OneCache.cs")]
+		public void GraphInheritance_OneCache(string actual)
+		{
+			VerifyCSharpDiagnostic(actual,
+				Descriptors.PX1006_ViewDeclarationOrder.CreateFor(13, 29, "SOInvoice", "ARInvoice"),
+				Descriptors.PX1006_ViewDeclarationOrder.CreateFor(20, 29, "SOInvoice", "ARInvoice"));
+		}
+
+		[Theory]
         [EmbeddedFileData("ViewDeclarationOrderWithGraphExtension.cs")]
         public void GraphExtension(string actual)
         {
