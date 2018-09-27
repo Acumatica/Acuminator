@@ -37,7 +37,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 					var semanticModel = context.Compilation.GetSemanticModel(methodSyntax.SyntaxTree);
 					var walker = new Walker(context, semanticModel, pxContext, eventType);
 
-					methodSyntax?.Accept(walker);
+					methodSyntax.Accept(walker);
 				}
 			}
 		}
