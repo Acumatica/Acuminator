@@ -44,6 +44,9 @@ In this version of Acuminator, the following bugs have been fixed.
 | The PX1032 error was displayed for invocations of methods declared on the system types, such as `string`, `int`, `DateTime`, `Guid`, and `TimeSpan`. | Invocations of methods declared on the system types are skipped by the PX1032 diagnostic. |
 | Code navigation didn't support action handlers with no parameters and the `void` return type. | Action handlers with no parameters and the `void` return type are now supported by code navigation. |
 
+### Other Enhancements
+Acuminator now includes detailed descriptions of the diagnostics. You can open the description by clicking the link in the diagnostic message.
+
 ## Acuminator 1.3
 Acuminator 1.3 includes the diagnostics and code fixes, enhancements, and bug fixes described in this section, as well as the features that have been implemented in the previous versions.
 
