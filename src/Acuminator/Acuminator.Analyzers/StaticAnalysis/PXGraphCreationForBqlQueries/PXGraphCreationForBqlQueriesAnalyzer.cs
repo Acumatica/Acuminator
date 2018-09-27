@@ -50,16 +50,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 
 			foreach (var graphArgSyntax in walker.GraphArguments)
 			{
-				// new PXGraph()
-				if (graphArgSyntax is ObjectCreationExpressionSyntax objCreationSyntax && objCreationSyntax.Type != null
-				    && context.SemanticModel.GetSymbolInfo(objCreationSyntax.Type).Symbol is ITypeSymbol typeSymbol
-					&& typeSymbol.Equals(pxContext.PXGraphType))
+				var instantiationType = GetGraphInstantiationType(graphArgSyntax, context.SemanticModel, pxContext);
+
+				if (instantiationType != GraphInstantiationType.None && thisGraph != null)
 				{
-					if (thisGraph != null)
-					{
-						context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries,
-							objCreationSyntax.GetLocation()));
-					}
+					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries,
+						graphArgSyntax.GetLocation()));
 				}
 			}
 		}
@@ -77,6 +73,41 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 				default:
 					return null;
 			}
+		}
+
+		private GraphInstantiationType GetGraphInstantiationType(SyntaxNode node, SemanticModel semanticModel, 
+			PXContext pxContext)
+		{
+			// new PXGraph()
+			if (node is ObjectCreationExpressionSyntax objCreationSyntax && objCreationSyntax.Type != null
+			                                                             && semanticModel
+				                                                             .GetSymbolInfo(objCreationSyntax.Type)
+				                                                             .Symbol is ITypeSymbol typeSymbol
+			                                                             && typeSymbol.IsPXGraph())
+			{
+				return GraphInstantiationType.Constructor;
+			}
+
+			// PXGraph.CreateInstance
+			if (node is InvocationExpressionSyntax invocationSyntax)
+			{
+				var symbolInfo = semanticModel.GetSymbolInfo(invocationSyntax);
+				var methodSymbol = (symbolInfo.Symbol ?? symbolInfo.CandidateSymbols.FirstOrDefault()) as IMethodSymbol;
+
+				if (methodSymbol != null && pxContext.PXGraphRelatedMethods.CreateInstance.Contains(methodSymbol))
+				{
+					return GraphInstantiationType.CreateInstance;
+				}
+			}
+
+			return GraphInstantiationType.None;
+		}
+
+		private enum GraphInstantiationType
+		{
+			None,
+			Constructor,
+			CreateInstance
 		}
 
 		private class Walker : CSharpSyntaxWalker

@@ -230,6 +230,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\PropertyInExternalService.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\StaticMethodInPXGraphWithPXGraphConstructor.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\InstanceMethodInPXGraphExtensionWithPXGraphConstructor.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\InstanceMethodInPXGraphWithCreateInstance.cs" />
     <Compile Include="Tests\StaticAnalysis\RowChangesInEventHandlers\RowChangesInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\ValidEventHandlers.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\DirectAssignment.cs" />

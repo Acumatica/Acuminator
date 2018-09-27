@@ -30,6 +30,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphCreationForBqlQueries
 		    Descriptors.PX1072_PXGraphCreationForBqlQueries.CreateFor(15, 13));
 
 	    [Theory]
+	    [EmbeddedFileData("InstanceMethodInPXGraphWithCreateInstance.cs")]
+	    public async Task InstanceMethodInPXGraphWithCreateInstance(string source) => await VerifyCSharpDiagnosticAsync(source, 
+		    Descriptors.PX1072_PXGraphCreationForBqlQueries.CreateFor(15, 13));
+
+	    [Theory]
 	    [EmbeddedFileData("PXGraphConstructorInVariable.cs", "Customer.cs", "CustomerMaint.cs")]
 	    public async Task PXGraphConstructorInVariable(string source, string dacSource, string graphSource) =>
 		    await VerifyCSharpDiagnosticAsync(source, dacSource, graphSource,
