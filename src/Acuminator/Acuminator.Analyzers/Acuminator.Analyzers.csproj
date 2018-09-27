@@ -72,6 +72,7 @@
     <Compile Include="StaticAnalysis\LongOperationStart\LongOperationInDataViewDelegateAnalyzer.cs" />
     <Compile Include="StaticAnalysis\LongOperationStart\StartLongOperationWalker.cs" />
     <Compile Include="StaticAnalysis\PXActionExecution\PXActionExecutionInEventHandlersAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\PXActionExecution\PXActionExecutionInPXGraphInitializerAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXActionExecution\Walker.cs" />
     <Compile Include="StaticAnalysis\PXGraphCreationDuringInitialization\PXGraphCreationDuringInitializationAnalyzer.cs" />
     <Compile Include="StaticAnalysis\LongOperationStart\LongOperationInEventHandlersAnalyzer.cs" />

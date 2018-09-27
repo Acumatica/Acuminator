@@ -71,7 +71,7 @@ namespace PX.Objects
 			ExecuteRelease();
 		}
 
-		private void ExecuteRelease(PXCache cache)
+		private void ExecuteRelease()
 		{
 			Release.Press();
 		}
