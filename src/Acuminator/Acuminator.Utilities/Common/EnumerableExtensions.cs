@@ -151,7 +151,6 @@ namespace Acuminator.Utilities.Common
 		/// <param name="source">The source to act on.</param>
 		/// <returns/>
 		[DebuggerStepThrough]
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ImmutableArray<TItem> Reverse<TItem>(this ImmutableArray<TItem> source)
 		{
 			if (source.Length == 0)
