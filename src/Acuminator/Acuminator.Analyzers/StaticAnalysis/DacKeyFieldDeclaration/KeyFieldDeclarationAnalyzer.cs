@@ -50,22 +50,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 				foreach (var attribute in property.GetAttributes())
 				{
 					if (attribute.NamedArguments.Where(a => a.Key.Contains(IsKey) &&
-															a.Value.Value is bool boolValue &&
-															boolValue == true)
-												.Any() && 
-						!IsDerivedFromIdentityTypes(attribute, pxContext))
+															 a.Value.Value is bool boolValue &&
+															 boolValue == true)
+												.Any())
 					{
-						flagIsKey = true;
-						keyAttributes.Add(attribute);
-					}
-
-					if (attribute.NamedArguments.Where(a => a.Key.Contains(IsKey) &&
-															a.Value.Value is bool boolValue &&
-															boolValue == true)
-												.Any() &&
-						IsDerivedFromIdentityTypes(attribute,pxContext))
-					{
-						flagIsKeyIdentity = true;
+						CheckAttributeIdentityOrKey(ref flagIsKey,ref flagIsKeyIdentity, attribute, pxContext);
 						keyAttributes.Add(attribute);
 					}
 				}
@@ -91,7 +80,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			}
 		}
 
-
 		private static async Task<Location> GetAttributeLocationAsync(AttributeData attribute, CancellationToken cancellationToken)
 		{
 			if (attribute.ApplicationSyntaxReference == null)
@@ -110,6 +98,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 			return attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, identityAttributeType) ||
 				   attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, longIdentityAttributeType);
+		}
+
+		private static void CheckAttributeIdentityOrKey(ref bool flagIsKey,ref bool flagIsKeyIdentity, AttributeData attribute, PXContext pxContext)
+		{
+			if (!IsDerivedFromIdentityTypes(attribute, pxContext))
+				flagIsKey = true;
+			else
+				flagIsKeyIdentity = true;
 		}
 	}
 }
