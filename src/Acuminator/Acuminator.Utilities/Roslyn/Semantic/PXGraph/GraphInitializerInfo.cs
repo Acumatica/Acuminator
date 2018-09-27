@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
-    public class GraphInitializerInfo
+    public readonly struct GraphInitializerInfo
     {
         public GraphInitializerType Type { get; }
         public CSharpSyntaxNode Node { get; }

@@ -1,4 +1,5 @@
 ﻿using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis
