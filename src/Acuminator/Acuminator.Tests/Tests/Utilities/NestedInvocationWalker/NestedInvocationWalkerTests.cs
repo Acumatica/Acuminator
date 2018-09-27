@@ -50,7 +50,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 
 			node.Accept(walker);
 			
-			walker.Locations.Should().BeEquivalentTo((line: 13, column: 4));
+			walker.Locations.Should().BeEquivalentTo((Line: 13, Column: 4));
 		}
 
 		[Theory]
@@ -65,7 +65,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 
 			node.Accept(walker);
 
-			walker.Locations.Should().BeEquivalentTo((line: 13, column: 4));
+			walker.Locations.Should().BeEquivalentTo((Line: 13, Column: 4));
 		}
 
 		[Theory]
@@ -80,7 +80,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 
 			node.Accept(walker);
 
-			walker.Locations.Should().BeEquivalentTo((line: 14, column: 16));
+			walker.Locations.Should().BeEquivalentTo((Line: 14, Column: 16));
 		}
 
 		[Theory]
@@ -95,7 +95,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 
 			node.Accept(walker);
 
-			walker.Locations.Should().BeEquivalentTo((line: 14, column: 16));
+			walker.Locations.Should().BeEquivalentTo((Line: 14, Column: 16));
 		}
 
 		[Theory]
@@ -110,7 +110,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 
 			node.Accept(walker);
 
-			walker.Locations.Should().BeEquivalentTo((line: 14, column: 4));
+			walker.Locations.Should().BeEquivalentTo((Line: 14, Column: 4));
 		}
 
 		[Theory]
@@ -125,7 +125,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 
 			node.Accept(walker);
 
-			walker.Locations.Should().BeEquivalentTo((line: 13, column: 26));
+			walker.Locations.Should().BeEquivalentTo((Line: 13, Column: 26));
 		}
 
 		[Theory]
@@ -155,7 +155,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 
 			node.Accept(walker);
 
-			walker.Locations.Should().BeEquivalentTo((line: 13, column: 14));
+			walker.Locations.Should().BeEquivalentTo((Line: 13, Column: 14));
 		}
 
 		[Theory]
@@ -170,7 +170,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 
 			node.Accept(walker);
 
-			walker.Locations.Should().BeEquivalentTo((line: 13, column: 20));
+			walker.Locations.Should().BeEquivalentTo((Line: 13, Column: 20));
 		}
 
 		[Theory]
@@ -185,7 +185,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 
 			node.Accept(walker);
 
-			walker.Locations.Should().BeEquivalentTo((line: 14, column: 4));
+			walker.Locations.Should().BeEquivalentTo((Line: 14, Column: 4));
 		}
 
 		[Theory(Skip = "Expression-bodied methods are not supported by Roslyn v1")]
@@ -200,7 +200,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 
 			node.Accept(walker);
 
-			walker.Locations.Should().BeEquivalentTo((line: 14, column: 4));
+			walker.Locations.Should().BeEquivalentTo((Line: 14, Column: 4));
 		}
 
 		[Theory]
@@ -215,7 +215,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 
 			node.Accept(walker);
 
-			walker.Locations.Should().BeEquivalentTo((line: 14, column: 4));
+			walker.Locations.Should().BeEquivalentTo((Line: 14, Column: 4));
 		}
 
 		[Theory]
@@ -230,7 +230,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 
 			node.Accept(walker);
 
-			walker.Locations.Should().BeEquivalentTo((line: 14, column: 4));
+			walker.Locations.Should().BeEquivalentTo((Line: 14, Column: 4));
 		}
 
 		[Theory]
@@ -245,7 +245,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 
 			node.Accept(walker);
 
-			walker.Locations.Should().BeEquivalentTo((line: 14, column: 4));
+			walker.Locations.Should().BeEquivalentTo((Line: 14, Column: 4));
 		}
 	}
 }

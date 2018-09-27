@@ -61,7 +61,7 @@ namespace Acuminator.Tests.Verification
 		/// </summary>
 		/// <param name="source">Classes in the form of a string</param>
 		/// <param name="language">The language the source code is in</param>
-		/// <param name="externalCode">The source codes for new memory compilation</param>
+		/// <param name="externalCode">The source codes for new memory compilation. The goal of the external code is to simulate the behaviour of the extenal assembly without source code.</param>
 		/// <returns>A Document created from the source string</returns>
 		public static Document CreateDocument(string source, string language = LanguageNames.CSharp, string[] externalCode = null)
 		{
@@ -79,7 +79,7 @@ namespace Acuminator.Tests.Verification
 		/// </summary>
 		/// <param name="sources">Classes in the form of strings</param>
 		/// <param name="language">The language the source code is in</param>
-		/// <param name="externalCode">The source codes for new memory compilation</param>
+		/// <param name="externalCode">The source codes for new memory compilation. The goal of the external code is to simulate the behaviour of the extenal assembly without source code.</param>
 		/// <returns>A Project created out of the Documents created from the source strings</returns>
 		private static Project CreateProject(string[] sources, string language = LanguageNames.CSharp, string[] externalCode = null)
 		{
@@ -204,7 +204,6 @@ namespace Acuminator.Tests.Verification
 		private static byte[] BuildAssemblyFromSources(string[] sourceCodes)
 		{
 			string assemblyName = Path.GetRandomFileName();
-
 			CSharpCompilation compilation = CSharpCompilation.Create(
 					assemblyName,
 					syntaxTrees: sourceCodes.Select(code => CSharpSyntaxTree.ParseText(text: code)),
@@ -228,8 +227,8 @@ namespace Acuminator.Tests.Verification
 					StringBuilder diagnosticMessages = new StringBuilder(BuildFailMessage + "\r\n");
 					
 					IEnumerable<Diagnostic> failures = emitResult.Diagnostics.Where(diagnostic =>
-								   diagnostic.IsWarningAsError ||
-								   diagnostic.Severity == DiagnosticSeverity.Error);
+															diagnostic.IsWarningAsError ||
+															diagnostic.Severity == DiagnosticSeverity.Error);
 
 					foreach (Diagnostic diagnostic in failures)
 					{
@@ -238,8 +237,10 @@ namespace Acuminator.Tests.Verification
 
 					throw new ArgumentException(diagnosticMessages.ToString());
 				}
+
 				image = ms.ToArray();
 			}
+
 			return image;
 		}
 	}

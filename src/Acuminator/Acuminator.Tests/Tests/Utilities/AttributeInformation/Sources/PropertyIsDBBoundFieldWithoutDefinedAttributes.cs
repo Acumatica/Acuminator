@@ -19,5 +19,9 @@ namespace PX.Objects.HackathonDemo
 		[PXUIField(DisplayName = "Unbound")]
 		public virtual decimal? Unbound { get; set; }
 		#endregion
+
+		[PXDependsOnFields(typeof(Bound), typeof(Unbound))] // doesn't inherit from PXEventSubscriberAttribute, so BoundType will be Unknown
+		[PXDBDecimal] // BoundType.DbBound
+		public decimal? Total => Bound * Unbound;
 	}
 }
