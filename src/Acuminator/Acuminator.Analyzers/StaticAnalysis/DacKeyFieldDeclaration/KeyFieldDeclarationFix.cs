@@ -22,9 +22,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
 	public class KeyFieldDeclarationFix : CodeFixProvider
 	{
-		private const string IsKey = "IsKey";
-		private const string True = "true";
-			
+		private const string IsKey = nameof(PX.Data.PXDBFieldAttribute.IsKey);
+		
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1055_DacKeyFieldBound.Id);
 
@@ -34,7 +33,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			{
 				var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1055_DacKeyFieldBound.Id);
 
-				if (diagnostic == null || context.CancellationToken.IsCancellationRequested)
+				context.CancellationToken.ThrowIfCancellationRequested();
+
+				if (diagnostic == null)
 					return;
 
 				string codeActionIdentityKeyName = nameof(Resources.PX1055Fix1).GetLocalized().ToString();
@@ -111,7 +112,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 				if (removeIdentityAttribute == false && !isIdentityAttribute ^ editIdentityAttribute)
 				{
 					var deletedNode = attributeNode.ArgumentList.Arguments.Where(a => a.NameEquals?.Name.Identifier.ValueText.Equals(IsKey)??false && 
-																					  (a.Expression as LiteralExpressionSyntax).Token.ValueText.Equals(True));
+																					  (a.Expression as LiteralExpressionSyntax).Token.ValueText.Equals(bool.TrueString));
 
 					deletedNodes.AddRange(deletedNode);
 				}

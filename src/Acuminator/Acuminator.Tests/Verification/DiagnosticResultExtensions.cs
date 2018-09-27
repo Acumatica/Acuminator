@@ -24,7 +24,6 @@ namespace Acuminator.Tests.Verification
 		}
 
 		public static DiagnosticResult CreateFor(this DiagnosticDescriptor descriptor,
-			//(int line, int column) location,
 			IEnumerable<(int line, int column)> locations)
 		{
 			return CreateDiagnosticResult(descriptor,null, locations);

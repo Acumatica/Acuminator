@@ -17,7 +17,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class KeyFieldDeclarationAnalyzer : PXDiagnosticAnalyzer
 	{
-		private const string IsKey = "IsKey";
+		private const string IsKey = nameof(PX.Data.PXDBFieldAttribute.IsKey);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
@@ -33,8 +33,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 		private static async Task AnalyzeDacOrDacExtensionDeclarationAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
-			if (!(symbolContext.Symbol is INamedTypeSymbol dacOrDacExtSymbol) || !dacOrDacExtSymbol.IsDacOrExtension(pxContext) || 
-				symbolContext.CancellationToken.IsCancellationRequested)
+			symbolContext.CancellationToken.ThrowIfCancellationRequested();
+
+			if (!(symbolContext.Symbol is INamedTypeSymbol dacOrDacExtSymbol) || !dacOrDacExtSymbol.IsDacOrExtension(pxContext))
 				return;
 			
 			var dacPropertiesDeclarations  = dacOrDacExtSymbol.GetMembers().OfType<IPropertySymbol>();
@@ -48,9 +49,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			{
 				foreach (var attribute in property.GetAttributes())
 				{
-					if (!attribute.NamedArguments.IsEmpty &&
-						attribute.NamedArguments.Where(a => a.Key.Contains(IsKey) &&
-															!a.Value.IsNull &&
+					if (attribute.NamedArguments.Where(a => a.Key.Contains(IsKey) &&
 															a.Value.Value is bool boolValue &&
 															boolValue == true)
 												.Any() && 
@@ -60,9 +59,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 						keyAttributes.Add(attribute);
 					}
 
-					if (!attribute.NamedArguments.IsEmpty &&
-						attribute.NamedArguments.Where(a => a.Key.Contains(IsKey) &&
-															!a.Value.IsNull &&
+					if (attribute.NamedArguments.Where(a => a.Key.Contains(IsKey) &&
 															a.Value.Value is bool boolValue &&
 															boolValue == true)
 												.Any() &&
@@ -95,11 +92,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 		}
 
 
-		public static async Task<Location> GetAttributeLocationAsync(AttributeData attribute, CancellationToken cancellationToken)
+		private static async Task<Location> GetAttributeLocationAsync(AttributeData attribute, CancellationToken cancellationToken)
 		{
-			SyntaxNode attributeSyntaxNode = null;
-
-			attributeSyntaxNode = await attribute.ApplicationSyntaxReference.GetSyntaxAsync(cancellationToken).ConfigureAwait(false);
+			if (attribute.ApplicationSyntaxReference == null)
+				return null;
+			SyntaxNode attributeSyntaxNode = await attribute.ApplicationSyntaxReference.GetSyntaxAsync(cancellationToken).ConfigureAwait(false);
 
 			return attributeSyntaxNode?.GetLocation();
 		}
