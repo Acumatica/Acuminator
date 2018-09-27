@@ -55,7 +55,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 				semanticModel.ThrowOnNull(nameof (semanticModel));
 				pxContext.ThrowOnNull(nameof (pxContext));
 
-				_context   = context;
+				_context = context;
 				_semanticModel = semanticModel;
 				_pxContext = pxContext;
 				_eventType = eventType;
@@ -63,6 +63,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 
 			public override void VisitThrowStatement(ThrowStatementSyntax node)
 			{
+				_context.CancellationToken.ThrowIfCancellationRequested();
+
 				if (_eventType == EventType.RowPersisted)
 				{
 					_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1073_ThrowingExceptionsInRowPersisted,
