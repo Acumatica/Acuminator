@@ -372,4 +372,10 @@
   <data name="PX1074MessageFormat" xml:space="preserve">
     <value>PXSetupNotEnteredException cannot be thrown in the {0} event handler. Use the RowSelected event handler instead</value>
   </data>
+  <data name="PX1075MessageFormat" xml:space="preserve">
+    <value>PXCache.RaiseExceptionHandling cannot be invoked from the {0} event handler</value>
+  </data>
+  <data name="PX1075Title" xml:space="preserve">
+    <value>PXCache.RaiseExceptionHandling cannot be invoked from this event handler</value>
+  </data>
 </root>
