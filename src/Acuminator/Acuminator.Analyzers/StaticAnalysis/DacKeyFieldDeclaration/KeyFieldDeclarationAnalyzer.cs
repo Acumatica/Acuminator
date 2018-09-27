@@ -39,11 +39,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			
 			var dacPropertiesDeclarations  = dacOrDacExtSymbol.GetMembers().OfType<IPropertySymbol>();
 
-			AttributeInformation attributeInformation = new AttributeInformation(pxContext);
-
 			List<AttributeData> keyAttributes = new List<AttributeData>();
-			var identityAttributeType = pxContext.FieldAttributes.PXDBIdentityAttribute;
-
+			
 			bool flagIsKey = false;
 			bool flagIsKeyIdentity = false;
 			
@@ -57,7 +54,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 															a.Value.Value is bool boolValue &&
 															boolValue == true)
 												.Any() && 
-												!attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, identityAttributeType))
+						!IsDerivedFromIdentityTypes(attribute, pxContext))
 					{
 						flagIsKey = true;
 						keyAttributes.Add(attribute);
@@ -69,7 +66,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 															a.Value.Value is bool boolValue &&
 															boolValue == true)
 												.Any() &&
-												attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, identityAttributeType))
+						IsDerivedFromIdentityTypes(attribute,pxContext))
 					{
 						flagIsKeyIdentity = true;
 						keyAttributes.Add(attribute);
@@ -105,6 +102,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			attributeSyntaxNode = await attribute.ApplicationSyntaxReference.GetSyntaxAsync(cancellationToken).ConfigureAwait(false);
 
 			return attributeSyntaxNode?.GetLocation();
+		}
+
+		private static bool IsDerivedFromIdentityTypes(AttributeData attribute, PXContext pxContext)
+		{
+			AttributeInformation attributeInformation = new AttributeInformation(pxContext);
+
+			INamedTypeSymbol identityAttributeType = pxContext.FieldAttributes.PXDBIdentityAttribute;
+			INamedTypeSymbol longIdentityAttributeType = pxContext.FieldAttributes.PXDBLongIdentityAttribute;
+
+			return attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, identityAttributeType) ||
+				   attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, longIdentityAttributeType);
 		}
 	}
 }
