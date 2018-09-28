@@ -14,7 +14,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 	/// <summary>
 	/// An analyzer for the order of view declaration in graph/graph extension.
 	/// </summary>
-	public class ViewDeclarationOrderAnalyzer : IPXGraphAnalyzer
+	public partial class ViewDeclarationOrderAnalyzer : IPXGraphAnalyzer
 	{
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1004_ViewDeclarationOrder, Descriptors.PX1006_ViewDeclarationOrder);
@@ -24,12 +24,62 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 		{
 			if (graphSemanticModel.Views.Length == 0)
 				return;
-			
-			//forward pass
-			CheckGraphViews(context, graphSemanticModel, Descriptors.PX1004_ViewDeclarationOrder, isForwardPass: true);
+
+			CheckGraphViewsOnForwardPass(context, graphSemanticModel);
 					
 			//backward pass
 			CheckGraphViews(context, graphSemanticModel, Descriptors.PX1006_ViewDeclarationOrder, isForwardPass: false);
+		}
+
+		private static void CheckGraphViewsOnForwardPass(SymbolAnalysisContext symbolContext, PXGraphSemanticModel graphSemanticModel)
+		{
+			symbolContext.CancellationToken.ThrowIfCancellationRequested();
+			AnalysisContext analysisContext = new AnalysisContext(symbolContext, graphSemanticModel, AnalysisPassDirection.Forward);
+
+			foreach (DataViewInfo viewInfo in analysisContext.GetViewsToAnalyze())
+			{
+				ITypeSymbol viewDacType = viewInfo.Type.TypeArguments[0];
+
+				if (!viewDacType.IsDAC())
+					continue;
+
+				AnalyzeGraphViewOnForwardPass(analysisContext, viewInfo, viewDacType);
+
+				if (analysisContext.AnalysisPassInfoByDacType.TryGetValue(viewDacType, out AnalysisPassInfo analysisPassInfo))
+				{
+					analysisPassInfo.VisitedViews.Add(viewInfo);
+				}
+				else
+				{
+					analysisContext.AnalysisPassInfoByDacType[viewDacType] = new AnalysisPassInfo(viewDacType, viewInfo);
+				}
+			}
+		}
+
+		private static void AnalyzeGraphViewOnForwardPass(AnalysisContext analysisContext, DataViewInfo viewInfo, ITypeSymbol viewDacType)
+		{
+			if (!GraphContainsViewDeclaration(analysisContext.GraphSemanticModel, viewInfo))
+				return;
+
+			Location viewLocation = viewInfo.Symbol.Locations[0];
+			var visitedBaseDACs = analysisContext.GetVisitedBaseDacs(viewDacType);
+
+			if (analysisContext.AnalysisPassInfoByDacType.TryGetValue(viewDacType, out var analysisPassInfo))
+			{
+				if (analysisPassInfo.HasDiagnostic)
+				{
+					visitedBaseDACs.ForEach(baseDac => analysisContext.ReportDiagnostic(
+											Diagnostic.Create(analysisPassInfo.DiagnosticDescriptor, viewLocation, viewDacType.Name, baseDac.Name)));
+				}
+
+
+			}
+
+			
+			
+			visitedBaseDACs.ForEach(baseDac => analysisContext.ReportDiagnostic(
+											Diagnostic.Create(Descriptors.PX1004_ViewDeclarationOrder, viewLocation, viewDacType.Name, baseDac.Name)));
+					
 		}
 
 		private static void CheckGraphViews(SymbolAnalysisContext context, PXGraphSemanticModel graphSemanticModel, 
