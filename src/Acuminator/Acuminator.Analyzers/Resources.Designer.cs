@@ -852,5 +852,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1081Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Actions cannot be executed within data view delegates.
+        /// </summary>
+        public static string PX1082Title {
+            get {
+                return ResourceManager.GetString("PX1082Title", resourceCulture);
+            }
+        }
     }
 }

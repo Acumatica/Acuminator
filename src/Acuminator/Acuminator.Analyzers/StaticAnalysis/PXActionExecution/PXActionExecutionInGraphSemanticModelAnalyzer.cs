@@ -7,10 +7,12 @@ using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXActionExecution
 {
-    public class PXActionExecutionInPXGraphInitializerAnalyzer : IPXGraphAnalyzer
+    public class PXActionExecutionInGraphSemanticModelAnalyzer : IPXGraphAnalyzer
     {
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-            ImmutableArray.Create(Descriptors.PX1081_PXGraphExecutesActionDuringInitialization);
+            ImmutableArray.Create(
+                Descriptors.PX1081_PXGraphExecutesActionDuringInitialization,
+                Descriptors.PX1082_ActionExecutionInDataViewDelegate);
 
         public void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
         {
@@ -22,6 +24,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionExecution
             {
                 context.CancellationToken.ThrowIfCancellationRequested();
                 walker.Visit(initializer.Node);
+            }
+
+            walker = new Walker(context, pxContext, Descriptors.PX1082_ActionExecutionInDataViewDelegate);
+
+            foreach (DataViewDelegateInfo del in pxGraph.ViewDelegates)
+            {
+                context.CancellationToken.ThrowIfCancellationRequested();
+                walker.Visit(del.Node);
             }
         }
     }
