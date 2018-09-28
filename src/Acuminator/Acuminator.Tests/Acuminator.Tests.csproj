@@ -196,6 +196,10 @@
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\AdditionalParameters.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacWithBoundAndUnboundFields.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacAggregateAttributeFields.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateWithParameter.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateInGraphExtensionOwnView.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateInGraphExtensionBaseView.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateInGraphExtensionOverride.cs" />
     <Compile Include="Tests\StaticAnalysis\LongOperationStart\LongOperationInDataViewDelegateTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\DataViewFromGraphStartsLongOperation.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\DataViewFromGraphStartsLongOperationViaMethod.cs" />
@@ -238,6 +242,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\ViewDelegateInGraphExtensionOwnView.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\ViewDelegateInGraphExtensionBaseView.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\ViewDelegateInGraphExtensionOverride.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegate.cs" />
     <Compile Include="Tests\StaticAnalysis\UiPresentationLogic\UiPresentationLogicInEventHandlersTests.cs" />
     <Compile Include="Tests\StaticAnalysis\PXActionExecution\PXActionExecutionInGraphSemanticModelTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressInGraph.cs" />
@@ -266,7 +271,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithInvalidAggregatorAttributes.cs" />
     <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\ExternalAttributes1.cs" />
     <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\ExternalAttributes2.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationDuringInitialization\Sources\PXGraphWithCreateInstanceOutsideOfInitialization.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\PXGraphWithCreateInstanceOutsideOfInitialization.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\PXGraphStartsLongOperationInInstanceConstructorViaMethod.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\DirectAssignment.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\IndirectAssignment.cs" />
@@ -319,10 +324,10 @@
     <Compile Include="Tests\StaticAnalysis\Localization\LocalizationPXExceptionCorrectTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\Lambda.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\LambdaWithBody.cs" />
-    <Compile Include="Tests\StaticAnalysis\PXGraphCreationDuringInitialization\PXGraphCreationDuringInitializationTests.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationDuringInitialization\Sources\PXGraphWithCreateInstanceInInstanceConstructor.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationDuringInitialization\Sources\PXGraphExtensionWithCreateInstanceInInitMethod.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationDuringInitialization\Sources\PXGrapWithCreateInstanceInInitDelegate.cs" />
+    <Compile Include="Tests\StaticAnalysis\GraphCreation\PXGraphCreationInGraphSemanticModelTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\PXGraphWithCreateInstanceInInstanceConstructor.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\PXGraphExtensionWithCreateInstanceInInitMethod.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\PXGrapWithCreateInstanceInInitDelegate.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\EventHandlers\CreateInstance.cs" />
     <Compile Include="Tests\StaticAnalysis\LongOperationStart\LongOperationInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\EventHandlers\Valid.cs" />
