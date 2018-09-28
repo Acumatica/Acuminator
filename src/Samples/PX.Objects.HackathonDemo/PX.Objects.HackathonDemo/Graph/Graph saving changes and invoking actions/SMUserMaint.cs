@@ -21,7 +21,8 @@ namespace PX.Objects.HackathonDemo
 
         public IEnumerable users()
         {
-            Cancel.Press();
+            Next.Press();
+            Actions.PressSave();
 
             return new PXSelect<Users>(this).Select();
         }
