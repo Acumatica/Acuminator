@@ -20,6 +20,9 @@ namespace PX.Objects.HackathonDemo
                 throw new PXSetupNotEnteredException<SOSetup>("Setup is not entered");
 
 			Base.Caches[typeof(SOSetup)].Insert(setup);
+
+            if (e.Row.OrderBal < 0)
+                e.Cache.RaiseExceptionHandling<SOOrder.orderBal>(e.Row, e.Row.OrderBal, new PXSetPropertyException("Negative balance"));
 		}
 
 		protected virtual void SOOrder_OrderNbr_CacheAttached(PXCache cache)

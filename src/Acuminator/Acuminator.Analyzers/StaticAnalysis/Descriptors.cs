@@ -190,6 +190,10 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			Rule("PX1074", nameof(Resources.PX1074Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning,
 				nameof(Resources.PX1074MessageFormat).GetLocalized());
 
+		public static DiagnosticDescriptor PX1075_RaiseExceptionHandlingInEventHandlers { get; } =
+			Rule("PX1075", nameof(Resources.PX1075Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error,
+				nameof(Resources.PX1075MessageFormat).GetLocalized());
+
         public static DiagnosticDescriptor PX1080_DataViewDelegateLongOperationStart { get; } =
             Rule("PX1080", nameof(Resources.PX1080Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 

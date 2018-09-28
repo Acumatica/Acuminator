@@ -818,6 +818,24 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to PXCache.RaiseExceptionHandling cannot be invoked from the {0} event handler.
+        /// </summary>
+        public static string PX1075MessageFormat {
+            get {
+                return ResourceManager.GetString("PX1075MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXCache.RaiseExceptionHandling cannot be invoked from this event handler.
+        /// </summary>
+        public static string PX1075Title {
+            get {
+                return ResourceManager.GetString("PX1075Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Data view delegates should not start long-running operations.
         /// </summary>
         public static string PX1080Title {
