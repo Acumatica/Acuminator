@@ -8,7 +8,7 @@ using PX.Data;
 namespace PX.Objects.HackathonDemo
 {
 	public class IIGPOALCLandedCost : IBqlTable
-    {
+	{
 		#region Selected
 		public abstract class selected : PX.Data.IBqlField { }
 		protected bool? _Selected;
