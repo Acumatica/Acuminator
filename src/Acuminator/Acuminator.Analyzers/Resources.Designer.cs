@@ -843,5 +843,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1080Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Actions cannot be executed during the PXGraph initialization.
+        /// </summary>
+        public static string PX1081Title {
+            get {
+                return ResourceManager.GetString("PX1081Title", resourceCulture);
+            }
+        }
     }
 }

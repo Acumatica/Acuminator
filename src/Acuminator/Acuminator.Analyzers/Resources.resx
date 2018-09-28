@@ -378,4 +378,7 @@
   <data name="PX1075Title" xml:space="preserve">
     <value>PXCache.RaiseExceptionHandling cannot be invoked from this event handler</value>
   </data>
+  <data name="PX1081Title" xml:space="preserve">
+    <value>Actions cannot be executed during the PXGraph initialization</value>
+  </data>
 </root>
