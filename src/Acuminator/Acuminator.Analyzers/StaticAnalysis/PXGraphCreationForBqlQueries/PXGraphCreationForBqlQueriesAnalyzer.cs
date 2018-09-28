@@ -90,6 +90,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			{
 				var symbolInfo = semanticModel.GetSymbolInfo(invocationSyntax);
 				var methodSymbol = (symbolInfo.Symbol ?? symbolInfo.CandidateSymbols.FirstOrDefault()) as IMethodSymbol;
+				methodSymbol = methodSymbol?.OverriddenMethod?.OriginalDefinition ?? methodSymbol?.OriginalDefinition;
 
 				if (methodSymbol != null && pxContext.PXGraphRelatedMethods.CreateInstance.Contains(methodSymbol))
 				{
