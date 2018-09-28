@@ -33,14 +33,15 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacExtensionDefaultAttribute
 				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 23, column: 4));
 
 		[Theory]
-		[EmbeddedFileData("DacWithBoundAndUnboundFields.cs")]
-		public virtual void TestDacWithBoundAndUnboundAttribute(string source) =>
+		[EmbeddedFileData("DacExtensionWithBoundAndUnboundFields.cs")]
+		public virtual void TestDacExtensionWithBoundAndUnboundAttribute(string source) =>
 			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 16, column: 4));
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 16, column: 4),
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 35, column: 4));
 
 		[Theory]
 		[EmbeddedFileData("AggregateAttributeFields.cs")]
-		public virtual void TestDacWithAggregateAttributeFields(string source) =>
+		public virtual void TestDacExtensionWithAggregateAttributeFields(string source) =>
 			VerifyCSharpDiagnostic(source,
 				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 36, column: 4));
 
@@ -61,5 +62,15 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacExtensionDefaultAttribute
 							"DacExtensionWithUnboundFields_Expected.cs")]
 		public virtual void TestCodeFixDacExtensionWithUnboundAttribute(string actual, string expected) =>
 			VerifyCSharpFix(actual, expected,1);
+
+		[Theory]
+		[EmbeddedFileData("DacWithBoundAndUnboundFields.cs")]
+		public virtual void TestDacWithBoundAndUnboundAttribute(string source) =>
+			VerifyCSharpDiagnostic(source);
+
+		[Theory]
+		[EmbeddedFileData("DacAggregateAttributeFields.cs")]
+		public virtual void TestDacWithAggregateAttributeFields(string source) =>
+			VerifyCSharpDiagnostic(source);
 	}
 }
