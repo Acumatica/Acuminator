@@ -863,7 +863,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Changes cannot be saved to the database from the data view delegate.
+        ///   Looks up a localized string similar to Changes cannot be saved to the database from data view delegates.
         /// </summary>
         public static string PX1083Title {
             get {
