@@ -40,5 +40,12 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphCreationDuringInitializat
         {
             VerifyCSharpDiagnostic(source);
         }
+
+        [Theory]
+        [EmbeddedFileData("PXGraphWithCreateInstanceInLambda.cs")]
+        public void PXGraph_InLambda_CreateInstanceUsage(string source)
+        {
+            VerifyCSharpDiagnostic(source);
+        }
     }
 }
