@@ -1,9 +1,10 @@
 ﻿using PX.Data;
 using PX.SM;
+using System.Collections;
 
 namespace PX.Objects.HackathonDemo
 {
-    public class SMUserMaint : PXGraph<SMUserMaint>
+    public class SMUserMaint : PXGraph<SMUserMaint, Users>
     {
         public PXSelect<Users> Users;
 
@@ -16,6 +17,14 @@ namespace PX.Objects.HackathonDemo
                 Users.Delete(Users.Current);
                 Actions.PressSave();
             }
+        }
+
+        public IEnumerable users()
+        {
+            Next.Press();
+            Actions.PressSave();
+
+            return new PXSelect<Users>(this).Select();
         }
     }
 }

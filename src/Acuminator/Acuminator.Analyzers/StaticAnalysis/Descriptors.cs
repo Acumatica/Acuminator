@@ -201,7 +201,10 @@ namespace Acuminator.Analyzers.StaticAnalysis
             Rule("PX1081", nameof(Resources.PX1081Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
         public static DiagnosticDescriptor PX1082_ActionExecutionInDataViewDelegate { get; } =
-            Rule("PX1082", nameof(Resources.PX1081Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+            Rule("PX1082", nameof(Resources.PX1082Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+        public static DiagnosticDescriptor PX1083_SavingChangesInDataViewDelegate { get; } =
+            Rule("PX1083", nameof(Resources.PX1083Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
         public static DiagnosticDescriptor PX1084_GraphCreationInDataViewDelegate { get; } =
             Rule("PX1084", nameof(Resources.PX1084Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);

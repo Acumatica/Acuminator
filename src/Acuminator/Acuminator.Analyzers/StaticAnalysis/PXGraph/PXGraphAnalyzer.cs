@@ -22,7 +22,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 
         public PXGraphAnalyzer() : this(
             new PXGraphCreationInGraphSemanticModelAnalyzer(),
-            new SavingChangesDuringPXGraphInitializationAnalyzer(),
+            new SavingChangesInGraphSemanticModelAnalyzer(),
             new ChangesInPXCacheDuringPXGraphInitializationAnalyzer(),
             new LongOperationInPXGraphDuringInitializationAnalyzer(),
             new LongOperationInDataViewDelegateAnalyzer(),
