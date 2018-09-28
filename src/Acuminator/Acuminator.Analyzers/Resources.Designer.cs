@@ -746,7 +746,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Make the field bound to identity column the only key field in the DAC.
+        ///   Looks up a localized string similar to Make the field bound to the identity column be the only key field in the DAC.
         /// </summary>
         public static string PX1055Fix1 {
             get {
@@ -755,7 +755,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Alter the definition of the field bound to identity column to make it a non-key field and leave all other key fields untouched.
+        ///   Looks up a localized string similar to Make the field bound to the identity column be a non-key field and leave all other key fields untouched.
         /// </summary>
         public static string PX1055Fix2 {
             get {
@@ -764,7 +764,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove the definition of the field bound to identity column and leave all other key fields untouched (it will be also very helpful to show a hint suggesting to drop the identity column, to which this key field is bound, from database).
+        ///   Looks up a localized string similar to Remove the definition of the field bound to the identity column and leave all other key fields untouched. (You should drop the corresponding identity column from the database manually.).
         /// </summary>
         public static string PX1055Fix3 {
             get {
