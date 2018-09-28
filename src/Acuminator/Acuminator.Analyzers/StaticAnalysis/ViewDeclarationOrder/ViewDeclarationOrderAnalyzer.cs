@@ -20,123 +20,105 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
             ImmutableArray.Create(Descriptors.PX1004_ViewDeclarationOrder, Descriptors.PX1006_ViewDeclarationOrder);
 
 		
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel graphSemanticModel)
+		public void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphSemanticModel graphSemanticModel)
 		{
 			if (graphSemanticModel.Views.Length == 0)
 				return;
 
-			CheckGraphViewsOnForwardPass(context, graphSemanticModel);
-					
-			//backward pass
-			CheckGraphViews(context, graphSemanticModel, Descriptors.PX1006_ViewDeclarationOrder, isForwardPass: false);
+			AnalysisContext analysisContext = new AnalysisContext(symbolContext, graphSemanticModel);
+
+			symbolContext.CancellationToken.ThrowIfCancellationRequested();
+			RunAnalysisOnGraphViews(analysisContext);
+			symbolContext.CancellationToken.ThrowIfCancellationRequested();
+
+
+			var dacsDeclaredInBaseGraphs = analysisContext.ViewsInBaseGraphs.Select(view => view.ViewDac)
+																			.Distinct()
+																			.ToList();
+
+			for (int i = analysisContext.ViewsInGraphNotMarkedOnForwardPass; i >= 0; i++)
+			{
+				ITypeSymbol viewDacType = view.ViewDac;
+
+				
+
+
+			}
 		}
 
-		private static void CheckGraphViewsOnForwardPass(SymbolAnalysisContext symbolContext, PXGraphSemanticModel graphSemanticModel)
+		private static void RunAnalysisOnGraphViews(AnalysisContext analysisContext)
 		{
-			symbolContext.CancellationToken.ThrowIfCancellationRequested();
-			AnalysisContext analysisContext = new AnalysisContext(symbolContext, graphSemanticModel, AnalysisPassDirection.Forward);
-
 			foreach (DataViewInfo viewInfo in analysisContext.GetViewsToAnalyze())
 			{
-				ITypeSymbol viewDacType = viewInfo.Type.TypeArguments[0];
+				ITypeSymbol viewDacType = viewInfo.ViewDac;
 
 				if (!viewDacType.IsDAC())
 					continue;
 
-				AnalyzeGraphViewOnForwardPass(analysisContext, viewInfo, viewDacType);
+				DiagnosticDescriptor descriptor = AnalyzeGraphViewOnForwardPass(analysisContext, viewInfo, viewDacType);
 
-				if (analysisContext.AnalysisPassInfoByDacType.TryGetValue(viewDacType, out AnalysisPassInfo analysisPassInfo))
+				if (analysisContext.AnalysisPassInfoByDacType.TryGetValue(viewDacType, out AnalysisDacInfo analysisPassInfo))
 				{
 					analysisPassInfo.VisitedViews.Add(viewInfo);
 				}
 				else
 				{
-					analysisContext.AnalysisPassInfoByDacType[viewDacType] = new AnalysisPassInfo(viewDacType, viewInfo);
+					analysisPassInfo = new AnalysisDacInfo(viewDacType, viewInfo);
+					analysisContext.AnalysisPassInfoByDacType[viewDacType] = analysisPassInfo;
+				}
+
+				if (descriptor != null)
+				{
+					analysisPassInfo.DiagnosticDescriptor = descriptor;
 				}
 			}
 		}
 
-		private static void AnalyzeGraphViewOnForwardPass(AnalysisContext analysisContext, DataViewInfo viewInfo, ITypeSymbol viewDacType)
+		/// <summary>
+		/// Analyze graph view on forward pass and returns the diagnostic descriptor if some diagnostic should be shown for the view. Otherwise returns null.
+		/// </summary>
+		/// <param name="analysisContext">Context for the analysis.</param>
+		/// <param name="viewInfo">Information describing the view.</param>
+		/// <param name="viewDacType">Type of the view DAC.</param>
+		/// <returns/>
+		private static DiagnosticDescriptor AnalyzeGraphViewOnForwardPass(AnalysisContext analysisContext, DataViewInfo viewInfo, 
+																		  ITypeSymbol viewDacType)
 		{
 			if (!GraphContainsViewDeclaration(analysisContext.GraphSemanticModel, viewInfo))
-				return;
-
+			{
+				analysisContext.ViewsInBaseGraphs.Add(viewInfo);
+				return null;
+			}
+				
 			Location viewLocation = viewInfo.Symbol.Locations[0];
 			var visitedBaseDACs = analysisContext.GetVisitedBaseDacs(viewDacType);
 
-			if (analysisContext.AnalysisPassInfoByDacType.TryGetValue(viewDacType, out var analysisPassInfo))
+			if (analysisContext.AnalysisPassInfoByDacType.TryGetValue(viewDacType, out var analysisPassInfo))  //If View DAC was already met in other view and the number of caches is already decided
 			{
-				if (analysisPassInfo.HasDiagnostic)
+				if (analysisPassInfo.HasDiagnostic)  //If the number of caches was already decided for this view
 				{
-					visitedBaseDACs.ForEach(baseDac => analysisContext.ReportDiagnostic(
-											Diagnostic.Create(analysisPassInfo.DiagnosticDescriptor, viewLocation, viewDacType.Name, baseDac.Name)));
+					analysisContext.ReportDiagnosticForBaseDACs(visitedBaseDACs, viewDacType, analysisPassInfo.DiagnosticDescriptor, viewLocation);
+					return analysisPassInfo.DiagnosticDescriptor;
 				}
-
-
+				else
+				{
+					analysisContext.ViewsInGraphNotMarkedOnForwardPass.Add(viewInfo);
+					return null;
+				}				
 			}
-
-			
-			
-			visitedBaseDACs.ForEach(baseDac => analysisContext.ReportDiagnostic(
-											Diagnostic.Create(Descriptors.PX1004_ViewDeclarationOrder, viewLocation, viewDacType.Name, baseDac.Name)));
-					
+			else if (visitedBaseDACs.Any())         //If the DAC is met for a first time and the number of caches is decided now
+			{
+				analysisContext.ReportDiagnosticForBaseDACs(visitedBaseDACs, viewDacType, Descriptors.PX1004_ViewDeclarationOrder, viewLocation);
+				return Descriptors.PX1004_ViewDeclarationOrder;
+			}
+			else
+			{
+				analysisContext.ViewsInGraphNotMarkedOnForwardPass.Add(viewInfo);
+				return null;
+			}
 		}
 
-		private static void CheckGraphViews(SymbolAnalysisContext context, PXGraphSemanticModel graphSemanticModel, 
-											DiagnosticDescriptor diagnosticDescriptor, bool isForwardPass)
-		{
-			context.CancellationToken.ThrowIfCancellationRequested();
-
-			var visitedViewDacTypesWithViews = new Dictionary<ITypeSymbol, List<DataViewInfo>>();
-			var graphViews = isForwardPass 
-				? graphSemanticModel.Views
-				: graphSemanticModel.Views.Reverse();
-			
-			foreach (DataViewInfo viewInfo in graphViews.Where(vInfo => vInfo.Type.TypeArguments.Any() && vInfo.Symbol.Locations.Any()))
-			{
-				ITypeSymbol viewDacType = viewInfo.Type.TypeArguments[0];
-
-				if (!viewDacType.IsDAC())
-					continue;
-
-				CheckGraphView(viewInfo, viewDacType);
-
-				if (visitedViewDacTypesWithViews.TryGetValue(viewDacType, out var visitedDataViews))
-				{
-					visitedDataViews.Add(viewInfo);
-				}
-				else
-				{
-					visitedViewDacTypesWithViews[viewDacType] = new List<DataViewInfo> { viewInfo };
-				}
-			}
-
-			//---------------------------------------------------Local Functions-----------------------------------------------
-			void CheckGraphView(DataViewInfo viewInfo, ITypeSymbol viewDacType)
-			{		
-				var visitedBaseDACs = viewDacType.GetBaseTypes()
-												 .Where(baseDac => visitedViewDacTypesWithViews.ContainsKey(baseDac));
-
-				if (GraphContainsViewDeclaration(graphSemanticModel, viewInfo))
-				{
-					Location viewLocation = viewInfo.Symbol.Locations[0];
-					visitedBaseDACs.ForEach(baseDac => context.ReportDiagnostic(
-															Diagnostic.Create(diagnosticDescriptor, viewLocation, viewDacType.Name, baseDac.Name)));
-				}
-				else
-				{
-					foreach (INamedTypeSymbol baseDac in visitedBaseDACs)
-					{
-						visitedViewDacTypesWithViews[baseDac]
-							.Where(visitedView => GraphContainsViewDeclaration(graphSemanticModel, visitedView))
-							.ForEach(visitedView => context.ReportDiagnostic(
-														Diagnostic.Create(diagnosticDescriptor, visitedView.Symbol.Locations[0],
-																		  viewDacType.Name, baseDac.Name)));
-					}
-				}
-			}
-		} 
-
+		
 		private static bool GraphContainsViewDeclaration(PXGraphSemanticModel graphSemanticModel, DataViewInfo viewInfo) =>
 			graphSemanticModel.Symbol.OriginalDefinition?.Equals(viewInfo.Symbol.ContainingType?.OriginalDefinition) ?? false;
 	}

@@ -17,47 +17,46 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 	/// </summary>
 	public partial class ViewDeclarationOrderAnalyzer : IPXGraphAnalyzer
 	{
-		private enum AnalysisPassDirection 
-		{
-			Forward,
-			Backward
-		}
-
 		private class AnalysisContext
 		{
 			private readonly SymbolAnalysisContext _symbolContext;
 
-			public CancellationToken CancellationToken => _symbolContext.CancellationToken;
-
 			public PXGraphSemanticModel GraphSemanticModel { get; }
 
-			public Dictionary<ITypeSymbol, AnalysisPassInfo> AnalysisPassInfoByDacType { get; }
+			public Dictionary<ITypeSymbol, AnalysisDacInfo> AnalysisPassInfoByDacType { get; }
 
-			public AnalysisPassDirection PassDirection { get; }
+			public List<DataViewInfo> ViewsInBaseGraphs { get; }
 
-			public AnalysisContext(SymbolAnalysisContext symbolContext, PXGraphSemanticModel graphSemanticModel, AnalysisPassDirection passDirection)
+			public List<DataViewInfo> ViewsInGraphNotMarkedOnForwardPass { get; }
+
+			public AnalysisContext(SymbolAnalysisContext symbolContext, PXGraphSemanticModel graphSemanticModel)
 			{
 				_symbolContext = symbolContext;
 				GraphSemanticModel = graphSemanticModel;
-				PassDirection = passDirection;
-				AnalysisPassInfoByDacType = new Dictionary<ITypeSymbol, AnalysisPassInfo>(capacity: graphSemanticModel.Views.Length);
+				ViewsInBaseGraphs = new List<DataViewInfo>(capacity: graphSemanticModel.Views.Length / 2);
+				ViewsInGraphNotMarkedOnForwardPass = new List<DataViewInfo>(capacity: graphSemanticModel.Views.Length / 2);
+				AnalysisPassInfoByDacType = new Dictionary<ITypeSymbol, AnalysisDacInfo>(capacity: graphSemanticModel.Views.Length);
 			}
 
-			public IEnumerable<DataViewInfo> GetViewsToAnalyze()
-			{
-				var viewsToAnalyze = PassDirection == AnalysisPassDirection.Forward
-										? GraphSemanticModel.Views
-										: GraphSemanticModel.Views.Reverse();
-
-				return viewsToAnalyze.Where(viewInfo => viewInfo.Type.TypeArguments.Any() && viewInfo.Symbol.Locations.Any());
-			}
-
+			public IEnumerable<DataViewInfo> GetViewsToAnalyze() => 
+				GraphSemanticModel.Views.Where(viewInfo => viewInfo.Type.TypeArguments.Any() && viewInfo.Symbol.Locations.Any());
+			
 			public IEnumerable<INamedTypeSymbol> GetVisitedBaseDacs(ITypeSymbol viewDacType) =>
 				viewDacType.GetBaseTypes()
 						   .Where(baseDac => AnalysisPassInfoByDacType.ContainsKey(baseDac));
 			
 
 			public void ReportDiagnostic(Diagnostic diagnostic) => _symbolContext.ReportDiagnostic(diagnostic);
+
+			public void ReportDiagnosticForBaseDACs(IEnumerable<ITypeSymbol> baseDacs, ITypeSymbol viewDac, DiagnosticDescriptor descriptor, 
+													Location location)
+			{
+				foreach (var dac in baseDacs)
+				{
+					_symbolContext.ReportDiagnostic(
+						Diagnostic.Create(descriptor, location, viewDac.Name, dac.Name));
+				}
+			}
 		}
 	}
 }

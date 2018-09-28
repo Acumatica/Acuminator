@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Linq;
 using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
 
@@ -17,6 +18,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         /// The type of the data view symbol
         /// </summary>
         public INamedTypeSymbol Type { get; }
+
+		public ITypeSymbol ViewDac => Type.TypeArguments.FirstOrDefault();
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private string DebuggerDisplay => $"Symbol: {Symbol.Name} | Type: {Type.ToString()}";

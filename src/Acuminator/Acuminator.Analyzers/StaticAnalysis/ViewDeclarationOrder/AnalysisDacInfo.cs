@@ -15,7 +15,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 	/// </summary>
 	public partial class ViewDeclarationOrderAnalyzer : IPXGraphAnalyzer
 	{
-		private class AnalysisPassInfo
+		private class AnalysisDacInfo
 		{
 			private DiagnosticDescriptor _diagnosticDescriptor;
 
@@ -37,7 +37,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 
 			public List<DataViewInfo> VisitedViews { get; }
 
-			public AnalysisPassInfo(ITypeSymbol viewDacType, DataViewInfo firstVisitedViewInfo)
+			public AnalysisDacInfo(ITypeSymbol viewDacType, DataViewInfo firstVisitedViewInfo)
 			{
 				ViewDacType = viewDacType;
 				VisitedViews = new List<DataViewInfo> { firstVisitedViewInfo };
