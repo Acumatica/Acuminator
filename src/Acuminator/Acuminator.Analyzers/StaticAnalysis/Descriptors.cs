@@ -192,5 +192,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
         public static DiagnosticDescriptor PX1080_DataViewDelegateLongOperationStart { get; } =
             Rule("PX1080", nameof(Resources.PX1080Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+        public static DiagnosticDescriptor PX1081_PXGraphExecutesActionDuringInitialization { get; } =
+            Rule("PX1081", nameof(Resources.PX1081Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
     }
 }
