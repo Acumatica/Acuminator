@@ -7,8 +7,8 @@ using PX.Data;
 
 namespace PX.Objects.HackathonDemo
 {
-	public class IIGPOALCLandedCost : IBqlTable
-	{
+	public class IIGPOALCLandedCost : PXCacheExtension<SOOrder>
+    {
 		#region Selected
 		public abstract class selected : PX.Data.IBqlField { }
 		protected bool? _Selected;
