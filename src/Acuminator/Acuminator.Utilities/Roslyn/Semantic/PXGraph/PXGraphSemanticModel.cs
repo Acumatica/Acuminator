@@ -159,7 +159,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
                     if (isCreationDelegateAddition)
                     {
                         INamedTypeSymbol graphSymbol = symbol.TypeArguments[0] as INamedTypeSymbol;
-                        ExpressionSyntax delegateNode = node.ArgumentList.Arguments.First().Expression;
+                        CSharpSyntaxNode delegateNode = node.ArgumentList.Arguments.First().Expression;
+
+                        if (delegateNode is LambdaExpressionSyntax lambdaNode)
+                        {
+                            delegateNode = lambdaNode.Body;
+                        }
+
                         ISymbol delegateSymbol = semanticModel.GetSymbolInfo(delegateNode).Symbol;
 
                         GraphInitDelegates.Add(new InitDelegateInfo(graphSymbol, delegateSymbol, delegateNode));
@@ -175,9 +181,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             public GraphType GraphType => GraphType.PXGraph;
             public INamedTypeSymbol GraphTypeSymbol { get; }
             public ISymbol DelegateSymbol { get; }
-            public ExpressionSyntax DelegateNode { get; }
+            public CSharpSyntaxNode DelegateNode { get; }
 
-            public InitDelegateInfo(INamedTypeSymbol graphSymbol, ISymbol delegateSymbol, ExpressionSyntax delegateNode)
+            public InitDelegateInfo(INamedTypeSymbol graphSymbol, ISymbol delegateSymbol, CSharpSyntaxNode delegateNode)
             {
                 GraphTypeSymbol = graphSymbol;
                 DelegateSymbol = delegateSymbol;
