@@ -381,6 +381,9 @@
   <data name="PX1081Title" xml:space="preserve">
     <value>Actions cannot be executed during the PXGraph initialization</value>
   </data>
+  <data name="PX1082Title" xml:space="preserve">
+    <value>Actions cannot be executed within data view delegates</value>
+  </data>
   <data name="PX1083Title" xml:space="preserve">
     <value>Changes cannot be saved to the database from the data view delegate</value>
   </data>

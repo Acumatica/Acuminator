@@ -9,10 +9,10 @@ using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.PXActionExecution
 {
-    public class PXActionExecutionInPXGraphInitializationTests : DiagnosticVerifier
+    public class PXActionExecutionInGraphSemanticModelTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-            new PXGraphAnalyzer(new PXActionExecutionInPXGraphInitializerAnalyzer());
+            new PXGraphAnalyzer(new PXActionExecutionInGraphSemanticModelAnalyzer());
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\PressInGraph.cs")]
@@ -53,5 +53,30 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXActionExecution
         [EmbeddedFileData(@"PXGraph\PressWithExternalMethodInGraphExtension.cs")]
         public async Task PressWithExternalMethod_PXGraphExtensionInitialization(string actual) =>
             await VerifyCSharpDiagnosticAsync(actual, Descriptors.PX1081_PXGraphExecutesActionDuringInitialization.CreateFor(9, 13));
+
+        [Theory]
+        [EmbeddedFileData(@"PXGraph\PressInViewDelegate.cs")]
+        public async Task Press_ViewDelegate(string actual) =>
+            await VerifyCSharpDiagnosticAsync(actual, Descriptors.PX1082_ActionExecutionInDataViewDelegate.CreateFor(13, 13));
+
+        [Theory]
+        [EmbeddedFileData(@"PXGraph\PressInViewDelegateWithParameter.cs")]
+        public async Task Press_ViewDelegateWithParameter(string actual) =>
+            await VerifyCSharpDiagnosticAsync(actual, Descriptors.PX1082_ActionExecutionInDataViewDelegate.CreateFor(13, 13));
+
+        [Theory]
+        [EmbeddedFileData(@"PXGraph\PressInViewDelegateInGraphExtension.cs")]
+        public async Task Press_ViewDelegateInGraphExtensionOwnView(string actual) =>
+            await VerifyCSharpDiagnosticAsync(actual, Descriptors.PX1082_ActionExecutionInDataViewDelegate.CreateFor(12, 13));
+
+        [Theory]
+        [EmbeddedFileData(@"PXGraph\PressInViewDelegateInGraphExtension2.cs")]
+        public async Task Press_ViewDelegateInGraphExtensionBaseView(string actual) =>
+            await VerifyCSharpDiagnosticAsync(actual, Descriptors.PX1082_ActionExecutionInDataViewDelegate.CreateFor(10, 13));
+
+        [Theory]
+        [EmbeddedFileData(@"PXGraph\PressInViewDelegateInGraphExtension3.cs")]
+        public async Task Press_ViewDelegateInGraphExtensionOverride(string actual) =>
+            await VerifyCSharpDiagnosticAsync(actual, Descriptors.PX1082_ActionExecutionInDataViewDelegate.CreateFor(10, 13));
     }
 }
