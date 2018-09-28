@@ -11,7 +11,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphCreationDuringInitializat
     public class PXGraphCreationDuringInitializationTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-            new PXGraphAnalyzer(new PXGraphCreationDuringInitializationAnalyzer());
+            new PXGraphAnalyzer(new PXGraphCreationInGraphSemanticModelAnalyzer());
 
         [Theory]
         [EmbeddedFileData("PXGraphWithCreateInstanceInInstanceConstructor.cs")]

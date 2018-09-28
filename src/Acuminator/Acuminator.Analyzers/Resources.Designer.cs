@@ -861,5 +861,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1082Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A PXGraph instance cannot be initialized within data view delegates.
+        /// </summary>
+        public static string PX1084Title {
+            get {
+                return ResourceManager.GetString("PX1084Title", resourceCulture);
+            }
+        }
     }
 }

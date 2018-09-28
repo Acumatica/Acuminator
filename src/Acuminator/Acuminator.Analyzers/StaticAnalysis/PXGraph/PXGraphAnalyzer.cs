@@ -21,7 +21,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
 
         public PXGraphAnalyzer() : this(
-            new PXGraphCreationDuringInitializationAnalyzer(),
+            new PXGraphCreationInGraphSemanticModelAnalyzer(),
             new SavingChangesDuringPXGraphInitializationAnalyzer(),
             new ChangesInPXCacheDuringPXGraphInitializationAnalyzer(),
             new LongOperationInPXGraphDuringInitializationAnalyzer(),

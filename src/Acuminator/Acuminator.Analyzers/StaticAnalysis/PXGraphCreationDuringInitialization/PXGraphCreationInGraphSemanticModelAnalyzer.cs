@@ -9,24 +9,31 @@ using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization
 {
-    public class PXGraphCreationDuringInitializationAnalyzer : IPXGraphAnalyzer
+    public class PXGraphCreationInGraphSemanticModelAnalyzer : IPXGraphAnalyzer
     {
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-            ImmutableArray.Create
-            (
-                Descriptors.PX1057_PXGraphCreationDuringInitialization
-            );
+            ImmutableArray.Create(
+                Descriptors.PX1057_PXGraphCreationDuringInitialization,
+                Descriptors.PX1084_GraphCreationInDataViewDelegate);
 
         public void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
-            PXGraphCreateInstanceWalker walker = new PXGraphCreateInstanceWalker(context, pxContext);
+            PXGraphCreateInstanceWalker walker = new PXGraphCreateInstanceWalker(context, pxContext, Descriptors.PX1057_PXGraphCreationDuringInitialization);
 
             foreach(GraphInitializerInfo initializer in pxGraph.Initializers)
             {
                 context.CancellationToken.ThrowIfCancellationRequested();
                 walker.Visit(initializer.Node);
+            }
+
+            walker = new PXGraphCreateInstanceWalker(context, pxContext, Descriptors.PX1084_GraphCreationInDataViewDelegate);
+
+            foreach(DataViewDelegateInfo del in pxGraph.ViewDelegates)
+            {
+                context.CancellationToken.ThrowIfCancellationRequested();
+                walker.Visit(del.Node);
             }
         }
 
@@ -34,12 +41,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
         {
             private readonly SymbolAnalysisContext _context;
             private readonly PXContext _pxContext;
+            private readonly DiagnosticDescriptor _descriptor;
 
-            public PXGraphCreateInstanceWalker(SymbolAnalysisContext context, PXContext pxContext)
+            public PXGraphCreateInstanceWalker(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor descriptor)
                 : base(context.Compilation, context.CancellationToken)
             {
                 _context = context;
                 _pxContext = pxContext;
+                _descriptor = descriptor;
             }
 
             public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
@@ -50,7 +59,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
 
                 if (symbol != null && _pxContext.PXGraphRelatedMethods.CreateInstance.Contains(symbol.ConstructedFrom))
                 {
-                    ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1057_PXGraphCreationDuringInitialization, node);
+                    ReportDiagnostic(_context.ReportDiagnostic, _descriptor, node);
                 }
                 else
                 {
