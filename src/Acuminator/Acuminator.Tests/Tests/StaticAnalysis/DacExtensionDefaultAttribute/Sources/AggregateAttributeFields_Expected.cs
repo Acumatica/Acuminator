@@ -30,7 +30,7 @@ namespace PX.Objects.HackathonDemo
 	public class _NonNullableIntListAttribute : PXAggregateAttribute
 	{
 	}
-	public class Foo : IBqlTable
+	public class Foo : PXCacheExtension<SOOrder>
 	{
 		public abstract class someField : IBqlField { }
 		[NonNullableIntList]

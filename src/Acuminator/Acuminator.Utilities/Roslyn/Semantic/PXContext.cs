@@ -54,6 +54,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		private readonly Lazy<PXViewSymbols> _pxView;
 		public PXViewSymbols PXView => _pxView.Value;
 
+		private readonly Lazy<ExceptionSymbols> _exceptions;
+		public ExceptionSymbols Exceptions => _exceptions.Value;
+
 
 		private readonly Lazy<ImmutableHashSet<IMethodSymbol>> _uiPresentationLogicMethods;
 		public ImmutableHashSet<IMethodSymbol> UiPresentationLogicMethods => _uiPresentationLogicMethods.Value;
@@ -82,9 +85,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		public INamedTypeSymbol PXFieldState => Compilation.GetTypeByMetadataName(typeof(PXFieldState).FullName);
 		public INamedTypeSymbol PXAttributeFamily => Compilation.GetTypeByMetadataName(typeof(PXAttributeFamilyAttribute).FullName);
-
-        public INamedTypeSymbol PXException => Compilation.GetTypeByMetadataName(typeof(PXException).FullName);
-        public INamedTypeSymbol PXBaseRedirectException => Compilation.GetTypeByMetadataName(typeof(PXBaseRedirectException).FullName);
 
         public INamedTypeSymbol IPXLocalizableList => Compilation.GetTypeByMetadataName(typeof(IPXLocalizableList).FullName);
 		public INamedTypeSymbol PXConnectionScope => Compilation.GetTypeByMetadataName(typeof(PXConnectionScope).FullName);
@@ -116,6 +116,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			_pxAction = new Lazy<PXActionSymbols>(() => new PXActionSymbols(Compilation));
 			_pxDatabase = new Lazy<PXDatabaseSymbols>(() => new PXDatabaseSymbols(Compilation));
 			_pxView = new Lazy<PXViewSymbols>(() => new PXViewSymbols(Compilation));
+			_exceptions = new Lazy<ExceptionSymbols>(() => new ExceptionSymbols(Compilation));
             _pxSelectBaseGeneric = new Lazy<PXSelectBaseGenericSymbols>(() => new PXSelectBaseGenericSymbols(Compilation));
 
 			_uiPresentationLogicMethods = new Lazy<ImmutableHashSet<IMethodSymbol>>(GetUiPresentationLogicMethods);
@@ -136,6 +137,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				.Concat(AttributeTypes.PXUIFieldAttribute.SetReadOnly)
 				.Concat(AttributeTypes.PXUIFieldAttribute.SetDisplayName)
 				.Concat(AttributeTypes.PXUIFieldAttribute.SetNeutralDisplayName)
+				.Concat(AttributeTypes.PXStringListAttribute.SetList)
+				.Concat(AttributeTypes.PXStringListAttribute.AppendList)
+				.Concat(AttributeTypes.PXStringListAttribute.SetLocalizable)
+				.Concat(AttributeTypes.PXIntListAttribute.SetList)
 				.ToImmutableHashSet();
 		}
 	}

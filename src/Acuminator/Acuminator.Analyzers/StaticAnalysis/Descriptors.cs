@@ -10,6 +10,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 	public static class Descriptors
 	{
+		private const string DocumentationLinkPrefix = @"https://github.com/Acumatica/Acuminator/docs/diagnostics";
+		private const string DocumentatonFileExtension = "md";
+
 		private static readonly ConcurrentDictionary<Category, string> categoryMapping = new ConcurrentDictionary<Category, string>();
 
         private static DiagnosticDescriptor Rule(string id, LocalizableString title, Category category, DiagnosticSeverity defaultSeverity, 
@@ -17,8 +20,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		{
 			bool isEnabledByDefault = true;
 			messageFormat = messageFormat ?? title;
+			string diagnosticLink = $"{DocumentationLinkPrefix}/{id}.{DocumentatonFileExtension}"; 
 			return new DiagnosticDescriptor(id, title, messageFormat, categoryMapping.GetOrAdd(category, c => c.ToString()), defaultSeverity,
-											isEnabledByDefault, description);
+											isEnabledByDefault, description, diagnosticLink);
 		}
 
 		public static DiagnosticDescriptor PX1000_InvalidPXActionHandlerSignature { get; } = 
@@ -181,5 +185,25 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 		public static DiagnosticDescriptor PX1072_PXGraphCreationForBqlQueries { get; } =
 			Rule("PX1072", nameof(Resources.PX1072Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+
+		public static DiagnosticDescriptor PX1073_ThrowingExceptionsInRowPersisted { get; } =
+			Rule("PX1073", nameof(Resources.PX1073Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+		public static DiagnosticDescriptor PX1074_ThrowingSetupNotEnteredExceptionInEventHandlers { get; } =
+			Rule("PX1074", nameof(Resources.PX1074Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning,
+				nameof(Resources.PX1074MessageFormat).GetLocalized());
+
+		public static DiagnosticDescriptor PX1075_RaiseExceptionHandlingInEventHandlers { get; } =
+			Rule("PX1075", nameof(Resources.PX1075Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error,
+				nameof(Resources.PX1075MessageFormat).GetLocalized());
+
+        public static DiagnosticDescriptor PX1080_DataViewDelegateLongOperationStart { get; } =
+            Rule("PX1080", nameof(Resources.PX1080Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+        public static DiagnosticDescriptor PX1081_PXGraphExecutesActionDuringInitialization { get; } =
+            Rule("PX1081", nameof(Resources.PX1081Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+        public static DiagnosticDescriptor PX1082_ActionExecutionInDataViewDelegate { get; } =
+            Rule("PX1082", nameof(Resources.PX1081Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
     }
 }

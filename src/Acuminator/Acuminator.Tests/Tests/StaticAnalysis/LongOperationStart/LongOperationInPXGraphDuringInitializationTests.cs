@@ -8,10 +8,10 @@ using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationStart
 {
-    public class PXGraphLongOperationDuringInitializationTests : DiagnosticVerifier
+    public class LongOperationInPXGraphDuringInitializationTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer () =>
-            new PXGraphAnalyzer(new PXGraphLongOperationDuringInitializationAnalyzer());
+            new PXGraphAnalyzer(new LongOperationInPXGraphDuringInitializationAnalyzer());
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\PXGraphStartsLongOperationInInstanceConstructor.cs")]

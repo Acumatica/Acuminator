@@ -37,7 +37,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.UiPresentationLogic
 				Descriptors.PX1070_UiPresentationLogicInEventHandlers.CreateFor(51, 4, EventType.RowUpdated),
 				Descriptors.PX1070_UiPresentationLogicInEventHandlers.CreateFor(56, 4, EventType.RowDeleted),
 				Descriptors.PX1070_UiPresentationLogicInEventHandlers.CreateFor(61, 4, EventType.RowPersisting),
-				Descriptors.PX1070_UiPresentationLogicInEventHandlers.CreateFor(66, 4, EventType.RowPersisted));
+				Descriptors.PX1070_UiPresentationLogicInEventHandlers.CreateFor(66, 4, EventType.RowPersisted),
+				Descriptors.PX1070_UiPresentationLogicInEventHandlers.CreateFor(67, 4, EventType.RowPersisted),
+				Descriptors.PX1070_UiPresentationLogicInEventHandlers.CreateFor(68, 4, EventType.RowPersisted));
 
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\EventHandlersWithExternalMethod.cs")]

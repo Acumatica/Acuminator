@@ -99,9 +99,15 @@
     <Compile Include="Common\EnumerableExtensions.cs" />
     <Compile Include="Common\ConcurrentExtensions.cs" />
     <Compile Include="Common\EnumerableExtraExtensions.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\GraphViewSymbolUtils.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\EventSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\BQLSymbols.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\ExceptionSymbols.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\PXIntListAttributeSymbols.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\PXStringListAttributeSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXViewSymbols.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\DataViewDelegateInfo.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\DataViewInfo.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXSelectorAttributeSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXDatabaseSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXUIFieldAttributeSymbols.cs" />
@@ -150,6 +156,7 @@
     <Compile Include="Roslyn\PXFieldAttributes\FieldTypeAttributesRegister.cs" />
     <Compile Include="Roslyn\PXSystemActions\PXSystemActionsRegister.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\PXGraphSemanticModel.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\StaticConstructorInfo.cs" />
     <Compile Include="Roslyn\Syntax\ArgumentSyntaxExtensions.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphSymbolUtils.cs" />
     <Compile Include="Roslyn\Semantic\IMethodSymbolExtensions.cs" />
