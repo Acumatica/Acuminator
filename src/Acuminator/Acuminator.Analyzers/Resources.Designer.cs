@@ -861,5 +861,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1082Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Changes cannot be saved to the database from data view delegates.
+        /// </summary>
+        public static string PX1083Title {
+            get {
+                return ResourceManager.GetString("PX1083Title", resourceCulture);
+            }
+        }
     }
 }
