@@ -69,6 +69,7 @@
     <Compile Include="DAC\Multiple field attributes, invalid aggregators and DAC field must be abstract\APInvoice.cs" />
     <Compile Include="DAC\APSetup.cs" />
     <Compile Include="Graph\Event Handlers\SOOrderEntryExt.cs" />
+    <Compile Include="Graph\Graph extension with action call\SOInvoiceEntryExt.cs" />
     <Compile Include="Graph\Graph is saving changes during initialization\SMUserMaint.cs" />
     <Compile Include="Graph\Graph starts long operaton from incorrect places\SMUserProcess.cs" />
     <Compile Include="Graph\Graph with creation of other graph during initialization\ARTranEntry.cs" />

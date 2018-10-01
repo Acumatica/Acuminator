@@ -1,5 +1,6 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
 using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
+using Acuminator.Analyzers.StaticAnalysis.PXActionExecution;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization;
 using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -24,7 +25,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
             new SavingChangesDuringPXGraphInitializationAnalyzer(),
             new ChangesInPXCacheDuringPXGraphInitializationAnalyzer(),
             new LongOperationInPXGraphDuringInitializationAnalyzer(),
-            new LongOperationInDataViewDelegateAnalyzer())
+            new LongOperationInDataViewDelegateAnalyzer(),
+            new PXActionExecutionInGraphSemanticModelAnalyzer())
         {
         }
 

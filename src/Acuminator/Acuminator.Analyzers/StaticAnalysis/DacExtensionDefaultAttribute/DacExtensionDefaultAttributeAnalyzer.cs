@@ -29,12 +29,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 		}
 		private static Task AnalyzePropertyAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
-			if (!(symbolContext.Symbol is INamedTypeSymbol dacOrDacExt) || !dacOrDacExt.IsDacOrExtension(pxContext))
+			if (!(symbolContext.Symbol is INamedTypeSymbol dacExt) || !dacExt.IsDacExtension())
 				return Task.FromResult(false);
 
 			AttributeInformation attributeInformation = new AttributeInformation(pxContext);
 
-			Task[] allTasks = dacOrDacExt.GetMembers()
+			Task[] allTasks = dacExt.GetMembers()
 				.OfType<IPropertySymbol>()
 				.Select(property => CheckDacPropertyAsync(property, symbolContext, pxContext, attributeInformation))
 				.ToArray();

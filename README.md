@@ -27,9 +27,14 @@ To build the solution, do the following:
    2. Display the public key to the console by using the following command: _sn.exe -tp "src\publickey.txt"_.
 4. Build _Acuminator.sln_.
 
+## Documentation
+* [Diagnostic Descriptions](docs/diagnostics)
+* [Refactoring Descriptions](docs/refactoring)
+
 ## Developer Documentation
 * [Coding Guidelines](docs/dev/CodingGuidelines/CodingGuidelines.md)
 * [Recursive Code Analysis](docs/dev/RecursiveCodeAnalysis/RecursiveCodeAnalysis.md)
+* [Documentation Guidelines](docs/dev/DocumentationGuidelines/DiagnosticDescription.md)
 
 ## Release Notes
 [Release Notes](docs/ReleaseNotes.md)

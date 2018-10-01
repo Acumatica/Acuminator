@@ -115,7 +115,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
         {
             syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-            return type.InheritsFromOrEquals(pxContext.PXException) && !type.InheritsFromOrEquals(pxContext.PXBaseRedirectException);
+            return type.InheritsFromOrEquals(pxContext.Exceptions.PXException) 
+                   && !type.InheritsFromOrEquals(pxContext.Exceptions.PXBaseRedirectException);
         }
     }
 }
