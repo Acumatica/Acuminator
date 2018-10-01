@@ -6,6 +6,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacKeyFieldDeclaration.Sources
 	{
 		#region StoreID
 		public abstract class storeID : IBqlField { }
+		
 		[PXUIField(Enabled = false)]
 		public virtual int? StoreID { get; set; }
 		#endregion

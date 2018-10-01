@@ -14,7 +14,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacKeyFieldDeclaration.Sources
 		#region CompositeID
 		public abstract class compositeID : IBqlField { }
 
-		[PXDBInt(IsKey = true)]
+		[PXDBInt()]
 		[PXUIField(DisplayName = "CompositeID")]
 		public virtual int? CompositeID { get; set; }
 		#endregion
@@ -24,7 +24,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacKeyFieldDeclaration.Sources
 
 		[PXUIField(DisplayName = "Inventory ID")]
 		[PXDefault]
-		[PXDBString(30, IsUnicode = true, InputMask = "", IsKey = true)]
+		[PXDBString(30, IsUnicode = true, InputMask = "")]
 		public virtual string MappedInventoryID { get; set; }
 		#endregion
 
