@@ -16,8 +16,8 @@ namespace Acuminator.Tests.Verification
 		}
 
 		public static DiagnosticResult CreateFor(this DiagnosticDescriptor descriptor,
-			(int line, int column) location,
-			(int line, int column) extraLocation,
+			(int Line, int Column) location,
+			(int Line, int Column) extraLocation,
 			params object[] messageArgs)
 		{
 			return CreateDiagnosticResult(descriptor, messageArgs, location, extraLocation);
@@ -46,7 +46,7 @@ namespace Acuminator.Tests.Verification
 
 		private static DiagnosticResult CreateDiagnosticResult(DiagnosticDescriptor descriptor,
 			object[] messageArgs,
-			IEnumerable<(int line, int column)> locations)
+			IEnumerable<(int Line, int Column)> locations)
 		{
 			return new DiagnosticResult()
 			{
@@ -55,7 +55,7 @@ namespace Acuminator.Tests.Verification
 				Message = messageArgs == null || messageArgs.Length == 0
 					? descriptor.Title.ToString()
 					: String.Format(descriptor.MessageFormat.ToString(), messageArgs),
-				Locations = locations.Select(l => new DiagnosticResultLocation("Test0.cs", l.line, l.column)).ToArray()
+				Locations = locations.Select(l => new DiagnosticResultLocation("Test0.cs", l.Line, l.Column)).ToArray()
 			};
 		}
 	}
