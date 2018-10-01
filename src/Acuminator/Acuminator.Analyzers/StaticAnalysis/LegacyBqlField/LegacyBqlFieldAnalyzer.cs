@@ -29,12 +29,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 			if (!IsDacFieldType(dacFieldType) || AlreadyStronglyTyped(dacFieldType, pxContext)) return;
 
 			var table = dacFieldType.ContainingType;
-			if (table != null && table.ImplementsInterface(pxContext.IBqlTableType))
+			if (table != null)
 			{
 				var property = table
 					.GetBaseTypesAndThis()
 					.SelectMany(t => t.GetMembers().OfType<IPropertySymbol>())
-					.FirstOrDefault(f => !f.IsReadOnly && !f.IsWriteOnly && String.Equals(f.Name, dacFieldType.Name, StringComparison.OrdinalIgnoreCase));
+					.FirstOrDefault(f => String.Equals(f.Name, dacFieldType.Name, StringComparison.OrdinalIgnoreCase));
 
 				if (property != null)
 				{
