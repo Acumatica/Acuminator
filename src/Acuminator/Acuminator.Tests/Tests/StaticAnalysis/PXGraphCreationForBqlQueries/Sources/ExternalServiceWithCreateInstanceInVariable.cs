@@ -9,12 +9,12 @@ namespace PX.Objects
 {
 	public class CustomerService
 	{
-		public void UpdateCustomer(int acuCustomerId)
+		public object GetCustomer(int acuCustomerId)
 		{
 			var existingGraph = PXGraph.CreateInstance<CustomerMaint>();
 			var graph = PXGraph.CreateInstance<CustomerMaint>();
 
-			graph.Customers.Current = PXSelect<Customer, Where<Customer.bAccountID, Equal<Required<Customer.bAccountID>>>>
+			return PXSelect<Customer, Where<Customer.bAccountID, Equal<Required<Customer.bAccountID>>>>
 				.Select(graph, acuCustomerId);
 		}
 	}

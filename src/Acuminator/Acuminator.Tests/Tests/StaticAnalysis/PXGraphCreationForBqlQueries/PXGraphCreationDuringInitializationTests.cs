@@ -41,10 +41,16 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphCreationForBqlQueries
 				Descriptors.PX1072_PXGraphCreationForBqlQueries.CreateFor(18, 13));
 
 	    [Theory]
-	    [EmbeddedFileData("CreateInstanceInVariable.cs", "Customer.cs", "CustomerMaint.cs")]
-	    public async Task CreateInstanceInVariable(string source, string dacSource, string graphSource) =>
+	    [EmbeddedFileData("ExternalServiceWithCreateInstanceInVariable.cs", "Customer.cs", "CustomerMaint.cs")]
+	    public async Task ExternalServiceWithCreateInstanceInVariable(string source, string dacSource, string graphSource) =>
 		    await VerifyCSharpDiagnosticAsync(source, dacSource, graphSource,
 				Descriptors.PX1072_PXGraphCreationForBqlQueries.CreateFor(18, 13));
+
+	    [Theory]
+	    [EmbeddedFileData("ExternalServiceWithMethodParameter.cs", "Customer.cs", "CustomerMaint.cs")]
+	    public async Task ExternalServiceWithMethodParameter(string source, string dacSource, string graphSource) =>
+		    await VerifyCSharpDiagnosticAsync(source, dacSource, graphSource,
+			    Descriptors.PX1072_PXGraphCreationForBqlQueries.CreateFor(17, 13));
 
 	    [Theory]
 	    [EmbeddedFileData("PropertyInExternalService.cs", "Customer.cs", "CustomerMaint.cs")]
@@ -72,6 +78,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphCreationForBqlQueries
 	    [Theory]
 	    [EmbeddedFileData("InstanceIsUsedOutsideBql.cs", "Customer.cs", "CustomerMaint.cs")]
 	    public async Task InstanceIsUsedOutsideBql_ShouldNotShowDiagnostic(string source, string dacSource, string graphSource) =>
+		    await VerifyCSharpDiagnosticAsync(source, dacSource, graphSource);
+
+	    [Theory]
+	    [EmbeddedFileData("ExternalServiceWithUsedVariable.cs", "Customer.cs", "CustomerMaint.cs")]
+	    public async Task ExternalServiceWithUsedVariable_ShouldNotShowDiagnostic(string source, string dacSource, string graphSource) =>
 		    await VerifyCSharpDiagnosticAsync(source, dacSource, graphSource);
     }
 }
