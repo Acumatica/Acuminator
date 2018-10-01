@@ -31,7 +31,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 			if (!(symbolContext.Symbol is INamedTypeSymbol graphOrGraphExtension) || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			bool isGraph = graphOrGraphExtension.InheritsFrom(pxContext.PXGraphType);
+			bool isGraph = graphOrGraphExtension.InheritsFrom(pxContext.PXGraph.Type);
 
 			if (!isGraph && !graphOrGraphExtension.InheritsFrom(pxContext.PXGraphExtensionType))
 				return;

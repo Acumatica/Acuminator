@@ -34,7 +34,7 @@ namespace Acuminator.Analyzers.Refactorings.ChangeEventHandlerSignatureToGeneric
 			var semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
 			var pxContext = new PXContext(semanticModel.Compilation);
 
-			if (pxContext.PXGraphType == null)
+			if (pxContext.PXGraph.Type == null)
 				return;
 
 			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);

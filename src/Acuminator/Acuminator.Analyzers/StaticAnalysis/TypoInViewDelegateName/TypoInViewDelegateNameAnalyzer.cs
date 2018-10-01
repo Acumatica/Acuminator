@@ -36,7 +36,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 	        }
 
 	        var parent = method.ContainingType;
-	        if (parent != null && parent.InheritsFrom(pxContext.PXGraphType))
+	        if (parent != null && parent.InheritsFrom(pxContext.PXGraph.Type))
 	        {
 		        var views = parent.GetMembers()
 					.OfType<IFieldSymbol>()

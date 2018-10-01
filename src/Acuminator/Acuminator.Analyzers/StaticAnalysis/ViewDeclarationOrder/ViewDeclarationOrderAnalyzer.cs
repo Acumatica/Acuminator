@@ -24,7 +24,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 			INamedTypeSymbol graph = (INamedTypeSymbol)context.Symbol;
 
 			if (graph == null || context.CancellationToken.IsCancellationRequested ||
-			   !graph.InheritsFromOrEquals(pxContext.PXGraphType) && !graph.InheritsFromOrEquals(pxContext.PXGraphExtensionType))
+			   !graph.InheritsFromOrEquals(pxContext.PXGraph.Type) && !graph.InheritsFromOrEquals(pxContext.PXGraphExtensionType))
 			{
 				return;
 			}

@@ -104,6 +104,7 @@
     <Compile Include="Roslyn\Semantic\Symbols\EventSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\BQLSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\ExceptionSymbols.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\PXGraphSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXIntListAttributeSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXStringListAttributeSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXViewSymbols.cs" />
@@ -119,7 +120,6 @@
     <Compile Include="Roslyn\Semantic\EventHandlerSignatureType.cs" />
     <Compile Include="Roslyn\Semantic\EventType.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXCacheSymbols.cs" />
-    <Compile Include="Roslyn\Semantic\Symbols\PXGraphRelatedMethodSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXSelectBaseGenericSymbols.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphInitializerInfo.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphInitializerType.cs" />
