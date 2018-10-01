@@ -33,41 +33,34 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
+			// Get body from a method or property
 			CSharpSyntaxNode body = GetBody(context.CodeBlock);
 			if (body == null) return;
 
+			// Collect all PXGraph-typed method parameters passed to BQL queries
 			var walker = new BqlGraphArgWalker(context.SemanticModel, pxContext);
 			body.Accept(walker);
-
 			if (walker.GraphArguments.IsEmpty) return;
 
-			var dataFlow = context.SemanticModel.AnalyzeDataFlow(body);
+			// Collect all available PXGraph instances (@this, method parameters, local variables)
+			var existingGraphs = GetExistingGraphInstances(body, context.SemanticModel, pxContext);
+			if (existingGraphs.IsEmpty) return;
 
-			if (!dataFlow.Succeeded) return;
-
-			// this
-			var thisGraph = dataFlow.WrittenOutside.OfType<IParameterSymbol>()
-				.FirstOrDefault(t => t.IsThis && t.Type != null && t.Type.IsPXGraphOrExtension(pxContext));
-			// Method parameter
-			var parGraph = dataFlow.WrittenOutside.OfType<IParameterSymbol>()
-				.FirstOrDefault(t => !t.IsThis && t.Type != null && t.Type.IsPXGraphOrExtension(pxContext));
-			// Local variable
-			var localVarGraphs = dataFlow.WrittenInside.OfType<ILocalSymbol>()
-				.Where(t => t.Type != null && t.Type.IsPXGraphOrExtension(pxContext));
-
-			var existingGraphs = new List<ISymbol>(localVarGraphs);
-			if (thisGraph != null) existingGraphs.Add(thisGraph);
-			if (parGraph != null) existingGraphs.Add(parGraph);
-
+			// Determine if available PXGraph instance is used outside of BQL queries
 			var usedGraphs = GetSymbolUsages(body, existingGraphs, context.SemanticModel, walker.GraphArguments)
 				.ToImmutableHashSet();
 			var availableGraphs = existingGraphs.Except(usedGraphs).ToArray();
 
+			// Analyze each PXGraph-typed parameter in BQL queries
 			foreach (var graphArgSyntax in walker.GraphArguments)
 			{
 				var instantiationType = graphArgSyntax.GetGraphInstantiationType(context.SemanticModel, pxContext);
 
-				if (instantiationType != GraphInstantiationType.None && existingGraphs.Count > 0
+				// New PXGraph() / new TGraph() / PXGraph.CreateInstance<TGraph> are reported at all times
+				// All other usages are reported only if:
+				// 1. There is at least one existing PXGraph instance available
+				// 2. PXGraph parameter is not used in any way because its modifications might affect the BQL query results
+				if (instantiationType != GraphInstantiationType.None
 				    || availableGraphs.Length > 0 && context.SemanticModel.GetSymbolInfo(graphArgSyntax).Symbol is ILocalSymbol localVar 
 				                                  && !usedGraphs.Contains(localVar))
 				{
@@ -90,6 +83,34 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 				default:
 					return null;
 			}
+		}
+
+		private ImmutableArray<ISymbol> GetExistingGraphInstances(SyntaxNode body, SemanticModel semanticModel, 
+			PXContext pxContext)
+		{
+			var dataFlow = semanticModel.AnalyzeDataFlow(body);
+
+			if (!dataFlow.Succeeded) 
+				return ImmutableArray<ISymbol>.Empty;
+
+			// this
+			var thisGraph = dataFlow.WrittenOutside.OfType<IParameterSymbol>()
+				.FirstOrDefault(t => t.IsThis && t.Type != null && t.Type.IsPXGraphOrExtension(pxContext));
+			// Method parameter
+			var parGraph = dataFlow.WrittenOutside.OfType<IParameterSymbol>()
+				.FirstOrDefault(t => !t.IsThis && t.Type != null && t.Type.IsPXGraphOrExtension(pxContext));
+			// Local variable
+			var localVarGraphs = dataFlow.WrittenInside.OfType<ILocalSymbol>()
+				.Where(t => t.Type != null && t.Type.IsPXGraphOrExtension(pxContext));
+
+			// ReSharper disable once ImpureMethodCallOnReadonlyValueField
+			var builder = ImmutableArray<ISymbol>.Empty.ToBuilder();
+
+			builder.AddRange(localVarGraphs);
+			if (thisGraph != null) builder.Add(thisGraph);
+			if (parGraph != null) builder.Add(parGraph);
+
+			return builder.ToImmutable();
 		}
 
 		private IEnumerable<ISymbol> GetSymbolUsages(CSharpSyntaxNode node, 
