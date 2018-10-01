@@ -82,11 +82,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 																CodeFixModes mode)
 		{
 
-
 			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
-			var pxContext = new PXContext(semanticModel.Compilation);
-			var attributeInformation = new AttributeInformation(pxContext);
-
 			cancellationToken.ThrowIfCancellationRequested();
 
 			Location[] attributeLocations = diagnostic.AdditionalLocations.ToArray();
@@ -106,8 +102,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 				if (attributeType == null)
 					return document;
 
-				bool isIdentityAttribute = attributeInformation.IsAttributeDerivedFromClass(attributeType, pxContext.FieldAttributes.PXDBIdentityAttribute) ||
-										   attributeInformation.IsAttributeDerivedFromClass(attributeType, pxContext.FieldAttributes.PXDBLongIdentityAttribute);
+				var attributeInformation = new AttributeInformation(new PXContext(semanticModel.Compilation));
+				bool isIdentityAttribute = attributeInformation.IsAttributeDerivedFromClass(attributeType, new PXContext(semanticModel.Compilation).FieldAttributes.PXDBIdentityAttribute) ||
+										   attributeInformation.IsAttributeDerivedFromClass(attributeType, new PXContext(semanticModel.Compilation).FieldAttributes.PXDBLongIdentityAttribute);
 
 
 				if ((mode == CodeFixModes.EditIdentityAttribute && isIdentityAttribute) ||
