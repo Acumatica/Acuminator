@@ -34,14 +34,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField.Id);
 
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		public override Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField.Id);
 
 			if (diagnostic == null)
-				return;
+				return Task.FromResult(false);
 
 			Document document = context.Document;
 
@@ -73,7 +73,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			context.RegisterCodeFix(codeActionBoundKeys, context.Diagnostics);
 			context.RegisterCodeFix(codeActionRemoveIdentityColumn, context.Diagnostics);
 
-			return;
+			return Task.FromResult(true);
 		}
 
 		private async Task<Document> RemoveKeysFromFieldsAsync(Document document,
@@ -97,9 +97,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 			foreach (var attributeLocation in attributeLocations)
 			{
-				AttributeSyntax attributeNode = root?.FindNode(attributeLocation.SourceSpan) as AttributeSyntax;
 
-				if (attributeNode == null)
+				if (!(root?.FindNode(attributeLocation.SourceSpan) is AttributeSyntax attributeNode))
 					return document;
 
 				ITypeSymbol attributeType = semanticModel.GetTypeInfo(attributeNode, cancellationToken).Type;

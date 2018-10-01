@@ -50,8 +50,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 				foreach (var attribute in property.GetAttributes())
 				{
 					if (attribute.NamedArguments.Where(a => a.Key.Contains(IsKey) &&
-															 a.Value.Value is bool boolValue &&
-															 boolValue == true)
+															 a.Value.Value is bool isKeyValue &&
+															 isKeyValue == true)
 												.Any())
 					{
 						var identityOrKey = CheckAttributeIdentityOrKey(attribute, pxContext);
@@ -87,7 +87,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 		private static async Task<Location> GetAttributeLocationAsync(AttributeData attribute, CancellationToken cancellationToken)
 		{
 			if (attribute.ApplicationSyntaxReference == null)
-				throw new ArgumentNullException(nameof(attribute.ApplicationSyntaxReference));
+				return null;
 
 			SyntaxNode attributeSyntaxNode = await attribute.ApplicationSyntaxReference.GetSyntaxAsync(cancellationToken).ConfigureAwait(false);
 			
