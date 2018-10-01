@@ -22,7 +22,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
 			(
-				Descriptors.PX1055_DacKeyFieldBound
+				Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField
 			);
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
@@ -37,14 +37,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 			if (!(symbolContext.Symbol is INamedTypeSymbol dacOrDacExtSymbol) || !dacOrDacExtSymbol.IsDacOrExtension(pxContext))
 				return;
-			
-			var dacPropertiesDeclarations  = dacOrDacExtSymbol.GetMembers().OfType<IPropertySymbol>();
 
-			List<AttributeData> keyAttributes = new List<AttributeData>();
-			
-			bool flagIsKey = false;
-			bool flagIsKeyIdentity = false;
-			
+			var dacPropertiesDeclarations = dacOrDacExtSymbol.GetMembers().OfType<IPropertySymbol>();
+
+			var keyAttributes = new List<AttributeData>();
+
+			bool isKey = false;
+			bool isKeyIdentity = false;
+
 			foreach (var property in dacPropertiesDeclarations)
 			{
 				foreach (var attribute in property.GetAttributes())
@@ -54,15 +54,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 															 boolValue == true)
 												.Any())
 					{
-						CheckAttributeIdentityOrKey(ref flagIsKey,ref flagIsKeyIdentity, attribute, pxContext);
+						var identityOrKey = CheckAttributeIdentityOrKey(attribute, pxContext);
+
+						isKey = identityOrKey.IsKey? true : isKey;
+						isKeyIdentity = identityOrKey.IsKeyIdentity ? true : isKeyIdentity;
+
 						keyAttributes.Add(attribute);
 					}
 				}
 			}
 
-			if(flagIsKey && flagIsKeyIdentity)
+			if (isKey && isKeyIdentity)
 			{
-				List<Location> locations = new List<Location>();
+				var locations = new List<Location>();
 
 				foreach (var attribute in keyAttributes)
 				{
@@ -75,37 +79,35 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 					symbolContext.ReportDiagnostic(
 					Diagnostic.Create(
-						Descriptors.PX1055_DacKeyFieldBound, attributeLocation, locations));
-				}	
+						Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField, attributeLocation, locations));
+				}
 			}
 		}
 
 		private static async Task<Location> GetAttributeLocationAsync(AttributeData attribute, CancellationToken cancellationToken)
 		{
 			if (attribute.ApplicationSyntaxReference == null)
-				return null;
-			SyntaxNode attributeSyntaxNode = await attribute.ApplicationSyntaxReference.GetSyntaxAsync(cancellationToken).ConfigureAwait(false);
+				throw new ArgumentNullException(nameof(attribute.ApplicationSyntaxReference));
 
+			SyntaxNode attributeSyntaxNode = await attribute.ApplicationSyntaxReference.GetSyntaxAsync(cancellationToken).ConfigureAwait(false);
+			
 			return attributeSyntaxNode?.GetLocation();
 		}
 
 		private static bool IsDerivedFromIdentityTypes(AttributeData attribute, PXContext pxContext)
 		{
-			AttributeInformation attributeInformation = new AttributeInformation(pxContext);
+			var attributeInformation = new AttributeInformation(pxContext);
 
-			INamedTypeSymbol identityAttributeType = pxContext.FieldAttributes.PXDBIdentityAttribute;
-			INamedTypeSymbol longIdentityAttributeType = pxContext.FieldAttributes.PXDBLongIdentityAttribute;
-
-			return attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, identityAttributeType) ||
-				   attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, longIdentityAttributeType);
+			return attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, pxContext.FieldAttributes.PXDBIdentityAttribute) ||
+				   attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, pxContext.FieldAttributes.PXDBLongIdentityAttribute);
 		}
 
-		private static void CheckAttributeIdentityOrKey(ref bool flagIsKey,ref bool flagIsKeyIdentity, AttributeData attribute, PXContext pxContext)
+		private static (bool IsKey, bool IsKeyIdentity) CheckAttributeIdentityOrKey(AttributeData attribute, PXContext pxContext)
 		{
 			if (!IsDerivedFromIdentityTypes(attribute, pxContext))
-				flagIsKey = true;
+				return (IsKey: true, IsKeyIdentity: false);
 			else
-				flagIsKeyIdentity = true;
+				return (IsKey: false, IsKeyIdentity: true);
 		}
 	}
 }

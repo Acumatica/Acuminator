@@ -25,72 +25,64 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 		private const string IsKey = nameof(PX.Data.PXDBFieldAttribute.IsKey);
 		
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-			ImmutableArray.Create(Descriptors.PX1055_DacKeyFieldBound.Id);
+			ImmutableArray.Create(Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField.Id);
 
-		public override  Task RegisterCodeFixesAsync(CodeFixContext context)
+		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			return Task.Run(() =>
-			{
-				var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1055_DacKeyFieldBound.Id);
-
-				context.CancellationToken.ThrowIfCancellationRequested();
-
-				if (diagnostic == null)
-					return;
-
-				string codeActionIdentityKeyName = nameof(Resources.PX1055Fix1).GetLocalized().ToString();
-				CodeAction codeActionIdentityKey = CodeAction.Create(codeActionIdentityKeyName,
-																	cToken => RemoveKeysFromFieldsAsync(context.Document,
-																										context,
-																										cToken, 
-																										diagnostic, 
-																										editIdentityAttribute:false),
-																	equivalenceKey: codeActionIdentityKeyName);
-
-				string codeActionBoundKeysName = nameof(Resources.PX1055Fix2).GetLocalized().ToString();
-				CodeAction codeActionBoundKeys = CodeAction.Create(	codeActionBoundKeysName,
-																	cToken => RemoveKeysFromFieldsAsync(context.Document, 
-																										context,
-																										cToken, 
-																										diagnostic, 
-																										editIdentityAttribute: true),
-																	equivalenceKey: codeActionBoundKeysName);
-
-				string codeActionRemoveIdentityColumnName = nameof(Resources.PX1055Fix3).GetLocalized().ToString();
-				CodeAction codeActionRemoveIdentityColumn = CodeAction.Create(codeActionRemoveIdentityColumnName,
-																				cToken => RemoveKeysFromFieldsAsync(context.Document, 
-																													context, 
-																													cToken, 
-																													diagnostic,
-																													removeIdentityAttribute: true),
-																				equivalenceKey: codeActionRemoveIdentityColumnName);
-
-				context.RegisterCodeFix(codeActionIdentityKey, context.Diagnostics);
-				context.RegisterCodeFix(codeActionBoundKeys, context.Diagnostics);
-				context.RegisterCodeFix(codeActionRemoveIdentityColumn, context.Diagnostics);
-			}, context.CancellationToken);
 			
+			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField.Id);
+
+			context.CancellationToken.ThrowIfCancellationRequested();
+
+			if (diagnostic == null)
+				return;
+
+			string codeActionIdentityKeyName = nameof(Resources.PX1055Fix1).GetLocalized().ToString();
+			CodeAction codeActionIdentityKey = CodeAction.Create(codeActionIdentityKeyName,
+																cToken => RemoveKeysFromFieldsAsync(context,
+																									cToken, 
+																									diagnostic, 
+																									editIdentityAttribute:false),
+																equivalenceKey: codeActionIdentityKeyName);
+
+			string codeActionBoundKeysName = nameof(Resources.PX1055Fix2).GetLocalized().ToString();
+			CodeAction codeActionBoundKeys = CodeAction.Create(	codeActionBoundKeysName,
+																cToken => RemoveKeysFromFieldsAsync(context,
+																									cToken, 
+																									diagnostic, 
+																									editIdentityAttribute: true),
+																equivalenceKey: codeActionBoundKeysName);
+
+			string codeActionRemoveIdentityColumnName = nameof(Resources.PX1055Fix3).GetLocalized().ToString();
+			CodeAction codeActionRemoveIdentityColumn = CodeAction.Create(codeActionRemoveIdentityColumnName,
+																			cToken => RemoveKeysFromFieldsAsync(context, 
+																												cToken, 
+																												diagnostic,
+																												removeIdentityAttribute: true),
+																			equivalenceKey: codeActionRemoveIdentityColumnName);
+
+			context.RegisterCodeFix(codeActionIdentityKey, context.Diagnostics);
+			context.RegisterCodeFix(codeActionBoundKeys, context.Diagnostics);
+			context.RegisterCodeFix(codeActionRemoveIdentityColumn, context.Diagnostics);
+
+			return ;
 		}
 
-		private async Task<Document> RemoveKeysFromFieldsAsync(Document document,CodeFixContext context, CancellationToken cToken, Diagnostic diagnostic, bool editIdentityAttribute = false, bool removeIdentityAttribute = false)
+		private async Task<Document> RemoveKeysFromFieldsAsync(CodeFixContext context, CancellationToken cToken, Diagnostic diagnostic, bool editIdentityAttribute = false, bool removeIdentityAttribute = false)
 		{
 
+			Document document = context.Document;
+			Document tempDocument = document;
+
 			SemanticModel semanticModel = await document.GetSemanticModelAsync(cToken).ConfigureAwait(false);
-			PXContext pxContext = new PXContext(semanticModel.Compilation);
-			AttributeInformation attributeInformation = new AttributeInformation(pxContext);
+			var pxContext = new PXContext(semanticModel.Compilation);
+			var attributeInformation = new AttributeInformation(pxContext);
 
 			cToken.ThrowIfCancellationRequested();
 
 			Location[] attributeLocations = diagnostic.AdditionalLocations.ToArray();
-			var identityAttributeType = pxContext.FieldAttributes.PXDBIdentityAttribute;
-			var longIdentityAttributeType = pxContext.FieldAttributes.PXDBLongIdentityAttribute;
-
-			if (attributeLocations == null)
-				return document;
 
 			SyntaxNode root = await document.GetSyntaxRootAsync(cToken).ConfigureAwait(false);
-
-			Document tempDocument = document;
 
 			List<SyntaxNode> deletedNodes = new List<SyntaxNode>();
 
@@ -106,8 +98,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 				if (attributeType == null)
 					return document;
 
-				bool isIdentityAttribute = attributeInformation.IsAttributeDerivedFromClass(attributeType, identityAttributeType) || 
-										   attributeInformation.IsAttributeDerivedFromClass(attributeType, longIdentityAttributeType);
+				bool isIdentityAttribute = attributeInformation.IsAttributeDerivedFromClass(attributeType, pxContext.FieldAttributes.PXDBIdentityAttribute) || 
+										   attributeInformation.IsAttributeDerivedFromClass(attributeType, pxContext.FieldAttributes.PXDBLongIdentityAttribute);
 
 				if (removeIdentityAttribute == false && !isIdentityAttribute ^ editIdentityAttribute)
 				{

@@ -35,19 +35,45 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacKeyFieldDeclaration
 		[EmbeddedFileData("IdentityKey+Key.cs")]
 		public virtual void TestIdentityKey_Key(string source) =>
 			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1055_DacKeyFieldBound.CreateFor(locations: new (int line, int column)[] { (line: 10, column: 4), (line: 10, column: 4), (line: 16, column: 4) }),
-				Descriptors.PX1055_DacKeyFieldBound.CreateFor(locations: new (int line, int column)[] { (line: 16, column: 4), (line: 10, column: 4), (line: 16, column: 4) }));
+				Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField.CreateFor(locations: new (int Line, int Column)[] 
+																							{
+																								(Line: 10, Column: 4),
+																								(Line: 10, Column: 4),
+																								(Line: 16, Column: 4)
+																							}),
+				Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField.CreateFor(locations: new (int Line, int Column)[] 
+																							{
+																								(Line: 16, Column: 4),
+																								(Line: 10, Column: 4),
+																								(Line: 16, Column: 4)
+																							}));
 
 		
 		[Theory]
 		[EmbeddedFileData("IdentityKey+CompoundKey.cs")]
 		public virtual void TestIdentityKey_CompoundKey(string source) =>
 			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1055_DacKeyFieldBound.CreateFor(locations: new (int line, int column)[] { (line: 9, column: 4) ,
-																										(line: 9, column: 4), (line: 17, column: 4), (line: 27, column: 4)
-																								      }),
-				Descriptors.PX1055_DacKeyFieldBound.CreateFor(locations: new (int line, int column)[] { (line: 17, column: 4), (line: 9, column: 4), (line: 17, column: 4), (line: 27, column: 4) }),
-				Descriptors.PX1055_DacKeyFieldBound.CreateFor(locations: new (int line, int column)[] { (line: 27, column: 4), (line: 9, column: 4), (line: 17, column: 4), (line: 27, column: 4) }));
+				Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField.CreateFor(locations: new (int Line, int Column)[] 
+																						{
+																							(Line: 9, Column: 4),
+																							(Line: 9, Column: 4),
+																							(Line: 17, Column: 4),
+																							(Line: 27, Column: 4)
+																						}),
+				Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField.CreateFor(locations: new (int Line, int Column)[] 
+																						{
+																							(Line: 17, Column: 4),
+																							(Line: 9,  Column: 4),
+																							(Line: 17, Column: 4),
+																							(Line: 27, Column: 4)
+																						}),
+				Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField.CreateFor(locations: new (int Line, int Column)[] 
+																						{
+																							(Line: 27, Column: 4),
+																							(Line: 9,  Column: 4),
+																							(Line: 17, Column: 4),
+																							(Line: 27, Column: 4)
+																						}));
 
 		[Theory]
 		[EmbeddedFileData("IdentityNoKey.cs")]
