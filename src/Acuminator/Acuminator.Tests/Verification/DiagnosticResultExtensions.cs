@@ -15,7 +15,7 @@ namespace Acuminator.Tests.Verification
 			return CreateDiagnosticResult(descriptor, messageArgs, (line, column));
 		}
 
-		public static DiagnosticResult CreateFor(this DiagnosticDescriptor descriptor, 
+		public static DiagnosticResult CreateFor(this DiagnosticDescriptor descriptor,
 			(int line, int column) location,
 			(int line, int column) extraLocation,
 			params object[] messageArgs)
@@ -24,23 +24,23 @@ namespace Acuminator.Tests.Verification
 		}
 
 		public static DiagnosticResult CreateFor(this DiagnosticDescriptor descriptor,
-			IEnumerable<(int line, int column)> locations)
+			IEnumerable<(int Line, int Column)> locations)
 		{
-			return CreateDiagnosticResult(descriptor,null, locations);
+			return CreateDiagnosticResult(descriptor, null, locations);
 		}
 
 		private static DiagnosticResult CreateDiagnosticResult(DiagnosticDescriptor descriptor,
-			object[] messageArgs, 
-			params (int line, int column)[] locations)
+			object[] messageArgs,
+			params (int Line, int Column)[] locations)
 		{
 			return new DiagnosticResult()
 			{
 				Id = descriptor.Id,
 				Severity = descriptor.DefaultSeverity,
-				Message = messageArgs == null || messageArgs.Length == 0 
-					? descriptor.Title.ToString() 
+				Message = messageArgs == null || messageArgs.Length == 0
+					? descriptor.Title.ToString()
 					: String.Format(descriptor.MessageFormat.ToString(), messageArgs),
-				Locations = locations.Select(l => new DiagnosticResultLocation("Test0.cs", l.line, l.column)).ToArray()
+				Locations = locations.Select(l => new DiagnosticResultLocation("Test0.cs", l.Line, l.Column)).ToArray()
 			};
 		}
 

@@ -6,6 +6,8 @@ namespace PX.Objects.HackathonDemo
 	{
 		#region CategoryID
 		public abstract class categoryID : IBqlField { }
+
+		
 		[PXUIField(DisplayName = "Category ID")]
 		public virtual int? CategoryID { get; set; }
 		#endregion

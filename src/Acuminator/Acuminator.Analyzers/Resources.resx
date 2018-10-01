@@ -374,6 +374,7 @@
   </data>
   <data name="PX1055Title" xml:space="preserve">
     <value>Invalid primary key of the DAC. Use a single identity field or one or multiple natural fields for the key.</value>
+  </data>
   <data name="PX1073Title" xml:space="preserve">
     <value>Exceptions cannot be thrown in the RowPersisted event handler</value>
   </data>
