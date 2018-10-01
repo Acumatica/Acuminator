@@ -38,9 +38,43 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 				AnalysisPassInfoByDacType = new Dictionary<ITypeSymbol, AnalysisDacInfo>(capacity: graphSemanticModel.Views.Length);
 			}
 
-			public IEnumerable<DataViewInfo> GetViewsToAnalyze() => 
-				GraphSemanticModel.Views.Where(viewInfo => viewInfo.Type.TypeArguments.Any() && viewInfo.Symbol.Locations.Any());
-			
+			public IEnumerable<DataViewInfo> GetViewsToAnalyze()
+			{
+				foreach (DataViewInfo view in GraphSemanticModel.Views)
+				{
+					if (view.Type.TypeArguments.IsEmpty || view.Symbol.Locations.IsEmpty)
+						continue;
+
+					int countOfDACsInHierarchy = CountOfDACsInTypeHierarchy(view);  
+
+					if (countOfDACsInHierarchy == 1 || countOfDACsInHierarchy == 2)  //Exclude rare corner case when there is a view for a deeply derived DAC (more than 2 DACs in hierarchy)
+					{
+						yield return view;
+					}
+				}
+
+				//---------------------------------Local functions-----------------------------------------------------------------------
+				int CountOfDACsInTypeHierarchy(DataViewInfo view)
+				{
+					var baseTypes = view.ViewDac?.GetBaseTypesAndThis();
+
+					if (baseTypes.IsNullOrEmpty())
+						return 0;
+
+					int countOfDACsInHierarchy = 0;
+
+					foreach (ITypeSymbol type in baseTypes)
+					{
+						if (!type.IsDAC())
+							break;
+
+						countOfDACsInHierarchy++;
+					}
+
+					return countOfDACsInHierarchy;
+				}
+			}
+
 			public IEnumerable<INamedTypeSymbol> GetVisitedBaseDacs(ITypeSymbol viewDacType) =>
 				viewDacType.GetBaseTypes()
 						   .Where(baseDac => AnalysisPassInfoByDacType.ContainsKey(baseDac));
