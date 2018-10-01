@@ -31,7 +31,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 			RunAnalysisOnGraphViews(analysisContext);
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-
 			var dacsDeclaredInBaseGraphs = analysisContext.ViewsInBaseGraphs.Select(view => view.ViewDac)
 																			.Distinct()
 																			.ToList();
