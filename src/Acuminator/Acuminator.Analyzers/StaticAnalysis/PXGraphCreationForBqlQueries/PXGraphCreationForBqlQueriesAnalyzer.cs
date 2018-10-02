@@ -45,7 +45,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			// Determine if available PXGraph instance is used outside of BQL queries
 			var usedGraphs = GetSymbolUsages(body, existingGraphs, context.SemanticModel, walker.GraphArguments)
 				.ToImmutableHashSet();
-			var availableGraphs = existingGraphs.Except(usedGraphs).ToImmutableArray();
+			var availableGraphs = existingGraphs.Except(usedGraphs).ToArray();
 
 			// Analyze each PXGraph-typed parameter in BQL queries
 			foreach (var graphArgSyntax in walker.GraphArguments)
@@ -56,12 +56,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 				// All other usages are reported only if:
 				// 1. There is at least one existing PXGraph instance available
 				// 2. PXGraph parameter is not used in any way because its modifications might affect the BQL query results
-				if (instantiationType != GraphInstantiationType.None
-				    || availableGraphs.Length > 0 && context.SemanticModel.GetSymbolInfo(graphArgSyntax).Symbol is ILocalSymbol localVar 
-				                                  && !usedGraphs.Contains(localVar))
+				if (instantiationType != GraphInstantiationType.None)
 				{
 					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries,
-						graphArgSyntax.GetLocation(), CreateDiagnosticProperties(availableGraphs)));
+						graphArgSyntax.GetLocation(),
+						CreateDiagnosticProperties(availableGraphs)));
+				}
+				else if (availableGraphs.Length > 0 && context.SemanticModel.GetSymbolInfo(graphArgSyntax).Symbol is ILocalSymbol localVar 
+				                               && !usedGraphs.Contains(localVar))
+				{
+					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries,
+						graphArgSyntax.GetLocation(),
+						CreateDiagnosticProperties(availableGraphs.Where(g => !Equals(g, localVar)))));
 				}
 			}
 		}
@@ -125,13 +131,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			}
 		}
 
-		private ImmutableDictionary<string, string> CreateDiagnosticProperties(ImmutableArray<ISymbol> availableGraphs)
+		private ImmutableDictionary<string, string> CreateDiagnosticProperties(IEnumerable<ISymbol> availableGraphs)
 		{
 			var builder = ImmutableDictionary.CreateBuilder<string, string>();
 
-			for (int i = 0; i < availableGraphs.Length; i++)
+			int i = 0;
+			foreach (var graph in availableGraphs)
 			{
-				builder.Add(IdentifierNamePropertyPrefix + i, availableGraphs[i].Name);
+				builder.Add(IdentifierNamePropertyPrefix + i, graph.Name);
+				i++;
 			}
 
 			return builder.ToImmutable();
