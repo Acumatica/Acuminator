@@ -70,7 +70,7 @@
     <Compile Include="DAC\APSetup.cs" />
     <Compile Include="Graph\Event Handlers\SOOrderEntryExt.cs" />
     <Compile Include="Graph\Graph extension with action call\SOInvoiceEntryExt.cs" />
-    <Compile Include="Graph\Graph is saving changes during initialization\SMUserMaint.cs" />
+    <Compile Include="Graph\Graph saving changes and invoking actions\SMUserMaint.cs" />
     <Compile Include="Graph\Graph starts long operaton from incorrect places\SMUserProcess.cs" />
     <Compile Include="Graph\Graph Reusing\SOOrdersInqExt.cs" />
     <Compile Include="Graph\Graph with creation of other graph during initialization\ARTranEntry.cs" />

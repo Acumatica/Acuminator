@@ -84,7 +84,7 @@
     <Compile Include="StaticAnalysis\PXGraphCreationForBqlQueries\Walker.cs" />
     <Compile Include="StaticAnalysis\RowChangesInEventHandlers\AccessWalkerBase.cs" />
     <Compile Include="StaticAnalysis\RowChangesInEventHandlers\DacInstanceAccessWalker.cs" />
-    <Compile Include="StaticAnalysis\SavingChanges\SavingChangesDuringPXGraphInitializationAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\SavingChanges\SavingChangesInGraphSemanticModelAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphUsageInDac\PXGraphUsageInDacAnalyzer.cs" />
     <Compile Include="StaticAnalysis\MethodsUsageInDac\MethodsUsageInDacAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DacExtensionDefaultAttribute\DacExtensionDefaultAttributeAnalyzer.cs" />

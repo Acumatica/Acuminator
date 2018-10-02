@@ -390,4 +390,7 @@
   <data name="PX1072Fix" xml:space="preserve">
     <value>Replace {0} with the following PXGraph instance: {1}</value>
   </data>
+  <data name="PX1083Title" xml:space="preserve">
+    <value>Changes cannot be saved to the database from data view delegates</value>
+  </data>
 </root>
