@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -33,7 +34,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			if (node == null || context.CancellationToken.IsCancellationRequested)
 				return;
 
-			string codeActionName = nameof(Resources.PX1072Fix).GetLocalized().ToString();
+			string format = nameof(Resources.PX1072Fix).GetLocalized().ToString();
 
 			foreach (var diagnostic in context.Diagnostics)
 			{
@@ -46,10 +47,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 					string identifierName = value;
 
 					if (identifierName.IsNullOrWhiteSpace()) continue;
-					
+
+					string codeActionName = String.Format(format, node, identifierName);
+
 					var codeAction = CodeAction.Create(codeActionName, 
 						ct => ReplaceIdentifier(context.Document, root, node, identifierName, context.CancellationToken),
-						equivalenceKey: codeActionName + identifierName);
+						equivalenceKey: codeActionName);
 					context.RegisterCodeFix(codeAction, diagnostic);
 				}
 			}

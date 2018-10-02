@@ -388,6 +388,6 @@
     <value>Actions cannot be executed within data view delegates</value>
   </data>
   <data name="PX1072Fix" xml:space="preserve">
-    <value>Use existing PXGraph instance</value>
+    <value>Replace {0} with the following PXGraph instance: {1}</value>
   </data>
 </root>

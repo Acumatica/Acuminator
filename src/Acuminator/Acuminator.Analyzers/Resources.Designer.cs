@@ -791,7 +791,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use existing PXGraph instance.
+        ///   Looks up a localized string similar to Replace {0} with the following PXGraph instance: {1}.
         /// </summary>
         public static string PX1072Fix {
             get {
