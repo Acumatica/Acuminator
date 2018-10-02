@@ -12,7 +12,7 @@ namespace Acuminator.Benchmark
 	{
 		static void Main(string[] args)
 		{
-			BenchmarkRunner.Run<RoslynCodeAnalysis>();
+			BenchmarkRunner.Run<RoslynCodeAnalysisBenchmark>();
 		}
 	}
 }
