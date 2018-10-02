@@ -9,7 +9,7 @@ namespace PX.Objects.HackathonDemo
 {
     public class SOOrdersInqExt : PXGraphExtension<SOOrdersInq>
     {
-        public SOOrder GetOrder(string orderNbr)
+        public SOOrder GetOrder(PXGraph graph, string orderNbr)
         {
             var order = PXSelect<SOOrder, Where<SOOrder.orderNbr, Equal<Required<SOOrder.orderNbr>>>>
                 .Select(new PXGraph(), orderNbr);
