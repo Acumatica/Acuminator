@@ -39,8 +39,9 @@ namespace Acuminator.Benchmark
 		[Benchmark]
 		public async Task AnalyzeProject()
 		{
-			var options = new CompilationWithAnalyzersOptions(null, null, true, true, false, null);
-			var compilationWithAnalyzers = _compilation.WithAnalyzers(Analyzers, options);
+			//var options = new CompilationWithAnalyzersOptions(null, null, true, true, false, null);
+			//var compilationWithAnalyzers = _compilation.WithAnalyzers(Analyzers, options);
+			var compilationWithAnalyzers = _compilation.WithAnalyzers(Analyzers);
 			await compilationWithAnalyzers.GetAnalyzerDiagnosticsAsync().ConfigureAwait(false);
 		}
 
