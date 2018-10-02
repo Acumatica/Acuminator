@@ -16,6 +16,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 	public partial class PXGraphCreationForBqlQueriesAnalyzer : PXDiagnosticAnalyzer
 	{
 		public const string IdentifierNamePropertyPrefix = "IdentifierName";
+		public const string IsGraphExtensionPropertyPrefix = "IsGraphExtension";
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
 			Descriptors.PX1072_PXGraphCreationForBqlQueries);
@@ -60,14 +61,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 				{
 					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries,
 						graphArgSyntax.GetLocation(),
-						CreateDiagnosticProperties(availableGraphs)));
+						CreateDiagnosticProperties(availableGraphs, pxContext)));
 				}
 				else if (availableGraphs.Length > 0 && context.SemanticModel.GetSymbolInfo(graphArgSyntax).Symbol is ILocalSymbol localVar 
-				                               && !usedGraphs.Contains(localVar))
+				                                    && !usedGraphs.Contains(localVar))
 				{
 					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries,
 						graphArgSyntax.GetLocation(),
-						CreateDiagnosticProperties(availableGraphs.Where(g => !Equals(g, localVar)))));
+						CreateDiagnosticProperties(availableGraphs.Where(g => !Equals(g, localVar)), pxContext)));
 				}
 			}
 		}
@@ -131,14 +132,30 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			}
 		}
 
-		private ImmutableDictionary<string, string> CreateDiagnosticProperties(IEnumerable<ISymbol> availableGraphs)
+		private ImmutableDictionary<string, string> CreateDiagnosticProperties(IEnumerable<ISymbol> availableGraphs, 
+			PXContext pxContext)
 		{
 			var builder = ImmutableDictionary.CreateBuilder<string, string>();
 
 			int i = 0;
 			foreach (var graph in availableGraphs)
 			{
+				ITypeSymbol type = null;
+				switch (graph)
+				{
+					case IParameterSymbol property:
+						type = property.Type;
+						break;
+					case ILocalSymbol local:
+						type = local.Type;
+						break;
+				}
+
 				builder.Add(IdentifierNamePropertyPrefix + i, graph.Name);
+				
+				if (type != null && type.IsPXGraphExtension(pxContext))
+					builder.Add(IsGraphExtensionPropertyPrefix + i, true.ToString());
+
 				i++;
 			}
 

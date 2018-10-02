@@ -117,6 +117,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphCreationForBqlQueries
 	    public async Task TestCodeFix_LocalVariable2(string actual, string expected) => 
 		    await VerifyCSharpFixAsync(actual, expected, 3);
 
+	    [Theory]
+	    [EmbeddedFileData("CodeFix_GraphExtension.cs", "CodeFix_GraphExtension_Expected.cs")]
+	    public async Task TestCodeFix_GraphExtension(string actual, string expected) => 
+		    await VerifyCSharpFixAsync(actual, expected);
+
 		#endregion
     }
 }

@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -19,6 +20,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 	public class PXGraphCreationForBqlQueriesFix : CodeFixProvider
 	{
+		private const string PXGraphExtensionTypeName = nameof (PX.Data.PXGraphExtension);
+
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries.Id);
 
@@ -49,9 +52,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 					if (identifierName.IsNullOrWhiteSpace()) continue;
 
 					string codeActionName = String.Format(format, node, identifierName);
+					bool isGraphExtension = diagnostic.Properties.ContainsKey(
+						PXGraphCreationForBqlQueriesAnalyzer.IsGraphExtensionPropertyPrefix + i);
 
 					var codeAction = CodeAction.Create(codeActionName, 
-						ct => ReplaceIdentifier(context.Document, root, node, identifierName, context.CancellationToken),
+						ct => ReplaceIdentifier(context.Document, root, node, identifierName, isGraphExtension, context.CancellationToken),
 						equivalenceKey: codeActionName);
 					context.RegisterCodeFix(codeAction, diagnostic);
 				}
@@ -59,7 +64,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 		}
 
 		private Task<Document> ReplaceIdentifier(Document document, SyntaxNode root, ArgumentSyntax nodeToReplace,
-			string identifierName, CancellationToken cancellationToken)
+			string identifierName, bool isGraphExtension, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 
@@ -68,6 +73,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 				newExpression = SyntaxFactory.ThisExpression();
 			else
 				newExpression = SyntaxFactory.IdentifierName(identifierName);
+
+			if (isGraphExtension)
+			{
+				newExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, newExpression,
+					SyntaxFactory.IdentifierName("Base"));
+			}
 
 			var newNode = nodeToReplace.WithExpression(newExpression);
 			var newRoot = root.ReplaceNode(nodeToReplace, newNode);
