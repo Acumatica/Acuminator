@@ -791,6 +791,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Use existing PXGraph instance.
+        /// </summary>
+        public static string PX1072Fix {
+            get {
+                return ResourceManager.GetString("PX1072Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to BQL queries must be executed within the context of an existing PXGraph instance.
         /// </summary>
         public static string PX1072Title {

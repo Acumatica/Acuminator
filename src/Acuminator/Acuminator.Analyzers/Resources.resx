@@ -387,4 +387,7 @@
   <data name="PX1082Title" xml:space="preserve">
     <value>Actions cannot be executed within data view delegates</value>
   </data>
+  <data name="PX1072Fix" xml:space="preserve">
+    <value>Use existing PXGraph instance</value>
+  </data>
 </root>

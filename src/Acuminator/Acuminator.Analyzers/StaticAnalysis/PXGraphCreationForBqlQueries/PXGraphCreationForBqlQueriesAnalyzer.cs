@@ -1,26 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Acuminator.Utilities;
-using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Utilities.Roslyn.Syntax;
 using Acuminator.Utilities.Roslyn.Syntax.PXGraph;
-using CommonServiceLocator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Semantics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public partial class PXGraphCreationForBqlQueriesAnalyzer : PXDiagnosticAnalyzer
 	{
+		public const string IdentifierNamePropertyPrefix = "IdentifierName";
+
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
 			Descriptors.PX1072_PXGraphCreationForBqlQueries);
 
@@ -49,7 +45,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			// Determine if available PXGraph instance is used outside of BQL queries
 			var usedGraphs = GetSymbolUsages(body, existingGraphs, context.SemanticModel, walker.GraphArguments)
 				.ToImmutableHashSet();
-			var availableGraphs = existingGraphs.Except(usedGraphs).ToArray();
+			var availableGraphs = existingGraphs.Except(usedGraphs).ToImmutableArray();
 
 			// Analyze each PXGraph-typed parameter in BQL queries
 			foreach (var graphArgSyntax in walker.GraphArguments)
@@ -65,7 +61,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 				                                  && !usedGraphs.Contains(localVar))
 				{
 					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries,
-						graphArgSyntax.GetLocation()));
+						graphArgSyntax.GetLocation(), CreateDiagnosticProperties(availableGraphs)));
 				}
 			}
 		}
@@ -106,9 +102,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			// ReSharper disable once ImpureMethodCallOnReadonlyValueField
 			var builder = ImmutableArray<ISymbol>.Empty.ToBuilder();
 
-			builder.AddRange(localVarGraphs);
 			if (thisGraph != null) builder.Add(thisGraph);
 			if (parGraph != null) builder.Add(parGraph);
+			builder.AddRange(localVarGraphs);
 
 			return builder.ToImmutable();
 		}
@@ -127,6 +123,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 				if (symbol != null && symbolsSet.Contains(symbol))
 					yield return symbol;
 			}
+		}
+
+		private ImmutableDictionary<string, string> CreateDiagnosticProperties(ImmutableArray<ISymbol> availableGraphs)
+		{
+			var builder = ImmutableDictionary.CreateBuilder<string, string>();
+
+			for (int i = 0; i < availableGraphs.Length; i++)
+			{
+				builder.Add(IdentifierNamePropertyPrefix + i, availableGraphs[i].Name);
+			}
+
+			return builder.ToImmutable();
 		}
 	}
 }

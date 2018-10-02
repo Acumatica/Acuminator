@@ -249,6 +249,11 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressInViewDelegateInGraphExtension3.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\ExternalServiceWithUsedVariable.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\ExternalServiceWithMethodParameter.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\CodeFix.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\CodeFix_Expected_ThisKeyword.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\CodeFix_Expected_MethodParameter.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\CodeFix_Expected_LocalVariable1.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationForBqlQueries\Sources\CodeFix_Expected_LocalVariable2.cs" />
     <Compile Include="Tests\StaticAnalysis\UiPresentationLogic\UiPresentationLogicInEventHandlersTests.cs" />
     <Compile Include="Tests\StaticAnalysis\PXActionExecution\PXActionExecutionInGraphSemanticModelTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressInGraph.cs" />
