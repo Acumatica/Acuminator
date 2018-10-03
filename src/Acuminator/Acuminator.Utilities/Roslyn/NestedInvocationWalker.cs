@@ -238,6 +238,18 @@ namespace Acuminator.Utilities.Roslyn
 			base.VisitConditionalAccessExpression(node);
 		}
 
+        public override void VisitSimpleLambdaExpression(SimpleLambdaExpressionSyntax node)
+        {
+        }
+
+        public override void VisitParenthesizedLambdaExpression(ParenthesizedLambdaExpressionSyntax node)
+        {
+        }
+
+		public override void VisitAnonymousMethodExpression(AnonymousMethodExpressionSyntax node)
+		{
+		}
+
 		private void VisitMethodSymbol(IMethodSymbol symbol, SyntaxNode originalNode)
 		{
 			if (symbol?.GetSyntax(_cancellationToken) is CSharpSyntaxNode methodNode)
