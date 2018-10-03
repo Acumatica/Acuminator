@@ -90,10 +90,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         /// </summary>
         /// <param name="pxContext">Context instance</param>
         /// <param name="typeSymbol">Symbol which is PXGraph or PXGraphExtension descendant and/or which uses PXGraph.InstanceCreated AddHandler method</param>
-        /// <param name="semanticModel">Semantic model</param>
         /// <param name="cancellation">Cancellation</param>
         /// <returns></returns>
-        public static IEnumerable<PXGraphSemanticModel> InferModels(PXContext pxContext, INamedTypeSymbol typeSymbol,
+        public static IReadOnlyList<PXGraphSemanticModel> InferModels(PXContext pxContext, INamedTypeSymbol typeSymbol,
                                                                     CancellationToken cancellation = default)
         {
             cancellation.ThrowIfCancellationRequested();

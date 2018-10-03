@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 {
@@ -51,16 +52,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
             if (!(context.Symbol is INamedTypeSymbol type))
                 return;
 
-            IEnumerable<PXGraphSemanticModel> graphs = PXGraphSemanticModel.InferModels(pxContext, type, context.CancellationToken);
+            IReadOnlyList<PXGraphSemanticModel> graphs = PXGraphSemanticModel.InferModels(pxContext, type, context.CancellationToken);
 
-            foreach (IPXGraphAnalyzer innerAnalyzer in _innerAnalyzers)
-            {
-                foreach (PXGraphSemanticModel g in graphs)
-                {
-                    context.CancellationToken.ThrowIfCancellationRequested();
-                    innerAnalyzer.Analyze(context, pxContext, g);
-                }
-            }
+			var options = new ParallelOptions() { CancellationToken = context.CancellationToken };
+
+			Parallel.ForEach(_innerAnalyzers, options, innerAnalyzer =>
+			{
+				Parallel.ForEach(graphs, options, graph =>
+				{
+					context.CancellationToken.ThrowIfCancellationRequested();
+					innerAnalyzer.Analyze(context, pxContext, graph);
+				});
+			});
         }
     }
 }

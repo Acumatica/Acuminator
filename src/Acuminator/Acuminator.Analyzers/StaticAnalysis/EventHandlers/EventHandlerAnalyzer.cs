@@ -80,11 +80,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 
 				if (eventType != EventType.None)
 				{
-					foreach (var innerAnalyzer in _innerAnalyzers)
+					var options = new ParallelOptions() { CancellationToken = context.CancellationToken };
+
+					Parallel.ForEach(_innerAnalyzers, options, innerAnalyzer =>
 					{
 						context.CancellationToken.ThrowIfCancellationRequested();
 						innerAnalyzer.Analyze(context, pxContext, codeAnalysisSettings, eventType);
-					}
+					});
 				}
 			}
 		}
