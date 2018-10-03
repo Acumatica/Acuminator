@@ -246,7 +246,11 @@ namespace Acuminator.Utilities.Roslyn
         {
         }
 
-        private void VisitMethodSymbol(IMethodSymbol symbol, SyntaxNode originalNode)
+		public override void VisitAnonymousMethodExpression(AnonymousMethodExpressionSyntax node)
+		{
+		}
+
+		private void VisitMethodSymbol(IMethodSymbol symbol, SyntaxNode originalNode)
 		{
 			if (symbol?.GetSyntax(_cancellationToken) is CSharpSyntaxNode methodNode)
 			{
