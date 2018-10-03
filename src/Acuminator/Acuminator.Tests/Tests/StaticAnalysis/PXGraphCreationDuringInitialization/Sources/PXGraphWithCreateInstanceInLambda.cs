@@ -4,7 +4,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphCreationDuringInitializat
 {
     public class SOOrderMaint : PXGraph<SOOrderMaint, SOOrder>
     {
-        public PXSelect<SOOrder> Orders;
+        public PXProcessing<SOOrder> Orders;
 
         public SOOrderMaint()
         {
@@ -23,6 +23,20 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphCreationDuringInitializat
             };
 
             Actions.Add("ActionParenthesized", new PXNamedAction<SOOrder>(this, "ActionParenthesized", actionHandlerSimple));
+
+	        PXButtonDelegate actionHandlerDelegate = delegate(PXAdapter adapter)
+	        {
+		        MethodWhichInitializeAnotherGraph(adapter);
+		        return adapter.Get();
+	        };
+
+	        Actions.Add("ActionDelegate", new PXNamedAction<SOOrder>(this, "ActionDelegate", actionHandlerDelegate));
+
+	        // Simple case with no recursive code analysis involved
+	        Orders.SetProcessDelegate(list =>
+	        {
+		        var graph = PXGraph.CreateInstance<SOOrderMaint>();
+	        });
         }
 
         private void MethodWhichInitializeAnotherGraph(PXAdapter adapter)
