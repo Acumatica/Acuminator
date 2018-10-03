@@ -13,7 +13,7 @@ using Microsoft.CodeAnalysis.MSBuild;
 
 namespace Acuminator.Benchmark
 {
-	internal static class RoslynHelper
+	public static class RoslynHelper
 	{
 		public static ImmutableArray<DiagnosticAnalyzer> GetAvailableAnalyzers()
 		{
