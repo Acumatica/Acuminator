@@ -19,13 +19,16 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ChangesInPXCache
 	public class ChangesInPXCacheInEventHandlersTests : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-			new EventHandlerAnalyzer(CodeAnalysisSettings.Default.WithRecursiveAnalysisEnabled(), 
+			new EventHandlerAnalyzer(
+				CodeAnalysisSettings.Default
+					.WithRecursiveAnalysisEnabled()
+					.WithIsvSpecificAnalyzersDisabled(), 
 				new ChangesInPXCacheInEventHandlersAnalyzer());
 
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\EventHandlers.cs")]
-		public Task EventHandlers(string actual) =>
-			VerifyCSharpDiagnosticAsync(actual, 
+		public async Task EventHandlers(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual, 
 				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(14, 4, EventType.FieldDefaulting),
 				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(19, 4, EventType.FieldVerifying),
 				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(24, 4, EventType.RowSelecting),
@@ -36,8 +39,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ChangesInPXCache
 
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\EventHandlersWithExternalMethod.cs")]
-		public Task EventHandlersWithExternalMethod(string actual) => 
-			VerifyCSharpDiagnosticAsync(actual,
+		public async Task EventHandlersWithExternalMethod(string actual) => 
+			await VerifyCSharpDiagnosticAsync(actual,
 				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(14, 4, EventType.FieldDefaulting),
 				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(19, 4, EventType.FieldVerifying),
 				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(24, 4, EventType.RowSelecting),
@@ -48,8 +51,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ChangesInPXCache
 
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\TypedCache.cs")]
-		public Task TypedCache(string actual) =>
-			VerifyCSharpDiagnosticAsync(actual, 
+		public async Task TypedCache(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual, 
 				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(14, 4, EventType.FieldDefaulting),
 				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(19, 4, EventType.FieldVerifying),
 				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(24, 4, EventType.RowSelecting),
@@ -59,8 +62,31 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ChangesInPXCache
 				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(44, 4, EventType.RowDeleting));
 
 		[Theory]
+		[EmbeddedFileData(@"EventHandlers\ExternalCache.cs")]
+		public async Task ExternalCache(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
+
+		[Theory]
 		[EmbeddedFileData(@"EventHandlers\ValidEventHandlers.cs")]
-		public Task ValidEventHandlers_ShouldNotShowDiagnostic(string actual) =>
-			VerifyCSharpDiagnosticAsync(actual);
+		public async Task ValidEventHandlers_ShouldNotShowDiagnostic(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
+	}
+
+	public class ChangesInPXCacheInEventHandlersIsvSpecificTests : DiagnosticVerifier
+	{
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
+			new EventHandlerAnalyzer(
+				CodeAnalysisSettings.Default
+					.WithRecursiveAnalysisEnabled()
+					.WithIsvSpecificAnalyzersEnabled(), 
+				new ChangesInPXCacheInEventHandlersAnalyzer());
+
+		[Theory]
+		[EmbeddedFileData(@"EventHandlers\ExternalCache.cs")]
+		public async Task ExternalCache(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual,
+				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(14, 4, EventType.RowInserting),
+				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(19, 4, EventType.RowUpdating),
+				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(24, 4, EventType.RowDeleting));
 	}
 }
