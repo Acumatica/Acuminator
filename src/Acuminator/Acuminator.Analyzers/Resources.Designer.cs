@@ -539,11 +539,20 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Consider setting PersistingCheck to Nothing or replacing PXDefault with PXUnboundDefault..
+        /// </summary>
+        public static string PX1030TitleDefaultAttributeOnDac {
+            get {
+                return ResourceManager.GetString("PX1030TitleDefaultAttributeOnDac", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The PXDefault attribute of the field is used incorrectly. PXDefaultAttribute used on a custom field defined in PXCacheExtension can potentially prevent updates to existing records when used without PersistingCheck property set to Nothing.
         /// </summary>
-        public static string PX1030Title {
+        public static string PX1030TitleDefaultAttributeOnDacExtension {
             get {
-                return ResourceManager.GetString("PX1030Title", resourceCulture);
+                return ResourceManager.GetString("PX1030TitleDefaultAttributeOnDacExtension", resourceCulture);
             }
         }
         

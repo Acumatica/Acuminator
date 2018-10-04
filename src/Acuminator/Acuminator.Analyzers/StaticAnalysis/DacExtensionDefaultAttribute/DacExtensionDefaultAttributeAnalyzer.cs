@@ -29,12 +29,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 		}
 		private static Task AnalyzePropertyAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
-			if (!(symbolContext.Symbol is INamedTypeSymbol dacExt) || !dacExt.IsDacExtension())
+			if (!(symbolContext.Symbol is INamedTypeSymbol dacOrDacExt) || !dacOrDacExt.IsDacOrExtension(pxContext))
 				return Task.FromResult(false);
 
 			AttributeInformation attributeInformation = new AttributeInformation(pxContext);
 
-			Task[] allTasks = dacExt.GetMembers()
+			Task[] allTasks = dacOrDacExt.GetMembers()
 				.OfType<IPropertySymbol>()
 				.Select(property => CheckDacPropertyAsync(property, symbolContext, pxContext, attributeInformation))
 				.ToArray();
@@ -125,15 +125,25 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 					if (attributeLocation != null)
 					{
-						var diagnosticProperties = new Dictionary<string, string>
+                        var diagnosticProperties = new Dictionary<string, string>
 						{
 							{ DiagnosticProperty.IsBoundField, false.ToString() }
 						}.ToImmutableDictionary();
 
-						symbolContext.ReportDiagnostic(
-							Diagnostic.Create(
-								Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attributeLocation, diagnosticProperties));
-					}
+                        if (!property.ContainingType.IsDAC()) 
+                        {
+                            symbolContext.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attributeLocation, diagnosticProperties));
+                        }
+                        else // BQLTable class 
+                        {
+                            symbolContext.ReportDiagnostic(
+                                Diagnostic.Create(
+                                    Descriptors.PX1030_DefaultAttibuteToExisitingRecordsOnDAC, attributeLocation, diagnosticProperties));
+                        }
+
+                    }
 				}
 			}
 		}

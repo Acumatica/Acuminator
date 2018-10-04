@@ -14,25 +14,27 @@ using PX.Data;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 {
-	[Shared]
-	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public class DacExtensionDefaultAttributeFix : CodeFixProvider
-	{
-		private const string _PXUnboundDefaultAttributeName = "PXUnboundDefault";
-		private const string _PXPersistingCheck = nameof(PXPersistingCheck);
-		private const string _PersistingCheck = nameof(PXDefaultAttribute.PersistingCheck);
-		private const string _PersistingCheckNothing = nameof(PXPersistingCheck.Nothing);
-		private const string _PXDefault = "PXDefault";
+    [Shared]
+    [ExportCodeFixProvider(LanguageNames.CSharp)]
+    public class DacExtensionDefaultAttributeFix : CodeFixProvider
+    {
+        private const string _PXUnboundDefaultAttributeName = "PXUnboundDefault";
+        private const string _PXPersistingCheck = nameof(PXPersistingCheck);
+        private const string _PersistingCheck = nameof(PXDefaultAttribute.PersistingCheck);
+        private const string _PersistingCheckNothing = nameof(PXPersistingCheck.Nothing);
+        private const string _PXDefault = "PXDefault";
 
 
-		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-			ImmutableArray.Create(Descriptors.PX1030_DefaultAttibuteToExisitingRecords.Id);
+        public override ImmutableArray<string> FixableDiagnosticIds { get; } =
+            ImmutableArray.Create(Descriptors.PX1030_DefaultAttibuteToExisitingRecords.Id, 
+                                  Descriptors.PX1030_DefaultAttibuteToExisitingRecordsOnDAC.Id);
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1030_DefaultAttibuteToExisitingRecords.Id);
+			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1030_DefaultAttibuteToExisitingRecords.Id ||
+                                                                     d.Id == Descriptors.PX1030_DefaultAttibuteToExisitingRecordsOnDAC.Id);
 
 			if (diagnostic == null)
 				return ;
