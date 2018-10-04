@@ -10,7 +10,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 {
     internal class Walker : NestedInvocationWalker
 	{
-		private SymbolAnalysisContext _context;
+		private readonly SymbolAnalysisContext _context;
 		private readonly PXContext _pxContext;
 		private readonly DiagnosticDescriptor _diagnosticDescriptor;
 		private readonly object[] _messageArgs;
