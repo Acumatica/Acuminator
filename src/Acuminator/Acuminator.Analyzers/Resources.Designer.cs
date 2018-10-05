@@ -539,7 +539,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Consider setting PersistingCheck to Nothing or replacing PXDefault with PXUnboundDefault..
+        ///   Looks up a localized string similar to Consider setting PersistingCheck to Nothing or replacing PXDefault with PXUnboundDefault.
         /// </summary>
         public static string PX1030TitleDefaultAttributeOnDac {
             get {
