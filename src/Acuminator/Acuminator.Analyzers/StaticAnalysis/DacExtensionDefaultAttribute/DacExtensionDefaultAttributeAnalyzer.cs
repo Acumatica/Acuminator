@@ -130,19 +130,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 							{ DiagnosticProperty.IsBoundField, false.ToString() }
 						}.ToImmutableDictionary();
 
-						if (!property.ContainingType.IsDAC())
-						{
-							symbolContext.ReportDiagnostic(
-								Diagnostic.Create(
-									Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attributeLocation, diagnosticProperties));
-						}
-						else // BQLTable class 
-						{
-							symbolContext.ReportDiagnostic(
-								Diagnostic.Create(
-									Descriptors.PX1030_DefaultAttibuteToExisitingRecordsOnDAC, attributeLocation, diagnosticProperties));
-						}
-
+						symbolContext.ReportDiagnostic(
+							Diagnostic.Create(
+								property.ContainingType.IsDAC() ? 
+									Descriptors.PX1030_DefaultAttibuteToExisitingRecordsOnDAC : 
+									Descriptors.PX1030_DefaultAttibuteToExisitingRecords,
+								attributeLocation,
+								diagnosticProperties));
 					}
 				}
 			}
