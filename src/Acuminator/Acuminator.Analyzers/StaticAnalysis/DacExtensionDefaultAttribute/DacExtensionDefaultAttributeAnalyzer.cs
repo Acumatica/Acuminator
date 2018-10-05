@@ -29,12 +29,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 		}
 		private static Task AnalyzePropertyAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
-			if (!(symbolContext.Symbol is INamedTypeSymbol dacExt) || !dacExt.IsDacExtension())
+			if (!(symbolContext.Symbol is INamedTypeSymbol dacOrDacExt) || !dacOrDacExt.IsDacOrExtension(pxContext))
 				return Task.FromResult(false);
 
 			AttributeInformation attributeInformation = new AttributeInformation(pxContext);
 
-			Task[] allTasks = dacExt.GetMembers()
+			Task[] allTasks = dacOrDacExt.GetMembers()
 				.OfType<IPropertySymbol>()
 				.Select(property => CheckDacPropertyAsync(property, symbolContext, pxContext, attributeInformation))
 				.ToArray();
@@ -53,7 +53,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 			bool isBoundField = attributeInformation.ContainsBoundAttributes(attributes);
 
-			if (isBoundField )
+			if (isBoundField)
 			{
 				await AnalyzeAttributesWithinBoundFieldAsync(property, attributes, pxContext, symbolContext, attributeInformation).ConfigureAwait(false);
 			}
@@ -132,7 +132,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 						symbolContext.ReportDiagnostic(
 							Diagnostic.Create(
-								Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attributeLocation, diagnosticProperties));
+								property.ContainingType.IsDAC() ? 
+									Descriptors.PX1030_DefaultAttibuteToExisitingRecordsOnDAC : 
+									Descriptors.PX1030_DefaultAttibuteToExisitingRecords,
+								attributeLocation,
+								diagnosticProperties));
 					}
 				}
 			}

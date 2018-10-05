@@ -270,7 +270,7 @@
   <data name="PX1030FixBound" xml:space="preserve">
     <value>Set PersistingCheck of PXDefaultAttribute to Nothing</value>
   </data>
-  <data name="PX1030Title" xml:space="preserve">
+  <data name="PX1030TitleDefaultAttributeOnDacExtension" xml:space="preserve">
     <value>The PXDefault attribute of the field is used incorrectly. PXDefaultAttribute used on a custom field defined in PXCacheExtension can potentially prevent updates to existing records when used without PersistingCheck property set to Nothing</value>
   </data>
   <data name="PX1040Fix" xml:space="preserve">
@@ -386,5 +386,8 @@
   </data>
   <data name="PX1083Title" xml:space="preserve">
     <value>Changes cannot be saved to the database from data view delegates</value>
+  </data>
+  <data name="PX1030TitleDefaultAttributeOnDac" xml:space="preserve">
+    <value>Consider setting PersistingCheck to Nothing or replacing PXDefault with PXUnboundDefault</value>
   </data>
 </root>
