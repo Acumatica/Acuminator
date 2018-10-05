@@ -235,6 +235,11 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressInViewDelegateWithParameter.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressInViewDelegateInGraphExtension2.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressInViewDelegateInGraphExtension3.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\ViewDelegate.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\ViewDelegateWithParameter.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\ViewDelegateInGraphExtensionOwnView.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\ViewDelegateInGraphExtensionBaseView.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\ViewDelegateInGraphExtensionOverride.cs" />
     <Compile Include="Tests\StaticAnalysis\UiPresentationLogic\UiPresentationLogicInEventHandlersTests.cs" />
     <Compile Include="Tests\StaticAnalysis\PXActionExecution\PXActionExecutionInGraphSemanticModelTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressInGraph.cs" />
@@ -245,6 +250,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressWithAdapterInGraphExtension.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressWithExternalMethodInGraph.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressWithExternalMethodInGraphExtension.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreationDuringInitialization\Sources\PXGraphWithCreateInstanceInLambda.cs" />
     <Compile Include="Tests\StaticAnalysis\RowChangesInEventHandlers\RowChangesInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\ValidEventHandlers.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\DirectAssignment.cs" />
@@ -270,7 +276,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\IndirectSetValue.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\SetValue.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\SetValueExt.cs" />
-    <Compile Include="Tests\StaticAnalysis\SavingChanges\SavingChangesDuringPXGraphInitializationTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\SavingChanges\SavingChangesInGraphSemanticModelTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\PXGraphIsSavingChangesInInstanceConstructor.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\PXGraphExtensionIsSavingChangesInInitializationMethod.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\PXGraphIsntSavingChangesInInstanceConstructor.cs" />

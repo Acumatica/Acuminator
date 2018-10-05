@@ -1,4 +1,5 @@
-﻿using Acuminator.Analyzers.StaticAnalysis;
+﻿using System.Threading.Tasks;
+using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization;
 using Acuminator.Tests.Helpers;
@@ -15,30 +16,27 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphCreationDuringInitializat
 
         [Theory]
         [EmbeddedFileData("PXGraphWithCreateInstanceInInstanceConstructor.cs")]
-        public void PXGraphCreationDuringInitialization_GraphInstanceConstructor_CreateInstanceUsage(string source)
-        {
-            VerifyCSharpDiagnostic(source, Descriptors.PX1057_PXGraphCreationDuringInitialization.CreateFor(15, 41));
-        }
+        public async Task PXGraphCreationDuringInitialization_GraphInstanceConstructor_CreateInstanceUsage(string source) =>
+            await VerifyCSharpDiagnosticAsync(source, Descriptors.PX1057_PXGraphCreationDuringInitialization.CreateFor(15, 41));
 
         [Theory]
         [EmbeddedFileData("PXGraphExtensionWithCreateInstanceInInitMethod.cs")]
-        public void PXGraphCreationDuringInitialization_GraphExtensionInitialize_CreateInstanceUsage(string source)
-        {
-            VerifyCSharpDiagnostic(source, Descriptors.PX1057_PXGraphCreationDuringInitialization.CreateFor(14, 41));
-        }
+        public async Task PXGraphCreationDuringInitialization_GraphExtensionInitialize_CreateInstanceUsage(string source) =>
+            await VerifyCSharpDiagnosticAsync(source, Descriptors.PX1057_PXGraphCreationDuringInitialization.CreateFor(14, 41));
 
         [Theory]
         [EmbeddedFileData("PXGrapWithCreateInstanceInInitDelegate.cs")]
-        public void PXGraphCreationDuringInitialization_GraphInitDelegate_CreateInstanceUsage(string source)
-        {
-            VerifyCSharpDiagnostic(source, Descriptors.PX1057_PXGraphCreationDuringInitialization.CreateFor(20, 14));
-        }
+        public async Task PXGraphCreationDuringInitialization_GraphInitDelegate_CreateInstanceUsage(string source) =>
+            await VerifyCSharpDiagnosticAsync(source, Descriptors.PX1057_PXGraphCreationDuringInitialization.CreateFor(20, 14));
 
         [Theory]
         [EmbeddedFileData("PXGraphWithCreateInstanceOutsideOfInitialization.cs")]
-        public void PXGraph_OutsideOfInitialization_CreateInstanceUsage(string source)
-        {
-            VerifyCSharpDiagnostic(source);
-        }
+        public async Task PXGraph_OutsideOfInitialization_CreateInstanceUsage(string source) =>
+            await VerifyCSharpDiagnosticAsync(source);
+
+        [Theory]
+        [EmbeddedFileData("PXGraphWithCreateInstanceInLambda.cs")]
+        public async Task PXGraph_InLambda_CreateInstanceUsage_ShouldNotShowDiagnostic(string source) =>
+            await VerifyCSharpDiagnosticAsync(source);
     }
 }

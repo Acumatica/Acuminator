@@ -1,56 +1,54 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
-using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 {
-    public class SavingChangesDuringPXGraphInitializationAnalyzer : IPXGraphAnalyzer
+    public class SavingChangesInGraphSemanticModelAnalyzer : IPXGraphAnalyzer
     {
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-            ImmutableArray.Create
-            (
-                Descriptors.PX1058_PXGraphSavingChangesDuringInitialization
-            );
+            ImmutableArray.Create(
+                Descriptors.PX1058_PXGraphSavingChangesDuringInitialization,
+                Descriptors.PX1083_SavingChangesInDataViewDelegate);
 
         public void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
+            SaveChangesWalker walker = new SaveChangesWalker(context, pxContext, Descriptors.PX1058_PXGraphSavingChangesDuringInitialization);
+
             foreach (GraphInitializerInfo initializer in pxGraph.Initializers)
             {
                 context.CancellationToken.ThrowIfCancellationRequested();
-                CheckSavingChanges(context, pxContext, initializer);
+                walker.Visit(initializer.Node);
             }
-        }
 
-        private void CheckSavingChanges(SymbolAnalysisContext context, PXContext pxContext, GraphInitializerInfo initializer)
-        {
-            context.CancellationToken.ThrowIfCancellationRequested();
+            walker = new SaveChangesWalker(context, pxContext, Descriptors.PX1083_SavingChangesInDataViewDelegate);
 
-            if (initializer.Node == null)
-                return;
-
-            SaveChangesWalker walker = new SaveChangesWalker(context, pxContext);
-
-            walker.Visit(initializer.Node);
+            foreach (DataViewDelegateInfo del in pxGraph.ViewDelegates)
+            {
+                context.CancellationToken.ThrowIfCancellationRequested();
+                walker.Visit(del.Node);
+            }
         }
 
         private class SaveChangesWalker : NestedInvocationWalker
         {
             private readonly SymbolAnalysisContext _context;
             private readonly PXContext _pxContext;
+            private readonly DiagnosticDescriptor _descriptor;
 
-            public SaveChangesWalker(SymbolAnalysisContext context, PXContext pxContext)
+            public SaveChangesWalker(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor descriptor)
                 : base(context.Compilation, context.CancellationToken)
             {
                 _context = context;
                 _pxContext = pxContext;
+                _descriptor = descriptor;
             }
 
             public override void VisitInvocationExpression(InvocationExpressionSyntax node)
@@ -62,7 +60,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 
                 if (symbol != null && SaveOperationHelper.GetSaveOperationKind(symbol, node, semanticModel, _pxContext) != SaveOperationKind.None)
                 {
-                    ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1058_PXGraphSavingChangesDuringInitialization, node);
+                    ReportDiagnostic(_context.ReportDiagnostic, _descriptor, node);
                 }
                 else
                 {
