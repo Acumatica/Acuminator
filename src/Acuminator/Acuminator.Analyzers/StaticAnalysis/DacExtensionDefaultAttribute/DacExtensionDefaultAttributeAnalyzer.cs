@@ -41,28 +41,28 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 			return Task.WhenAll(allTasks);
 		}
-		private static async Task CheckDacPropertyAsync(IPropertySymbol property, SymbolAnalysisContext symbolContext, PXContext pxContext,
-														AttributeInformation attributeInformation)
-		{
-			ImmutableArray<AttributeData> attributes = property.GetAttributes();
+        private static async Task CheckDacPropertyAsync(IPropertySymbol property, SymbolAnalysisContext symbolContext, PXContext pxContext,
+                                                        AttributeInformation attributeInformation)
+        {
+            ImmutableArray<AttributeData> attributes = property.GetAttributes();
 
-			if (attributes.Length == 0)
-				return;
+            if (attributes.Length == 0)
+                return;
 
-			symbolContext.CancellationToken.ThrowIfCancellationRequested();
+            symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			bool isBoundField = attributeInformation.ContainsBoundAttributes(attributes);
+            bool isBoundField = attributeInformation.ContainsBoundAttributes(attributes);
 
-			if (isBoundField )
-			{
-				await AnalyzeAttributesWithinBoundFieldAsync(property, attributes, pxContext, symbolContext, attributeInformation).ConfigureAwait(false);
-			}
-			else if (!isBoundField)
-			{
-				await AnalyzeAttributesWithinUnBoundFieldAsync(property, attributes, pxContext, symbolContext, attributeInformation).ConfigureAwait(false);
-			}
+            if (isBoundField)
+            {
+                await AnalyzeAttributesWithinBoundFieldAsync(property, attributes, pxContext, symbolContext, attributeInformation).ConfigureAwait(false);
+            }
+            else if (!isBoundField)
+            {
+                await AnalyzeAttributesWithinUnBoundFieldAsync(property, attributes, pxContext, symbolContext, attributeInformation).ConfigureAwait(false);
+            }
 
-		}
+        }
 
 		private static async Task AnalyzeAttributesWithinBoundFieldAsync(IPropertySymbol property, ImmutableArray<AttributeData> attributes,
 																			PXContext pxContext,
