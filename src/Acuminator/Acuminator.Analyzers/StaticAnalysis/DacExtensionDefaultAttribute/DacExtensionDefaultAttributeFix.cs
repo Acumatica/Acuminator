@@ -14,30 +14,30 @@ using PX.Data;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 {
-    [Shared]
-    [ExportCodeFixProvider(LanguageNames.CSharp)]
-    public class DacExtensionDefaultAttributeFix : CodeFixProvider
-    {
-        private const string _PXUnboundDefaultAttributeName = "PXUnboundDefault";
-        private const string _PXPersistingCheck = nameof(PXPersistingCheck);
-        private const string _PersistingCheck = nameof(PXDefaultAttribute.PersistingCheck);
-        private const string _PersistingCheckNothing = nameof(PXPersistingCheck.Nothing);
-        private const string _PXDefault = "PXDefault";
+	[Shared]
+	[ExportCodeFixProvider(LanguageNames.CSharp)]
+	public class DacExtensionDefaultAttributeFix : CodeFixProvider
+	{
+		private const string _PXUnboundDefaultAttributeName = "PXUnboundDefault";
+		private const string _PXPersistingCheck = nameof(PXPersistingCheck);
+		private const string _PersistingCheck = nameof(PXDefaultAttribute.PersistingCheck);
+		private const string _PersistingCheckNothing = nameof(PXPersistingCheck.Nothing);
+		private const string _PXDefault = "PXDefault";
 
 
-        public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-            ImmutableArray.Create(Descriptors.PX1030_DefaultAttibuteToExisitingRecords.Id, 
-                                  Descriptors.PX1030_DefaultAttibuteToExisitingRecordsOnDAC.Id);
+		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
+			ImmutableArray.Create(Descriptors.PX1030_DefaultAttibuteToExisitingRecords.Id,
+								  Descriptors.PX1030_DefaultAttibuteToExisitingRecordsOnDAC.Id);
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
 			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1030_DefaultAttibuteToExisitingRecords.Id ||
-                                                                     d.Id == Descriptors.PX1030_DefaultAttibuteToExisitingRecordsOnDAC.Id);
+																	 d.Id == Descriptors.PX1030_DefaultAttibuteToExisitingRecordsOnDAC.Id);
 
 			if (diagnostic == null)
-				return ;
+				return;
 
 			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			SyntaxNode codeFixNode = root?.FindNode(context.Span);
@@ -46,7 +46,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 			if (attributeNode != null && (attributeNode.Name as IdentifierNameSyntax).Identifier.Text.Equals(_PXDefault))
 			{
 				bool isBoundField = IsBoundField(diagnostic);
-				string codeActionNameBound = nameof(Resources.PX1030FixBound).GetLocalized().ToString() ;
+				string codeActionNameBound = nameof(Resources.PX1030FixBound).GetLocalized().ToString();
 				string codeActionNameUnbound = nameof(Resources.PX1030FixUnbound).GetLocalized().ToString();
 
 				CodeAction codeActionBound =
@@ -62,15 +62,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 						CodeAction.Create(codeActionNameUnbound,
 							cToken => ReplaceAttributeToPXUnboundDefault(context.Document, context.Span, cToken),
 							equivalenceKey: codeActionNameUnbound);
-					context.RegisterCodeFix(codeActionUnbound,context.Diagnostics);
+					context.RegisterCodeFix(codeActionUnbound, context.Diagnostics);
 				}
 
 			}
 
-			return ;
-			
+			return;
+
 		}
-				
+
 		private async Task<Document> ReplaceAttributeToPXUnboundDefault(Document document, TextSpan span, CancellationToken cancellationToken)
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
@@ -95,7 +95,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 		}
 
-		private async Task<Document> AddToAttributePersistingCheckNothing(Document document, TextSpan span, bool isBoundField,CancellationToken cancellationToken)
+		private async Task<Document> AddToAttributePersistingCheckNothing(Document document, TextSpan span, bool isBoundField, CancellationToken cancellationToken)
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
@@ -111,16 +111,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 			var memberAccessExpression = generator.MemberAccessExpression(generator.IdentifierName(_PXPersistingCheck),
 																		  generator.IdentifierName(_PersistingCheckNothing));
-			var persistingAttributeArgument = generator.AttributeArgument(_PersistingCheck, 
+			var persistingAttributeArgument = generator.AttributeArgument(_PersistingCheck,
 																		  memberAccessExpression) as AttributeArgumentSyntax;
-			
+
 			SyntaxNode modifiedRoot;
 
 			if (attributeNode.ArgumentList != null)
 			{
 				AttributeArgumentSyntax argument = GetArgumentFromAttribute();
-				
-				if (argument != null )
+
+				if (argument != null)
 				{
 					persistingAttributeArgument = argument.ReplaceNode(argument.Expression, memberAccessExpression);
 					var newAttributeNode = attributeNode.ReplaceNode(argument, persistingAttributeArgument);

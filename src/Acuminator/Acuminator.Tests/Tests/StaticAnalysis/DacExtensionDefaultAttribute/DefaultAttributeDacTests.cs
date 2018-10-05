@@ -61,28 +61,28 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacExtensionDefaultAttribute
 		[EmbeddedFileData("DacExtensionWithUnboundFields.cs",
 							"DacExtensionWithUnboundFields_Expected.cs")]
 		public virtual void TestCodeFixDacExtensionWithUnboundAttribute(string actual, string expected) =>
-			VerifyCSharpFix(actual, expected,1);
+			VerifyCSharpFix(actual, expected, 1);
 
 		[Theory]
 		[EmbeddedFileData("DacWithBoundAndUnboundFields.cs")]
 		public virtual void TestDacWithBoundAndUnboundAttribute(string source) =>
 			VerifyCSharpDiagnostic(source,
-                 Descriptors.PX1030_DefaultAttibuteToExisitingRecordsOnDAC.CreateFor(line: 16, column: 4));
+				 Descriptors.PX1030_DefaultAttibuteToExisitingRecordsOnDAC.CreateFor(line: 16, column: 4));
 
 		[Theory]
 		[EmbeddedFileData("DacAggregateAttributeFields.cs")]
 		public virtual void TestDacWithAggregateAttributeFields(string source) =>
 			VerifyCSharpDiagnostic(source,
-                Descriptors.PX1030_DefaultAttibuteToExisitingRecordsOnDAC.CreateFor(line: 36, column: 4));
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecordsOnDAC.CreateFor(line: 36, column: 4));
 
-        [Theory]
-        [EmbeddedFileData("DacWithBoundAndUnboundFields.cs", "DacWithBoundAndUnboundFields_Expected.cs")]
-        public virtual void TestCodeFixDacWithBoundAndUnboundAttribute(string actual, string expected) =>
-        VerifyCSharpFix(actual, expected);
+		[Theory]
+		[EmbeddedFileData("DacWithBoundAndUnboundFields.cs", "DacWithBoundAndUnboundFields_Expected.cs")]
+		public virtual void TestCodeFixDacWithBoundAndUnboundAttribute(string actual, string expected) =>
+		VerifyCSharpFix(actual, expected);
 
-        [Theory]
-        [EmbeddedFileData("DacAggregateAttributeFields.cs", "DacAggregateAttributeFields_Expected.cs")]
-        public virtual void TestCodeFixDacWithAggregateAttributeFields(string actual, string expected) =>
-            VerifyCSharpFix(actual, expected);
-    }
+		[Theory]
+		[EmbeddedFileData("DacAggregateAttributeFields.cs", "DacAggregateAttributeFields_Expected.cs")]
+		public virtual void TestCodeFixDacWithAggregateAttributeFields(string actual, string expected) =>
+			VerifyCSharpFix(actual, expected);
+	}
 }
