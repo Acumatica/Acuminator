@@ -28,24 +28,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 			AnalysisContext analysisContext = new AnalysisContext(symbolContext, graphSemanticModel);
 
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
-			RunAnalysisOnGraphViews(analysisContext);
+			RunAnalysisOnGraphViewsToFindTwoCacheCases(analysisContext);
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			var dacsDeclaredInBaseGraphs = analysisContext.ViewsInBaseGraphs.Select(view => view.ViewDac)
-																			.Distinct()
-																			.ToList();
-
-			for (int i = analysisContext.ViewsInGraphNotMarkedOnForwardPass; i >= 0; i++)
-			{
-				ITypeSymbol viewDacType = view.ViewDac;
-
-				
-
-
-			}
+			
 		}
 
-		private static void RunAnalysisOnGraphViews(AnalysisContext analysisContext)
+		private static void RunAnalysisOnGraphViewsToFindTwoCacheCases(AnalysisContext analysisContext)
 		{
 			foreach (DataViewInfo viewInfo in analysisContext.GetViewsToAnalyze())
 			{
@@ -74,7 +63,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 		}
 
 		/// <summary>
-		/// Analyze graph view on forward pass and returns the diagnostic descriptor if some diagnostic should be shown for the view. Otherwise returns null.
+		/// Analyze graph view on forward pass to find if PX1004 should be shown and returns the diagnostic descriptor if the diagnostic should be shown for the view. Otherwise returns null.
 		/// </summary>
 		/// <param name="analysisContext">Context for the analysis.</param>
 		/// <param name="viewInfo">Information describing the view.</param>
@@ -117,7 +106,28 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 			}
 		}
 
-		
+		private static void RunAnalysisOnGraphViewsToFindOneCacheCases(AnalysisContext analysisContext)
+		{
+			var dacsDeclaredInBaseGraphs = analysisContext.ViewsInBaseGraphs.Select(view => view.ViewDac)
+																			.Distinct()
+																			.ToList();
+
+			for (int i = analysisContext.ViewsInGraphNotMarkedOnForwardPass.Count - 1; i >= 0; i++)
+			{
+				DataViewInfo view = analysisContext.ViewsInGraphNotMarkedOnForwardPass[i];
+				ITypeSymbol viewDacType = view.ViewDac;
+				var defivedDacsInBaseGraph = dacsDeclaredInBaseGraphs.Any(dacInBaseGraph => dacInBaseGraph.InheritsFrom(viewDacType))
+
+				if ()
+				{
+					analysisContext.ReportDiagnosticForBaseDACs(visitedBaseDACs, viewDacType, Descriptors.PX1004_ViewDeclarationOrder, viewLocation);
+				}
+
+
+			}
+		}
+
+
 		private static bool GraphContainsViewDeclaration(PXGraphSemanticModel graphSemanticModel, DataViewInfo viewInfo) =>
 			graphSemanticModel.Symbol.OriginalDefinition?.Equals(viewInfo.Symbol.ContainingType?.OriginalDefinition) ?? false;
 	}
