@@ -388,6 +388,6 @@
     <value>Changes cannot be saved to the database from data view delegates</value>
   </data>
   <data name="PX1084Title" xml:space="preserve">
-    <value>A PXGraph instance cannot be initialized within data view delegates</value>
+    <value>PXGraph instances cannot be initialized within data view delegates</value>
   </data>
 </root>

@@ -872,7 +872,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A PXGraph instance cannot be initialized within data view delegates.
+        ///   Looks up a localized string similar to PXGraph instances cannot be initialized within data view delegates.
         /// </summary>
         public static string PX1084Title {
             get {
