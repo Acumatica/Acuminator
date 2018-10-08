@@ -74,7 +74,7 @@
     <Compile Include="StaticAnalysis\PXActionExecution\PXActionExecutionInEventHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXActionExecution\PXActionExecutionInGraphSemanticModelAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXActionExecution\Walker.cs" />
-    <Compile Include="StaticAnalysis\PXGraphCreationDuringInitialization\PXGraphCreationDuringInitializationAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\PXGraphCreationDuringInitialization\PXGraphCreationInGraphSemanticModelAnalyzer.cs" />
     <Compile Include="StaticAnalysis\LongOperationStart\LongOperationInEventHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceInEventHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\LongOperationStart\LongOperationInPXGraphDuringInitializationAnalyzer.cs" />
