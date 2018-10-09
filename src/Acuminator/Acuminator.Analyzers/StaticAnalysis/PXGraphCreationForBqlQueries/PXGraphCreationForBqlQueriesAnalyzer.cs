@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+using Acuminator.Utilities.Roslyn.Syntax;
 using Acuminator.Utilities.Roslyn.Syntax.PXGraph;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -31,7 +32,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			// Get body from a method or property
-			CSharpSyntaxNode body = GetBody(context.CodeBlock);
+			CSharpSyntaxNode body = context.CodeBlock?.GetBody();
 			if (body == null) return;
 
 			// Collect all PXGraph-typed method parameters passed to BQL queries
@@ -70,21 +71,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 						graphArgSyntax.GetLocation(),
 						CreateDiagnosticProperties(availableGraphs.Where(g => !Equals(g, localVar)), pxContext)));
 				}
-			}
-		}
-
-		private CSharpSyntaxNode GetBody(SyntaxNode codeBlock)
-		{
-			switch (codeBlock)
-			{
-				case AccessorDeclarationSyntax accessorSyntax:
-					return accessorSyntax.Body;
-				case MethodDeclarationSyntax methodSyntax:
-					return methodSyntax.Body ?? (CSharpSyntaxNode) methodSyntax.ExpressionBody?.Expression;
-				case ConstructorDeclarationSyntax constructorSyntax:
-					return constructorSyntax.Body;
-				default:
-					return null;
 			}
 		}
 
