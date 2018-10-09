@@ -205,7 +205,16 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateInGraphExtensionBaseView.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateInGraphExtensionOverride.cs" />
     <Compile Include="Tests\StaticAnalysis\DatabaseQueries\DatabaseQueriesInPXGraphInitializationTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\PXGraphConstructor.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\PXGraphConstructor.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\CreateInstanceDelegate.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\BQLSelect.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\BQLSearch.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\DataView.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\ExternalMethod.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\NonDbCrudOperations.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\PXDatabase.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\PXSelector.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\PXView.cs" />
     <Compile Include="Tests\StaticAnalysis\LongOperationStart\LongOperationInDataViewDelegateTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\DataViewFromGraphStartsLongOperation.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\DataViewFromGraphStartsLongOperationViaMethod.cs" />

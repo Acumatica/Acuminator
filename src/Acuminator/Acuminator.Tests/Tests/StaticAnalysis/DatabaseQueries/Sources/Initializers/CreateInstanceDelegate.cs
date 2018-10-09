@@ -10,11 +10,14 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DatabaseQueries.Sources.Initiali
 {
     public class UserEntry : PXGraph
     {
-        private readonly int _count;
-
-        public UserEntry()
+        static UserEntry()
         {
-            _count = PXSelect<Users>.Select(this).Count;
+            PXGraph.InstanceCreated.AddHandler<UserEntry>(InstanceCreatedHandler);
+        }
+
+        private static void InstanceCreatedHandler(UserEntry graph)
+        {
+            int count = PXSelect<Users>.Select(graph).Count;
         }
     }
 }

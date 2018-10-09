@@ -8,13 +8,19 @@ using System.Threading.Tasks;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.DatabaseQueries.Sources.Initializers
 {
+    public class UserEntryExt : PXGraphExtension<UserEntry>
+    {
+        private int _count;
+
+        public PXSelect<Users> AllUsers;
+
+        public override void Initialize()
+        {
+            _count = AllUsers.Select().Count;
+        }
+    }
+
     public class UserEntry : PXGraph
     {
-        private readonly int _count;
-
-        public UserEntry()
-        {
-            _count = PXSelect<Users>.Select(this).Count;
-        }
     }
 }
