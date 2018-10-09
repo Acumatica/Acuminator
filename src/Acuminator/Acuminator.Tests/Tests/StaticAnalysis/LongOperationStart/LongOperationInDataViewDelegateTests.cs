@@ -6,13 +6,14 @@ using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
 using System.Threading.Tasks;
+using Acuminator.Utilities;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationStart
 {
     public class LongOperationInDataViewDelegateTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-            new PXGraphAnalyzer(new LongOperationInDataViewDelegateAnalyzer());
+            new PXGraphAnalyzer(CodeAnalysisSettings.Default, new LongOperationInDataViewDelegateAnalyzer());
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\DataViewFromGraphStartsLongOperation.cs")]

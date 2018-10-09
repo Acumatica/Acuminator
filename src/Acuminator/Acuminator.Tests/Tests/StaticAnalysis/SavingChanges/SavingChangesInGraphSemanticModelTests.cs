@@ -3,6 +3,7 @@ using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
+using Acuminator.Utilities;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Threading.Tasks;
 using Xunit;
@@ -12,7 +13,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.SavingChanges
     public class SavingChangesInGraphSemanticModelTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-            new PXGraphAnalyzer(new SavingChangesInGraphSemanticModelAnalyzer());
+            new PXGraphAnalyzer(CodeAnalysisSettings.Default, new SavingChangesInGraphSemanticModelAnalyzer());
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\PXGraphIsSavingChangesInInstanceConstructor.cs")]

@@ -1,15 +1,13 @@
-﻿using Acuminator.Utilities.Roslyn;
-using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
+﻿using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
+using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 {
-    public interface IPXGraphAnalyzer
+    public interface IPXGraphAnalyzer : ISymbolAnalyzer
     {
-        ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
-        void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph);
+        void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, PXGraphSemanticModel pxGraph);
     }
 }

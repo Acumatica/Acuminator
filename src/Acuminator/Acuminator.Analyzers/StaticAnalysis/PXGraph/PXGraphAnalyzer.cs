@@ -1,8 +1,10 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
+﻿using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
+using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
 using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
 using Acuminator.Analyzers.StaticAnalysis.PXActionExecution;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization;
 using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
+using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
@@ -14,13 +16,11 @@ using System.Linq;
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class PXGraphAnalyzer : PXDiagnosticAnalyzer
+    public class PXGraphAnalyzer : SymbolAnalyzersAggregator<IPXGraphAnalyzer>
     {
-        private readonly ImmutableArray<IPXGraphAnalyzer> _innerAnalyzers;
+        protected override SymbolKind SymbolKind => SymbolKind.NamedType;
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
-
-        public PXGraphAnalyzer() : this(
+        public PXGraphAnalyzer() : this(null,
             new PXGraphCreationInGraphSemanticModelAnalyzer(),
             new SavingChangesInGraphSemanticModelAnalyzer(),
             new ChangesInPXCacheDuringPXGraphInitializationAnalyzer(),
@@ -33,18 +33,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
         /// <summary>
         /// Constructor for the unit tests.
         /// </summary>
-        public PXGraphAnalyzer(params IPXGraphAnalyzer[] innerAnalyzers)
+        public PXGraphAnalyzer(CodeAnalysisSettings codeAnalysisSettings, params IPXGraphAnalyzer[] innerAnalyzers)
+            : base(codeAnalysisSettings, innerAnalyzers)
         {
-            _innerAnalyzers = ImmutableArray.CreateRange(innerAnalyzers);
-            SupportedDiagnostics = ImmutableArray.CreateRange(innerAnalyzers.SelectMany(a => a.SupportedDiagnostics));
         }
 
-        internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
-        {
-            compilationStartContext.RegisterSymbolAction(context => AnalyzeGraph(context, pxContext), SymbolKind.NamedType);
-        }
-
-        private void AnalyzeGraph(SymbolAnalysisContext context, PXContext pxContext)
+        protected override void AnalyzeSymbol(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -58,7 +52,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
                 foreach (PXGraphSemanticModel g in graphs)
                 {
                     context.CancellationToken.ThrowIfCancellationRequested();
-                    innerAnalyzer.Analyze(context, pxContext, g);
+                    innerAnalyzer.Analyze(context, pxContext, settings, g);
                 }
             }
         }

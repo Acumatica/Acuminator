@@ -5,13 +5,14 @@ using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
+using Acuminator.Utilities;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationStart
 {
     public class LongOperationInPXGraphDuringInitializationTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer () =>
-            new PXGraphAnalyzer(new LongOperationInPXGraphDuringInitializationAnalyzer());
+            new PXGraphAnalyzer(CodeAnalysisSettings.Default, new LongOperationInPXGraphDuringInitializationAnalyzer());
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\PXGraphStartsLongOperationInInstanceConstructor.cs")]

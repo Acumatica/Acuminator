@@ -3,6 +3,7 @@ using Acuminator.Analyzers.StaticAnalysis.PXActionExecution;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
+using Acuminator.Utilities;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Threading.Tasks;
 using Xunit;
@@ -12,7 +13,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXActionExecution
     public class PXActionExecutionInGraphSemanticModelTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-            new PXGraphAnalyzer(new PXActionExecutionInGraphSemanticModelAnalyzer());
+            new PXGraphAnalyzer(CodeAnalysisSettings.Default, new PXActionExecutionInGraphSemanticModelAnalyzer());
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\PressInGraph.cs")]
