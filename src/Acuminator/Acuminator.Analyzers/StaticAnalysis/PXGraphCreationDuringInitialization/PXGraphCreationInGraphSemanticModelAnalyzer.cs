@@ -57,7 +57,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
 
                 IMethodSymbol symbol = GetSymbol<IMethodSymbol>(node);
 
-                if (symbol != null && _pxContext.PXGraphRelatedMethods.CreateInstance.Contains(symbol.ConstructedFrom))
+                if (symbol != null && _pxContext.PXGraph.CreateInstance.Contains(symbol.ConstructedFrom))
                 {
                     ReportDiagnostic(_context.ReportDiagnostic, _descriptor, node);
                 }

@@ -70,7 +70,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 			if (pxContext == null || semanticModel == null || graphOrGraphExtension == null || cancellationToken.IsCancellationRequested)
 				return null;
 
-			bool isGraph = graphOrGraphExtension.InheritsFrom(pxContext.PXGraphType);
+			bool isGraph = graphOrGraphExtension.InheritsFrom(pxContext.PXGraph.Type);
 
 			if (!isGraph && !graphOrGraphExtension.InheritsFrom(pxContext.PXGraphExtensionType))
 				return null;

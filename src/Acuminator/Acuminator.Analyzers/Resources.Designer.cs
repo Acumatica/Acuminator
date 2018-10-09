@@ -800,6 +800,24 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Replace {0} with the following PXGraph instance: {1}.
+        /// </summary>
+        public static string PX1072Fix {
+            get {
+                return ResourceManager.GetString("PX1072Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BQL queries must be executed within the context of an existing PXGraph instance.
+        /// </summary>
+        public static string PX1072Title {
+            get {
+                return ResourceManager.GetString("PX1072Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Exceptions cannot be thrown in the RowPersisted event handler.
         /// </summary>
         public static string PX1073Title {

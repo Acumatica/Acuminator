@@ -197,7 +197,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
                 if (semanticModel.GetSymbolInfo(node, _cancellation).Symbol is IMethodSymbol symbol)
                 {
-                    bool isCreationDelegateAddition = _pxContext.PXGraphRelatedMethods.InstanceCreatedEventsAddHandler.Equals(symbol.ConstructedFrom);
+                    bool isCreationDelegateAddition = _pxContext.PXGraph.InstanceCreatedEvents.AddHandler.Equals(symbol.ConstructedFrom);
 
                     if (isCreationDelegateAddition)
                     {

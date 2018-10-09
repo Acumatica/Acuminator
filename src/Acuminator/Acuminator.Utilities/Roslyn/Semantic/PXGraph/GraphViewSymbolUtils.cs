@@ -26,7 +26,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         {
             pxContext.ThrowOnNull(nameof(pxContext));
 
-            if (graph?.InheritsFrom(pxContext.PXGraphType) != true)
+            if (graph?.InheritsFrom(pxContext.PXGraph.Type) != true)
                 return Enumerable.Empty<INamedTypeSymbol>();
 
             if (includeViewsFromInheritanceChain)
@@ -122,7 +122,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         {
             pxContext.ThrowOnNull(nameof(pxContext));
 
-            if (graph?.InheritsFrom(pxContext.PXGraphType) != true)
+            if (graph?.InheritsFrom(pxContext.PXGraph.Type) != true)
                 return Enumerable.Empty<(ISymbol, INamedTypeSymbol)>();
 
             if (includeViewsFromInheritanceChain)

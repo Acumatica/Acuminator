@@ -73,6 +73,7 @@
     <Compile Include="Graph\Graph saving changes and invoking actions\SMUserMaint.cs" />
     <Compile Include="Graph\Graph starts long operaton from incorrect places\SMUserProcess.cs" />
     <Compile Include="Graph\Graph with creation of other graphs\ARTranEntry.cs" />
+    <Compile Include="Graph\Graph Reusing\SOOrdersInqExt.cs" />
     <Compile Include="Graph\Start row reset for paging\LEPMaint.cs" />
     <Compile Include="Localization\InvalidRowException.cs" />
     <Compile Include="Localization\Messages.cs" />

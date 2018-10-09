@@ -29,7 +29,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 			}
 
 			var graphOrGraphExt = method.ContainingType;
-			bool isGraph = graphOrGraphExt?.InheritsFrom(pxContext.PXGraphType) ?? false;
+			bool isGraph = graphOrGraphExt?.InheritsFrom(pxContext.PXGraph.Type) ?? false;
 
 			if (graphOrGraphExt == null ||
 				(!isGraph && !graphOrGraphExt.InheritsFrom(pxContext.PXGraphExtensionType)))
