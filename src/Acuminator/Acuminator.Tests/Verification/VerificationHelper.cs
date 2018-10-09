@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -27,6 +29,7 @@ namespace Acuminator.Tests.Verification
 		internal static string CSharpDefaultFileExt = "cs";
 		internal static string VisualBasicDefaultExt = "vb";
 		internal static string TestProjectName = "TestProject";
+		internal static string BuildFailMessage = "External assembly build failure";
 
 
 		/// <summary>
@@ -58,10 +61,11 @@ namespace Acuminator.Tests.Verification
 		/// </summary>
 		/// <param name="source">Classes in the form of a string</param>
 		/// <param name="language">The language the source code is in</param>
+		/// <param name="externalCode">The source codes for new memory compilation. The goal of the external code is to simulate the behaviour of the extenal assembly without source code.</param>
 		/// <returns>A Document created from the source string</returns>
-		public static Document CreateDocument(string source, string language = LanguageNames.CSharp)
+		public static Document CreateDocument(string source, string language = LanguageNames.CSharp, string[] externalCode = null)
 		{
-			return CreateProject(new[] { source }, language).Documents.First();
+			return CreateProject(new[] { source }, language, externalCode).Documents.First();
 		}
 
 		public static Document CreateCSharpDocument(string source, params string[] additionalSources)
@@ -75,8 +79,9 @@ namespace Acuminator.Tests.Verification
 		/// </summary>
 		/// <param name="sources">Classes in the form of strings</param>
 		/// <param name="language">The language the source code is in</param>
+		/// <param name="externalCode">The source codes for new memory compilation. The goal of the external code is to simulate the behaviour of the extenal assembly without source code.</param>
 		/// <returns>A Project created out of the Documents created from the source strings</returns>
-		private static Project CreateProject(string[] sources, string language = LanguageNames.CSharp)
+		private static Project CreateProject(string[] sources, string language = LanguageNames.CSharp, string[] externalCode = null)
 		{
 			string fileNamePrefix = DefaultFilePathPrefix;
 			string fileExt = language == LanguageNames.CSharp ? CSharpDefaultFileExt : VisualBasicDefaultExt;
@@ -97,6 +102,13 @@ namespace Acuminator.Tests.Verification
 									.AddMetadataReference(projectId, CodeAnalysisReference)
 									.AddMetadataReference(projectId, PXDataReference)
 									.AddMetadataReference(projectId, PXCommonReference);
+
+			if (externalCode != null && externalCode.Length > 0)
+			{
+				IEnumerable<byte> dynamicAssembly = BuildAssemblyFromSources(externalCode);
+				MetadataReference dynamicReference = MetadataReference.CreateFromImage(dynamicAssembly);
+				solution = solution.AddMetadataReference(projectId, dynamicReference);
+			}
 
 			var project = solution.GetProject(projectId);
 			var parseOptions = project.ParseOptions.WithFeatures(
@@ -128,7 +140,7 @@ namespace Acuminator.Tests.Verification
 			root = Formatter.Format(root, Formatter.Annotation, simplifiedDoc.Project.Solution.Workspace);
 			return root.GetText().ToString();
 		}
-		
+
 		/// <summary>
 		/// Apply the inputted CodeAction to the inputted document.
 		/// </summary>
@@ -172,7 +184,7 @@ namespace Acuminator.Tests.Verification
 				}
 			}
 		}
-		
+
 		/// <summary>
 		/// Get the existing compiler diagnostics on the inputted document.
 		/// </summary>
@@ -182,6 +194,54 @@ namespace Acuminator.Tests.Verification
 		{
 			var semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
 			return semanticModel.GetDiagnostics();
+		}
+
+		/// <summary>
+		/// Compile internal source code into memory array 
+		/// </summary>
+		/// <param name="sourceCodes">Source codes of library</param>
+		/// <returns>Byte array from compiled binary dll assembly</returns>
+		private static byte[] BuildAssemblyFromSources(string[] sourceCodes)
+		{
+			string assemblyName = Path.GetRandomFileName();
+			CSharpCompilation compilation = CSharpCompilation.Create(
+					assemblyName,
+					syntaxTrees: sourceCodes.Select(code => CSharpSyntaxTree.ParseText(text: code)),
+					references: new MetadataReference[] { CorlibReference,
+														  SystemCoreReference,
+														  CSharpSymbolsReference,
+														  CodeAnalysisReference,
+														  PXDataReference,
+														  PXCommonReference },
+					options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
+			// Emit the image of this assembly 
+			byte[] image = null;
+
+			using (var ms = new MemoryStream())
+			{
+				var emitResult = compilation.Emit(ms);
+
+				if (!emitResult.Success)
+				{
+					StringBuilder diagnosticMessages = new StringBuilder(BuildFailMessage + "\r\n");
+					
+					IEnumerable<Diagnostic> failures = emitResult.Diagnostics.Where(diagnostic =>
+															diagnostic.IsWarningAsError ||
+															diagnostic.Severity == DiagnosticSeverity.Error);
+
+					foreach (Diagnostic diagnostic in failures)
+					{
+						diagnosticMessages.Append(string.Format("{0}: {1} \r\n", diagnostic.Id, diagnostic.GetMessage()));
+					}
+
+					throw new ArgumentException(diagnosticMessages.ToString());
+				}
+
+				image = ms.ToArray();
+			}
+
+			return image;
 		}
 	}
 }

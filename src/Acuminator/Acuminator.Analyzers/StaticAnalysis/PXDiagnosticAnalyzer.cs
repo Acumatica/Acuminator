@@ -12,7 +12,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			context.RegisterCompilationStartAction(compilationStartContext =>
 			{
 				var pxContext = new PXContext(compilationStartContext.Compilation);
-				if (pxContext.PXGraphType != null && ShouldAnalyze(pxContext))
+				if (pxContext.PXGraph.Type != null && ShouldAnalyze(pxContext))
 				{
 					AnalyzeCompilation(compilationStartContext, pxContext);
 				}

@@ -19,48 +19,47 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ChangesInPXCache
 	public class ChangesInPXCacheInEventHandlersTests : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-			new EventHandlerAnalyzer(CodeAnalysisSettings.Default.WithRecursiveAnalysisEnabled(), 
+			new EventHandlerAnalyzer(
+				CodeAnalysisSettings.Default
+					.WithRecursiveAnalysisEnabled()
+					.WithIsvSpecificAnalyzersDisabled(), 
 				new ChangesInPXCacheInEventHandlersAnalyzer());
 
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\EventHandlers.cs")]
-		public Task EventHandlers(string actual) =>
-			VerifyCSharpDiagnosticAsync(actual, 
+		public async Task EventHandlers(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual,
 				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(14, 4, EventType.FieldDefaulting),
 				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(19, 4, EventType.FieldVerifying),
 				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(24, 4, EventType.RowSelecting),
-				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(29, 4, EventType.RowSelected),
-				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(34, 4, EventType.RowInserting),
-				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(39, 4, EventType.RowUpdating),
-				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(44, 4, EventType.RowDeleting));
+				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(29, 4, EventType.RowSelected));
 
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\EventHandlersWithExternalMethod.cs")]
-		public Task EventHandlersWithExternalMethod(string actual) => 
-			VerifyCSharpDiagnosticAsync(actual,
+		public async Task EventHandlersWithExternalMethod(string actual) => 
+			await VerifyCSharpDiagnosticAsync(actual,
 				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(14, 4, EventType.FieldDefaulting),
 				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(19, 4, EventType.FieldVerifying),
 				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(24, 4, EventType.RowSelecting),
-				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(29, 4, EventType.RowSelected),
-				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(34, 4, EventType.RowInserting),
-				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(39, 4, EventType.RowUpdating),
-				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(44, 4, EventType.RowDeleting));
+				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(29, 4, EventType.RowSelected));
 
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\TypedCache.cs")]
-		public Task TypedCache(string actual) =>
-			VerifyCSharpDiagnosticAsync(actual, 
+		public async Task TypedCache(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual, 
 				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(14, 4, EventType.FieldDefaulting),
 				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(19, 4, EventType.FieldVerifying),
 				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(24, 4, EventType.RowSelecting),
-				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(29, 4, EventType.RowSelected),
-				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(34, 4, EventType.RowInserting),
-				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(39, 4, EventType.RowUpdating),
-				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(44, 4, EventType.RowDeleting));
+				Descriptors.PX1044_ChangesInPXCacheInEventHandlers.CreateFor(29, 4, EventType.RowSelected));
+
+		[Theory]
+		[EmbeddedFileData(@"EventHandlers\ExternalCache.cs")]
+		public async Task ExternalCache(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
 
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\ValidEventHandlers.cs")]
-		public Task ValidEventHandlers_ShouldNotShowDiagnostic(string actual) =>
-			VerifyCSharpDiagnosticAsync(actual);
+		public async Task ValidEventHandlers_ShouldNotShowDiagnostic(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
 	}
 }

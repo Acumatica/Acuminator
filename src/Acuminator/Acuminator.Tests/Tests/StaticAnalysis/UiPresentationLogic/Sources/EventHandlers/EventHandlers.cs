@@ -64,6 +64,8 @@ namespace PX.Objects
 		protected virtual void _(Events.RowPersisted<SOInvoice> e)
 		{
 			Release.SetTooltip("Release the document");
+			PXStringListAttribute.SetList<SOInvoice.refNbr>(e.Cache, null, new [] { "1" }, new [] { "0001" });
+			PXIntListAttribute.SetList<SOInvoice.refNbr>(e.Cache, null, new [] { 1 }, new [] { "0001" });
 		}
 	}
 

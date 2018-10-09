@@ -15,13 +15,13 @@ namespace Acuminator.Tests.Helpers
 	public class EmbeddedFileDataAttribute : DataAttribute
 	{
 		private const string SourcesPrefix = "Sources";
-		private static readonly string TestsRoot = typeof(EmbeddedFileDataAttribute).Assembly.GetName().Name;	
+		private static readonly string TestsRoot = typeof(EmbeddedFileDataAttribute).Assembly.GetName().Name;
 		private static readonly string DefaultPrefix = TestsRoot + "." + SourcesPrefix;
 
 		private readonly string _prefix;
 		private readonly string[] _fileNames;
 
-		public EmbeddedFileDataAttribute(string fileName, bool overloadParam = true, 
+		public EmbeddedFileDataAttribute(string fileName, bool overloadParam = true,
 			[CallerFilePath] string testFilePath = null)
 			: this(new[] { fileName }, testFilePath)
 		{
@@ -38,8 +38,11 @@ namespace Acuminator.Tests.Helpers
 			: this(new[] { fileName1, fileName2, fileName3 }, testFilePath)
 		{
 		}
-
-		protected EmbeddedFileDataAttribute(string[] fileNames, string testFilePath)
+		public EmbeddedFileDataAttribute(string fileName, string[] internalCodeFileNames, bool overloadParam = true,
+			[CallerFilePath] string testFilePath = null)
+			: this(new[] { fileName }, testFilePath, internalCodeFileNames)
+		{ }
+		protected EmbeddedFileDataAttribute(string[] fileNames, string testFilePath, string[] externalCodeFileNames = null)
 		{
 			if (fileNames.IsNullOrEmpty())
 				throw new ArgumentNullException(nameof(fileNames));
@@ -48,11 +51,20 @@ namespace Acuminator.Tests.Helpers
 			{
 				if (String.IsNullOrWhiteSpace(fileName))
 					// ReSharper disable once LocalizableElement
-					throw new ArgumentException("File name cannot be empty", nameof (fileNames));
+					throw new ArgumentException("File name cannot be empty", nameof(fileNames));
+			}
+			if (!externalCodeFileNames.IsNullOrEmpty())
+			{
+				foreach (string internalCodeFileName in externalCodeFileNames)
+				{
+					if (String.IsNullOrWhiteSpace(internalCodeFileName))
+						throw new ArgumentException("File name cannot be empty", nameof(internalCodeFileName));
+				}
 			}
 
 			_prefix = GetPrefixFromTestFilePath(testFilePath);
-			_fileNames = fileNames;
+
+			_fileNames = externalCodeFileNames.IsNullOrEmpty() ? fileNames :  fileNames.Concat(externalCodeFileNames).ToArray();
 		}
 
 		public override IEnumerable<object[]> GetData(MethodInfo testMethod)

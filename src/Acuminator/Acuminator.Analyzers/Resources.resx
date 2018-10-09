@@ -270,7 +270,7 @@
   <data name="PX1030FixBound" xml:space="preserve">
     <value>Set PersistingCheck of PXDefaultAttribute to Nothing</value>
   </data>
-  <data name="PX1030Title" xml:space="preserve">
+  <data name="PX1030TitleDefaultAttributeOnDacExtension" xml:space="preserve">
     <value>The PXDefault attribute of the field is used incorrectly. PXDefaultAttribute used on a custom field defined in PXCacheExtension can potentially prevent updates to existing records when used without PersistingCheck property set to Nothing</value>
   </data>
   <data name="PX1040Fix" xml:space="preserve">
@@ -368,5 +368,47 @@
   </data>
   <data name="PX1061Title" xml:space="preserve">
     <value>The {0} constant could be made strongly typed</value>
+  </data>
+  <data name="PX1071Title" xml:space="preserve">
+    <value>Actions cannot be executed within event handlers</value>
+  </data>
+  <data name="PX1072Title" xml:space="preserve">
+    <value>BQL queries must be executed within the context of an existing PXGraph instance</value>
+  </data>
+  <data name="PX1080Title" xml:space="preserve">
+    <value>Data view delegates should not start long-running operations</value>
+  </data>
+  <data name="PX1073Title" xml:space="preserve">
+    <value>Exceptions cannot be thrown in the RowPersisted event handler</value>
+  </data>
+  <data name="PX1074Title" xml:space="preserve">
+    <value>PXSetupNotEnteredException cannot be thrown in this event handler. Use the RowSelected event handler instead</value>
+  </data>
+  <data name="PX1074MessageFormat" xml:space="preserve">
+    <value>PXSetupNotEnteredException cannot be thrown in the {0} event handler. Use the RowSelected event handler instead</value>
+  </data>
+  <data name="PX1075MessageFormat" xml:space="preserve">
+    <value>PXCache.RaiseExceptionHandling cannot be invoked from the {0} event handler</value>
+  </data>
+  <data name="PX1075Title" xml:space="preserve">
+    <value>PXCache.RaiseExceptionHandling cannot be invoked from this event handler</value>
+  </data>
+  <data name="PX1081Title" xml:space="preserve">
+    <value>Actions cannot be executed during the PXGraph initialization</value>
+  </data>
+  <data name="PX1082Title" xml:space="preserve">
+    <value>Actions cannot be executed within data view delegates</value>
+  </data>
+  <data name="PX1072Fix" xml:space="preserve">
+    <value>Replace {0} with the following PXGraph instance: {1}</value>
+  </data>
+  <data name="PX1083Title" xml:space="preserve">
+    <value>Changes cannot be saved to the database from data view delegates</value>
+  </data>
+  <data name="PX1030TitleDefaultAttributeOnDac" xml:space="preserve">
+    <value>Consider setting PersistingCheck to Nothing or replacing PXDefault with PXUnboundDefault</value>
+  </data>
+  <data name="PX1084Title" xml:space="preserve">
+    <value>PXGraph instances cannot be initialized within data view delegates</value>
   </data>
 </root>

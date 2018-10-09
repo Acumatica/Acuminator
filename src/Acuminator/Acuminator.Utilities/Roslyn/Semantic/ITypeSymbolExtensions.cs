@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -330,29 +331,26 @@ namespace Acuminator.Utilities.Roslyn.Semantic
             return initializers;
         }
 
-        public static (ConstructorDeclarationSyntax Node, IMethodSymbol Symbol) GetDeclaredStaticConstructor
+        public static ImmutableArray<StaticConstructorInfo> GetStaticConstructors
             (this INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
         {
             typeSymbol.ThrowOnNull(nameof(typeSymbol));
+
+            List<StaticConstructorInfo> staticCtrs = new List<StaticConstructorInfo>();
 
             foreach(IMethodSymbol ctr in typeSymbol.StaticConstructors)
             {
                 cancellation.ThrowIfCancellationRequested();
 
-                if (!ctr.IsDefinition)
-                    continue;
-
                 SyntaxReference reference = ctr.DeclaringSyntaxReferences.FirstOrDefault();
-                if (reference == null)
+
+                if (!(reference?.GetSyntax(cancellation) is ConstructorDeclarationSyntax node))
                     continue;
 
-                if (!(reference.GetSyntax(cancellation) is ConstructorDeclarationSyntax node))
-                    continue;
-
-                return (node, ctr);
+                staticCtrs.Add(new StaticConstructorInfo(node, ctr));
             }
 
-            return (null, null);
+            return staticCtrs.ToImmutableArray(); ;
         }
 
 		/// <summary>Get all the methods of this symbol.</summary>

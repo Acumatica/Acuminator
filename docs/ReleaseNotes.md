@@ -1,20 +1,69 @@
 # Acuminator Release Notes
-This document provides information about fixes, enhancements, and key features that are available in Acuminator 1.3.
+This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
-## Acuminator 1.3
-Acuminator 1.3 includes the diagnostics and code fixes, enhancements, and bug fixes described in this section, as well as the features that have been implemented in the previous versions.
+## Acuminator 1.4
+Acuminator 1.4 includes the diagnostics and code fixes, suggestions for refactoring code, and bug fixes described in this section, as well as the features that have been implemented in previous versions.
+
 ### New Diagnostics and Code Fixes
 In this version, diagnostics and code fixes for the following issues have been added.
 
 | Code   | Issue Description                                               | Type    | Diagnostics | Code Fix  | 
 | ------ | --------------------------------------------------------------- | ------- | ----------- | --------- | 
-| PX1012 | `PXAction` is declared on a non-primary view.                     | Warning | Available   | Available |
+| PX1030 | The `PXDefault` attribute of the field is used incorrectly. `PXDefaultAttribute` used on a custom field defined in `PXCacheExtension` can potentially prevent updates to existing records when it is used without the `PersistingCheck` property set to `Nothing`. | Warning | Available | Available |
+| PX1042 | In a `RowSelecting` handler, BQL statements and other database queries must be executed only inside a separate connection scope. | Error | Available | Available |
+| PX1043 | Only the methods of the `PXCache.Persist` family can be used to save changes to the database from `RowPersisting` event handlers. Changes cannot be saved to the database from other event handlers.  | Error | Available | Unavailable |
+| PX1044 | Changes to `PXCache` cannot be performed in event handlers. | Error | Available | Unavailable |
+| PX1045 | `PXGraph` instances cannot be created in event handlers. | Error | Available | Unavailable |
+| PX1046 | Long-running operations cannot be started within event handlers. | Error | Available | Unavailable |
+| PX1050 | Hardcoded strings cannot be used as parameters for localization methods and `PXException` constructors. | Error | Available | Unavailable |
+| PX1051 | The strings defined in a class without the `PXLocalizable` attribute cannot be used as parameters for localization methods and `PXException` constructors. | Error | Available | Unavailable |
+| PX1052 | The strings without formatted string arguments cannot be used in the methods of the `LocalizeFormat` family. | Error | Available | Unavailable |
+| PX1053 | Concatenated strings cannot be used as parameters for localization methods and `PXException` constructors. | Error | Available | Unavailable |
+| PX1054 | A `PXGraph` instance must not start a long-running operation during the `PXGraph` initialization. | Error | Available | Unavailable |
+| PX1057 | A `PXGraph` instance cannot be initialized while another `PXGraph` instance is being initialized. | Error | Available | Unavailable |
+| PX1058 | A `PXGraph` instance must not save changes to the database during the `PXGraph` initialization. | Error | Available | Unavailable |
+
+### New Suggestions for Refactoring Code
+Acuminator 1.4 suggests one type of code refactoring: replacement of the standard event handler signature with the generic signature. Because an event handler can be overridden in derived classes or graph extensions, after you have applied this refactoring to your code, you have to manually update all possible overrides. 
+
+### Code Analysis Enhancements
+Now Acuminator can analyze the code recursively (that is, it can analyze the whole tree of method invocations in a recursive manner). For example, for the PX1042 diagnostic, the code of a `RowSelecting` event handler can contain no direct requests to the database but can contain a call to another method that performs a request to the database. Acuminator 1.4 can find this indirect request to the database.
+By default, Acuminator analyzes the code recursively. You can turn off this behavior by setting to `False` the value of **Tools > Options > Acuminator > Code Analysis > Enable recursive code analysis**.
+
+### Bug Fixes
+In this version of Acuminator, the following bugs have been fixed.
+
+| Bug | Fix Description |
+| --- | --------------- |
+| The PX1021 error was displayed for the DAC fields of the `string[]` type that had an attribute inherited from `PXDBAttributeAttribute`. | The error is not displayed for these fields. |
+| The PX1021 error was displayed for the DAC property fields with non-nullable types along with the PX1014 error. | Only the PX1014 error is displayed for the DAC property fields with non-nullable types. |
+| The PX1021 and PX1023 errors were displayed if a DAC field had the `PXDBCalced` or `PXDBScalar` attribute. | The PX1021 error is not displayed for the `PXDBCalced` and `PXDBScalar` attributes. The PX1023 diagnostic now finds invalid attributes (type attributes, `PXDBCalced` and `PXDBScalar` attributes) that are used with attributes derived from `PXAggregateAttribute`. The PX1023 diagnostic also finds multiple `PXDBCalced` and `PXDBScalar` attributes on a DAC field. |
+| The PX1029 error was displayed for DACs with the `PXPrimaryGraph` attribute. | The use of `PXGraph` instances in DAC attributes is ignored. `PXGraph` instances can be used in `typeof` expressions. |
+| The PX1029 diagnostic could be displayed twice for the same code. | Duplicate analysis of DACs has been removed. |
+| The PX1029, PX1031, and PX1032 diagnostics displayed errors for custom attributes and helpers declared in DACs. | The PX1029, PX1031, and PX1032 diagnostics do not check the nested DAC classes that had a type other than IBqlField. |
+| The PX1032 error was displayed for invocations of methods declared on the system types, such as `string`, `int`, `DateTime`, `Guid`, and `TimeSpan`. | Invocations of methods declared on the system types are skipped by the PX1032 diagnostic. |
+| Code navigation didn't support action handlers with no parameters and the `void` return type. | Action handlers with no parameters and the `void` return type are now supported by code navigation. |
+
+### Other Enhancements
+Acuminator now includes detailed descriptions of the diagnostics. You can open the description by clicking the link in the diagnostic message.
+
+## Acuminator 1.3
+Acuminator 1.3 includes the diagnostics and code fixes, enhancements, and bug fixes described in this section, as well as the features that have been implemented in the previous versions.
+
+### New Diagnostics and Code Fixes
+In this version, diagnostics and code fixes for the following issues have been added.
+
+| Code   | Issue Description                                               | Type    | Diagnostics | Code Fix  | 
+| ------ | --------------------------------------------------------------- | ------- | ----------- | --------- | 
+| PX1012 | `PXAction` is declared on a non-primary view.                   | Warning | Available   | Available |
 | PX1015 | For a BQL statement that contains parameters, the number of arguments of a `Select` method is different from the number of parameters. | Warning | Available | Unavailable |
 | PX1018 | The graph with the specified primary view type parameter doesn't contain the primary view of the specified type. | Error | Available | Unavailable |
 | PX1021 | The DAC property field has a type that is not compatible with the field attribute assigned to this property. | Error   | Available   | Available |
 | PX1023 | The DAC property is marked with multiple field attributes.      | Error   | Available   | Available |
 | PX1024 | The DAC nested class is not declared as an abstract class.      | Error   | Available   | Available |
 | PX1026 | Underscores cannot be used in the names of DACs and DAC fields. | Error   | Available   | Available |
+| PX1027 | The `CompanyMask`, `CompanyID`, and `DeletedDatabaseRecord` fields cannot be declared in DACs. | Error   | Available   | Available | 
+| PX1028 | Constructors cannot be used in DACs.                            | Error   | Available   | Available |
 | PX1029 | `PXGraph` instances cannot be used inside DAC properties.       | Error   | Available   | Unavailable |
 | PX1031 | DACs cannot contain instance methods.                           | Error   | Available   | Unavailable |
 | PX1032 | DAC properties cannot contain invocations of instance methods.  | Error   | Available   | Unavailable |
@@ -107,14 +156,14 @@ In the code based on Acumatica Framework, Acuminator finds common mistakes and t
 | PX1000 | An invalid signature of the `PXAction` handler is used.                                                                                         | Error   | Available   | Available     |
 | PX1001 | A `PXGraph` instance must be created with the `PXGraph.CreateInstance()` factory method.                                                        | Error   | Available   | Available     | 
 | PX1002 | The field must have the type attribute corresponding to the list attribute.                                                                     | Error   | Available   | Available     | 
-| PX1003 | A `PXGraph` instance must be created with the `PXGraph.CreateInstance()` factory method. Consider using a specific implementation of `PXGraph`. | Error   | Available   | Available     | 
+| PX1003 | Consider using a specific implementation of `PXGraph`.                                                                                          | Warning | Available   | Unavailable   | 
 | PX1004 | The order of view declarations will cause the creation of two cache instances.                                                                  | Warning | Available   | Unavailable   | 
 | PX1005 | There is probably a typo in the view delegate name.                                                                                             | Warning | Available   | Available     | 
 | PX1006 | The order of view declarations will cause the creation of one cache instance for multiple DACs.                                                 | Warning | Available   | Unavailable   | 
 | PX1008 | The reference of `@this` graph in the delegate will cause synchronous delegate execution.                                                       | Warning | Available   | Unavailable   | 
 | PX1009 | Multiple levels of inheritance are not supported for `PXCacheExtension`.                                                                        | Error   | Available   | Available     | 
 | PX1010 | If a delegate applies paging in an inner select, `StartRow` must be reset. (If `StartRow` is not reset, paging will be applied twice.)          | Warning | Available   | Available     | 
-| PX1011 | Because multiple levels of inheritance are not supported for `PXCacheExtension`, the derived type can be marked as sealed.                      | Error   | Available   | Available     | 
+| PX1011 | Because multiple levels of inheritance are not supported for `PXCacheExtension`, the derived type can be marked as sealed.                      | Warning | Available   | Available     | 
 
 ### Code Coloring
 Acuminator colorizes BQL statements, thus improving the readability of long BQL queries. 
@@ -135,7 +184,4 @@ Acuminator supports coloring for the following code elements:
 #### Color Settings
 You can adjust the color settings of Acuminator, as follows.
 * Change the default colors.<br/> In Visual Studio, open **Tools > Options > Environment > Fonts and Colors**, select the needed **Acuminator** option in **Display items**, adjust colors, and click **OK**.
-* Turn on or turn off coloring.<br/> In Visual Studio, set the value of **Tools > Options > Acuminator > Enable coloring**.                                                                                                                                                                             
-
-
-
+* Turn on or turn off coloring.<br/> In Visual Studio, set the value of **Tools > Options > Acuminator > Enable coloring**.

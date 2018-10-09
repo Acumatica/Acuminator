@@ -246,7 +246,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
             typeSymbol.ThrowOnNull(nameof(typeSymbol));
             pxContext.ThrowOnNull(nameof(pxContext));
 
-            return typeSymbol.InheritsFromOrEquals(pxContext.PXGraphType);
+            return typeSymbol.InheritsFromOrEquals(pxContext.PXGraph.Type);
         }
 
         public static bool IsPXGraphExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
@@ -263,7 +263,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
             typeSymbol.ThrowOnNull(nameof(typeSymbol));
             pxContext.ThrowOnNull(nameof(pxContext));
 
-            return typeSymbol.InheritsFromOrEquals(pxContext.PXGraphType) ||
+            return typeSymbol.InheritsFromOrEquals(pxContext.PXGraph.Type) ||
                    typeSymbol.InheritsFromOrEquals(pxContext.PXGraphExtensionType);
         }
 
