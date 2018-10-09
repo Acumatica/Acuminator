@@ -112,9 +112,12 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			Rule("PX1029", nameof(Resources.PX1029Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
 		public static DiagnosticDescriptor PX1030_DefaultAttibuteToExisitingRecords { get; } =
-			Rule("PX1030", nameof(Resources.PX1030Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+			Rule("PX1030", nameof(Resources.PX1030TitleDefaultAttributeOnDacExtension).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 
-		public static DiagnosticDescriptor PX1031_DacCannotContainInstanceMethods { get; } =
+		public static DiagnosticDescriptor PX1030_DefaultAttibuteToExisitingRecordsOnDAC { get; } =
+			Rule("PX1030", nameof(Resources.PX1030TitleDefaultAttributeOnDac).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+
+        public static DiagnosticDescriptor PX1031_DacCannotContainInstanceMethods { get; } =
 			Rule("PX1031", nameof(Resources.PX1031Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
 		public static DiagnosticDescriptor PX1032_DacPropertyCannotContainMethodInvocations { get; } =
@@ -208,5 +211,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
         public static DiagnosticDescriptor PX1083_SavingChangesInDataViewDelegate { get; } =
             Rule("PX1083", nameof(Resources.PX1083Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+        public static DiagnosticDescriptor PX1084_GraphCreationInDataViewDelegate { get; } =
+            Rule("PX1084", nameof(Resources.PX1084Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
     }
 }
