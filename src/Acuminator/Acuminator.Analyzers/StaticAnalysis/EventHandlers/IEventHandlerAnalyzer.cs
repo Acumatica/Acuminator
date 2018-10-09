@@ -7,7 +7,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 {
     public interface IEventHandlerAnalyzer : ISymbolAnalyzer
 	{
-		void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
+		void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, 
 			EventType eventType);
 	}
 }

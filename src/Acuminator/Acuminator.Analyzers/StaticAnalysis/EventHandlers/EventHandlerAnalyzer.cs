@@ -41,8 +41,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 		/// <summary>
 		/// Constructor for the unit tests.
 		/// </summary>
-		public EventHandlerAnalyzer(CodeAnalysisSettings codeAnalysisSettings, params IEventHandlerAnalyzer[] innerAnalyzers)
-            : base(codeAnalysisSettings, innerAnalyzers)
+		public EventHandlerAnalyzer(CodeAnalysisSettings settings, params IEventHandlerAnalyzer[] innerAnalyzers)
+            : base(settings, innerAnalyzers)
 		{
 		}
 

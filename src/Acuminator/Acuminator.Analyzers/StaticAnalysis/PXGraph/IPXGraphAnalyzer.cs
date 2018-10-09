@@ -8,6 +8,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 {
     public interface IPXGraphAnalyzer : ISymbolAnalyzer
     {
-        void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, PXGraphSemanticModel pxGraph);
+        void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph);
     }
 }
