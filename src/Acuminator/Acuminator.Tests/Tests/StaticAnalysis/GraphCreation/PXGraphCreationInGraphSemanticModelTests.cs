@@ -13,7 +13,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.GraphCreation
     public class PXGraphCreationInGraphSemanticModelTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-            new PXGraphAnalyzer(CodeAnalysisSettings.Default, new PXGraphCreationInGraphSemanticModelAnalyzer());
+            new PXGraphAnalyzer(
+                CodeAnalysisSettings.Default
+                .WithRecursiveAnalysisEnabled(),
+                new PXGraphCreationInGraphSemanticModelAnalyzer());
 
         [Theory]
         [EmbeddedFileData("PXGraphWithCreateInstanceInInstanceConstructor.cs")]

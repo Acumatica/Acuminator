@@ -13,7 +13,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.SavingChanges
     public class SavingChangesInGraphSemanticModelTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-            new PXGraphAnalyzer(CodeAnalysisSettings.Default, new SavingChangesInGraphSemanticModelAnalyzer());
+            new PXGraphAnalyzer(
+                CodeAnalysisSettings.Default
+                .WithRecursiveAnalysisEnabled(),
+                new SavingChangesInGraphSemanticModelAnalyzer());
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\PXGraphIsSavingChangesInInstanceConstructor.cs")]

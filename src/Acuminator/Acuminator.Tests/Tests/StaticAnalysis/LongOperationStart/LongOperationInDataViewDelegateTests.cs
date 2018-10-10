@@ -13,7 +13,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LongOperationStart
     public class LongOperationInDataViewDelegateTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-            new PXGraphAnalyzer(CodeAnalysisSettings.Default, new LongOperationInDataViewDelegateAnalyzer());
+            new PXGraphAnalyzer(
+                CodeAnalysisSettings.Default
+                .WithRecursiveAnalysisEnabled(),
+                new LongOperationInDataViewDelegateAnalyzer());
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\DataViewFromGraphStartsLongOperation.cs")]

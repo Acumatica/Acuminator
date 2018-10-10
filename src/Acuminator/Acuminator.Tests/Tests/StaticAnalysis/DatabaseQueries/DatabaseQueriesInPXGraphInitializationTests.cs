@@ -15,6 +15,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DatabaseQueries
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
             new PXGraphAnalyzer(
                 CodeAnalysisSettings.Default
+                .WithRecursiveAnalysisEnabled()
                 .WithIsvSpecificAnalyzersEnabled(),
                 new DatabaseQueriesInPXGraphInitializationAnalyzer());
 

@@ -13,7 +13,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXActionExecution
     public class PXActionExecutionInGraphSemanticModelTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-            new PXGraphAnalyzer(CodeAnalysisSettings.Default, new PXActionExecutionInGraphSemanticModelAnalyzer());
+            new PXGraphAnalyzer(
+                CodeAnalysisSettings.Default
+                .WithRecursiveAnalysisEnabled(),
+                new PXActionExecutionInGraphSemanticModelAnalyzer());
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\PressInGraph.cs")]

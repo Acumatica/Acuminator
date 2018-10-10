@@ -12,7 +12,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ChangesInPXCache
     public class ChangesInPXCacheDuringPXGraphInitializationTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-            new PXGraphAnalyzer(CodeAnalysisSettings.Default, new ChangesInPXCacheDuringPXGraphInitializationAnalyzer());
+            new PXGraphAnalyzer(
+                CodeAnalysisSettings.Default
+                .WithRecursiveAnalysisEnabled(),
+                new ChangesInPXCacheDuringPXGraphInitializationAnalyzer());
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\PXGraphChangesPXCacheInInstanceConstructor.cs")]
