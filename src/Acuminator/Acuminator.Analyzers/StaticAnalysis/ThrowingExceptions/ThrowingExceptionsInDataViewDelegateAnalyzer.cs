@@ -8,7 +8,7 @@ using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 {
-    public class ThrowingExceptionsInPXGraphInitializationAnalyzer : IPXGraphAnalyzer
+    public class ThrowingExceptionsInDataViewDelegateAnalyzer : IPXGraphAnalyzer
     {
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInPXGraphInitialization);

@@ -120,7 +120,7 @@
     <Compile Include="StaticAnalysis\BqlParameterMismatch\BqlParameterMismatchAnalyzer.cs" />
     <Compile Include="StaticAnalysis\MissingTypeListAttribute\MissingTypeListAttributeAnalyzer.cs" />
     <Compile Include="StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInEventHandlersAnalyzer.cs" />
-    <Compile Include="StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInPXGraphInitializationAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInDataViewDelegateAnalyzer.cs" />
     <Compile Include="StaticAnalysis\ThrowingExceptions\WalkerBase.cs" />
     <Compile Include="StaticAnalysis\TypoInViewDelegateName\TypoInViewDelegateNameAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceAnalyzer.cs" />

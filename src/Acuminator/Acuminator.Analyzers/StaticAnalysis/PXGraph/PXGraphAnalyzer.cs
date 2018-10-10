@@ -28,7 +28,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
             new LongOperationInPXGraphDuringInitializationAnalyzer(),
             new LongOperationInDataViewDelegateAnalyzer(),
             new PXActionExecutionInGraphSemanticModelAnalyzer(),
-            new ThrowingExceptionsInPXGraphInitializationAnalyzer())
+            new ThrowingExceptionsInDataViewDelegateAnalyzer())
         {
         }
 
