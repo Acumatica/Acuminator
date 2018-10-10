@@ -281,7 +281,14 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\ViewDelegateInGraphExtensionBaseView.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\ViewDelegateInGraphExtensionOverride.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegate.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\ViewDelegates\DataViewDelegateFromGraph.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\ViewDelegates\PXGraph_View.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\ViewDelegates\PXGraphExtension_OwnView.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\ViewDelegates\PXGraphExtension_BaseView.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\ViewDelegates\PXGraphExtension_Override.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\ViewDelegates\PXGraph_DelegateWithParameter.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\ViewDelegates\PXGraphExtension_StaticDelegate.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\ViewDelegates\PXGraphExtension_ExternalMethod.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\ViewDelegates\PXGraph_OtherExceptions.cs" />
     <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInDataViewDelegateTests.cs" />
     <Compile Include="Tests\StaticAnalysis\UiPresentationLogic\UiPresentationLogicInEventHandlersTests.cs" />
     <Compile Include="Tests\StaticAnalysis\PXActionExecution\PXActionExecutionInGraphSemanticModelTests.cs" />

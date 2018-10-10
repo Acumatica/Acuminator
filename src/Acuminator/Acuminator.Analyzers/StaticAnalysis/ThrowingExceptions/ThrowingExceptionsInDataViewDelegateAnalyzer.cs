@@ -1,4 +1,5 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.PXGraph;
+using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
@@ -13,7 +14,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInPXGraphInitialization);
 
-        public void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
+        public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
