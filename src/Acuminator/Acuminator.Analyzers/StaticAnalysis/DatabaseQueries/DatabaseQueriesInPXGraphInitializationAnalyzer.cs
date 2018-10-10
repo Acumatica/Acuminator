@@ -6,21 +6,26 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
-namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
+namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 {
-    public class ChangesInPXCacheDuringPXGraphInitializationAnalyzer : IPXGraphAnalyzer
+    public class DatabaseQueriesInPXGraphInitializationAnalyzer : IPXGraphAnalyzer
     {
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-            ImmutableArray.Create(Descriptors.PX1059_ChangesInPXCacheDuringPXGraphInitialization);
+            ImmutableArray.Create(Descriptors.PX1085_DatabaseQueriesInPXGraphInitialization);
 
         public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
         {
-            Walker walker = new Walker(context, pxContext, Descriptors.PX1059_ChangesInPXCacheDuringPXGraphInitialization);
+            if (!settings.IsvSpecificAnalyzersEnabled)
+            {
+                return;
+            }
 
-            foreach (GraphInitializerInfo initializer in pxGraph.Initializers)
+            var dbQueriesWalker = new Walker(context, pxContext, Descriptors.PX1085_DatabaseQueriesInPXGraphInitialization);
+
+            foreach (var initializer in pxGraph.Initializers)
             {
                 context.CancellationToken.ThrowIfCancellationRequested();
-                walker.Visit(initializer.Node);
+                dbQueriesWalker.Visit(initializer.Node);
             }
         }
     }

@@ -202,16 +202,25 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
                     if (isCreationDelegateAddition)
                     {
                         INamedTypeSymbol graphSymbol = symbol.TypeArguments[0] as INamedTypeSymbol;
-                        CSharpSyntaxNode delegateNode = node.ArgumentList.Arguments.First().Expression;
+                        SyntaxNode expressionNode = node.ArgumentList.Arguments.First().Expression;
+                        SyntaxNode delegateNode;
+                        ISymbol delegateSymbol;
 
-                        if (delegateNode is LambdaExpressionSyntax lambdaNode)
+                        if (expressionNode is LambdaExpressionSyntax lambdaNode)
                         {
                             delegateNode = lambdaNode.Body;
+                            delegateSymbol = semanticModel.GetSymbolInfo(delegateNode).Symbol;
+                        }
+                        else
+                        {
+                            delegateSymbol = semanticModel.GetSymbolInfo(expressionNode).Symbol;
+                            delegateNode = delegateSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(_cancellation);
                         }
 
-                        ISymbol delegateSymbol = semanticModel.GetSymbolInfo(delegateNode).Symbol;
-
-                        GraphInitDelegates.Add(new InitDelegateInfo(graphSymbol, delegateSymbol, delegateNode));
+                        if (delegateNode != null)
+                        {
+                            GraphInitDelegates.Add(new InitDelegateInfo(graphSymbol, delegateSymbol, delegateNode));
+                        }
                     }
                 }
 
@@ -224,9 +233,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             public GraphType GraphType => GraphType.PXGraph;
             public INamedTypeSymbol GraphTypeSymbol { get; }
             public ISymbol DelegateSymbol { get; }
-            public CSharpSyntaxNode DelegateNode { get; }
+            public SyntaxNode DelegateNode { get; }
 
-            public InitDelegateInfo(INamedTypeSymbol graphSymbol, ISymbol delegateSymbol, CSharpSyntaxNode delegateNode)
+            public InitDelegateInfo(INamedTypeSymbol graphSymbol, ISymbol delegateSymbol, SyntaxNode delegateNode)
             {
                 GraphTypeSymbol = graphSymbol;
                 DelegateSymbol = delegateSymbol;

@@ -214,5 +214,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
         public static DiagnosticDescriptor PX1084_GraphCreationInDataViewDelegate { get; } =
             Rule("PX1084", nameof(Resources.PX1084Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+        public static DiagnosticDescriptor PX1085_DatabaseQueriesInPXGraphInitialization { get; } =
+            Rule("PX1085", nameof(Resources.PX1085Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
     }
 }
