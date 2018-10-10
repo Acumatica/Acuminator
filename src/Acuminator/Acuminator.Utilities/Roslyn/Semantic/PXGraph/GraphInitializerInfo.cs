@@ -7,10 +7,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
     public readonly struct GraphInitializerInfo
     {
         public GraphInitializerType Type { get; }
-        public CSharpSyntaxNode Node { get; }
+        public SyntaxNode Node { get; }
         public ISymbol Symbol { get; }
 
-        public GraphInitializerInfo(GraphInitializerType type, CSharpSyntaxNode node, ISymbol symbol)
+        public GraphInitializerInfo(GraphInitializerType type, SyntaxNode node, ISymbol symbol)
         {
             node.ThrowOnNull(nameof(node));
             symbol.ThrowOnNull(nameof(symbol));

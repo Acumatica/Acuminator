@@ -399,6 +399,9 @@
   <data name="PX1084Title" xml:space="preserve">
     <value>PXGraph instances cannot be initialized within data view delegates</value>
   </data>
+  <data name="PX1085Title" xml:space="preserve">
+    <value>BQL statements and other database queries should not be executed during the PXGraph initialization</value>
+  </data>
   <data name="PX1086Title" xml:space="preserve">
     <value>PXSetupNotEnteredException cannot be thrown during the PXGraph initialization</value>
   </data>

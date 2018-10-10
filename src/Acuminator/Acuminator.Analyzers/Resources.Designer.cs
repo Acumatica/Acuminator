@@ -908,6 +908,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to BQL statements and other database queries should not be executed during the PXGraph initialization.
+        /// </summary>
+        public static string PX1085Title {
+            get {
+                return ResourceManager.GetString("PX1085Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown during the PXGraph initialization.
         /// </summary>
         public static string PX1086Title {
