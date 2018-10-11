@@ -34,53 +34,45 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 
 				if (methodSyntax != null)
 				{
-					var semanticModel = context.Compilation.GetSemanticModel(methodSyntax.SyntaxTree);
-					var walker = new Walker(context, semanticModel, pxContext, eventType);
+					var walker = new Walker(context, pxContext, eventType);
 
 					methodSyntax.Accept(walker);
 				}
 			}
 		}
 
-
-		private class Walker : CSharpSyntaxWalker
+		private class Walker : WalkerBase
 		{
-			private SymbolAnalysisContext _context;
-			private readonly SemanticModel _semanticModel;
-			private readonly PXContext _pxContext;
 			private readonly EventType _eventType;
 
-			public Walker(SymbolAnalysisContext context, SemanticModel semanticModel, PXContext pxContext, EventType eventType)
+			public Walker(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
+                : base(context, pxContext)
 			{
-				semanticModel.ThrowOnNull(nameof (semanticModel));
-				pxContext.ThrowOnNull(nameof (pxContext));
-
-				_context = context;
-				_semanticModel = semanticModel;
-				_pxContext = pxContext;
 				_eventType = eventType;
 			}
 
 			public override void VisitThrowStatement(ThrowStatementSyntax node)
 			{
-				_context.CancellationToken.ThrowIfCancellationRequested();
+				ThrowIfCancellationRequested();
 
-				if (_eventType == EventType.RowPersisted)
-				{
-					_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1073_ThrowingExceptionsInRowPersisted,
-						node.GetLocation()));
-				}
+                var isReported = false;
 
-				// new PXSetupNotEnteredException(...)
-				if (_eventType != EventType.RowSelected 
-				    && node.Expression is ObjectCreationExpressionSyntax objCreationSyntax 
-					&& objCreationSyntax.Type != null 
-					&& _semanticModel.GetSymbolInfo(objCreationSyntax.Type).Symbol is INamedTypeSymbol exceptionType 
-					&& exceptionType.InheritsFromOrEquals(_pxContext.Exceptions.PXSetupNotEnteredException))
-				{
-					_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1074_ThrowingSetupNotEnteredExceptionInEventHandlers,
-						node.GetLocation(), _eventType));
-				}
+                if (_eventType == EventType.RowPersisted)
+                {
+                    ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1073_ThrowingExceptionsInRowPersisted, node);
+                    isReported = true;
+                }
+
+                if (_eventType != EventType.RowSelected && IsPXSetupNotEnteredException(node))
+                {
+                    ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1074_ThrowingSetupNotEnteredExceptionInEventHandlers, node, _eventType);
+                    isReported = true;
+                }
+
+                if (!isReported)
+                {
+                    base.VisitThrowStatement(node);
+                }
 			}
 		}
 	}
