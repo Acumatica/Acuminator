@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Acuminator.Utilities.Common;
+﻿using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 {
-	/// <summary>
-	/// C# Syntax Walker that searches for the database queries
-	/// </summary>
-	internal class Walker : NestedInvocationWalker
+    /// <summary>
+    /// C# Syntax Walker that searches for the database queries
+    /// </summary>
+    internal class Walker : NestedInvocationWalker
 	{
 		private const string SelectMethodName = "Select";
 		private const string SearchMethodName = "Search";

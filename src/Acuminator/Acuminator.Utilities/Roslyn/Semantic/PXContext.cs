@@ -36,8 +36,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
         private readonly Lazy<LocalizationSymbols> _localizationMethods;
         public LocalizationSymbols Localization => _localizationMethods.Value;
 
-        private readonly Lazy<PXGraphRelatedMethodSymbols> _pxGraphRelatedMethods;
-        public PXGraphRelatedMethodSymbols PXGraphRelatedMethods => _pxGraphRelatedMethods.Value;
+        private readonly Lazy<PXGraphSymbols> _pxGraph;
+        public PXGraphSymbols PXGraph => _pxGraph.Value;
 
         private readonly Lazy<PXCacheSymbols> _pxCache;
         public PXCacheSymbols PXCache => _pxCache.Value;
@@ -54,12 +54,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		private readonly Lazy<PXViewSymbols> _pxView;
 		public PXViewSymbols PXView => _pxView.Value;
 
+		private readonly Lazy<ExceptionSymbols> _exceptions;
+		public ExceptionSymbols Exceptions => _exceptions.Value;
+
 
 		private readonly Lazy<ImmutableHashSet<IMethodSymbol>> _uiPresentationLogicMethods;
 		public ImmutableHashSet<IMethodSymbol> UiPresentationLogicMethods => _uiPresentationLogicMethods.Value;
 
-
-        public INamedTypeSymbol PXGraphType => Compilation.GetTypeByMetadataName(typeof(PX.Data.PXGraph).FullName);
+		
 		public INamedTypeSymbol PXProcessingBaseType => Compilation.GetTypeByMetadataName(typeof(PXProcessingBase<>).FullName);
 		public INamedTypeSymbol PXGraphExtensionType => Compilation.GetTypeByMetadataName(typeof(PXGraphExtension).FullName);
 		public INamedTypeSymbol PXCacheExtensionType => Compilation.GetTypeByMetadataName(typeof(PXCacheExtension).FullName);
@@ -83,13 +85,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public INamedTypeSymbol PXFieldState => Compilation.GetTypeByMetadataName(typeof(PXFieldState).FullName);
 		public INamedTypeSymbol PXAttributeFamily => Compilation.GetTypeByMetadataName(typeof(PXAttributeFamilyAttribute).FullName);
 
-        public INamedTypeSymbol PXException => Compilation.GetTypeByMetadataName(typeof(PXException).FullName);
-        public INamedTypeSymbol PXBaseRedirectException => Compilation.GetTypeByMetadataName(typeof(PXBaseRedirectException).FullName);
-
         public INamedTypeSymbol IPXLocalizableList => Compilation.GetTypeByMetadataName(typeof(IPXLocalizableList).FullName);
 		public INamedTypeSymbol PXConnectionScope => Compilation.GetTypeByMetadataName(typeof(PXConnectionScope).FullName);
-
-        public INamedTypeSymbol InstanceCreatedEvents => Compilation.GetTypeByMetadataName(typeof(PX.Data.PXGraph.InstanceCreatedEvents).FullName);
 
         public ImmutableArray<ISymbol> StringFormat => SystemTypes.String.GetMembers(nameof(string.Format));
         public ImmutableArray<ISymbol> StringConcat => SystemTypes.String.GetMembers(nameof(string.Concat));
@@ -111,11 +108,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			_attributes = new Lazy<AttributeSymbols>(() => new AttributeSymbols(Compilation));
 			_systemTypes = new Lazy<SystemTypeSymbols>(() => new SystemTypeSymbols(Compilation));
             _localizationMethods = new Lazy<LocalizationSymbols>(() => new LocalizationSymbols(Compilation));
-            _pxGraphRelatedMethods = new Lazy<PXGraphRelatedMethodSymbols>(() => new PXGraphRelatedMethodSymbols(this));
+            _pxGraph = new Lazy<PXGraphSymbols>(() => new PXGraphSymbols(Compilation));
             _pxCache = new Lazy<PXCacheSymbols>(() => new PXCacheSymbols(Compilation));
 			_pxAction = new Lazy<PXActionSymbols>(() => new PXActionSymbols(Compilation));
 			_pxDatabase = new Lazy<PXDatabaseSymbols>(() => new PXDatabaseSymbols(Compilation));
 			_pxView = new Lazy<PXViewSymbols>(() => new PXViewSymbols(Compilation));
+			_exceptions = new Lazy<ExceptionSymbols>(() => new ExceptionSymbols(Compilation));
             _pxSelectBaseGeneric = new Lazy<PXSelectBaseGenericSymbols>(() => new PXSelectBaseGenericSymbols(Compilation));
 
 			_uiPresentationLogicMethods = new Lazy<ImmutableHashSet<IMethodSymbol>>(GetUiPresentationLogicMethods);

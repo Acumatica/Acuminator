@@ -61,7 +61,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			if (graph?.InheritsFrom(pxContext.PXGraphType) != true)
+			if (graph?.InheritsFrom(pxContext.PXGraph.Type) != true)
 				return Enumerable.Empty<INamedTypeSymbol>();
 
 			if (includeActionsFromInheritanceChain)
@@ -154,7 +154,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			if (graph?.InheritsFrom(pxContext.PXGraphType) != true)
+			if (graph?.InheritsFrom(pxContext.PXGraph.Type) != true)
 				return Enumerable.Empty<(ISymbol, INamedTypeSymbol)>();
 
 			if (includeActionsFromInheritanceChain)
@@ -246,7 +246,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			INamedTypeSymbol containingType = method.ContainingType;
 
 			if (containingType == null ||
-			   (!containingType.InheritsFrom(pxContext.PXGraphType) && !containingType.InheritsFrom(pxContext.PXGraphExtensionType)))
+			   (!containingType.InheritsFrom(pxContext.PXGraph.Type) && !containingType.InheritsFrom(pxContext.PXGraphExtensionType)))
 				return false;
 
 			return containingType.GetMembers()
@@ -314,7 +314,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public static ITypeSymbol GetDeclaredPrimaryDacFromGraphOrGraphExtension(this INamedTypeSymbol graphOrExtension, PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
-			bool isGraph = graphOrExtension?.InheritsFrom(pxContext.PXGraphType) ?? false;
+			bool isGraph = graphOrExtension?.InheritsFrom(pxContext.PXGraph.Type) ?? false;
 
 			if (!isGraph && !graphOrExtension?.InheritsFrom(pxContext.PXGraphExtensionType) != true)
 				return null;

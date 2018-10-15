@@ -3,6 +3,7 @@ using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
+using Acuminator.Utilities;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
 
@@ -11,7 +12,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ChangesInPXCache
     public class ChangesInPXCacheDuringPXGraphInitializationTests : DiagnosticVerifier
     {
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-            new PXGraphAnalyzer(new ChangesInPXCacheDuringPXGraphInitializationAnalyzer());
+            new PXGraphAnalyzer(
+                CodeAnalysisSettings.Default
+                .WithRecursiveAnalysisEnabled(),
+                new ChangesInPXCacheDuringPXGraphInitializationAnalyzer());
 
         [Theory]
         [EmbeddedFileData(@"PXGraph\PXGraphChangesPXCacheInInstanceConstructor.cs")]

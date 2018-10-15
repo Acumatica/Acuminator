@@ -36,7 +36,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 				{
 					return generator.InvocationExpression(
 						generator.MemberAccessExpression(
-							generator.TypeExpression(_pxContext.PXGraphType),
+							generator.TypeExpression(_pxContext.PXGraph.Type),
 							generator.GenericName(nameof(PX.Data.PXGraph.CreateInstance), typeSymbol)));
 				}
 

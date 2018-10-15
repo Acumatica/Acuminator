@@ -50,14 +50,6 @@
     <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=1.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.1.3.2\lib\portable-net45+win8\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.1.0.1\lib\portable-net45+win8\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.1\lib\portable-net45+win8\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="PX.Common">
       <HintPath>..\..\..\lib\PX.Common.dll</HintPath>
     </Reference>
@@ -107,9 +99,12 @@
     <Compile Include="Common\EnumerableExtensions.cs" />
     <Compile Include="Common\ConcurrentExtensions.cs" />
     <Compile Include="Common\EnumerableExtraExtensions.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\GraphInstantiationType.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphViewSymbolUtils.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\EventSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\BQLSymbols.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\ExceptionSymbols.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\PXGraphSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXIntListAttributeSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXStringListAttributeSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXViewSymbols.cs" />
@@ -125,7 +120,6 @@
     <Compile Include="Roslyn\Semantic\EventHandlerSignatureType.cs" />
     <Compile Include="Roslyn\Semantic\EventType.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXCacheSymbols.cs" />
-    <Compile Include="Roslyn\Semantic\Symbols\PXGraphRelatedMethodSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXSelectBaseGenericSymbols.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphInitializerInfo.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphInitializerType.cs" />
@@ -169,6 +163,7 @@
     <Compile Include="Roslyn\Semantic\IMethodSymbolExtensions.cs" />
     <Compile Include="Roslyn\Syntax\MethodDeclarationUtils.cs" />
     <Compile Include="Roslyn\Syntax\ParameterUsagesRewriter.cs" />
+    <Compile Include="Roslyn\Syntax\PXGraph\GraphSyntaxUtils.cs" />
     <Compile Include="Roslyn\Syntax\SyntaxTreeUtils.cs" />
     <Compile Include="Roslyn\Syntax\RoslynSyntaxUtils.cs" />
     <Compile Include="Roslyn\BqlModifyingMethods.cs" />

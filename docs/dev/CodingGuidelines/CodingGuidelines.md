@@ -213,11 +213,12 @@ When you write a piece of functionality for a diagnostic (such as a generic chec
 
 ### Task Blocking
 
-You should avoid the use of `Task.Result` and `Task.Wait()` because this can cause deadlocks and thread pool exhaustion. You should consider using `ThreadHelper.JoinableTaskFactory.Run()` istead.
+You should avoid the use of `Task.Result` and `Task.Wait()` because this can cause deadlocks and thread pool exhaustion. You should consider using `ThreadHelper.JoinableTaskFactory.Run()` instead.
 
 For details, see the following articles: 
 
 * [How to: Manage multiple threads in managed code](https://docs.microsoft.com/en-us/visualstudio/extensibility/managing-multiple-threads-in-managed-code) 
+* [Asynchronous and multithreaded programming within VS using the JoinableTaskFactory](https://blogs.msdn.microsoft.com/andrewarnottms/2014/05/07/asynchronous-and-multithreaded-programming-within-vs-using-the-joinabletaskfactory/)
 * [Cookbook for Visual Studio](https://github.com/Microsoft/vs-threading/blob/master/doc/cookbook_vs.md)
 * [Three Threading Rules](https://github.com/Microsoft/vs-threading/blob/master/doc/threading_rules.md)
 

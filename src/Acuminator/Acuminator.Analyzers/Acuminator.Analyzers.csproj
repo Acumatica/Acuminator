@@ -46,6 +46,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Refactorings\ChangeEventHandlerSignatureToGeneric\ChangeEventHandlerSignatureToGenericRefactoring.cs" />
+    <Compile Include="StaticAnalysis\AnalyzersAggregator\ISymbolAnalyzer.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\ArrayElemCountLocalVariableResolver.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\BqlInvocationDataFlowAnalyserBase.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\ParametersCounter.cs" />
@@ -55,6 +56,8 @@
     <Compile Include="StaticAnalysis\ChangesInPXCache\ChangesInPXCacheInEventHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\ChangesInPXCache\ChangesInPXCacheDuringPXGraphInitializationAnalyzer.cs" />
     <Compile Include="StaticAnalysis\ChangesInPXCache\Walker.cs" />
+    <Compile Include="StaticAnalysis\AnalyzersAggregator\SymbolAnalyzersAggregator.cs" />
+    <Compile Include="StaticAnalysis\DatabaseQueries\DatabaseQueriesInPXGraphInitializationAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DatabaseQueries\DatabaseQueriesInRowSelectedAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DatabaseQueries\DatabaseQueriesInRowSelectingAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DacPropertyAttributes\MultipleSpecialAttributesOnDacPropertyFix.cs" />
@@ -72,14 +75,19 @@
     <Compile Include="StaticAnalysis\LongOperationStart\LongOperationInDataViewDelegateAnalyzer.cs" />
     <Compile Include="StaticAnalysis\LongOperationStart\StartLongOperationWalker.cs" />
     <Compile Include="StaticAnalysis\PXActionExecution\PXActionExecutionInEventHandlersAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\PXActionExecution\PXActionExecutionInGraphSemanticModelAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXActionExecution\Walker.cs" />
-    <Compile Include="StaticAnalysis\PXGraphCreationDuringInitialization\PXGraphCreationDuringInitializationAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\PXGraphCreationDuringInitialization\PXGraphCreationInGraphSemanticModelAnalyzer.cs" />
     <Compile Include="StaticAnalysis\LongOperationStart\LongOperationInEventHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceInEventHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\LongOperationStart\LongOperationInPXGraphDuringInitializationAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\PXGraphCreationForBqlQueries\PXGraphCreationForBqlQueriesFix.cs" />
+    <Compile Include="StaticAnalysis\RaiseExceptionHandling\RaiseExceptionHandlingInEventHandlersAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\PXGraphCreationForBqlQueries\PXGraphCreationForBqlQueriesAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\PXGraphCreationForBqlQueries\Walker.cs" />
     <Compile Include="StaticAnalysis\RowChangesInEventHandlers\AccessWalkerBase.cs" />
     <Compile Include="StaticAnalysis\RowChangesInEventHandlers\DacInstanceAccessWalker.cs" />
-    <Compile Include="StaticAnalysis\SavingChanges\SavingChangesDuringPXGraphInitializationAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\SavingChanges\SavingChangesInGraphSemanticModelAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphUsageInDac\PXGraphUsageInDacAnalyzer.cs" />
     <Compile Include="StaticAnalysis\MethodsUsageInDac\MethodsUsageInDacAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DacExtensionDefaultAttribute\DacExtensionDefaultAttributeAnalyzer.cs" />
@@ -114,6 +122,9 @@
     <Compile Include="StaticAnalysis\LongOperationDelegateClosures\LongOperationDelegateClosuresAnalyzer.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\BqlParameterMismatchAnalyzer.cs" />
     <Compile Include="StaticAnalysis\MissingTypeListAttribute\MissingTypeListAttributeAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInEventHandlersAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInDataViewDelegateAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\ThrowingExceptions\WalkerBase.cs" />
     <Compile Include="StaticAnalysis\TypoInViewDelegateName\TypoInViewDelegateNameAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceAnalyzer.cs" />
     <Compile Include="StaticAnalysis\UiPresentationLogic\UiPresentationLogicInEventHandlersAnalyzer.cs" />
