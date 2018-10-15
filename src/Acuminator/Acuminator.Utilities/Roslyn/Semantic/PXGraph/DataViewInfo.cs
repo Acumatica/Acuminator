@@ -1,10 +1,16 @@
 ﻿using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
+using System.Collections.Generic;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
-    public readonly struct DataViewInfo
+    public class DataViewInfo
     {
+        /// <summary>
+        /// The overriden item if any
+        /// </summary>
+        public DataViewInfo Base { get; }
+
         /// <summary>
         /// The symbol of the data view declaration
         /// </summary>
@@ -22,6 +28,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
             Symbol = symbol;
             Type = type;
+        }
+
+        public DataViewInfo(ISymbol symbol, INamedTypeSymbol type, DataViewInfo baseInfo)
+            : this(symbol, type)
+        {
+            baseInfo.ThrowOnNull();
+
+            Base = baseInfo;
         }
     }
 }

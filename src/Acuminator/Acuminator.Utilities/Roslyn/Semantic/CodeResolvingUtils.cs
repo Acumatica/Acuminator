@@ -148,7 +148,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				return true;
 
 			List<ITypeSymbol> typeHierarchy = typeSymbol.GetBaseTypesAndThis().ToList();
-			return typeHierarchy.Contains(pxContext.PXSelectBaseType) || typeHierarchy.Contains(pxContext.BQL.BqlCommand);
+			return typeHierarchy.Contains(pxContext.PXSelectBase.Type) || typeHierarchy.Contains(pxContext.BQL.BqlCommand);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -282,7 +282,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			context.ThrowOnNull(nameof(context));
 
 			int pxSelectBaseStandartDepth = context.IsAcumatica2018R2 ? 3 : 2;
-			int? pxSelectBaseDepth = bqlTypeSymbol.GetInheritanceDepth(context.PXSelectBaseType);
+			int? pxSelectBaseDepth = bqlTypeSymbol.GetInheritanceDepth(context.PXSelectBase.Type);
 
 			if (pxSelectBaseDepth > pxSelectBaseStandartDepth)
 				return true;

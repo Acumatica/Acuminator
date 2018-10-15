@@ -220,5 +220,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
         public static DiagnosticDescriptor PX1086_ThrowingSetupNotEnteredExceptionInPXGraphInitialization { get; } =
             Rule("PX1086", nameof(Resources.PX1086Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+        public static DiagnosticDescriptor PX1087_PossibleStackOverflowExceptionInBaseViewDelegateInvocation { get; } =
+            Rule("PX1087", nameof(Resources.PX1087Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
     }
 }

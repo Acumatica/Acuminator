@@ -1,4 +1,5 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
+using Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate;
 using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
 using Acuminator.Analyzers.StaticAnalysis.DatabaseQueries;
 using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
@@ -27,7 +28,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
             new LongOperationInDataViewDelegateAnalyzer(),
             new PXActionExecutionInGraphSemanticModelAnalyzer(),
             new DatabaseQueriesInPXGraphInitializationAnalyzer(),
-            new ThrowingExceptionsInDataViewDelegateAnalyzer())
+            new ThrowingExceptionsInDataViewDelegateAnalyzer(),
+            new CallingBaseDataViewDelegateFromOverrideDelegateAnalyzer())
         {
         }
 

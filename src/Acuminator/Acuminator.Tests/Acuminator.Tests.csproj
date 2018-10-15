@@ -199,6 +199,9 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacAggregateAttributeFields_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacWithBoundAndUnboundFields_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlers\ExternalCache.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseDataViewDelegate\Sources\BaseViewInvocation_ThroughView.cs" />
+    <Compile Include="Tests\StaticAnalysis\CallingBaseDataViewDelegate\CallingBaseDataViewDelegateFromOverrideDelegateTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseDataViewDelegate\Sources\BaseViewInvocation_WithRedeclaredView.cs" />
     <Compile Include="Tests\StaticAnalysis\ChangesInPXCache\ChangesInPXCacheInEventHandlersIsvSpecificTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateWithParameter.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateInGraphExtensionOwnView.cs" />
