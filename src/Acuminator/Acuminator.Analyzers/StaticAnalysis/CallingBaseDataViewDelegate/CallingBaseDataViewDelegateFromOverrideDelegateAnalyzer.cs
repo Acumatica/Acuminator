@@ -5,13 +5,12 @@ using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.CSharp;
 
 namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
 {
@@ -48,7 +47,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
 
             foreach (var viewDelegate in ownDelegatesDictionary.Values)
             {
-                var walker = new Walker(context, pxContext, baseNonRedeclaredRelatedViews.ToArray());
+                var walker = new Walker(context, pxContext, baseNonRedeclaredRelatedViews);
 
                 walker.Visit(viewDelegate.Node);
             }
@@ -58,9 +57,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
         {
             private readonly SymbolAnalysisContext _context;
             private readonly PXContext _pxContext;
-            private readonly DataViewInfo[] _nonRedeclaredBaseViews;
+            private readonly IEnumerable<DataViewInfo> _nonRedeclaredBaseViews;
 
-            public Walker(SymbolAnalysisContext context, PXContext pxContext, DataViewInfo[] nonRedeclaredBaseViews)
+            public Walker(SymbolAnalysisContext context, PXContext pxContext, IEnumerable<DataViewInfo> nonRedeclaredBaseViews)
                 : base(context.Compilation, context.CancellationToken)
             {
                 pxContext.ThrowOnNull();
@@ -81,7 +80,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
                 var expressionSymbol = GetSymbol<ISymbol>(node.Expression);
 
                 //Base.PXSelectBaseGenIns.Select()
-                if (_pxContext.PXSelectBaseGeneric.Select.Contains(symbol))
+                if (_pxContext.PXSelectBaseGeneric.Select.Contains(symbol.OriginalDefinition))
                 {
                     reported = TryToReport(expressionSymbol, node);
                 }
@@ -102,6 +101,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
 
             private bool TryToReport(ISymbol symbol, ExpressionSyntax node)
             {
+                ThrowIfCancellationRequested();
+
                 if (_nonRedeclaredBaseViews.Any(v => v.Symbol.Equals(symbol)))
                 {
                     ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1087_PossibleStackOverflowExceptionInBaseViewDelegateInvocation, node);
