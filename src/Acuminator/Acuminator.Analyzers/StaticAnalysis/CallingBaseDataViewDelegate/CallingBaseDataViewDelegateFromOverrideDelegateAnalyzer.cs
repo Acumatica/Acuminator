@@ -17,7 +17,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
     public class CallingBaseDataViewDelegateFromOverrideDelegateAnalyzer : IPXGraphAnalyzer
     {
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-            ImmutableArray.Create(Descriptors.PX1087_PossibleStackOverflowExceptionInBaseViewDelegateInvocation);
+            ImmutableArray.Create(Descriptors.PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation);
 
         public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
         {
@@ -26,11 +26,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
             var ownDelegatesDictionary = pxGraph.ViewDelegates
                                          .Where(d => pxGraph.Symbol.Equals(d.Symbol.ContainingType))
                                          .ToDictionary(d => d.Symbol.Name, d => d, StringComparer.OrdinalIgnoreCase);
-            var ownRelatedViews = pxGraph.Views
-                                  .Where(v => ownDelegatesDictionary.ContainsKey(v.Symbol.Name) &&
-                                              pxGraph.Symbol.Equals(v.Symbol.ContainingType))
-                                  .ToArray();
-            var baseNonRedeclaredRelatedViews = new List<DataViewInfo>();
+            var ownRelatedViewsHashSet = pxGraph.Views
+                                         .Where(v => ownDelegatesDictionary.ContainsKey(v.Symbol.Name) &&
+                                                     pxGraph.Symbol.Equals(v.Symbol.ContainingType))
+                                         .Select(v => v.Symbol.Name)
+                                         .ToImmutableHashSet(StringComparer.OrdinalIgnoreCase);
+            var baseNonRedeclaredRelatedViewsBuilder = ImmutableHashSet<ISymbol>.Empty.ToBuilder();
 
             foreach (var view in pxGraph.Views)
             {
@@ -38,16 +39,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
                 {
                     if (ownDelegatesDictionary.ContainsKey(curView.Symbol.Name) &&
                         !pxGraph.Symbol.Equals(curView.Symbol.ContainingType) &&
-                        ownRelatedViews.All(v => !v.Symbol.Name.Equals(curView.Symbol.Name, StringComparison.OrdinalIgnoreCase)))
+                        !ownRelatedViewsHashSet.Contains(curView.Symbol.Name))
                     {
-                        baseNonRedeclaredRelatedViews.Add(curView);
+                        baseNonRedeclaredRelatedViewsBuilder.Add(curView.Symbol);
                     }
                 }
             }
 
+            var baseNonRedeclaredRelatedViewsHashSet = baseNonRedeclaredRelatedViewsBuilder.ToImmutable();
+
             foreach (var viewDelegate in ownDelegatesDictionary.Values)
             {
-                var walker = new Walker(context, pxContext, baseNonRedeclaredRelatedViews);
+                var walker = new Walker(context, pxContext, baseNonRedeclaredRelatedViewsHashSet);
 
                 walker.Visit(viewDelegate.Node);
             }
@@ -57,9 +60,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
         {
             private readonly SymbolAnalysisContext _context;
             private readonly PXContext _pxContext;
-            private readonly IEnumerable<DataViewInfo> _nonRedeclaredBaseViews;
+            private readonly ImmutableHashSet<ISymbol> _nonRedeclaredBaseViews;
 
-            public Walker(SymbolAnalysisContext context, PXContext pxContext, IEnumerable<DataViewInfo> nonRedeclaredBaseViews)
+            public Walker(SymbolAnalysisContext context, PXContext pxContext, ImmutableHashSet<ISymbol> nonRedeclaredBaseViews)
                 : base(context.Compilation, context.CancellationToken)
             {
                 pxContext.ThrowOnNull();
@@ -77,10 +80,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
 
                 var reported = false;
                 var symbol = GetSymbol<ISymbol>(node);
+                var methodSymbol = symbol as IMethodSymbol;
+
+                if (methodSymbol != null)
+                {
+                    methodSymbol = methodSymbol.OriginalDefinition?.OverriddenMethod ?? methodSymbol.OriginalDefinition;
+                }
+
                 var expressionSymbol = GetSymbol<ISymbol>(node.Expression);
 
                 //Base.PXSelectBaseGenIns.Select()
-                if (_pxContext.PXSelectBaseGeneric.Select.Contains(symbol.OriginalDefinition))
+                if (_pxContext.PXSelectBaseGeneric.Select.Contains(methodSymbol))
                 {
                     reported = TryToReport(expressionSymbol, node);
                 }
@@ -103,9 +113,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
             {
                 ThrowIfCancellationRequested();
 
-                if (_nonRedeclaredBaseViews.Any(v => v.Symbol.Equals(symbol)))
+                if (_nonRedeclaredBaseViews.Contains(symbol))
                 {
-                    ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1087_PossibleStackOverflowExceptionInBaseViewDelegateInvocation, node);
+                    ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation, node);
 
                     return true;
                 }

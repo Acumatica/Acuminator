@@ -21,19 +21,19 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.CallingBaseDataViewDelegate
         [Theory]
         [EmbeddedFileData("BaseViewInvocation_ThroughView.cs")]
         public async Task BaseViewInvocation_ThroughView_ReportsDiagnostic(string source) =>
-            await VerifyCSharpDiagnosticAsync(source, Descriptors.PX1087_PossibleStackOverflowExceptionInBaseViewDelegateInvocation.CreateFor(13, 26));
+            await VerifyCSharpDiagnosticAsync(source, Descriptors.PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation.CreateFor(13, 26));
 
         [Theory]
         [EmbeddedFileData("BaseViewInvocation_ThroughSelectBase.cs")]
         public async Task BaseViewDelegateInvocation_ThroughSelectBase_ReportsDiagnostic(string source) =>
-            await VerifyCSharpDiagnosticAsync(source, Descriptors.PX1087_PossibleStackOverflowExceptionInBaseViewDelegateInvocation.CreateFor(10, 26));
+            await VerifyCSharpDiagnosticAsync(source, Descriptors.PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation.CreateFor(10, 26));
 
         [Theory]
         [EmbeddedFileData("BaseViewInvocation_ExternalMethod.cs")]
         public async Task BaseViewDelegateInvocation_ExternalMethod_ReportsDiagnostic(string source) =>
             await VerifyCSharpDiagnosticAsync(source,
-                Descriptors.PX1087_PossibleStackOverflowExceptionInBaseViewDelegateInvocation.CreateFor(10, 20),
-                Descriptors.PX1087_PossibleStackOverflowExceptionInBaseViewDelegateInvocation.CreateFor(26, 26));
+                Descriptors.PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation.CreateFor(10, 20),
+                Descriptors.PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation.CreateFor(26, 26));
 
         [Theory]
         [EmbeddedFileData("BaseViewInvocation_WithRedeclaredView.cs")]
