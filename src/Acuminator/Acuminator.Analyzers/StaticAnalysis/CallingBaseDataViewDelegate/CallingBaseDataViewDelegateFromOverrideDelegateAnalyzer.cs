@@ -76,7 +76,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
             public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
             {
                 ThrowIfCancellationRequested();
-                _context.CancellationToken.ThrowIfCancellationRequested();
 
                 var reported = false;
                 var symbol = GetSymbol<ISymbol>(node);
@@ -89,12 +88,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
 
                 var expressionSymbol = GetSymbol<ISymbol>(node.Expression);
 
-                //Base.PXSelectBaseGenIns.Select()
+                // case Base.PXSelectBaseGenIns.Select()
                 if (_pxContext.PXSelectBaseGeneric.Select.Contains(methodSymbol))
                 {
                     reported = TryToReport(expressionSymbol, node);
                 }
-                //Base.PXSelectBaseGenIns.View.Select()
+                // case Base.PXSelectBaseGenIns.View.Select()
                 else if (_pxContext.PXView.Select.Contains(symbol) &&
                          _pxContext.PXSelectBase.View.Equals(expressionSymbol) &&
                          node.Expression is MemberAccessExpressionSyntax expressionNode)

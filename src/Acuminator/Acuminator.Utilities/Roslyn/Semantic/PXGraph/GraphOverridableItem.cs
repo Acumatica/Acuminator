@@ -10,7 +10,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
         public GraphOverridableItem(T item, GraphOverridableItem<T> baseItem = null)
         {
-            item.ThrowOnNull();
+            item.ThrowOnNull(nameof(item));
 
             Item = item;
             Base = baseItem;
