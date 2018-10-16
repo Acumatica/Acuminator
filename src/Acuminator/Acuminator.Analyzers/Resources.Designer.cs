@@ -924,5 +924,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1086Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Processing delegate cannot use any views from processing graphs except PXFilter, PXProcessingBase and PXSetup.
+        /// </summary>
+        public static string PX1088Title {
+            get {
+                return ResourceManager.GetString("PX1088Title", resourceCulture);
+            }
+        }
     }
 }

@@ -66,6 +66,7 @@
     <Compile Include="StaticAnalysis\DatabaseQueries\Walker.cs" />
     <Compile Include="StaticAnalysis\EventHandlers\EventHandlerAnalyzer.cs" />
     <Compile Include="StaticAnalysis\EventHandlers\IEventHandlerAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\InvalidViewUsageInProcessingDelegate\InvalidViewUsageInProcessingDelegateAnalyzer.cs" />
     <Compile Include="StaticAnalysis\Localization\LocalizationMessageHelper.cs" />
     <Compile Include="StaticAnalysis\Localization\LocalizationInvocationAnalyzer.cs" />
     <Compile Include="StaticAnalysis\Localization\LocalizationPXExceptionAnalyzer.cs" />

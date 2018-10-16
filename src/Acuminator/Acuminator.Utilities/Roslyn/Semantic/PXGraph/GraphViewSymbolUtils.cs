@@ -14,6 +14,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
     public static class GraphViewSymbolUtils
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsProcessingView(this ITypeSymbol view, PXContext pxContext)
+        {
+            view.ThrowOnNull(nameof(view));
+            pxContext.ThrowOnNull(nameof(pxContext));
+
+            return view.InheritsFromOrEqualsGeneric(pxContext.PXProcessingBaseType);
+        }
+
         /// <summary>
         /// Gets all declared views from the graph and its base graphs if there is a graphs class hierarchy and <paramref name="includeViewsFromInheritanceChain"/> parameter is <c>true</c>.
         /// </summary>

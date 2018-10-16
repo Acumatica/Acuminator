@@ -15,12 +15,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         private readonly CancellationToken _cancellation;
         private readonly PXContext _pxContext;
 
+        public bool IsProcessing { get; }
         public GraphType Type { get; }
         public INamedTypeSymbol Symbol { get; }
         public ImmutableArray<StaticConstructorInfo> StaticConstructors { get; }
         public ImmutableArray<GraphInitializerInfo> Initializers { get; private set; }
-        public ImmutableArray<DataViewInfo> Views { get; }
-        public ImmutableArray<DataViewDelegateInfo> ViewDelegates { get; }
+        public ImmutableDictionary<string, DataViewInfo> ViewsByNames { get; }
+        public IEnumerable<DataViewInfo> Views => ViewsByNames.Values;
+        public ImmutableDictionary<string, DataViewDelegateInfo> ViewDelegatesByNames { get; }
+        public IEnumerable<DataViewDelegateInfo> ViewDelegates => ViewDelegatesByNames.Values;
 
         private PXGraphSemanticModel(PXContext pxContext, GraphType type, INamedTypeSymbol symbol, CancellationToken cancellation = default)
         {
@@ -31,33 +34,34 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             Symbol = symbol;
             _cancellation = cancellation;
             StaticConstructors = Symbol.GetStaticConstructors(_cancellation);
-            Views = GetDataViews();
-            ViewDelegates = GetDataViewDelegates();
+            ViewsByNames = GetDataViews();
+            ViewDelegatesByNames = GetDataViewDelegates();
+            IsProcessing = Views.Any(v => v.IsProcessing);
 
             InitDeclaredInitializers();
         }
 
-        private ImmutableArray<DataViewInfo> GetDataViews()
+        private ImmutableDictionary<string, DataViewInfo> GetDataViews()
         {
             IEnumerable<(ISymbol, INamedTypeSymbol)> views = Type == GraphType.PXGraph
                 ? Symbol.GetViewsWithSymbolsFromPXGraph(_pxContext)
                 : Symbol.GetViewsFromGraphExtensionAndBaseGraph(_pxContext);
 
-            return views
-                   .Select(v => new DataViewInfo(v.Item1, v.Item2))
-                   .ToImmutableArray();
+            return views.ToImmutableDictionary(v => v.Item1.Name,
+                                               v => new DataViewInfo(v.Item1, v.Item2, _pxContext),
+                                               StringComparer.OrdinalIgnoreCase);
         }
 
-        private ImmutableArray<DataViewDelegateInfo> GetDataViewDelegates()
+        private ImmutableDictionary<string, DataViewDelegateInfo> GetDataViewDelegates()
         {
             IEnumerable<ISymbol> viewSymbols = Views.Select(v => v.Symbol);
             IEnumerable<(MethodDeclarationSyntax, IMethodSymbol)> delegates = Type == GraphType.PXGraph
                 ? Symbol.GetViewDelegatesFromGraph(viewSymbols, _pxContext, _cancellation)
                 : Symbol.GetViewDelegatesFromGraphExtensionAndBaseGraph(viewSymbols, _pxContext, _cancellation);
 
-            return delegates
-                   .Select(d => new DataViewDelegateInfo(d.Item1, d.Item2))
-                   .ToImmutableArray();
+            return delegates.ToImmutableDictionary(d => d.Item2.Name,
+                                                   d => new DataViewDelegateInfo(d.Item1, d.Item2),
+                                                   StringComparer.OrdinalIgnoreCase);
         }
 
         private void InitDeclaredInitializers()

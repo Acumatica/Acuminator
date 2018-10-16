@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
-    public readonly struct DataViewDelegateInfo
+    public class DataViewDelegateInfo
     {
         public MethodDeclarationSyntax Node { get; }
         public IMethodSymbol Symbol { get; }

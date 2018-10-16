@@ -405,4 +405,7 @@
   <data name="PX1086Title" xml:space="preserve">
     <value>PXSetupNotEnteredException cannot be thrown during the PXGraph initialization</value>
   </data>
+  <data name="PX1088Title" xml:space="preserve">
+    <value>Processing delegate cannot use any views from processing graphs except PXFilter, PXProcessingBase and PXSetup</value>
+  </data>
 </root>

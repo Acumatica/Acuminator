@@ -101,6 +101,7 @@
     <Compile Include="Common\EnumerableExtraExtensions.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphInstantiationType.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphViewSymbolUtils.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\ProcessingDelegateInfo.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\EventSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\BQLSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\ExceptionSymbols.cs" />
