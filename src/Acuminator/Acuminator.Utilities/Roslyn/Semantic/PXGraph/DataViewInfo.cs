@@ -1,10 +1,16 @@
 ﻿using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
+using System.Collections.Generic;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
-    public readonly struct DataViewInfo
+    public class DataViewInfo
     {
+        /// <summary>
+        /// The overriden item if any
+        /// </summary>
+        public DataViewInfo Base { get; }
+
         /// <summary>
         /// Indicates whether the data view is processing data view
         /// </summary>
@@ -29,6 +35,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             Symbol = symbol;
             Type = type;
             IsProcessing = type.IsProcessingView(pxContext);
+        }
+
+        public DataViewInfo(ISymbol symbol, INamedTypeSymbol type, PXContext pxContext, DataViewInfo baseInfo)
+            : this(symbol, type, pxContext)
+        {
+            baseInfo.ThrowOnNull();
+
+            Base = baseInfo;
         }
     }
 }

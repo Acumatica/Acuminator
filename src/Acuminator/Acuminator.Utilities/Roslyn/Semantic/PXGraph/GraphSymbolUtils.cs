@@ -251,7 +251,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			return containingType.GetMembers()
 								 .OfType<IFieldSymbol>()
-								 .Where(field => field.Type.InheritsFrom(pxContext.PXSelectBaseType))
+								 .Where(field => field.Type.InheritsFrom(pxContext.PXSelectBase.Type))
 								 .Any(field => String.Equals(field.Name, method.Name, StringComparison.OrdinalIgnoreCase));
 		}
 
@@ -267,7 +267,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			if (pxView?.InheritsFrom(pxContext.PXSelectBaseType) != true)
+			if (pxView?.InheritsFrom(pxContext.PXSelectBase.Type) != true)
 				return null;
 
 			INamedTypeSymbol baseViewType = pxView.GetBaseTypesAndThis()

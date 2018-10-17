@@ -43,25 +43,50 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
         private ImmutableDictionary<string, DataViewInfo> GetDataViews()
         {
-            IEnumerable<(ISymbol, INamedTypeSymbol)> views = Type == GraphType.PXGraph
-                ? Symbol.GetViewsWithSymbolsFromPXGraph(_pxContext)
-                : Symbol.GetViewsFromGraphExtensionAndBaseGraph(_pxContext);
+            if (Type == GraphType.PXGraph)
+            {
+                var graphViews = Symbol.GetViewsWithSymbolsFromPXGraph(_pxContext);
 
-            return views.ToImmutableDictionary(v => v.Item1.Name,
-                                               v => new DataViewInfo(v.Item1, v.Item2, _pxContext),
-                                               StringComparer.OrdinalIgnoreCase);
+                return graphViews
+                       .ToImmutableDictionary(v => v.ViewSymbol.Name,
+                                              v => new DataViewInfo(v.ViewSymbol, v.ViewType, _pxContext),
+                                              StringComparer.OrdinalIgnoreCase);
+            }
+
+            var extViews = Symbol.GetViewsFromGraphExtensionAndBaseGraph(_pxContext);
+
+            return extViews
+                   .ToImmutableDictionary(v => v.Item.ViewSymbol.Name,
+                                          v => v.Base == null
+                                               ? new DataViewInfo(v.Item.ViewSymbol,
+                                                                  v.Item.ViewType,
+                                                                  _pxContext)
+                                               : new DataViewInfo(v.Item.ViewSymbol,
+                                                                  v.Item.ViewType,
+                                                                  _pxContext,
+                                                                  new DataViewInfo(v.Base.Item.ViewSymbol, v.Base.Item.ViewType, _pxContext)));
         }
 
         private ImmutableDictionary<string, DataViewDelegateInfo> GetDataViewDelegates()
         {
-            IEnumerable<ISymbol> viewSymbols = Views.Select(v => v.Symbol);
-            IEnumerable<(MethodDeclarationSyntax, IMethodSymbol)> delegates = Type == GraphType.PXGraph
-                ? Symbol.GetViewDelegatesFromGraph(viewSymbols, _pxContext, _cancellation)
-                : Symbol.GetViewDelegatesFromGraphExtensionAndBaseGraph(viewSymbols, _pxContext, _cancellation);
+            var viewSymbols = Views.Select(v => v.Symbol);
 
-            return delegates.ToImmutableDictionary(d => d.Item2.Name,
-                                                   d => new DataViewDelegateInfo(d.Item1, d.Item2),
-                                                   StringComparer.OrdinalIgnoreCase);
+            if (Type == GraphType.PXGraph)
+            {
+                var graphDelegates = Symbol.GetViewDelegatesFromGraph(viewSymbols, _pxContext, _cancellation);
+
+                return graphDelegates
+                       .ToImmutableDictionary(d => d.Symbol.Name,
+                                              d => new DataViewDelegateInfo(d.Node, d.Symbol));
+            }
+
+            var extDelegates = Symbol.GetViewDelegatesFromGraphExtensionAndBaseGraph(viewSymbols, _pxContext, _cancellation);
+
+            return extDelegates
+                   .ToImmutableDictionary(d => d.Item.Symbol.Name,
+                                          d => d.Base == null
+                                               ? new DataViewDelegateInfo(d.Item.Node, d.Item.Symbol)
+                                               : new DataViewDelegateInfo(d.Item.Node, d.Item.Symbol, new DataViewDelegateInfo(d.Base.Item.Node, d.Base.Item.Symbol)));
         }
 
         private void InitDeclaredInitializers()

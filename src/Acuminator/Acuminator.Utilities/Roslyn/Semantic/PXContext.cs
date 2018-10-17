@@ -48,7 +48,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
         private readonly Lazy<PXSelectBaseGenericSymbols> _pxSelectBaseGeneric;
         public PXSelectBaseGenericSymbols PXSelectBaseGeneric => _pxSelectBaseGeneric.Value;
 
-		private readonly Lazy<PXDatabaseSymbols> _pxDatabase;
+        private readonly Lazy<PXSelectBaseSymbols> _pxSelectBase;
+        public PXSelectBaseSymbols PXSelectBase => _pxSelectBase.Value;
+
+        private readonly Lazy<PXDatabaseSymbols> _pxDatabase;
 		public PXDatabaseSymbols PXDatabase => _pxDatabase.Value;
 
 		private readonly Lazy<PXViewSymbols> _pxView;
@@ -66,8 +69,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public INamedTypeSymbol PXGraphExtensionType => Compilation.GetTypeByMetadataName(typeof(PXGraphExtension).FullName);
 		public INamedTypeSymbol PXCacheExtensionType => Compilation.GetTypeByMetadataName(typeof(PXCacheExtension).FullName);
 		public INamedTypeSymbol PXMappedCacheExtensionType => Compilation.GetTypeByMetadataName(typeof(PXMappedCacheExtension).FullName);
-		public INamedTypeSymbol PXViewType => Compilation.GetTypeByMetadataName(typeof(PXView).FullName);
-		public INamedTypeSymbol PXSelectBaseType => Compilation.GetTypeByMetadataName(typeof(PXSelectBase).FullName);
 		public INamedTypeSymbol PXLongOperation => Compilation.GetTypeByMetadataName(typeof(PXLongOperation).FullName);
 
 		public INamedTypeSymbol PXSelectBase2018R2NewType => Compilation.GetTypeByMetadataName(PXSelectBase_Acumatica2018R2);
@@ -115,6 +116,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			_pxView = new Lazy<PXViewSymbols>(() => new PXViewSymbols(Compilation));
 			_exceptions = new Lazy<ExceptionSymbols>(() => new ExceptionSymbols(Compilation));
             _pxSelectBaseGeneric = new Lazy<PXSelectBaseGenericSymbols>(() => new PXSelectBaseGenericSymbols(Compilation));
+            _pxSelectBase = new Lazy<PXSelectBaseSymbols>(() => new PXSelectBaseSymbols(Compilation));
 
 			_uiPresentationLogicMethods = new Lazy<ImmutableHashSet<IMethodSymbol>>(GetUiPresentationLogicMethods);
 

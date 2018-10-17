@@ -33,7 +33,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 								  .OfType<IFieldSymbol>()
 								  .Select(field => field.Type as INamedTypeSymbol)
 								  .Where(fieldType => fieldType != null &&
-													   fieldType.InheritsFrom(pxContext.PXSelectBaseType) && 
+													   fieldType.InheritsFrom(pxContext.PXSelectBase.Type) && 
 													   fieldType.IsGenericType &&
 													   fieldType.TypeArguments.Length > 0).
 								   ToImmutableList();

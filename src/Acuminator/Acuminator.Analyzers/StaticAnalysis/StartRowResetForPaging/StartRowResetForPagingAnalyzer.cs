@@ -141,7 +141,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 
 				if (symbol.Name.StartsWith("Select") &&
 				   (symbol.ContainingType.InheritsFromOrEquals(pxContext.PXView.Type) ||
-					symbol.ContainingType.InheritsFromOrEquals(pxContext.PXSelectBaseType)))
+					symbol.ContainingType.InheritsFromOrEquals(pxContext.PXSelectBase.Type)))
 				{
 					return (symbol, invocation);
 				}
