@@ -100,12 +100,15 @@
     <Compile Include="Common\ConcurrentExtensions.cs" />
     <Compile Include="Common\EnumerableExtraExtensions.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphInstantiationType.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\GraphOverridableItem.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphViewSymbolUtils.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\GraphOverridableItemsCollection.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\EventSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\BQLSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\ExceptionSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXGraphSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXIntListAttributeSymbols.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\PXSelectBaseSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXStringListAttributeSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXViewSymbols.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\DataViewDelegateInfo.cs" />

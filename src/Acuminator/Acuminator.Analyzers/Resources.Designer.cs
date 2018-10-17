@@ -924,5 +924,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1086Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This invocation of the base data view delegate can cause a StackOverflowException.
+        /// </summary>
+        public static string PX1087Title {
+            get {
+                return ResourceManager.GetString("PX1087Title", resourceCulture);
+            }
+        }
     }
 }

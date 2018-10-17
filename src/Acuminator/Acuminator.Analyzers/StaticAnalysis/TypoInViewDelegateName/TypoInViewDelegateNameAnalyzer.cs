@@ -40,7 +40,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 	        {
 		        var views = parent.GetMembers()
 					.OfType<IFieldSymbol>()
-					.Where(f => f.Type.InheritsFrom(pxContext.PXSelectBaseType))
+					.Where(f => f.Type.InheritsFrom(pxContext.PXSelectBase.Type))
 					.ToArray();
 		        if (views.Any(f => String.Equals(f.Name, method.Name, StringComparison.OrdinalIgnoreCase)))
 			        return;
