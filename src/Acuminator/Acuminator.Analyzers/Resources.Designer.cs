@@ -935,7 +935,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Processing delegate cannot use any views from processing graphs except PXFilter, PXProcessingBase and PXSetup.
+        ///   Looks up a localized string similar to Processing delegates cannot use the data views from processing graphs except for the data views of the PXFilter, PXProcessingBase, or PXSetup types.
         /// </summary>
         public static string PX1088Title {
             get {
