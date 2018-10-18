@@ -4,13 +4,10 @@ using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.InvalidViewUsageInProcessingDelegate
 {
@@ -28,22 +25,67 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidViewUsageInProcessingDelega
                 return;
             }
 
-            var processingDelegates = pxGraph.ViewDelegates
-                                      .OfType<ProcessingDelegateInfo>();
+            var processingViews = pxGraph.Views.Where(v => v.IsProcessing);
+            var walker = new Walker(context, pxContext);
 
-            foreach (var d in processingDelegates)
+            foreach (var view in processingViews)
             {
-                var walker = new Walker(context, pxContext);
+                foreach (var d in view.ParametersDelegates)
+                {
+                    walker.Visit(d.Node);
+                }
 
-                walker.Visit(d.Node);
+                foreach (var d in view.ProcessDelegates)
+                {
+                    walker.Visit(d.Node);
+                }
+
+                foreach (var d in view.FinallyProcessDelegates)
+                {
+                    walker.Visit(d.Node);
+                }
             }
         }
 
         private class Walker : NestedInvocationWalker
         {
+            private readonly SymbolAnalysisContext _context;
+            private readonly PXContext _pxContext;
+
             public Walker(SymbolAnalysisContext context, PXContext pxContext)
                 : base(context.Compilation, context.CancellationToken)
             {
+                _context = context;
+                _pxContext = pxContext;
+            }
+
+            public override void VisitIdentifierName(IdentifierNameSyntax node)
+            {
+                ThrowIfCancellationRequested();
+
+                var semanticModel = GetSemanticModel(node.SyntaxTree);
+                if (semanticModel == null)
+                {
+                    return;
+                }
+
+                var typeSymbol = semanticModel.GetTypeInfo(node, CancellationToken).Type;
+                if (typeSymbol == null)
+                {
+                    return;
+                }
+
+                var isAllowedSymbol = typeSymbol.InheritsFromOrEqualsGeneric(_pxContext.PXProcessingBase.Type) ||
+                                      typeSymbol.InheritsFromOrEqualsGeneric(_pxContext.BQL.PXFilter) ||
+                                      typeSymbol.IsPXSetupBqlCommand(_pxContext);
+                if (!isAllowedSymbol)
+                {
+                    ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1088_InvalidViewUsageInProcessingDelegate, node);
+                }
+                else
+                {
+                    base.VisitIdentifierName(node);
+                }
             }
         }
     }

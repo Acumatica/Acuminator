@@ -72,6 +72,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
         private void AnalyzeSetParametersDelegate(string viewName, ArgumentListSyntax argumentList)
         {
+            ThrowIfCancellationRequested();
+
             var handlerNode = argumentList?.Arguments.First()?.Expression;
             if (handlerNode == null)
             {
@@ -88,6 +90,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
         private void AnalyzeSetProcessDelegate(string viewName, ArgumentListSyntax argumentList)
         {
+            ThrowIfCancellationRequested();
+
             var handlerNode = argumentList?.Arguments.First()?.Expression;
             if (handlerNode == null)
             {
@@ -122,6 +126,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
         private ProcessingDelegateInfo GetDelegateInfo(ExpressionSyntax handlerNode)
         {
+            ThrowIfCancellationRequested();
+
             ISymbol delegateSymbol;
             SyntaxNode delegateNode;
 
