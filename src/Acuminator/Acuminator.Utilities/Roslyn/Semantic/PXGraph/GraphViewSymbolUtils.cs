@@ -15,13 +15,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
     public static class GraphViewSymbolUtils
     {
+        /// <summary>
+        /// Returns true if the data view is a processing view
+        /// </summary>
+        /// <param name="view">The type symbol of a data view</param>
+        /// <param name="pxContext">The context</param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsProcessingView(this ITypeSymbol view, PXContext pxContext)
         {
             view.ThrowOnNull(nameof(view));
             pxContext.ThrowOnNull(nameof(pxContext));
 
-            return view.InheritsFromOrEqualsGeneric(pxContext.PXProcessingBaseType);
+            return view.InheritsFromOrEqualsGeneric(pxContext.PXProcessingBase.Type);
         }
 
         /// <summary>

@@ -1,10 +1,10 @@
 ﻿using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
-    public class DataViewInfo
+    public class DataViewInfo : GraphNodeSymbolItem<ISymbol>
     {
         /// <summary>
         /// The overriden item if any
@@ -17,22 +17,31 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         public bool IsProcessing { get; }
 
         /// <summary>
-        /// The symbol of the data view declaration
-        /// </summary>
-        public ISymbol Symbol { get; }
-
-        /// <summary>
         /// The type of the data view symbol
         /// </summary>
         public INamedTypeSymbol Type { get; }
 
+        /// <summary>
+        /// The process delegates
+        /// </summary>
+        public ImmutableArray<DataViewDelegateInfo> ProcessDelegates { get; }
+
+        /// <summary>
+        /// The parameters process delegate
+        /// </summary>
+        public DataViewDelegateInfo ParametersDelegate { get; }
+
+        /// <summary>
+        /// The finally process delegate
+        /// </summary>
+        public DataViewDelegateInfo FinallyProcessDelegate { get; }
+
         public DataViewInfo(ISymbol symbol, INamedTypeSymbol type, PXContext pxContext)
+            : base(symbol)
         {
-            symbol.ThrowOnNull(nameof(symbol));
             type.ThrowOnNull(nameof(type));
             pxContext.ThrowOnNull(nameof(pxContext));
 
-            Symbol = symbol;
             Type = type;
             IsProcessing = type.IsProcessingView(pxContext);
         }
@@ -43,6 +52,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             baseInfo.ThrowOnNull();
 
             Base = baseInfo;
+        }
+
+        public void InitProcessingDelegatesInfo()
+        {
         }
     }
 }
