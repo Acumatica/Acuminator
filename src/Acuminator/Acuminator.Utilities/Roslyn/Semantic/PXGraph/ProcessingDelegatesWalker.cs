@@ -1,0 +1,142 @@
+﻿using Acuminator.Utilities.Common;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Threading;
+
+namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
+{
+    public class ProcessingDelegatesWalker : NestedInvocationWalker
+    {
+        private readonly PXContext _pxContext;
+        private readonly ImmutableHashSet<ISymbol> _processingViewSymbols;
+
+        public Dictionary<string, List<ProcessingDelegateInfo>> ParametersDelegateListByView { get; } =
+            new Dictionary<string, List<ProcessingDelegateInfo>>();
+        public Dictionary<string, List<ProcessingDelegateInfo>> ProcessDelegateListByView { get; } =
+            new Dictionary<string, List<ProcessingDelegateInfo>>();
+        public Dictionary<string, List<ProcessingDelegateInfo>> FinallyProcessDelegateListByView { get; } =
+            new Dictionary<string, List<ProcessingDelegateInfo>>();
+
+        public ProcessingDelegatesWalker(Compilation compilation, PXContext pxContext,
+                                         ImmutableHashSet<ISymbol> processingViewSymbols, CancellationToken cancellation)
+            : base(compilation, cancellation)
+        {
+            pxContext.ThrowOnNull();
+            processingViewSymbols.ThrowOnNull();
+
+            _pxContext = pxContext;
+            _processingViewSymbols = processingViewSymbols;
+        }
+
+        public override void VisitInvocationExpression(InvocationExpressionSyntax node)
+        {
+            ThrowIfCancellationRequested();
+
+            if (node.ArgumentList == null || !(node.Expression is MemberAccessExpressionSyntax memberAccess))
+            {
+                return;
+            }
+
+            var viewSymbol = GetSymbol<ISymbol>(memberAccess.Expression);
+            var isProcessingView = _processingViewSymbols.Contains(viewSymbol);
+
+            if (!isProcessingView)
+            {
+                return;
+            }
+
+            var viewName = viewSymbol.Name;
+            var methodSymbol = GetSymbol<IMethodSymbol>(memberAccess.Name);
+            var isSetParametersDelegate = _pxContext.PXProcessingBase.SetParametersDelegate.Equals(methodSymbol);
+
+            if (isSetParametersDelegate)
+            {
+                AnalyzeSetParametersDelegate(viewName, node.ArgumentList);
+            }
+            else
+            {
+                var isSetProcessDelegate = _pxContext.PXProcessingBase.SetProcessDelegate.Contains(methodSymbol);
+
+                if (isSetProcessDelegate)
+                {
+                    AnalyzeSetProcessDelegate(viewName, node.ArgumentList);
+                }
+            }
+
+            base.VisitInvocationExpression(node);
+        }
+
+        private void AnalyzeSetParametersDelegate(string viewName, ArgumentListSyntax argumentList)
+        {
+            var handlerNode = argumentList?.Arguments.First()?.Expression;
+            if (handlerNode == null)
+            {
+                return;
+            }
+
+            if (!ParametersDelegateListByView.ContainsKey(viewName))
+            {
+                ParametersDelegateListByView.Add(viewName, new List<ProcessingDelegateInfo>());
+            }
+
+            ParametersDelegateListByView[viewName].Add(GetDelegateInfo(handlerNode));
+        }
+
+        private void AnalyzeSetProcessDelegate(string viewName, ArgumentListSyntax argumentList)
+        {
+            var handlerNode = argumentList?.Arguments.First()?.Expression;
+            if (handlerNode == null)
+            {
+                return;
+            }
+
+            if (!ProcessDelegateListByView.ContainsKey(viewName))
+            {
+                ProcessDelegateListByView.Add(viewName, new List<ProcessingDelegateInfo>());
+            }
+
+            ProcessDelegateListByView[viewName].Add(GetDelegateInfo(handlerNode));
+
+            if (argumentList.Arguments.Count == 1)
+            {
+                return;
+            }
+
+            var finallyHandlerNode = argumentList.Arguments[1]?.Expression;
+            if (finallyHandlerNode == null)
+            {
+                return;
+            }
+
+            if (!FinallyProcessDelegateListByView.ContainsKey(viewName))
+            {
+                FinallyProcessDelegateListByView.Add(viewName, new List<ProcessingDelegateInfo>());
+            }
+
+            FinallyProcessDelegateListByView[viewName].Add(GetDelegateInfo(finallyHandlerNode));
+        }
+
+        private ProcessingDelegateInfo GetDelegateInfo(ExpressionSyntax handlerNode)
+        {
+            ISymbol delegateSymbol;
+            SyntaxNode delegateNode;
+
+            if (handlerNode is AnonymousFunctionExpressionSyntax anonymousFunction)
+            {
+                delegateNode = anonymousFunction.Body;
+                delegateSymbol = GetSemanticModel(delegateNode.SyntaxTree)?.GetSymbolInfo(delegateNode).Symbol;
+            }
+            else
+            {
+                delegateSymbol = GetSymbol<ISymbol>(handlerNode);
+                delegateNode = delegateSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(CancellationToken);
+            }
+
+            return new ProcessingDelegateInfo(delegateNode, delegateSymbol);
+        }
+    }
+}
