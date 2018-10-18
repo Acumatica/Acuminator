@@ -260,8 +260,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			method.ThrowOnNull(nameof(method));
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			if (method.Parameters.Length == 0 && method.ReturnsVoid)
-				return true;
+			if (method.Parameters.Length == 0)
+				return method.ReturnsVoid;
 			else
 			{
 				return method.Parameters[0].Type.InheritsFromOrEquals(pxContext.PXAdapterType) &&
