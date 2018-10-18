@@ -255,6 +255,28 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 								 .Any(field => String.Equals(field.Name, method.Name, StringComparison.OrdinalIgnoreCase));
 		}
 
+		public static bool IsValidActionHandler(this IMethodSymbol method, PXContext pxContext)
+		{
+			method.ThrowOnNull(nameof(method));
+			pxContext.ThrowOnNull(nameof(pxContext));
+
+			if (method.Parameters.Length == 0 && method.ReturnsVoid)
+				return true;
+			else
+			{
+				return method.Parameters[0].Type.InheritsFromOrEquals(pxContext.PXAdapterType) &&
+					   method.ReturnType.InheritsFromOrEquals(pxContext.SystemTypes.IEnumerable, includeInterfaces: true);
+			}
+		}
+
+		public static bool IsValidViewDelegate(this IMethodSymbol method, PXContext pxContext)
+		{
+			method.ThrowOnNull(nameof(method));
+			pxContext.ThrowOnNull(nameof(pxContext));
+
+			return method.ReturnType.InheritsFromOrEquals(pxContext.SystemTypes.IEnumerable, includeInterfaces: true);
+		}
+
 		/// <summary>
 		/// Get view's DAC for which the view was declared.
 		/// </summary>
