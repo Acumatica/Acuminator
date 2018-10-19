@@ -81,8 +81,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 																Diagnostic diagnostic,
 																CodeFixModes mode)
 		{
-
-
 			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
 			var pxContext = new PXContext(semanticModel.Compilation);
 			var attributeInformation = new AttributeInformation(pxContext);
@@ -140,9 +138,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 		private IEnumerable<AttributeArgumentSyntax> GetIsKeyEQTrueArguments(AttributeSyntax attributeNode)
 		{
-			return attributeNode.ArgumentList.Arguments.Where(a => (a.NameEquals?.Name.Identifier.ValueText.Equals(IsKey, StringComparison.OrdinalIgnoreCase) ?? false) &&
-															(a.Expression as LiteralExpressionSyntax).Token.ValueText.Equals(bool.TrueString,StringComparison.OrdinalIgnoreCase));
-
+			return attributeNode
+				.ArgumentList
+				.Arguments
+				.Where(a => (a.NameEquals?.Name.Identifier.ValueText.Equals(IsKey, StringComparison.OrdinalIgnoreCase) ?? false) &&
+				(a.Expression as LiteralExpressionSyntax).Token.ValueText.Equals(bool.TrueString,StringComparison.OrdinalIgnoreCase));
 		}
 
 	}
