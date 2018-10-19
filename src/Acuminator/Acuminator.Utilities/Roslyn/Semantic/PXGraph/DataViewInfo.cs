@@ -24,17 +24,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         /// <summary>
         /// The process delegates
         /// </summary>
-        public ImmutableArray<ProcessingDelegateInfo> ProcessDelegates { get; internal set; }
+        public ImmutableArray<ProcessingDelegateInfo> ProcessDelegates { get; internal set; } =
+            ImmutableArray<ProcessingDelegateInfo>.Empty;
 
         /// <summary>
         /// The parameters process delegate
         /// </summary>
-        public ImmutableArray<ProcessingDelegateInfo> ParametersDelegates { get; internal set; }
+        public ImmutableArray<ProcessingDelegateInfo> ParametersDelegates { get; internal set; } =
+            ImmutableArray<ProcessingDelegateInfo>.Empty;
 
         /// <summary>
         /// The finally process delegate
         /// </summary>
-        public ImmutableArray<ProcessingDelegateInfo> FinallyProcessDelegates { get; internal set; }
+        public ImmutableArray<ProcessingDelegateInfo> FinallyProcessDelegates { get; internal set; } =
+            ImmutableArray<ProcessingDelegateInfo>.Empty;
 
         public DataViewInfo(ISymbol symbol, INamedTypeSymbol type, PXContext pxContext)
             : base(symbol)

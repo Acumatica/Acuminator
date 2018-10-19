@@ -75,10 +75,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidViewUsageInProcessingDelega
                     return;
                 }
 
-                var isAllowedSymbol = typeSymbol.InheritsFromOrEqualsGeneric(_pxContext.PXProcessingBase.Type) ||
-                                      typeSymbol.InheritsFromOrEqualsGeneric(_pxContext.BQL.PXFilter) ||
-                                      typeSymbol.IsPXSetupBqlCommand(_pxContext);
-                if (!isAllowedSymbol)
+                var isForbiddenSymbol = typeSymbol.InheritsFromOrEqualsGeneric(_pxContext.PXSelectBaseGeneric.Type) &&
+                                        !typeSymbol.InheritsFromOrEqualsGeneric(_pxContext.PXProcessingBase.Type) &&
+                                        !typeSymbol.InheritsFromOrEqualsGeneric(_pxContext.BQL.PXFilter) &&
+                                        !typeSymbol.OriginalDefinition.IsPXSetupBqlCommand(_pxContext);
+                if (isForbiddenSymbol)
                 {
                     ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1088_InvalidViewUsageInProcessingDelegate, node);
                 }

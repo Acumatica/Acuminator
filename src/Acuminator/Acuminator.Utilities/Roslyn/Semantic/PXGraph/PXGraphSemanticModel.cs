@@ -41,7 +41,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             StaticConstructors = Symbol.GetStaticConstructors(_cancellation);
             ViewsByNames = GetDataViews();
             ViewDelegatesByNames = GetDataViewDelegates();
-            IsProcessing = Views.Any(v => v.IsProcessing);
 
             InitProcessingDelegatesInfo(compilation);
             InitDeclaredInitializers();
