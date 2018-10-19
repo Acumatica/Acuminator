@@ -89,7 +89,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 			cancellationToken.ThrowIfCancellationRequested();
 
-			Location[] attributeLocations = diagnostic.AdditionalLocations.ToArray();
+			List<Location> attributeLocations = diagnostic.AdditionalLocations.ToList();
+			attributeLocations.Add(diagnostic.Location);
 
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
@@ -138,8 +139,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 		private IEnumerable<AttributeArgumentSyntax> GetIsKeyEQTrueArguments(AttributeSyntax attributeNode)
 		{
-			return attributeNode.ArgumentList.Arguments.Where(a => (a.NameEquals?.Name.Identifier.ValueText.Equals(IsKey) ?? false) &&
-															(a.Expression as LiteralExpressionSyntax).Token.ValueText.Equals(bool.TrueString));
+			return attributeNode.ArgumentList.Arguments.Where(a => (a.NameEquals?.Name.Identifier.ValueText.Equals(IsKey, StringComparison.OrdinalIgnoreCase) ?? false) &&
+															(a.Expression as LiteralExpressionSyntax).Token.ValueText.Equals(bool.TrueString,StringComparison.OrdinalIgnoreCase));
 
 		}
 

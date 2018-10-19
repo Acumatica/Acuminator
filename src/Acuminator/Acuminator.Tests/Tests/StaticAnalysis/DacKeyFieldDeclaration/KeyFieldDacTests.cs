@@ -132,5 +132,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacKeyFieldDeclaration
 							"IdentityKey_CompoundKey_AttributeListSyntax_Expected.cs")]
 		public async Task TestFixForIdentityKeyWithCompoundKey_AttributeListSyntax(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected, 2);
+
+		[Theory]
+		[EmbeddedFileData("IdentityKey_CompoundKey_AttributeListSyntax.cs",
+							"IdentityKey_CompoundKey_AttributeListSyntax_EditFields_Expected.cs")]
+		public async Task TestFixForIdentityKeyWithCompoundKey_AttributeListSyntax_EditFields(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected);
 	}
 }
