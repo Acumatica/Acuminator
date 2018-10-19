@@ -19,22 +19,22 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacKeyFieldDeclaration
 
 		[Theory]
 		[EmbeddedFileData("CompoundKey.cs")]
-		public async Task TestCompoundKey_ShouldNotShowDiagnosticAsync(string source) =>
+		public async Task TestCompoundKey_ShouldNotShowDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
 		[EmbeddedFileData("Key.cs")]
-		public async Task TestKey_ShouldNotShowDiagnosticAsync(string source) =>
+		public async Task TestKey_ShouldNotShowDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
 		[EmbeddedFileData("IdentityKey.cs")]
-		public async Task TestIdentityKey_ShouldNotShowDiagnosticAsync(string source) =>
+		public async Task TestIdentityKey_ShouldNotShowDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
 		[EmbeddedFileData("IdentityKey_Key.cs")]
-		public async Task TestIdentityKeyWithKeyAsync(string source) =>
+		public async Task TestIdentityKeyWithKey(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField.CreateFor(
 					location: (Line: 10, Column: 4),
@@ -52,7 +52,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacKeyFieldDeclaration
 		
 		[Theory]
 		[EmbeddedFileData("IdentityKey_CompoundKey.cs")]
-		public async Task TestIdentityKeyWithCompoundKeyAsync(string source) =>
+		public async Task TestIdentityKeyWithCompoundKey(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField.CreateFor(
 					location: (Line: 9, Column: 4),
@@ -78,59 +78,59 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacKeyFieldDeclaration
 
 		[Theory]
 		[EmbeddedFileData("IdentityNoKey.cs")]
-		public async Task TestIdentityNoKey_ShouldNotShowDiagnosticAsync(string source) =>
+		public async Task TestIdentityNoKey_ShouldNotShowDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
 		[EmbeddedFileData("IdentityNoKey_CompoundKey.cs")]
-		public async Task TestIdentityNoKeyWithCompoundKey_ShouldNotShowDiagnosticAsync(string source) =>
+		public async Task TestIdentityNoKeyWithCompoundKey_ShouldNotShowDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
 		[EmbeddedFileData("IdentityNoKey_Key.cs")]
-		public async Task TestIdentityNoKeyWithKey_ShouldNotShowDiagnosticAsync(string source) =>
+		public async Task TestIdentityNoKeyWithKey_ShouldNotShowDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
 		[EmbeddedFileData("IdentityKey_Key.cs",
 						"IdentityKey_Key_EditFieldsAttr_Expected.cs")]
-		public async Task TestFixForIdentityKeyWithKeyAsync(string actual, string expected) =>
+		public async Task TestFixForIdentityKeyWithKey(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected);
 
 		[Theory]
 		[EmbeddedFileData("IdentityKey_CompoundKey.cs",
 							"IdentityKey_CompoundKey_EditFieldsAttr_Expected.cs")]
-		public async Task TestFixForIdentityKeyWithCompoundKey_EditFieldsAttrAsync(string actual, string expected) =>
+		public async Task TestFixForIdentityKeyWithCompoundKey_EditFieldsAttr(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected);
 
 		[Theory]
 		[EmbeddedFileData("IdentityKey_Key.cs",
 						"IdentityKey_Key_EditIdentityAttr_Expected.cs")]
-		public async Task TestFixForIdentityKeyWithKey_EditIdentityAttributeAsync(string actual, string expected) =>
+		public async Task TestFixForIdentityKeyWithKey_EditIdentityAttribut(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected,1);
 
 		[Theory]
 		[EmbeddedFileData("IdentityKey_CompoundKey.cs",
 							"IdentityKey_CompoundKey_EditIdentityAttr_Expected.cs")]
-		public async Task TestFixForIdentityKeyWithCompoundKey_EditIdentityAttributeAsync(string actual, string expected) =>
+		public async Task TestFixForIdentityKeyWithCompoundKey_EditIdentityAttribute(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected,1);
 
 		[Theory]
 		[EmbeddedFileData("IdentityKey_Key.cs",
 						"IdentityKey_Key_RemoveIdentityAttr_Expected.cs")]
-		public async Task TestFixForIdentityKeyWithKey_RemoveIdentityAttributeAsync(string actual, string expected) =>
+		public async Task TestFixForIdentityKeyWithKey_RemoveIdentityAttribute(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected, 2);
 
 		[Theory]
 		[EmbeddedFileData("IdentityKey_CompoundKey.cs",
 							"IdentityKey_CompoundKey_RemoveIdentityAttr_Expected.cs")]
-		public async Task TestFixForIdentityKeyWithCompoundKey_RemoveIdentityAttributeAsync(string actual, string expected) =>
+		public async Task TestFixForIdentityKeyWithCompoundKey_RemoveIdentityAttribute(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected, 2);
 
 		[Theory]
 		[EmbeddedFileData("IdentityKey_CompoundKey_AttributeListSyntax.cs",
 							"IdentityKey_CompoundKey_AttributeListSyntax_Expected.cs")]
-		public async Task TestFixForIdentityKeyWithCompoundKey_AttributeListSyntaxAsync(string actual, string expected) =>
+		public async Task TestFixForIdentityKeyWithCompoundKey_AttributeListSyntax(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected, 2);
 	}
 }
