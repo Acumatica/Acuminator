@@ -1,6 +1,24 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
+## Acuminator 1.5
+Acuminator 1.5 includes the diagnostics and code fixes, enhancements, and bug fixes described in this section, as well as the features that have been implemented in previous versions.
+
+### New Diagnostics and Code Fixes
+In this version, diagnostics and code fixes for the following issues have been added.
+
+| Code                                 | Issue Description                                                                                        | Type    | Diagnostics | Code Fix    | 
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------- | ------- | ----------- | ----------- | 
+| [PX1074](docs/diagnostics/PX1074.md) | `PXSetupNotEnteredException` cannot be thrown in event handlers except the `RowSelected` event handlers. | Warning | Available   | Unavailable |
+| [PX1081](docs/diagnostics/PX1081.md) | Actions cannot be executed during the `PXGraph` initialization.                                          | Error   | Available   | Unavailable |
+| [PX1082](docs/diagnostics/PX1082.md) | Actions cannot be executed within data view delegates.                                                   | Error   | Available   | Unavailable |
+| [PX1086](docs/diagnostics/PX1086.md) | `PXSetupNotEnteredException` cannot be thrown during the `PXGraph` initialization.                       | Warning | Available   | Unavailable |
+
+### Special Diagnostics for ISV Solutions
+Now Acuminator includes the diagnostics that are designed specifically for the certification of ISV solutions developed based on Acumatica platform. Developers of ISV solutions have to turn on these diagnostics and fix the issues reported by the diagnostics. For non-ISV solutions, these diagnostics are informational. 
+
+To turn on these diagnostics, you set the value of **Tools > Options > Acuminator > Code Analysis > Enable additional diagnostics for ISV Solution Certification** to `True`. By default, these diagnostics are turned off.
+
 ## Acuminator 1.4
 Acuminator 1.4 includes the diagnostics and code fixes, suggestions for refactoring code, and bug fixes described in this section, as well as the features that have been implemented in previous versions.
 

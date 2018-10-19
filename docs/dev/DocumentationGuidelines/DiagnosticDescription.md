@@ -45,7 +45,7 @@ The diagnostic description contains the following sections:
     | ----------------- | -----------------------------------------------------------------------------------------------------|
     | Code              | The ID of the diagnostic.                                                                            |
     | Short Description | A short description of the issue. You can use the message displayed by Visual Studio in this column. |
-    | Type              | The type of the issue, which can have one of the following values:<ul><li>_Error_</li><li>_Warning (Level 1: Significant)_</li><li>_Warning (Level 2: Production Quality)_</li><li>_Warning (Level 3: Informational)_</li><li>Message</li></ul> |
+    | Type              | The type of the issue, which can have one of the following values:<ul><li>_Error_</li><li>_Warning (Level 1: Significant)_</li><li>_Warning (Level 2: Production Quality)_</li><li>_Warning (Level 3: Informational)_</li><li>_Message_</li></ul> |
     | Code Fix          | A value that specifies whether the code fix for the issue is available. The value can be one of the following:<ul><li>_Available_</li><li>_Unavailable_</li></ul> |
 
 ### Diagnostic Description
