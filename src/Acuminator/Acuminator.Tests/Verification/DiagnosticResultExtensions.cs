@@ -24,9 +24,14 @@ namespace Acuminator.Tests.Verification
 		}
 
 		public static DiagnosticResult CreateFor(this DiagnosticDescriptor descriptor,
-			IEnumerable<(int Line, int Column)> locations)
+			(int Line, int Column) location,
+			IEnumerable<(int Line, int Column)> extraLocations,
+			params object[] messageArgs)
 		{
-			return CreateDiagnosticResult(descriptor, null, locations);
+			var mergedLocations  = new List<(int Line, int Column)>();
+			mergedLocations.Add(location);
+			mergedLocations.AddRange(extraLocations.ToList());
+			return CreateDiagnosticResult(descriptor, null, mergedLocations);
 		}
 
 		private static DiagnosticResult CreateDiagnosticResult(DiagnosticDescriptor descriptor,
@@ -46,17 +51,16 @@ namespace Acuminator.Tests.Verification
 
 		private static DiagnosticResult CreateDiagnosticResult(DiagnosticDescriptor descriptor,
 			object[] messageArgs,
-			IEnumerable<(int Line, int Column)> locations)
-		{
-			return new DiagnosticResult()
-			{
-				Id = descriptor.Id,
-				Severity = descriptor.DefaultSeverity,
-				Message = messageArgs == null || messageArgs.Length == 0
-					? descriptor.Title.ToString()
-					: String.Format(descriptor.MessageFormat.ToString(), messageArgs),
-				Locations = locations.Select(l => new DiagnosticResultLocation("Test0.cs", l.Line, l.Column)).ToArray()
-			};
-		}
+			IEnumerable<(int Line, int Column)> locations) => 
+				new DiagnosticResult()
+				{
+					Id = descriptor.Id,
+					Severity = descriptor.DefaultSeverity,
+					Message = messageArgs == null || messageArgs.Length == 0
+						? descriptor.Title.ToString()
+						: String.Format(descriptor.MessageFormat.ToString(), messageArgs),
+					Locations = locations.Select(l => new DiagnosticResultLocation("Test0.cs", l.Line, l.Column)).ToArray()
+				};
+		
 	}
 }

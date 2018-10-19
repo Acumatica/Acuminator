@@ -82,7 +82,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 																CodeFixModes mode)
 		{
 
+
 			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+			var pxContext = new PXContext(semanticModel.Compilation);
+			var attributeInformation = new AttributeInformation(pxContext);
+
 			cancellationToken.ThrowIfCancellationRequested();
 
 			Location[] attributeLocations = diagnostic.AdditionalLocations.ToArray();
@@ -93,8 +97,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 			foreach (var attributeLocation in attributeLocations)
 			{
+				AttributeSyntax attributeNode = root?.FindNode(attributeLocation.SourceSpan) as AttributeSyntax;
 
-				if (!(root?.FindNode(attributeLocation.SourceSpan) is AttributeSyntax attributeNode))
+				if (attributeNode == null)
 					return document;
 
 				ITypeSymbol attributeType = semanticModel.GetTypeInfo(attributeNode, cancellationToken).Type;
@@ -102,8 +107,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 				if (attributeType == null)
 					return document;
 
-				var pxContext = new PXContext(semanticModel.Compilation);
-				var attributeInformation = new AttributeInformation(pxContext);
 				bool isIdentityAttribute = attributeInformation.IsAttributeDerivedFromClass(attributeType, pxContext.FieldAttributes.PXDBIdentityAttribute) ||
 										   attributeInformation.IsAttributeDerivedFromClass(attributeType, pxContext.FieldAttributes.PXDBLongIdentityAttribute);
 
@@ -115,7 +118,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 					deletedNodes.AddRange(deletedNode);
 				}
-
 				if (mode == CodeFixModes.RemoveIdentityAttribute && isIdentityAttribute)
 				{
 					if ((attributeNode.Parent as AttributeListSyntax).Attributes.Count == 1)
@@ -136,8 +138,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 		private IEnumerable<AttributeArgumentSyntax> GetIsKeyEQTrueArguments(AttributeSyntax attributeNode)
 		{
-			return attributeNode.ArgumentList.Arguments.Where(a => IsKey == a.NameEquals?.Name.Identifier.ValueText && 
-															bool.TrueString == (a.Expression as LiteralExpressionSyntax).Token.ValueText);
+			return attributeNode.ArgumentList.Arguments.Where(a => (a.NameEquals?.Name.Identifier.ValueText.Equals(IsKey) ?? false) &&
+															(a.Expression as LiteralExpressionSyntax).Token.ValueText.Equals(bool.TrueString));
+
 		}
 
 	}

@@ -37,18 +37,16 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacKeyFieldDeclaration
 		public async Task TestIdentityKeyWithKeyAsync(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField.CreateFor(
-					locations: new (int Line, int Column)[] 
+					location: (Line: 10, Column: 4),
+					extraLocations: new (int Line, int Column)[] 
 					{
-						(Line: 10, Column: 4),
-						(Line: 10, Column: 4),
 						(Line: 16, Column: 4)
 					}),
 				Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField.CreateFor(
-					locations: new (int Line, int Column)[] 
+					location: (Line: 16, Column: 4),
+					extraLocations: new (int Line, int Column)[] 
 					{
-						(Line: 16, Column: 4),
-						(Line: 10, Column: 4),
-						(Line: 16, Column: 4)
+						(Line: 10, Column: 4)
 					}));
 
 		
@@ -57,28 +55,25 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacKeyFieldDeclaration
 		public async Task TestIdentityKeyWithCompoundKeyAsync(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField.CreateFor(
-					locations: new (int Line, int Column)[] 
+					location: (Line: 9, Column: 4),
+					extraLocations: new (int Line, int Column)[] 
 					{
-						(Line: 9, Column: 4),
-						(Line: 9, Column: 4),
 						(Line: 17, Column: 4),
 						(Line: 27, Column: 4)
 					}),
 				Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField.CreateFor(
-					locations: new (int Line, int Column)[] 
+					location: (Line: 17, Column: 4),
+					extraLocations: new (int Line, int Column)[] 
 					{
-						(Line: 17, Column: 4),
 						(Line: 9,  Column: 4),
-						(Line: 17, Column: 4),
 						(Line: 27, Column: 4)
 					}),
 				Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField.CreateFor(
-					locations: new (int Line, int Column)[] 
+					location: (Line: 27, Column: 4),
+					extraLocations: new (int Line, int Column)[] 
 					{
-						(Line: 27, Column: 4),
 						(Line: 9,  Column: 4),
-						(Line: 17, Column: 4),
-						(Line: 27, Column: 4)
+						(Line: 17, Column: 4)
 					}));
 
 		[Theory]

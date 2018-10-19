@@ -67,20 +67,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 			if (isKey && isKeyIdentity)
 			{
-				var locations = new List<Location>();
+				var locations = new HashSet<Location>();
 
 				foreach (var attribute in keyAttributes)
 				{
 					locations.Add(await GetAttributeLocationAsync(attribute, symbolContext.CancellationToken).ConfigureAwait(false));
 				}
 
+				
 				foreach (var attribute in keyAttributes)
 				{
 					Location attributeLocation = await GetAttributeLocationAsync(attribute, symbolContext.CancellationToken).ConfigureAwait(false);
 
+					locations.Remove(attributeLocation);
 					symbolContext.ReportDiagnostic(
 					Diagnostic.Create(
 						Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField, attributeLocation, locations));
+					locations.Add(attributeLocation);
 				}
 			}
 		}
