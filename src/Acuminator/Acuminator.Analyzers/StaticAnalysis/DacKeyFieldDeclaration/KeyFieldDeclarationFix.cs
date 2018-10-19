@@ -119,6 +119,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 					deletedNodes.AddRange(deletedNode);
 				}
+
 				if (mode == CodeFixModes.RemoveIdentityAttribute && isIdentityAttribute)
 				{
 					if ((attributeNode.Parent as AttributeListSyntax).Attributes.Count == 1)
