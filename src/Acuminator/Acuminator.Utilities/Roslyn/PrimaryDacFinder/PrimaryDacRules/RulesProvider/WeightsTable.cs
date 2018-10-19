@@ -36,7 +36,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.RulesProv
 			[nameof(PXViewNameAttributeViewRule)]	           = 3.0,
 
 			[nameof(ScoreSimpleActionRule)]                    = 1.0,
-			[nameof(ScoreSystemActionRule)]                    = 4.0,
+			[nameof(ScoreSystemActionRule)]                    = 8.0,
 
 			[nameof(SameOrDescendingNamespaceDacRule)]         = 2.0,
 		}
