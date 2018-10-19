@@ -102,9 +102,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 				if (attributeType == null)
 					return document;
 
-				var attributeInformation = new AttributeInformation(new PXContext(semanticModel.Compilation));
-				bool isIdentityAttribute = attributeInformation.IsAttributeDerivedFromClass(attributeType, new PXContext(semanticModel.Compilation).FieldAttributes.PXDBIdentityAttribute) ||
-										   attributeInformation.IsAttributeDerivedFromClass(attributeType, new PXContext(semanticModel.Compilation).FieldAttributes.PXDBLongIdentityAttribute);
+				var pxContext = new PXContext(semanticModel.Compilation);
+				var attributeInformation = new AttributeInformation(pxContext);
+				bool isIdentityAttribute = attributeInformation.IsAttributeDerivedFromClass(attributeType, pxContext.FieldAttributes.PXDBIdentityAttribute) ||
+										   attributeInformation.IsAttributeDerivedFromClass(attributeType, pxContext.FieldAttributes.PXDBLongIdentityAttribute);
 
 
 				if ((mode == CodeFixModes.EditIdentityAttribute && isIdentityAttribute) ||
@@ -114,6 +115,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 					deletedNodes.AddRange(deletedNode);
 				}
+
 				if (mode == CodeFixModes.RemoveIdentityAttribute && isIdentityAttribute)
 				{
 					if ((attributeNode.Parent as AttributeListSyntax).Attributes.Count == 1)
@@ -134,8 +136,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 		private IEnumerable<AttributeArgumentSyntax> GetIsKeyEQTrueArguments(AttributeSyntax attributeNode)
 		{
-			return attributeNode.ArgumentList.Arguments.Where(a => a.NameEquals?.Name.Identifier.ValueText.Equals(IsKey) ?? false &&
-															(a.Expression as LiteralExpressionSyntax).Token.ValueText.Equals(bool.TrueString));
+			return attributeNode.ArgumentList.Arguments.Where(a => IsKey == a.NameEquals?.Name.Identifier.ValueText && 
+															bool.TrueString == (a.Expression as LiteralExpressionSyntax).Token.ValueText);
 		}
 
 	}
