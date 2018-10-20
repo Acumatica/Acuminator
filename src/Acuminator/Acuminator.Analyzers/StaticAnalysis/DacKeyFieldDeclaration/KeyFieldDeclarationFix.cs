@@ -45,7 +45,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 			Document document = context.Document;
 
-			string codeActionIdentityKeyName = nameof(Resources.PX1055Fix1).GetLocalized().ToString();
+			string codeActionIdentityKeyName = nameof(Resources.PX1055FixEditKeyFieldAttributes).GetLocalized().ToString();
 			CodeAction codeActionIdentityKey = CodeAction.Create(codeActionIdentityKeyName,
 																cToken => RemoveKeysFromFieldsAsync(document,
 																									cToken,
@@ -53,7 +53,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 																									CodeFixModes.EditKeyFieldAttributes),
 																equivalenceKey: codeActionIdentityKeyName);
 
-			string codeActionBoundKeysName = nameof(Resources.PX1055Fix2).GetLocalized().ToString();
+			string codeActionBoundKeysName = nameof(Resources.PX1055FixEditIdentityAttribute).GetLocalized().ToString();
 			CodeAction codeActionBoundKeys = CodeAction.Create(codeActionBoundKeysName,
 																cToken => RemoveKeysFromFieldsAsync(document,
 																									cToken,
@@ -61,7 +61,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 																									CodeFixModes.EditIdentityAttribute),
 																equivalenceKey: codeActionBoundKeysName);
 
-			string codeActionRemoveIdentityColumnName = nameof(Resources.PX1055Fix3).GetLocalized().ToString();
+			string codeActionRemoveIdentityColumnName = nameof(Resources.PX1055FixRemoveIdentityAttribute).GetLocalized().ToString();
 			CodeAction codeActionRemoveIdentityColumn = CodeAction.Create(codeActionRemoveIdentityColumnName,
 																			cToken => RemoveKeysFromFieldsAsync(document,
 																												cToken,
