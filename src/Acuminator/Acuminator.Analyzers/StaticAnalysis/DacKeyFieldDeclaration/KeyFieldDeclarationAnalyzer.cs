@@ -49,9 +49,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			{
 				foreach (var attribute in property.GetAttributes())
 				{
-					bool hasKeys = attribute.NamedArguments.Where(a => a.Key.Contains(IsKey) &&
+					bool hasKeys = attribute.NamedArguments.Any(a => a.Key.Contains(IsKey) &&
 																		a.Value.Value is bool isKeyValue &&
-																		isKeyValue == true).Any();
+																		isKeyValue == true);
 
 					if (hasKeys)
 					{
