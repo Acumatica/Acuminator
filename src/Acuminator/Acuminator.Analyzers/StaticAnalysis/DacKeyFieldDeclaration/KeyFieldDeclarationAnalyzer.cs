@@ -45,23 +45,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			bool isKey = false;
 			bool isKeyIdentity = false;
 
-			foreach (var property in dacPropertiesDeclarations)
+			foreach (var attribute in dacPropertiesDeclarations.SelectMany(a => a.GetAttributes()))
 			{
-				foreach (var attribute in property.GetAttributes())
+				bool hasKeys = attribute.NamedArguments.Any(a => a.Key.Contains(IsKey) &&
+																	a.Value.Value is bool isKeyValue &&
+																	isKeyValue == true);
+
+				if (hasKeys)
 				{
-					bool hasKeys = attribute.NamedArguments.Any(a => a.Key.Contains(IsKey) &&
-																		a.Value.Value is bool isKeyValue &&
-																		isKeyValue == true);
+					var identityOrKey = CheckAttributeIdentityOrKey(attribute, pxContext);
 
-					if (hasKeys)
-					{
-						var identityOrKey = CheckAttributeIdentityOrKey(attribute, pxContext);
+					isKey = identityOrKey.IsKey? true : isKey;
+					isKeyIdentity = identityOrKey.IsKeyIdentity ? true : isKeyIdentity;
 
-						isKey = identityOrKey.IsKey? true : isKey;
-						isKeyIdentity = identityOrKey.IsKeyIdentity ? true : isKeyIdentity;
-
-						keyAttributes.Add(attribute);
-					}
+					keyAttributes.Add(attribute);
 				}
 			}
 
