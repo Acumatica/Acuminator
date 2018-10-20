@@ -9,7 +9,6 @@ namespace Acuminator.Utilities.Common
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ThrowOnNull<T>(this T obj, string parameter = null, string message = null)
-		where T : class
 		{
 			if (obj != null)
 				return;

@@ -539,11 +539,20 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Consider setting PersistingCheck to Nothing or replacing PXDefault with PXUnboundDefault.
+        /// </summary>
+        public static string PX1030TitleDefaultAttributeOnDac {
+            get {
+                return ResourceManager.GetString("PX1030TitleDefaultAttributeOnDac", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The PXDefault attribute of the field is used incorrectly. PXDefaultAttribute used on a custom field defined in PXCacheExtension can potentially prevent updates to existing records when used without PersistingCheck property set to Nothing.
         /// </summary>
-        public static string PX1030Title {
+        public static string PX1030TitleDefaultAttributeOnDacExtension {
             get {
-                return ResourceManager.GetString("PX1030Title", resourceCulture);
+                return ResourceManager.GetString("PX1030TitleDefaultAttributeOnDacExtension", resourceCulture);
             }
         }
         
@@ -827,6 +836,24 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Replace {0} with the following PXGraph instance: {1}.
+        /// </summary>
+        public static string PX1072Fix {
+            get {
+                return ResourceManager.GetString("PX1072Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BQL queries must be executed within the context of an existing PXGraph instance.
+        /// </summary>
+        public static string PX1072Title {
+            get {
+                return ResourceManager.GetString("PX1072Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Exceptions cannot be thrown in the RowPersisted event handler.
         /// </summary>
         public static string PX1073Title {
@@ -895,6 +922,51 @@ namespace Acuminator.Analyzers {
         public static string PX1082Title {
             get {
                 return ResourceManager.GetString("PX1082Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Changes cannot be saved to the database from data view delegates.
+        /// </summary>
+        public static string PX1083Title {
+            get {
+                return ResourceManager.GetString("PX1083Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXGraph instances cannot be initialized within data view delegates.
+        /// </summary>
+        public static string PX1084Title {
+            get {
+                return ResourceManager.GetString("PX1084Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BQL statements and other database queries should not be executed during the PXGraph initialization.
+        /// </summary>
+        public static string PX1085Title {
+            get {
+                return ResourceManager.GetString("PX1085Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown during the PXGraph initialization.
+        /// </summary>
+        public static string PX1086Title {
+            get {
+                return ResourceManager.GetString("PX1086Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This invocation of the base data view delegate can cause a StackOverflowException.
+        /// </summary>
+        public static string PX1087Title {
+            get {
+                return ResourceManager.GetString("PX1087Title", resourceCulture);
             }
         }
     }

@@ -228,5 +228,26 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 					return SyntaxFactory.TokenList();
 			}
 		}
+
+		/// <summary>
+		/// Returns the body of the <paramref name="node"/> that is passed as an argument, if it is available
+		/// (e.g., method body for getters, methods, constructors, expression for expression-bodied getters and methods, etc.)
+		/// </summary>
+		/// <param name="node">Syntax node</param>
+		/// <returns>Syntax node for the body, if any</returns>
+		public static CSharpSyntaxNode GetBody(this SyntaxNode node)
+		{
+			switch (node)
+			{
+				case AccessorDeclarationSyntax accessorSyntax:
+					return accessorSyntax.Body;
+				case MethodDeclarationSyntax methodSyntax:
+					return methodSyntax.Body ?? (CSharpSyntaxNode) methodSyntax.ExpressionBody?.Expression;
+				case ConstructorDeclarationSyntax constructorSyntax:
+					return constructorSyntax.Body;
+				default:
+					return null;
+			}
+		}
 	}
 }

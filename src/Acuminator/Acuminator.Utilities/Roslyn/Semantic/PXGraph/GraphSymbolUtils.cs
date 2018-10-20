@@ -61,7 +61,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			if (graph?.InheritsFrom(pxContext.PXGraphType) != true)
+			if (graph?.InheritsFrom(pxContext.PXGraph.Type) != true)
 				return Enumerable.Empty<INamedTypeSymbol>();
 
 			if (includeActionsFromInheritanceChain)
@@ -154,7 +154,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			if (graph?.InheritsFrom(pxContext.PXGraphType) != true)
+			if (graph?.InheritsFrom(pxContext.PXGraph.Type) != true)
 				return Enumerable.Empty<(ISymbol, INamedTypeSymbol)>();
 
 			if (includeActionsFromInheritanceChain)
@@ -246,12 +246,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			INamedTypeSymbol containingType = method.ContainingType;
 
 			if (containingType == null ||
-			   (!containingType.InheritsFrom(pxContext.PXGraphType) && !containingType.InheritsFrom(pxContext.PXGraphExtensionType)))
+			   (!containingType.InheritsFrom(pxContext.PXGraph.Type) && !containingType.InheritsFrom(pxContext.PXGraphExtensionType)))
 				return false;
 
 			return containingType.GetMembers()
 								 .OfType<IFieldSymbol>()
-								 .Where(field => field.Type.InheritsFrom(pxContext.PXSelectBaseType))
+								 .Where(field => field.Type.InheritsFrom(pxContext.PXSelectBase.Type))
 								 .Any(field => String.Equals(field.Name, method.Name, StringComparison.OrdinalIgnoreCase));
 		}
 
@@ -267,7 +267,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			if (pxView?.InheritsFrom(pxContext.PXSelectBaseType) != true)
+			if (pxView?.InheritsFrom(pxContext.PXSelectBase.Type) != true)
 				return null;
 
 			INamedTypeSymbol baseViewType = pxView.GetBaseTypesAndThis()
@@ -314,7 +314,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public static ITypeSymbol GetDeclaredPrimaryDacFromGraphOrGraphExtension(this INamedTypeSymbol graphOrExtension, PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
-			bool isGraph = graphOrExtension?.InheritsFrom(pxContext.PXGraphType) ?? false;
+			bool isGraph = graphOrExtension?.InheritsFrom(pxContext.PXGraph.Type) ?? false;
 
 			if (!isGraph && !graphOrExtension?.InheritsFrom(pxContext.PXGraphExtensionType) != true)
 				return null;

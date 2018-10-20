@@ -50,7 +50,8 @@ namespace Acuminator.Utilities.Roslyn.PXSystemActions
 				pxContext.PXSystemActions.PXFirst,
 				pxContext.PXSystemActions.PXPrevious,
 				pxContext.PXSystemActions.PXNext,
-				pxContext.PXSystemActions.PXLast
+				pxContext.PXSystemActions.PXLast,
+				pxContext.PXSystemActions.PXChangeID
 			};	
 	}
 }

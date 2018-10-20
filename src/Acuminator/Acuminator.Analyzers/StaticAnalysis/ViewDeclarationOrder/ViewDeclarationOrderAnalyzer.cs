@@ -24,7 +24,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 			INamedTypeSymbol graph = (INamedTypeSymbol)context.Symbol;
 
 			if (graph == null || context.CancellationToken.IsCancellationRequested ||
-			   !graph.InheritsFromOrEquals(pxContext.PXGraphType) && !graph.InheritsFromOrEquals(pxContext.PXGraphExtensionType))
+			   !graph.InheritsFromOrEquals(pxContext.PXGraph.Type) && !graph.InheritsFromOrEquals(pxContext.PXGraphExtensionType))
 			{
 				return;
 			}
@@ -33,7 +33,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 								  .OfType<IFieldSymbol>()
 								  .Select(field => field.Type as INamedTypeSymbol)
 								  .Where(fieldType => fieldType != null &&
-													   fieldType.InheritsFrom(pxContext.PXSelectBaseType) && 
+													   fieldType.InheritsFrom(pxContext.PXSelectBase.Type) && 
 													   fieldType.IsGenericType &&
 													   fieldType.TypeArguments.Length > 0).
 								   ToImmutableList();

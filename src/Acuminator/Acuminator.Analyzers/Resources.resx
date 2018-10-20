@@ -270,7 +270,7 @@
   <data name="PX1030FixBound" xml:space="preserve">
     <value>Set PersistingCheck of PXDefaultAttribute to Nothing</value>
   </data>
-  <data name="PX1030Title" xml:space="preserve">
+  <data name="PX1030TitleDefaultAttributeOnDacExtension" xml:space="preserve">
     <value>The PXDefault attribute of the field is used incorrectly. PXDefaultAttribute used on a custom field defined in PXCacheExtension can potentially prevent updates to existing records when used without PersistingCheck property set to Nothing</value>
   </data>
   <data name="PX1040Fix" xml:space="preserve">
@@ -360,6 +360,9 @@
   <data name="PX1071Title" xml:space="preserve">
     <value>Actions cannot be executed within event handlers</value>
   </data>
+  <data name="PX1072Title" xml:space="preserve">
+    <value>BQL queries must be executed within the context of an existing PXGraph instance</value>
+  </data>
   <data name="PX1080Title" xml:space="preserve">
     <value>Data view delegates should not start long-running operations</value>
   </data>
@@ -395,5 +398,26 @@
   </data>
   <data name="PX1082Title" xml:space="preserve">
     <value>Actions cannot be executed within data view delegates</value>
+  </data>
+  <data name="PX1072Fix" xml:space="preserve">
+    <value>Replace {0} with the following PXGraph instance: {1}</value>
+  </data>
+  <data name="PX1083Title" xml:space="preserve">
+    <value>Changes cannot be saved to the database from data view delegates</value>
+  </data>
+  <data name="PX1030TitleDefaultAttributeOnDac" xml:space="preserve">
+    <value>Consider setting PersistingCheck to Nothing or replacing PXDefault with PXUnboundDefault</value>
+  </data>
+  <data name="PX1084Title" xml:space="preserve">
+    <value>PXGraph instances cannot be initialized within data view delegates</value>
+  </data>
+  <data name="PX1085Title" xml:space="preserve">
+    <value>BQL statements and other database queries should not be executed during the PXGraph initialization</value>
+  </data>
+  <data name="PX1086Title" xml:space="preserve">
+    <value>PXSetupNotEnteredException cannot be thrown during the PXGraph initialization</value>
+  </data>
+  <data name="PX1087Title" xml:space="preserve">
+    <value>This invocation of the base data view delegate can cause a StackOverflowException</value>
   </data>
 </root>

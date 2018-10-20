@@ -36,8 +36,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
         private readonly Lazy<LocalizationSymbols> _localizationMethods;
         public LocalizationSymbols Localization => _localizationMethods.Value;
 
-        private readonly Lazy<PXGraphRelatedMethodSymbols> _pxGraphRelatedMethods;
-        public PXGraphRelatedMethodSymbols PXGraphRelatedMethods => _pxGraphRelatedMethods.Value;
+        private readonly Lazy<PXGraphSymbols> _pxGraph;
+        public PXGraphSymbols PXGraph => _pxGraph.Value;
 
         private readonly Lazy<PXCacheSymbols> _pxCache;
         public PXCacheSymbols PXCache => _pxCache.Value;
@@ -48,7 +48,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
         private readonly Lazy<PXSelectBaseGenericSymbols> _pxSelectBaseGeneric;
         public PXSelectBaseGenericSymbols PXSelectBaseGeneric => _pxSelectBaseGeneric.Value;
 
-		private readonly Lazy<PXDatabaseSymbols> _pxDatabase;
+        private readonly Lazy<PXSelectBaseSymbols> _pxSelectBase;
+        public PXSelectBaseSymbols PXSelectBase => _pxSelectBase.Value;
+
+        private readonly Lazy<PXDatabaseSymbols> _pxDatabase;
 		public PXDatabaseSymbols PXDatabase => _pxDatabase.Value;
 
 		private readonly Lazy<PXViewSymbols> _pxView;
@@ -61,14 +64,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		private readonly Lazy<ImmutableHashSet<IMethodSymbol>> _uiPresentationLogicMethods;
 		public ImmutableHashSet<IMethodSymbol> UiPresentationLogicMethods => _uiPresentationLogicMethods.Value;
 
-
-        public INamedTypeSymbol PXGraphType => Compilation.GetTypeByMetadataName(typeof(PX.Data.PXGraph).FullName);
+		
 		public INamedTypeSymbol PXProcessingBaseType => Compilation.GetTypeByMetadataName(typeof(PXProcessingBase<>).FullName);
 		public INamedTypeSymbol PXGraphExtensionType => Compilation.GetTypeByMetadataName(typeof(PXGraphExtension).FullName);
 		public INamedTypeSymbol PXCacheExtensionType => Compilation.GetTypeByMetadataName(typeof(PXCacheExtension).FullName);
 		public INamedTypeSymbol PXMappedCacheExtensionType => Compilation.GetTypeByMetadataName(typeof(PXMappedCacheExtension).FullName);
-		public INamedTypeSymbol PXViewType => Compilation.GetTypeByMetadataName(typeof(PXView).FullName);
-		public INamedTypeSymbol PXSelectBaseType => Compilation.GetTypeByMetadataName(typeof(PXSelectBase).FullName);
 		public INamedTypeSymbol PXLongOperation => Compilation.GetTypeByMetadataName(typeof(PXLongOperation).FullName);
 
 		public INamedTypeSymbol PXSelectBase2018R2NewType => Compilation.GetTypeByMetadataName(PXSelectBase_Acumatica2018R2);
@@ -88,8 +88,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
         public INamedTypeSymbol IPXLocalizableList => Compilation.GetTypeByMetadataName(typeof(IPXLocalizableList).FullName);
 		public INamedTypeSymbol PXConnectionScope => Compilation.GetTypeByMetadataName(typeof(PXConnectionScope).FullName);
-
-        public INamedTypeSymbol InstanceCreatedEvents => Compilation.GetTypeByMetadataName(typeof(PX.Data.PXGraph.InstanceCreatedEvents).FullName);
 
         public ImmutableArray<ISymbol> StringFormat => SystemTypes.String.GetMembers(nameof(string.Format));
         public ImmutableArray<ISymbol> StringConcat => SystemTypes.String.GetMembers(nameof(string.Concat));
@@ -111,13 +109,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			_attributes = new Lazy<AttributeSymbols>(() => new AttributeSymbols(Compilation));
 			_systemTypes = new Lazy<SystemTypeSymbols>(() => new SystemTypeSymbols(Compilation));
             _localizationMethods = new Lazy<LocalizationSymbols>(() => new LocalizationSymbols(Compilation));
-            _pxGraphRelatedMethods = new Lazy<PXGraphRelatedMethodSymbols>(() => new PXGraphRelatedMethodSymbols(this));
+            _pxGraph = new Lazy<PXGraphSymbols>(() => new PXGraphSymbols(Compilation));
             _pxCache = new Lazy<PXCacheSymbols>(() => new PXCacheSymbols(Compilation));
 			_pxAction = new Lazy<PXActionSymbols>(() => new PXActionSymbols(Compilation));
 			_pxDatabase = new Lazy<PXDatabaseSymbols>(() => new PXDatabaseSymbols(Compilation));
 			_pxView = new Lazy<PXViewSymbols>(() => new PXViewSymbols(Compilation));
 			_exceptions = new Lazy<ExceptionSymbols>(() => new ExceptionSymbols(Compilation));
             _pxSelectBaseGeneric = new Lazy<PXSelectBaseGenericSymbols>(() => new PXSelectBaseGenericSymbols(Compilation));
+            _pxSelectBase = new Lazy<PXSelectBaseSymbols>(() => new PXSelectBaseSymbols(Compilation));
 
 			_uiPresentationLogicMethods = new Lazy<ImmutableHashSet<IMethodSymbol>>(GetUiPresentationLogicMethods);
 

@@ -34,11 +34,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 
                 DiagnosticDescriptor descriptor = null;
 
-                if (typeSymbol.InheritsFrom(_pxContext.PXGraphType))
+                if (typeSymbol.InheritsFrom(_pxContext.PXGraph.Type))
                 {
                     descriptor = Descriptors.PX1001_PXGraphCreateInstance;
                 }
-                else if (typeSymbol.Equals(_pxContext.PXGraphType))
+                else if (typeSymbol.Equals(_pxContext.PXGraph.Type))
                 {
                     descriptor = Descriptors.PX1003_NonSpecificPXGraphCreateInstance;
                 }

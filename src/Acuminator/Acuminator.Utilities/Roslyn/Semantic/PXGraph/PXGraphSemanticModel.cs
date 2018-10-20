@@ -39,24 +39,43 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
         private ImmutableArray<DataViewInfo> GetDataViews()
         {
-            IEnumerable<(ISymbol, INamedTypeSymbol)> views = Type == GraphType.PXGraph
-                ? Symbol.GetViewsWithSymbolsFromPXGraph(_pxContext)
-                : Symbol.GetViewsFromGraphExtensionAndBaseGraph(_pxContext);
+            if (Type == GraphType.PXGraph)
+            {
+                var graphViews = Symbol.GetViewsWithSymbolsFromPXGraph(_pxContext);
 
-            return views
-                   .Select(v => new DataViewInfo(v.Item1, v.Item2))
+                return graphViews
+                       .Select(v => new DataViewInfo(v.ViewSymbol, v.ViewType))
+                       .ToImmutableArray();
+            }
+
+            var extViews = Symbol.GetViewsFromGraphExtensionAndBaseGraph(_pxContext);
+
+            return extViews
+                   .Select(v => v.Base == null
+                                ? new DataViewInfo(v.Item.ViewSymbol, v.Item.ViewType)
+                                : new DataViewInfo(v.Item.ViewSymbol, v.Item.ViewType, new DataViewInfo(v.Base.Item.ViewSymbol, v.Base.Item.ViewType)))
                    .ToImmutableArray();
         }
 
         private ImmutableArray<DataViewDelegateInfo> GetDataViewDelegates()
         {
-            IEnumerable<ISymbol> viewSymbols = Views.Select(v => v.Symbol);
-            IEnumerable<(MethodDeclarationSyntax, IMethodSymbol)> delegates = Type == GraphType.PXGraph
-                ? Symbol.GetViewDelegatesFromGraph(viewSymbols, _pxContext, _cancellation)
-                : Symbol.GetViewDelegatesFromGraphExtensionAndBaseGraph(viewSymbols, _pxContext, _cancellation);
+            var viewSymbols = Views.Select(v => v.Symbol);
 
-            return delegates
-                   .Select(d => new DataViewDelegateInfo(d.Item1, d.Item2))
+            if (Type == GraphType.PXGraph)
+            {
+                var graphDelegates = Symbol.GetViewDelegatesFromGraph(viewSymbols, _pxContext, _cancellation);
+
+                return graphDelegates
+                       .Select(d => new DataViewDelegateInfo(d.Node, d.Symbol))
+                       .ToImmutableArray();
+            }
+
+            var extDelegates = Symbol.GetViewDelegatesFromGraphExtensionAndBaseGraph(viewSymbols, _pxContext, _cancellation);
+
+            return extDelegates
+                   .Select(d => d.Base == null
+                                ? new DataViewDelegateInfo(d.Item.Node, d.Item.Symbol)
+                                : new DataViewDelegateInfo(d.Item.Node, d.Item.Symbol, new DataViewDelegateInfo(d.Base.Item.Node, d.Base.Item.Symbol)))
                    .ToImmutableArray();
         }
 
@@ -197,15 +216,30 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
                 if (semanticModel.GetSymbolInfo(node, _cancellation).Symbol is IMethodSymbol symbol)
                 {
-                    bool isCreationDelegateAddition = _pxContext.PXGraphRelatedMethods.InstanceCreatedEventsAddHandler.Equals(symbol.ConstructedFrom);
+                    bool isCreationDelegateAddition = _pxContext.PXGraph.InstanceCreatedEvents.AddHandler.Equals(symbol.ConstructedFrom);
 
                     if (isCreationDelegateAddition)
                     {
                         INamedTypeSymbol graphSymbol = symbol.TypeArguments[0] as INamedTypeSymbol;
-                        ExpressionSyntax delegateNode = node.ArgumentList.Arguments.First().Expression;
-                        ISymbol delegateSymbol = semanticModel.GetSymbolInfo(delegateNode).Symbol;
+                        SyntaxNode expressionNode = node.ArgumentList.Arguments.First().Expression;
+                        SyntaxNode delegateNode;
+                        ISymbol delegateSymbol;
 
-                        GraphInitDelegates.Add(new InitDelegateInfo(graphSymbol, delegateSymbol, delegateNode));
+                        if (expressionNode is LambdaExpressionSyntax lambdaNode)
+                        {
+                            delegateNode = lambdaNode.Body;
+                            delegateSymbol = semanticModel.GetSymbolInfo(delegateNode).Symbol;
+                        }
+                        else
+                        {
+                            delegateSymbol = semanticModel.GetSymbolInfo(expressionNode).Symbol;
+                            delegateNode = delegateSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(_cancellation);
+                        }
+
+                        if (delegateNode != null)
+                        {
+                            GraphInitDelegates.Add(new InitDelegateInfo(graphSymbol, delegateSymbol, delegateNode));
+                        }
                     }
                 }
 
@@ -218,9 +252,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             public GraphType GraphType => GraphType.PXGraph;
             public INamedTypeSymbol GraphTypeSymbol { get; }
             public ISymbol DelegateSymbol { get; }
-            public ExpressionSyntax DelegateNode { get; }
+            public SyntaxNode DelegateNode { get; }
 
-            public InitDelegateInfo(INamedTypeSymbol graphSymbol, ISymbol delegateSymbol, ExpressionSyntax delegateNode)
+            public InitDelegateInfo(INamedTypeSymbol graphSymbol, ISymbol delegateSymbol, SyntaxNode delegateNode)
             {
                 GraphTypeSymbol = graphSymbol;
                 DelegateSymbol = delegateSymbol;

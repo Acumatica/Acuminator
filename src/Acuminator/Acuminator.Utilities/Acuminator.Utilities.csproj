@@ -99,11 +99,16 @@
     <Compile Include="Common\EnumerableExtensions.cs" />
     <Compile Include="Common\ConcurrentExtensions.cs" />
     <Compile Include="Common\EnumerableExtraExtensions.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\GraphInstantiationType.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\GraphOverridableItem.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphViewSymbolUtils.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\GraphOverridableItemsCollection.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\EventSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\BQLSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\ExceptionSymbols.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\PXGraphSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXIntListAttributeSymbols.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\PXSelectBaseSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXStringListAttributeSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXViewSymbols.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\DataViewDelegateInfo.cs" />
@@ -118,7 +123,6 @@
     <Compile Include="Roslyn\Semantic\EventHandlerSignatureType.cs" />
     <Compile Include="Roslyn\Semantic\EventType.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXCacheSymbols.cs" />
-    <Compile Include="Roslyn\Semantic\Symbols\PXGraphRelatedMethodSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\PXSelectBaseGenericSymbols.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphInitializerInfo.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphInitializerType.cs" />
@@ -162,6 +166,7 @@
     <Compile Include="Roslyn\Semantic\IMethodSymbolExtensions.cs" />
     <Compile Include="Roslyn\Syntax\MethodDeclarationUtils.cs" />
     <Compile Include="Roslyn\Syntax\ParameterUsagesRewriter.cs" />
+    <Compile Include="Roslyn\Syntax\PXGraph\GraphSyntaxUtils.cs" />
     <Compile Include="Roslyn\Syntax\SyntaxTreeUtils.cs" />
     <Compile Include="Roslyn\Syntax\RoslynSyntaxUtils.cs" />
     <Compile Include="Roslyn\BqlModifyingMethods.cs" />

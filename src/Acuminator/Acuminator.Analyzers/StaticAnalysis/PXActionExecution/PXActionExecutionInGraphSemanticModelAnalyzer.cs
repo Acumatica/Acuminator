@@ -1,4 +1,5 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.PXGraph;
+using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
@@ -14,7 +15,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionExecution
                 Descriptors.PX1081_PXGraphExecutesActionDuringInitialization,
                 Descriptors.PX1082_ActionExecutionInDataViewDelegate);
 
-        public void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
+        public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
