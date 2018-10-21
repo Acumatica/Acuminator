@@ -18,13 +18,14 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.DacRules
 
 		public override bool SatisfyRule(PrimaryDacFinder dacFinder, ITypeSymbol dac)
 		{
-			if (dacFinder?.Graph?.ContainingNamespace == null || dacFinder.CancellationToken.IsCancellationRequested ||
+			if (dacFinder?.GraphSemanticModel?.GraphSymbol?.ContainingNamespace == null || 
+				dacFinder.CancellationToken.IsCancellationRequested ||
 				dac?.ContainingNamespace == null)
 			{
 				return false;
 			}
 
-			var graphNameSpace = dacFinder.Graph.ContainingNamespace;
+			var graphNameSpace = dacFinder.GraphSemanticModel.GraphSymbol.ContainingNamespace;
 			return dac.GetContainingNamespaces().Contains(graphNameSpace);
 		}
 	}
