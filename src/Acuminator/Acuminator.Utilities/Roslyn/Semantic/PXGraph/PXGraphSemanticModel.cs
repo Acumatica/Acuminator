@@ -139,7 +139,58 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
                                                : new DataViewDelegateInfo(d.Item.Node, d.Item.Symbol, new DataViewDelegateInfo(d.Base.Item.Node, d.Base.Item.Symbol)));
         }
 
-        private void InitDeclaredInitializers()
+		private ImmutableDictionary<string, ActionInfo> GetActions()
+		{
+			var systemActionsRegister = new PXSystemActions.PXSystemActionsRegister(_pxContext);
+
+			switch (Type)
+			{
+				case GraphType.PXGraph:
+					return Symbol.GetPXActionSymbolsWithTypesFromGraph(_pxContext)
+							 .ToImmutableDictionary(a => a.ActionSymbol.Name,
+													a => new ActionInfo(a.ActionSymbol, a.ActionType,
+																		systemActionsRegister.IsSystemAction(a.ActionType)),
+														StringComparer.OrdinalIgnoreCase);
+				case GraphType.PXGraphExtension:
+					return Symbol.GetPXActionSymbolsWithTypesFromGraphExtensionAndItsBaseGraph(_pxContext)
+								 .ToImmutableDictionary(a => a.ActionSymbol.Name,
+														a => v.Base == null
+											   ? new DataViewInfo(v.Item.ViewSymbol,
+																  v.Item.ViewType,
+																  _pxContext)
+											   : new DataViewInfo(v.Item.ViewSymbol,
+																  v.Item.ViewType,
+																  _pxContext,
+																  new DataViewInfo(v.Base.Item.ViewSymbol, v.Base.Item.ViewType, _pxContext)));
+				case GraphType.None:
+				default:
+					return ImmutableDictionary.Create<string, ActionInfo>();
+			}
+		}
+
+		private ImmutableDictionary<string, DataViewDelegateInfo> GetDataViewDelegates()
+		{
+			var viewSymbols = Views.Select(v => v.Symbol);
+
+			if (Type == GraphType.PXGraph)
+			{
+				var graphDelegates = Symbol.GetViewDelegatesFromGraph(viewSymbols, _pxContext, _cancellation);
+
+				return graphDelegates
+					   .ToImmutableDictionary(d => d.Symbol.Name,
+											  d => new DataViewDelegateInfo(d.Node, d.Symbol));
+			}
+
+			var extDelegates = Symbol.GetViewDelegatesFromGraphExtensionAndBaseGraph(viewSymbols, _pxContext, _cancellation);
+
+			return extDelegates
+				   .ToImmutableDictionary(d => d.Item.Symbol.Name,
+										  d => d.Base == null
+											   ? new DataViewDelegateInfo(d.Item.Node, d.Item.Symbol)
+											   : new DataViewDelegateInfo(d.Item.Node, d.Item.Symbol, new DataViewDelegateInfo(d.Base.Item.Node, d.Base.Item.Symbol)));
+		}
+
+		private void InitDeclaredInitializers()
         {
             _cancellation.ThrowIfCancellationRequested();
 

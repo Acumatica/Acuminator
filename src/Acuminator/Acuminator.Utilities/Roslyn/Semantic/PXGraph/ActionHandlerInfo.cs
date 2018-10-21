@@ -20,7 +20,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         {
         }
 
-        public ActionHandlerInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, ActionHandlerInfo baseInfo) : this(node, symbol)
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private string DebuggerDisplay => $"Symbol: {Symbol.Name}";
+
+		public ActionHandlerInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, ActionHandlerInfo baseInfo) : this(node, symbol)
         {
             baseInfo.ThrowOnNull();
             Base = baseInfo;
