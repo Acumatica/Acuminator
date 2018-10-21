@@ -38,46 +38,61 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         /// <param name="pxContext">Context.</param>
         /// <param name="includeViewsFromInheritanceChain">(Optional) True to include, false to exclude the views from inheritance chain.</param>
         /// <returns/>
-        public static ViewSymbolWithTypeCollection GetViewsWithSymbolsFromPXGraph(this ITypeSymbol graph, PXContext pxContext,
-                                                                                  bool includeViewsFromInheritanceChain = true)
+        public static ViewOverridableCollection GetViewsWithSymbolsFromPXGraph(this ITypeSymbol graph, PXContext pxContext,
+                                                                               bool includeViewsFromInheritanceChain = true)
         {
             pxContext.ThrowOnNull(nameof(pxContext));
 
-            if (graph?.InheritsFrom(pxContext.PXGraph.Type) != true)
-                return Enumerable.Empty<(ISymbol, INamedTypeSymbol)>();
+			if (graph?.InheritsFrom(pxContext.PXGraph.Type) != true)
+				return Enumerable.Empty<GraphOverridableItem<(ISymbol, INamedTypeSymbol)>>();
 
-            if (includeViewsFromInheritanceChain)
-            {
-                return graph.GetBaseTypesAndThis()
-                            .TakeWhile(baseGraph => !baseGraph.IsGraphBaseType())
-                            .Reverse()
-                            .SelectMany(baseGraph => GetAllViewSymbolsWithTypesFromPXGraphOrPXGraphExtensionImpl(baseGraph, pxContext));
-            }
-            else
-                return GetAllViewSymbolsWithTypesFromPXGraphOrPXGraphExtensionImpl(graph, pxContext);
+			var viewsByName = new GraphOverridableItemsCollection<(ISymbol, INamedTypeSymbol)>();
+			GetViewsFromGraphImpl(graph, pxContext, includeViewsFromInheritanceChain)
+				.ForEach(view => viewsByName.Add(view.ViewSymbol.Name, view));
+
+			return viewsByName.Items;
         }
 
-        /// <summary>
-        /// Get all view symbols and types from the graph extension and its base graph
-        /// </summary>
-        /// <param name="graphExtension">The graph extension to act on</param>
-        /// <param name="pxContext">Context</param>
-        /// <returns></returns>
-        public static ViewOverridableCollection GetViewsFromGraphExtensionAndBaseGraph(this ITypeSymbol graphExtension, PXContext pxContext)
+		/// <summary>
+		/// Get all views from graph or graph extension and its base graphs and base graph extensions (extended via Acumatica Customization).
+		/// </summary>
+		/// <param name="graphOrExtension">The graph Or graph extension to act on.</param>
+		/// <param name="pxContext">Context.</param>
+		/// <returns/>
+		public static ViewOverridableCollection GetViewsFromGraphOrGraphExtensionAndBaseGraph(this ITypeSymbol graphOrExtension, PXContext pxContext)
+		{
+			pxContext.ThrowOnNull(nameof(pxContext));
+			graphOrExtension.ThrowOnNull(nameof(graphOrExtension));
+
+			bool isGraph = graphOrExtension.IsPXGraph(pxContext);
+
+			if (!isGraph && !graphOrExtension.IsPXGraphExtension(pxContext))
+				return Enumerable.Empty<GraphOverridableItem<(ISymbol, INamedTypeSymbol)>>();
+
+			return isGraph
+				? graphOrExtension.GetViewsWithSymbolsFromPXGraph(pxContext)
+				: graphOrExtension.GetViewsFromGraphExtensionAndBaseGraph(pxContext);
+		}
+
+		/// <summary>
+		/// Get all view symbols and types from the graph extension and its base graph
+		/// </summary>
+		/// <param name="graphExtension">The graph extension to act on</param>
+		/// <param name="pxContext">Context</param>
+		/// <returns></returns>
+		public static ViewOverridableCollection GetViewsFromGraphExtensionAndBaseGraph(this ITypeSymbol graphExtension, PXContext pxContext)
         {
             graphExtension.ThrowOnNull(nameof(graphExtension));
             pxContext.ThrowOnNull(nameof(pxContext));
 
             return GetViewInfoFromGraphExtension<(ISymbol, INamedTypeSymbol)>(graphExtension, pxContext, AddViewsFromGraph, AddViewsFromGraphExtension);
 
-            void AddViewsFromGraph(GraphOverridableItemsCollection<(ISymbol, INamedTypeSymbol)> views, ITypeSymbol graph)
-            {
-                var graphViews = graph.GetViewsWithSymbolsFromPXGraph(pxContext);
 
-                graphViews.ForEach(v => views.Add(v.ViewSymbol.Name, v));
-            }
+            void AddViewsFromGraph(GraphOverridableItemsCollection<(ISymbol, INamedTypeSymbol)> views, ITypeSymbol graph) =>
+				graph.GetViewsFromGraphImpl(pxContext)
+					 .ForEach(v => views.Add(v.ViewSymbol.Name, v));
 
-            void AddViewsFromGraphExtension(GraphOverridableItemsCollection<(ISymbol, INamedTypeSymbol)> views, ITypeSymbol graphExt)
+			void AddViewsFromGraphExtension(GraphOverridableItemsCollection<(ISymbol, INamedTypeSymbol)> views, ITypeSymbol graphExt)
             {
                 var extViews = GetAllViewSymbolsWithTypesFromPXGraphOrPXGraphExtensionImpl(graphExt, pxContext);
 
@@ -85,59 +100,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             }
         }
 
-        /// <summary>
-        /// Gets all declared view symbols with view types from graph extension and its base graph extensions,
-        /// if there is a class hierarchy and <paramref name="includeViewsFromInheritanceChain"/> parameter is <c>true</c>.
-        /// Does not include views from extension's graph.
-        /// </summary>
-        /// <param name="graphExtension">The graph extension to act on.</param>
-        /// <param name="pxContext">Context.</param>
-        /// <param name="includeViewsFromInheritanceChain">(Optional) True to include, false to exclude the views from inheritance chain.</param>
-        /// <returns/>
-        public static ViewSymbolWithTypeCollection GetViewSymbolsWithTypesFromGraphExtension(this ITypeSymbol graphExtension, PXContext pxContext,
-                                                                                             bool includeViewsFromInheritanceChain = true)
-        {
-            pxContext.ThrowOnNull(nameof(pxContext));
+		private static ViewSymbolWithTypeCollection GetViewsFromGraphImpl(this ITypeSymbol graph, PXContext pxContext,
+																		  bool includeViewsFromInheritanceChain = true)
+		{
+			if (includeViewsFromInheritanceChain)
+			{
+				return graph.GetBaseTypesAndThis()
+							.TakeWhile(baseGraph => !baseGraph.IsGraphBaseType())
+							.Reverse()
+							.SelectMany(baseGraph => GetAllViewSymbolsWithTypesFromPXGraphOrPXGraphExtensionImpl(baseGraph, pxContext));
+			}
+			else
+				return GetAllViewSymbolsWithTypesFromPXGraphOrPXGraphExtensionImpl(graph, pxContext);
+		}
 
-            if (graphExtension?.InheritsFrom(pxContext.PXGraphExtensionType) != true)
-                return Enumerable.Empty<(ISymbol, INamedTypeSymbol)>();
-
-            if (includeViewsFromInheritanceChain)
-            {
-                return graphExtension.GetBaseTypesAndThis()
-                                     .TakeWhile(baseGraphExt => !baseGraphExt.IsGraphExtensionBaseType())
-                                     .Reverse()
-                                     .SelectMany(baseGraphExt => GetAllViewSymbolsWithTypesFromPXGraphOrPXGraphExtensionImpl(baseGraphExt, pxContext));
-            }
-            else
-                return GetAllViewSymbolsWithTypesFromPXGraphOrPXGraphExtensionImpl(graphExtension, pxContext);
-        }
-
-        /// <summary>
-        /// Gets the view symbols with view types from graph extension and its base graph.
-        /// </summary>
-        /// <param name="graphExtension">The graph extension to act on.</param>
-        /// <param name="pxContext">Context.</param>
-        /// <param name="includeViewsFromExtensionsInheritanceChain">(Optional) True to include, false to exclude the views from extensions
-        /// 														 inheritance chain.</param>
-        /// <param name="includeViewsFromGraphsInheritanceChain">(Optional) True to include, false to exclude the views from graphs inheritance
-        /// 													 chain.</param>
-        /// <returns/>
-        public static ViewSymbolWithTypeCollection GetViewSymbolsWithTypesFromGraphExtensionAndItsBaseGraph(this ITypeSymbol graphExtension, PXContext pxContext,
-                                                                                                            bool includeViewsFromExtensionsInheritanceChain = true,
-                                                                                                            bool includeViewsFromGraphsInheritanceChain = true)
-        {
-            var extensionViewSymbolWithTypes = graphExtension.GetViewSymbolsWithTypesFromGraphExtension(pxContext, includeViewsFromExtensionsInheritanceChain);
-            ITypeSymbol graph = graphExtension.GetGraphFromGraphExtension(pxContext);
-
-            if (graph == null)
-                return extensionViewSymbolWithTypes;
-
-            var graphViewsSymbolWithTypes = graph.GetViewsWithSymbolsFromPXGraph(pxContext, includeViewsFromGraphsInheritanceChain);
-            return graphViewsSymbolWithTypes.Concat(extensionViewSymbolWithTypes);
-        }
-
-        private static ViewSymbolWithTypeCollection GetAllViewSymbolsWithTypesFromPXGraphOrPXGraphExtensionImpl(ITypeSymbol graphOrExtension,
+		private static ViewSymbolWithTypeCollection GetAllViewSymbolsWithTypesFromPXGraphOrPXGraphExtensionImpl(ITypeSymbol graphOrExtension,
                                                                                                                 PXContext pxContext)
         {
             foreach (ISymbol member in graphOrExtension.GetMembers())

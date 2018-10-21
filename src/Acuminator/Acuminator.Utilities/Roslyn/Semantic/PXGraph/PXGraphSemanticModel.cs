@@ -70,7 +70,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             ViewsByNames = GetDataViews();
             ViewDelegatesByNames = GetDataViewDelegates();
 
-            InitProcessingDelegatesInfo(compilation);
+			ActionsByNames = GetActions();
+
+			InitProcessingDelegatesInfo(compilation);
             InitDeclaredInitializers();
         }
 
@@ -119,9 +121,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
                 var graphViews = Symbol.GetViewsWithSymbolsFromPXGraph(_pxContext);
 
                 return graphViews
-                       .ToImmutableDictionary(v => v.ViewSymbol.Name,
-                                              v => new DataViewInfo(v.ViewSymbol, v.ViewType, _pxContext),
-                                              StringComparer.OrdinalIgnoreCase);
+                       .ToImmutableDictionary(v => v.Item.ViewSymbol.Name,
+                                              v => new DataViewInfo(v.Item.ViewSymbol, v.Item.ViewType, _pxContext),
+																	StringComparer.OrdinalIgnoreCase);
             }
 
             var extViews = Symbol.GetViewsFromGraphExtensionAndBaseGraph(_pxContext);
@@ -160,34 +162,33 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
                                                : new DataViewDelegateInfo(d.Item.Node, d.Item.Symbol, new DataViewDelegateInfo(d.Base.Item.Node, d.Base.Item.Symbol)));
         }
 
-		//private ImmutableDictionary<string, ActionInfo> GetActions()
-		//{
-		//	var systemActionsRegister = new PXSystemActions.PXSystemActionsRegister(_pxContext);
+		private ImmutableDictionary<string, ActionInfo> GetActions()
+		{
+			var systemActionsRegister = new PXSystemActions.PXSystemActionsRegister(_pxContext);
 
-		//	switch (Type)
-		//	{
-		//		case GraphType.PXGraph:
-		//			return Symbol.GetPXActionSymbolsWithTypesFromGraph(_pxContext)
-		//					 .ToImmutableDictionary(a => a.ActionSymbol.Name,
-		//											a => new ActionInfo(a.ActionSymbol, a.ActionType,
-		//																systemActionsRegister.IsSystemAction(a.ActionType)),
-		//												StringComparer.OrdinalIgnoreCase);
-		//		case GraphType.PXGraphExtension:
-		//			return Symbol.GetPXActionSymbolsWithTypesFromGraphExtensionAndItsBaseGraph(_pxContext)
-		//						 .ToImmutableDictionary(a => a.ActionSymbol.Name,
-		//												a => v.Base == null
-		//									   ? new DataViewInfo(v.Item.ViewSymbol,
-		//														  v.Item.ViewType,
-		//														  _pxContext)
-		//									   : new DataViewInfo(v.Item.ViewSymbol,
-		//														  v.Item.ViewType,
-		//														  _pxContext,
-		//														  new DataViewInfo(v.Base.Item.ViewSymbol, v.Base.Item.ViewType, _pxContext)));
-		//		case GraphType.None:
-		//		default:
-		//			return ImmutableDictionary.Create<string, ActionInfo>();
-		//	}
-		//}
+			switch (Type)
+			{
+				case GraphType.PXGraph:
+					return Symbol.GetActionSymbolsWithTypesFromGraph(_pxContext)
+								 .ToImmutableDictionary(a => a.Item.ActionSymbol.Name,
+														a => new ActionInfo(a.Item.ActionSymbol, a.Item.ActionType,
+																			systemActionsRegister.IsSystemAction(a.Item.ActionType)),
+															StringComparer.OrdinalIgnoreCase);
+				case GraphType.PXGraphExtension:
+					return Symbol.GetActionsFromGraphExtensionAndBaseGraph(_pxContext)
+								 .ToImmutableDictionary(a => a.Item.ActionSymbol.Name,
+														a => a.Base == null
+											   ? new ActionInfo(a.Item.ActionSymbol, a.Item.ActionType, 
+																systemActionsRegister.IsSystemAction(a.Item.ActionType))
+											   : new ActionInfo(a.Item.ActionSymbol, a.Item.ActionType, 
+																systemActionsRegister.IsSystemAction(a.Item.ActionType),
+														new ActionInfo(a.Base.Item.ActionSymbol, a.Base.Item.ActionType, 
+																	   systemActionsRegister.IsSystemAction(a.Item.ActionType))));
+				case GraphType.None:
+				default:
+					return ImmutableDictionary.Create<string, ActionInfo>();
+			}
+		}
 
 		//private ImmutableDictionary<string, DataViewDelegateInfo> GetDataViewDelegates()
 		//{

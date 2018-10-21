@@ -11,10 +11,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public class ActionInfo : GraphNodeSymbolItem<ISymbol>
     {
-        /// <summary>
-        /// Indicates whether the action is predefined system action in Acumatica like <see cref="PX.Data.PXSave{TNode}"/>
-        /// </summary>
-        public bool IsSystem { get; }
+		/// <summary>
+		/// The overriden action if any
+		/// </summary>
+		public ActionInfo Base { get; }
+
+		/// <summary>
+		/// Indicates whether the action is predefined system action in Acumatica like <see cref="PX.Data.PXSave{TNode}"/>
+		/// </summary>
+		public bool IsSystem { get; }
 
         /// <summary>
         /// The type of the action symbol.
@@ -31,5 +36,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             Type = type;
 			IsSystem = isSystem;
         }
-    }
+
+		public ActionInfo(ISymbol symbol, INamedTypeSymbol type, bool isSystem, ActionInfo baseInfo) : 
+					 this(symbol, type, isSystem)
+		{
+			baseInfo.ThrowOnNull(nameof(baseInfo));
+
+			Base = baseInfo;
+		}
+	}
 }
