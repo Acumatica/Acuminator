@@ -37,12 +37,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 				return;
 			}
 
-			var actionsWithTypes = isGraph
-				? graphOrGraphExt.GetPXActionSymbolsWithTypesFromGraph(pxContext)
-				: graphOrGraphExt.GetPXActionSymbolsWithTypesFromGraphExtension(pxContext);
-
-			var action = actionsWithTypes.FirstOrDefault(a => String.Equals(a.ActionSymbol.Name, method.Name, StringComparison.OrdinalIgnoreCase))
-										 .ActionSymbol;
+			var action = graphOrGraphExt.GetActionsFromGraphOrGraphExtensionAndBaseGraph(pxContext)
+										.Select(item => item.Item)
+										.FirstOrDefault(a => string.Equals(a.ActionSymbol.Name, method.Name,
+																		   StringComparison.OrdinalIgnoreCase))
+										.ActionSymbol;
 
 			if (action == null || symbolContext.CancellationToken.IsCancellationRequested)
 				return;

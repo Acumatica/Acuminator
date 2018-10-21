@@ -279,17 +279,17 @@ namespace Acuminator.Vsix.GoToDeclaration
 
 				if (IsValidActionHandler(methodSymbol, context))
 				{
-					candidates = graphSymbol.GetPXActionSymbolsWithTypesFromGraph(context, includeActionsFromInheritanceChain: false)
-											.Where(actionWithType => actionWithType.ActionSymbol.Name.Equals(methodSymbol.Name,
+					candidates = graphSymbol.GetActionSymbolsWithTypesFromGraph(context)
+											.Where(actionWithType => actionWithType.Item.ActionSymbol.Name.Equals(methodSymbol.Name,
 																	 StringComparison.OrdinalIgnoreCase))
-											.Select(actionWithType => actionWithType.ActionSymbol);		
+											.Select(actionWithType => actionWithType.Item.ActionSymbol);		
 				}
 				else if (IsValidViewDelegate(methodSymbol, context))
 				{
 					candidates = graphSymbol.GetViewsWithSymbolsFromPXGraph(context, includeViewsFromInheritanceChain: false)
-											.Where(viewWithType => viewWithType.ViewSymbol.Name.Equals(methodSymbol.Name,
+											.Where(viewWithType => viewWithType.Item.ViewSymbol.Name.Equals(methodSymbol.Name,
 																   StringComparison.OrdinalIgnoreCase))
-											.Select(viewWithType => viewWithType.ViewSymbol);
+											.Select(viewWithType => viewWithType.Item.ViewSymbol);
 				}
 				else
 					return null;

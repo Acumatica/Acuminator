@@ -55,7 +55,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac
 
 		private static IEnumerable<ITypeSymbol> GetGraphViewDacTypes(INamedTypeSymbol pxGraph, PXContext pxContext) =>
 			pxGraph.GetViewsWithSymbolsFromPXGraph(pxContext)
-				   .Select(viewInfo => viewInfo.ViewType.GetDacFromView(pxContext))
+				   .Select(viewInfo => viewInfo.Item.ViewType.GetDacFromView(pxContext))
 				   .Where(dacType => dacType != null);		
 
 		private static Location GetLocation(ClassDeclarationSyntax pxGraphNode, ITypeSymbol declaredPrimaryDacType,
