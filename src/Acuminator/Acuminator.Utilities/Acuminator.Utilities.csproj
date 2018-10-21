@@ -99,6 +99,8 @@
     <Compile Include="Common\EnumerableExtensions.cs" />
     <Compile Include="Common\ConcurrentExtensions.cs" />
     <Compile Include="Common\EnumerableExtraExtensions.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\ActionInfo.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\ActionHandlerInfo.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphInstantiationType.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphNodeSymbolItem.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\GraphOverridableItem.cs" />

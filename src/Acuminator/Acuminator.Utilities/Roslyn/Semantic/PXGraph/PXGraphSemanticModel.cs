@@ -29,7 +29,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         public ImmutableDictionary<string, DataViewDelegateInfo> ViewDelegatesByNames { get; }
         public IEnumerable<DataViewDelegateInfo> ViewDelegates => ViewDelegatesByNames.Values;
 
-        private PXGraphSemanticModel(Compilation compilation, PXContext pxContext, GraphType type,
+
+		public ImmutableDictionary<string, ActionInfo> ActionsByNames { get; }
+		public IEnumerable<ActionInfo> Actions => ActionsByNames.Values;
+
+		public ImmutableDictionary<string, ActionHandlerInfo> ActionHandlersByNames { get; }
+		public IEnumerable<ActionHandlerInfo> ActionHandlers => ActionHandlersByNames.Values;
+
+		private PXGraphSemanticModel(Compilation compilation, PXContext pxContext, GraphType type,
                                      INamedTypeSymbol symbol, CancellationToken cancellation = default)
         {
             cancellation.ThrowIfCancellationRequested();
