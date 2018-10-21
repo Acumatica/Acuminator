@@ -54,8 +54,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac
 		}
 
 		private static IEnumerable<ITypeSymbol> GetGraphViewDacTypes(INamedTypeSymbol pxGraph, PXContext pxContext) =>
-			pxGraph.GetViewsFromPXGraph(pxContext)
-				   .Select(view => view.GetDacFromView(pxContext))
+			pxGraph.GetViewsWithSymbolsFromPXGraph(pxContext)
+				   .Select(viewInfo => viewInfo.ViewType.GetDacFromView(pxContext))
 				   .Where(dacType => dacType != null);		
 
 		private static Location GetLocation(ClassDeclarationSyntax pxGraphNode, ITypeSymbol declaredPrimaryDacType,
@@ -69,20 +69,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac
 				INamedTypeSymbol baseTypeSymbol =
 					syntaxContext.SemanticModel.GetSymbolInfo(genericBaseType, syntaxContext.CancellationToken).Symbol as INamedTypeSymbol;
 
-				if (baseTypeSymbol?.IsPXGraph() == true)
+				if (baseTypeSymbol == null || !baseTypeSymbol.IsPXGraph())
+					continue;
+		
+				if (baseTypeSymbol.TypeArguments.Length >= 2)
 				{
-					if (baseTypeSymbol.TypeArguments.Length >= 2)
+					int indexOfDac = baseTypeSymbol.TypeArguments.IndexOf(declaredPrimaryDacType);
+
+					if (indexOfDac >= 0)
 					{
-						int indexOfDac = baseTypeSymbol.TypeArguments.IndexOf(declaredPrimaryDacType);
-
-						if (indexOfDac >= 0)
-						{
-							return genericBaseType.TypeArgumentList.Arguments[indexOfDac].GetLocation();
-						}
+						return genericBaseType.TypeArgumentList.Arguments[indexOfDac].GetLocation();
 					}
-
-					break;
 				}
+
+				break;			
 			}
 
 			return pxGraphNode.Identifier.GetLocation();
