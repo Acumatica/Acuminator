@@ -84,50 +84,68 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
         private ImmutableDictionary<string, DataViewInfo> GetDataViews()
         {
+            var viewByNameDictionary = new Dictionary<string, DataViewInfo>(StringComparer.OrdinalIgnoreCase);
+
             if (Type == GraphType.PXGraph)
             {
                 var graphViews = Symbol.GetViewsWithSymbolsFromPXGraph(_pxContext);
 
-                return graphViews
-                       .ToImmutableDictionary(v => v.ViewSymbol.Name,
-                                              v => new DataViewInfo(v.ViewSymbol, v.ViewType, _pxContext),
-                                              StringComparer.OrdinalIgnoreCase);
+                foreach (var (ViewSymbol, ViewType) in graphViews)
+                {
+                    viewByNameDictionary[ViewSymbol.Name] = new DataViewInfo(ViewSymbol, ViewType, _pxContext);
+                }
+            }
+            else
+            {
+                var extViews = Symbol.GetViewsFromGraphExtensionAndBaseGraph(_pxContext);
+
+                foreach (var view in extViews)
+                {
+                    var viewInfo = view.Base == null
+                        ? new DataViewInfo(view.Item.ViewSymbol,
+                                           view.Item.ViewType,
+                                           _pxContext)
+                        : new DataViewInfo(view.Item.ViewSymbol,
+                                           view.Item.ViewType,
+                                           _pxContext,
+                                           new DataViewInfo(view.Base.Item.ViewSymbol, view.Base.Item.ViewType, _pxContext));
+
+                    viewByNameDictionary[view.Item.ViewSymbol.Name] = viewInfo;
+                }
             }
 
-            var extViews = Symbol.GetViewsFromGraphExtensionAndBaseGraph(_pxContext);
-
-            return extViews
-                   .ToImmutableDictionary(v => v.Item.ViewSymbol.Name,
-                                          v => v.Base == null
-                                               ? new DataViewInfo(v.Item.ViewSymbol,
-                                                                  v.Item.ViewType,
-                                                                  _pxContext)
-                                               : new DataViewInfo(v.Item.ViewSymbol,
-                                                                  v.Item.ViewType,
-                                                                  _pxContext,
-                                                                  new DataViewInfo(v.Base.Item.ViewSymbol, v.Base.Item.ViewType, _pxContext)));
+            return viewByNameDictionary.ToImmutableDictionary();
         }
 
         private ImmutableDictionary<string, DataViewDelegateInfo> GetDataViewDelegates()
         {
+            var viewDelegateByNameDictionary = new Dictionary<string, DataViewDelegateInfo>(StringComparer.OrdinalIgnoreCase);
             var viewSymbols = Views.Select(v => v.Symbol);
 
             if (Type == GraphType.PXGraph)
             {
                 var graphDelegates = Symbol.GetViewDelegatesFromGraph(viewSymbols, _pxContext, _cancellation);
 
-                return graphDelegates
-                       .ToImmutableDictionary(d => d.Symbol.Name,
-                                              d => new DataViewDelegateInfo(d.Node, d.Symbol));
+                foreach (var del in graphDelegates)
+                {
+                    viewDelegateByNameDictionary[del.Symbol.Name] = new DataViewDelegateInfo(del.Node, del.Symbol);
+                }
+            }
+            else
+            {
+                var extDelegates = Symbol.GetViewDelegatesFromGraphExtensionAndBaseGraph(viewSymbols, _pxContext, _cancellation);
+
+                foreach (var del in extDelegates)
+                {
+                    var delegateInfo = del.Base == null
+                        ? new DataViewDelegateInfo(del.Item.Node, del.Item.Symbol)
+                        : new DataViewDelegateInfo(del.Item.Node, del.Item.Symbol, new DataViewDelegateInfo(del.Base.Item.Node, del.Base.Item.Symbol));
+
+                    viewDelegateByNameDictionary[del.Item.Symbol.Name] = delegateInfo;
+                }
             }
 
-            var extDelegates = Symbol.GetViewDelegatesFromGraphExtensionAndBaseGraph(viewSymbols, _pxContext, _cancellation);
-
-            return extDelegates
-                   .ToImmutableDictionary(d => d.Item.Symbol.Name,
-                                          d => d.Base == null
-                                               ? new DataViewDelegateInfo(d.Item.Node, d.Item.Symbol)
-                                               : new DataViewDelegateInfo(d.Item.Node, d.Item.Symbol, new DataViewDelegateInfo(d.Base.Item.Node, d.Base.Item.Symbol)));
+            return viewDelegateByNameDictionary.ToImmutableDictionary();
         }
 
         private void InitDeclaredInitializers()

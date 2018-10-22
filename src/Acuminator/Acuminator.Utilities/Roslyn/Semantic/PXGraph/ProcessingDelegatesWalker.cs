@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
-    public class ProcessingDelegatesWalker : NestedInvocationWalker
+    internal class ProcessingDelegatesWalker : NestedInvocationWalker
     {
         private readonly PXContext _pxContext;
         private readonly ImmutableHashSet<ISymbol> _processingViewSymbols;
