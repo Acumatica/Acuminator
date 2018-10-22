@@ -10,27 +10,25 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
     public class InstanceCreatedEventsAddHandlerWalker : NestedInvocationWalker
     {
-        private readonly CancellationToken _cancellation;
         private readonly PXContext _pxContext;
 
         public List<InitDelegateInfo> GraphInitDelegates { get; private set; } = new List<InitDelegateInfo>();
 
-        public InstanceCreatedEventsAddHandlerWalker(Compilation compilation, PXContext pxContext, CancellationToken cancellation)
-            : base(compilation, cancellation)
+        public InstanceCreatedEventsAddHandlerWalker(PXContext pxContext, CancellationToken cancellation)
+            : base(pxContext.Compilation, cancellation)
         {
             pxContext.ThrowOnNull(nameof(pxContext));
 
             _pxContext = pxContext;
-            _cancellation = cancellation;
         }
 
         public override void VisitInvocationExpression(InvocationExpressionSyntax node)
         {
-            _cancellation.ThrowIfCancellationRequested();
+            ThrowIfCancellationRequested();
 
             SemanticModel semanticModel = _pxContext.Compilation.GetSemanticModel(node.SyntaxTree);
 
-            if (semanticModel.GetSymbolInfo(node, _cancellation).Symbol is IMethodSymbol symbol)
+            if (semanticModel.GetSymbolInfo(node, CancellationToken).Symbol is IMethodSymbol symbol)
             {
                 bool isCreationDelegateAddition = _pxContext.PXGraph.InstanceCreatedEvents.AddHandler.Equals(symbol.ConstructedFrom);
 
@@ -49,7 +47,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
                     else
                     {
                         delegateSymbol = semanticModel.GetSymbolInfo(expressionNode).Symbol;
-                        delegateNode = delegateSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(_cancellation);
+                        delegateNode = delegateSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(CancellationToken);
                     }
 
                     if (delegateNode != null)

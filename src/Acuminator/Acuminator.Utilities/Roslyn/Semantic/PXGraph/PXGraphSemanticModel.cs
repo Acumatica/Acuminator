@@ -1,6 +1,5 @@
 ﻿using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
@@ -29,8 +28,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         public ImmutableDictionary<string, DataViewDelegateInfo> ViewDelegatesByNames { get; }
         public IEnumerable<DataViewDelegateInfo> ViewDelegates => ViewDelegatesByNames.Values;
 
-        private PXGraphSemanticModel(Compilation compilation, PXContext pxContext, GraphType type,
-                                     INamedTypeSymbol symbol, CancellationToken cancellation = default)
+        private PXGraphSemanticModel(PXContext pxContext, GraphType type, INamedTypeSymbol symbol, CancellationToken cancellation = default)
         {
             cancellation.ThrowIfCancellationRequested();
 
@@ -42,11 +40,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             ViewsByNames = GetDataViews();
             ViewDelegatesByNames = GetDataViewDelegates();
 
-            InitProcessingDelegatesInfo(compilation);
+            InitProcessingDelegatesInfo();
             InitDeclaredInitializers();
         }
 
-        private void InitProcessingDelegatesInfo(Compilation compilation)
+        private void InitProcessingDelegatesInfo()
         {
             var processingViewSymbols = Views
                                         .Where(v => v.IsProcessing)
@@ -61,7 +59,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
             var declaringNodes = Symbol.DeclaringSyntaxReferences
                                  .Select(r => r.GetSyntax(_cancellation));
-            var walker = new ProcessingDelegatesWalker(compilation, _pxContext, processingViewSymbols, _cancellation);
+            var walker = new ProcessingDelegatesWalker(_pxContext, processingViewSymbols, _cancellation);
 
             foreach (var node in declaringNodes)
             {
@@ -165,28 +163,27 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         /// <param name="semanticModel">Semantic model</param>
         /// <param name="cancellation">Cancellation</param>
         /// <returns></returns>
-        public static IEnumerable<PXGraphSemanticModel> InferModels(Compilation compilation, PXContext pxContext,
-                                                                    INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
+        public static IEnumerable<PXGraphSemanticModel> InferModels(PXContext pxContext, INamedTypeSymbol typeSymbol,
+                                                                    CancellationToken cancellation = default)
         {
             cancellation.ThrowIfCancellationRequested();
-            compilation.ThrowOnNull(nameof(compilation));
             pxContext.ThrowOnNull(nameof(pxContext));
             typeSymbol.ThrowOnNull(nameof(typeSymbol));
 
             List<PXGraphSemanticModel> models = new List<PXGraphSemanticModel>();
 
-            InferExplicitModel(compilation, pxContext, typeSymbol, models, cancellation);
-            InferImplicitModels(compilation, pxContext, typeSymbol, models, cancellation);
+            InferExplicitModel(pxContext, typeSymbol, models, cancellation);
+            InferImplicitModels(pxContext, typeSymbol, models, cancellation);
 
             return models;
         }
 
-        private static void InferImplicitModels(Compilation compilation, PXContext pxContext, INamedTypeSymbol typeSymbol,
+        private static void InferImplicitModels(PXContext pxContext, INamedTypeSymbol typeSymbol,
                                                 List<PXGraphSemanticModel> models, CancellationToken cancellation)
         {
             cancellation.ThrowIfCancellationRequested();
 
-            IEnumerable<InitDelegateInfo> delegates = GetInitDelegates(compilation, pxContext, typeSymbol, cancellation);
+            IEnumerable<InitDelegateInfo> delegates = GetInitDelegates(pxContext, typeSymbol, cancellation);
 
             foreach (InitDelegateInfo d in delegates)
             {
@@ -200,7 +197,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
                 }
                 else
                 {
-                    implicitModel = new PXGraphSemanticModel(compilation, pxContext, d.GraphType, d.GraphTypeSymbol, cancellation);
+                    implicitModel = new PXGraphSemanticModel(pxContext, d.GraphType, d.GraphTypeSymbol, cancellation);
                     models.Add(implicitModel);
                 }
 
@@ -208,7 +205,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             }
         }
 
-        private static void InferExplicitModel(Compilation compilation, PXContext pxContext, INamedTypeSymbol typeSymbol,
+        private static void InferExplicitModel(PXContext pxContext, INamedTypeSymbol typeSymbol,
                                                List<PXGraphSemanticModel> models, CancellationToken cancellation)
         {
             cancellation.ThrowIfCancellationRequested();
@@ -226,20 +223,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
             if (graphType != GraphType.None)
             {
-                PXGraphSemanticModel explicitModel = new PXGraphSemanticModel(compilation, pxContext, graphType, typeSymbol, cancellation);
+                PXGraphSemanticModel explicitModel = new PXGraphSemanticModel(pxContext, graphType, typeSymbol, cancellation);
 
                 models.Add(explicitModel);
             }
         }
 
-        private static IEnumerable<InitDelegateInfo> GetInitDelegates(Compilation compilation, PXContext pxContext,
-                                                                      INamedTypeSymbol typeSymbol, CancellationToken cancellation)
+        private static IEnumerable<InitDelegateInfo> GetInitDelegates(PXContext pxContext, INamedTypeSymbol typeSymbol,
+                                                                      CancellationToken cancellation)
         {
             cancellation.ThrowIfCancellationRequested();
 
             IEnumerable<SyntaxNode> declaringNodes = typeSymbol.DeclaringSyntaxReferences
                                                      .Select(r => r.GetSyntax(cancellation));
-            InstanceCreatedEventsAddHandlerWalker walker = new InstanceCreatedEventsAddHandlerWalker(compilation, pxContext, cancellation);
+            InstanceCreatedEventsAddHandlerWalker walker = new InstanceCreatedEventsAddHandlerWalker(pxContext, cancellation);
 
             foreach (SyntaxNode node in declaringNodes)
             {

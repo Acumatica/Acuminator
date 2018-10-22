@@ -21,9 +21,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         public Dictionary<string, List<ProcessingDelegateInfo>> FinallyProcessDelegateListByView { get; } =
             new Dictionary<string, List<ProcessingDelegateInfo>>();
 
-        public ProcessingDelegatesWalker(Compilation compilation, PXContext pxContext,
-                                         ImmutableHashSet<ISymbol> processingViewSymbols, CancellationToken cancellation)
-            : base(compilation, cancellation)
+        public ProcessingDelegatesWalker(PXContext pxContext, ImmutableHashSet<ISymbol> processingViewSymbols, CancellationToken cancellation)
+            : base(pxContext.Compilation, cancellation)
         {
             pxContext.ThrowOnNull(nameof(pxContext));
             processingViewSymbols.ThrowOnNull(nameof(processingViewSymbols));
