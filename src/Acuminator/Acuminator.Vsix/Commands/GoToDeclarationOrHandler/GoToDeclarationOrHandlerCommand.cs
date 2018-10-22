@@ -148,7 +148,8 @@ namespace Acuminator.Vsix.GoToDeclaration
 													MemberDeclarationSyntax memberNode, SemanticModel semanticModel, PXContext context)
 		{
 			INamedTypeSymbol graphOrExtensionType = memberSymbol.ContainingType;
-			PXGraphSemanticModel graphSemanticModel = PXGraphSemanticModel.InferModels(context, graphOrExtensionType).FirstOrDefault();
+			PXGraphSemanticModel graphSemanticModel = PXGraphSemanticModel.InferModels(context.Compilation, context, graphOrExtensionType)
+																		  .FirstOrDefault();
 
 			if (graphSemanticModel == null || graphSemanticModel.Type == GraphType.None)
 				return;
@@ -160,13 +161,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 					return;
 				case IFieldSymbol fieldSymbol when fieldSymbol.Type.IsBqlCommand(context):
 					NavigateToPXViewDelegate(document, textView, fieldSymbol, graphSemanticModel, context);
-					return;
-				case IPropertySymbol propertySymbol when propertySymbol.Type.IsPXAction():
-					NavigateToPXActionHandler(document, textView, propertySymbol, graphSemanticModel, context);
-					return;
-				case IPropertySymbol propertySymbol when propertySymbol.Type.IsBqlCommand(context):
-					NavigateToPXViewDelegate(document, textView, propertySymbol, graphSemanticModel, context);
-					return;
+					return;								
 				case IMethodSymbol methodSymbol:
 					NavigateToActionOrViewDeclaration(document, textView, methodSymbol, graphSemanticModel, context);
 					return;
@@ -176,36 +171,24 @@ namespace Acuminator.Vsix.GoToDeclaration
 		private void NavigateToPXActionHandler(Document document, IWpfTextView textView, ISymbol actionSymbol, PXGraphSemanticModel graphSemanticModel,
 											   PXContext context)
 		{
-			var actionHandlers = GetActionHandlerByName(graphSemanticModel.Symbol, actionSymbol.Name, context);
-
-			if (!actionHandlers.IsSingle())
+			if (!graphSemanticModel.ActionHandlersByNames.TryGetValue(actionSymbol.Name, out ActionHandlerInfo actionHandler))
 				return;
 
-			IMethodSymbol actionHandler = actionHandlers.First();
-			ImmutableArray<SyntaxReference> syntaxReferences = actionHandler.DeclaringSyntaxReferences;
+			IWpfTextView textViewToNavigateTo = textView;
 
-			if (syntaxReferences.Length != 1)
+			if (!(actionHandler.Node is MethodDeclarationSyntax handlerNode) || handlerNode.SyntaxTree == null)
 				return;
 
-			SyntaxReference syntaxReference = syntaxReferences[0];
-
-			if (syntaxReference.SyntaxTree.FilePath != document.FilePath)
+			if (handlerNode.SyntaxTree.FilePath != document.FilePath)
 			{
-				textView = OpenOtherDocumentForNavigationAndGetItsTextView(document, syntaxReference.SyntaxTree);
-			}
+				textViewToNavigateTo = OpenOtherDocumentForNavigationAndGetItsTextView(document, handlerNode.SyntaxTree);
+			}	
 
-			if (textView == null)
+			if (textViewToNavigateTo == null)
 				return;
 
-			MethodDeclarationSyntax methodNode = syntaxReference.GetSyntax() as MethodDeclarationSyntax;
-			TextSpan textSpan = methodNode?.Identifier.Span ?? syntaxReferences[0].Span;
-			SetNewPositionInTextView(textView, textSpan);
-		}
-
-		private IEnumerable<IMethodSymbol> GetActionHandlerByName(INamedTypeSymbol graphSymbol, string name, PXContext pxContext) =>
-			from method in graphSymbol.GetMembers().OfType<IMethodSymbol>()
-			where method.Name.Equals(name, StringComparison.OrdinalIgnoreCase) && method.IsValidActionHandler(pxContext)
-			select method;
+			SetNewPositionInTextView(textViewToNavigateTo, handlerNode.Identifier.Span);
+		}	
 										
 		private void NavigateToPXViewDelegate(Document document, IWpfTextView textView, ISymbol viewSymbol, 
 											  PXGraphSemanticModel graphSemanticModel, PXContext context)
@@ -294,13 +277,9 @@ namespace Acuminator.Vsix.GoToDeclaration
 
 			if (methodSymbol.IsValidActionHandler(context))
 			{
-				var actionsWithTypes = graphSemanticModel.Type == GraphType.PXGraph
-					? graphSemanticModel.Symbol.GetPXActionSymbolsWithTypesFromGraph(context)
-					: graphSemanticModel.Symbol.GetPXActionSymbolsWithTypesFromGraphExtensionAndItsBaseGraph(context);
-
-				candidates = from actionWithType in actionsWithTypes
-							 where string.Equals(actionWithType.ActionSymbol.Name, methodSymbol.Name, StringComparison.OrdinalIgnoreCase)
-							 select actionWithType.ActionSymbol;
+				candidates = from action in graphSemanticModel.Actions
+							 where string.Equals(action.Symbol.Name, methodSymbol.Name, StringComparison.OrdinalIgnoreCase)
+							 select action.Symbol;
 			}
 			else if (methodSymbol.IsValidViewDelegate(context))
 			{
