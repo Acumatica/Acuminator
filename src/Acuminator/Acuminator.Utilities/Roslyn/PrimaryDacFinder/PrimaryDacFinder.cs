@@ -74,8 +74,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 			if (!isGraph && !graphOrGraphExtension.InheritsFrom(pxContext.PXGraphExtensionType))
 				return null;
 
-			PXGraphSemanticModel graphSemanticModel = PXGraphSemanticModel.InferModels(pxContext.Compilation, pxContext,
-																					   graphOrGraphExtension, cancellationToken)
+			PXGraphSemanticModel graphSemanticModel = PXGraphSemanticModel.InferModels(pxContext, graphOrGraphExtension, cancellationToken)
 																		 ?.FirstOrDefault();
 
 			if (graphSemanticModel?.GraphSymbol == null || cancellationToken.IsCancellationRequested)

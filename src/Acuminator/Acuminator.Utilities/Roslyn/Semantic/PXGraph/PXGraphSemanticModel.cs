@@ -120,7 +120,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
             if (Type == GraphType.PXGraph)
             {
-                var graphViews = Symbol.GetViewsWithSymbolsFromPXGraph(_pxContext);
+                var graphViews = Symbol.GetViewsWithSymbolsFromPXGraph(_pxContext).Select(item => item.Item);
 
                 foreach (var (ViewSymbol, ViewType) in graphViews)
                 {
