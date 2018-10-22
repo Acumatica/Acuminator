@@ -2,16 +2,29 @@
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
 ## Acuminator 1.5
-Acuminator 1.5 includes the diagnostics and code fixes, enhancements, and bug fixes described in this section, as well as the features that have been implemented in previous versions.
+Acuminator 1.5 includes the diagnostics and code fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
 ### New Diagnostics and Code Fixes
 In this version, diagnostics and code fixes for the following issues have been added.
 
 | Code                                 | Issue Description                                                                                        | Type    | Diagnostics | Code Fix    | 
-| ------------------------------------ | -------------------------------------------------------------------------------------------------------- | ------- | ----------- | ----------- | 
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------- | ------- | ----------- | ----------- |
+| [PX1047](docs/diagnostics/PX1047.md) | A DAC instance passed to the event handler cannot be modified inside this event handler.                 | Error   | Available   | Unavailable |
+| [PX1048](docs/diagnostics/PX1048.md) | Only the DAC instance that is passed in the event arguments can be modified in the event handler.        | Error   | Available   | Unavailable |
+| [PX1049](docs/diagnostics/PX1049.md) | In a `RowSelected` handler, BQL statements and other database queries should be avoided.                 | Warning | Available   | Unavailable |
+| [PX1059](docs/diagnostics/PX1059.md) | Changes to `PXCache` cannot be performed during the `PXGraph` initialization.                            | Error   | Available   | Unavailable |
+| [PX1070](docs/diagnostics/PX1070.md) | The state of fields and actions can be configured only in RowSelected event handlers.                    | Error   | Available   | Unavailable |
+| [PX1071](docs/diagnostics/PX1071.md) | Actions cannot be executed within event handlers.                                                        | Error   | Available   | Unavailable | 
+| [PX1072](docs/diagnostics/PX1072.md) | BQL queries must be executed within the context of an existing `PXGraph` instance.                       | Warning | Available   | Available   | 
+| [PX1073](docs/diagnostics/PX1073.md) | Exceptions cannot be thrown in `RowPersisted` event handlers.                                            | Error   | Available   | Unavailable |
 | [PX1074](docs/diagnostics/PX1074.md) | `PXSetupNotEnteredException` cannot be thrown in event handlers except the `RowSelected` event handlers. | Warning | Available   | Unavailable |
+| [PX1075](docs/diagnostics/PX1075.md) | `PXCache.RaiseExceptionHandling` cannot be invoked from the `FieldDefaulting`, `FieldSelecting`, `RowSelecting`, `RowPersisted` event handlers. | Error | Available   | Unavailable |
+| [PX1080](docs/diagnostics/PX1080.md) | Data view delegates should not start long-running operations.                                            | Error   | Available   | Unavailable |
 | [PX1081](docs/diagnostics/PX1081.md) | Actions cannot be executed during the `PXGraph` initialization.                                          | Error   | Available   | Unavailable |
 | [PX1082](docs/diagnostics/PX1082.md) | Actions cannot be executed within data view delegates.                                                   | Error   | Available   | Unavailable |
+| [PX1083](docs/diagnostics/PX1083.md) | Changes cannot be saved to the database from data view delegates.                                        | Error   | Available   | Unavailable |
+| [PX1084](docs/diagnostics/PX1084.md) | `PXGraph` instances cannot be initialized within data view delegates.                                    | Error   | Available   | Unavailable |
+| [PX1085](docs/diagnostics/PX1085.md) | BQL statements and other database queries should not be executed during the `PXGraph` initialization.    | Warning | Available   | Unavailable |
 | [PX1086](docs/diagnostics/PX1086.md) | `PXSetupNotEnteredException` cannot be thrown during the `PXGraph` initialization.                       | Warning | Available   | Unavailable |
 
 ### Special Diagnostics for ISV Solutions
