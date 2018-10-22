@@ -182,11 +182,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		private ImmutableDictionary<string, ActionInfo> GetActions()
 		{
-			var systemActionsRegister = new PXSystemActions.PXSystemActionsRegister(_pxContext);
-
 			if (Type == GraphType.None)
 				return ImmutableDictionary.Create<string, ActionInfo>(StringComparer.OrdinalIgnoreCase);
 
+			var systemActionsRegister = new PXSystemActions.PXSystemActionsRegister(_pxContext);
 			var rawActionInfos = Type == GraphType.PXGraph
 				? Symbol.GetActionSymbolsWithTypesFromGraph(_pxContext)
 				: Symbol.GetActionsFromGraphExtensionAndBaseGraph(_pxContext);
@@ -213,20 +212,17 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		private ImmutableDictionary<string, ActionHandlerInfo> GetActionHandlers()
 		{
-			switch (Type)
-			{
-				case GraphType.PXGraph:
-					return Symbol.GetActionHandlersFromGraph(ActionsByNames, _pxContext, _cancellation)
-								 .ToImmutableDictionary(a => a.Item.Symbol.Name, CreateActionHandlerInfo,
-															 StringComparer.OrdinalIgnoreCase);
-				case GraphType.PXGraphExtension:
-					return Symbol.GetActionHandlersFromGraphExtensionAndBaseGraph(ActionsByNames, _pxContext, _cancellation)
-								 .ToImmutableDictionary(a => a.Item.Symbol.Name, CreateActionHandlerInfo,
-														StringComparer.OrdinalIgnoreCase);
-				case GraphType.None:
-				default:
-					return ImmutableDictionary.Create<string, ActionHandlerInfo>(StringComparer.OrdinalIgnoreCase);
-			}
+			if (Type == GraphType.None)
+				return ImmutableDictionary.Create<string, ActionHandlerInfo>(StringComparer.OrdinalIgnoreCase);
+
+			var rawActionHandlerInfos = Type == GraphType.PXGraph
+				? Symbol.GetActionHandlersFromGraph(ActionsByNames, _pxContext, _cancellation)
+				: Symbol.GetActionHandlersFromGraphExtensionAndBaseGraph(ActionsByNames, _pxContext, _cancellation);
+
+			return rawActionHandlerInfos.ToLookup(handler => handler.Item.Symbol.Name, StringComparer.OrdinalIgnoreCase)
+										.ToImmutableDictionary(group => group.Key,
+															   group => CreateActionHandlerInfo(group.First()),
+															   keyComparer: StringComparer.OrdinalIgnoreCase);
 
 			//--------------------------------------------------------Local Function--------------------------------------------
 			ActionHandlerInfo CreateActionHandlerInfo(GraphOverridableItem<(MethodDeclarationSyntax, IMethodSymbol)> item)
