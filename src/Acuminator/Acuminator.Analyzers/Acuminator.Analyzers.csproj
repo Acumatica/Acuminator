@@ -61,9 +61,11 @@
     <Compile Include="StaticAnalysis\DatabaseQueries\DatabaseQueriesInPXGraphInitializationAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DatabaseQueries\DatabaseQueriesInRowSelectedAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DatabaseQueries\DatabaseQueriesInRowSelectingAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\DacKeyFieldDeclaration\KeyFieldDeclarationFix.cs" />
     <Compile Include="StaticAnalysis\DacPropertyAttributes\MultipleSpecialAttributesOnDacPropertyFix.cs" />
     <Compile Include="StaticAnalysis\DacPropertyAttributes\MultipleFieldTypeAttributesOnDacPropertyFix.cs" />
     <Compile Include="StaticAnalysis\DacPropertyAttributes\MultipleAttributesOnDacPropertyFixBase.cs" />
+    <Compile Include="StaticAnalysis\DacKeyFieldDeclaration\KeyFieldDeclarationAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DatabaseQueries\Walker.cs" />
     <Compile Include="StaticAnalysis\EventHandlers\EventHandlerAnalyzer.cs" />
     <Compile Include="StaticAnalysis\EventHandlers\IEventHandlerAnalyzer.cs" />

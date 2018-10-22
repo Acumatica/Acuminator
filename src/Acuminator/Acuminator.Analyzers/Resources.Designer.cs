@@ -755,6 +755,42 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Make the field bound to the identity column be a non-key field and leave all other key fields untouched.
+        /// </summary>
+        public static string PX1055FixEditIdentityAttribute {
+            get {
+                return ResourceManager.GetString("PX1055FixEditIdentityAttribute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Make the field bound to the identity column be the only key field in the DAC.
+        /// </summary>
+        public static string PX1055FixEditKeyFieldAttributes {
+            get {
+                return ResourceManager.GetString("PX1055FixEditKeyFieldAttributes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove the definition of the field bound to the identity column and leave all other key fields untouched. (You should drop the corresponding identity column from the database manually.).
+        /// </summary>
+        public static string PX1055FixRemoveIdentityAttribute {
+            get {
+                return ResourceManager.GetString("PX1055FixRemoveIdentityAttribute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid primary key of the DAC. Use a single identity field or one or multiple natural fields for the key..
+        /// </summary>
+        public static string PX1055Title {
+            get {
+                return ResourceManager.GetString("PX1055Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A PXGraph instance cannot be initialized while another PXGraph instance is being initialized.
         /// </summary>
         public static string PX1057Title {
