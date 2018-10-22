@@ -127,7 +127,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <param name="cancellation">Cancellation token</param>
 		/// <param name="inheritance">If true includes action handlers from the graph inheritance chain</param>
 		/// <returns></returns>
-		public static ActionHandlersOverridableCollection GetActionHandlersFromGraph(this ITypeSymbol graph, IDictionary<string, ISymbol> actionsByName,
+		public static ActionHandlersOverridableCollection GetActionHandlersFromGraph(this ITypeSymbol graph, IDictionary<string, ActionInfo> actionsByName,
 																					 PXContext pxContext, CancellationToken cancellation, 
 																					 bool inheritance = true)
 		{
@@ -158,7 +158,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <param name="cancellation">Cancellation token</param>
 		/// <returns></returns>
 		public static ActionHandlersOverridableCollection GetActionHandlersFromGraphExtensionAndBaseGraph(this ITypeSymbol graphExtension,
-																				IDictionary<string, ISymbol> actionsByName, PXContext pxContext,
+																				IDictionary<string, ActionInfo> actionsByName, PXContext pxContext,
 																				CancellationToken cancellation)
 		{
 			graphExtension.ThrowOnNull(nameof(graphExtension));
@@ -184,7 +184,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		}
 
 		private static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetActionHandlersFromGraphImpl(
-																this ITypeSymbol graph, IDictionary<string, ISymbol> actionsByName,
+																this ITypeSymbol graph, IDictionary<string, ActionInfo> actionsByName,
 																PXContext pxContext, CancellationToken cancellation, bool inheritance)
 		{
 			if (inheritance)
@@ -201,7 +201,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		}
 
 		private static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetActionHandlersFromGraphOrGraphExtension(
-															this ITypeSymbol graphOrExtension, IDictionary<string, ISymbol> actionsByName, 
+															this ITypeSymbol graphOrExtension, IDictionary<string, ActionInfo> actionsByName, 
 															PXContext pxContext, CancellationToken cancellation)
 		{
 			IEnumerable<IMethodSymbol> handlers = from method in graphOrExtension.GetMembers().OfType<IMethodSymbol>()

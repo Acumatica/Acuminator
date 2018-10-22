@@ -71,6 +71,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             ViewDelegatesByNames = GetDataViewDelegates();
 
 			ActionsByNames = GetActions();
+			ActionHandlersByNames = GetActionHandlers();
 
 			InitProcessingDelegatesInfo(compilation);
             InitDeclaredInitializers();
@@ -196,27 +197,37 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 		}
 
-		//private ImmutableDictionary<string, DataViewDelegateInfo> GetDataViewDelegates()
-		//{
-		//	var viewSymbols = Views.Select(v => v.Symbol);
+		private ImmutableDictionary<string, ActionHandlerInfo> GetActionHandlers()
+		{
+			switch (Type)
+			{
+				case GraphType.PXGraph:
+					return Symbol.GetActionHandlersFromGraph(ActionsByNames, _pxContext, _cancellation)
+								 .ToImmutableDictionary(a => a.Item.Symbol.Name, CreateActionHandlerInfo,
+															 StringComparer.OrdinalIgnoreCase);
+				case GraphType.PXGraphExtension:
+					return Symbol.GetActionHandlersFromGraphExtensionAndBaseGraph(ActionsByNames, _pxContext, _cancellation)
+								 .ToImmutableDictionary(a => a.Item.Symbol.Name, CreateActionHandlerInfo,
+														StringComparer.OrdinalIgnoreCase);
+				case GraphType.None:
+				default:
+					return ImmutableDictionary.Create<string, ActionHandlerInfo>(StringComparer.OrdinalIgnoreCase);
+			}
 
-		//	if (Type == GraphType.PXGraph)
-		//	{
-		//		var graphDelegates = Symbol.GetViewDelegatesFromGraph(viewSymbols, _pxContext, _cancellation);
+			//--------------------------------------------------------Local Function--------------------------------------------
+			ActionHandlerInfo CreateActionHandlerInfo(GraphOverridableItem<(MethodDeclarationSyntax, IMethodSymbol)> item)
+			{
+				var (node, method) = item.Item;
 
-		//		return graphDelegates
-		//			   .ToImmutableDictionary(d => d.Symbol.Name,
-		//									  d => new DataViewDelegateInfo(d.Node, d.Symbol));
-		//	}
+				ActionHandlerInfo baseActionHandlerInfo = item.Base != null
+					? baseActionHandlerInfo = CreateActionHandlerInfo(item.Base)
+					: null;
 
-		//	var extDelegates = Symbol.GetViewDelegatesFromGraphExtensionAndBaseGraph(viewSymbols, _pxContext, _cancellation);
-
-		//	return extDelegates
-		//		   .ToImmutableDictionary(d => d.Item.Symbol.Name,
-		//								  d => d.Base == null
-		//									   ? new DataViewDelegateInfo(d.Item.Node, d.Item.Symbol)
-		//									   : new DataViewDelegateInfo(d.Item.Node, d.Item.Symbol, new DataViewDelegateInfo(d.Base.Item.Node, d.Base.Item.Symbol)));
-		//}
+				return baseActionHandlerInfo == null
+					? new ActionHandlerInfo(node, method)
+					: new ActionHandlerInfo(node, method, baseActionHandlerInfo);
+			}
+		}
 
 		private void InitDeclaredInitializers()
         {
