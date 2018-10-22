@@ -111,6 +111,28 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				: null;
 		}
 
+		public static bool IsValidActionHandler(this IMethodSymbol method, PXContext pxContext)
+		{
+			method.ThrowOnNull(nameof(method));
+			pxContext.ThrowOnNull(nameof(pxContext));
+
+			if (method.Parameters.Length == 0)
+				return method.ReturnsVoid;
+			else
+			{
+				return method.Parameters[0].Type.InheritsFromOrEquals(pxContext.PXAdapterType) &&
+					   method.ReturnType.InheritsFromOrEquals(pxContext.SystemTypes.IEnumerable, includeInterfaces: true);
+			}
+		}
+
+		public static bool IsValidViewDelegate(this IMethodSymbol method, PXContext pxContext)
+		{
+			method.ThrowOnNull(nameof(method));
+			pxContext.ThrowOnNull(nameof(pxContext));
+
+			return method.ReturnType.InheritsFromOrEquals(pxContext.SystemTypes.IEnumerable, includeInterfaces: true);
+		}
+
 		/// <summary>
 		/// Get declared primary DAC from graph or graph extension.
 		/// </summary>

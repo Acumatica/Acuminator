@@ -137,7 +137,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
                                                : new DataViewInfo(v.Item.ViewSymbol,
                                                                   v.Item.ViewType,
                                                                   _pxContext,
-                                                                  new DataViewInfo(v.Base.Item.ViewSymbol, v.Base.Item.ViewType, _pxContext)));
+                                                                  new DataViewInfo(v.Base.Item.ViewSymbol, v.Base.Item.ViewType, _pxContext)));  //Where is the comparer?
         }
 
         private ImmutableDictionary<string, DataViewDelegateInfo> GetDataViewDelegates()
@@ -170,23 +170,29 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			{
 				case GraphType.PXGraph:
 					return Symbol.GetActionSymbolsWithTypesFromGraph(_pxContext)
-								 .ToImmutableDictionary(a => a.Item.ActionSymbol.Name,
-														a => new ActionInfo(a.Item.ActionSymbol, a.Item.ActionType,
-																			systemActionsRegister.IsSystemAction(a.Item.ActionType)),
-															StringComparer.OrdinalIgnoreCase);
+								 .ToImmutableDictionary(a => a.Item.ActionSymbol.Name, CreateActionInfo,
+														StringComparer.OrdinalIgnoreCase);
 				case GraphType.PXGraphExtension:
 					return Symbol.GetActionsFromGraphExtensionAndBaseGraph(_pxContext)
-								 .ToImmutableDictionary(a => a.Item.ActionSymbol.Name,
-														a => a.Base == null
-											   ? new ActionInfo(a.Item.ActionSymbol, a.Item.ActionType, 
-																systemActionsRegister.IsSystemAction(a.Item.ActionType))
-											   : new ActionInfo(a.Item.ActionSymbol, a.Item.ActionType, 
-																systemActionsRegister.IsSystemAction(a.Item.ActionType),
-														new ActionInfo(a.Base.Item.ActionSymbol, a.Base.Item.ActionType, 
-																	   systemActionsRegister.IsSystemAction(a.Item.ActionType))));
+								 .ToImmutableDictionary(a => a.Item.ActionSymbol.Name, CreateActionInfo,
+														StringComparer.OrdinalIgnoreCase);
 				case GraphType.None:
 				default:
-					return ImmutableDictionary.Create<string, ActionInfo>();
+					return ImmutableDictionary.Create<string, ActionInfo>(StringComparer.OrdinalIgnoreCase);
+			}
+
+			//--------------------------------------------------------Local Function--------------------------------------------
+			ActionInfo CreateActionInfo(GraphOverridableItem<(ISymbol ActionSymbol, INamedTypeSymbol ActionType)> item)
+			{
+				var (actionSymbol, actionType) = item.Item;
+
+				ActionInfo baseActionInfo = item.Base != null
+					? baseActionInfo = CreateActionInfo(item.Base)
+					: null;
+					
+				return baseActionInfo == null 
+					? new ActionInfo(actionSymbol, actionType, systemActionsRegister.IsSystemAction(actionType))
+					: new ActionInfo(actionSymbol, actionType, systemActionsRegister.IsSystemAction(actionType), baseActionInfo);
 			}
 		}
 

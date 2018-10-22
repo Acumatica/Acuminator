@@ -16,6 +16,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
 	public static class GraphActionSymbolUtils
 	{
+		#region Actions
 		/// <summary>
 		/// Gets the PXAction symbols with types from graph and, if <paramref name="includeActionsFromInheritanceChain"/> is <c>true</c>, its base graphs.
 		/// </summary>
@@ -75,7 +76,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			//--------------------------------------------------------Local Functions----------------------------------------------------------
 			void AddActionsFromGraph(GraphOverridableItemsCollection<(ISymbol, INamedTypeSymbol)> actionsCollection, ITypeSymbol graph) =>
-				graph.GetActionsFromGraphImpl(pxContext)
+				graph.GetActionsFromGraphImpl(pxContext, includeActionsFromInheritanceChain: true)
 					 .ForEach(action => actionsCollection.Add(action.ActionSymbol.Name, action));
 
 			void AddActionsFromGraphExtension(GraphOverridableItemsCollection<(ISymbol, INamedTypeSymbol)> actionsCollection, ITypeSymbol graphExt)
@@ -87,7 +88,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		}
 
 		private static ActionSymbolWithTypeCollection GetActionsFromGraphImpl(this ITypeSymbol graph, PXContext pxContext,
-																			  bool includeActionsFromInheritanceChain = true)
+																			  bool includeActionsFromInheritanceChain)
 		{
 			if (includeActionsFromInheritanceChain)
 			{
@@ -113,7 +114,114 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				}
 			}
 		}
-		
+		#endregion
+
+		#region Action Handlers
+		/// <summary>
+		/// Get the action handlers method symbols and syntax nodes from the graph. 
+		/// The <paramref name="actionsByName"/> must have <see cref="StringComparer.OrdinalIgnoreCase"/> comparer.
+		/// </summary>
+		/// <param name="graph">The graph to act on</param>
+		/// <param name="actionsByName">The actions of the graph dictionary with <see cref="StringComparer.OrdinalIgnoreCase"/> comparer</param>
+		/// <param name="pxContext">Context</param>
+		/// <param name="cancellation">Cancellation token</param>
+		/// <param name="inheritance">If true includes action handlers from the graph inheritance chain</param>
+		/// <returns></returns>
+		public static ActionHandlersOverridableCollection GetActionHandlersFromGraph(this ITypeSymbol graph, IDictionary<string, ISymbol> actionsByName,
+																					 PXContext pxContext, CancellationToken cancellation, 
+																					 bool inheritance = true)
+		{
+			graph.ThrowOnNull(nameof(graph));
+			actionsByName.ThrowOnNull(nameof(actionsByName));
+			pxContext.ThrowOnNull(nameof(pxContext));
+
+			if (!graph.IsPXGraph(pxContext))
+			{
+				return Enumerable.Empty<GraphOverridableItem<(MethodDeclarationSyntax, IMethodSymbol)>>();
+			}
+
+			var actionHandlersByName = new GraphOverridableItemsCollection<(MethodDeclarationSyntax, IMethodSymbol)>();
+
+			GetActionHandlersFromGraphImpl(graph, actionsByName, pxContext, cancellation, inheritance)
+				.ForEach(handler => actionHandlersByName.Add(handler.Symbol.Name, handler));
+
+			return actionHandlersByName.Items;
+		}
+
+		/// <summary>
+		/// Get the action handlers symbols and syntax nodes from the graph extension.
+		/// The <paramref name="actionsByName"/> must have <see cref="StringComparer.OrdinalIgnoreCase"/> comparer.
+		/// </summary>
+		/// <param name="graphExtension">The graph extension to act on</param>
+		/// <param name="actionsByName">The actions of the graph dictionary with <see cref="StringComparer.OrdinalIgnoreCase"/> comparer</param>
+		/// <param name="pxContext">Context</param>
+		/// <param name="cancellation">Cancellation token</param>
+		/// <returns></returns>
+		public static ActionHandlersOverridableCollection GetActionHandlersFromGraphExtensionAndBaseGraph(this ITypeSymbol graphExtension,
+																				IDictionary<string, ISymbol> actionsByName, PXContext pxContext,
+																				CancellationToken cancellation)
+		{
+			graphExtension.ThrowOnNull(nameof(graphExtension));
+			actionsByName.ThrowOnNull(nameof(actionsByName));
+			pxContext.ThrowOnNull(nameof(pxContext));
+
+			return GetActionInfoFromGraphExtension<(MethodDeclarationSyntax, IMethodSymbol)>(
+				graphExtension, pxContext, AddHandlersFromGraph, AddHandlersFromGraphExtension);
+
+			//--------------------------------------------------------Local Functions----------------------------------------------------------
+			void AddHandlersFromGraph(GraphOverridableItemsCollection<(MethodDeclarationSyntax, IMethodSymbol)> handlersCollection, ITypeSymbol graph)
+			{
+				graph.GetActionHandlersFromGraphImpl(actionsByName, pxContext, cancellation, inheritance: true)
+					 .ForEach(handler => handlersCollection.Add(handler.Symbol.Name, handler));
+			}
+
+			void AddHandlersFromGraphExtension(GraphOverridableItemsCollection<(MethodDeclarationSyntax, IMethodSymbol)> handlersCollection,
+											   ITypeSymbol graphExt)
+			{
+				graphExt.GetActionHandlersFromGraphOrGraphExtension(actionsByName, pxContext, cancellation)
+						.ForEach(handler => handlersCollection.Add(handler.Symbol.Name, handler));
+			}
+		}
+
+		private static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetActionHandlersFromGraphImpl(
+																this ITypeSymbol graph, IDictionary<string, ISymbol> actionsByName,
+																PXContext pxContext, CancellationToken cancellation, bool inheritance)
+		{
+			if (inheritance)
+			{
+				return graph.GetBaseTypesAndThis()
+							.TakeWhile(baseGraph => !baseGraph.IsGraphBaseType())
+							.Reverse()
+							.SelectMany(baseGraph => GetActionHandlersFromGraphOrGraphExtension(baseGraph, actionsByName, pxContext, cancellation));
+			}
+			else
+			{
+				return GetActionHandlersFromGraphOrGraphExtension(graph, actionsByName, pxContext, cancellation);
+			}
+		}
+
+		private static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetActionHandlersFromGraphOrGraphExtension(
+															this ITypeSymbol graphOrExtension, IDictionary<string, ISymbol> actionsByName, 
+															PXContext pxContext, CancellationToken cancellation)
+		{
+			IEnumerable<IMethodSymbol> handlers = from method in graphOrExtension.GetMembers().OfType<IMethodSymbol>()
+												  where method.IsValidActionHandler(pxContext) && actionsByName.ContainsKey(method.Name)
+												  select method;
+												  											 
+			foreach (IMethodSymbol handler in handlers)
+			{
+				cancellation.ThrowIfCancellationRequested();
+
+				SyntaxReference reference = handler.DeclaringSyntaxReferences.FirstOrDefault();
+
+				if (reference?.GetSyntax(cancellation) is MethodDeclarationSyntax declaration)
+				{
+					yield return (declaration, handler);
+				}		
+			}
+		}
+		#endregion
+
 		private static IEnumerable<GraphOverridableItem<T>> GetActionInfoFromGraphExtension<T>(ITypeSymbol graphExtension, PXContext pxContext,
 															Action<GraphOverridableItemsCollection<T>, ITypeSymbol> addGraphActionInfo,
 															Action<GraphOverridableItemsCollection<T>, ITypeSymbol> addGraphExtensionActionInfo)
@@ -122,7 +230,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			if (!graphExtension.InheritsFrom(pxContext.PXGraphExtensionType) || !graphExtension.BaseType.IsGenericType)
 				return Enumerable.Empty<GraphOverridableItem<T>>();
-			
+
 			var actionsByName = new GraphOverridableItemsCollection<T>();
 			INamedTypeSymbol baseType = graphExtension.BaseType;
 			ITypeSymbol graphType = baseType.TypeArguments[baseType.TypeArguments.Length - 1];
@@ -134,7 +242,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			if (baseType.TypeArguments.Length >= 2 && !AddInfoFromBaseExtensions())
 				return empty;
-			
+
 			addGraphExtensionActionInfo(actionsByName, graphExtension);
 			return actionsByName.Items;
 
@@ -156,6 +264,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 				return true;
 			}
-		}		
+		}	
 	}
 }
