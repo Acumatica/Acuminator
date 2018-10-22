@@ -52,7 +52,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
                 return;
             }
 
-            var inferredGraphs = PXGraphSemanticModel.InferModels(context.Compilation, pxContext, type, context.CancellationToken);
+            var inferredGraphs = PXGraphSemanticModel.InferModels(pxContext, type, context.CancellationToken);
 
             foreach (var innerAnalyzer in _innerAnalyzers)
             {
