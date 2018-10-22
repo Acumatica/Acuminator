@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using PX.Common;
 using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
@@ -18,7 +17,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
         public GraphNodeSymbolItem(T symbol)
         {
-            symbol.ThrowOnNull();
+            symbol.ThrowOnNull(nameof(symbol));
             Symbol = symbol;
         }
     }
