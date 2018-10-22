@@ -195,7 +195,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 														group => CreateActionInfo(group.First()),
 														keyComparer: StringComparer.OrdinalIgnoreCase);
 
-			//--------------------------------------------------------Local Function--------------------------------------------
+
+
 			ActionInfo CreateActionInfo(GraphOverridableItem<(ISymbol ActionSymbol, INamedTypeSymbol ActionType)> item)
 			{
 				var (actionSymbol, actionType) = item.Item;
@@ -224,7 +225,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 															   group => CreateActionHandlerInfo(group.First()),
 															   keyComparer: StringComparer.OrdinalIgnoreCase);
 
-			//--------------------------------------------------------Local Function--------------------------------------------
+
+
 			ActionHandlerInfo CreateActionHandlerInfo(GraphOverridableItem<(MethodDeclarationSyntax, IMethodSymbol)> item)
 			{
 				var (node, method) = item.Item;

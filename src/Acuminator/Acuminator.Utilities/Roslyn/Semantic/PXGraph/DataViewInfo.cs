@@ -56,9 +56,5 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
             Base = baseInfo;
         }
-
-        public void InitProcessingDelegatesInfo()
-        {
-        }
     }
 }

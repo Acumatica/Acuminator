@@ -25,7 +25,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		public ActionHandlerInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, ActionHandlerInfo baseInfo) : this(node, symbol)
         {
-            baseInfo.ThrowOnNull();
+            baseInfo.ThrowOnNull(nameof(baseInfo));
             Base = baseInfo;
         }
     }

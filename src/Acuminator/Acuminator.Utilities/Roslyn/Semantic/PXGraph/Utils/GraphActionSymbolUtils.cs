@@ -74,7 +74,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return GetActionInfoFromGraphExtension<(ISymbol, INamedTypeSymbol)>(graphExtension, pxContext,
 																				AddActionsFromGraph, AddActionsFromGraphExtension);
 
-			//--------------------------------------------------------Local Functions----------------------------------------------------------
+
 			void AddActionsFromGraph(GraphOverridableItemsCollection<(ISymbol, INamedTypeSymbol)> actionsCollection, ITypeSymbol graph) =>
 				graph.GetActionsFromGraphImpl(pxContext, includeActionsFromInheritanceChain: true)
 					 .ForEach(action => actionsCollection.Add(action.ActionSymbol.Name, action));
@@ -168,7 +168,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return GetActionInfoFromGraphExtension<(MethodDeclarationSyntax, IMethodSymbol)>(
 				graphExtension, pxContext, AddHandlersFromGraph, AddHandlersFromGraphExtension);
 
-			//--------------------------------------------------------Local Functions----------------------------------------------------------
+
 			void AddHandlersFromGraph(GraphOverridableItemsCollection<(MethodDeclarationSyntax, IMethodSymbol)> handlersCollection, ITypeSymbol graph)
 			{
 				graph.GetActionHandlersFromGraphImpl(actionsByName, pxContext, cancellation, inheritance: true)
@@ -247,7 +247,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return actionsByName.Items;
 
 
-			//-----------------------------------------------------------------Local Function----------------------------------------------
 			bool AddInfoFromBaseExtensions()
 			{
 				for (int i = baseType.TypeArguments.Length - 2; i >= 0; i--)
