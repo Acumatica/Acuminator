@@ -69,6 +69,8 @@
     <Compile Include="DAC\Multiple field attributes, invalid aggregators and DAC field must be abstract\APInvoice.cs" />
     <Compile Include="DAC\APSetup.cs" />
     <Compile Include="Graph\Event Handlers\SOOrderEntryExt.cs" />
+    <Compile Include="Graph\GoTo Test\APInvoiceEntryExt.cs" />
+    <Compile Include="Graph\GoTo Test\APInvoiceEntryExtProcessPrices.cs" />
     <Compile Include="Graph\Graph extension calling non-overriden view via delegate\SOInvoiceEntryExt.cs" />
     <Compile Include="Graph\Graph extension with action call\SOInvoiceEntryExt.cs" />
     <Compile Include="Graph\Graph saving changes and invoking actions\SMUserMaint.cs" />
