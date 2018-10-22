@@ -55,8 +55,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 				{
 					var identityOrKey = CheckAttributeIdentityOrKey(attribute, pxContext);
 
-					isKey = identityOrKey.IsKey? true : isKey;
-					isKeyIdentity = identityOrKey.IsKeyIdentity ? true : isKeyIdentity;
+					isKey = identityOrKey.IsKey || isKey;
+					isKeyIdentity = identityOrKey.IsKeyIdentity || isKeyIdentity;
 
 					keyAttributes.Add(attribute);
 				}
