@@ -25,8 +25,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
                                          ImmutableHashSet<ISymbol> processingViewSymbols, CancellationToken cancellation)
             : base(compilation, cancellation)
         {
-            pxContext.ThrowOnNull();
-            processingViewSymbols.ThrowOnNull();
+            pxContext.ThrowOnNull(nameof(pxContext));
+            processingViewSymbols.ThrowOnNull(nameof(processingViewSymbols));
 
             _pxContext = pxContext;
             _processingViewSymbols = processingViewSymbols;

@@ -52,7 +52,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         public DataViewInfo(ISymbol symbol, INamedTypeSymbol type, PXContext pxContext, DataViewInfo baseInfo)
             : this(symbol, type, pxContext)
         {
-            baseInfo.ThrowOnNull();
+            baseInfo.ThrowOnNull(nameof(baseInfo));
 
             Base = baseInfo;
         }

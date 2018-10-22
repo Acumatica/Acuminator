@@ -18,7 +18,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         public InstanceCreatedEventsAddHandlerWalker(Compilation compilation, PXContext pxContext, CancellationToken cancellation)
             : base(compilation, cancellation)
         {
-            pxContext.ThrowOnNull();
+            pxContext.ThrowOnNull(nameof(pxContext));
 
             _pxContext = pxContext;
             _cancellation = cancellation;

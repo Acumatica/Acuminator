@@ -19,7 +19,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         public DataViewDelegateInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, DataViewDelegateInfo baseInfo)
             : this(node, symbol)
         {
-            baseInfo.ThrowOnNull();
+            baseInfo.ThrowOnNull(nameof(baseInfo));
             Base = baseInfo;
         }
     }
