@@ -21,5 +21,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		public INamedTypeSymbol PXPrevious => _compilation.GetTypeByMetadataName(typeof(PXPrevious<>).FullName);
 		public INamedTypeSymbol PXNext => _compilation.GetTypeByMetadataName(typeof(PXNext<>).FullName);
 		public INamedTypeSymbol PXLast => _compilation.GetTypeByMetadataName(typeof(PXLast<>).FullName);
+		public INamedTypeSymbol PXChangeID => _compilation.GetTypeByMetadataName(typeof(PXChangeID<,>).FullName);
 	}
 }

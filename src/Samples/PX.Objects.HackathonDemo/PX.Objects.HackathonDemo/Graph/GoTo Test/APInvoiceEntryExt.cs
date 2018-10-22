@@ -5,32 +5,26 @@ using System.Linq;
 
 namespace PX.Objects.HackathonDemo
 {
-	public partial class APInvoiceEntry : PXGraph<APInvoiceEntry>
+	public partial class APInvoiceEntryExt : PXGraphExtension<APInvoiceEntry>
 	{
 		#region Views
-		public PXSelect<ListEntryPoint> Items;
-
-		public PXSelect<APInvoice> Orders;
+		public PXSelect<ListEntryPoint> ItemsExtended;
 
 		public PXSetup<APSetup> APSetup;
-
-		public PXSelect<TaxTran> Taxes;
 
 		#region Current Order
 		public PXSelect<APInvoice,
 					Where<APInvoice.refNbr, Equal<Current<APInvoice.refNbr>>,
-						And<APInvoice.docType, Equal<Current<APInvoice.docType>>>>> CurrentOrder;
+						And<APInvoice.docType, Equal<Current<APInvoice.docType>>>>> CurrentOrderExtended;
 		#endregion
 		#endregion
 
-		public PXAction<APInvoice> Release;
+		public PXAction<APInvoice> ReleaseExtended;
 
-		public PXAction<APInvoice> ViewBatch;
-
-		public PXAction<APInvoice> VoidInvoice;
+		public PXAction<APInvoice> ProcessPrices;
 
 
-		protected virtual void APInvoice_RowUpdated(PXCache sender, PXRowUpdatedEventArgs e)
+		protected virtual void APInvoice_CuryDocBal_FieldUpdated(PXCache sender, PXFieldUpdatedEventArgs e)
 		{
 			APInvoice doc = e.Row as APInvoice;
 			if (doc == null) return;
@@ -97,14 +91,14 @@ namespace PX.Objects.HackathonDemo
 
 
 		#region Delegate
-		public IEnumerable items()
+		public IEnumerable itemsExtended()
 		{
 			int startRow = PXView.StartRow;
 			int totalRows = 0;
 
 			startRow = PXView.StartRow;
 
-			IEnumerable<ListEntryPoint> rows = new PXView(this, false, new Select<ListEntryPoint>())
+			IEnumerable<ListEntryPoint> rows = new PXView(Base, false, new Select<ListEntryPoint>())
 					.Select(PXView.Currents, PXView.Parameters, PXView.Searches, PXView.SortColumns, PXView.Descendings, PXView.Filters,
 					ref startRow, PXView.MaximumRows, ref totalRows).Cast<ListEntryPoint>();
 
@@ -123,7 +117,7 @@ namespace PX.Objects.HackathonDemo
 		}
 		#endregion
 
-		public IEnumerable release(PXAdapter adapter)
+		public IEnumerable releaseExtended(PXAdapter adapter)
 		{
 			return adapter.Get();
 		}
