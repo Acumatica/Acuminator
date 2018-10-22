@@ -9,14 +9,14 @@ In this version, diagnostics and code fixes for the following issues have been a
 
 | Code                            | Issue Description                                                                                        | Type    | Diagnostics | Code Fix    | 
 | ------------------------------- | -------------------------------------------------------------------------------------------------------- | ------- | ----------- | ----------- |
-| [PX1047](diagnostics/PX1047.md) | For the `FieldDefaulting`, `FieldVerifying`, and `RowSelected` events, a DAC instance passed to the event handler cannot be modified in this event handler. | Error   | Available   | Unavailable |
+| [PX1047](diagnostics/PX1047.md) | In the `FieldDefaulting`, `FieldVerifying`, and `RowSelected` event handlers, DAC instances passed to these event handlers cannot be modified. | Error   | Available   | Unavailable |
 | [PX1048](diagnostics/PX1048.md) | For the `RowInserting` and `RowSelecting` events, only the DAC instance that is passed in the event arguments can be modified in the event handler. | Error   | Available   | Unavailable |
-| [PX1049](diagnostics/PX1049.md) | In a `RowSelected` handler, BQL statements and other database queries should be avoided.                 | Warning | Available   | Unavailable |
+| [PX1049](diagnostics/PX1049.md) | In `RowSelected` event handlers, BQL statements and other database queries should be avoided.            | Warning | Available   | Unavailable |
 | [PX1059](diagnostics/PX1059.md) | Changes to `PXCache` cannot be performed during the `PXGraph` initialization.                            | Error   | Available   | Unavailable |
-| [PX1070](diagnostics/PX1070.md) | The state of fields and actions can be configured only in `RowSelected` event handlers.                    | Error   | Available   | Unavailable |
+| [PX1070](diagnostics/PX1070.md) | The state of fields and actions can be configured only in `RowSelected` event handlers.                  | Error   | Available   | Unavailable |
 | [PX1071](diagnostics/PX1071.md) | Actions cannot be executed within event handlers.                                                        | Error   | Available   | Unavailable | 
 | [PX1072](diagnostics/PX1072.md) | BQL queries must be executed within the context of an existing `PXGraph` instance.                       | Warning | Available   | Available   | 
-| [PX1073](diagnostics/PX1073.md) | Exceptions cannot be thrown in the `RowPersisted` event handlers.                                            | Error   | Available   | Unavailable |
+| [PX1073](diagnostics/PX1073.md) | Exceptions cannot be thrown in the `RowPersisted` event handlers.                                        | Error   | Available   | Unavailable |
 | [PX1074](diagnostics/PX1074.md) | `PXSetupNotEnteredException` cannot be thrown in event handlers except the `RowSelected` event handlers. | Warning | Available   | Unavailable |
 | [PX1075](diagnostics/PX1075.md) | `PXCache.RaiseExceptionHandling` cannot be invoked from the `FieldDefaulting`, `FieldSelecting`, `RowSelecting`, and `RowPersisted` event handlers. | Error | Available   | Unavailable |
 | [PX1080](diagnostics/PX1080.md) | Data view delegates should not start long-running operations.                                            | Error   | Available   | Unavailable |

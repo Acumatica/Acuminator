@@ -66,7 +66,7 @@ The diagnostic description contains the following sections:
 -   Has one of the following titles:
     -   _Example of Incorrect Code_ (for errors)
     -   _Example of Code that Results in the Warning_ (for warnings)
--   Contains an example of the code in C# with a comment in the line where the diagnostic is displayed
+-   Contains an example of the code in C# with a comment in the line where the diagnostic is displayed (_The PX1047 error is displayed for this line._)
 
 #### Example of the code fix (if a code fix is available)
 
