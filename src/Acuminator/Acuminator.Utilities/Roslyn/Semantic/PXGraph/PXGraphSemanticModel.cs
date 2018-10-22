@@ -184,20 +184,17 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			var systemActionsRegister = new PXSystemActions.PXSystemActionsRegister(_pxContext);
 
-			switch (Type)
-			{
-				case GraphType.PXGraph:
-					return Symbol.GetActionSymbolsWithTypesFromGraph(_pxContext)
-								 .ToImmutableDictionary(a => a.Item.ActionSymbol.Name, CreateActionInfo,
-														StringComparer.OrdinalIgnoreCase);
-				case GraphType.PXGraphExtension:
-					return Symbol.GetActionsFromGraphExtensionAndBaseGraph(_pxContext)
-								 .ToImmutableDictionary(a => a.Item.ActionSymbol.Name, CreateActionInfo,
-														StringComparer.OrdinalIgnoreCase);
-				case GraphType.None:
-				default:
-					return ImmutableDictionary.Create<string, ActionInfo>(StringComparer.OrdinalIgnoreCase);
-			}
+			if (Type == GraphType.None)
+				return ImmutableDictionary.Create<string, ActionInfo>(StringComparer.OrdinalIgnoreCase);
+
+			var rawActionInfos = Type == GraphType.PXGraph
+				? Symbol.GetActionSymbolsWithTypesFromGraph(_pxContext)
+				: Symbol.GetActionsFromGraphExtensionAndBaseGraph(_pxContext);
+
+			return rawActionInfos.ToLookup(a => a.Item.ActionSymbol.Name, StringComparer.OrdinalIgnoreCase)
+								 .ToImmutableDictionary(group => group.Key,
+														group => CreateActionInfo(group.First()),
+														keyComparer: StringComparer.OrdinalIgnoreCase);
 
 			//--------------------------------------------------------Local Function--------------------------------------------
 			ActionInfo CreateActionInfo(GraphOverridableItem<(ISymbol ActionSymbol, INamedTypeSymbol ActionType)> item)
