@@ -366,6 +366,18 @@
   <data name="PX1080Title" xml:space="preserve">
     <value>Data view delegates should not start long-running operations</value>
   </data>
+  <data name="PX1055FixEditKeyFieldAttributes" xml:space="preserve">
+    <value>Make the field bound to the identity column be the only key field in the DAC</value>
+  </data>
+  <data name="PX1055FixEditIdentityAttribute" xml:space="preserve">
+    <value>Make the field bound to the identity column be a non-key field and leave all other key fields untouched</value>
+  </data>
+  <data name="PX1055FixRemoveIdentityAttribute" xml:space="preserve">
+    <value>Remove the definition of the field bound to the identity column and leave all other key fields untouched. (You should drop the corresponding identity column from the database manually.)</value>
+  </data>
+  <data name="PX1055Title" xml:space="preserve">
+    <value>Invalid primary key of the DAC. Use a single identity field or one or multiple natural fields for the key.</value>
+  </data>
   <data name="PX1073Title" xml:space="preserve">
     <value>Exceptions cannot be thrown in the RowPersisted event handler</value>
   </data>
