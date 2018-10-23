@@ -100,8 +100,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				pxContext.FieldAttributes.PXBoolAttribute
 			};
 
-		private static HashSet<ITypeSymbol> GetBoundTypeAttributes(PXContext pxContext) =>
-			new HashSet<ITypeSymbol>
+		private static HashSet<ITypeSymbol> GetBoundTypeAttributes(PXContext pxContext)
+		{
+			var boundTypeAttributes = new HashSet<ITypeSymbol>
 			{
 				pxContext.FieldAttributes.PXDBFieldAttribute,
 
@@ -125,6 +126,16 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				pxContext.FieldAttributes.PXDBDataLengthAttribute
 			};
 
+			var packagedIntegerAttribute = pxContext.FieldAttributes.PXDBPackedIntegerArrayAttribute;
+
+			if (packagedIntegerAttribute != null)
+			{
+				boundTypeAttributes.Add(packagedIntegerAttribute);
+			}
+
+			return boundTypeAttributes;
+		}
+
 		private static HashSet<ITypeSymbol> GetSpecialAttributes(PXContext pxContext) =>
 			new HashSet<ITypeSymbol>
 			{
@@ -132,8 +143,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				pxContext.FieldAttributes.PXDBCalcedAttribute
 			};
 
-		private static Dictionary<ITypeSymbol, ITypeSymbol> GetCorrespondingSimpleTypes(PXContext pxContext) =>
-			new Dictionary<ITypeSymbol, ITypeSymbol>
+		private static Dictionary<ITypeSymbol, ITypeSymbol> GetCorrespondingSimpleTypes(PXContext pxContext)
+		{
+			var fieldTypeAttributesWithCorrespondingPropertyTypes = new Dictionary<ITypeSymbol, ITypeSymbol>
 			{
 				{ pxContext.FieldAttributes.PXLongAttribute, pxContext.SystemTypes.Int64 },
 				{ pxContext.FieldAttributes.PXIntAttribute, pxContext.SystemTypes.Int32 },
@@ -166,5 +178,15 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				{ pxContext.FieldAttributes.PXDBAttributeAttribute, pxContext.SystemTypes.StringArray },
 				{ pxContext.FieldAttributes.PXDBDataLengthAttribute, pxContext.SystemTypes.Int64 },
 			};
+
+			var packagedIntegerAttribute = pxContext.FieldAttributes.PXDBPackedIntegerArrayAttribute;
+
+			if (packagedIntegerAttribute != null)
+			{
+				fieldTypeAttributesWithCorrespondingPropertyTypes.Add(packagedIntegerAttribute, pxContext.SystemTypes.UInt16Array);
+			}
+
+			return fieldTypeAttributesWithCorrespondingPropertyTypes;
+		}
 	}
 }
