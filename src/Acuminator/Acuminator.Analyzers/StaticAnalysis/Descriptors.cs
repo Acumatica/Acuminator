@@ -226,5 +226,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
         public static DiagnosticDescriptor PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation { get; } =
             Rule("PX1087", nameof(Resources.PX1087Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+        public static DiagnosticDescriptor PX1088_InvalidViewUsageInProcessingDelegate { get; } =
+            Rule("PX1088", nameof(Resources.PX1088Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
     }
 }

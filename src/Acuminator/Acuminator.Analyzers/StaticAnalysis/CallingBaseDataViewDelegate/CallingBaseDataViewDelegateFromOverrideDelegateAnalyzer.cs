@@ -65,8 +65,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
             public Walker(SymbolAnalysisContext context, PXContext pxContext, ImmutableHashSet<ISymbol> nonRedeclaredBaseViews)
                 : base(context.Compilation, context.CancellationToken)
             {
-                pxContext.ThrowOnNull();
-                nonRedeclaredBaseViews.ThrowOnNull();
+                pxContext.ThrowOnNull(nameof(pxContext));
+                nonRedeclaredBaseViews.ThrowOnNull(nameof(nonRedeclaredBaseViews));
 
                 _context = context;
                 _pxContext = pxContext;
