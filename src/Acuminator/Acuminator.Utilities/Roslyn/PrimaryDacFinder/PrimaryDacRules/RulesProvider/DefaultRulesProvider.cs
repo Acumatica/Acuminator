@@ -35,8 +35,8 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.RulesProv
 				new FirstViewsInGraphRule(numberOfViews: 5),
 				new FirstViewsInGraphRule(numberOfViews: 10),
 
-				new PairOfViewsWithSpecialNamesGraphRule(aFirstName: "Document", aSecondName: "CurrentDocument"),
-				new PairOfViewsWithSpecialNamesGraphRule(aFirstName: "Entities", aSecondName: "CurrentEntity"),
+				new PairOfViewsWithSpecialNamesGraphRule(firstName: "Document", secondName: "CurrentDocument"),
+				new PairOfViewsWithSpecialNamesGraphRule(firstName: "Entities", secondName: "CurrentEntity"),
 
 				new NoReadOnlyViewGraphRule(),
 				new ViewsWithoutPXViewNameAttributeGraphRule(context),

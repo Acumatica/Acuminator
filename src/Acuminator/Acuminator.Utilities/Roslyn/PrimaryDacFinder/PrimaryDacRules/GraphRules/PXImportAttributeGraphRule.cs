@@ -3,7 +3,9 @@ using System.Collections.Immutable;
 using System.Linq;
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
+
 
 namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRules
 {
@@ -25,12 +27,12 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 
 			List<ITypeSymbol> primaryDacCandidates = new List<ITypeSymbol>(1);
 
-			foreach (var (view, viewType) in dacFinder.GraphViewSymbolsWithTypes)
+			foreach (DataViewInfo viewInfo in dacFinder.GraphViews)
 			{
 				if (dacFinder.CancellationToken.IsCancellationRequested)
 					return Enumerable.Empty<ITypeSymbol>();
 
-				ImmutableArray<AttributeData> attributes = view.GetAttributes();
+				ImmutableArray<AttributeData> attributes = viewInfo.Symbol.GetAttributes();
 
 				if (attributes.Length == 0)
 					continue;
