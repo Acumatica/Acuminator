@@ -15,7 +15,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
             bool allowParams = false,
             CancellationToken cancellationToken = default)
         {
-            argument.ThrowOnNull();
+            argument.ThrowOnNull(nameof(argument));
 
             if (!(argument.Parent is BaseArgumentListSyntax argumentList))
                 return null;

@@ -1,10 +1,10 @@
 ﻿using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
-    public class DataViewInfo
+    public class DataViewInfo : GraphNodeSymbolItem<ISymbol>
     {
         /// <summary>
         /// The overriden item if any
@@ -12,28 +12,47 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         public DataViewInfo Base { get; }
 
         /// <summary>
-        /// The symbol of the data view declaration
+        /// Indicates whether the data view is processing data view
         /// </summary>
-        public ISymbol Symbol { get; }
+        public bool IsProcessing { get; }
 
         /// <summary>
         /// The type of the data view symbol
         /// </summary>
         public INamedTypeSymbol Type { get; }
 
-        public DataViewInfo(ISymbol symbol, INamedTypeSymbol type)
-        {
-            symbol.ThrowOnNull(nameof(symbol));
-            type.ThrowOnNull(nameof(type));
+        /// <summary>
+        /// The process delegates
+        /// </summary>
+        public ImmutableArray<ProcessingDelegateInfo> ProcessDelegates { get; internal set; } =
+            ImmutableArray<ProcessingDelegateInfo>.Empty;
 
-            Symbol = symbol;
+        /// <summary>
+        /// The parameters process delegate
+        /// </summary>
+        public ImmutableArray<ProcessingDelegateInfo> ParametersDelegates { get; internal set; } =
+            ImmutableArray<ProcessingDelegateInfo>.Empty;
+
+        /// <summary>
+        /// The finally process delegate
+        /// </summary>
+        public ImmutableArray<ProcessingDelegateInfo> FinallyProcessDelegates { get; internal set; } =
+            ImmutableArray<ProcessingDelegateInfo>.Empty;
+
+        public DataViewInfo(ISymbol symbol, INamedTypeSymbol type, PXContext pxContext)
+            : base(symbol)
+        {
+            type.ThrowOnNull(nameof(type));
+            pxContext.ThrowOnNull(nameof(pxContext));
+
             Type = type;
+            IsProcessing = type.IsProcessingView(pxContext);
         }
 
-        public DataViewInfo(ISymbol symbol, INamedTypeSymbol type, DataViewInfo baseInfo)
-            : this(symbol, type)
+        public DataViewInfo(ISymbol symbol, INamedTypeSymbol type, PXContext pxContext, DataViewInfo baseInfo)
+            : this(symbol, type, pxContext)
         {
-            baseInfo.ThrowOnNull();
+            baseInfo.ThrowOnNull(nameof(baseInfo));
 
             Base = baseInfo;
         }

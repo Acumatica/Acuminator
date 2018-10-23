@@ -38,18 +38,22 @@ namespace Acuminator.Utilities.Roslyn
 		private const int MaxDepth = 100; // to avoid circular dependencies
 
 		private readonly Compilation _compilation;
-		private CancellationToken _cancellationToken;
 		
 		private readonly CodeAnalysisSettings _settings;
 		private readonly Dictionary<SyntaxTree, SemanticModel> _semanticModels = new Dictionary<SyntaxTree, SemanticModel>();
 
 		private readonly ISet<(SyntaxNode, DiagnosticDescriptor)> _reportedDiagnostics = new HashSet<(SyntaxNode, DiagnosticDescriptor)>();
 
-		/// <summary>
-		/// Syntax node in the original tree that is being analyzed.
-		/// Typically it is the node on which a diagnostic should be reported.
-		/// </summary>
-		protected SyntaxNode OriginalNode { get; private set; }
+        /// <summary>
+        /// Cancellation token
+        /// </summary>
+        protected CancellationToken CancellationToken { get; }
+
+        /// <summary>
+        /// Syntax node in the original tree that is being analyzed.
+        /// Typically it is the node on which a diagnostic should be reported.
+        /// </summary>
+        protected SyntaxNode OriginalNode { get; private set; }
 
 		private readonly Stack<SyntaxNode> _nodesStack = new Stack<SyntaxNode>();
 
@@ -58,7 +62,7 @@ namespace Acuminator.Utilities.Roslyn
 			compilation.ThrowOnNull(nameof (compilation));
 
 			_compilation = compilation;
-			_cancellationToken = cancellationToken;
+            CancellationToken = cancellationToken;
 
 			try
 			{
@@ -76,7 +80,7 @@ namespace Acuminator.Utilities.Roslyn
 
 		protected void ThrowIfCancellationRequested()
 		{
-			_cancellationToken.ThrowIfCancellationRequested();
+            CancellationToken.ThrowIfCancellationRequested();
 		}
 
 		/// <summary>
@@ -90,7 +94,7 @@ namespace Acuminator.Utilities.Roslyn
 
 			if (semanticModel != null)
 			{
-				var symbolInfo = semanticModel.GetSymbolInfo(node, _cancellationToken);
+				var symbolInfo = semanticModel.GetSymbolInfo(node, CancellationToken);
 
 				if (symbolInfo.Symbol is T symbol)
 				{
@@ -252,7 +256,7 @@ namespace Acuminator.Utilities.Roslyn
 
 		private void VisitMethodSymbol(IMethodSymbol symbol, SyntaxNode originalNode)
 		{
-			if (symbol?.GetSyntax(_cancellationToken) is CSharpSyntaxNode methodNode)
+			if (symbol?.GetSyntax(CancellationToken) is CSharpSyntaxNode methodNode)
 			{
 				Push(originalNode);
 				methodNode.Accept(this);

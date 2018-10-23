@@ -88,7 +88,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 
 			var setDelegateSymbol = syntaxContext.SemanticModel.GetSymbolInfo(setDelegatememberAccessExpr).Symbol as IMethodSymbol;
 
-			if (setDelegateSymbol == null || !setDelegateSymbol.ContainingType.ConstructedFrom.InheritsFromOrEquals(pxContext.PXProcessingBaseType))
+			if (setDelegateSymbol == null || !setDelegateSymbol.ContainingType.ConstructedFrom.InheritsFromOrEquals(pxContext.PXProcessingBase.Type))
 				return false;
 
 			return true;

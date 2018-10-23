@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using DataViewDelegatesOverridableCollection = System.Collections.Generic.IEnumerable<Acuminator.Utilities.Roslyn.Semantic.PXGraph.GraphOverridableItem<(Microsoft.CodeAnalysis.CSharp.Syntax.MethodDeclarationSyntax Node, Microsoft.CodeAnalysis.IMethodSymbol Symbol)>>;
 using ViewOverridableCollection = System.Collections.Generic.IEnumerable<Acuminator.Utilities.Roslyn.Semantic.PXGraph.GraphOverridableItem<(Microsoft.CodeAnalysis.ISymbol ViewSymbol, Microsoft.CodeAnalysis.INamedTypeSymbol ViewType)>>;
@@ -14,6 +15,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
     public static class GraphViewSymbolUtils
     {
+        /// <summary>
+        /// Returns true if the data view is a processing view
+        /// </summary>
+        /// <param name="view">The type symbol of a data view</param>
+        /// <param name="pxContext">The context</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsProcessingView(this ITypeSymbol view, PXContext pxContext)
+        {
+            view.ThrowOnNull(nameof(view));
+            pxContext.ThrowOnNull(nameof(pxContext));
+
+            return view.InheritsFromOrEqualsGeneric(pxContext.PXProcessingBase.Type);
+        }
+
         /// <summary>
         /// Gets all declared views from the graph and its base graphs if there is a graphs class hierarchy and <paramref name="includeViewsFromInheritanceChain"/> parameter is <c>true</c>.
         /// </summary>
