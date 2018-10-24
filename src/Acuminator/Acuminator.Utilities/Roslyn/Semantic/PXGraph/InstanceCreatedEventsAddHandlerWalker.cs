@@ -11,6 +11,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
     public class InstanceCreatedEventsAddHandlerWalker : NestedInvocationWalker
     {
         private readonly PXContext _pxContext;
+		private int _currentDeclarationOrder;
 
         public List<InitDelegateInfo> GraphInitDelegates { get; private set; } = new List<InitDelegateInfo>();
 
@@ -52,7 +53,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
                     if (delegateNode != null)
                     {
-                        GraphInitDelegates.Add(new InitDelegateInfo(graphSymbol, delegateSymbol, delegateNode));
+                        GraphInitDelegates.Add(new InitDelegateInfo(graphSymbol, delegateSymbol, delegateNode, _currentDeclarationOrder));
+						_currentDeclarationOrder++;
                     }
                 }
             }

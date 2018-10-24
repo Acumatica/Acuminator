@@ -12,6 +12,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
     internal class ProcessingDelegatesWalker : NestedInvocationWalker
     {
         private readonly PXContext _pxContext;
+		private int _currentDeclarationOrder;
         private readonly ImmutableHashSet<ISymbol> _processingViewSymbols;
 
         public Dictionary<string, List<ProcessingDelegateInfo>> ParametersDelegateListByView { get; } =
@@ -139,15 +140,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             if (handlerNode is AnonymousFunctionExpressionSyntax anonymousFunction)
             {
                 delegateNode = anonymousFunction.Body;
-                delegateSymbol = GetSemanticModel(delegateNode.SyntaxTree)?.GetSymbolInfo(anonymousFunction).Symbol;
+                delegateSymbol = GetSemanticModel(delegateNode.SyntaxTree)
+									?.GetSymbolInfo(anonymousFunction, CancellationToken).Symbol;
             }
             else
             {
                 delegateSymbol = GetSymbol<ISymbol>(handlerNode);
-                delegateNode = delegateSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(CancellationToken);
+                delegateNode = delegateSymbol.DeclaringSyntaxReferences.FirstOrDefault()
+																	  ?.GetSyntax(CancellationToken);
             }
 
-            return new ProcessingDelegateInfo(delegateNode, delegateSymbol);
+            var processingDelegateInfo = new ProcessingDelegateInfo(delegateNode, delegateSymbol, _currentDeclarationOrder);
+			_currentDeclarationOrder++;
+			return processingDelegateInfo;
         }
     }
 }

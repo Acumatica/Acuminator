@@ -78,10 +78,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
         private void InitProcessingDelegatesInfo()
         {
-            var processingViewSymbols = Views
-                                        .Where(v => v.IsProcessing)
-                                        .Select(v => v.Symbol)
-                                        .ToImmutableHashSet();
+            var processingViewSymbols = Views.Where(v => v.IsProcessing)
+											 .Select(v => v.Symbol)
+											 .ToImmutableHashSet();
             IsProcessing = processingViewSymbols.Count > 0;
 
 			if (!IsProcessing)
@@ -90,7 +89,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 
             var declaringNodes = Symbol.DeclaringSyntaxReferences
-                                 .Select(r => r.GetSyntax(_cancellation));
+									   .Select(r => r.GetSyntax(_cancellation));
             var walker = new ProcessingDelegatesWalker(_pxContext, processingViewSymbols, _cancellation);
 
 			foreach (var node in declaringNodes)
@@ -241,8 +240,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			if (Type == GraphType.PXGraph)
 			{
-				IEnumerable<GraphInitializerInfo> ctrs = Symbol.GetDeclaredInstanceConstructors(_cancellation)
-														 .Select(ctr => new GraphInitializerInfo(GraphInitializerType.InstanceCtr, ctr.Node, ctr.Symbol));
+				IEnumerable<GraphInitializerInfo> ctrs = 
+					Symbol.GetDeclaredInstanceConstructors(_cancellation)
+						  .Select((ctr, order) => new GraphInitializerInfo(GraphInitializerType.InstanceCtr, ctr.Node, ctr.Symbol, order));
+
 				initializers.AddRange(ctrs);
 			}
 			else if (Type == GraphType.PXGraphExtension)
@@ -251,7 +252,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 				if (node != null && symbol != null)
 				{
-					initializers.Add(new GraphInitializerInfo(GraphInitializerType.InitializeMethod, node, symbol));
+					initializers.Add(
+						new GraphInitializerInfo(GraphInitializerType.InitializeMethod, node, symbol, declarationOrder: 0));
 				}
 			}
 
@@ -290,7 +292,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			foreach (InitDelegateInfo d in delegates)
 			{
-				GraphInitializerInfo info = new GraphInitializerInfo(GraphInitializerType.InstanceCreatedDelegate, d.Node, d.Symbol);
+				GraphInitializerInfo info = new GraphInitializerInfo(GraphInitializerType.InstanceCreatedDelegate, d.Node,
+																	 d.Symbol, d.DeclarationOrder);
 				PXGraphSemanticModel existingModel = models.FirstOrDefault(m => m.Symbol.Equals(d.GraphTypeSymbol));
 				PXGraphSemanticModel implicitModel;
 
@@ -338,7 +341,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             cancellation.ThrowIfCancellationRequested();
 
             IEnumerable<SyntaxNode> declaringNodes = typeSymbol.DeclaringSyntaxReferences
-                                                     .Select(r => r.GetSyntax(cancellation));
+															   .Select(r => r.GetSyntax(cancellation));
             InstanceCreatedEventsAddHandlerWalker walker = new InstanceCreatedEventsAddHandlerWalker(pxContext, cancellation);
 
 			foreach (SyntaxNode node in declaringNodes)
