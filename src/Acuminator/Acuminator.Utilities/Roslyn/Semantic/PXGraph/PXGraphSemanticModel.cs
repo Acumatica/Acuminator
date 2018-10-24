@@ -116,35 +116,32 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
         private ImmutableDictionary<string, DataViewInfo> GetDataViews()
         {
-            var viewByNameDictionary = new Dictionary<string, DataViewInfo>(StringComparer.OrdinalIgnoreCase);
+			if (Type == GraphType.None)
+				return ImmutableDictionary.Create<string, DataViewInfo>(StringComparer.OrdinalIgnoreCase);
 
-            if (Type == GraphType.PXGraph)
-            {
-                var graphViewInfos = Symbol.GetViewsWithSymbolsFromPXGraph(_pxContext);
+			var rawViewInfos = Type == GraphType.PXGraph
+				? Symbol.GetViewsWithSymbolsFromPXGraph(_pxContext)
+				: Symbol.GetViewsFromGraphExtensionAndBaseGraph(_pxContext);
 
-                foreach (var view in graphViewInfos)
-                {
-                    viewByNameDictionary[view.Item.ViewSymbol.Name] = 
-						new DataViewInfo(view.Item.ViewSymbol, view.Item.ViewType, _pxContext, view.DeclarationOrder);
-                }
-            }
-            else
-            {
-                var extViews = Symbol.GetViewsFromGraphExtensionAndBaseGraph(_pxContext);
+			return rawViewInfos.ToLookup(a => a.Item.ViewSymbol.Name, StringComparer.OrdinalIgnoreCase)
+							   .ToImmutableDictionary(group => group.Key,
+													  group => CreateViewInfo(group.First()),
+													  keyComparer: StringComparer.OrdinalIgnoreCase);
 
-                foreach (var view in extViews)
-                {
-                    var viewInfo = view.Base == null
-                        ? new DataViewInfo(view.Item.ViewSymbol, view.Item.ViewType, _pxContext, view.DeclarationOrder)
-                        : new DataViewInfo(view.Item.ViewSymbol, view.Item.ViewType, _pxContext, view.DeclarationOrder,
-								new DataViewInfo(view.Base.Item.ViewSymbol, view.Base.Item.ViewType, _pxContext, view.Base.DeclarationOrder));
+			
+			DataViewInfo CreateViewInfo(GraphOverridableItem<(ISymbol ViewSymbol, INamedTypeSymbol ViewType)> item)
+			{
+				var (viewSymbol, viewType) = item.Item;
 
-                    viewByNameDictionary[view.Item.ViewSymbol.Name] = viewInfo;
-                }
-            }
+				DataViewInfo baseViewInfo = item.Base != null
+					? CreateViewInfo(item.Base)
+					: null;
 
-            return viewByNameDictionary.ToImmutableDictionary();
-        }
+				return baseViewInfo == null
+					? new DataViewInfo(viewSymbol, viewType, _pxContext, item.DeclarationOrder)
+					: new DataViewInfo(viewSymbol, viewType, _pxContext, item.DeclarationOrder, baseViewInfo);
+			}
+		}
 
         private ImmutableDictionary<string, DataViewDelegateInfo> GetDataViewDelegates()
         {
@@ -156,9 +153,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				: Symbol.GetViewDelegatesFromGraphExtensionAndBaseGraph(ViewsByNames, _pxContext, _cancellation);
 
 			return rawDelegateInfos.ToLookup(d => d.Item.Symbol.Name, StringComparer.OrdinalIgnoreCase)
-					 .ToImmutableDictionary(group => group.Key,
-											group => CreateViewDelegateInfo(group.First()),
-											keyComparer: StringComparer.OrdinalIgnoreCase);
+								   .ToImmutableDictionary(group => group.Key,
+														  group => CreateViewDelegateInfo(group.First()),
+														  keyComparer: StringComparer.OrdinalIgnoreCase);
 
 
 			DataViewDelegateInfo CreateViewDelegateInfo(GraphOverridableItem<(MethodDeclarationSyntax, IMethodSymbol)> item)
@@ -166,7 +163,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				var (node, method) = item.Item;
 
 				DataViewDelegateInfo baseDelegateInfo = item.Base != null
-					? baseDelegateInfo = CreateViewDelegateInfo(item.Base)
+					? CreateViewDelegateInfo(item.Base)
 					: null;
 
 				return baseDelegateInfo == null
@@ -197,7 +194,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				var (actionSymbol, actionType) = item.Item;
 
 				ActionInfo baseActionInfo = item.Base != null
-					? baseActionInfo = CreateActionInfo(item.Base)
+					? CreateActionInfo(item.Base)
 					: null;
 
 				return baseActionInfo == null
@@ -227,7 +224,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				var (node, method) = item.Item;
 
 				ActionHandlerInfo baseActionHandlerInfo = item.Base != null
-					? baseActionHandlerInfo = CreateActionHandlerInfo(item.Base)
+					? CreateActionHandlerInfo(item.Base)
 					: null;
 
 				return baseActionHandlerInfo == null
