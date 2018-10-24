@@ -87,9 +87,11 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 				return null;
 
 			var allGraphActionInfos = graphSemanticModel.Actions
-													    .Where(action => action.Symbol.ContainingType.IsPXGraph(pxContext));
+													    .Where(action => action.Symbol.ContainingType.IsPXGraph(pxContext))
+														.OrderBy(action => action.DeclarationOrder);
 			var allViewInfos = graphSemanticModel.Views
-												 .Where(view => view.Symbol.ContainingType.IsPXGraph(pxContext));
+												 .Where(view => view.Symbol.ContainingType.IsPXGraph(pxContext))
+												 .OrderBy(view => view.DeclarationOrder);
 
 			if (cancellationToken.IsCancellationRequested)
 				return null;
