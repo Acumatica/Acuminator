@@ -12,18 +12,18 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         {
         }
 
-        public void Add(string key, T value)
+        public void Add(string key, T value, int declarationOrder)
         {
             if (TryGetValue(key, out GraphOverridableItem<T> existingValue))
             {
                 if (!existingValue.Item.Equals(value))
                 {
-                    base[key] = new GraphOverridableItem<T>(value, existingValue);
+                    base[key] = new GraphOverridableItem<T>(value, declarationOrder, existingValue);
                 }
             }
             else
             {
-                Add(key, new GraphOverridableItem<T>(value));
+                Add(key, new GraphOverridableItem<T>(value, declarationOrder));
             }
         }
     }

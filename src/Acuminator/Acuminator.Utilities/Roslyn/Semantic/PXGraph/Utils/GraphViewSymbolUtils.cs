@@ -206,34 +206,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
                 return empty;
             }
 
-            var infoByView = new GraphOverridableItemsCollection<T>();
-            var baseType = graphExtension.BaseType;
-            var graphType = baseType.TypeArguments[baseType.TypeArguments.Length - 1];
+			var graphType = graphExtension.GetGraphFromGraphExtension(pxContext);
 
-            if (!graphType.IsPXGraph(pxContext))
-            {
-                return empty;
-            }
+			if (graphType == null)
+				return empty;
 
-            addGraphViewInfo(infoByView, graphType);
+			var allExtensionsFromBaseToDerived = graphExtension.GetGraphExtensionWithBaseExtensions(pxContext, SortDirection.Ascending, 
+																									includeGraph: false);
+			if (allExtensionsFromBaseToDerived.IsNullOrEmpty())
+				return empty;
 
-            if (baseType.TypeArguments.Length >= 2)
-            {
-                for (int i = baseType.TypeArguments.Length - 2; i >= 0; i--)
-                {
-                    var argType = baseType.TypeArguments[i];
-
-                    if (!argType.IsPXGraphExtension(pxContext))
-                    {
-                        return empty;
-                    }
-
-                    addGraphExtensionViewInfo(infoByView, argType);
-                }
-            }
-
-            addGraphExtensionViewInfo(infoByView, graphExtension);
-
+			var infoByView = new GraphOverridableItemsCollection<T>();
+			addGraphViewInfo(infoByView, graphType);
+			allExtensionsFromBaseToDerived.ForEach(extension => addGraphExtensionViewInfo(infoByView, extension));
             return infoByView.Items;
         }
 

@@ -29,7 +29,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private string DebuggerDisplay => $"Symbol: {Symbol.Name} | Type: {Type.ToString()}";
 
-		public ActionInfo(ISymbol symbol, INamedTypeSymbol type, bool isSystem) : base(symbol)
+		public ActionInfo(ISymbol symbol, INamedTypeSymbol type, int declarationOrder, bool isSystem) : 
+					 base(symbol, declarationOrder)
         {
             type.ThrowOnNull(nameof(type));
 
@@ -37,8 +38,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			IsSystem = isSystem;
         }
 
-		public ActionInfo(ISymbol symbol, INamedTypeSymbol type, bool isSystem, ActionInfo baseInfo) : 
-					 this(symbol, type, isSystem)
+		public ActionInfo(ISymbol symbol, INamedTypeSymbol type, int declarationOrder, bool isSystem, ActionInfo baseInfo) : 
+					 this(symbol, type, declarationOrder, isSystem)
 		{
 			baseInfo.ThrowOnNull(nameof(baseInfo));
 

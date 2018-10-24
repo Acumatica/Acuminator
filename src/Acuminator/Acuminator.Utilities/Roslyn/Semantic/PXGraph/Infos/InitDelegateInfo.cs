@@ -8,8 +8,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         public GraphType GraphType => GraphType.PXGraph;
         public INamedTypeSymbol GraphTypeSymbol { get; }
 
-        public InitDelegateInfo(INamedTypeSymbol graphSymbol, ISymbol delegateSymbol, SyntaxNode delegateNode)
-            : base(delegateNode, delegateSymbol)
+        public InitDelegateInfo(INamedTypeSymbol graphSymbol, ISymbol delegateSymbol, SyntaxNode delegateNode, int declarationOrder)
+            : base(delegateNode, delegateSymbol, declarationOrder)
         {
             graphSymbol.ThrowOnNull(nameof(graphSymbol));
             GraphTypeSymbol = graphSymbol;

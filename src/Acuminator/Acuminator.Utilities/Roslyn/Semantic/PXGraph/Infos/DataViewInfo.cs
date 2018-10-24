@@ -39,8 +39,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         public ImmutableArray<ProcessingDelegateInfo> FinallyProcessDelegates { get; internal set; } =
             ImmutableArray<ProcessingDelegateInfo>.Empty;
 
-        public DataViewInfo(ISymbol symbol, INamedTypeSymbol type, PXContext pxContext)
-            : base(symbol)
+        public DataViewInfo(ISymbol symbol, INamedTypeSymbol type, PXContext pxContext, int declarationOrder)
+            : base(symbol, declarationOrder)
         {
             type.ThrowOnNull(nameof(type));
             pxContext.ThrowOnNull(nameof(pxContext));
@@ -49,8 +49,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             IsProcessing = type.IsProcessingView(pxContext);
         }
 
-        public DataViewInfo(ISymbol symbol, INamedTypeSymbol type, PXContext pxContext, DataViewInfo baseInfo)
-            : this(symbol, type, pxContext)
+        public DataViewInfo(ISymbol symbol, INamedTypeSymbol type, PXContext pxContext, int declarationOrder, DataViewInfo baseInfo)
+            : this(symbol, type, pxContext, declarationOrder)
         {
             baseInfo.ThrowOnNull(nameof(baseInfo));
 

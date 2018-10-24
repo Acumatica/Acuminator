@@ -5,8 +5,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
     public class StaticConstructorInfo : GraphNodeSymbolItem<ConstructorDeclarationSyntax, IMethodSymbol>
     {
-        public StaticConstructorInfo(ConstructorDeclarationSyntax node, IMethodSymbol symbol)
-            : base(node, symbol)
+        public StaticConstructorInfo(ConstructorDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder)
+            : base(node, symbol, declarationOrder)
         {
         }
     }

@@ -11,13 +11,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         /// </summary>
         public DataViewDelegateInfo Base { get; }
 
-        public DataViewDelegateInfo(MethodDeclarationSyntax node, IMethodSymbol symbol)
-            : base(node, symbol)
+        public DataViewDelegateInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder)
+            : base(node, symbol, declarationOrder)
         {
         }
 
-        public DataViewDelegateInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, DataViewDelegateInfo baseInfo)
-            : this(node, symbol)
+        public DataViewDelegateInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder, DataViewDelegateInfo baseInfo)
+            : this(node, symbol, declarationOrder)
         {
             baseInfo.ThrowOnNull(nameof(baseInfo));
             Base = baseInfo;

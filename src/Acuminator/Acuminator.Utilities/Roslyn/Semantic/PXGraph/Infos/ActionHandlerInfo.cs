@@ -16,14 +16,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         /// </summary>
         public ActionHandlerInfo Base { get; }
 
-        public ActionHandlerInfo(MethodDeclarationSyntax node, IMethodSymbol symbol) : base(node, symbol)
+        public ActionHandlerInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder) : 
+							base(node, symbol, declarationOrder)
         {
         }
 
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private string DebuggerDisplay => $"Symbol: {Symbol.Name}";
+		
 
-		public ActionHandlerInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, ActionHandlerInfo baseInfo) : this(node, symbol)
+		public ActionHandlerInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder, ActionHandlerInfo baseInfo) :
+							this(node, symbol, declarationOrder)
         {
             baseInfo.ThrowOnNull(nameof(baseInfo));
             Base = baseInfo;

@@ -17,8 +17,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         /// </summary>
         public N Node { get; }
 
-        public GraphNodeSymbolItem(N node, S symbol)
-            : base(symbol)
+        public GraphNodeSymbolItem(N node, S symbol, int declarationOrder)
+            : base(symbol, declarationOrder)
         {
             node.ThrowOnNull(nameof(node));
             Node = node;
