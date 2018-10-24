@@ -213,7 +213,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			method.ThrowOnNull(nameof(method));
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			return method.ReturnType.InheritsFromOrEquals(pxContext.SystemTypes.IEnumerable, includeInterfaces: true);
+			return method.ReturnType.Equals(pxContext.SystemTypes.IEnumerable) &&
+				   method.Parameters.All(p => p.RefKind != RefKind.Ref);
 		}
 
 		/// <summary>

@@ -17,6 +17,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		private const char DefaultGenericArgsCountSeparator = '`';
 		private const char DefaultNestedTypesSeparator = '+';
 
+		/// <summary>
+		/// Gets the base types and this in this collection. The types are returned from the most derived ones to the most base <see cref="Object"/> type
+		/// </summary>
+		/// <param name="type">The type to act on.</param>
+		/// <returns/>
 		public static IEnumerable<ITypeSymbol> GetBaseTypesAndThis(this ITypeSymbol type)
 		{
 			var current = type;
@@ -28,6 +33,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			}
 		}
 
+		/// <summary>
+		/// Gets the base types and this in this collection. The types are returned from the most derived ones to the most base <see cref="Object"/> type
+		/// </summary>
+		/// <param name="type">The type to act on.</param>
+		/// <returns/>
 		public static IEnumerable<INamedTypeSymbol> GetBaseTypes(this ITypeSymbol type)
 		{
 			var current = type.BaseType;
