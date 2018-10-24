@@ -30,7 +30,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 																ITypeSymbol graphOrgraphExtension, int startingOrder);
 
 
-		#region Actions
+		#region ActionsGet
 		/// <summary>
 		/// Gets the PXAction symbols with types from graph and, if <paramref name="includeActionsFromInheritanceChain"/> is <c>true</c>, its base graphs.
 		/// </summary>

@@ -341,27 +341,29 @@ namespace Acuminator.Utilities.Roslyn.Semantic
             return initializers;
         }
 
-        public static ImmutableArray<StaticConstructorInfo> GetStaticConstructors
-            (this INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
-        {
-            typeSymbol.ThrowOnNull(nameof(typeSymbol));
+		public static ImmutableArray<StaticConstructorInfo> GetStaticConstructors
+			(this INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
+		{
+			typeSymbol.ThrowOnNull(nameof(typeSymbol));
 
-            List<StaticConstructorInfo> staticCtrs = new List<StaticConstructorInfo>();
+			int order = 0;
+			List<StaticConstructorInfo> staticCtrs = new List<StaticConstructorInfo>();
 
-            foreach(IMethodSymbol ctr in typeSymbol.StaticConstructors)
-            {
-                cancellation.ThrowIfCancellationRequested();
+			foreach (IMethodSymbol ctr in typeSymbol.StaticConstructors)
+			{
+				cancellation.ThrowIfCancellationRequested();
 
-                SyntaxReference reference = ctr.DeclaringSyntaxReferences.FirstOrDefault();
+				SyntaxReference reference = ctr.DeclaringSyntaxReferences.FirstOrDefault();
 
-                if (!(reference?.GetSyntax(cancellation) is ConstructorDeclarationSyntax node))
-                    continue;
+				if (!(reference?.GetSyntax(cancellation) is ConstructorDeclarationSyntax node))
+					continue;
 
-                staticCtrs.Add(new StaticConstructorInfo(node, ctr));
-            }
+				staticCtrs.Add(new StaticConstructorInfo(node, ctr, order));
+				order++;
+			}
 
-            return staticCtrs.ToImmutableArray(); ;
-        }
+			return staticCtrs.ToImmutableArray();
+		}
 
 		/// <summary>Get all the methods of this symbol.</summary>
 		/// <returns>An ImmutableArray containing all the methods of this symbol. If this symbol has no methods,

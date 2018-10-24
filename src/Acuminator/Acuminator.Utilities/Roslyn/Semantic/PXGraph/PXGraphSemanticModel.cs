@@ -120,11 +120,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
             if (Type == GraphType.PXGraph)
             {
-                var graphViews = Symbol.GetViewsWithSymbolsFromPXGraph(_pxContext).Select(item => item.Item);
+                var graphViewInfos = Symbol.GetViewsWithSymbolsFromPXGraph(_pxContext);
 
-                foreach (var (ViewSymbol, ViewType) in graphViews)
+                foreach (var view in graphViewInfos)
                 {
-                    viewByNameDictionary[ViewSymbol.Name] = new DataViewInfo(ViewSymbol, ViewType, _pxContext);
+                    viewByNameDictionary[view.Item.ViewSymbol.Name] = 
+						new DataViewInfo(view.Item.ViewSymbol, view.Item.ViewType, _pxContext, view.DeclarationOrder);
                 }
             }
             else
@@ -134,13 +135,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
                 foreach (var view in extViews)
                 {
                     var viewInfo = view.Base == null
-                        ? new DataViewInfo(view.Item.ViewSymbol,
-                                           view.Item.ViewType,
-                                           _pxContext)
-                        : new DataViewInfo(view.Item.ViewSymbol,
-                                           view.Item.ViewType,
-                                           _pxContext,
-                                           new DataViewInfo(view.Base.Item.ViewSymbol, view.Base.Item.ViewType, _pxContext));
+                        ? new DataViewInfo(view.Item.ViewSymbol, view.Item.ViewType, _pxContext, view.DeclarationOrder)
+                        : new DataViewInfo(view.Item.ViewSymbol, view.Item.ViewType, _pxContext, view.DeclarationOrder,
+								new DataViewInfo(view.Base.Item.ViewSymbol, view.Base.Item.ViewType, _pxContext, view.Base.DeclarationOrder));
 
                     viewByNameDictionary[view.Item.ViewSymbol.Name] = viewInfo;
                 }
@@ -151,34 +148,32 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
         private ImmutableDictionary<string, DataViewDelegateInfo> GetDataViewDelegates()
         {
-            var viewDelegateByNameDictionary = new Dictionary<string, DataViewDelegateInfo>(StringComparer.OrdinalIgnoreCase);
-            var viewSymbols = Views.Select(v => v.Symbol);
+			if (Type == GraphType.None)
+				return ImmutableDictionary.Create<string, DataViewDelegateInfo>(StringComparer.OrdinalIgnoreCase);
 
-			if (Type == GraphType.PXGraph)
+			var rawDelegateInfos = Type == GraphType.PXGraph
+				? Symbol.GetViewDelegatesFromGraph(ViewsByNames, _pxContext, _cancellation)
+				: Symbol.GetViewDelegatesFromGraphExtensionAndBaseGraph(ViewsByNames, _pxContext, _cancellation);
+
+			return rawDelegateInfos.ToLookup(d => d.Item.Symbol.Name, StringComparer.OrdinalIgnoreCase)
+					 .ToImmutableDictionary(group => group.Key,
+											group => CreateViewDelegateInfo(group.First()),
+											keyComparer: StringComparer.OrdinalIgnoreCase);
+
+
+			DataViewDelegateInfo CreateViewDelegateInfo(GraphOverridableItem<(MethodDeclarationSyntax, IMethodSymbol)> item)
 			{
-				var graphDelegates = Symbol.GetViewDelegatesFromGraph(viewSymbols, _pxContext, _cancellation);
+				var (node, method) = item.Item;
 
-                foreach (var del in graphDelegates)
-                {
-                    viewDelegateByNameDictionary[del.Symbol.Name] = new DataViewDelegateInfo(del.Node, del.Symbol);
-                }
-            }
-            else
-            {
-                var extDelegates = Symbol.GetViewDelegatesFromGraphExtensionAndBaseGraph(viewSymbols, _pxContext, _cancellation);
+				DataViewDelegateInfo baseDelegateInfo = item.Base != null
+					? baseDelegateInfo = CreateViewDelegateInfo(item.Base)
+					: null;
 
-                foreach (var del in extDelegates)
-                {
-                    var delegateInfo = del.Base == null
-                        ? new DataViewDelegateInfo(del.Item.Node, del.Item.Symbol)
-                        : new DataViewDelegateInfo(del.Item.Node, del.Item.Symbol, new DataViewDelegateInfo(del.Base.Item.Node, del.Base.Item.Symbol));
-
-                    viewDelegateByNameDictionary[del.Item.Symbol.Name] = delegateInfo;
-                }
-            }
-
-            return viewDelegateByNameDictionary.ToImmutableDictionary();
-        }
+				return baseDelegateInfo == null
+					? new DataViewDelegateInfo(node, method, item.DeclarationOrder)
+					: new DataViewDelegateInfo(node, method, item.DeclarationOrder, baseDelegateInfo);
+			}
+		}
 
 		private ImmutableDictionary<string, ActionInfo> GetActions()
 		{
@@ -206,8 +201,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 					: null;
 
 				return baseActionInfo == null
-					? new ActionInfo(actionSymbol, actionType, systemActionsRegister.IsSystemAction(actionType))
-					: new ActionInfo(actionSymbol, actionType, systemActionsRegister.IsSystemAction(actionType), baseActionInfo);
+					? new ActionInfo(actionSymbol, actionType, item.DeclarationOrder, systemActionsRegister.IsSystemAction(actionType))
+					: new ActionInfo(actionSymbol, actionType, item.DeclarationOrder, 
+									 systemActionsRegister.IsSystemAction(actionType), baseActionInfo);
 			}
 		}
 
@@ -226,7 +222,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 															   keyComparer: StringComparer.OrdinalIgnoreCase);
 
 
-
 			ActionHandlerInfo CreateActionHandlerInfo(GraphOverridableItem<(MethodDeclarationSyntax, IMethodSymbol)> item)
 			{
 				var (node, method) = item.Item;
@@ -236,8 +231,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 					: null;
 
 				return baseActionHandlerInfo == null
-					? new ActionHandlerInfo(node, method)
-					: new ActionHandlerInfo(node, method, baseActionHandlerInfo);
+					? new ActionHandlerInfo(node, method, item.DeclarationOrder)
+					: new ActionHandlerInfo(node, method, item.DeclarationOrder, baseActionHandlerInfo);
 			}
 		}
 

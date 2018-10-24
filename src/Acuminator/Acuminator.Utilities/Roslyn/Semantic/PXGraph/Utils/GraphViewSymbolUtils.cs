@@ -146,53 +146,50 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             }
         }
 
-        /// <summary>
-        /// Get the view delegates symbols and syntax nodes from the graph
-        /// </summary>
-        /// <param name="graph">The graph to act on</param>
-        /// <param name="views">The views of the graph</param>
-        /// <param name="pxContext">Context</param>
-        /// <param name="cancellation">Cancellation token</param>
-        /// <param name="inheritance">If true includes view delegates from the graph inheritance chain</param>
-        /// <returns></returns>
-        public static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetViewDelegatesFromGraph(
-            this ITypeSymbol graph, IEnumerable<ISymbol> views, PXContext pxContext, CancellationToken cancellation, bool inheritance = true)
-        {
-            graph.ThrowOnNull(nameof(graph));
-            views.ThrowOnNull(nameof(views));
-            pxContext.ThrowOnNull(nameof(pxContext));
+		/// <summary>
+		/// Get the view delegates symbols and syntax nodes from the graph.
+		/// The <paramref name="viewsByName"/> must have <see cref="StringComparer.OrdinalIgnoreCase"/> comparer.
+		/// </summary>
+		/// <param name="graph">The graph to act on</param>
+		/// <param name="viewsByName">The views of the graph dictionary with <see cref="StringComparer.OrdinalIgnoreCase"/> comparer</param>
+		/// <param name="pxContext">Context</param>
+		/// <param name="cancellation">Cancellation token</param>
+		/// <param name="inheritance">If true includes view delegates from the graph inheritance chain</param>
+		/// <returns></returns>
+		public static DataViewDelegatesOverridableCollection GetViewDelegatesFromGraph(this ITypeSymbol graph, 
+																						   IDictionary<string, DataViewInfo> viewsByName,
+																						   PXContext pxContext, CancellationToken cancellation,
+																						   bool inheritance = true)
+		{
+			graph.ThrowOnNull(nameof(graph));
+			viewsByName.ThrowOnNull(nameof(viewsByName));
+			pxContext.ThrowOnNull(nameof(pxContext));
 
-            if (!graph.IsPXGraph(pxContext))
-            {
-                return Enumerable.Empty<(MethodDeclarationSyntax, IMethodSymbol)>();
-            }
+			if (!graph.IsPXGraph(pxContext))
+				return Enumerable.Empty<GraphOverridableItem<(MethodDeclarationSyntax, IMethodSymbol)>>();
 
-            if (inheritance)
-            {
-                return graph.GetBaseTypesAndThis()
-                            .TakeWhile(baseGraph => !baseGraph.IsGraphBaseType())
-							.Reverse()
-                            .SelectMany(baseGraph => GetViewDelegatesFromGraphOrGraphExtension(baseGraph, views, pxContext, cancellation));
-            }
-            else
-            {
-                return GetViewDelegatesFromGraphOrGraphExtension(graph, views, pxContext, cancellation);
-            }
-        }
+			var viewDelegatesByName = new GraphOverridableItemsCollection<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)>();
+			var graphViewDelegates = GetViewDelegatesFromGraphImpl(graph, viewsByName, pxContext, inheritance, cancellation);
 
-        /// <summary>
-        /// Get the view delegates symbols and syntax nodes from the graph extension
-        /// </summary>
-        /// <param name="graphExtension">The graph extension to act on</param>
-        /// <param name="views">The views of the graph extension</param>
-        /// <param name="pxContext">Context</param>
-        /// <param name="cancellation">Cancellation token</param>
-        /// <returns></returns>
-        public static DataViewDelegatesOverridableCollection GetViewDelegatesFromGraphExtensionAndBaseGraph(
-            this ITypeSymbol graphExtension, IEnumerable<ISymbol> views, PXContext pxContext, CancellationToken cancellation)
+			viewDelegatesByName.AddRangeWithDeclarationOrder(graphViewDelegates, startingOrder: 0, keySelector: viewDel => viewDel.Symbol.Name);
+			return viewDelegatesByName.Items;
+		}
+
+		/// <summary>
+		/// Get the view delegates symbols and syntax nodes from the graph extension.
+		/// The <paramref name="viewsByName"/> must have <see cref="StringComparer.OrdinalIgnoreCase"/> comparer.
+		/// </summary>
+		/// <param name="graphExtension">The graph extension to act on</param>
+		/// <param name="viewsByName">The views of the graph extension with <see cref="StringComparer.OrdinalIgnoreCase"/> comparer</param>
+		/// <param name="pxContext">Context</param>
+		/// <param name="cancellation">Cancellation token</param>
+		/// <returns></returns>
+		public static DataViewDelegatesOverridableCollection GetViewDelegatesFromGraphExtensionAndBaseGraph(
+														this ITypeSymbol graphExtension, IDictionary<string, DataViewInfo> viewsByName,
+														PXContext pxContext, CancellationToken cancellation)
         {
             graphExtension.ThrowOnNull(nameof(graphExtension));
-            views.ThrowOnNull(nameof(views));
+            viewsByName.ThrowOnNull(nameof(viewsByName));
             pxContext.ThrowOnNull(nameof(pxContext));
 
             return GetViewInfoFromGraphExtension<(MethodDeclarationSyntax, IMethodSymbol)>(
@@ -201,7 +198,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             int AddDelegatesFromGraph(GraphOverridableItemsCollection<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> delegates, 
 									   ITypeSymbol graph, int startingOrder)
             {
-				var graphViewDelegates = graph.GetViewDelegatesFromGraph(views, pxContext, cancellation);
+				var graphViewDelegates = graph.GetViewDelegatesFromGraphImpl(viewsByName, pxContext, inheritance: true, cancellation);
 				return delegates.AddRangeWithDeclarationOrder(graphViewDelegates, 
 							startingOrder, keySelector: viewDelegate => viewDelegate.Symbol.Name);		
             }
@@ -209,7 +206,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			int AddDelegatesFromGraphExtension(GraphOverridableItemsCollection<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> delegates, 
 												ITypeSymbol graphExt, int startingOrder)
             {
-				var extensionViewDelegates = graphExt.GetViewDelegatesFromGraphOrGraphExtension(views, pxContext, cancellation);
+				var extensionViewDelegates = graphExt.GetViewDelegatesFromGraphOrGraphExtension(viewsByName, pxContext, cancellation);
 				return delegates.AddRangeWithDeclarationOrder(extensionViewDelegates, 
 										startingOrder, keySelector: viewDelegate => viewDelegate.Symbol.Name);
             }
@@ -247,12 +244,29 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             return infoByView.Items;
         }
 
-        private static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetViewDelegatesFromGraphOrGraphExtension(
-            this ITypeSymbol graphOrExtension, IEnumerable<ISymbol> views, PXContext pxContext, CancellationToken cancellation)
+		private static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetViewDelegatesFromGraphImpl(
+																	this ITypeSymbol graph, IDictionary<string, DataViewInfo> viewsByName,
+																	PXContext pxContext, bool inheritance, CancellationToken cancellation)
+		{
+			if (inheritance)
+			{
+				return graph.GetBaseTypesAndThis()
+							.TakeWhile(baseGraph => !baseGraph.IsGraphBaseType())
+							.Reverse()
+							.SelectMany(baseGraph => GetViewDelegatesFromGraphOrGraphExtension(baseGraph, viewsByName, pxContext, cancellation));
+			}
+			else
+			{
+				return GetViewDelegatesFromGraphOrGraphExtension(graph, viewsByName, pxContext, cancellation);
+			}
+		}
+
+		private static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetViewDelegatesFromGraphOrGraphExtension(
+															this ITypeSymbol graphOrExtension, IDictionary<string, DataViewInfo> viewsByName,
+															PXContext pxContext, CancellationToken cancellation)
         {
 			IEnumerable<IMethodSymbol> delegates = from method in graphOrExtension.GetMembers().OfType<IMethodSymbol>()
-												   where method.IsValidViewDelegate(pxContext) &&
-														 views.Any(v => v.Name.Equals(method.Name, StringComparison.OrdinalIgnoreCase))
+												   where method.IsValidViewDelegate(pxContext) && viewsByName.ContainsKey(method.Name)
 												   select method;
 											                                        
             foreach (IMethodSymbol d in delegates)
