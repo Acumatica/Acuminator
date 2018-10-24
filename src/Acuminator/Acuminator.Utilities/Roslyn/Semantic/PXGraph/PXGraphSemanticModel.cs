@@ -41,7 +41,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public ImmutableDictionary<string, ActionHandlerInfo> ActionHandlersByNames { get; }
 		public IEnumerable<ActionHandlerInfo> ActionHandlers => ActionHandlersByNames.Values;
 
-		private PXGraphSemanticModel(PXContext pxContext, GraphType type, INamedTypeSymbol symbol, 
+		private PXGraphSemanticModel(PXContext pxContext, GraphType type, INamedTypeSymbol symbol,
 									 CancellationToken cancellation = default)
 		{
 			cancellation.ThrowIfCancellationRequested();
@@ -76,21 +76,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			InitDeclaredInitializers();
 		}
 
-        private void InitProcessingDelegatesInfo()
-        {
-            var processingViewSymbols = Views.Where(v => v.IsProcessing)
+		private void InitProcessingDelegatesInfo()
+		{
+			var processingViewSymbols = Views.Where(v => v.IsProcessing)
 											 .Select(v => v.Symbol)
 											 .ToImmutableHashSet();
-            IsProcessing = processingViewSymbols.Count > 0;
+			IsProcessing = processingViewSymbols.Count > 0;
 
 			if (!IsProcessing)
 			{
 				return;
 			}
 
-            var declaringNodes = Symbol.DeclaringSyntaxReferences
+			var declaringNodes = Symbol.DeclaringSyntaxReferences
 									   .Select(r => r.GetSyntax(_cancellation));
-            var walker = new ProcessingDelegatesWalker(_pxContext, processingViewSymbols, _cancellation);
+			var walker = new ProcessingDelegatesWalker(_pxContext, processingViewSymbols, _cancellation);
 
 			foreach (var node in declaringNodes)
 			{
@@ -113,8 +113,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 		}
 
-        private ImmutableDictionary<string, DataViewInfo> GetDataViews()
-        {
+		private ImmutableDictionary<string, DataViewInfo> GetDataViews()
+		{
 			if (Type == GraphType.None)
 				return ImmutableDictionary.Create<string, DataViewInfo>(StringComparer.OrdinalIgnoreCase);
 
@@ -127,7 +127,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 													  group => CreateViewInfo(group.First()),
 													  keyComparer: StringComparer.OrdinalIgnoreCase);
 
-			
+
 			DataViewInfo CreateViewInfo(GraphOverridableItem<(ISymbol ViewSymbol, INamedTypeSymbol ViewType)> item)
 			{
 				var (viewSymbol, viewType) = item.Item;
@@ -142,8 +142,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 		}
 
-        private ImmutableDictionary<string, DataViewDelegateInfo> GetDataViewDelegates()
-        {
+		private ImmutableDictionary<string, DataViewDelegateInfo> GetDataViewDelegates()
+		{
 			if (Type == GraphType.None)
 				return ImmutableDictionary.Create<string, DataViewDelegateInfo>(StringComparer.OrdinalIgnoreCase);
 
@@ -198,7 +198,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 				return baseActionInfo == null
 					? new ActionInfo(actionSymbol, actionType, item.DeclarationOrder, systemActionsRegister.IsSystemAction(actionType))
-					: new ActionInfo(actionSymbol, actionType, item.DeclarationOrder, 
+					: new ActionInfo(actionSymbol, actionType, item.DeclarationOrder,
 									 systemActionsRegister.IsSystemAction(actionType), baseActionInfo);
 			}
 		}
@@ -240,7 +240,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			if (Type == GraphType.PXGraph)
 			{
-				IEnumerable<GraphInitializerInfo> ctrs = 
+				IEnumerable<GraphInitializerInfo> ctrs =
 					Symbol.GetDeclaredInstanceConstructors(_cancellation)
 						  .Select((ctr, order) => new GraphInitializerInfo(GraphInitializerType.InstanceCtr, ctr.Node, ctr.Symbol, order));
 
@@ -260,35 +260,35 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			Initializers = initializers.ToImmutableArray();
 		}
 
-        /// <summary>
-        /// Returns one or multiple semantic models of PXGraph and PXGraphExtension descendants which are inferred from <paramref name="typeSymbol"/>
-        /// </summary>
-        /// <param name="pxContext">Context instance</param>
-        /// <param name="typeSymbol">Symbol which is PXGraph or PXGraphExtension descendant and/or which uses PXGraph.InstanceCreated AddHandler method</param>
-        /// <param name="semanticModel">Semantic model</param>
-        /// <param name="cancellation">Cancellation</param>
-        /// <returns></returns>
-        public static IEnumerable<PXGraphSemanticModel> InferModels(PXContext pxContext, INamedTypeSymbol typeSymbol,
-                                                                    CancellationToken cancellation = default)
-        {
-            cancellation.ThrowIfCancellationRequested();
-            pxContext.ThrowOnNull(nameof(pxContext));
-            typeSymbol.ThrowOnNull(nameof(typeSymbol));
+		/// <summary>
+		/// Returns one or multiple semantic models of PXGraph and PXGraphExtension descendants which are inferred from <paramref name="typeSymbol"/>
+		/// </summary>
+		/// <param name="pxContext">Context instance</param>
+		/// <param name="typeSymbol">Symbol which is PXGraph or PXGraphExtension descendant and/or which uses PXGraph.InstanceCreated AddHandler method</param>
+		/// <param name="semanticModel">Semantic model</param>
+		/// <param name="cancellation">Cancellation</param>
+		/// <returns></returns>
+		public static IEnumerable<PXGraphSemanticModel> InferModels(PXContext pxContext, INamedTypeSymbol typeSymbol,
+																	CancellationToken cancellation = default)
+		{
+			cancellation.ThrowIfCancellationRequested();
+			pxContext.ThrowOnNull(nameof(pxContext));
+			typeSymbol.ThrowOnNull(nameof(typeSymbol));
 
 			List<PXGraphSemanticModel> models = new List<PXGraphSemanticModel>();
 
-            InferExplicitModel(pxContext, typeSymbol, models, cancellation);
-            InferImplicitModels(pxContext, typeSymbol, models, cancellation);
+			InferExplicitModel(pxContext, typeSymbol, models, cancellation);
+			InferImplicitModels(pxContext, typeSymbol, models, cancellation);
 
 			return models;
 		}
 
-        private static void InferImplicitModels(PXContext pxContext, INamedTypeSymbol typeSymbol,
-                                                List<PXGraphSemanticModel> models, CancellationToken cancellation)
-        {
-            cancellation.ThrowIfCancellationRequested();
+		private static void InferImplicitModels(PXContext pxContext, INamedTypeSymbol typeSymbol,
+												List<PXGraphSemanticModel> models, CancellationToken cancellation)
+		{
+			cancellation.ThrowIfCancellationRequested();
 
-            IEnumerable<InitDelegateInfo> delegates = GetInitDelegates(pxContext, typeSymbol, cancellation);
+			IEnumerable<InitDelegateInfo> delegates = GetInitDelegates(pxContext, typeSymbol, cancellation);
 
 			foreach (InitDelegateInfo d in delegates)
 			{
@@ -297,24 +297,24 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				PXGraphSemanticModel existingModel = models.FirstOrDefault(m => m.Symbol.Equals(d.GraphTypeSymbol));
 				PXGraphSemanticModel implicitModel;
 
-                if (existingModel != null)
-                {
-                    implicitModel = existingModel;
-                }
-                else
-                {
-                    implicitModel = new PXGraphSemanticModel(pxContext, d.GraphType, d.GraphTypeSymbol, cancellation);
-                    models.Add(implicitModel);
-                }
+				if (existingModel != null)
+				{
+					implicitModel = existingModel;
+				}
+				else
+				{
+					implicitModel = new PXGraphSemanticModel(pxContext, d.GraphType, d.GraphTypeSymbol, cancellation);
+					models.Add(implicitModel);
+				}
 
 				implicitModel.Initializers = implicitModel.Initializers.Add(info);
 			}
 		}
 
-        private static void InferExplicitModel(PXContext pxContext, INamedTypeSymbol typeSymbol,
-                                               List<PXGraphSemanticModel> models, CancellationToken cancellation)
-        {
-            cancellation.ThrowIfCancellationRequested();
+		private static void InferExplicitModel(PXContext pxContext, INamedTypeSymbol typeSymbol,
+											   List<PXGraphSemanticModel> models, CancellationToken cancellation)
+		{
+			cancellation.ThrowIfCancellationRequested();
 
 			GraphType graphType = GraphType.None;
 
@@ -327,22 +327,22 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				graphType = GraphType.PXGraphExtension;
 			}
 
-            if (graphType != GraphType.None)
-            {
-                PXGraphSemanticModel explicitModel = new PXGraphSemanticModel(pxContext, graphType, typeSymbol, cancellation);
+			if (graphType != GraphType.None)
+			{
+				PXGraphSemanticModel explicitModel = new PXGraphSemanticModel(pxContext, graphType, typeSymbol, cancellation);
 
 				models.Add(explicitModel);
 			}
 		}
 
-        private static IEnumerable<InitDelegateInfo> GetInitDelegates(PXContext pxContext, INamedTypeSymbol typeSymbol,
-                                                                      CancellationToken cancellation)
-        {
-            cancellation.ThrowIfCancellationRequested();
+		private static IEnumerable<InitDelegateInfo> GetInitDelegates(PXContext pxContext, INamedTypeSymbol typeSymbol,
+																	  CancellationToken cancellation)
+		{
+			cancellation.ThrowIfCancellationRequested();
 
-            IEnumerable<SyntaxNode> declaringNodes = typeSymbol.DeclaringSyntaxReferences
+			IEnumerable<SyntaxNode> declaringNodes = typeSymbol.DeclaringSyntaxReferences
 															   .Select(r => r.GetSyntax(cancellation));
-            InstanceCreatedEventsAddHandlerWalker walker = new InstanceCreatedEventsAddHandlerWalker(pxContext, cancellation);
+			InstanceCreatedEventsAddHandlerWalker walker = new InstanceCreatedEventsAddHandlerWalker(pxContext, cancellation);
 
 			foreach (SyntaxNode node in declaringNodes)
 			{

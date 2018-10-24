@@ -71,7 +71,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			if (graphType == null || !graphType.IsPXGraph(pxContext))
 				return Enumerable.Empty<ITypeSymbol>();
 
-			return sortDirection == SortDirection.Ascending 
+			return sortDirection == SortDirection.Ascending
 				? GetExtensionInAscendingOrder()
 				: GetExtensionInDescendingOrder();
 
@@ -185,7 +185,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			ImmutableArray<ITypeSymbol> actionTypeArgs = pxAction.TypeArguments;
 
-			if (actionTypeArgs.Length == 0)  
+			if (actionTypeArgs.Length == 0)
 				return null;
 
 			ITypeSymbol pxActionDacType = actionTypeArgs[0];
@@ -274,26 +274,26 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		private static bool IsGraphWithPrimaryDacBaseGenericType(INamedTypeSymbol type) =>
 			type.TypeArguments.Length >= 2 && type.Name == TypeNames.PXGraph;
 
-        public static (MethodDeclarationSyntax Node, IMethodSymbol Symbol) GetGraphExtensionInitialization
-            (this INamedTypeSymbol typeSymbol, PXContext pxContext, CancellationToken cancellation = default)
-        {
-            typeSymbol.ThrowOnNull(nameof(typeSymbol));
+		public static (MethodDeclarationSyntax Node, IMethodSymbol Symbol) GetGraphExtensionInitialization
+			(this INamedTypeSymbol typeSymbol, PXContext pxContext, CancellationToken cancellation = default)
+		{
+			typeSymbol.ThrowOnNull(nameof(typeSymbol));
 
-            IMethodSymbol initialize = typeSymbol.GetMembers()
-                                       .OfType<IMethodSymbol>()
-                                       .Where(m => pxContext.PXGraphExtensionInitializeMethod.Equals(m.OverriddenMethod))
-                                       .FirstOrDefault();
-            if (initialize == null)
-                return (null, null);
+			IMethodSymbol initialize = typeSymbol.GetMembers()
+									   .OfType<IMethodSymbol>()
+									   .Where(m => pxContext.PXGraphExtensionInitializeMethod.Equals(m.OverriddenMethod))
+									   .FirstOrDefault();
+			if (initialize == null)
+				return (null, null);
 
-            SyntaxReference reference = initialize.DeclaringSyntaxReferences.FirstOrDefault();
-            if (reference == null)
-                return (null, null);
+			SyntaxReference reference = initialize.DeclaringSyntaxReferences.FirstOrDefault();
+			if (reference == null)
+				return (null, null);
 
-            if (!(reference.GetSyntax(cancellation) is MethodDeclarationSyntax node))
-                return (null, null);
+			if (!(reference.GetSyntax(cancellation) is MethodDeclarationSyntax node))
+				return (null, null);
 
-            return (node, initialize);
-        }
+			return (node, initialize);
+		}
 	}
 }

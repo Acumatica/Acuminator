@@ -45,7 +45,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 			GraphActions = actionInfos.ToImmutableArray();
 			GraphViews = graphViewInfos.ToImmutableArray();
 			viewsWithDacAndScores = new Dictionary<ISymbol, (ITypeSymbol DAC, Score Score)>(GraphViews.Length);
-			
+
 			foreach (DataViewInfo viewInfo in GraphViews)
 			{
 				var dac = viewInfo.Type.GetDacFromView(PxContext);
@@ -56,7 +56,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 				viewsWithDacAndScores.Add(viewInfo.Symbol, (dac, new Score(0.0)));
 			}
 
-			dacWithViewsLookup = viewsWithDacAndScores.ToLookup(viewAndDac => viewAndDac.Value.DAC, 
+			dacWithViewsLookup = viewsWithDacAndScores.ToLookup(viewAndDac => viewAndDac.Value.DAC,
 																viewAndDac => viewAndDac.Key);
 
 			absoluteRules = rules.Where(rule => rule.IsAbsolute).ToList();
@@ -78,7 +78,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 																		 ?.FirstOrDefault();
 
 			if (graphSemanticModel?.GraphSymbol == null || cancellationToken.IsCancellationRequested)
-				return null;		
+				return null;
 
 			rulesProvider = rulesProvider ?? new DefaultRulesProvider(pxContext);
 			var rules = rulesProvider.GetRules();
@@ -87,7 +87,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 				return null;
 
 			var allGraphActionInfos = graphSemanticModel.Actions
-													    .Where(action => action.Symbol.ContainingType.IsPXGraph(pxContext))
+														.Where(action => action.Symbol.ContainingType.IsPXGraph(pxContext))
 														.OrderBy(action => action.DeclarationOrder);
 			var allViewInfos = graphSemanticModel.Views
 												 .Where(view => view.Symbol.ContainingType.IsPXGraph(pxContext))
@@ -132,13 +132,13 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 			var maxScoredViews = viewsWithDacAndScores.ItemsWithMaxValues(viewWithDacAndScore => viewWithDacAndScore.Value.Score.Value);
 			var maxScoredDACs = maxScoredViews.Select(viewWithDacAndScore => viewWithDacAndScore.Value.DAC)
 											  .ToHashSet();
-			return maxScoredDACs.Count == 1 
+			return maxScoredDACs.Count == 1
 				? maxScoredDACs.FirstOrDefault()
 				: null;
 		}
 
 		private ITypeSymbol ApplyRule(PrimaryDacRuleBase rule)
-		{	
+		{
 			IEnumerable<ITypeSymbol> dacCandidates = null;
 			IEnumerable<ISymbol> viewCandidates = null;
 
@@ -155,7 +155,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 				case PrimaryDacRuleKind.Dac:
 					var dacWithViewCandidates = GetCandidatesFromDacRule(rule as DacRuleBase);
 					dacCandidates = dacWithViewCandidates?.Select(group => group.Key);
-					viewCandidates = dacWithViewCandidates?.SelectMany(group => group);			
+					viewCandidates = dacWithViewCandidates?.SelectMany(group => group);
 					break;
 				case PrimaryDacRuleKind.Action:
 					dacCandidates = GetCandidatesFromActionRule(rule as ActionRuleBase);
@@ -191,7 +191,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 
 			var candidates = dacWithViewsLookup.TakeWhile(dacWithViews => !CancellationToken.IsCancellationRequested)
 												  .Where(dacWithViews => dacRule.SatisfyRule(this, dacWithViews.Key));
-							
+
 			return !CancellationToken.IsCancellationRequested
 				? candidates.ToList()
 				: null;
@@ -209,7 +209,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 			return !CancellationToken.IsCancellationRequested
 				? dacCandidates
 				: null;
-		}	
+		}
 
 		private void ScoreRuleForViewCandidates(IEnumerable<ISymbol> viewCandidates, PrimaryDacRuleBase rule)
 		{
@@ -236,7 +236,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 						score.Value += rule.Weight;
 					else
 						score.Value = double.MinValue;
-				}			
+				}
 			}
 		}
 	}

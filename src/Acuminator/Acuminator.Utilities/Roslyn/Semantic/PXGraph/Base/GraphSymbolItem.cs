@@ -10,8 +10,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	/// <typeparam name="T">Type of the declaration symbol of the item</typeparam>
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public abstract class GraphNodeSymbolItem<T>
-        where T : ISymbol
-    {
+		where T : ISymbol
+	{
 		/// <summary>
 		/// The declaration order.
 		/// </summary>
@@ -26,10 +26,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		protected virtual string DebuggerDisplay => $"{Symbol.Name}";
 
 		public GraphNodeSymbolItem(T symbol, int declarationOrder)
-        {
-            symbol.ThrowOnNull(nameof(symbol));
-            Symbol = symbol;
+		{
+			symbol.ThrowOnNull(nameof(symbol));
+			Symbol = symbol;
 			DeclarationOrder = declarationOrder;
-        }
-    }
+		}
+	}
 }

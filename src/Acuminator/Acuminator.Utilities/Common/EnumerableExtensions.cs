@@ -74,7 +74,7 @@ namespace Acuminator.Utilities.Common
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Stack<T> ToStack<T>(this IEnumerable<T> source) => source != null 
+		public static Stack<T> ToStack<T>(this IEnumerable<T> source) => source != null
 			? new Stack<T>(source)
 			: throw new ArgumentNullException(nameof(source));
 
