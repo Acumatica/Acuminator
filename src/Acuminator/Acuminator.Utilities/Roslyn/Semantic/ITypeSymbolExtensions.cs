@@ -341,8 +341,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			return initializers;
 		}
 
-		public static ImmutableArray<StaticConstructorInfo> GetStaticConstructors
-			(this INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
+		public static ImmutableArray<StaticConstructorInfo> GetStaticConstructors(this INamedTypeSymbol typeSymbol,
+																				  CancellationToken cancellation = default)
 		{
 			typeSymbol.ThrowOnNull(nameof(typeSymbol));
 
