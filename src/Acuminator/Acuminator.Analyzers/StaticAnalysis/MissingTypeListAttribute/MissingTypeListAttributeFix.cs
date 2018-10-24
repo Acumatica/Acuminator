@@ -14,52 +14,51 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute
 {
-    [ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-    public class MissingTypeListAttributeFix : CodeFixProvider
-    {
-        public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-            ImmutableArray.Create(Descriptors.PX1002_MissingTypeListAttributeAnalyzer.Id);
+	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
+	public class MissingTypeListAttributeFix : CodeFixProvider
+	{
+		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
+			ImmutableArray.Create(Descriptors.PX1002_MissingTypeListAttributeAnalyzer.Id);
 
-        public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
-        {
+		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken)
-													.ConfigureAwait(false);
+			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			var node = root?.FindNode(context.Span) as PropertyDeclarationSyntax;
 
 			if (node == null)
 				return;
 
-            context.RegisterCodeFix(
-                CodeAction.Create(
-                    Resources.PX1002Fix,
-                    cancellationToken => InsertTypeAttributeAsync(context.Document, root, node, cancellationToken),
-                    Resources.PX1002Fix),
-                context.Diagnostics);
-        }
+			context.RegisterCodeFix(
+				CodeAction.Create(
+					Resources.PX1002Fix,
+					cancellationToken => InsertTypeAttributeAsync(context.Document, root, node, cancellationToken),
+					Resources.PX1002Fix),
+				context.Diagnostics);
+		}
 
-        private async Task<Document> InsertTypeAttributeAsync(Document document, SyntaxNode root, PropertyDeclarationSyntax propertyDeclaration,
+		private async Task<Document> InsertTypeAttributeAsync(Document document, SyntaxNode root, PropertyDeclarationSyntax propertyDeclaration,
 															  CancellationToken cancellationToken)
-        {
+		{
 			cancellationToken.ThrowIfCancellationRequested();
 
-            var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+			var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
 			IPropertySymbol property = semanticModel?.GetDeclaredSymbol(propertyDeclaration, cancellationToken);
 
 			if (property == null)
 				return document;
 
 			var pxContext = new PXContext(semanticModel.Compilation);
-            var lists = new List<INamedTypeSymbol> {
-                                    pxContext.AttributeTypes.PXIntListAttribute.Type,
-                                    pxContext.AttributeTypes.PXStringListAttribute.Type };
+			var lists = new List<INamedTypeSymbol> {
+									pxContext.AttributeTypes.PXIntListAttribute.Type,
+									pxContext.AttributeTypes.PXStringListAttribute.Type };
 
-            var attributeTypes = property.GetAttributes()
+			var attributeTypes = property.GetAttributes()
 										 .Select(a => a.AttributeClass);
-            var listAttribute = attributeTypes.FirstOrDefault(attributeType => 
+			var listAttribute = attributeTypes.FirstOrDefault(attributeType =>
 													lists.Any(lAttribute => attributeType.InheritsFromOrEquals(lAttribute, true)));
 
 			cancellationToken.ThrowIfCancellationRequested();
@@ -68,17 +67,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute
 				? pxContext.FieldAttributes.PXIntAttribute.Name
 				: pxContext.FieldAttributes.PXStringAttribute.Name;
 
-			AttributeSyntax attributeNode = 
+			AttributeSyntax attributeNode =
 				SyntaxFactory.Attribute(
 					SyntaxFactory.IdentifierName(attributeIdentifier));
 
-            var attributes = propertyDeclaration.AttributeLists.Add(
-                   SyntaxFactory.AttributeList(
+			var attributes = propertyDeclaration.AttributeLists.Add(
+				   SyntaxFactory.AttributeList(
 					   SyntaxFactory.SingletonSeparatedList(attributeNode)));
 
-			var modifiedRoot = root.ReplaceNode(propertyDeclaration, 
+			var modifiedRoot = root.ReplaceNode(propertyDeclaration,
 												propertyDeclaration.WithAttributeLists(attributes));
 			return document.WithSyntaxRoot(modifiedRoot);
-        }
-    }
+		}
+	}
 }
