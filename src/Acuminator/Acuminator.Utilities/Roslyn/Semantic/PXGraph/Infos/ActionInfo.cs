@@ -8,7 +8,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	/// <summary>
 	/// The DTO with information about the action declared in graph.
 	/// </summary>
-	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public class ActionInfo : GraphNodeSymbolItem<ISymbol>
     {
 		/// <summary>
@@ -27,7 +26,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         public INamedTypeSymbol Type { get; }
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private string DebuggerDisplay => $"Symbol: {Symbol.Name} | Type: {Type.ToString()}";
+		protected override string DebuggerDisplay => $"{base.DebuggerDisplay} |Type: {Type.ToString()}";
 
 		public ActionInfo(ISymbol symbol, INamedTypeSymbol type, int declarationOrder, bool isSystem) : 
 					 base(symbol, declarationOrder)

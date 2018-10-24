@@ -23,7 +23,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public T Symbol { get; }
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		protected virtual string DebuggerDisplay => $"Symbol: {Symbol.Name}";
+		protected virtual string DebuggerDisplay => $"{Symbol.Name}";
 
 		public GraphNodeSymbolItem(T symbol, int declarationOrder)
         {

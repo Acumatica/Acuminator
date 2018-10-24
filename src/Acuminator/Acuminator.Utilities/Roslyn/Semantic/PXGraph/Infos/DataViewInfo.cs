@@ -39,7 +39,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
         public ImmutableArray<ProcessingDelegateInfo> FinallyProcessDelegates { get; internal set; } =
             ImmutableArray<ProcessingDelegateInfo>.Empty;
 
-        public DataViewInfo(ISymbol symbol, INamedTypeSymbol type, PXContext pxContext, int declarationOrder)
+		protected override string DebuggerDisplay => $"{base.DebuggerDisplay} |Type: {Type.ToString()}";
+
+		public DataViewInfo(ISymbol symbol, INamedTypeSymbol type, PXContext pxContext, int declarationOrder)
             : base(symbol, declarationOrder)
         {
             type.ThrowOnNull(nameof(type));

@@ -9,5 +9,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
             : base(node, symbol, declarationOrder)
         {
         }
-    }
+
+		protected override string DebuggerDisplay => this.ToString();
+	}
 }

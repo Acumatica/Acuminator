@@ -6,7 +6,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
     {
         public GraphInitializerType Type { get; }
 
-        public GraphInitializerInfo(GraphInitializerType type, SyntaxNode node, ISymbol symbol, int declarationOrder)
+		protected override string DebuggerDisplay => this.ToString();
+
+		public GraphInitializerInfo(GraphInitializerType type, SyntaxNode node, ISymbol symbol, int declarationOrder)
             : base(node, symbol, declarationOrder)
         {
             Type = type;

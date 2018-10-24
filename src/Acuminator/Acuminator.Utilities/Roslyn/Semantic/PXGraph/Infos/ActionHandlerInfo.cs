@@ -8,7 +8,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	/// <summary>
 	/// Information about the action's handler in graph.
 	/// </summary>
-	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public class ActionHandlerInfo : GraphNodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol>
     {
         /// <summary>
@@ -20,8 +19,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 							base(node, symbol, declarationOrder)
         {
         }
-
-		
 
 		public ActionHandlerInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder, ActionHandlerInfo baseInfo) :
 							this(node, symbol, declarationOrder)
