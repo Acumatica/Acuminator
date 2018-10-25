@@ -388,6 +388,7 @@
     <Compile Include="Coloriser\Outlining\PXOutliningTaggerProvider.cs" />
     <Compile Include="Coloriser\Base\PXTaggerProviderBase.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\RoslynVSEditorExtensions.cs" />
+    <Compile Include="Commands\BQL Fixer\AngleBracesBqlRewriter.cs" />
     <Compile Include="Commands\BQL Fixer\FixBqlCommand.cs" />
     <Compile Include="Commands\GoToDeclarationOrHandler\GoToDeclarationOrHandlerCommand.cs" />
     <Compile Include="Commands\VSCommandBase.cs" />

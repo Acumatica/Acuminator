@@ -21,7 +21,7 @@ using Microsoft.VisualStudio.Text.Outlining;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Acuminator.Vsix;
 using Acuminator.Vsix.Utilities;
-
+using Acuminator.Utilities.Common;
 
 
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
@@ -86,14 +86,60 @@ namespace Acuminator.Vsix.BqlFixer
 			if (syntaxRoot == null || semanticModel == null)
 				return;
 
-			TextSpan lineSpan = TextSpan.FromBounds(caretLine.Start.Position, caretLine.End.Position);
-			var memberNode = syntaxRoot.FindNode(lineSpan) as MemberDeclarationSyntax;  
+			//TextSpan lineSpan = TextSpan.FromBounds(caretLine.Start.Position, caretLine.End.Position);
+			//var memberNode = syntaxRoot.FindNode(lineSpan) as MemberDeclarationSyntax;
 
-			if (memberNode == null)
-				return;
+			//         if (memberNode == null)
+			//             return;
+
+			SyntaxNode fixedRoot;
+			#region todo
+			if (textView.Selection.IsActive && !textView.Selection.IsEmpty) // if has selection
+			{
+				// todo: check selection
+
+				//// Find all nodes within the span and format them
+				//var selectionSpan = TextSpan.FromBounds(textView.Selection.Start.Position, textView.Selection.End.Position);
+				//SyntaxNode topNode = syntaxRoot.FindNode(selectionSpan); // can, return top node that intersects with selectionSpan, so we need SpanWalker here
+
+				//if (topNode == null)
+				//	return; // nothing to format (e.g. selection contains only trivia)
+
+				//var spanWalker = new SpanWalker(selectionSpan);
+				//spanWalker.Visit(topNode);
+
+				//if (spanWalker.NodesWithinSpan.Count == 0)
+				//	return;
+
+				//fixedRoot = syntaxRoot.ReplaceNodes(spanWalker.NodesWithinSpan, (o, r) => formatter.Format(o, semanticModel));
+			}
+			else
+			{
+			}
+			#endregion
+			fixedRoot = new AngleBracesBqlRewriter(semanticModel).Visit(syntaxRoot);
 
 
-			//Implementation here
+			// todo: check
+			if (!textView.TextBuffer.EditInProgress)
+			{
+				var formattedDocument = document.WithSyntaxRoot(fixedRoot);
+				ApplyChanges(document, formattedDocument);
+			}
+		}
+
+		private void ApplyChanges(Microsoft.CodeAnalysis.Document oldDocument, Microsoft.CodeAnalysis.Document newDocument)
+		{
+			oldDocument.ThrowOnNull(nameof(oldDocument));
+			newDocument.ThrowOnNull(nameof(newDocument));
+
+			Workspace workspace = oldDocument.Project?.Solution?.Workspace;
+			Microsoft.CodeAnalysis.Solution newSolution = newDocument.Project?.Solution;
+
+			if (workspace != null && newSolution != null)
+			{
+				workspace.TryApplyChanges(newSolution);
+			}
 		}
 	}
 }
