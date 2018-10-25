@@ -94,10 +94,7 @@ namespace Acuminator.Vsix.BqlFixer
 				return;
 
 
-			//Implementation here
-			VSDocumentNavigation.OpenCodeFileAndNavigateToPosition(ServiceProvider,
-				@"C:\Users\snikomarov\Desktop\Decepticode - Push\Acuminator\src\Samples\PX.Objects.HackathonDemo\PX.Objects.HackathonDemo\Graph\GoTo Test\APInvoiceEntry.cs",
-				5);
+			
 		}
 	}
 }
