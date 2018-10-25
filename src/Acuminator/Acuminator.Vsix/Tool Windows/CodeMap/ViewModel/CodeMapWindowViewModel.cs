@@ -25,19 +25,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public TreeViewModel Tree { get; }
 
-		public CodeMapWindowViewModel()
-		{
-			_documentModel = new DocumentModel();
-			Tree = new TreeViewModel(this);
-
-			var root = new TreeNodeViewModel(Tree, "Root");
-			root.Children.Add(new TreeNodeViewModel(Tree, "Child1"));
-			root.Children.Add(new TreeNodeViewModel(Tree, "Child2"));
-			root.Children.Last().Children.Add(new TreeNodeViewModel(Tree, "Descendant"));
-
-			Tree.RootItems.Add(root);
-		}
-
 		public CodeMapWindowViewModel(IWpfTextView wpfTextView, Document document)
 		{
 			_documentModel = new DocumentModel(wpfTextView, document);
