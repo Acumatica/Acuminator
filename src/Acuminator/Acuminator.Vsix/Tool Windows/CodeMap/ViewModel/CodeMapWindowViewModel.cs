@@ -23,7 +23,20 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public Document Document => _documentModel.Document;
 
-		public TreeViewModel Tree { get; }
+		private TreeViewModel _tree;
+
+		public TreeViewModel Tree
+		{
+			get => _tree;
+			private set
+			{
+				if (!ReferenceEquals(_tree, value))
+				{
+					_tree = value;
+					NotifyPropertyChanged();
+				}
+			}
+		}
 
 		public CodeMapWindowViewModel(IWpfTextView wpfTextView, Document document)
 		{
@@ -58,10 +71,22 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					CancellationToken cancellationToken = _cancellationTokenSource.Token;
 
 					await TaskScheduler.Default;
-					await BuildCodeMapCoreAsync(cancellationToken).ConfigureAwait(false);
+					await _documentModel.LoadCodeFileDataAsync(cancellationToken)
+										.ConfigureAwait(false);
+
+					TreeViewModel newTreeVM = null;// await BuildCodeMapTreeViewAsync(cancellationToken).ConfigureAwait(false);
+
+					if (newTreeVM == null)
+						return;
+
 					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
+					Tree = newTreeVM;
 				}
+			}
+			catch (OperationCanceledException e)
+			{
+
 			}
 			finally
 			{
@@ -69,13 +94,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		private async Task BuildCodeMapCoreAsync(CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-				return;
+		//private async Task<TreeViewModel> BuildCodeMapTreeViewAsync(CancellationToken cancellationToken)
+		//{
+		//	if (cancellationToken.IsCancellationRequested)
+		//		return null;
 
-			await _documentModel.LoadCodeFileDataAsync(cancellationToken)
-							    .ConfigureAwait(false);
-		}
+		//	TreeViewModel tree = new TreeViewModel()
+		//}
 	}
 }

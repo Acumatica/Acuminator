@@ -21,8 +21,6 @@ namespace Acuminator.Vsix.ToolWindows.AntiPlagiator
 {
 	public class AntiPlagiatorWindowViewModel : ToolWindowViewModelBase
 	{
-		private const double DefaultThreshhold = 50;
-
 		private CancellationTokenSource _cancellationTokenSource;
 
 		public ExtendedObservableCollection<PlagiarismInfoViewModel> PlagiatedItems { get; }
@@ -71,8 +69,8 @@ namespace Acuminator.Vsix.ToolWindows.AntiPlagiator
                 }
             }
         }
-	
-		private double _threshholdPercent = DefaultThreshhold;
+
+		private double _threshholdPercent = PlagiarismScanner.SimilarityThresholdDefault * 100;
 
 		public double ThreshholdPercent
 		{
@@ -113,25 +111,6 @@ namespace Acuminator.Vsix.ToolWindows.AntiPlagiator
 		{
 			base.FreeResources();
 			_cancellationTokenSource?.Dispose();
-		}
-
-		public void OpenLocation(PlagiarismInfoViewModel plagiarismInfo, LocationType locationType)
-		{
-			string location;
-
-			switch (locationType)
-			{
-				case LocationType.Reference:
-					location = plagiarismInfo.ReferenceLocation;
-					break;
-				case LocationType.Source:
-					location = plagiarismInfo.SourceLocation;
-					break;
-				default:
-					return;
-			}
-
-			MessageBox.Show("Yay!");
 		}
 
 		private void OpenReferenceSolution()

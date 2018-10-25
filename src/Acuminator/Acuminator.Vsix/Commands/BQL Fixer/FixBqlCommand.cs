@@ -21,7 +21,6 @@ using Microsoft.VisualStudio.Text.Outlining;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Acuminator.Vsix;
 using Acuminator.Vsix.Utilities;
-using Acuminator.Vsix.Utils.Navigation;
 
 
 

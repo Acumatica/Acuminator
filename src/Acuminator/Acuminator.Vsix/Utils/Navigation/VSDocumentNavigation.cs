@@ -12,6 +12,7 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Outlining;
 
 
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
@@ -20,13 +21,58 @@ using DTE = EnvDTE.DTE;
 
 
 
-namespace Acuminator.Vsix.Utils.Navigation
+namespace Acuminator.Vsix.Utilities.Navigation
 {
 	public static class VSDocumentNavigation
 	{
-		public static (bool IsSuccess, CaretPosition CaretPosition) OpenCodeFileAndNavigateToPosition(this IServiceProvider serviceProvider,
-																									  Solution solution, string filePath, 
-																									  int? caretPosition = null)
+		public static (IWpfTextView WpfTextView, CaretPosition CaretPosition) OpenCodeFileAndNavigateByLineAndChar(
+																									  this IServiceProvider serviceProvider,
+																									  Solution solution, string filePath,
+																									  int lineNumber, int character)
+		{
+			serviceProvider.ThrowOnNull(nameof(serviceProvider));
+
+			if (lineNumber < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(lineNumber));
+			}
+			else if (character < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(character));
+			}
+
+			IWpfTextView wpfTextView = OpenCodeWindow(serviceProvider, solution, filePath);
+
+			if (wpfTextView == null)
+				return default;
+
+			try
+			{
+				ITextSnapshotLine textLine = wpfTextView.TextSnapshot.GetLineFromLineNumber(lineNumber);
+				int absoluteOffset = textLine.Start + character;
+				SnapshotPoint point = wpfTextView.TextSnapshot.GetPoint(absoluteOffset);
+				SnapshotSpan span = new SnapshotSpan(point, length: 0);
+
+				serviceProvider.ExpandAllRegionsContainingSpan(span, wpfTextView);
+				CaretPosition newCaretPosition = wpfTextView.MoveCaretTo(absoluteOffset);
+
+				if (!wpfTextView.TextViewLines.ContainsBufferPosition(newCaretPosition.BufferPosition))
+				{
+					wpfTextView.ViewScroller.EnsureSpanVisible(span, EnsureSpanVisibleOptions.AlwaysCenter);
+				}
+
+				return (wpfTextView, newCaretPosition);
+			}
+			catch
+			{
+				return default;
+			}
+		}
+
+		public static (IWpfTextView WpfTextView, CaretPosition CaretPosition) OpenCodeFileAndNavigateToPosition(
+																					this IServiceProvider serviceProvider,
+																					Solution solution, string filePath, 
+																					int? caretPosition = null)
 		{
 			serviceProvider.ThrowOnNull(nameof(serviceProvider));
 
@@ -42,11 +88,22 @@ namespace Acuminator.Vsix.Utils.Navigation
 
 			try
 			{
-				CaretPosition caret = caretPosition.HasValue
-					? wpfTextView.MoveCaretTo(caretPosition.Value)
-					: wpfTextView.Caret.Position;
+				if (caretPosition == null)
+				{
+					return (wpfTextView, wpfTextView.Caret.Position);
+				}
 
-				return (true, caret);
+				SnapshotPoint point = wpfTextView.TextSnapshot.GetPoint(caretPosition.Value);
+				SnapshotSpan span = new SnapshotSpan(point, length: 0);
+				serviceProvider.ExpandAllRegionsContainingSpan(span, wpfTextView);
+				CaretPosition newCaretPosition = wpfTextView.MoveCaretTo(caretPosition.Value);
+
+				if (!wpfTextView.TextViewLines.ContainsBufferPosition(newCaretPosition.BufferPosition))
+				{
+					wpfTextView.ViewScroller.EnsureSpanVisible(span, EnsureSpanVisibleOptions.AlwaysCenter);
+				}
+
+				return (wpfTextView, newCaretPosition);
 			}
 			catch
 			{
@@ -83,8 +140,22 @@ namespace Acuminator.Vsix.Utils.Navigation
 			}
 		}
 
+		public static void ExpandAllRegionsContainingSpan(this IServiceProvider serviceProvider, SnapshotSpan selectedSpan, IWpfTextView textView)
+		{
+			if (textView == null)
+				return;
+
+			IOutliningManager outliningManager = serviceProvider?.GetOutliningManager(textView);
+
+			if (outliningManager == null)
+				return;
+
+			outliningManager.GetCollapsedRegions(selectedSpan, exposedRegionsOnly: false)
+							.ForEach(region => outliningManager.Expand(region));
+		}
+
 		private static bool IsFileOpen(this Solution solution, DocumentId documentID) => 
 			solution.Workspace.GetOpenDocumentIds()
-							  .Contains(documentID);
+							  .Contains(documentID);		
 	}
 }
