@@ -50,8 +50,8 @@ namespace Acuminator.Vsix.ToolWindows.AntiPlagiator
 
 			_plagiarismInfo = plagiarismInfo;
 			ParentViewModel = parentViewModel;
-			ReferenceLocation = ExtractShortLocation(_plagiarismInfo.Reference.Location, referenceSolutionDir);
-			SourceLocation = ExtractShortLocation(_plagiarismInfo.Source.Location, sourceSolutionDir);
+			ReferenceLocation = ExtractShortLocation(_plagiarismInfo.Reference.Path, referenceSolutionDir);
+			SourceLocation = ExtractShortLocation(_plagiarismInfo.Source.Path, sourceSolutionDir);
 		}
 
 		private string ExtractShortLocation(string location, string solutionDir)
