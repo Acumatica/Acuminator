@@ -16,13 +16,13 @@ namespace AcumaticaPlagiarism.Method
                 return null;
             }
 
-            var statements = method.Body.Statements;
-            var statementIndexes = new List<int>();
+            SyntaxList<StatementSyntax> statements = method.Body.Statements;
+            List<int> statementIndexes = new List<int>();
 
-            foreach (var s in statements)
+            foreach (StatementSyntax s in statements)
             {
-                var words = BuildWords(s);
-                var wordIndex = GetWordsIndex(words);
+                IEnumerable<string> words = BuildWords(s);
+                IEnumerable<int> wordIndex = GetWordsIndex(words);
 
                 statementIndexes.AddRange(wordIndex);
             }
@@ -32,14 +32,9 @@ namespace AcumaticaPlagiarism.Method
                 return null;
             }
 
-            var symbol = semanticModel.GetDeclaredSymbol(method);
-            var methodName = symbol.ToDisplayString();
-            var location = method.GetLocation().GetMappedLineSpan();
-
-            if (methodName == @"PX.Objects.IN.KitAssemblyEntry.ExecuteUpdate(string, IDictionary, IDictionary, params object[])"
-                /*@"PX.Objects.IN.KitAssemblyEntry.ExecuteUpdate(string, IDictionary, IDictionary, params object[])"*/)
-            {
-            }
+            ISymbol symbol = semanticModel.GetDeclaredSymbol(method);
+            string methodName = symbol.ToDisplayString();
+            string location = method.GetLocation().ToString();
 
             return new MethodIndex(methodName, location, statementIndexes);
         }
@@ -51,7 +46,7 @@ namespace AcumaticaPlagiarism.Method
 
         private static IEnumerable<string> BuildWords(StatementSyntax statement)
         {
-            var walker = new MethodStatementWalker();
+            MethodStatementWalker walker = new MethodStatementWalker();
 
             walker.Visit(statement);
 

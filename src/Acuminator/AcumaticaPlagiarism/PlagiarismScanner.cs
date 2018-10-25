@@ -8,7 +8,7 @@ namespace AcumaticaPlagiarism
 {
     public class PlagiarismScanner
     {
-        private const double _similarityThresholdDefault = 0.8;
+        public const double SimilarityThresholdDefault = 0.8;
 
         private readonly List<PlagiarismInfo> _scanResults = new List<PlagiarismInfo>();
         private readonly double _similarityThreshold;
@@ -17,7 +17,7 @@ namespace AcumaticaPlagiarism
         private readonly Func<MethodIndex, MethodIndex, double> _methodSimilarityStrategy;
 
         public PlagiarismScanner(string referenceSolutionPath, string sourceSolutionPath,
-                                 double similarityThreshold = _similarityThresholdDefault,
+                                 double similarityThreshold = SimilarityThresholdDefault,
                                  Func<MethodIndex, MethodIndex, double> methodSimilarityStrategy = null)
         {
             _referenceSolutionPath = referenceSolutionPath;

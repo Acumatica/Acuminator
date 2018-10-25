@@ -18,7 +18,7 @@ namespace AcumaticaPlagiarism.Solution
 
             Microsoft.CodeAnalysis.Solution solution = workspace.OpenSolutionAsync(solutionPath).Result;
 
-            foreach (Project p in solution.Projects.Take(1))
+            foreach (Project p in solution.Projects)
             {
                 Compilation compilation = p.GetCompilationAsync().Result;
 

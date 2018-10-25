@@ -54,9 +54,9 @@ namespace Acuminator.Vsix.ToolWindows.AntiPlagiator
 			SourceLocation = ExtractShortLocation(_plagiarismInfo.Source.Location, sourceSolutionDir);
 		}
 
-		private string ExtractShortLocation(FileLinePositionSpan location, string solutionDir)
+		private string ExtractShortLocation(string location, string solutionDir)
 		{
-			string preparedLocation = location.Path;
+            string preparedLocation = location;
 
 			if (preparedLocation.StartsWith(LocationPrefix))
 			{
