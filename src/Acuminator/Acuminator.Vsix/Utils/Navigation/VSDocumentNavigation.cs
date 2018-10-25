@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -34,7 +35,7 @@ namespace Acuminator.Vsix.Utils.Navigation
 
 			var window = OpenCodeWindow(serviceProvider, filePath);
 
-			if (window == null || !(serviceProvider.GetWpfTextView() is IWpfTextView activeTextView))
+			if (window.Window == null || !(serviceProvider.GetWpfTextView() is IWpfTextView activeTextView))
 				return default;
 
 			try
@@ -49,16 +50,27 @@ namespace Acuminator.Vsix.Utils.Navigation
 		}
 
 #pragma warning disable VSTHRD010
-		public static EnvDTE.Window OpenCodeWindow(this IServiceProvider serviceProvider, string filePath)
+		public static (EnvDTE.Window Window, TextDocument TextDocument) OpenCodeWindow(this IServiceProvider serviceProvider, string filePath)
 		{
 			serviceProvider.ThrowOnNull(nameof(serviceProvider));		
 
 			if (!ThreadHelper.CheckAccess() || !File.Exists(filePath) || !(serviceProvider.GetService(typeof(DTE)) is DTE dte))
-				return null;
+				return default;
 
 			try
 			{
-				return dte.ItemOperations.OpenFile(filePath, EnvDTE.Constants.vsViewKindTextView);
+				var window = dte.ItemOperations.OpenFile(filePath, EnvDTE.Constants.vsViewKindTextView);
+				var textDocument = window?.GetTextDocumentFromWindow();
+
+				if (textDocument == null)
+					return default;
+			
+				window.Visible = true;
+				//textDocument.Tr
+				//textDocument.
+				// textDocument.TryGetText(out var text);
+				//text.Container.
+				return (window, textDocument);
 			}
 			catch
 			{

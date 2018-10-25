@@ -45,7 +45,7 @@
     <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Refactorings\ChangeEventHandlerSignatureToGeneric\ChangeEventHandlerSignatureToGenericRefactoring.cs" />
+    <Content Include="Refactorings\ChangeEventHandlerSignatureToGeneric\ChangeEventHandlerSignatureToGenericRefactoring.cs" />
     <Compile Include="StaticAnalysis\AnalyzersAggregator\ISymbolAnalyzer.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\ArrayElemCountLocalVariableResolver.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\BqlInvocationDataFlowAnalyserBase.cs" />

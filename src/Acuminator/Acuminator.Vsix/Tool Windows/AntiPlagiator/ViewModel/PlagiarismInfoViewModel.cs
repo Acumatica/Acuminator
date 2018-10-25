@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
+using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Common;
 using AcumaticaPlagiarism;
 
@@ -53,9 +54,9 @@ namespace Acuminator.Vsix.ToolWindows.AntiPlagiator
 			SourceLocation = ExtractShortLocation(_plagiarismInfo.Source.Location, sourceSolutionDir);
 		}
 
-		private string ExtractShortLocation(string location, string solutionDir)
+		private string ExtractShortLocation(FileLinePositionSpan location, string solutionDir)
 		{
-			string preparedLocation = location;
+			string preparedLocation = location.Path;
 
 			if (preparedLocation.StartsWith(LocationPrefix))
 			{

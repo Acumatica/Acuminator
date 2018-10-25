@@ -93,7 +93,7 @@
 					  <CommandFlag>DynamicVisibility</CommandFlag>-->
         <Strings>
           <CommandName>cmdidFixBqlCommand</CommandName>
-          <ButtonText>Fix angle braces in BQL Statement</ButtonText>
+          <ButtonText>Fix BQL Braces</ButtonText>
         </Strings>
       </Button>
 
@@ -104,7 +104,7 @@
         <!--<CommandFlag>DefaultDisabled</CommandFlag>-->
         <Strings>
           <CommandName>cmdidOpenCodeMapWindowCommand</CommandName>
-          <ButtonText>Acuminator CodeMap</ButtonText>
+          <ButtonText>CodeMap</ButtonText>
         </Strings>
       </Button>
 
@@ -113,7 +113,7 @@
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <CommandName>cmdidOpenAntiPlagiatorWindowCommand</CommandName>
-          <ButtonText>Acuminator AntiPlagiator</ButtonText>
+          <ButtonText>AntiPlagiarism</ButtonText>
         </Strings>
       </Button>
       
@@ -202,11 +202,11 @@
       <Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" />
     </CommandPlacement>
 
-    <CommandPlacement guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" priority="0x0002">
+    <CommandPlacement guid="guidAcuminatorCmdSet" id="FixBqlCommandId" priority="0x0002">
       <Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" />
     </CommandPlacement>
 
-    <CommandPlacement guid="guidAcuminatorCmdSet" id="FixBqlCommandId" priority="0x0003">
+    <CommandPlacement guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" priority="0x0003">
       <Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" />
     </CommandPlacement>
 

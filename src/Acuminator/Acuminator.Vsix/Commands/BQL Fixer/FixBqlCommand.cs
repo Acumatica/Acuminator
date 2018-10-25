@@ -21,6 +21,7 @@ using Microsoft.VisualStudio.Text.Outlining;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Acuminator.Vsix;
 using Acuminator.Vsix.Utilities;
+using Acuminator.Vsix.Utils.Navigation;
 
 
 
@@ -94,6 +95,9 @@ namespace Acuminator.Vsix.BqlFixer
 
 
 			//Implementation here
+			VSDocumentNavigation.OpenCodeFileAndNavigateToPosition(ServiceProvider,
+				@"C:\Users\snikomarov\Desktop\Decepticode - Push\Acuminator\src\Samples\PX.Objects.HackathonDemo\PX.Objects.HackathonDemo\Graph\GoTo Test\APInvoiceEntry.cs",
+				5);
 		}
 	}
 }
