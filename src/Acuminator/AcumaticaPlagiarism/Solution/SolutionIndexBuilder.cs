@@ -18,7 +18,7 @@ namespace AcumaticaPlagiarism.Solution
 
             Microsoft.CodeAnalysis.Solution solution = workspace.OpenSolutionAsync(solutionPath).Result;
 
-            foreach (Project p in solution.Projects.Take(1))
+            foreach (Project p in solution.Projects)
             {
                 Compilation compilation = p.GetCompilationAsync().Result;
 
@@ -27,16 +27,14 @@ namespace AcumaticaPlagiarism.Solution
                     SemanticModel semanticModel = compilation.GetSemanticModel(t);
                     IEnumerable<MethodDeclarationSyntax> methodDeclarations = t.GetRoot()
                                                                                .DescendantNodesAndSelf()
-                                                                               .OfType<MethodDeclarationSyntax>();
+                                                                               .OfType<MethodDeclarationSyntax>()
+                                                                               .Where(m => m.Body != null);
 
                     foreach (MethodDeclarationSyntax method in methodDeclarations)
                     {
                         MethodIndex index = MethodIndexBuilder.BuildIndex(method, semanticModel);
 
-                        if (index != null)
-                        {
-                            indices.Add(index);
-                        }
+                        indices.Add(index);
                     }
                 }
             }

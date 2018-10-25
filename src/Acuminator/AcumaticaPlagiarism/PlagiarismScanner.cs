@@ -8,7 +8,7 @@ namespace AcumaticaPlagiarism
 {
     public class PlagiarismScanner
     {
-        private const double _similarityThresholdDefault = 0.8;
+        private const double _similarityThresholdDefault = 0.5;
 
         private readonly List<PlagiarismInfo> _scanResults = new List<PlagiarismInfo>();
         private readonly double _similarityThreshold;
