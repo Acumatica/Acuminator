@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using EnvDTE80;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
@@ -34,6 +36,13 @@ namespace Acuminator.Vsix.Utilities
 		where TActual : class
 		{
 			return serviceProvider?.GetService(typeof(TRequested)) as TActual;
+		}
+
+		internal static string GetSolutionPath(this IServiceProvider serviceProvider)
+		{
+			IWpfTextView textView = serviceProvider?.GetWpfTextView();
+			Document document = textView?.TextSnapshot?.GetOpenDocumentInCurrentContextWithChanges();
+			return document?.Project?.Solution?.FilePath ?? string.Empty;
 		}
 
 		internal static IOutliningManager GetOutliningManager(this IServiceProvider serviceProvider, ITextView textView)

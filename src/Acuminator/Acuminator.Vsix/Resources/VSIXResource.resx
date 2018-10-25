@@ -249,4 +249,13 @@
   <data name="Setting_CodeAnalysis_IsvSpecificAnalyzersEnabled_Title" xml:space="preserve">
     <value>Enable additional diagnostics for ISV Solution Certification</value>
   </data>
+  <data name="CodeMapWindowTitle" xml:space="preserve">
+    <value>Acuminator CodeMap</value>
+  </data>
+  <data name="AntiPlagiatorWindowTitle" xml:space="preserve">
+    <value>Anti-Plagiator</value>
+  </data> 
+  <data name="DacExplorerWindowTitle" xml:space="preserve">
+    <value>DAC Explorer</value>
+  </data>
 </root>

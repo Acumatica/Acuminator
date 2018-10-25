@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Media;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
@@ -14,14 +15,16 @@ namespace Acuminator.Vsix.Coloriser
 {
     public static class VSColors
     {
-        private const byte RedCriteria = 128;
+		private const int NOT_INITIALIZED = 0, INITIALIZED = 1;
+
+		private const byte RedCriteria = 128;
         private const byte GreenCriteria = 128;
         private const byte BlueCriteria = 128;
 
-        private static object locker = new object();
-        private static IVsUIShell5 vsUIShell5;
+        private static IVsUIShell5 _vsUIShell5;
+		private static int _serviceInitialized = NOT_INITIALIZED;
 
-        private static readonly Dictionary<string,  Func<Color>> acuminatorColors = new Dictionary<string,  Func<Color>>()
+		private static readonly Dictionary<string,  Func<Color>> _acuminatorColors = new Dictionary<string,  Func<Color>>()
         {
             { ColoringConstants.BQLOperatorFormat, () => BQLOperatorFormatColor },
             { ColoringConstants.BQLParameterFormat, () => BQLParameterFormatColor },
@@ -55,28 +58,24 @@ namespace Acuminator.Vsix.Coloriser
             if (formatName.IsNullOrWhiteSpace())
                 return null;
 
-            return acuminatorColors.TryGetValue(formatName, out Func<Color> colorGetter)
+            return _acuminatorColors.TryGetValue(formatName, out Func<Color> colorGetter)
                 ? colorGetter()
                 : (Color?)null;
         }
 
         public static bool IsDarkTheme()
         {
-            if (vsUIShell5 == null)
-            {
-                lock (locker)
-                {
-                    if (vsUIShell5 == null)
-                    {
-                        vsUIShell5 = ServiceProvider.GlobalProvider.GetService(typeof(SVsUIShell)) as IVsUIShell5;
-                    }
-                }
-            }
+			ThreadHelper.ThrowIfNotOnUIThread();
 
-            if (vsUIShell5 == null)
+			if (Interlocked.Exchange(ref _serviceInitialized, INITIALIZED) == NOT_INITIALIZED)
+			{
+				_vsUIShell5 = ServiceProvider.GlobalProvider.GetService(typeof(SVsUIShell)) as IVsUIShell5;
+			}
+
+            if (_vsUIShell5 == null)
                 return true;
 
-            Color editorBackgroundColor = vsUIShell5.GetThemedWPFColor(EnvironmentColors.DarkColorKey);
+            Color editorBackgroundColor = _vsUIShell5.GetThemedWPFColor(EnvironmentColors.DarkColorKey);
 
             if (editorBackgroundColor == null)
                 return true;

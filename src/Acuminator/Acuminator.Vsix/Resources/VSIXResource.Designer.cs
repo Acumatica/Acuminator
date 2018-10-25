@@ -61,6 +61,15 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Anti-Plagiator.
+        /// </summary>
+        public static string AntiPlagiatorWindowTitle {
+            get {
+                return ResourceManager.GetString("AntiPlagiatorWindowTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Acuminator - BQL Constant (Ending).
         /// </summary>
         public static string BQLConstantEndingFormatLabel {
@@ -246,6 +255,24 @@ namespace Acuminator.Vsix {
         public static string Category_Outlining {
             get {
                 return ResourceManager.GetString("Category_Outlining", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Acuminator CodeMap.
+        /// </summary>
+        public static string CodeMapWindowTitle {
+            get {
+                return ResourceManager.GetString("CodeMapWindowTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DAC Explorer.
+        /// </summary>
+        public static string DacExplorerWindowTitle {
+            get {
+                return ResourceManager.GetString("DacExplorerWindowTitle", resourceCulture);
             }
         }
         

@@ -76,6 +76,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AcumaticaPlagiarism\AcumaticaPlagiarism.csproj">
+      <Project>{7cb50417-d544-4302-8f4f-300a26570a98}</Project>
+      <Name>AcumaticaPlagiarism</Name>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+    </ProjectReference>
     <ProjectReference Include="..\Acuminator.Analyzers\Acuminator.Analyzers.csproj">
       <Project>{984DBFAC-91A7-4059-A5B2-CDE33CD93EA0}</Project>
       <Name>Acuminator.Analyzers</Name>
@@ -136,8 +142,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Imaging, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.VisualStudio.Imaging.14.2.25123\lib\net45\Microsoft.VisualStudio.Imaging.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.VisualStudio.Imaging.14.3.25407\lib\net45\Microsoft.VisualStudio.Imaging.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Language.StandardClassification, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.VisualStudio.Language.StandardClassification.14.3.25407\lib\net45\Microsoft.VisualStudio.Language.StandardClassification.dll</HintPath>
@@ -148,8 +153,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Shell.14.0, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.VisualStudio.Shell.14.0.14.2.25123\lib\Microsoft.VisualStudio.Shell.14.0.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.VisualStudio.Shell.14.0.14.3.25407\lib\Microsoft.VisualStudio.Shell.14.0.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.VisualStudio.Shell.Immutable.10.0.10.0.30319\lib\net40\Microsoft.VisualStudio.Shell.Immutable.10.0.dll</HintPath>
@@ -164,8 +168,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.14.0, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.VisualStudio.Shell.Immutable.14.0.14.2.25123\lib\net45\Microsoft.VisualStudio.Shell.Immutable.14.0.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.VisualStudio.Shell.Immutable.14.0.14.3.25407\lib\net45\Microsoft.VisualStudio.Shell.Immutable.14.0.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Shell.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\..\packages\Microsoft.VisualStudio.Shell.Interop.7.10.6071\lib\Microsoft.VisualStudio.Shell.Interop.dll</HintPath>
@@ -223,8 +226,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Utilities, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.VisualStudio.Utilities.14.2.25123\lib\net45\Microsoft.VisualStudio.Utilities.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\Microsoft.VisualStudio.Utilities.14.3.25407\lib\net45\Microsoft.VisualStudio.Utilities.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Validation, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.VisualStudio.Validation.14.1.111\lib\net45\Microsoft.VisualStudio.Validation.dll</HintPath>
@@ -341,7 +343,25 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Resources\acumaticaPackageIcon.ico" />
+    <Content Include="Resources\acumaticaPackageIcon.ico">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="Resources\StatusInvalid.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Cancel.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\OpenFolder.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Run.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Copy.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <VSCTCompile Include="AcuminatorVSPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
     </VSCTCompile>
@@ -368,6 +388,7 @@
     <Compile Include="Coloriser\Outlining\PXOutliningTaggerProvider.cs" />
     <Compile Include="Coloriser\Base\PXTaggerProviderBase.cs" />
     <Compile Include="Coloriser\Roslyn\Utils\RoslynVSEditorExtensions.cs" />
+    <Compile Include="Commands\BQL Fixer\FixBqlCommand.cs" />
     <Compile Include="Commands\GoToDeclarationOrHandler\GoToDeclarationOrHandlerCommand.cs" />
     <Compile Include="Commands\VSCommandBase.cs" />
     <Compile Include="Resources\VSIXResource.Designer.cs">
@@ -378,6 +399,35 @@
     <Compile Include="ServiceLocation\DelegatingServiceLocator.cs" />
     <Compile Include="ServiceLocation\MefServiceLocator.cs" />
     <Compile Include="Settings\CodeAnalysisSettingsFromOptionsPage.cs" />
+    <Compile Include="Tool Windows\AntiPlagiator\AntiPlagiatorWindow.cs" />
+    <Compile Include="Tool Windows\AntiPlagiator\AntiPlagiatorWindowControl.xaml.cs">
+      <DependentUpon>AntiPlagiatorWindowControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tool Windows\AntiPlagiator\LocationType.cs" />
+    <Compile Include="Tool Windows\AntiPlagiator\ViewModel\PlagiarismInfoViewModel.cs" />
+    <Compile Include="Tool Windows\AntiPlagiator\OpenAntiPlagiatorWindowCommand.cs" />
+    <Compile Include="Tool Windows\AntiPlagiator\ViewModel\AntiPlagiatorWindowViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\CodeMapWindowViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\CodeMapWindow.cs" />
+    <Compile Include="Tool Windows\CodeMap\CodeMapWindowControl.xaml.cs">
+      <DependentUpon>CodeMapWindowControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tool Windows\CodeMap\OpenCodeMapWindowCommand.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\DocumentModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\TreeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\TreeNodeViewModel.cs" />
+    <Compile Include="Tool Windows\Converters\BoolInversionConverter.cs" />
+    <Compile Include="Tool Windows\Converters\VisibilityInverter.cs" />
+    <Compile Include="Tool Windows\Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Tool Windows\DacExplorer\DacExplorerControl.xaml.cs">
+      <DependentUpon>DacExplorerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tool Windows\DacExplorer\DacExplorerWindow.cs" />
+    <Compile Include="Tool Windows\DacExplorer\OpenDacExplorerWindowCommand.cs" />
+    <Compile Include="Tool Windows\OpenToolWindowCommandBase.cs" />
+    <Compile Include="Tool Windows\ViewModel\Command.cs" />
+    <Compile Include="Tool Windows\ViewModel\ToolWindowViewModelBase.cs" />
+    <Compile Include="Tool Windows\ViewModel\ViewModelBase.cs" />
     <Compile Include="Utils\AcuminatorLogger.cs" />
     <Compile Include="Utils\EditorExtensions.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheAsync.cs" />
@@ -402,6 +452,7 @@
     <Compile Include="Settings\UI\GeneralOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Utils\Collection\ExtendedObservableCollection.cs" />
     <Compile Include="Utils\VSServicesExtensions.cs" />
     <Compile Include="Utils\ResourceManagerExtensions.cs" />
     <Compile Include="Utils\UIAttributes\CategoryFromResourcesAttribute.cs" />
@@ -434,7 +485,24 @@
     <Analyzer Include="..\..\packages\Microsoft.VisualStudio.SDK.Analyzers.15.8.33\analyzers\cs\Microsoft.VisualStudio.SDK.Analyzers.dll" />
     <Analyzer Include="..\..\packages\Microsoft.VisualStudio.Threading.Analyzers.15.8.122\analyzers\cs\Microsoft.VisualStudio.Threading.Analyzers.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Page Include="Tool Windows\AntiPlagiator\AntiPlagiatorWindowControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tool Windows\CodeMap\CodeMapWindowControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tool Windows\DacExplorer\DacExplorerControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tool Windows\Themes\Styles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
   <Import Project="..\..\packages\GitVersionTask.3.6.5\build\portable-net+sl+win+wpa+wp\GitVersionTask.targets" Condition="Exists('..\..\packages\GitVersionTask.3.6.5\build\portable-net+sl+win+wpa+wp\GitVersionTask.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />

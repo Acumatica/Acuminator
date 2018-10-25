@@ -1,0 +1,43 @@
+﻿<UserControl x:Class="Acuminator.Vsix.ToolWindows.CodeMap.CodeMapWindowControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.14.0"
+             xmlns:platformUI="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
+             xmlns:codeMap="clr-namespace:Acuminator.Vsix.ToolWindows.CodeMap"
+             xmlns:converters="clr-namespace:Acuminator.Vsix.ToolWindows.Converters"
+                      
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300"
+             Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
+             Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
+             d:DataContext="{d:DesignInstance Type={x:Type codeMap:CodeMapWindowViewModel}, IsDesignTimeCreatable=True}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <WrapPanel Orientation="Horizontal" Grid.Row="0">
+            <TextBlock Text="Display Mode" Margin="10,2,0,2" VerticalAlignment="Center"/>
+            <ComboBox VerticalAlignment="Center" Margin="10,5,0,5" MinWidth="120">
+                
+            </ComboBox>
+        </WrapPanel>
+        <TreeView Grid.Row="1" DataContext="{Binding Path=Tree, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
+                  ItemsSource="{Binding Path=RootItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="TreeViewItem">
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                </Style>
+            </TreeView.ItemContainerStyle>
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Path=Children, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"                                         >
+                    <TextBlock Text="{Binding Path=Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+    </Grid>
+</UserControl>

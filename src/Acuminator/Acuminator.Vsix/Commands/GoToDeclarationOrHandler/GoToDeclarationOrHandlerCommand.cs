@@ -19,8 +19,6 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
 using Microsoft.VisualStudio.TextManager.Interop;
-using Acuminator.Utilities;
-using Acuminator.Analyzers;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
