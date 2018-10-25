@@ -4,6 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
+using System.Xml.Serialization;
+using System.IO;
+using System.Xml;
+
 namespace DacDependencyExtractor
 {
     class Program
@@ -40,6 +44,26 @@ namespace DacDependencyExtractor
                 catch (ReflectionTypeLoadException ex)
                 {
                     Console.WriteLine(ex.Message);
+                }
+            }
+
+            Save();
+        }
+
+        //dumb save
+        private static void Save()
+        {
+            using (var file = new System.IO.StreamWriter(@"dependencies.txt"))
+            {
+                foreach (var kv in dependencies)
+                {
+                    string line = kv.Key.FullName + ';';
+                    foreach (var dd in kv.Value.outDependency)
+                        line += dd.fromDac.FullName + ',' + dd.fromField.FullName + ',' + dd.toDac.FullName + ',' + dd.toField.FullName + ',' + dd.connection.ToString() + '|';
+                    line += ';';
+                    foreach (var dd in kv.Value.inDependency)
+                        line += dd.fromDac.FullName + ',' + dd.fromField.FullName + ',' + dd.toDac.FullName + ',' + dd.toField.FullName + ',' + dd.connection.ToString() + '|';
+                    file.WriteLine(line);
                 }
             }
         }

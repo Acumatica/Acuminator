@@ -12,8 +12,14 @@ namespace ForceGraph
         private const uint _vColor = 1;
         private ShaderProgram _shaderProgram;
         private VertexBufferArray _vba;
+        private ForceGraph _forceGraph;
         public void Init(OpenGL gl)
         {
+            string[] varyings =
+            {           
+                "ft_vPosition", "ft_vVelocity"
+            };
+
             var vertexShaderSource = ManifestLoader.LoadTextFile(@"Shaders\points.vs.glsl");
             var fragmentShaderSource = ManifestLoader.LoadTextFile(@"Shaders\points.fs.glsl");
             _shaderProgram = new ShaderProgram();
@@ -21,6 +27,7 @@ namespace ForceGraph
             _shaderProgram.BindAttributeLocation(gl, _vPosition, "vPosition");
             _shaderProgram.BindAttributeLocation(gl, _vColor, "vColor");
             _shaderProgram.AssertValid(gl);
+
 
             gl.PointSize(64);
             gl.Enable(OpenGL.GL_PROGRAM_POINT_SIZE);
@@ -31,17 +38,31 @@ namespace ForceGraph
 
         private void CreateVertices(OpenGL gl)
         {
-            var vertices = new float[12];
-            var colors = new float[12]; // Colors for our vertices  
-            vertices[0] = -0.5f; vertices[1] = -0.5f; vertices[2] = -1.0f; // Bottom left corner  
-            colors[0] = 1.0f; colors[1] = 1.0f; colors[2] = 1.0f; // Bottom left corner  
-            vertices[3] = -0.5f; vertices[4] = 0.5f; vertices[5] = 0.0f; // Top left corner  
-            colors[3] = 1.0f; colors[4] = 0.0f; colors[5] = 0.0f; // Top left corner  
-            vertices[6] = 0.5f; vertices[7] = 0.5f; vertices[8] = 0.0f; // Top Right corner  
-            colors[6] = 0.0f; colors[7] = 1.0f; colors[8] = 0.0f; // Top Right corner  
-            vertices[9] = 0.5f; vertices[10] = -0.5f; vertices[11] = 1.0f; // Bottom right corner  
-            colors[9] = 0.0f; colors[10] = 0.0f; colors[11] = 1.0f; // Bottom right corner  
+            _forceGraph = new ForceGraph();
+            _forceGraph.LoadGraph("dependencies.txt");
 
+
+            var vertices = new float[12];
+            var colors = new float[12];
+            var velocties = new float[12];
+            vertices[0] = -0.5f; vertices[1] = -0.5f; vertices[2] = -1.0f;
+            colors[0] = 1.0f; colors[1] = 1.0f; colors[2] = 1.0f;
+            velocties[0] = .1f; velocties[1] = .1f; velocties[2] = .0f;
+
+            vertices[3] = -0.5f; vertices[4] = 0.5f; vertices[5] = 0.0f;
+            colors[3] = 1.0f; colors[4] = 0.0f; colors[5] = 0.0f;
+            velocties[3] = .2f; velocties[4] = .2f; velocties[5] = .0f;
+
+            vertices[6] = 0.5f; vertices[7] = 0.5f; vertices[8] = 0.0f;
+            colors[6] = 0.0f; colors[7] = 1.0f; colors[8] = 0.0f;
+            velocties[6] = .3f; velocties[7] = .3f; velocties[8] = .3f;
+
+            vertices[9] = 0.5f; vertices[10] = -0.5f; vertices[11] = 1.0f;
+            colors[9] = 0.0f; colors[10] = 0.0f; colors[11] = 1.0f;
+            velocties[9] = .4f; velocties[10] = .4f; velocties[11] = .4f;
+
+            for(int i = 0; i<2; ++i)
+            { 
             _vba = new VertexBufferArray();
             _vba.Create(gl);
             _vba.Bind(gl);
@@ -56,7 +77,13 @@ namespace ForceGraph
             colorBuffer.Bind(gl);
             colorBuffer.SetData(gl, 1, colors, false, 3);
 
+            var velocityBuffer = new VertexBuffer();
+            velocityBuffer.Create(gl);
+            velocityBuffer.Bind(gl);
+            velocityBuffer.SetData(gl, 2, velocties, false, 3);
+
             _vba.Unbind(gl);
+                }
         }
 
         public void Render(OpenGL gl, mat4 pMat, mat4 vMat, mat4 mMat)
