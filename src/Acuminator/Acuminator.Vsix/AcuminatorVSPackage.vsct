@@ -87,7 +87,7 @@
       </Button>-->
 
       <Button guid="guidAcuminatorCmdSet" id="FixBqlCommandId" type="Button">
-        <Icon guid="guidAcumaticaIcon" id="acumaticaIcon" />
+        <Icon guid="guidBqlFixerIcon" id="bqlFixerIcon" />
         <!--<CommandFlag>DefaultDisabled</CommandFlag>-->
         
         <!--<CommandFlag>DefaultInvisible</CommandFlag>
@@ -139,6 +139,7 @@
       <Bitmap guid="guidAntiplagiarismIcon" href="Resources\antiplagiarism.ico" usedList="antiplagiarismIcon" />
       <Bitmap guid="guidCodeMapIcon" href="Resources\codemap.ico" usedList="codemapIcon" />
       <Bitmap guid="guidDacExplorerIcon" href="Resources\DacExplorer.ico" usedList="dacExplorerIcon" />
+      <Bitmap guid="guidBqlFixerIcon" href="Resources\bqlFixer.ico" usedList="bqlFixerIcon" />
     </Bitmaps>
   </Commands>
 
@@ -278,6 +279,10 @@
 
     <GuidSymbol name="guidDacExplorerIcon" value="{E81BF908-DB5E-44A5-BD5B-227FBD359449}">
       <IDSymbol name="dacExplorerIcon" value="1" />
+    </GuidSymbol>
+    
+    <GuidSymbol name="guidBqlFixerIcon" value="{6D21BFF5-3EE6-45B9-B463-CBF2CBF24652}">
+      <IDSymbol name="bqlFixerIcon" value="1" />
     </GuidSymbol>
   </Symbols>
 </CommandTable>
