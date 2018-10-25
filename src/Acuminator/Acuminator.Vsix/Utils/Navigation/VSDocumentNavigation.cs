@@ -44,6 +44,16 @@ namespace Acuminator.Vsix.Utilities.Navigation
 			IWpfTextView wpfTextView = OpenCodeWindow(serviceProvider, solution, filePath);
 
 			if (wpfTextView == null)
+			{
+				var (window, textDocument) = OpenCodeFileNotInSolutionWithDTE(serviceProvider, filePath);
+
+				if (window == null)
+					return default;
+
+				wpfTextView = serviceProvider.GetWpfTextViewByFilePath(filePath);
+			}
+
+			if (wpfTextView == null)
 				return default;
 
 			try
@@ -82,6 +92,16 @@ namespace Acuminator.Vsix.Utilities.Navigation
 			}
 
 			IWpfTextView wpfTextView = OpenCodeWindow(serviceProvider, solution, filePath);
+
+			if (wpfTextView == null)
+			{
+				var (window, textDocument) = OpenCodeFileNotInSolutionWithDTE(serviceProvider, filePath);
+
+				if (window == null)
+					return default;
+
+				wpfTextView = serviceProvider.GetWpfTextViewByFilePath(filePath);
+			}
 
 			if (wpfTextView == null)
 				return default;
@@ -124,12 +144,12 @@ namespace Acuminator.Vsix.Utilities.Navigation
 			if (documentIDs.Length != 1)
 				return null;
 
-			DocumentId documentId = documentIDs[0];
-			bool wasAlreadyOpened = solution.IsFileOpen(documentId);
+			DocumentId documentID = documentIDs[0];
+			bool wasAlreadyOpened = solution.Workspace.GetOpenDocumentIds().Contains(documentID); 
 
 			try
 			{
-				solution.Workspace.OpenDocument(documentId);
+				solution.Workspace.OpenDocument(documentID);
 				return wasAlreadyOpened
 					? serviceProvider.GetWpfTextViewByFilePath(filePath)
 					: serviceProvider.GetWpfTextView(); 			
@@ -154,8 +174,47 @@ namespace Acuminator.Vsix.Utilities.Navigation
 							.ForEach(region => outliningManager.Expand(region));
 		}
 
-		private static bool IsFileOpen(this Solution solution, DocumentId documentID) => 
-			solution.Workspace.GetOpenDocumentIds()
-							  .Contains(documentID);		
+#pragma warning disable VSTHRD010
+		public static (EnvDTE.Window Window, EnvDTE.TextDocument TextDocument) OpenCodeFileNotInSolutionWithDTE(
+																									this IServiceProvider serviceProvider, 
+																									string filePath)
+		{
+			serviceProvider.ThrowOnNull(nameof(serviceProvider));
+
+			if (!ThreadHelper.CheckAccess() || !File.Exists(filePath) || !(serviceProvider.GetService(typeof(DTE)) is DTE dte))
+				return default;
+
+			try
+			{
+				var window = dte.ItemOperations.OpenFile(filePath, EnvDTE.Constants.vsViewKindCode);
+				var textDocument = window?.GetTextDocumentFromWindow();
+
+				if (textDocument == null)
+					return default;
+
+				window.Visible = true;
+				textDocument.StartPoint.TryToShow();
+				return (window, textDocument);
+			}
+			catch
+			{
+				return default;
+			}
+		}
+
+		private static EnvDTE.TextDocument GetTextDocumentFromWindow(this EnvDTE.Window window)
+		{
+			const string TextDocumentPropertyName = "TextDocument";
+
+			try
+			{
+				return window.Document?.Object(TextDocumentPropertyName) as EnvDTE.TextDocument;
+			}
+			catch
+			{
+				return default;
+			}
+		}
+#pragma warning restore VSTHRD010
 	}
 }
