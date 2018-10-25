@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Acuminator.Utilities.Common;
+using Acuminator.Vsix.Utilities;
 
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
@@ -11,7 +12,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public CodeMapWindowViewModel CodeMapViewModel { get; } 
 
-		public ObservableCollection<TreeNodeViewModel> RootItems { get; } = new ObservableCollection<TreeNodeViewModel>();
+		public ExtendedObservableCollection<TreeNodeViewModel> RootItems { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
 
 		private TreeNodeViewModel _selectedItem;
 

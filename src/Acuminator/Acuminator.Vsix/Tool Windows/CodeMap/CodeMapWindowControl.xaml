@@ -12,7 +12,7 @@
              d:DesignHeight="300" d:DesignWidth="300"
              Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
              Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
-             d:DataContext="{d:DesignInstance Type={x:Type codeMap:CodeMapWindowViewModel}, IsDesignTimeCreatable=True}">
+             d:DataContext="{d:DesignInstance Type={x:Type codeMap:CodeMapWindowViewModel}, IsDesignTimeCreatable=False}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

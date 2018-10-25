@@ -61,8 +61,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			IWpfTextView textView = ServiceProvider.GetWpfTextView();
 			Document document = textView?.TextSnapshot?.GetOpenDocumentInCurrentContextWithChanges();
 
-			if (document == null || CheckIfSameDocumentWasReOpened(codeMapViewModel, document))   //Return window in case of re-openning of the same doc
+			if (document == null)
 			{
+				return codeMapWindow;
+			}
+			else if (CheckIfSameDocumentWasReOpened(codeMapViewModel, document))   //Return window in case of re-openning of the same doc
+			{
+				codeMapWindow.CodeMapWPFControl.DataContext = CodeMapWindowViewModel.InitCodeMap(textView, document);
 				return codeMapWindow;
 			}
 			else if (codeMapViewModel != null)                  //Cancel operations in case of another doc and dispose of the old view model
@@ -71,7 +76,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				codeMapViewModel.Dispose();
 			}
 
-			codeMapWindow.CodeMapWPFControl.DataContext = new CodeMapWindowViewModel(textView, document);
+			codeMapWindow.CodeMapWPFControl.DataContext = CodeMapWindowViewModel.InitCodeMap(textView, document);
 			return codeMapWindow;
 		}
 

@@ -38,17 +38,20 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public CodeMapWindowViewModel(IWpfTextView wpfTextView, Document document)
+		private CodeMapWindowViewModel(IWpfTextView wpfTextView, Document document)
 		{
 			_documentModel = new DocumentModel(wpfTextView, document);
 			Tree = new TreeViewModel(this);
+		}
 
-			var root = new TreeNodeViewModel(Tree, "Root");
-			root.Children.Add(new TreeNodeViewModel(Tree, "Child1"));
-			root.Children.Add(new TreeNodeViewModel(Tree, "Child2"));
-			root.Children.Last().Children.Add(new TreeNodeViewModel(Tree, "Descendant"));
+		public static CodeMapWindowViewModel InitCodeMap(IWpfTextView wpfTextView, Document document)
+		{
+			if (wpfTextView == null || document == null)
+				return null;
 
-			Tree.RootItems.Add(root);
+			var codeMapViewModel = new CodeMapWindowViewModel(wpfTextView, document);
+			codeMapViewModel.BuildCodeMapAsync().Forget();
+			return codeMapViewModel;
 		}
 
 		public void CancelCodeMapBuilding()
@@ -62,7 +65,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			_cancellationTokenSource?.Dispose();
 		}
 
-		public async Task BuildCodeMapAsync()
+		private async Task BuildCodeMapAsync()
 		{
 			try
 			{
@@ -74,7 +77,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					await _documentModel.LoadCodeFileDataAsync(cancellationToken)
 										.ConfigureAwait(false);
 
-					TreeViewModel newTreeVM = null;// await BuildCodeMapTreeViewAsync(cancellationToken).ConfigureAwait(false);
+					TreeViewModel newTreeVM = BuildCodeMapTreeView(cancellationToken);
 
 					if (newTreeVM == null)
 						return;
@@ -94,12 +97,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		//private async Task<TreeViewModel> BuildCodeMapTreeViewAsync(CancellationToken cancellationToken)
-		//{
-		//	if (cancellationToken.IsCancellationRequested)
-		//		return null;
+		private TreeViewModel BuildCodeMapTreeView(CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested || !_documentModel.IsCodeFileDataLoaded)
+				return null;
 
-		//	TreeViewModel tree = new TreeViewModel()
-		//}
+			TreeViewModel tree = new TreeViewModel(this);
+			var rootItems = _documentModel.GraphModels.Select(graph => GraphNodeViewModel.Create(graph, tree))
+													  .Where(graphVM => graphVM != null);
+			tree.RootItems.AddRange(rootItems);
+			cancellationToken.ThrowIfCancellationRequested();
+			return tree;
+		}
 	}
 }

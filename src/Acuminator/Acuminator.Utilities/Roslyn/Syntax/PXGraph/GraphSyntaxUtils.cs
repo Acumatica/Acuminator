@@ -85,8 +85,13 @@ namespace Acuminator.Utilities.Roslyn.Syntax.PXGraph
 			semanticModel.ThrowOnNull(nameof(semanticModel));
 			cancellationToken.ThrowIfCancellationRequested();
 
+			var typeSymbol = semanticModel.GetDeclaredSymbol(classDeclaration, cancellationToken) as ITypeSymbol;
+
+			if (typeSymbol != null)
+				return typeSymbol;
+
 			SymbolInfo symbolInfo = semanticModel.GetSymbolInfo(classDeclaration, cancellationToken);
-			var typeSymbol = symbolInfo.Symbol as ITypeSymbol;
+			typeSymbol = symbolInfo.Symbol as ITypeSymbol;
 
 			if (typeSymbol == null && symbolInfo.CandidateSymbols.Length == 1)
 			{

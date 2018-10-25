@@ -435,6 +435,7 @@
     <Compile Include="Tool Windows\AntiPlagiator\ViewModel\PlagiarismInfoViewModel.cs" />
     <Compile Include="Tool Windows\AntiPlagiator\OpenAntiPlagiatorWindowCommand.cs" />
     <Compile Include="Tool Windows\AntiPlagiator\ViewModel\AntiPlagiatorWindowViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\GraphMemberType.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\CodeMapWindowViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\CodeMapWindow.cs" />
     <Compile Include="Tool Windows\CodeMap\CodeMapWindowControl.xaml.cs">
@@ -442,8 +443,9 @@
     </Compile>
     <Compile Include="Tool Windows\CodeMap\OpenCodeMapWindowCommand.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\DocumentModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\GraphNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\TreeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\TreeNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Base\TreeNodeViewModel.cs" />
     <Compile Include="Tool Windows\Converters\BoolInversionConverter.cs" />
     <Compile Include="Tool Windows\Converters\VisibilityInverter.cs" />
     <Compile Include="Tool Windows\Converters\BoolToVisibilityConverter.cs" />
