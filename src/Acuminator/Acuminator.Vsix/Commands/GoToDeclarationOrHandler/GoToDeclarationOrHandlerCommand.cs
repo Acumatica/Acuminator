@@ -23,7 +23,6 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Vsix;
 using Acuminator.Vsix.Utilities;
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 using Document = Microsoft.CodeAnalysis.Document;

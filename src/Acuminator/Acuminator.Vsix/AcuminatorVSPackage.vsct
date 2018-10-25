@@ -47,7 +47,8 @@
     <Menus>
       <Menu guid="guidAcuminatorCmdSet" id="AcuminatorTopMenu" type="Menu">
         <Strings>
-          <ButtonText>Acuminator</ButtonText>
+          <!--<ButtonText>Acuminator</ButtonText>--> 
+          <ButtonText>Decepticode</ButtonText>
         </Strings>
       </Menu>
     </Menus>
@@ -62,61 +63,63 @@
               <CommandFlag>DefaultInvisible</CommandFlag>
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
-      <Button guid="guidAcuminatorCmdSet" id="FormatBqlCommandId" type="Button">
-        <Icon guid="guidImages" id="acumaticaIcon" />
+      
+      <!--<Button guid="guidAcuminatorCmdSet" id="FormatBqlCommandId" type="Button">
+        <Icon guid="guidAcumaticaIcon" id="acumaticaIcon" />
         <CommandFlag>DefaultDisabled</CommandFlag>
-        <!--<CommandFlag>DefaultInvisible</CommandFlag>
-					  <CommandFlag>DynamicVisibility</CommandFlag>-->
+        --><!--<CommandFlag>DefaultInvisible</CommandFlag>
+					  <CommandFlag>DynamicVisibility</CommandFlag>--><!--
         <Strings>
           <CommandName>cmdidFormatBQLCommand</CommandName>
           <ButtonText>Format BQL Statements</ButtonText>
         </Strings>
-      </Button>
+      </Button>-->
 
-      <Button guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" type="Button">
-        <Icon guid="guidImages" id="acumaticaIcon" />
+      <!--<Button guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" type="Button">
+        <Icon guid="guidAcumaticaIcon" id="acumaticaIcon" />
         <CommandFlag>DefaultDisabled</CommandFlag>
-        <!--<CommandFlag>DefaultInvisible</CommandFlag>
-					  <CommandFlag>DynamicVisibility</CommandFlag>-->
+        --><!--<CommandFlag>DefaultInvisible</CommandFlag>
+					  <CommandFlag>DynamicVisibility</CommandFlag>--><!--
         <Strings>
           <CommandName>cmdidGoToDeclarationOrHandlerCommand</CommandName>
           <ButtonText>Go To Action/View Declaration/Handler</ButtonText>
         </Strings>
-      </Button>
+      </Button>-->
 
       <Button guid="guidAcuminatorCmdSet" id="FixBqlCommandId" type="Button">
-        <Icon guid="guidImages" id="acumaticaIcon" />
-        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Icon guid="guidBqlFixerIcon" id="bqlFixerIcon" />
+        <!--<CommandFlag>DefaultDisabled</CommandFlag>-->
+        
         <!--<CommandFlag>DefaultInvisible</CommandFlag>
 					  <CommandFlag>DynamicVisibility</CommandFlag>-->
         <Strings>
           <CommandName>cmdidFixBqlCommand</CommandName>
-          <ButtonText>Fix angle braces in BQL Statement</ButtonText>
+          <ButtonText>Fix BQL Braces</ButtonText>
         </Strings>
       </Button>
 
 
       <!--Tool Windows Commands-->
       <Button guid="guidAcuminatorCmdSet" id="OpenCodeMapWindowCommand" type="Button">
-        <Icon guid="guidImages" id="acumaticaIcon" />
+        <Icon guid="guidCodeMapIcon" id="codemapIcon" />
         <!--<CommandFlag>DefaultDisabled</CommandFlag>-->
         <Strings>
           <CommandName>cmdidOpenCodeMapWindowCommand</CommandName>
-          <ButtonText>Acuminator CodeMap</ButtonText>
+          <ButtonText>CodeMap</ButtonText>
         </Strings>
       </Button>
 
       <Button guid="guidAcuminatorCmdSet" id="OpenAntiPlagiatorWindowCommand" type="Button">
-        <Icon guid="guidImages" id="acumaticaIcon" />
+        <Icon guid="guidAntiplagiarismIcon" id="antiplagiarismIcon" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <CommandName>cmdidOpenAntiPlagiatorWindowCommand</CommandName>
-          <ButtonText>Acuminator AntiPlagiator</ButtonText>
+          <ButtonText>AntiPlagiarism</ButtonText>
         </Strings>
       </Button>
       
       <Button guid="guidAcuminatorCmdSet" id="OpenDacExplorerWindowCommand" type="Button">
-        <Icon guid="guidImages" id="acumaticaIcon" />
+        <Icon guid="guidDacExplorerIcon" id="dacExplorerIcon" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <CommandName>cmdidOpenDacExplorerWindowCommand</CommandName>
@@ -132,7 +135,11 @@
             bitmap strip containing the bitmaps and then there are the numeric ids of the elements used
             inside a button definition. An important aspect of this declaration is that the element id
             must be the actual index (1-based) of the bitmap inside the bitmap strip. -->
-      <Bitmap guid="guidImages" href="Resources\acumatica.ico" usedList="acumaticaIcon" />
+      <Bitmap guid="guidAcumaticaIcon" href="Resources\acumatica.ico" usedList="acumaticaIcon" />
+      <Bitmap guid="guidAntiplagiarismIcon" href="Resources\antiplagiarism.ico" usedList="antiplagiarismIcon" />
+      <Bitmap guid="guidCodeMapIcon" href="Resources\codemap.ico" usedList="codemapIcon" />
+      <Bitmap guid="guidDacExplorerIcon" href="Resources\DacExplorer.ico" usedList="dacExplorerIcon" />
+      <Bitmap guid="guidBqlFixerIcon" href="Resources\bqlFixer.ico" usedList="bqlFixerIcon" />
     </Bitmaps>
   </Commands>
 
@@ -197,11 +204,11 @@
       <Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" />
     </CommandPlacement>
 
-    <CommandPlacement guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" priority="0x0002">
+    <CommandPlacement guid="guidAcuminatorCmdSet" id="FixBqlCommandId" priority="0x0002">
       <Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" />
     </CommandPlacement>
 
-    <CommandPlacement guid="guidAcuminatorCmdSet" id="FixBqlCommandId" priority="0x0003">
+    <CommandPlacement guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" priority="0x0003">
       <Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" />
     </CommandPlacement>
 
@@ -258,8 +265,24 @@
       <IDSymbol  name="OpenDacExplorerWindowCommand" value="0x0203"/>
     </GuidSymbol>
 
-    <GuidSymbol name="guidImages" value="{D87E7D18-43E1-4C9E-9550-EBF39A85F071}">
+    <GuidSymbol name="guidAcumaticaIcon" value="{D87E7D18-43E1-4C9E-9550-EBF39A85F071}">
       <IDSymbol name="acumaticaIcon" value="1" />
+    </GuidSymbol>
+    
+    <GuidSymbol name="guidAntiplagiarismIcon" value="{D528B56B-D2F7-4BA5-81AB-398BD099C35D}">
+      <IDSymbol name="antiplagiarismIcon" value="1" />
+    </GuidSymbol>
+    
+    <GuidSymbol name="guidCodeMapIcon" value="{6C8C4200-07AF-4D31-89D4-8AD464805E08}">
+      <IDSymbol name="codemapIcon" value="1" />
+    </GuidSymbol>
+
+    <GuidSymbol name="guidDacExplorerIcon" value="{E81BF908-DB5E-44A5-BD5B-227FBD359449}">
+      <IDSymbol name="dacExplorerIcon" value="1" />
+    </GuidSymbol>
+    
+    <GuidSymbol name="guidBqlFixerIcon" value="{6D21BFF5-3EE6-45B9-B463-CBF2CBF24652}">
+      <IDSymbol name="bqlFixerIcon" value="1" />
     </GuidSymbol>
   </Symbols>
 </CommandTable>

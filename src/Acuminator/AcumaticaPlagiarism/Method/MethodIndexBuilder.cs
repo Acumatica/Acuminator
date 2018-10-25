@@ -7,8 +7,15 @@ namespace AcumaticaPlagiarism.Method
 {
     internal static class MethodIndexBuilder
     {
+		private const int _defaultMinMethodSize = 10;//100;
+
         public static MethodIndex BuildIndex(MethodDeclarationSyntax method, SemanticModel semanticModel)
         {
+            if (method.Body == null)
+            {
+                return null;
+            }
+
             SyntaxList<StatementSyntax> statements = method.Body.Statements;
             List<int> statementIndexes = new List<int>();
 
@@ -20,11 +27,18 @@ namespace AcumaticaPlagiarism.Method
                 statementIndexes.AddRange(wordIndex);
             }
 
-            ISymbol symbol = semanticModel.GetDeclaredSymbol(method);
-            string methodName = symbol.ToDisplayString();
-            string location = method.GetLocation().ToString();
+            if (statementIndexes.Count < _defaultMinMethodSize)
+            {
+                return null;
+            }
 
-            return new MethodIndex(methodName, location, statementIndexes);
+            ISymbol symbol = semanticModel.GetDeclaredSymbol(method);
+            string methodName = symbol.Name;
+            var path = method.GetLocation().GetMappedLineSpan().Path;
+            var line = method.GetLocation().GetMappedLineSpan().StartLinePosition.Line;
+            var character = method.GetLocation().GetMappedLineSpan().StartLinePosition.Character;
+
+            return new MethodIndex(methodName, path, line, character, statementIndexes);
         }
 
         private static IEnumerable<int> GetWordsIndex(IEnumerable<string> words)

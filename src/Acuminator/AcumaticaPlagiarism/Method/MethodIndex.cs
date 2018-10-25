@@ -8,8 +8,8 @@ namespace AcumaticaPlagiarism.Method
     {
         public int[] Statements { get; private set; }
 
-        public MethodIndex(string name, string location, IEnumerable<int> statements)
-            : base(name, location)
+        public MethodIndex(string name, string path, int line, int character, IEnumerable<int> statements)
+            : base(name, path, line, character)
         {
             if (statements == null)
                 throw new ArgumentNullException(nameof(statements));

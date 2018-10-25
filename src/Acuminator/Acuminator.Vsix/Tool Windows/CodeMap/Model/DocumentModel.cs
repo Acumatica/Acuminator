@@ -6,8 +6,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Acuminator.Utilities.Common;
-using System.ComponentModel;
+using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+using Acuminator.Utilities.Roslyn.Syntax.PXGraph;
+
+
+using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
@@ -22,19 +28,20 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public SemanticModel SemanticModel { get; private set; }
 
+		private readonly List<PXGraphSemanticModel> _graphModels = new List<PXGraphSemanticModel>(capacity: 2);
+
+		public ReadOnlyCollection<PXGraphSemanticModel> GraphModels { get; }
+
 		public bool IsCodeFileDataLoaded => Root != null && SemanticModel != null;
 
 		public DocumentModel(IWpfTextView wpfTextView, Document document)
 		{
 			wpfTextView.ThrowOnNull(nameof(wpfTextView));
 			document.ThrowOnNull(nameof(document));
-
+			
 			WpfTextView = wpfTextView;
 			Document = document;
-		}
-
-		public DocumentModel()
-		{			
+			GraphModels = _graphModels.AsReadOnly();
 		}
 
 		public async Task<bool> LoadCodeFileDataAsync(CancellationToken cancellationToken)
@@ -43,9 +50,31 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return false;
 
 			try
-			{		
+			{
+				_graphModels.Clear();
 				SemanticModel = await GetSemanticModelAsync(cancellationToken);
 				Root = await GetRootAsync(cancellationToken);
+
+				if (!(Root is CompilationUnitSyntax compilationUnit))
+					return false;
+
+				PXContext context = new PXContext(SemanticModel.Compilation);
+				var graphs = compilationUnit.GetDeclaredGraphs(SemanticModel, context, cancellationToken)
+											.Select(graphInfo => graphInfo.GraphSymbol)
+											.OfType<INamedTypeSymbol>()
+											.ToList();
+				if (graphs.Count == 0)
+					return false;
+
+				var graphSemanticModels = graphs.Select(graph => PXGraphSemanticModel.InferModels(context, graph, cancellationToken)
+																					 .FirstOrDefault())
+												.Where(graphModel => graphModel != null && graphModel.Type != GraphType.None)
+												.ToList();
+
+				if (graphSemanticModels.Count == 0)
+					return false;
+
+				_graphModels.AddRange(graphSemanticModels);
 				return true;
 			}
 			catch

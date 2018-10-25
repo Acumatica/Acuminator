@@ -21,14 +21,13 @@ namespace Acuminator.Vsix.ToolWindows.AntiPlagiator
 
 		private void DataGridCell_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
-			if (!(DataContext is AntiPlagiatorWindowViewModel windowViewModel) ||
-				!(sender is DataGridCell cell) || !(cell.DataContext is PlagiarismInfoViewModel plagiarismInfo) ||
+			if (!(sender is DataGridCell cell) || !(cell.DataContext is PlagiarismInfoViewModel plagiarismInfo) ||
 				!(cell.Tag is LocationType locationType) || e.Handled || e.ChangedButton != System.Windows.Input.MouseButton.Left)
 			{
 				return;
 			}
 
-			windowViewModel.OpenLocation(plagiarismInfo, locationType);
+			plagiarismInfo.OpenLocation(locationType);
 		}
 	}
 }
