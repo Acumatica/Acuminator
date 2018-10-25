@@ -22,43 +22,57 @@ namespace Acuminator.Vsix.Utils.Navigation
 {
 	public static class VSDocumentNavigation
 	{
-		private const string TextDocumentPropertyName = "TextDocument";
-
-
-		public static bool OpenCodeFile(this IServiceProvider serviceProvider, string filePath, bool navigateToCodeFile)
+		public static (bool IsSuccess, CaretPosition CaretPosition) OpenCodeFileAndNavigateToPosition(this IServiceProvider serviceProvider,
+																									  string filePath, int caretPosition)
 		{
 			serviceProvider.ThrowOnNull(nameof(serviceProvider));
 
-			if (!ThreadHelper.CheckAccess() || !File.Exists(filePath) || !(serviceProvider.GetService(typeof(DTE)) is DTE dte))
-				return false;
+			if (caretPosition < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(caretPosition));
+			}
 
-			var (window, wasOpened) = OpenOrGetCodeWindow(dte, filePath);
+			var window = OpenCodeWindow(serviceProvider, filePath);
 
-			if (window?.Document == null)
-				return false;
-			else if (wasOpened && !navigateToCodeFile)
-				return true;
+			if (window == null || !(serviceProvider.GetWpfTextView() is IWpfTextView activeTextView))
+				return default;
 
-			
-
-
-
-			IWpfTextView textView = serviceProvider.GetWpfTextView();
-
-			if (textView == null)
-				return false;
-
-			return true;
+			try
+			{
+				CaretPosition caret = activeTextView.MoveCaretTo(caretPosition);
+				return (true, caret);
+			}
+			catch
+			{
+				return default;
+			}
 		}
 
 #pragma warning disable VSTHRD010
-		private static (EnvDTE.Window Window, bool WasOpened) OpenOrGetCodeWindow(DTE dte, string filePath)
+		public static EnvDTE.Window OpenCodeWindow(this IServiceProvider serviceProvider, string filePath)
 		{
+			serviceProvider.ThrowOnNull(nameof(serviceProvider));		
+
+			if (!ThreadHelper.CheckAccess() || !File.Exists(filePath) || !(serviceProvider.GetService(typeof(DTE)) is DTE dte))
+				return null;
+
 			try
 			{
-				bool isFileOpened = dte.ItemOperations.IsFileOpen(filePath);
-				var window = dte.ItemOperations.OpenFile(filePath, EnvDTE.Constants.vsViewKindTextView);
-				return (window, isFileOpened);
+				return dte.ItemOperations.OpenFile(filePath, EnvDTE.Constants.vsViewKindTextView);
+			}
+			catch
+			{
+				return default;
+			}
+		}
+
+		private static TextDocument GetTextDocumentFromWindow(this EnvDTE.Window window)
+		{
+			const string TextDocumentPropertyName = "TextDocument";
+
+			try
+			{
+				return window.Document?.Object(TextDocumentPropertyName) as TextDocument;
 			}
 			catch
 			{
