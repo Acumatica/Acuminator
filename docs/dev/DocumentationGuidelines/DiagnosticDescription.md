@@ -21,6 +21,7 @@ The diagnostic description contains the following sections:
 -   A summary 
 -   The description of the diagnostic 
 -   Code examples (one section or multiple sections with code examples)
+-   Related articles
 
 ### Introduction
 
@@ -79,3 +80,9 @@ The diagnostic description contains the following sections:
 -   Is optional
 -   Has the following title: _Example of Possible Code Fix_ 
 -   Shows how the issue shown in the code example of the issue can be fixed
+
+### Related Articles
+
+-   Is optional
+-   Has the following title: _Related Articles_
+-   Contains links to related articles on help.acumatica.com or other resources
