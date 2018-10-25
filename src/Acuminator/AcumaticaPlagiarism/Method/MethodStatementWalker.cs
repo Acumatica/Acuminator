@@ -63,6 +63,9 @@ namespace AcumaticaPlagiarism.Method
 
             switch (node)
             {
+                case ThisExpressionSyntax thisNode:
+                    base.Visit(node);
+                    break;
                 case IfStatementSyntax ifNode:
                     RegisterIfNode(ifNode);
                     break;
@@ -81,11 +84,68 @@ namespace AcumaticaPlagiarism.Method
                 case SwitchStatementSyntax switchNode:
                     RegisterSwitchNode(switchNode);
                     break;
+                case TryStatementSyntax tryNode:
+                    RegisterTryNode(tryNode);
+                    break;
                 default:
                     RegisterNode(node);
                     base.Visit(node);
                     break;
             }
+        }
+
+        private void RegisterTryNode(TryStatementSyntax tryNode)
+        {
+            RegisterBlock("Try");
+
+            if (tryNode.Block != null)
+            {
+                foreach (var statement in tryNode.Block.Statements)
+                {
+                    base.Visit(statement);
+                    FlushWord();
+                }
+            }
+
+            foreach (var catchClause in tryNode.Catches)
+            {
+                RegisterBlock("Catch");
+
+                if (catchClause.Declaration != null)
+                {
+                    base.Visit(catchClause.Declaration);
+                    FlushWord();
+                }
+
+                if (catchClause.Block != null)
+                {
+                    foreach (var statement in catchClause.Block.Statements)
+                    {
+                        base.Visit(statement);
+                        FlushWord();
+                    }
+                }
+
+                RegisterBlock("CatchEnd");
+            }
+
+            if (tryNode.Finally != null)
+            {
+                RegisterBlock("Finally");
+
+                if (tryNode.Finally.Block != null)
+                {
+                    foreach (var statement in tryNode.Finally.Block.Statements)
+                    {
+                        base.Visit(statement);
+                        FlushWord();
+                    }
+                }
+
+                RegisterBlock("FinallyEnd");
+            }
+
+            RegisterBlock("TryEnd");
         }
 
         private void RegisterForNode(ForStatementSyntax forNode)
@@ -158,13 +218,13 @@ namespace AcumaticaPlagiarism.Method
 
             foreach (SwitchSectionSyntax section in switchNode.Sections)
             {
-                foreach(SwitchLabelSyntax l in section.Labels)
+                foreach (SwitchLabelSyntax l in section.Labels)
                 {
                     base.Visit(l);
                     FlushWord();
                 }
 
-                foreach(StatementSyntax s in section.Statements)
+                foreach (StatementSyntax s in section.Statements)
                 {
                     base.Visit(s);
                 }

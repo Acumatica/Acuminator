@@ -1,19 +1,24 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis;
+using System;
 
 namespace AcumaticaPlagiarism
 {
     public abstract class Index
     {
-        public string Name { get; private set; }
-        public string Location { get; private set; }
+        public string Name { get; }
+        public FileLinePositionSpan Location { get; }
 
-        public Index(string name, string location)
+        public Index(string name, FileLinePositionSpan location)
         {
             if (string.IsNullOrEmpty(name))
+            {
                 throw new ArgumentException(nameof(name));
+            }
 
-            if (string.IsNullOrEmpty(location))
+            if (!location.IsValid)
+            {
                 throw new ArgumentException(nameof(location));
+            }
 
             Name = name;
             Location = location;
