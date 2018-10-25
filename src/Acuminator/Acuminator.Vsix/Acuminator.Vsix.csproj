@@ -453,6 +453,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Utils\Collection\ExtendedObservableCollection.cs" />
+    <Compile Include="Utils\Navigation\VSDocumentNavigation.cs" />
     <Compile Include="Utils\VSServicesExtensions.cs" />
     <Compile Include="Utils\ResourceManagerExtensions.cs" />
     <Compile Include="Utils\UIAttributes\CategoryFromResourcesAttribute.cs" />
