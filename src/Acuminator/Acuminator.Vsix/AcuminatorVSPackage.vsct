@@ -47,7 +47,8 @@
     <Menus>
       <Menu guid="guidAcuminatorCmdSet" id="AcuminatorTopMenu" type="Menu">
         <Strings>
-          <ButtonText>Acuminator</ButtonText>
+          <!--<ButtonText>Acuminator</ButtonText>--> 
+          <ButtonText>Decepticode</ButtonText>
         </Strings>
       </Menu>
     </Menus>
@@ -87,6 +88,7 @@
       <Button guid="guidAcuminatorCmdSet" id="FixBqlCommandId" type="Button">
         <Icon guid="guidImages" id="acumaticaIcon" />
         <CommandFlag>DefaultDisabled</CommandFlag>
+        
         <!--<CommandFlag>DefaultInvisible</CommandFlag>
 					  <CommandFlag>DynamicVisibility</CommandFlag>-->
         <Strings>
