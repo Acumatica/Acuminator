@@ -43,20 +43,22 @@ namespace Acuminator.Vsix.BqlFixer
 			// reconstruct all nodes except last
 			var typeSyntaxes = DeconstructLastNode(baseNode, out var identifierName);
 
+			for (int i = typeSyntaxes.Count - 2; i >= 0; i--)
+			{
+				var generic = typeSyntaxes[i].lastNode;
+				var args = typeSyntaxes[i + 1].nodes;
+				var syntaxList = SyntaxFactory.SeparatedList(args);
+				var argSyntax = SyntaxFactory.TypeArgumentList(syntaxList);
+				var resGeneric = SyntaxFactory.GenericName(generic.Identifier, argSyntax);
+				typeSyntaxes[i].nodes.Add(resGeneric);
+			}
 
-			
-			//var variableDeclaration = SyntaxFactory
-			//	.VariableDeclaration(SyntaxFactory.ParseTypeName("bool"))
-			//	.AddVariables(SyntaxFactory.VariableDeclarator("canceled"));
+			var resulterGeneric = typeSyntaxes[0].nodes.First() as GenericNameSyntax;
+			var variableName = SyntaxFactory.VariableDeclarator(identifierName.Identifier);
+			var variableDeclaration = SyntaxFactory.VariableDeclaration(resulterGeneric).AddVariables(variableName);
+			var fieldDeclaration = SyntaxFactory.FieldDeclaration(variableDeclaration).WithModifiers(node.Modifiers);
 
-			//// Create a field declaration: (private bool canceled;)
-			//var fieldDeclaration = SyntaxFactory
-			//	.FieldDeclaration(variableDeclaration)
-			//	.AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword));
-
-
-
-			return null;
+			return fieldDeclaration;
 		}
 
 		private bool IsClosedNode(GenericNameSyntax node)
@@ -78,48 +80,41 @@ namespace Acuminator.Vsix.BqlFixer
 			return false;
 		}
 
-		private IList<(IList<TypeSyntax> nodes, GenericNameSyntax lastNode)> DeconstructLastNode(
+		private IList<(List<TypeSyntax> nodes, GenericNameSyntax lastNode)> DeconstructLastNode(
 			GenericNameSyntax node,
 			out IdentifierNameSyntax identifierName)
 		{
 			IdentifierNameSyntax name = null;
-			var result = DeconstructLastNodeRecursively(node, true, false, name_ => name = name_).ToArray();
+			var result = Enumerable
+				.Repeat((new List<TypeSyntax>(), node), 1)
+				.Union(DeconstructLastNodeRecursively(node, name_ => name = name_))
+				.ToArray();
 			identifierName = name;
 			return result;
 		}
 
-		private IEnumerable<(IList<TypeSyntax>, GenericNameSyntax)> DeconstructLastNodeRecursively(
+		private IEnumerable<(List<TypeSyntax>, GenericNameSyntax)> DeconstructLastNodeRecursively(
 			GenericNameSyntax node,
-			bool checkHasSemicolon,
-			bool checkIdentifier,
 			Action<IdentifierNameSyntax> fieldNameUtilizer)
 		{
 			var args = node.TypeArgumentList.Arguments;
 			var lastNode = args.Last() as GenericNameSyntax;
-			var checkIdentifier_ = checkIdentifier;
 			if (lastNode == null || IsClosedNode(lastNode))
 			{
 				IEnumerable<TypeSyntax> newArgs = args;
-				if(checkIdentifier && lastNode == null && args.Last() is IdentifierNameSyntax identifier)
+				if(lastNode == null && args.Last() is IdentifierNameSyntax identifier)
 				{
 					fieldNameUtilizer(identifier);
-					checkIdentifier_ = false;
 					newArgs = args.Take(args.Count - 1);
 				}
 				
 				yield return (newArgs.ToList(), null);
 				yield break;
 			}
-			
-			bool checkHasSemicolon_ = checkHasSemicolon;
-			if (checkHasSemicolon && HasFieldNameNode(node))
-			{
-				yield return (args.Take(args.Count -1).ToList(), lastNode);
-				checkHasSemicolon_ = false;
-				checkIdentifier_ = true;
-			}
 
-			foreach (var inner in DeconstructLastNodeRecursively(lastNode, checkHasSemicolon_, checkIdentifier_, fieldNameUtilizer))
+			yield return (args.Take(args.Count - 1).ToList(), lastNode);
+
+			foreach (var inner in DeconstructLastNodeRecursively(lastNode, fieldNameUtilizer))
 			{
 				yield return inner;
 			}
