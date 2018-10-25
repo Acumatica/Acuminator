@@ -4,19 +4,23 @@ namespace AcumaticaPlagiarism
 {
     public abstract class Index
     {
-        public string Name { get; private set; }
-        public string Location { get; private set; }
+        public string Name { get; }
+        public string Path { get; }
+        public int Line { get; }
+        public int Character { get; }
 
-        public Index(string name, string location)
+        public Index(string name, string path, int line, int character)
         {
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentException(nameof(name));
 
-            if (string.IsNullOrEmpty(location))
-                throw new ArgumentException(nameof(location));
+            if (string.IsNullOrEmpty(path))
+                throw new ArgumentException(nameof(path));
 
             Name = name;
-            Location = location;
+            Path = path;
+            Line = line;
+            Character = character;
         }
     }
 }
