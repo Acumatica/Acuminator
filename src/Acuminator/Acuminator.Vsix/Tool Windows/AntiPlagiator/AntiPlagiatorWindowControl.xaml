@@ -174,8 +174,8 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 
-                <DataGridTextColumn Header="Type" Width="0.5*" Binding="{Binding Path=Type, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                                    ElementStyle="{StaticResource cellTextBlockStyle}"/>
+                <!--<DataGridTextColumn Header="Type" Width="0.5*" Binding="{Binding Path=Type, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                    ElementStyle="{StaticResource cellTextBlockStyle}"/>-->
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
