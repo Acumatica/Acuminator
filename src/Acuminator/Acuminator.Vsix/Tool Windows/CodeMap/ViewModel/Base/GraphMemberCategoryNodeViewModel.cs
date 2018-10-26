@@ -76,8 +76,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				case GraphMemberType.ActionHandler:
 					return new ActionHandlerCategoryNodeViewModel(graphViewModel, isExpanded);
 				case GraphMemberType.CacheAttached:
+					return new CacheAttachedCategoryNodeViewModel(graphViewModel, isExpanded);
 				case GraphMemberType.RowEvent:
+					return new RowEventCategoryNodeViewModel(graphViewModel, isExpanded);
 				case GraphMemberType.FieldEvent:
+					return new FieldEventCategoryNodeViewModel(graphViewModel, isExpanded);
 				case GraphMemberType.NestedDAC:
 				case GraphMemberType.NestedGraph:
 				default:

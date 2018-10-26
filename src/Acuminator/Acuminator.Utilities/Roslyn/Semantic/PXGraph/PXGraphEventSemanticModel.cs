@@ -78,7 +78,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			_cancellation.ThrowIfCancellationRequested();
 			var methods = GetAllGraphMethodsFromBaseToDerived();
 
-			var cacheAttachedCollection = new GraphOverridableItemsCollection<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)>();
+			var eventsCollector = new EventsCollector(this, _pxContext);
 
 			foreach (IMethodSymbol method in methods)
 			{
@@ -86,52 +86,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 				var (eventType, eventSignatureType) = method.GetEventHandlerInfo(_pxContext);
 
-				if (eventSignatureType == EventHandlerSignatureType.None)
+				if (eventSignatureType == EventHandlerSignatureType.None || eventType == EventType.None)
 					continue;
 
-				switch (eventType)
-				{				
-					case EventType.CacheAttached:
-						break;
-					case EventType.RowSelecting:
-						break;
-					case EventType.RowSelected:
-						break;
-					case EventType.RowInserting:
-						break;
-					case EventType.RowInserted:
-						break;
-					case EventType.RowUpdating:
-						break;
-					case EventType.RowUpdated:
-						break;
-					case EventType.RowDeleting:
-						break;
-					case EventType.RowDeleted:
-						break;
-					case EventType.RowPersisting:
-						break;
-					case EventType.RowPersisted:
-						break;
-					case EventType.FieldSelecting:
-						break;
-					case EventType.FieldDefaulting:
-						break;
-					case EventType.FieldVerifying:
-						break;
-					case EventType.FieldUpdating:
-						break;
-					case EventType.FieldUpdated:
-						break;
-					case EventType.CommandPreparing:
-						break;
-					case EventType.ExceptionHandling:
-						break;
-					case EventType.None:
-					default:
-						continue;
-				}
+				eventsCollector.AddEvent(eventSignatureType, eventType, method);
 			}
+
+
 
 		}
 

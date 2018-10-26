@@ -23,6 +23,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private const string ViewDelegateIcon = "ViewDelegate";
 		private const string ActionIcon = "Action";
 		private const string ActionHandlerIcon = "ActionHandler";
+		private const string GroupNodeIcon = "GroupNode";
 
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
@@ -48,6 +49,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				case GraphNodeViewModel graphNode:
 					return GraphIcon;
+				case GraphMemberCategoryNodeViewModel graphMemberCategoryNode:
+					return GroupNodeIcon;
 				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.View:
 					return ViewIcon;
 				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.ViewDelegate:

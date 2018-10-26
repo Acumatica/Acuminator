@@ -15,6 +15,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	{
 		private class EventsCollector
 		{
+			private readonly PXContext _pxContext;
 			private readonly PXGraphEventSemanticModel _graphEventSemanticModel;
 
 			public GraphOverridableItemsCollection<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> CacheAttachedEvents { get; } =
@@ -73,9 +74,53 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 
 
-			public EventsCollector(PXGraphEventSemanticModel graphEventSemanticModel)
+			public EventsCollector(PXGraphEventSemanticModel graphEventSemanticModel, PXContext context)
 			{
+				_pxContext = context;
 				_graphEventSemanticModel = graphEventSemanticModel;
+			}
+
+			public void AddEvent(EventHandlerSignatureType signatureType, EventType eventType, IMethodSymbol methodSymbol)
+			{
+				switch (eventType)
+				{
+					case EventType.CacheAttached:
+						break;
+					case EventType.RowSelecting:
+						break;
+					case EventType.RowSelected:
+						break;
+					case EventType.RowInserting:
+						break;
+					case EventType.RowInserted:
+						break;
+					case EventType.RowUpdating:
+						break;
+					case EventType.RowUpdated:
+						break;
+					case EventType.RowDeleting:
+						break;
+					case EventType.RowDeleted:
+						break;
+					case EventType.RowPersisting:
+						break;
+					case EventType.RowPersisted:
+						break;
+					case EventType.FieldSelecting:
+						break;
+					case EventType.FieldDefaulting:
+						break;
+					case EventType.FieldVerifying:
+						break;
+					case EventType.FieldUpdating:
+						break;
+					case EventType.FieldUpdated:
+						break;
+					case EventType.CommandPreparing:
+						break;
+					case EventType.ExceptionHandling:
+						break;				
+				}
 			}
 		}
 	}
