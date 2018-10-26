@@ -106,6 +106,8 @@
     <Compile Include="Roslyn\Semantic\PXGraph\Base\GraphNodeSymbolItem.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Base\GraphOverridableItem.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Base\GraphSymbolItem.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\Infos\Events\CacheAttachedInfo.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\PXGraphEventSemanticModel.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Utils\GraphActionSymbolUtils.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Utils\GraphViewSymbolUtils.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Base\GraphOverridableItemsCollection.cs" />
