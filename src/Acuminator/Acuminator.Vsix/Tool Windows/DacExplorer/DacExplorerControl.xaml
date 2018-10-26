@@ -10,16 +10,35 @@
              xmlns:converters="clr-namespace:Acuminator.Vsix.ToolWindows.Converters"
             
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300"           
+             d:DesignHeight="300" d:DesignWidth="300"      
+             d:DataContext="{d:DesignInstance Type={x:Type dacExplorer:DacExplorerViewModel}, IsDesignTimeCreatable=True}"
+             
              Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
              Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}">
+  
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Themes/Styles.xaml"/>
 
+                <ResourceDictionary>
+                    <!-- Image Style-->
+                    <Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}"/>
+            
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
-        <forceGraph:ForceGraphUserConrol Grid.Column="1"/>
+        <DataGrid Style="{StaticResource readonlyDataGridStyle}">
+            
+        </DataGrid>
+        
+        <forceGraph:ForceGraphUserConrol Grid.Column="1" x:Name="graphControl"/>
     </Grid>
 </UserControl>

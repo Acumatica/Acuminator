@@ -13,7 +13,7 @@ namespace Acuminator.Vsix.ToolWindows.DacExplorer
 	{
 		public const string DacExplorerWindowGuidString = "ACBD2BB9-F7BF-4F07-BCB5-D375E18939D8";
 
-		private readonly DacExplorerControl _control;
+		public DacExplorerControl Control { get; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DacExplorerWindow"/> class.
@@ -25,8 +25,9 @@ namespace Acuminator.Vsix.ToolWindows.DacExplorer
 			// This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
 			// we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on
 			// the object returned by the Content property.
-			_control = new DacExplorerControl();
-			this.Content = _control;
+			Control = new DacExplorerControl();
+			this.Content = Control;
+			
 		}
 	}
 }
