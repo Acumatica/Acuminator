@@ -46,10 +46,62 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public IEnumerable<ActionHandlerInfo> ActionHandlers => BaseGraphModel.ActionHandlers;
 		#endregion
 
+		#region Events
+		public ImmutableDictionary<string, GraphEventInfo> CacheAttachedByDacName { get; }
+		public IEnumerable<GraphEventInfo> CacheAttachedEvents => CacheAttachedByDacName.Values;
 
-		public ImmutableDictionary<string, CacheAttachedInfo> CacheAttachedByDacName { get; }
+		public ImmutableDictionary<string, GraphEventInfo> RowSelectingByDacName { get; }
+		public IEnumerable<GraphEventInfo> RowSelectingEvents => RowSelectingByDacName.Values;
 
-		public IEnumerable<CacheAttachedInfo> CacheAttachedEvents => CacheAttachedByDacName.Values;
+		public ImmutableDictionary<string, GraphEventInfo> RowSelectedByDacName { get; }
+		public IEnumerable<GraphEventInfo> RowSelectedEvents => RowSelectedByDacName.Values;
+
+		public ImmutableDictionary<string, GraphEventInfo> RowInsertingByDacName { get; }
+		public IEnumerable<GraphEventInfo> RowInsertingEvents => RowInsertingByDacName.Values;
+
+		public ImmutableDictionary<string, GraphEventInfo> RowInsertedByDacName { get; }
+		public IEnumerable<GraphEventInfo> RowInsertedEvents => RowInsertedByDacName.Values;
+
+		public ImmutableDictionary<string, GraphEventInfo> RowUpdatingByDacName { get; }
+		public IEnumerable<GraphEventInfo> RowUpdatingEvents => RowUpdatingByDacName.Values;
+
+		public ImmutableDictionary<string, GraphEventInfo> RowUpdatedByDacName { get; }
+		public IEnumerable<GraphEventInfo> RowUpdatedEvents => RowUpdatedByDacName.Values;
+
+		public ImmutableDictionary<string, GraphEventInfo> RowDeletingByDacName { get; }
+		public IEnumerable<GraphEventInfo> RowDeletingEvents => RowDeletingByDacName.Values;
+
+		public ImmutableDictionary<string, GraphEventInfo> RowDeletedByDacName { get; }
+		public IEnumerable<GraphEventInfo> RowDeletedEvents => RowDeletedByDacName.Values;
+
+		public ImmutableDictionary<string, GraphEventInfo> RowPersistingByDacName { get; }
+		public IEnumerable<GraphEventInfo> RowPersistingEvents => RowPersistingByDacName.Values;
+
+		public ImmutableDictionary<string, GraphEventInfo> RowPersistedByDacName { get; }
+		public IEnumerable<GraphEventInfo> RowPersistedEvents => RowPersistedByDacName.Values;
+
+		public ImmutableDictionary<string, GraphEventInfo> FieldSelectingByDacName { get; }
+		public IEnumerable<GraphEventInfo> FieldSelectingEvents => FieldSelectingByDacName.Values;
+
+		public ImmutableDictionary<string, GraphEventInfo> FieldDefaultingByDacName { get; }
+		public IEnumerable<GraphEventInfo> FieldDefaultingEvents => FieldDefaultingByDacName.Values;
+
+		public ImmutableDictionary<string, GraphEventInfo> FieldVerifyingByDacName { get; }
+		public IEnumerable<GraphEventInfo> FieldVerifyingEvents => FieldVerifyingByDacName.Values;
+
+		public ImmutableDictionary<string, GraphEventInfo> FieldUpdatingByDacName { get; }
+		public IEnumerable<GraphEventInfo> FieldUpdatingEvents => FieldUpdatingByDacName.Values;
+
+		public ImmutableDictionary<string, GraphEventInfo> FieldUpdatedByDacName { get; }
+		public IEnumerable<GraphEventInfo> FieldUpdatedEvents => FieldUpdatedByDacName.Values;
+
+		public ImmutableDictionary<string, GraphEventInfo> CommandPreparingByDacName { get; }
+		public IEnumerable<GraphEventInfo> CommandPreparingEvents => CommandPreparingByDacName.Values;
+
+		public ImmutableDictionary<string, GraphEventInfo> ExceptionHandlingByDacName { get; }
+		public IEnumerable<GraphEventInfo> ExceptionHandlingEvents => ExceptionHandlingByDacName.Values;
+		#endregion
+
 
 		private PXGraphEventSemanticModel(PXContext pxContext, PXGraphSemanticModel baseGraphModel,
 									      CancellationToken cancellation = default)
@@ -60,7 +112,26 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			if (BaseGraphModel.Type != GraphType.None)
 			{
+				var eventsCollector = InitializeEvents();
 
+				CacheAttachedByDacName = GetEvents(eventsCollector, collector => collector.CacheAttachedEvents);
+				RowSelectingByDacName = GetEvents(eventsCollector, collector => collector.RowSelectingEvents);
+				RowSelectedByDacName = GetEvents(eventsCollector, collector => collector.RowSelectedEvents);
+				RowInsertingByDacName = GetEvents(eventsCollector, collector => collector.RowInsertingEvents);
+				RowInsertedByDacName = GetEvents(eventsCollector, collector => collector.RowInsertedEvents);
+				RowUpdatingByDacName = GetEvents(eventsCollector, collector => collector.RowUpdatingEvents);
+				RowUpdatedByDacName = GetEvents(eventsCollector, collector => collector.RowUpdatedEvents);
+				RowDeletingByDacName = GetEvents(eventsCollector, collector => collector.RowDeletingEvents);
+				RowDeletedByDacName = GetEvents(eventsCollector, collector => collector.RowDeletedEvents);
+				RowPersistingByDacName = GetEvents(eventsCollector, collector => collector.RowPersistingEvents);
+				RowPersistedByDacName = GetEvents(eventsCollector, collector => collector.RowPersistedEvents);
+				FieldSelectingByDacName = GetEvents(eventsCollector, collector => collector.FieldSelectingEvents);
+				FieldDefaultingByDacName = GetEvents(eventsCollector, collector => collector.FieldDefaultingEvents);
+				FieldVerifyingByDacName = GetEvents(eventsCollector, collector => collector.FieldVerifyingEvents);
+				FieldUpdatingByDacName = GetEvents(eventsCollector, collector => collector.FieldUpdatingEvents);
+				FieldUpdatedByDacName = GetEvents(eventsCollector, collector => collector.FieldUpdatedEvents);
+				CommandPreparingByDacName = GetEvents(eventsCollector, collector => collector.CommandPreparingEvents);
+				ExceptionHandlingByDacName = GetEvents(eventsCollector, collector => collector.ExceptionHandlingEvents);
 			}
 		}
 
@@ -73,12 +144,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return eventsGraphModels;
 		}
 
-		private void InitializeEvents()
+		private EventsCollector InitializeEvents()
 		{
 			_cancellation.ThrowIfCancellationRequested();
 			var methods = GetAllGraphMethodsFromBaseToDerived();
 
 			var eventsCollector = new EventsCollector(this, _pxContext);
+			int declarationOrder = 0;
 
 			foreach (IMethodSymbol method in methods)
 			{
@@ -89,11 +161,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				if (eventSignatureType == EventHandlerSignatureType.None || eventType == EventType.None)
 					continue;
 
-				eventsCollector.AddEvent(eventSignatureType, eventType, method);
+				eventsCollector.AddEvent(eventSignatureType, eventType, method, declarationOrder, _cancellation);
+				declarationOrder++;
 			}
 
-
-
+			return eventsCollector;
 		}
 
 
@@ -115,9 +187,32 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return baseTypes.SelectMany(t => t.GetMembers().OfType<IMethodSymbol>());
 		}
 
-		private void ProcessEvent(IMethodSymbol eventSymbol, EventType eventType, EventHandlerSignatureType signatureType)
+		private ImmutableDictionary<string, GraphEventInfo> GetEvents(EventsCollector eventsCollector, 
+																	  Func<EventsCollector, GraphOverridableItemsCollection<GraphEventInfo>> selector)
 		{
+			if (Type == GraphType.None)
+				return ImmutableDictionary.Create<string, GraphEventInfo>(StringComparer.OrdinalIgnoreCase);
 
+			var rawCollection = selector(eventsCollector);
+			return rawCollection.Values.ToLookup(e => e.Item.Symbol.Name, StringComparer.OrdinalIgnoreCase)
+									   .ToImmutableDictionary(group => group.Key,
+															  group => CreateEventInfo(group.First()),
+															  keyComparer: StringComparer.OrdinalIgnoreCase);
+
+
+			GraphEventInfo CreateEventInfo(GraphOverridableItem<GraphEventInfo> item)
+			{
+				GraphEventInfo eventInfo = item.Item;
+
+				GraphEventInfo baseEventInfo = item.Base != null
+					? CreateEventInfo(item.Base)
+					: null;
+
+				return baseEventInfo == null
+					? new GraphEventInfo(eventInfo.Node, eventInfo.Symbol, item.DeclarationOrder, eventInfo.SignatureType, eventInfo.EventType)
+					: new GraphEventInfo(eventInfo.Node, eventInfo.Symbol, item.DeclarationOrder, eventInfo.SignatureType, eventInfo.EventType,
+										 baseEventInfo);
+			}
 		}
 	}
 }
