@@ -23,6 +23,7 @@
                 <ResourceDictionary>
                     <!--Converters-->
                     <codeMap:TreeNodeToImageSourceConverter x:Key="nodeToImageConverter"/>
+                    <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
 
                     <!-- Image Style-->
                     <Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}"/>
@@ -80,7 +81,11 @@
                 
             </ComboBox>
         </WrapPanel>-->
-        
+
+        <ProgressBar Margin="5,2" VerticalAlignment="Center" IsIndeterminate="True"
+                     MaxHeight="18" MinHeight="18" 
+                     Visibility="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
+                                          Converter={StaticResource boolToVisibilityConverter}}"/>
 
         <TreeView Grid.Row="1" DataContext="{Binding Path=Tree, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
                   ItemsSource="{Binding Path=RootItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"

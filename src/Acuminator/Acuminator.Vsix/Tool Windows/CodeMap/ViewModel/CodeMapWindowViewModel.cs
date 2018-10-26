@@ -38,6 +38,21 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
+		private bool _isCalculating;
+
+		public bool  IsCalculating
+		{
+			get => _isCalculating;
+			private set
+			{
+				if (_isCalculating != value)
+				{
+					_isCalculating = value;
+					NotifyPropertyChanged();
+				}
+			}
+		}
+
 		private CodeMapWindowViewModel(IWpfTextView wpfTextView, Document document)
 		{
 			_documentModel = new DocumentModel(wpfTextView, document);
@@ -72,6 +87,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				using (_cancellationTokenSource = new CancellationTokenSource())
 				{
 					CancellationToken cancellationToken = _cancellationTokenSource.Token;
+					IsCalculating = true;
 
 					await TaskScheduler.Default;
 					await _documentModel.LoadCodeFileDataAsync(cancellationToken)
@@ -85,6 +101,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
 					Tree = newTreeVM;
+					IsCalculating = false;
 				}
 			}
 			catch (OperationCanceledException e)
