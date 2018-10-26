@@ -27,20 +27,24 @@ void main(void) {
 	vec3 a = vec3(0.0f, .0f, .0f);
 	for(int i = 0; i < nPoints; ++i)
 	{
-		vec3 otherPosition = texelFetch(tbo, i * 4).xyz;
-		vec3 diff = vPosition - otherPosition;
-		float len = length(diff);
-
-		if (len != 0.0)
+		float dep = texelFetch(depTex, ivec2(index,i) ,0).r;
+		if(dep != .0f)
 		{
-			//repulse
-			vec3 n = diff / len;
-			float force = .05f/len;
-			//a = a + vec3(force * n.x, force * n.y, .0f);
+			vec3 otherPosition = texelFetch(tbo, i * 4).xyz;
+			vec3 diff = vPosition - otherPosition;
+			float len = length(diff);
+
+			if (len != 0.0)
+			{
+				//repulse
+				vec3 n = diff / len;
+				float force = .05f/len;
+				//a = a + vec3(force * n.x, force * n.y, .0f);
 			
-			//spring
-			force = .5f * (len - .5f);
-			a = a - vec3(force * n.x, force * n.y, .0f);
+				//spring
+				force = .5f * (len - .5f);
+				a = a - vec3(force * n.x, force * n.y, .0f);
+			}
 		}
 
 	}

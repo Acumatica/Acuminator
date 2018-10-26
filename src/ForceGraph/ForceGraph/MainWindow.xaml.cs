@@ -31,7 +31,7 @@ namespace ForceGraph
 
             const float rads = (60.0f / 360.0f) * (float)Math.PI * 2.0f;
             _projectionMatrix = glm.perspective(rads, 800 / 600, 0.1f, 100.0f);
-            _viewMatrix = glm.translate(new mat4(1.0f), new vec3(0.0f, 0.0f, -5.0f));
+            _viewMatrix = glm.translate(new mat4(1.0f), new vec3(0.0f, 0.0f, -10.0f));
             _modelMatrix = glm.scale(new mat4(1.0f), new vec3(2.5f));
 
             _forceGraph = new ForceGraphScene();

@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Specialized;
 
 namespace ForceGraph
 {
     class ForceGraph
     {
-        Dictionary<string, Dependency> _dependencies = new Dictionary<string, Dependency>();
-        struct DependencyDetails
+        Dictionary<string,Dependency> _dependencies = new Dictionary<string, Dependency>();
+        Dictionary<string, int> _str2ind = new Dictionary<string, int>();
+        Dictionary<int, string> _ind2str = new Dictionary<int, string>();
+        public struct DependencyDetails
         {
             public String fromDac;
             public String toDac;
@@ -18,7 +21,7 @@ namespace ForceGraph
             public String connection;
         }
 
-        class Dependency
+        public class Dependency
         {
             public List<DependencyDetails> outDependency;
             public List<DependencyDetails> inDependency;
@@ -28,6 +31,7 @@ namespace ForceGraph
         {
             var file = new System.IO.StreamReader(@"dependencies.txt");
             string line;
+            int index = 0;
             while ((line = file.ReadLine()) != null)
             {
                 var dependency = new Dependency();
@@ -65,6 +69,9 @@ namespace ForceGraph
                     dependency.inDependency.Add(d);
                 }
                 _dependencies.Add(dac, dependency);
+                _str2ind.Add(dac, index);
+                _ind2str.Add(index, dac);
+                ++index;
             }
         }
 
@@ -73,6 +80,25 @@ namespace ForceGraph
             return _dependencies.Keys.ToList();
         }
 
+        public Dependency GetDependency(string dac)
+        {
+            return _dependencies[dac];
+        }
+
+        public Dependency GetDependency(int index)
+        {
+            return _dependencies[_ind2str[index]];
+        }
+
+        public int GetIndex(string Dac)
+        {
+            return _str2ind[Dac];
+        }
+
+        public string GetDac(int index)
+        {
+            return _ind2str[index];
+        }
 
     }
 }
