@@ -76,6 +76,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\ForceGraph\ForceGraph\ForceGraph.csproj">
+      <Project>{9e91c318-d6fe-43dc-8c47-baedef8aa090}</Project>
+      <Name>ForceGraph</Name>
+    </ProjectReference>
     <ProjectReference Include="..\AcumaticaPlagiarism\AcumaticaPlagiarism.csproj">
       <Project>{7cb50417-d544-4302-8f4f-300a26570a98}</Project>
       <Name>AcumaticaPlagiarism</Name>

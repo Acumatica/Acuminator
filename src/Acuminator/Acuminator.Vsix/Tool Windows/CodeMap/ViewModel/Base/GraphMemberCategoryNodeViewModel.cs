@@ -18,7 +18,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public GraphMemberType CategoryType { get; }
 
-		public override string Name { get; }
+		private readonly string _categoryDescription;
+
+		public override string Name => $"{_categoryDescription}({Children.Count})";
 
 		protected GraphMemberCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
 												bool isExpanded) : 
@@ -26,7 +28,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			GraphViewModel = graphViewModel;
 			CategoryType = graphMemberType;
-			Name = CategoryType.Description();
+			_categoryDescription = CategoryType.Description();
 		}
 
 		public static GraphMemberCategoryNodeViewModel Create(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,

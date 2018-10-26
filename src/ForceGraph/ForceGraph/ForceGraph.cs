@@ -32,6 +32,7 @@ namespace ForceGraph
             var file = new System.IO.StreamReader(@"dependencies.txt");
             string line;
             int index = 0;
+		
             while ((line = file.ReadLine()) != null)
             {
                 var dependency = new Dependency();

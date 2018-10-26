@@ -11,7 +11,7 @@ using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
-	public class PXGraphEventSemanticModel
+	public partial class PXGraphEventSemanticModel
 	{
 		private readonly CancellationToken _cancellation;
 		private readonly PXContext _pxContext;
@@ -78,6 +78,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			_cancellation.ThrowIfCancellationRequested();
 			var methods = GetAllGraphMethodsFromBaseToDerived();
 
+			var cacheAttachedCollection = new GraphOverridableItemsCollection<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)>();
+
 			foreach (IMethodSymbol method in methods)
 			{
 				_cancellation.ThrowIfCancellationRequested();
@@ -88,9 +90,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 					continue;
 
 				switch (eventType)
-				{
-					case EventType.None:
-						break;
+				{				
 					case EventType.CacheAttached:
 						break;
 					case EventType.RowSelecting:
@@ -127,8 +127,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 						break;
 					case EventType.ExceptionHandling:
 						break;
+					case EventType.None:
 					default:
-						break;
+						continue;
 				}
 			}
 

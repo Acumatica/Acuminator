@@ -6,6 +6,7 @@
              xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.14.0"
              xmlns:platformUI="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
              xmlns:dacExplorer="clr-namespace:Acuminator.Vsix.ToolWindows.DacExplorer"
+             xmlns:forceGraph="clr-namespace:ForceGraph;assembly=ForceGraph"
              xmlns:converters="clr-namespace:Acuminator.Vsix.ToolWindows.Converters"
             
              mc:Ignorable="d"
@@ -14,6 +15,11 @@
              Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}">
 
     <Grid>
-        <TextBlock Text="Test Text" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <forceGraph:ForceGraphUserConrol Grid.Column="1"/>
     </Grid>
 </UserControl>
