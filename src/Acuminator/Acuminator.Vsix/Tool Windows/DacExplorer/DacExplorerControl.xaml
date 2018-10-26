@@ -25,7 +25,7 @@
 
                 <ResourceDictionary>
                     <!-- Image Style-->
-                    <Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}"/>
+                    <!--<Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}"/>-->
             
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
@@ -37,15 +37,31 @@
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
-        <DataGrid ItemsSource="{Binding Path=DACs, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+        <Grid  Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Button Content="All DACs" Margin="5,2" VerticalAlignment="Center" 
+                    Command="{Binding Path=AllDACsCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                    Style="{StaticResource vsButtonStyle}"/>
+
+            <DataGrid Grid.Row="1" ItemsSource="{Binding Path=DACs, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                    Style="{StaticResource readonlyDataGridStyle}">
-            <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding Path=DacName, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Path=DacName, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
 
-            </DataGrid.Columns>
-        </DataGrid>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+        
+        
 
-        <forceGraph:ForceGraphUserConrol Grid.Column="1" DataContext="{Binding Path=ForceGraphViewModel, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+        <forceGraph:ForceGraphUserConrol Grid.Column="1" 
+                                         DataContext="{Binding Path=ForceGraphViewModel, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
+                                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                         HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
     </Grid>
 </UserControl>

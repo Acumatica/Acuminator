@@ -23,6 +23,7 @@ namespace ForceGraph
 				{
 					_forceGraphScene = value;
 					NotifyPropertyChanged();
+					NotifyPropertyChanged(nameof(ForceGraph));
 					OnForceGraphUpdated?.Invoke(this, EventArgs.Empty);			
 				}
 			}

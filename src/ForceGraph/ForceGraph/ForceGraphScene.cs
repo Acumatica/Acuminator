@@ -76,7 +76,7 @@ namespace ForceGraph
             return sh;
         }
 
-        private void CreateVertices(OpenGL gl)
+        public void CreateVertices(OpenGL gl)
         {
             var dacs = _forceGraph.GetDacs();
             int depCount = 600;
@@ -207,7 +207,7 @@ namespace ForceGraph
             }
         }
 
-        private void CreateDacVertices(OpenGL gl, string  targetDac)
+        public void CreateDacVertices(OpenGL gl, string  targetDac)
         {
             var dep = _forceGraph.GetDependency(targetDac);
             Dictionary<string, int> str2int = new Dictionary<string, int>();

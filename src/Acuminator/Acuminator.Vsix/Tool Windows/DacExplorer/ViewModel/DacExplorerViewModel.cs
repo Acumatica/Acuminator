@@ -19,7 +19,26 @@ namespace Acuminator.Vsix.ToolWindows.DacExplorer
 {
 	public class DacExplorerViewModel : ToolWindowViewModelBase
 	{
-		public ExtendedObservableCollection<DacViewModel> DACs { get; } = new ExtendedObservableCollection<DacViewModel>(); 
+		public ExtendedObservableCollection<DacViewModel> DACs { get; } = new ExtendedObservableCollection<DacViewModel>();
+
+		private DacViewModel _selectedItem;
+
+		public DacViewModel SelectedItem
+		{
+			get => _selectedItem;
+			set
+			{
+				if (!ReferenceEquals(_selectedItem, value))
+				{
+					_selectedItem = value;
+					NotifyPropertyChanged();
+
+					ForceGraphViewModel.ForceGraphScene?.CreateDacVertices(null, SelectedItem.DacName);
+				}
+			}
+		}
+
+		public Command AllDACsCommand { get; }
 
 		public ForceGraphViewModel ForceGraphViewModel { get; }
 
@@ -27,6 +46,7 @@ namespace Acuminator.Vsix.ToolWindows.DacExplorer
 		{
 			ForceGraphViewModel = new ForceGraphViewModel();
 			ForceGraphViewModel.OnForceGraphUpdated += ForceGraphViewModel_OnForceGraphUpdated;
+			AllDACsCommand = new Command(p => CreateAllDACs());
 		}
 
 		private void ForceGraphViewModel_OnForceGraphUpdated(object sender, EventArgs e)
@@ -35,6 +55,11 @@ namespace Acuminator.Vsix.ToolWindows.DacExplorer
 
 			var dacs =ForceGraphViewModel.ForceGraph.GetDacs().Select(dacName => new DacViewModel(this, dacName));
 			DACs.AddRange(dacs);
+		}
+
+		private void CreateAllDACs()
+		{
+			ForceGraphViewModel.ForceGraphScene?.CreateVertices(null);
 		}
 	}
 }
