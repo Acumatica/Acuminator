@@ -19,9 +19,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			
 		}
 
-		protected override void AddCategoryMembers()
-		{
-
-		}
+		protected override void AddCategoryMembers() =>
+			AddCategoryMembersDefaultImpl(graph =>
+				graph.RowInsertingEvents
+					 .Concat(graph.RowInsertedEvents)
+					 .Concat(graph.RowSelectingEvents)
+					 .Concat(graph.RowSelectedEvents)
+					 .Concat(graph.RowUpdatingEvents)
+					 .Concat(graph.RowUpdatedEvents)
+					 .Concat(graph.RowDeletingEvents)
+					 .Concat(graph.RowDeletedEvents)
+					 .Concat(graph.RowPersistingEvents)
+					 .Concat(graph.RowPersistedEvents));
 	}
 }
