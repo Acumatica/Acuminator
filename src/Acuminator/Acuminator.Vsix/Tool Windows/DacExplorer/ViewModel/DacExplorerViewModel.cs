@@ -8,6 +8,8 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.Threading;
 using Acuminator.Utilities.Common;
+using Acuminator.Vsix.Utilities;
+using ForceGraph;
 
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
@@ -17,9 +19,22 @@ namespace Acuminator.Vsix.ToolWindows.DacExplorer
 {
 	public class DacExplorerViewModel : ToolWindowViewModelBase
 	{
+		public ExtendedObservableCollection<DacViewModel> DACs { get; } = new ExtendedObservableCollection<DacViewModel>(); 
+
+		public ForceGraphViewModel ForceGraphViewModel { get; }
+
 		public DacExplorerViewModel()
 		{
+			ForceGraphViewModel = new ForceGraphViewModel();
+			ForceGraphViewModel.OnForceGraphUpdated += ForceGraphViewModel_OnForceGraphUpdated;
+		}
 
+		private void ForceGraphViewModel_OnForceGraphUpdated(object sender, EventArgs e)
+		{
+			DACs.Clear();
+
+			var dacs =ForceGraphViewModel.ForceGraph.GetDacs().Select(dacName => new DacViewModel(this, dacName));
+			DACs.AddRange(dacs);
 		}
 	}
 }

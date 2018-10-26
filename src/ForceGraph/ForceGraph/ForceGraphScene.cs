@@ -9,9 +9,9 @@ using SharpGL.VertexBuffers;
 
 namespace ForceGraph
 {
-    class ForceGraphScene
+    public class ForceGraphScene
     {
-        private ForceGraph _forceGraph;
+        public ForceGraph _forceGraph;
 
         private uint _pointsProgram;
         private uint _depDataTex;

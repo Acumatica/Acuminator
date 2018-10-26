@@ -49,6 +49,11 @@ namespace ForceGraph
 
 			_forceGraph = new ForceGraphScene();
 			_forceGraph.Init(_gl);
+
+			if (!(DataContext is ForceGraphViewModel forceGraphViewModel))
+				return;
+
+			forceGraphViewModel.ForceGraphScene = _forceGraph;
 		}
 
 		private void OpenGLControl_OpenGLDraw(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)

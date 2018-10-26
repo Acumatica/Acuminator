@@ -7,10 +7,9 @@
              xmlns:sharpGL="clr-namespace:SharpGL.WPF;assembly=SharpGL.WPF"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <sharpGL:OpenGLControl
+
+    <sharpGL:OpenGLControl
             OpenGLDraw="OpenGLControl_OpenGLDraw" OpenGLInitialized="OpenGLControl_OpenGLInitialized"
             RenderContextType="FBO"
             Unloaded="OpenGLControl_Unloaded"/>
-    </Grid>
 </UserControl>

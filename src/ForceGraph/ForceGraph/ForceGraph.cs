@@ -7,7 +7,7 @@ using System.Collections.Specialized;
 
 namespace ForceGraph
 {
-    class ForceGraph
+    public class ForceGraph
     {
         Dictionary<string,Dependency> _dependencies = new Dictionary<string, Dependency>();
         Dictionary<string, int> _str2ind = new Dictionary<string, int>();

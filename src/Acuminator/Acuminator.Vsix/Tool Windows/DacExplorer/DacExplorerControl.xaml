@@ -15,7 +15,9 @@
              
              Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
              Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}">
-  
+    <UserControl.DataContext>
+        <dacExplorer:DacExplorerViewModel/>
+    </UserControl.DataContext>
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -35,10 +37,15 @@
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
-        <DataGrid Style="{StaticResource readonlyDataGridStyle}">
-            
+        <DataGrid ItemsSource="{Binding Path=DACs, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                   Style="{StaticResource readonlyDataGridStyle}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding Path=DacName, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+
+            </DataGrid.Columns>
         </DataGrid>
-        
-        <forceGraph:ForceGraphUserConrol Grid.Column="1" x:Name="graphControl"/>
+
+        <forceGraph:ForceGraphUserConrol Grid.Column="1" DataContext="{Binding Path=ForceGraphViewModel, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
     </Grid>
 </UserControl>

@@ -45,13 +45,5 @@ namespace Acuminator.Vsix.ToolWindows.DacExplorer
 				Instance = new OpenDacExplorerWindowCommand(package);
 			}
 		}
-
-		protected override DacExplorerWindow OpenToolWindow()
-		{
-			CodeMapWindow codeMapWindow = base.OpenToolWindow();
-
-			if (codeMapWindow?.CodeMapWPFControl == null)
-				return codeMapWindow;
-		}
 	}
 }

@@ -265,6 +265,15 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\PX.DbServices.dll</HintPath>
     </Reference>
+    <Reference Include="SharpGL, Version=2.4.0.0, Culture=neutral, PublicKeyToken=27fc851303210b27, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SharpGL.2.4.0.0\lib\net40\SharpGL.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpGL.SceneGraph, Version=2.4.0.0, Culture=neutral, PublicKeyToken=27fc851303210b27, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SharpGL.2.4.0.0\lib\net40\SharpGL.SceneGraph.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpGL.WPF, Version=2.4.0.0, Culture=neutral, PublicKeyToken=27fc851303210b27, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SharpGL.WPF.2.4.0.0\lib\net40\SharpGL.WPF.dll</HintPath>
+    </Reference>
     <Reference Include="stdole, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
@@ -485,6 +494,7 @@
     </Compile>
     <Compile Include="Tool Windows\DacExplorer\DacExplorerWindow.cs" />
     <Compile Include="Tool Windows\DacExplorer\OpenDacExplorerWindowCommand.cs" />
+    <Compile Include="Tool Windows\DacExplorer\ViewModel\DacViewModel.cs" />
     <Compile Include="Tool Windows\DacExplorer\ViewModel\DacExplorerViewModel.cs" />
     <Compile Include="Tool Windows\OpenToolWindowCommandBase.cs" />
     <Compile Include="Tool Windows\ViewModel\Command.cs" />
