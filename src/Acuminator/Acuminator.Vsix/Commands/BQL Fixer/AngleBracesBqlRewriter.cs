@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Acuminator.Vsix.BqlFixer
 {
-	internal class AngleBracesBqlRewriter : CSharpSyntaxRewriter
+	public class AngleBracesBqlRewriter : CSharpSyntaxRewriter
 	{
 		public AngleBracesBqlRewriter(SemanticModel semanticModel)
 		{
@@ -21,15 +21,11 @@ namespace Acuminator.Vsix.BqlFixer
 		public override SyntaxNode VisitIncompleteMember(IncompleteMemberSyntax node)
 		{
 			if (!(node.Type is GenericNameSyntax baseNode)
-				|| !baseNode.ContainsSkippedText
 				|| IsClosedNode(baseNode))
 				return node;
 
 			var baseArguments = baseNode.TypeArgumentList.Arguments;
 			if (baseArguments.Count == 0)
-				return node;
-
-			if (!(baseArguments.Last() is GenericNameSyntax lastNode))
 				return node;
 
 			// reconstruct all nodes except last
@@ -84,14 +80,14 @@ namespace Acuminator.Vsix.BqlFixer
 				if(lastNode == null && args.Last() is IdentifierNameSyntax identifier)
 				{
 					fieldNameUtilizer(identifier);
-					newArgs = args.Take(args.Count - 1);
+					newArgs = args.Take(args.Count - 1).Select(a => a.WithoutTrivia());
 				}
 				
 				yield return (newArgs.ToList(), null);
 				yield break;
 			}
 
-			yield return (args.Take(args.Count - 1).ToList(), lastNode);
+			yield return (args.Take(args.Count - 1).Select(a => a.WithoutTrivia()).ToList(), lastNode.WithoutTrivia());
 
 			foreach (var inner in DeconstructLastNodeRecursively(lastNode, fieldNameUtilizer))
 			{

@@ -182,6 +182,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Tests\Fixer\AngleBracesBqlRewriterTests.cs" />
     <Compile Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\ChangeEventHandlerSignatureToGenericTests.cs" />
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\CacheAttached.cs" />
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\CacheAttached_Expected.cs" />
