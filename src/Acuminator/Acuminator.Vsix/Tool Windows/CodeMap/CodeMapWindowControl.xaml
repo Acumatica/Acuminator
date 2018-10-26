@@ -80,10 +80,11 @@
                 
             </ComboBox>
         </WrapPanel>-->
+        
+
         <TreeView Grid.Row="1" DataContext="{Binding Path=Tree, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
                   ItemsSource="{Binding Path=RootItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                  Style="{StaticResource vsTreeViewStyle}" Margin="0,2"
-                  VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling">
+                  Style="{StaticResource vsTreeViewStyle}" Margin="0,2">
             <TreeView.ItemContainerStyle>
                 <Style TargetType="TreeViewItem" BasedOn="{StaticResource vsTreeViewItemStyle}">
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
