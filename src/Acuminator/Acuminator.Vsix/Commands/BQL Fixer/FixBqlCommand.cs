@@ -26,7 +26,7 @@ using Acuminator.Utilities.Common;
 
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 using Document = Microsoft.CodeAnalysis.Document;
-
+using Acuminator.Vsix.Formatter;
 
 namespace Acuminator.Vsix.BqlFixer
 {
@@ -119,11 +119,17 @@ namespace Acuminator.Vsix.BqlFixer
 			#endregion
 			fixedRoot = new AngleBracesBqlRewriter(semanticModel).Visit(syntaxRoot);
 
+			// have to format, because cannot save all original indention
+			BqlFormatter formatter = BqlFormatter.FromTextView(textView);
 
-			// todo: check
+			var newDocument = document.WithSyntaxRoot(fixedRoot);
+			(SyntaxNode newSyntaxRoot, SemanticModel newSemanticModel) = ThreadHelper.JoinableTaskFactory.Run(
+				async () => (await newDocument.GetSyntaxRootAsync(), await newDocument.GetSemanticModelAsync()));
+
+			var formatedRoot = formatter.Format(newSyntaxRoot, newSemanticModel);
 			if (!textView.TextBuffer.EditInProgress)
 			{
-				var formattedDocument = document.WithSyntaxRoot(fixedRoot);
+				var formattedDocument = document.WithSyntaxRoot(formatedRoot);
 				ApplyChanges(document, formattedDocument);
 			}
 		}

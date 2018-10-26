@@ -18,14 +18,6 @@ namespace Acuminator.Vsix.BqlFixer
 
 		protected SemanticModel SemanticModel { get; }
 
-		//public override SyntaxNode VisitFieldDeclaration(FieldDeclarationSyntax node)
-		//{
-		//	VariableDeclaratorSyntax declarator = node.Declaration.Variables.First();
-		//	TypeSyntax variableTypeName = node.Declaration.Type;
-
-		//	return base.VisitFieldDeclaration(node);
-		//}
-
 		public override SyntaxNode VisitIncompleteMember(IncompleteMemberSyntax node)
 		{
 			if (!(node.Type is GenericNameSyntax baseNode)
@@ -65,19 +57,6 @@ namespace Acuminator.Vsix.BqlFixer
 		{
 			// if ends with angle braces - it is closed node
 			return node.TypeArgumentList.GreaterThanToken.ValueText == ">";
-		}
-
-		private bool HasFieldNameNode(GenericNameSyntax node)
-		{
-			// check for semicolon
-			if (node.TypeArgumentList.GreaterThanToken.HasTrailingTrivia
-				// actually this is semicolon
-				// todo: check if this works OK
-				&& node.TypeArgumentList.GreaterThanToken.TrailingTrivia.LastIndexOf(SyntaxKind.SkippedTokensTrivia) >= 0)
-			{
-				return true;
-			}
-			return false;
 		}
 
 		private IList<(List<TypeSyntax> nodes, GenericNameSyntax lastNode)> DeconstructLastNode(

@@ -64,7 +64,7 @@ namespace Acuminator.Vsix.Formatter
 			if (textView == null)
 				return;
 
-			BqlFormatter formatter = CreateFormatter(textView);
+			BqlFormatter formatter = BqlFormatter.FromTextView(textView);
 
 			SnapshotPoint caretPosition = textView.Caret.Position.BufferPosition;
 			Document document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
@@ -119,18 +119,6 @@ namespace Acuminator.Vsix.Formatter
 			{
 				workspace.TryApplyChanges(newSolution);
 			}
-		}
-
-		private BqlFormatter CreateFormatter(IWpfTextView textView)
-		{
-			textView.ThrowOnNull(nameof(textView));
-
-			int indentSize = textView.Options.GetOptionValue(DefaultOptions.IndentSizeOptionId);
-			int tabSize = textView.Options.GetOptionValue(DefaultOptions.TabSizeOptionId);
-			bool convertTabsToSpaces = textView.Options.GetOptionValue(DefaultOptions.ConvertTabsToSpacesOptionId);
-			string newLineCharacter = textView.Options.GetOptionValue(DefaultOptions.NewLineCharacterOptionId);
-
-			return new BqlFormatter(newLineCharacter, !convertTabsToSpaces, tabSize, indentSize);
 		}
 	}
 }
