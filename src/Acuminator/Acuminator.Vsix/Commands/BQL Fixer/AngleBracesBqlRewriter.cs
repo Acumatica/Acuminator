@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Acuminator.Vsix.BqlFixer
 {
-	internal class AngleBracesBqlRewriter : CSharpSyntaxRewriter
+	public class AngleBracesBqlRewriter : CSharpSyntaxRewriter
 	{
 		public AngleBracesBqlRewriter(SemanticModel semanticModel)
 		{
@@ -21,7 +21,6 @@ namespace Acuminator.Vsix.BqlFixer
 		public override SyntaxNode VisitIncompleteMember(IncompleteMemberSyntax node)
 		{
 			if (!(node.Type is GenericNameSyntax baseNode)
-				|| !baseNode.ContainsSkippedText
 				|| IsClosedNode(baseNode))
 				return node;
 
