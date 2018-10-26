@@ -14,65 +14,97 @@ namespace ForceGraph
         public ForceGraph _forceGraph;
 
         private uint _pointsProgram;
+        private uint _linesProgram;
         private uint _depDataTex;
         private uint _tbTex;
         private uint[] _texs;
         private uint[] _vaos;
         private uint[] _vbos;
-        private int _projectionMatrixLoc;
-        private int _viewMatrixLoc;
-        private int _modelMatrixLoc;
-        private int _timeStepLoc;
-        private int _lightDirLoc;
-        private int _nPointsLoc;
+
+        private int _pprojectionMatrixLoc;
+        private int _pviewMatrixLoc;
+        private int _pmodelMatrixLoc;
+        private int _ptimeStepLoc;
+        private int _plightDirLoc;
+        private int _pnPointsLoc;
+
+        private int _lprojectionMatrixLoc;
+        private int _lviewMatrixLoc;
+        private int _lmodelMatrixLoc;
+        private int _lnPointsLoc;
+
         private int _nPoints = 4;
+        private OpenGL _gl;
 
         private uint _frameCount = 0;
 
         public void Init(OpenGL gl)
         {
+            _gl = gl;
+
+            CreatePointsProgram();
+            CreateLinesProgram();
+
+            _gl.PointSize(64);
+            _gl.Enable(OpenGL.GL_PROGRAM_POINT_SIZE);
+            _gl.Enable(0x8861);
+
+            _forceGraph = new ForceGraph();
+            _forceGraph.LoadGraph("dependencies.txt");
+            //CreateVertices(gl);
+            CreateDacVertices(_gl, "PX.Objects.SO.SOLine");
+        }
+
+        private void CreateLinesProgram()
+        {
+            var vertexShaderSource = ManifestLoader.LoadTextFile(@"Shaders\lines.vs.glsl");
+            var fragmentShaderSource = ManifestLoader.LoadTextFile(@"Shaders\lines.fs.glsl");
+            uint program = _gl.CreateProgram();
+            CreateShader(_gl, program, vertexShaderSource, OpenGL.GL_VERTEX_SHADER);
+            CreateShader(_gl, program, fragmentShaderSource, OpenGL.GL_FRAGMENT_SHADER);
+            _gl.LinkProgram(program);
+            _gl.UseProgram(program);
+            _linesProgram = program;
+            _lprojectionMatrixLoc = _gl.GetUniformLocation(program, "projectionMatrix");
+            _lviewMatrixLoc = _gl.GetUniformLocation(program, "viewMatrix");
+            _lmodelMatrixLoc = _gl.GetUniformLocation(program, "modelMatrix");
+            _lnPointsLoc = _gl.GetUniformLocation(program, "nPoints");
+        }
+
+        private void CreatePointsProgram()
+        {
             string[] varyings =
-            {           
+            {
                 "ft_vPosition", "ft_vVelocity", "ft_vColor", "ft_vIndex"
             };
 
             var vertexShaderSource = ManifestLoader.LoadTextFile(@"Shaders\points.vs.glsl");
             var fragmentShaderSource = ManifestLoader.LoadTextFile(@"Shaders\points.fs.glsl");
-            uint program = gl.CreateProgram();
-            CreateShader(gl, program, vertexShaderSource, OpenGL.GL_VERTEX_SHADER);
-            CreateShader(gl, program, fragmentShaderSource, OpenGL.GL_FRAGMENT_SHADER);
-            gl.TransformFeedbackVaryings(program, 4, varyings, OpenGL.GL_INTERLEAVED_ATTRIBS);
-            gl.LinkProgram(program);
-            gl.UseProgram(program);
+            uint program = _gl.CreateProgram();
+            CreateShader(_gl, program, vertexShaderSource, OpenGL.GL_VERTEX_SHADER);
+            CreateShader(_gl, program, fragmentShaderSource, OpenGL.GL_FRAGMENT_SHADER);
+            _gl.TransformFeedbackVaryings(program, 4, varyings, OpenGL.GL_INTERLEAVED_ATTRIBS);
+            _gl.LinkProgram(program);
+            _gl.UseProgram(program);
             _pointsProgram = program;
-            _projectionMatrixLoc = gl.GetUniformLocation(program, "projectionMatrix");
-            _viewMatrixLoc = gl.GetUniformLocation(program, "viewMatrix");
-            _modelMatrixLoc = gl.GetUniformLocation(program, "modelMatrix");
-            _timeStepLoc = gl.GetUniformLocation(program, "timeStep");
-            _lightDirLoc = gl.GetUniformLocation(program, "vLightDir");
-            _nPointsLoc = gl.GetUniformLocation(program, "nPoints");
-
-
-            gl.PointSize(64);
-            gl.Enable(OpenGL.GL_PROGRAM_POINT_SIZE);
-            gl.Enable(0x8861);
-
-            _forceGraph = new ForceGraph();
-            _forceGraph.LoadGraph("dependencies.txt");
-            //CreateVertices(gl);
-            CreateDacVertices(gl, "PX.Objects.SO.SOLine");
+            _pprojectionMatrixLoc = _gl.GetUniformLocation(program, "projectionMatrix");
+            _pviewMatrixLoc = _gl.GetUniformLocation(program, "viewMatrix");
+            _pmodelMatrixLoc = _gl.GetUniformLocation(program, "modelMatrix");
+            _ptimeStepLoc = _gl.GetUniformLocation(program, "timeStep");
+            _plightDirLoc = _gl.GetUniformLocation(program, "vLightDir");
+            _pnPointsLoc = _gl.GetUniformLocation(program, "nPoints");
         }
 
         private uint CreateShader(OpenGL gl, uint program, string source, uint type)
         {
            
-            uint sh = gl.CreateShader(type);
-            gl.ShaderSource(sh, source);
-            gl.CompileShader(sh);
+            uint sh = _gl.CreateShader(type);
+            _gl.ShaderSource(sh, source);
+            _gl.CompileShader(sh);
             var sb = new System.Text.StringBuilder();
-            gl.GetShaderInfoLog(sh, 4096, new IntPtr(), sb);
-            gl.AttachShader(program, sh);
-            gl.DeleteShader(sh);
+            _gl.GetShaderInfoLog(sh, 4096, new IntPtr(), sb);
+            _gl.AttachShader(program, sh);
+            _gl.DeleteShader(sh);
             return sh;
         }
 
@@ -136,28 +168,28 @@ namespace ForceGraph
 
 
             _texs = new uint[2];
-            gl.GenTextures(2, _texs);
+            _gl.GenTextures(2, _texs);
             _depDataTex = _texs[0];
-            gl.BindTexture(OpenGL.GL_TEXTURE_2D, _depDataTex);
-            gl.TexImage2D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_R8, depCount, depCount, 
+            _gl.BindTexture(OpenGL.GL_TEXTURE_2D, _depDataTex);
+            _gl.TexImage2D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_R8, depCount, depCount, 
                             0, OpenGL.GL_RED, OpenGL.GL_UNSIGNED_BYTE, depData);
-            gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MIN_FILTER, OpenGL.GL_NEAREST);
-            gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MAG_FILTER, OpenGL.GL_NEAREST);
-            gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, OpenGL.GL_CLAMP_TO_EDGE);
-            gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, OpenGL.GL_CLAMP_TO_EDGE);
+            _gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MIN_FILTER, OpenGL.GL_NEAREST);
+            _gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MAG_FILTER, OpenGL.GL_NEAREST);
+            _gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, OpenGL.GL_CLAMP_TO_EDGE);
+            _gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, OpenGL.GL_CLAMP_TO_EDGE);
 
             _tbTex = _texs[1];
 
             _vaos = new uint[2];
-            gl.GenVertexArrays(2, _vaos);
+            _gl.GenVertexArrays(2, _vaos);
             _vbos = new uint[2];
-            gl.GenBuffers(2, _vbos);
+            _gl.GenBuffers(2, _vbos);
             
 
             for (int i = 0; i < 2; ++i)
             {
-                gl.BindBuffer(OpenGL.GL_TRANSFORM_FEEDBACK_BUFFER, _vbos[i]);
-                gl.BufferData(OpenGL.GL_TRANSFORM_FEEDBACK_BUFFER, 
+                _gl.BindBuffer(OpenGL.GL_TRANSFORM_FEEDBACK_BUFFER, _vbos[i]);
+                _gl.BufferData(OpenGL.GL_TRANSFORM_FEEDBACK_BUFFER, 
                     Marshal.SizeOf(typeof(float)) * 3 * 4 * indexes, new IntPtr(0), OpenGL.GL_DYNAMIC_COPY);
 
                 float[] data = new float[indexes * 4];
@@ -180,30 +212,30 @@ namespace ForceGraph
                     data[k + 10] = .0f;
                     data[k + 11] = .0f;
                 }
-                IntPtr gpuBuffer = gl.MapBuffer(OpenGL.GL_TRANSFORM_FEEDBACK_BUFFER, OpenGL.GL_WRITE_ONLY);
+                IntPtr gpuBuffer = _gl.MapBuffer(OpenGL.GL_TRANSFORM_FEEDBACK_BUFFER, OpenGL.GL_WRITE_ONLY);
                 Marshal.Copy(data, 0, gpuBuffer, indexes * 4);
-                gl.UnmapBuffer(OpenGL.GL_TRANSFORM_FEEDBACK_BUFFER);
+                _gl.UnmapBuffer(OpenGL.GL_TRANSFORM_FEEDBACK_BUFFER);
 
-                gl.BindVertexArray(_vaos[i]);
-                gl.BindBuffer(OpenGL.GL_ARRAY_BUFFER, _vbos[i]);
+                _gl.BindVertexArray(_vaos[i]);
+                _gl.BindBuffer(OpenGL.GL_ARRAY_BUFFER, _vbos[i]);
 
-                gl.VertexAttribPointer(0, 3, OpenGL.GL_FLOAT, false, 
+                _gl.VertexAttribPointer(0, 3, OpenGL.GL_FLOAT, false, 
                     Marshal.SizeOf(typeof(float)) * 3 * 4, new IntPtr(0));
-                gl.VertexAttribPointer(1, 3, OpenGL.GL_FLOAT, false,
+                _gl.VertexAttribPointer(1, 3, OpenGL.GL_FLOAT, false,
                     Marshal.SizeOf(typeof(float)) * 3 * 4, (IntPtr)(Marshal.SizeOf(typeof(float)) * 3));
-                gl.VertexAttribPointer(2, 3, OpenGL.GL_FLOAT, false,
+                _gl.VertexAttribPointer(2, 3, OpenGL.GL_FLOAT, false,
                     Marshal.SizeOf(typeof(float)) * 3 * 4, (IntPtr)(Marshal.SizeOf(typeof(float)) * 6));
-                gl.VertexAttribIPointer(3, 3, OpenGL.GL_INT,
+                _gl.VertexAttribIPointer(3, 3, OpenGL.GL_INT,
                     Marshal.SizeOf(typeof(float)) * 3 * 4, (IntPtr)(Marshal.SizeOf(typeof(float)) * 9));
 
-                gl.EnableVertexAttribArray(0);
-                gl.EnableVertexAttribArray(1);
-                gl.EnableVertexAttribArray(2);
-                gl.EnableVertexAttribArray(3);
+                _gl.EnableVertexAttribArray(0);
+                _gl.EnableVertexAttribArray(1);
+                _gl.EnableVertexAttribArray(2);
+                _gl.EnableVertexAttribArray(3);
 
-                gl.BindTexture(OpenGL.GL_TEXTURE_2D, _depDataTex);
-                gl.BindTexture(OpenGL.GL_TEXTURE_BUFFER, _tbTex);
-                gl.TexBuffer(OpenGL.GL_TEXTURE_BUFFER, OpenGL.GL_RGB32F, _vbos[i]);
+                _gl.BindTexture(OpenGL.GL_TEXTURE_2D, _depDataTex);
+                _gl.BindTexture(OpenGL.GL_TEXTURE_BUFFER, _tbTex);
+                _gl.TexBuffer(OpenGL.GL_TEXTURE_BUFFER, OpenGL.GL_RGB32F, _vbos[i]);
             }
         }
 
@@ -286,28 +318,28 @@ namespace ForceGraph
 
 
             _texs = new uint[2];
-            gl.GenTextures(2, _texs);
+            _gl.GenTextures(2, _texs);
             _depDataTex = _texs[0];
-            gl.BindTexture(OpenGL.GL_TEXTURE_2D, _depDataTex);
-            gl.TexImage2D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_R8, _nPoints, _nPoints,
+            _gl.BindTexture(OpenGL.GL_TEXTURE_2D, _depDataTex);
+            _gl.TexImage2D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_R8, _nPoints, _nPoints,
                             0, OpenGL.GL_RED, OpenGL.GL_UNSIGNED_BYTE, depData);
-            gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MIN_FILTER, OpenGL.GL_NEAREST);
-            gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MAG_FILTER, OpenGL.GL_NEAREST);
-            gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, OpenGL.GL_CLAMP_TO_EDGE);
-            gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, OpenGL.GL_CLAMP_TO_EDGE);
+            _gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MIN_FILTER, OpenGL.GL_NEAREST);
+            _gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MAG_FILTER, OpenGL.GL_NEAREST);
+            _gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, OpenGL.GL_CLAMP_TO_EDGE);
+            _gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, OpenGL.GL_CLAMP_TO_EDGE);
 
             _tbTex = _texs[1];
 
-            _vaos = new uint[2];
-            gl.GenVertexArrays(2, _vaos);
-            _vbos = new uint[2];
-            gl.GenBuffers(2, _vbos);
+            _vaos = new uint[3];
+            _gl.GenVertexArrays(3, _vaos);
+            _vbos = new uint[3];
+            _gl.GenBuffers(3, _vbos);
 
 
             for (int i = 0; i < 2; ++i)
             {
-                gl.BindBuffer(OpenGL.GL_TRANSFORM_FEEDBACK_BUFFER, _vbos[i]);
-                gl.BufferData(OpenGL.GL_TRANSFORM_FEEDBACK_BUFFER,
+                _gl.BindBuffer(OpenGL.GL_TRANSFORM_FEEDBACK_BUFFER, _vbos[i]);
+                _gl.BufferData(OpenGL.GL_TRANSFORM_FEEDBACK_BUFFER,
                     Marshal.SizeOf(typeof(float)) * 3 * 4 * indexes, new IntPtr(0), OpenGL.GL_DYNAMIC_COPY);
 
                 float[] data = new float[indexes * 4];
@@ -330,67 +362,111 @@ namespace ForceGraph
                     data[k + 10] = .0f;
                     data[k + 11] = .0f;
                 }
-                IntPtr gpuBuffer = gl.MapBuffer(OpenGL.GL_TRANSFORM_FEEDBACK_BUFFER, OpenGL.GL_WRITE_ONLY);
+                IntPtr gpuBuffer = _gl.MapBuffer(OpenGL.GL_TRANSFORM_FEEDBACK_BUFFER, OpenGL.GL_WRITE_ONLY);
                 Marshal.Copy(data, 0, gpuBuffer, indexes * 4);
-                gl.UnmapBuffer(OpenGL.GL_TRANSFORM_FEEDBACK_BUFFER);
+                _gl.UnmapBuffer(OpenGL.GL_TRANSFORM_FEEDBACK_BUFFER);
 
-                gl.BindVertexArray(_vaos[i]);
-                gl.BindBuffer(OpenGL.GL_ARRAY_BUFFER, _vbos[i]);
+                _gl.BindVertexArray(_vaos[i]);
+                _gl.BindBuffer(OpenGL.GL_ARRAY_BUFFER, _vbos[i]);
 
-                gl.VertexAttribPointer(0, 3, OpenGL.GL_FLOAT, false,
+                _gl.VertexAttribPointer(0, 3, OpenGL.GL_FLOAT, false,
                     Marshal.SizeOf(typeof(float)) * 3 * 4, new IntPtr(0));
-                gl.VertexAttribPointer(1, 3, OpenGL.GL_FLOAT, false,
+                _gl.VertexAttribPointer(1, 3, OpenGL.GL_FLOAT, false,
                     Marshal.SizeOf(typeof(float)) * 3 * 4, (IntPtr)(Marshal.SizeOf(typeof(float)) * 3));
-                gl.VertexAttribPointer(2, 3, OpenGL.GL_FLOAT, false,
+                _gl.VertexAttribPointer(2, 3, OpenGL.GL_FLOAT, false,
                     Marshal.SizeOf(typeof(float)) * 3 * 4, (IntPtr)(Marshal.SizeOf(typeof(float)) * 6));
-                gl.VertexAttribIPointer(3, 3, OpenGL.GL_INT,
+                _gl.VertexAttribIPointer(3, 3, OpenGL.GL_INT,
                     Marshal.SizeOf(typeof(float)) * 3 * 4, (IntPtr)(Marshal.SizeOf(typeof(float)) * 9));
 
-                gl.EnableVertexAttribArray(0);
-                gl.EnableVertexAttribArray(1);
-                gl.EnableVertexAttribArray(2);
-                gl.EnableVertexAttribArray(3);
+                _gl.EnableVertexAttribArray(0);
+                _gl.EnableVertexAttribArray(1);
+                _gl.EnableVertexAttribArray(2);
+                _gl.EnableVertexAttribArray(3);
 
-                gl.BindTexture(OpenGL.GL_TEXTURE_2D, _depDataTex);
-                gl.BindTexture(OpenGL.GL_TEXTURE_BUFFER, _tbTex);
-                gl.TexBuffer(OpenGL.GL_TEXTURE_BUFFER, OpenGL.GL_RGB32F, _vbos[i]);
+                _gl.BindTexture(OpenGL.GL_TEXTURE_2D, _depDataTex);
+                _gl.BindTexture(OpenGL.GL_TEXTURE_BUFFER, _tbTex);
+                _gl.TexBuffer(OpenGL.GL_TEXTURE_BUFFER, OpenGL.GL_RGB32F, _vbos[i]);
             }
+
+            _gl.BindVertexArray(_vaos[2]);
+            _gl.BindBuffer(OpenGL.GL_ARRAY_BUFFER, _vbos[2]);
+            var lineIndexes = new int[_nPoints * _nPoints * 2];
+            int count = 0;
+            for (int i = 0; i < _nPoints; ++i)
+            {
+                for (int j = 0; j < _nPoints; ++j)
+                {
+                    lineIndexes[count++] = i;
+                    lineIndexes[count++] = j;
+                }
+            }
+            GCHandle handle = GCHandle.Alloc(lineIndexes, GCHandleType.Pinned);
+            IntPtr ptr = handle.AddrOfPinnedObject();
+            var size = Marshal.SizeOf(typeof(int)) * lineIndexes.Count();
+            _gl.BufferData(OpenGL.GL_ARRAY_BUFFER, size, ptr, OpenGL.GL_STATIC_DRAW);
+            _gl.VertexAttribPointer(0, 2, OpenGL.GL_INT, false, 0, new IntPtr(0));
+            _gl.EnableVertexAttribArray(0);
+
+            _gl.BindTexture(OpenGL.GL_TEXTURE_2D, _depDataTex);
+            _gl.BindTexture(OpenGL.GL_TEXTURE_BUFFER, _tbTex);
+            _gl.TexBuffer(OpenGL.GL_TEXTURE_BUFFER, OpenGL.GL_RGB32F, _vbos[0]);
         }
 
+        private void UsePointsProgram(mat4 pMat, mat4 vMat, mat4 mMat)
+        {
+            _gl.UseProgram(_pointsProgram);
+            _gl.UniformMatrix4(_pprojectionMatrixLoc, 1, false, pMat.to_array());
+            _gl.UniformMatrix4(_pviewMatrixLoc, 1, false, vMat.to_array());
+            _gl.UniformMatrix4(_pmodelMatrixLoc, 1, false, mMat.to_array());
+            _gl.Uniform3(_plightDirLoc, 0.0f, 0.0f, 1.0f);
+            _gl.Uniform1(_pnPointsLoc, _nPoints);
+        }
+
+        private void UseLinesProgram(mat4 pMat, mat4 vMat, mat4 mMat)
+        {
+            _gl.UseProgram(_linesProgram);
+            _gl.UniformMatrix4(_lprojectionMatrixLoc, 1, false, pMat.to_array());
+            _gl.UniformMatrix4(_lviewMatrixLoc, 1, false, vMat.to_array());
+            _gl.UniformMatrix4(_lmodelMatrixLoc, 1, false, mMat.to_array());
+            _gl.Uniform1(_lnPointsLoc, _nPoints);
+        }
         public void Render(OpenGL gl, mat4 pMat, mat4 vMat, mat4 mMat)
         {
-            gl.UseProgram(_pointsProgram);
-            gl.UniformMatrix4(_projectionMatrixLoc, 1, false, pMat.to_array());
-            gl.UniformMatrix4(_viewMatrixLoc, 1, false, vMat.to_array());
-            gl.UniformMatrix4(_modelMatrixLoc, 1, false, mMat.to_array());
-            gl.Uniform3(_lightDirLoc, 0.0f, 0.0f, 1.0f);
-            gl.Uniform1(_nPointsLoc, _nPoints);
+            _gl = gl;
+
+            UsePointsProgram(pMat, vMat, mMat);
 
             if (_frameCount % 2 == 1)
             {
-                gl.BindVertexArray(_vaos[1]);
-                gl.BindBufferBase(OpenGL.GL_TRANSFORM_FEEDBACK_BUFFER, 0, _vbos[0]);
+                _gl.BindVertexArray(_vaos[1]);
+                _gl.BindBufferBase(OpenGL.GL_TRANSFORM_FEEDBACK_BUFFER, 0, _vbos[0]);
             }
             else
             {
-                gl.BindVertexArray(_vaos[0]);
-                gl.BindBufferBase(OpenGL.GL_TRANSFORM_FEEDBACK_BUFFER, 0, _vbos[1]);
+                _gl.BindVertexArray(_vaos[0]);
+                _gl.BindBufferBase(OpenGL.GL_TRANSFORM_FEEDBACK_BUFFER, 0, _vbos[1]);
             }
-            gl.BeginTransformFeedback(OpenGL.GL_POINTS);
-            gl.DrawArrays(OpenGL.GL_POINTS, 0, _nPoints);
-            gl.EndTransformFeedback();
-            gl.BindVertexArray(0);
+            _gl.BeginTransformFeedback(OpenGL.GL_POINTS);
+            _gl.DrawArrays(OpenGL.GL_POINTS, 0, _nPoints);
+            _gl.EndTransformFeedback();
+            _gl.BindVertexArray(0);
 
+            _gl.BindVertexArray(_vaos[2]);
+            UseLinesProgram(pMat, vMat, mMat);
+            _gl.DrawArrays(OpenGL.GL_LINES, 0, _nPoints);
+            
             ++_frameCount;
         }
 
+
+
         internal void CleanUp(OpenGL gl)
         {
-            gl.UseProgram(0);
-            gl.DeleteProgram(_pointsProgram);
-            gl.DeleteVertexArrays(2, _vaos);
-            gl.DeleteBuffers(2, _vbos);
-            gl.DeleteTextures(2, _texs);
+            _gl.UseProgram(0);
+            _gl.DeleteProgram(_pointsProgram);
+            _gl.DeleteVertexArrays(3, _vaos);
+            _gl.DeleteBuffers(3, _vbos);
+            _gl.DeleteTextures(2, _texs);
         }
 
     }

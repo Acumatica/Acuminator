@@ -48,6 +48,7 @@
                     Style="{StaticResource vsButtonStyle}"/>
 
             <DataGrid Grid.Row="1" ItemsSource="{Binding Path=DACs, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                      SelectedItem="{Binding Path=SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                    Style="{StaticResource readonlyDataGridStyle}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding Path=DacName, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
