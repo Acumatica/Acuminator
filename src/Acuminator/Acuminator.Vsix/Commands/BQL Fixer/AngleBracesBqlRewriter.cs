@@ -28,9 +28,6 @@ namespace Acuminator.Vsix.BqlFixer
 			if (baseArguments.Count == 0)
 				return node;
 
-			if (!(baseArguments.Last() is GenericNameSyntax lastNode))
-				return node;
-
 			// reconstruct all nodes except last
 			var typeSyntaxes = DeconstructLastNode(baseNode, out var identifierName);
 
@@ -83,14 +80,14 @@ namespace Acuminator.Vsix.BqlFixer
 				if(lastNode == null && args.Last() is IdentifierNameSyntax identifier)
 				{
 					fieldNameUtilizer(identifier);
-					newArgs = args.Take(args.Count - 1);
+					newArgs = args.Take(args.Count - 1).Select(a => a.WithoutTrivia());
 				}
 				
 				yield return (newArgs.ToList(), null);
 				yield break;
 			}
 
-			yield return (args.Take(args.Count - 1).ToList(), lastNode);
+			yield return (args.Take(args.Count - 1).Select(a => a.WithoutTrivia()).ToList(), lastNode.WithoutTrivia());
 
 			foreach (var inner in DeconstructLastNodeRecursively(lastNode, fieldNameUtilizer))
 			{

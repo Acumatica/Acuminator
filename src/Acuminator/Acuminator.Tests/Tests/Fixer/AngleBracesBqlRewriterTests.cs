@@ -60,18 +60,29 @@ namespace Acuminator.Tests.Tests.Fixer
 			// currently doesn't support indention
 			public IEnumerator<object[]> GetEnumerator()
 			{
-				// todo: add checking with trailing semicolons
+				// todo: add checking with trailing semicolons (but it adds them)
+				// hack: some problems with trivias, so check without spaces or newlines
 				yield return new object[]
 				{
-					"public PXSelect<APInvoice,Where<APInvoice.refNbr, Equal<Current<APInvoice.refNbr>>, "
-						+ "And<APInvoice.docType, Equal<Current<APInvoice.docType> CurrentOrder",
-					"public PXSelect<APInvoice,Where<APInvoice.refNbr, Equal<Current<APInvoice.refNbr>>, "
-						+ "And<APInvoice.docType, Equal<Current<APInvoice.docType>>>>> CurrentOrder",
+					"public PXSelect<APInvoice,Where<APInvoice.refNbr,Equal<Current<APInvoice.refNbr>>,"
+						+ "And<APInvoice.docType,Equal<Current<APInvoice.docType> CurrentOrder",
+					"public PXSelect<APInvoice,Where<APInvoice.refNbr,Equal<Current<APInvoice.refNbr>>,"
+						+ "And<APInvoice.docType,Equal<Current<APInvoice.docType>>>>>CurrentOrder;",
 				};
 				yield return new object[]
 				{
-					"public PXSelect<APInvoice,Where<APInvoice.refNbr, Or<Nor> field",
-					"public PXSelect<APInvoice,Where<APInvoice.refNbr, Or<Nor>>> field"
+					"public PXSelect<APInvoice,Where<APInvoice.refNbr,Or<Nor> field",
+					"public PXSelect<APInvoice,Where<APInvoice.refNbr,Or<Nor>>>field;",
+				};
+				yield return new object[]
+				{
+					"PXSelect<SOOrder,Where<SOOrder.orderType,Equal<SalesOrder>,And<SOOrder.status,Equal<Open>>>,OrderBy<Asc<SOOrder.orderNbr>>otherField",
+					"PXSelect<SOOrder,Where<SOOrder.orderType,Equal<SalesOrder>,And<SOOrder.status,Equal<Open>>>,OrderBy<Asc<SOOrder.orderNbr>>>otherField;",
+				};
+				yield return new object[]
+				{
+					"PXSelect<SOOrder,Dump<DumpSimple,Dump<DumpSimple,Dump<DumpSimple>>field",
+					"PXSelect<SOOrder,Dump<DumpSimple,Dump<DumpSimple,Dump<DumpSimple>>>>field;",
 				};
 			}
 
