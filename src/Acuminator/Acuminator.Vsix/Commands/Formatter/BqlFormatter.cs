@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace Acuminator.Vsix.Formatter
 {
@@ -38,6 +39,18 @@ namespace Acuminator.Vsix.Formatter
 			 var rewriter = new BqlRewriter(new BqlContext(semanticModel.Compilation), semanticModel,
 				EndOfLineTrivia, IndentationTrivia);
 			return rewriter.Visit(syntaxRoot);
+		}
+
+		public static BqlFormatter FromTextView(IWpfTextView textView)
+		{
+			textView.ThrowOnNull(nameof(textView));
+
+			int indentSize = textView.Options.GetOptionValue(DefaultOptions.IndentSizeOptionId);
+			int tabSize = textView.Options.GetOptionValue(DefaultOptions.TabSizeOptionId);
+			bool convertTabsToSpaces = textView.Options.GetOptionValue(DefaultOptions.ConvertTabsToSpacesOptionId);
+			string newLineCharacter = textView.Options.GetOptionValue(DefaultOptions.NewLineCharacterOptionId);
+
+			return new BqlFormatter(newLineCharacter, !convertTabsToSpaces, tabSize, indentSize);
 		}
 	}
 }
