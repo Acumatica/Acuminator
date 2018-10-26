@@ -371,6 +371,21 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Resource Include="Resources\CodeMap\Action.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\CodeMap\ActionHandler.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\CodeMap\Graph.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\CodeMap\View.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\CodeMap\ViewDelegate.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Content Include="Resources\DacExplorer.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -436,6 +451,7 @@
     <Compile Include="Tool Windows\AntiPlagiator\ViewModel\PlagiarismInfoViewModel.cs" />
     <Compile Include="Tool Windows\AntiPlagiator\OpenAntiPlagiatorWindowCommand.cs" />
     <Compile Include="Tool Windows\AntiPlagiator\ViewModel\AntiPlagiatorWindowViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\Convertes\TreeNodeToImageSourceConverter.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphMemberType.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\CodeMapWindowViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\CodeMapWindow.cs" />
@@ -454,6 +470,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\TreeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\TreeNodeViewModel.cs" />
     <Compile Include="Tool Windows\Converters\BoolInversionConverter.cs" />
+    <Compile Include="Tool Windows\Converters\IsBackgroundDarkConverter.cs" />
     <Compile Include="Tool Windows\Converters\VisibilityInverter.cs" />
     <Compile Include="Tool Windows\Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Tool Windows\DacExplorer\DacExplorerControl.xaml.cs">
@@ -541,6 +558,7 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="..\..\packages\GitVersionTask.3.6.5\build\portable-net+sl+win+wpa+wp\GitVersionTask.targets" Condition="Exists('..\..\packages\GitVersionTask.3.6.5\build\portable-net+sl+win+wpa+wp\GitVersionTask.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
