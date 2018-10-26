@@ -14,6 +14,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	public class GraphNodeViewModel : TreeNodeViewModel
 	{
 		public PXGraphSemanticModel GraphSemanticModel { get; }
+
+		//private readonly List<>
+
 		public override string Name => GraphSemanticModel.Symbol.Name;
 
 		private GraphNodeViewModel(PXGraphSemanticModel graphSemanticModel, TreeViewModel tree, bool isExpanded) : 
@@ -37,7 +40,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			var memberCategories =
 				GraphMemberTypeUtils.GetGraphMemberTypes()
 									.Select(graphMemberType =>
-										 GraphMemberCategoryNodeViewModel.Create(this, GraphMemberType.View, isExpanded: false));
+										 GraphMemberCategoryNodeViewModel.Create(this, graphMemberType, isExpanded: false));
 
 			Children.AddRange(memberCategories);
 		}

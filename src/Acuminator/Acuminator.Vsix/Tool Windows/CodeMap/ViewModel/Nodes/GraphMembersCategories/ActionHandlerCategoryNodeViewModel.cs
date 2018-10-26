@@ -11,15 +11,15 @@ using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class ViewCategoryNodeViewModel : GraphMemberCategoryNodeViewModel
+	public class ActionHandlerCategoryNodeViewModel : GraphMemberCategoryNodeViewModel
 	{
-		public ViewCategoryNodeViewModel(GraphNodeViewModel graphViewModel, bool isExpanded) : 
-									base(graphViewModel, GraphMemberType.View, isExpanded)
+		public ActionHandlerCategoryNodeViewModel(GraphNodeViewModel graphViewModel, bool isExpanded) : 
+											 base(graphViewModel, GraphMemberType.ActionHandler, isExpanded)
 		{
 			
 		}
 
 		protected override void AddCategoryMembers() => 
-			AddCategoryMembersDefaultImpl(graphSemanticModel => graphSemanticModel.Views);
+			AddCategoryMembersDefaultImpl(graphSemanticModel => graphSemanticModel.ActionHandlers);
 	}
 }
