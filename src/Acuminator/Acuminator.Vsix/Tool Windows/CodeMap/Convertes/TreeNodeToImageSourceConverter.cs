@@ -23,6 +23,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private const string ViewDelegateIcon = "ViewDelegate";
 		private const string ActionIcon = "Action";
 		private const string ActionHandlerIcon = "ActionHandler";
+
+		private const string EventIcon = "Event";
+		private const string RowEventIcon = "RowEvent";
+		private const string FieldEventIcon = "FieldEvent";
+		private const string CacheAttachedIcon = "CacheAttached";
+	
 		private const string GroupNodeIcon = "GroupNode";
 
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -49,6 +55,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				case GraphNodeViewModel graphNode:
 					return GraphIcon;
+				case CacheAttachedCategoryNodeViewModel cacheAttachedCategoryNode:
+				case RowEventCategoryNodeViewModel rowEventCategoryNode:		
+				case FieldEventCategoryNodeViewModel fieldEventCategoryNode:
+					return EventIcon;
 				case GraphMemberCategoryNodeViewModel graphMemberCategoryNode:
 					return GroupNodeIcon;
 				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.View:
@@ -59,6 +69,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					return ActionIcon;
 				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.ActionHandler:
 					return ActionHandlerIcon;
+				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.RowEvent:
+					return RowEventIcon;
+				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.FieldEvent:
+					return FieldEventIcon;
+				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.CacheAttached:
+					return CacheAttachedIcon;
 				default:
 					return null;
 			}
