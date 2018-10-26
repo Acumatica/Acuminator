@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Acuminator.Utilities.Common;
+using Acuminator.Vsix.Utilities;
 
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class TreeNodeViewModel : ViewModelBase
+	public abstract class TreeNodeViewModel : ViewModelBase
 	{
 		public TreeViewModel Tree { get; }
 
-		public string Name { get; }
+		public abstract string Name { get; }
 
-		public ObservableCollection<TreeNodeViewModel> Children { get; } = new ObservableCollection<TreeNodeViewModel>();
+		public ExtendedObservableCollection<TreeNodeViewModel> Children { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
 
 		private bool _isExpanded;
 
@@ -50,13 +51,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public TreeNodeViewModel(TreeViewModel tree, string name, bool isExpanded = true)
+		public TreeNodeViewModel(TreeViewModel tree, bool isExpanded = true)
 		{
 			tree.ThrowOnNull(nameof(tree));
-			name.ThrowOnNullOrWhiteSpace();
 
 			Tree = tree;
-			Name = name;
 			_isExpanded = isExpanded;
 		}
 	}

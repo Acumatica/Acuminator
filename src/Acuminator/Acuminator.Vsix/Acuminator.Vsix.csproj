@@ -444,7 +444,10 @@
     </Compile>
     <Compile Include="Tool Windows\CodeMap\OpenCodeMapWindowCommand.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\DocumentModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\GraphNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Base\GraphMemberCategoryNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\GraphMembersCategories\ViewMemberCategoryNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\GraphNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\GraphMemberNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\TreeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\TreeNodeViewModel.cs" />
     <Compile Include="Tool Windows\Converters\BoolInversionConverter.cs" />
