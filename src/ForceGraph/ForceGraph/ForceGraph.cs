@@ -29,11 +29,9 @@ namespace ForceGraph
         //dumb load
         public void LoadGraph(string fileName)
         {
-            var file = new System.IO.StreamReader(@"dependencies.txt");
-            string line;
+            var file = ManifestLoader.LoadTextFile(@"dependencies.txt");
             int index = 0;
-		
-            while ((line = file.ReadLine()) != null)
+            foreach (var line in file.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var dependency = new Dependency();
                 string dac = null;
