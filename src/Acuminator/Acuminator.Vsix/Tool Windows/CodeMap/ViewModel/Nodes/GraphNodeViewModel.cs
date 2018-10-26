@@ -14,19 +14,19 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class GraphNodeViewModel : TreeNodeViewModel
 	{
-		public PXGraphSemanticModel GraphSemanticModel { get; }
+		public PXGraphEventSemanticModel GraphSemanticModel { get; }
 
 		//private readonly List<>
 
 		public override string Name => GraphSemanticModel.Symbol.Name;
 
-		private GraphNodeViewModel(PXGraphSemanticModel graphSemanticModel, TreeViewModel tree, bool isExpanded) : 
+		private GraphNodeViewModel(PXGraphEventSemanticModel graphSemanticModel, TreeViewModel tree, bool isExpanded) : 
 							 base(tree, isExpanded)
 		{
 			GraphSemanticModel = graphSemanticModel;
 		}
 
-		public static GraphNodeViewModel Create(PXGraphSemanticModel graphSemanticModel, TreeViewModel tree)
+		public static GraphNodeViewModel Create(PXGraphEventSemanticModel graphSemanticModel, TreeViewModel tree)
 		{
 			if (graphSemanticModel == null || tree == null)
 				return null;

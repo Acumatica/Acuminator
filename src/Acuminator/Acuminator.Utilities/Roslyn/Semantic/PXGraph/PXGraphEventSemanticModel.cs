@@ -18,6 +18,35 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		public PXGraphSemanticModel BaseGraphModel { get; }
 
+		#region Base Model
+		public bool IsProcessing => BaseGraphModel.IsProcessing;
+
+		public GraphType Type => BaseGraphModel.Type;
+
+		public INamedTypeSymbol Symbol => BaseGraphModel.Symbol;
+
+		/// <summary>
+		/// The graph symbol. For the graph is the same as <see cref="Symbol"/>. For graph extensions is the extension's base graph.
+		/// </summary>
+		public INamedTypeSymbol GraphSymbol => BaseGraphModel.GraphSymbol;
+
+		public ImmutableArray<StaticConstructorInfo> StaticConstructors => BaseGraphModel.StaticConstructors;
+		public ImmutableArray<GraphInitializerInfo> Initializers => BaseGraphModel.Initializers;
+
+		public ImmutableDictionary<string, DataViewInfo> ViewsByNames => BaseGraphModel.ViewsByNames;
+		public IEnumerable<DataViewInfo> Views => BaseGraphModel.Views;
+
+		public ImmutableDictionary<string, DataViewDelegateInfo> ViewDelegatesByNames => BaseGraphModel.ViewDelegatesByNames;
+		public IEnumerable<DataViewDelegateInfo> ViewDelegates => BaseGraphModel.ViewDelegates;
+
+		public ImmutableDictionary<string, ActionInfo> ActionsByNames => BaseGraphModel.ActionsByNames;
+		public IEnumerable<ActionInfo> Actions => BaseGraphModel.Actions;
+
+		public ImmutableDictionary<string, ActionHandlerInfo> ActionHandlersByNames => BaseGraphModel.ActionHandlersByNames;
+		public IEnumerable<ActionHandlerInfo> ActionHandlers => BaseGraphModel.ActionHandlers;
+		#endregion
+
+
 		public ImmutableDictionary<string, CacheAttachedInfo> CacheAttachedByDacName { get; }
 
 		public IEnumerable<CacheAttachedInfo> CacheAttachedEvents => CacheAttachedByDacName.Values;

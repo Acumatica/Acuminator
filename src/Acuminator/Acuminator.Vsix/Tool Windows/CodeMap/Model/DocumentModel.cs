@@ -28,9 +28,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public SemanticModel SemanticModel { get; private set; }
 
-		private readonly List<PXGraphSemanticModel> _graphModels = new List<PXGraphSemanticModel>(capacity: 2);
+		private readonly List<PXGraphEventSemanticModel> _graphModels = new List<PXGraphEventSemanticModel>(capacity: 2);
 
-		public ReadOnlyCollection<PXGraphSemanticModel> GraphModels { get; }
+		public ReadOnlyCollection<PXGraphEventSemanticModel> GraphModels { get; }
 
 		public bool IsCodeFileDataLoaded => Root != null && SemanticModel != null;
 
@@ -66,8 +66,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				if (graphs.Count == 0)
 					return false;
 
-				var graphSemanticModels = graphs.Select(graph => PXGraphSemanticModel.InferModels(context, graph, cancellationToken)
-																					 .FirstOrDefault())
+				var graphSemanticModels = graphs.Select(graph => PXGraphEventSemanticModel.InferModels(context, graph, cancellationToken)
+																						  .FirstOrDefault())
 												.Where(graphModel => graphModel != null && graphModel.Type != GraphType.None)
 												.ToList();
 

@@ -42,7 +42,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected abstract void AddCategoryMembers();
 
-		protected void AddCategoryMembersDefaultImpl<T>(Func<PXGraphSemanticModel, IEnumerable<GraphNodeSymbolItem<T>>> graphMembersSelector)
+		protected void AddCategoryMembersDefaultImpl<T>(Func<PXGraphEventSemanticModel, IEnumerable<GraphNodeSymbolItem<T>>> graphMembersSelector)
 		where T : ISymbol
 		{
 			if (graphMembersSelector == null)
