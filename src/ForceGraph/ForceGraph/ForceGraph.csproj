@@ -124,6 +124,8 @@
     </None>
     <EmbeddedResource Include="Shaders\points.fs.glsl" />
     <EmbeddedResource Include="Shaders\points.vs.glsl" />
+    <EmbeddedResource Include="Shaders\lines.fs.glsl" />
+    <EmbeddedResource Include="Shaders\lines.vs.glsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

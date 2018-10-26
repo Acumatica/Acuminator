@@ -120,7 +120,7 @@
       
       <Button guid="guidAcuminatorCmdSet" id="OpenDacExplorerWindowCommand" type="Button">
         <Icon guid="guidDacExplorerIcon" id="dacExplorerIcon" />
-        <CommandFlag>DefaultDisabled</CommandFlag>
+        <!--<CommandFlag>DefaultDisabled</CommandFlag>-->
         <Strings>
           <CommandName>cmdidOpenDacExplorerWindowCommand</CommandName>
           <ButtonText>DAC Explorer</ButtonText>
