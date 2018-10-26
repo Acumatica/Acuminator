@@ -8,8 +8,9 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <sharpGL:OpenGLControl 
+        <sharpGL:OpenGLControl
             OpenGLDraw="OpenGLControl_OpenGLDraw" OpenGLInitialized="OpenGLControl_OpenGLInitialized"
-            RenderContextType="FBO" />
+            RenderContextType="FBO"
+            Unloaded="OpenGLControl_Unloaded"/>
     </Grid>
 </Window>

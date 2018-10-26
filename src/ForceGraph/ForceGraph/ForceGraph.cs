@@ -8,7 +8,7 @@ namespace ForceGraph
 {
     class ForceGraph
     {
-        List<Tuple<string,Dependency>> _dependencies = new List<Tuple<string,Dependency>>();
+        Dictionary<string, Dependency> _dependencies = new Dictionary<string, Dependency>();
         struct DependencyDetails
         {
             public String fromDac;
@@ -64,9 +64,15 @@ namespace ForceGraph
                     d.connection = dSplit[4];
                     dependency.inDependency.Add(d);
                 }
-                var tuple = new Tuple<string, Dependency>(dac, dependency);
-                _dependencies.Add(tuple);
+                _dependencies.Add(dac, dependency);
             }
         }
+
+        public List<string> GetDacs()
+        {
+            return _dependencies.Keys.ToList();
+        }
+
+
     }
 }
