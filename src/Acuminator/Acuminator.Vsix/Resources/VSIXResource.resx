@@ -250,11 +250,11 @@
     <value>Enable additional diagnostics for ISV Solution Certification</value>
   </data>
   <data name="CodeMapWindowTitle" xml:space="preserve">
-    <value>Acuminator CodeMap</value>
+    <value>CodeMap</value>
   </data>
   <data name="AntiPlagiatorWindowTitle" xml:space="preserve">
-    <value>Anti-Plagiator</value>
-  </data> 
+    <value>AntiPlagiarism</value>
+  </data>
   <data name="DacExplorerWindowTitle" xml:space="preserve">
     <value>DAC Explorer</value>
   </data>

@@ -61,7 +61,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Anti-Plagiator.
+        ///   Looks up a localized string similar to AntiPlagiarism.
         /// </summary>
         public static string AntiPlagiatorWindowTitle {
             get {
@@ -259,7 +259,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Acuminator CodeMap.
+        ///   Looks up a localized string similar to CodeMap.
         /// </summary>
         public static string CodeMapWindowTitle {
             get {
