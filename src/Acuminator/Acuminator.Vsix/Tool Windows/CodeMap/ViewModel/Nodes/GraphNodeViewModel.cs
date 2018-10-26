@@ -6,6 +6,7 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.Utilities;
+using Acuminator.Vsix.Utilities.Navigation;
 
 
 
@@ -34,6 +35,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			graphNodeVM.AddGraphMemberCategories();
 			return graphNodeVM;
 		}
+
+		public override void NavigateToItem() => AcuminatorVSPackage.Instance.NavigateToSymbol(GraphSemanticModel.Symbol);
+		
 
 		private void AddGraphMemberCategories()
 		{

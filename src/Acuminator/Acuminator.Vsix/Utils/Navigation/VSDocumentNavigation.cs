@@ -25,6 +25,24 @@ namespace Acuminator.Vsix.Utilities.Navigation
 {
 	public static class VSDocumentNavigation
 	{
+		public static (IWpfTextView WpfTextView, CaretPosition CaretPosition) NavigateToSymbol(this IServiceProvider serviceProvider,
+																							   ISymbol symbol)
+		{
+			serviceProvider.ThrowOnNull(nameof(serviceProvider));
+			symbol.ThrowOnNull(nameof(symbol));
+
+			var syntaxReferences = symbol.DeclaringSyntaxReferences;
+
+			if (syntaxReferences.Length != 1)
+				return default;
+
+			var filePath = syntaxReferences[0].SyntaxTree?.FilePath;
+			var workspace = AcuminatorVSPackage.Instance.GetVSWorkspace();
+
+			return AcuminatorVSPackage.Instance.OpenCodeFileAndNavigateToPosition(workspace?.CurrentSolution, filePath,
+																				  syntaxReferences[0].Span.Start);
+		}
+
 		public static (IWpfTextView WpfTextView, CaretPosition CaretPosition) OpenCodeFileAndNavigateByLineAndChar(
 																									  this IServiceProvider serviceProvider,
 																									  Solution solution, string filePath,

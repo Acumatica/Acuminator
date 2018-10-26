@@ -50,6 +50,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			var itemViewModels = from graphMemberInfo in graphMembersSelector(GraphViewModel.GraphSemanticModel)
 																	 .OrderBy(member => member.DeclarationOrder)
+								 where graphMemberInfo.Symbol.ContainingType == GraphViewModel.GraphSemanticModel.GraphSymbol ||
+									   graphMemberInfo.Symbol.ContainingType.OriginalDefinition == 
+									   GraphViewModel.GraphSemanticModel.GraphSymbol.OriginalDefinition
 								 select GraphMemberNodeViewModel.Create(this, graphMemberInfo.Symbol, isExpanded: false) into itemViewModel
 								 where itemViewModel != null
 								 select itemViewModel;

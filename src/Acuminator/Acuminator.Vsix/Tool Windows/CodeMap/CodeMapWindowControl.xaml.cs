@@ -18,5 +18,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			this.InitializeComponent();
 		}
+
+		private void TreeViewItem_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		{
+			if (e.Handled || e.ClickCount != 2 || e.ChangedButton != System.Windows.Input.MouseButton.Left)
+				return;
+
+			if (!(sender is StackPanel treeViewItemPanel) || !(treeViewItemPanel.DataContext is TreeNodeViewModel treeNodeVM))
+				return;
+
+			treeNodeVM.NavigateToItem();
+			e.Handled = true;
+		}
 	}
 }

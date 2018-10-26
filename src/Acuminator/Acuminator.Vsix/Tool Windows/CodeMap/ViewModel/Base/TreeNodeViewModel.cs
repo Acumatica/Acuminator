@@ -58,5 +58,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Tree = tree;
 			_isExpanded = isExpanded;
 		}
+
+		public virtual void NavigateToItem()
+		{
+		}
 	}
 }

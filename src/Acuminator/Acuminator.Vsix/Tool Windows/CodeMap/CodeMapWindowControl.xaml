@@ -10,32 +10,106 @@
                       
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
+            
              Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
              Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
              d:DataContext="{d:DesignInstance Type={x:Type codeMap:CodeMapWindowViewModel}, IsDesignTimeCreatable=False}">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Themes/Styles.xaml"/>
+
+                <ResourceDictionary>
+                    <!--Converters-->
+                    <codeMap:TreeNodeToImageSourceConverter x:Key="nodeToImageConverter"/>
+
+                    <!-- Image Style-->
+                    <Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}"/>
+
+                    <!-- TreeView Style-->
+                    <Style x:Key="vsTreeViewStyle" TargetType="TreeView">
+                        <Setter Property="Background" Value="Transparent"/>
+                    </Style>
+
+                    <!-- TreeViewItem Style-->
+                    <Style x:Key="vsTreeViewItemStyle" TargetType="TreeViewItem">
+                        <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundBrushKey}}"/>
+                        <Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundTextBrushKey}}"/>
+
+                        <Style.Triggers>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsSelected" Value="True"/>
+                                    <Condition Property="IsSelectionActive" Value="True"/>
+                                </MultiTrigger.Conditions>
+                                
+                                <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemActiveBrushKey}}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemActiveTextBrushKey}}"/>
+                            </MultiTrigger> 
+                            
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsSelected" Value="True"/>
+                                    <Condition Property="IsSelectionActive" Value="False"/>
+                                </MultiTrigger.Conditions>
+                                
+                                <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemInactiveBrushKey}}"/>
+                                <Setter Property="Foreground" Value="Black"/>
+                            </MultiTrigger>
+
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:HeaderColors.MouseOverBrushKey}}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:HeaderColors.MouseOverTextBrushKey}}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
-        <WrapPanel Orientation="Horizontal" Grid.Row="0">
+        <!--<WrapPanel Orientation="Horizontal" Grid.Row="0">
             <TextBlock Text="Display Mode" Margin="10,2,0,2" VerticalAlignment="Center"/>
             <ComboBox VerticalAlignment="Center" Margin="10,5,0,5" MinWidth="120">
                 
             </ComboBox>
-        </WrapPanel>
+        </WrapPanel>-->
         <TreeView Grid.Row="1" DataContext="{Binding Path=Tree, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
-                  ItemsSource="{Binding Path=RootItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                  ItemsSource="{Binding Path=RootItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                  Style="{StaticResource vsTreeViewStyle}" Margin="0,2"
+                  VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling">
             <TreeView.ItemContainerStyle>
-                <Style TargetType="TreeViewItem">
+                <Style TargetType="TreeViewItem" BasedOn="{StaticResource vsTreeViewItemStyle}">
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
                     <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 </Style>
             </TreeView.ItemContainerStyle>
             <TreeView.ItemTemplate>
-                <HierarchicalDataTemplate ItemsSource="{Binding Path=Children, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"                                         >
-                    <TextBlock Text="{Binding Path=Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <HierarchicalDataTemplate ItemsSource="{Binding Path=Children, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                    <StackPanel Orientation="Horizontal" PreviewMouseLeftButtonDown="TreeViewItem_PreviewMouseLeftButtonDown"
+                                HorizontalAlignment="Stretch">
+                        <Image Margin="0,1.5,5,1.5" MaxWidth="14" MaxHeight="14" VerticalAlignment="Center"
+                               Source="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, Mode=OneWay,
+                                                             UpdateSourceTrigger=PropertyChanged, Converter={StaticResource nodeToImageConverter}}">
+                            <Image.Style>
+                                <Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}">
+                                    <Style.Triggers>
+                                        <Trigger Property="Source" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                        <TextBlock VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,3,0"
+                                   Text="{Binding Path=Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
         </TreeView>

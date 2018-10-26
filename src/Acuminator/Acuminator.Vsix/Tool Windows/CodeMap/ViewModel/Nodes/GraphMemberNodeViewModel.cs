@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
+using Acuminator.Vsix.Utilities.Navigation;
 
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
@@ -35,5 +36,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			return new GraphMemberNodeViewModel(graphMemberCategoryVM, memberSymbol, isExpanded);
 		}
+
+		public override void NavigateToItem() => AcuminatorVSPackage.Instance.NavigateToSymbol(MemberSymbol);
 	}
 }

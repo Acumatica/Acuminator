@@ -51,18 +51,19 @@ namespace Acuminator.Utilities.Roslyn.Syntax.PXGraph
 			return GraphInstantiationType.None;
 		}
 
-		public static IEnumerable<(ITypeSymbol GraphSymbol, SyntaxNode GraphNode)> GetDeclaredGraphs(this SyntaxNode root, SemanticModel semanticModel,
-																									 PXContext context, CancellationToken cancellationToken = default)
+		public static IEnumerable<(ITypeSymbol GraphSymbol, SyntaxNode GraphNode)> GetDeclaredGraphsAndExtensions(
+																						this SyntaxNode root, SemanticModel semanticModel,
+																						PXContext context, CancellationToken cancellationToken = default)
 		{
 			root.ThrowOnNull(nameof(root));
 			context.ThrowOnNull(nameof(context));
 			semanticModel.ThrowOnNull(nameof(semanticModel));
 			cancellationToken.ThrowIfCancellationRequested();
 
-			return GetDeclaredGraphsImpl();
+			return GetDeclaredGraphsAndExtensionsImpl();
 
 
-			IEnumerable<(ITypeSymbol GraphSymbol, SyntaxNode GraphNode)> GetDeclaredGraphsImpl()
+			IEnumerable<(ITypeSymbol GraphSymbol, SyntaxNode GraphNode)> GetDeclaredGraphsAndExtensionsImpl()
 			{
 				var declaredClasses = root.DescendantNodesAndSelf().OfType<ClassDeclarationSyntax>();
 
@@ -70,7 +71,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax.PXGraph
 				{
 					ITypeSymbol classTypeSymbol = classNode.GetTypeSymbolFromClassDeclaration(semanticModel, cancellationToken);
 
-					if (classTypeSymbol != null && classTypeSymbol.IsPXGraph(context))
+					if (classTypeSymbol != null && classTypeSymbol.IsPXGraphOrExtension(context))
 					{
 						yield return (classTypeSymbol, classNode);
 					}
