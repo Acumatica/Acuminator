@@ -7,7 +7,7 @@ namespace AcumaticaPlagiarism.Method
 {
     internal static class MethodIndexBuilder
     {
-		private const int _defaultMinMethodSize = 10;//100;
+		private const int _defaultMinMethodSize = 100;
 
         public static MethodIndex BuildIndex(MethodDeclarationSyntax method, SemanticModel semanticModel)
         {
