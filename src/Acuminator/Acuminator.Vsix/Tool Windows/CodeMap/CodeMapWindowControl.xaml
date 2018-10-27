@@ -19,6 +19,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Themes/Styles.xaml"/>
+                <ResourceDictionary Source="../Themes/BitmapImages.xaml"/>
 
                 <ResourceDictionary>
                     <!--Converters-->
@@ -100,9 +101,8 @@
                 <HierarchicalDataTemplate ItemsSource="{Binding Path=Children, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
                     <StackPanel Orientation="Horizontal" PreviewMouseLeftButtonDown="TreeViewItem_PreviewMouseLeftButtonDown"
                                 HorizontalAlignment="Stretch">
-                        <Image Margin="0,1.5,5,1.5" MaxWidth="14" MaxHeight="14" VerticalAlignment="Center"
-                               Source="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, Mode=OneWay,
-                                                             UpdateSourceTrigger=PropertyChanged, Converter={StaticResource nodeToImageConverter}}">
+                        <Image Margin="0,1.5,5,1.5" MaxWidth="14" MaxHeight="14" VerticalAlignment="Center" 
+                               Source="{StaticResource Graph}">
                             <Image.Style>
                                 <Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}">
                                     <Style.Triggers>

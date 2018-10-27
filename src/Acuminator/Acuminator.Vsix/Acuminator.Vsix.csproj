@@ -542,13 +542,14 @@
     <Compile Include="Settings\UI\GeneralOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Utils\Collection\ExtendedObservableCollection.cs" />
+    <Compile Include="Utils\WPF\Collection\ExtendedObservableCollection.cs" />
     <Compile Include="Utils\Navigation\VSDocumentNavigation.cs" />
     <Compile Include="Utils\VSServicesExtensions.cs" />
     <Compile Include="Utils\ResourceManagerExtensions.cs" />
     <Compile Include="Utils\UIAttributes\CategoryFromResourcesAttribute.cs" />
     <Compile Include="Utils\UIAttributes\DescriptionFromResourcesAttribute.cs" />
     <Compile Include="Utils\UIAttributes\DisplayNameFromResourcesAttribute.cs" />
+    <Compile Include="Utils\WPF\ResourceDictionaryExtensions.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\ARDocumentRelease.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\PMAllocationProcess.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\APInvoice.cs" />
@@ -586,6 +587,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Tool Windows\DacExplorer\DacExplorerControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tool Windows\Themes\BitmapImages.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
