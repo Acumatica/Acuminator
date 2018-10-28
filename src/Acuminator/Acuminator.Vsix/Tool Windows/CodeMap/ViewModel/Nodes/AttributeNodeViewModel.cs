@@ -13,6 +13,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class AttributeNodeViewModel : TreeNodeViewModel
 	{
+		private const string AttributeSuffix = nameof(System.Attribute);
 		public AttributeData Attribute { get; }
 
 		public override string Name
@@ -28,7 +29,19 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			attribute.ThrowOnNull(nameof(attribute));
 
 			Attribute = attribute;
-			string attributeName = Attribute.AttributeClass.Name.Split('.').FirstOrDefault();
+			int lastDotIndex = Attribute.AttributeClass.Name.LastIndexOf('.');
+			string attributeName = lastDotIndex >= 0 && lastDotIndex < Attribute.AttributeClass.Name.Length - 1
+				? Attribute.AttributeClass.Name.Substring(lastDotIndex + 1)
+				: Attribute.AttributeClass.Name;
+
+			int lastAttributeSuffixIndex = attributeName.LastIndexOf(AttributeSuffix);
+			bool endsWithSuffix = attributeName.Length == (lastAttributeSuffixIndex + AttributeSuffix.Length);
+
+			if (lastAttributeSuffixIndex > 0 && endsWithSuffix)
+			{
+				attributeName = attributeName.Remove(lastAttributeSuffixIndex);
+			}
+
 			Name = $"[{attributeName}]";
 		}
 
