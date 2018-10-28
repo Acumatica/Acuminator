@@ -47,59 +47,59 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		#endregion
 
 		#region Events
-		public ImmutableDictionary<string, GraphEventInfo> CacheAttachedByDacName { get; }
-		public IEnumerable<GraphEventInfo> CacheAttachedEvents => CacheAttachedByDacName.Values;
+		public ImmutableDictionary<string, GraphEventInfo> CacheAttachedByName { get; }
+		public IEnumerable<GraphEventInfo> CacheAttachedEvents => CacheAttachedByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> RowSelectingByDacName { get; }
-		public IEnumerable<GraphEventInfo> RowSelectingEvents => RowSelectingByDacName.Values;
+		public ImmutableDictionary<string, GraphEventInfo> RowSelectingByName { get; }
+		public IEnumerable<GraphEventInfo> RowSelectingEvents => RowSelectingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> RowSelectedByDacName { get; }
-		public IEnumerable<GraphEventInfo> RowSelectedEvents => RowSelectedByDacName.Values;
+		public ImmutableDictionary<string, GraphEventInfo> RowSelectedByName { get; }
+		public IEnumerable<GraphEventInfo> RowSelectedEvents => RowSelectedByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> RowInsertingByDacName { get; }
-		public IEnumerable<GraphEventInfo> RowInsertingEvents => RowInsertingByDacName.Values;
+		public ImmutableDictionary<string, GraphEventInfo> RowInsertingByName { get; }
+		public IEnumerable<GraphEventInfo> RowInsertingEvents => RowInsertingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> RowInsertedByDacName { get; }
-		public IEnumerable<GraphEventInfo> RowInsertedEvents => RowInsertedByDacName.Values;
+		public ImmutableDictionary<string, GraphEventInfo> RowInsertedByName { get; }
+		public IEnumerable<GraphEventInfo> RowInsertedEvents => RowInsertedByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> RowUpdatingByDacName { get; }
-		public IEnumerable<GraphEventInfo> RowUpdatingEvents => RowUpdatingByDacName.Values;
+		public ImmutableDictionary<string, GraphEventInfo> RowUpdatingByName { get; }
+		public IEnumerable<GraphEventInfo> RowUpdatingEvents => RowUpdatingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> RowUpdatedByDacName { get; }
-		public IEnumerable<GraphEventInfo> RowUpdatedEvents => RowUpdatedByDacName.Values;
+		public ImmutableDictionary<string, GraphEventInfo> RowUpdatedByName { get; }
+		public IEnumerable<GraphEventInfo> RowUpdatedEvents => RowUpdatedByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> RowDeletingByDacName { get; }
-		public IEnumerable<GraphEventInfo> RowDeletingEvents => RowDeletingByDacName.Values;
+		public ImmutableDictionary<string, GraphEventInfo> RowDeletingByName { get; }
+		public IEnumerable<GraphEventInfo> RowDeletingEvents => RowDeletingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> RowDeletedByDacName { get; }
-		public IEnumerable<GraphEventInfo> RowDeletedEvents => RowDeletedByDacName.Values;
+		public ImmutableDictionary<string, GraphEventInfo> RowDeletedByName { get; }
+		public IEnumerable<GraphEventInfo> RowDeletedEvents => RowDeletedByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> RowPersistingByDacName { get; }
-		public IEnumerable<GraphEventInfo> RowPersistingEvents => RowPersistingByDacName.Values;
+		public ImmutableDictionary<string, GraphEventInfo> RowPersistingByName { get; }
+		public IEnumerable<GraphEventInfo> RowPersistingEvents => RowPersistingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> RowPersistedByDacName { get; }
-		public IEnumerable<GraphEventInfo> RowPersistedEvents => RowPersistedByDacName.Values;
+		public ImmutableDictionary<string, GraphEventInfo> RowPersistedByName { get; }
+		public IEnumerable<GraphEventInfo> RowPersistedEvents => RowPersistedByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> FieldSelectingByDacName { get; }
-		public IEnumerable<GraphEventInfo> FieldSelectingEvents => FieldSelectingByDacName.Values;
+		public ImmutableDictionary<string, GraphEventInfo> FieldSelectingByName { get; }
+		public IEnumerable<GraphEventInfo> FieldSelectingEvents => FieldSelectingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> FieldDefaultingByDacName { get; }
-		public IEnumerable<GraphEventInfo> FieldDefaultingEvents => FieldDefaultingByDacName.Values;
+		public ImmutableDictionary<string, GraphEventInfo> FieldDefaultingByName { get; }
+		public IEnumerable<GraphEventInfo> FieldDefaultingEvents => FieldDefaultingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> FieldVerifyingByDacName { get; }
-		public IEnumerable<GraphEventInfo> FieldVerifyingEvents => FieldVerifyingByDacName.Values;
+		public ImmutableDictionary<string, GraphEventInfo> FieldVerifyingByName { get; }
+		public IEnumerable<GraphEventInfo> FieldVerifyingEvents => FieldVerifyingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> FieldUpdatingByDacName { get; }
-		public IEnumerable<GraphEventInfo> FieldUpdatingEvents => FieldUpdatingByDacName.Values;
+		public ImmutableDictionary<string, GraphEventInfo> FieldUpdatingByName { get; }
+		public IEnumerable<GraphEventInfo> FieldUpdatingEvents => FieldUpdatingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> FieldUpdatedByDacName { get; }
-		public IEnumerable<GraphEventInfo> FieldUpdatedEvents => FieldUpdatedByDacName.Values;
+		public ImmutableDictionary<string, GraphEventInfo> FieldUpdatedByName { get; }
+		public IEnumerable<GraphEventInfo> FieldUpdatedEvents => FieldUpdatedByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> CommandPreparingByDacName { get; }
-		public IEnumerable<GraphEventInfo> CommandPreparingEvents => CommandPreparingByDacName.Values;
+		public ImmutableDictionary<string, GraphEventInfo> CommandPreparingByName { get; }
+		public IEnumerable<GraphEventInfo> CommandPreparingEvents => CommandPreparingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> ExceptionHandlingByDacName { get; }
-		public IEnumerable<GraphEventInfo> ExceptionHandlingEvents => ExceptionHandlingByDacName.Values;
+		public ImmutableDictionary<string, GraphEventInfo> ExceptionHandlingByName { get; }
+		public IEnumerable<GraphEventInfo> ExceptionHandlingEvents => ExceptionHandlingByName.Values;
 		#endregion
 
 
@@ -114,24 +114,24 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			{
 				var eventsCollector = InitializeEvents();
 
-				CacheAttachedByDacName = GetEvents(eventsCollector, collector => collector.CacheAttachedEvents);
-				RowSelectingByDacName = GetEvents(eventsCollector, collector => collector.RowSelectingEvents);
-				RowSelectedByDacName = GetEvents(eventsCollector, collector => collector.RowSelectedEvents);
-				RowInsertingByDacName = GetEvents(eventsCollector, collector => collector.RowInsertingEvents);
-				RowInsertedByDacName = GetEvents(eventsCollector, collector => collector.RowInsertedEvents);
-				RowUpdatingByDacName = GetEvents(eventsCollector, collector => collector.RowUpdatingEvents);
-				RowUpdatedByDacName = GetEvents(eventsCollector, collector => collector.RowUpdatedEvents);
-				RowDeletingByDacName = GetEvents(eventsCollector, collector => collector.RowDeletingEvents);
-				RowDeletedByDacName = GetEvents(eventsCollector, collector => collector.RowDeletedEvents);
-				RowPersistingByDacName = GetEvents(eventsCollector, collector => collector.RowPersistingEvents);
-				RowPersistedByDacName = GetEvents(eventsCollector, collector => collector.RowPersistedEvents);
-				FieldSelectingByDacName = GetEvents(eventsCollector, collector => collector.FieldSelectingEvents);
-				FieldDefaultingByDacName = GetEvents(eventsCollector, collector => collector.FieldDefaultingEvents);
-				FieldVerifyingByDacName = GetEvents(eventsCollector, collector => collector.FieldVerifyingEvents);
-				FieldUpdatingByDacName = GetEvents(eventsCollector, collector => collector.FieldUpdatingEvents);
-				FieldUpdatedByDacName = GetEvents(eventsCollector, collector => collector.FieldUpdatedEvents);
-				CommandPreparingByDacName = GetEvents(eventsCollector, collector => collector.CommandPreparingEvents);
-				ExceptionHandlingByDacName = GetEvents(eventsCollector, collector => collector.ExceptionHandlingEvents);
+				CacheAttachedByName = GetEvents(eventsCollector, collector => collector.CacheAttachedEvents);
+				RowSelectingByName = GetEvents(eventsCollector, collector => collector.RowSelectingEvents);
+				RowSelectedByName = GetEvents(eventsCollector, collector => collector.RowSelectedEvents);
+				RowInsertingByName = GetEvents(eventsCollector, collector => collector.RowInsertingEvents);
+				RowInsertedByName = GetEvents(eventsCollector, collector => collector.RowInsertedEvents);
+				RowUpdatingByName = GetEvents(eventsCollector, collector => collector.RowUpdatingEvents);
+				RowUpdatedByName = GetEvents(eventsCollector, collector => collector.RowUpdatedEvents);
+				RowDeletingByName = GetEvents(eventsCollector, collector => collector.RowDeletingEvents);
+				RowDeletedByName = GetEvents(eventsCollector, collector => collector.RowDeletedEvents);
+				RowPersistingByName = GetEvents(eventsCollector, collector => collector.RowPersistingEvents);
+				RowPersistedByName = GetEvents(eventsCollector, collector => collector.RowPersistedEvents);
+				FieldSelectingByName = GetEvents(eventsCollector, collector => collector.FieldSelectingEvents);
+				FieldDefaultingByName = GetEvents(eventsCollector, collector => collector.FieldDefaultingEvents);
+				FieldVerifyingByName = GetEvents(eventsCollector, collector => collector.FieldVerifyingEvents);
+				FieldUpdatingByName = GetEvents(eventsCollector, collector => collector.FieldUpdatingEvents);
+				FieldUpdatedByName = GetEvents(eventsCollector, collector => collector.FieldUpdatedEvents);
+				CommandPreparingByName = GetEvents(eventsCollector, collector => collector.CommandPreparingEvents);
+				ExceptionHandlingByName = GetEvents(eventsCollector, collector => collector.ExceptionHandlingEvents);
 			}
 		}
 

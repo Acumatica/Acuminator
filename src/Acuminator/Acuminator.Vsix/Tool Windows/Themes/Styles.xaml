@@ -7,6 +7,7 @@
     <Style x:Key="vsImageStyle" TargetType="{x:Type Image}">
         <Setter Property="MaxHeight" Value="16"/>
         <Setter Property="MaxWidth" Value="16"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
 
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="False">
@@ -145,4 +146,107 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+
+    <Style x:Key="vsToolBarBasedButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemActiveBrushKey}}"/>
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonHoverTextBrushKey}}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonBorderHoverBrushKey}}"/>
+            </Trigger>
+
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonPressedBrushKey}}"/>
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonPressedTextBrushKey}}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonBorderPressedBrushKey}}"/>
+            </Trigger>
+
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonDisabledBrushKey}}"/>
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonDisabledTextBrushKey}}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:CommonControlsColors.ButtonBorderDisabledBrushKey}}"/>
+                <Setter Property="Opacity" Value="0.3"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    
+    <!-- TreeViewItem Style-->
+    <Style x:Key="vsTreeViewItemStyle" TargetType="TreeViewItem">
+        <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundBrushKey}}"/>
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundTextBrushKey}}"/>
+
+        <Style.Triggers>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsSelected" Value="True"/>
+                    <Condition Property="IsSelectionActive" Value="True"/>
+                </MultiTrigger.Conditions>
+
+                <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemActiveBrushKey}}"/>
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemActiveTextBrushKey}}"/>
+            </MultiTrigger>
+
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:HeaderColors.MouseOverBrushKey}}"/>
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:HeaderColors.MouseOverTextBrushKey}}"/>
+            </Trigger>
+
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsSelected" Value="True"/>
+                    <Condition Property="IsSelectionActive" Value="False"/>
+                </MultiTrigger.Conditions>
+
+                <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemInactiveBrushKey}}"/>
+                <Setter Property="Foreground" Value="Black"/>
+            </MultiTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- TreeView Style-->
+    <Style x:Key="vsTreeViewStyle" TargetType="TreeView">
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <!--VS ListBox Style-->
+    <Style x:Key="vsListBoxItemStyle" TargetType="ListBoxItem">
+        <Setter Property="Background" Value="Transparent"/>
+
+        <Style.Triggers>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsSelected" Value="True"/>
+                    <Condition Property="IsFocused" Value="True"/>
+                </MultiTrigger.Conditions>
+
+                <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemActiveBrushKey}}"/>
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemActiveTextBrushKey}}"/>
+            </MultiTrigger>
+
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsSelected" Value="True"/>
+                    <Condition Property="IsFocused" Value="False"/>
+                </MultiTrigger.Conditions>
+
+                <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemInactiveBrushKey}}"/>
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemInactiveTextBrushKey}}"/>
+            </MultiTrigger>
+
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:HeaderColors.MouseOverBrushKey}}"/>
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:HeaderColors.MouseOverTextBrushKey}}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="vsListBoxStyle" TargetType="ListBox">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:HeaderColors.SeparatorLineBrushKey}}"/>
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarTextActiveBrushKey}}"/>
+
+        <Setter Property="ItemContainerStyle" Value="{StaticResource vsListBoxItemStyle}"/>
+    </Style>
 </ResourceDictionary>
+
+ 

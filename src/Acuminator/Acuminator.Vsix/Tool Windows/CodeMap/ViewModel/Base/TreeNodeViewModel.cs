@@ -12,7 +12,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public TreeViewModel Tree { get; }
 
-		public abstract string Name { get; }
+		public abstract string Name { get; protected set; }
 
 		public ExtendedObservableCollection<TreeNodeViewModel> Children { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
 

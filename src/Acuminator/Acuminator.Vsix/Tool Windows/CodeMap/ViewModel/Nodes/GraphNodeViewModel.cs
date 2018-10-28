@@ -16,11 +16,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public PXGraphEventSemanticModel GraphSemanticModel { get; }
 
-		//private readonly List<>
-
-		public override string Name => GraphSemanticModel.Symbol.Name;
-
-		private GraphNodeViewModel(PXGraphEventSemanticModel graphSemanticModel, TreeViewModel tree, bool isExpanded) : 
+		public override string Name
+		{
+			get => GraphSemanticModel.Symbol.Name;
+			protected set { }
+		}
+		protected GraphNodeViewModel(PXGraphEventSemanticModel graphSemanticModel, TreeViewModel tree, bool isExpanded) : 
 							 base(tree, isExpanded)
 		{
 			GraphSemanticModel = graphSemanticModel;

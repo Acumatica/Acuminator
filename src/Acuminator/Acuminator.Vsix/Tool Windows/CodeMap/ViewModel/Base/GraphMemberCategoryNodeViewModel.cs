@@ -18,9 +18,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public GraphMemberType CategoryType { get; }
 
-		private readonly string _categoryDescription;
+		protected string CategoryDescription { get; }
 
-		public override string Name => $"{_categoryDescription}({Children.Count})";
+		public override string Name
+		{
+			get => $"{CategoryDescription}({Children.Count})";
+			protected set { }
+		}
 
 		protected GraphMemberCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
 												bool isExpanded) : 
@@ -28,7 +32,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			GraphViewModel = graphViewModel;
 			CategoryType = graphMemberType;
-			_categoryDescription = CategoryType.Description();
+			CategoryDescription = CategoryType.Description();
 		}
 
 		public static GraphMemberCategoryNodeViewModel Create(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
@@ -50,16 +54,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (graphMembersSelector == null)
 				return;
 
-			var itemViewModels = from graphMemberInfo in graphMembersSelector(GraphViewModel.GraphSemanticModel)
+			var graphMemberViewModels = from graphMemberInfo in graphMembersSelector(GraphViewModel.GraphSemanticModel)
 																	 .OrderBy(member => member.DeclarationOrder)
-								 where graphMemberInfo.Symbol.ContainingType == GraphViewModel.GraphSemanticModel.GraphSymbol ||
-									   graphMemberInfo.Symbol.ContainingType.OriginalDefinition == 
-									   GraphViewModel.GraphSemanticModel.GraphSymbol.OriginalDefinition
-								 select GraphMemberNodeViewModel.Create(this, graphMemberInfo.Symbol, isExpanded: false) into itemViewModel
-								 where itemViewModel != null
-								 select itemViewModel;
+										where graphMemberInfo.Symbol.ContainingType == GraphViewModel.GraphSemanticModel.GraphSymbol ||
+											  graphMemberInfo.Symbol.ContainingType.OriginalDefinition ==
+											  GraphViewModel.GraphSemanticModel.GraphSymbol.OriginalDefinition
+										select new GraphMemberNodeViewModel(this, graphMemberInfo.Symbol);
 
-			Children.AddRange(itemViewModels);
+			Children.AddRange(graphMemberViewModels);
 		}
 
 		private static GraphMemberCategoryNodeViewModel CreateCategory(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,

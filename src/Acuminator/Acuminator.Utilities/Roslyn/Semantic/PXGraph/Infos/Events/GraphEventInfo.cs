@@ -16,6 +16,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		public EventType EventType { get; }
 
+		public string DacName { get; }
 
 		public GraphEventInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder, 
 							  EventHandlerSignatureType signatureType, EventType eventType) :
@@ -23,6 +24,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			SignatureType = signatureType;
 			EventType = EventType;
+
+			var underscoreIndex = Symbol.Name.IndexOf('_');
+			DacName = underscoreIndex > 0
+				? Symbol.Name.Substring(0, underscoreIndex)
+				: string.Empty;
 		}
 
 		public GraphEventInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder,

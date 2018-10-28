@@ -18,23 +18,20 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public GraphMemberType MemberType => MemberCategory.CategoryType;
 
-		public override string Name => MemberSymbol.Name;
-
-		private GraphMemberNodeViewModel(GraphMemberCategoryNodeViewModel graphMemberCategoryVM, ISymbol memberSymbol, 
-										 bool isExpanded) :
-									base(graphMemberCategoryVM.Tree, isExpanded)
+		public override string Name
 		{
-			MemberSymbol = memberSymbol;
-			MemberCategory = graphMemberCategoryVM;		
+			get => MemberSymbol.Name;
+			protected set { }
 		}
 
-		public static GraphMemberNodeViewModel Create(GraphMemberCategoryNodeViewModel graphMemberCategoryVM, ISymbol memberSymbol,
-													  bool isExpanded = true)
+		public GraphMemberNodeViewModel(GraphMemberCategoryNodeViewModel graphMemberCategoryVM, ISymbol memberSymbol, 
+										 bool isExpanded = false) :
+								   base(graphMemberCategoryVM?.Tree, isExpanded)
 		{
-			if (graphMemberCategoryVM == null || memberSymbol == null)
-				return null;
+			memberSymbol.ThrowOnNull(nameof(memberSymbol));
 
-			return new GraphMemberNodeViewModel(graphMemberCategoryVM, memberSymbol, isExpanded);
+			MemberSymbol = memberSymbol;
+			MemberCategory = graphMemberCategoryVM;		
 		}
 
 		public override void NavigateToItem() => AcuminatorVSPackage.Instance.NavigateToSymbol(MemberSymbol);

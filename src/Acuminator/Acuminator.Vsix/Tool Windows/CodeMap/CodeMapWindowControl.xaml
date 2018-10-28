@@ -19,53 +19,21 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Themes/Styles.xaml"/>
-                <ResourceDictionary Source="../Themes/BitmapImages.xaml"/>
 
                 <ResourceDictionary>
-                    <!--Converters-->
-                    <codeMap:TreeNodeToImageSourceConverter x:Key="nodeToImageConverter"/>
+                    <!--Converters-->                  
                     <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+                    <codeMap:TreeNodeToImageSourceConverter x:Key="treeNodeToIconConverter"/>
 
                     <!-- Image Style-->
                     <Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}"/>
 
-                    <!-- TreeView Style-->
-                    <Style x:Key="vsTreeViewStyle" TargetType="TreeView">
-                        <Setter Property="Background" Value="Transparent"/>
-                    </Style>
+                    <!-- Bitmap Images-->
+                    <BitmapImage x:Key="expandIcon" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+                                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Expand.ico"/>
 
-                    <!-- TreeViewItem Style-->
-                    <Style x:Key="vsTreeViewItemStyle" TargetType="TreeViewItem">
-                        <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundBrushKey}}"/>
-                        <Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundTextBrushKey}}"/>
-
-                        <Style.Triggers>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="IsSelected" Value="True"/>
-                                    <Condition Property="IsSelectionActive" Value="True"/>
-                                </MultiTrigger.Conditions>
-                                
-                                <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemActiveBrushKey}}"/>
-                                <Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemActiveTextBrushKey}}"/>
-                            </MultiTrigger> 
-                            
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="IsSelected" Value="True"/>
-                                    <Condition Property="IsSelectionActive" Value="False"/>
-                                </MultiTrigger.Conditions>
-                                
-                                <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemInactiveBrushKey}}"/>
-                                <Setter Property="Foreground" Value="Black"/>
-                            </MultiTrigger>
-
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:HeaderColors.MouseOverBrushKey}}"/>
-                                <Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:HeaderColors.MouseOverTextBrushKey}}"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
+                    <BitmapImage x:Key="collapseIcon" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+                                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Collapse.ico"/>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -83,8 +51,8 @@
             </ComboBox>
         </WrapPanel>-->
 
-        <ProgressBar Margin="5,2" VerticalAlignment="Center" IsIndeterminate="True"
-                     MaxHeight="18" MinHeight="18" 
+        <ProgressBar Grid.Row="0" Margin="5,2"  IsIndeterminate="True"  MaxHeight="16" MinHeight="16"
+                     HorizontalAlignment="Left" VerticalAlignment="Center" MaxWidth="150" MinWidth="150"
                      Visibility="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
                                           Converter={StaticResource boolToVisibilityConverter}}"/>
 
@@ -98,11 +66,13 @@
                 </Style>
             </TreeView.ItemContainerStyle>
             <TreeView.ItemTemplate>
-                <HierarchicalDataTemplate ItemsSource="{Binding Path=Children, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                <HierarchicalDataTemplate DataType="{x:Type codeMap:TreeNodeViewModel}"
+                                              ItemsSource="{Binding Path=Children, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
                     <StackPanel Orientation="Horizontal" PreviewMouseLeftButtonDown="TreeViewItem_PreviewMouseLeftButtonDown"
                                 HorizontalAlignment="Stretch">
-                        <Image Margin="0,1.5,5,1.5" MaxWidth="14" MaxHeight="14" VerticalAlignment="Center" 
-                               Source="{StaticResource Graph}">
+                        <Image Margin="0,1.5,5,1.5" MaxWidth="14" MaxHeight="14"
+                                   Source="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, 
+                                                    Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource treeNodeToIconConverter}}">
                             <Image.Style>
                                 <Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}">
                                     <Style.Triggers>
@@ -113,6 +83,7 @@
                                 </Style>
                             </Image.Style>
                         </Image>
+
                         <TextBlock VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,3,0"
                                    Text="{Binding Path=Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>

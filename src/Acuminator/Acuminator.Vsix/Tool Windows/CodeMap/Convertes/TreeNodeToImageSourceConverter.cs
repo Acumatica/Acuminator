@@ -4,19 +4,21 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media.Imaging;
 using System.Windows.Data;
+using Acuminator.Vsix.Utilities;
 
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	/// <summary>
-	/// Converter which converts <see cref="TreeNodeViewModel"/> node to the string url of the image source.
+	/// Converter which converts <see cref="TreeNodeViewModel"/> node to the <see cref="BitmapImage"/> icon.
 	/// </summary>
-	[ValueConversion(sourceType: typeof(TreeNodeViewModel), targetType: typeof(string))]
+	[ValueConversion(sourceType: typeof(TreeNodeViewModel), targetType: typeof(BitmapImage))]
 	public class TreeNodeToImageSourceConverter : IValueConverter
 	{
-		private const string BaseURI = @"pack://application:,,,/Acuminator;component/Resources/CodeMap";
-		private const string IconFileExtension = "ico";
+		private const string BitmapsCollectionURI = @"pack://application:,,,/Acuminator;component/Tool Windows/Themes/BitmapImages.xaml";
 
 		private const string GraphIcon = "Graph";
 		private const string ViewIcon = "View";
@@ -28,20 +30,29 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private const string RowEventIcon = "RowEvent";
 		private const string FieldEventIcon = "FieldEvent";
 		private const string CacheAttachedIcon = "CacheAttached";
-	
+
 		private const string GroupNodeIcon = "GroupNode";
+
+		private ResourceDictionary _resourceDictionary = new ResourceDictionary()
+		{
+			Source = new Uri(BitmapsCollectionURI)
+		};
+
 
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			if (!(value is TreeNodeViewModel treeNodeViewModel))
 				return null;
 
-			string iconFileName = GetIconFileName(treeNodeViewModel);
+			string iconKey = GetIconResourceKeyForNode(treeNodeViewModel);
 
-			if (iconFileName == null)
+			if (iconKey == null)
 				return null;
 
-			return $"{BaseURI}/{iconFileName}.{IconFileExtension}";
+			if (!_resourceDictionary.TryGetValue(iconKey, out BitmapImage icon))
+				return null;
+
+			return icon;
 		}
 
 		public object ConvertBack(object value, Type targetTypes, object parameter, CultureInfo culture)
@@ -49,7 +60,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			throw new NotSupportedException();
 		}
 
-		private string GetIconFileName(TreeNodeViewModel treeNodeViewModel)
+		private string GetIconResourceKeyForNode(TreeNodeViewModel treeNodeViewModel)
 		{
 			switch (treeNodeViewModel)
 			{
