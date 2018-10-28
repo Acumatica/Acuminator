@@ -16,6 +16,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public GraphNodeViewModel GraphViewModel { get; }
 
+		public PXGraphEventSemanticModel GraphSemanticModel => GraphViewModel.GraphSemanticModel;
+
 		public GraphMemberType CategoryType { get; }
 
 		protected string CategoryDescription { get; }
@@ -46,23 +48,23 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return memberCategoryVM;
 		}
 
-		protected abstract void AddCategoryMembers();
-
-		protected void AddCategoryMembersDefaultImpl<T>(Func<PXGraphEventSemanticModel, IEnumerable<GraphNodeSymbolItem<T>>> graphMembersSelector)
-		where T : ISymbol
+		protected virtual void AddCategoryMembers()
 		{
-			if (graphMembersSelector == null)
+			IEnumerable<GraphNodeSymbolItem> categoryTreeNodes = GetCategoryGraphNodeSymbols();
+
+			if (categoryTreeNodes.IsNullOrEmpty())
 				return;
 
-			var graphMemberViewModels = from graphMemberInfo in graphMembersSelector(GraphViewModel.GraphSemanticModel)
-																	 .OrderBy(member => member.DeclarationOrder)
-										where graphMemberInfo.Symbol.ContainingType == GraphViewModel.GraphSemanticModel.GraphSymbol ||
-											  graphMemberInfo.Symbol.ContainingType.OriginalDefinition ==
+			var graphMemberViewModels = from graphMemberInfo in categoryTreeNodes.OrderBy(member => member.DeclarationOrder)
+										where graphMemberInfo.SymbolBase.ContainingType == GraphViewModel.GraphSemanticModel.GraphSymbol ||
+											  graphMemberInfo.SymbolBase.ContainingType.OriginalDefinition ==
 											  GraphViewModel.GraphSemanticModel.GraphSymbol.OriginalDefinition
-										select new GraphMemberNodeViewModel(this, graphMemberInfo.Symbol);
+										select new GraphMemberNodeViewModel(this, graphMemberInfo.SymbolBase);
 
 			Children.AddRange(graphMemberViewModels);
 		}
+
+		protected abstract IEnumerable<GraphNodeSymbolItem> GetCategoryGraphNodeSymbols();
 
 		private static GraphMemberCategoryNodeViewModel CreateCategory(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
 																		bool isExpanded)
@@ -88,6 +90,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				default:
 					return null;
 			}
-		}
+		}	
 	}
 }

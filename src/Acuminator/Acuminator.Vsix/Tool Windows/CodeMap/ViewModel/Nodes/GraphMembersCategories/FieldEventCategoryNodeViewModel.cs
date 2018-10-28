@@ -11,51 +11,21 @@ using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class FieldEventCategoryNodeViewModel : GraphMemberCategoryNodeViewModel
+	public class FieldEventCategoryNodeViewModel : GraphEventCategoryNodeViewModel
 	{
-		private string _name;
-
-		public override string Name
-		{
-			get => _name;
-			protected set
-			{
-				if (_name != value)
-				{
-					_name = value;
-					NotifyPropertyChanged();
-				}
-			}
-		}
-
 		public FieldEventCategoryNodeViewModel(GraphNodeViewModel graphViewModel, bool isExpanded) :
-									base(graphViewModel, GraphMemberType.FieldEvent, isExpanded)
+										  base(graphViewModel, GraphMemberType.FieldEvent, isExpanded)
 		{
-			_name = CategoryDescription;
 		}
 
-		protected override void AddCategoryMembers()
-		{
-			var graphSemanticModel = GraphViewModel.GraphSemanticModel;
-			var graphFieldEvents = graphSemanticModel.FieldDefaultingEvents
-													 .Concat(graphSemanticModel.FieldVerifyingEvents)
-													 .Concat(graphSemanticModel.FieldSelectingEvents)
-													 .Concat(graphSemanticModel.FieldUpdatingEvents)
-													 .Concat(graphSemanticModel.FieldUpdatedEvents)
-													 .OrderBy(member => member.DeclarationOrder);
+		protected override GraphEventNodeByDacConstructor EventNodeByDacConstructor { get; } =
+			(dacGroupVM, eventInfo) => new FieldEventNodeViewModel(dacGroupVM, eventInfo.Symbol);
 
-			var graphMemberViewModels = from eventInfo in graphFieldEvents
-										where eventInfo.Symbol.ContainingType == GraphViewModel.GraphSemanticModel.GraphSymbol ||
-											  eventInfo.Symbol.ContainingType.OriginalDefinition ==
-											  GraphViewModel.GraphSemanticModel.GraphSymbol.OriginalDefinition
-										group eventInfo by eventInfo.DacName into dacFieldEvents
-										select new DacGroupingNodeViewModel(this, dacFieldEvents,
-															(dacGroupVM, eventInfo) =>
-																	new GraphMemberNodeViewModel(dacGroupVM.GraphMemberCategoryVM,
-																								 eventInfo.Symbol));
-			Children.AddRange(graphMemberViewModels);
-			int eventsCount = Children.Sum(node => node.Children.Count);
-			Name = $"{CategoryDescription}({eventsCount})";
-		}
+		protected override IEnumerable<GraphNodeSymbolItem> GetCategoryGraphNodeSymbols() =>
+			GraphSemanticModel.FieldDefaultingEvents
+							  .Concat(GraphSemanticModel.FieldVerifyingEvents)
+							  .Concat(GraphSemanticModel.FieldSelectingEvents)
+							  .Concat(GraphSemanticModel.FieldUpdatingEvents)
+							  .Concat(GraphSemanticModel.FieldUpdatedEvents);
 	}
 }

@@ -27,13 +27,6 @@
 
                     <!-- Image Style-->
                     <Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}"/>
-
-                    <!-- Bitmap Images-->
-                    <BitmapImage x:Key="expandIcon" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
-                                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Expand.ico"/>
-
-                    <BitmapImage x:Key="collapseIcon" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
-                                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Collapse.ico"/>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

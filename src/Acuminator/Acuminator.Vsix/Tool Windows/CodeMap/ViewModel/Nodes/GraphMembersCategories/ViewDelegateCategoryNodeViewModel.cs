@@ -19,7 +19,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			
 		}
 
-		protected override void AddCategoryMembers() =>
-			AddCategoryMembersDefaultImpl(graphSemanticModel => graphSemanticModel.ViewDelegates);
+		protected override IEnumerable<GraphNodeSymbolItem> GetCategoryGraphNodeSymbols() => GraphSemanticModel.ViewDelegates;
 	}
 }

@@ -15,11 +15,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public ActionHandlerCategoryNodeViewModel(GraphNodeViewModel graphViewModel, bool isExpanded) : 
 											 base(graphViewModel, GraphMemberType.ActionHandler, isExpanded)
-		{
-			
+		{		
 		}
 
-		protected override void AddCategoryMembers() => 
-			AddCategoryMembersDefaultImpl(graphSemanticModel => graphSemanticModel.ActionHandlers);
+		protected override IEnumerable<GraphNodeSymbolItem> GetCategoryGraphNodeSymbols() => GraphSemanticModel.ActionHandlers;
 	}
 }

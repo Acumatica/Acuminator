@@ -19,13 +19,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override string Name
 		{
-			get => DacName;
+			get => $"{DacName}({Children.Count})";
 			protected set { }
 		}
 
 		public DacGroupingNodeViewModel(GraphMemberCategoryNodeViewModel graphMemberCategoryVM,
-										IGrouping<string, GraphEventInfo> graphEventsForDAC, 
-										Func<DacGroupingNodeViewModel, GraphEventInfo, GraphMemberNodeViewModel> graphMemberCreator,
+										IGrouping<string, GraphEventInfo> graphEventsForDAC,
+										GraphEventNodeByDacConstructor graphMemberCreator,
 										bool isExpanded = false) :
 								   base(graphMemberCategoryVM?.Tree, isExpanded)
 		{
