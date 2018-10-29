@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.Threading;
 using Acuminator.Utilities.Common;
+using Acuminator.Vsix.Utilities;
 
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
@@ -20,6 +21,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private CancellationTokenSource _cancellationTokenSource;
 
 		private DocumentModel _documentModel;
+		private Workspace _workspace;
 
 		public Document Document => _documentModel.Document;
 
@@ -57,6 +59,35 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			_documentModel = new DocumentModel(wpfTextView, document);
 			Tree = new TreeViewModel(this);
+
+			_workspace = _documentModel.Document.Project.Solution.Workspace;
+			_workspace.WorkspaceChanged += OnWorkspaceChanged;
+		}
+
+		private async void OnWorkspaceChanged(object sender, WorkspaceChangeEventArgs e)
+		{
+			if (e.Kind != WorkspaceChangeKind.DocumentChanged || Document.Id != e.DocumentId ||
+				Document.Project.Id != e.ProjectId || !(sender is Workspace newWorkspace))
+			{
+				return;
+			}
+
+			_cancellationTokenSource?.Cancel();
+			Tree?.RootItems.Clear();
+			Tree = null;
+			_workspace = newWorkspace;
+			Document changedDocument = e.NewSolution.GetDocument(e.DocumentId);
+
+			if (changedDocument == null)
+				return;
+			
+			var root = await changedDocument.GetSyntaxRootAsync().ConfigureAwait(false);
+
+			if (root == null || root.ContainsDiagnostics)
+				return;
+
+			_documentModel = new DocumentModel(_documentModel.WpfTextView, changedDocument);
+			BuildCodeMapAsync().Forget();
 		}
 
 		public static CodeMapWindowViewModel InitCodeMap(IWpfTextView wpfTextView, Document document)
@@ -77,7 +108,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override void FreeResources()
 		{
 			base.FreeResources();
+
 			_cancellationTokenSource?.Dispose();
+
+			if (_workspace != null)
+			{
+				_workspace.WorkspaceChanged -= OnWorkspaceChanged;
+			}
 		}
 
 		private async Task BuildCodeMapAsync()
@@ -87,9 +124,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				using (_cancellationTokenSource = new CancellationTokenSource())
 				{
 					CancellationToken cancellationToken = _cancellationTokenSource.Token;
-					IsCalculating = true;
 
+					if (!ThreadHelper.CheckAccess())
+					{
+						await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+					}
+				
+					IsCalculating = true;
 					await TaskScheduler.Default;
+
 					await _documentModel.LoadCodeFileDataAsync(cancellationToken)
 										.ConfigureAwait(false);
 
