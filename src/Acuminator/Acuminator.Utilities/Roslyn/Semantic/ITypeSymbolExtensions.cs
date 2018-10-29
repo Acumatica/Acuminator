@@ -17,10 +17,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		private const char DefaultGenericArgsCountSeparator = '`';
 		private const char DefaultNestedTypesSeparator = '+';
 
+		/// <summary>
+		/// Gets the base types and this in this collection. The types are returned from the most derived ones to the most base <see cref="Object"/> type
+		/// </summary>
+		/// <param name="type">The type to act on.</param>
+		/// <returns/>
 		public static IEnumerable<ITypeSymbol> GetBaseTypesAndThis(this ITypeSymbol type)
 		{
 			var current = type;
-			
+
 			while (current != null)
 			{
 				yield return current;
@@ -28,6 +33,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			}
 		}
 
+		/// <summary>
+		/// Gets the base types and this in this collection. The types are returned from the most derived ones to the most base <see cref="Object"/> type
+		/// </summary>
+		/// <param name="type">The type to act on.</param>
+		/// <returns/>
 		public static IEnumerable<INamedTypeSymbol> GetBaseTypes(this ITypeSymbol type)
 		{
 			var current = type.BaseType;
@@ -238,9 +248,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		{
 			if (!typeSymbol.IsNullable(pxContext))
 				return null;
-			
+
 			ImmutableArray<ITypeSymbol> typeArgs = typeSymbol.TypeArguments;
-			return typeArgs.Length == 1 
+			return typeArgs.Length == 1
 				? typeArgs[0]
 				: null;
 		}
@@ -251,7 +261,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			pxContext.ThrowOnNull(nameof(pxContext));
 			return typeSymbol?.OriginalDefinition?.Equals(pxContext.SystemTypes.Nullable) ?? false;
 		}
-		
+
 		/// <summary>
 		/// An INamedTypeSymbol extension method that gets CLR-style full type name from type.
 		/// </summary>
@@ -304,61 +314,63 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			return typeNameWithoutGeneric + DefaultGenericArgsCountSeparator + typeArgs.Length;
 		}
 
-        public static IEnumerable<(ConstructorDeclarationSyntax Node, IMethodSymbol Symbol)> GetDeclaredInstanceConstructors(
-            this INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
-        {
-            typeSymbol.ThrowOnNull(nameof(typeSymbol));
+		public static IEnumerable<(ConstructorDeclarationSyntax Node, IMethodSymbol Symbol)> GetDeclaredInstanceConstructors(
+			this INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
+		{
+			typeSymbol.ThrowOnNull(nameof(typeSymbol));
 
-            List<(ConstructorDeclarationSyntax, IMethodSymbol)> initializers = new List<(ConstructorDeclarationSyntax, IMethodSymbol)>();
+			List<(ConstructorDeclarationSyntax, IMethodSymbol)> initializers = new List<(ConstructorDeclarationSyntax, IMethodSymbol)>();
 
-            foreach (IMethodSymbol ctr in typeSymbol.InstanceConstructors)
-            {
-                cancellation.ThrowIfCancellationRequested();
+			foreach (IMethodSymbol ctr in typeSymbol.InstanceConstructors)
+			{
+				cancellation.ThrowIfCancellationRequested();
 
-                if (!ctr.IsDefinition)
-                    continue;
+				if (!ctr.IsDefinition)
+					continue;
 
-                SyntaxReference reference = ctr.DeclaringSyntaxReferences.FirstOrDefault();
-                if (reference == null)
-                    continue;
+				SyntaxReference reference = ctr.DeclaringSyntaxReferences.FirstOrDefault();
+				if (reference == null)
+					continue;
 
-                if (!(reference.GetSyntax(cancellation) is ConstructorDeclarationSyntax node))
-                    continue;
+				if (!(reference.GetSyntax(cancellation) is ConstructorDeclarationSyntax node))
+					continue;
 
-                initializers.Add((node, ctr));
-            }
+				initializers.Add((node, ctr));
+			}
 
-            return initializers;
-        }
+			return initializers;
+		}
 
-        public static ImmutableArray<StaticConstructorInfo> GetStaticConstructors
-            (this INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
-        {
-            typeSymbol.ThrowOnNull(nameof(typeSymbol));
+		public static ImmutableArray<StaticConstructorInfo> GetStaticConstructors(this INamedTypeSymbol typeSymbol,
+																				  CancellationToken cancellation = default)
+		{
+			typeSymbol.ThrowOnNull(nameof(typeSymbol));
 
-            List<StaticConstructorInfo> staticCtrs = new List<StaticConstructorInfo>();
+			int order = 0;
+			List<StaticConstructorInfo> staticCtrs = new List<StaticConstructorInfo>();
 
-            foreach(IMethodSymbol ctr in typeSymbol.StaticConstructors)
-            {
-                cancellation.ThrowIfCancellationRequested();
+			foreach (IMethodSymbol ctr in typeSymbol.StaticConstructors)
+			{
+				cancellation.ThrowIfCancellationRequested();
 
-                SyntaxReference reference = ctr.DeclaringSyntaxReferences.FirstOrDefault();
+				SyntaxReference reference = ctr.DeclaringSyntaxReferences.FirstOrDefault();
 
-                if (!(reference?.GetSyntax(cancellation) is ConstructorDeclarationSyntax node))
-                    continue;
+				if (!(reference?.GetSyntax(cancellation) is ConstructorDeclarationSyntax node))
+					continue;
 
-                staticCtrs.Add(new StaticConstructorInfo(node, ctr));
-            }
+				staticCtrs.Add(new StaticConstructorInfo(node, ctr, order));
+				order++;
+			}
 
-            return staticCtrs.ToImmutableArray(); ;
-        }
+			return staticCtrs.ToImmutableArray();
+		}
 
 		/// <summary>Get all the methods of this symbol.</summary>
 		/// <returns>An ImmutableArray containing all the methods of this symbol. If this symbol has no methods,
 		/// returns an empty ImmutableArray. Never returns Null.</returns>
 		public static ImmutableArray<IMethodSymbol> GetMethods(this ITypeSymbol type)
 		{
-			type.ThrowOnNull(nameof (type));
+			type.ThrowOnNull(nameof(type));
 
 			return type
 				.GetMembers()
@@ -373,12 +385,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// no methods with this name, returns an empty ImmutableArray. Never returns Null.</returns>
 		public static ImmutableArray<IMethodSymbol> GetMethods(this ITypeSymbol type, string methodName)
 		{
-			type.ThrowOnNull(nameof (type));
+			type.ThrowOnNull(nameof(type));
 
 			return type
 				.GetMembers(methodName)
 				.OfType<IMethodSymbol>()
 				.ToImmutableArray();
 		}
-    }
+	}
 }

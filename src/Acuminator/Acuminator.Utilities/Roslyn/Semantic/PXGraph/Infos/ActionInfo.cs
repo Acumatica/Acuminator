@@ -8,9 +8,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	/// <summary>
 	/// The DTO with information about the action declared in graph.
 	/// </summary>
-	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public class ActionInfo : GraphNodeSymbolItem<ISymbol>
-    {
+	{
 		/// <summary>
 		/// The overriden action if any
 		/// </summary>
@@ -21,24 +20,25 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// </summary>
 		public bool IsSystem { get; }
 
-        /// <summary>
-        /// The type of the action symbol.
-        /// </summary>
-        public INamedTypeSymbol Type { get; }
+		/// <summary>
+		/// The type of the action symbol.
+		/// </summary>
+		public INamedTypeSymbol Type { get; }
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private string DebuggerDisplay => $"Symbol: {Symbol.Name} | Type: {Type.ToString()}";
+		protected override string DebuggerDisplay => $"{base.DebuggerDisplay} |Type: {Type.ToString()}";
 
-		public ActionInfo(ISymbol symbol, INamedTypeSymbol type, bool isSystem) : base(symbol)
-        {
-            type.ThrowOnNull(nameof(type));
+		public ActionInfo(ISymbol symbol, INamedTypeSymbol type, int declarationOrder, bool isSystem) :
+					 base(symbol, declarationOrder)
+		{
+			type.ThrowOnNull(nameof(type));
 
-            Type = type;
+			Type = type;
 			IsSystem = isSystem;
-        }
+		}
 
-		public ActionInfo(ISymbol symbol, INamedTypeSymbol type, bool isSystem, ActionInfo baseInfo) : 
-					 this(symbol, type, isSystem)
+		public ActionInfo(ISymbol symbol, INamedTypeSymbol type, int declarationOrder, bool isSystem, ActionInfo baseInfo) :
+					 this(symbol, type, declarationOrder, isSystem)
 		{
 			baseInfo.ThrowOnNull(nameof(baseInfo));
 
