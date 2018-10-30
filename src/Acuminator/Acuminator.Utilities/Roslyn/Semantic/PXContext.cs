@@ -106,7 +106,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			compilation.ThrowOnNull(nameof(compilation));
 
 			Compilation = compilation;
-			IsPlatformReferenced = compilation.GetTypeByMetadataName(TypeNames.PXGraph) != null;
+			IsPlatformReferenced = compilation.GetTypeByMetadataName(TypeNames.PXGraphTypeName) != null;
 
 			_bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation));
 			_events = new Lazy<EventSymbols>(() => new EventSymbols(Compilation));
