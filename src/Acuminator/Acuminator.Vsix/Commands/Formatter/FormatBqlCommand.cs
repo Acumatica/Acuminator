@@ -6,8 +6,8 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn;
 using Acuminator.Vsix;
 using Acuminator.Vsix.Utilities;
 
@@ -74,6 +74,11 @@ namespace Acuminator.Vsix.Formatter
 				async () => (await document.GetSyntaxRootAsync(), await document.GetSemanticModelAsync()));
 
 			if (syntaxRoot == null || semanticModel == null)
+				return;
+
+			bool isPlatformReferenced = semanticModel.Compilation.GetTypeByMetadataName(TypeNames.PXGraph) != null;
+
+			if (!isPlatformReferenced)
 				return;
 
 			SyntaxNode formattedRoot;

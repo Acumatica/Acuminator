@@ -10,10 +10,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 {
 	public class PXContext
 	{
-		private const string PXGraphTypeName = "PX.Data.PXGraph";
-		private const string PXSelectBase_Acumatica2018R2 = "PX.Data.PXSelectBase`2";
-		private const string IViewConfig_Acumatica2018R2 = "PX.Data.PXSelectBase`2+IViewConfig";
-
 		public bool IsAcumatica2018R2 { get; }
 
 		/// <summary>
@@ -78,8 +74,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public INamedTypeSymbol PXMappedCacheExtensionType => Compilation.GetTypeByMetadataName(typeof(PXMappedCacheExtension).FullName);
 		public INamedTypeSymbol PXLongOperation => Compilation.GetTypeByMetadataName(typeof(PXLongOperation).FullName);
 
-		public INamedTypeSymbol PXSelectBase2018R2NewType => Compilation.GetTypeByMetadataName(PXSelectBase_Acumatica2018R2);
-		public INamedTypeSymbol IViewConfig2018R2 => Compilation.GetTypeByMetadataName(IViewConfig_Acumatica2018R2);
+		public INamedTypeSymbol PXSelectBase2018R2NewType => Compilation.GetTypeByMetadataName(TypeNames.PXSelectBase_Acumatica2018R2);
+		public INamedTypeSymbol IViewConfig2018R2 => Compilation.GetTypeByMetadataName(TypeNames.IViewConfig_Acumatica2018R2);
 
 		public INamedTypeSymbol PXActionCollection => Compilation.GetTypeByMetadataName(typeof(PXActionCollection).FullName);
 
@@ -110,7 +106,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			compilation.ThrowOnNull(nameof(compilation));
 
 			Compilation = compilation;
-			IsPlatformReferenced = compilation.GetTypeByMetadataName(PXGraphTypeName) != null;
+			IsPlatformReferenced = compilation.GetTypeByMetadataName(TypeNames.PXGraph) != null;
 
 			_bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation));
 			_events = new Lazy<EventSymbols>(() => new EventSymbols(Compilation));
