@@ -104,6 +104,10 @@ namespace Acuminator.Vsix.GoToDeclaration
 				return;
 
 			PXContext context = new PXContext(semanticModel.Compilation);
+
+			if (!context.IsPlatformReferenced)
+				return;
+
 			ISymbol memberSymbol = GetMemberSymbol(memberNode, semanticModel, caretPosition);
 
 			if (!CheckMemberSymbol(memberSymbol, context))
