@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Immutable;
 using System.Linq;
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.Symbols;
 using Microsoft.CodeAnalysis;
 using PX.Data;
@@ -9,10 +10,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 {
 	public class PXContext
 	{
+		private const string PXGraphTypeName = "PX.Data.PXGraph";
 		private const string PXSelectBase_Acumatica2018R2 = "PX.Data.PXSelectBase`2";
 		private const string IViewConfig_Acumatica2018R2 = "PX.Data.PXSelectBase`2+IViewConfig";
 
 		public bool IsAcumatica2018R2 { get; }
+
+		/// <summary>
+		/// Is platform referenced in the current solution. If not then diagnostic can't run on the solution.
+		/// </summary>
+		public bool IsPlatformReferenced { get; }
 
 		public Compilation Compilation { get; }
 
@@ -100,7 +107,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
         public PXContext(Compilation compilation)
 		{
+			compilation.ThrowOnNull(nameof(compilation));
+
 			Compilation = compilation;
+			IsPlatformReferenced = compilation.GetTypeByMetadataName(PXGraphTypeName) != null;
 
 			_bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation));
 			_events = new Lazy<EventSymbols>(() => new EventSymbols(Compilation));
