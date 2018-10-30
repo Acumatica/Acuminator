@@ -76,10 +76,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\ForceGraph\ForceGraph\ForceGraph.csproj">
-      <Project>{9e91c318-d6fe-43dc-8c47-baedef8aa090}</Project>
-      <Name>ForceGraph</Name>
-    </ProjectReference>
     <ProjectReference Include="..\AcumaticaPlagiarism\AcumaticaPlagiarism.csproj">
       <Project>{7cb50417-d544-4302-8f4f-300a26570a98}</Project>
       <Name>AcumaticaPlagiarism</Name>
@@ -93,8 +89,6 @@
     <ProjectReference Include="..\Acuminator.Utilities\Acuminator.Utilities.csproj">
       <Project>{b902103c-831b-4bbf-a88b-3dae6f601cf0}</Project>
       <Name>Acuminator.Utilities</Name>
-      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -112,9 +106,6 @@
     </Reference>
     <Reference Include="EnvDTE90, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="GlmNet, Version=0.5.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\GlmNet.0.5.1.0\lib\net40\GlmNet.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.CodeAnalysis, Version=1.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -264,15 +255,6 @@
     <Reference Include="PX.DbServices, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3b136cac2f602b8e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\PX.DbServices.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpGL, Version=2.4.0.0, Culture=neutral, PublicKeyToken=27fc851303210b27, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SharpGL.2.4.0.0\lib\net40\SharpGL.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpGL.SceneGraph, Version=2.4.0.0, Culture=neutral, PublicKeyToken=27fc851303210b27, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SharpGL.2.4.0.0\lib\net40\SharpGL.SceneGraph.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpGL.WPF, Version=2.4.0.0, Culture=neutral, PublicKeyToken=27fc851303210b27, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SharpGL.WPF.2.4.0.0\lib\net40\SharpGL.WPF.dll</HintPath>
     </Reference>
     <Reference Include="stdole, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>False</EmbedInteropTypes>
@@ -518,13 +500,6 @@
     <Compile Include="Tool Windows\Converters\IsBackgroundDarkConverter.cs" />
     <Compile Include="Tool Windows\Converters\VisibilityInverter.cs" />
     <Compile Include="Tool Windows\Converters\BoolToVisibilityConverter.cs" />
-    <Compile Include="Tool Windows\DacExplorer\DacExplorerControl.xaml.cs">
-      <DependentUpon>DacExplorerControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Tool Windows\DacExplorer\DacExplorerWindow.cs" />
-    <Compile Include="Tool Windows\DacExplorer\OpenDacExplorerWindowCommand.cs" />
-    <Compile Include="Tool Windows\DacExplorer\ViewModel\DacViewModel.cs" />
-    <Compile Include="Tool Windows\DacExplorer\ViewModel\DacExplorerViewModel.cs" />
     <Compile Include="Tool Windows\OpenToolWindowCommandBase.cs" />
     <Compile Include="Tool Windows\ViewModel\Command.cs" />
     <Compile Include="Tool Windows\ViewModel\ToolWindowViewModelBase.cs" />
@@ -594,10 +569,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Tool Windows\CodeMap\CodeMapWindowControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Tool Windows\DacExplorer\DacExplorerControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

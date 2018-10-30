@@ -255,7 +255,4 @@
   <data name="AntiPlagiatorWindowTitle" xml:space="preserve">
     <value>AntiPlagiarism</value>
   </data>
-  <data name="DacExplorerWindowTitle" xml:space="preserve">
-    <value>DAC Explorer</value>
-  </data>
 </root>

@@ -268,15 +268,6 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DAC Explorer.
-        /// </summary>
-        public static string DacExplorerWindowTitle {
-            get {
-                return ResourceManager.GetString("DacExplorerWindowTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Acuminator - DAC Extension Name.
         /// </summary>
         public static string DacExtensionFormatLabel {
