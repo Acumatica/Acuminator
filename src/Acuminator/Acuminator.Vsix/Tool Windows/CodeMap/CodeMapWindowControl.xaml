@@ -23,6 +23,7 @@
                 <ResourceDictionary>
                     <!--Converters-->                  
                     <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+                    <converters:ObjectToItsTypeConverter x:Key="objectToTypeConverter"/>
                     <codeMap:TreeNodeToImageSourceConverter x:Key="treeNodeToIconConverter"/>
 
                     <!-- Image Style-->
@@ -60,7 +61,7 @@
             </TreeView.ItemContainerStyle>
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type codeMap:TreeNodeViewModel}"
-                                              ItemsSource="{Binding Path=Children, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                                          ItemsSource="{Binding Path=Children, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
                     <StackPanel Orientation="Horizontal" PreviewMouseLeftButtonDown="TreeViewItem_PreviewMouseLeftButtonDown"
                                 HorizontalAlignment="Stretch">
                         <Image Margin="0,1.5,5,1.5" MaxWidth="14" MaxHeight="14"
@@ -78,7 +79,19 @@
                         </Image>
 
                         <TextBlock VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,3,0"
-                                   Text="{Binding Path=Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                   Text="{Binding Path=Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
+                                                                       Converter={StaticResource objectToTypeConverter}}" 
+                                                     Value="{x:Type codeMap:AttributeNodeViewModel}">
+                                            <Setter Property="ToolTip" Value="{Binding Path=Attribute, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
                     </StackPanel>
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>

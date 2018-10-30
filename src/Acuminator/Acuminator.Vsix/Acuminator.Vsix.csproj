@@ -514,6 +514,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\TreeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\TreeNodeViewModel.cs" />
     <Compile Include="Tool Windows\Converters\BoolInversionConverter.cs" />
+    <Compile Include="Tool Windows\Converters\ObjectToItsTypeConverter.cs" />
     <Compile Include="Tool Windows\Converters\IsBackgroundDarkConverter.cs" />
     <Compile Include="Tool Windows\Converters\VisibilityInverter.cs" />
     <Compile Include="Tool Windows\Converters\BoolToVisibilityConverter.cs" />
