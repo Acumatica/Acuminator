@@ -41,7 +41,6 @@
       <Group guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" />
       <Group guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCodeMap" />
       <Group guid="guidAcuminatorCmdSet" id="AcuminatorGroupForAntiPlagiator" />
-      <Group guid="guidAcuminatorCmdSet" id="AcuminatorGroupForDacExplorer" />
     </Groups>
 
     <Menus>
@@ -116,15 +115,6 @@
           <ButtonText>AntiPlagiarism</ButtonText>
         </Strings>
       </Button>
-      
-      <Button guid="guidAcuminatorCmdSet" id="OpenDacExplorerWindowCommand" type="Button">
-        <Icon guid="guidDacExplorerIcon" id="dacExplorerIcon" />
-        <CommandFlag>DefaultDisabled</CommandFlag>
-        <Strings>
-          <CommandName>cmdidOpenDacExplorerWindowCommand</CommandName>
-          <ButtonText>DAC Explorer</ButtonText>
-        </Strings>
-      </Button>
     </Buttons>
 
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
@@ -137,7 +127,6 @@
       <Bitmap guid="guidAcumaticaIcon" href="Resources\acumatica.ico" usedList="acumaticaIcon" />
       <Bitmap guid="guidAntiplagiarismIcon" href="Resources\antiplagiarism.ico" usedList="antiplagiarismIcon" />
       <Bitmap guid="guidCodeMapIcon" href="Resources\codemap.ico" usedList="codemapIcon" />
-      <Bitmap guid="guidDacExplorerIcon" href="Resources\DacExplorer.ico" usedList="dacExplorerIcon" />
       <Bitmap guid="guidBqlFixerIcon" href="Resources\bqlFixer.ico" usedList="bqlFixerIcon" />
     </Bitmaps>
   </Commands>
@@ -177,19 +166,6 @@
 
     <CommandPlacement guid="guidAcuminatorCmdSet" id="OpenAntiPlagiatorWindowCommand" priority="0x0001">
       <Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForAntiPlagiator" />
-    </CommandPlacement>
-
-    <!--DAC Explorer Placement 
-				Placement for tool window in Top Menu
-        The order is: AcuminatorTopMenu > AcuminatorGroupForDacExplorer > OpenDacExplorerWindowCommand
-		-->
-
-    <CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorGroupForDacExplorer" priority="0x0003">
-      <Parent guid="guidAcuminatorCmdSet" id="AcuminatorTopMenu" />
-    </CommandPlacement>
-
-    <CommandPlacement guid="guidAcuminatorCmdSet" id="OpenDacExplorerWindowCommand" priority="0x0001">
-      <Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForDacExplorer" />
     </CommandPlacement>
 
     <!--Placement for Acuminator commands in Top Menu
@@ -251,7 +227,6 @@
       <IDSymbol name="AcuminatorGroupForCommands" value="0x1022" />
       <IDSymbol name="AcuminatorGroupForCodeMap" value="0x1023" />
       <IDSymbol name="AcuminatorGroupForAntiPlagiator" value="0x1024" />
-      <IDSymbol name="AcuminatorGroupForDacExplorer" value="0x1025" />
 
       <!-- Warning!!: Keep the values in sync with the code in FormatBqlCommand.cs and etc -->
       <IDSymbol name="FormatBqlCommandId" value="0x0101" />
@@ -261,7 +236,6 @@
       <!--Tool Windows commands-->
       <IDSymbol  name="OpenCodeMapWindowCommand" value="0x0201"/>
       <IDSymbol  name="OpenAntiPlagiatorWindowCommand" value="0x0202"/>
-      <IDSymbol  name="OpenDacExplorerWindowCommand" value="0x0203"/>
     </GuidSymbol>
 
     <GuidSymbol name="guidAcumaticaIcon" value="{D87E7D18-43E1-4C9E-9550-EBF39A85F071}">
@@ -276,9 +250,6 @@
       <IDSymbol name="codemapIcon" value="1" />
     </GuidSymbol>
 
-    <GuidSymbol name="guidDacExplorerIcon" value="{E81BF908-DB5E-44A5-BD5B-227FBD359449}">
-      <IDSymbol name="dacExplorerIcon" value="1" />
-    </GuidSymbol>
     
     <GuidSymbol name="guidBqlFixerIcon" value="{6D21BFF5-3EE6-45B9-B463-CBF2CBF24652}">
       <IDSymbol name="bqlFixerIcon" value="1" />
