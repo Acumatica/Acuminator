@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
 
@@ -14,7 +15,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public GraphMemberCategoryNodeViewModel MemberCategory { get; }
 
-		public ISymbol MemberSymbol { get; }
+		public GraphNodeSymbolItem MemberInfo { get; }
+
+		public ISymbol MemberSymbol => MemberInfo.SymbolBase;
 
 		public GraphMemberType MemberType => MemberCategory.CategoryType;
 
@@ -24,13 +27,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set { }
 		}
 
-		public GraphMemberNodeViewModel(GraphMemberCategoryNodeViewModel graphMemberCategoryVM, ISymbol memberSymbol, 
-										 bool isExpanded = false) :
+		public GraphMemberNodeViewModel(GraphMemberCategoryNodeViewModel graphMemberCategoryVM, GraphNodeSymbolItem memberInfo, 
+										bool isExpanded = false) :
 								   base(graphMemberCategoryVM?.Tree, isExpanded)
 		{
-			memberSymbol.ThrowOnNull(nameof(memberSymbol));
+			memberInfo.ThrowOnNull(nameof(memberInfo));
 
-			MemberSymbol = memberSymbol;
+			MemberInfo = memberInfo;
 			MemberCategory = graphMemberCategoryVM;		
 		}
 

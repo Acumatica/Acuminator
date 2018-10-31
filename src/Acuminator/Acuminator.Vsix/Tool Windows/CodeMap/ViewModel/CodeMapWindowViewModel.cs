@@ -40,6 +40,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
+		public CancellationToken? CancellationToken => _cancellationTokenSource?.Token;
+
 		private bool _isCalculating;
 
 		public bool  IsCalculating

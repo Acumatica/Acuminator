@@ -468,6 +468,7 @@
     <Compile Include="Tool Windows\AntiPlagiator\OpenAntiPlagiatorWindowCommand.cs" />
     <Compile Include="Tool Windows\AntiPlagiator\ViewModel\AntiPlagiatorWindowViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\Convertes\TreeNodeToImageSourceConverter.cs" />
+    <Compile Include="Tool Windows\CodeMap\Convertes\TreeNodeToTooltipConverter.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphMemberType.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\GraphEventCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\GraphEventNodeByDacConstructor.cs" />

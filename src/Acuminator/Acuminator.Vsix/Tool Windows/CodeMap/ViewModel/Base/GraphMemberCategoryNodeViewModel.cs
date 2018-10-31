@@ -59,7 +59,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 										where graphMemberInfo.SymbolBase.ContainingType == GraphViewModel.GraphSemanticModel.GraphSymbol ||
 											  graphMemberInfo.SymbolBase.ContainingType.OriginalDefinition ==
 											  GraphViewModel.GraphSemanticModel.GraphSymbol.OriginalDefinition
-										select new GraphMemberNodeViewModel(this, graphMemberInfo.SymbolBase);
+										select new GraphMemberNodeViewModel(this, graphMemberInfo);
 
 			Children.AddRange(graphMemberViewModels);
 		}

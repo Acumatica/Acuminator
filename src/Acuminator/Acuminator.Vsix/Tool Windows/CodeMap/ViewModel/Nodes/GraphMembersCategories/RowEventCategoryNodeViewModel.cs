@@ -19,7 +19,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		protected override GraphEventNodeByDacConstructor EventNodeByDacConstructor { get; } =
-			(dacGroupVM, eventInfo) => new RowEventNodeViewModel(dacGroupVM, eventInfo.Symbol);
+			(dacGroupVM, eventInfo) => new RowEventNodeViewModel(dacGroupVM, eventInfo);
 
 		protected override IEnumerable<GraphNodeSymbolItem> GetCategoryGraphNodeSymbols() =>
 			GraphSemanticModel.RowInsertingEvents

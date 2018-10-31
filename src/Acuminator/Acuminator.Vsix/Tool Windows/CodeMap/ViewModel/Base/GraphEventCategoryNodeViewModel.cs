@@ -30,7 +30,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		protected virtual GraphEventNodeByDacConstructor EventNodeByDacConstructor { get; } =
-			(dacGroupVM, eventInfo) => new GraphMemberNodeViewModel(dacGroupVM.GraphMemberCategoryVM, eventInfo.Symbol);
+			(dacGroupVM, eventInfo) => new GraphMemberNodeViewModel(dacGroupVM.GraphMemberCategoryVM, eventInfo);
 
 		protected GraphEventCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
 												  bool isExpanded) : 

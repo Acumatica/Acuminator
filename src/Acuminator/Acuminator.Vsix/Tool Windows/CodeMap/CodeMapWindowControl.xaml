@@ -23,7 +23,7 @@
                 <ResourceDictionary>
                     <!--Converters-->                  
                     <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
-                    <converters:ObjectToItsTypeConverter x:Key="objectToTypeConverter"/>
+                    <codeMap:TreeNodeToTooltipConverter x:Key="treeNodeToTooltipConverter"/>
                     <codeMap:TreeNodeToImageSourceConverter x:Key="treeNodeToIconConverter"/>
 
                     <!-- Image Style-->
@@ -32,6 +32,15 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
+    <UserControl.Style>
+        <Style TargetType="UserControl">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                    <Setter Property="Cursor" Value="Wait"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Style>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -79,15 +88,40 @@
                         </Image>
 
                         <TextBlock VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,3,0"
-                                   Text="{Binding Path=Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                                   Text="{Binding Path=Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                   Tag="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
+                                                 Converter={StaticResource treeNodeToTooltipConverter}}">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
+                                    <Setter Property="ToolTip" >
+                                        <Setter.Value>
+                                            <ToolTip DataContext="{Binding RelativeSource={RelativeSource Mode=Self}, Path=PlacementTarget.DataContext,
+                                                                           Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                                                <ToolTip.Style>
+                                                    <Style TargetType="ToolTip">
+                                                        <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundBrushKey}}"/>
+                                                        <Setter Property="Foreground" Value="#F1F1F1"/>
+
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Path=Tree.CodeMapViewModel.IsDarkTheme, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                         Value="False">
+                                                                <Setter Property="Foreground" Value="Black"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </ToolTip.Style>
+                                                                                           
+                                                <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ToolTip}, 
+                                                                      Path=PlacementTarget.Tag, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                                           TextAlignment="Left" TextWrapping="Wrap" MaxWidth="700"/>
+                                            </ToolTip>
+                                        </Setter.Value>
+                                    </Setter>
+
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
-                                                                       Converter={StaticResource objectToTypeConverter}}" 
-                                                     Value="{x:Type codeMap:AttributeNodeViewModel}">
-                                            <Setter Property="ToolTip" Value="{Binding Path=Attribute, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                        </DataTrigger>
+                                        <Trigger Property="Tag" Value="{x:Null}">
+                                            <Setter Property="ToolTip" Value="{x:Null}"/>
+                                        </Trigger>
                                     </Style.Triggers>
                                 </Style>
                             </TextBlock.Style>
