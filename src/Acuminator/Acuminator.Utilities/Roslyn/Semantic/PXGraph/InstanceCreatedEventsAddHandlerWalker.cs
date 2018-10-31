@@ -27,6 +27,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			ThrowIfCancellationRequested();
 
+			if (!_pxContext.Compilation.ContainsSyntaxTree(node.SyntaxTree))
+				return;
+
 			SemanticModel semanticModel = _pxContext.Compilation.GetSemanticModel(node.SyntaxTree);
 
 			if (semanticModel.GetSymbolInfo(node, CancellationToken).Symbol is IMethodSymbol symbol)
