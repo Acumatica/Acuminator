@@ -77,6 +77,7 @@
     <Compile Include="StaticAnalysis\DacNonAbstractFieldType\DacNonAbstractFieldTypeAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DacDeclaration\DacDeclarationAnalyzer.cs" />
     <Compile Include="StaticAnalysis\LongOperationStart\LongOperationInDataViewDelegateAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\LongOperationStart\StartLongOperationDelegateWalker.cs" />
     <Compile Include="StaticAnalysis\LongOperationStart\StartLongOperationWalker.cs" />
     <Compile Include="StaticAnalysis\PXActionExecution\PXActionExecutionInEventHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXActionExecution\PXActionExecutionInGraphSemanticModelAnalyzer.cs" />
