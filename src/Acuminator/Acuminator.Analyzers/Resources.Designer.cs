@@ -953,7 +953,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown during the PXGraph initialization.
+        ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown in long-running operations.
         /// </summary>
         public static string PX1086Title {
             get {

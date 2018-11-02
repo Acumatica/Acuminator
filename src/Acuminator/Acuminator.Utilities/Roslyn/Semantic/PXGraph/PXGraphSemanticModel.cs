@@ -217,7 +217,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 															   group => CreateActionHandlerInfo(group.First()),
 															   keyComparer: StringComparer.OrdinalIgnoreCase);
 
-
 			ActionHandlerInfo CreateActionHandlerInfo(GraphOverridableItem<(MethodDeclarationSyntax, IMethodSymbol)> item)
 			{
 				var (node, method) = item.Item;
