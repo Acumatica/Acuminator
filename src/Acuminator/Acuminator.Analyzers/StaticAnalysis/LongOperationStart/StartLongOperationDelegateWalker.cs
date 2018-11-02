@@ -20,7 +20,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
         public StartLongOperationDelegateWalker(PXContext pxContext, Compilation compilation, CancellationToken cancellation)
             : base(compilation, cancellation)
         {
-            pxContext.ThrowOnNull();
+            pxContext.ThrowOnNull(nameof(pxContext));
 
             _pxContext = pxContext;
         }
@@ -33,7 +33,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
 
             if (_pxContext.StartOperation.Contains(methodSymbol))
             {
-                var firstArgument = node.ArgumentList?.Arguments.FirstOrDefault()?.Expression;
+                var delegateExists = node.ArgumentList?.Arguments.Count > 1;
+                if (!delegateExists)
+                {
+                    return;
+                }
+
+                var firstArgument = node.ArgumentList.Arguments[1].Expression;
                 if (firstArgument == null)
                 {
                     return;
