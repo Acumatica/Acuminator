@@ -229,5 +229,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
         public static DiagnosticDescriptor PX1088_InvalidViewUsageInProcessingDelegate { get; } =
             Rule("PX1088", nameof(Resources.PX1088Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+        public static DiagnosticDescriptor PX1090_ThrowingSetupNotEnteredExceptionInActionDelegates { get; } =
+            Rule("PX1090", nameof(Resources.PX1090Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
     }
 }

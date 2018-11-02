@@ -978,5 +978,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1088Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown in action delegates.
+        /// </summary>
+        public static string PX1090Title {
+            get {
+                return ResourceManager.GetString("PX1090Title", resourceCulture);
+            }
+        }
     }
 }
