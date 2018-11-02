@@ -222,7 +222,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
             Rule("PX1085", nameof(Resources.PX1085Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 
         public static DiagnosticDescriptor PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation { get; } =
-            Rule("PX1086", nameof(Resources.PX1086Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+            Rule("PX1086", nameof(Resources.PX1086Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 
         public static DiagnosticDescriptor PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation { get; } =
             Rule("PX1087", nameof(Resources.PX1087Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
