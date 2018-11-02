@@ -980,7 +980,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The state of fields and actions cannot be configured in the action delegates.
+        ///   Looks up a localized string similar to The state of fields and actions cannot be configured in action delegates.
         /// </summary>
         public static string PX1089Title {
             get {
