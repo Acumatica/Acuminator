@@ -177,6 +177,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
         public static DiagnosticDescriptor PX1058_PXGraphSavingChangesDuringInitialization { get; } =
             Rule("PX1058", nameof(Resources.PX1058Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
+		public static DiagnosticDescriptor PX1055_DacKeyFieldsWithIdentityKeyField { get; } =
+			Rule("PX1055", nameof(Resources.PX1055Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
         public static DiagnosticDescriptor PX1059_ChangesInPXCacheDuringPXGraphInitialization { get; } =
             Rule("PX1059", nameof(Resources.PX1059Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
@@ -220,5 +223,11 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
         public static DiagnosticDescriptor PX1086_ThrowingSetupNotEnteredExceptionInPXGraphInitialization { get; } =
             Rule("PX1086", nameof(Resources.PX1086Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+        public static DiagnosticDescriptor PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation { get; } =
+            Rule("PX1087", nameof(Resources.PX1087Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+        public static DiagnosticDescriptor PX1088_InvalidViewUsageInProcessingDelegate { get; } =
+            Rule("PX1088", nameof(Resources.PX1088Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
     }
 }

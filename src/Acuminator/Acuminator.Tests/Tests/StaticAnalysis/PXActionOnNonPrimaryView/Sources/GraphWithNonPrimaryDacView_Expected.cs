@@ -22,7 +22,7 @@ namespace PX.Objects.HackathonDemo
 
 		public PXAction<SOOrder> Release1;
 
-		public PXAction<SOOrder> Release2 { get; }
+		public PXAction<SOOrder> Release2;
 
 		public PXSave<SOOrder> Release3;
 	}
@@ -35,7 +35,7 @@ namespace PX.Objects.HackathonDemo
 
 		public PXAction<SOOrder> Action2;
 
-		public PXAction<SOOrder> Action3 { get; }
+		public PXAction<SOOrder> Action3;
 	}
 
 	public class SOOrderEntryWithNonPrimaryDacView2 : PXGraph<SOOrderEntryWithNonPrimaryDacView2, SOOrder>
@@ -46,7 +46,7 @@ namespace PX.Objects.HackathonDemo
 
 		public PXAction<SOOrder> Release1;
 
-		public PXAction<SOOrder> Release2 { get; }
+		public PXAction<SOOrder> Release2;
 
 		public PXAction<SOOrder> Release3;
 	}

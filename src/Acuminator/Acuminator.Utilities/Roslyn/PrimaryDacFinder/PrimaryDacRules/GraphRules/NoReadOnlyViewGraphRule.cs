@@ -24,17 +24,17 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 				return Enumerable.Empty<ITypeSymbol>();
 
 			List<INamedTypeSymbol> readOnlyViews = new List<INamedTypeSymbol>(capacity: 4);
-			List<INamedTypeSymbol> editableViews = new List<INamedTypeSymbol>(capacity: dacFinder.GraphViewSymbolsWithTypes.Length);
+			List<INamedTypeSymbol> editableViews = new List<INamedTypeSymbol>(capacity: dacFinder.GraphViews.Length);
 
-			foreach (var viewWithType in dacFinder.GraphViewSymbolsWithTypes)
+			foreach (var viewWithType in dacFinder.GraphViews)
 			{
 				if (dacFinder.CancellationToken.IsCancellationRequested)
 					return Enumerable.Empty<ITypeSymbol>();
 
-				if (viewWithType.ViewType.IsReadOnlyBqlCommand(dacFinder.PxContext))
-					readOnlyViews.Add(viewWithType.ViewType);
+				if (viewWithType.Type.IsReadOnlyBqlCommand(dacFinder.PxContext))
+					readOnlyViews.Add(viewWithType.Type);
 				else
-					editableViews.Add(viewWithType.ViewType);
+					editableViews.Add(viewWithType.Type);
 			}
 
 			if (editableViews.Count == 0 || dacFinder.CancellationToken.IsCancellationRequested)

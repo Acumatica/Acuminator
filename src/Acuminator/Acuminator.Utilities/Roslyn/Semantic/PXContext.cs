@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Immutable;
 using System.Linq;
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.Symbols;
 using Microsoft.CodeAnalysis;
 using PX.Data;
@@ -9,10 +10,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 {
 	public class PXContext
 	{
-		private const string PXSelectBase_Acumatica2018R2 = "PX.Data.PXSelectBase`2";
-		private const string IViewConfig_Acumatica2018R2 = "PX.Data.PXSelectBase`2+IViewConfig";
-
 		public bool IsAcumatica2018R2 { get; }
+
+		/// <summary>
+		/// Is platform referenced in the current solution. If not then diagnostic can't run on the solution.
+		/// </summary>
+		public bool IsPlatformReferenced { get; }
 
 		public Compilation Compilation { get; }
 
@@ -48,7 +51,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
         private readonly Lazy<PXSelectBaseGenericSymbols> _pxSelectBaseGeneric;
         public PXSelectBaseGenericSymbols PXSelectBaseGeneric => _pxSelectBaseGeneric.Value;
 
-		private readonly Lazy<PXDatabaseSymbols> _pxDatabase;
+        private readonly Lazy<PXSelectBaseSymbols> _pxSelectBase;
+        public PXSelectBaseSymbols PXSelectBase => _pxSelectBase.Value;
+
+        private readonly Lazy<PXDatabaseSymbols> _pxDatabase;
 		public PXDatabaseSymbols PXDatabase => _pxDatabase.Value;
 
 		private readonly Lazy<PXViewSymbols> _pxView;
@@ -57,21 +63,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		private readonly Lazy<ExceptionSymbols> _exceptions;
 		public ExceptionSymbols Exceptions => _exceptions.Value;
 
+        private readonly Lazy<PXProcessingBaseSymbols> _pxProcessingBase;
+        public PXProcessingBaseSymbols PXProcessingBase => _pxProcessingBase.Value;
 
-		private readonly Lazy<ImmutableHashSet<IMethodSymbol>> _uiPresentationLogicMethods;
+        private readonly Lazy<ImmutableHashSet<IMethodSymbol>> _uiPresentationLogicMethods;
 		public ImmutableHashSet<IMethodSymbol> UiPresentationLogicMethods => _uiPresentationLogicMethods.Value;
 
-		
-		public INamedTypeSymbol PXProcessingBaseType => Compilation.GetTypeByMetadataName(typeof(PXProcessingBase<>).FullName);
 		public INamedTypeSymbol PXGraphExtensionType => Compilation.GetTypeByMetadataName(typeof(PXGraphExtension).FullName);
 		public INamedTypeSymbol PXCacheExtensionType => Compilation.GetTypeByMetadataName(typeof(PXCacheExtension).FullName);
 		public INamedTypeSymbol PXMappedCacheExtensionType => Compilation.GetTypeByMetadataName(typeof(PXMappedCacheExtension).FullName);
-		public INamedTypeSymbol PXViewType => Compilation.GetTypeByMetadataName(typeof(PXView).FullName);
-		public INamedTypeSymbol PXSelectBaseType => Compilation.GetTypeByMetadataName(typeof(PXSelectBase).FullName);
 		public INamedTypeSymbol PXLongOperation => Compilation.GetTypeByMetadataName(typeof(PXLongOperation).FullName);
 
-		public INamedTypeSymbol PXSelectBase2018R2NewType => Compilation.GetTypeByMetadataName(PXSelectBase_Acumatica2018R2);
-		public INamedTypeSymbol IViewConfig2018R2 => Compilation.GetTypeByMetadataName(IViewConfig_Acumatica2018R2);
+		public INamedTypeSymbol PXSelectBase2018R2NewType => Compilation.GetTypeByMetadataName(TypeNames.PXSelectBase_Acumatica2018R2);
+		public INamedTypeSymbol IViewConfig2018R2 => Compilation.GetTypeByMetadataName(TypeNames.IViewConfig_Acumatica2018R2);
 
 		public INamedTypeSymbol PXActionCollection => Compilation.GetTypeByMetadataName(typeof(PXActionCollection).FullName);
 
@@ -99,7 +103,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
         public PXContext(Compilation compilation)
 		{
+			compilation.ThrowOnNull(nameof(compilation));
+
 			Compilation = compilation;
+			IsPlatformReferenced = compilation.GetTypeByMetadataName(TypeNames.PXGraphTypeName) != null;
 
 			_bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation));
 			_events = new Lazy<EventSymbols>(() => new EventSymbols(Compilation));
@@ -115,6 +122,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			_pxView = new Lazy<PXViewSymbols>(() => new PXViewSymbols(Compilation));
 			_exceptions = new Lazy<ExceptionSymbols>(() => new ExceptionSymbols(Compilation));
             _pxSelectBaseGeneric = new Lazy<PXSelectBaseGenericSymbols>(() => new PXSelectBaseGenericSymbols(Compilation));
+            _pxSelectBase = new Lazy<PXSelectBaseSymbols>(() => new PXSelectBaseSymbols(Compilation));
+            _pxProcessingBase = new Lazy<PXProcessingBaseSymbols>(() => new PXProcessingBaseSymbols(Compilation));
 
 			_uiPresentationLogicMethods = new Lazy<ImmutableHashSet<IMethodSymbol>>(GetUiPresentationLogicMethods);
 

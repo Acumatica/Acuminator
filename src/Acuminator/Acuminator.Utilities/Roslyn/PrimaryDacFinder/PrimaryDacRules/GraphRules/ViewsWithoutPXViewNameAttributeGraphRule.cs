@@ -28,18 +28,21 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 
 		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder)
 		{
-			if (dacFinder?.Graph == null || dacFinder.CancellationToken.IsCancellationRequested || dacFinder.GraphViewSymbolsWithTypes.Length == 0)
+			if (dacFinder?.GraphSemanticModel?.GraphSymbol == null || dacFinder.CancellationToken.IsCancellationRequested ||
+				dacFinder.GraphViews.Length == 0)
+			{
 				return Enumerable.Empty<ITypeSymbol>();
+			}
 
-			List<ITypeSymbol> dacCandidates = new List<ITypeSymbol>(dacFinder.GraphViewSymbolsWithTypes.Length);
+			List<ITypeSymbol> dacCandidates = new List<ITypeSymbol>(dacFinder.GraphViews.Length);
 			bool grapHasViewsWithViewNameAttribute = false;
 
-			foreach (var (view, viewType) in dacFinder.GraphViewSymbolsWithTypes)
+			foreach (DataViewInfo viewInfo in dacFinder.GraphViews)
 			{
 				if (dacFinder.CancellationToken.IsCancellationRequested)
 					return Enumerable.Empty<ITypeSymbol>();
 
-				ImmutableArray<AttributeData> attributes = view.GetAttributes();
+				ImmutableArray<AttributeData> attributes = viewInfo.Symbol.GetAttributes();
 
 				if (attributes.Length == 0)
 					continue;
@@ -48,7 +51,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 														  .Any(baseType => baseType.Equals(pxViewNameAttribute));
 				if (!viewHasViewNameAttribute)
 				{
-					var dac = viewType.GetDacFromView(dacFinder.PxContext);
+					var dac = viewInfo.Type.GetDacFromView(dacFinder.PxContext);
 
 					if (dac != null)
 					{

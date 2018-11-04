@@ -5,6 +5,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
 	public class FieldAttributeSymbols
 	{
+		/// <summary>
+		/// The PXDBPackedIntegerArrayAttribute type full name in Acumatica 2018R2. Doesn't exist in previous versions.
+		/// </summary>
+		private const string PXDBPackedIntegerArrayAttributeFullName_Acumatica2018R2 = "PX.Data.PXDBPackedIntegerArrayAttribute";
+
 		private readonly Compilation _compilation;
 
 		internal FieldAttributeSymbols(Compilation aCompilation)
@@ -46,6 +51,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		public INamedTypeSymbol PXDBIdentityAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBIdentityAttribute).FullName);
 		public INamedTypeSymbol PXDBLongIdentityAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBLongIdentityAttribute).FullName);
 		public INamedTypeSymbol PXDBBinaryAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBBinaryAttribute).FullName);
+
+		public INamedTypeSymbol PXDBPackedIntegerArrayAttribute => 
+			_compilation.GetTypeByMetadataName(PXDBPackedIntegerArrayAttributeFullName_Acumatica2018R2);
+
 		public INamedTypeSymbol PXDBUserPasswordAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBUserPasswordAttribute).FullName);
 
 		public INamedTypeSymbol PXDBAttributeAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBAttributeAttribute).FullName);
