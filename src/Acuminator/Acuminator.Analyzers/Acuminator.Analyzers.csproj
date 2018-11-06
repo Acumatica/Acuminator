@@ -134,8 +134,6 @@
     <Compile Include="StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceAnalyzer.cs" />
     <Compile Include="StaticAnalysis\UiPresentationLogic\UiPresentationLogicInEventHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\UiPresentationLogic\Walker.cs" />
-    <Compile Include="StaticAnalysis\ViewDeclarationOrder\AnalysisContext.cs" />
-    <Compile Include="StaticAnalysis\ViewDeclarationOrder\AnalysisDacInfo.cs" />
     <Compile Include="StaticAnalysis\ViewDeclarationOrder\ViewDeclarationOrderAnalyzer.cs" />
     <Compile Include="StaticAnalysis\InvalidPXActionSignature\InvalidPXActionSignatureFix.cs" />
     <Compile Include="StaticAnalysis\Descriptors.cs" />
