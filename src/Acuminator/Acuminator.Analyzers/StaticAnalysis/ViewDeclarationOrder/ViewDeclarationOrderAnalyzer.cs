@@ -20,9 +20,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 		private const string InitCacheMappingMethodName = "InitCacheMapping";
 
 		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-            ImmutableArray.Create(Descriptors.PX1004_ViewDeclarationOrder, Descriptors.PX1006_ViewDeclarationOrder);	
+			ImmutableArray.Create(Descriptors.PX1004_ViewDeclarationOrder, Descriptors.PX1006_ViewDeclarationOrder);
 
-		public void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, CodeAnalysisSettings settings, 
+		public void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, CodeAnalysisSettings settings,
 							PXGraphSemanticModel graphSemanticModel)
 		{
 			if (graphSemanticModel.ViewsByNames.Count == 0 || IsNewMethodUsedToInitCaches(pxContext))
@@ -30,9 +30,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			RunAnalysisOnGraphViewsToFindTwoCacheCases(pxContext, graphSemanticModel, symbolContext);
+			var viewsGroupedByDAC = GetViewsUsedInAnalysis(graphSemanticModel).Where(view => view.ViewDAC != null)
+																			  .ToLookup(view => view.ViewDAC);
+			if (viewsGroupedByDAC.Count == 0)
+				return;
 
-			symbolContext.CancellationToken.ThrowIfCancellationRequested();	
+			foreach (IGrouping<ITypeSymbol, DataViewInfo> dacViews in viewsGroupedByDAC)
+			{
+				AnalyzeDacViewsForNumberOfCaches(graphSemanticModel, symbolContext, dacViews, viewsGroupedByDAC);
+			}
+
+			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 		}
 
 		/// <summary>
@@ -48,51 +56,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 			return initCachesNewMethod != null;
 		}
 
-		private static void RunAnalysisOnGraphViewsToFindTwoCacheCases(PXContext pxContext, PXGraphSemanticModel graphSemanticModel, 
-																	   SymbolAnalysisContext symbolContext)
-		{
-			var viewsGroupedByDAC = GetViewsToAnalyze(graphSemanticModel)
-										.Where(view => view.ViewDAC != null)
-										.ToLookup(view => view.ViewDAC);
-
-			if (viewsGroupedByDAC.Count == 0)
-				return;
-
-			foreach (IGrouping<ITypeSymbol, DataViewInfo> dacViews in viewsGroupedByDAC)
-			{
-				ITypeSymbol dac = dacViews.Key;
-				int minDacViewDeclarationOrder = dacViews.Min(view => view.DeclarationOrder);
-				var baseDACsWithViews = dac.GetBaseTypes()
-										   .Where(t => t.IsDAC() && viewsGroupedByDAC.Contains(t));
-
-				foreach (INamedTypeSymbol baseDac in baseDACsWithViews)
-				{
-					var minBaseDacViewDeclarationOrder = viewsGroupedByDAC[baseDac].Min(view => view.DeclarationOrder);
-
-					if (minBaseDacViewDeclarationOrder > minDacViewDeclarationOrder)
-					{
-
-					}
-					else
-					{
-
-					}
-				}
-			}
-			 
-
-
-
-
-
-
-			
-		}
-
-		private static bool GraphContainsViewDeclaration(PXGraphSemanticModel graphSemanticModel, DataViewInfo viewInfo) =>
-			graphSemanticModel.Symbol.OriginalDefinition?.Equals(viewInfo.Symbol.ContainingType?.OriginalDefinition) ?? false;
-
-		private static IEnumerable<DataViewInfo> GetViewsToAnalyze(PXGraphSemanticModel graphSemanticModel)
+		private static IEnumerable<DataViewInfo> GetViewsUsedInAnalysis(PXGraphSemanticModel graphSemanticModel)
 		{
 			foreach (DataViewInfo view in graphSemanticModel.Views)
 			{
@@ -109,6 +73,49 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 					yield return view;
 				}
 			}
+		}
+
+		private static void AnalyzeDacViewsForNumberOfCaches(PXGraphSemanticModel graphSemanticModel, SymbolAnalysisContext symbolContext,
+															 IGrouping<ITypeSymbol, DataViewInfo> dacViews,
+															 ILookup<ITypeSymbol, DataViewInfo> viewsGroupedByDAC)
+		{
+			var dacViewsDeclaredInGraph = dacViews.Where(view => GraphContainsViewDeclaration(graphSemanticModel, view)).ToList();
+
+			if (dacViewsDeclaredInGraph.Count == 0)
+				return;
+
+			ITypeSymbol dac = dacViews.Key;
+			int minDacViewDeclarationOrder = dacViews.Min(view => view.DeclarationOrder);
+			var baseDACsWithViews = dac.GetBaseTypes()
+									   .Where(t => t.IsDAC() && viewsGroupedByDAC.Contains(t));
+
+			foreach (INamedTypeSymbol baseDac in baseDACsWithViews)
+			{
+				var minBaseDacViewDeclarationOrder = viewsGroupedByDAC[baseDac].Min(view => view.DeclarationOrder);
+				DiagnosticDescriptor descriptor = minBaseDacViewDeclarationOrder > minDacViewDeclarationOrder
+					? Descriptors.PX1004_ViewDeclarationOrder
+					: Descriptors.PX1006_ViewDeclarationOrder;
+
+				ReportDiagnostic(descriptor, symbolContext, dacViewsDeclaredInGraph, dac, baseDac);
+			}
 		}	
+
+		private static bool GraphContainsViewDeclaration(PXGraphSemanticModel graphSemanticModel, DataViewInfo viewInfo) =>
+			graphSemanticModel.Symbol.OriginalDefinition?.Equals(viewInfo.Symbol.ContainingType?.OriginalDefinition) ?? false;
+
+		private static void ReportDiagnostic(DiagnosticDescriptor descriptor, SymbolAnalysisContext symbolContext, 
+											 List<DataViewInfo> declaredViews, ITypeSymbol dac, ITypeSymbol baseDac)
+		{
+			foreach (DataViewInfo view in declaredViews)
+			{
+				Location viewLocation = view.Symbol.Locations.FirstOrDefault();
+
+				if (viewLocation == null)
+					continue;
+
+				symbolContext.ReportDiagnostic(
+									Diagnostic.Create(descriptor, viewLocation, dac.Name, baseDac.Name));
+			}		
+		}
 	}
 }
