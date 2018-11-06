@@ -1,6 +1,8 @@
 ﻿using System.Collections.Immutable;
 using System.Threading;
 using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.Symbols;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -19,7 +21,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 
         private SemanticModel SemanticModel => _syntaxContext.SemanticModel;
         private CancellationToken Cancellation => _syntaxContext.CancellationToken;
-        private LocalizationTypes Localization => _pxContext.Localization;
+        private LocalizationSymbols Localization => _pxContext.Localization;
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create

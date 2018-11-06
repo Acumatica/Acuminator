@@ -36,11 +36,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 	        }
 
 	        var parent = method.ContainingType;
-	        if (parent != null && parent.InheritsFrom(pxContext.PXGraphType))
+	        if (parent != null && parent.InheritsFrom(pxContext.PXGraph.Type))
 	        {
 		        var views = parent.GetMembers()
 					.OfType<IFieldSymbol>()
-					.Where(f => f.Type.InheritsFrom(pxContext.PXSelectBaseType))
+					.Where(f => f.Type.InheritsFrom(pxContext.PXSelectBase.Type))
 					.ToArray();
 		        if (views.Any(f => String.Equals(f.Name, method.Name, StringComparison.OrdinalIgnoreCase)))
 			        return;

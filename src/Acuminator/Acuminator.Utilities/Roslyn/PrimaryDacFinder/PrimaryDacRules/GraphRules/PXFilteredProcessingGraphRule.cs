@@ -3,8 +3,10 @@ using System.Linq;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
 using PX.Data;
+
 
 namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRules
 {
@@ -26,22 +28,22 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 
 		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder)
 		{
-			if (pxFilteredProcessingType == null ||
-				dacFinder?.Graph == null || dacFinder.CancellationToken.IsCancellationRequested || dacFinder.GraphViewSymbolsWithTypes.Length == 0)
+			if (pxFilteredProcessingType == null || dacFinder?.GraphSemanticModel?.GraphSymbol == null || 
+				dacFinder.CancellationToken.IsCancellationRequested || dacFinder.GraphViews.Length == 0)
 			{
 				return Enumerable.Empty<ITypeSymbol>();
 			}
 
 			List<ITypeSymbol> primaryDacCandidates = new List<ITypeSymbol>(1);
 
-			foreach (var (view, viewType) in dacFinder.GraphViewSymbolsWithTypes)
+			foreach (DataViewInfo view in dacFinder.GraphViews)
 			{
 				if (dacFinder.CancellationToken.IsCancellationRequested)
 					return Enumerable.Empty<ITypeSymbol>();
 
-				var fProcessingView = viewType.GetBaseTypesAndThis()
-											  .FirstOrDefault(t => pxFilteredProcessingType.Equals(t) || 
-																   pxFilteredProcessingType.Equals(t?.OriginalDefinition));
+				var fProcessingView = view.Type.GetBaseTypesAndThis()
+											   .FirstOrDefault(t => pxFilteredProcessingType.Equals(t) || 
+																    pxFilteredProcessingType.Equals(t?.OriginalDefinition));
 
 				if (fProcessingView == null || !(fProcessingView is INamedTypeSymbol filteredProcessingView))
 					continue;

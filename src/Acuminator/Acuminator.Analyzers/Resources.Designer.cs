@@ -539,11 +539,20 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Consider setting PersistingCheck to Nothing or replacing PXDefault with PXUnboundDefault.
+        /// </summary>
+        public static string PX1030TitleDefaultAttributeOnDac {
+            get {
+                return ResourceManager.GetString("PX1030TitleDefaultAttributeOnDac", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The PXDefault attribute of the field is used incorrectly. PXDefaultAttribute used on a custom field defined in PXCacheExtension can potentially prevent updates to existing records when used without PersistingCheck property set to Nothing.
         /// </summary>
-        public static string PX1030Title {
+        public static string PX1030TitleDefaultAttributeOnDacExtension {
             get {
-                return ResourceManager.GetString("PX1030Title", resourceCulture);
+                return ResourceManager.GetString("PX1030TitleDefaultAttributeOnDacExtension", resourceCulture);
             }
         }
         
@@ -674,6 +683,33 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Only the DAC instance that is passed in the event arguments can be modified in the {0} event handler.
+        /// </summary>
+        public static string PX1048MessageFormat {
+            get {
+                return ResourceManager.GetString("PX1048MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only the DAC instance that is passed in the event arguments can be modified in this event handler.
+        /// </summary>
+        public static string PX1048Title {
+            get {
+                return ResourceManager.GetString("PX1048Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In a RowSelected handler, BQL statements and other database queries should be avoided.
+        /// </summary>
+        public static string PX1049Title {
+            get {
+                return ResourceManager.GetString("PX1049Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hardcoded strings are not allowed as parameters for localization methods and PXException constructors. You should use string constants from the appropriate localizable messages class..
         /// </summary>
         public static string PX1050Title {
@@ -719,6 +755,42 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Make the field bound to the identity column be a non-key field and leave all other key fields untouched.
+        /// </summary>
+        public static string PX1055FixEditIdentityAttribute {
+            get {
+                return ResourceManager.GetString("PX1055FixEditIdentityAttribute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Make the field bound to the identity column be the only key field in the DAC.
+        /// </summary>
+        public static string PX1055FixEditKeyFieldAttributes {
+            get {
+                return ResourceManager.GetString("PX1055FixEditKeyFieldAttributes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove the definition of the field bound to the identity column and leave all other key fields untouched. (You should drop the corresponding identity column from the database manually.).
+        /// </summary>
+        public static string PX1055FixRemoveIdentityAttribute {
+            get {
+                return ResourceManager.GetString("PX1055FixRemoveIdentityAttribute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid primary key of the DAC. Use a single identity field or one or multiple natural fields for the key..
+        /// </summary>
+        public static string PX1055Title {
+            get {
+                return ResourceManager.GetString("PX1055Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A PXGraph instance cannot be initialized while another PXGraph instance is being initialized.
         /// </summary>
         public static string PX1057Title {
@@ -733,6 +805,186 @@ namespace Acuminator.Analyzers {
         public static string PX1058Title {
             get {
                 return ResourceManager.GetString("PX1058Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Changes to PXCache cannot be performed during PXGraph initialization.
+        /// </summary>
+        public static string PX1059Title {
+            get {
+                return ResourceManager.GetString("PX1059Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The state of fields and actions can be configured only in the RowSelected event handler.
+        /// </summary>
+        public static string PX1070Title {
+            get {
+                return ResourceManager.GetString("PX1070Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Actions cannot be executed within event handlers.
+        /// </summary>
+        public static string PX1071Title {
+            get {
+                return ResourceManager.GetString("PX1071Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Replace {0} with the following PXGraph instance: {1}.
+        /// </summary>
+        public static string PX1072Fix {
+            get {
+                return ResourceManager.GetString("PX1072Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BQL queries must be executed within the context of an existing PXGraph instance.
+        /// </summary>
+        public static string PX1072Title {
+            get {
+                return ResourceManager.GetString("PX1072Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exceptions cannot be thrown in the RowPersisted event handler.
+        /// </summary>
+        public static string PX1073Title {
+            get {
+                return ResourceManager.GetString("PX1073Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown in the {0} event handler. Use the RowSelected event handler instead.
+        /// </summary>
+        public static string PX1074MessageFormat {
+            get {
+                return ResourceManager.GetString("PX1074MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown in this event handler. Use the RowSelected event handler instead.
+        /// </summary>
+        public static string PX1074Title {
+            get {
+                return ResourceManager.GetString("PX1074Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXCache.RaiseExceptionHandling cannot be invoked from the {0} event handler.
+        /// </summary>
+        public static string PX1075MessageFormat {
+            get {
+                return ResourceManager.GetString("PX1075MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXCache.RaiseExceptionHandling cannot be invoked from this event handler.
+        /// </summary>
+        public static string PX1075Title {
+            get {
+                return ResourceManager.GetString("PX1075Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Data view delegates should not start long-running operations.
+        /// </summary>
+        public static string PX1080Title {
+            get {
+                return ResourceManager.GetString("PX1080Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Actions cannot be executed during the PXGraph initialization.
+        /// </summary>
+        public static string PX1081Title {
+            get {
+                return ResourceManager.GetString("PX1081Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Actions cannot be executed within data view delegates.
+        /// </summary>
+        public static string PX1082Title {
+            get {
+                return ResourceManager.GetString("PX1082Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Changes cannot be saved to the database from data view delegates.
+        /// </summary>
+        public static string PX1083Title {
+            get {
+                return ResourceManager.GetString("PX1083Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXGraph instances cannot be initialized within data view delegates.
+        /// </summary>
+        public static string PX1084Title {
+            get {
+                return ResourceManager.GetString("PX1084Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BQL statements and other database queries should not be executed during the PXGraph initialization.
+        /// </summary>
+        public static string PX1085Title {
+            get {
+                return ResourceManager.GetString("PX1085Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown in long-running operations.
+        /// </summary>
+        public static string PX1086Title {
+            get {
+                return ResourceManager.GetString("PX1086Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This invocation of the base data view delegate can cause a StackOverflowException.
+        /// </summary>
+        public static string PX1087Title {
+            get {
+                return ResourceManager.GetString("PX1087Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Processing delegates cannot use the data views from processing graphs except for the data views of the PXFilter, PXProcessingBase, or PXSetup types.
+        /// </summary>
+        public static string PX1088Title {
+            get {
+                return ResourceManager.GetString("PX1088Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The state of fields and actions cannot be configured in action delegates.
+        /// </summary>
+        public static string PX1089Title {
+            get {
+                return ResourceManager.GetString("PX1089Title", resourceCulture);
             }
         }
     }

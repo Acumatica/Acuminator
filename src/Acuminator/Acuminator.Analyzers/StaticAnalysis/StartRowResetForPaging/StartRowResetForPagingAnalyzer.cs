@@ -108,7 +108,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 
 				var symbol = semanticModel.GetSymbolInfo(memberAccesses[0]).Symbol;
 
-				if (symbol != null && symbol.ContainingType.Equals(pxContext.PXViewType) && symbol.Name == nameof(PXView.StartRow))
+				if (symbol != null && symbol.ContainingType.Equals(pxContext.PXView.Type) && symbol.Name == nameof(PXView.StartRow))
 				{
 					return localSymbol;
 				}
@@ -140,8 +140,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 					continue;
 
 				if (symbol.Name.StartsWith("Select") &&
-				   (symbol.ContainingType.InheritsFromOrEquals(pxContext.PXViewType) ||
-					symbol.ContainingType.InheritsFromOrEquals(pxContext.PXSelectBaseType)))
+				   (symbol.ContainingType.InheritsFromOrEquals(pxContext.PXView.Type) ||
+					symbol.ContainingType.InheritsFromOrEquals(pxContext.PXSelectBase.Type)))
 				{
 					return (symbol, invocation);
 				}

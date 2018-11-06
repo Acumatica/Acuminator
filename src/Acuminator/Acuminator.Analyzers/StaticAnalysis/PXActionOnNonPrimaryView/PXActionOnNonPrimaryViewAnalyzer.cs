@@ -31,7 +31,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 			if (!(symbolContext.Symbol is INamedTypeSymbol graphOrGraphExtension) || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			bool isGraph = graphOrGraphExtension.InheritsFrom(pxContext.PXGraphType);
+			bool isGraph = graphOrGraphExtension.InheritsFrom(pxContext.PXGraph.Type);
 
 			if (!isGraph && !graphOrGraphExtension.InheritsFrom(pxContext.PXGraphExtensionType))
 				return;
@@ -46,10 +46,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 
 			if (semanticModel == null || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
-
-			var declaredActionsWithTypes = isGraph 
-				? graphOrGraphExtension.GetPXActionSymbolsWithTypesFromGraph(pxContext, includeActionsFromInheritanceChain: false)
-				: graphOrGraphExtension.GetPXActionSymbolsWithTypesFromGraphExtension(pxContext, includeActionsFromInheritanceChain: false);
+			
+			var declaredActionsWithTypes = graphOrGraphExtension.GetActionsFromGraphOrGraphExtensionAndBaseGraph(pxContext)
+																.Select(item => item.Item)
+																.Where(action => action.ActionSymbol.ContainingType == graphOrGraphExtension);
 
 			if (declaredActionsWithTypes.IsNullOrEmpty() || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
@@ -72,7 +72,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 			{
 				{ DiagnosticProperty.DacName, primaryDAC.Name },
 				{ DiagnosticProperty.DacMetadataName, primaryDAC.GetCLRTypeNameFromType() }
-			}.ToImmutableDictionary();
+			}
+			.ToImmutableDictionary();
 
 			var registrationTasks = actionsWithWrongDAC.Select(a => RegisterDiagnosticForActionAsync(a.ActionSymbol, primaryDAC.Name, 
 																									 diagnosticExtraData, symbolContext));

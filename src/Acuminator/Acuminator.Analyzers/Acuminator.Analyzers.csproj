@@ -46,32 +46,53 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Refactorings\ChangeEventHandlerSignatureToGeneric\ChangeEventHandlerSignatureToGenericRefactoring.cs" />
+    <Compile Include="StaticAnalysis\AnalyzersAggregator\ISymbolAnalyzer.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\ArrayElemCountLocalVariableResolver.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\BqlInvocationDataFlowAnalyserBase.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\ParametersCounter.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\BqlLocalVariableTypeResolver.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\ParametersCounterSymbolWalker.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\ParametersCounterSyntaxWalker.cs" />
+    <Compile Include="StaticAnalysis\CallingBaseDataViewDelegate\CallingBaseDataViewDelegateFromOverrideDelegateAnalyzer.cs" />
     <Compile Include="StaticAnalysis\ChangesInPXCache\ChangesInPXCacheInEventHandlersAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\ChangesInPXCache\ChangesInPXCacheDuringPXGraphInitializationAnalyzer.cs" />
     <Compile Include="StaticAnalysis\ChangesInPXCache\Walker.cs" />
-    <Compile Include="StaticAnalysis\ConnectionScopeInRowSelecting\ConnectionScopeInRowSelectingAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\AnalyzersAggregator\SymbolAnalyzersAggregator.cs" />
+    <Compile Include="StaticAnalysis\DatabaseQueries\DatabaseQueriesInPXGraphInitializationAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\DatabaseQueries\DatabaseQueriesInRowSelectedAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\DatabaseQueries\DatabaseQueriesInRowSelectingAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\DacKeyFieldDeclaration\KeyFieldDeclarationFix.cs" />
     <Compile Include="StaticAnalysis\DacPropertyAttributes\MultipleSpecialAttributesOnDacPropertyFix.cs" />
     <Compile Include="StaticAnalysis\DacPropertyAttributes\MultipleFieldTypeAttributesOnDacPropertyFix.cs" />
     <Compile Include="StaticAnalysis\DacPropertyAttributes\MultipleAttributesOnDacPropertyFixBase.cs" />
+    <Compile Include="StaticAnalysis\DacKeyFieldDeclaration\KeyFieldDeclarationAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\DatabaseQueries\Walker.cs" />
     <Compile Include="StaticAnalysis\EventHandlers\EventHandlerAnalyzer.cs" />
     <Compile Include="StaticAnalysis\EventHandlers\IEventHandlerAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\InvalidViewUsageInProcessingDelegate\InvalidViewUsageInProcessingDelegateAnalyzer.cs" />
     <Compile Include="StaticAnalysis\Localization\LocalizationMessageHelper.cs" />
     <Compile Include="StaticAnalysis\Localization\LocalizationInvocationAnalyzer.cs" />
     <Compile Include="StaticAnalysis\Localization\LocalizationPXExceptionAnalyzer.cs" />
     <Compile Include="StaticAnalysis\ConstructorInGraphExtension\ConstructorInGraphExtensionAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DacNonAbstractFieldType\DacNonAbstractFieldTypeAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DacDeclaration\DacDeclarationAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\LongOperationStart\LongOperationInDataViewDelegateAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\LongOperationStart\StartLongOperationDelegateWalker.cs" />
     <Compile Include="StaticAnalysis\LongOperationStart\StartLongOperationWalker.cs" />
-    <Compile Include="StaticAnalysis\PXGraphCreationDuringInitialization\PXGraphCreationDuringInitializationAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\PXActionExecution\PXActionExecutionInEventHandlersAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\PXActionExecution\PXActionExecutionInGraphSemanticModelAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\PXActionExecution\Walker.cs" />
+    <Compile Include="StaticAnalysis\PXGraphCreationDuringInitialization\PXGraphCreationInGraphSemanticModelAnalyzer.cs" />
     <Compile Include="StaticAnalysis\LongOperationStart\LongOperationInEventHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceInEventHandlersAnalyzer.cs" />
-    <Compile Include="StaticAnalysis\LongOperationStart\PXGraphLongOperationDuringInitializationAnalyzer.cs" />
-    <Compile Include="StaticAnalysis\SavingChanges\SavingChangesDuringPXGraphInitializationAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\LongOperationStart\LongOperationInPXGraphDuringInitializationAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\PXGraphCreationForBqlQueries\PXGraphCreationForBqlQueriesFix.cs" />
+    <Compile Include="StaticAnalysis\RaiseExceptionHandling\RaiseExceptionHandlingInEventHandlersAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\PXGraphCreationForBqlQueries\PXGraphCreationForBqlQueriesAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\PXGraphCreationForBqlQueries\Walker.cs" />
+    <Compile Include="StaticAnalysis\RowChangesInEventHandlers\AccessWalkerBase.cs" />
+    <Compile Include="StaticAnalysis\RowChangesInEventHandlers\DacInstanceAccessWalker.cs" />
+    <Compile Include="StaticAnalysis\SavingChanges\SavingChangesInGraphSemanticModelAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphUsageInDac\PXGraphUsageInDacAnalyzer.cs" />
     <Compile Include="StaticAnalysis\MethodsUsageInDac\MethodsUsageInDacAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DacExtensionDefaultAttribute\DacExtensionDefaultAttributeAnalyzer.cs" />
@@ -95,7 +116,7 @@
     <Compile Include="StaticAnalysis\DacDeclaration\RegionsVisitor.cs" />
     <Compile Include="StaticAnalysis\DacDeclaration\ForbiddenFieldsInDacFix.cs" />
     <Compile Include="StaticAnalysis\DacDeclaration\ConstructorInDacFix.cs" />
-    <Compile Include="StaticAnalysis\ConnectionScopeInRowSelecting\ConnectionScopeInRowSelectingFix.cs" />
+    <Compile Include="StaticAnalysis\DatabaseQueries\DatabaseQueriesInRowSelectingFix.cs" />
     <Compile Include="StaticAnalysis\ConstructorInGraphExtension\ConstructorInGraphExtensionCodeFix.cs" />
     <Compile Include="StaticAnalysis\DacExtensionDefaultAttribute\DacExtensionDefaultAttributeFix.cs" />
     <Compile Include="StaticAnalysis\DacDeclaration\UnderscoresInDacFix.cs" />
@@ -106,8 +127,14 @@
     <Compile Include="StaticAnalysis\LongOperationDelegateClosures\LongOperationDelegateClosuresAnalyzer.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\BqlParameterMismatchAnalyzer.cs" />
     <Compile Include="StaticAnalysis\MissingTypeListAttribute\MissingTypeListAttributeAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInEventHandlersAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInDataViewDelegateAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\ThrowingExceptions\WalkerBase.cs" />
     <Compile Include="StaticAnalysis\TypoInViewDelegateName\TypoInViewDelegateNameAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\UiPresentationLogic\UiPresentationLogicInActionHandlersAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\UiPresentationLogic\UiPresentationLogicInEventHandlersAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\UiPresentationLogic\Walker.cs" />
     <Compile Include="StaticAnalysis\ViewDeclarationOrder\ViewDeclarationOrderAnalyzer.cs" />
     <Compile Include="StaticAnalysis\InvalidPXActionSignature\InvalidPXActionSignatureFix.cs" />
     <Compile Include="StaticAnalysis\Descriptors.cs" />
@@ -137,12 +164,16 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Diagnostic.nuspec">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="tools\install.ps1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -159,17 +190,17 @@
     <Reference Include="CommonServiceLocator, Version=2.0.4.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
       <HintPath>..\..\packages\CommonServiceLocator.2.0.4\lib\netstandard1.0\CommonServiceLocator.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis, Version=1.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Common.1.3.2\lib\portable-net45+win8\Microsoft.CodeAnalysis.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Common.1.2.2\lib\portable-net45+win8\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=1.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.1.3.2\lib\portable-net45+win8\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.1.2.2\lib\portable-net45+win8\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces, Version=1.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.1.3.2\lib\portable-net45+win8\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.1.2.2\lib\portable-net45+win8\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces, Version=1.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.3.2\lib\portable-net45+win8\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.2.2\lib\portable-net45+win8\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
     </Reference>
     <Reference Include="PX.Common">
       <HintPath>..\..\..\lib\PX.Common.dll</HintPath>
@@ -177,8 +208,8 @@
     <Reference Include="PX.Data">
       <HintPath>..\..\..\lib\PX.Data.dll</HintPath>
     </Reference>
-    <Reference Include="System.Collections.Immutable, Version=1.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Collections.Immutable.1.2.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    <Reference Include="System.Collections.Immutable, Version=1.1.37.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Collections.Immutable.1.1.37\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.Composition.AttributedModel, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.AttributedModel.dll</HintPath>
@@ -200,8 +231,8 @@
       <HintPath>..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.TypedParts.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.Reflection.Metadata, Version=1.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Reflection.Metadata.1.3.0\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+    <Reference Include="System.Reflection.Metadata, Version=1.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Reflection.Metadata.1.2.0\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\netstandard1.1\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>

@@ -5,9 +5,24 @@ using System.Linq;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 {
+	/// <summary>
+	/// Helper used to classify Acumatica attributes.
+	/// </summary>
+	/// <remarks>
+	/// By Acumatica atribute we mean an attribute derived from PXEventSubscriberAttribute.
+	/// </remarks>
+	
+	public enum BoundType
+	{
+		Unknown = 0,
+		Unbound = 1,
+		DbBound = 2,
+		NotDefined = 3
+	}
 	/// <summary>
 	/// Helper used to retrieve information about the Acumatica attributes.
 	/// </summary>
@@ -24,6 +39,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		private readonly INamedTypeSymbol _aggregateAttribute;
 
 		public ImmutableHashSet<ITypeSymbol> BoundBaseTypes { get; }
+
+		private const string IsDBField = "IsDBField";
 
 		public AttributeInformation(PXContext pxContext)
 		{
@@ -141,26 +158,56 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// <summary>
 		/// Query if Acumatica attribute is bound.
 		/// </summary>
-		/// <param name="attributeType">Type of the attribute.</param>
+		/// <param name="attribute">Data of the attribute.</param>
 		/// <returns/>
-		public bool IsBoundAttribute(ITypeSymbol attributeType)
+		public BoundType IsBoundAttribute(AttributeData attribute)
 		{
-			attributeType.ThrowOnNull(nameof(attributeType));
+			attribute.ThrowOnNull(nameof(attribute));
 
-			if (!attributeType.InheritsFromOrEquals(_eventSubscriberAttribute))
-				return false;
+			if (!attribute.AttributeClass.InheritsFromOrEquals(_eventSubscriberAttribute))
+				return BoundType.NotDefined;
 
-			return BoundBaseTypes.Any(boundBaseType => IsAttributeDerivedFromClassInternal(attributeType, boundBaseType));
+			if (BoundBaseTypes.Any(boundBaseType => IsAttributeDerivedFromClassInternal(attribute.AttributeClass, boundBaseType)))
+				return BoundType.DbBound;
+
+			bool containsIsDbFieldproperty =
+					attribute.AttributeClass.GetMembers().OfType<IPropertySymbol>()  //only properties considered
+														 .Any(property => IsDBField.Equals(property.Name, StringComparison.OrdinalIgnoreCase));
+			
+			if (containsIsDbFieldproperty)
+			{
+				var isDbPropertyAttributeArgs = attribute.NamedArguments.Where(arg => IsDBField.Equals(arg.Key, StringComparison.OrdinalIgnoreCase)).ToList();    //case insensitive check
+
+				if (isDbPropertyAttributeArgs.Count != 1)  //rare case when there are multiple different "IsDBField" considered
+					return BoundType.Unknown;
+
+				if (!(isDbPropertyAttributeArgs[0].Value.Value is bool isDbPropertyAttributeArgument))
+					return BoundType.Unknown;  //if there is null or values of type other than bool then we don't know if attribute is bound
+
+				return isDbPropertyAttributeArgument
+					? BoundType.DbBound
+					: BoundType.Unbound;
+			}
+			return BoundType.Unbound;
 		}
 
 		/// <summary>
 		/// Query if collection of attributes contains bound attribute.
 		/// </summary>
-		/// <param name="attributeTypes">The attributes collection.</param>
+		/// <param name="attributes">The attributes collection.</param>
 		/// <returns/>
-		public bool ContainsBoundAttributes(IEnumerable<ITypeSymbol> attributeTypes)
+		public bool ContainsBoundAttributes(IEnumerable<AttributeData> attributes)
 		{
-			return attributeTypes.Any(IsBoundAttribute);
+			attributes.ThrowOnNull();
+
+			foreach (var attribute in attributes)
+			{
+				BoundType result = IsBoundAttribute(attribute);
+
+				if (result == BoundType.DbBound)
+					return true;
+			}
+			return false;
 		}
 
 		private bool IsAttributeDerivedFromClassInternal(ITypeSymbol attributeType, ITypeSymbol typeToCheck, int depth = DefaultRecursionDepth)
@@ -182,5 +229,6 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		private bool IsAggregatorAttribute(ITypeSymbol attributeType) =>
 			attributeType.InheritsFromOrEquals(_aggregateAttribute) || attributeType.InheritsFromOrEquals(_dynamicAggregateAttribute);
+
 	}
 }

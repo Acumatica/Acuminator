@@ -14,6 +14,8 @@ namespace PX.Objects.HackathonDemo
 
 		public PXSetup<APSetup> APSetup;
 
+		public PXSelect<TaxTran> Taxes;
+
 		#region Current Order
 		public PXSelect<APInvoice,
 					Where<APInvoice.refNbr, Equal<Current<APInvoice.refNbr>>,

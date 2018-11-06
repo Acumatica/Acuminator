@@ -4,7 +4,9 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
+using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -14,25 +16,32 @@ namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 {
 	public class ChangesInPXCacheInEventHandlersAnalyzer : IEventHandlerAnalyzer
 	{
-		private static readonly ISet<EventType> AnalyzedEventTypes = new HashSet<EventType>()
+		private static readonly ImmutableHashSet<EventType> AnalyzedEventTypes = new []
 		{
 			EventType.FieldDefaulting,
 			EventType.FieldVerifying,
 			EventType.RowSelected,
 			EventType.RowSelecting,
-			EventType.RowInserting,
-			EventType.RowUpdating,
-			EventType.RowDeleting,
-		};
+		}.ToImmutableHashSet();
+
+		private static readonly ImmutableHashSet<EventType> AnalyzedEventTypesForIsv = AnalyzedEventTypes
+			.Add(EventType.RowInserting)
+			.Add(EventType.RowUpdating)
+			.Add(EventType.RowDeleting);
 
 		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
 			ImmutableArray.Create(Descriptors.PX1044_ChangesInPXCacheInEventHandlers);
 
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
+		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
+			EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (AnalyzedEventTypes.Contains(eventType))
+			var eventSet = codeAnalysisSettings.IsvSpecificAnalyzersEnabled
+				? AnalyzedEventTypesForIsv
+				: AnalyzedEventTypes;
+
+			if (eventSet.Contains(eventType))
 			{
 				var methodSymbol = (IMethodSymbol) context.Symbol;
 				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;

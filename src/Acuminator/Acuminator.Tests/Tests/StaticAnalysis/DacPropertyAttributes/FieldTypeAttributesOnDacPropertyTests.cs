@@ -46,20 +46,20 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 		[EmbeddedFileData("DacFieldAttributesTypeMismatch.cs")]
 		public virtual void DacPropertyTypeNotMatchingAttributeType(string source) =>
 			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty.CreateFor((line: 24, column: 4), 
-					extraLocation: (line: 26, column: 10)),
-				Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty.CreateFor((line: 26, column: 10), 
-					extraLocation: (line: 24, column: 4)),
+				Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty.CreateFor((Line: 24, Column: 4), 
+					extraLocation: (Line: 26, Column: 10)),
+				Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty.CreateFor((Line: 26, Column: 10), 
+					extraLocation: (Line: 24, Column: 4)),
 
-				Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty.CreateFor((line: 34, column: 4),
-					extraLocation: (line: 35, column: 18)),
-				Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty.CreateFor((line: 35, column: 18),
-					extraLocation: (line: 34, column: 4)),
+				Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty.CreateFor((Line: 34, Column: 4),
+					extraLocation: (Line: 35, Column: 18)),
+				Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty.CreateFor((Line: 35, Column: 18),
+					extraLocation: (Line: 34, Column: 4)),
 
-				Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty.CreateFor((line: 53, column: 4), 
-					extraLocation: (line: 54, column: 18)),
-				Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty.CreateFor((line: 54, column: 18),
-					extraLocation: (line: 53, column: 4)));
+				Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty.CreateFor((Line: 53, Column: 4), 
+					extraLocation: (Line: 54, Column: 18)),
+				Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty.CreateFor((Line: 54, Column: 18),
+					extraLocation: (Line: 53, Column: 4)));
 
 		[Theory]
 		[EmbeddedFileData("DacWithInvalidAggregatorAttributes.cs")]

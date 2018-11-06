@@ -15,49 +15,37 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 	{
 		public sealed override bool IsAbsolute => false;
 
-		private readonly string firstName, secondName;
+		private readonly string _firstName, _secondName;
 
-		public PairOfViewsWithSpecialNamesGraphRule(string aFirstName, string aSecondName, double? customWeight = null) : base(customWeight)
+		public PairOfViewsWithSpecialNamesGraphRule(string firstName, string secondName, double? customWeight = null) : base(customWeight)
 		{
-			if (aFirstName.IsNullOrWhiteSpace())
-				throw new ArgumentNullException(nameof(aFirstName));
-			else if (aSecondName.IsNullOrWhiteSpace())
-				throw new ArgumentNullException(nameof(aSecondName));
+			if (firstName.IsNullOrWhiteSpace())
+				throw new ArgumentNullException(nameof(firstName));
+			else if (secondName.IsNullOrWhiteSpace())
+				throw new ArgumentNullException(nameof(secondName));
 
-			firstName = aFirstName;
-			secondName = aSecondName;
+			_firstName = firstName;
+			_secondName = secondName;
 		}
 
 		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder)
 		{
-			if (dacFinder?.Graph == null || dacFinder.CancellationToken.IsCancellationRequested || dacFinder.GraphViewSymbolsWithTypes.Length == 0)
-				return Enumerable.Empty<ITypeSymbol>();
-
-			bool firstNameFound = false, secondNameFound = false;
-			ITypeSymbol firstDacCandidate = null, secondDacCandidate = null;
-
-			foreach (var (view, viewType) in dacFinder.GraphViewSymbolsWithTypes)
+			if (dacFinder?.GraphSemanticModel?.GraphSymbol == null || dacFinder.CancellationToken.IsCancellationRequested ||
+				dacFinder.GraphViews.Length == 0)
 			{
-				if (dacFinder.CancellationToken.IsCancellationRequested)
-					return Enumerable.Empty<ITypeSymbol>();
-
-				if (view.Name == firstName)
-				{
-					firstNameFound = true;
-					firstDacCandidate = viewType.GetDacFromView(dacFinder.PxContext);
-					continue;
-				}
-
-				if (view.Name == secondName)
-				{
-					secondNameFound = true;
-					secondDacCandidate = viewType.GetDacFromView(dacFinder.PxContext);
-					continue;
-				}
-
-				if (firstNameFound && secondNameFound)
-					break;
+				return Enumerable.Empty<ITypeSymbol>();
 			}
+
+			bool firstNameFound = dacFinder.GraphSemanticModel.ViewsByNames.TryGetValue(_firstName, out var firstView);
+			bool secondNameFound = dacFinder.GraphSemanticModel.ViewsByNames.TryGetValue(_secondName, out var secondView);
+
+			if (!firstNameFound || !secondNameFound)
+			{
+				return Enumerable.Empty<ITypeSymbol>();
+			}
+
+			ITypeSymbol firstDacCandidate = firstView.Type.GetDacFromView(dacFinder.PxContext);
+			ITypeSymbol secondDacCandidate = secondView.Type.GetDacFromView(dacFinder.PxContext);
 
 			var dacCandidate = ChooseDacCandidate(firstDacCandidate, secondDacCandidate);
 			return dacCandidate?.ToEnumerable() ?? Enumerable.Empty<ITypeSymbol>();

@@ -32,7 +32,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 
 			if (hasHiddenAttribute)
 				return true;
-			else if (dacFinder.GraphViewSymbolsWithTypes.Length <= 1 || dacFinder.CancellationToken.IsCancellationRequested)
+			else if (dacFinder.GraphViews.Length <= 1 || dacFinder.CancellationToken.IsCancellationRequested)
 				return false;
 
 			INamedTypeSymbol copyPasteHiddenViewAttribute = dacFinder.PxContext.AttributeTypes.PXCopyPasteHiddenViewAttribute;

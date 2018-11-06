@@ -1,4 +1,5 @@
 ﻿using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis
@@ -11,7 +12,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			context.RegisterCompilationStartAction(compilationStartContext =>
 			{
 				var pxContext = new PXContext(compilationStartContext.Compilation);
-				if (pxContext.PXGraphType != null && ShouldAnalyze(pxContext))
+
+				if (pxContext.IsPlatformReferenced && ShouldAnalyze(pxContext))
 				{
 					AnalyzeCompilation(compilationStartContext, pxContext);
 				}

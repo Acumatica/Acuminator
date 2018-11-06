@@ -39,15 +39,14 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 
 		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder)
 		{
-			if (dacFinder == null || dacFinder.GraphViewSymbolsWithTypes.Length == 0 ||
-				dacFinder.CancellationToken.IsCancellationRequested)
+			if (dacFinder == null || dacFinder.GraphViews.Length == 0 || dacFinder.CancellationToken.IsCancellationRequested)
 			{
 				return Enumerable.Empty<ITypeSymbol>();
 			}
 
-			return dacFinder.GraphViewSymbolsWithTypes.Take(NumberOfViews)
-													  .Select(viewWithType => viewWithType.ViewType.GetDacFromView(dacFinder.PxContext))
-													  .Where(dac => dac != null);
+			return dacFinder.GraphViews.Take(NumberOfViews)
+									   .Select(view => view.Type.GetDacFromView(dacFinder.PxContext))
+									   .Where(dac => dac != null);
 		}
 	}
 }

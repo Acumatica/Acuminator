@@ -1,61 +1,52 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
 using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
-using Acuminator.Analyzers.StaticAnalysis.ConnectionScopeInRowSelecting;
+using Acuminator.Analyzers.StaticAnalysis.DatabaseQueries;
 using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
+using Acuminator.Analyzers.StaticAnalysis.PXActionExecution;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance;
+using Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling;
 using Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers;
 using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
-using Acuminator.Utilities.Roslyn;
+using Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions;
+using Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic;
+using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Semantics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 {
-	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class EventHandlerAnalyzer : PXDiagnosticAnalyzer
+    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+	public class EventHandlerAnalyzer : SymbolAnalyzersAggregator<IEventHandlerAnalyzer>
 	{
-		private readonly ImmutableArray<IEventHandlerAnalyzer> _innerAnalyzers;
+        protected override SymbolKind SymbolKind => SymbolKind.Method;
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
-
-		public EventHandlerAnalyzer() : this(
+		public EventHandlerAnalyzer() : this(null,
 			// can be replaced with DI from ServiceLocator if DI-container is used
-			new ConnectionScopeInRowSelectingAnalyzer(),
+			new DatabaseQueriesInRowSelectingAnalyzer(),
 			new SavingChangesInEventHandlersAnalyzer(),
 			new ChangesInPXCacheInEventHandlersAnalyzer(),
 			new PXGraphCreateInstanceInEventHandlersAnalyzer(),
 			new LongOperationInEventHandlersAnalyzer(),
-			new RowChangesInEventHandlersAnalyzer())
+			new RowChangesInEventHandlersAnalyzer(),
+			new DatabaseQueriesInRowSelectedAnalyzer(),
+			new UiPresentationLogicInEventHandlersAnalyzer(),
+			new PXActionExecutionInEventHandlersAnalyzer(),
+			new ThrowingExceptionsInEventHandlersAnalyzer(),
+			new RaiseExceptionHandlingInEventHandlersAnalyzer())
 		{
 		}
 
 		/// <summary>
 		/// Constructor for the unit tests.
 		/// </summary>
-		public EventHandlerAnalyzer(params IEventHandlerAnalyzer[] innerAnalyzers)
+		public EventHandlerAnalyzer(CodeAnalysisSettings settings, params IEventHandlerAnalyzer[] innerAnalyzers)
+            : base(settings, innerAnalyzers)
 		{
-			_innerAnalyzers = ImmutableArray.CreateRange(innerAnalyzers);
-			SupportedDiagnostics = ImmutableArray.CreateRange(innerAnalyzers.SelectMany(a => a.SupportedDiagnostics));
 		}
 
-		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
-		{
-			compilationStartContext.RegisterSymbolAction(c => AnalyzeMethod(c, pxContext), SymbolKind.Method);
-			// TODO: Enable this operation action after migration to Roslyn v2
-			//compilationStartContext.RegisterOperationAction(c => AnalyzeLambda(c, pxContext), OperationKind.LambdaExpression);
-		}
-
-		private void AnalyzeMethod(SymbolAnalysisContext context, PXContext pxContext)
+		protected override void AnalyzeSymbol(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 			
@@ -68,24 +59,25 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 					foreach (var innerAnalyzer in _innerAnalyzers)
 					{
 						context.CancellationToken.ThrowIfCancellationRequested();
-						innerAnalyzer.Analyze(context, pxContext, eventType);
+						innerAnalyzer.Analyze(context, pxContext, codeAnalysisSettings, eventType);
 					}
 				}
 			}
 		}
 
-		private void AnalyzeLambda(OperationAnalysisContext context, PXContext pxContext)
+		private void AnalyzeLambda(OperationAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings)
 		{
 			if (context.Operation is ILambdaExpression lambdaExpression)
 			{
-				AnalyzeMethod(new SymbolAnalysisContext(
+				AnalyzeSymbol(new SymbolAnalysisContext(
 					lambdaExpression.Signature, 
 					context.Compilation,
 					context.Options, 
 					context.ReportDiagnostic, 
 					d => true, // this check is covered inside context.ReportDiagnostic
 					context.CancellationToken),
-					pxContext);
+					pxContext,
+					codeAnalysisSettings);
 			}
 		}
 	}

@@ -20,10 +20,11 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 
 		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder)
 		{
-			if (dacFinder?.Graph == null)
+			if (dacFinder?.GraphSemanticModel?.GraphSymbol == null)
 				return Enumerable.Empty<ITypeSymbol>();
 
-			ITypeSymbol primaryDac = dacFinder.Graph.GetDeclaredPrimaryDacFromGraphOrGraphExtension(dacFinder.PxContext);
+			ITypeSymbol primaryDac = dacFinder.GraphSemanticModel.GraphSymbol
+																 .GetDeclaredPrimaryDacFromGraphOrGraphExtension(dacFinder.PxContext);
 			return primaryDac?.ToEnumerable() ?? Enumerable.Empty<ITypeSymbol>();
 		}
 	}

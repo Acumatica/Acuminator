@@ -6,6 +6,7 @@ using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base;
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.DacRules;
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRules;
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules;
+using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.RulesProvider
 {
@@ -34,8 +35,8 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.RulesProv
 				new FirstViewsInGraphRule(numberOfViews: 5),
 				new FirstViewsInGraphRule(numberOfViews: 10),
 
-				new PairOfViewsWithSpecialNamesGraphRule(aFirstName: "Document", aSecondName: "CurrentDocument"),
-				new PairOfViewsWithSpecialNamesGraphRule(aFirstName: "Entities", aSecondName: "CurrentEntity"),
+				new PairOfViewsWithSpecialNamesGraphRule(firstName: "Document", secondName: "CurrentDocument"),
+				new PairOfViewsWithSpecialNamesGraphRule(firstName: "Entities", secondName: "CurrentEntity"),
 
 				new NoReadOnlyViewGraphRule(),
 				new ViewsWithoutPXViewNameAttributeGraphRule(context),

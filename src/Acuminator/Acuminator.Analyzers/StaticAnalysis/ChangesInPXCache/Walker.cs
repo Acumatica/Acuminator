@@ -1,27 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Acuminator.Utilities.Common;
+﻿using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
-using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Linq;
+using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 {
-	internal class Walker : NestedInvocationWalker
+    internal class Walker : NestedInvocationWalker
 	{
-		private static readonly ISet<string> MethodNames = new HashSet<string>(StringComparer.Ordinal)
-		{
-			"Insert" ,
-			"Update",
-			"Delete",
-		};
-
-		private SymbolAnalysisContext _context;
+		private readonly SymbolAnalysisContext _context;
 		private readonly PXContext _pxContext;
 		private readonly DiagnosticDescriptor _diagnosticDescriptor;
 		private readonly object[] _messageArgs;
@@ -57,9 +46,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 
 		private bool IsMethodForbidden(IMethodSymbol symbol)
 		{
-			return symbol.ContainingType?.OriginalDefinition != null
-			       && symbol.ContainingType.OriginalDefinition.InheritsFromOrEquals(_pxContext.PXCacheType)
-			       && MethodNames.Contains(symbol.Name);
+			var methodSymbol = symbol.OriginalDefinition?.OverriddenMethod ?? symbol.OriginalDefinition;
+
+			return methodSymbol != null &&
+				   (_pxContext.PXCache.Insert.Any(i => methodSymbol.Equals(i)) ||
+                   _pxContext.PXCache.Update.Any(u => methodSymbol.Equals(u)) ||
+                   _pxContext.PXCache.Delete.Any(d => methodSymbol.Equals(d)) ||
+                   _pxContext.PXSelectBaseGeneric.Insert.Any(i => methodSymbol.Equals(i)) ||
+                   _pxContext.PXSelectBaseGeneric.Update.Any(u => methodSymbol.Equals(u)) ||
+                   _pxContext.PXSelectBaseGeneric.Delete.Any(d => methodSymbol.Equals(d)));
 		}
 	}
 }

@@ -103,12 +103,17 @@ namespace Acuminator.Vsix.GoToDeclaration
 			if (memberNode == null)
 				return;
 
-			ISymbol memberSymbol = GetMemberSymbol(memberNode, semanticModel, caretPosition);
+			PXContext context = new PXContext(semanticModel.Compilation);
 
-			if (!CheckMemberSymbol(memberSymbol))
+			if (!context.IsPlatformReferenced)
 				return;
 
-			NavigateToHandlerOrDeclaration(document, textView, memberSymbol, memberNode, semanticModel);
+			ISymbol memberSymbol = GetMemberSymbol(memberNode, semanticModel, caretPosition);
+
+			if (!CheckMemberSymbol(memberSymbol, context))
+				return;
+
+			NavigateToHandlerOrDeclaration(document, textView, memberSymbol, memberNode, semanticModel, context);
 		}
 
 		private ISymbol GetMemberSymbol(MemberDeclarationSyntax memberDeclaration, SemanticModel semanticModel, SnapshotPoint caretPosition)
@@ -127,9 +132,9 @@ namespace Acuminator.Vsix.GoToDeclaration
 			return semanticModel.GetDeclaredSymbol(variableDeclaration);
 		}
 
-		private bool CheckMemberSymbol(ISymbol memberSymbol)
+		private bool CheckMemberSymbol(ISymbol memberSymbol, PXContext context)
 		{
-			if (memberSymbol?.ContainingType == null || !memberSymbol.ContainingType.IsPXGraph())
+			if (memberSymbol?.ContainingType == null || !memberSymbol.ContainingType.IsPXGraphOrExtension(context))
 				return false;
 
 			switch (memberSymbol.Kind)
@@ -144,98 +149,94 @@ namespace Acuminator.Vsix.GoToDeclaration
 		}
 
 		private void NavigateToHandlerOrDeclaration(Document document, IWpfTextView textView, ISymbol memberSymbol,
-													MemberDeclarationSyntax memberNode, SemanticModel semanticModel)
+													MemberDeclarationSyntax memberNode, SemanticModel semanticModel, PXContext context)
 		{
-			PXContext context = new PXContext(semanticModel.Compilation);
-			INamedTypeSymbol graphType = memberSymbol.ContainingType;
-			
+			INamedTypeSymbol graphOrExtensionType = memberSymbol.ContainingType;
+			PXGraphSemanticModel graphSemanticModel = PXGraphSemanticModel.InferModels(context, graphOrExtensionType)
+																		 ?.FirstOrDefault();
+
+			if (graphSemanticModel == null || graphSemanticModel.Type == GraphType.None)
+				return;
+
 			switch (memberSymbol)
 			{
 				case IFieldSymbol fieldSymbol when fieldSymbol.Type.IsPXAction():
-					NavigateToPXActionHandler(document, textView, fieldSymbol, graphType, context);
+					NavigateToPXActionHandler(document, textView, fieldSymbol, graphSemanticModel, context);
 					return;
 				case IFieldSymbol fieldSymbol when fieldSymbol.Type.IsBqlCommand(context):
-					NavigateToPXViewDelegate(document, textView, fieldSymbol, graphType, context);
-					return;
-				case IPropertySymbol propertySymbol when propertySymbol.Type.IsPXAction():
-					NavigateToPXActionHandler(document, textView, propertySymbol, graphType, context);
-					return;
-				case IPropertySymbol propertySymbol when propertySymbol.Type.IsBqlCommand(context):
-					NavigateToPXViewDelegate(document, textView, propertySymbol, graphType, context);
-					return;
+					NavigateToPXViewDelegate(document, textView, fieldSymbol, graphSemanticModel, context);
+					return;								
 				case IMethodSymbol methodSymbol:
-					NavigateToActionOrViewDeclaration(document, textView, methodSymbol, graphType, context);
+					NavigateToActionOrViewDeclaration(document, textView, methodSymbol, graphSemanticModel, context);
 					return;
 			}
 		}
 
-		private void NavigateToPXActionHandler(Document document, IWpfTextView textView, ISymbol actionSymbol, INamedTypeSymbol graphSymbol,
+		private void NavigateToPXActionHandler(Document document, IWpfTextView textView, ISymbol actionSymbol, PXGraphSemanticModel graphSemanticModel,
 											   PXContext context)
 		{
-			var actionHandlers = GetActionHandlerByName(graphSymbol, actionSymbol.Name, context);
-
-			if (!actionHandlers.IsSingle())
+			if (!graphSemanticModel.ActionHandlersByNames.TryGetValue(actionSymbol.Name, out ActionHandlerInfo actionHandler))
 				return;
 
-			IMethodSymbol actionHandler = actionHandlers.First();
-			ImmutableArray<SyntaxReference> syntaxReferences = actionHandler.DeclaringSyntaxReferences;
+			IWpfTextView textViewToNavigateTo = textView;
 
-			if (syntaxReferences.Length != 1)
+			if (!(actionHandler.Node is MethodDeclarationSyntax handlerNode) || handlerNode.SyntaxTree == null)
 				return;
 
-			SyntaxReference syntaxReference = syntaxReferences[0];
-
-			if (syntaxReference.SyntaxTree.FilePath != document.FilePath)
+			if (handlerNode.SyntaxTree.FilePath != document.FilePath)
 			{
-				textView = OpenOtherDocumentForNavigationAndGetItsTextView(document, syntaxReference);
-			}
+				textViewToNavigateTo = OpenOtherDocumentForNavigationAndGetItsTextView(document, handlerNode.SyntaxTree);
+			}	
 
-			if (textView == null)
+			if (textViewToNavigateTo == null)
 				return;
 
-			MethodDeclarationSyntax methodNode = syntaxReference.GetSyntax() as MethodDeclarationSyntax;
-			TextSpan textSpan = methodNode?.Identifier.Span ?? syntaxReferences[0].Span;
-			SetNewPositionInTextView(textView, textSpan);
-		}
-
-		private IEnumerable<IMethodSymbol> GetActionHandlerByName(INamedTypeSymbol graphSymbol, string name, PXContext pxContext) =>
-			from method in graphSymbol.GetMembers().OfType<IMethodSymbol>()
-			where method.Name.Equals(name, StringComparison.OrdinalIgnoreCase) && IsValidActionHandler(method, pxContext)
-			select method;
+			SetNewPositionInTextView(textViewToNavigateTo, handlerNode.Identifier.Span);
+		}	
 										
-		private void NavigateToPXViewDelegate(Document document, IWpfTextView textView, ISymbol viewSymbol, INamedTypeSymbol graphSymbol,
-											  PXContext context)
-		{
-			var viewDelegates = GetDelegateByName(graphSymbol, viewSymbol.Name, context);
-
-			if (!viewDelegates.IsSingle())
-				return;
-			
-			IMethodSymbol viewDelegate = viewDelegates.First();
-			ImmutableArray<SyntaxReference> syntaxReferences = viewDelegate.DeclaringSyntaxReferences;
-
-			if (syntaxReferences.Length != 1)
+		private void NavigateToPXViewDelegate(Document document, IWpfTextView textView, ISymbol viewSymbol, 
+											  PXGraphSemanticModel graphSemanticModel, PXContext context)
+		{		
+			var viewDelegates = graphSemanticModel.ViewDelegates
+												  .Where(vDelegate => string.Equals(viewSymbol.Name, vDelegate.Symbol.Name,
+																					StringComparison.OrdinalIgnoreCase))
+												  .ToList();
+			if (viewDelegates.Count == 0)
 				return;
 
-			SyntaxReference syntaxReference = syntaxReferences[0];
+			DataViewDelegateInfo viewDelegateInfo;
 
-			if (syntaxReference.SyntaxTree.FilePath != document.FilePath)
+			if (viewDelegates.Count == 1)
 			{
-				textView = OpenOtherDocumentForNavigationAndGetItsTextView(document, syntaxReference);
+				viewDelegateInfo = viewDelegates.First();
+			}
+			else
+			{
+				viewDelegateInfo = viewDelegates.Where(vDelegate => vDelegate.Symbol.ContainingType == viewSymbol.ContainingType)
+												.FirstOrDefault();
 			}
 
-			if (textView == null)
+			if (!(viewDelegateInfo.Node is MethodDeclarationSyntax methodNode) || methodNode.SyntaxTree == null)
 				return;
 
-			MethodDeclarationSyntax methodNode = syntaxReference.GetSyntax() as MethodDeclarationSyntax;
-			TextSpan textSpan = methodNode?.Identifier.Span ?? syntaxReferences[0].Span;
-			SetNewPositionInTextView(textView, textSpan);
+			string viewDelegateFilePath = viewDelegateInfo.Node.SyntaxTree.FilePath;
+			IWpfTextView textViewToNavigateTo = textView;
+
+			if (viewDelegateFilePath != document.FilePath)
+			{
+				textViewToNavigateTo = OpenOtherDocumentForNavigationAndGetItsTextView(document, viewDelegateInfo.Node.SyntaxTree);
+			}
+
+			if (textViewToNavigateTo == null)
+				return;
+
+			SetNewPositionInTextView(textViewToNavigateTo, methodNode.Identifier.Span);
 		}
 
-		private void NavigateToActionOrViewDeclaration(Document document, IWpfTextView textView, IMethodSymbol methodSymbol, INamedTypeSymbol graphSymbol,
-													   PXContext context)
+		private void NavigateToActionOrViewDeclaration(Document document, IWpfTextView textView, IMethodSymbol methodSymbol, 
+													   PXGraphSemanticModel graphSemanticModel, PXContext context)
 		{
-			ISymbol symbolToNavigate = GetSymbolToNavigateTo();
+			ISymbol symbolToNavigate = GetActionOrViewSymbolToNavigateTo(methodSymbol, graphSemanticModel, context);
 
 			if (symbolToNavigate == null)
 				return;
@@ -249,7 +250,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 
 			if (syntaxReference.SyntaxTree.FilePath != document.FilePath)
 			{
-				textView = OpenOtherDocumentForNavigationAndGetItsTextView(document, syntaxReference);
+				textView = OpenOtherDocumentForNavigationAndGetItsTextView(document, syntaxReference.SyntaxTree);
 			}
 
 			if (textView == null)
@@ -271,43 +272,43 @@ namespace Acuminator.Vsix.GoToDeclaration
 			}
 
 			SetNewPositionInTextView(textView, textSpan);
-
-			//********************************************************Local Function**********************************************
-			ISymbol GetSymbolToNavigateTo()
-			{
-				IEnumerable<ISymbol> candidates;
-
-				if (IsValidActionHandler(methodSymbol, context))
-				{
-					candidates = graphSymbol.GetPXActionSymbolsWithTypesFromGraph(context, includeActionsFromInheritanceChain: false)
-											.Where(actionWithType => actionWithType.ActionSymbol.Name.Equals(methodSymbol.Name,
-																	 StringComparison.OrdinalIgnoreCase))
-											.Select(actionWithType => actionWithType.ActionSymbol);		
-				}
-				else if (IsValidViewDelegate(methodSymbol, context))
-				{
-					candidates = graphSymbol.GetViewsWithSymbolsFromPXGraph(context, includeViewsFromInheritanceChain: false)
-											.Where(viewWithType => viewWithType.ViewSymbol.Name.Equals(methodSymbol.Name,
-																   StringComparison.OrdinalIgnoreCase))
-											.Select(viewWithType => viewWithType.ViewSymbol);
-				}
-				else
-					return null;
-
-				return candidates.IsSingle()
-						? candidates.First()
-						: null;
-			}	
 		}
 
-		private IEnumerable<IMethodSymbol> GetDelegateByName(INamedTypeSymbol graphSymbol, string name, PXContext pxContext) =>
-			graphSymbol.GetMembers()
-					   .OfType<IMethodSymbol>()
-					   .Where(method => method.Name.Equals(name, StringComparison.OrdinalIgnoreCase) && IsValidViewDelegate(method, pxContext));
-
-		private IWpfTextView OpenOtherDocumentForNavigationAndGetItsTextView(Document originalDocument, SyntaxReference syntaxReference)
+		private static ISymbol GetActionOrViewSymbolToNavigateTo(IMethodSymbol methodSymbol, PXGraphSemanticModel graphSemanticModel,
+																 PXContext context)
 		{
-			DocumentId documentToNavigateId = originalDocument.Project.GetDocumentId(syntaxReference.SyntaxTree);
+			IEnumerable<ISymbol> candidates;
+
+			if (methodSymbol.IsValidActionHandler(context))
+			{
+				candidates = from action in graphSemanticModel.Actions
+							 where string.Equals(action.Symbol.Name, methodSymbol.Name, StringComparison.OrdinalIgnoreCase)
+							 select action.Symbol;
+			}
+			else if (methodSymbol.IsValidViewDelegate(context))
+			{
+				candidates = from viewInfo in graphSemanticModel.Views
+							 where string.Equals(viewInfo.Symbol.Name, methodSymbol.Name, StringComparison.OrdinalIgnoreCase)
+							 select viewInfo.Symbol;
+			}
+			else
+				return null;
+
+			if (candidates.IsSingle())
+			{
+				return candidates.First();
+			}
+			else
+			{
+				return candidates.Where(symbol => symbol.ContainingType == methodSymbol.ContainingType ||
+												  symbol.ContainingType.OriginalDefinition == methodSymbol.ContainingType.OriginalDefinition)
+								 .FirstOrDefault();
+			}
+		}
+
+		private IWpfTextView OpenOtherDocumentForNavigationAndGetItsTextView(Document originalDocument, SyntaxTree syntaxTreeToNavigate)
+		{
+			DocumentId documentToNavigateId = originalDocument.Project.GetDocumentId(syntaxTreeToNavigate);
 
 			if (documentToNavigateId == null)
 				return null;
@@ -342,20 +343,6 @@ namespace Acuminator.Vsix.GoToDeclaration
 
 			textView.Selection.Select(selectedSpan, isReversed: false);
 		}
-
-		private static bool IsValidActionHandler(IMethodSymbol method, PXContext pxContext)
-		{
-			if (method.Parameters.Length == 0 && method.ReturnsVoid)
-				return true;
-			else
-			{
-				return method.Parameters[0].Type.InheritsFromOrEquals(pxContext.PXAdapterType) &&
-					   method.ReturnType.InheritsFromOrEquals(pxContext.SystemTypes.IEnumerable, includeInterfaces: true);
-			}
-		}
-
-		private static bool IsValidViewDelegate(IMethodSymbol method, PXContext pxContext) =>
-			 method.ReturnType.InheritsFromOrEquals(pxContext.SystemTypes.IEnumerable, includeInterfaces: true);
 
 		private void ExpandAllRegionsContainingSpan(SnapshotSpan selectedSpan, IWpfTextView textView)
 		{

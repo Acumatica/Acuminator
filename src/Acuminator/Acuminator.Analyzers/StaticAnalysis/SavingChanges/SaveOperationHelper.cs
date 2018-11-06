@@ -40,7 +40,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 					case PressSaveMethodName when containingType.InheritsFromOrEquals(pxContext.PXActionCollection):
 						return SaveOperationKind.PressSave;
 					// PXSave.press
-					case PressMethodName when containingType.InheritsFromOrEquals(pxContext.PXActionType):
+					case PressMethodName when containingType.InheritsFromOrEquals(pxContext.PXAction.Type):
 						var walker = new SavePressWalker(semanticModel, pxContext);
 						syntaxNode.Accept(walker);
 						return walker.Found ? SaveOperationKind.PressSave : SaveOperationKind.None;
@@ -52,7 +52,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 					case CachePersistInsertedMethodName:
 					case CachePersistUpdatedMethodName:
 					case CachePersistDeletedMethodName:
-						if (containingType.InheritsFromOrEquals(pxContext.PXCacheType))
+						if (containingType.InheritsFromOrEquals(pxContext.PXCache.Type))
 							return SaveOperationKind.CachePersist;
 						break;
 				}

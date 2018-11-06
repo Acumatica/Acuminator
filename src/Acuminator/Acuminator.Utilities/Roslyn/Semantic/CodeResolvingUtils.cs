@@ -148,7 +148,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				return true;
 
 			List<ITypeSymbol> typeHierarchy = typeSymbol.GetBaseTypesAndThis().ToList();
-			return typeHierarchy.Contains(pxContext.PXSelectBaseType) || typeHierarchy.Contains(pxContext.BQL.BqlCommand);
+			return typeHierarchy.Contains(pxContext.PXSelectBase.Type) || typeHierarchy.Contains(pxContext.BQL.BqlCommand);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -246,7 +246,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
             typeSymbol.ThrowOnNull(nameof(typeSymbol));
             pxContext.ThrowOnNull(nameof(pxContext));
 
-            return typeSymbol.InheritsFromOrEquals(pxContext.PXGraphType);
+            return typeSymbol.InheritsFromOrEquals(pxContext.PXGraph.Type);
         }
 
         public static bool IsPXGraphExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
@@ -263,7 +263,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
             typeSymbol.ThrowOnNull(nameof(typeSymbol));
             pxContext.ThrowOnNull(nameof(pxContext));
 
-            return typeSymbol.InheritsFromOrEquals(pxContext.PXGraphType) ||
+            return typeSymbol.InheritsFromOrEquals(pxContext.PXGraph.Type) ||
                    typeSymbol.InheritsFromOrEquals(pxContext.PXGraphExtensionType);
         }
 
@@ -282,7 +282,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			context.ThrowOnNull(nameof(context));
 
 			int pxSelectBaseStandartDepth = context.IsAcumatica2018R2 ? 3 : 2;
-			int? pxSelectBaseDepth = bqlTypeSymbol.GetInheritanceDepth(context.PXSelectBaseType);
+			int? pxSelectBaseDepth = bqlTypeSymbol.GetInheritanceDepth(context.PXSelectBase.Type);
 
 			if (pxSelectBaseDepth > pxSelectBaseStandartDepth)
 				return true;
@@ -423,7 +423,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				// is extracted from event handler calls to a separate method
 
 				// Old non-generic syntax
-				if (symbol.Parameters[0].Type.OriginalDefinition.InheritsFromOrEquals(pxContext.PXCacheType))
+				if (symbol.Parameters[0].Type.OriginalDefinition.InheritsFromOrEquals(pxContext.PXCache.Type))
 				{
 					if (symbol.Name.EndsWith("CacheAttached", StringComparison.Ordinal))
 						return (EventType.CacheAttached, EventHandlerSignatureType.Default);

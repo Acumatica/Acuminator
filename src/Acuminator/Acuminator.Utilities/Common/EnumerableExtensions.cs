@@ -17,6 +17,12 @@ namespace Acuminator.Utilities.Common
 				yield return item;
 		}
 
+		/// <summary>
+		/// Perfrom an <paramref name="action"/> on all items of the <paramref name="source"/> collection.
+		/// </summary>
+		/// <typeparam name="T">Generic type parameter.</typeparam>
+		/// <param name="source">The source to act on.</param>
+		/// <param name="action">The action.</param>
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
@@ -68,7 +74,7 @@ namespace Acuminator.Utilities.Common
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Stack<T> ToStack<T>(this IEnumerable<T> source) => source != null 
+		public static Stack<T> ToStack<T>(this IEnumerable<T> source) => source != null
 			? new Stack<T>(source)
 			: throw new ArgumentNullException(nameof(source));
 
