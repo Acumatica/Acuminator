@@ -980,7 +980,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown in action delegates.
+        ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown in action handlers.
         /// </summary>
         public static string PX1090Title {
             get {
