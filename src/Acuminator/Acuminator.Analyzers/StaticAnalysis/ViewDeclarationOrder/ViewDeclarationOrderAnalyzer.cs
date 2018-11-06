@@ -14,6 +14,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 {
 	/// <summary>
 	/// An analyzer for the order of view declaration in graph/graph extension.
+	/// This diagnostic works only for simple class hierarchy where the depth of the inheritance is equal to 2: object -> DAC -> DerivedDAC.
 	/// </summary>
 	public class ViewDeclarationOrderAnalyzer : IPXGraphAnalyzer
 	{
@@ -79,34 +80,36 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 															 IGrouping<ITypeSymbol, DataViewInfo> dacViews,
 															 ILookup<ITypeSymbol, DataViewInfo> viewsGroupedByDAC)
 		{
-			var dacViewsDeclaredInGraph = dacViews.Where(view => GraphContainsViewDeclaration(graphSemanticModel, view)).ToList();
+			var dacViewsDeclaredInGraph = dacViews.Where(view => GraphContainsViewDeclaration(graphSemanticModel, view));
+			ITypeSymbol dac = dacViews.Key;
+			int dacViewDeclarationOrder = dacViews.Min(view => view.DeclarationOrder);
+			var baseDacs = dac.GetBaseTypes()
+							  .Where(t => t.IsDAC() && viewsGroupedByDAC.Contains(t))
+							  .ToList();
 
-			if (dacViewsDeclaredInGraph.Count == 0)
+			if (baseDacs.Count != 1)
 				return;
 
-			ITypeSymbol dac = dacViews.Key;
-			int minDacViewDeclarationOrder = dacViews.Min(view => view.DeclarationOrder);
-			var baseDACsWithViews = dac.GetBaseTypes()
-									   .Where(t => t.IsDAC() && viewsGroupedByDAC.Contains(t));
+			ITypeSymbol baseDac = baseDacs[0];
+			int baseDacViewOrder = viewsGroupedByDAC[baseDac].Min(baseDacView => baseDacView.DeclarationOrder);
 
-			foreach (INamedTypeSymbol baseDac in baseDACsWithViews)
-			{
-				var minBaseDacViewDeclarationOrder = viewsGroupedByDAC[baseDac].Min(view => view.DeclarationOrder);
-				DiagnosticDescriptor descriptor = minBaseDacViewDeclarationOrder > minDacViewDeclarationOrder
-					? Descriptors.PX1004_ViewDeclarationOrder
-					: Descriptors.PX1006_ViewDeclarationOrder;
+			DiagnosticDescriptor descriptor = dacViewDeclarationOrder > baseDacViewOrder  
+					? Descriptors.PX1004_ViewDeclarationOrder                                //the first declared DAC view goes after the first declared base DAC view and two caches will be created
+					: Descriptors.PX1006_ViewDeclarationOrder;                               //the first declared DAC view goes before the first declared base DAC view and one cache will be created
 
-				ReportDiagnostic(descriptor, symbolContext, dacViewsDeclaredInGraph, dac, baseDac);
-			}
+			var baseDacViewsDeclaredInGraph = viewsGroupedByDAC[baseDac].Where(view => GraphContainsViewDeclaration(graphSemanticModel, view));
+			var viewsToShowDiagnostic = dacViewsDeclaredInGraph.Concat(baseDacViewsDeclaredInGraph);
+
+			ReportDiagnostic(descriptor, symbolContext, viewsToShowDiagnostic, dac, baseDac);
 		}	
 
 		private static bool GraphContainsViewDeclaration(PXGraphSemanticModel graphSemanticModel, DataViewInfo viewInfo) =>
 			graphSemanticModel.Symbol.OriginalDefinition?.Equals(viewInfo.Symbol.ContainingType?.OriginalDefinition) ?? false;
 
 		private static void ReportDiagnostic(DiagnosticDescriptor descriptor, SymbolAnalysisContext symbolContext, 
-											 List<DataViewInfo> declaredViews, ITypeSymbol dac, ITypeSymbol baseDac)
+											 IEnumerable<DataViewInfo> viewsToShowDiagnostic, ITypeSymbol dac, ITypeSymbol baseDac)
 		{
-			foreach (DataViewInfo view in declaredViews)
+			foreach (DataViewInfo view in viewsToShowDiagnostic)
 			{
 				Location viewLocation = view.Symbol.Locations.FirstOrDefault();
 
