@@ -8,6 +8,7 @@ using Acuminator.Analyzers.StaticAnalysis.PXActionExecution;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization;
 using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
 using Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions;
+using Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic;
 using Acuminator.Utilities;
 using Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -33,7 +34,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
             new ThrowingExceptionsInLongRunningOperationAnalyzer(),
             new CallingBaseDataViewDelegateFromOverrideDelegateAnalyzer(),
             new InvalidViewUsageInProcessingDelegateAnalyzer(),
-            new ViewDeclarationOrderAnalyzer())
+            new UiPresentationLogicInActionHandlersAnalyzer(),
+			new ViewDeclarationOrderAnalyzer())
         {
         }
 
