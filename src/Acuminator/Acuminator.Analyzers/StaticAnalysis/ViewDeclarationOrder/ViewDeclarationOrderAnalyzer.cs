@@ -22,23 +22,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 		
 		public void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphSemanticModel graphSemanticModel)
 		{
-			if (graphSemanticModel.Views.Length == 0)
+			if (graphSemanticModel.ViewsByNames.Count == 0)
 				return;
 
 			AnalysisContext analysisContext = new AnalysisContext(symbolContext, graphSemanticModel);
 
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 			RunAnalysisOnGraphViewsToFindTwoCacheCases(analysisContext);
-			symbolContext.CancellationToken.ThrowIfCancellationRequested();
-
-			
+			symbolContext.CancellationToken.ThrowIfCancellationRequested();	
 		}
 
 		private static void RunAnalysisOnGraphViewsToFindTwoCacheCases(AnalysisContext analysisContext)
 		{
 			foreach (DataViewInfo viewInfo in analysisContext.GetViewsToAnalyze())
 			{
-				ITypeSymbol viewDacType = viewInfo.ViewDac;
+				ITypeSymbol viewDacType = viewInfo.ViewDAC;
 
 				if (!viewDacType.IsDAC())
 					continue;
@@ -108,22 +106,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 
 		private static void RunAnalysisOnGraphViewsToFindOneCacheCases(AnalysisContext analysisContext)
 		{
-			var dacsDeclaredInBaseGraphs = analysisContext.ViewsInBaseGraphs.Select(view => view.ViewDac)
-																			.Distinct()
-																			.ToList();
+			var dacsDeclaredInBaseGraphs = analysisContext.ViewsInBaseGraphs
+														  .Select(view => view.ViewDAC)
+														  .Distinct()
+														  .ToList();
 
 			for (int i = analysisContext.ViewsInGraphNotMarkedOnForwardPass.Count - 1; i >= 0; i++)
 			{
 				DataViewInfo view = analysisContext.ViewsInGraphNotMarkedOnForwardPass[i];
-				ITypeSymbol viewDacType = view.ViewDac;
-				var defivedDacsInBaseGraph = dacsDeclaredInBaseGraphs.Any(dacInBaseGraph => dacInBaseGraph.InheritsFrom(viewDacType))
-
+				ITypeSymbol viewDacType = view.ViewDAC;
+				var defivedDacsInBaseGraph = dacsDeclaredInBaseGraphs.Any(dacInBaseGraph => 
+																			dacInBaseGraph.InheritsFrom(viewDacType));
 				if ()
 				{
-					analysisContext.ReportDiagnosticForBaseDACs(visitedBaseDACs, viewDacType, Descriptors.PX1004_ViewDeclarationOrder, viewLocation);
+					analysisContext.ReportDiagnosticForBaseDACs(visitedBaseDACs, viewDacType, 
+																Descriptors.PX1004_ViewDeclarationOrder, viewLocation);
 				}
-
-
 			}
 		}
 
