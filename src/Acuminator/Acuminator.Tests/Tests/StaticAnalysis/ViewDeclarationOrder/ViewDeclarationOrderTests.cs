@@ -24,6 +24,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ViewDeclarationOrder
         {
             VerifyCSharpDiagnostic(actual, 
 				Descriptors.PX1006_ViewDeclarationOrder.CreateFor(9, 29, "Vendor", "BAccount"),
+				Descriptors.PX1006_ViewDeclarationOrder.CreateFor(10, 31, "Vendor", "BAccount"),
+	            Descriptors.PX1004_ViewDeclarationOrder.CreateFor(17, 28, "Customer", "BAccount"),
 	            Descriptors.PX1004_ViewDeclarationOrder.CreateFor(18, 28, "Customer", "BAccount"));
         }
 
@@ -42,6 +44,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ViewDeclarationOrder
 		{
 			VerifyCSharpDiagnostic(actual,
 				Descriptors.PX1006_ViewDeclarationOrder.CreateFor(13, 29, "SOInvoice", "ARInvoice"),
+				Descriptors.PX1006_ViewDeclarationOrder.CreateFor(15, 29, "SOInvoice", "ARInvoice"),
 				Descriptors.PX1006_ViewDeclarationOrder.CreateFor(20, 29, "SOInvoice", "ARInvoice"));
 		}
 
