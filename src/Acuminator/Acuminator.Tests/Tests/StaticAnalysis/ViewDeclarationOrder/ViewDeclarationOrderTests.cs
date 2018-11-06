@@ -1,17 +1,22 @@
-﻿using Acuminator.Analyzers.StaticAnalysis;
+﻿using Microsoft.CodeAnalysis.Diagnostics;
+using Xunit;
+using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
-using Microsoft.CodeAnalysis.Diagnostics;
-using Xunit;
+using Acuminator.Utilities;
+
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.ViewDeclarationOrder
 {
     public class ViewDeclarationOrderTests : CodeFixVerifier
     {
 	    protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>  
-			new PXGraphAnalyzer(new ViewDeclarationOrderAnalyzer());
+			new PXGraphAnalyzer(CodeAnalysisSettings.Default
+													.WithRecursiveAnalysisEnabled()
+													.WithIsvSpecificAnalyzersEnabled(), 
+								new ViewDeclarationOrderAnalyzer());
 
 		[Theory]
         [EmbeddedFileData("ViewDeclarationOrderInOneGraph.cs")]
