@@ -53,6 +53,7 @@
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\BqlLocalVariableTypeResolver.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\ParametersCounterSymbolWalker.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\ParametersCounterSyntaxWalker.cs" />
+    <Compile Include="StaticAnalysis\CallingBaseActionHandler\CallingBaseActionHandlerFromOverrideHandlerAnalyzer.cs" />
     <Compile Include="StaticAnalysis\CallingBaseDataViewDelegate\CallingBaseDataViewDelegateFromOverrideDelegateAnalyzer.cs" />
     <Compile Include="StaticAnalysis\ChangesInPXCache\ChangesInPXCacheInEventHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\ChangesInPXCache\ChangesInPXCacheDuringPXGraphInitializationAnalyzer.cs" />
