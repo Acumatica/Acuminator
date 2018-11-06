@@ -16,13 +16,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 	/// </summary>
 	public partial class ViewDeclarationOrderAnalyzer : IPXGraphAnalyzer
 	{
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+		private const string InitCacheMappingmethodName = "InitCacheMapping";
+
+		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1004_ViewDeclarationOrder, Descriptors.PX1006_ViewDeclarationOrder);
 
 		
 		public void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphSemanticModel graphSemanticModel)
 		{
-			if (graphSemanticModel.ViewsByNames.Count == 0)
+
+			if (graphSemanticModel.ViewsByNames.Count == 0 || IsNewMethodUsedToInitCaches(pxContext))
 				return;
 
 			AnalysisContext analysisContext = new AnalysisContext(symbolContext, graphSemanticModel);
@@ -30,6 +33,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 			RunAnalysisOnGraphViewsToFindTwoCacheCases(analysisContext);
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();	
+		}
+
+		/// <summary>
+		/// Starting from the Acumatica 2018R2 version a new method is used to initialize caches with explicit ordering of caches.
+		/// </summary>
+		/// <returns/>
+		private static bool IsNewMethodUsedToInitCaches(PXContext pxContext)
+		{
+			var baseGraphType = pxContext.PXGraph.Type;
+			IMethodSymbol initCachesNewMethod = baseGraphType.GetMembers(InitCacheMappingmethodName)
+															 .OfType<IMethodSymbol>()
+															 .FirstOrDefault(method => method.ReturnsVoid && method.Parameters.Length == 1);
+			return initCachesNewMethod != null;
 		}
 
 		private static void RunAnalysisOnGraphViewsToFindTwoCacheCases(AnalysisContext analysisContext)
