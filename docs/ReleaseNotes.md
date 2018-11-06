@@ -32,6 +32,12 @@ Now Acuminator includes diagnostics that are designed specifically for the certi
 
 To turn on these diagnostics, you set the value of **Tools > Options > Acuminator > Code Analysis > Enable additional diagnostics for ISV Solution Certification** to `True`. By default, these diagnostics are turned off.
 
+### Fixed Bugs
+In this version of Acuminator, the following bugs have been fixed:
+
+ - BQL colorizer of Version 1.4 didn't work in Visual Studio 2015.
+ - The PX1012 diagnostic incorrectly determined the primary DAC.
+
 ## Acuminator 1.4
 Acuminator 1.4 includes the diagnostics and code fixes, suggestions for refactoring code, and bug fixes described in this section, as well as the features that have been implemented in previous versions.
 
