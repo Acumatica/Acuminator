@@ -87,12 +87,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
 
                 var expressionSymbol = GetSymbol<ISymbol>(node.Expression);
 
-                // case Base.PXSelectBaseGenIns.Select()
+                // Case Base.PXSelectBaseGenIns.Select()
                 if (_pxContext.PXSelectBaseGeneric.Select.Contains(methodSymbol))
                 {
                     reported = TryToReport(expressionSymbol, node);
                 }
-                // case Base.PXSelectBaseGenIns.View.Select()
+                // Case Base.PXSelectBaseGenIns.View.Select()
                 else if (_pxContext.PXView.Select.Contains(symbol) &&
                          _pxContext.PXSelectBase.View.Equals(expressionSymbol) &&
                          node.Expression is MemberAccessExpressionSyntax expressionNode)
