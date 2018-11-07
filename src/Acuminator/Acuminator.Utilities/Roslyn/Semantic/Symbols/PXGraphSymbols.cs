@@ -6,7 +6,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
     public class PXGraphSymbols
     {
-		private const string InitCacheMappingMethodName = "InitCacheMapping";
+		private const string InitCacheMappingMethodName = nameof(PX.Data.PXGraph.InitCacheMapping);
 
 		public class InstanceCreatedEventsSymbols
 	    {
