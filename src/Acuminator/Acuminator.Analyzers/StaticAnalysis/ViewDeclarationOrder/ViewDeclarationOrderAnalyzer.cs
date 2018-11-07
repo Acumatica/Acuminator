@@ -18,8 +18,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 	/// </summary>
 	public class ViewDeclarationOrderAnalyzer : IPXGraphAnalyzer
 	{
-		private const string InitCacheMappingMethodName = "InitCacheMapping";
-
 		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1004_ViewDeclarationOrder, Descriptors.PX1006_ViewDeclarationOrder);
 
@@ -48,14 +46,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 		/// Starting from the Acumatica 2018R2 version a new method is used to initialize caches with explicit ordering of caches.
 		/// </summary>
 		/// <returns/>
-		private static bool IsNewMethodUsedToInitCaches(PXContext pxContext)
-		{
-			IMethodSymbol initCachesNewMethod = pxContext.PXGraph.Type
-																 .GetMembers(InitCacheMappingMethodName)
-																 .OfType<IMethodSymbol>()
-																 .FirstOrDefault(method => method.ReturnsVoid && method.Parameters.Length == 1);
-			return initCachesNewMethod != null;
-		}
+		private static bool IsNewMethodUsedToInitCaches(PXContext pxContext) => pxContext.PXGraph.InitCacheMapping != null;
 
 		private static IEnumerable<DataViewInfo> GetViewsUsedInAnalysis(PXGraphSemanticModel graphSemanticModel)
 		{
