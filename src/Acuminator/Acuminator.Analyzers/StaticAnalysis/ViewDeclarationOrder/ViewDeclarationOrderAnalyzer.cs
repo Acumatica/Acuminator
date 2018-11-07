@@ -38,10 +38,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 
 			foreach (IGrouping<ITypeSymbol, DataViewInfo> dacViews in viewsGroupedByDAC)
 			{
+				symbolContext.CancellationToken.ThrowIfCancellationRequested();
+
 				AnalyzeDacViewsForNumberOfCaches(graphSemanticModel, symbolContext, dacViews, viewsGroupedByDAC);
 			}
-
-			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 		}
 
 		/// <summary>
