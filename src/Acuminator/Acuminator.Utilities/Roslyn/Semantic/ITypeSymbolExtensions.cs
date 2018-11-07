@@ -24,13 +24,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// <returns/>
 		public static IEnumerable<ITypeSymbol> GetBaseTypesAndThis(this ITypeSymbol type)
 		{
-			var current = type;
+			type.ThrowOnNull(nameof(type));
 
-			while (current != null)
+			if (type is ITypeParameterSymbol typeParameter)
 			{
-				yield return current;
-				current = current.BaseType;
+				IEnumerable<ITypeSymbol> constraintTypes = typeParameter.GetAllConstraintTypes(includeInterfaces: false)
+																	    .SelectMany(GetBaseTypesImplementation)
+																	    .Distinct();
+				return typeParameter.ToEnumerable()
+									.Concat(constraintTypes);
 			}
+			else
+			{
+				return type.GetBaseTypesAndThisImplementation();
+			}		
 		}
 
 		/// <summary>
@@ -40,7 +47,32 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// <returns/>
 		public static IEnumerable<INamedTypeSymbol> GetBaseTypes(this ITypeSymbol type)
 		{
-			var current = type.BaseType;
+			type.ThrowOnNull(nameof(type));
+
+			if (type is ITypeParameterSymbol typeParameter)
+			{
+				return typeParameter.GetAllConstraintTypes(includeInterfaces: false)
+									.SelectMany(GetBaseTypesImplementation)
+									.Distinct();
+			}
+
+			return type.GetBaseTypesImplementation();			
+		}
+
+		private static IEnumerable<ITypeSymbol> GetBaseTypesAndThisImplementation(this ITypeSymbol typeToUse)
+		{
+			var current = typeToUse;
+
+			while (current != null)
+			{
+				yield return current;
+				current = current.BaseType;
+			}
+		}
+
+		private static IEnumerable<INamedTypeSymbol> GetBaseTypesImplementation(this ITypeSymbol typeToUse)
+		{
+			var current = typeToUse.BaseType;
 
 			while (current != null)
 			{
@@ -98,7 +130,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 			if (includeInterfaces)
 			{
-				typeList = typeList.Concat(type.AllInterfaces);
+				typeList = typeList.ConcatStructList(type.AllInterfaces);
 			}
 
 			return typeList.Any(t => t.Equals(baseType));
@@ -126,7 +158,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			var typeList = type.GetBaseTypesAndThis();
 
 			if (includeInterfaces)
-				typeList = typeList.Concat(type.AllInterfaces);
+				typeList = typeList.ConcatStructList(type.AllInterfaces);
 
 			return typeList.Select(t => t.OriginalDefinition)
 						   .Any(t => t.Equals(baseType.OriginalDefinition));
@@ -137,12 +169,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			type.ThrowOnNull(nameof(type));
 			baseType.ThrowOnNull(nameof(baseType));
 
-			var list = type.GetBaseTypes();
+			IEnumerable<ITypeSymbol> baseTypes = type.GetBaseTypes();
 
 			if (includeInterfaces)
-				list = list.Concat(type.AllInterfaces);
-
-			return list.Any(t => t.Equals(baseType));
+			{
+				baseTypes = baseTypes.ConcatStructList(type.AllInterfaces);
+			}
+			
+			return baseTypes.Any(t => t.Equals(baseType));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -151,8 +185,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			type.ThrowOnNull(nameof(type));
 			interfaceType.ThrowOnNull(nameof(interfaceType));
 
-			if (!interfaceType.IsAbstract)
+			if (interfaceType.TypeKind != TypeKind.Interface)
+			{
 				throw new ArgumentException("Invalid interface type", nameof(interfaceType));
+			}
 
 			return type.AllInterfaces.Any(t => t.Equals(interfaceType));
 		}
@@ -163,49 +199,93 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			symbol.ThrowOnNull(nameof(symbol));
 			baseType.ThrowOnNullOrWhiteSpace(nameof(baseType));
 
-			ITypeSymbol current = symbol;
-
-			while (current != null)
-			{
-				if (current.Name == baseType)
-					return true;
-
-				current = current.BaseType;
-			}
-
-			return false;
+			return symbol.GetBaseTypesAndThis()
+						 .Any(t => t.Name == baseType);
 		}
-
-		// Determine if "type" inherits from "baseType", ignoring constructed types, optionally including interfaces,
-		// dealing only with original types.
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		
+		/// <summary>
+		/// Determine if "type" inherits from "baseType", ignoring constructed types, optionally including interfaces, dealing only with original
+		/// types.
+		/// </summary>
+		/// <param name="type">The type to act on.</param>
+		/// <param name="baseTypeName">Name of the base type.</param>
+		/// <param name="includeInterfaces">(Optional) True to include, false to exclude the interfaces.</param>
+		/// <returns/>
 		public static bool InheritsOrImplementsOrEquals(this ITypeSymbol type, string baseTypeName,
 														bool includeInterfaces = true)
 		{
 			if (type == null)
 				return false;
 
-			IEnumerable<ITypeSymbol> baseTypes = includeInterfaces
-				? type.GetBaseTypesAndThis().ConcatStructList(type.AllInterfaces)
-				: type.GetBaseTypesAndThis();
+			IEnumerable<ITypeSymbol> baseTypes = type.GetBaseTypesAndThis();
 
-			return baseTypes.Select(typeSymbol => typeSymbol.Name)
-							.Contains(baseTypeName);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool ImplementsInterface(this ITypeSymbol type, string interfaceName)
-		{
-			if (type == null)
-				return false;
-
-			foreach (var interfaceSymbol in type.AllInterfaces)
+			if (includeInterfaces)
 			{
-				if (interfaceSymbol.Name == interfaceName)
-					return true;
+				baseTypes = baseTypes.ConcatStructList(type.AllInterfaces);
 			}
 
-			return false;
+			return baseTypes.Any(typeSymbol => typeSymbol.Name == baseTypeName);					
+		}
+
+		public static bool ImplementsInterface(this ITypeSymbol type, string interfaceName) =>
+			type?.AllInterfaces.Any(interfaceType => interfaceType.Name == interfaceName) ?? false;
+			
+
+		/// <summary>
+		/// Gets <paramref name="typeParameterSymbol"/> and its all constraint types.
+		/// </summary>
+		/// <param name="typeParameterSymbol">The typeParameterSymbol to act on.</param>
+		/// <param name="includeInterfaces">(Optional) True to include, false to exclude the interfaces.</param>
+		/// <returns/>
+		public static IEnumerable<ITypeSymbol> GetTypeWithAllConstraintTypes(this ITypeParameterSymbol typeParameterSymbol,
+																			 bool includeInterfaces = true)
+		{
+			var constraintTypes = typeParameterSymbol.GetAllConstraintTypes(includeInterfaces);
+			return typeParameterSymbol.ToEnumerable()
+									  .Concat(constraintTypes);
+		}
+
+		/// <summary>
+		/// Gets all constraint types for the given <paramref name="typeParameterSymbol"/>.
+		/// </summary>
+		/// <param name="typeParameterSymbol">The typeParameterSymbol to act on.</param>
+		/// <param name="includeInterfaces">(Optional) True to include, false to exclude the interfaces.</param>
+		/// <returns/>
+		public static IEnumerable<ITypeSymbol> GetAllConstraintTypes(this ITypeParameterSymbol typeParameterSymbol, bool includeInterfaces = true)
+		{
+			typeParameterSymbol.ThrowOnNull(nameof(typeParameterSymbol));
+
+			const int maxRecursionLevel = 40;
+			var constraintTypes = includeInterfaces
+				? GetAllConstraintTypesImplementation(typeParameterSymbol)
+				: GetAllConstraintTypesImplementation(typeParameterSymbol)
+							.Where(type => type.TypeKind != TypeKind.Interface);
+
+			return constraintTypes.Distinct();
+
+			//---------------------------------Local Functions--------------------------------------------------------
+			IEnumerable<ITypeSymbol> GetAllConstraintTypesImplementation(ITypeParameterSymbol typeParameter, int recursionLevel = 0)
+			{
+				if (recursionLevel > maxRecursionLevel || typeParameter.ConstraintTypes.Length == 0)
+					yield break;
+
+				foreach (ITypeSymbol constraintType in typeParameter.ConstraintTypes)
+				{
+					if (constraintType is ITypeParameterSymbol constraintTypeParameter)
+					{
+						var nextOrderTypeParams = GetAllConstraintTypesImplementation(constraintTypeParameter, recursionLevel + 1);
+
+						foreach (ITypeSymbol type in nextOrderTypeParams)
+						{
+							yield return type;
+						}
+					}
+					else
+					{
+						yield return constraintType;
+					}
+				}
+			}
 		}
 
 		/// <summary>
