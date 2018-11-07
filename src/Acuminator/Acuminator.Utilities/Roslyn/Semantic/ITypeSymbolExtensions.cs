@@ -130,7 +130,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 			if (includeInterfaces)
 			{
-				typeList = typeList.Concat(type.AllInterfaces);
+				typeList = typeList.ConcatStructList(type.AllInterfaces);
 			}
 
 			return typeList.Any(t => t.Equals(baseType));
@@ -158,7 +158,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			var typeList = type.GetBaseTypesAndThis();
 
 			if (includeInterfaces)
-				typeList = typeList.Concat(type.AllInterfaces);
+				typeList = typeList.ConcatStructList(type.AllInterfaces);
 
 			return typeList.Select(t => t.OriginalDefinition)
 						   .Any(t => t.Equals(baseType.OriginalDefinition));
@@ -169,25 +169,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			type.ThrowOnNull(nameof(type));
 			baseType.ThrowOnNull(nameof(baseType));
 
-			IEnumerable<ITypeSymbol> baseTypes;
+			IEnumerable<ITypeSymbol> baseTypes = type.GetBaseTypes();
 
-			if (type is ITypeParameterSymbol typeParameter)
+			if (includeInterfaces)
 			{
-				var constraints = typeParameter.GetAllConstraintTypes(includeInterfaces).ToList();
-				baseTypes = constraints.SelectMany(constraint => constraint.GetBaseTypesAndThis());
-
-				if (includeInterfaces)
-				{
-					var allConstraintInterfaces = constraints.SelectMany(constraint => constraint.AllInterfaces);
-					baseTypes = baseTypes.Concat(allConstraintInterfaces);
-				}
-			}
-			else
-			{
-				baseTypes = type.GetBaseTypes();
-
-				if (includeInterfaces)
-					baseTypes = baseTypes.Concat(type.AllInterfaces);
+				baseTypes = baseTypes.ConcatStructList(type.AllInterfaces);
 			}
 			
 			return baseTypes.Any(t => t.Equals(baseType));
@@ -213,13 +199,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			symbol.ThrowOnNull(nameof(symbol));
 			baseType.ThrowOnNullOrWhiteSpace(nameof(baseType));
 
-			if (symbol is ITypeParameterSymbol typeParameter)
-			{
-				return typeParameter.GetTypeWithAllConstraintTypes(includeInterfaces: false)
-									.Any(type => type.Name == baseType);
-			}
-
-			return symbol.GetBaseTypesAndThisImplementation()
+			return symbol.GetBaseTypesAndThis()
 						 .Any(t => t.Name == baseType);
 		}
 		
@@ -237,17 +217,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			if (type == null)
 				return false;
 
-			IEnumerable<ITypeSymbol> baseTypes;
-
-			if (type is ITypeParameterSymbol typeParameter)
-			{
-				baseTypes = typeParameter.GetAllConstraintTypes(includeInterfaces: false)
-										 .SelectMany(GetBaseTypesAndThisImplementation);
-			}
-			else
-			{
-				baseTypes = type.GetBaseTypesAndThisImplementation();
-			}
+			IEnumerable<ITypeSymbol> baseTypes = type.GetBaseTypesAndThis();
 
 			if (includeInterfaces)
 			{
