@@ -8,6 +8,8 @@ namespace PX.Objects.HackathonDemo
     {
         public PXSelect<Users> Users;
 
+        public PXAction<Users> AddTooltip;
+
         public SMUserMaint()
         {
             int icount = Users.Select().Count;
@@ -25,6 +27,13 @@ namespace PX.Objects.HackathonDemo
             Actions.PressSave();
 
             return new PXSelect<Users>(this).Select();
+        }
+
+        [PXButton]
+        [PXUIField(DisplayName = "Add Tooltip")]
+        public void addTooltip()
+        {
+            Next.SetTooltip("Next Action");
         }
     }
 }

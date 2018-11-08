@@ -423,6 +423,9 @@
   <data name="PX1088Title" xml:space="preserve">
     <value>Processing delegates cannot use the data views from processing graphs except for the data views of the PXFilter, PXProcessingBase, or PXSetup types</value>
   </data>
+  <data name="PX1089Title" xml:space="preserve">
+    <value>The state of fields and actions cannot be configured in action delegates</value>
+  </data>
   <data name="PX1091Title" xml:space="preserve">
     <value>This invocation of the base action handler can cause a StackOverflowException</value>
   </data>

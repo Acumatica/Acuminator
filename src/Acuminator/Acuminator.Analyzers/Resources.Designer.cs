@@ -980,6 +980,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The state of fields and actions cannot be configured in action delegates.
+        /// </summary>
+        public static string PX1089Title {
+            get {
+                return ResourceManager.GetString("PX1089Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This invocation of the base action handler can cause a StackOverflowException.
         /// </summary>
         public static string PX1091Title {
