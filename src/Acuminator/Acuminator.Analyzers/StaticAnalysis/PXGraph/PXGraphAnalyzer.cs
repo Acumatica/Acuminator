@@ -34,7 +34,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
             new ThrowingExceptionsInLongRunningOperationAnalyzer(),
             new CallingBaseDataViewDelegateFromOverrideDelegateAnalyzer(),
             new CallingBaseActionHandlerFromOverrideHandlerAnalyzer(),
-            new InvalidViewUsageInProcessingDelegateAnalyzer())
+            new InvalidViewUsageInProcessingDelegateAnalyzer(),
             new UiPresentationLogicInActionHandlersAnalyzer())
         {
         }

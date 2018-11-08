@@ -49,6 +49,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
 
             foreach (var actionHandler in redeclaredHandlersWithoutActionsList)
             {
+                context.CancellationToken.ThrowIfCancellationRequested();
                 walker.Visit(actionHandler.Node);
             }
         }
