@@ -980,6 +980,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The state of fields and actions cannot be configured in action delegates.
+        /// </summary>
+        public static string PX1089Title {
+            get {
+                return ResourceManager.GetString("PX1089Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown in action handlers.
         /// </summary>
         public static string PX1090Title {

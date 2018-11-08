@@ -73,7 +73,7 @@
     <Compile Include="Graph\GoTo Test\APInvoiceEntryExtProcessPrices.cs" />
     <Compile Include="Graph\Graph extension calling non-overriden view via delegate\SOInvoiceEntryExt.cs" />
     <Compile Include="Graph\Graph extension with action call\SOInvoiceEntryExt.cs" />
-    <Compile Include="Graph\Graph saving changes and invoking actions\SMUserMaint.cs" />
+    <Compile Include="Graph\Graph saving changes and invoking actions with UI presentation logic\SMUserMaint.cs" />
     <Compile Include="Graph\Graph starts long operaton from incorrect places\SMUserProcess.cs" />
     <Compile Include="Graph\Graph with creation of other graphs\ARTranEntry.cs" />
     <Compile Include="Graph\Graph Reusing\SOOrdersInqExt.cs" />

@@ -134,6 +134,7 @@
     <Compile Include="StaticAnalysis\ThrowingExceptions\WalkerForGraphAnalyzer.cs" />
     <Compile Include="StaticAnalysis\TypoInViewDelegateName\TypoInViewDelegateNameAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\UiPresentationLogic\UiPresentationLogicInActionHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\UiPresentationLogic\UiPresentationLogicInEventHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\UiPresentationLogic\Walker.cs" />
     <Compile Include="StaticAnalysis\ViewDeclarationOrder\ViewDeclarationOrderAnalyzer.cs" />
