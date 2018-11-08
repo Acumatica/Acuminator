@@ -25,36 +25,25 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
         {
             ThrowIfCancellationRequested();
 
-            if (node == null || node.Expression == null)
+            if (node?.Expression?.SyntaxTree == null)
             {
                 return false;
             }
 
-            var exceptionType = GetExceptionType(node.Expression);
-            if (exceptionType == null)
+            var semanticModel = GetSemanticModel(node.Expression.SyntaxTree);
+            if (semanticModel == null)
             {
                 return false;
             }
 
-            var isSetupNotEntered = exceptionType.InheritsFromOrEquals(_pxContext.Exceptions.PXSetupNotEnteredException);
+            var typeInfo = semanticModel.GetTypeInfo(node.Expression);
+            if (typeInfo.Type == null)
+            {
+                return false;
+            }
+
+            var isSetupNotEntered = typeInfo.Type.InheritsFromOrEquals(_pxContext.Exceptions.PXSetupNotEnteredException);
             return isSetupNotEntered;
-        }
-
-        private ITypeSymbol GetExceptionType(ExpressionSyntax node)
-        {
-            var symbol = GetSymbol<ISymbol>(node);
-
-            switch (symbol)
-            {
-                case IMethodSymbol method:
-                    return method.MethodKind == MethodKind.Constructor
-                        ? method.ContainingType
-                        : method.ReturnType;
-                case ILocalSymbol local:
-                    return local.Type;
-                default:
-                    return null;
-            }
         }
     }
 }
