@@ -987,5 +987,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1089Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Action handlers should be decorated with PXButtonAttribute and PXUIFieldAttribute attributes.
+        /// </summary>
+        public static string PX1092Title {
+            get {
+                return ResourceManager.GetString("PX1092Title", resourceCulture);
+            }
+        }
     }
 }

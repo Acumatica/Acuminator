@@ -232,5 +232,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
         public static DiagnosticDescriptor PX1089_UiPresentationLogicInActionDelegates { get; } =
             Rule("PX1089", nameof(Resources.PX1089Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+        public static DiagnosticDescriptor PX1092_MissingAttributesOnActionHandler { get; } =
+            Rule("PX1092", nameof(Resources.PX1092Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
     }
 }
