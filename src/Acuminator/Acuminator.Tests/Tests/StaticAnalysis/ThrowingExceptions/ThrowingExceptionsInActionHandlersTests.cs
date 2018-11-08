@@ -22,8 +22,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ThrowingExceptions
         [EmbeddedFileData(@"ActionHandlers\Handlers_Bad.cs")]
         public async Task Actions_ReportDiagnostic(string source) =>
             await VerifyCSharpDiagnosticAsync(source,
-                Descriptors.PX1090_ThrowingSetupNotEnteredExceptionInActionHandlers.CreateFor(18, 13),
-                Descriptors.PX1090_ThrowingSetupNotEnteredExceptionInActionHandlers.CreateFor(25, 13));
+                Descriptors.PX1090_ThrowingSetupNotEnteredExceptionInActionHandlers.CreateFor(19, 13),
+                Descriptors.PX1090_ThrowingSetupNotEnteredExceptionInActionHandlers.CreateFor(26, 13),
+                Descriptors.PX1090_ThrowingSetupNotEnteredExceptionInActionHandlers.CreateFor(35, 13));
 
         [Theory]
         [EmbeddedFileData(@"ActionHandlers\Handlers_Good.cs")]

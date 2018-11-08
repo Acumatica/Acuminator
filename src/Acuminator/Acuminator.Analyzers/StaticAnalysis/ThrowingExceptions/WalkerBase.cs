@@ -25,13 +25,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
         {
             ThrowIfCancellationRequested();
 
-            if (node == null || !(node.Expression is ObjectCreationExpressionSyntax objCreationSyntax) ||
-                objCreationSyntax.Type == null)
+            if (node == null || node.Expression == null)
             {
                 return false;
             }
 
-            var exceptionType = GetSymbol<INamedTypeSymbol>(objCreationSyntax.Type);
+            var exceptionType = GetExceptionType(node.Expression);
             if (exceptionType == null)
             {
                 return false;
@@ -39,6 +38,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 
             var isSetupNotEntered = exceptionType.InheritsFromOrEquals(_pxContext.Exceptions.PXSetupNotEnteredException);
             return isSetupNotEntered;
+        }
+
+        private ITypeSymbol GetExceptionType(ExpressionSyntax node)
+        {
+            var symbol = GetSymbol<ISymbol>(node);
+
+            switch (symbol)
+            {
+                case IMethodSymbol method:
+                    return method.MethodKind == MethodKind.Constructor
+                        ? method.ContainingType
+                        : method.ReturnType;
+                case ILocalSymbol local:
+                    return local.Type;
+                default:
+                    return null;
+            }
         }
     }
 }
