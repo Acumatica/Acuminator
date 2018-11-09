@@ -20,17 +20,37 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 
         public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
         {
-            context.CancellationToken.ThrowIfCancellationRequested();
-
-            var declaredActionHandlers = pxGraph.ActionHandlers
-                .Where(h => pxGraph.Symbol.Equals(h.Symbol?.ContainingType));
-
             foreach (var actionHandler in pxGraph.ActionHandlers)
             {
                 context.CancellationToken.ThrowIfCancellationRequested();
 
+                if (actionHandler.Symbol == null)
+                {
+                    continue;
+                }
+
                 var attributes = actionHandler.Symbol.GetAttributes();
+                var pxUiFieldAttributeType = pxContext.AttributeTypes.PXUIFieldAttribute.Type;
+                var pxButtonAttributeType = pxContext.AttributeTypes.PXButtonAttribute;
+                var pxUiFieldAttributeExists = false;
+                var pxButtonAttributeExists = false;
+
+                foreach (var attr in attributes)
+                {
+                    if (pxUiFieldAttributeType.Equals(attr.AttributeClass))
+                    {
+                        pxUiFieldAttributeExists = true;
+                    }
+
+                    if (pxButtonAttributeType.Equals(attr.AttributeClass))
+                    {
+                        pxButtonAttributeExists = true;
+                    }
+                }
+
                 //attributes[0].AttributeClass
+                //pxContext.AttributeTypes.PXUIFieldAttribute.Type;
+                //pxContext.AttributeTypes.PXButtonAttribute;
             }
         }
     }
