@@ -127,9 +127,11 @@
     <Compile Include="StaticAnalysis\LongOperationDelegateClosures\LongOperationDelegateClosuresAnalyzer.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\BqlParameterMismatchAnalyzer.cs" />
     <Compile Include="StaticAnalysis\MissingTypeListAttribute\MissingTypeListAttributeAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInActionHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInEventHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInDataViewDelegateAnalyzer.cs" />
     <Compile Include="StaticAnalysis\ThrowingExceptions\WalkerBase.cs" />
+    <Compile Include="StaticAnalysis\ThrowingExceptions\WalkerForGraphAnalyzer.cs" />
     <Compile Include="StaticAnalysis\TypoInViewDelegateName\TypoInViewDelegateNameAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceAnalyzer.cs" />
     <Compile Include="StaticAnalysis\UiPresentationLogic\UiPresentationLogicInActionHandlersAnalyzer.cs" />

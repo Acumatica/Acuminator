@@ -426,4 +426,7 @@
   <data name="PX1089Title" xml:space="preserve">
     <value>The state of fields and actions cannot be configured in action delegates</value>
   </data>
+  <data name="PX1090Title" xml:space="preserve">
+    <value>PXSetupNotEnteredException cannot be thrown in action handlers</value>
+  </data>
 </root>
