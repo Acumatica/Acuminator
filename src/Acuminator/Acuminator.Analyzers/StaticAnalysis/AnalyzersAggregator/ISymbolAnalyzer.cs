@@ -9,6 +9,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator
     {
         ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
 
-		bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings);
+		bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings);
 	}
 }
