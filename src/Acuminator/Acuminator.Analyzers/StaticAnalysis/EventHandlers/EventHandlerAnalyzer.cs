@@ -62,7 +62,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 
-				if (innerAnalyzer.ShouldAnalyze(pxContext))
+				if (innerAnalyzer.ShouldAnalyze(pxContext, codeAnalysisSettings))
 				{
 					innerAnalyzer.Analyze(context, pxContext, codeAnalysisSettings, eventType);
 				}

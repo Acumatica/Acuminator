@@ -68,7 +68,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 				{
 					context.CancellationToken.ThrowIfCancellationRequested();
 
-					if (innerAnalyzer.ShouldAnalyze(pxContext))
+					if (innerAnalyzer.ShouldAnalyze(pxContext, settings))
 					{
 						innerAnalyzer.Analyze(context, pxContext, settings, graph);
 					}			

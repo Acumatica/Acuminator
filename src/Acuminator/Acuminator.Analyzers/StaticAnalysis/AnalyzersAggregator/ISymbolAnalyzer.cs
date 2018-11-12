@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities;
 
 namespace Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator
 {
@@ -8,6 +9,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator
     {
         ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
 
-		bool ShouldAnalyze(PXContext pxContext);
+		bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings);
 	}
 }
