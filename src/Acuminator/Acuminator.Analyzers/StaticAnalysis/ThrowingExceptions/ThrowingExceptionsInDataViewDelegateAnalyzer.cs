@@ -4,7 +4,6 @@ using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -22,13 +21,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
-            var walker = new Walker(context, pxContext);
+            var walker = new WalkerForGraphAnalyzer(context, pxContext, Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation);
 
             CheckProcessingDelegates(pxGraph, walker, context.CancellationToken);
             CheckLongOperationStartDelegates(pxGraph.Symbol, walker, pxContext, context.Compilation, context.CancellationToken);
         }
 
-        private void CheckProcessingDelegates(PXGraphSemanticModel pxGraph, Walker walker, CancellationToken cancellation)
+        private void CheckProcessingDelegates(PXGraphSemanticModel pxGraph, WalkerForGraphAnalyzer walker, CancellationToken cancellation)
         {
             cancellation.ThrowIfCancellationRequested();
 
@@ -67,7 +66,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
             }
         }
 
-        private void CheckLongOperationStartDelegates(ISymbol symbol, Walker walker, PXContext pxContext,
+        private void CheckLongOperationStartDelegates(ISymbol symbol, WalkerForGraphAnalyzer walker, PXContext pxContext,
                                                       Compilation compilation, CancellationToken cancellation)
         {
             cancellation.ThrowIfCancellationRequested();
@@ -101,28 +100,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
             }
 
             return loDelegateNodeList;
-        }
-
-        private class Walker : WalkerBase
-        {
-            public Walker(SymbolAnalysisContext context, PXContext pxContext)
-                : base(context, pxContext)
-            {
-            }
-
-            public override void VisitThrowStatement(ThrowStatementSyntax node)
-            {
-                ThrowIfCancellationRequested();
-
-                if (IsPXSetupNotEnteredException(node))
-                {
-                    ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation, node);
-                }
-                else
-                {
-                    base.VisitThrowStatement(node);
-                }
-            }
         }
     }
 }

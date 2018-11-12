@@ -56,8 +56,9 @@ namespace Acuminator.Utilities.Roslyn
         protected SyntaxNode OriginalNode { get; private set; }
 
 		private readonly Stack<SyntaxNode> _nodesStack = new Stack<SyntaxNode>();
+        private readonly HashSet<IMethodSymbol> _methodsInStack = new HashSet<IMethodSymbol>();
 
-		protected NestedInvocationWalker(Compilation compilation, CancellationToken cancellationToken)
+        protected NestedInvocationWalker(Compilation compilation, CancellationToken cancellationToken)
 		{
 			compilation.ThrowOnNull(nameof (compilation));
 
@@ -148,17 +149,19 @@ namespace Acuminator.Utilities.Roslyn
 			}
 		}
 
-		private void Push(SyntaxNode node)
+		private void Push(SyntaxNode node, IMethodSymbol symbol)
 		{
 			if (_nodesStack.Count == 0)
 				OriginalNode = node;
 
 			_nodesStack.Push(node);
+            _methodsInStack.Add(symbol);
 		}
 
-		private void Pop()
+		private void Pop(IMethodSymbol symbol)
 		{
 			_nodesStack.Pop();
+            _methodsInStack.Remove(symbol);
 
 			if (_nodesStack.Count == 0)
 				OriginalNode = null;
@@ -256,14 +259,20 @@ namespace Acuminator.Utilities.Roslyn
 
 		private void VisitMethodSymbol(IMethodSymbol symbol, SyntaxNode originalNode)
 		{
-			if (symbol?.GetSyntax(CancellationToken) is CSharpSyntaxNode methodNode)
+			if (symbol?.GetSyntax(CancellationToken) is CSharpSyntaxNode methodNode &&
+                !IsMethodInStack(symbol))
 			{
-				Push(originalNode);
+				Push(originalNode, symbol);
 				methodNode.Accept(this);
-				Pop();
+				Pop(symbol);
 			}
 		}
 
-		#endregion
-	}
+        private bool IsMethodInStack(IMethodSymbol symbol)
+        {
+            return _methodsInStack.Contains(symbol);
+        }
+
+        #endregion
+    }
 }

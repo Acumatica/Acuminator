@@ -36,7 +36,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 	        CreateInstance = Type.GetMethods(nameof(PX.Data.PXGraph.CreateInstance));
 			InstanceCreatedEvents = new InstanceCreatedEventsSymbols(compilation);
-		        
         }
     }
 }

@@ -232,5 +232,11 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
         public static DiagnosticDescriptor PX1089_UiPresentationLogicInActionDelegates { get; } =
             Rule("PX1089", nameof(Resources.PX1089Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+        public static DiagnosticDescriptor PX1090_ThrowingSetupNotEnteredExceptionInActionHandlers { get; } =
+            Rule("PX1090", nameof(Resources.PX1090Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+
+        public static DiagnosticDescriptor PX1091_CausingStackOverflowExceptionInBaseActionHandlerInvocation { get; } =
+            Rule("PX1091", nameof(Resources.PX1091Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
     }
 }

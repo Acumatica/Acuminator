@@ -65,22 +65,22 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ThrowingExceptions
 
         [Theory]
         [EmbeddedFileData(@"LongOperations\LongOperationStart_Good.cs")]
-        public async Task LongOperationStart_WithoutPXSetupNotEnteredException__DoesntReportDiagnostic(string source) =>
+        public async Task LongOperationStart_WithoutPXSetupNotEnteredException_DoesntReportDiagnostic(string source) =>
             await VerifyCSharpDiagnosticAsync(source);
 
         [Theory]
         [EmbeddedFileData(@"LongOperations\ParametersDelegate_Good.cs")]
-        public async Task ParametersDelegate_WithoutPXSetupNotEnteredException__DoesntReportDiagnostic(string source) =>
+        public async Task ParametersDelegate_WithoutPXSetupNotEnteredException_DoesntReportDiagnostic(string source) =>
             await VerifyCSharpDiagnosticAsync(source);
 
         [Theory]
         [EmbeddedFileData(@"LongOperations\ProcessDelegate_Good.cs")]
-        public async Task ProcessDelegate_WithoutPXSetupNotEnteredException__DoesntReportDiagnostic(string source) =>
+        public async Task ProcessDelegate_WithoutPXSetupNotEnteredException_DoesntReportDiagnostic(string source) =>
             await VerifyCSharpDiagnosticAsync(source);
 
         [Theory]
         [EmbeddedFileData(@"LongOperations\FinallyProcessDelegate_Good.cs")]
-        public async Task FinallyProcessDelegate_WithoutPXSetupNotEnteredException__DoesntReportDiagnostic(string source) =>
+        public async Task FinallyProcessDelegate_WithoutPXSetupNotEnteredException_DoesntReportDiagnostic(string source) =>
             await VerifyCSharpDiagnosticAsync(source);
     }
 }
