@@ -16,7 +16,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidViewUsageInProcessingDelega
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1088_InvalidViewUsageInProcessingDelegate);
 
-        public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
+		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => true;
+
+		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 

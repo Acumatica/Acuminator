@@ -14,7 +14,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1090_ThrowingSetupNotEnteredExceptionInActionHandlers);
 
-        public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
+		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => true;
+
+		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 

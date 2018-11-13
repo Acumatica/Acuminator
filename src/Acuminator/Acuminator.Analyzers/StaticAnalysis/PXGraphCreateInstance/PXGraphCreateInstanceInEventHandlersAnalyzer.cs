@@ -22,6 +22,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1045_PXGraphCreateInstanceInEventHandlers);
 
+		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => true;
+
 		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
 			EventType eventType)
 		{
