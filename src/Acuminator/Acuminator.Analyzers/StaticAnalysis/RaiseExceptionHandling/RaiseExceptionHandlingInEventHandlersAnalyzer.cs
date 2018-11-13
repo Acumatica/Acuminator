@@ -29,6 +29,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
 			ImmutableArray.Create(Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers);
 
+		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => true;
+
 		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
 			EventType eventType)
 		{

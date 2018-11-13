@@ -23,6 +23,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 			Descriptors.PX1043_SavingChangesInEventHandlers,
 			Descriptors.PX1043_SavingChangesInRowPerstisting);
 
+		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => true;
+
 		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings,
 			EventType eventType)
 		{

@@ -19,6 +19,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionExecution
 		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
 			ImmutableArray.Create(Descriptors.PX1071_PXActionExecutionInEventHandlers);
 
+		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => true;
+
 		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
 			EventType eventType)
 		{

@@ -13,13 +13,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 	{
 		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1049_DatabaseQueriesInRowSelected);
-		
+
+		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => settings.IsvSpecificAnalyzersEnabled;
+
 		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
 			EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 			
-			if (codeAnalysisSettings.IsvSpecificAnalyzersEnabled && eventType == EventType.RowSelected)
+			if (eventType == EventType.RowSelected)
 			{
 				var methodSymbol = (IMethodSymbol) context.Symbol;
 				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;

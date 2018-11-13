@@ -37,6 +37,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 			Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs,
 			Descriptors.PX1048_RowChangesInEventHandlersAllowedForArgsOnly);
 
+		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => true;
+
 		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
 			EventType eventType)
 		{
