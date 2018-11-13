@@ -9,24 +9,22 @@ using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 {
-    public class DatabaseQueriesInRowSelectedAnalyzer : IEventHandlerAnalyzer
+    public class DatabaseQueriesInRowSelectedAnalyzer : EventHandlerAggregatedAnalyzerBase
 	{
-		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1049_DatabaseQueriesInRowSelected);
 
-		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => settings.IsvSpecificAnalyzersEnabled;
+		public override bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings, EventType eventType) =>
+			settings.IsvSpecificAnalyzersEnabled && eventType == EventType.RowSelected;
 
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
-			EventType eventType)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings,
+									 EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
-			
-			if (eventType == EventType.RowSelected)
-			{
-				var methodSymbol = (IMethodSymbol) context.Symbol;
-				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
-				methodSyntax?.Accept(new Walker(context, pxContext, Descriptors.PX1049_DatabaseQueriesInRowSelected));
-			}
+
+			var methodSymbol = (IMethodSymbol)context.Symbol;
+			var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
+			methodSyntax?.Accept(new Walker(context, pxContext, Descriptors.PX1049_DatabaseQueriesInRowSelected));
 		}
 	}
 }

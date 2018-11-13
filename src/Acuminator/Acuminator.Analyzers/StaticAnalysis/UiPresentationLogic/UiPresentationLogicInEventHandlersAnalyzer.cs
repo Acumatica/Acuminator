@@ -14,26 +14,25 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic
 {
-	public class UiPresentationLogicInEventHandlersAnalyzer : IEventHandlerAnalyzer
+	public class UiPresentationLogicInEventHandlersAnalyzer : EventHandlerAggregatedAnalyzerBase
 	{
-		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
 			ImmutableArray.Create(Descriptors.PX1070_UiPresentationLogicInEventHandlers);
 
-		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => true;
+		public override bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings, EventType eventType) =>
+			eventType != EventType.RowSelected && 
+			eventType != EventType.CacheAttached;
 
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
-			EventType eventType)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings,
+									 EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (eventType != EventType.RowSelected && eventType != EventType.CacheAttached)
-			{
-				var methodSymbol = (IMethodSymbol) context.Symbol;
-				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
-				var walker = new Walker(context, pxContext, Descriptors.PX1070_UiPresentationLogicInEventHandlers);
+			var methodSymbol = (IMethodSymbol)context.Symbol;
+			var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
+			var walker = new Walker(context, pxContext, Descriptors.PX1070_UiPresentationLogicInEventHandlers);
 
-				methodSyntax?.Accept(walker);
-			}
+			methodSyntax?.Accept(walker);
 		}
 	}
 }
