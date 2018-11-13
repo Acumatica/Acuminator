@@ -16,24 +16,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 	/// An analyzer for the order of view declaration in graph/graph extension.
 	/// This diagnostic works only for simple class hierarchy where the depth of the inheritance is equal to 2: object -> DAC -> DerivedDAC.
 	/// </summary>
-	public class ViewDeclarationOrderAnalyzer : IPXGraphAnalyzer
+	public class ViewDeclarationOrderAnalyzer : PXGraphAggregatedAnalyzerBase
 	{
-		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1004_ViewDeclarationOrder, Descriptors.PX1006_ViewDeclarationOrder);
 
 		/// <summary>
 		/// Starting from the Acumatica 2018R2 version a new method is used to initialize caches with explicit ordering of caches.
 		/// </summary>
 		/// <returns/>
-		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => 
-			pxContext.PXGraph.InitCacheMapping != null;
+		public override bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel graph) =>
+			pxContext.PXGraph.InitCacheMapping != null && 
+			graph.ViewsByNames.Count > 0;
 
-		public void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, CodeAnalysisSettings settings,
+		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, CodeAnalysisSettings settings,
 							PXGraphSemanticModel graphSemanticModel)
 		{
-			if (graphSemanticModel.ViewsByNames.Count == 0)
-				return;
-
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
 			var viewsGroupedByDAC = GetViewsUsedInAnalysis(graphSemanticModel).Where(view => view.DAC != null)

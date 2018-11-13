@@ -13,14 +13,12 @@ using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
 {
-    public class CallingBaseDataViewDelegateFromOverrideDelegateAnalyzer : IPXGraphAnalyzer
+    public class CallingBaseDataViewDelegateFromOverrideDelegateAnalyzer : PXGraphAggregatedAnalyzerBase
     {
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation);
 
-		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => true;
-
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 

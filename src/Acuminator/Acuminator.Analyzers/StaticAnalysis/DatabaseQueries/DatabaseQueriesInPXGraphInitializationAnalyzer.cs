@@ -8,14 +8,12 @@ using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 {
-    public class DatabaseQueriesInPXGraphInitializationAnalyzer : IPXGraphAnalyzer
+    public class DatabaseQueriesInPXGraphInitializationAnalyzer : PXGraphAggregatedAnalyzerBase
     {
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1085_DatabaseQueriesInPXGraphInitialization);
 
-		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => settings.IsvSpecificAnalyzersEnabled;
-
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
         {
             var dbQueriesWalker = new Walker(context, pxContext, Descriptors.PX1085_DatabaseQueriesInPXGraphInitialization);
 

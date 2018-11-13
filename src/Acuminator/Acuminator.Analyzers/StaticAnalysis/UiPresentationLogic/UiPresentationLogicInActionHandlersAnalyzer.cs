@@ -9,14 +9,12 @@ using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic
 {
-    public class UiPresentationLogicInActionHandlersAnalyzer : IPXGraphAnalyzer
+    public class UiPresentationLogicInActionHandlersAnalyzer : PXGraphAggregatedAnalyzerBase
     {
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1089_UiPresentationLogicInActionDelegates);
 
-		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => true;
-
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 

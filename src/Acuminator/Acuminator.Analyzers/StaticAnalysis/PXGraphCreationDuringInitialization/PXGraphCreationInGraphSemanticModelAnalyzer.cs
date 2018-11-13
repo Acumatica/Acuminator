@@ -10,16 +10,14 @@ using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization
 {
-    public class PXGraphCreationInGraphSemanticModelAnalyzer : IPXGraphAnalyzer
+    public class PXGraphCreationInGraphSemanticModelAnalyzer : PXGraphAggregatedAnalyzerBase
     {
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(
                 Descriptors.PX1057_PXGraphCreationDuringInitialization,
                 Descriptors.PX1084_GraphCreationInDataViewDelegate);
 
-		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => true;
-
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 

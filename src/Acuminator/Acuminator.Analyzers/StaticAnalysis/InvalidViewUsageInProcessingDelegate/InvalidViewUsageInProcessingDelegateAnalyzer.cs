@@ -11,21 +11,18 @@ using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.InvalidViewUsageInProcessingDelegate
 {
-    public class InvalidViewUsageInProcessingDelegateAnalyzer : IPXGraphAnalyzer
+    public class InvalidViewUsageInProcessingDelegateAnalyzer : PXGraphAggregatedAnalyzerBase
     {
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1088_InvalidViewUsageInProcessingDelegate);
 
-		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => true;
+		public override bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel graph) =>
+			graph.IsProcessing;
 
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings,
+									 PXGraphSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
-
-            if (!pxGraph.IsProcessing)
-            {
-                return;
-            }
 
             var processingViews = pxGraph.Views.Where(v => v.IsProcessing);
             var walker = new Walker(context, pxContext);

@@ -8,14 +8,12 @@ using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 {
-    public class ChangesInPXCacheDuringPXGraphInitializationAnalyzer : IPXGraphAnalyzer
+    public class ChangesInPXCacheDuringPXGraphInitializationAnalyzer : PXGraphAggregatedAnalyzerBase
     {
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1059_ChangesInPXCacheDuringPXGraphInitialization);
 
-		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => true;
-
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
         {
             Walker walker = new Walker(context, pxContext, Descriptors.PX1059_ChangesInPXCacheDuringPXGraphInitialization);
 

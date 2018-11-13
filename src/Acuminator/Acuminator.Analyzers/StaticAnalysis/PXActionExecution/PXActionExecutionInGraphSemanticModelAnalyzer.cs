@@ -8,16 +8,15 @@ using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXActionExecution
 {
-    public class PXActionExecutionInGraphSemanticModelAnalyzer : IPXGraphAnalyzer
+    public class PXActionExecutionInGraphSemanticModelAnalyzer : PXGraphAggregatedAnalyzerBase
     {
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(
                 Descriptors.PX1081_PXGraphExecutesActionDuringInitialization,
                 Descriptors.PX1082_ActionExecutionInDataViewDelegate);
 
-		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => true;
-
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings,
+									 PXGraphSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
