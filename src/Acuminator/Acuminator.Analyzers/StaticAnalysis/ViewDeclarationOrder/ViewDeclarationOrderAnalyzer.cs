@@ -36,8 +36,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			var viewsGroupedByDAC = GetViewsUsedInAnalysis(graphSemanticModel).Where(view => view.ViewDAC != null)
-																			  .ToLookup(view => view.ViewDAC);
+			var viewsGroupedByDAC = GetViewsUsedInAnalysis(graphSemanticModel).Where(view => view.DAC != null)
+																			  .ToLookup(view => view.DAC);
 			if (viewsGroupedByDAC.Count == 0)
 				return;
 
@@ -56,7 +56,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 				if (view.Type.TypeArguments.IsEmpty || view.Symbol.Locations.IsEmpty)
 					continue;
 
-				var baseTypes = view.ViewDAC?.GetBaseTypesAndThis();
+				var baseTypes = view.DAC?.GetBaseTypesAndThis();
 				int countOfDACsInHierarchy = baseTypes.IsNullOrEmpty()
 												? 0
 												: baseTypes.TakeWhile(t => t.IsDAC()).Count();
