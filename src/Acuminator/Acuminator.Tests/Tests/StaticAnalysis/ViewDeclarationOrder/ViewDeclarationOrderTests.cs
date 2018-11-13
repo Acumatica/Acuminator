@@ -6,7 +6,7 @@ using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities;
-
+using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.ViewDeclarationOrder
 {
@@ -16,7 +16,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ViewDeclarationOrder
 			new PXGraphAnalyzer(CodeAnalysisSettings.Default
 													.WithRecursiveAnalysisEnabled()
 													.WithIsvSpecificAnalyzersEnabled(), 
-								new ViewDeclarationOrderAnalyzer());
+								new ViewDeclarationOrderAnalyzerForTests());
 
 		[Theory]
         [EmbeddedFileData("ViewDeclarationOrderInOneGraph.cs")]
@@ -56,5 +56,15 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ViewDeclarationOrder
 				Descriptors.PX1004_ViewDeclarationOrder.CreateFor(25, 29, "SOInvoice", "ARInvoice"),
 	            Descriptors.PX1006_ViewDeclarationOrder.CreateFor(27, 26, "SOTran", "ARTran"));
         }
-    }
+
+
+		/// <summary>
+		/// A special derived view declaration order analyzer. Used for unit tests, overrides <see cref="ShouldAnalyze(PXContext, CodeAnalysisSettings)"/> logic 
+		/// to always run analyzer no matter what version of Acumatica assemblies is used.
+		/// </summary>
+		private class ViewDeclarationOrderAnalyzerForTests : ViewDeclarationOrderAnalyzer
+		{
+			public override bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => true;
+		}
+	}
 }
