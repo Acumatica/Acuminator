@@ -18,7 +18,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation);
 
-        public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
+		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => true;
+
+		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -55,7 +57,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
             }
         }
 
-        private class Walker : NestedInvocationWalker
+		private class Walker : NestedInvocationWalker
         {
             private readonly SymbolAnalysisContext _context;
             private readonly PXContext _pxContext;

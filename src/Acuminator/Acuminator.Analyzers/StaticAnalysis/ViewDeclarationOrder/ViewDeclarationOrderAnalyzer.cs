@@ -21,10 +21,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1004_ViewDeclarationOrder, Descriptors.PX1006_ViewDeclarationOrder);
 
+		/// <summary>
+		/// Starting from the Acumatica 2018R2 version a new method is used to initialize caches with explicit ordering of caches.
+		/// </summary>
+		/// <returns/>
+		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => 
+			pxContext.PXGraph.InitCacheMapping != null;
+
 		public void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, CodeAnalysisSettings settings,
 							PXGraphSemanticModel graphSemanticModel)
 		{
-			if (graphSemanticModel.ViewsByNames.Count == 0 || IsNewMethodUsedToInitCaches(pxContext))
+			if (graphSemanticModel.ViewsByNames.Count == 0)
 				return;
 
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
@@ -41,12 +48,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 				AnalyzeDacViewsForNumberOfCaches(graphSemanticModel, symbolContext, dacViews, viewsGroupedByDAC);
 			}
 		}
-
-		/// <summary>
-		/// Starting from the Acumatica 2018R2 version a new method is used to initialize caches with explicit ordering of caches.
-		/// </summary>
-		/// <returns/>
-		private static bool IsNewMethodUsedToInitCaches(PXContext pxContext) => pxContext.PXGraph.InitCacheMapping != null;
 
 		private static IEnumerable<DataViewInfo> GetViewsUsedInAnalysis(PXGraphSemanticModel graphSemanticModel)
 		{

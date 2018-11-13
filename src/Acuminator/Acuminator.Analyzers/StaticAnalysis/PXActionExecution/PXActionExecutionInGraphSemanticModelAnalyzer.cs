@@ -15,7 +15,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionExecution
                 Descriptors.PX1081_PXGraphExecutesActionDuringInitialization,
                 Descriptors.PX1082_ActionExecutionInDataViewDelegate);
 
-        public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
+		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => true;
+
+		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 

@@ -13,13 +13,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1085_DatabaseQueriesInPXGraphInitialization);
 
-        public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
-        {
-            if (!settings.IsvSpecificAnalyzersEnabled)
-            {
-                return;
-            }
+		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => settings.IsvSpecificAnalyzersEnabled;
 
+		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
+        {
             var dbQueriesWalker = new Walker(context, pxContext, Descriptors.PX1085_DatabaseQueriesInPXGraphInitialization);
 
             foreach (var initializer in pxGraph.Initializers)
@@ -27,6 +24,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
                 context.CancellationToken.ThrowIfCancellationRequested();
                 dbQueriesWalker.Visit(initializer.Node);
             }
-        }
-    }
+        }		
+	}
 }

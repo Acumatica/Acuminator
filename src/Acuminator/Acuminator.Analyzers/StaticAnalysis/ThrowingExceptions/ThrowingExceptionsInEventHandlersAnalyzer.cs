@@ -22,6 +22,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 			Descriptors.PX1073_ThrowingExceptionsInRowPersisted,
 			Descriptors.PX1074_ThrowingSetupNotEnteredExceptionInEventHandlers);
 
+		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => true;
+
 		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
 			EventType eventType)
 		{
@@ -39,7 +41,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 					methodSyntax.Accept(walker);
 				}
 			}
-		}
+		}	
 
 		private class Walker : WalkerBase
 		{
