@@ -7,6 +7,7 @@ using Acuminator.Tests.Verification;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.ViewDeclarationOrder
 {
@@ -64,7 +65,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ViewDeclarationOrder
 		/// </summary>
 		private class ViewDeclarationOrderAnalyzerForTests : ViewDeclarationOrderAnalyzer
 		{
-			public override bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings) => true;
+			public override bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel graph) => true;
 		}
 	}
 }
