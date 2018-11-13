@@ -10,7 +10,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 {
 
 	/// <summary>
-	/// Base class for graph aggregated analyzers.
+	/// Base class for aggregated graph analyzers.
 	/// </summary>
 	public abstract class PXGraphAggregatedAnalyzerBase : IPXGraphAnalyzer
 	{
