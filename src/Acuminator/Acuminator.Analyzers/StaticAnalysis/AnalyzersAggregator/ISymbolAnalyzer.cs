@@ -8,7 +8,5 @@ namespace Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator
     public interface ISymbolAnalyzer
     {
         ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
-
-		bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings);
 	}
 }
