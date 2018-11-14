@@ -48,9 +48,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
                     }
                 }
 
-                //attributes[0].AttributeClass
-                //pxContext.AttributeTypes.PXUIFieldAttribute.Type;
-                //pxContext.AttributeTypes.PXButtonAttribute;
+                if (pxUiFieldAttributeExists && pxButtonAttributeExists)
+                {
+                    continue;
+                }
+
+                var fixOption = !pxUiFieldAttributeExists && !pxButtonAttributeExists ? FixOption.AddBothAttributes :
+                    !pxUiFieldAttributeExists ? FixOption.AddPXUIFieldAttribute :
+                    FixOption.AddPXButtonAttribute;
+                var properties = ImmutableDictionary<string, string>.Empty.Add(ActionHandlerAttributesFix.FixOptionKey, fixOption.ToString());
+                var diagnostic = Diagnostic.Create(
+                    Descriptors.PX1092_MissingAttributesOnActionHandler,
+                    actionHandler.Node.GetLocation(),
+                    properties);
+
+                context.ReportDiagnostic(diagnostic);
             }
         }
     }

@@ -429,4 +429,7 @@
   <data name="PX1092Title" xml:space="preserve">
     <value>Action handlers should be decorated with PXButtonAttribute and PXUIFieldAttribute attributes</value>
   </data>
+  <data name="PX1092Fix" xml:space="preserve">
+    <value>Add missing attribute(s)</value>
+  </data>
 </root>

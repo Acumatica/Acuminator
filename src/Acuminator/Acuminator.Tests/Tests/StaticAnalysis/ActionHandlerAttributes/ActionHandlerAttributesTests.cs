@@ -6,10 +6,6 @@ using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -17,14 +13,29 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ActionHandlerAttributes
 {
     public class ActionHandlerAttributesTests : CodeFixVerifier
     {
-        protected override CodeFixProvider GetCSharpCodeFixProvider() => new ActionHandlerAttributesFix();
-
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
             new PXGraphAnalyzer(CodeAnalysisSettings.Default, new ActionHandlerAttributesAnalyzer());
 
+        protected override CodeFixProvider GetCSharpCodeFixProvider() => new ActionHandlerAttributesFix();
+
         [Theory]
-        [EmbeddedFileData("Handler_Bad.cs")]
+        [EmbeddedFileData("Handlers_Bad.cs")]
         public async Task Handler_ReportsDiagnostic(string source) =>
-            await VerifyCSharpDiagnosticAsync(source, Descriptors.PX1092_MissingAttributesOnActionHandler.CreateFor(1, 1));
+            await VerifyCSharpDiagnosticAsync(source,
+                Descriptors.PX1092_MissingAttributesOnActionHandler.CreateFor(22, 9),
+                Descriptors.PX1092_MissingAttributesOnActionHandler.CreateFor(28, 9),
+                Descriptors.PX1092_MissingAttributesOnActionHandler.CreateFor(34, 9));
+
+        [Theory]
+        [EmbeddedFileData("Handlers_Good.cs")]
+        public async Task Handler_DoesntReportDiagnostic(string source) =>
+            await VerifyCSharpDiagnosticAsync(source);
+
+        [Theory]
+        [EmbeddedFileData(
+            "Handlers_Bad.cs",
+            "Handlers_Good.cs")]
+        public async Task CodeFix(string actual, string expected) =>
+            await VerifyCSharpFixAsync(actual, expected);
     }
 }
