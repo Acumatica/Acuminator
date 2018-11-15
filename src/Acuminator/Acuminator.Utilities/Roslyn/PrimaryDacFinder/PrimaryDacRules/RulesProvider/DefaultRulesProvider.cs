@@ -15,13 +15,13 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.RulesProv
 	/// </summary>
 	internal class DefaultRulesProvider : IRulesProvider
 	{
-		private readonly ImmutableArray<PrimaryDacRuleBase> rules;
+		private readonly ImmutableArray<PrimaryDacRuleBase> _rules;
 
 		public DefaultRulesProvider(PXContext context)
 		{
 			context.ThrowOnNull(nameof(context));
 
-			rules = new List<PrimaryDacRuleBase>
+			_rules = new List<PrimaryDacRuleBase>
 			{
 				//AbsoluteRules
 				new PrimaryDacSpecifiedGraphRule(),
@@ -42,7 +42,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.RulesProv
 				new ViewsWithoutPXViewNameAttributeGraphRule(context),
 
 				// View rules
-				new ForbiddenWordsInNameViewRule(),
+				new ForbiddenWordsInNameViewRule(useCaseSensitiveComparison: false),
 				new HiddenAttributesViewRule(),
 				new NoPXSetupViewRule(context),
 				new PXViewNameAttributeViewRule(context),			
@@ -57,6 +57,6 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.RulesProv
 			.ToImmutableArray();
 		}
 
-		public ImmutableArray<PrimaryDacRuleBase> GetRules() => rules;
+		public ImmutableArray<PrimaryDacRuleBase> GetRules() => _rules;
 	}
 }

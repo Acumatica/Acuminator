@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Acuminator.Utilities.Common;
@@ -12,17 +13,31 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 	/// </summary>
 	public class ForbiddenWordsInNameViewRule : ViewRuleBase
 	{
-		private readonly ImmutableArray<string> forbiddenWords;
+		private readonly bool _useCaseSensitiveComparison;
+		private readonly ImmutableArray<string> _forbiddenWords;
 
 		public sealed override bool IsAbsolute => false;
 
-		public ForbiddenWordsInNameViewRule(IEnumerable<string> wordsToForbid = null, double? weight = null) : base(weight)
+		public ForbiddenWordsInNameViewRule(bool useCaseSensitiveComparison, IEnumerable<string> wordsToForbid = null, double? weight = null) :
+									   base(weight)
 		{
-			forbiddenWords = wordsToForbid.IsNullOrEmpty() 
-				? GetDefaultForbiddenWords()
-				: wordsToForbid.ToImmutableArray();
+			_useCaseSensitiveComparison = useCaseSensitiveComparison;
+
+			if (wordsToForbid.IsNullOrEmpty())
+			{
+				_forbiddenWords = GetDefaultForbiddenWords();
+			}
+			else
+			{
+				if (_useCaseSensitiveComparison)
+				{
+					wordsToForbid = wordsToForbid.Select(w => w.ToUpper());
+				}
+
+				_forbiddenWords = wordsToForbid.Distinct().ToImmutableArray();
+			}
 		}
-		
+
 		/// <summary>
 		/// Query if view name contains one of forbidden words.
 		/// </summary>
@@ -30,10 +45,17 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 		/// <param name="view">The view.</param>
 		/// <param name="viewType">Type of the view.</param>
 		/// <returns/>
-		public sealed override bool SatisfyRule(PrimaryDacFinder dacFinder, ISymbol view, INamedTypeSymbol viewType) =>
-			view != null
-				? forbiddenWords.Any(word => view.Name.Contains(word))
-				: false;
+		public sealed override bool SatisfyRule(PrimaryDacFinder dacFinder, ISymbol view, INamedTypeSymbol viewType)
+		{
+			if (view == null)
+				return false;
+
+			string viewName = _useCaseSensitiveComparison
+				? view.Name
+				: view.Name.ToUpper();
+
+			return _forbiddenWords.Any(word => viewName.Contains(word));
+		}
 
 		private ImmutableArray<string> GetDefaultForbiddenWords() =>
 			ImmutableArray.Create("dummy");
