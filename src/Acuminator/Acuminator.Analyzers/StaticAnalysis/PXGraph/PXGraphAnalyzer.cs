@@ -11,6 +11,7 @@ using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
 using Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions;
 using Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic;
 using Acuminator.Utilities;
+using Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
@@ -36,7 +37,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
             new CallingBaseDataViewDelegateFromOverrideDelegateAnalyzer(),
             new CallingBaseActionHandlerFromOverrideHandlerAnalyzer(),
             new InvalidViewUsageInProcessingDelegateAnalyzer(),
-            new UiPresentationLogicInActionHandlersAnalyzer())
+            new UiPresentationLogicInActionHandlersAnalyzer(),
+			new ViewDeclarationOrderAnalyzer())
         {
         }
 
