@@ -13,9 +13,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ViewDeclarationOrder
     public class ViewDeclarationOrderTests : CodeFixVerifier
     {
 	    protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>  
-			new PXGraphAnalyzer(CodeAnalysisSettings.Default
-													.WithRecursiveAnalysisEnabled()
-													.WithIsvSpecificAnalyzersEnabled(), 
+			new PXGraphAnalyzer(CodeAnalysisSettings.Default, 
 								new ViewDeclarationOrderAnalyzer());
 
 		[Theory]
