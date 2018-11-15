@@ -22,9 +22,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ActionHandlerAttributes
         [EmbeddedFileData("Handlers_Bad.cs")]
         public async Task Handler_ReportsDiagnostic(string source) =>
             await VerifyCSharpDiagnosticAsync(source,
-                Descriptors.PX1092_MissingAttributesOnActionHandler.CreateFor(22, 9),
-                Descriptors.PX1092_MissingAttributesOnActionHandler.CreateFor(28, 9),
-                Descriptors.PX1092_MissingAttributesOnActionHandler.CreateFor(34, 9));
+                Descriptors.PX1092_MissingAttributesOnActionHandler.CreateFor(22, 3),
+                Descriptors.PX1092_MissingAttributesOnActionHandler.CreateFor(28, 3),
+                Descriptors.PX1092_MissingAttributesOnActionHandler.CreateFor(34, 3));
 
         [Theory]
         [EmbeddedFileData("Handlers_Good.cs")]

@@ -4,16 +4,11 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 {
-    public class ActionHandlerAttributesAnalyzer : IPXGraphAnalyzer
+	public class ActionHandlerAttributesAnalyzer : IPXGraphAnalyzer
     {
         public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1092_MissingAttributesOnActionHandler);
@@ -24,46 +19,62 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
             {
                 context.CancellationToken.ThrowIfCancellationRequested();
 
-                if (actionHandler.Symbol == null)
+                if (actionHandler.Symbol == null || actionHandler.Node == null)
                 {
                     continue;
                 }
 
-                var attributes = actionHandler.Symbol.GetAttributes();
-                var pxUiFieldAttributeType = pxContext.AttributeTypes.PXUIFieldAttribute.Type;
-                var pxButtonAttributeType = pxContext.AttributeTypes.PXButtonAttribute;
-                var pxUiFieldAttributeExists = false;
-                var pxButtonAttributeExists = false;
-
-                foreach (var attr in attributes)
-                {
-                    if (pxUiFieldAttributeType.Equals(attr.AttributeClass))
-                    {
-                        pxUiFieldAttributeExists = true;
-                    }
-
-                    if (pxButtonAttributeType.Equals(attr.AttributeClass))
-                    {
-                        pxButtonAttributeExists = true;
-                    }
-                }
-
-                if (pxUiFieldAttributeExists && pxButtonAttributeExists)
-                {
-                    continue;
-                }
-
-                var fixOption = !pxUiFieldAttributeExists && !pxButtonAttributeExists ? FixOption.AddBothAttributes :
-                    !pxUiFieldAttributeExists ? FixOption.AddPXUIFieldAttribute :
-                    FixOption.AddPXButtonAttribute;
-                var properties = ImmutableDictionary<string, string>.Empty.Add(ActionHandlerAttributesFix.FixOptionKey, fixOption.ToString());
-                var diagnostic = Diagnostic.Create(
-                    Descriptors.PX1092_MissingAttributesOnActionHandler,
-                    actionHandler.Node.GetLocation(),
-                    properties);
-
-                context.ReportDiagnostic(diagnostic);
+				CheckActionHandler(context, pxContext, actionHandler.Symbol, actionHandler.Node);
             }
         }
+
+		private void CheckActionHandler(SymbolAnalysisContext context, PXContext pxContext,
+			IMethodSymbol symbol, SyntaxNode node)
+		{
+			context.CancellationToken.ThrowIfCancellationRequested();
+
+			var attributes = symbol.GetAttributes();
+			var pxUIFieldAttributeType = pxContext.AttributeTypes.PXUIFieldAttribute.Type;
+			var pxButtonAttributeType = pxContext.AttributeTypes.PXButtonAttribute;
+			var hasPXUIFieldAttribute = false;
+			var hasPXButtonAttribute = false;
+
+			foreach (var attr in attributes)
+			{
+				context.CancellationToken.ThrowIfCancellationRequested();
+
+				if (attr.AttributeClass == null)
+				{
+					continue;
+				}
+
+				if (attr.AttributeClass.InheritsFromOrEquals(pxUIFieldAttributeType))
+				{
+					hasPXUIFieldAttribute = true;
+				}
+
+				if (attr.AttributeClass.InheritsFromOrEquals(pxButtonAttributeType))
+				{
+					hasPXButtonAttribute = true;
+				}
+
+				if (hasPXUIFieldAttribute && hasPXButtonAttribute)
+				{
+					return;
+				}
+			}
+
+			var fixOption = !hasPXUIFieldAttribute && !hasPXButtonAttribute ? FixOption.AddBothAttributes :
+				!hasPXUIFieldAttribute ? FixOption.AddPXUIFieldAttribute :
+				FixOption.AddPXButtonAttribute;
+			var properties = ImmutableDictionary<string, string>.Empty
+				.Add(ActionHandlerAttributesFix.FixOptionKey, fixOption.ToString());
+			var diagnostic = Diagnostic.Create(
+				Descriptors.PX1092_MissingAttributesOnActionHandler,
+				node.GetLocation(),
+				properties);
+
+			context.ReportDiagnostic(diagnostic);
+		}
     }
 }

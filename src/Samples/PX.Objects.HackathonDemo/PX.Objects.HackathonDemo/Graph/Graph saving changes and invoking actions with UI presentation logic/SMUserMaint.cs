@@ -29,7 +29,7 @@ namespace PX.Objects.HackathonDemo
             return new PXSelect<Users>(this).Select();
         }
 
-        [PXButton]
+        
         [PXUIField(DisplayName = "Add Tooltip")]
         public void addTooltip()
         {

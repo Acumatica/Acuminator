@@ -1,4 +1,5 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
+﻿using Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes;
+using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
 using Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate;
 using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
 using Acuminator.Analyzers.StaticAnalysis.DatabaseQueries;
@@ -33,7 +34,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
             new ThrowingExceptionsInLongRunningOperationAnalyzer(),
             new CallingBaseDataViewDelegateFromOverrideDelegateAnalyzer(),
             new InvalidViewUsageInProcessingDelegateAnalyzer(),
-            new UiPresentationLogicInActionHandlersAnalyzer())
+            new UiPresentationLogicInActionHandlersAnalyzer(),
+			new ActionHandlerAttributesAnalyzer())
         {
         }
 
