@@ -14,7 +14,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 {
-	public class ChangesInPXCacheInEventHandlersAnalyzer : IEventHandlerAnalyzer
+	public class ChangesInPXCacheInEventHandlersAnalyzer : EventHandlerAggregatedAnalyzerBase
 	{
 		private static readonly ImmutableHashSet<EventType> AnalyzedEventTypes = new []
 		{
@@ -29,27 +29,28 @@ namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 			.Add(EventType.RowUpdating)
 			.Add(EventType.RowDeleting);
 
-		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
 			ImmutableArray.Create(Descriptors.PX1044_ChangesInPXCacheInEventHandlers);
 
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
+		public override bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings, EventType eventType)
+		{
+			var eventSet = settings.IsvSpecificAnalyzersEnabled
+				? AnalyzedEventTypesForIsv
+				: AnalyzedEventTypes;
+
+			return eventSet.Contains(eventType);
+		}
+
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings,
 			EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var eventSet = codeAnalysisSettings.IsvSpecificAnalyzersEnabled
-				? AnalyzedEventTypesForIsv
-				: AnalyzedEventTypes;
+			var methodSymbol = (IMethodSymbol)context.Symbol;
+			var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
+			var walker = new Walker(context, pxContext, Descriptors.PX1044_ChangesInPXCacheInEventHandlers, eventType);
 
-			if (eventSet.Contains(eventType))
-			{
-				var methodSymbol = (IMethodSymbol) context.Symbol;
-				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
-				var walker = new Walker(context, pxContext, 
-					Descriptors.PX1044_ChangesInPXCacheInEventHandlers, eventType);
-
-				methodSyntax?.Accept(walker);
-			}
+			methodSyntax?.Accept(walker);
 		}
 	}
 }

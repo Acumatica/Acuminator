@@ -16,21 +16,26 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 	/// An analyzer for the order of view declaration in graph/graph extension.
 	/// This diagnostic works only for simple class hierarchy where the depth of the inheritance is equal to 2: object -> DAC -> DerivedDAC.
 	/// </summary>
-	public class ViewDeclarationOrderAnalyzer : IPXGraphAnalyzer
+	public class ViewDeclarationOrderAnalyzer : PXGraphAggregatedAnalyzerBase
 	{
-		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1004_ViewDeclarationOrder, Descriptors.PX1006_ViewDeclarationOrder);
 
-		public void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, CodeAnalysisSettings settings,
+		/// <summary>
+		/// Starting from the Acumatica 2018R2 version a new method is used to initialize caches with explicit ordering of caches.
+		/// </summary>
+		/// <returns/>
+		public override bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel graph) =>
+			pxContext.PXGraph.InitCacheMapping != null && 
+			graph.ViewsByNames.Count > 0;
+
+		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, CodeAnalysisSettings settings,
 							PXGraphSemanticModel graphSemanticModel)
 		{
-			if (graphSemanticModel.ViewsByNames.Count == 0 || IsNewMethodUsedToInitCaches(pxContext))
-				return;
-
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			var viewsGroupedByDAC = GetViewsUsedInAnalysis(graphSemanticModel).Where(view => view.ViewDAC != null)
-																			  .ToLookup(view => view.ViewDAC);
+			var viewsGroupedByDAC = GetViewsUsedInAnalysis(graphSemanticModel).Where(view => view.DAC != null)
+																			  .ToLookup(view => view.DAC);
 			if (viewsGroupedByDAC.Count == 0)
 				return;
 
@@ -42,12 +47,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 			}
 		}
 
-		/// <summary>
-		/// Starting from the Acumatica 2018R2 version a new method is used to initialize caches with explicit ordering of caches.
-		/// </summary>
-		/// <returns/>
-		private static bool IsNewMethodUsedToInitCaches(PXContext pxContext) => pxContext.PXGraph.InitCacheMapping != null;
-
 		private static IEnumerable<DataViewInfo> GetViewsUsedInAnalysis(PXGraphSemanticModel graphSemanticModel)
 		{
 			foreach (DataViewInfo view in graphSemanticModel.Views)
@@ -55,7 +54,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 				if (view.Type.TypeArguments.IsEmpty || view.Symbol.Locations.IsEmpty)
 					continue;
 
-				var baseTypes = view.ViewDAC?.GetBaseTypesAndThis();
+				var baseTypes = view.DAC?.GetBaseTypesAndThis();
 				int countOfDACsInHierarchy = baseTypes.IsNullOrEmpty()
 												? 0
 												: baseTypes.TakeWhile(t => t.IsDAC()).Count();

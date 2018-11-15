@@ -15,22 +15,22 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 {
-	public class DatabaseQueriesInRowSelectingAnalyzer : IEventHandlerAnalyzer
+	public class DatabaseQueriesInRowSelectingAnalyzer : EventHandlerAggregatedAnalyzerBase
 	{
-		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1042_DatabaseQueriesInRowSelecting);
-		
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
-			EventType eventType)
+
+		public override bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings, EventType eventType) =>
+			eventType == EventType.RowSelecting;
+
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings,
+									 EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
-			
-			if (eventType == EventType.RowSelecting)
-			{
-				var methodSymbol = (IMethodSymbol) context.Symbol;
-				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
-				methodSyntax?.Accept(new DiagnosticWalker(context, pxContext));
-			}
+
+			var methodSymbol = (IMethodSymbol)context.Symbol;
+			var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
+			methodSyntax?.Accept(new DiagnosticWalker(context, pxContext));
 		}
 
 

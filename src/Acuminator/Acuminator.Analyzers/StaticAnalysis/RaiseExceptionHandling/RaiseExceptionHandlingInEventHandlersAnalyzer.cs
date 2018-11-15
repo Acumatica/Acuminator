@@ -16,7 +16,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 {
-	public class RaiseExceptionHandlingInEventHandlersAnalyzer : IEventHandlerAnalyzer
+	public class RaiseExceptionHandlingInEventHandlersAnalyzer : EventHandlerAggregatedAnalyzerBase
 	{
 		private static readonly ISet<EventType> AnalyzedEventTypes = new HashSet<EventType>()
 		{
@@ -26,22 +26,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 			EventType.RowPersisted
 		};
 
-		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
 			ImmutableArray.Create(Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers);
 
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
+		public override bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings, EventType eventType) =>
+			AnalyzedEventTypes.Contains(eventType);
+
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings,
 			EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (AnalyzedEventTypes.Contains(eventType))
-			{
-				var methodSymbol = (IMethodSymbol) context.Symbol;
-				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
-				var walker = new Walker(context, pxContext, eventType);
+			var methodSymbol = (IMethodSymbol)context.Symbol;
+			var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
+			var walker = new Walker(context, pxContext, eventType);
 
-				methodSyntax?.Accept(walker);
-			}
+			methodSyntax?.Accept(walker);
 		}
 
 		

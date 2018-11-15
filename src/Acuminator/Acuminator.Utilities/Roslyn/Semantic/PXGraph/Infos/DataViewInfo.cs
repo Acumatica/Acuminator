@@ -21,7 +21,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// </summary>
 		public INamedTypeSymbol Type { get; }
 		
-		public ITypeSymbol ViewDAC { get; }
+		public ITypeSymbol DAC { get; }
 
 		/// <summary>
 		/// The process delegates
@@ -51,7 +51,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			Type = type;
 			IsProcessing = type.IsProcessingView(pxContext);
-			ViewDAC = Type.GetDacFromView(pxContext);
+			DAC = Type.GetDacFromView(pxContext);
 		}
 
 		public DataViewInfo(ISymbol symbol, INamedTypeSymbol type, PXContext pxContext, int declarationOrder, DataViewInfo baseInfo)

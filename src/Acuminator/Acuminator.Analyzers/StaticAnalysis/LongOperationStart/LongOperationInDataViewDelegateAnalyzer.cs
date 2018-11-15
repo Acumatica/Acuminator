@@ -8,12 +8,12 @@ using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
 {
-    public class LongOperationInDataViewDelegateAnalyzer : IPXGraphAnalyzer
+    public class LongOperationInDataViewDelegateAnalyzer : PXGraphAggregatedAnalyzerBase
     {
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1080_DataViewDelegateLongOperationStart);
 
-        public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 

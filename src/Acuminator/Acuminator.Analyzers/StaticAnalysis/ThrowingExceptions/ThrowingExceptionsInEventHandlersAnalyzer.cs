@@ -16,30 +16,30 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 {
-	public class ThrowingExceptionsInEventHandlersAnalyzer : IEventHandlerAnalyzer
+	public class ThrowingExceptionsInEventHandlersAnalyzer : EventHandlerAggregatedAnalyzerBase
 	{
-		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
 			Descriptors.PX1073_ThrowingExceptionsInRowPersisted,
 			Descriptors.PX1074_ThrowingSetupNotEnteredExceptionInEventHandlers);
 
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
-			EventType eventType)
+		public override bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings, EventType eventType) =>
+			eventType != EventType.None;
+
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings,
+									 EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (eventType != EventType.None)
+			var methodSymbol = (IMethodSymbol)context.Symbol;
+			var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
+
+			if (methodSyntax != null)
 			{
-				var methodSymbol = (IMethodSymbol) context.Symbol;
-				var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
+				var walker = new Walker(context, pxContext, eventType);
 
-				if (methodSyntax != null)
-				{
-					var walker = new Walker(context, pxContext, eventType);
-
-					methodSyntax.Accept(walker);
-				}
+				methodSyntax.Accept(walker);
 			}
-		}
+		}	
 
 		private class Walker : WalkerBase
 		{
