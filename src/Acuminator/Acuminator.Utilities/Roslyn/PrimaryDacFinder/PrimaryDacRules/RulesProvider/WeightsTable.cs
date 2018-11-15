@@ -15,7 +15,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.RulesProv
 	{
 		public static readonly WeightsTable Default = new WeightsTable();
 
-		private static readonly IImmutableDictionary<string, double> weights = new Dictionary<string, double>
+		private static readonly IImmutableDictionary<string, double> _weights = new Dictionary<string, double>
 		{
 			[nameof(PrimaryDacSpecifiedGraphRule)]             = double.MaxValue,
 			[nameof(PXImportAttributeGraphRule)]               = 1000.0,
@@ -45,7 +45,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.RulesProv
 		public double this[string ruleName] => 
 			ruleName.IsNullOrWhiteSpace() 
 				? 0.0
-				: weights.TryGetValue(ruleName, out double weight) 
+				: _weights.TryGetValue(ruleName, out double weight) 
 					? weight 
 					: 0.0;
 
