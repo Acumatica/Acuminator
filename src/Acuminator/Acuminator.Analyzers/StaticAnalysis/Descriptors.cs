@@ -225,10 +225,10 @@ namespace Acuminator.Analyzers.StaticAnalysis
             Rule("PX1086", nameof(Resources.PX1086Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 
         public static DiagnosticDescriptor PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation { get; } =
-            Rule("PX1087", nameof(Resources.PX1087Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+            Rule("PX1087", nameof(Resources.PX1087Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 
         public static DiagnosticDescriptor PX1088_InvalidViewUsageInProcessingDelegate { get; } =
-            Rule("PX1088", nameof(Resources.PX1088Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+            Rule("PX1088", nameof(Resources.PX1088Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 
         public static DiagnosticDescriptor PX1089_UiPresentationLogicInActionDelegates { get; } =
             Rule("PX1089", nameof(Resources.PX1089Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
