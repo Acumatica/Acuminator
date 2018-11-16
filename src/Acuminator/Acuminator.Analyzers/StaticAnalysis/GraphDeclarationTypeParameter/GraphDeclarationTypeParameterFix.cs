@@ -3,12 +3,9 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,10 +21,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.GraphDeclarationTypeParameter
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			if (context.CancellationToken.IsCancellationRequested)
-			{
-				return;
-			}
+			context.CancellationToken.ThrowIfCancellationRequested();
 
 			var codeActionName = nameof(Resources.PX1093Fix).GetLocalized().ToString();
 			var codeAction = CodeAction.Create(
@@ -39,10 +33,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.GraphDeclarationTypeParameter
 
 		private async Task<Document> FixGraphDeclarationTypeParameter(Document document, TextSpan span, CancellationToken cancellation)
 		{
-			if (cancellation.IsCancellationRequested)
-			{
-				return document;
-			}
+			cancellation.ThrowIfCancellationRequested();
 
 			var root = await document
 				.GetSyntaxRootAsync(cancellation)
