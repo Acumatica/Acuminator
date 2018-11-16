@@ -14,13 +14,13 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXActionExecution
 {
-	public class PXActionExecutionInEventHandlersAnalyzer : IEventHandlerAnalyzer
+	public class PXActionExecutionInEventHandlersAnalyzer : EventHandlerAggregatedAnalyzerBase
 	{
-		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
 			ImmutableArray.Create(Descriptors.PX1071_PXActionExecutionInEventHandlers);
 
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
-			EventType eventType)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
+									 EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 

@@ -68,6 +68,7 @@
     <Compile Include="StaticAnalysis\DacPropertyAttributes\MultipleAttributesOnDacPropertyFixBase.cs" />
     <Compile Include="StaticAnalysis\DacKeyFieldDeclaration\KeyFieldDeclarationAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DatabaseQueries\Walker.cs" />
+    <Compile Include="StaticAnalysis\EventHandlers\EventHandlerAggregatedAnalyzerBase.cs" />
     <Compile Include="StaticAnalysis\EventHandlers\EventHandlerAnalyzer.cs" />
     <Compile Include="StaticAnalysis\EventHandlers\IEventHandlerAnalyzer.cs" />
     <Compile Include="StaticAnalysis\GraphDeclarationTypeParameter\GraphDeclarationTypeParameterAnalyzer.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="StaticAnalysis\PXGraphCreateInstance\PXGraphCreateInstanceInEventHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\LongOperationStart\LongOperationInPXGraphDuringInitializationAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphCreationForBqlQueries\PXGraphCreationForBqlQueriesFix.cs" />
+    <Compile Include="StaticAnalysis\PXGraph\PXGraphAggregatedAnalyzerBase.cs" />
     <Compile Include="StaticAnalysis\RaiseExceptionHandling\RaiseExceptionHandlingInEventHandlersAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphCreationForBqlQueries\PXGraphCreationForBqlQueriesAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphCreationForBqlQueries\Walker.cs" />

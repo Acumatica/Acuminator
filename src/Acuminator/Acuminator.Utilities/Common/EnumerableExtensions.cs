@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -147,6 +148,28 @@ namespace Acuminator.Utilities.Common
 					yield return item;
 				}
 			}
+		}
+
+		/// <summary>
+		/// Reverses <see cref="ImmutableArray{T}"/>. This is an optimization method which allows to avoid boxing.
+		/// </summary>
+		/// <typeparam name="TItem">Type of the item.</typeparam>
+		/// <param name="source">The source to act on.</param>
+		/// <returns/>
+		[DebuggerStepThrough]
+		public static ImmutableArray<TItem> Reverse<TItem>(this ImmutableArray<TItem> source)
+		{
+			if (source.Length == 0)
+				return source;
+
+			ImmutableArray<TItem>.Builder builder = ImmutableArray.CreateBuilder<TItem>(source.Length);
+
+			for (int i = source.Length - 1; i >= 0; i--)
+			{		
+				builder.Add(source[i]);
+			}
+
+			return builder.ToImmutable();
 		}
 
 		[DebuggerStepThrough]

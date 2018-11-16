@@ -12,12 +12,12 @@ using System.Threading;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 {
-    public class ThrowingExceptionsInLongRunningOperationAnalyzer : IPXGraphAnalyzer
+    public class ThrowingExceptionsInLongRunningOperationAnalyzer : PXGraphAggregatedAnalyzerBase
     {
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation);
 
-        public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 

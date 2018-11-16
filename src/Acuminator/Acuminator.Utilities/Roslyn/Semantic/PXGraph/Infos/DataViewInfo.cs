@@ -20,6 +20,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// The type of the data view symbol
 		/// </summary>
 		public INamedTypeSymbol Type { get; }
+		
+		public ITypeSymbol DAC { get; }
 
 		/// <summary>
 		/// The process delegates
@@ -42,17 +44,18 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		protected override string DebuggerDisplay => $"{base.DebuggerDisplay} |Type: {Type.ToString()}";
 
 		public DataViewInfo(ISymbol symbol, INamedTypeSymbol type, PXContext pxContext, int declarationOrder)
-			: base(symbol, declarationOrder)
+					 : base(symbol, declarationOrder)
 		{
 			type.ThrowOnNull(nameof(type));
 			pxContext.ThrowOnNull(nameof(pxContext));
 
 			Type = type;
 			IsProcessing = type.IsProcessingView(pxContext);
+			DAC = Type.GetDacFromView(pxContext);
 		}
 
 		public DataViewInfo(ISymbol symbol, INamedTypeSymbol type, PXContext pxContext, int declarationOrder, DataViewInfo baseInfo)
-			: this(symbol, type, pxContext, declarationOrder)
+					 : this(symbol, type, pxContext, declarationOrder)
 		{
 			baseInfo.ThrowOnNull(nameof(baseInfo));
 

@@ -10,14 +10,14 @@ using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 {
-    public class SavingChangesInGraphSemanticModelAnalyzer : IPXGraphAnalyzer
+    public class SavingChangesInGraphSemanticModelAnalyzer : PXGraphAggregatedAnalyzerBase
     {
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(
                 Descriptors.PX1058_PXGraphSavingChangesDuringInitialization,
                 Descriptors.PX1083_SavingChangesInDataViewDelegate);
 
-        public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 

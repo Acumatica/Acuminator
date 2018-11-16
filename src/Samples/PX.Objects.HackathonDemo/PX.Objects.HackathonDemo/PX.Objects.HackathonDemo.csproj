@@ -80,6 +80,13 @@
     <Compile Include="Graph\Graph Reusing\SOOrdersInqExt.cs" />
     <Compile Include="Graph\Graph with processing delegate uses incorrect view and throws setup exceptions\UsersProcess.cs" />
     <Compile Include="Graph\Start row reset for paging\LEPMaint.cs" />
+    <Compile Include="Graph\View Order\DAC\ARTran.cs" />
+    <Compile Include="Graph\View Order\DAC\SOTran.cs" />
+    <Compile Include="Graph\View Order\DAC\SOInvoice.cs" />
+    <Compile Include="Graph\View Order\DAC\ARInvoice.cs" />
+    <Compile Include="Graph\View Order\ARInvoiceEntry.cs" />
+    <Compile Include="Graph\View Order\SOInvoiceEntry.cs" />
+    <Compile Include="IIGPOALCLandedCost.cs" />
     <Compile Include="Localization\InvalidRowException.cs" />
     <Compile Include="Localization\Messages.cs" />
     <Compile Include="Localization\SOOrderExt.cs" />
