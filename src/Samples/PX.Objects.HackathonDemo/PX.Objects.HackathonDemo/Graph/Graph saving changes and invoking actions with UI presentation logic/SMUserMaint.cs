@@ -4,7 +4,7 @@ using System.Collections;
 
 namespace PX.Objects.HackathonDemo
 {
-    public class SMUserMaint : PXGraph<SMUserMaint, Users>
+    public class SMUserMaint : PXGraph<UserEntry, Users>
     {
         public PXSelect<Users> Users;
 

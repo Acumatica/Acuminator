@@ -223,6 +223,9 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\PXSelector.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\PXView.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityKey_CompoundKey_AttributeListSyntax_EditFields_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\GraphDeclarationTypeParameter\Sources\Graph_Bad.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\GraphDeclarationTypeParameter\Sources\Graph_Good.cs" />
+    <Compile Include="Tests\StaticAnalysis\GraphDeclarationTypeParameter\PXGraphTypeParameterTests.cs" />
     <Compile Include="Tests\StaticAnalysis\InvalidViewUsageInProcessingDelegate\InvalidViewUsageInProcessingDelegateTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\InvalidViewUsageInProcessingDelegate\Sources\ParametersDelegate_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\InvalidViewUsageInProcessingDelegate\Sources\ProcessDelegate_Bad.cs" />
