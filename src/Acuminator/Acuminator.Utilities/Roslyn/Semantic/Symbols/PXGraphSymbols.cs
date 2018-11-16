@@ -6,7 +6,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
     public class PXGraphSymbols
     {
-	    public class InstanceCreatedEventsSymbols
+		private const string InitCacheMappingMethodName = nameof(PX.Data.PXGraph.InitCacheMapping);
+
+		public class InstanceCreatedEventsSymbols
 	    {
 		    public INamedTypeSymbol Type { get; }
 			public IMethodSymbol AddHandler { get; }
@@ -21,9 +23,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
         public INamedTypeSymbol Type { get; }
 
         public ImmutableArray<IMethodSymbol> CreateInstance { get; }
+
 	    public InstanceCreatedEventsSymbols InstanceCreatedEvents { get; }
 
-        internal PXGraphSymbols(Compilation compilation)
+		public IMethodSymbol InitCacheMapping => Type.GetMembers(InitCacheMappingMethodName)
+													 .OfType<IMethodSymbol>()
+													 .FirstOrDefault(method => method.ReturnsVoid && method.Parameters.Length == 1);
+
+		internal PXGraphSymbols(Compilation compilation)
         {
             Type = compilation.GetTypeByMetadataName(typeof(PX.Data.PXGraph).FullName);
 

@@ -49,20 +49,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 		protected override void AnalyzeSymbol(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
-			
-			if (context.Symbol is IMethodSymbol methodSymbol)
-			{
-				EventType eventType = methodSymbol.GetEventHandlerType(pxContext);
 
-				if (eventType != EventType.None)
+			if (!(context.Symbol is IMethodSymbol methodSymbol))
+				return;
+		
+			EventType eventType = methodSymbol.GetEventHandlerType(pxContext);
+
+			if (eventType == EventType.None)
+				return;
+
+			foreach (var innerAnalyzer in _innerAnalyzers)
+			{
+				context.CancellationToken.ThrowIfCancellationRequested();
+
+				if (innerAnalyzer.ShouldAnalyze(pxContext, codeAnalysisSettings, eventType))
 				{
-					foreach (var innerAnalyzer in _innerAnalyzers)
-					{
-						context.CancellationToken.ThrowIfCancellationRequested();
-						innerAnalyzer.Analyze(context, pxContext, codeAnalysisSettings, eventType);
-					}
+					innerAnalyzer.Analyze(context, pxContext, codeAnalysisSettings, eventType);
 				}
-			}
+			}		
 		}
 
 		private void AnalyzeLambda(OperationAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings)

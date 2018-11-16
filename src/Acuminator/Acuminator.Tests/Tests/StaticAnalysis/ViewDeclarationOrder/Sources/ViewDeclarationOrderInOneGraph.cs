@@ -14,8 +14,8 @@ public class VendorMaint : PXGraph<VendorMaint, Vendor>
 
 public class CustomerMaint : PXGraph<CustomerMaint, Customer>
 {
-    public PXSelect<BAccount> CustomerBAcc;
-    public PXSelect<Customer> Customer;
+	public PXSelect<BAccount> CustomerBAcc;
+	public PXSelect<Customer> Customer;
 
-    // There are two cache instances: PXCache<BAccount> and PXCache<Customer>
+	// There are two cache instances: PXCache<BAccount> and PXCache<Customer>
 }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PX.Objects.HackathonDemo
+namespace PX.Objects.HackathonDemo.ViewOrder
 {
 	public class SOOrderProcessing : PXGraph<SOOrderProcessing>
 	{

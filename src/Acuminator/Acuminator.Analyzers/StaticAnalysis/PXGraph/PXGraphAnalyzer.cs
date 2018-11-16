@@ -1,4 +1,5 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes;
+﻿using System.Linq;
+using Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes;
 using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
 using Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler;
 using Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate;
@@ -12,6 +13,7 @@ using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
 using Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions;
 using Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic;
 using Acuminator.Utilities;
+using Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
@@ -38,6 +40,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
             new CallingBaseActionHandlerFromOverrideHandlerAnalyzer(),
             new InvalidViewUsageInProcessingDelegateAnalyzer(),
             new UiPresentationLogicInActionHandlersAnalyzer(),
+			new ViewDeclarationOrderAnalyzer(),
 			new ActionHandlerAttributesAnalyzer())
         {
         }
@@ -50,25 +53,29 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
         {
         }
 
-        protected override void AnalyzeSymbol(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings)
-        {
-            context.CancellationToken.ThrowIfCancellationRequested();
+		protected override void AnalyzeSymbol(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings)
+		{
+			context.CancellationToken.ThrowIfCancellationRequested();
 
-            if (!(context.Symbol is INamedTypeSymbol type))
-            {
-                return;
-            }
+			if (!(context.Symbol is INamedTypeSymbol type))
+			{
+				return;
+			}
 
-            var inferredGraphs = PXGraphSemanticModel.InferModels(pxContext, type, context.CancellationToken);
+			var inferredGraphs = PXGraphSemanticModel.InferModels(pxContext, type, context.CancellationToken);
 
-            foreach (var innerAnalyzer in _innerAnalyzers)
-            {
-                foreach (var graph in inferredGraphs)
-                {
-                    context.CancellationToken.ThrowIfCancellationRequested();
-                    innerAnalyzer.Analyze(context, pxContext, settings, graph);
-                }
-            }
-        }
+			foreach (var graph in inferredGraphs)
+			{
+				foreach (var innerAnalyzer in _innerAnalyzers)
+				{
+					context.CancellationToken.ThrowIfCancellationRequested();
+
+					if (innerAnalyzer.ShouldAnalyze(pxContext, settings, graph))
+					{
+						innerAnalyzer.Analyze(context, pxContext, settings, graph);
+					}			
+				}
+			}
+		}
     }
 }

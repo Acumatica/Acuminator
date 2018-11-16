@@ -17,18 +17,18 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 {
-	public class SavingChangesInEventHandlersAnalyzer : IEventHandlerAnalyzer
+	public class SavingChangesInEventHandlersAnalyzer : EventHandlerAggregatedAnalyzerBase
 	{
-		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
 			Descriptors.PX1043_SavingChangesInEventHandlers,
 			Descriptors.PX1043_SavingChangesInRowPerstisting);
 
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings,
-			EventType eventType)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings,
+									 EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var methodSymbol = (IMethodSymbol) context.Symbol;
+			var methodSymbol = (IMethodSymbol)context.Symbol;
 			var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
 			methodSyntax?.Accept(new Walker(context, pxContext, eventType));
 		}

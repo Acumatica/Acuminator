@@ -13,14 +13,14 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			{
 				var pxContext = new PXContext(compilationStartContext.Compilation);
 
-				if (pxContext.IsPlatformReferenced && ShouldAnalyze(pxContext))
+				if (ShouldAnalyze(pxContext))
 				{
 					AnalyzeCompilation(compilationStartContext, pxContext);
 				}
 			});
 		}
 
-		protected virtual bool ShouldAnalyze(PXContext pxContext) => true;
+		protected virtual bool ShouldAnalyze(PXContext pxContext) => pxContext.IsPlatformReferenced;
 
 		internal abstract void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext);
 	}
