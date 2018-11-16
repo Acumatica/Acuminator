@@ -9,11 +9,11 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ActionRul
 	/// </summary>
 	public class ScoreSystemActionRule : ScoreSimpleActionRule
 	{
-		private readonly PXSystemActionsRegister systemActionsRegister;
+		private readonly PXSystemActionsRegister _systemActionsRegister;
 
 		public ScoreSystemActionRule(PXContext context, double? weight = null) : base(weight)
 		{
-			systemActionsRegister = new PXSystemActionsRegister(context);
+			_systemActionsRegister = new PXSystemActionsRegister(context);
 		}
 
 		public override bool SatisfyRule(PrimaryDacFinder dacFinder, ISymbol action, INamedTypeSymbol actionType)
@@ -21,7 +21,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ActionRul
 			if (!base.SatisfyRule(dacFinder, action, actionType))
 				return false;
 
-			return systemActionsRegister.IsSystemAction(actionType);
+			return _systemActionsRegister.IsSystemAction(actionType);
 		}
 	}
 }

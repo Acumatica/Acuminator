@@ -28,11 +28,11 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 
 		public ImmutableArray<DataViewInfo> GraphViews { get; }
 
-		private readonly Dictionary<ISymbol, (ITypeSymbol DAC, Score Score)> viewsWithDacAndScores;
-		private readonly ILookup<ITypeSymbol, ISymbol> dacWithViewsLookup;
+		private readonly Dictionary<ISymbol, (ITypeSymbol DAC, Score Score)> _viewsWithDacAndScores;
+		private readonly ILookup<ITypeSymbol, ISymbol> _dacWithViewsLookup;
 
-		private readonly List<PrimaryDacRuleBase> absoluteRules;
-		private readonly List<PrimaryDacRuleBase> heuristicRules;
+		private readonly List<PrimaryDacRuleBase> _absoluteRules;
+		private readonly List<PrimaryDacRuleBase> _heuristicRules;
 
 		private PrimaryDacFinder(PXContext pxContext, SemanticModel semanticModel, PXGraphSemanticModel graphSemanticModel,
 								 ImmutableArray<PrimaryDacRuleBase> rules, CancellationToken cancellationToken,
@@ -44,7 +44,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 			CancellationToken = cancellationToken;
 			GraphActions = actionInfos.ToImmutableArray();
 			GraphViews = graphViewInfos.ToImmutableArray();
-			viewsWithDacAndScores = new Dictionary<ISymbol, (ITypeSymbol DAC, Score Score)>(GraphViews.Length);
+			_viewsWithDacAndScores = new Dictionary<ISymbol, (ITypeSymbol DAC, Score Score)>(GraphViews.Length);
 
 			foreach (DataViewInfo viewInfo in GraphViews)
 			{
@@ -53,14 +53,14 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 				if (dac == null)
 					continue;
 
-				viewsWithDacAndScores.Add(viewInfo.Symbol, (dac, new Score(0.0)));
+				_viewsWithDacAndScores.Add(viewInfo.Symbol, (dac, new Score(0.0)));
 			}
 
-			dacWithViewsLookup = viewsWithDacAndScores.ToLookup(viewAndDac => viewAndDac.Value.DAC,
+			_dacWithViewsLookup = _viewsWithDacAndScores.ToLookup(viewAndDac => viewAndDac.Value.DAC,
 																viewAndDac => viewAndDac.Key);
 
-			absoluteRules = rules.Where(rule => rule.IsAbsolute).ToList();
-			heuristicRules = rules.Where(rule => !rule.IsAbsolute).ToList();
+			_absoluteRules = rules.Where(rule => rule.IsAbsolute).ToList();
+			_heuristicRules = rules.Where(rule => !rule.IsAbsolute).ToList();
 		}
 
 		public static PrimaryDacFinder Create(PXContext pxContext, SemanticModel semanticModel, INamedTypeSymbol graphOrGraphExtension,
@@ -102,10 +102,10 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 
 		public ITypeSymbol FindPrimaryDAC()
 		{
-			if (dacWithViewsLookup.Count == 0)
+			if (_dacWithViewsLookup.Count == 0)
 				return null;
 
-			foreach (PrimaryDacRuleBase rule in absoluteRules)
+			foreach (PrimaryDacRuleBase rule in _absoluteRules)
 			{
 				ITypeSymbol primaryDAC = ApplyRule(rule);
 
@@ -118,7 +118,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 			if (CancellationToken.IsCancellationRequested)
 				return null;
 
-			foreach (PrimaryDacRuleBase rule in heuristicRules)
+			foreach (PrimaryDacRuleBase rule in _heuristicRules)
 			{
 				ApplyRule(rule);
 
@@ -129,7 +129,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 			if (CancellationToken.IsCancellationRequested)
 				return null;
 
-			var maxScoredViews = viewsWithDacAndScores.ItemsWithMaxValues(viewWithDacAndScore => viewWithDacAndScore.Value.Score.Value);
+			var maxScoredViews = _viewsWithDacAndScores.ItemsWithMaxValues(viewWithDacAndScore => viewWithDacAndScore.Value.Score.Value);
 			var maxScoredDACs = maxScoredViews.Select(viewWithDacAndScore => viewWithDacAndScore.Value.DAC)
 											  .ToHashSet();
 			return maxScoredDACs.Count == 1
@@ -171,7 +171,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 			if (rule.IsAbsolute && dacCandidatesList.Count == 1)
 				primaryDac = dacCandidatesList[0];
 
-			viewCandidates = viewCandidates ?? dacCandidatesList.SelectMany(dac => dacWithViewsLookup[dac]);
+			viewCandidates = viewCandidates ?? dacCandidatesList.SelectMany(dac => _dacWithViewsLookup[dac]);
 			ScoreRuleForViewCandidates(viewCandidates, rule);
 			return primaryDac;
 		}
@@ -189,7 +189,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 			if (dacRule == null || CancellationToken.IsCancellationRequested)
 				return null;
 
-			var candidates = dacWithViewsLookup.TakeWhile(dacWithViews => !CancellationToken.IsCancellationRequested)
+			var candidates = _dacWithViewsLookup.TakeWhile(dacWithViews => !CancellationToken.IsCancellationRequested)
 												  .Where(dacWithViews => dacRule.SatisfyRule(this, dacWithViews.Key));
 
 			return !CancellationToken.IsCancellationRequested
@@ -218,7 +218,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 
 			foreach (ISymbol candidate in viewCandidates)
 			{
-				if (!viewsWithDacAndScores.TryGetValue(candidate, out var dacWithScore))
+				if (!_viewsWithDacAndScores.TryGetValue(candidate, out var dacWithScore))
 					continue;
 
 				Score score = dacWithScore.Score;
