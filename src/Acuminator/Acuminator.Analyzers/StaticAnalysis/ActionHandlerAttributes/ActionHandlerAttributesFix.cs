@@ -67,10 +67,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 
         private async Task<Document> FixActionHandlerAttributes(Document document, TextSpan span, FixOption option, CancellationToken cancellation)
         {
-            if (cancellation.IsCancellationRequested)
-            {
-                return document;
-            }
+			cancellation.ThrowIfCancellationRequested();
 
             var root = await document
                 .GetSyntaxRootAsync(cancellation)
