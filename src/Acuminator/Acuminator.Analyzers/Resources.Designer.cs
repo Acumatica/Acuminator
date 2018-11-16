@@ -1023,5 +1023,32 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1093Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add PXCacheName attribute.
+        /// </summary>
+        public static string PX1094FixPXCacheNameAttribute {
+            get {
+                return ResourceManager.GetString("PX1094FixPXCacheNameAttribute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add PXHidden attribute.
+        /// </summary>
+        public static string PX1094FixPXHiddenAttribute {
+            get {
+                return ResourceManager.GetString("PX1094FixPXHiddenAttribute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DAC should be decorated with either PXHidden attribute or PXCacheName attribute.
+        /// </summary>
+        public static string PX1094Title {
+            get {
+                return ResourceManager.GetString("PX1094Title", resourceCulture);
+            }
+        }
     }
 }

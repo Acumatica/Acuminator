@@ -59,6 +59,8 @@
     <Compile Include="StaticAnalysis\ChangesInPXCache\ChangesInPXCacheDuringPXGraphInitializationAnalyzer.cs" />
     <Compile Include="StaticAnalysis\ChangesInPXCache\Walker.cs" />
     <Compile Include="StaticAnalysis\AnalyzersAggregator\SymbolAnalyzersAggregator.cs" />
+    <Compile Include="StaticAnalysis\DacUiAttributes\DacUiAttributesAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\DacUiAttributes\DacUiAttributesFix.cs" />
     <Compile Include="StaticAnalysis\DatabaseQueries\DatabaseQueriesInPXGraphInitializationAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DatabaseQueries\DatabaseQueriesInRowSelectedAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DatabaseQueries\DatabaseQueriesInRowSelectingAnalyzer.cs" />
@@ -248,9 +250,7 @@
       <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\portable-net40+sl4+win8+wp8\System.ValueTuple.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="StaticAnalysis\DacUiAttributes\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Acuminator.Utilities\Acuminator.Utilities.csproj">
       <Project>{b902103c-831b-4bbf-a88b-3dae6f601cf0}</Project>
