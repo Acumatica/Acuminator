@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.GraphDeclarationTypeParameter
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			context.CancellationToken.ThrowIfCancellationRequested();
+			if (context.CancellationToken.IsCancellationRequested)
+			{
+				return;
+			}
 
 			var codeActionName = nameof(Resources.PX1093Fix).GetLocalized().ToString();
 			var codeAction = CodeAction.Create(
@@ -35,9 +39,36 @@ namespace Acuminator.Analyzers.StaticAnalysis.GraphDeclarationTypeParameter
 
 		private async Task<Document> FixGraphDeclarationTypeParameter(Document document, TextSpan span, CancellationToken cancellation)
 		{
-			cancellation.ThrowIfCancellationRequested();
+			if (cancellation.IsCancellationRequested)
+			{
+				return document;
+			}
 
-			return document;
+			var root = await document
+				.GetSyntaxRootAsync(cancellation)
+				.ConfigureAwait(false);
+
+			if (!(root?.FindNode(span) is IdentifierNameSyntax invalidParameterTypeIdentifier))
+			{
+				return document;
+			}
+
+			var classDeclaration = invalidParameterTypeIdentifier
+				.Ancestors()
+				.OfType<ClassDeclarationSyntax>()
+				.FirstOrDefault();
+
+			if (classDeclaration == null)
+			{
+				return document;
+			}
+
+			var invalidTypeParameterToken = invalidParameterTypeIdentifier.Identifier;
+			var validTypeParameterToken = classDeclaration.Identifier.WithTrailingTrivia();
+			var newRoot = root.ReplaceToken(invalidTypeParameterToken, validTypeParameterToken);
+			var newDocument = document.WithSyntaxRoot(newRoot);
+
+			return newDocument;
 		}
 	}
 }
