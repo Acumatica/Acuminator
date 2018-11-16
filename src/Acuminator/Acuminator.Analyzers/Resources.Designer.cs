@@ -1005,5 +1005,23 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1091Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change graph type parameter.
+        /// </summary>
+        public static string PX1093Fix {
+            get {
+                return ResourceManager.GetString("PX1093Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Graph declaration should contain graph type as first type paramenter.
+        /// </summary>
+        public static string PX1093Title {
+            get {
+                return ResourceManager.GetString("PX1093Title", resourceCulture);
+            }
+        }
     }
 }
