@@ -9,13 +9,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Acuminator.Analyzers.StaticAnalysis.GraphDeclarationTypeParameter
+namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class GraphDeclarationTypeParameterFix : CodeFixProvider
+	public class PXGraphDeclarationTypeParameterFix : CodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-			ImmutableArray.Create(Descriptors.PX1093_GraphDeclarationVialation.Id);
+			ImmutableArray.Create(Descriptors.PX1093_GraphDeclarationViolation.Id);
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 

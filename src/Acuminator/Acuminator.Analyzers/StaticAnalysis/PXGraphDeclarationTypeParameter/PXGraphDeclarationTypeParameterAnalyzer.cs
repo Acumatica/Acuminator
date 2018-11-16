@@ -6,13 +6,13 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace Acuminator.Analyzers.StaticAnalysis.GraphDeclarationTypeParameter
+namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class GraphDeclarationTypeParameterAnalyzer : PXDiagnosticAnalyzer
+	public class PXGraphDeclarationTypeParameterAnalyzer : PXDiagnosticAnalyzer
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-			ImmutableArray.Create(Descriptors.PX1093_GraphDeclarationVialation);
+			ImmutableArray.Create(Descriptors.PX1093_GraphDeclarationViolation);
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
@@ -57,7 +57,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.GraphDeclarationTypeParameter
 				return;
 			}
 
-			context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1093_GraphDeclarationVialation, graphArgumentIdentifier.GetLocation()));
+			context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1093_GraphDeclarationViolation, graphArgumentIdentifier.GetLocation()));
 		}
 
 		private BaseTypeSyntax GetBaseGraphTypeNode(SyntaxNodeAnalysisContext context, PXContext pxContext,
