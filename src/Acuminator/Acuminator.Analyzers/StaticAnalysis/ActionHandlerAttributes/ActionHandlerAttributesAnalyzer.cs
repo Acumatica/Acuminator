@@ -8,12 +8,12 @@ using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 {
-	public class ActionHandlerAttributesAnalyzer : IPXGraphAnalyzer
-    {
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+	public class ActionHandlerAttributesAnalyzer : PXGraphAggregatedAnalyzerBase
+	{
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1092_MissingAttributesOnActionHandler);
 
-        public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
+        public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
         {
             foreach (var actionHandler in pxGraph.ActionHandlers)
             {
