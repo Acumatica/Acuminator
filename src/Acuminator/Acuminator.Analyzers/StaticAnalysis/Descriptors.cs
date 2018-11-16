@@ -10,7 +10,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 	public static class Descriptors
 	{
-		private const string DocumentationLinkPrefix = @"https://github.com/Acumatica/Acuminator/docs/diagnostics";
+		private const string DocumentationLinkPrefix = @"https://github.com/Acumatica/Acuminator/blob/master/docs/diagnostics";
 		private const string DocumentatonFileExtension = "md";
 
 		private static readonly ConcurrentDictionary<Category, string> categoryMapping = new ConcurrentDictionary<Category, string>();
