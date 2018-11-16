@@ -989,7 +989,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add missing attribute(s) to the action handler.
+        ///   Looks up a localized string similar to Add the missing attribute or attributes to the action handler.
         /// </summary>
         public static string PX1092Fix {
             get {
@@ -998,7 +998,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Action handlers should be decorated with PXButtonAttribute and PXUIFieldAttribute attributes or their successors.
+        ///   Looks up a localized string similar to Action handlers must be decorated with the PXUIField attribute and the PXButton attribute or its successors.
         /// </summary>
         public static string PX1092Title {
             get {
