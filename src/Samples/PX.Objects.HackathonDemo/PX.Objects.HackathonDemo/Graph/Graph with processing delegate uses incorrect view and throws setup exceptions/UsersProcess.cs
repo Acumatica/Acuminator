@@ -34,6 +34,11 @@ namespace PX.Objects.HackathonDemo
         public void syncUsers()
         {
             PXLongOperation.StartOperation(UID, SyncUsersLongOperation);
+
+            if (AllUsers.Select().Count == 0)
+            {
+                throw new PXSetupNotEnteredException<Users>(null);
+            }
         }
 
         public static void SyncUsersLongOperation()

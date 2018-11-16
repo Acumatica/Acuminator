@@ -27,38 +27,38 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			ThrowIfCancellationRequested();
 
-			if (!_pxContext.Compilation.ContainsSyntaxTree(node.SyntaxTree))
+			SemanticModel semanticModel = GetSemanticModel(node.SyntaxTree);
+			IMethodSymbol symbol = GetSymbol<IMethodSymbol>(node);
+
+			if (semanticModel == null || symbol == null)
 				return;
 
-			SemanticModel semanticModel = _pxContext.Compilation.GetSemanticModel(node.SyntaxTree);
+			bool isCreationDelegateAddition = _pxContext.PXGraph.InstanceCreatedEvents.AddHandler.Equals(symbol.ConstructedFrom);
 
-			if (semanticModel.GetSymbolInfo(node, CancellationToken).Symbol is IMethodSymbol symbol)
+			if (isCreationDelegateAddition)
 			{
-				bool isCreationDelegateAddition = _pxContext.PXGraph.InstanceCreatedEvents.AddHandler.Equals(symbol.ConstructedFrom);
+				INamedTypeSymbol graphSymbol = symbol.TypeArguments[0] as INamedTypeSymbol;
+				SyntaxNode expressionNode = node.ArgumentList.Arguments.First().Expression;
+				SyntaxNode delegateNode;
+				ISymbol delegateSymbol;
 
-				if (isCreationDelegateAddition)
+				if (expressionNode is LambdaExpressionSyntax lambdaNode)
 				{
-					INamedTypeSymbol graphSymbol = symbol.TypeArguments[0] as INamedTypeSymbol;
-					SyntaxNode expressionNode = node.ArgumentList.Arguments.First().Expression;
-					SyntaxNode delegateNode;
-					ISymbol delegateSymbol;
+					delegateNode = lambdaNode.Body;
+					delegateSymbol = semanticModel.GetSymbolInfo(delegateNode, CancellationToken).Symbol;
+				}
+				else
+				{
+					delegateSymbol = semanticModel.GetSymbolInfo(expressionNode, CancellationToken).Symbol;
+					delegateNode = delegateSymbol?.DeclaringSyntaxReferences
+												  .FirstOrDefault()?
+												  .GetSyntax(CancellationToken);
+				}
 
-					if (expressionNode is LambdaExpressionSyntax lambdaNode)
-					{
-						delegateNode = lambdaNode.Body;
-						delegateSymbol = semanticModel.GetSymbolInfo(delegateNode).Symbol;
-					}
-					else
-					{
-						delegateSymbol = semanticModel.GetSymbolInfo(expressionNode).Symbol;
-						delegateNode = delegateSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(CancellationToken);
-					}
-
-					if (delegateNode != null)
-					{
-						GraphInitDelegates.Add(new InitDelegateInfo(graphSymbol, delegateSymbol, delegateNode, _currentDeclarationOrder));
-						_currentDeclarationOrder++;
-					}
+				if (delegateNode != null)
+				{
+					GraphInitDelegates.Add(new InitDelegateInfo(graphSymbol, delegateSymbol, delegateNode, _currentDeclarationOrder));
+					_currentDeclarationOrder++;
 				}
 			}
 
