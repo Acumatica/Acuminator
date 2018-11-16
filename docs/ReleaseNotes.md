@@ -36,11 +36,15 @@ Now Acuminator includes diagnostics that are designed specifically for the certi
 
 To turn on these diagnostics, you set the value of **Tools > Options > Acuminator > Code Analysis > Enable additional diagnostics for ISV Solution Certification** to `True`. By default, these diagnostics are turned off.
 
+### Enhanced Code Navigation
+With the **Go To Action/View Declaration/Handler** in the context menu or on the **Acuminator** main menu, you can now navigate from an action handler in a graph extension to the action declaration in the base graph, and from a data view delegate in a graph extension to the data view declaration in the base graph.
+
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
 
  - BQL colorizer of Version 1.4 didn't work in Visual Studio 2015.
  - The PX1012 diagnostic incorrectly determined the primary DAC.
+ - Links to diagnostic descriptions in Visual Studio were broken.
 
 ## Acuminator 1.4
 Acuminator 1.4 includes the diagnostics and code fixes, suggestions for refactoring code, and bug fixes described in this section, as well as the features that have been implemented in previous versions.
