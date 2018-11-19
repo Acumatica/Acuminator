@@ -28,7 +28,7 @@ In this version, diagnostics and code fixes for the following issues have been a
 | [PX1085](diagnostics/PX1085.md) | BQL statements and other database queries should not be executed during the `PXGraph` initialization.    | Warning | Available   | Unavailable |
 | [PX1086](diagnostics/PX1086.md) | `PXSetupNotEnteredException` cannot be thrown in long-running operations.                                | Warning | Available   | Unavailable |
 | [PX1087](diagnostics/PX1087.md) | This invocation of the base data view delegate can cause a `StackOverflowException`.                     | Warning | Available   | Unavailable |
-| [PX1088](diagnostics/PX1088.md) | Processing delegates cannot use the data views from processing graphs except for the data views of the `PXFilter`, `PXProcessingBase`, or `PXSetup` types. | Warning | Available | Unavailable |
+| [PX1088](diagnostics/PX1088.md) | Processing delegates cannot use the data views from processing graphs, except for the data views of the `PXFilter`, `PXProcessingBase`, and `PXSetup` types. | Warning | Available | Unavailable |
 | [PX1089](diagnostics/PX1089.md) | The state of fields and actions cannot be configured in the action delegates.                            | Error   | Available   | Unavailable |
 
 ### Special Diagnostics for ISV Solutions
