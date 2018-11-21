@@ -14,7 +14,7 @@ using PX.SM;
 
 namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 {
-	public partial class RowChangesInEventHandlersAnalyzer : IEventHandlerAnalyzer
+	public partial class RowChangesInEventHandlersAnalyzer : EventHandlerAggregatedAnalyzerBase
 	{
 		private enum RowChangesAnalysisMode
 		{
@@ -22,22 +22,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 			ChangesAllowedOnlyForRowFromEventArgs,
 		}
 
-		private static readonly IReadOnlyDictionary<EventType, RowChangesAnalysisMode> AnalyzedEventTypes = new Dictionary<EventType, RowChangesAnalysisMode>()
-		{
-			// Changes to e.Row are not allowed
-			{ EventType.FieldDefaulting, RowChangesAnalysisMode.ChangesForbiddenForRowFromEventArgs },
-			{ EventType.FieldVerifying, RowChangesAnalysisMode.ChangesForbiddenForRowFromEventArgs  },
-			{ EventType.RowSelected, RowChangesAnalysisMode.ChangesForbiddenForRowFromEventArgs  },
-			// Changes are allowed for e.Row only
-			{ EventType.RowInserting, RowChangesAnalysisMode.ChangesAllowedOnlyForRowFromEventArgs  },
-			{ EventType.RowSelecting, RowChangesAnalysisMode.ChangesAllowedOnlyForRowFromEventArgs },
-		};
+		private static readonly IReadOnlyDictionary<EventType, RowChangesAnalysisMode> AnalyzedEventTypes = 
+			new Dictionary<EventType, RowChangesAnalysisMode>
+			{
+				// Changes to e.Row are not allowed
+				{ EventType.FieldDefaulting, RowChangesAnalysisMode.ChangesForbiddenForRowFromEventArgs },
+				{ EventType.FieldVerifying, RowChangesAnalysisMode.ChangesForbiddenForRowFromEventArgs },
+				{ EventType.RowSelected, RowChangesAnalysisMode.ChangesForbiddenForRowFromEventArgs },
+				// Changes are allowed for e.Row only
+				{ EventType.RowInserting, RowChangesAnalysisMode.ChangesAllowedOnlyForRowFromEventArgs },
+				{ EventType.RowSelecting, RowChangesAnalysisMode.ChangesAllowedOnlyForRowFromEventArgs },
+			};
 
-		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
 			Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs,
 			Descriptors.PX1048_RowChangesInEventHandlersAllowedForArgsOnly);
 
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
 			EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();

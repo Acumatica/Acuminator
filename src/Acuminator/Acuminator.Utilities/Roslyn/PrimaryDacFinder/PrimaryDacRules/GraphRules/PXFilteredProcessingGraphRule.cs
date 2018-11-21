@@ -15,7 +15,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 	/// </summary>
 	public class PXFilteredProcessingGraphRule : GraphRuleBase
 	{
-		private readonly ITypeSymbol pxFilteredProcessingType;
+		private readonly ITypeSymbol _pxFilteredProcessingType;
 
 		public sealed override bool IsAbsolute => true;
 
@@ -23,12 +23,12 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 		{
 			context.ThrowOnNull(nameof(context));
 
-			pxFilteredProcessingType = context.Compilation.GetTypeByMetadataName(typeof(PXFilteredProcessing<,>).FullName);
+			_pxFilteredProcessingType = context.Compilation.GetTypeByMetadataName(typeof(PXFilteredProcessing<,>).FullName);
 		}
 
 		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder)
 		{
-			if (pxFilteredProcessingType == null || dacFinder?.GraphSemanticModel?.GraphSymbol == null || 
+			if (_pxFilteredProcessingType == null || dacFinder?.GraphSemanticModel?.GraphSymbol == null || 
 				dacFinder.CancellationToken.IsCancellationRequested || dacFinder.GraphViews.Length == 0)
 			{
 				return Enumerable.Empty<ITypeSymbol>();
@@ -42,8 +42,8 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 					return Enumerable.Empty<ITypeSymbol>();
 
 				var fProcessingView = view.Type.GetBaseTypesAndThis()
-											   .FirstOrDefault(t => pxFilteredProcessingType.Equals(t) || 
-																    pxFilteredProcessingType.Equals(t?.OriginalDefinition));
+											   .FirstOrDefault(t => _pxFilteredProcessingType.Equals(t) || 
+																    _pxFilteredProcessingType.Equals(t?.OriginalDefinition));
 
 				if (fProcessingView == null || !(fProcessingView is INamedTypeSymbol filteredProcessingView))
 					continue;

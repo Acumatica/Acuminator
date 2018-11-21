@@ -31,7 +31,7 @@ namespace Acuminator.Utilities.Roslyn
 		public static readonly string PXCacheExtension = typeof(PXCacheExtension).Name;
 		public static readonly string PXCacheExtensionGeneric = typeof(PXCacheExtension).Name + "`1";
 
-		public static readonly string PXGraph = typeof(PXGraph).Name;
+		public static readonly string PXGraph = "PXGraph";
 		public static readonly string PXGraphGeneric = typeof(PXGraph<>).Name;
 		public static readonly string PXGraphExtension = typeof(PXGraphExtension).Name;
 
@@ -46,6 +46,10 @@ namespace Acuminator.Utilities.Roslyn
 		public const string PXSelectReadonly = nameof(PXSelectReadonly<DummyDac>);
 		public const string PXSelectReadonly2 = nameof(PXSelectReadonly2);
 		public const string PXSelectReadonly3 = nameof(PXSelectReadonly3);
+
+		public const string PXSelectBase_Acumatica2018R2 = "PX.Data.PXSelectBase`2";
+		public const string IViewConfig_Acumatica2018R2 = "PX.Data.PXSelectBase`2+IViewConfig";
+		public const string PXGraphTypeName = "PX.Data.PXGraph";
 
 		public static ImmutableDictionary<string, PXCodeType> TypeNamesToCodeTypesForIdentifier { get; } =
 			new Dictionary<string, PXCodeType>

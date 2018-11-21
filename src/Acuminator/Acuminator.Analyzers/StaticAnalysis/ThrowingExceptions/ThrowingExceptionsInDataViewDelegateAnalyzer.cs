@@ -1,51 +1,105 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.PXGraph;
+﻿using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
+using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
+using System.Threading;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 {
-    public class ThrowingExceptionsInDataViewDelegateAnalyzer : IPXGraphAnalyzer
+    public class ThrowingExceptionsInLongRunningOperationAnalyzer : PXGraphAggregatedAnalyzerBase
     {
-        public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-            ImmutableArray.Create(Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInPXGraphInitialization);
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+            ImmutableArray.Create(Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation);
 
-        public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
-            var walker = new Walker(context, pxContext);
+            var walker = new WalkerForGraphAnalyzer(context, pxContext, Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInLongRunningOperation);
 
-            foreach (var viewDel in pxGraph.ViewDelegates)
+            CheckProcessingDelegates(pxGraph, walker, context.CancellationToken);
+            CheckLongOperationStartDelegates(pxGraph.Symbol, walker, pxContext, context.Compilation, context.CancellationToken);
+        }
+
+        private void CheckProcessingDelegates(PXGraphSemanticModel pxGraph, WalkerForGraphAnalyzer walker, CancellationToken cancellation)
+        {
+            cancellation.ThrowIfCancellationRequested();
+
+            if (!pxGraph.IsProcessing)
             {
-                walker.Visit(viewDel.Node);
+                return;
+            }
+
+            var processingViews = pxGraph.Views.Where(v => v.IsProcessing);
+
+            foreach (var viewDel in processingViews)
+            {
+                var finallyDelegates = viewDel.FinallyProcessDelegates.Where(d => d.Node != null);
+
+                foreach (var finDel in finallyDelegates)
+                {
+                    cancellation.ThrowIfCancellationRequested();
+                    walker.Visit(finDel.Node);
+                }
+
+                var parametersDelegates = viewDel.ParametersDelegates.Where(d => d.Node != null);
+
+                foreach (var parDel in parametersDelegates)
+                {
+                    cancellation.ThrowIfCancellationRequested();
+                    walker.Visit(parDel.Node);
+                }
+
+                var processDelegates = viewDel.ProcessDelegates.Where(d => d.Node != null);
+
+                foreach (var processDel in processDelegates)
+                {
+                    cancellation.ThrowIfCancellationRequested();
+                    walker.Visit(processDel.Node);
+                }
             }
         }
 
-        private class Walker : WalkerBase
+        private void CheckLongOperationStartDelegates(ISymbol symbol, WalkerForGraphAnalyzer walker, PXContext pxContext,
+                                                      Compilation compilation, CancellationToken cancellation)
         {
-            public Walker(SymbolAnalysisContext context, PXContext pxContext)
-                : base(context, pxContext)
+            cancellation.ThrowIfCancellationRequested();
+
+            var longOperationDelegates = GetLongOperationStartDelegates(symbol, pxContext, compilation, cancellation);
+
+            foreach (var loDel in longOperationDelegates)
             {
+                cancellation.ThrowIfCancellationRequested();
+                walker.Visit(loDel);
+            }
+        }
+
+        private IEnumerable<SyntaxNode> GetLongOperationStartDelegates(ISymbol symbol, PXContext pxContext, Compilation compilation,
+                                                                       CancellationToken cancellation)
+        {
+            cancellation.ThrowIfCancellationRequested();
+
+            var loDelegateNodeList = new List<SyntaxNode>();
+            var declaringNodes = symbol.DeclaringSyntaxReferences
+                                 .Select(r => r.GetSyntax(cancellation));
+
+            foreach (var node in declaringNodes)
+            {
+                cancellation.ThrowIfCancellationRequested();
+
+                var loStartWalker = new StartLongOperationDelegateWalker(pxContext, compilation, cancellation);
+
+                loStartWalker.Visit(node);
+                loDelegateNodeList.AddRange(loStartWalker.Delegates);
             }
 
-            public override void VisitThrowStatement(ThrowStatementSyntax node)
-            {
-                ThrowIfCancellationRequested();
-
-                if (IsPXSetupNotEnteredException(node))
-                {
-                    ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1086_ThrowingSetupNotEnteredExceptionInPXGraphInitialization, node);
-                }
-                else
-                {
-                    base.VisitThrowStatement(node);
-                }
-            }
+            return loDelegateNodeList;
         }
     }
 }

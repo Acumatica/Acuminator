@@ -17,13 +17,13 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 {
-	public class PXGraphCreateInstanceInEventHandlersAnalyzer : IEventHandlerAnalyzer
+	public class PXGraphCreateInstanceInEventHandlersAnalyzer : EventHandlerAggregatedAnalyzerBase
 	{
-		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1045_PXGraphCreateInstanceInEventHandlers);
 
-		public void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
-			EventType eventType)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
+									 EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 

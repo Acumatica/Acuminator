@@ -15,7 +15,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Acuminator.Tests</RootNamespace>
     <AssemblyName>Acuminator.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
@@ -47,29 +47,29 @@
     <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FluentAssertions, Version=5.1.2.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\FluentAssertions.5.1.2\lib\net45\FluentAssertions.dll</HintPath>
+    <Reference Include="FluentAssertions, Version=5.4.2.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FluentAssertions.5.4.2\lib\net47\FluentAssertions.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis, Version=1.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Common.1.3.2\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Common.1.2.2\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=1.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.1.3.2\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.1.2.2\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces, Version=1.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.1.3.2\lib\net45\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.1.2.2\lib\net45\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.VisualBasic, Version=1.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.CodeAnalysis.VisualBasic.1.3.2\lib\net45\Microsoft.CodeAnalysis.VisualBasic.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis.VisualBasic, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.VisualBasic.1.2.2\lib\net45\Microsoft.CodeAnalysis.VisualBasic.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces, Version=1.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.CodeAnalysis.VisualBasic.Workspaces.1.3.2\lib\net45\Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.VisualBasic.Workspaces.1.2.2\lib\net45\Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces, Version=1.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.3.2\lib\net45\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.2.2\lib\net45\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop, Version=1.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.3.2\lib\net45\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.2.2\lib\net45\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
     </Reference>
     <Reference Include="PX.Common">
       <HintPath>..\..\..\lib\PX.Common.dll</HintPath>
@@ -81,8 +81,8 @@
     <Reference Include="System.AppContext, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.AppContext.4.1.0\lib\net46\System.AppContext.dll</HintPath>
     </Reference>
-    <Reference Include="System.Collections.Immutable, Version=1.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Collections.Immutable.1.2.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    <Reference Include="System.Collections.Immutable, Version=1.1.37.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Collections.Immutable.1.1.37\lib\dotnet\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Composition.AttributedModel, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -122,8 +122,8 @@
       <HintPath>..\..\packages\System.IO.FileSystem.Primitives.4.0.1\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Reflection.Metadata, Version=1.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Reflection.Metadata.1.3.0\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+    <Reference Include="System.Reflection.Metadata, Version=1.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Reflection.Metadata.1.2.0\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
     </Reference>
     <Reference Include="System.Security.Cryptography.Algorithms, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Security.Cryptography.Algorithms.4.2.0\lib\net461\System.Security.Cryptography.Algorithms.dll</HintPath>
@@ -142,11 +142,6 @@
     </Reference>
     <Reference Include="System.Threading.Thread, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Threading.Thread.4.0.0\lib\net46\System.Threading.Thread.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -197,12 +192,15 @@
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\Override.cs" />
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\PXOverride.cs" />
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\AdditionalParameters.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacWithBoundAndUnboundFields.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacAggregateAttributeFields.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacAggregateAttributeFields_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacWithBoundAndUnboundFields_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlers\ExternalCache.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseDataViewDelegate\Sources\BaseViewInvocation_ThroughView.cs" />
+    <Compile Include="Tests\StaticAnalysis\CallingBaseActionHandler\CallingBaseActionHandlerFromOverrideHandlerTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionHandlerInvocation_Bad.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionHandlerInvocation_Good.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionInvocation_Bad.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionInvocation_Good.cs" />
     <Compile Include="Tests\StaticAnalysis\CallingBaseDataViewDelegate\CallingBaseDataViewDelegateFromOverrideDelegateTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseDataViewDelegate\Sources\BaseViewInvocation_WithRedeclaredView.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseDataViewDelegate\Sources\BaseViewInvocation_ThroughSelectBase.cs" />
@@ -224,6 +222,9 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\PXSelector.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\PXView.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityKey_CompoundKey_AttributeListSyntax_EditFields_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\GraphDeclarationTypeParameter\Sources\Graph_Bad.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\GraphDeclarationTypeParameter\Sources\Graph_Good.cs" />
+    <Compile Include="Tests\StaticAnalysis\GraphDeclarationTypeParameter\PXGraphTypeParameterTests.cs" />
     <Compile Include="Tests\StaticAnalysis\InvalidViewUsageInProcessingDelegate\InvalidViewUsageInProcessingDelegateTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\InvalidViewUsageInProcessingDelegate\Sources\ParametersDelegate_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\InvalidViewUsageInProcessingDelegate\Sources\ProcessDelegate_Bad.cs" />
@@ -291,9 +292,6 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityKey_Key_RemoveIdentityAttr_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityKey_CompoundKey_AttributeListSyntax.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\IdentityKey_CompoundKey_AttributeListSyntax_Expected.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\EventHandlers\EventHandlers.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\EventHandlers\EventHandlersWithExternalMethod.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\EventHandlers\ValidEventHandlers.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressInViewDelegate.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressInViewDelegateInGraphExtension.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressInViewDelegateWithParameter.cs" />
@@ -314,15 +312,21 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\ViewDelegateInGraphExtensionBaseView.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\PXGraph\ViewDelegateInGraphExtensionOverride.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegate.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\ViewDelegates\PXGraph_View.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\ViewDelegates\PXGraphExtension_OwnView.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\ViewDelegates\PXGraphExtension_BaseView.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\ViewDelegates\PXGraphExtension_Override.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\ViewDelegates\PXGraph_DelegateWithParameter.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\ViewDelegates\PXGraphExtension_StaticDelegate.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\ViewDelegates\PXGraphExtension_ExternalMethod.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\ViewDelegates\PXGraph_OtherExceptions.cs" />
-    <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInDataViewDelegateTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\LongOperations\FinallyProcessDelegate_Bad.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\LongOperations\FinallyProcessDelegate_Good.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\LongOperations\LongOperationStart_Bad.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\LongOperations\ParametersDelegate_Bad.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\LongOperations\ParametersDelegate_Good.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\LongOperations\ProcessDelegate_Bad.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\LongOperations\ProcessDelegate_Good.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\LongOperations\LongOperationStart_Good.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\ActionHandlers\Handlers_Bad.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\ActionHandlers\Handlers_Good.cs" />
+    <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInActionHandlersTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInLongRunningOperationTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\ActionHandlers\Handlers_Bad.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\ActionHandlers\Handlers_Good.cs" />
+    <Compile Include="Tests\StaticAnalysis\UiPresentationLogic\UiPresentationLogicInActionHandlersTests.cs" />
     <Compile Include="Tests\StaticAnalysis\UiPresentationLogic\UiPresentationLogicInEventHandlersTests.cs" />
     <Compile Include="Tests\StaticAnalysis\PXActionExecution\PXActionExecutionInGraphSemanticModelTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressInGraph.cs" />
@@ -334,6 +338,8 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressWithExternalMethodInGraph.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\PXGraph\PressWithExternalMethodInGraphExtension.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\PXGraphWithCreateInstanceInLambda.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacWithBoundAndUnboundFields.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacAggregateAttributeFields.cs" />
     <Compile Include="Tests\StaticAnalysis\RowChangesInEventHandlers\RowChangesInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\ValidEventHandlers.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\DirectAssignment.cs" />
@@ -377,6 +383,12 @@
     <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RaiseExceptionHandling\Sources\EventHandlers\ValidEventHandlers.cs" />
     <Compile Include="Tests\StaticAnalysis\RaiseExceptionHandling\RaiseExceptionHandlingInEventHandlersTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\EventHandlers\EventHandlers.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\EventHandlers\EventHandlersWithExternalMethod.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\UiPresentationLogic\Sources\EventHandlers\ValidEventHandlers.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ViewDeclarationOrder\Sources\ViewDeclarationOrderWithGraphInheritance.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ViewDeclarationOrder\Sources\ViewDeclarationOrderWithGraphExtension.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ViewDeclarationOrder\Sources\ViewDeclarationOrderWithGraphInheritance_OneCache.cs" />
     <Compile Include="Verification\CodeRefactoringVerifier.cs" />
     <Compile Include="Verification\VerificationHelper.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\StaticMethod.cs" />
@@ -597,7 +609,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\Field_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\Property_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphCreateInstance\Sources\MethodWithNonSpecificPXGraph.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\ViewDeclarationOrder\Sources\ViewDeclarationOrder.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ViewDeclarationOrder\Sources\ViewDeclarationOrderInOneGraph.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_Good_Override.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\TypoInViewDelegateName\Sources\TypoInViewDelegateName_Bad.cs" />
     <Compile Include="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\NoPrimaryViewForPrimaryDacTests.cs" />
@@ -610,7 +622,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="FormatterTests.playlist" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Acuminator.Utilities\Acuminator.Utilities.csproj">

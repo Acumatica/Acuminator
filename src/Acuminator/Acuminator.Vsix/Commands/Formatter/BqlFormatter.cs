@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Acuminator.Analyzers;
@@ -9,6 +8,9 @@ using Microsoft.CodeAnalysis.CSharp;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Microsoft.VisualStudio.Text.Editor;
+
+using Enumerable = System.Linq.Enumerable;
+
 
 namespace Acuminator.Vsix.Formatter
 {

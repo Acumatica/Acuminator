@@ -953,7 +953,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown during the PXGraph initialization.
+        ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown in long-running operations.
         /// </summary>
         public static string PX1086Title {
             get {
@@ -976,6 +976,51 @@ namespace Acuminator.Analyzers {
         public static string PX1088Title {
             get {
                 return ResourceManager.GetString("PX1088Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The state of fields and actions cannot be configured in action delegates.
+        /// </summary>
+        public static string PX1089Title {
+            get {
+                return ResourceManager.GetString("PX1089Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PXSetupNotEnteredException cannot be thrown in action handlers.
+        /// </summary>
+        public static string PX1090Title {
+            get {
+                return ResourceManager.GetString("PX1090Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This invocation of the base action handler can cause a StackOverflowException.
+        /// </summary>
+        public static string PX1091Title {
+            get {
+                return ResourceManager.GetString("PX1091Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change graph type parameter.
+        /// </summary>
+        public static string PX1093Fix {
+            get {
+                return ResourceManager.GetString("PX1093Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Graph declaration should contain graph type as first type paramenter.
+        /// </summary>
+        public static string PX1093Title {
+            get {
+                return ResourceManager.GetString("PX1093Title", resourceCulture);
             }
         }
     }

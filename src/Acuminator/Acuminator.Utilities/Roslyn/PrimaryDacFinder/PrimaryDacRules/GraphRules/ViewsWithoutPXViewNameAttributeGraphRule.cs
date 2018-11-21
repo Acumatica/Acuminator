@@ -17,13 +17,13 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 	{
 		public sealed override bool IsAbsolute => false;
 
-		private readonly INamedTypeSymbol pxViewNameAttribute;
+		private readonly INamedTypeSymbol _pxViewNameAttribute;
 
 		public ViewsWithoutPXViewNameAttributeGraphRule(PXContext context, double? customWeight = null) : base(customWeight)
 		{
 			context.ThrowOnNull(nameof(context));
 
-			pxViewNameAttribute = context.Compilation.GetTypeByMetadataName(typeof(PXViewNameAttribute).FullName);
+			_pxViewNameAttribute = context.Compilation.GetTypeByMetadataName(typeof(PXViewNameAttribute).FullName);
 		}
 
 		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder)
@@ -48,7 +48,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 					continue;
 
 				bool viewHasViewNameAttribute = attributes.SelectMany(a => a.AttributeClass.GetBaseTypesAndThis())
-														  .Any(baseType => baseType.Equals(pxViewNameAttribute));
+														  .Any(baseType => baseType.Equals(_pxViewNameAttribute));
 				if (!viewHasViewNameAttribute)
 				{
 					var dac = viewInfo.Type.GetDacFromView(dacFinder.PxContext);
