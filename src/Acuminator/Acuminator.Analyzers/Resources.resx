@@ -438,4 +438,10 @@
   <data name="PX1092Fix" xml:space="preserve">
     <value>Add the missing attribute or attributes to the action handler</value>
   </data>
+  <data name="PX1093Fix" xml:space="preserve">
+    <value>Change graph type parameter</value>
+  </data>
+  <data name="PX1093Title" xml:space="preserve">
+    <value>Graph declaration should contain graph type as first type paramenter</value>
+  </data>
 </root>

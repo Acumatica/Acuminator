@@ -10,7 +10,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 	public static class Descriptors
 	{
-		private const string DocumentationLinkPrefix = @"https://github.com/Acumatica/Acuminator/docs/diagnostics";
+		private const string DocumentationLinkPrefix = @"https://github.com/Acumatica/Acuminator/blob/master/docs/diagnostics";
 		private const string DocumentatonFileExtension = "md";
 
 		private static readonly ConcurrentDictionary<Category, string> categoryMapping = new ConcurrentDictionary<Category, string>();
@@ -225,10 +225,10 @@ namespace Acuminator.Analyzers.StaticAnalysis
             Rule("PX1086", nameof(Resources.PX1086Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 
         public static DiagnosticDescriptor PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation { get; } =
-            Rule("PX1087", nameof(Resources.PX1087Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+            Rule("PX1087", nameof(Resources.PX1087Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 
         public static DiagnosticDescriptor PX1088_InvalidViewUsageInProcessingDelegate { get; } =
-            Rule("PX1088", nameof(Resources.PX1088Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+            Rule("PX1088", nameof(Resources.PX1088Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 
         public static DiagnosticDescriptor PX1089_UiPresentationLogicInActionDelegates { get; } =
             Rule("PX1089", nameof(Resources.PX1089Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
@@ -241,5 +241,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
         public static DiagnosticDescriptor PX1092_MissingAttributesOnActionHandler { get; } =
             Rule("PX1092", nameof(Resources.PX1092Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+		public static DiagnosticDescriptor PX1093_GraphDeclarationViolation { get; } =
+			Rule("PX1093", nameof(Resources.PX1093Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
     }
 }

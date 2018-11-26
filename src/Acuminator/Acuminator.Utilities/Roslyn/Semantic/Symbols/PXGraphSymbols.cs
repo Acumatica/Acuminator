@@ -21,8 +21,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 	    }
 
         public INamedTypeSymbol Type { get; }
+		public INamedTypeSymbol GenericTypeGraph { get; }
+		public INamedTypeSymbol GenericTypeGraphDac { get; }
+		public INamedTypeSymbol GenericTypeGraphDacField { get; }
 
-        public ImmutableArray<IMethodSymbol> CreateInstance { get; }
+		public ImmutableArray<IMethodSymbol> CreateInstance { get; }
 
 	    public InstanceCreatedEventsSymbols InstanceCreatedEvents { get; }
 
@@ -33,8 +36,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		internal PXGraphSymbols(Compilation compilation)
         {
             Type = compilation.GetTypeByMetadataName(typeof(PX.Data.PXGraph).FullName);
+			GenericTypeGraph = compilation.GetTypeByMetadataName(typeof(PX.Data.PXGraph<>).FullName);
+			GenericTypeGraphDac = compilation.GetTypeByMetadataName(typeof(PX.Data.PXGraph<,>).FullName);
+			GenericTypeGraphDacField = compilation.GetTypeByMetadataName(typeof(PX.Data.PXGraph<,,>).FullName);
 
-	        CreateInstance = Type.GetMethods(nameof(PX.Data.PXGraph.CreateInstance));
+			CreateInstance = Type.GetMethods(nameof(PX.Data.PXGraph.CreateInstance));
 			InstanceCreatedEvents = new InstanceCreatedEventsSymbols(compilation);
         }
     }

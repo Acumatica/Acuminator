@@ -14,13 +14,13 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 	{
 		public sealed override bool IsAbsolute => false;
 
-		private readonly ImmutableArray<INamedTypeSymbol> setupTypes;
+		private readonly ImmutableArray<INamedTypeSymbol> _setupTypes;
 
 		public NoPXSetupViewRule(PXContext context, double? weight = null) : base(weight)
 		{
 			context.ThrowOnNull(nameof(context));
 
-			setupTypes = context.BQL.GetPXSetupTypes();
+			_setupTypes = context.BQL.GetPXSetupTypes();
 		}
 		
 		/// <summary>
@@ -36,7 +36,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 				return false;
 
 			return viewType.GetBaseTypesAndThis()
-						   .Any(type => setupTypes.Contains(type));
+						   .Any(type => _setupTypes.Contains(type));
 		}
 	}
 }

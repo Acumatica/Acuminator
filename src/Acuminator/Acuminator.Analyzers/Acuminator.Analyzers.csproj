@@ -73,6 +73,8 @@
     <Compile Include="StaticAnalysis\EventHandlers\EventHandlerAggregatedAnalyzerBase.cs" />
     <Compile Include="StaticAnalysis\EventHandlers\EventHandlerAnalyzer.cs" />
     <Compile Include="StaticAnalysis\EventHandlers\IEventHandlerAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\PXGraphDeclarationTypeParameter\PXGraphDeclarationTypeParameterAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\PXGraphDeclarationTypeParameter\PXGraphDeclarationTypeParameterFix.cs" />
     <Compile Include="StaticAnalysis\InvalidViewUsageInProcessingDelegate\InvalidViewUsageInProcessingDelegateAnalyzer.cs" />
     <Compile Include="StaticAnalysis\Localization\LocalizationMessageHelper.cs" />
     <Compile Include="StaticAnalysis\Localization\LocalizationInvocationAnalyzer.cs" />

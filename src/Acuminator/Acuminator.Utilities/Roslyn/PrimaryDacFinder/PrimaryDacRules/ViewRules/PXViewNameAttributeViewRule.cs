@@ -13,7 +13,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 	/// </summary>
 	public class PXViewNameAttributeViewRule : ViewRuleBase
 	{
-		private readonly INamedTypeSymbol pxViewNameAttribute;
+		private readonly INamedTypeSymbol _pxViewNameAttribute;
 
 		public sealed override bool IsAbsolute => false;
 
@@ -21,7 +21,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 		{
 			context.ThrowOnNull(nameof(context));
 
-			pxViewNameAttribute = context.Compilation.GetTypeByMetadataName(typeof(PXViewNameAttribute).FullName);
+			_pxViewNameAttribute = context.Compilation.GetTypeByMetadataName(typeof(PXViewNameAttribute).FullName);
 		}
 
 		public override bool SatisfyRule(PrimaryDacFinder dacFinder, ISymbol view, INamedTypeSymbol viewType)
@@ -35,7 +35,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 				return false;
 
 			return attributes.SelectMany(a => a.AttributeClass.GetBaseTypesAndThis())
-							 .Any(baseType => baseType.Equals(pxViewNameAttribute));
+							 .Any(baseType => baseType.Equals(_pxViewNameAttribute));
 		}
 	}
 }
