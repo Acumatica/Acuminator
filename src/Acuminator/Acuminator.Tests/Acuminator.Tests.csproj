@@ -200,6 +200,9 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionHandlerInvocation_Good.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionInvocation_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionInvocation_Good.cs" />
+    <Compile Include="Tests\StaticAnalysis\ActionHandlerAttributes\ActionHandlerAttributesTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ActionHandlerAttributes\Sources\Handlers_Bad.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ActionHandlerAttributes\Sources\Handlers_Good.cs" />
     <Compile Include="Tests\StaticAnalysis\CallingBaseDataViewDelegate\CallingBaseDataViewDelegateFromOverrideDelegateTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseDataViewDelegate\Sources\BaseViewInvocation_WithRedeclaredView.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseDataViewDelegate\Sources\BaseViewInvocation_ThroughSelectBase.cs" />
