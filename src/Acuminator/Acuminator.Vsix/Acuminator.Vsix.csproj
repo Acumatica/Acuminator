@@ -456,14 +456,6 @@
     <Compile Include="ServiceLocation\DelegatingServiceLocator.cs" />
     <Compile Include="ServiceLocation\MefServiceLocator.cs" />
     <Compile Include="Settings\CodeAnalysisSettingsFromOptionsPage.cs" />
-    <Compile Include="Tool Windows\AntiPlagiator\AntiPlagiatorWindow.cs" />
-    <Compile Include="Tool Windows\AntiPlagiator\AntiPlagiatorWindowControl.xaml.cs">
-      <DependentUpon>AntiPlagiatorWindowControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Tool Windows\AntiPlagiator\LocationType.cs" />
-    <Compile Include="Tool Windows\AntiPlagiator\ViewModel\PlagiarismInfoViewModel.cs" />
-    <Compile Include="Tool Windows\AntiPlagiator\OpenAntiPlagiatorWindowCommand.cs" />
-    <Compile Include="Tool Windows\AntiPlagiator\ViewModel\AntiPlagiatorWindowViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\Convertes\TreeNodeToImageSourceConverter.cs" />
     <Compile Include="Tool Windows\CodeMap\Convertes\TreeNodeToTooltipConverter.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphMemberType.cs" />
@@ -562,10 +554,6 @@
     <Analyzer Include="..\..\packages\Microsoft.VisualStudio.Threading.Analyzers.15.8.122\analyzers\cs\Microsoft.VisualStudio.Threading.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Tool Windows\AntiPlagiator\AntiPlagiatorWindowControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Tool Windows\CodeMap\CodeMapWindowControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
