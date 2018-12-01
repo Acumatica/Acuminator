@@ -1023,5 +1023,23 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1093Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the missing attribute or attributes to the action handler.
+        /// </summary>
+        public static string PX1092Fix {
+            get {
+                return ResourceManager.GetString("PX1092Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Action handlers must be decorated with the PXUIField attribute and the PXButton attribute or its successors.
+        /// </summary>
+        public static string PX1092Title {
+            get {
+                return ResourceManager.GetString("PX1092Title", resourceCulture);
+            }
+        }
     }
 }

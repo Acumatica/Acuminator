@@ -29,6 +29,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		public INamedTypeSymbol PXDynamicAggregateAttribute => _compilation.GetTypeByMetadataName(typeof(PXDynamicAggregateAttribute).FullName);
 		public INamedTypeSymbol PXDefaultAttribute => _compilation.GetTypeByMetadataName(typeof(PXDefaultAttribute).FullName);
 		public INamedTypeSymbol PXUnboundDefaultAttribute => _compilation.GetTypeByMetadataName(typeof(PXUnboundDefaultAttribute).FullName);
+        public INamedTypeSymbol PXButtonAttribute => _compilation.GetTypeByMetadataName(typeof(PXButtonAttribute).FullName);
 
 		private readonly Lazy<PXUIFieldAttributeSymbols> _pxUiFieldAttribute;
 		public PXUIFieldAttributeSymbols PXUIFieldAttribute => _pxUiFieldAttribute.Value;

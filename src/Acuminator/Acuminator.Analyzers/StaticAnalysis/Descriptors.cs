@@ -239,8 +239,10 @@ namespace Acuminator.Analyzers.StaticAnalysis
         public static DiagnosticDescriptor PX1091_CausingStackOverflowExceptionInBaseActionHandlerInvocation { get; } =
             Rule("PX1091", nameof(Resources.PX1091Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 
+        public static DiagnosticDescriptor PX1092_MissingAttributesOnActionHandler { get; } =
+            Rule("PX1092", nameof(Resources.PX1092Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
 		public static DiagnosticDescriptor PX1093_GraphDeclarationViolation { get; } =
 			Rule("PX1093", nameof(Resources.PX1093Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
-
-	}
+    }
 }
