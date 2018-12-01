@@ -79,12 +79,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AcumaticaPlagiarism\AcumaticaPlagiarism.csproj">
-      <Project>{7cb50417-d544-4302-8f4f-300a26570a98}</Project>
-      <Name>AcumaticaPlagiarism</Name>
-      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
-    </ProjectReference>
     <ProjectReference Include="..\Acuminator.Analyzers\Acuminator.Analyzers.csproj">
       <Project>{984DBFAC-91A7-4059-A5B2-CDE33CD93EA0}</Project>
       <Name>Acuminator.Analyzers</Name>

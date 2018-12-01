@@ -22,7 +22,6 @@ using System.Composition.Hosting.Core;
 using Acuminator.Vsix.Settings;
 using Acuminator.Vsix.Logger;
 using Acuminator.Vsix.ToolWindows.CodeMap;
-using Acuminator.Vsix.ToolWindows.AntiPlagiator;
 using Acuminator.Vsix.Utilities;
 
 using FirstChanceExceptionEventArgs = System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs;
@@ -58,7 +57,6 @@ namespace Acuminator.Vsix
 	[ProvideOptionPage(typeof(GeneralOptionsPage), SettingsCategoryName, GeneralOptionsPage.PageTitle,
 					   categoryResourceID: 201, pageNameResourceID: 202, supportsAutomation: true, SupportsProfiles = true)]
 	[ProvideToolWindow(typeof(CodeMapWindow))]
-	[ProvideToolWindow(typeof(AntiPlagiatorWindow))]
 	public sealed class AcuminatorVSPackage : Package
     {
 		private const string SettingsCategoryName = "Acuminator";
@@ -186,7 +184,6 @@ namespace Acuminator.Vsix
 			BqlFixer.FixBqlCommand.Initialize(this);
 
 			OpenCodeMapWindowCommand.Initialize(this);
-			OpenAntiPlagiatorWindowCommand.Initialize(this);
 		}
 
 		private void SubscribeOnSolutionEvents()
@@ -251,7 +248,6 @@ namespace Acuminator.Vsix
 			{
 #pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
 				DTE dte = GetService(typeof(DTE)) as DTE;
-				dte?.Windows.Item($"{{{AntiPlagiatorWindow.AntiPlagiatorWindowGuidString}}}")?.Close();
 				dte?.Windows.Item($"{{{CodeMapWindow.CodeMapWindowGuidString}}}")?.Close();
 #pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 			}
