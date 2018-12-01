@@ -252,7 +252,4 @@
   <data name="CodeMapWindowTitle" xml:space="preserve">
     <value>CodeMap</value>
   </data>
-  <data name="AntiPlagiatorWindowTitle" xml:space="preserve">
-    <value>AntiPlagiarism</value>
-  </data>
 </root>

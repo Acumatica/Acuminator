@@ -61,15 +61,6 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to AntiPlagiarism.
-        /// </summary>
-        public static string AntiPlagiatorWindowTitle {
-            get {
-                return ResourceManager.GetString("AntiPlagiatorWindowTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Acuminator - BQL Constant (Ending).
         /// </summary>
         public static string BQLConstantEndingFormatLabel {
