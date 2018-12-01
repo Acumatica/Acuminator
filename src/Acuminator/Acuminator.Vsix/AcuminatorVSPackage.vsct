@@ -83,27 +83,27 @@
         </Strings>
       </Button>
 
-      <Button guid="guidAcuminatorCmdSet" id="FixBqlCommandId" type="Button">
+      <!--<Button guid="guidAcuminatorCmdSet" id="FixBqlCommandId" type="Button">
         <Icon guid="guidBqlFixerIcon" id="bqlFixerIcon" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         
-        <!--<CommandFlag>DefaultInvisible</CommandFlag>
-					  <CommandFlag>DynamicVisibility</CommandFlag>-->
+        --><!--<CommandFlag>DefaultInvisible</CommandFlag>
+					  <CommandFlag>DynamicVisibility</CommandFlag>--><!--
         <Strings>
           <CommandName>cmdidFixBqlCommand</CommandName>
           <ButtonText>Fix BQL Braces</ButtonText>
         </Strings>
-      </Button>
+      </Button>-->
 
       <!--Tool Windows Commands-->
-      <Button guid="guidAcuminatorCmdSet" id="OpenCodeMapWindowCommand" type="Button">
+      <!--<Button guid="guidAcuminatorCmdSet" id="OpenCodeMapWindowCommand" type="Button">
         <Icon guid="guidCodeMapIcon" id="codemapIcon" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <CommandName>cmdidOpenCodeMapWindowCommand</CommandName>
           <ButtonText>CodeMap</ButtonText>
         </Strings>
-      </Button>
+      </Button>-->
     </Buttons>
 
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
