@@ -1,0 +1,134 @@
+﻿<UserControl x:Class="Acuminator.Vsix.ToolWindows.CodeMap.CodeMapWindowControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.14.0"
+             xmlns:platformUI="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
+             xmlns:codeMap="clr-namespace:Acuminator.Vsix.ToolWindows.CodeMap"
+             xmlns:converters="clr-namespace:Acuminator.Vsix.ToolWindows.Converters"
+                      
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300"
+            
+             Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
+             Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
+             d:DataContext="{d:DesignInstance Type={x:Type codeMap:CodeMapWindowViewModel}, IsDesignTimeCreatable=False}">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Themes/Styles.xaml"/>
+
+                <ResourceDictionary>
+                    <!--Converters-->                  
+                    <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+                    <codeMap:TreeNodeToTooltipConverter x:Key="treeNodeToTooltipConverter"/>
+                    <codeMap:TreeNodeToImageSourceConverter x:Key="treeNodeToIconConverter"/>
+
+                    <!-- Image Style-->
+                    <Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}"/>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <UserControl.Style>
+        <Style TargetType="UserControl">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                    <Setter Property="Cursor" Value="Wait"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Style>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <!--<WrapPanel Orientation="Horizontal" Grid.Row="0">
+            <TextBlock Text="Display Mode" Margin="10,2,0,2" VerticalAlignment="Center"/>
+            <ComboBox VerticalAlignment="Center" Margin="10,5,0,5" MinWidth="120">
+                
+            </ComboBox>
+        </WrapPanel>-->
+
+        <ProgressBar Grid.Row="0" Margin="5,2"  IsIndeterminate="True"  MaxHeight="16" MinHeight="16"
+                     HorizontalAlignment="Left" VerticalAlignment="Center" MaxWidth="150" MinWidth="150"
+                     Visibility="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
+                                          Converter={StaticResource boolToVisibilityConverter}}"/>
+
+        <TreeView Grid.Row="1" DataContext="{Binding Path=Tree, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
+                  ItemsSource="{Binding Path=RootItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                  Style="{StaticResource vsTreeViewStyle}" Margin="0,2">
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="TreeViewItem" BasedOn="{StaticResource vsTreeViewItemStyle}">
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                </Style>
+            </TreeView.ItemContainerStyle>
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type codeMap:TreeNodeViewModel}"
+                                          ItemsSource="{Binding Path=Children, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                    <StackPanel Orientation="Horizontal" PreviewMouseLeftButtonDown="TreeViewItem_PreviewMouseLeftButtonDown"
+                                HorizontalAlignment="Stretch">
+                        <Image Margin="0,1.5,5,1.5" MaxWidth="14" MaxHeight="14"
+                                   Source="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, 
+                                                    Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource treeNodeToIconConverter}}">
+                            <Image.Style>
+                                <Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}">
+                                    <Style.Triggers>
+                                        <Trigger Property="Source" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+
+                        <TextBlock VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,3,0"
+                                   Text="{Binding Path=Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                   Tag="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
+                                                 Converter={StaticResource treeNodeToTooltipConverter}}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="ToolTip" >
+                                        <Setter.Value>
+                                            <ToolTip DataContext="{Binding RelativeSource={RelativeSource Mode=Self}, Path=PlacementTarget.DataContext,
+                                                                           Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                                                <ToolTip.Style>
+                                                    <Style TargetType="ToolTip">
+                                                        <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundBrushKey}}"/>
+                                                        <Setter Property="Foreground" Value="#F1F1F1"/>
+
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Path=Tree.CodeMapViewModel.IsDarkTheme, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                         Value="False">
+                                                                <Setter Property="Foreground" Value="Black"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </ToolTip.Style>
+                                                                                           
+                                                <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ToolTip}, 
+                                                                      Path=PlacementTarget.Tag, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                                           TextAlignment="Left" TextWrapping="Wrap" MaxWidth="700"/>
+                                            </ToolTip>
+                                        </Setter.Value>
+                                    </Setter>
+
+                                    <Style.Triggers>
+                                        <Trigger Property="Tag" Value="{x:Null}">
+                                            <Setter Property="ToolTip" Value="{x:Null}"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+    </Grid>
+</UserControl>

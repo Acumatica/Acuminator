@@ -250,6 +250,15 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CodeMap.
+        /// </summary>
+        public static string CodeMapWindowTitle {
+            get {
+                return ResourceManager.GetString("CodeMapWindowTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Acuminator - DAC Extension Name.
         /// </summary>
         public static string DacExtensionFormatLabel {
