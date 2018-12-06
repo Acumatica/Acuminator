@@ -18,6 +18,7 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 {
@@ -66,15 +67,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 
 			foreach (var graph in inferredGraphs)
 			{
-				foreach (var innerAnalyzer in _innerAnalyzers)
+				Parallel.ForEach(_innerAnalyzers, innerAnalyzer =>
 				{
 					context.CancellationToken.ThrowIfCancellationRequested();
 
 					if (innerAnalyzer.ShouldAnalyze(pxContext, settings, graph))
 					{
 						innerAnalyzer.Analyze(context, pxContext, settings, graph);
-					}			
-				}
+					}
+				});
 			}
 		}
     }
