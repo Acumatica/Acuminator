@@ -14,6 +14,7 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Semantics;
+using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 {
@@ -58,7 +59,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 			if (eventType == EventType.None)
 				return;
 
-			foreach (var innerAnalyzer in _innerAnalyzers)
+			Parallel.ForEach(_innerAnalyzers, innerAnalyzer =>
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -66,7 +67,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 				{
 					innerAnalyzer.Analyze(context, pxContext, codeAnalysisSettings, eventType);
 				}
-			}		
+			});
 		}
 
 		private void AnalyzeLambda(OperationAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings)
