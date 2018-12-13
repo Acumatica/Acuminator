@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using EnvDTE80;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
@@ -12,6 +14,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
 using Microsoft.VisualStudio.TextManager.Interop;
+using Microsoft.VisualStudio.LanguageServices;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 
@@ -34,6 +37,18 @@ namespace Acuminator.Vsix.Utilities
 		where TActual : class
 		{
 			return serviceProvider?.GetService(typeof(TRequested)) as TActual;
+		}
+
+		internal static VisualStudioWorkspace GetVSWorkspace(this IServiceProvider serviceProvider)
+		{
+			IComponentModel componentModel = serviceProvider?.GetService(typeof(SComponentModel)) as IComponentModel;
+			return componentModel?.GetService<VisualStudioWorkspace>();
+		}
+
+		internal static string GetSolutionPath(this IServiceProvider serviceProvider)
+		{
+			VisualStudioWorkspace workspace = serviceProvider?.GetVSWorkspace();	
+			return workspace?.CurrentSolution?.FilePath ?? string.Empty;
 		}
 
 		internal static IOutliningManager GetOutliningManager(this IServiceProvider serviceProvider, ITextView textView)

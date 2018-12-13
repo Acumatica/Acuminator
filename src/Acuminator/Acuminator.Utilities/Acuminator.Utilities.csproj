@@ -103,12 +103,16 @@
     <Compile Include="Common\ConcurrentExtensions.cs" />
     <Compile Include="Common\EnumerableExtraExtensions.cs" />
     <Compile Include="Common\Enum\SortDirection.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\Base\GraphSymbolItemGeneric.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Infos\ActionInfo.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Infos\ActionHandlerInfo.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Enums\GraphInstantiationType.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Base\GraphNodeSymbolItem.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Base\GraphOverridableItem.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Base\GraphSymbolItem.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\Infos\Events\GraphEventInfo.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\PXGraphEventSemanticModel.EventsCollector.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\PXGraphEventSemanticModel.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Utils\GraphActionSymbolUtils.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Utils\GraphViewSymbolUtils.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Base\GraphOverridableItemsCollection.cs" />
