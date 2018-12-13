@@ -1,7 +1,7 @@
 ﻿using Acuminator.Utilities.Common;
 using System;
 
-namespace Acuminator.Analyzers.DiagnosticSuppression
+namespace Acuminator.Utilities.DiagnosticSuppression
 {
 	internal readonly struct SuppressMessage
 	{

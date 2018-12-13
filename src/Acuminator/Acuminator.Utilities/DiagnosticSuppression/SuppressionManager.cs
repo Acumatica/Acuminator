@@ -5,16 +5,13 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace Acuminator.Analyzers.DiagnosticSuppression
+namespace Acuminator.Utilities.DiagnosticSuppression
 {
 	public class SuppressionManager
 	{
-		private const string SuppressionFileExtension = ".acuminator";
-
-		//private readonly Dictionary<string, HashSet<SuppressMessage>> _messagesByAssembly = new Dictionary<string, HashSet<SuppressMessage>>();
 		//private readonly Dictionary<string, bool> _generateSuppressionBaseByAssembly = new Dictionary<string, bool>();
 		private readonly Dictionary<string, SuppressionFile> _fileByAssembly = new Dictionary<string, SuppressionFile>();
-		private readonly HashSet<SyntaxKind>  _targetKinds = new HashSet<SyntaxKind>(new[] {
+		private readonly HashSet<SyntaxKind> _targetKinds = new HashSet<SyntaxKind>(new[] {
 			SyntaxKind.ClassDeclaration,
 			SyntaxKind.MethodDeclaration,
 			SyntaxKind.ConstructorDeclaration,
@@ -22,43 +19,33 @@ namespace Acuminator.Analyzers.DiagnosticSuppression
 			SyntaxKind.FieldDeclaration
 		});
 
-		public SuppressionManager(AnalyzerOptions options)
-		{
-			LoadSuppressMessages(options);
-		}
+		public static SuppressionManager Instance { get; set; }
 
-		public void LoadSuppressMessages(AnalyzerOptions options)
+		public SuppressionManager(IEnumerable<string> suppressionFiles)
 		{
-			if (options == null)
+			foreach (var file in suppressionFiles)
 			{
-				return;
-			}
-
-			foreach (var file in options.AdditionalFiles)
-			{
-				if (!SuppressionFile.IsSuppressionFile(file.Path))
+				if (!SuppressionFile.IsSuppressionFile(file))
 				{
-					continue;
+					throw new ArgumentException($"File {file} is not a suppression file");
 				}
 
-				var suppressionFile = SuppressionFile.Load(file.Path);
+				var suppressionFile = SuppressionFile.Load(file);
 				var assemblyName = suppressionFile.AssemblyName;
 				var storeFile = suppressionFile.GenerateSuppressionBase;
 
-				if (/*_messagesByAssembly.ContainsKey(assemblyName) ||
-					_generateSuppressionBaseByAssembly.ContainsKey(assemblyName) ||
-					(storeFile && */_fileByAssembly.ContainsKey(assemblyName))//)
+				if (//_generateSuppressionBaseByAssembly.ContainsKey(assemblyName) ||
+					_fileByAssembly.ContainsKey(assemblyName))
 				{
 					throw new InvalidOperationException($"Suppression information for assembly {assemblyName} has been already loaded");
 				}
 
-				//_messagesByAssembly.Add(assemblyName, suppressionFile.Messages);
 				//_generateSuppressionBaseByAssembly.Add(assemblyName, suppressionFile.GenerateSuppressionBase);
 				_fileByAssembly.Add(assemblyName, suppressionFile);
 			}
 		}
 
-		public bool IsSuppressed(SemanticModel semanticModel, Diagnostic diagnostic)
+		private bool IsSuppressed(SemanticModel semanticModel, Diagnostic diagnostic)
 		{
 			var (assembly, message) = GetSuppressionInfo(semanticModel, diagnostic);
 
@@ -74,6 +61,16 @@ namespace Acuminator.Analyzers.DiagnosticSuppression
 			}
 
 			return true;
+		}
+
+		public static void ReportDiagnosticWithSuppressionCheck(SemanticModel semanticModel, Action<Diagnostic> reportDiagnostic, Diagnostic diagnostic)
+		{
+			if (Instance?.IsSuppressed(semanticModel, diagnostic) == true)
+			{
+				return;
+			}
+
+			reportDiagnostic(diagnostic);
 		}
 
 		private (string Assembly, SuppressMessage Message) GetSuppressionInfo(SemanticModel semanticModel, Diagnostic diagnostic)

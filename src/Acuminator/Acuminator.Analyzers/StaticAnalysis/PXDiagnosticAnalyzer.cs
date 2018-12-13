@@ -1,4 +1,4 @@
-﻿using Acuminator.Analyzers.DiagnosticSuppression;
+﻿using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -15,7 +15,6 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public override void Initialize(AnalysisContext context)
 		{
 			//context.EnableConcurrentExecution();
-
 			context.RegisterCompilationStartAction(compilationStartContext =>
 			{
 				InitSuppressionManager(compilationStartContext.Options);

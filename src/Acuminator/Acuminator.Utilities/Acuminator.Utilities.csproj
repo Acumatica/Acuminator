@@ -94,6 +94,9 @@
     <Compile Include="Common\DictionaryExtensions.cs" />
     <Compile Include="Common\ExceptionExtensions.cs" />
     <Compile Include="Common\StringExtensions.cs" />
+    <Compile Include="DiagnosticSuppression\SuppressionFile.cs" />
+    <Compile Include="DiagnosticSuppression\SuppressionManager.cs" />
+    <Compile Include="DiagnosticSuppression\SuppressMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\ArrayExtensions.cs" />
     <Compile Include="Common\EnumerableExtensions.cs" />

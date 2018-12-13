@@ -7,7 +7,7 @@ using System.IO;
 using Acuminator.Utilities.Common;
 using System.Xml.Linq;
 
-namespace Acuminator.Analyzers.DiagnosticSuppression
+namespace Acuminator.Utilities.DiagnosticSuppression
 {
 	internal class SuppressionFile
 	{
