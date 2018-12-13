@@ -1,15 +1,12 @@
-﻿using System;
+﻿using Acuminator.Utilities.Common;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-using Acuminator.Utilities.Common;
 using System.Xml.Linq;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
 {
-	internal class SuppressionFile
+	public class SuppressionFile
 	{
 		private const string GenerateSuppressionBaseAttribute = "generateSuppressionBase";
 		private const string SuppressMessageElement = "suppressMessage";
@@ -19,11 +16,11 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		private const string SuppressionFileExtension = ".acuminator";
 		private static readonly char[] TrimCharacters = { ' ', '\t', '\n' };
 
-		public string AssemblyName { get; }
+		internal string AssemblyName { get; }
 
-		public bool GenerateSuppressionBase { get; }
+		internal bool GenerateSuppressionBase { get; }
 
-		public HashSet<SuppressMessage> Messages { get; }
+		internal HashSet<SuppressMessage> Messages { get; }
 
 		private SuppressionFile(string assemblyName, bool generateSuppressionBase, HashSet<SuppressMessage> messages)
 		{
@@ -37,7 +34,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			return SuppressionFileExtension.Equals(Path.GetExtension(path), StringComparison.Ordinal);
 		}
 
-		public static SuppressionFile Load(string path)
+		internal static SuppressionFile Load(string path)
 		{
 			path.ThrowOnNull(nameof(path));
 
@@ -67,10 +64,10 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			return false;
 		}
 
-		public static void AddMessage(SuppressMessage message)
+		/*public static void AddMessage(SuppressMessage message)
 		{
 
-		}
+		}*/
 
 		private static SuppressMessage ParseMessage(XElement messageElement)
 		{

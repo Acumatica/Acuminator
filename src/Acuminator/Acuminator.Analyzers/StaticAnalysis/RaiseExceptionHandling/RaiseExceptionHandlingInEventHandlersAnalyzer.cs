@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
+﻿using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
@@ -13,6 +8,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 {
@@ -70,11 +67,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 
 				if (methodSymbol != null && _pxContext.PXCache.RaiseExceptionHandling.Contains(methodSymbol))
 				{
-					ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
-						_context.ReportDiagnostic,
+					ReportDiagnostic(_context.ReportDiagnostic,
 						Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers, 
-						node,
-						_messageArgs);
+						node, _messageArgs);
 				}
 				else
 				{

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
+﻿using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
@@ -14,6 +8,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 {
@@ -73,15 +68,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 					{
 						if (saveOperationKind != SaveOperationKind.CachePersist)
 						{
-							ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
-								_context.ReportDiagnostic, Descriptors.PX1043_SavingChangesInRowPerstisting, node);
+							ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1043_SavingChangesInRowPerstisting, node);
 							return true;
 						}
 					}
 					else
 					{
-						ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
-							_context.ReportDiagnostic, Descriptors.PX1043_SavingChangesInEventHandlers, node);
+						ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1043_SavingChangesInEventHandlers, node);
 						return true;
 					}
 				}

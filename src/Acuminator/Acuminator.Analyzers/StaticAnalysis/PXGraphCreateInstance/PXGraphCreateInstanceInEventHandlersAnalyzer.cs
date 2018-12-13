@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
+﻿using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Utilities;
-using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
@@ -14,6 +7,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 {
@@ -56,8 +50,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 					&& methodSymbol.ContainingType.OriginalDefinition.IsPXGraph() 
 					&& methodSymbol.Name == CreateInstanceMethodName)
 				{
-					ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
-						_context.ReportDiagnostic, Descriptors.PX1045_PXGraphCreateInstanceInEventHandlers, node);
+					ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1045_PXGraphCreateInstanceInEventHandlers, node);
 				}
 				else
 				{
@@ -73,8 +66,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 
 					if (typeSymbol != null && typeSymbol.IsPXGraph())
 					{
-						ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
-							_context.ReportDiagnostic, Descriptors.PX1045_PXGraphCreateInstanceInEventHandlers, node);
+						ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1045_PXGraphCreateInstanceInEventHandlers, node);
 					}
 				}
 

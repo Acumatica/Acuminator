@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
 {
-    public class CallingBaseDataViewDelegateFromOverrideDelegateAnalyzer : PXGraphAggregatedAnalyzerBase
+	public class CallingBaseDataViewDelegateFromOverrideDelegateAnalyzer : PXGraphAggregatedAnalyzerBase
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation);
@@ -113,8 +113,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
 
                 if (_nonRedeclaredBaseViews.Contains(symbol))
                 {
-                    ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
-						_context.ReportDiagnostic,
+                    ReportDiagnostic(_context.ReportDiagnostic,
 						Descriptors.PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation,
 						node);
 

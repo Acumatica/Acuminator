@@ -10,7 +10,7 @@ using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization
 {
-    public class PXGraphCreationInGraphSemanticModelAnalyzer : PXGraphAggregatedAnalyzerBase
+	public class PXGraphCreationInGraphSemanticModelAnalyzer : PXGraphAggregatedAnalyzerBase
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(
@@ -60,7 +60,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
 
                 if (symbol != null && _pxContext.PXGraph.CreateInstance.Contains(symbol.ConstructedFrom))
                 {
-                    ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck, _context.ReportDiagnostic, _descriptor, node);
+                    ReportDiagnostic(_context.ReportDiagnostic, _descriptor, node);
                 }
                 else
                 {

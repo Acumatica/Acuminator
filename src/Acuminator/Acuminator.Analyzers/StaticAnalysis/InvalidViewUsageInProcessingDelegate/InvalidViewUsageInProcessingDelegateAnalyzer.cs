@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.InvalidViewUsageInProcessingDelegate
 {
-    public class InvalidViewUsageInProcessingDelegateAnalyzer : PXGraphAggregatedAnalyzerBase
+	public class InvalidViewUsageInProcessingDelegateAnalyzer : PXGraphAggregatedAnalyzerBase
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1088_InvalidViewUsageInProcessingDelegate);
@@ -80,8 +80,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidViewUsageInProcessingDelega
                                         !typeSymbol.OriginalDefinition.IsPXSetupBqlCommand(_pxContext);
                 if (isForbiddenSymbol)
                 {
-                    ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
-						_context.ReportDiagnostic, Descriptors.PX1088_InvalidViewUsageInProcessingDelegate, node);
+                    ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1088_InvalidViewUsageInProcessingDelegate, node);
                 }
                 else
                 {

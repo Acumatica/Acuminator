@@ -1,14 +1,13 @@
 ﻿using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Linq;
-using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXActionExecution
 {
-    internal class Walker : NestedInvocationWalker
+	internal class Walker : NestedInvocationWalker
 	{
 		private readonly SymbolAnalysisContext _context;
 		private readonly PXContext _pxContext;
@@ -37,8 +36,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionExecution
 
 			if (methodSymbol != null && _pxContext.PXAction.Press.Contains(methodSymbol))
 			{
-				ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
-					_context.ReportDiagnostic, _diagnosticDescriptor, node, _messageArgs);
+				ReportDiagnostic(_context.ReportDiagnostic, _diagnosticDescriptor, node, _messageArgs);
 			}
 			else
 			{

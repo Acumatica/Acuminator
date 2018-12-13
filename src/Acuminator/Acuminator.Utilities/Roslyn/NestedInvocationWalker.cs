@@ -1,4 +1,5 @@
 ﻿using Acuminator.Utilities.Common;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Syntax;
 using CommonServiceLocator;
 using Microsoft.CodeAnalysis;
@@ -135,8 +136,8 @@ namespace Acuminator.Utilities.Roslyn
 		/// <param name="messageArgs">Arguments to the message of the diagnostic</param>
 		/// <remarks>This method takes a report diagnostic method as a parameter because it is different for each analyzer type 
 		/// (<code>SymbolAnalysisContext.ReportDiagnostic</code>, <code>SyntaxNodeAnalysisContext.ReportDiagnostic</code>, etc.)</remarks>
-		protected virtual void ReportDiagnostic(Action<SemanticModel, Action<Diagnostic>, Diagnostic> reportDiagnosticWithSuppressionCheck,
-			Action<Diagnostic> reportDiagnostic, DiagnosticDescriptor diagnosticDescriptor, SyntaxNode node, params object[] messageArgs)
+		protected virtual void ReportDiagnostic(Action<Diagnostic> reportDiagnostic, DiagnosticDescriptor diagnosticDescriptor,
+			SyntaxNode node, params object[] messageArgs)
 		{
 			var nodeToReport = OriginalNode ?? node;
 
@@ -147,7 +148,7 @@ namespace Acuminator.Utilities.Roslyn
 				var diagnostic = Diagnostic.Create(diagnosticDescriptor, nodeToReport.GetLocation(), messageArgs);
 				var semanticModel = GetSemanticModel(node.SyntaxTree);
 
-				reportDiagnosticWithSuppressionCheck(semanticModel, reportDiagnostic, diagnostic);
+				SuppressionManager.ReportDiagnosticWithSuppressionCheck(semanticModel, reportDiagnostic, diagnostic);
 				_reportedDiagnostics.Add(diagnosticKey);
 			}
 		}

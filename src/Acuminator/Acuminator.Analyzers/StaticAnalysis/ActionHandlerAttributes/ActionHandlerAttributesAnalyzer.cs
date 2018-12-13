@@ -1,5 +1,6 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
@@ -76,7 +77,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 				node.GetLocation(),
 				properties);
 
-			PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck(semanticModel, context.ReportDiagnostic, diagnostic);
+			SuppressionManager.ReportDiagnosticWithSuppressionCheck(semanticModel, context.ReportDiagnostic, diagnostic);
 		}
     }
 }
