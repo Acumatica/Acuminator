@@ -113,7 +113,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate
 
                 if (_nonRedeclaredBaseViews.Contains(symbol))
                 {
-                    ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation, node);
+                    ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
+						_context.ReportDiagnostic,
+						Descriptors.PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation,
+						node);
 
                     return true;
                 }

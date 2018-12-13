@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using Acuminator.Utilities.Common;
+﻿using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Syntax;
 using CommonServiceLocator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 
 namespace Acuminator.Utilities.Roslyn
 {
@@ -135,8 +135,8 @@ namespace Acuminator.Utilities.Roslyn
 		/// <param name="messageArgs">Arguments to the message of the diagnostic</param>
 		/// <remarks>This method takes a report diagnostic method as a parameter because it is different for each analyzer type 
 		/// (<code>SymbolAnalysisContext.ReportDiagnostic</code>, <code>SyntaxNodeAnalysisContext.ReportDiagnostic</code>, etc.)</remarks>
-		protected virtual void ReportDiagnostic(Action<Diagnostic> reportDiagnostic, 
-			DiagnosticDescriptor diagnosticDescriptor, SyntaxNode node, params object[] messageArgs)
+		protected virtual void ReportDiagnostic(Action<SemanticModel, Action<Diagnostic>, Diagnostic> reportDiagnosticWithSuppressionCheck,
+			Action<Diagnostic> reportDiagnostic, DiagnosticDescriptor diagnosticDescriptor, SyntaxNode node, params object[] messageArgs)
 		{
 			var nodeToReport = OriginalNode ?? node;
 
@@ -144,7 +144,10 @@ namespace Acuminator.Utilities.Roslyn
 
 			if (!_reportedDiagnostics.Contains(diagnosticKey))
 			{
-				reportDiagnostic(Diagnostic.Create(diagnosticDescriptor, nodeToReport.GetLocation(), messageArgs));
+				var diagnostic = Diagnostic.Create(diagnosticDescriptor, nodeToReport.GetLocation(), messageArgs);
+				var semanticModel = GetSemanticModel(node.SyntaxTree);
+
+				reportDiagnosticWithSuppressionCheck(semanticModel, reportDiagnostic, diagnostic);
 				_reportedDiagnostics.Add(diagnosticKey);
 			}
 		}

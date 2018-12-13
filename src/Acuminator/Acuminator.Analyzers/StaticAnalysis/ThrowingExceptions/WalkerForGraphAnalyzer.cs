@@ -24,7 +24,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 
             if (IsPXSetupNotEnteredException(node))
             {
-                ReportDiagnostic(_context.ReportDiagnostic, _descriptor, node);
+                ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
+					_context.ReportDiagnostic, _descriptor, node);
             }
             else
             {

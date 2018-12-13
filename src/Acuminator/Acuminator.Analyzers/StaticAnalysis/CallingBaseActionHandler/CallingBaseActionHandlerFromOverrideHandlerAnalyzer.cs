@@ -87,7 +87,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
                 // Case Base.someActionHandler(adapter)
                 if (_baseHandlers.Contains(methodSymbol))
                 {
-                    ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1091_CausingStackOverflowExceptionInBaseActionHandlerInvocation, node);
+                    ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
+						_context.ReportDiagnostic,
+						Descriptors.PX1091_CausingStackOverflowExceptionInBaseActionHandlerInvocation,
+						node);
+
                     return;
                 }
 
@@ -101,7 +105,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
 
                     if (_baseActions.Contains(expressionSymbol))
                     {
-                        ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1091_CausingStackOverflowExceptionInBaseActionHandlerInvocation, node);
+                        ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
+							_context.ReportDiagnostic,
+							Descriptors.PX1091_CausingStackOverflowExceptionInBaseActionHandlerInvocation,
+							node);
+
                         return;
                     }
                 }

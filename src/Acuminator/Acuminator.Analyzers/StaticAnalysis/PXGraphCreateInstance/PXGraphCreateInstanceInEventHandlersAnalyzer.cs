@@ -56,7 +56,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 					&& methodSymbol.ContainingType.OriginalDefinition.IsPXGraph() 
 					&& methodSymbol.Name == CreateInstanceMethodName)
 				{
-					ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1045_PXGraphCreateInstanceInEventHandlers, node);
+					ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
+						_context.ReportDiagnostic, Descriptors.PX1045_PXGraphCreateInstanceInEventHandlers, node);
 				}
 				else
 				{
@@ -72,8 +73,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 
 					if (typeSymbol != null && typeSymbol.IsPXGraph())
 					{
-						ReportDiagnostic(_context.ReportDiagnostic, 
-							Descriptors.PX1045_PXGraphCreateInstanceInEventHandlers, node);
+						ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
+							_context.ReportDiagnostic, Descriptors.PX1045_PXGraphCreateInstanceInEventHandlers, node);
 					}
 				}
 

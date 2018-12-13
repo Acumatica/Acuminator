@@ -61,7 +61,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 
                 if (symbol != null && SaveOperationHelper.GetSaveOperationKind(symbol, node, semanticModel, _pxContext) != SaveOperationKind.None)
                 {
-                    ReportDiagnostic(_context.ReportDiagnostic, _descriptor, node);
+                    ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
+						_context.ReportDiagnostic, _descriptor, node);
                 }
                 else
                 {

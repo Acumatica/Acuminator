@@ -59,13 +59,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 
                 if (_eventType == EventType.RowPersisted)
                 {
-                    ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1073_ThrowingExceptionsInRowPersisted, node);
+                    ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
+						_context.ReportDiagnostic,
+						Descriptors.PX1073_ThrowingExceptionsInRowPersisted,
+						node);
                     isReported = true;
                 }
 
                 if (_eventType != EventType.RowSelected && IsPXSetupNotEnteredException(node))
                 {
-                    ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1074_ThrowingSetupNotEnteredExceptionInEventHandlers, node, _eventType);
+                    ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
+						_context.ReportDiagnostic,
+						Descriptors.PX1074_ThrowingSetupNotEnteredExceptionInEventHandlers,
+						node,
+						_eventType);
                     isReported = true;
                 }
 

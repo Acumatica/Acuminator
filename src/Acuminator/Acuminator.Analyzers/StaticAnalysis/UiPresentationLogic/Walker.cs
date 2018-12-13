@@ -37,7 +37,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic
 
 			if (methodSymbol != null && _pxContext.UiPresentationLogicMethods.Contains(methodSymbol))
 			{
-				ReportDiagnostic(_context.ReportDiagnostic, _diagnosticDescriptor, node, _messageArgs);
+				ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
+					_context.ReportDiagnostic, _diagnosticDescriptor, node, _messageArgs);
 			}
 			else
 			{

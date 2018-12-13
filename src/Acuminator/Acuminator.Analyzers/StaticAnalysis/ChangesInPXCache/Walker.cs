@@ -36,7 +36,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 
 			if (methodSymbol != null && IsMethodForbidden(methodSymbol))
 			{
-				ReportDiagnostic(_context.ReportDiagnostic, _diagnosticDescriptor, node, _messageArgs);
+				ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
+					_context.ReportDiagnostic, _diagnosticDescriptor, node, _messageArgs);
 			}
 			else
 			{

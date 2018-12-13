@@ -37,7 +37,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionExecution
 
 			if (methodSymbol != null && _pxContext.PXAction.Press.Contains(methodSymbol))
 			{
-				ReportDiagnostic(_context.ReportDiagnostic, _diagnosticDescriptor, node, _messageArgs);
+				ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
+					_context.ReportDiagnostic, _diagnosticDescriptor, node, _messageArgs);
 			}
 			else
 			{

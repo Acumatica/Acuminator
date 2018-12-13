@@ -60,7 +60,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
 
                 if (symbol != null && _pxContext.PXGraph.CreateInstance.Contains(symbol.ConstructedFrom))
                 {
-                    ReportDiagnostic(_context.ReportDiagnostic, _descriptor, node);
+                    ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck, _context.ReportDiagnostic, _descriptor, node);
                 }
                 else
                 {

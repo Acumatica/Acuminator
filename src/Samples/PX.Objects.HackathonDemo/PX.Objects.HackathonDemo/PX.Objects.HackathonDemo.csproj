@@ -107,5 +107,8 @@
     <Compile Include="DAC\SOSetup.cs" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <AdditionalFiles Include="PX.Objects.HackathonDemo.acuminator" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

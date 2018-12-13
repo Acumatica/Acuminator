@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<suppressions generateSuppressionBase="false">
+	<suppressMessage id="PX1089">
+		<target>
+			PX.Objects.HackathonDemo.SMUserMaint.addTooltip()
+		</target>
+		<syntaxNode>
+			Next.SetTooltip("Next Action")
+		</syntaxNode>
+	</suppressMessage>
+</suppressions>

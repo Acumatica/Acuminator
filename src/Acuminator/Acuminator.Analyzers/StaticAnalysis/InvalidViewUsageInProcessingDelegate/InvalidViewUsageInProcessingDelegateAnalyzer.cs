@@ -80,7 +80,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidViewUsageInProcessingDelega
                                         !typeSymbol.OriginalDefinition.IsPXSetupBqlCommand(_pxContext);
                 if (isForbiddenSymbol)
                 {
-                    ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1088_InvalidViewUsageInProcessingDelegate, node);
+                    ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
+						_context.ReportDiagnostic, Descriptors.PX1088_InvalidViewUsageInProcessingDelegate, node);
                 }
                 else
                 {

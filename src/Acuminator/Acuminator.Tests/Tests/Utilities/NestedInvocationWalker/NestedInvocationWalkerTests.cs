@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis;
@@ -30,7 +31,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 			public override void VisitThrowStatement(ThrowStatementSyntax node)
 			{
 				base.VisitThrowStatement(node);
-				ReportDiagnostic(AddDiagnostic, DiagnosticDescriptor, node);
+				ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck, AddDiagnostic, DiagnosticDescriptor, node);
 			}
 
 			private void AddDiagnostic(Diagnostic diagnostic)

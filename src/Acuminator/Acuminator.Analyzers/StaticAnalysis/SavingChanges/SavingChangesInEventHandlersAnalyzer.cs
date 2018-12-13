@@ -73,13 +73,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 					{
 						if (saveOperationKind != SaveOperationKind.CachePersist)
 						{
-							ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1043_SavingChangesInRowPerstisting, node);
+							ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
+								_context.ReportDiagnostic, Descriptors.PX1043_SavingChangesInRowPerstisting, node);
 							return true;
 						}
 					}
 					else
 					{
-						ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1043_SavingChangesInEventHandlers, node);
+						ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
+							_context.ReportDiagnostic, Descriptors.PX1043_SavingChangesInEventHandlers, node);
 						return true;
 					}
 				}

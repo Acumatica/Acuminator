@@ -52,7 +52,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 
 			if (methodSymbol != null && IsDatabaseCall(methodSymbol))
 			{
-				ReportDiagnostic(_context.ReportDiagnostic, _diagnosticDescriptor, node);
+				ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
+					_context.ReportDiagnostic, _diagnosticDescriptor, node);
 			}
 			else
 			{

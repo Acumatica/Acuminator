@@ -70,8 +70,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 
 				if (methodSymbol != null && _pxContext.PXCache.RaiseExceptionHandling.Contains(methodSymbol))
 				{
-					ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers, 
-						node, _messageArgs);
+					ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck,
+						_context.ReportDiagnostic,
+						Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers, 
+						node,
+						_messageArgs);
 				}
 				else
 				{

@@ -33,7 +33,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
 
             if (_pxContext.StartOperation.Contains(methodSymbol))
             {
-                ReportDiagnostic(_reportDiagnostic, _descriptor, node);
+                ReportDiagnostic(PXDiagnosticAnalyzer.ReportDiagnosticWithSuppressionCheck, _reportDiagnostic, _descriptor, node);
             }
             else
             {
