@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Acuminator.Utilities.Roslyn;
+﻿using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Utilities.Roslyn.Syntax;
@@ -12,6 +7,11 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using PX.Data;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 {
@@ -63,7 +63,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 				{ DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString() }
 			}.ToImmutableDictionary();
 
-			syntaxContext.ReportDiagnostic(
+			syntaxContext.ReportDiagnosticWithSuppressionCheck(
 				Diagnostic.Create(
 					Descriptors.PX1010_StartRowResetForPaging, selectInvocation.GetLocation(), diagnosticProperties));
 		}

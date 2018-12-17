@@ -183,12 +183,11 @@ namespace Acuminator.Vsix
 		private void InitializeSuppressionManager()
 		{
 			var workspace = this.GetVSWorkspace();
-			var suppressionFiles = workspace.CurrentSolution.Projects
+			var additionalFiles = workspace.CurrentSolution.Projects
 				.SelectMany(p => p.AdditionalDocuments)
-				.Where(d => SuppressionFile.IsSuppressionFile(d.FilePath))
 				.Select(d => d.FilePath);
 
-			SuppressionManager.Instance = new SuppressionManager(suppressionFiles);
+			SuppressionManager.Init(additionalFiles);
 		}
 
 		private void InitializeCommands()

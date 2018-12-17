@@ -1,15 +1,15 @@
-﻿using System.Collections.Immutable;
-using Acuminator.Utilities.Roslyn;
+﻿using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+	[DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class PXGraphUsageInDacAnalyzer : PXDiagnosticAnalyzer
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
@@ -98,7 +98,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac
                 if (typeInfo.Type == null || !typeInfo.Type.IsPXGraphOrExtension(_pxContext))
                     return;
 
-                _syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1029_PXGraphUsageInDac, node.GetLocation()));
+                _syntaxContext.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1029_PXGraphUsageInDac, node.GetLocation()));
 
                 base.VisitIdentifierName(node);
             }

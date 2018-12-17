@@ -87,7 +87,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
                 // Case Base.someActionHandler(adapter)
                 if (_baseHandlers.Contains(methodSymbol))
                 {
-                    base.ReportDiagnostic(_context.ReportDiagnostic,
+                    ReportDiagnostic(_context.ReportDiagnostic,
 						Descriptors.PX1091_CausingStackOverflowExceptionInBaseActionHandlerInvocation,
 						node);
 

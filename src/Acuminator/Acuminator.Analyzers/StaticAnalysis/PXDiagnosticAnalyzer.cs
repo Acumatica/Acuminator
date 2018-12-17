@@ -1,8 +1,5 @@
-﻿using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Microsoft.CodeAnalysis;
+﻿using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
 
 namespace Acuminator.Analyzers.StaticAnalysis
 {

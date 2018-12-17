@@ -1,4 +1,5 @@
-﻿using Acuminator.Utilities.Roslyn.Semantic;
+﻿using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -57,7 +58,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 				return;
 			}
 
-			context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1093_GraphDeclarationViolation, graphArgumentIdentifier.GetLocation()));
+			context.ReportDiagnosticWithSuppressionCheck(
+				Diagnostic.Create(Descriptors.PX1093_GraphDeclarationViolation, graphArgumentIdentifier.GetLocation()));
 		}
 
 		private BaseTypeSyntax GetBaseGraphTypeNode(SyntaxNodeAnalysisContext context, PXContext pxContext,

@@ -1,10 +1,10 @@
-﻿using System.Collections.Immutable;
-using System.Threading.Tasks;
-using Acuminator.Utilities.Roslyn;
+﻿using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Immutable;
+using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType
 {
@@ -42,7 +42,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType
 			if (dacFieldLocation == null || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
 	
-			symbolContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1024_DacNonAbstractFieldType, dacFieldLocation));		
+			symbolContext.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1024_DacNonAbstractFieldType, dacFieldLocation));		
 		}
 
 		private static bool IsDacFieldType(ITypeSymbol dacFieldType, PXContext pxContext)

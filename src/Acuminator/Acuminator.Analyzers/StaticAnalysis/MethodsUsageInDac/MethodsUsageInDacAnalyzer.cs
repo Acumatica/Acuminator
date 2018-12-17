@@ -1,4 +1,4 @@
-﻿using Acuminator.Utilities.Roslyn;
+﻿using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
@@ -12,7 +12,7 @@ using System.Threading;
 
 namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class MethodsUsageInDacAnalyzer : PXDiagnosticAnalyzer
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
@@ -96,12 +96,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
                     if (inWhitelist)
                         continue;
 
-                    syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1032_DacPropertyCannotContainMethodInvocations,
+                    syntaxContext.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1032_DacPropertyCannotContainMethodInvocations,
                         invocation.GetLocation()));
                 }
 				else if (node is ObjectCreationExpressionSyntax)
 				{
-					syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1032_DacPropertyCannotContainMethodInvocations,
+					syntaxContext.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1032_DacPropertyCannotContainMethodInvocations,
 						node.GetLocation()));
 				}
 			}
@@ -112,7 +112,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
 		{
 			if (method != null && !method.IsStatic())
 			{
-				syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1031_DacCannotContainInstanceMethods,
+				syntaxContext.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1031_DacCannotContainInstanceMethods,
 					method.Identifier.GetLocation()));
 			}
 		}

@@ -25,14 +25,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
                     continue;
                 }
 
-				var semanticModel = context.Compilation.GetSemanticModel(actionHandler.Node.SyntaxTree);
-
-				CheckActionHandler(context, pxContext, semanticModel, actionHandler.Symbol, actionHandler.Node);
+				CheckActionHandler(context, pxContext, actionHandler.Symbol, actionHandler.Node);
             }
         }
 
 		private void CheckActionHandler(SymbolAnalysisContext context, PXContext pxContext,
-			SemanticModel semanticModel, IMethodSymbol symbol, SyntaxNode node)
+			IMethodSymbol symbol, SyntaxNode node)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -77,7 +75,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 				node.GetLocation(),
 				properties);
 
-			SuppressionManager.ReportDiagnosticWithSuppressionCheck(semanticModel, context.ReportDiagnostic, diagnostic);
+			context.ReportDiagnosticWithSuppressionCheck(diagnostic);
 		}
     }
 }

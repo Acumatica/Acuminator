@@ -1,16 +1,15 @@
-﻿using System.Collections.Immutable;
-using System.Threading;
-using Acuminator.Utilities.Roslyn;
-using Acuminator.Utilities.Roslyn.Semantic;
+﻿using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Symbols;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Immutable;
+using System.Threading;
 
 namespace Acuminator.Analyzers.StaticAnalysis.Localization
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+	[DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class LocalizationInvocationAnalyzer : PXDiagnosticAnalyzer
     {
         private SyntaxNodeAnalysisContext _syntaxContext;

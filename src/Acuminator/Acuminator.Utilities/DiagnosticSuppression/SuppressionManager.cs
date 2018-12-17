@@ -19,7 +19,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			SyntaxKind.FieldDeclaration
 		});
 
-		public static SuppressionManager Instance { get; set; }
+		private static SuppressionManager Instance { get; set; }
 
 		public SuppressionManager(IEnumerable<string> suppressionFiles)
 		{
@@ -43,6 +43,13 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				//_generateSuppressionBaseByAssembly.Add(assemblyName, suppressionFile.GenerateSuppressionBase);
 				_fileByAssembly.Add(assemblyName, suppressionFile);
 			}
+		}
+
+		public static void Init(IEnumerable<string> additionalFiles)
+		{
+			var suppressionFiles = additionalFiles.Where(f => SuppressionFile.IsSuppressionFile(f));
+
+			Instance = new SuppressionManager(suppressionFiles);
 		}
 
 		private bool IsSuppressed(SemanticModel semanticModel, Diagnostic diagnostic)

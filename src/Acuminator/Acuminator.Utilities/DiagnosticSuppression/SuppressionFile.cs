@@ -29,7 +29,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			Messages = messages;
 		}
 
-		public static bool IsSuppressionFile(string path)
+		internal static bool IsSuppressionFile(string path)
 		{
 			return SuppressionFileExtension.Equals(Path.GetExtension(path), StringComparison.Ordinal);
 		}
