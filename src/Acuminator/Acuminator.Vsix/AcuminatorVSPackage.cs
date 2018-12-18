@@ -29,6 +29,7 @@ using FirstChanceExceptionEventArgs = System.Runtime.ExceptionServices.FirstChan
 using EnvDTE80;
 using EnvDTE;
 using System.Linq;
+using Acuminator.Vsix.Utils;
 
 namespace Acuminator.Vsix
 {
@@ -185,9 +186,9 @@ namespace Acuminator.Vsix
 			var workspace = this.GetVSWorkspace();
 			var additionalFiles = workspace.CurrentSolution.Projects
 				.SelectMany(p => p.AdditionalDocuments)
-				.Select(d => d.FilePath);
+				.Select(d => (d.FilePath, false));
 
-			SuppressionManager.Init(additionalFiles);
+			SuppressionManager.Init(new SuppressionFileSystemService(), additionalFiles);
 		}
 
 		private void InitializeCommands()

@@ -95,6 +95,7 @@
     <Compile Include="Common\ExceptionExtensions.cs" />
     <Compile Include="Common\StringExtensions.cs" />
     <Compile Include="DiagnosticSuppression\ContextExtensions.cs" />
+    <Compile Include="DiagnosticSuppression\ISuppressionFileSystemService.cs" />
     <Compile Include="DiagnosticSuppression\SuppressionFile.cs" />
     <Compile Include="DiagnosticSuppression\SuppressionManager.cs" />
     <Compile Include="DiagnosticSuppression\SuppressMessage.cs" />

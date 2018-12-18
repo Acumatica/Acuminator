@@ -1,14 +1,13 @@
 ﻿using Acuminator.Utilities.Common;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Xml.Linq;
+using System.IO;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
 {
 	public class SuppressionFile
 	{
-		private const string GenerateSuppressionBaseAttribute = "generateSuppressionBase";
 		private const string SuppressMessageElement = "suppressMessage";
 		private const string IdAttribute = "id";
 		private const string TargetElement = "target";
@@ -18,9 +17,11 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		internal string AssemblyName { get; }
 
+		internal string Path { get; }
+
 		internal bool GenerateSuppressionBase { get; }
 
-		internal HashSet<SuppressMessage> Messages { get; }
+		private HashSet<SuppressMessage> Messages { get; }
 
 		private SuppressionFile(string assemblyName, bool generateSuppressionBase, HashSet<SuppressMessage> messages)
 		{
@@ -29,64 +30,85 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			Messages = messages;
 		}
 
-		internal static bool IsSuppressionFile(string path)
+		internal bool ContainsMessage(SuppressMessage message)
 		{
-			return SuppressionFileExtension.Equals(Path.GetExtension(path), StringComparison.Ordinal);
+			return Messages.Contains(message);
 		}
 
-		internal static SuppressionFile Load(string path)
+		internal static bool IsSuppressionFile(string path)
 		{
-			path.ThrowOnNull(nameof(path));
+			return SuppressionFileExtension.Equals(System.IO.Path.GetExtension(path), StringComparison.Ordinal);
+		}
 
-			string assemblyName = Path.GetFileNameWithoutExtension(path);
+		internal static SuppressionFile Load(ISuppressionFileSystemService fileSystemService,
+			(string path, bool generateSuppressionBase) suppressionFile)
+		{
+			suppressionFile.path.ThrowOnNull(nameof(suppressionFile.path));
+
+			string assemblyName = fileSystemService.GetFileName(suppressionFile.path);
 
 			if (string.IsNullOrEmpty(assemblyName))
 			{
 				throw new FormatException("Acuminator suppression file name cannot be empty");
 			}
 
-			var document = XDocument.Load(path);
-			var generateSuppression = LoadGenerateSuppression(document);
-			var messages = LoadMessages(document);
+			var messages = new HashSet<SuppressMessage>();
 
-			return new SuppressionFile(assemblyName, generateSuppression, messages);
-		}
-
-		private static bool LoadGenerateSuppression(XDocument document)
-		{
-			var generateSuppressionString = document.Root.Attribute(GenerateSuppressionBaseAttribute)?.Value;
-
-			if (bool.TryParse(generateSuppressionString, out bool generateSuppressionValue))
+			if (!suppressionFile.generateSuppressionBase)
 			{
-				return generateSuppressionValue;
+				messages = LoadMessages(fileSystemService, suppressionFile.path);
 			}
 
-			return false;
+			return new SuppressionFile(assemblyName, suppressionFile.generateSuppressionBase, messages);
 		}
 
-		/*public static void AddMessage(SuppressMessage message)
+		internal void AddMessage(SuppressMessage message)
 		{
+			Messages.Add(message);
+		}
 
-		}*/
-
-		private static SuppressMessage ParseMessage(XElement messageElement)
+		public XDocument MessagesToDocument()
 		{
-			var id = messageElement.Attribute(IdAttribute).Value;
-			var targetElement = messageElement.Element(TargetElement);
+			var document = XDocument.Load(Path);
+			var root = document.Root;
+
+			root.RemoveNodes();
+
+			foreach (var message in Messages)
+			{
+				root.Add(ElementFromMessage(message));
+			}
+
+			return document;
+		}
+
+		private static XElement ElementFromMessage(SuppressMessage message)
+		{
+			return new XElement(SuppressMessageElement,
+				new XAttribute(IdAttribute, message.Id),
+				new XElement(TargetElement, message.Target),
+				new XElement(SyntaxNodeElement, message.SyntaxNode));
+		}
+
+		private static SuppressMessage MessageFromElement(XElement element)
+		{
+			var id = element.Attribute(IdAttribute).Value;
+			var targetElement = element.Element(TargetElement);
 			var target = targetElement.Value?.Trim(TrimCharacters);
-			var syntaxNode = messageElement.Element(SyntaxNodeElement).Value?.Trim(TrimCharacters);
+			var syntaxNode = element.Element(SyntaxNodeElement).Value?.Trim(TrimCharacters);
 
 			return new SuppressMessage(id, target, syntaxNode);
 		}
 
-		private static HashSet<SuppressMessage> LoadMessages(XDocument document)
+		private static HashSet<SuppressMessage> LoadMessages(ISuppressionFileSystemService fileSystemService, string path)
 		{
 			var messages = new HashSet<SuppressMessage>();
+			var document = fileSystemService.Load(path);
 			var messageElements = document.Root.Elements(SuppressMessageElement);
 
 			foreach (var element in messageElements)
 			{
-				messages.Add(ParseMessage(element));
+				messages.Add(MessageFromElement(element));
 			}
 
 			return messages;
