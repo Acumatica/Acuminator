@@ -68,15 +68,23 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private async void OnWorkspaceChanged(object sender, WorkspaceChangeEventArgs e)
 		{
-			if (e.Kind != WorkspaceChangeKind.DocumentChanged || Document.Id != e.DocumentId ||
-				Document.Project.Id != e.ProjectId || !(sender is Workspace newWorkspace))
+			if (e == null || !(sender is Workspace newWorkspace))
+				return;
+
+			if (Document != null && e.IsActiveDocumentCleared(Document))
 			{
+				ClearCodeMap();
 				return;
 			}
 
-			_cancellationTokenSource?.Cancel();
-			Tree?.RootItems.Clear();
-			Tree = null;
+			bool isActiveDocumentChanged = e.IsActiveDocumentChanged(Document);
+			bool isDocumentTextChanged = e.IsDocumentTextChanged(Document);
+
+			if (!isActiveDocumentChanged && !isDocumentTextChanged)
+				return;
+
+			ClearCodeMap();
+
 			_workspace = newWorkspace;
 			Document changedDocument = e.NewSolution.GetDocument(e.DocumentId);
 
@@ -89,8 +97,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 
 			_documentModel = new DocumentModel(_documentModel.WpfTextView, changedDocument);
-			BuildCodeMapAsync().Forget();
-		}
+			BuildCodeMapAsync().Forget();		
+		}	
 
 		public static CodeMapWindowViewModel InitCodeMap(IWpfTextView wpfTextView, Document document)
 		{
@@ -117,6 +125,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				_workspace.WorkspaceChanged -= OnWorkspaceChanged;
 			}
+		}
+
+		private void ClearCodeMap()
+		{
+			_cancellationTokenSource?.Cancel();
+			Tree?.RootItems.Clear();
+			Tree = null;
 		}
 
 		private async Task BuildCodeMapAsync()

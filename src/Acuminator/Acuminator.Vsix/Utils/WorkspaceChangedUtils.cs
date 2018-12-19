@@ -16,9 +16,28 @@ namespace Acuminator.Vsix.Utilities
     /// </summary>
     public static class WorkspaceChangedUtils
 	{       
+		public static bool IsActiveDocumentCleared(this WorkspaceChangeEventArgs changeEventArgs, Document oldDocument)
+		{
+			changeEventArgs.ThrowOnNull(nameof(changeEventArgs));
+
+			switch (changeEventArgs.Kind)
+			{
+				case WorkspaceChangeKind.SolutionRemoved:					
+				case WorkspaceChangeKind.SolutionCleared:		
+				case WorkspaceChangeKind.SolutionReloaded:
+					return oldDocument?.Project.Solution.Id == changeEventArgs.NewSolution.Id;
+				case WorkspaceChangeKind.ProjectRemoved:
+				case WorkspaceChangeKind.ProjectReloaded:
+					return oldDocument?.Project.Id == changeEventArgs.ProjectId;
+				case WorkspaceChangeKind.DocumentRemoved:
+					return oldDocument?.Id == changeEventArgs.DocumentId;
+				default:
+					return false;
+			}
+		}
+
         public static bool IsActiveDocumentChanged(this WorkspaceChangeEventArgs changeEventArgs, Document oldDocument)
 		{
-			oldDocument.ThrowOnNull(nameof(oldDocument));
 			changeEventArgs.ThrowOnNull(nameof(changeEventArgs));
 
 			if (changeEventArgs.Kind != WorkspaceChangeKind.DocumentChanged)
@@ -29,16 +48,18 @@ namespace Acuminator.Vsix.Utilities
 
 		public static bool IsDocumentTextChanged(this WorkspaceChangeEventArgs changeEventArgs, Document oldDocument)
 		{
-			oldDocument.ThrowOnNull(nameof(oldDocument));
 			changeEventArgs.ThrowOnNull(nameof(changeEventArgs));
 
-			if (changeEventArgs.Kind != WorkspaceChangeKind.DocumentChanged)
+			if (changeEventArgs.Kind != WorkspaceChangeKind.DocumentChanged &&
+				changeEventArgs.Kind != WorkspaceChangeKind.DocumentReloaded)
+			{
 				return false;
+			}
 
 			return !HaveDocumentIdOrProjectIdChanged(changeEventArgs, oldDocument);
 		}
 
 		private static bool HaveDocumentIdOrProjectIdChanged(WorkspaceChangeEventArgs changeEventArgs, Document oldDocument) =>
-			oldDocument.Id != changeEventArgs.DocumentId || oldDocument.Project.Id != changeEventArgs.ProjectId;
+			oldDocument?.Id != changeEventArgs.DocumentId || oldDocument?.Project.Id != changeEventArgs.ProjectId;
 	}
 }
