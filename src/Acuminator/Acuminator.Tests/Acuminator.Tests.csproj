@@ -238,6 +238,14 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\InvalidViewUsageInProcessingDelegate\Sources\ParametersDelegate_Good.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\InvalidViewUsageInProcessingDelegate\Sources\ProcessDelegate_Good.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\InvalidViewUsageInProcessingDelegate\Sources\FinallyProcessDelegate_Good.cs" />
+    <Compile Include="Tests\StaticAnalysis\LegacyBqlConstant\LegacyBqlConstantTest.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\LegacyBqlConstant\Sources\LegacyBqlConstantBad.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\LegacyBqlConstant\Sources\LegacyBqlConstantBad_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\LegacyBqlConstant\Sources\LegacyBqlConstantGood.cs" />
+    <Compile Include="Tests\StaticAnalysis\LegacyBqlField\LegacyBqlFieldTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\LegacyBqlField\Sources\LegacyBqlFieldBad.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\LegacyBqlField\Sources\LegacyBqlFieldBad_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\LegacyBqlField\Sources\LegacyBqlFieldGood.cs" />
     <Compile Include="Tests\StaticAnalysis\LongOperationStart\LongOperationInDataViewDelegateTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\DataViewFromGraphStartsLongOperation.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\DataViewFromGraphStartsLongOperationViaMethod.cs" />

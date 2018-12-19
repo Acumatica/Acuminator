@@ -444,4 +444,16 @@
   <data name="PX1093Title" xml:space="preserve">
     <value>Graph declaration should contain graph type as first type paramenter</value>
   </data>
+  <data name="PX1060Fix" xml:space="preserve">
+    <value>Make field strongly typed</value>
+  </data>
+  <data name="PX1060Title" xml:space="preserve">
+    <value>The {0} field should be strongly typed to be used in the fluent BQL queries</value>
+  </data>
+  <data name="PX1061Fix" xml:space="preserve">
+    <value>Make constant strongly typed</value>
+  </data>
+  <data name="PX1061Title" xml:space="preserve">
+    <value>The {0} constant should be strongly typed to be used in the fluent BQL queries</value>
+  </data>
 </root>

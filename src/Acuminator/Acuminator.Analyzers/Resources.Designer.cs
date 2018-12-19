@@ -818,6 +818,42 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Make field strongly typed.
+        /// </summary>
+        public static string PX1060Fix {
+            get {
+                return ResourceManager.GetString("PX1060Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} field should be strongly typed to be used in the fluent BQL queries.
+        /// </summary>
+        public static string PX1060Title {
+            get {
+                return ResourceManager.GetString("PX1060Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Make constant strongly typed.
+        /// </summary>
+        public static string PX1061Fix {
+            get {
+                return ResourceManager.GetString("PX1061Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} constant should be strongly typed to be used in the fluent BQL queries.
+        /// </summary>
+        public static string PX1061Title {
+            get {
+                return ResourceManager.GetString("PX1061Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The state of fields and actions can be configured only in the RowSelected event handler.
         /// </summary>
         public static string PX1070Title {
@@ -1007,24 +1043,6 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change graph type parameter.
-        /// </summary>
-        public static string PX1093Fix {
-            get {
-                return ResourceManager.GetString("PX1093Fix", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Graph declaration should contain graph type as first type paramenter.
-        /// </summary>
-        public static string PX1093Title {
-            get {
-                return ResourceManager.GetString("PX1093Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Add the missing attribute or attributes to the action handler.
         /// </summary>
         public static string PX1092Fix {
@@ -1039,6 +1057,24 @@ namespace Acuminator.Analyzers {
         public static string PX1092Title {
             get {
                 return ResourceManager.GetString("PX1092Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change graph type parameter.
+        /// </summary>
+        public static string PX1093Fix {
+            get {
+                return ResourceManager.GetString("PX1093Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Graph declaration should contain graph type as first type paramenter.
+        /// </summary>
+        public static string PX1093Title {
+            get {
+                return ResourceManager.GetString("PX1093Title", resourceCulture);
             }
         }
     }

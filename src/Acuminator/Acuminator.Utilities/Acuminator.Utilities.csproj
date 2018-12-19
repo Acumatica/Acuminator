@@ -117,6 +117,7 @@
     <Compile Include="Roslyn\Semantic\PXGraph\InstanceCreatedEventsAddHandlerWalker.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Infos\ProcessingDelegateInfo.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\ProcessingDelegatesWalker.cs" />
+    <Compile Include="Roslyn\Semantic\Symbols\BqlDataTypeSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\EventSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\BQLSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\ExceptionSymbols.cs" />
