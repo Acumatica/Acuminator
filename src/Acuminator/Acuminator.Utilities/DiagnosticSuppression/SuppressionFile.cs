@@ -13,7 +13,6 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		private const string TargetElement = "target";
 		private const string SyntaxNodeElement = "syntaxNode";
 		private const string SuppressionFileExtension = ".acuminator";
-		private static readonly char[] TrimCharacters = { ' ', '\t', '\n' };
 
 		internal string AssemblyName { get; }
 
@@ -23,9 +22,10 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		private HashSet<SuppressMessage> Messages { get; }
 
-		private SuppressionFile(string assemblyName, bool generateSuppressionBase, HashSet<SuppressMessage> messages)
+		private SuppressionFile(string assemblyName, string path, bool generateSuppressionBase, HashSet<SuppressMessage> messages)
 		{
 			AssemblyName = assemblyName;
+			Path = path;
 			GenerateSuppressionBase = generateSuppressionBase;
 			Messages = messages;
 		}
@@ -41,11 +41,11 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		}
 
 		internal static SuppressionFile Load(ISuppressionFileSystemService fileSystemService,
-			(string path, bool generateSuppressionBase) suppressionFile)
+			(string path, bool generateSuppressionBase) loadInfo)
 		{
-			suppressionFile.path.ThrowOnNull(nameof(suppressionFile.path));
+			loadInfo.path.ThrowOnNull(nameof(loadInfo.path));
 
-			string assemblyName = fileSystemService.GetFileName(suppressionFile.path);
+			string assemblyName = fileSystemService.GetFileName(loadInfo.path);
 
 			if (string.IsNullOrEmpty(assemblyName))
 			{
@@ -54,12 +54,12 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			var messages = new HashSet<SuppressMessage>();
 
-			if (!suppressionFile.generateSuppressionBase)
+			if (!loadInfo.generateSuppressionBase)
 			{
-				messages = LoadMessages(fileSystemService, suppressionFile.path);
+				messages = LoadMessages(fileSystemService, loadInfo.path);
 			}
 
-			return new SuppressionFile(assemblyName, suppressionFile.generateSuppressionBase, messages);
+			return new SuppressionFile(assemblyName, loadInfo.path, loadInfo.generateSuppressionBase, messages);
 		}
 
 		internal void AddMessage(SuppressMessage message)
@@ -67,7 +67,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			Messages.Add(message);
 		}
 
-		public XDocument MessagesToDocument()
+		internal XDocument MessagesToDocument()
 		{
 			var document = XDocument.Load(Path);
 			var root = document.Root;
@@ -94,8 +94,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		{
 			var id = element.Attribute(IdAttribute).Value;
 			var targetElement = element.Element(TargetElement);
-			var target = targetElement.Value?.Trim(TrimCharacters);
-			var syntaxNode = element.Element(SyntaxNodeElement).Value?.Trim(TrimCharacters);
+			var target = targetElement.Value;
+			var syntaxNode = element.Element(SyntaxNodeElement).Value;
 
 			return new SuppressMessage(id, target, syntaxNode);
 		}

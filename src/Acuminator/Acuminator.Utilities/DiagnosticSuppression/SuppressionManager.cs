@@ -1,6 +1,7 @@
 ﻿using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,7 +58,14 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		public static void SaveSuppressionBase()
 		{
-			foreach (var file in Instance._fileByAssembly.Values)
+			if (Instance == null)
+			{
+				throw new InvalidOperationException($"{nameof(SuppressionManager)} instance was not initialized");
+			}
+
+			var filesWithGeneratedSuppression = Instance._fileByAssembly.Values.Where(f => f.GenerateSuppressionBase);
+
+			foreach (var file in filesWithGeneratedSuppression)
 			{
 				Instance._fileSystemService.Save(file.MessagesToDocument(), file.Path);
 			}
@@ -113,6 +121,12 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			}
 
 			var diagnosticNode = rootNode.FindNode(diagnostic.Location.SourceSpan);
+
+			if (diagnosticNode is MemberDeclarationSyntax memberDeclaration)
+			{
+				var token = memberDeclaration.FindToken(diagnostic.Location.SourceSpan.Start);
+			}
+
 			if (diagnosticNode == null)
 			{
 				return (null, default);
@@ -138,7 +152,12 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			var id = diagnostic.Id;
 			var target = targetSymbol.ToDisplayString();
-			var syntaxNode = diagnosticNode.ToString();
+
+			// Use target in case of class declaration as we do not want to store the text of the entire class
+			var syntaxNode = diagnosticNode is ClassDeclarationSyntax && diagnosticNode.Equals(targetNode) ?
+				target :
+				// Replace \r symbol as XDocument does not preserve it in suppression file
+				diagnosticNode.ToString().Replace("\r", "");
 			var message = new SuppressMessage(id, target, syntaxNode);
 
 			return (assemblyName, message);
@@ -147,7 +166,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		private SyntaxNode FindTargetNode(SyntaxNode node)
 		{
 			return node
-				.Ancestors()
+				.AncestorsAndSelf()
 				.Where(a => _targetKinds.Contains(a.Kind()))
 				.FirstOrDefault();
 		}
