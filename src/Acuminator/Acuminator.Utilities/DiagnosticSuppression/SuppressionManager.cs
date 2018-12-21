@@ -121,12 +121,6 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			}
 
 			var diagnosticNode = rootNode.FindNode(diagnostic.Location.SourceSpan);
-
-			if (diagnosticNode is MemberDeclarationSyntax memberDeclaration)
-			{
-				var token = memberDeclaration.FindToken(diagnostic.Location.SourceSpan.Start);
-			}
-
 			if (diagnosticNode == null)
 			{
 				return (null, default);
@@ -153,9 +147,22 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			var id = diagnostic.Id;
 			var target = targetSymbol.ToDisplayString();
 
-			// Use target in case of class declaration as we do not want to store the text of the entire class
-			var syntaxNode = diagnosticNode is ClassDeclarationSyntax && diagnosticNode.Equals(targetNode) ?
-				target :
+			// Try to obtain token in case of member declaration syntax as we do not want to store the text of the entire declaration node
+			var token = default(SyntaxToken?);
+			if (diagnosticNode is MemberDeclarationSyntax memberDeclaration)
+			{
+				try
+				{
+					token = memberDeclaration.FindToken(diagnostic.Location.SourceSpan.Start);
+				}
+				catch (ArgumentOutOfRangeException)
+				{
+					token = null;
+				}
+			}
+
+			var syntaxNode = token != null ? //diagnosticNode is MemberDeclarationSyntax && diagnosticNode.Equals(targetNode) ?
+				token.ToString() :
 				// Replace \r symbol as XDocument does not preserve it in suppression file
 				diagnosticNode.ToString().Replace("\r", "");
 			var message = new SuppressMessage(id, target, syntaxNode);
