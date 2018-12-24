@@ -56,6 +56,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.InvalidViewUsageInProcessingDele
             var current = graph.Filter.Current;
 			var entryGraph = CreateInstance<UserEntry>();
 			var entryCurrent = entryGraph.AllUsers.Current;
+			var localView = new PXSelect<Users>(graph);
         }
     }
 

@@ -91,7 +91,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidViewUsageInProcessingDelega
                                         !typeSymbol.InheritsFromOrEqualsGeneric(_pxContext.BQL.PXFilter) &&
                                         !typeSymbol.OriginalDefinition.IsPXSetupBqlCommand(_pxContext);
 
-				if (isForbiddenSymbol && ContainedInProcessingGraph(nodeSymbol))
+				if (nodeSymbol.Kind != SymbolKind.Local && isForbiddenSymbol && ContainedInProcessingGraph(nodeSymbol))
 				{
 					ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1088_InvalidViewUsageInProcessingDelegate, node);
 				}
