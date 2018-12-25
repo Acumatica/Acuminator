@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
-using System.IO;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
 {
@@ -21,6 +20,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		internal bool GenerateSuppressionBase { get; }
 
 		private HashSet<SuppressMessage> Messages { get; }
+
+		public HashSet<SuppressMessage> MessagesCopy => new HashSet<SuppressMessage>(Messages);
 
 		private SuppressionFile(string assemblyName, string path, bool generateSuppressionBase, HashSet<SuppressMessage> messages)
 		{

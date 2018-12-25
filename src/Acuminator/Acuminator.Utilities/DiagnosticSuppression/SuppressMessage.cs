@@ -3,7 +3,7 @@ using System;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
 {
-	internal readonly struct SuppressMessage
+	public readonly struct SuppressMessage
 	{
 		public string Id { get; }
 

@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -95,6 +96,40 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			}
 
 			return true;
+		}
+
+		public static IEnumerable<SuppressionDiffResult> ValidateSuppressionBaseDiff()
+		{
+			if (Instance == null)
+			{
+				return Enumerable.Empty<SuppressionDiffResult>();
+			}
+
+			var diffList = new List<SuppressionDiffResult>();
+
+			foreach (var entry in Instance._fileByAssembly)
+			{
+				var currentFile = entry.Value;
+				var oldFile = SuppressionFile.Load(Instance._fileSystemService, (currentFile.Path, false));
+
+				diffList.Add(CompareFiles(oldFile, currentFile));
+			}
+
+			return diffList;
+		}
+
+		private static SuppressionDiffResult CompareFiles(SuppressionFile oldFile, SuppressionFile newFile)
+		{
+			var oldMessages = oldFile.MessagesCopy;
+			var newMessages = newFile.MessagesCopy;
+
+			var addedMessages = new HashSet<SuppressMessage>(newMessages);
+			addedMessages.ExceptWith(oldMessages);
+
+			var deletedMessages = new HashSet<SuppressMessage>(oldMessages);
+			deletedMessages.ExceptWith(newMessages);
+
+			return new SuppressionDiffResult(oldFile.AssemblyName, oldFile.Path, addedMessages, deletedMessages);
 		}
 
 		public static void ReportDiagnosticWithSuppressionCheck(SemanticModel semanticModel, Action<Diagnostic> reportDiagnostic, Diagnostic diagnostic)
