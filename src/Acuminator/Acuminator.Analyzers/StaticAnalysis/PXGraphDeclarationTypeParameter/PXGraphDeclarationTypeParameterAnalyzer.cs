@@ -53,7 +53,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 
 			var graphTypeArgument = context.SemanticModel.GetTypeInfo(graphArgumentIdentifier).Type;
 
-			if (typeSymbol.Equals(graphTypeArgument))
+			if (graphTypeArgument.Kind == SymbolKind.TypeParameter || typeSymbol.Equals(graphTypeArgument))
 			{
 				return;
 			}
