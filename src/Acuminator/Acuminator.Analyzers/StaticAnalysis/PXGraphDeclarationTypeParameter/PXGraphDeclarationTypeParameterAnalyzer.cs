@@ -46,14 +46,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 				return;
 			}
 
+			// Get last identifier to handle cases like SO.SOSetupMaint
 			var graphArgumentIdentifier = graphBaseNode
 				.DescendantNodes()
 				.OfType<IdentifierNameSyntax>()
-				.First();
+				.Last();
 
 			var graphTypeArgument = context.SemanticModel.GetTypeInfo(graphArgumentIdentifier).Type;
 
-			if (graphTypeArgument.Kind == SymbolKind.TypeParameter || typeSymbol.Equals(graphTypeArgument))
+			if (typeSymbol.Equals(graphTypeArgument) || graphTypeArgument?.Kind == SymbolKind.TypeParameter)
 			{
 				return;
 			}

@@ -3,16 +3,16 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
 {
 	public class SuppressionManager
 	{
 		private readonly Dictionary<string, SuppressionFile> _fileByAssembly = new Dictionary<string, SuppressionFile>();
-		private readonly HashSet<SyntaxKind> _targetKinds = new HashSet<SyntaxKind>(new[] {
+		private static HashSet<SyntaxKind> _targetKinds = new HashSet<SyntaxKind>(new[] {
 			SyntaxKind.ClassDeclaration,
 			SyntaxKind.MethodDeclaration,
 			SyntaxKind.ConstructorDeclaration,
@@ -72,9 +72,11 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			}
 		}
 
-		private bool IsSuppressed(SemanticModel semanticModel, Diagnostic diagnostic)
+		private bool IsSuppressed(SemanticModel semanticModel, Diagnostic diagnostic, CancellationToken cancellation)
 		{
-			var (assembly, message) = GetSuppressionInfo(semanticModel, diagnostic);
+			cancellation.ThrowIfCancellationRequested();
+
+			var (assembly, message) = GetSuppressionInfo(semanticModel, diagnostic, cancellation);
 
 			if (assembly == null)
 			{
@@ -132,9 +134,12 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			return new SuppressionDiffResult(oldFile.AssemblyName, oldFile.Path, addedMessages, deletedMessages);
 		}
 
-		public static void ReportDiagnosticWithSuppressionCheck(SemanticModel semanticModel, Action<Diagnostic> reportDiagnostic, Diagnostic diagnostic)
+		public static void ReportDiagnosticWithSuppressionCheck(SemanticModel semanticModel, Action<Diagnostic> reportDiagnostic,
+			Diagnostic diagnostic, CancellationToken cancellation)
 		{
-			if (Instance?.IsSuppressed(semanticModel, diagnostic) == true)
+			cancellation.ThrowIfCancellationRequested();
+
+			if (Instance?.IsSuppressed(semanticModel, diagnostic, cancellation) == true)
 			{
 				return;
 			}
@@ -142,14 +147,17 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			reportDiagnostic(diagnostic);
 		}
 
-		private (string Assembly, SuppressMessage Message) GetSuppressionInfo(SemanticModel semanticModel, Diagnostic diagnostic)
+		private static (string Assembly, SuppressMessage Message) GetSuppressionInfo(
+			SemanticModel semanticModel, Diagnostic diagnostic, CancellationToken cancellation)
 		{
+			cancellation.ThrowIfCancellationRequested();
+
 			if (semanticModel == null || diagnostic?.Location == null)
 			{
 				return (null, default);
 			}
 
-			var rootNode = semanticModel.SyntaxTree.GetRoot();
+			var rootNode = semanticModel.SyntaxTree.GetRoot(cancellation);
 			if (rootNode == null)
 			{
 				return (null, default);
@@ -167,7 +175,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				return (null, default);
 			}
 
-			var targetSymbol = semanticModel.GetDeclaredSymbol(targetNode);
+			var targetSymbol = semanticModel.GetDeclaredSymbol(targetNode, cancellation);
 			if (targetSymbol == null)
 			{
 				return (null, default);
@@ -182,7 +190,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			var id = diagnostic.Id;
 			var target = targetSymbol.ToDisplayString();
 
-			// Try to obtain token in case of member declaration syntax as we do not want to store the text of the entire declaration node
+			// Try to obtain token in case of member declaration syntax as we do not want to store the text
+			// of the entire declaration node
 			var token = default(SyntaxToken?);
 			if (diagnosticNode is MemberDeclarationSyntax memberDeclaration)
 			{
@@ -196,7 +205,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				}
 			}
 
-			var syntaxNode = token != null ? //diagnosticNode is MemberDeclarationSyntax && diagnosticNode.Equals(targetNode) ?
+			var syntaxNode = token != null ?
 				token.ToString() :
 				// Replace \r symbol as XDocument does not preserve it in suppression file
 				diagnosticNode.ToString().Replace("\r", "");
@@ -205,12 +214,18 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			return (assemblyName, message);
 		}
 
-		private SyntaxNode FindTargetNode(SyntaxNode node)
+		private static SyntaxNode FindTargetNode(SyntaxNode node)
 		{
-			return node
+			var targetNode = node
 				.AncestorsAndSelf()
 				.Where(a => _targetKinds.Contains(a.Kind()))
 				.FirstOrDefault();
+
+			// Use first variable in case of field declaration as it may contain multiple variables and therefore
+			// cannot be used to obtain declared symbol
+			return targetNode is FieldDeclarationSyntax fieldDeclaration ?
+				fieldDeclaration.Declaration?.Variables[0] :
+				targetNode;
 		}
 	}
 }

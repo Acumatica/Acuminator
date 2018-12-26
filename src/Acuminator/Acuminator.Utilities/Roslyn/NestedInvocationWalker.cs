@@ -148,7 +148,7 @@ namespace Acuminator.Utilities.Roslyn
 				var diagnostic = Diagnostic.Create(diagnosticDescriptor, nodeToReport.GetLocation(), messageArgs);
 				var semanticModel = GetSemanticModel(nodeToReport.SyntaxTree);
 
-				SuppressionManager.ReportDiagnosticWithSuppressionCheck(semanticModel, reportDiagnostic, diagnostic);
+				SuppressionManager.ReportDiagnosticWithSuppressionCheck(semanticModel, reportDiagnostic, diagnostic, CancellationToken);
 				_reportedDiagnostics.Add(diagnosticKey);
 			}
 		}
