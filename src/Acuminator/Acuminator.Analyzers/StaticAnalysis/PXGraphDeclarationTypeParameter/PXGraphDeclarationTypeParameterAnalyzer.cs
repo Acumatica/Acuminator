@@ -40,15 +40,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 				return;
 			}
 
-			var graphBaseNode = GetBaseGraphTypeNode(context, pxContext, classDeclaration.BaseList.Types);
-			if (graphBaseNode == null)
+			var graphArgumentNode = GetBaseGraphTypeNode(context, pxContext, classDeclaration.BaseList.Types);
+			if (graphArgumentNode == null)
 			{
 				return;
 			}
 
 			// Get last identifier to handle cases like SO.SOSetupMaint
-			var graphArgumentIdentifier = graphBaseNode
-				.DescendantNodes()
+			var graphArgumentIdentifier = graphArgumentNode
+				.DescendantNodesAndSelf()
 				.OfType<IdentifierNameSyntax>()
 				.Last();
 
@@ -63,7 +63,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 				Diagnostic.Create(Descriptors.PX1093_GraphDeclarationViolation, graphArgumentIdentifier.GetLocation()));
 		}
 
-		private BaseTypeSyntax GetBaseGraphTypeNode(SyntaxNodeAnalysisContext context, PXContext pxContext,
+		private TypeSyntax GetBaseGraphTypeNode(SyntaxNodeAnalysisContext context, PXContext pxContext,
 			SeparatedSyntaxList<BaseTypeSyntax> baseTypes)
 		{
 			foreach (var typeSyntax in baseTypes)
@@ -83,10 +83,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 				var isGraphBaseType = baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraph) ||
 					baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraphDac) ||
 					baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraphDacField);
-				if (isGraphBaseType)
+				if (!isGraphBaseType)
 				{
-					return typeSyntax;
+					continue;
 				}
+
+				return typeSyntax
+					.DescendantNodes()
+					.OfType<TypeArgumentListSyntax>()
+					.FirstOrDefault()
+					?.Arguments
+					.FirstOrDefault();
 			}
 
 			return null;
