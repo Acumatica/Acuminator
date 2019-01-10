@@ -19,6 +19,9 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			if (variableName.IsNullOrWhiteSpace())
 				return false;
 
+			if (containingMethod.Body == null)
+				return false;
+
 			DataFlowAnalysis dataFlowAnalysis = semanticModel.AnalyzeDataFlow(containingMethod.Body);
 
 			if (dataFlowAnalysis == null || !dataFlowAnalysis.Succeeded)
