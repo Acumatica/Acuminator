@@ -3,6 +3,7 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using CommonServiceLocator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -26,11 +27,32 @@ namespace Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator
 
         protected abstract void AnalyzeSymbol(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings);
 
-        internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		private void AnalyzeSymbolHandleAggregateException(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings)
+		{
+			try
+			{
+				AnalyzeSymbol(context, pxContext, settings);
+			}
+			catch (AggregateException e)
+			{
+				var operationCanceledException = e.InnerExceptions
+					.OfType<OperationCanceledException>()
+					.FirstOrDefault();
+
+				if (operationCanceledException != null)
+				{
+					throw operationCanceledException;
+				}
+
+				throw;
+			}
+		}
+
+		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
         {
             var codeAnalysisSettings = GetCodeAnalysisSettings();
 
-            compilationStartContext.RegisterSymbolAction(c => AnalyzeSymbol(c, pxContext, codeAnalysisSettings), SymbolKind);
+            compilationStartContext.RegisterSymbolAction(c => AnalyzeSymbolHandleAggregateException(c, pxContext, codeAnalysisSettings), SymbolKind);
             // TODO: Enable this operation action after migration to Roslyn v2
             //compilationStartContext.RegisterOperationAction(c => AnalyzeLambda(c, pxContext, codeAnalysisSettings), OperationKind.LambdaExpression);
         }
