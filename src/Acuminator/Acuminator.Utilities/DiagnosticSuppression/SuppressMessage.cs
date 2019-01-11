@@ -23,8 +23,6 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		/// </summary>
 		public string SyntaxNode { get; }
 
-		private readonly int _hashCode;
-
 		public SuppressMessage(string id, string target, string syntaxNode)
 		{
 			id.ThrowOnNull(nameof(id));
@@ -34,13 +32,20 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			Id = id;
 			Target = target;
 			SyntaxNode = syntaxNode;
-
-			_hashCode = $"{Id}_{Target}_{SyntaxNode}".GetHashCode();
 		}
 
 		public override int GetHashCode()
 		{
-			return _hashCode;
+			int hash = 17;
+
+			unchecked
+			{
+				hash = 23 * hash + Id.GetHashCode();
+				hash = 23 * hash + Target.GetHashCode();
+				hash = 23 * hash + SyntaxNode.GetHashCode();
+			}
+
+			return hash;
 		}
 
 		public bool Equals(SuppressMessage other)
