@@ -105,10 +105,13 @@
     <Compile Include="Graph\Graph constructor call, typo in view delegate and invalid action handler signature\SOOrderEntry.cs" />
     <Compile Include="Graph\View Order\SOOrderProcessing.cs" />
     <Compile Include="DAC\SOSetup.cs" />
+    <Compile Include="Suppression\SOOrderBalanced.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <AdditionalFiles Include="PX.Objects.HackathonDemo.acuminator" />
+    <AdditionalFiles Include="PX.Objects.HackathonDemo.acuminator">
+      <SubType>Designer</SubType>
+    </AdditionalFiles>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

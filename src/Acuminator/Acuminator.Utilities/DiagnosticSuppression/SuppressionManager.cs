@@ -129,8 +129,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		private static SuppressionDiffResult CompareFiles(SuppressionFile oldFile, SuppressionFile newFile)
 		{
-			var oldMessages = oldFile.MessagesCopy;
-			var newMessages = newFile.MessagesCopy;
+			var oldMessages = oldFile.CopyMessages();
+			var newMessages = newFile.CopyMessages();
 
 			var addedMessages = new HashSet<SuppressMessage>(newMessages);
 			addedMessages.ExceptWith(oldMessages);

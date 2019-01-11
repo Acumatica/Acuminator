@@ -3,12 +3,24 @@ using System;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
 {
-	public readonly struct SuppressMessage
+	/// <summary>
+	/// The class holds information about suppression of reported Acuminator's diagnostic 
+	/// </summary>
+	public readonly struct SuppressMessage : IEquatable<SuppressMessage>
 	{
+		/// <summary>
+		/// Suppressed diagnostic Id
+		/// </summary>
 		public string Id { get; }
 
+		/// <summary>
+		/// Description of a member declaration where suppressed diagnostic is located
+		/// </summary>
 		public string Target { get; }
 
+		/// <summary>
+		/// Syntax node of a suppressed diagnostic
+		/// </summary>
 		public string SyntaxNode { get; }
 
 		private readonly int _hashCode;
@@ -31,6 +43,26 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			return _hashCode;
 		}
 
+		public bool Equals(SuppressMessage other)
+		{
+			if (!other.Id.Equals(Id, StringComparison.Ordinal))
+			{
+				return false;
+			}
+
+			if (!other.Target.Equals(Target, StringComparison.Ordinal))
+			{
+				return false;
+			}
+
+			if (!other.SyntaxNode.Equals(SyntaxNode, StringComparison.Ordinal))
+			{
+				return false;
+			}
+
+			return true;
+		}
+
 		public override bool Equals(object obj)
 		{
 			if (!(obj is SuppressMessage message))
@@ -38,22 +70,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				return false;
 			}
 
-			if (!message.Id.Equals(Id, StringComparison.Ordinal))
-			{
-				return false;
-			}
-
-			if (!message.Target.Equals(Target, StringComparison.Ordinal))
-			{
-				return false;
-			}
-
-			if (!message.SyntaxNode.Equals(SyntaxNode, StringComparison.Ordinal))
-			{
-				return false;
-			}
-
-			return true;
+			return Equals(message);
 		}
 	}
 }

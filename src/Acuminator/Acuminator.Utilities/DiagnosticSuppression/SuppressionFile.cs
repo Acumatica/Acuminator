@@ -24,7 +24,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		private HashSet<SuppressMessage> Messages { get; }
 
-		public HashSet<SuppressMessage> MessagesCopy => new HashSet<SuppressMessage>(Messages);
+		public HashSet<SuppressMessage> CopyMessages() => new HashSet<SuppressMessage>(Messages);
 
 		private SuppressionFile(string assemblyName, string path, bool generateSuppressionBase, HashSet<SuppressMessage> messages)
 		{
