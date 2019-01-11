@@ -17,6 +17,9 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		internal string Path { get; }
 
+		/// <summary>
+		/// Indicates whether to generate errors suppression base to suppression file or not
+		/// </summary>
 		internal bool GenerateSuppressionBase { get; }
 
 		private HashSet<SuppressMessage> Messages { get; }
@@ -42,11 +45,12 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		}
 
 		internal static SuppressionFile Load(ISuppressionFileSystemService fileSystemService,
-			(string path, bool generateSuppressionBase) loadInfo)
+			(string Path, bool GenerateSuppressionBase) loadInfo)
 		{
-			loadInfo.path.ThrowOnNull(nameof(loadInfo.path));
+			fileSystemService.ThrowOnNull(nameof(fileSystemService));
+			loadInfo.Path.ThrowOnNull(nameof(loadInfo.Path));
 
-			string assemblyName = fileSystemService.GetFileName(loadInfo.path);
+			string assemblyName = fileSystemService.GetFileName(loadInfo.Path);
 
 			if (string.IsNullOrEmpty(assemblyName))
 			{
@@ -55,12 +59,12 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			var messages = new HashSet<SuppressMessage>();
 
-			if (!loadInfo.generateSuppressionBase)
+			if (!loadInfo.GenerateSuppressionBase)
 			{
-				messages = LoadMessages(fileSystemService, loadInfo.path);
+				messages = LoadMessages(fileSystemService, loadInfo.Path);
 			}
 
-			return new SuppressionFile(assemblyName, loadInfo.path, loadInfo.generateSuppressionBase, messages);
+			return new SuppressionFile(assemblyName, loadInfo.Path, loadInfo.GenerateSuppressionBase, messages);
 		}
 
 		internal void AddMessage(SuppressMessage message)

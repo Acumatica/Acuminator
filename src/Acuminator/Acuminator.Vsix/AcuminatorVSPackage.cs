@@ -186,7 +186,7 @@ namespace Acuminator.Vsix
 			var workspace = this.GetVSWorkspace();
 			var additionalFiles = workspace.CurrentSolution.Projects
 				.SelectMany(p => p.AdditionalDocuments)
-				.Select(d => (d.FilePath, false));
+				.Select(d => (path: d.FilePath, generateSuppressionBase: false));
 
 			SuppressionManager.Init(new SuppressionFileSystemService(), additionalFiles);
 		}

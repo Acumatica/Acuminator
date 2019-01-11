@@ -1,8 +1,7 @@
-﻿using Acuminator.Utilities.DiagnosticSuppression;
-using System.Xml.Linq;
-using System;
-using Acuminator.Utilities.Common;
+﻿using Acuminator.Utilities.Common;
+using Acuminator.Utilities.DiagnosticSuppression;
 using System.IO;
+using System.Xml.Linq;
 
 namespace Acuminator.Vsix.Utils
 {
@@ -10,10 +9,7 @@ namespace Acuminator.Vsix.Utils
 	{
 		public XDocument Load(string path)
 		{
-			if (string.IsNullOrEmpty(path))
-			{
-				throw new ArgumentNullException(nameof(path));
-			}
+			path.ThrowOnNullOrWhiteSpace(nameof(path));
 
 			return XDocument.Load(path);
 		}
@@ -21,21 +17,14 @@ namespace Acuminator.Vsix.Utils
 		public void Save(XDocument document, string path)
 		{
 			document.ThrowOnNull(nameof(document));
-
-			if (string.IsNullOrEmpty(path))
-			{
-				throw new ArgumentNullException(nameof(path));
-			}
+			path.ThrowOnNullOrWhiteSpace(nameof(path));
 
 			document.Save(path);
 		}
 
 		public string GetFileName(string path)
 		{
-			if (string.IsNullOrEmpty(path))
-			{
-				throw new ArgumentNullException(nameof(path));
-			}
+			path.ThrowOnNullOrWhiteSpace(nameof(path));
 
 			return Path.GetFileNameWithoutExtension(path);
 		}

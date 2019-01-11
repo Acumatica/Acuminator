@@ -23,7 +23,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		private static SuppressionManager Instance { get; set; }
 
-		public SuppressionManager(ISuppressionFileSystemService fileSystemService,
+		private SuppressionManager(ISuppressionFileSystemService fileSystemService,
 			IEnumerable<(string path, bool generateSuppressionBase)> suppressionFiles)
 		{
 			fileSystemService.ThrowOnNull(nameof(fileSystemService));
@@ -50,9 +50,16 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		}
 
 		public static void Init(ISuppressionFileSystemService fileSystemService,
-			IEnumerable<(string path, bool generateSuppressionBase)> additionalFiles)
+			IEnumerable<(string Path, bool GenerateSuppressionBase)> additionalFiles)
 		{
-			var suppressionFiles = additionalFiles.Where(f => SuppressionFile.IsSuppressionFile(f.path));
+			additionalFiles.ThrowOnNull(nameof(additionalFiles));
+
+			var suppressionFiles = additionalFiles.Where(f => SuppressionFile.IsSuppressionFile(f.Path));
+
+			if (Instance != null)
+			{
+				throw new InvalidOperationException($"{typeof(SuppressionManager).Name} has been already initialized");
+			}
 
 			Instance = new SuppressionManager(fileSystemService, suppressionFiles);
 		}
