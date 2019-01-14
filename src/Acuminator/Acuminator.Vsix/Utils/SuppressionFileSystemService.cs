@@ -1,6 +1,7 @@
 ﻿using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using System.IO;
+using System.Security;
 using System.Xml.Linq;
 
 namespace Acuminator.Vsix.Utils
@@ -11,7 +12,18 @@ namespace Acuminator.Vsix.Utils
 		{
 			path.ThrowOnNullOrWhiteSpace(nameof(path));
 
-			return XDocument.Load(path);
+			try
+			{
+				return XDocument.Load(path);
+			}
+			catch (SecurityException)
+			{
+			}
+			catch (IOException)
+			{
+			}
+
+			return null;
 		}
 
 		public void Save(XDocument document, string path)
@@ -27,6 +39,17 @@ namespace Acuminator.Vsix.Utils
 			path.ThrowOnNullOrWhiteSpace(nameof(path));
 
 			return Path.GetFileNameWithoutExtension(path);
+		}
+
+		public ISuppressionFileWatcherService CreateWatcher(string path)
+		{
+			var directory = Path.GetDirectoryName(path);
+			var file = Path.GetFileName(path);
+			var watcher = new FileSystemWatcher(directory, file);
+
+			watcher.NotifyFilter = NotifyFilters.LastWrite;
+
+			return new SuppressionFileWatcherService(watcher);
 		}
 	}
 }

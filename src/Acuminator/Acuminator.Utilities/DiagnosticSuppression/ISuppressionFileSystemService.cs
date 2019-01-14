@@ -8,6 +8,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		void Save(XDocument document, string path);
 
+		ISuppressionFileWatcherService CreateWatcher(string path);
+
 		string GetFileName(string path);
 	}
 }

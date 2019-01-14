@@ -1,6 +1,7 @@
 ﻿using Acuminator.Utilities.Common;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Linq;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
@@ -26,12 +27,25 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		public HashSet<SuppressMessage> CopyMessages() => new HashSet<SuppressMessage>(Messages);
 
-		private SuppressionFile(string assemblyName, string path, bool generateSuppressionBase, HashSet<SuppressMessage> messages)
+		public event Action<object, SuppressionFileEventArgs> Changed;
+
+		private SuppressionFile(string assemblyName, string path, bool generateSuppressionBase,
+			HashSet<SuppressMessage> messages, ISuppressionFileWatcherService watcher)
 		{
 			AssemblyName = assemblyName;
 			Path = path;
 			GenerateSuppressionBase = generateSuppressionBase;
 			Messages = messages;
+
+			if (watcher != null)
+			{
+				watcher.Changed += OnChanged;
+			}
+		}
+
+		private void OnChanged(object sender, SuppressionFileEventArgs e)
+		{
+			Changed?.Invoke(sender, e);
 		}
 
 		internal bool ContainsMessage(SuppressMessage message)
@@ -51,7 +65,6 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			loadInfo.Path.ThrowOnNull(nameof(loadInfo.Path));
 
 			string assemblyName = fileSystemService.GetFileName(loadInfo.Path);
-
 			if (string.IsNullOrEmpty(assemblyName))
 			{
 				throw new FormatException("Acuminator suppression file name cannot be empty");
@@ -64,7 +77,9 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				messages = LoadMessages(fileSystemService, loadInfo.Path);
 			}
 
-			return new SuppressionFile(assemblyName, loadInfo.Path, loadInfo.GenerateSuppressionBase, messages);
+			var fileWatcher = fileSystemService.CreateWatcher(loadInfo.Path);
+
+			return new SuppressionFile(assemblyName, loadInfo.Path, loadInfo.GenerateSuppressionBase, messages, fileWatcher);
 		}
 
 		internal void AddMessage(SuppressMessage message)
@@ -107,16 +122,16 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		private static HashSet<SuppressMessage> LoadMessages(ISuppressionFileSystemService fileSystemService, string path)
 		{
-			var messages = new HashSet<SuppressMessage>();
 			var document = fileSystemService.Load(path);
-			var messageElements = document.Root.Elements(SuppressMessageElement);
 
-			foreach (var element in messageElements)
+			if (document == null)
 			{
-				messages.Add(MessageFromElement(element));
+				return new HashSet<SuppressMessage>();
 			}
 
-			return messages;
+			return document.Root.Elements(SuppressMessageElement)
+				.Select(e => MessageFromElement(e))
+				.ToHashSet();
 		}
 	}
 }

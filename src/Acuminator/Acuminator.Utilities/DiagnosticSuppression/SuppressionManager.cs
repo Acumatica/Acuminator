@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -11,7 +12,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 {
 	public class SuppressionManager
 	{
-		private readonly Dictionary<string, SuppressionFile> _fileByAssembly = new Dictionary<string, SuppressionFile>();
+		private readonly ConcurrentDictionary<string, SuppressionFile> _fileByAssembly = new ConcurrentDictionary<string, SuppressionFile>();
+
 		private static HashSet<SyntaxKind> _targetKinds = new HashSet<SyntaxKind>(new[] {
 			SyntaxKind.ClassDeclaration,
 			SyntaxKind.MethodDeclaration,
@@ -19,6 +21,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			SyntaxKind.PropertyDeclaration,
 			SyntaxKind.FieldDeclaration
 		});
+
 		private readonly ISuppressionFileSystemService _fileSystemService;
 
 		private static SuppressionManager Instance { get; set; }
@@ -30,23 +33,38 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			_fileSystemService = fileSystemService;
 
-			foreach (var file in suppressionFiles)
+			foreach (var fileInfo in suppressionFiles)
 			{
-				if (!SuppressionFile.IsSuppressionFile(file.path))
+				if (!SuppressionFile.IsSuppressionFile(fileInfo.path))
 				{
-					throw new ArgumentException($"File {file} is not a suppression file");
+					throw new ArgumentException($"File {fileInfo.path} is not a suppression file");
 				}
 
-				var suppressionFile = SuppressionFile.Load(_fileSystemService, file);
-				var assemblyName = suppressionFile.AssemblyName;
+				var (file, assembly) = CreateFileTrackChanges(fileInfo);
 
-				if (_fileByAssembly.ContainsKey(assemblyName))
+				if (!_fileByAssembly.TryAdd(assembly, file))
 				{
-					throw new InvalidOperationException($"Suppression information for assembly {assemblyName} has been already loaded");
+					throw new InvalidOperationException($"Suppression information for assembly {assembly} has been already loaded");
 				}
-
-				_fileByAssembly.Add(assemblyName, suppressionFile);
 			}
+		}
+
+		private (SuppressionFile File, string Assembly) CreateFileTrackChanges((string Path, bool GenerateSuppressionBase) fileInfo)
+		{
+			var suppressionFile = SuppressionFile.Load(_fileSystemService, fileInfo);
+			var assemblyName = suppressionFile.AssemblyName;
+
+			suppressionFile.Changed += ReloadFile;
+
+			return (suppressionFile, assemblyName);
+		}
+
+		public void ReloadFile(object sender, SuppressionFileEventArgs e)
+		{
+			var fileInfo = (path: e.FullPath, generateSuppressionBase: false);
+			var (file, assembly) = CreateFileTrackChanges(fileInfo);
+
+			_fileByAssembly[assembly] = file;
 		}
 
 		public static void Init(ISuppressionFileSystemService fileSystemService,
@@ -90,16 +108,21 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				return false;
 			}
 
-			var fileExists = _fileByAssembly.TryGetValue(assembly, out SuppressionFile file);
+			var file = _fileByAssembly.GetOrAdd(assembly, (SuppressionFile)null);
 
-			if (fileExists && file.GenerateSuppressionBase)
+			if (file == null)
+			{
+				return false;
+			}
+
+			if (file.GenerateSuppressionBase)
 			{
 				file.AddMessage(message);
 
 				return true;
 			}
 
-			if (!fileExists || !file.ContainsMessage(message))
+			if (!file.ContainsMessage(message))
 			{
 				return false;
 			}
