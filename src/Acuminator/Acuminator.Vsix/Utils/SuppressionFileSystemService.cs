@@ -45,9 +45,11 @@ namespace Acuminator.Vsix.Utils
 		{
 			var directory = Path.GetDirectoryName(path);
 			var file = Path.GetFileName(path);
-			var watcher = new FileSystemWatcher(directory, file);
-
-			watcher.NotifyFilter = NotifyFilters.LastWrite;
+			var watcher = new FileSystemWatcher(directory, file)
+			{
+				NotifyFilter = NotifyFilters.Size | NotifyFilters.LastWrite | NotifyFilters.CreationTime,
+				EnableRaisingEvents = true
+			};
 
 			return new SuppressionFileWatcherService(watcher);
 		}

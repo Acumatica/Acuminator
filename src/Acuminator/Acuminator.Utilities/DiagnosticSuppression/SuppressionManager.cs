@@ -62,9 +62,16 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		public void ReloadFile(object sender, SuppressionFileEventArgs e)
 		{
 			var fileInfo = (path: e.FullPath, generateSuppressionBase: false);
-			var (file, assembly) = CreateFileTrackChanges(fileInfo);
+			var (newFile, assembly) = CreateFileTrackChanges(fileInfo);
+			var oldFile = _fileByAssembly.GetOrAdd(assembly, (SuppressionFile)null);
 
-			_fileByAssembly[assembly] = file;
+			// We need to unsubscribe from the old file's event because it can be fired until the link to the file will be collected by GC
+			if (oldFile != null)
+			{
+				oldFile.Changed -= ReloadFile;
+			}
+
+			_fileByAssembly[assembly] = newFile;
 		}
 
 		public static void Init(ISuppressionFileSystemService fileSystemService,
