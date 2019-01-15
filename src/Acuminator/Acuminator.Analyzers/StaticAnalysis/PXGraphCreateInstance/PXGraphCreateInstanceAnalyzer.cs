@@ -1,14 +1,14 @@
-﻿using System.Collections.Immutable;
-using Acuminator.Utilities.Roslyn;
+﻿using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+	[DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class PXGraphCreateInstanceAnalyzer : PXDiagnosticAnalyzer
     {
         private class Walker : CSharpSyntaxWalker
@@ -45,7 +45,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 
                 if (descriptor != null)
                 {
-                    _context.ReportDiagnostic(Diagnostic.Create(descriptor, node.GetLocation()));
+                    _context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(descriptor, node.GetLocation()));
                 }
 
                 base.VisitObjectCreationExpression(node);

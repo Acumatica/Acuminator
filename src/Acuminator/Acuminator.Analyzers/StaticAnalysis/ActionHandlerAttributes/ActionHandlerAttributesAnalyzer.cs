@@ -1,8 +1,10 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
@@ -29,7 +31,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
         }
 
 		private void CheckActionHandler(SymbolAnalysisContext context, PXContext pxContext,
-			IMethodSymbol symbol, SyntaxNode node)
+			IMethodSymbol symbol, MethodDeclarationSyntax node)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -71,10 +73,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 				.Add(ActionHandlerAttributesFix.FixOptionKey, fixOption.ToString());
 			var diagnostic = Diagnostic.Create(
 				Descriptors.PX1092_MissingAttributesOnActionHandler,
-				node.GetLocation(),
+				node.Identifier.GetLocation(),
 				properties);
 
-			context.ReportDiagnostic(diagnostic);
+			context.ReportDiagnosticWithSuppressionCheck(diagnostic);
 		}
     }
 }

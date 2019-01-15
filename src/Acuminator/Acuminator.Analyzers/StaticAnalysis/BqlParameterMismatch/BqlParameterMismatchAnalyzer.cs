@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
@@ -295,15 +296,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 				if (parametersCounter.OptionalParametersCount == 0)
 				{
-					syntaxContext.ReportDiagnostic(
-						Diagnostic.Create(Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams, location,
-										  methodSymbol.Name, minCount));
+					syntaxContext.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(
+						Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams,
+						location, methodSymbol.Name, minCount));
 				}
 				else
 				{
-					syntaxContext.ReportDiagnostic(
-						Diagnostic.Create(Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams, location,
-										  methodSymbol.Name, minCount, maxCount));
+					syntaxContext.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(
+						Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams,
+						location, methodSymbol.Name, minCount, maxCount));
 				}
 			}
 		}

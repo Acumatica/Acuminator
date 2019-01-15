@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -258,7 +259,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 			if (propertyTypeLocation != null)
 			{
-				symbolContext.ReportDiagnostic(
+				symbolContext.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(
 						Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, propertyTypeLocation, attributeLocation.ToEnumerable(),
 						diagnosticProperties));
@@ -266,7 +267,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 			if (attributeLocation != null)
 			{
-				symbolContext.ReportDiagnostic(
+				symbolContext.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(
 						Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, attributeLocation, propertyTypeLocation.ToEnumerable(),
 						diagnosticProperties));
@@ -282,7 +283,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 			foreach (Location attrLocation in attributeLocations.Where(location => location != null))
 			{
-				symbolContext.ReportDiagnostic(
+				symbolContext.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(diagnosticDescriptor, attrLocation));
 			}
 		}

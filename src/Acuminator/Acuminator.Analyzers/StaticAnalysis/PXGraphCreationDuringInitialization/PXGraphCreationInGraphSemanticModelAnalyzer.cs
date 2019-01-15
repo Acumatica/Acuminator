@@ -10,7 +10,7 @@ using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization
 {
-    public class PXGraphCreationInGraphSemanticModelAnalyzer : PXGraphAggregatedAnalyzerBase
+	public class PXGraphCreationInGraphSemanticModelAnalyzer : PXGraphAggregatedAnalyzerBase
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(

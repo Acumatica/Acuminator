@@ -1,4 +1,5 @@
-﻿using Acuminator.Utilities.Roslyn.Semantic;
+﻿using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -39,28 +40,30 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 				return;
 			}
 
-			var graphBaseNode = GetBaseGraphTypeNode(context, pxContext, classDeclaration.BaseList.Types);
-			if (graphBaseNode == null)
+			var graphArgumentNode = GetBaseGraphTypeNode(context, pxContext, classDeclaration.BaseList.Types);
+			if (graphArgumentNode == null)
 			{
 				return;
 			}
 
-			var graphArgumentIdentifier = graphBaseNode
-				.DescendantNodes()
+			// Get last identifier to handle cases like SO.SOSetupMaint
+			var graphArgumentIdentifier = graphArgumentNode
+				.DescendantNodesAndSelf()
 				.OfType<IdentifierNameSyntax>()
-				.First();
+				.Last();
 
 			var graphTypeArgument = context.SemanticModel.GetTypeInfo(graphArgumentIdentifier).Type;
 
-			if (typeSymbol.Equals(graphTypeArgument))
+			if (typeSymbol.Equals(graphTypeArgument) || graphTypeArgument?.Kind == SymbolKind.TypeParameter)
 			{
 				return;
 			}
 
-			context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1093_GraphDeclarationViolation, graphArgumentIdentifier.GetLocation()));
+			context.ReportDiagnosticWithSuppressionCheck(
+				Diagnostic.Create(Descriptors.PX1093_GraphDeclarationViolation, graphArgumentIdentifier.GetLocation()));
 		}
 
-		private BaseTypeSyntax GetBaseGraphTypeNode(SyntaxNodeAnalysisContext context, PXContext pxContext,
+		private TypeSyntax GetBaseGraphTypeNode(SyntaxNodeAnalysisContext context, PXContext pxContext,
 			SeparatedSyntaxList<BaseTypeSyntax> baseTypes)
 		{
 			foreach (var typeSyntax in baseTypes)
@@ -80,10 +83,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 				var isGraphBaseType = baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraph) ||
 					baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraphDac) ||
 					baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraphDacField);
-				if (isGraphBaseType)
+				if (!isGraphBaseType)
 				{
-					return typeSyntax;
+					continue;
 				}
+
+				return typeSyntax
+					.DescendantNodes()
+					.OfType<TypeArgumentListSyntax>()
+					.FirstOrDefault()
+					?.Arguments
+					.FirstOrDefault();
 			}
 
 			return null;

@@ -23,10 +23,13 @@ using Acuminator.Vsix.Settings;
 using Acuminator.Vsix.Logger;
 using Acuminator.Vsix.ToolWindows.CodeMap;
 using Acuminator.Vsix.Utilities;
+using Acuminator.Utilities.DiagnosticSuppression;
 
 using FirstChanceExceptionEventArgs = System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs;
 using EnvDTE80;
 using EnvDTE;
+using System.Linq;
+using Acuminator.Vsix.Utils;
 
 namespace Acuminator.Vsix
 {
@@ -155,6 +158,7 @@ namespace Acuminator.Vsix
                 return;
 
 			InitializeLogger();
+			InitializeSuppressionManager();
 
 			try
 			{
@@ -175,6 +179,16 @@ namespace Acuminator.Vsix
 			{
 				// Exception will be logged in FCEL
 			}
+		}
+
+		private void InitializeSuppressionManager()
+		{
+			var workspace = this.GetVSWorkspace();
+			var additionalFiles = workspace.CurrentSolution.Projects
+				.SelectMany(p => p.AdditionalDocuments)
+				.Select(d => (path: d.FilePath, generateSuppressionBase: false));
+
+			SuppressionManager.Init(new SuppressionFileSystemService(), additionalFiles);
 		}
 
 		private void InitializeCommands()

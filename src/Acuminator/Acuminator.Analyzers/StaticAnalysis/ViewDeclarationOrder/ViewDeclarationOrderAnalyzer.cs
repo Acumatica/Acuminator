@@ -9,6 +9,7 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Utilities;
+using Acuminator.Utilities.DiagnosticSuppression;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 {
@@ -106,8 +107,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 				if (viewLocation == null)
 					continue;
 
-				symbolContext.ReportDiagnostic(
-									Diagnostic.Create(descriptor, viewLocation, dac.Name, baseDac.Name));
+				symbolContext.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(descriptor, viewLocation, dac.Name, baseDac.Name));
 			}		
 		}
 	}

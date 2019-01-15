@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Immutable;
-using System.Linq;
-using Acuminator.Utilities.Roslyn;
+﻿using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.NonNullableTypeForBqlField
 {
@@ -35,7 +35,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonNullableTypeForBqlField
 				if (bqlField != null && propertyType != null
 					&& propertyType.IsValueType && propertyType.ConstructedFrom?.SpecialType != SpecialType.System_Nullable_T)
 				{
-					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1014_NonNullableTypeForBqlField, property.Locations.First()));
+					context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1014_NonNullableTypeForBqlField, property.Locations.First()));
 				}
 			}
 		}

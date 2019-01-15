@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
+﻿using Acuminator.Utilities.Common;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+	[DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class TypoInViewDelegateNameAnalyzer : PXDiagnosticAnalyzer
     {
 	    public const string ViewFieldNameProperty = "field";
@@ -50,7 +50,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 				{
 					var properties = ImmutableDictionary.CreateBuilder<string, string>();
 					properties.Add(ViewFieldNameProperty, nearest.Name);
-					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1005_TypoInViewDelegateName, 
+					context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1005_TypoInViewDelegateName, 
 						method.Locations.First(), properties.ToImmutable(), nearest.Name));
 		        }
 	        }
