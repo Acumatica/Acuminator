@@ -8,7 +8,6 @@ using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Common;
 
 
-
 namespace Acuminator.Vsix.Utilities
 {
     /// <summary>

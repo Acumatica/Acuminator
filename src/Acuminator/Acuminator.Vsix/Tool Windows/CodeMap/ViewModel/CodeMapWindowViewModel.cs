@@ -71,7 +71,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (e == null || !(sender is Workspace newWorkspace))
 				return;
 
-			if (Document != null && e.IsActiveDocumentCleared(Document))
+			bool isDocumentTabClosed = _documentModel.WpfTextView?.IsClosed ?? true;
+
+			if (Document != null && (_documentModel.WpfTextView.IsClosed || e.IsActiveDocumentCleared(Document)))
 			{
 				ClearCodeMap();
 				return;
