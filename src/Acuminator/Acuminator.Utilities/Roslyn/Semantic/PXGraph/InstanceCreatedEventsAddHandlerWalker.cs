@@ -44,10 +44,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 					lambdaNode.Body :
 					delegateSymbol?.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(CancellationToken);
 
-				if (expressionNode is LambdaExpressionSyntax)
-				{
-				}
-
 				if (delegateNode != null)
 				{
 					GraphInitDelegates.Add(new InitDelegateInfo(graphSymbol, delegateSymbol, delegateNode, _currentDeclarationOrder));
