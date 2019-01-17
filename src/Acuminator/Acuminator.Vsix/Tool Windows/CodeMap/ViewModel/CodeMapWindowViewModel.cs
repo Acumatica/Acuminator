@@ -58,10 +58,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
+		public Command RefreshCodeMapCommand { get; }
+
 		private CodeMapWindowViewModel(IWpfTextView wpfTextView, Document document)
 		{
 			_documentModel = new DocumentModel(wpfTextView, document);
 			Tree = new TreeViewModel(this);
+
+			RefreshCodeMapCommand = new Command(p => RefreshCodeMapAsync().Forget());
 
 			_workspace = _documentModel.Document.Project.Solution.Workspace;
 			_workspace.WorkspaceChanged += OnWorkspaceChanged;
@@ -117,6 +121,33 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 
 			dte.Events.WindowEvents.WindowActivated -= WindowEvents_WindowActivated;
+		}
+
+		private async Task RefreshCodeMapAsync()
+		{
+			if (IsCalculating)
+				return;
+
+			if (!ThreadHelper.CheckAccess())
+			{
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+			}
+
+			ClearCodeMap();
+			var currentWorkspace = AcuminatorVSPackage.Instance.GetVSWorkspace();
+
+			if (currentWorkspace == null)
+				return;
+
+			_workspace = currentWorkspace;
+			IWpfTextView activeWpfTextView = AcuminatorVSPackage.Instance.GetWpfTextView();
+			Document activeDocument = activeWpfTextView?.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
+
+			if (activeDocument == null)
+				return;
+
+			_documentModel = new DocumentModel(activeWpfTextView, activeDocument);
+			BuildCodeMapAsync().Forget();
 		}
 
 		private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
