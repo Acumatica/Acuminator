@@ -482,6 +482,7 @@
     <Compile Include="Tool Windows\ViewModel\ToolWindowViewModelBase.cs" />
     <Compile Include="Tool Windows\ViewModel\ViewModelBase.cs" />
     <Compile Include="Utils\AcuminatorLogger.cs" />
+    <Compile Include="Utils\Constants\LegacyLanguageNames.cs" />
     <Compile Include="Utils\EditorExtensions.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheAsync.cs" />
     <Compile Include="Coloriser\Formats\ClassificationTypeDefinitions.cs" />
