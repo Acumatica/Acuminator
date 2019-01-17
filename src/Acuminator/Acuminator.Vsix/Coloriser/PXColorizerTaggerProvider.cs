@@ -13,13 +13,13 @@ using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Acuminator.Utilities;
+using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.Roslyn;
 
 
 namespace Acuminator.Vsix.Coloriser
 {
-    [ContentType("CSharp")]
+    [ContentType(LegacyLanguageNames.CSharp)]
     [TagType(typeof(IClassificationTag))]
     [TextViewRole(PredefinedTextViewRoles.Document)]
     [Export(typeof(IViewTaggerProvider))]

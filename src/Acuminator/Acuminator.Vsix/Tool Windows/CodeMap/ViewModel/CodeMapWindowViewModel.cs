@@ -65,6 +65,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			_workspace = _documentModel.Document.Project.Solution.Workspace;
 			_workspace.WorkspaceChanged += OnWorkspaceChanged;
+			SubscribeOnWindowChangeEvent();
 		}
 
 		public static CodeMapWindowViewModel InitCodeMap(IWpfTextView wpfTextView, Document document)
@@ -92,6 +93,52 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				_workspace.WorkspaceChanged -= OnWorkspaceChanged;
 			}
+
+			UnsubscribeFromWindowChangeEvent();
+		}
+
+		private void SubscribeOnWindowChangeEvent()
+		{
+			ThreadHelper.ThrowIfNotOnUIThread();
+			EnvDTE.DTE dte = AcuminatorVSPackage.Instance.GetService<EnvDTE.DTE>();
+
+			if (dte == null)
+				return;
+
+			dte.Events.WindowEvents.WindowActivated += WindowEvents_WindowActivated;
+		}
+
+		private void UnsubscribeFromWindowChangeEvent()
+		{
+			ThreadHelper.ThrowIfNotOnUIThread();
+			EnvDTE.DTE dte = AcuminatorVSPackage.Instance.GetService<EnvDTE.DTE>();
+
+			if (dte == null)
+				return;
+
+			dte.Events.WindowEvents.WindowActivated -= WindowEvents_WindowActivated;
+		}
+
+		private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
+		{
+			if (!ThreadHelper.CheckAccess() || Equals(gotFocus, lostFocus) || gotFocus?.Document == null)
+			{
+				return;
+			}
+
+			#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
+			if (gotFocus.Document.Language != LegacyLanguageNames.CSharp || gotFocus.Document.Path == lostFocus?.Document?.Path)
+			{
+				return;
+			}
+			#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
+
+			var currentWorkspace = AcuminatorVSPackage.Instance.GetVSWorkspace();
+
+			if (currentWorkspace != null)
+			{
+				HandleActiveDocumentChangedOrClosed(currentWorkspace);
+			}		
 		}
 
 		private async void OnWorkspaceChanged(object sender, WorkspaceChangeEventArgs e)
