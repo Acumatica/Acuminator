@@ -164,7 +164,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				ClearCodeMap();
 				return;
 			}
-			else if (gotFocus.Document.FullName == lostFocus?.Document?.FullName)
+			else if (gotFocus.Document.FullName == lostFocus?.Document?.FullName ||
+					(lostFocus?.Document == null && Document != null && gotFocus.Document.FullName == Document.FilePath))
 			{
 				return;
 			}
