@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using Acuminator.Utilities.Roslyn;
+﻿using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac
 {
@@ -49,7 +49,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac
 			if (location == null)
 				return;
 
-			syntaxContext.ReportDiagnostic(
+			syntaxContext.ReportDiagnosticWithSuppressionCheck(
 				Diagnostic.Create(Descriptors.PX1018_NoPrimaryViewForPrimaryDac, location));
 		}
 

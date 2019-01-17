@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
 {
-    public class CallingBaseActionHandlerFromOverrideHandlerAnalyzer : PXGraphAggregatedAnalyzerBase
+	public class CallingBaseActionHandlerFromOverrideHandlerAnalyzer : PXGraphAggregatedAnalyzerBase
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1091_CausingStackOverflowExceptionInBaseActionHandlerInvocation);
@@ -87,7 +87,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
                 // Case Base.someActionHandler(adapter)
                 if (_baseHandlers.Contains(methodSymbol))
                 {
-                    ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1091_CausingStackOverflowExceptionInBaseActionHandlerInvocation, node);
+                    ReportDiagnostic(_context.ReportDiagnostic,
+						Descriptors.PX1091_CausingStackOverflowExceptionInBaseActionHandlerInvocation,
+						node);
+
                     return;
                 }
 
@@ -101,7 +104,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler
 
                     if (_baseActions.Contains(expressionSymbol))
                     {
-                        ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1091_CausingStackOverflowExceptionInBaseActionHandlerInvocation, node);
+                        ReportDiagnostic(_context.ReportDiagnostic,
+							Descriptors.PX1091_CausingStackOverflowExceptionInBaseActionHandlerInvocation,
+							node);
+
                         return;
                     }
                 }

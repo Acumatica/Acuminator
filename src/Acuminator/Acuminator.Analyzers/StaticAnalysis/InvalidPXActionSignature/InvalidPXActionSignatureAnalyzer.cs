@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Immutable;
-using System.Linq;
-using Acuminator.Utilities.Roslyn;
+﻿using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 {
@@ -50,7 +50,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 
 			if (methodLocation != null)
 			{
-				symbolContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1000_InvalidPXActionHandlerSignature, methodLocation));
+				symbolContext.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1000_InvalidPXActionHandlerSignature, methodLocation));
 			}
 		}
 

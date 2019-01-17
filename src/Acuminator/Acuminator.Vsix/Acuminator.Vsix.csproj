@@ -505,6 +505,8 @@
     <Compile Include="Settings\UI\GeneralOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Utils\SuppressionFileSystemService.cs" />
+    <Compile Include="Utils\SuppressionFileWatcherService.cs" />
     <Compile Include="Utils\WorkspaceChangedUtils.cs" />
     <Compile Include="Utils\WPF\Collection\ExtendedObservableCollection.cs" />
     <Compile Include="Utils\Navigation\VSDocumentNavigation.cs" />

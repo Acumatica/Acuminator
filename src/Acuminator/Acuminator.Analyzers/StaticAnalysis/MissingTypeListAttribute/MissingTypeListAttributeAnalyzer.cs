@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using Acuminator.Utilities.Roslyn;
+﻿using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+	[DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class MissingTypeListAttributeAnalyzer : PXDiagnosticAnalyzer
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
@@ -61,7 +61,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute
                     Any(c => types.Any(l => c.InheritsFromOrEquals(l, true)));
 
             if(!hasTypeAttribute)
-                context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1002_MissingTypeListAttributeAnalyzer, property.Locations.First()));
+                context.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1002_MissingTypeListAttributeAnalyzer, property.Locations.First()));
 
         }
 	}

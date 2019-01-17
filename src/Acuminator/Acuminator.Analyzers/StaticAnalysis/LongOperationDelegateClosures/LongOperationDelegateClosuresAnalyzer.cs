@@ -1,15 +1,15 @@
-﻿using System.Collections.Immutable;
-using System.Linq;
-using Acuminator.Utilities.Roslyn;
+﻿using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+	[DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class LongOperationDelegateClosuresAnalyzer : PXDiagnosticAnalyzer
     {
 		private const string SetProcessDelegateMethodName = "SetProcessDelegate";
@@ -39,7 +39,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 
 					if (identifierSymbol != null && !identifierSymbol.IsStatic)
                     {
-                        syntaxContext.ReportDiagnostic(
+                        syntaxContext.ReportDiagnosticWithSuppressionCheck(
                             Diagnostic.Create(
                                 Descriptors.PX1008_LongOperationDelegateClosures, setDelegateInvocation.GetLocation()));
                     }
@@ -69,7 +69,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 
             if (dfa != null && dfa.DataFlowsIn.OfType<IParameterSymbol>().Any(p => p.IsThis))
             {
-                syntaxContext.ReportDiagnostic(
+                syntaxContext.ReportDiagnosticWithSuppressionCheck(
                     Diagnostic.Create(
                         Descriptors.PX1008_LongOperationDelegateClosures, setDelegateInvocation.GetLocation()));
             }
@@ -107,7 +107,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			if ((identifierSymbol.Kind == SymbolKind.Field || identifierSymbol.Kind == SymbolKind.Property) && !identifierSymbol.IsStatic)
 			{
 				var setDelegateInvocation = syntaxContext.Node as InvocationExpressionSyntax;
-				syntaxContext.ReportDiagnostic(
+				syntaxContext.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(
 						Descriptors.PX1008_LongOperationDelegateClosures, setDelegateInvocation.GetLocation()));
 			}

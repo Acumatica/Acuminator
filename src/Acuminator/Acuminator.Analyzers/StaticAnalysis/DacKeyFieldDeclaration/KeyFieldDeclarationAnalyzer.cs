@@ -1,4 +1,5 @@
-﻿using Acuminator.Utilities.Roslyn;
+﻿using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
@@ -77,7 +78,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 				{
 					extraLocations.Remove(attributeLocation);
 
-					symbolContext.ReportDiagnostic(
+					symbolContext.ReportDiagnosticWithSuppressionCheck(
 						Diagnostic.Create(
 							Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField, attributeLocation, extraLocations));
 

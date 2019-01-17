@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
@@ -75,12 +76,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 
 					if (found && _analysisMode == RowChangesAnalysisMode.ChangesForbiddenForRowFromEventArgs)
 					{
-						_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs, 
+						_context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs, 
 							node.GetLocation(), _messageArgs));
 					}
 					else if (!found && _analysisMode == RowChangesAnalysisMode.ChangesAllowedOnlyForRowFromEventArgs)
 					{
-						_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1048_RowChangesInEventHandlersAllowedForArgsOnly, 
+						_context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1048_RowChangesInEventHandlersAllowedForArgsOnly, 
 							node.GetLocation(), _messageArgs));
 					}
 				}
@@ -103,7 +104,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 					
 					if (found && _analysisMode == RowChangesAnalysisMode.ChangesForbiddenForRowFromEventArgs)
 					{
-						_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs, 
+						_context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs, 
 							node.GetLocation(), _messageArgs));
 					}
 					else if (!found && _analysisMode == RowChangesAnalysisMode.ChangesAllowedOnlyForRowFromEventArgs)
@@ -113,7 +114,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 
 						if (_dacInstanceAccessWalker.Success)
 						{
-							_context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1048_RowChangesInEventHandlersAllowedForArgsOnly,
+							_context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1048_RowChangesInEventHandlersAllowedForArgsOnly,
 								node.GetLocation(), _messageArgs));
 						}
 					}

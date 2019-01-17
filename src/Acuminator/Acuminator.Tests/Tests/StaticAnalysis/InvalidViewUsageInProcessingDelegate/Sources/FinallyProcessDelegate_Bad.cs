@@ -23,13 +23,17 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.InvalidViewUsageInProcessingDele
             OurUsers.SetProcessAllCaption("Process users");
             OurUsers.SetProcessCaption("Process user");
 
-            OurUsers.SetProcessDelegate(ProcessItem, FinallyProcess);
+            OurUsers.SetProcessDelegate<UsersProcess>(ProcessItem, FinallyProcess);
             OurUsers.SetProcessDelegate(
-                delegate (UsersProcess graph, Users user)
+                delegate (UsersProcess processingGraph, Users user)
                 {
-                    graph.AllUsers.Update(user);
-                    graph.Persist();
-                },
+					processingGraph.AllUsers.Update(user);
+					processingGraph.Persist();
+
+					var entryGraph = PXGraph.CreateInstance<UserEntry>();
+					var badCurrent = processingGraph.AllUsers.Current;
+					var goodCurrent = entryGraph.AllUsers.Current;
+				},
                 delegate (UsersProcess graph)
                 {
                     graph.AllUsers.Select().Clear();
@@ -50,12 +54,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.InvalidViewUsageInProcessingDele
                 (UsersProcess graph) => graph.AllUsers.Select().Clear());
         }
 
-        private static void ProcessItem(Users user)
+        private static void ProcessItem(UsersProcess graph, Users user)
         {
-            var processingGraph = PXGraph.CreateInstance<UsersProcess>();
-
-            processingGraph.AllUsers.Update(user);
-            processingGraph.Persist();
+            graph.AllUsers.Update(user);
+            graph.Persist();
         }
 
         private static void FinallyProcess(UsersProcess graph)
@@ -63,4 +65,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.InvalidViewUsageInProcessingDele
             graph.AllUsers.Select().Clear();
         }
     }
+
+	public class UserEntry : PXGraph<UserEntry, Users>
+	{
+		public PXSelect<Users> AllUsers;
+	}
 }
