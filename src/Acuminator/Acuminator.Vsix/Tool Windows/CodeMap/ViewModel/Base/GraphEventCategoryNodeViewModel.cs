@@ -48,9 +48,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 
 			var graphMemberViewModels = from eventInfo in graphCategoryEvents.OrderBy(member => member.DeclarationOrder)
-										where eventInfo.Symbol.ContainingType == GraphViewModel.GraphSemanticModel.GraphSymbol ||
+										where eventInfo.Symbol.ContainingType == GraphViewModel.GraphSemanticModel.Symbol ||
 											  eventInfo.Symbol.ContainingType.OriginalDefinition ==
-											  GraphViewModel.GraphSemanticModel.GraphSymbol.OriginalDefinition
+											  GraphViewModel.GraphSemanticModel.Symbol.OriginalDefinition
 										group eventInfo by eventInfo.DacName into dacFieldEvents
 										select new DacGroupingNodeViewModel(this, dacFieldEvents, EventNodeByDacConstructor);
 

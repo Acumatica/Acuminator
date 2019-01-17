@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Threading;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
 
@@ -285,11 +286,18 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return null;
 
 			TreeViewModel tree = new TreeViewModel(this);
-			var rootItems = _documentModel.GraphModels
-										  .Select(graph => GraphNodeViewModel.Create(graph, tree, isExpanded: true, expandChildren: false))
-										  .Where(graphVM => graphVM != null);
 
-			tree.RootItems.AddRange(rootItems);
+			foreach (PXGraphEventSemanticModel graph in _documentModel.GraphModels)
+			{
+				cancellationToken.ThrowIfCancellationRequested();
+				var graphNodeVM = GraphNodeViewModel.Create(graph, tree, isExpanded: true, expandChildren: false);
+
+				if (graphNodeVM != null)
+				{
+					tree.RootItems.Add(graphNodeVM);
+				}
+			}
+
 			cancellationToken.ThrowIfCancellationRequested();
 			return tree;
 		}
