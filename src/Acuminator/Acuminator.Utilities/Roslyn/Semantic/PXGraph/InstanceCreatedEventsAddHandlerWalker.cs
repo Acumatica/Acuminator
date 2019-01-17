@@ -37,23 +37,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			if (isCreationDelegateAddition)
 			{
-				INamedTypeSymbol graphSymbol = symbol.TypeArguments[0] as INamedTypeSymbol;
-				SyntaxNode expressionNode = node.ArgumentList.Arguments.First().Expression;
-				SyntaxNode delegateNode;
-				ISymbol delegateSymbol;
-
-				if (expressionNode is LambdaExpressionSyntax lambdaNode)
-				{
-					delegateNode = lambdaNode.Body;
-					delegateSymbol = semanticModel.GetSymbolInfo(delegateNode, CancellationToken).Symbol;
-				}
-				else
-				{
-					delegateSymbol = semanticModel.GetSymbolInfo(expressionNode, CancellationToken).Symbol;
-					delegateNode = delegateSymbol?.DeclaringSyntaxReferences
-												  .FirstOrDefault()?
-												  .GetSyntax(CancellationToken);
-				}
+				var graphSymbol = symbol.TypeArguments[0] as INamedTypeSymbol;
+				var expressionNode = node.ArgumentList.Arguments.First().Expression;
+				var delegateSymbol = semanticModel.GetSymbolInfo(expressionNode, CancellationToken).Symbol;
+				var delegateNode = expressionNode is LambdaExpressionSyntax lambdaNode ?
+					lambdaNode.Body :
+					delegateSymbol?.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(CancellationToken);
 
 				if (delegateNode != null)
 				{
