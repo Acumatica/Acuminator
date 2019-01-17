@@ -27,25 +27,26 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			GraphSemanticModel = graphSemanticModel;
 		}
 
-		public static GraphNodeViewModel Create(PXGraphEventSemanticModel graphSemanticModel, TreeViewModel tree)
+		public static GraphNodeViewModel Create(PXGraphEventSemanticModel graphSemanticModel, TreeViewModel tree, 
+												bool isExpanded, bool expandChildren)
 		{
 			if (graphSemanticModel == null || tree == null)
 				return null;
 
-			GraphNodeViewModel graphNodeVM = new GraphNodeViewModel(graphSemanticModel, tree, isExpanded: false);
-			graphNodeVM.AddGraphMemberCategories();
+			GraphNodeViewModel graphNodeVM = new GraphNodeViewModel(graphSemanticModel, tree, isExpanded);
+			graphNodeVM.AddGraphMemberCategories(expandChildren);
 			return graphNodeVM;
 		}
 
 		public override void NavigateToItem() => AcuminatorVSPackage.Instance.NavigateToSymbol(GraphSemanticModel.Symbol);
 		
 
-		private void AddGraphMemberCategories()
+		private void AddGraphMemberCategories(bool expandChildren)
 		{
 			var memberCategories =
 				GraphMemberTypeUtils.GetGraphMemberTypes()
 									.Select(graphMemberType =>
-										 GraphMemberCategoryNodeViewModel.Create(this, graphMemberType, isExpanded: false));
+										 GraphMemberCategoryNodeViewModel.Create(this, graphMemberType, isExpanded: expandChildren));
 
 			Children.AddRange(memberCategories);
 		}

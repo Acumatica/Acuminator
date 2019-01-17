@@ -121,29 +121,43 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
 		{
-			if (!ThreadHelper.CheckAccess() || Equals(gotFocus, lostFocus) || gotFocus?.Document == null)
+#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
+			if (!ThreadHelper.CheckAccess() || Equals(gotFocus, lostFocus) || gotFocus.Document == null)
 			{
 				return;
 			}
 
-			#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
-			if (gotFocus.Document.Language != LegacyLanguageNames.CSharp || gotFocus.Document.Path == lostFocus?.Document?.Path)
+			if (gotFocus.Document.Language != LegacyLanguageNames.CSharp)
+			{
+				ClearCodeMap();
+				return;
+			}
+			else if (gotFocus.Document.FullName == lostFocus?.Document?.FullName)
 			{
 				return;
 			}
-			#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 
+			ClearCodeMap();
 			var currentWorkspace = AcuminatorVSPackage.Instance.GetVSWorkspace();
 
-			if (currentWorkspace != null)
-			{
-				HandleActiveDocumentChangedOrClosed(currentWorkspace);
-			}		
+			if (currentWorkspace == null)
+				return;
+
+			_workspace = currentWorkspace;
+			IWpfTextView activeWpfTextView = AcuminatorVSPackage.Instance.GetWpfTextViewByFilePath(gotFocus.Document.FullName);
+			Document activeDocument = activeWpfTextView?.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
+
+			if (activeDocument == null)
+				return;
+
+			_documentModel = new DocumentModel(activeWpfTextView, activeDocument);
+			BuildCodeMapAsync().Forget();
+#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 		}
 
 		private async void OnWorkspaceChanged(object sender, WorkspaceChangeEventArgs e)
 		{
-			if (e == null || !(sender is Workspace newWorkspace))
+			if (e == null || !(sender is Workspace newWorkspace) || Document == null)
 				return;
 
 			if (!ThreadHelper.CheckAccess())
@@ -153,29 +167,19 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			bool isDocumentTabClosed = _documentModel.WpfTextView?.IsClosed ?? true;
 
-			if (Document == null || isDocumentTabClosed || e.IsActiveDocumentCleared(Document) || e.IsActiveDocumentChanged(Document))
+			if (isDocumentTabClosed || e.IsActiveDocumentCleared(Document))
 			{
-				HandleActiveDocumentChangedOrClosed(newWorkspace);
+				ClearCodeMap();
+				return;
+			}
+			else if (e.IsActiveDocumentChanged(Document))
+			{
+				return;
 			}
 			else if (e.IsDocumentTextChanged(Document))
 			{
 				await HandleDocumentTextChangesAsync(newWorkspace, e).ConfigureAwait(false);
 			}		
-		}
-
-		private void HandleActiveDocumentChangedOrClosed(Workspace newWorkspace)
-		{
-			ClearCodeMap();
-
-			_workspace = newWorkspace;
-			IWpfTextView newWpfTextView = AcuminatorVSPackage.Instance.GetWpfTextView();
-			Document newDocument = newWpfTextView?.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
-
-			if (newDocument == null)
-				return;
-
-			_documentModel = new DocumentModel(newWpfTextView, newDocument);
-			BuildCodeMapAsync().Forget();
 		}
 
 		private async Task HandleDocumentTextChangesAsync(Workspace newWorkspace, WorkspaceChangeEventArgs e)
@@ -250,8 +254,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return null;
 
 			TreeViewModel tree = new TreeViewModel(this);
-			var rootItems = _documentModel.GraphModels.Select(graph => GraphNodeViewModel.Create(graph, tree))
-													  .Where(graphVM => graphVM != null);
+			var rootItems = _documentModel.GraphModels
+										  .Select(graph => GraphNodeViewModel.Create(graph, tree, isExpanded: true, expandChildren: false))
+										  .Where(graphVM => graphVM != null);
+
 			tree.RootItems.AddRange(rootItems);
 			cancellationToken.ThrowIfCancellationRequested();
 			return tree;
