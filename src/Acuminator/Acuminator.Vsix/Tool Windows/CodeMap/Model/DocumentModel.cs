@@ -57,22 +57,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			GraphModels = _graphModels.AsReadOnly();
 		}
 
-		public void ChangeWpfTextView(IWpfTextView newWpfTextView, Document newDocument)
-		{
-			newWpfTextView.ThrowOnNull(nameof(newWpfTextView));
-			newDocument.ThrowOnNull(nameof(newDocument));
-
-			string newWpfTextViewFilePath = newWpfTextView.TextBuffer?.GetFilePath();
-
-			if (newWpfTextViewFilePath != newDocument.FilePath)
-			{
-				throw new ArgumentException("The file paths for WPF text view and Roslyn Document are not equal");
-			}
-
-			WpfTextView = newWpfTextView;
-			Document = newDocument;
-		}
-
 		public async Task<bool> LoadCodeFileDataAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Threading;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
@@ -23,7 +24,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private DocumentModel _documentModel;
 		private Workspace _workspace;
 
-		public Document Document => _documentModel.Document;
+		public Document Document => _documentModel?.Document;
 
 		private TreeViewModel _tree;
 
@@ -66,42 +67,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			_workspace.WorkspaceChanged += OnWorkspaceChanged;
 		}
 
-		private async void OnWorkspaceChanged(object sender, WorkspaceChangeEventArgs e)
-		{
-			if (e == null || !(sender is Workspace newWorkspace))
-				return;
-
-			bool isDocumentTabClosed = _documentModel.WpfTextView?.IsClosed ?? true;
-
-			if (Document != null && (_documentModel.WpfTextView.IsClosed || e.IsActiveDocumentCleared(Document)))
-			{
-				ClearCodeMap();
-				return;
-			}
-
-			bool isActiveDocumentChanged = e.IsActiveDocumentChanged(Document);
-			bool isDocumentTextChanged = e.IsDocumentTextChanged(Document);
-
-			if (!isActiveDocumentChanged && !isDocumentTextChanged)
-				return;
-
-			ClearCodeMap();
-
-			_workspace = newWorkspace;
-			Document changedDocument = e.NewSolution.GetDocument(e.DocumentId);
-
-			if (changedDocument == null)
-				return;
-			
-			var root = await changedDocument.GetSyntaxRootAsync().ConfigureAwait(false);
-
-			if (root == null || root.ContainsDiagnostics)
-				return;
-
-			_documentModel = new DocumentModel(_documentModel.WpfTextView, changedDocument);
-			BuildCodeMapAsync().Forget();		
-		}	
-
 		public static CodeMapWindowViewModel InitCodeMap(IWpfTextView wpfTextView, Document document)
 		{
 			if (wpfTextView == null || document == null)
@@ -127,6 +92,62 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				_workspace.WorkspaceChanged -= OnWorkspaceChanged;
 			}
+		}
+
+		private async void OnWorkspaceChanged(object sender, WorkspaceChangeEventArgs e)
+		{
+			if (e == null || !(sender is Workspace newWorkspace))
+				return;
+
+			if (!ThreadHelper.CheckAccess())
+			{
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken ?? default);
+			}
+
+			bool isDocumentTabClosed = _documentModel.WpfTextView?.IsClosed ?? true;
+
+			if (Document == null || isDocumentTabClosed || e.IsActiveDocumentCleared(Document) || e.IsActiveDocumentChanged(Document))
+			{
+				HandleActiveDocumentChangedOrClosed(newWorkspace);
+			}
+			else if (e.IsDocumentTextChanged(Document))
+			{
+				await HandleDocumentTextChangesAsync(newWorkspace, e).ConfigureAwait(false);
+			}		
+		}
+
+		private void HandleActiveDocumentChangedOrClosed(Workspace newWorkspace)
+		{
+			ClearCodeMap();
+
+			_workspace = newWorkspace;
+			IWpfTextView newWpfTextView = AcuminatorVSPackage.Instance.GetWpfTextView();
+			Document newDocument = newWpfTextView?.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
+
+			if (newDocument == null)
+				return;
+
+			_documentModel = new DocumentModel(newWpfTextView, newDocument);
+			BuildCodeMapAsync().Forget();
+		}
+
+		private async Task HandleDocumentTextChangesAsync(Workspace newWorkspace, WorkspaceChangeEventArgs e)
+		{
+			ClearCodeMap();
+
+			_workspace = newWorkspace;
+			Document changedDocument = e.NewSolution.GetDocument(e.DocumentId);
+
+			if (changedDocument == null)
+				return;
+
+			var root = await changedDocument.GetSyntaxRootAsync().ConfigureAwait(false);
+
+			if (root == null || root.ContainsDiagnostics)
+				return;
+
+			_documentModel = new DocumentModel(_documentModel.WpfTextView, changedDocument);
+			BuildCodeMapAsync().Forget();
 		}
 
 		private void ClearCodeMap()
