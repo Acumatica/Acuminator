@@ -10,10 +10,10 @@ using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 {
-    /// <summary>
-    /// C# Syntax Walker that searches for the database queries
-    /// </summary>
-    internal class Walker : NestedInvocationWalker
+	/// <summary>
+	/// C# Syntax Walker that searches for the database queries
+	/// </summary>
+	internal class Walker : NestedInvocationWalker
 	{
 		private const string SelectMethodName = "Select";
 		private const string SearchMethodName = "Search";

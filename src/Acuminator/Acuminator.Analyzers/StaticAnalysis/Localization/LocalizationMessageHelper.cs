@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Symbols;
@@ -39,7 +40,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
             bool isHardcodedMessage = _messageExpression is LiteralExpressionSyntax;
             if (isHardcodedMessage)
             {
-                _syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1050_HardcodedStringInLocalizationMethod, _messageExpression.GetLocation()));
+                _syntaxContext.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1050_HardcodedStringInLocalizationMethod, _messageExpression.GetLocation()));
                 return;
             }
 
@@ -48,17 +50,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
             {
                 if (IsNonLocalizableMessageType(messageType))
                 {
-                    _syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1051_NonLocalizableString, _messageExpression.GetLocation()));
+                    _syntaxContext.ReportDiagnosticWithSuppressionCheck(
+						Diagnostic.Create(Descriptors.PX1051_NonLocalizableString, _messageExpression.GetLocation()));
                 }
 
                 if (IsIncorrectStringToFormat())
                 {
-                    _syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1052_IncorrectStringToFormat, _messageExpression.GetLocation()));
+                    _syntaxContext.ReportDiagnosticWithSuppressionCheck(
+						Diagnostic.Create(Descriptors.PX1052_IncorrectStringToFormat, _messageExpression.GetLocation()));
                 }
             }
             else if (IsStringConcatenation())
             {
-                _syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1053_ConcatenationPriorLocalization, _messageExpression.GetLocation()));
+                _syntaxContext.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1053_ConcatenationPriorLocalization, _messageExpression.GetLocation()));
             }
         }
 

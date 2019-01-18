@@ -21,10 +21,15 @@ using System.Composition.Hosting;
 using System.Composition.Hosting.Core;
 using Acuminator.Vsix.Settings;
 using Acuminator.Vsix.Logger;
+using Acuminator.Vsix.ToolWindows.CodeMap;
+using Acuminator.Vsix.Utilities;
+using Acuminator.Utilities.DiagnosticSuppression;
 
 using FirstChanceExceptionEventArgs = System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs;
-
-
+using EnvDTE80;
+using EnvDTE;
+using System.Linq;
+using Acuminator.Vsix.Utils;
 
 namespace Acuminator.Vsix
 {
@@ -54,6 +59,7 @@ namespace Acuminator.Vsix
                      Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
 	[ProvideOptionPage(typeof(GeneralOptionsPage), SettingsCategoryName, GeneralOptionsPage.PageTitle,
 					   categoryResourceID: 201, pageNameResourceID: 202, supportsAutomation: true, SupportsProfiles = true)]
+	[ProvideToolWindow(typeof(CodeMapWindow))]
 	public sealed class AcuminatorVSPackage : Package
     {
 		private const string SettingsCategoryName = "Acuminator";
@@ -142,16 +148,17 @@ namespace Acuminator.Vsix
         /// </summary>
         protected override void Initialize()
         {
-            FormatBqlCommand.Initialize(this);
-			GoToDeclarationOrHandlerCommand.Initialize(this);
-            base.Initialize();
+			InitializeCommands();
+			base.Initialize();
+			SubscribeOnSolutionEvents();
 
-            IComponentModel componentModel = Package.GetGlobalService(typeof(SComponentModel)) as IComponentModel;
+			IComponentModel componentModel = Package.GetGlobalService(typeof(SComponentModel)) as IComponentModel;
 
             if (componentModel == null)
                 return;
 
 			InitializeLogger();
+			InitializeSuppressionManager();
 
 			try
 			{
@@ -174,10 +181,57 @@ namespace Acuminator.Vsix
 			}
 		}
 
+		private void InitializeSuppressionManager()
+		{
+			var workspace = this.GetVSWorkspace();
+			var additionalFiles = workspace.CurrentSolution.Projects
+				.SelectMany(p => p.AdditionalDocuments)
+				.Select(d => (path: d.FilePath, generateSuppressionBase: false));
+
+			SuppressionManager.Init(new SuppressionFileSystemService(), additionalFiles);
+		}
+
+		private void InitializeCommands()
+		{
+			FormatBqlCommand.Initialize(this);
+			GoToDeclarationOrHandlerCommand.Initialize(this);
+			BqlFixer.FixBqlCommand.Initialize(this);
+
+			OpenCodeMapWindowCommand.Initialize(this);
+		}
+
+		private void SubscribeOnSolutionEvents()
+		{
+			if (!ThreadHelper.CheckAccess())
+				return;
+
+#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
+			if (GetService(typeof(DTE)) is DTE dte)
+			{
+				dte.Events.SolutionEvents.AfterClosing += SolutionEvents_AfterClosing;
+			}
+#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
+		}
+
+		private void SolutionEvents_AfterClosing()
+		{
+			CloseOpenToolWindows();
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
 			AcuminatorLogger?.Dispose();
+
+			if (ThreadHelper.CheckAccess())
+			{
+#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
+				if (GetService(typeof(DTE)) is DTE dte)
+				{
+					dte.Events.SolutionEvents.AfterClosing -= SolutionEvents_AfterClosing;
+				}
+#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
+			}
 		}
 
 	    private void InitializeLogger()
@@ -192,6 +246,29 @@ namespace Acuminator.Vsix
 				    $"An error occurred during the logger initialization ({ex.GetType().Name}, message: \"{ex.Message}\")");
 		    }
 	    }
+
+		protected override int QueryClose(out bool canClose)
+		{
+			CloseOpenToolWindows();
+			return base.QueryClose(out canClose);
+		}
+
+		private void CloseOpenToolWindows()
+		{
+			if (!ThreadHelper.CheckAccess())
+				return;
+
+			try
+			{
+#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
+				DTE dte = GetService(typeof(DTE)) as DTE;
+				dte?.Windows.Item($"{{{CodeMapWindow.CodeMapWindowGuidString}}}")?.Close();
+#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
+			}
+			catch
+			{			
+			}		
+		}
 
 		#region Package Settings         
 		public bool ColoringEnabled => GeneralOptionsPage?.ColoringEnabled ?? true;

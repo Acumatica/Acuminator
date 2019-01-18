@@ -15,15 +15,15 @@
         defining some of the constants that we will use inside the file. -->
 
   <!--This is the file that defines the IDs for all the commands exposed by VisualStudio. -->
-  <Extern href="stdidcmd.h"/>
+  <Extern href="stdidcmd.h" />
 
   <!--This header contains the command ids for the menus provided by the shell. -->
-  <Extern href="vsshlids.h"/>
+  <Extern href="vsshlids.h" />
 
   <!--The Commands section is where commands, menus, and menu groups are defined.
       This section uses a Guid to identify the package that provides the command defined inside it. -->
   <Commands package="guidAcuminatorVSPackage">
-		
+
     <!-- Inside this section we have different sub-sections: one for the menus, another
     for the menu groups, one for the buttons (the actual commands), one for the combos
     and the last one for the bitmaps used. Each element is identified by a command id that
@@ -37,17 +37,18 @@
          group as the part of a menu contained between two lines. The parent of a group
          must be a menu. -->
     <Groups>
-			<Group guid="guidAcuminatorCmdSet" id="AcuminatorContextMenuGroup" />
-			<Group guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" />		
+      <Group guid="guidAcuminatorCmdSet" id="AcuminatorContextMenuGroup" />
+      <Group guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" />
+      <Group guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCodeMap" />
     </Groups>
 
-		<Menus>
-			<Menu guid="guidAcuminatorCmdSet" id="AcuminatorTopMenu" type="Menu">
-				<Strings>
-					<ButtonText>Acuminator</ButtonText>
-				</Strings>
-			</Menu>
-		</Menus>
+    <Menus>
+      <Menu guid="guidAcuminatorCmdSet" id="AcuminatorTopMenu" type="Menu">
+        <Strings>
+          <ButtonText>Acuminator</ButtonText> 
+        </Strings>
+      </Menu>
+    </Menus>
     <!--Buttons section. -->
     <!--This section defines the elements the user can interact with, like a menu command or a button
         or combo box in a toolbar. -->
@@ -59,91 +60,135 @@
               <CommandFlag>DefaultInvisible</CommandFlag>
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
-      <Button guid="guidAcuminatorCmdSet" id="FormatBqlCommandId" type="Button">
-        <Icon guid="guidImages" id="acumaticaIcon" />
+      
+     <Button guid="guidAcuminatorCmdSet" id="FormatBqlCommandId" type="Button">
+        <Icon guid="guidAcumaticaIcon" id="acumaticaIcon" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         <!--<CommandFlag>DefaultInvisible</CommandFlag>
 					  <CommandFlag>DynamicVisibility</CommandFlag>-->
         <Strings>
-					<CommandName>cmdidFormatBQLCommand</CommandName>
+          <CommandName>cmdidFormatBQLCommand</CommandName>
           <ButtonText>Format BQL Statements</ButtonText>
         </Strings>
       </Button>
 
-			<Button guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" type="Button">
-				<Icon guid="guidImages" id="acumaticaIcon" />
-				<CommandFlag>DefaultDisabled</CommandFlag>
-				<!--<CommandFlag>DefaultInvisible</CommandFlag>
+     <Button guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" type="Button">
+        <Icon guid="guidAcumaticaIcon" id="acumaticaIcon" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <!--<CommandFlag>DefaultInvisible</CommandFlag>
 					  <CommandFlag>DynamicVisibility</CommandFlag>-->
-				<Strings>
-					<CommandName>cmdidGoToDeclarationOrHandlerCommand</CommandName>
-					<ButtonText>Go To Action/View Declaration/Handler</ButtonText>
-				</Strings>
-			</Button>
+        <Strings>
+          <CommandName>cmdidGoToDeclarationOrHandlerCommand</CommandName>
+          <ButtonText>Go To Action/View Declaration/Handler</ButtonText>
+        </Strings>
+      </Button>
+
+      <!--<Button guid="guidAcuminatorCmdSet" id="FixBqlCommandId" type="Button">
+        <Icon guid="guidBqlFixerIcon" id="bqlFixerIcon" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        
+        --><!--<CommandFlag>DefaultInvisible</CommandFlag>
+					  <CommandFlag>DynamicVisibility</CommandFlag>--><!--
+        <Strings>
+          <CommandName>cmdidFixBqlCommand</CommandName>
+          <ButtonText>Fix BQL Braces</ButtonText>
+        </Strings>
+      </Button>-->
+
+      <!--Tool Windows Commands-->
+      <Button guid="guidAcuminatorCmdSet" id="OpenCodeMapWindowCommand" type="Button">
+        <Icon guid="guidCodeMapIcon" id="codemapIcon" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <CommandName>cmdidOpenCodeMapWindowCommand</CommandName>
+          <ButtonText>CodeMap</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
 
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
-   <Bitmaps>
+    <Bitmaps>
       <!--  The bitmap id is defined in a way that is a little bit different from the others:
             the declaration starts with a guid for the bitmap strip, then there is the resource id of the
             bitmap strip containing the bitmaps and then there are the numeric ids of the elements used
             inside a button definition. An important aspect of this declaration is that the element id
             must be the actual index (1-based) of the bitmap inside the bitmap strip. -->
-      <Bitmap guid="guidImages" href="Resources\acumatica.ico" usedList="acumaticaIcon"/>
+      <Bitmap guid="guidAcumaticaIcon" href="Resources\acumatica.ico" usedList="acumaticaIcon" />     
+      <Bitmap guid="guidCodeMapIcon" href="Resources\codemap.ico" usedList="codemapIcon" />
+      <Bitmap guid="guidBqlFixerIcon" href="Resources\bqlFixer.ico" usedList="bqlFixerIcon" />
     </Bitmaps>
   </Commands>
 
-	<CommandPlacements>
-		<!-- Placement for groups and menus.
+  <CommandPlacements>
+    <!-- Placement for groups and menus.
            The parent of a group is a menu, context menu or toolbar.
            The parent of a submenu is always a group.
 					 The parent of a command is always a group, never a menu, context menu or toolbar.
            The priority sets the position of the group compared to the priority of other existing groups in the menu.
-					 
-					 Placement for Acuminator in Top Menu
-           The order is: AcuminatorTopMenu > AcuminatorGroupForCommands > FormatBqlCommandId, GoToDeclarationOrHandlerCommandId
       -->
-		<CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorTopMenu" priority="0x0307">
-			<!-- The parent of the top menu will be the main menu -->
-			<Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS"/>
-		</CommandPlacement>
-		
-		<CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" priority="0x0001">
-			<Parent guid="guidAcuminatorCmdSet" id="AcuminatorTopMenu"/>
-		</CommandPlacement>
+    <CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorTopMenu" priority="0x0307">
+      <!-- The parent of the top menu will be the main menu -->
+      <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS" />
+    </CommandPlacement>
 
-		<CommandPlacement guid="guidAcuminatorCmdSet" id="FormatBqlCommandId" priority="0x0001" >
-			<Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands"/>
-		</CommandPlacement>
+    <!--Code Map Placement 
+				Placement for tool window in Top Menu
+        The order is: AcuminatorTopMenu > AcuminatorGroupForCodeMap > OpenCodeMapWindowCommand
+		-->
+    <CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCodeMap" priority="0x0001">
+      <Parent guid="guidAcuminatorCmdSet" id="AcuminatorTopMenu" />
+    </CommandPlacement>
 
-		<CommandPlacement guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" priority="0x0002" >
-			<Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands"/>
-		</CommandPlacement>
+    <CommandPlacement guid="guidAcuminatorCmdSet" id="OpenCodeMapWindowCommand" priority="0x0001">
+      <Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCodeMap" />
+    </CommandPlacement>
 
-		<!-- Placement for Acuminator in context menu
-         The order is: Context Menu > AcuminatorContextMenuGroup > FormatBqlCommandId  -->
-		
-		<CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorContextMenuGroup" priority="0x0001">
-			<!--The parent of the group will be also the context menu-->
-			<Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN"/>
-		</CommandPlacement>
+    <!--Placement for Acuminator commands in Top Menu
+				The order is: AcuminatorTopMenu > AcuminatorGroupForCommands > FormatBqlCommandId, GoToDeclarationOrHandlerCommandId, FixBqlCommandId-->
 
-		<CommandPlacement guid="guidAcuminatorCmdSet" id="FormatBqlCommandId" priority="0x0001" >
-			<Parent guid="guidAcuminatorCmdSet" id="AcuminatorContextMenuGroup"/>
-		</CommandPlacement>
+    <CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" priority="0x0004">
+      <Parent guid="guidAcuminatorCmdSet" id="AcuminatorTopMenu" />
+    </CommandPlacement>
 
-		<CommandPlacement guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" priority="0x0002" >
-			<Parent guid="guidAcuminatorCmdSet" id="AcuminatorContextMenuGroup"/>
-		</CommandPlacement>
-	</CommandPlacements>
+    <CommandPlacement guid="guidAcuminatorCmdSet" id="FormatBqlCommandId" priority="0x0001">
+      <Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" />
+    </CommandPlacement>
 
-	<KeyBindings>
+    <CommandPlacement guid="guidAcuminatorCmdSet" id="FixBqlCommandId" priority="0x0002">
+      <Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" />
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" priority="0x0003">
+      <Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" />
+    </CommandPlacement>
+
+    <!-- Placement for Acuminator commands in context menu
+         The order is: Context Menu > AcuminatorContextMenuGroup > FormatBqlCommandId, GoToDeclarationOrHandlerCommandId, FixBqlCommandId-  -->
+
+    <CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorContextMenuGroup" priority="0x0001">
+      <!--The parent of the group will be also the context menu-->
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN" />
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidAcuminatorCmdSet" id="FormatBqlCommandId" priority="0x0001">
+      <Parent guid="guidAcuminatorCmdSet" id="AcuminatorContextMenuGroup" />
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" priority="0x0002">
+      <Parent guid="guidAcuminatorCmdSet" id="AcuminatorContextMenuGroup" />
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidAcuminatorCmdSet" id="FixBqlCommandId" priority="0x0003">
+      <Parent guid="guidAcuminatorCmdSet" id="AcuminatorContextMenuGroup" />
+    </CommandPlacement>
+  </CommandPlacements>
+
+  <KeyBindings>
     <!-- guidVSStd97 is global scope -->
     <KeyBinding guid="guidAcuminatorCmdSet" id="FormatBqlCommandId"
-                editor="guidVSStd97"
-                key1="B" mod1="CONTROL"
-                key2="F" mod2="CONTROL"
-    />
+								editor="guidVSStd97"
+								key1="B" mod1="CONTROL"
+								key2="F" mod2="CONTROL" />
   </KeyBindings>
 
   <Symbols>
@@ -152,17 +197,30 @@
 
     <!-- This is the guid used to group the menu commands together -->
     <GuidSymbol name="guidAcuminatorCmdSet" value="{3cd59430-1e8d-40af-b48d-9007624b3d77}">
+      <IDSymbol name="AcuminatorTopMenu" value="0x0100" />
       <IDSymbol name="AcuminatorContextMenuGroup" value="0x1021" />
-			<IDSymbol name="AcuminatorGroupForCommands" value="0x1022" />
-			<IDSymbol name="AcuminatorTopMenu" value="0x0100" />
+      <IDSymbol name="AcuminatorGroupForCommands" value="0x1022" />
+      <IDSymbol name="AcuminatorGroupForCodeMap" value="0x1023" />
 
-			<!-- Warning!!: Keep the values in sync with the code in FormatBqlCommand.cs and etc -->
+      <!-- Warning!!: Keep the values in sync with the code in FormatBqlCommand.cs and etc -->
       <IDSymbol name="FormatBqlCommandId" value="0x0101" />
       <IDSymbol name="GoToDeclarationOrHandlerCommandId" value="0x0102" />
+      <IDSymbol name="FixBqlCommandId" value="0x0103" />
+
+      <!--Tool Windows commands-->
+      <IDSymbol  name="OpenCodeMapWindowCommand" value="0x0201"/>
     </GuidSymbol>
 
-		<GuidSymbol name="guidImages" value="{D87E7D18-43E1-4C9E-9550-EBF39A85F071}">
-			<IDSymbol name="acumaticaIcon" value="1" />
-		</GuidSymbol>
+    <GuidSymbol name="guidAcumaticaIcon" value="{D87E7D18-43E1-4C9E-9550-EBF39A85F071}">
+      <IDSymbol name="acumaticaIcon" value="1" />
+    </GuidSymbol>
+    
+    <GuidSymbol name="guidCodeMapIcon" value="{6C8C4200-07AF-4D31-89D4-8AD464805E08}">
+      <IDSymbol name="codemapIcon" value="1" />
+    </GuidSymbol>
+   
+    <GuidSymbol name="guidBqlFixerIcon" value="{6D21BFF5-3EE6-45B9-B463-CBF2CBF24652}">
+      <IDSymbol name="bqlFixerIcon" value="1" />
+    </GuidSymbol>
   </Symbols>
 </CommandTable>

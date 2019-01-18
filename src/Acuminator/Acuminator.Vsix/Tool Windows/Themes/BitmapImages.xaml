@@ -1,0 +1,40 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.14.0"
+                    xmlns:platformUI="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0">
+
+
+    <BitmapImage x:Key="Graph" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Graph.ico"/>
+
+    <BitmapImage x:Key="View" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/View.ico"/>
+
+    <BitmapImage x:Key="ViewDelegate" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/ViewDelegate.ico"/>
+
+    <BitmapImage x:Key="Action" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Action.ico"/>
+
+    <BitmapImage x:Key="ActionHandler" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/ActionHandler.ico"/>
+
+    <BitmapImage x:Key="Event" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Event.ico"/>
+
+    <BitmapImage x:Key="RowEvent" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/RowEvent.ico"/>
+
+    <BitmapImage x:Key="FieldEvent" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/FieldEvent.ico"/>
+
+    <BitmapImage x:Key="CacheAttached" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/CacheAttached.ico"/>
+
+    <BitmapImage x:Key="DAC" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DAC.ico"/>
+
+    <BitmapImage x:Key="GroupNode" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/GroupNode.ico"/>
+
+</ResourceDictionary>

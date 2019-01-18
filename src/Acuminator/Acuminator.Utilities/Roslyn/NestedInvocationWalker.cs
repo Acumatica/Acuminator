@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using Acuminator.Utilities.Common;
+﻿using Acuminator.Utilities.Common;
+using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
 using CommonServiceLocator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 
 namespace Acuminator.Utilities.Roslyn
 {
@@ -57,13 +59,33 @@ namespace Acuminator.Utilities.Roslyn
 
 		private readonly Stack<SyntaxNode> _nodesStack = new Stack<SyntaxNode>();
         private readonly HashSet<IMethodSymbol> _methodsInStack = new HashSet<IMethodSymbol>();
+		private readonly Func<IMethodSymbol, bool> _bypassMethod;
 
-        protected NestedInvocationWalker(Compilation compilation, CancellationToken cancellationToken)
+		/// <summary>
+		/// Constructor of the class
+		/// </summary>
+		/// <param name="compilation">Compilation</param>
+		/// <param name="cancellationToken">Cancellation token</param>
+		/// <param name="bypassMethod">Delegate to control if it is needed to bypass analysis of an invocation of a method and do not step into it. If not supplied, default implementation is used to bypass some core types from PX.Data namespace</param>
+		protected NestedInvocationWalker(Compilation compilation, CancellationToken cancellationToken,
+			Func<IMethodSymbol, bool> bypassMethod = null)
 		{
 			compilation.ThrowOnNull(nameof (compilation));
 
 			_compilation = compilation;
             CancellationToken = cancellationToken;
+
+			if (bypassMethod != null)
+			{
+				_bypassMethod = bypassMethod;
+			}
+			else
+			{
+				var pxContext = new PXContext(_compilation);
+				var typesToBypass = GetTypesToBypass(pxContext).ToHashSet();
+
+				_bypassMethod = m => typesToBypass.Contains(m.ContainingType);
+			}
 
 			try
 			{
@@ -77,6 +99,16 @@ namespace Acuminator.Utilities.Roslyn
 
 			if (_settings == null)
 				_settings = CodeAnalysisSettings.Default;
+		}
+
+		protected virtual IEnumerable<INamedTypeSymbol> GetTypesToBypass(PXContext pxContext)
+		{
+			return new[]
+			{
+				pxContext.PXGraph.Type,
+				pxContext.PXView.Type,
+				pxContext.PXCache.Type
+			};
 		}
 
 		protected void ThrowIfCancellationRequested()
@@ -135,8 +167,8 @@ namespace Acuminator.Utilities.Roslyn
 		/// <param name="messageArgs">Arguments to the message of the diagnostic</param>
 		/// <remarks>This method takes a report diagnostic method as a parameter because it is different for each analyzer type 
 		/// (<code>SymbolAnalysisContext.ReportDiagnostic</code>, <code>SyntaxNodeAnalysisContext.ReportDiagnostic</code>, etc.)</remarks>
-		protected virtual void ReportDiagnostic(Action<Diagnostic> reportDiagnostic, 
-			DiagnosticDescriptor diagnosticDescriptor, SyntaxNode node, params object[] messageArgs)
+		protected virtual void ReportDiagnostic(Action<Diagnostic> reportDiagnostic, DiagnosticDescriptor diagnosticDescriptor,
+			SyntaxNode node, params object[] messageArgs)
 		{
 			var nodeToReport = OriginalNode ?? node;
 
@@ -144,7 +176,10 @@ namespace Acuminator.Utilities.Roslyn
 
 			if (!_reportedDiagnostics.Contains(diagnosticKey))
 			{
-				reportDiagnostic(Diagnostic.Create(diagnosticDescriptor, nodeToReport.GetLocation(), messageArgs));
+				var diagnostic = Diagnostic.Create(diagnosticDescriptor, nodeToReport.GetLocation(), messageArgs);
+				var semanticModel = GetSemanticModel(nodeToReport.SyntaxTree);
+
+				SuppressionManager.ReportDiagnosticWithSuppressionCheck(semanticModel, reportDiagnostic, diagnostic, CancellationToken);
 				_reportedDiagnostics.Add(diagnosticKey);
 			}
 		}
@@ -260,7 +295,7 @@ namespace Acuminator.Utilities.Roslyn
 		private void VisitMethodSymbol(IMethodSymbol symbol, SyntaxNode originalNode)
 		{
 			if (symbol?.GetSyntax(CancellationToken) is CSharpSyntaxNode methodNode &&
-                !IsMethodInStack(symbol))
+                !IsMethodInStack(symbol) && !_bypassMethod(symbol))
 			{
 				Push(originalNode, symbol);
 				methodNode.Accept(this);

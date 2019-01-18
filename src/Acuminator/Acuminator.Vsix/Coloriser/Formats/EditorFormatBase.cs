@@ -38,7 +38,9 @@ namespace Acuminator.Vsix.Coloriser
       
         private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e)
         {
-            if (AcuminatorVSPackage.Instance?.ClassificationFormatMapService == null ||
+			ThreadHelper.ThrowIfNotOnUIThread();
+
+			if (AcuminatorVSPackage.Instance?.ClassificationFormatMapService == null ||
                 AcuminatorVSPackage.Instance.ClassificationRegistry == null ||
                 classificationTypeName == null)
             {

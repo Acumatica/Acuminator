@@ -1,14 +1,9 @@
 ﻿using PX.Data;
 using PX.SM;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.InvalidViewUsageInProcessingDelegate.Sources
 {
-    public class UsersProcess : PXGraph<UsersProcess>
+	public class UsersProcess : PXGraph<UsersProcess>
     {
         public PXCancel<Users> Cancel;
 
@@ -59,6 +54,14 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.InvalidViewUsageInProcessingDele
         private static void FinallyProcess(UsersProcess graph)
         {
             var current = graph.Filter.Current;
+			var entryGraph = CreateInstance<UserEntry>();
+			var entryCurrent = entryGraph.AllUsers.Current;
+			var localView = new PXSelect<Users>(graph);
         }
     }
+
+	public class UserEntry : PXGraph<UserEntry, Users>
+	{
+		public PXSelect<Users> AllUsers;
+	}
 }

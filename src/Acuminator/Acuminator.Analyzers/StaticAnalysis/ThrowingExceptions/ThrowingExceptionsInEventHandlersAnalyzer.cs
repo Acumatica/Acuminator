@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
+﻿using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Utilities;
-using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 {
@@ -59,13 +53,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 
                 if (_eventType == EventType.RowPersisted)
                 {
-                    ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1073_ThrowingExceptionsInRowPersisted, node);
+                    ReportDiagnostic(_context.ReportDiagnostic,	Descriptors.PX1073_ThrowingExceptionsInRowPersisted, node);
                     isReported = true;
                 }
 
                 if (_eventType != EventType.RowSelected && IsPXSetupNotEnteredException(node))
                 {
-                    ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1074_ThrowingSetupNotEnteredExceptionInEventHandlers, node, _eventType);
+                    ReportDiagnostic(_context.ReportDiagnostic,
+						Descriptors.PX1074_ThrowingSetupNotEnteredExceptionInEventHandlers,
+						node, _eventType);
                     isReported = true;
                 }
 

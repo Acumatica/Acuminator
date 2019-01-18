@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
@@ -49,6 +49,57 @@ namespace Acuminator.Utilities.Roslyn.Syntax.PXGraph
 			}
 
 			return GraphInstantiationType.None;
+		}
+
+		public static IEnumerable<(ITypeSymbol GraphSymbol, SyntaxNode GraphNode)> GetDeclaredGraphsAndExtensions(
+																						this SyntaxNode root, SemanticModel semanticModel,
+																						PXContext context, CancellationToken cancellationToken = default)
+		{
+			root.ThrowOnNull(nameof(root));
+			context.ThrowOnNull(nameof(context));
+			semanticModel.ThrowOnNull(nameof(semanticModel));
+			cancellationToken.ThrowIfCancellationRequested();
+
+			return GetDeclaredGraphsAndExtensionsImpl();
+
+
+			IEnumerable<(ITypeSymbol GraphSymbol, SyntaxNode GraphNode)> GetDeclaredGraphsAndExtensionsImpl()
+			{
+				var declaredClasses = root.DescendantNodesAndSelf().OfType<ClassDeclarationSyntax>();
+
+				foreach (ClassDeclarationSyntax classNode in declaredClasses)
+				{
+					ITypeSymbol classTypeSymbol = classNode.GetTypeSymbolFromClassDeclaration(semanticModel, cancellationToken);
+
+					if (classTypeSymbol != null && classTypeSymbol.IsPXGraphOrExtension(context))
+					{
+						yield return (classTypeSymbol, classNode);
+					}
+				}
+			}
+		}
+
+		public static ITypeSymbol GetTypeSymbolFromClassDeclaration(this ClassDeclarationSyntax classDeclaration, SemanticModel semanticModel,
+																	CancellationToken cancellationToken = default)
+		{
+			classDeclaration.ThrowOnNull(nameof(classDeclaration));
+			semanticModel.ThrowOnNull(nameof(semanticModel));
+			cancellationToken.ThrowIfCancellationRequested();
+
+			var typeSymbol = semanticModel.GetDeclaredSymbol(classDeclaration, cancellationToken) as ITypeSymbol;
+
+			if (typeSymbol != null)
+				return typeSymbol;
+
+			SymbolInfo symbolInfo = semanticModel.GetSymbolInfo(classDeclaration, cancellationToken);
+			typeSymbol = symbolInfo.Symbol as ITypeSymbol;
+
+			if (typeSymbol == null && symbolInfo.CandidateSymbols.Length == 1)
+			{
+				typeSymbol = symbolInfo.CandidateSymbols[0] as ITypeSymbol;
+			}
+
+			return typeSymbol;
 		}
 	}
 }

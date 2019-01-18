@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
@@ -69,7 +70,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 					{ DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString() }
 				}.ToImmutableDictionary();
 
-				syntaxContext.ReportDiagnostic(
+				syntaxContext.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(
 						Descriptors.PX1026_UnderscoresInDacDeclaration, identifier.GetLocation(), diagnosticProperties));
 			}
@@ -88,12 +89,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 					{ DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString() }
 				}.ToImmutableDictionary();
 
-				syntaxContext.ReportDiagnostic(
+				syntaxContext.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(
 						Descriptors.PX1026_UnderscoresInDacDeclaration, identifierToReport.GetLocation(), diagnosticProperties));
 			}
-
-
 
 			//*************************************Local Functions**********************************************************************
 			bool IdentifierContainsOnlyUnderscores(string identifierName)
@@ -127,7 +126,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 			{
 				foreach (var iProperty in listProperties)
 				{
-					syntaxContext.ReportDiagnostic(
+					syntaxContext.ReportDiagnosticWithSuppressionCheck(
 						Diagnostic.Create(
 							Descriptors.PX1027_ForbiddenFieldsInDacDeclaration, iProperty.Identifier.GetLocation(),
 							iProperty.Identifier.Text));
@@ -137,7 +136,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 			{
 				foreach (var iClass in listClasses)
 				{
-					syntaxContext.ReportDiagnostic(
+					syntaxContext.ReportDiagnosticWithSuppressionCheck(
 						Diagnostic.Create(
 							Descriptors.PX1027_ForbiddenFieldsInDacDeclaration, iClass.Identifier.GetLocation(),
 							iClass.Identifier.Text));
@@ -152,7 +151,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 
 			foreach (var constructor in dacConstructors)
 			{
-				syntaxContext.ReportDiagnostic(
+				syntaxContext.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(
 						Descriptors.PX1028_ConstructorInDacDeclaration, constructor.Identifier.GetLocation()));
 			}

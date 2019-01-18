@@ -150,16 +150,40 @@ namespace Acuminator.Vsix.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetText(this ITextBuffer buffer, params string[] lines)
         {
-            var text = String.Join(Environment.NewLine, lines);
-            var edit = buffer.CreateEdit(EditOptions.DefaultMinimalChange, 0, null);
+			string text = string.Join(Environment.NewLine, lines);
+			ITextEdit edit = buffer.CreateEdit(EditOptions.DefaultMinimalChange, 0, null);
             edit.Replace(new Span(0, buffer.CurrentSnapshot.Length), text);
             edit.Apply();
         }
 
-        #endregion
+		/// <summary>
+		/// Get file path from the text buffer. Must be accessed only from UI thread.
+		/// </summary>
+		/// <param name="textBuffer">The textBuffer to act on.</param>
+		public static string GetFilePath(this ITextBuffer textBuffer)
+		{
+			textBuffer.ThrowOnNull(nameof(textBuffer));
+			Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+					
+			textBuffer.Properties.TryGetPropertySafe(typeof(Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer),
+													 out Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer bufferAdapter);
 
-        #region ITextView     
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			if (!(bufferAdapter is Microsoft.VisualStudio.Shell.Interop.IPersistFileFormat persistFileFormat))
+			{
+				return null;
+			}
+
+			if (persistFileFormat.GetCurFile(out string filePath, out _) == Microsoft.VisualStudio.VSConstants.S_OK)
+			{
+				return filePath;
+			}
+
+			return null;
+		}
+		#endregion
+
+		#region ITextView     
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static SnapshotPoint GetCaretPoint(this ITextView textView)
         {
             return textView.Caret.Position.BufferPosition;
@@ -211,7 +235,6 @@ namespace Acuminator.Vsix.Utilities
         {
             textView.TextBuffer.SetText(lines);
         }
-
         #endregion
 
         #region IProjectionBuffer
