@@ -82,13 +82,7 @@ namespace Acuminator.Utilities.Roslyn
 			else
 			{
 				var pxContext = new PXContext(_compilation);
-				var typesToBypass = new[]
-				{
-					pxContext.PXGraph.Type,
-					pxContext.PXView.Type,
-					pxContext.PXCache.Type
-				}
-				.ToHashSet();
+				var typesToBypass = GetTypesToBypass(pxContext).ToHashSet();
 
 				_bypassMethod = m => typesToBypass.Contains(m.ContainingType);
 			}
@@ -105,6 +99,16 @@ namespace Acuminator.Utilities.Roslyn
 
 			if (_settings == null)
 				_settings = CodeAnalysisSettings.Default;
+		}
+
+		protected virtual IEnumerable<INamedTypeSymbol> GetTypesToBypass(PXContext pxContext)
+		{
+			return new[]
+			{
+				pxContext.PXGraph.Type,
+				pxContext.PXView.Type,
+				pxContext.PXCache.Type
+			};
 		}
 
 		protected void ThrowIfCancellationRequested()
