@@ -58,7 +58,8 @@ namespace Acuminator.Vsix
                      Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
 	[ProvideOptionPage(typeof(GeneralOptionsPage), SettingsCategoryName, GeneralOptionsPage.PageTitle,
 					   categoryResourceID: 201, pageNameResourceID: 202, supportsAutomation: true, SupportsProfiles = true)]
-	[ProvideToolWindow(typeof(CodeMapWindow))]
+	[ProvideToolWindow(typeof(CodeMapWindow), MultiInstances = false, Transient = true, Orientation = ToolWindowOrientation.Left,
+					   Style = VsDockStyle.Linked)]
 	public sealed class AcuminatorVSPackage : Package
     {
 		private const string SettingsCategoryName = "Acuminator";
