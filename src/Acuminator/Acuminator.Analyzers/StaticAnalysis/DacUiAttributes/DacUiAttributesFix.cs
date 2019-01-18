@@ -1,6 +1,9 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using Acuminator.Utilities.Roslyn.Semantic;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
@@ -16,6 +19,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 	public class DacUiAttributesFix : CodeFixProvider
 	{
+		private const string PXCacheNameDefaultArgumentValue = "Enter an appropriate cache name for this DAC class";
+
+		private enum FixOption
+		{
+			AddPXCacheNameAttribute,
+			AddPXHiddenAttribute
+		}
+
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1094_DacShouldHaveUiAttribute.Id);
 
@@ -28,24 +39,59 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 			var addPXHiddenTitle = nameof(Resources.PX1094FixPXHiddenAttribute).GetLocalized().ToString();
 			var addPXHiddenAction = CodeAction.Create(
 				addPXHiddenTitle,
-				cancellation => AddPXHiddenAttribute(context.Document, context.Span, cancellation));
+				cancellation => AddAttributeToDac(context.Document, context.Span, FixOption.AddPXHiddenAttribute, cancellation));
 
 			context.RegisterCodeFix(addPXHiddenAction, context.Diagnostics);
 
 			var addPXCacheNameTitle = nameof(Resources.PX1094FixPXCacheNameAttribute).GetLocalized().ToString();
 			var addPXCacheNameAction = CodeAction.Create(
 				addPXCacheNameTitle,
-				cancellation => AddPXCacheNameAttribute(context.Document, context.Span, cancellation));
+				cancellation => AddAttributeToDac(context.Document, context.Span, FixOption.AddPXCacheNameAttribute, cancellation));
+
+			context.RegisterCodeFix(addPXCacheNameAction, context.Diagnostics);
 		}
 
-		private async Task<Document> AddPXHiddenAttribute(Document document, TextSpan span, CancellationToken cancellation)
+		private async Task<Document> AddAttributeToDac(Document document, TextSpan span, FixOption option, CancellationToken cancellation)
 		{
-			return document;
-		}
+			cancellation.ThrowIfCancellationRequested();
 
-		private async Task<Document> AddPXCacheNameAttribute(Document document, TextSpan span, CancellationToken cancellation)
-		{
-			return document;
+			var root = await document
+				.GetSyntaxRootAsync(cancellation)
+				.ConfigureAwait(false);
+
+			if (!(root?.FindNode(span) is ClassDeclarationSyntax node))
+			{
+				return document;
+			}
+
+			var semanticModel = await document
+				.GetSemanticModelAsync(cancellation)
+				.ConfigureAwait(false);
+
+			if (semanticModel == null)
+			{
+				return document;
+			}
+
+			var pxContext = new PXContext(semanticModel.Compilation);
+			var attributeList = option == FixOption.AddPXCacheNameAttribute ?
+				pxContext.AttributeTypes.PXCacheNameAttribute.GetAttributeList(CreateDefaultArgumentList()) :
+				pxContext.AttributeTypes.PXHiddenAttribute.GetAttributeList();
+			var newNode = node.AddAttributeLists(attributeList);
+			var newRoot = root.ReplaceNode(node, newNode);
+			var newDocument = document.WithSyntaxRoot(newRoot);
+
+			return newDocument;
+
+			AttributeArgumentListSyntax CreateDefaultArgumentList()
+			{
+				return SyntaxFactory.AttributeArgumentList(
+					SyntaxFactory.SingletonSeparatedList(
+						SyntaxFactory.AttributeArgument(
+							SyntaxFactory.LiteralExpression(
+								SyntaxKind.StringLiteralExpression,
+								SyntaxFactory.Literal(PXCacheNameDefaultArgumentValue)))));
+			}
 		}
 	}
 }

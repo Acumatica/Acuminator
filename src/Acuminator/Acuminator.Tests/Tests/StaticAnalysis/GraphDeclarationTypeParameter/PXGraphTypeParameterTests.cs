@@ -12,7 +12,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphDeclarationTypeParameter
 {
 	public class PXGraphDeclarationTypeParameterTests : CodeFixVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacUiAttributesAnalyzer();
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new PXGraphDeclarationTypeParameterAnalyzer();
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new PXGraphDeclarationTypeParameterFix();
 

@@ -20,6 +20,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		public INamedTypeSymbol PXImportAttribute => _compilation.GetTypeByMetadataName(typeof(PXImportAttribute).FullName);
 		public INamedTypeSymbol PXHiddenAttribute => _compilation.GetTypeByMetadataName(typeof(PXHiddenAttribute).FullName);
+		public INamedTypeSymbol PXCacheNameAttribute => _compilation.GetTypeByMetadataName(typeof(PXCacheNameAttribute).FullName);
 		public INamedTypeSymbol PXCopyPasteHiddenViewAttribute => _compilation.GetTypeByMetadataName(typeof(PXCopyPasteHiddenViewAttribute).FullName);
 		public INamedTypeSymbol PXOverrideAttribute => _compilation.GetTypeByMetadataName(typeof(PXOverrideAttribute).FullName);
 

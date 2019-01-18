@@ -88,8 +88,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
             }
 
             var pxContext = new PXContext(semanticModel.Compilation);
-			var pxButtonAttributeList = GetAttributeList(pxContext.AttributeTypes.PXButtonAttribute);
-			var pxUIFieldAttributeList = GetAttributeList(pxContext.AttributeTypes.PXUIFieldAttribute.Type);
+			var pxButtonAttributeList = pxContext.AttributeTypes.PXButtonAttribute.GetAttributeList();
+			var pxUIFieldAttributeList = pxContext.AttributeTypes.PXUIFieldAttribute.Type.GetAttributeList();
             var attributeListCollection = new List<AttributeListSyntax>();
 
             switch (option)
@@ -112,19 +112,5 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 
             return newDocument;
         }
-
-		private AttributeListSyntax GetAttributeList(INamedTypeSymbol type)
-		{
-			var node = SyntaxFactory.Attribute(
-				SyntaxFactory.IdentifierName(
-					type.Name))
-				.WithAdditionalAnnotations(Simplifier.Annotation);
-
-			var list = SyntaxFactory.AttributeList(
-				SyntaxFactory.SingletonSeparatedList(
-					node));
-
-			return list;
-		}
     }
 }

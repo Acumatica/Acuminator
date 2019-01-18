@@ -4,10 +4,6 @@ using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -23,18 +19,30 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacUiAttributes
 		[EmbeddedFileData("Dac_Bad.cs")]
 		public async Task Graph_ReportsDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
-				Descriptors.PX1094_DacShouldHaveUiAttribute.CreateFor(1, 1));
+				Descriptors.PX1094_DacShouldHaveUiAttribute.CreateFor(6, 15));
 
 		[Theory]
-		[EmbeddedFileData("Dac_Good.cs")]
-		public async Task Graph_DoesntReportDiagnostic(string source) =>
+		[EmbeddedFileData("Dac_Good_Hidden.cs")]
+		public async Task GraphWithPXHiddenAttribute_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("Dac_Good_CacheName.cs")]
+		public async Task GraphWithPXCacheNameAttribute_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
 		[EmbeddedFileData(
 			"Dac_Bad.cs",
-			"Dac_Good.cs")]
-		public async Task CodeFix(string actual, string expected) =>
-			await VerifyCSharpFixAsync(actual, expected);
+			"Dac_Good_Hidden.cs")]
+		public async Task AddPXHiddenAttribute_VerifyCodeFix(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected, 0);
+
+		[Theory]
+		[EmbeddedFileData(
+			"Dac_Bad.cs",
+			"Dac_Good_CacheName.cs")]
+		public async Task AddPXCacheNameAttribute_VerifyCodeFix(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected, 1);
 	}
 }

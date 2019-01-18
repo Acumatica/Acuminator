@@ -5,8 +5,10 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.Simplification;
 
 namespace Acuminator.Utilities.Roslyn.Semantic
 {
@@ -195,7 +197,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			return typeSymbol.ImplementsInterface(TypeNames.IBqlTable);
 		}
 
-        public static bool IsDacOrExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsDac(this ITypeSymbol typeSymbol, PXContext pxContext)
+		{
+			typeSymbol.ThrowOnNull(nameof(typeSymbol));
+
+			return typeSymbol.ImplementsInterface(pxContext.IBqlTableType);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsDacOrExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
         {
             typeSymbol.ThrowOnNull(nameof(typeSymbol));
             pxContext.ThrowOnNull(nameof(pxContext));
@@ -323,6 +334,32 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			ImmutableArray<INamedTypeSymbol> setupTypes = context.BQL.GetPXSetupTypes();
 			return bqlTypeSymbol.GetBaseTypesAndThis()
 								.Any(type => setupTypes.Contains(type));
+		}
+
+		/// <summary>
+		/// Create attribute list of the supplied type
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public static AttributeListSyntax GetAttributeList(this INamedTypeSymbol type, AttributeArgumentListSyntax argumentList = null)
+		{
+			type.ThrowOnNull(nameof(type));
+
+			var node = SyntaxFactory.Attribute(
+				SyntaxFactory.IdentifierName(
+					type.Name))
+				.WithAdditionalAnnotations(Simplifier.Annotation);
+
+			if (argumentList != null)
+			{
+				node = node.WithArgumentList(argumentList);
+			}
+
+			var list = SyntaxFactory.AttributeList(
+				SyntaxFactory.SingletonSeparatedList(
+					node));
+
+			return list;
 		}
 
 		public static TextSpan? GetBqlOperatorOutliningTextSpan(this ITypeSymbol typeSymbol, GenericNameSyntax bqlOperatorNode)
