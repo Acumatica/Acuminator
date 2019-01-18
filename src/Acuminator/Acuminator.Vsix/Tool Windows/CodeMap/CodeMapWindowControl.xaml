@@ -23,11 +23,19 @@
                 <ResourceDictionary>
                     <!--Converters-->                  
                     <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+                    <converters:BoolInversionConverter x:Key="boolInverter"/>
                     <codeMap:TreeNodeToTooltipConverter x:Key="treeNodeToTooltipConverter"/>
                     <codeMap:TreeNodeToImageSourceConverter x:Key="treeNodeToIconConverter"/>
 
+                    <!-- Bitmap Images -->
+                    <BitmapImage x:Key="RefreshImage" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+                                 UriSource="pack://application:,,,/Acuminator;component/Resources/Refresh.ico"/>
+                    
                     <!-- Image Style-->
                     <Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}"/>
+
+                    <!-- Button Style-->
+                    <Style TargetType="Button" BasedOn="{StaticResource vsButtonStyle}"/>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -54,11 +62,19 @@
             </ComboBox>
         </WrapPanel>-->
 
-        <ProgressBar Grid.Row="0" Margin="5,2"  IsIndeterminate="True"  MaxHeight="16" MinHeight="16"
+        <WrapPanel Grid.Row="0" Margin="5,2" Orientation="Horizontal">
+            <Button  VerticalAlignment="Center" ToolTip="Refresh Code Map" Padding="0,1"
+                     Command="{Binding Path=RefreshCodeMapCommand}" MaxHeight="20" MinHeight="20" MaxWidth="20" MinWidth="20"
+                     IsEnabled="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolInverter}}">
+                <Image Source="{StaticResource RefreshImage}" Style="{StaticResource vsImageStyle}"/>
+            </Button>
+
+            <ProgressBar IsIndeterminate="True"  MaxHeight="16" MinHeight="16" Margin="2,0,0,0"
                      HorizontalAlignment="Left" VerticalAlignment="Center" MaxWidth="150" MinWidth="150"
                      Visibility="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
                                           Converter={StaticResource boolToVisibilityConverter}}"/>
-
+        </WrapPanel>
+       
         <TreeView Grid.Row="1" DataContext="{Binding Path=Tree, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
                   ItemsSource="{Binding Path=RootItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                   Style="{StaticResource vsTreeViewStyle}" Margin="0,2">

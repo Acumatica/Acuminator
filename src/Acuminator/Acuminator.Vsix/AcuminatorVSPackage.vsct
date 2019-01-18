@@ -96,14 +96,14 @@
       </Button>-->
 
       <!--Tool Windows Commands-->
-      <!--<Button guid="guidAcuminatorCmdSet" id="OpenCodeMapWindowCommand" type="Button">
+      <Button guid="guidAcuminatorCmdSet" id="OpenCodeMapWindowCommand" type="Button">
         <Icon guid="guidCodeMapIcon" id="codemapIcon" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <CommandName>cmdidOpenCodeMapWindowCommand</CommandName>
           <ButtonText>CodeMap</ButtonText>
         </Strings>
-      </Button>-->
+      </Button>
     </Buttons>
 
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->

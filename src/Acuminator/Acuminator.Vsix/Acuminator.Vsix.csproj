@@ -359,6 +359,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Resource Include="Resources\Refresh.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\CodeMap\Action.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -482,6 +485,7 @@
     <Compile Include="Tool Windows\ViewModel\ToolWindowViewModelBase.cs" />
     <Compile Include="Tool Windows\ViewModel\ViewModelBase.cs" />
     <Compile Include="Utils\AcuminatorLogger.cs" />
+    <Compile Include="Utils\Constants\LegacyLanguageNames.cs" />
     <Compile Include="Utils\EditorExtensions.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheAsync.cs" />
     <Compile Include="Coloriser\Formats\ClassificationTypeDefinitions.cs" />
@@ -507,6 +511,7 @@
     </Compile>
     <Compile Include="Utils\SuppressionFileSystemService.cs" />
     <Compile Include="Utils\SuppressionFileWatcherService.cs" />
+    <Compile Include="Utils\WorkspaceChangedUtils.cs" />
     <Compile Include="Utils\WPF\Collection\ExtendedObservableCollection.cs" />
     <Compile Include="Utils\Navigation\VSDocumentNavigation.cs" />
     <Compile Include="Utils\VSServicesExtensions.cs" />
