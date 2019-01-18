@@ -1007,24 +1007,6 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change graph type parameter.
-        /// </summary>
-        public static string PX1093Fix {
-            get {
-                return ResourceManager.GetString("PX1093Fix", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Graph declaration should contain graph type as first type paramenter.
-        /// </summary>
-        public static string PX1093Title {
-            get {
-                return ResourceManager.GetString("PX1093Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Add the missing attribute or attributes to the action handler.
         /// </summary>
         public static string PX1092Fix {
@@ -1043,7 +1025,25 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add PXCacheName attribute.
+        ///   Looks up a localized string similar to Change graph type parameter.
+        /// </summary>
+        public static string PX1093Fix {
+            get {
+                return ResourceManager.GetString("PX1093Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Graph declaration should contain graph type as first type paramenter.
+        /// </summary>
+        public static string PX1093Title {
+            get {
+                return ResourceManager.GetString("PX1093Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the PXCacheName attribute.
         /// </summary>
         public static string PX1094FixPXCacheNameAttribute {
             get {
@@ -1052,7 +1052,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add PXHidden attribute.
+        ///   Looks up a localized string similar to Add the PXHidden attribute.
         /// </summary>
         public static string PX1094FixPXHiddenAttribute {
             get {
@@ -1061,7 +1061,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DAC should be decorated with either PXHidden attribute or PXCacheName attribute.
+        ///   Looks up a localized string similar to A DAC must be decorated with the PXHidden or PXCacheName attribute.
         /// </summary>
         public static string PX1094Title {
             get {
