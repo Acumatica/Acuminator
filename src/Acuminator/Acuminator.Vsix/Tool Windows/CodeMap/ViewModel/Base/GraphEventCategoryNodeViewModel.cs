@@ -47,7 +47,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (graphCategoryEvents.IsNullOrEmpty())
 				return;
 
-			var graphMemberViewModels = from eventInfo in graphCategoryEvents.OrderBy(member => member.DeclarationOrder)
+			var graphMemberViewModels = from eventInfo in graphCategoryEvents.OrderBy(member => member.Symbol.Name)
 										where eventInfo.Symbol.ContainingType == GraphViewModel.GraphSemanticModel.Symbol ||
 											  eventInfo.Symbol.ContainingType.OriginalDefinition ==
 											  GraphViewModel.GraphSemanticModel.Symbol.OriginalDefinition
