@@ -20,6 +20,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class CodeMapWindowViewModel : ToolWindowViewModelBase
 	{
+		private readonly EnvDTE.WindowEvents _windowEvents;
+
 		private CancellationTokenSource _cancellationTokenSource;
 
 		private DocumentModel _documentModel;
@@ -70,7 +72,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			_workspace = _documentModel.Document.Project.Solution.Workspace;
 			_workspace.WorkspaceChanged += OnWorkspaceChanged;
-			SubscribeOnWindowChangeEvent();
+
+			if (ThreadHelper.CheckAccess())
+			{
+				EnvDTE.DTE dte = AcuminatorVSPackage.Instance.GetService<EnvDTE.DTE>();
+				_windowEvents = dte?.Events?.WindowEvents;                                  //Store reference to DTE WindowEvents to prevent it from being GCed
+
+				if (_windowEvents != null)
+				{
+					_windowEvents.WindowActivated += WindowEvents_WindowActivated;
+				}
+			}		
 		}
 
 		public static CodeMapWindowViewModel InitCodeMap(IWpfTextView wpfTextView, Document document)
@@ -99,29 +111,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				_workspace.WorkspaceChanged -= OnWorkspaceChanged;
 			}
 
-			UnsubscribeFromWindowChangeEvent();
-		}
-
-		private void SubscribeOnWindowChangeEvent()
-		{
-			ThreadHelper.ThrowIfNotOnUIThread();
-			EnvDTE.DTE dte = AcuminatorVSPackage.Instance.GetService<EnvDTE.DTE>();
-
-			if (dte == null)
-				return;
-
-			dte.Events.WindowEvents.WindowActivated += WindowEvents_WindowActivated;
-		}
-
-		private void UnsubscribeFromWindowChangeEvent()
-		{
-			ThreadHelper.ThrowIfNotOnUIThread();
-			EnvDTE.DTE dte = AcuminatorVSPackage.Instance.GetService<EnvDTE.DTE>();
-
-			if (dte == null)
-				return;
-
-			dte.Events.WindowEvents.WindowActivated -= WindowEvents_WindowActivated;
+			if (_windowEvents != null)
+			{
+				_windowEvents.WindowActivated -= WindowEvents_WindowActivated;
+			}
 		}
 
 		private async Task RefreshCodeMapAsync()
