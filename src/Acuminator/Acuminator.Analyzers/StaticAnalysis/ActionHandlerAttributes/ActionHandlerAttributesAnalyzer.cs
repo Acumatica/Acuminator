@@ -17,7 +17,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 
         public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
         {
-            foreach (var actionHandler in pxGraph.ActionHandlers)
+            foreach (var actionHandler in pxGraph.DeclaredActionHandlers)
             {
                 context.CancellationToken.ThrowIfCancellationRequested();
 

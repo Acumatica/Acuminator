@@ -78,17 +78,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
             ITypeSymbol messageClassType = memberAccess.Expression
                                            .DescendantNodesAndSelf()
                                            .OfType<IdentifierNameSyntax>()
+										   .Reverse()
                                            .Select(i => SemanticModel.GetTypeInfo(i, Cancellation).Type)
                                            .Where(t => t != null && t.IsReferenceType)
                                            .FirstOrDefault();
             if (messageClassType == null)
                 return null;
 
-            IFieldSymbol messageMemberInfo = SemanticModel.GetSymbolInfo(messageMember, Cancellation).Symbol as IFieldSymbol;
-            if (messageMemberInfo == null || !messageMemberInfo.IsConst || messageMemberInfo.DeclaredAccessibility != Accessibility.Public)
-                return null;
+			if (!(SemanticModel.GetSymbolInfo(messageMember, Cancellation).Symbol is IFieldSymbol messageMemberInfo) ||
+				!messageMemberInfo.IsConst ||
+				messageMemberInfo.DeclaredAccessibility != Accessibility.Public)
+			{
+				return null;
+			}
 
-            _messageMember = messageMemberInfo;
+			_messageMember = messageMemberInfo;
             return messageClassType;
         }
 
