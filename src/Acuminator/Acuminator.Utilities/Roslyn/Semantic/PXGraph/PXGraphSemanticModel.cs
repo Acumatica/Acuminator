@@ -41,6 +41,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public ImmutableDictionary<string, ActionHandlerInfo> ActionHandlersByNames { get; }
 		public IEnumerable<ActionHandlerInfo> ActionHandlers => ActionHandlersByNames.Values;
 
+		/// <summary>
+		/// Action handlers which are declared a the graph represented by an instance of the class.
+		/// Use this property for diagnostics of graph action handlers
+		/// </summary>
+		public IEnumerable<ActionHandlerInfo> DeclaredActionHandlers => Type == GraphType.PXGraphExtension ?
+			ActionHandlers.Where(h => h?.Symbol.ContainingType.Equals(Symbol) ?? false) :
+			ActionHandlers;
+
+
 		private PXGraphSemanticModel(PXContext pxContext, GraphType type, INamedTypeSymbol symbol,
 									 CancellationToken cancellation = default)
 		{
