@@ -47,7 +47,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// </summary>
 		public IEnumerable<ActionHandlerInfo> DeclaredActionHandlers => Type == GraphType.None ?
 			Enumerable.Empty<ActionHandlerInfo>() :
-			ActionHandlers.Where(h => h?.Symbol.ContainingType.Equals(Symbol) ?? false);
+			ActionHandlers.Where(h => h?.Symbol?.ContainingType?.Equals(Symbol) ?? false);
 
 
 		private PXGraphSemanticModel(PXContext pxContext, GraphType type, INamedTypeSymbol symbol,
