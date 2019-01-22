@@ -10,6 +10,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	/// </summary>
 	public class GraphEventInfo : GraphNodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol>
 	{
+		private const string GenericEventName = "_";
+
 		public GraphEventInfo Base { get; }
 
 		public EventHandlerSignatureType SignatureType { get; }
@@ -23,12 +25,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 						 base(node, symbol, declarationOrder)
 		{
 			SignatureType = signatureType;
-			EventType = EventType;
-
-			var underscoreIndex = Symbol.Name.IndexOf('_');
-			DacName = underscoreIndex > 0
-				? Symbol.Name.Substring(0, underscoreIndex)
-				: string.Empty;
+			EventType = eventType;
+			DacName = GetDacName();
 		}
 
 		public GraphEventInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder,
@@ -38,6 +36,33 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			baseInfo.ThrowOnNull(nameof(baseInfo));
 
 			Base = baseInfo;
+		}
+
+		private string GetDacName()
+		{
+			switch (SignatureType)
+			{			
+				case EventHandlerSignatureType.Default:
+					var underscoreIndex = Symbol.Name.IndexOf('_');
+					return underscoreIndex > 0
+						? Symbol.Name.Substring(0, underscoreIndex)
+						: string.Empty;
+
+				case EventHandlerSignatureType.Generic:
+					if (Symbol.Name != GenericEventName || Symbol.Parameters.IsDefaultOrEmpty)
+						return string.Empty;
+
+					if (!(Symbol.Parameters[0]?.Type is INamedTypeSymbol firstParameter) || firstParameter.TypeArguments.IsDefaultOrEmpty)
+						return string.Empty;
+
+					return firstParameter.TypeArguments[0].IsDAC() 
+						? firstParameter.TypeArguments[0].Name
+						: string.Empty;
+					
+				case EventHandlerSignatureType.None:
+				default:
+					return string.Empty;
+			}
 		}
 	}
 }
