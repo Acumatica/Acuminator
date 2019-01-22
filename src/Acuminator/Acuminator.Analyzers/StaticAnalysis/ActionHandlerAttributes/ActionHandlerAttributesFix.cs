@@ -1,24 +1,21 @@
 ﻿using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Simplification;
 using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 {
-    internal enum FixOption
+	internal enum FixOption
     {
         AddPXButtonAttribute,
         AddPXUIFieldAttribute,
@@ -88,8 +85,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
             }
 
             var pxContext = new PXContext(semanticModel.Compilation);
-			var pxButtonAttributeList = GetAttributeList(pxContext.AttributeTypes.PXButtonAttribute);
-			var pxUIFieldAttributeList = GetAttributeList(pxContext.AttributeTypes.PXUIFieldAttribute.Type);
+			var pxButtonAttributeList = pxContext.AttributeTypes.PXButtonAttribute.GetAttributeList();
+			var pxUIFieldAttributeList = pxContext.AttributeTypes.PXUIFieldAttribute.Type.GetAttributeList();
             var attributeListCollection = new List<AttributeListSyntax>();
 
             switch (option)
@@ -112,19 +109,5 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 
             return newDocument;
         }
-
-		private AttributeListSyntax GetAttributeList(INamedTypeSymbol type)
-		{
-			var node = SyntaxFactory.Attribute(
-				SyntaxFactory.IdentifierName(
-					type.Name))
-				.WithAdditionalAnnotations(Simplifier.Annotation);
-
-			var list = SyntaxFactory.AttributeList(
-				SyntaxFactory.SingletonSeparatedList(
-					node));
-
-			return list;
-		}
     }
 }

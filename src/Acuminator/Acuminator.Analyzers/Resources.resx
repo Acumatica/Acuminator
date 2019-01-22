@@ -444,4 +444,16 @@
   <data name="PX1093Title" xml:space="preserve">
     <value>Graph declaration should contain graph type as first type paramenter</value>
   </data>
+  <data name="PX1094FixPXCacheNameAttribute" xml:space="preserve">
+    <value>Add the PXCacheName attribute</value>
+  </data>
+  <data name="PX1094FixPXHiddenAttribute" xml:space="preserve">
+    <value>Add the PXHidden attribute</value>
+  </data>
+  <data name="PX1094Title" xml:space="preserve">
+    <value>A DAC must be decorated with the PXHidden or PXCacheName attribute</value>
+  </data>
+  <data name="PX1094PXCacheNameDefaultArgumentValue" xml:space="preserve">
+    <value>Enter a cache name for this DAC</value>
+  </data>
 </root>
