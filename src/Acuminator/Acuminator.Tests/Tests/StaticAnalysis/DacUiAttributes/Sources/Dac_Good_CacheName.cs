@@ -2,7 +2,7 @@
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacUiAttributes.Sources
 {
-	[PXCacheName("Enter an appropriate cache name for this DAC class")]
+	[PXCacheName("Enter a cache name for this DAC")]
 	public class SOOrder : IBqlTable
 	{
 		[PXDBString(IsKey = true, InputMask = "")]

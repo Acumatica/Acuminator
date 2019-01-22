@@ -15,8 +15,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 	public class DacUiAttributesFix : CodeFixProvider
 	{
-		private const string PXCacheNameDefaultArgumentValue = "Enter an appropriate cache name for this DAC class";
-
 		private enum FixOption
 		{
 			AddPXCacheNameAttribute,
@@ -81,12 +79,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 
 			AttributeArgumentListSyntax CreateDefaultArgumentList()
 			{
+				var pxCacheNameDefaultArgumentValue = nameof(Resources.PX1094PXCacheNameDefaultArgumentValue).GetLocalized().ToString();
+
 				return SyntaxFactory.AttributeArgumentList(
 					SyntaxFactory.SingletonSeparatedList(
 						SyntaxFactory.AttributeArgument(
 							SyntaxFactory.LiteralExpression(
 								SyntaxKind.StringLiteralExpression,
-								SyntaxFactory.Literal(PXCacheNameDefaultArgumentValue)))));
+								SyntaxFactory.Literal(pxCacheNameDefaultArgumentValue)))));
 			}
 		}
 	}

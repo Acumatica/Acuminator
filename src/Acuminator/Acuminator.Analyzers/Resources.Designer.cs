@@ -1061,6 +1061,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enter a cache name for this DAC.
+        /// </summary>
+        public static string PX1094PXCacheNameDefaultArgumentValue {
+            get {
+                return ResourceManager.GetString("PX1094PXCacheNameDefaultArgumentValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A DAC must be decorated with the PXHidden or PXCacheName attribute.
         /// </summary>
         public static string PX1094Title {
