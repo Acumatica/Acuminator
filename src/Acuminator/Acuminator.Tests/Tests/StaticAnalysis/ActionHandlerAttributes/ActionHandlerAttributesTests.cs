@@ -31,6 +31,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ActionHandlerAttributes
         public async Task Handler_DoesntReportDiagnostic(string source) =>
             await VerifyCSharpDiagnosticAsync(source);
 
+		[Theory]
+		[EmbeddedFileData("Handlers_Good_PXOverride.cs")]
+		public async Task HandlerWithPXOverrideAttribute_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
         [Theory]
         [EmbeddedFileData(
             "Handlers_Bad.cs",

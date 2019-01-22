@@ -199,6 +199,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacWithBoundAndUnboundFields_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlers\ExternalCache.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseDataViewDelegate\Sources\BaseViewInvocation_ThroughView.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ActionHandlerAttributes\Sources\Handlers_Good_PXOverride.cs" />
     <Compile Include="Tests\StaticAnalysis\CallingBaseActionHandler\CallingBaseActionHandlerFromOverrideHandlerTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionHandlerInvocation_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionHandlerInvocation_Good.cs" />

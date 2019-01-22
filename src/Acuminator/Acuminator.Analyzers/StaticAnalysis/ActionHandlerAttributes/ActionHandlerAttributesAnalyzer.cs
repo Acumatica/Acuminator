@@ -26,20 +26,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
                     continue;
                 }
 
-				CheckActionHandler(context, pxContext, actionHandler.Symbol, actionHandler.Node);
+				CheckActionHandler(context, pxContext, actionHandler.Symbol, actionHandler.Node, pxGraph.Type);
             }
         }
 
 		private void CheckActionHandler(SymbolAnalysisContext context, PXContext pxContext,
-			IMethodSymbol symbol, MethodDeclarationSyntax node)
+			IMethodSymbol symbol, MethodDeclarationSyntax node, GraphType graphType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			var attributes = symbol.GetAttributes();
 			var pxUIFieldAttributeType = pxContext.AttributeTypes.PXUIFieldAttribute.Type;
 			var pxButtonAttributeType = pxContext.AttributeTypes.PXButtonAttribute;
+			var pxOverrideAttributeType = pxContext.AttributeTypes.PXOverrideAttribute;
 			var hasPXUIFieldAttribute = false;
 			var hasPXButtonAttribute = false;
+			var hasPXOverrideAttribute = false;
 
 			foreach (var attr in attributes)
 			{
@@ -61,6 +63,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 				}
 
 				if (hasPXUIFieldAttribute && hasPXButtonAttribute)
+				{
+					return;
+				}
+
+				if (attr.AttributeClass.InheritsFromOrEquals(pxOverrideAttributeType))
+				{
+					hasPXOverrideAttribute = true;
+				}
+
+				if (graphType == GraphType.PXGraphExtension && hasPXOverrideAttribute)
 				{
 					return;
 				}
