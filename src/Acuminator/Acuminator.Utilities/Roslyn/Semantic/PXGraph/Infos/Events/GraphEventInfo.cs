@@ -10,7 +10,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	/// </summary>
 	public class GraphEventInfo : GraphNodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol>
 	{
-		private const string GenericEventName = "_";
+		public const string GenericEventName = "_";
 
 		public GraphEventInfo Base { get; }
 
