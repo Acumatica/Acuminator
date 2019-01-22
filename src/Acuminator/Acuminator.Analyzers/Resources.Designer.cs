@@ -1007,6 +1007,24 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add the missing attribute or attributes to the action handler.
+        /// </summary>
+        public static string PX1092Fix {
+            get {
+                return ResourceManager.GetString("PX1092Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Action handlers must be decorated with the PXUIField attribute and the PXButton attribute or its successors.
+        /// </summary>
+        public static string PX1092Title {
+            get {
+                return ResourceManager.GetString("PX1092Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Change graph type parameter.
         /// </summary>
         public static string PX1093Fix {
@@ -1025,20 +1043,38 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add the missing attribute or attributes to the action handler.
+        ///   Looks up a localized string similar to Add the PXCacheName attribute.
         /// </summary>
-        public static string PX1092Fix {
+        public static string PX1094FixPXCacheNameAttribute {
             get {
-                return ResourceManager.GetString("PX1092Fix", resourceCulture);
+                return ResourceManager.GetString("PX1094FixPXCacheNameAttribute", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Action handlers must be decorated with the PXUIField attribute and the PXButton attribute or its successors.
+        ///   Looks up a localized string similar to Add the PXHidden attribute.
         /// </summary>
-        public static string PX1092Title {
+        public static string PX1094FixPXHiddenAttribute {
             get {
-                return ResourceManager.GetString("PX1092Title", resourceCulture);
+                return ResourceManager.GetString("PX1094FixPXHiddenAttribute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter a cache name for this DAC.
+        /// </summary>
+        public static string PX1094PXCacheNameDefaultArgumentValue {
+            get {
+                return ResourceManager.GetString("PX1094PXCacheNameDefaultArgumentValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A DAC must be decorated with the PXHidden or PXCacheName attribute.
+        /// </summary>
+        public static string PX1094Title {
+            get {
+                return ResourceManager.GetString("PX1094Title", resourceCulture);
             }
         }
     }

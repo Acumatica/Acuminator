@@ -5,8 +5,10 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.Simplification;
 
 namespace Acuminator.Utilities.Roslyn.Semantic
 {
@@ -195,7 +197,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			return typeSymbol.ImplementsInterface(TypeNames.IBqlTable);
 		}
 
-        public static bool IsDacOrExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsDac(this ITypeSymbol typeSymbol, PXContext pxContext)
+		{
+			typeSymbol.ThrowOnNull(nameof(typeSymbol));
+
+			return typeSymbol.ImplementsInterface(pxContext.IBqlTableType);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsDacOrExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
         {
             typeSymbol.ThrowOnNull(nameof(typeSymbol));
             pxContext.ThrowOnNull(nameof(pxContext));

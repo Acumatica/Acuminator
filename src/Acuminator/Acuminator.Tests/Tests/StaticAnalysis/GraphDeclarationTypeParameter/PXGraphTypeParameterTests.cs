@@ -1,4 +1,5 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Analyzers.StaticAnalysis.DacUiAttributes;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;

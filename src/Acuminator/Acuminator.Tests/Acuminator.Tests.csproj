@@ -216,6 +216,10 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateInGraphExtensionOwnView.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateInGraphExtensionBaseView.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateInGraphExtensionOverride.cs" />
+    <Compile Include="Tests\StaticAnalysis\DacUiAttributes\DacUiAttributesTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacUiAttributes\Sources\Dac_Bad.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacUiAttributes\Sources\Dac_Good_CacheName.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacUiAttributes\Sources\Dac_Good_Hidden.cs" />
     <Compile Include="Tests\StaticAnalysis\DatabaseQueries\DatabaseQueriesInPXGraphInitializationTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\PXGraphConstructor.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\CreateInstanceDelegate.cs" />
