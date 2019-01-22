@@ -188,6 +188,7 @@
     <Compile Include="Roslyn\Syntax\MethodDeclarationUtils.cs" />
     <Compile Include="Roslyn\Syntax\ParameterUsagesRewriter.cs" />
     <Compile Include="Roslyn\Syntax\PXGraph\GraphSyntaxUtils.cs" />
+    <Compile Include="Roslyn\Syntax\SyntaxNodeGenerationUtils.cs" />
     <Compile Include="Roslyn\Syntax\SyntaxTreeUtils.cs" />
     <Compile Include="Roslyn\Syntax\RoslynSyntaxUtils.cs" />
     <Compile Include="Roslyn\BqlModifyingMethods.cs" />
