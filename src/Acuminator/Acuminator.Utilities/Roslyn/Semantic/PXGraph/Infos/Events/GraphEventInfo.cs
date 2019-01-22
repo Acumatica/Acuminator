@@ -25,7 +25,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 						 base(node, symbol, declarationOrder)
 		{
 			SignatureType = signatureType;
-			EventType = EventType;
+			EventType = eventType;
 			DacName = GetDacName();
 		}
 
