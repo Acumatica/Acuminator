@@ -23,7 +23,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			if (MemberCategory.GraphSemanticModel.ViewDelegatesByNames.TryGetValue(MemberSymbol.Name, out DataViewDelegateInfo viewDelegate))
 			{
-				Children.Add(new GraphMemberNodeViewModel(MemberCategory, viewDelegate));
+				Children.Add(new GraphMemberInfoNodeViewModel(this, viewDelegate, GraphMemberInfoType.ViewDelegate));
 			}
 		}
 	}
