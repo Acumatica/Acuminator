@@ -73,12 +73,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				case GraphMemberType.View:
 					return new ViewCategoryNodeViewModel(graphViewModel, isExpanded);
-				case GraphMemberType.ViewDelegate:
-					return new ViewDelegateCategoryNodeViewModel(graphViewModel, isExpanded);				
 				case GraphMemberType.Action:
 					return new ActionCategoryNodeViewModel(graphViewModel, isExpanded);
-				case GraphMemberType.ActionHandler:
-					return new ActionHandlerCategoryNodeViewModel(graphViewModel, isExpanded);
 				case GraphMemberType.CacheAttached:
 					return new CacheAttachedCategoryNodeViewModel(graphViewModel, isExpanded);
 				case GraphMemberType.RowEvent:

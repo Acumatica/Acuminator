@@ -10,9 +10,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	public enum GraphMemberType
 	{
 		View,
-		ViewDelegate,
 		Action,
-		ActionHandler,
 		CacheAttached,
 		RowEvent,
 		FieldEvent,
@@ -25,9 +23,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private static readonly Dictionary<GraphMemberType, string> _descriptions = new Dictionary<GraphMemberType, string>
 		{
 			{ GraphMemberType.View, "Views" },
-			{ GraphMemberType.ViewDelegate, "View Delegates" },
 			{ GraphMemberType.Action, "Actions" },
-			{ GraphMemberType.ActionHandler, "Action Handlers" },
 			{ GraphMemberType.CacheAttached, "Cache Attached" },
 			{ GraphMemberType.RowEvent, "Row Events" },
 			{ GraphMemberType.FieldEvent, "Field Events" },
