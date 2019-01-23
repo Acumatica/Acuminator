@@ -67,28 +67,28 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			if (!validSpecialTypes)
 				return;
 
-			CheckForPXDBCalcedAndUnboundTypeAttributes(symbolContext, pxContext, fieldAttributesRegister, property);
+			CheckForPXDBCalcedAndUnboundTypeAttributes(symbolContext, pxContext, fieldAttributesRegister, property, attributesWithInfos);
 
 			await CheckForFieldTypeAttributesAsync(property, symbolContext, pxContext, attributesWithInfos)
 					.ConfigureAwait(false);
 		}
 
 		private static void CheckForPXDBCalcedAndUnboundTypeAttributes(SymbolAnalysisContext symbolContext, PXContext pxContext,
-			FieldTypeAttributesRegister fieldAttributesRegister, IPropertySymbol propertySymbol)
+			FieldTypeAttributesRegister fieldAttributesRegister, IPropertySymbol propertySymbol,
+			List<(AttributeData Attribute, List<FieldTypeAttributeInfo> Infos)> attributesWithInfos)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			var attributes = propertySymbol.GetAttributes();
 			var hasUnboundTypeAttribute = false;
 			var hasPXDBCalcedAttribute = false;
 
-			foreach (var attr in attributes)
+			foreach (var (attribute, info) in attributesWithInfos)
 			{
-				if (attr.AttributeClass.Equals(pxContext.FieldAttributes.PXDBCalcedAttribute))
+				if (attribute.AttributeClass.Equals(pxContext.FieldAttributes.PXDBCalcedAttribute))
 				{
 					hasPXDBCalcedAttribute = true;
 				}
-				else if (fieldAttributesRegister.UnboundTypeAttributes.Contains(attr.AttributeClass))
+				else if (fieldAttributesRegister.UnboundTypeAttributes.Contains(attribute.AttributeClass))
 				{
 					hasUnboundTypeAttribute = true;
 				}
