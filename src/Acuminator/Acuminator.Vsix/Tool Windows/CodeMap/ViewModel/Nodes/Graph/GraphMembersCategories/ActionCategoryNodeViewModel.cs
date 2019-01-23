@@ -20,5 +20,22 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		protected override IEnumerable<GraphNodeSymbolItem> GetCategoryGraphNodeSymbols() => GraphSemanticModel.Actions;
+
+		protected override void AddCategoryMembers()
+		{
+			IEnumerable<GraphNodeSymbolItem> categoryTreeNodes = GetCategoryGraphNodeSymbols();
+
+			if (categoryTreeNodes.IsNullOrEmpty())
+				return;
+
+			var graphMemberViewModels = from actionInfo in categoryTreeNodes.OfType<ActionInfo>()
+										where actionInfo.SymbolBase.ContainingType == GraphViewModel.GraphSemanticModel.Symbol ||
+											  actionInfo.SymbolBase.ContainingType.OriginalDefinition ==
+											  GraphViewModel.GraphSemanticModel.Symbol.OriginalDefinition
+										orderby actionInfo.SymbolBase.Name
+										select new ActionNodeViewModel(this, actionInfo);
+
+			Children.AddRange(graphMemberViewModels);
+		}
 	}
 }
