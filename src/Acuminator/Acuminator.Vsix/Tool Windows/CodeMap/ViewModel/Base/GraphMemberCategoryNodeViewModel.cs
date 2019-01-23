@@ -55,10 +55,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (categoryTreeNodes.IsNullOrEmpty())
 				return;
 
-			var graphMemberViewModels = from graphMemberInfo in categoryTreeNodes.OrderBy(member => member.SymbolBase.Name)
+			var graphMemberViewModels = from graphMemberInfo in categoryTreeNodes
 										where graphMemberInfo.SymbolBase.ContainingType == GraphViewModel.GraphSemanticModel.Symbol ||
 											  graphMemberInfo.SymbolBase.ContainingType.OriginalDefinition ==
 											  GraphViewModel.GraphSemanticModel.Symbol.OriginalDefinition
+										orderby graphMemberInfo.SymbolBase.Name
 										select new GraphMemberNodeViewModel(this, graphMemberInfo);
 
 			Children.AddRange(graphMemberViewModels);
