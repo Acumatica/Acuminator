@@ -244,7 +244,11 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 		public static DiagnosticDescriptor PX1093_GraphDeclarationViolation { get; } =
 			Rule("PX1093", nameof(Resources.PX1093Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
 		public static DiagnosticDescriptor PX1094_DacShouldHaveUiAttribute { get; } =
 			Rule("PX1094", nameof(Resources.PX1094Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
-    }
+
+		public static DiagnosticDescriptor PX1095_PXDBCalcedMustBeAccompaniedNonDBTypeAttribute { get; } =
+			Rule("PX1095", nameof(Resources.PX1095Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+	}
 }
