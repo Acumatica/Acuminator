@@ -450,8 +450,8 @@
     <Compile Include="Tool Windows\CodeMap\Convertes\TreeNodeToTooltipConverter.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphMemberInfoType.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphMemberType.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Base\GraphEventCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Base\GraphEventNodeByDacConstructor.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\GraphMembers\Base\GraphEventCategoryNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\GraphMembers\Base\GraphEventNodeByDacConstructor.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\CodeMapWindowViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\CodeMapWindow.cs" />
     <Compile Include="Tool Windows\CodeMap\CodeMapWindowControl.xaml.cs">
@@ -459,7 +459,7 @@
     </Compile>
     <Compile Include="Tool Windows\CodeMap\OpenCodeMapWindowCommand.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\DocumentModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Base\GraphMemberCategoryNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\GraphMembers\Base\GraphMemberCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\AttributeNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\DacGroupingNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\GraphMembersCategories\FieldEventCategoryNodeViewModel.cs" />
