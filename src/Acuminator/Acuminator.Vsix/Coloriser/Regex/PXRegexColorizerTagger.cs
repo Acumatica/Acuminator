@@ -20,16 +20,16 @@ namespace Acuminator.Vsix.Coloriser
 
         public override TaggerType TaggerType => TaggerType.RegEx;
 
-        private readonly TagsCacheSync<IClassificationTag> classificationTagsCache = new TagsCacheSync<IClassificationTag>();
+        private readonly TagsCacheSync<IClassificationTag> _classificationTagsCache = new TagsCacheSync<IClassificationTag>();
 
-        protected internal override ITagsCache<IClassificationTag> ClassificationTagsCache => classificationTagsCache;
+        protected internal override ITagsCache<IClassificationTag> ClassificationTagsCache => _classificationTagsCache;
 
-        private readonly TagsCacheSync<IOutliningRegionTag> outliningTagsCache = new TagsCacheSync<IOutliningRegionTag>(capacity: 0);
+        private readonly TagsCacheSync<IOutliningRegionTag> _outliningTagsCache = new TagsCacheSync<IOutliningRegionTag>(capacity: 0);
 
-        protected internal override ITagsCache<IOutliningRegionTag> OutliningsTagsCache => outliningTagsCache;
+        protected internal override ITagsCache<IOutliningRegionTag> OutliningsTagsCache => _outliningTagsCache;
 
 
-        private readonly ConcurrentBag<ITagSpan<IClassificationTag>> tagsBag = new ConcurrentBag<ITagSpan<IClassificationTag>>();
+        private readonly ConcurrentBag<ITagSpan<IClassificationTag>> _tagsBag = new ConcurrentBag<ITagSpan<IClassificationTag>>();
 		
         internal PXRegexColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider aProvider, bool subscribeToSettingsChanges, 
                                         bool useCacheChecking) :
@@ -54,7 +54,7 @@ namespace Acuminator.Vsix.Coloriser
         protected internal override IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot)
         {
             GetTagsFromSnapshot(snapshot);
-            classificationTagsCache.AddTags(tagsBag);
+            _classificationTagsCache.AddTags(_tagsBag);
             ClassificationTagsCache.CompleteProcessing();
             OutliningsTagsCache.CompleteProcessing();
             return ClassificationTagsCache;
@@ -63,7 +63,7 @@ namespace Acuminator.Vsix.Coloriser
         protected internal override void ResetCacheAndFlags(ITextSnapshot newCache)
         {
             base.ResetCacheAndFlags(newCache);
-            tagsBag.Clear();
+            _tagsBag.Clear();
         }
 
         private void GetTagsFromSnapshot(ITextSnapshot newSnapshot)
@@ -117,7 +117,7 @@ namespace Acuminator.Vsix.Coloriser
 			Span span = new Span(offset, selectOp.Length);
 			SnapshotSpan snapshotSpan = new SnapshotSpan(newSnapshot, span);
 			var tag = new TagSpan<IClassificationTag>(snapshotSpan, new ClassificationTag(Provider[PXCodeType.BqlOperator]));
-			tagsBag.Add(tag);
+			_tagsBag.Add(tag);
 		}
 
 		private void GetBqlParameterTags(ITextSnapshot newSnapshot, string bqlCommand, int offset)
@@ -176,7 +176,7 @@ namespace Acuminator.Vsix.Coloriser
 			Span span = new Span(startIndex, tagContent.Length);
 			SnapshotSpan snapshotSpan = new SnapshotSpan(newSnapshot, span);
 			var tag = new TagSpan<IClassificationTag>(snapshotSpan, new ClassificationTag(classType));
-			tagsBag.Add(tag);
+			_tagsBag.Add(tag);
 		}       
     }
 }

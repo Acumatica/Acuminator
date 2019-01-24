@@ -19,14 +19,14 @@ namespace Acuminator.Vsix.Coloriser
     {
         public override TaggerType TaggerType => TaggerType.General;
 
-        private readonly Dictionary<TaggerType, PXColorizerTaggerBase> taggersByType;
+        private readonly Dictionary<TaggerType, PXColorizerTaggerBase> _taggersByType;
 
         protected internal override bool UseAsyncTagging
         {
             get
             {
                 TaggerType currentTaggerType = GetCurrentTaggerTypeFromSettings();
-                return taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase tagger) 
+                return _taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase tagger) 
                     ? tagger.UseAsyncTagging
                     : false;
             }
@@ -37,7 +37,7 @@ namespace Acuminator.Vsix.Coloriser
             get
             {
                 TaggerType currentTaggerType = GetCurrentTaggerTypeFromSettings();
-                return taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase tagger)
+                return _taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase tagger)
                     ? tagger.ClassificationTagsCache
                     : throw new NotSupportedException($"Tagger type {currentTaggerType} not supported");
             }
@@ -48,7 +48,7 @@ namespace Acuminator.Vsix.Coloriser
             get
             {
                 TaggerType currentTaggerType = GetCurrentTaggerTypeFromSettings();
-                return taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase tagger)
+                return _taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase tagger)
                     ? tagger.OutliningsTagsCache
                     : throw new NotSupportedException($"Tagger type {currentTaggerType} not supported");
             }
@@ -63,7 +63,7 @@ namespace Acuminator.Vsix.Coloriser
             PXColorizerTaggerBase regexTagger = new PXRegexColorizerTagger(buffer, aProvider, subscribeToSettingsChanges: false, 
                                                                            useCacheChecking: false);
 
-            taggersByType = new Dictionary<TaggerType, PXColorizerTaggerBase>(capacity: 2)
+            _taggersByType = new Dictionary<TaggerType, PXColorizerTaggerBase>(capacity: 2)
             {
                 { roslynTagger.TaggerType, roslynTagger },
                 { regexTagger.TaggerType, regexTagger }
@@ -74,7 +74,7 @@ namespace Acuminator.Vsix.Coloriser
         {
             TaggerType currentTaggerType = GetCurrentTaggerTypeFromSettings();
 
-            if (!taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase activeTagger))
+            if (!_taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase activeTagger))
                 return Enumerable.Empty<ITagSpan<IClassificationTag>>();
                     
             return activeTagger.GetTagsSynchronousImplementation(snapshot);
@@ -85,7 +85,7 @@ namespace Acuminator.Vsix.Coloriser
         {
             TaggerType currentTaggerType = GetCurrentTaggerTypeFromSettings();
 
-            if (!taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase activeTagger))
+            if (!_taggersByType.TryGetValue(currentTaggerType, out PXColorizerTaggerBase activeTagger))
                 return Task.FromResult(Enumerable.Empty<ITagSpan<IClassificationTag>>());
 
             if (activeTagger.UseAsyncTagging)
@@ -101,7 +101,7 @@ namespace Acuminator.Vsix.Coloriser
 
         public override void Dispose()
         {
-            taggersByType.Values.Distinct()
+            _taggersByType.Values.Distinct()
                                 .ForEach(tagger => tagger.Dispose());
             base.Dispose();
         }
@@ -109,7 +109,7 @@ namespace Acuminator.Vsix.Coloriser
         protected internal override void ResetCacheAndFlags(ITextSnapshot newCache)
         {
             base.ResetCacheAndFlags(newCache);
-            taggersByType.Values.ForEach(tagger => tagger.ResetCacheAndFlags(newCache));
+            _taggersByType.Values.ForEach(tagger => tagger.ResetCacheAndFlags(newCache));
         }
 
         protected TaggerType GetCurrentTaggerTypeFromSettings()

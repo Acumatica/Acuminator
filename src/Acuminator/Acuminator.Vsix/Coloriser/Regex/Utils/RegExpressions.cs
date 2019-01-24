@@ -8,7 +8,7 @@ namespace Acuminator.Vsix.Coloriser
 {
 	public static class RegExpressions
 	{
-		private static readonly string[] bqlSelectNames = new[]
+		private static readonly string[] _bqlSelectNames = new[]
 		{
                "(PX)?Select(GroupBy)?(OrderBy)?",
                 @"Search\d?",
@@ -20,7 +20,7 @@ namespace Acuminator.Vsix.Coloriser
                 "PX(Filtered)?Processing(Join)?"
         };
 
-		private static readonly string[] bqlParameterNames = new[]
+		private static readonly string[] _bqlParameterNames = new[]
 		{
 			"Current2?",
 			"Optional2?",
@@ -30,9 +30,9 @@ namespace Acuminator.Vsix.Coloriser
 		private const string DacWithFieldPattern = @"<\W*?([A-Z]+\w*\.)?([A-Z]+\w*)+\d?\.\W*([a-z]+\w*\d*)([>|,])?";
         private const string DacOrConstantPattern = @"<\W*?([A-Z]+\w*\.)?([A-Z]+\w*\d?)\W*(>|\,)";
         private const string DacOperandPattern = @"(,|<)?([A-Z]+\w*)\d?<";
-        private const string bqlAllowedSymbols = @"[^;\{\}\(\)\[\]]";
-        private const string afterBqlAllowedSymbols = @"[^;\{\}\(\)\[\]]";
-        private const string bqlEndingSymbol = @"(;|\{|\]|\[|\(|\))";
+        private const string BqlAllowedSymbols = @"[^;\{\}\(\)\[\]]";
+        private const string AfterBqlAllowedSymbols = @"[^;\{\}\(\)\[\]]";
+        private const string BqlEndingSymbol = @"(;|\{|\]|\[|\(|\))";
 
         public static Regex DacWithFieldRegex { get; } = new Regex(DacWithFieldPattern, RegexOptions.Compiled);
 
@@ -46,9 +46,9 @@ namespace Acuminator.Vsix.Coloriser
 
 		static RegExpressions()
 		{
-			string bqlSelectCommandPattern = "(" + string.Join("|", bqlSelectNames) + ")" + $"<{bqlAllowedSymbols}*>" + @"\.?" +
-                                             $"{afterBqlAllowedSymbols}*?" + bqlEndingSymbol;
-            string bqlParametersPattern = "(" + string.Join("|", bqlParameterNames) + ")";
+			string bqlSelectCommandPattern = "(" + string.Join("|", _bqlSelectNames) + ")" + $"<{BqlAllowedSymbols}*>" + @"\.?" +
+                                             $"{AfterBqlAllowedSymbols}*?" + BqlEndingSymbol;
+            string bqlParametersPattern = "(" + string.Join("|", _bqlParameterNames) + ")";
             BQLSelectCommandRegex = new Regex(bqlSelectCommandPattern, RegexOptions.Compiled | RegexOptions.Singleline);
             BQLParametersRegex = new Regex(bqlParametersPattern, RegexOptions.Compiled);
         }
