@@ -14,15 +14,15 @@ namespace Acuminator.Vsix.Coloriser
     public class TagsCacheAsync<TTag> : ITagsCache<TTag>
     where TTag : ITag
     {
-        private const int defaultCapacity = 64;
+        private const int DefaultCapacity = 64;
         
         protected CancellationToken CancellationToken { get; set;  }
 
         public bool IsCompleted { get; private set; }
 
-        private readonly ConcurrentQueue<ITagSpan<TTag>> tagsQueue = new ConcurrentQueue<ITagSpan<TTag>>();
+        private readonly ConcurrentQueue<ITagSpan<TTag>> _tagsQueue = new ConcurrentQueue<ITagSpan<TTag>>();
 
-        public IReadOnlyCollection<ITagSpan<TTag>> ProcessedTags => tagsQueue;
+        public IReadOnlyCollection<ITagSpan<TTag>> ProcessedTags => _tagsQueue;
         
         public int Count => ProcessedTags.Count;
 
@@ -46,7 +46,7 @@ namespace Acuminator.Vsix.Coloriser
 
         public void Reset()
         {
-            tagsQueue.Clear();
+            _tagsQueue.Clear();
 
             IsCompleted = false;                    
         }
@@ -56,7 +56,7 @@ namespace Acuminator.Vsix.Coloriser
             if (tag == null || CancellationToken.IsCancellationRequested)
                 return;
 
-            tagsQueue.Enqueue(tag);
+            _tagsQueue.Enqueue(tag);
         }
 
         public void AddTags(IEnumerable<ITagSpan<TTag>> tags)
@@ -71,7 +71,7 @@ namespace Acuminator.Vsix.Coloriser
                 if (CancellationToken.IsCancellationRequested)
                     return;
 
-                tagsQueue.Enqueue(tag);
+                _tagsQueue.Enqueue(tag);
             }
         }
 

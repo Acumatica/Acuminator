@@ -13,15 +13,15 @@ namespace Acuminator.Vsix.Coloriser
 {
     public class BackgroundTagging : IDisposable
     {
-        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
-        public CancellationToken CancellationToken => cancellationTokenSource.Token;
+        public CancellationToken CancellationToken => _cancellationTokenSource.Token;
 
-        public bool IsCancellationRequested => cancellationTokenSource.IsCancellationRequested;
+        public bool IsCancellationRequested => _cancellationTokenSource.IsCancellationRequested;
 
         public Task TaggingTask { get; private set; }
 
-        private bool isDisposed;
+        private bool _isDisposed;
 
         private BackgroundTagging()
         {
@@ -50,19 +50,19 @@ namespace Acuminator.Vsix.Coloriser
             if (!IsTaskRunning() || IsCancellationRequested)
                 return;
 
-            cancellationTokenSource.Cancel();
+            _cancellationTokenSource.Cancel();
         }
 
         public bool IsTaskRunning() => TaggingTask != null && !TaggingTask.IsCanceled && !TaggingTask.IsCompleted && !TaggingTask.IsFaulted;
 
         public void Dispose()
         {
-            if (isDisposed)
+            if (_isDisposed)
                 return;
 
-            isDisposed = true;
+            _isDisposed = true;
             CancelTagging();
-            cancellationTokenSource.Dispose();
+            _cancellationTokenSource.Dispose();
         }
     }
 }
