@@ -22,8 +22,6 @@ namespace Acuminator.Vsix.Logger
 	/// </summary>
 	internal class AcuminatorLogger : IDisposable
 	{
-		public const string PackageName = "Acuminator";
-
 		private readonly string AnalyzersDll = typeof(PXDiagnosticAnalyzer).Assembly.GetName().Name;
 		private readonly string UtilitiesDll = typeof(CodeAnalysisSettings).Assembly.GetName().Name;
 		private readonly string VsixDll = typeof(AcuminatorLogger).Assembly.GetName().Name;
@@ -58,7 +56,7 @@ namespace Acuminator.Vsix.Logger
 				return;
 
 			string logMessage = CreateLogMessageFromException(exception, currentDocument);
-			ActivityLog.TryLogError(PackageName, logMessage);
+			ActivityLog.TryLogError(AcuminatorVSPackage.PackageName, logMessage);
 		}
 
 		private string CreateLogMessageFromException(Exception exception, Document currentDocument)

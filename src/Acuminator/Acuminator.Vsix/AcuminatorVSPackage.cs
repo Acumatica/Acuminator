@@ -62,6 +62,7 @@ namespace Acuminator.Vsix
 					   Style = VsDockStyle.Linked)]
 	public sealed class AcuminatorVSPackage : Package
     {
+		public const string PackageName = "Acuminator";
 		private const string SettingsCategoryName = "Acuminator";
 
 		/// <summary>
@@ -242,7 +243,7 @@ namespace Acuminator.Vsix
 		    }
 		    catch (Exception ex)
 		    {
-			    ActivityLog.TryLogError(AcuminatorLogger.PackageName,
+			    ActivityLog.TryLogError(PackageName,
 				    $"An error occurred during the logger initialization ({ex.GetType().Name}, message: \"{ex.Message}\")");
 		    }
 	    }
