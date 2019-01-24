@@ -41,8 +41,7 @@
      <Button guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" type="Button">
         <Icon guid="guidAcumaticaIcon" id="acumaticaIcon" />
         <CommandFlag>DefaultDisabled</CommandFlag>
-        <!--<CommandFlag>DefaultInvisible</CommandFlag>
-					  <CommandFlag>DynamicVisibility</CommandFlag>-->
+				<CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <CommandName>cmdidGoToDeclarationOrHandlerCommand</CommandName>
           <ButtonText>Go To Action/View Declaration/Handler</ButtonText>
@@ -65,6 +64,7 @@
       <Button guid="guidAcuminatorCmdSet" id="OpenCodeMapWindowCommand" type="Button">
         <Icon guid="guidCodeMapIcon" id="codemapIcon" />
         <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <CommandName>cmdidOpenCodeMapWindowCommand</CommandName>
           <ButtonText>CodeMap</ButtonText>
