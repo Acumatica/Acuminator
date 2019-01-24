@@ -16,13 +16,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 	{
 		protected class ArrayElemCountLocalVariableResolver : BqlInvocationDataFlowAnalyserBase
 		{
-			private readonly ResolveArrayElemCountMethodBodyWalker methodBodyWalker;
+			private readonly ResolveArrayElemCountMethodBodyWalker _methodBodyWalker;
 
 			public ArrayElemCountLocalVariableResolver(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext,
 													   IdentifierNameSyntax identifierNode) :
 												  base(syntaxContext, pxContext, identifierNode)
 			{
-				methodBodyWalker = new ResolveArrayElemCountMethodBodyWalker(this);
+				_methodBodyWalker = new ResolveArrayElemCountMethodBodyWalker(this);
 			}
 
 			/// <summary>
@@ -39,9 +39,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				if (methodDeclaration == null || !SemanticModel.IsLocalVariable(methodDeclaration, VariableName))
 					return null;
 
-				methodBodyWalker.Visit(methodDeclaration);
+				_methodBodyWalker.Visit(methodDeclaration);
 
-				if (CancellationToken.IsCancellationRequested || !methodBodyWalker.IsValid || methodBodyWalker.Candidates.Count == 0)
+				if (CancellationToken.IsCancellationRequested || !_methodBodyWalker.IsValid || _methodBodyWalker.Candidates.Count == 0)
 					return null;
 
 				return GetElementsCountFromCandidates();
@@ -49,9 +49,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			private int? GetElementsCountFromCandidates()
 			{
-				while (methodBodyWalker.Candidates.Count > 0)
+				while (_methodBodyWalker.Candidates.Count > 0)
 				{
-					var (potentialAssignmentStatement, count) = methodBodyWalker.Candidates.Pop();
+					var (potentialAssignmentStatement, count) = _methodBodyWalker.Candidates.Pop();
 					var (analysisSucceded, varAlwaysAssigned) = CheckCandidate(potentialAssignmentStatement);
 
 					if (!analysisSucceded || !varAlwaysAssigned || count == null)
@@ -70,30 +70,30 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			//*****************************************************************************************************************************************************************************
 			private class ResolveArrayElemCountMethodBodyWalker : CSharpSyntaxWalker
 			{
-				private readonly ArrayElemCountLocalVariableResolver resolver;
+				private readonly ArrayElemCountLocalVariableResolver _resolver;
 
-				private bool shouldStop;
-				private bool isValid = true;
-				private bool IsCancelationRequested => resolver.CancellationToken.IsCancellationRequested;
+				private bool _shouldStop;
+				private bool _isValid = true;
+				private bool IsCancelationRequested => _resolver.CancellationToken.IsCancellationRequested;
 
 				public Stack<(StatementSyntax PotentialAssignment, int? ElementsCount)> Candidates { get; }
 
 				public bool IsValid
 				{
-					get => isValid;
+					get => _isValid;
 					set
 					{
 						if (value == false)
 						{
-							isValid = false;
-							shouldStop = true;
+							_isValid = false;
+							_shouldStop = true;
 						}
 					}
 				}
 
 				public ResolveArrayElemCountMethodBodyWalker(ArrayElemCountLocalVariableResolver aResolver)
 				{
-					resolver = aResolver;
+					_resolver = aResolver;
 					Candidates = new Stack<(StatementSyntax, int?)>(capacity: 2);
 				}
 
@@ -104,7 +104,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 						IsValid = false;
 					}
 
-					if (shouldStop)
+					if (_shouldStop)
 						return;
 
 					base.Visit(node);
@@ -112,7 +112,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 				public override void VisitVariableDeclarator(VariableDeclaratorSyntax declarator)
 				{
-					if (IsCancelationRequested || declarator.Identifier.ValueText != resolver.VariableName ||
+					if (IsCancelationRequested || declarator.Identifier.ValueText != _resolver.VariableName ||
 						declarator.Initializer?.Value == null)
 					{
 						if (!IsCancelationRequested)
@@ -123,12 +123,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 					var declaratorStatement = declarator.GetStatementNode();
 
-					if (!resolver.IsReacheableByControlFlow(declaratorStatement))
+					if (!_resolver.IsReacheableByControlFlow(declaratorStatement))
 						return;
 
 					int? countOfArrayArgs = RoslynSyntaxUtils.TryGetSizeOfSingleDimensionalNonJaggedArray(declarator.Initializer.Value,
-																										  resolver.SemanticModel,
-																										  resolver.CancellationToken);
+																										  _resolver.SemanticModel,
+																										  _resolver.CancellationToken);
 					Candidates.Push((declaratorStatement, countOfArrayArgs));
 				}
 
@@ -143,7 +143,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 					while (curExpression is AssignmentExpressionSyntax curAssignment)
 					{
 						if (candidateAssignment == null && curAssignment.Left is IdentifierNameSyntax identifier &&
-							identifier.Identifier.ValueText == resolver.VariableName)
+							identifier.Identifier.ValueText == _resolver.VariableName)
 						{
 							candidateAssignment = curAssignment;
 						}
@@ -156,11 +156,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 					var assignmentStatement = candidateAssignment.GetStatementNode();
 
-					if (!resolver.IsReacheableByControlFlow(assignmentStatement))
+					if (!_resolver.IsReacheableByControlFlow(assignmentStatement))
 						return;
 
-					int? countOfArrayArgs = RoslynSyntaxUtils.TryGetSizeOfSingleDimensionalNonJaggedArray(curExpression, resolver.SemanticModel,
-																										  resolver.CancellationToken);
+					int? countOfArrayArgs = RoslynSyntaxUtils.TryGetSizeOfSingleDimensionalNonJaggedArray(curExpression, _resolver.SemanticModel,
+																										  _resolver.CancellationToken);
 					Candidates.Push((assignmentStatement, countOfArrayArgs));
 				}
 
@@ -174,12 +174,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 				public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
 				{
-					if (shouldStop)
+					if (_shouldStop)
 						return;
 
-					if (invocation.Equals(resolver.Invocation))
+					if (invocation.Equals(_resolver.Invocation))
 					{
-						shouldStop = true;
+						_shouldStop = true;
 						return;
 					}
 
@@ -202,7 +202,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				/// <returns/>
 				private bool AnalyzeInvocation(InvocationExpressionSyntax invocation)
 				{
-					bool notPassiingVariableByRef = invocation.GetArgumentsContainingIdentifier(resolver.VariableName)
+					bool notPassiingVariableByRef = invocation.GetArgumentsContainingIdentifier(_resolver.VariableName)
 															  .All(arg => arg.RefOrOutKeyword.IsKind(SyntaxKind.None));
 
 					if (notPassiingVariableByRef)   //Check only for method calls passing variable by ref because they could modify it in the method body
@@ -210,7 +210,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 					try
 					{
-						ControlFlowAnalysis controlFlow = resolver.SemanticModel.AnalyzeControlFlow(invocation.GetStatementNode());
+						ControlFlowAnalysis controlFlow = _resolver.SemanticModel.AnalyzeControlFlow(invocation.GetStatementNode());
 
 						if (controlFlow?.Succeeded == true && !controlFlow.EndPointIsReachable)
 							return true;

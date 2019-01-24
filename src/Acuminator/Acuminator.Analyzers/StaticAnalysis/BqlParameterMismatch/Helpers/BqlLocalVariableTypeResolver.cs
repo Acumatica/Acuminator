@@ -15,12 +15,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 	{
 		protected class BqlLocalVariableTypeResolver : BqlInvocationDataFlowAnalyserBase
 		{
-			private readonly ResolveVarTypeMethodBodyWalker methodBodyWalker;
+			private readonly ResolveVarTypeMethodBodyWalker _methodBodyWalker;
 
 			public BqlLocalVariableTypeResolver(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext, IdentifierNameSyntax identifierNode) :
 											base(syntaxContext, pxContext, identifierNode)
 			{
-				methodBodyWalker = new ResolveVarTypeMethodBodyWalker(this);
+				_methodBodyWalker = new ResolveVarTypeMethodBodyWalker(this);
 			}
 
 			public bool CheckForBqlModifications()
@@ -33,8 +33,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				if (methodDeclaration == null || CancellationToken.IsCancellationRequested)
 					return false;
 
-				methodBodyWalker.Visit(methodDeclaration);
-				return methodBodyWalker.IsValid && !CancellationToken.IsCancellationRequested;
+				_methodBodyWalker.Visit(methodDeclaration);
+				return _methodBodyWalker.IsValid && !CancellationToken.IsCancellationRequested;
 			}
 
 			public ITypeSymbol ResolveVariableType()
@@ -47,9 +47,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				if (methodDeclaration == null || !SemanticModel.IsLocalVariable(methodDeclaration, VariableName))
 					return null;
 
-				methodBodyWalker.Visit(methodDeclaration);
+				_methodBodyWalker.Visit(methodDeclaration);
 
-				if (CancellationToken.IsCancellationRequested || !methodBodyWalker.IsValid || methodBodyWalker.Candidates.Count == 0)
+				if (CancellationToken.IsCancellationRequested || !_methodBodyWalker.IsValid || _methodBodyWalker.Candidates.Count == 0)
 					return null;
 
 				TypeSyntax assignedType = GetTypeFromCandidates();
@@ -63,9 +63,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			private TypeSyntax GetTypeFromCandidates()
 			{
-				while (methodBodyWalker.Candidates.Count > 0)
+				while (_methodBodyWalker.Candidates.Count > 0)
 				{
-					var (potentialAssignmentStatement, assignedType) = methodBodyWalker.Candidates.Pop();
+					var (potentialAssignmentStatement, assignedType) = _methodBodyWalker.Candidates.Pop();
 					var (analysisSucceded, varAlwaysAssigned) = CheckCandidate(potentialAssignmentStatement);
 
 					if (!analysisSucceded || !varAlwaysAssigned || assignedType == null)
