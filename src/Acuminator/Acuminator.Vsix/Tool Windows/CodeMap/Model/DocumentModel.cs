@@ -72,6 +72,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					return false;
 
 				PXContext context = new PXContext(SemanticModel.Compilation);
+
+				if (!context.IsPlatformReferenced)
+					return false;
+
 				var graphs = compilationUnit.GetDeclaredGraphsAndExtensions(SemanticModel, context, cancellationToken)
 											.Select(graphInfo => graphInfo.GraphSymbol)
 											.OfType<INamedTypeSymbol>()

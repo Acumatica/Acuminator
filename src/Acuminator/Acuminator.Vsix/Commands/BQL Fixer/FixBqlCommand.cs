@@ -39,6 +39,8 @@ namespace Acuminator.Vsix.BqlFixer
 		/// </summary>
 		public const int FixBqlCommandId = 0x0103;
 
+		protected override bool CanModifyDocument => true;
+
 		private FixBqlCommand(Package aPackage) : base(aPackage, FixBqlCommandId)
 		{
 		}

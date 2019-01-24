@@ -60,7 +60,9 @@ namespace Acuminator.Utilities.Roslyn.Syntax.PXGraph
 			semanticModel.ThrowOnNull(nameof(semanticModel));
 			cancellationToken.ThrowIfCancellationRequested();
 
-			return GetDeclaredGraphsAndExtensionsImpl();
+			return context.IsPlatformReferenced 
+				? GetDeclaredGraphsAndExtensionsImpl()
+				: Enumerable.Empty<(ITypeSymbol, SyntaxNode)>();
 
 
 			IEnumerable<(ITypeSymbol GraphSymbol, SyntaxNode GraphNode)> GetDeclaredGraphsAndExtensionsImpl()
