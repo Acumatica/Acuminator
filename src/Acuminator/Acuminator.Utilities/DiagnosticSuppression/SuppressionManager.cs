@@ -251,8 +251,11 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			return (assemblyName, message);
 		}
 
-		private static SyntaxNode FindTargetNode(SyntaxNode node)
+		public static SyntaxNode FindTargetNode(SyntaxNode node)
 		{
+			if (node == null)
+				return null;
+
 			var targetNode = node
 				.AncestorsAndSelf()
 				.Where(a => _targetKinds.Contains(a.Kind()))
