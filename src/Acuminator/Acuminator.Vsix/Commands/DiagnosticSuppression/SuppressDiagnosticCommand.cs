@@ -28,7 +28,7 @@ using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 using Document = Microsoft.CodeAnalysis.Document;
 
 
-namespace Acuminator.Vsix.GoToDeclaration
+namespace Acuminator.Vsix.DiagnosticSuppression
 {
 	/// <summary>
 	/// Suppress Diagnostic Command.

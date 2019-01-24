@@ -1,34 +1,34 @@
 ﻿using System;
+using System.Linq;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.ComponentModel.Composition.Primitives;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Acuminator.Utilities;
-using Acuminator.Vsix.Formatter;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Classification;
-using Acuminator.Vsix.GoToDeclaration;
-using Acuminator.Vsix.ServiceLocation;
+using EnvDTE80;
+using EnvDTE;
 using CommonServiceLocator;
 using System.Composition.Hosting;
-using System.Composition.Hosting.Core;
+
 using Acuminator.Vsix.Settings;
 using Acuminator.Vsix.Logger;
 using Acuminator.Vsix.ToolWindows.CodeMap;
+using Acuminator.Vsix.DiagnosticSuppression;
+using Acuminator.Vsix.GoToDeclaration;
+using Acuminator.Vsix.ServiceLocation;
+using Acuminator.Vsix.Formatter;
 using Acuminator.Vsix.Utilities;
+using Acuminator.Utilities;
 using Acuminator.Utilities.DiagnosticSuppression;
 
-using EnvDTE80;
-using EnvDTE;
-using System.Linq;
-using Acuminator.Vsix.Utils;
+
+
+
 
 namespace Acuminator.Vsix
 {
@@ -199,6 +199,7 @@ namespace Acuminator.Vsix
 			FormatBqlCommand.Initialize(this);
 			GoToDeclarationOrHandlerCommand.Initialize(this);
 			BqlFixer.FixBqlCommand.Initialize(this);
+			SuppressDiagnosticCommand.Initialize(this);
 
 			OpenCodeMapWindowCommand.Initialize(this);
 		}
