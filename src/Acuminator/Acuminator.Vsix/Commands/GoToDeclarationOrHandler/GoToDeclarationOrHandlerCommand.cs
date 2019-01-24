@@ -38,7 +38,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 		private static int _isCommandInitialized = NOT_INITIALIZED;
 
 		/// <summary>
-		/// Gro to View/Declaration Command ID.
+		/// Go to View/Declaration Command ID.
 		/// </summary>
 		public const int GoToDeclarationCommandId = 0x0102;
 
