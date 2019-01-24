@@ -87,9 +87,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			{
 				private readonly BqlLocalVariableTypeResolver resolver;
 
-				private bool isInAnalysedVariableInvocation;
-				private bool shouldStop;
-				private bool isValid = true;
+				private bool _isInAnalysedVariableInvocation;
+				private bool _shouldStop;
+				private bool _isValid = true;
 
 				private bool IsCancelationRequested => resolver.CancellationToken.IsCancellationRequested;
 
@@ -97,13 +97,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 				public bool IsValid
 				{
-					get => isValid;
+					get => _isValid;
 					set
 					{
 						if (value == false)
 						{
-							isValid = false;
-							shouldStop = true;
+							_isValid = false;
+							_shouldStop = true;
 						}
 					}
 				}
@@ -121,7 +121,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 						IsValid = false;
 					}
 
-					if (shouldStop)
+					if (_shouldStop)
 						return;
 
 					base.Visit(node);
@@ -197,7 +197,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 					if (IsCancelationRequested)
 						return;
 
-					if (isInAnalysedVariableInvocation || !(conditionalAccess.Expression is IdentifierNameSyntax identifier) ||
+					if (_isInAnalysedVariableInvocation || !(conditionalAccess.Expression is IdentifierNameSyntax identifier) ||
 						identifier.Identifier.ValueText != resolver.VariableName)
 					{
 						base.VisitConditionalAccessExpression(conditionalAccess);
@@ -205,12 +205,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 					try
 					{
-						isInAnalysedVariableInvocation = true;
+						_isInAnalysedVariableInvocation = true;
 						base.VisitConditionalAccessExpression(conditionalAccess);
 					}
 					finally
 					{
-						isInAnalysedVariableInvocation = false;
+						_isInAnalysedVariableInvocation = false;
 					}
 				}
 
@@ -224,12 +224,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 				public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
 				{
-					if (shouldStop)
+					if (_shouldStop)
 						return;
 
 					if (invocation.Equals(resolver.Invocation))
 					{
-						shouldStop = true;
+						_shouldStop = true;
 						return;
 					}
 
@@ -284,7 +284,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				[MethodImpl(MethodImplOptions.AggressiveInlining)]
 				private bool IsInvocationOnAnalysedVariable(InvocationExpressionSyntax invocation)
 				{
-					if (isInAnalysedVariableInvocation)
+					if (_isInAnalysedVariableInvocation)
 						return true;
 
 					return invocation.Expression is MemberAccessExpressionSyntax memberAccess &&
