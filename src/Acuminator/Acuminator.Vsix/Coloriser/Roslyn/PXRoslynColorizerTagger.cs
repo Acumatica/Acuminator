@@ -26,20 +26,20 @@ namespace Acuminator.Vsix.Coloriser
 
         public override TaggerType TaggerType => TaggerType.Roslyn;
 
-        private readonly TagsCacheAsync<IClassificationTag> classificationTagsCache;
+        private readonly TagsCacheAsync<IClassificationTag> _classificationTagsCache;
 
-        protected internal override ITagsCache<IClassificationTag> ClassificationTagsCache => classificationTagsCache;
+        protected internal override ITagsCache<IClassificationTag> ClassificationTagsCache => _classificationTagsCache;
 
-        private readonly TagsCacheAsync<IOutliningRegionTag> outliningTagsCache;
+        private readonly TagsCacheAsync<IOutliningRegionTag> _outliningTagsCache;
 
-        protected internal override ITagsCache<IOutliningRegionTag> OutliningsTagsCache => outliningTagsCache;
+        protected internal override ITagsCache<IOutliningRegionTag> OutliningsTagsCache => _outliningTagsCache;
 
         internal PXRoslynColorizerTagger(ITextBuffer buffer, PXColorizerTaggerProvider aProvider, bool subscribeToSettingsChanges,
                                          bool useCacheChecking) :
                                     base(buffer, aProvider, subscribeToSettingsChanges, useCacheChecking)
         {
-            classificationTagsCache = new TagsCacheAsync<IClassificationTag>();
-            outliningTagsCache = new TagsCacheAsync<IOutliningRegionTag>();
+            _classificationTagsCache = new TagsCacheAsync<IClassificationTag>();
+            _outliningTagsCache = new TagsCacheAsync<IOutliningRegionTag>();
 
             //Buffer.Changed += Buffer_Changed;
         }
@@ -89,8 +89,8 @@ namespace Acuminator.Vsix.Coloriser
 
         protected internal override IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot)
         {
-            classificationTagsCache.SetCancellation(CancellationToken.None);
-            outliningTagsCache.SetCancellation(CancellationToken.None);
+            _classificationTagsCache.SetCancellation(CancellationToken.None);
+            _outliningTagsCache.SetCancellation(CancellationToken.None);
 
             Task<ParsedDocument> getDocumentTask = ParsedDocument.Resolve(Buffer, Snapshot, CancellationToken.None);
 
@@ -122,8 +122,8 @@ namespace Acuminator.Vsix.Coloriser
         protected internal async override Task<IEnumerable<ITagSpan<IClassificationTag>>> GetTagsAsyncImplementation(ITextSnapshot snapshot,
                                                                                                                      CancellationToken cToken)
         {
-            classificationTagsCache.SetCancellation(cToken);
-            outliningTagsCache.SetCancellation(cToken);
+            _classificationTagsCache.SetCancellation(cToken);
+            _outliningTagsCache.SetCancellation(cToken);
 
             Task<ParsedDocument> getDocumentTask = ParsedDocument.Resolve(Buffer, Snapshot, cToken);
 

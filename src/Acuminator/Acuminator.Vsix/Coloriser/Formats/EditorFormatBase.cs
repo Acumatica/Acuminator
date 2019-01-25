@@ -20,19 +20,19 @@ namespace Acuminator.Vsix.Coloriser
 {
     internal abstract class EditorFormatBase : ClassificationFormatDefinition, IDisposable
     {
-        private const string textCategory = "text";
-        private readonly string classificationTypeName; 
+        private const string TextCategory = "text";
+        private readonly string _classificationTypeName; 
         
         protected EditorFormatBase()
         {          
             VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
 
             Type type = this.GetType();
-            classificationTypeName = type.GetCustomAttribute<NameAttribute>()?.Name;
+            _classificationTypeName = type.GetCustomAttribute<NameAttribute>()?.Name;
             
-            if (classificationTypeName != null)
+            if (_classificationTypeName != null)
             {
-                ForegroundColor = VSColors.GetThemedColor(classificationTypeName);
+                ForegroundColor = VSColors.GetThemedColor(_classificationTypeName);
             }
         }
       
@@ -42,7 +42,7 @@ namespace Acuminator.Vsix.Coloriser
 
 			if (AcuminatorVSPackage.Instance?.ClassificationFormatMapService == null ||
                 AcuminatorVSPackage.Instance.ClassificationRegistry == null ||
-                classificationTypeName == null)
+                _classificationTypeName == null)
             {
                 return;
             }
@@ -63,13 +63,13 @@ namespace Acuminator.Vsix.Coloriser
                 //TODO Log error              
             }
 
-            Color? foregroundColorForTheme =  VSColors.GetThemedColor(classificationTypeName);
+            Color? foregroundColorForTheme =  VSColors.GetThemedColor(_classificationTypeName);
 
             if (foregroundColorForTheme == null)
                 return;
                     
             IClassificationFormatMap formatMap = AcuminatorVSPackage.Instance.ClassificationFormatMapService
-                                                                             .GetClassificationFormatMap(category: textCategory);
+                                                                             .GetClassificationFormatMap(category: TextCategory);
             if (formatMap == null)
                 return;
 
@@ -78,14 +78,14 @@ namespace Acuminator.Vsix.Coloriser
                 formatMap.BeginBatchUpdate();
                 ForegroundColor = foregroundColorForTheme;
                 var bqlOperatorClasType = AcuminatorVSPackage.Instance.ClassificationRegistry
-                                                                      .GetClassificationType(classificationTypeName);
+                                                                      .GetClassificationType(_classificationTypeName);
 
                 if (bqlOperatorClasType == null)
                     return;
 
                 ColorableItemInfo[] colorInfo = new ColorableItemInfo[1];
 
-                if (fontAndColorStorage.GetItem(classificationTypeName, colorInfo) != VSConstants.S_OK)    //comment from F# repo: "we don't touch the changes made by the user"
+                if (fontAndColorStorage.GetItem(_classificationTypeName, colorInfo) != VSConstants.S_OK)    //comment from F# repo: "we don't touch the changes made by the user"
                 {
                     var properties = formatMap.GetTextProperties(bqlOperatorClasType);
                     var newProperties = properties.SetForeground(ForegroundColor.Value);
