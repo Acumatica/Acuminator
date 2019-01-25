@@ -252,4 +252,7 @@
   <data name="CodeMapWindowTitle" xml:space="preserve">
     <value>CodeMap</value>
   </data>
+  <data name="DiagnosticSuppression_NoDiagnosticFound" xml:space="preserve">
+    <value>There are no Acuminator diagnostic on this code snippet.</value>
+  </data>
 </root>

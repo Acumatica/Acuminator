@@ -286,6 +286,15 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There are no Acuminator diagnostic on this code snippet..
+        /// </summary>
+        public static string DiagnosticSuppression_NoDiagnosticFound {
+            get {
+                return ResourceManager.GetString("DiagnosticSuppression_NoDiagnosticFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Acuminator - PXAction.
         /// </summary>
         public static string PXActionFormatLabel {
