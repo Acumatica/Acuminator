@@ -449,7 +449,7 @@ namespace Acuminator.Vsix.Coloriser
          
             private void AddOutliningTagToAttribute(AttributeListSyntax attributeListNode)
             {
-                if (!_tagger.Provider.Package.UseBqlOutlining)
+                if (!_tagger.Provider.Package.UseBqlOutlining || attributeListNode.Attributes.Count > 1)
                     return;
 
                 AttributeSyntax attribute = attributeListNode.ChildNodes()
