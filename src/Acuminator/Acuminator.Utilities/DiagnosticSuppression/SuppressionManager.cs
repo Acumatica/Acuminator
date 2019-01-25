@@ -261,11 +261,22 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				.Where(a => _targetKinds.Contains(a.Kind()))
 				.FirstOrDefault();
 
-			// Use first variable in case of field declaration as it may contain multiple variables and therefore
-			// cannot be used to obtain declared symbol
-			return targetNode is FieldDeclarationSyntax fieldDeclaration ?
-				fieldDeclaration.Declaration?.Variables[0] :
-				targetNode;
+			if (!(targetNode is FieldDeclarationSyntax fieldDeclaration))
+				return targetNode;
+			else if (fieldDeclaration.Declaration == null)
+				return null;
+
+			SeparatedSyntaxList<VariableDeclaratorSyntax> declaredVariables = fieldDeclaration.Declaration.Variables;
+
+			switch (declaredVariables.Count)
+			{
+				case 0:
+					return null;
+				case 1:
+					return declaredVariables[0];
+				default:
+					return declaredVariables.FirstOrDefault(variableDeclarator => variableDeclarator.Contains(node));
+			}
 		}
 	}
 }
