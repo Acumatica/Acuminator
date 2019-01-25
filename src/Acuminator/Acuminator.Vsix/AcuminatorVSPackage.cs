@@ -76,18 +76,18 @@ namespace Acuminator.Vsix
 		public const string AcuminatorDefaultCommandSetGuidString = "3cd59430-1e8d-40af-b48d-9007624b3d77";
 
 		[Import]
-        internal IClassificationFormatMapService classificationFormatMapService = null;  //Set via MEF
+        internal IClassificationFormatMapService _classificationFormatMapService = null;  //Set via MEF
 
-        public IClassificationFormatMapService ClassificationFormatMapService => classificationFormatMapService;
+        public IClassificationFormatMapService ClassificationFormatMapService => _classificationFormatMapService;
 
         [Import]
-        internal IClassificationTypeRegistryService classificationRegistry = null; // Set via MEF
+        internal IClassificationTypeRegistryService _classificationRegistry = null; // Set via MEF
 
-        public IClassificationTypeRegistryService ClassificationRegistry => classificationRegistry;
+        public IClassificationTypeRegistryService ClassificationRegistry => _classificationRegistry;
 
         private const int INSTANCE_UNINITIALIZED = 0;
         private const int INSTANCE_INITIALIZED = 1;
-        private static int instanceInitialized;
+        private static int _instanceInitialized;
 
         public static AcuminatorVSPackage Instance { get; private set; }
 
@@ -95,24 +95,24 @@ namespace Acuminator.Vsix
 		private SolutionEvents _dteSolutionEvents;
 
 
-		private GeneralOptionsPage generalOptionsPage = null;     
+		private GeneralOptionsPage _generalOptionsPage = null;     
       
         public GeneralOptionsPage GeneralOptionsPage
         {
             get
             {
-                if (generalOptionsPage == null)
+                if (_generalOptionsPage == null)
                 {
                     lock (locker)
                     {
-                        if (generalOptionsPage == null)
+                        if (_generalOptionsPage == null)
                         {
-                            generalOptionsPage = GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage;
+                            _generalOptionsPage = GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage;
                         }
                     }
                 }
 
-                return generalOptionsPage;
+                return _generalOptionsPage;
             }
         }
 
@@ -140,7 +140,7 @@ namespace Acuminator.Vsix
             if (package == null)
                 return;
 
-            if (Interlocked.CompareExchange(ref instanceInitialized, INSTANCE_INITIALIZED, INSTANCE_UNINITIALIZED) == INSTANCE_UNINITIALIZED)
+            if (Interlocked.CompareExchange(ref _instanceInitialized, INSTANCE_INITIALIZED, INSTANCE_UNINITIALIZED) == INSTANCE_UNINITIALIZED)
             {
                 Instance = package;
             }
