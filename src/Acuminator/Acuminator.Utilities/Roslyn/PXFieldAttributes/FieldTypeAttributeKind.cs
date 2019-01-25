@@ -6,9 +6,14 @@
 	public enum FieldTypeAttributeKind
 	{
 		/// <summary>
-		/// Normal type attribute.
+		/// DB bound type attribute
 		/// </summary>
-		TypeAttribute,
+		BoundTypeAttribute,
+
+		/// <summary>
+		/// DB unbound type attribute
+		/// </summary>
+		UnboundTypeAttribute,
 
 		/// <summary>
 		/// PXDBScalarAttribute attribute.

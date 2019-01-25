@@ -82,16 +82,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			var hasUnboundTypeAttribute = false;
 			var hasPXDBCalcedAttribute = false;
 
-			foreach (var (attribute, info) in attributesWithInfos)
+			foreach (var (attribute, infos) in attributesWithInfos)
 			{
-				if (attribute.AttributeClass.Equals(pxContext.FieldAttributes.PXDBCalcedAttribute))
-				{
-					hasPXDBCalcedAttribute = true;
-				}
-				else if (fieldAttributesRegister.UnboundTypeAttributes.Contains(attribute.AttributeClass))
-				{
-					hasUnboundTypeAttribute = true;
-				}
+				hasPXDBCalcedAttribute |= infos.Any(i => i.Kind == FieldTypeAttributeKind.PXDBCalcedAttribute);
+				hasUnboundTypeAttribute |= infos.Any(i => i.Kind == FieldTypeAttributeKind.UnboundTypeAttribute);
 			}
 
 			if (!hasPXDBCalcedAttribute || hasUnboundTypeAttribute)
