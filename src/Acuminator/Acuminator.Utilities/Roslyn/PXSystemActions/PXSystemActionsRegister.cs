@@ -13,7 +13,7 @@ namespace Acuminator.Utilities.Roslyn.PXSystemActions
 	/// </summary>
 	public class PXSystemActionsRegister
 	{
-		private readonly PXContext context;
+		private readonly PXContext _context;
 
 		public ImmutableHashSet<ITypeSymbol> SystemActions { get; }
 		
@@ -21,8 +21,8 @@ namespace Acuminator.Utilities.Roslyn.PXSystemActions
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			context = pxContext;
-			SystemActions = GetSystemActions(context).ToImmutableHashSet();
+			_context = pxContext;
+			SystemActions = GetSystemActions(_context).ToImmutableHashSet();
 		}
 
 		/// <summary>

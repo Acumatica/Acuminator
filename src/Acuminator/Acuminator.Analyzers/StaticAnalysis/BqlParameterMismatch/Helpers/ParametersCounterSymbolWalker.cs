@@ -14,41 +14,41 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 		/// </summary>
 		protected class ParametersCounterSymbolWalker : SymbolVisitor
 		{
-			private readonly bool isAcumatica2018R2;
-			private readonly INamedTypeSymbol iViewConfig2018R2;
+			private readonly bool _isAcumatica2018R2;
+			private readonly INamedTypeSymbol _iViewConfig2018R2;
 
-			private readonly SyntaxNodeAnalysisContext syntaxContext;
-			private readonly CancellationToken cancellationToken;
+			private readonly SyntaxNodeAnalysisContext _syntaxContext;
+			private readonly CancellationToken _cancellationToken;
 
 			public ParametersCounter ParametersCounter { get; }
 
-			public ParametersCounterSymbolWalker(SyntaxNodeAnalysisContext aSyntaxContext, PXContext aPxContext)
+			public ParametersCounterSymbolWalker(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
 			{
-				syntaxContext = aSyntaxContext;
-				cancellationToken = syntaxContext.CancellationToken;
+				_syntaxContext = syntaxContext;
+				_cancellationToken = _syntaxContext.CancellationToken;
 
-				isAcumatica2018R2 = aPxContext.IsAcumatica2018R2;
+				_isAcumatica2018R2 = pxContext.IsAcumatica2018R2;
 
-				if (isAcumatica2018R2)
+				if (_isAcumatica2018R2)
 				{
-					iViewConfig2018R2 = aPxContext.IViewConfig2018R2;
+					_iViewConfig2018R2 = pxContext.IViewConfig2018R2;
 				}
 
-				ParametersCounter = new ParametersCounter(aPxContext);
+				ParametersCounter = new ParametersCounter(pxContext);
 			}
 
 			public bool CountParametersInTypeSymbol(ITypeSymbol typeSymbol)
 			{
-				if (cancellationToken.IsCancellationRequested)
+				if (_cancellationToken.IsCancellationRequested)
 					return false;
 
 				Visit(typeSymbol);
-				return ParametersCounter.IsCountingValid && !cancellationToken.IsCancellationRequested;
+				return ParametersCounter.IsCountingValid && !_cancellationToken.IsCancellationRequested;
 			}
 
 			public override void VisitNamedType(INamedTypeSymbol typeSymbol)
 			{
-				if (typeSymbol == null || cancellationToken.IsCancellationRequested)
+				if (typeSymbol == null || _cancellationToken.IsCancellationRequested)
 					return;
 
 				if (typeSymbol.IsUnboundGenericType)
@@ -56,10 +56,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 					typeSymbol = typeSymbol.OriginalDefinition;
 				}
 
-				if (!ParametersCounter.CountParametersInTypeSymbol(typeSymbol, cancellationToken))
+				if (!ParametersCounter.CountParametersInTypeSymbol(typeSymbol, _cancellationToken))
 					return;
 
-				if (isAcumatica2018R2 && !cancellationToken.IsCancellationRequested && typeSymbol.ContainingType != null &&
+				if (_isAcumatica2018R2 && !_cancellationToken.IsCancellationRequested && typeSymbol.ContainingType != null &&
 					ImplementsIViewConfig(typeSymbol))
 				{
 					Visit(typeSymbol.ContainingType);
@@ -71,41 +71,41 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				{
 					foreach (ITypeSymbol typeArg in typeArguments)
 					{
-						if (cancellationToken.IsCancellationRequested)
+						if (_cancellationToken.IsCancellationRequested)
 							return;
 
 						Visit(typeArg);
 					}
 				}
 
-				if (!cancellationToken.IsCancellationRequested)
+				if (!_cancellationToken.IsCancellationRequested)
 					base.VisitNamedType(typeSymbol);
 			}
 
 			public override void VisitTypeParameter(ITypeParameterSymbol typeParameterSymbol)
 			{
-				if (typeParameterSymbol == null || cancellationToken.IsCancellationRequested)
+				if (typeParameterSymbol == null || _cancellationToken.IsCancellationRequested)
 					return;
 
 				foreach (ITypeSymbol constraintType in typeParameterSymbol.ConstraintTypes)
 				{
-					if (cancellationToken.IsCancellationRequested)
+					if (_cancellationToken.IsCancellationRequested)
 						return;
 
 					Visit(constraintType);
 				}
 
-				if (!cancellationToken.IsCancellationRequested)
+				if (!_cancellationToken.IsCancellationRequested)
 					base.VisitTypeParameter(typeParameterSymbol);
 			}
 
 			private bool ImplementsIViewConfig(ITypeSymbol type)
 			{
-				if (type == null || iViewConfig2018R2 == null)
+				if (type == null || _iViewConfig2018R2 == null)
 					return false;
 
-				return type.AllInterfaces.Any(interfaceType => iViewConfig2018R2.Equals(interfaceType) || 
-															   iViewConfig2018R2.Equals(interfaceType?.OriginalDefinition));
+				return type.AllInterfaces.Any(interfaceType => _iViewConfig2018R2.Equals(interfaceType) || 
+															   _iViewConfig2018R2.Equals(interfaceType?.OriginalDefinition));
 			}
 		}
 	}

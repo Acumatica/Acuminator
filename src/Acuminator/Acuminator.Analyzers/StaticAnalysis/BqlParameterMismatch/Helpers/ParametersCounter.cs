@@ -13,14 +13,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 		/// </summary>
 		protected class ParametersCounter
 		{
-			private readonly PXContext pxContext;
-			private readonly Dictionary<ITypeSymbol, int> customPredicatesWithWeights;
+			private readonly PXContext _pxContext;
+			private readonly Dictionary<ITypeSymbol, int> _customPredicatesWithWeights;
 
 			private const int DefaultWeight = 1;
 			private const int AreDistinctWeight = 2;
 			private const int AreSameWeight = 2;
 
-			private int currentParameterWeight = DefaultWeight;
+			private int _currentParameterWeight = DefaultWeight;
 
 			public int RequiredParametersCount
 			{
@@ -40,14 +40,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				private set;
 			}
 
-			public ParametersCounter(PXContext aPxContext)
+			public ParametersCounter(PXContext pxContext)
 			{
-				pxContext = aPxContext;
+				_pxContext = pxContext;
 				IsCountingValid = true;
-				customPredicatesWithWeights = new Dictionary<ITypeSymbol, int>
+				_customPredicatesWithWeights = new Dictionary<ITypeSymbol, int>
 				{
-					{ pxContext.BQL.AreDistinct, AreDistinctWeight },
-					{ pxContext.BQL.AreSame, AreSameWeight }
+					{ _pxContext.BQL.AreDistinct, AreDistinctWeight },
+					{ _pxContext.BQL.AreSame, AreSameWeight }
 				};
 			}
 
@@ -67,16 +67,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				switch (codeType)
 				{
 					case PXCodeType.BqlCommand:
-						currentParameterWeight = DefaultWeight;
-						IsCountingValid = !typeSymbol.IsCustomBqlCommand(pxContext); //diagnostic for types inherited from standard views disabled. TODO: make analysis for them
+						_currentParameterWeight = DefaultWeight;
+						IsCountingValid = !typeSymbol.IsCustomBqlCommand(_pxContext); //diagnostic for types inherited from standard views disabled. TODO: make analysis for them
 						return IsCountingValid;
-					case PXCodeType.BqlOperator when typeSymbol.InheritsFrom(pxContext.BQL.CustomPredicate):  //Custom predicate
+					case PXCodeType.BqlOperator when typeSymbol.InheritsFrom(_pxContext.BQL.CustomPredicate):  //Custom predicate
 						{
 							IsCountingValid = ProcessCustomPredicate(typeSymbol);
 							return IsCountingValid;
 						}
 					case PXCodeType.BqlOperator:
-						currentParameterWeight = DefaultWeight;
+						_currentParameterWeight = DefaultWeight;
 						return IsCountingValid;
 					case PXCodeType.BqlParameter:
 						if (!UpdateParametersCount(typeSymbol) && !cancellationToken.IsCancellationRequested)
@@ -92,26 +92,26 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			private bool ProcessCustomPredicate(ITypeSymbol typeSymbol)
 			{
-				if (!customPredicatesWithWeights.TryGetValue(typeSymbol, out int weight) &&
-					(typeSymbol.OriginalDefinition == null || !customPredicatesWithWeights.TryGetValue(typeSymbol.OriginalDefinition, out weight)))
+				if (!_customPredicatesWithWeights.TryGetValue(typeSymbol, out int weight) &&
+					(typeSymbol.OriginalDefinition == null || !_customPredicatesWithWeights.TryGetValue(typeSymbol.OriginalDefinition, out weight)))
 				{
 					return false;    //Non-default custom predicate
 				}
 		
-				currentParameterWeight = weight;
+				_currentParameterWeight = weight;
 				return true;
 			}
 
 			private bool UpdateParametersCount(ITypeSymbol typeSymbol)
 			{
-				if (typeSymbol.InheritsFromOrEquals(pxContext.BQL.Required) || typeSymbol.InheritsFromOrEquals(pxContext.BQL.Argument))
+				if (typeSymbol.InheritsFromOrEquals(_pxContext.BQL.Required) || typeSymbol.InheritsFromOrEquals(_pxContext.BQL.Argument))
 				{
-					RequiredParametersCount += currentParameterWeight;
+					RequiredParametersCount += _currentParameterWeight;
 					return true;
 				}
-				else if (typeSymbol.InheritsFromOrEquals(pxContext.BQL.Optional) || typeSymbol.InheritsFromOrEquals(pxContext.BQL.Optional2))
+				else if (typeSymbol.InheritsFromOrEquals(_pxContext.BQL.Optional) || typeSymbol.InheritsFromOrEquals(_pxContext.BQL.Optional2))
 				{
-					OptionalParametersCount += currentParameterWeight;
+					OptionalParametersCount += _currentParameterWeight;
 					return true;
 				}
 
