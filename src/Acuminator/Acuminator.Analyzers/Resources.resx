@@ -456,4 +456,7 @@
   <data name="PX1094PXCacheNameDefaultArgumentValue" xml:space="preserve">
     <value>Enter a cache name for this DAC</value>
   </data>
+  <data name="PX1095Title" xml:space="preserve">
+    <value>A field with the PXDBCalced attribute must have an unbound type attribute, such as PXDate, PXDecimal</value>
+  </data>
 </root>

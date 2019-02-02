@@ -27,6 +27,13 @@ namespace PX.Objects.HackathonDemo
 		public string OrderNbr { get; set; }
 		#endregion
 
+		[PXDBCalced(typeof(Switch<
+			Case<Where<status, IsNotNull>, status>,
+			orderType>),
+			typeof(string))]
+		public string ExtRef { get; set; }
+		public abstract class extRef : IBqlField { }
+
 		#region Status
 		public abstract class status : IBqlField { }
 
