@@ -110,7 +110,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 
 				foreach (var attribute in attributes)
 				{
-					actual.Add(attributeInformation.IsBoundAttribute(attribute));
+					actual.Add(attributeInformation.GetBoundAttributeType(attribute));
 				}
 			}
 

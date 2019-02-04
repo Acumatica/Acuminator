@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Acuminator.Utilities.Common;
@@ -15,7 +16,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		private readonly PXContext _context;
 		private readonly AttributeInformation _attributeInformation;
 
-		public ImmutableDictionary<ITypeSymbol, ITypeSymbol> CorrespondingSimpleTypes { get; }
+		public ImmutableDictionary<ITypeSymbol, ITypeSymbol> CorrespondingSimpleUnboundTypes { get; }
+
+		public ImmutableDictionary<ITypeSymbol, ITypeSymbol> CorrespondingSimpleBoundTypes { get; }
 
 		public ImmutableHashSet<ITypeSymbol> UnboundTypeAttributes { get; }
 		public ImmutableHashSet<ITypeSymbol> BoundTypeAttributes { get; }
@@ -28,10 +31,10 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 			_context = pxContext;
 			_attributeInformation = new AttributeInformation(_context);
-			var unboundFieldAttributes = GetUnboundTypeAttributes(_context);
+			var unboundFieldAttributes = GetCorrespondingSimpleUnboundTypes(_context).Keys;
 			UnboundTypeAttributes = unboundFieldAttributes.ToImmutableHashSet();
 
-			var boundFieldAttributes = GetBoundTypeAttributes(_context);
+			var boundFieldAttributes = GetCorrespondingSimpleBoundTypes(_context).Keys;
 			BoundTypeAttributes = boundFieldAttributes.ToImmutableHashSet();
 
 			var specialAttributes = GetSpecialAttributes(_context);
@@ -40,7 +43,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 													  .Concat(specialAttributes)
 													  .ToImmutableHashSet();
 
-			CorrespondingSimpleTypes = GetCorrespondingSimpleTypes(_context).ToImmutableDictionary();
+			CorrespondingSimpleUnboundTypes = GetCorrespondingSimpleUnboundTypes(_context).ToImmutableDictionary();
+			CorrespondingSimpleBoundTypes = GetCorrespondingSimpleBoundTypes(_context).ToImmutableDictionary();
 		}
 
 		public IEnumerable<FieldTypeAttributeInfo> GetFieldTypeAttributeInfos(ITypeSymbol attributeSymbol)
@@ -79,61 +83,17 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			else if (firstTypeAttribute.Equals(_context.FieldAttributes.PXDBCalcedAttribute))
 				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.PXDBCalcedAttribute, fieldType: null);
 
-			return CorrespondingSimpleTypes.TryGetValue(firstTypeAttribute, out var fieldType)
-				? new FieldTypeAttributeInfo(FieldTypeAttributeKind.TypeAttribute, fieldType)
-				: new FieldTypeAttributeInfo(FieldTypeAttributeKind.TypeAttribute, fieldType: null);
-		}
-
-		private static HashSet<ITypeSymbol> GetUnboundTypeAttributes(PXContext pxContext) =>
-			new HashSet<ITypeSymbol>
+			if (CorrespondingSimpleBoundTypes.TryGetValue(firstTypeAttribute, out var boundFieldType))
 			{
-				pxContext.FieldAttributes.PXLongAttribute,
-				pxContext.FieldAttributes.PXIntAttribute,
-				pxContext.FieldAttributes.PXShortAttribute,
-				pxContext.FieldAttributes.PXStringAttribute,
-				pxContext.FieldAttributes.PXByteAttribute,
-				pxContext.FieldAttributes.PXDecimalAttribute,
-				pxContext.FieldAttributes.PXFloatAttribute,
-				pxContext.FieldAttributes.PXDoubleAttribute,
-				pxContext.FieldAttributes.PXDateAttribute,
-				pxContext.FieldAttributes.PXGuidAttribute,
-				pxContext.FieldAttributes.PXBoolAttribute
-			};
-
-		private static HashSet<ITypeSymbol> GetBoundTypeAttributes(PXContext pxContext)
-		{
-			var boundTypeAttributes = new HashSet<ITypeSymbol>
-			{
-				pxContext.FieldAttributes.PXDBFieldAttribute,
-
-				pxContext.FieldAttributes.PXDBLongAttribute,
-				pxContext.FieldAttributes.PXDBIntAttribute,
-				pxContext.FieldAttributes.PXDBShortAttribute,
-				pxContext.FieldAttributes.PXDBStringAttribute,
-				pxContext.FieldAttributes.PXDBByteAttribute,
-				pxContext.FieldAttributes.PXDBDecimalAttribute,
-				pxContext.FieldAttributes.PXDBDoubleAttribute,
-				pxContext.FieldAttributes.PXDBFloatAttribute,
-				pxContext.FieldAttributes.PXDBDateAttribute,
-				pxContext.FieldAttributes.PXDBGuidAttribute,
-				pxContext.FieldAttributes.PXDBBoolAttribute,
-				pxContext.FieldAttributes.PXDBTimestampAttribute,
-				pxContext.FieldAttributes.PXDBIdentityAttribute,
-				pxContext.FieldAttributes.PXDBLongIdentityAttribute,
-				pxContext.FieldAttributes.PXDBBinaryAttribute,
-				pxContext.FieldAttributes.PXDBUserPasswordAttribute,
-				pxContext.FieldAttributes.PXDBAttributeAttribute,
-				pxContext.FieldAttributes.PXDBDataLengthAttribute
-			};
-
-			var packagedIntegerAttribute = pxContext.FieldAttributes.PXDBPackedIntegerArrayAttribute;
-
-			if (packagedIntegerAttribute != null)
-			{
-				boundTypeAttributes.Add(packagedIntegerAttribute);
+				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.BoundTypeAttribute, boundFieldType);
 			}
 
-			return boundTypeAttributes;
+			if (CorrespondingSimpleUnboundTypes.TryGetValue(firstTypeAttribute, out var unboundFieldType))
+			{
+				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.UnboundTypeAttribute, unboundFieldType);
+			}
+
+			throw new InvalidOperationException($"Cannot get type attribute info for {typeAttribute}");
 		}
 
 		private static HashSet<ITypeSymbol> GetSpecialAttributes(PXContext pxContext) =>
@@ -143,9 +103,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				pxContext.FieldAttributes.PXDBCalcedAttribute
 			};
 
-		private static Dictionary<ITypeSymbol, ITypeSymbol> GetCorrespondingSimpleTypes(PXContext pxContext)
+		private static Dictionary<ITypeSymbol, ITypeSymbol> GetCorrespondingSimpleUnboundTypes(PXContext pxContext)
 		{
-			var fieldTypeAttributesWithCorrespondingPropertyTypes = new Dictionary<ITypeSymbol, ITypeSymbol>
+			return new Dictionary<ITypeSymbol, ITypeSymbol>
 			{
 				{ pxContext.FieldAttributes.PXLongAttribute, pxContext.SystemTypes.Int64 },
 				{ pxContext.FieldAttributes.PXIntAttribute, pxContext.SystemTypes.Int32 },
@@ -158,7 +118,14 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				{ pxContext.FieldAttributes.PXDateAttribute, pxContext.SystemTypes.DateTime },
 				{ pxContext.FieldAttributes.PXGuidAttribute, pxContext.SystemTypes.Guid },
 				{ pxContext.FieldAttributes.PXBoolAttribute, pxContext.SystemTypes.Bool },
+			};
+		}
 
+		private static Dictionary<ITypeSymbol, ITypeSymbol> GetCorrespondingSimpleBoundTypes(PXContext pxContext)
+		{
+			var types = new Dictionary<ITypeSymbol, ITypeSymbol>
+			{
+				{ pxContext.FieldAttributes.PXDBFieldAttribute, null },
 				{ pxContext.FieldAttributes.PXDBLongAttribute, pxContext.SystemTypes.Int64 },
 				{ pxContext.FieldAttributes.PXDBIntAttribute, pxContext.SystemTypes.Int32 },
 				{ pxContext.FieldAttributes.PXDBShortAttribute, pxContext.SystemTypes.Int16 },
@@ -183,10 +150,10 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 			if (packagedIntegerAttribute != null)
 			{
-				fieldTypeAttributesWithCorrespondingPropertyTypes.Add(packagedIntegerAttribute, pxContext.SystemTypes.UInt16Array);
+				types.Add(packagedIntegerAttribute, pxContext.SystemTypes.UInt16Array);
 			}
 
-			return fieldTypeAttributesWithCorrespondingPropertyTypes;
+			return types;
 		}
 	}
 }
