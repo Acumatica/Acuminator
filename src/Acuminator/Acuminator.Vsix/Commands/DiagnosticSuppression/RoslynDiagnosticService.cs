@@ -55,30 +55,6 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		private readonly MethodInfo _getDiagnosticOnTextSpanMethod;
 		private readonly PropertyInfo _taskResultPropertyInfo;
 
-
-		private RoslynDiagnosticService(Package package, IComponentModel componentModel)
-		{
-			package.ThrowOnNull(nameof(package));
-			componentModel.ThrowOnNull(nameof(componentModel));
-			
-			_package = package;
-			_componentModel = componentModel;
-
-			DiagnosticAnalyzerServiceType = GetInternalRoslynServiceType();
-			DiagnosticDataType = GetDiagnosticDataType();
-			DiagnosticAnalyzerServiceType.ThrowOnNull(nameof(DiagnosticAnalyzerServiceType));
-			DiagnosticDataType.ThrowOnNull(nameof(DiagnosticDataType));
-
-			_roslynAnalyzersService = GetDiagnosticServiceInstance(componentModel, DiagnosticAnalyzerServiceType);
-			_roslynAnalyzersService.ThrowOnNull(nameof(_roslynAnalyzersService));
-
-			_getDiagnosticOnTextSpanMethod = DiagnosticAnalyzerServiceType.GetMethod(GetDiagnosticsForSpanAsyncMethodName);
-			_getDiagnosticOnTextSpanMethod.ThrowOnNull(nameof(_getDiagnosticOnTextSpanMethod));
-
-			_taskResultPropertyInfo = GetTaskResultPropertyInfo(DiagnosticDataType);
-			_taskResultPropertyInfo.ThrowOnNull(nameof(_taskResultPropertyInfo));
-		}
-
 		/// <summary>
 		/// Gets the instance of the service.
 		/// </summary>
@@ -100,6 +76,29 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 				Instance = new RoslynDiagnosticService(package, componentModel);
 			}
+		}
+
+		private RoslynDiagnosticService(Package package, IComponentModel componentModel)
+		{
+			package.ThrowOnNull(nameof(package));
+			componentModel.ThrowOnNull(nameof(componentModel));
+
+			_package = package;
+			_componentModel = componentModel;
+
+			DiagnosticAnalyzerServiceType = GetInternalRoslynServiceType();
+			DiagnosticDataType = GetDiagnosticDataType();
+			DiagnosticAnalyzerServiceType.ThrowOnNull(nameof(DiagnosticAnalyzerServiceType));
+			DiagnosticDataType.ThrowOnNull(nameof(DiagnosticDataType));
+
+			_roslynAnalyzersService = GetDiagnosticServiceInstance(componentModel, DiagnosticAnalyzerServiceType);
+			_roslynAnalyzersService.ThrowOnNull(nameof(_roslynAnalyzersService));
+
+			_getDiagnosticOnTextSpanMethod = DiagnosticAnalyzerServiceType.GetMethod(GetDiagnosticsForSpanAsyncMethodName);
+			_getDiagnosticOnTextSpanMethod.ThrowOnNull(nameof(_getDiagnosticOnTextSpanMethod));
+
+			_taskResultPropertyInfo = GetTaskResultPropertyInfo(DiagnosticDataType);
+			_taskResultPropertyInfo.ThrowOnNull(nameof(_taskResultPropertyInfo));
 		}
 
 		private static Type GetInternalRoslynServiceType()
@@ -161,24 +160,14 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 					return new List<DiagnosticData>();
 
 				await task;
-				object diagnosticsCollectionRaw = _taskResultPropertyInfo.GetValue(dataTask);
+				object rawResult = _taskResultPropertyInfo.GetValue(dataTask);
 
-				if (!(diagnosticsCollectionRaw is IEnumerable<object> diagnosticsRaw) || diagnosticsRaw.IsNullOrEmpty())
+				if (!(rawResult is IEnumerable<object> diagnosticsRaw) || diagnosticsRaw.IsNullOrEmpty())
 					return new List<DiagnosticData>();
 
-				List<DiagnosticData> preparedDiagnostics = new List<DiagnosticData>(2);
-
-				foreach (dynamic rawData in diagnosticsRaw)
-				{
-					DiagnosticData wrappedData = DiagnosticData.Create(rawData);
-
-					if (wrappedData != null)
-					{
-						preparedDiagnostics.Add(wrappedData);
-					}
-				}
-
-				return preparedDiagnostics;
+				return diagnosticsRaw.Select(rawData => DiagnosticData.Create(rawData))
+									 .Where(wrappedData => wrappedData != null)
+									 .ToList();
 			}
 			catch (Exception e)
 			{
