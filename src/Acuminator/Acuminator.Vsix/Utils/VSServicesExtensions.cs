@@ -120,5 +120,58 @@ namespace Acuminator.Vsix.Utilities
 			IVsEditorAdaptersFactoryService vsEditorAdaptersFactoryService = componentModel?.GetService<IVsEditorAdaptersFactoryService>();
 			return vsEditorAdaptersFactoryService?.GetWpfTextView(vsTextView);
 		}
+
+		internal static List<IVsTaskItem> GetErrorList(this IServiceProvider serviceProvider)
+		{
+			ThreadHelper.ThrowIfNotOnUIThread();
+
+			var errorService = serviceProvider?.GetService<SVsErrorList, IVsTaskList>();
+
+			if (errorService == null)
+				return null;
+
+			int result = VSConstants.S_OK;
+			List<IVsTaskItem> taskItemsList = new List<IVsTaskItem>(8);
+
+			try
+			{
+				ErrorHandler.ThrowOnFailure(errorService.EnumTaskItems(out IVsEnumTaskItems errorItems));
+
+				if (errorItems == null)
+				{
+					return null;
+				}
+
+				// Retrieve the task item text and check whether it is equal with one that supposed to be thrown.
+
+				uint[] fetched = new uint[1];
+
+				do
+				{
+					IVsTaskItem[] taskItems = new IVsTaskItem[1];
+
+					result = errorItems.Next(1, taskItems, fetched);
+
+					if (fetched[0] == 1 && taskItems[0] is IVsTaskItem2 taskItem)
+					{
+						taskItemsList.Add(taskItem);
+					}
+
+				}
+				while (result == VSConstants.S_OK && fetched[0] == 1);
+
+			}
+			catch (System.Runtime.InteropServices.COMException e)
+			{
+				result = e.ErrorCode;
+			}
+
+			if (result != VSConstants.S_OK)
+			{
+				return null;
+			}
+
+			return taskItemsList;
+		}
 	}
 }
