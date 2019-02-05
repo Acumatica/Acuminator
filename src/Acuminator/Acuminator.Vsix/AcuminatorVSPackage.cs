@@ -193,6 +193,7 @@ namespace Acuminator.Vsix
 				.Select(d => (path: d.FilePath, generateSuppressionBase: false));
 
 			SuppressionManager.Init(new SuppressionFileSystemService(), additionalFiles);
+			RoslynDiagnosticService.Initialize(this);
 		}
 
 		private void InitializeCommands()
