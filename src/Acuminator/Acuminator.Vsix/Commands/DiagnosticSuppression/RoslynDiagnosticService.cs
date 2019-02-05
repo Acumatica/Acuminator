@@ -149,7 +149,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			return genericTask?.GetProperty(nameof(System.Threading.Tasks.Task<object>.Result));
 		}
 
-		public async System.Threading.Tasks.Task<List<object>> GetCurrentDiagnosticForDocumentSpanAsync(Document document, TextSpan caretSpan)
+		public async System.Threading.Tasks.Task<List<DiagnosticData>> GetCurrentDiagnosticForDocumentSpanAsync(Document document, TextSpan caretSpan)
 		{		
 			var componentModelType = _componentModel.GetType();
 			
@@ -158,19 +158,31 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 				dynamic dataTask = _getDiagnosticOnTextSpanMethod.Invoke(_roslynAnalyzersService, 
 																		 new object[] { document, caretSpan, null, false, CancellationToken.None });
 				if (!(dataTask is System.Threading.Tasks.Task task))
-					return new List<object>();
+					return new List<DiagnosticData>();
 
 				await task;
 				object diagnosticsCollectionRaw = _taskResultPropertyInfo.GetValue(dataTask);
 
-				if (!(diagnosticsCollectionRaw is IEnumerable<object> diagnostics) || diagnostics.IsNullOrEmpty())
-					return new List<object>();
+				if (!(diagnosticsCollectionRaw is IEnumerable<object> diagnosticsRaw) || diagnosticsRaw.IsNullOrEmpty())
+					return new List<DiagnosticData>();
 
-				return diagnostics.ToList();
+				List<DiagnosticData> preparedDiagnostics = new List<DiagnosticData>(2);
+
+				foreach (dynamic rawData in diagnosticsRaw)
+				{
+					DiagnosticData wrappedData = DiagnosticData.Create(rawData);
+
+					if (wrappedData != null)
+					{
+						preparedDiagnostics.Add(wrappedData);
+					}
+				}
+
+				return preparedDiagnostics;
 			}
-			catch (Exception exc)
+			catch (Exception e)
 			{
-				return new List<object>();
+				return new List<DiagnosticData>();
 			}
 		}
 	}
