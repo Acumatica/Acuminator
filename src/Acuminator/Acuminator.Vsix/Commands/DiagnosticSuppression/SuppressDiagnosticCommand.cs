@@ -96,27 +96,22 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			if (syntaxRoot == null || semanticModel == null || !IsPlatformReferenced(semanticModel))
 				return;
 
-
 			TextSpan caretSpan = GetTextSpanFromCaret(caretPosition, caretLine);
 			SyntaxNode syntaxNode = syntaxRoot.FindNode(caretSpan);
-			SyntaxNode targetNode = SuppressionManager.FindTargetNode(syntaxNode);		
+			List<DiagnosticData> diagnosticData = GetDiagnostics(document, caretSpan).ToList();
 
-			try
+			switch (diagnosticData.Count)
 			{
-				List<DiagnosticData> diagnosticData = ThreadHelper.JoinableTaskFactory.Run(
-					async () => await RoslynDiagnosticService.Instance.GetCurrentDiagnosticForDocumentSpanAsync(document, caretSpan));
-
-				if (diagnosticData.IsNullOrEmpty())
+				case 0:
+					MessageBox.Show(VSIXResource.DiagnosticSuppression_NoDiagnosticFound, AcuminatorVSPackage.PackageName);
 					return;
-			}
-			catch (Exception exc)
-			{
-
-			
-			}
-			
-
-			//SuppressDiagnosticsOnTargetNode(targetNode, semanticModelFromVS);	
+				case 1:
+					SuppressDiagnosticsOnNode(syntaxNode, semanticModel, diagnosticData);
+					return;
+				default:
+					MessageBox.Show(VSIXResource.DiagnosticSuppression_MultipleDiagnosticFound, AcuminatorVSPackage.PackageName);
+					return;
+			}	
 		}
 
 		private TextSpan GetTextSpanFromCaret(SnapshotPoint caretPosition, ITextSnapshotLine caretLine)
@@ -143,25 +138,37 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			return context.IsPlatformReferenced;
 		}
 
-		
+		private IEnumerable<DiagnosticData> GetDiagnostics(Document document, TextSpan caretSpan)
+		{
+			IEnumerable<DiagnosticData> diagnosticData = null;
 
-		//private void SuppressDiagnosticsOnTargetNode(SyntaxNode targetNode, SemanticModel semanticModel)
-		//{
-		//	if (targetNode == null)
-		//		return;
+			try
+			{
+				diagnosticData = ThreadHelper.JoinableTaskFactory.Run(
+					async () => await RoslynDiagnosticService.Instance.GetCurrentDiagnosticForDocumentSpanAsync(document, caretSpan));
+			}
+			catch (Exception e)
+			{
+				return Enumerable.Empty<DiagnosticData>();
+			}
 
-		//	bool x = targetNode.DescendantNodesAndTokens().Any(n => n.ContainsDiagnostics);
+			return diagnosticData?.Where(d => IsAcuminatorDiagnostic(d)) ?? Enumerable.Empty<DiagnosticData>();
+		}
 
-		//	var diagnostics = semanticModel.GetDiagnostics(targetNode.Span)
-		//								   .Where(diagnostic => diagnostic.IsAcuminatorDiagnostic());
+		private static bool IsAcuminatorDiagnostic(DiagnosticData diagnosticData) =>
+			diagnosticData.Id.StartsWith(SharedConstants.AcuminatorDiagnosticPrefix);
 
-		//	if (!diagnostics.IsNullOrEmpty())
-		//	{
-		//		MessageBox.Show(VSIXResource.DiagnosticSuppression_NoDiagnosticFound, AcuminatorVSPackage.PackageName);
-		//		return;
-		//	}
 
-		//	//return true;
-		//}
+		private void SuppressDiagnosticsOnNode(SyntaxNode syntaxNode, SemanticModel semanticModel, 
+											   List<DiagnosticData> diagnosticData)
+		{
+			SyntaxNode targetNode = SuppressionManager.FindTargetNode(syntaxNode);
+
+			if (targetNode == null)
+				return;
+
+			
+			//return true;
+		}
 	}
 }

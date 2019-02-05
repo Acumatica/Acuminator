@@ -255,4 +255,7 @@
   <data name="DiagnosticSuppression_NoDiagnosticFound" xml:space="preserve">
     <value>There are no Acuminator diagnostic on this code snippet.</value>
   </data>
+  <data name="DiagnosticSuppression_MultipleDiagnosticFound" xml:space="preserve">
+    <value>There are multiple Acuminator diagnostics on this code snippet. The Acuminator can't shoose between them.</value>
+  </data>
 </root>
