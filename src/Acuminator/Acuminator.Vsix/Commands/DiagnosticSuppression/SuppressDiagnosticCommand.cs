@@ -106,7 +106,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 					MessageBox.Show(VSIXResource.DiagnosticSuppression_NoDiagnosticFound, AcuminatorVSPackage.PackageName);
 					return;
 				case 1:
-					SuppressDiagnosticsOnNode(syntaxNode, semanticModel, diagnosticData);
+					SuppressDiagnosticsOnNode(syntaxNode, semanticModel, diagnosticData[0]);
 					return;
 				default:
 					MessageBox.Show(VSIXResource.DiagnosticSuppression_MultipleDiagnosticFound, AcuminatorVSPackage.PackageName);
@@ -160,7 +160,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 
 		private void SuppressDiagnosticsOnNode(SyntaxNode syntaxNode, SemanticModel semanticModel, 
-											   List<DiagnosticData> diagnosticData)
+											   DiagnosticData diagnostic)
 		{
 			SyntaxNode targetNode = SuppressionManager.FindTargetNode(syntaxNode);
 
@@ -168,7 +168,6 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 				return;
 
 			
-			//return true;
 		}
 	}
 }

@@ -437,6 +437,7 @@
     <Compile Include="Commands\BQL Fixer\AngleBracesBqlRewriter.cs" />
     <Compile Include="Commands\BQL Fixer\FixBqlCommand.cs" />
     <Compile Include="Commands\DiagnosticSuppression\DiagnosticData.cs" />
+    <Compile Include="Commands\DiagnosticSuppression\ProjectSuppressionFileGenerator.cs" />
     <Compile Include="Commands\DiagnosticSuppression\RoslynDiagnosticService.cs" />
     <Compile Include="Commands\GoToDeclarationOrHandler\GoToDeclarationOrHandlerCommand.cs" />
     <Compile Include="Commands\DiagnosticSuppression\SuppressDiagnosticCommand.cs" />
