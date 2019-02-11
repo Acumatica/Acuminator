@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
+﻿using Acuminator.Utilities.Common;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 {
@@ -25,7 +24,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				Descriptors.PX1023_MultipleTypeAttributesOnProperty,
 				Descriptors.PX1023_MultipleTypeAttributesOnAggregators,
 				Descriptors.PX1023_MultipleSpecialTypeAttributesOnProperty,
-				Descriptors.PX1023_MultipleSpecialTypeAttributesOnAggregators
+				Descriptors.PX1023_MultipleSpecialTypeAttributesOnAggregators,
+				Descriptors.PX1095_PXDBCalcedMustBeAccompaniedNonDBTypeAttribute
 			);
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
@@ -67,8 +67,40 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			if (!validSpecialTypes)
 				return;
 
+			CheckForPXDBCalcedAndUnboundTypeAttributes(symbolContext, pxContext, fieldAttributesRegister, property, attributesWithInfos);
+
 			await CheckForFieldTypeAttributesAsync(property, symbolContext, pxContext, attributesWithInfos)
 					.ConfigureAwait(false);
+		}
+
+		private static void CheckForPXDBCalcedAndUnboundTypeAttributes(SymbolAnalysisContext symbolContext, PXContext pxContext,
+			FieldTypeAttributesRegister fieldAttributesRegister, IPropertySymbol propertySymbol,
+			List<(AttributeData Attribute, List<FieldTypeAttributeInfo> Infos)> attributesWithInfos)
+		{
+			symbolContext.CancellationToken.ThrowIfCancellationRequested();
+
+			var hasUnboundTypeAttribute = false;
+			var hasPXDBCalcedAttribute = false;
+
+			foreach (var (attribute, infos) in attributesWithInfos)
+			{
+				hasPXDBCalcedAttribute |= infos.Any(i => i.Kind == FieldTypeAttributeKind.PXDBCalcedAttribute);
+				hasUnboundTypeAttribute |= infos.Any(i => i.Kind == FieldTypeAttributeKind.UnboundTypeAttribute);
+			}
+
+			if (!hasPXDBCalcedAttribute || hasUnboundTypeAttribute)
+			{
+				return;
+			}
+
+			if (!(propertySymbol.GetSyntax(symbolContext.CancellationToken) is PropertyDeclarationSyntax propertyNode))
+			{
+				return;
+			}
+
+			var diagnostic = Diagnostic.Create(Descriptors.PX1095_PXDBCalcedMustBeAccompaniedNonDBTypeAttribute, propertyNode.Identifier.GetLocation());
+
+			symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic);
 		}
 
 		private static List<(AttributeData Attribute, List<FieldTypeAttributeInfo> Infos)> GetFieldTypeAttributesInfos(PXContext pxContext,
@@ -258,7 +290,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 			if (propertyTypeLocation != null)
 			{
-				symbolContext.ReportDiagnostic(
+				symbolContext.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(
 						Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, propertyTypeLocation, attributeLocation.ToEnumerable(),
 						diagnosticProperties));
@@ -266,7 +298,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 			if (attributeLocation != null)
 			{
-				symbolContext.ReportDiagnostic(
+				symbolContext.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(
 						Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, attributeLocation, propertyTypeLocation.ToEnumerable(),
 						diagnosticProperties));
@@ -282,7 +314,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 			foreach (Location attrLocation in attributeLocations.Where(location => location != null))
 			{
-				symbolContext.ReportDiagnostic(
+				symbolContext.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(diagnosticDescriptor, attrLocation));
 			}
 		}

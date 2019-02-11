@@ -76,19 +76,19 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				case DacGroupingNodeViewModel dacGroupingNodeViewModel:
 					return DacIcon;
 				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.View:
-					return ViewIcon;
-				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.ViewDelegate:
-					return ViewDelegateIcon;
+					return ViewIcon;		
 				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.Action:
-					return ActionIcon;
-				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.ActionHandler:
-					return ActionHandlerIcon;
+					return ActionIcon;				
 				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.RowEvent:
 					return RowEventIcon;
 				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.FieldEvent:
 					return FieldEventIcon;
 				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.CacheAttached:
 					return CacheAttachedIcon;
+				case GraphMemberInfoNodeViewModel graphMemberInfo when graphMemberInfo.GraphMemberInfoType == GraphMemberInfoType.ViewDelegate:
+					return ViewDelegateIcon;
+				case GraphMemberInfoNodeViewModel graphMemberInfo when graphMemberInfo.GraphMemberInfoType == GraphMemberInfoType.ActionHandler:
+					return ActionHandlerIcon;
 				default:
 					return null;
 			}

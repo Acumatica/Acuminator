@@ -1,15 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Utilities.Roslyn.Syntax;
 using Acuminator.Utilities.Roslyn.Syntax.PXGraph;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 {
@@ -60,14 +59,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 				// 2. PXGraph parameter is not used in any way because its modifications might affect the BQL query results
 				if (instantiationType != GraphInstantiationType.None)
 				{
-					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries,
+					context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries,
 						graphArgSyntax.GetLocation(),
 						CreateDiagnosticProperties(availableGraphs, pxContext)));
 				}
 				else if (availableGraphs.Length > 0 && context.SemanticModel.GetSymbolInfo(graphArgSyntax).Symbol is ILocalSymbol localVar 
 				                                    && !usedGraphs.Contains(localVar))
 				{
-					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries,
+					context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries,
 						graphArgSyntax.GetLocation(),
 						CreateDiagnosticProperties(availableGraphs.Where(g => !Equals(g, localVar)), pxContext)));
 				}

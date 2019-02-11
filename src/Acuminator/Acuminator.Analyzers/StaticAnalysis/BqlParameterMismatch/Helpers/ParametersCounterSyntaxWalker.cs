@@ -15,37 +15,37 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 		/// </summary>
 		protected class ParametersCounterSyntaxWalker : CSharpSyntaxWalker
 		{
-			private readonly SyntaxNodeAnalysisContext syntaxContext;
-			private readonly CancellationToken cancellationToken;
+			private readonly SyntaxNodeAnalysisContext _syntaxContext;
+			private readonly CancellationToken _cancellationToken;
 
 			public ParametersCounter ParametersCounter { get; }
 
 			public ParametersCounterSyntaxWalker(SyntaxNodeAnalysisContext aSyntaxContext, PXContext aPxContext)
 			{
-				syntaxContext = aSyntaxContext;
-				cancellationToken = syntaxContext.CancellationToken;
+				_syntaxContext = aSyntaxContext;
+				_cancellationToken = _syntaxContext.CancellationToken;
 				ParametersCounter = new ParametersCounter(aPxContext);
 			}
 
 			public bool CountParametersInNode(SyntaxNode node)
 			{
-				if (cancellationToken.IsCancellationRequested)
+				if (_cancellationToken.IsCancellationRequested)
 					return false;
 
 				Visit(node);
-				return ParametersCounter.IsCountingValid && !cancellationToken.IsCancellationRequested;
+				return ParametersCounter.IsCountingValid && !_cancellationToken.IsCancellationRequested;
 			}
 
 			public override void VisitGenericName(GenericNameSyntax genericNode)
 			{
-				if (cancellationToken.IsCancellationRequested)
+				if (_cancellationToken.IsCancellationRequested)
 					return;
 
-				SymbolInfo symbolInfo = syntaxContext.SemanticModel.GetSymbolInfo(genericNode, cancellationToken);
+				SymbolInfo symbolInfo = _syntaxContext.SemanticModel.GetSymbolInfo(genericNode, _cancellationToken);
 
-				if (cancellationToken.IsCancellationRequested || !(symbolInfo.Symbol is ITypeSymbol typeSymbol))
+				if (_cancellationToken.IsCancellationRequested || !(symbolInfo.Symbol is ITypeSymbol typeSymbol))
 				{
-					if (!cancellationToken.IsCancellationRequested)
+					if (!_cancellationToken.IsCancellationRequested)
 						base.VisitGenericName(genericNode);
 
 					return;
@@ -54,10 +54,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				if (genericNode.IsUnboundGenericName)
 					typeSymbol = typeSymbol.OriginalDefinition;
 
-				if (!ParametersCounter.CountParametersInTypeSymbol(typeSymbol, cancellationToken))
+				if (!ParametersCounter.CountParametersInTypeSymbol(typeSymbol, _cancellationToken))
 					return;
 
-				if (!cancellationToken.IsCancellationRequested)
+				if (!_cancellationToken.IsCancellationRequested)
 					base.VisitGenericName(genericNode);
 			}
 		}

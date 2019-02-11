@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes;
+﻿using Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes;
 using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
 using Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler;
 using Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate;
@@ -12,8 +11,8 @@ using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization;
 using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
 using Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions;
 using Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic;
-using Acuminator.Utilities;
 using Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder;
+using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
@@ -22,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+	[DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class PXGraphAnalyzer : SymbolAnalyzersAggregator<IPXGraphAnalyzer>
     {
         protected override SymbolKind SymbolKind => SymbolKind.NamedType;

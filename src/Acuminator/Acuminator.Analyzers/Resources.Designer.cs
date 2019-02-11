@@ -1077,5 +1077,50 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1093Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the PXCacheName attribute.
+        /// </summary>
+        public static string PX1094FixPXCacheNameAttribute {
+            get {
+                return ResourceManager.GetString("PX1094FixPXCacheNameAttribute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the PXHidden attribute.
+        /// </summary>
+        public static string PX1094FixPXHiddenAttribute {
+            get {
+                return ResourceManager.GetString("PX1094FixPXHiddenAttribute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter a cache name for this DAC.
+        /// </summary>
+        public static string PX1094PXCacheNameDefaultArgumentValue {
+            get {
+                return ResourceManager.GetString("PX1094PXCacheNameDefaultArgumentValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A DAC must be decorated with the PXHidden or PXCacheName attribute.
+        /// </summary>
+        public static string PX1094Title {
+            get {
+                return ResourceManager.GetString("PX1094Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A field with the PXDBCalced attribute must have an unbound type attribute, such as PXDate, PXDecimal.
+        /// </summary>
+        public static string PX1095Title {
+            get {
+                return ResourceManager.GetString("PX1095Title", resourceCulture);
+            }
+        }
     }
 }

@@ -36,6 +36,11 @@ namespace Acuminator.Vsix
 		protected Package Package { get; }
 
 		/// <summary>
+		/// True if the command can modify document in some way - text or properties.
+		/// </summary>
+		protected abstract bool CanModifyDocument { get; }
+
+		/// <summary>
 		/// Initializes a new instance of the command.
 		/// Adds our command handlers for menu (commands must exist in the command table file)
 		/// </summary>
@@ -72,11 +77,10 @@ namespace Acuminator.Vsix
 			bool visible = false;
 			bool enabled = false;
 
-			if (dte?.ActiveDocument != null)
+			if (dte?.ActiveDocument != null && dte.ActiveDocument.Language == LegacyLanguageNames.CSharp)
 			{
-				string fileExtension = System.IO.Path.GetExtension(dte.ActiveDocument.FullName);
-				visible = !fileExtension.IsNullOrEmpty() && fileExtension.Equals(".cs", StringComparison.OrdinalIgnoreCase);
-				enabled = !dte.ActiveDocument.ReadOnly;
+				visible = true;
+				enabled = !CanModifyDocument || !dte.ActiveDocument.ReadOnly;
 			}
 
 			menuCommand.Visible = visible;

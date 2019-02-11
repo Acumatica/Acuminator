@@ -11,7 +11,7 @@ namespace Acuminator.Vsix.Coloriser
 {
     public class PXOutliningTagger : PXTaggerBase, ITagger<IOutliningRegionTag>
     {
-        private int isSubscribed = NOT_SUBSCRIBED;
+        private int _isSubscribed = NOT_SUBSCRIBED;
         private const int NOT_SUBSCRIBED = 0;
         private const int SUBSCRIBED = 1;
 
@@ -61,7 +61,7 @@ namespace Acuminator.Vsix.Coloriser
             if (colorizerTagger.TaggerType == TaggerType.RegEx)
                 return;
 
-            if (Interlocked.Exchange(ref isSubscribed, SUBSCRIBED) == NOT_SUBSCRIBED)
+            if (Interlocked.Exchange(ref _isSubscribed, SUBSCRIBED) == NOT_SUBSCRIBED)
             {
                 ColorizerTagger = colorizerTagger;
                 ColorizerTagger.TagsChanged += OnColorizingTaggerTagsChanged;
@@ -75,7 +75,7 @@ namespace Acuminator.Vsix.Coloriser
 
         public override void Dispose()
         {
-            if (Interlocked.Exchange(ref isSubscribed, NOT_SUBSCRIBED) == SUBSCRIBED && ColorizerTagger != null)
+            if (Interlocked.Exchange(ref _isSubscribed, NOT_SUBSCRIBED) == SUBSCRIBED && ColorizerTagger != null)
             {
                 ColorizerTagger.TagsChanged -= OnColorizingTaggerTagsChanged;
                 ColorizerTagger = null;

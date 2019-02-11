@@ -23,10 +23,12 @@ using Acuminator.Vsix.Settings;
 using Acuminator.Vsix.Logger;
 using Acuminator.Vsix.ToolWindows.CodeMap;
 using Acuminator.Vsix.Utilities;
+using Acuminator.Utilities.DiagnosticSuppression;
 
-using FirstChanceExceptionEventArgs = System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs;
 using EnvDTE80;
 using EnvDTE;
+using System.Linq;
+using Acuminator.Vsix.Utils;
 
 namespace Acuminator.Vsix
 {
@@ -56,7 +58,8 @@ namespace Acuminator.Vsix
                      Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
 	[ProvideOptionPage(typeof(GeneralOptionsPage), SettingsCategoryName, GeneralOptionsPage.PageTitle,
 					   categoryResourceID: 201, pageNameResourceID: 202, supportsAutomation: true, SupportsProfiles = true)]
-	[ProvideToolWindow(typeof(CodeMapWindow))]
+	[ProvideToolWindow(typeof(CodeMapWindow), MultiInstances = false, Transient = true, Orientation = ToolWindowOrientation.Left,
+					   Style = VsDockStyle.Linked)]
 	public sealed class AcuminatorVSPackage : Package
     {
 		private const string SettingsCategoryName = "Acuminator";
@@ -88,7 +91,10 @@ namespace Acuminator.Vsix
         public static AcuminatorVSPackage Instance { get; private set; }
 
         private object locker = new object();
-        private GeneralOptionsPage generalOptionsPage = null;     
+		private SolutionEvents _dteSolutionEvents;
+
+
+		private GeneralOptionsPage generalOptionsPage = null;     
       
         public GeneralOptionsPage GeneralOptionsPage
         {
@@ -155,6 +161,7 @@ namespace Acuminator.Vsix
                 return;
 
 			InitializeLogger();
+			InitializeSuppressionManager();
 
 			try
 			{
@@ -177,6 +184,16 @@ namespace Acuminator.Vsix
 			}
 		}
 
+		private void InitializeSuppressionManager()
+		{
+			var workspace = this.GetVSWorkspace();
+			var additionalFiles = workspace.CurrentSolution.Projects
+				.SelectMany(p => p.AdditionalDocuments)
+				.Select(d => (path: d.FilePath, generateSuppressionBase: false));
+
+			SuppressionManager.Init(new SuppressionFileSystemService(), additionalFiles);
+		}
+
 		private void InitializeCommands()
 		{
 			FormatBqlCommand.Initialize(this);
@@ -194,7 +211,8 @@ namespace Acuminator.Vsix
 #pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
 			if (GetService(typeof(DTE)) is DTE dte)
 			{
-				dte.Events.SolutionEvents.AfterClosing += SolutionEvents_AfterClosing;
+				_dteSolutionEvents = dte.Events.SolutionEvents;						//Save DTE events object to prevent it from being GCed
+				_dteSolutionEvents.AfterClosing += SolutionEvents_AfterClosing;
 			}
 #pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 		}
@@ -209,14 +227,9 @@ namespace Acuminator.Vsix
 			base.Dispose(disposing);
 			AcuminatorLogger?.Dispose();
 
-			if (ThreadHelper.CheckAccess())
-			{
-#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
-				if (GetService(typeof(DTE)) is DTE dte)
-				{
-					dte.Events.SolutionEvents.AfterClosing -= SolutionEvents_AfterClosing;
-				}
-#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
+			if (ThreadHelper.CheckAccess() && _dteSolutionEvents != null)
+			{		
+				_dteSolutionEvents.AfterClosing -= SolutionEvents_AfterClosing;		
 			}
 		}
 
@@ -252,8 +265,8 @@ namespace Acuminator.Vsix
 #pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 			}
 			catch
-			{			
-			}		
+			{
+			}
 		}
 
 		#region Package Settings         

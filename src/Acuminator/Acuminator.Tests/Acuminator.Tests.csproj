@@ -199,6 +199,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacWithBoundAndUnboundFields_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlers\ExternalCache.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseDataViewDelegate\Sources\BaseViewInvocation_ThroughView.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ActionHandlerAttributes\Sources\Handlers_Good_PXOverride.cs" />
     <Compile Include="Tests\StaticAnalysis\CallingBaseActionHandler\CallingBaseActionHandlerFromOverrideHandlerTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionHandlerInvocation_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionHandlerInvocation_Good.cs" />
@@ -216,6 +217,13 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateInGraphExtensionOwnView.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateInGraphExtensionBaseView.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateInGraphExtensionOverride.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithPXDBCalcedAndWithoutUnboundTypeAttributes.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithPXDBCalcedAndUnboundTypeAttributes.cs" />
+    <Compile Include="Tests\StaticAnalysis\DacPropertyAttributes\DacFieldWithDBCalcedAttributeTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\DacUiAttributes\DacUiAttributesTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacUiAttributes\Sources\Dac_Bad.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacUiAttributes\Sources\Dac_Good_CacheName.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacUiAttributes\Sources\Dac_Good_Hidden.cs" />
     <Compile Include="Tests\StaticAnalysis\DatabaseQueries\DatabaseQueriesInPXGraphInitializationTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\PXGraphConstructor.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\Initializers\CreateInstanceDelegate.cs" />

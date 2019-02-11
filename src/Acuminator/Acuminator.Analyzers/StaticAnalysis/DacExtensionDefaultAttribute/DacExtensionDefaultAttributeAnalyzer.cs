@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -92,7 +93,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 							{ DiagnosticProperty.IsBoundField,true.ToString() }
 						}.ToImmutableDictionary();
 
-						symbolContext.ReportDiagnostic(
+						symbolContext.ReportDiagnosticWithSuppressionCheck(
 							Diagnostic.Create(
 								Descriptors.PX1030_DefaultAttibuteToExisitingRecords, attributeLocation, diagnosticProperties));
 					}
@@ -130,7 +131,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 							{ DiagnosticProperty.IsBoundField, false.ToString() }
 						}.ToImmutableDictionary();
 
-						symbolContext.ReportDiagnostic(
+						symbolContext.ReportDiagnosticWithSuppressionCheck(
 							Diagnostic.Create(
 								property.ContainingType.IsDAC() ? 
 									Descriptors.PX1030_DefaultAttibuteToExisitingRecordsOnDAC : 

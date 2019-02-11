@@ -11,11 +11,11 @@ namespace Acuminator.Vsix.Coloriser
     public class TagsCacheSync<TTag> : ITagsCache<TTag>
     where TTag : ITag
     {
-        private const int defaultCapacity = 64;
+        private const int DefaultCapacity = 64;
 
         public bool IsCompleted { get; private set; }
 
-        private readonly List<ITagSpan<TTag>> resultTagsList;
+        private readonly List<ITagSpan<TTag>> _resultTagsList;
         
         public IReadOnlyCollection<ITagSpan<TTag>> ProcessedTags { get; }
 
@@ -23,8 +23,8 @@ namespace Acuminator.Vsix.Coloriser
 
         public TagsCacheSync(int? capacity = null)
         {
-            resultTagsList = new List<ITagSpan<TTag>>(capacity ?? defaultCapacity);
-            ProcessedTags = resultTagsList.AsReadOnly();
+            _resultTagsList = new List<ITagSpan<TTag>>(capacity ?? DefaultCapacity);
+            ProcessedTags = _resultTagsList.AsReadOnly();
         }
 
         public void CompleteProcessing()
@@ -34,7 +34,7 @@ namespace Acuminator.Vsix.Coloriser
 
         public void Reset()
         {
-            resultTagsList.Clear();
+            _resultTagsList.Clear();
             IsCompleted = false;
         }
 
@@ -43,10 +43,10 @@ namespace Acuminator.Vsix.Coloriser
             if (tag == null)
                 return;
 
-            resultTagsList.Add(tag);
+            _resultTagsList.Add(tag);
         }
 
-        public void AddTags(IEnumerable<ITagSpan<TTag>> tags) => resultTagsList.AddRange(tags);
+        public void AddTags(IEnumerable<ITagSpan<TTag>> tags) => _resultTagsList.AddRange(tags);
         
         public IEnumerator<ITagSpan<TTag>> GetEnumerator() => ProcessedTags.GetEnumerator();
 

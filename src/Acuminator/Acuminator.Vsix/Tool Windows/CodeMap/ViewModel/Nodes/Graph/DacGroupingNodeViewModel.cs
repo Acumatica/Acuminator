@@ -39,7 +39,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			GraphMemberCategoryVM = graphMemberCategoryVM;
 			DacName = graphEventsForDAC.Key;
 			var graphMembers = graphEventsForDAC.Select(eventInfo => graphMemberCreator(this, eventInfo))
-												.Where(graphMemberVM => graphMemberVM != null);
+												.Where(graphMemberVM => graphMemberVM != null && !graphMemberVM.Name.IsNullOrEmpty())
+												.OrderBy(graphMemberVM => graphMemberVM.Name);
 			Children.AddRange(graphMembers);
 		}
 	}

@@ -50,6 +50,9 @@
     <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.1.2.2\lib\portable-net45+win8\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.2.2\lib\portable-net45+win8\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+    </Reference>
     <Reference Include="PX.Common">
       <HintPath>..\..\..\lib\PX.Common.dll</HintPath>
     </Reference>
@@ -61,23 +64,18 @@
     </Reference>
     <Reference Include="System.Composition.AttributedModel, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.AttributedModel.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Composition.Convention, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.Convention.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Composition.Hosting, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.Hosting.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Composition.Runtime, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.Runtime.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Composition.TypedParts, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.TypedParts.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Reflection.Metadata, Version=1.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Reflection.Metadata.1.2.0\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
@@ -94,6 +92,14 @@
     <Compile Include="Common\DictionaryExtensions.cs" />
     <Compile Include="Common\ExceptionExtensions.cs" />
     <Compile Include="Common\StringExtensions.cs" />
+    <Compile Include="DiagnosticSuppression\ContextExtensions.cs" />
+    <Compile Include="DiagnosticSuppression\ISuppressionFileSystemService.cs" />
+    <Compile Include="DiagnosticSuppression\ISuppressionFileWatcherService.cs" />
+    <Compile Include="DiagnosticSuppression\SuppressionDiffResult.cs" />
+    <Compile Include="DiagnosticSuppression\SuppressionFile.cs" />
+    <Compile Include="DiagnosticSuppression\SuppressionFileEventArgs.cs" />
+    <Compile Include="DiagnosticSuppression\SuppressionManager.cs" />
+    <Compile Include="DiagnosticSuppression\SuppressMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\ArrayExtensions.cs" />
     <Compile Include="Common\EnumerableExtensions.cs" />
@@ -183,6 +189,7 @@
     <Compile Include="Roslyn\Syntax\MethodDeclarationUtils.cs" />
     <Compile Include="Roslyn\Syntax\ParameterUsagesRewriter.cs" />
     <Compile Include="Roslyn\Syntax\PXGraph\GraphSyntaxUtils.cs" />
+    <Compile Include="Roslyn\Syntax\SyntaxNodeGenerationUtils.cs" />
     <Compile Include="Roslyn\Syntax\SyntaxTreeUtils.cs" />
     <Compile Include="Roslyn\Syntax\RoslynSyntaxUtils.cs" />
     <Compile Include="Roslyn\BqlModifyingMethods.cs" />

@@ -95,6 +95,13 @@ namespace PX.Objects.HackathonDemo
 			}
 		}
 
+        protected virtual void APInvoice_RowInserting(PXCache sender, PXRowInsertingEventArgs e)
+        {
+        }
+
+        protected virtual void APInvoice_DocDate_FieldVerifying(PXCache sender, PXFieldVerifyingEventArgs e)
+        {
+        }
 
 		#region Delegate
 		public IEnumerable items()

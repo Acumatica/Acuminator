@@ -359,6 +359,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Resource Include="Resources\Refresh.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\CodeMap\Action.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -445,9 +448,10 @@
     <Compile Include="Settings\CodeAnalysisSettingsFromOptionsPage.cs" />
     <Compile Include="Tool Windows\CodeMap\Convertes\TreeNodeToImageSourceConverter.cs" />
     <Compile Include="Tool Windows\CodeMap\Convertes\TreeNodeToTooltipConverter.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\GraphMemberInfoType.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphMemberType.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Base\GraphEventCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Base\GraphEventNodeByDacConstructor.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\Base\GraphEventCategoryNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventNodeByDacConstructor.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\CodeMapWindowViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\CodeMapWindow.cs" />
     <Compile Include="Tool Windows\CodeMap\CodeMapWindowControl.xaml.cs">
@@ -455,21 +459,22 @@
     </Compile>
     <Compile Include="Tool Windows\CodeMap\OpenCodeMapWindowCommand.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\DocumentModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Base\GraphMemberCategoryNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\Base\GraphMemberCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\AttributeNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\DacGroupingNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\GraphMembersCategories\ActionHandlerCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\GraphMembersCategories\FieldEventCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\GraphMembersCategories\ViewDelegateCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\GraphMembersCategories\ActionCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\GraphMembersCategories\CacheAttachedCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\GraphMembersCategories\RowEventCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\GraphMembersCategories\ViewCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\GraphMembers\FieldEventNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\GraphMembers\RowEventNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\GraphMembers\CacheAttachedNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\GraphNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\GraphMemberNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\DacGroupingNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\FieldEventCategoryNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\ActionCategoryNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\CacheAttachedCategoryNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\RowEventCategoryNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\ViewCategoryNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMemberInfos\GraphMemberInfoNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\FieldEventNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\ActionNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\ViewNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\RowEventNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\CacheAttachedNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\Base\GraphMemberNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\TreeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\TreeNodeViewModel.cs" />
     <Compile Include="Tool Windows\Converters\BoolInversionConverter.cs" />
@@ -482,6 +487,7 @@
     <Compile Include="Tool Windows\ViewModel\ToolWindowViewModelBase.cs" />
     <Compile Include="Tool Windows\ViewModel\ViewModelBase.cs" />
     <Compile Include="Utils\AcuminatorLogger.cs" />
+    <Compile Include="Utils\Constants\LegacyLanguageNames.cs" />
     <Compile Include="Utils\EditorExtensions.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheAsync.cs" />
     <Compile Include="Coloriser\Formats\ClassificationTypeDefinitions.cs" />
@@ -505,6 +511,9 @@
     <Compile Include="Settings\UI\GeneralOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Utils\SuppressionFileSystemService.cs" />
+    <Compile Include="Utils\SuppressionFileWatcherService.cs" />
+    <Compile Include="Utils\WorkspaceChangedUtils.cs" />
     <Compile Include="Utils\WPF\Collection\ExtendedObservableCollection.cs" />
     <Compile Include="Utils\Navigation\VSDocumentNavigation.cs" />
     <Compile Include="Utils\VSServicesExtensions.cs" />

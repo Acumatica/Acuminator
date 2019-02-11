@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Symbols;
@@ -39,7 +40,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
             bool isHardcodedMessage = _messageExpression is LiteralExpressionSyntax;
             if (isHardcodedMessage)
             {
-                _syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1050_HardcodedStringInLocalizationMethod, _messageExpression.GetLocation()));
+                _syntaxContext.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1050_HardcodedStringInLocalizationMethod, _messageExpression.GetLocation()));
                 return;
             }
 
@@ -48,17 +50,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
             {
                 if (IsNonLocalizableMessageType(messageType))
                 {
-                    _syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1051_NonLocalizableString, _messageExpression.GetLocation()));
+                    _syntaxContext.ReportDiagnosticWithSuppressionCheck(
+						Diagnostic.Create(Descriptors.PX1051_NonLocalizableString, _messageExpression.GetLocation()));
                 }
 
                 if (IsIncorrectStringToFormat())
                 {
-                    _syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1052_IncorrectStringToFormat, _messageExpression.GetLocation()));
+                    _syntaxContext.ReportDiagnosticWithSuppressionCheck(
+						Diagnostic.Create(Descriptors.PX1052_IncorrectStringToFormat, _messageExpression.GetLocation()));
                 }
             }
             else if (IsStringConcatenation())
             {
-                _syntaxContext.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1053_ConcatenationPriorLocalization, _messageExpression.GetLocation()));
+                _syntaxContext.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1053_ConcatenationPriorLocalization, _messageExpression.GetLocation()));
             }
         }
 
@@ -73,17 +78,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
             ITypeSymbol messageClassType = memberAccess.Expression
                                            .DescendantNodesAndSelf()
                                            .OfType<IdentifierNameSyntax>()
+										   .Reverse()
                                            .Select(i => SemanticModel.GetTypeInfo(i, Cancellation).Type)
                                            .Where(t => t != null && t.IsReferenceType)
                                            .FirstOrDefault();
             if (messageClassType == null)
                 return null;
 
-            IFieldSymbol messageMemberInfo = SemanticModel.GetSymbolInfo(messageMember, Cancellation).Symbol as IFieldSymbol;
-            if (messageMemberInfo == null || !messageMemberInfo.IsConst || messageMemberInfo.DeclaredAccessibility != Accessibility.Public)
-                return null;
+			if (!(SemanticModel.GetSymbolInfo(messageMember, Cancellation).Symbol is IFieldSymbol messageMemberInfo) ||
+				!messageMemberInfo.IsConst ||
+				messageMemberInfo.DeclaredAccessibility != Accessibility.Public)
+			{
+				return null;
+			}
 
-            _messageMember = messageMemberInfo;
+			_messageMember = messageMemberInfo;
             return messageClassType;
         }
 

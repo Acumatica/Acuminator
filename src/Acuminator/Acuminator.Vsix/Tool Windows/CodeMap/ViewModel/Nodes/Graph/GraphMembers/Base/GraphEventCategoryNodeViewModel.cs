@@ -33,7 +33,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			(dacGroupVM, eventInfo) => new GraphMemberNodeViewModel(dacGroupVM.GraphMemberCategoryVM, eventInfo);
 
 		protected GraphEventCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
-												  bool isExpanded) : 
+												  bool isExpanded) :
 										   base(graphViewModel, graphMemberType, isExpanded)
 		{
 			_name = CategoryDescription;
@@ -42,15 +42,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected override void AddCategoryMembers()
 		{
 			var graphSemanticModel = GraphViewModel.GraphSemanticModel;
-			var graphCategoryEvents = GetCategoryGraphNodeSymbols()?.OfType<GraphEventInfo>();
-
+			var graphCategoryEvents = GetCategoryGraphNodeSymbols()?.OfType<GraphEventInfo>()
+																	.Where(eventInfo => eventInfo.SignatureType != EventHandlerSignatureType.None);
 			if (graphCategoryEvents.IsNullOrEmpty())
 				return;
 
-			var graphMemberViewModels = from eventInfo in graphCategoryEvents.OrderBy(member => member.DeclarationOrder)
-										where eventInfo.Symbol.ContainingType == GraphViewModel.GraphSemanticModel.GraphSymbol ||
+			var graphMemberViewModels = from eventInfo in graphCategoryEvents
+										where eventInfo.Symbol.ContainingType == GraphViewModel.GraphSemanticModel.Symbol ||
 											  eventInfo.Symbol.ContainingType.OriginalDefinition ==
-											  GraphViewModel.GraphSemanticModel.GraphSymbol.OriginalDefinition
+											  GraphViewModel.GraphSemanticModel.Symbol.OriginalDefinition
 										group eventInfo by eventInfo.DacName into dacFieldEvents
 										select new DacGroupingNodeViewModel(this, dacFieldEvents, EventNodeByDacConstructor);
 

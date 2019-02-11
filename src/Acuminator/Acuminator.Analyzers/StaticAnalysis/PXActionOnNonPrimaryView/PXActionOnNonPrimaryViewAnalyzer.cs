@@ -1,9 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Threading.Tasks;
-using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
+﻿using Acuminator.Utilities.Common;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
@@ -11,6 +7,10 @@ using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 {
@@ -101,7 +101,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 			if (location == null)
 				return;
 
-			symbolContext.ReportDiagnostic(
+			symbolContext.ReportDiagnosticWithSuppressionCheck(
 				Diagnostic.Create(Descriptors.PX1012_PXActionOnNonPrimaryView, location, diagnosticProperties,
 								  actionSymbol.Name, primaryDacName));
 		}

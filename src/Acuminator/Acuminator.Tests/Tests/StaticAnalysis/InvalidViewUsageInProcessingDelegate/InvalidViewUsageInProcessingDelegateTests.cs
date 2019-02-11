@@ -44,14 +44,15 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.InvalidViewUsageInProcessingDele
         [EmbeddedFileData("FinallyProcessDelegate_Bad.cs")]
         public async Task FinallyProcessDelegate_ReportsDiagnostic(string source) =>
             await VerifyCSharpDiagnosticAsync(source,
-                Descriptors.PX1088_InvalidViewUsageInProcessingDelegate.CreateFor(30, 27),
-                Descriptors.PX1088_InvalidViewUsageInProcessingDelegate.CreateFor(35, 27),
-                Descriptors.PX1088_InvalidViewUsageInProcessingDelegate.CreateFor(41, 27),
-                Descriptors.PX1088_InvalidViewUsageInProcessingDelegate.CreateFor(46, 27),
-                Descriptors.PX1088_InvalidViewUsageInProcessingDelegate.CreateFor(49, 59),
-                Descriptors.PX1088_InvalidViewUsageInProcessingDelegate.CreateFor(50, 47),
-                Descriptors.PX1088_InvalidViewUsageInProcessingDelegate.CreateFor(57, 29),
-                Descriptors.PX1088_InvalidViewUsageInProcessingDelegate.CreateFor(63, 19));
+                Descriptors.PX1088_InvalidViewUsageInProcessingDelegate.CreateFor(30, 22),
+				Descriptors.PX1088_InvalidViewUsageInProcessingDelegate.CreateFor(34, 39),
+				Descriptors.PX1088_InvalidViewUsageInProcessingDelegate.CreateFor(39, 27),
+                Descriptors.PX1088_InvalidViewUsageInProcessingDelegate.CreateFor(45, 27),
+                Descriptors.PX1088_InvalidViewUsageInProcessingDelegate.CreateFor(50, 27),
+                Descriptors.PX1088_InvalidViewUsageInProcessingDelegate.CreateFor(53, 59),
+                Descriptors.PX1088_InvalidViewUsageInProcessingDelegate.CreateFor(54, 47),
+                Descriptors.PX1088_InvalidViewUsageInProcessingDelegate.CreateFor(59, 19),
+                Descriptors.PX1088_InvalidViewUsageInProcessingDelegate.CreateFor(65, 19));
 
         [Theory]
         [EmbeddedFileData("ParametersDelegate_Good.cs")]

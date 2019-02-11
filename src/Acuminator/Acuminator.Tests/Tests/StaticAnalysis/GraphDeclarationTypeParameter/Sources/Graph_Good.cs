@@ -19,4 +19,12 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.GraphTypeParameter.Sources
 	public class PCMaint : PXGraph<PCMaint, Users, Users.contactID>
 	{
 	}
+
+	public class UserEntry : UserEntryBase<UserEntry>
+	{
+	}
+
+	public abstract class UserEntryBase<T> : PXGraph<T>
+	{
+	}
 }

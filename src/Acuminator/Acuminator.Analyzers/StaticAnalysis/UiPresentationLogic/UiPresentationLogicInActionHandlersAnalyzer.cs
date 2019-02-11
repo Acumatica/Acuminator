@@ -19,8 +19,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic
             context.CancellationToken.ThrowIfCancellationRequested();
 
             var walker = new Walker(context, pxContext, Descriptors.PX1089_UiPresentationLogicInActionDelegates);
-            var delegateNodes = pxGraph.ActionHandlers
-                                .Where(h => h.Node != null)
+            var delegateNodes = pxGraph.DeclaredActionHandlers
+								.Where(h => h.Node != null)
                                 .Select(h => h.Node);
 
             foreach (var node in delegateNodes)

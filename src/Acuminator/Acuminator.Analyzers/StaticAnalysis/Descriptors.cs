@@ -13,7 +13,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		private const string DocumentationLinkPrefix = @"https://github.com/Acumatica/Acuminator/blob/master/docs/diagnostics";
 		private const string DocumentatonFileExtension = "md";
 
-		private static readonly ConcurrentDictionary<Category, string> categoryMapping = new ConcurrentDictionary<Category, string>();
+		private static readonly ConcurrentDictionary<Category, string> _categoryMapping = new ConcurrentDictionary<Category, string>();
 
         private static DiagnosticDescriptor Rule(string id, LocalizableString title, Category category, DiagnosticSeverity defaultSeverity, 
 										 LocalizableString messageFormat = null, LocalizableString description = null)
@@ -21,7 +21,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			bool isEnabledByDefault = true;
 			messageFormat = messageFormat ?? title;
 			string diagnosticLink = $"{DocumentationLinkPrefix}/{id}.{DocumentatonFileExtension}"; 
-			return new DiagnosticDescriptor(id, title, messageFormat, categoryMapping.GetOrAdd(category, c => c.ToString()), defaultSeverity,
+			return new DiagnosticDescriptor(id, title, messageFormat, _categoryMapping.GetOrAdd(category, c => c.ToString()), defaultSeverity,
 											isEnabledByDefault, description, diagnosticLink);
 		}
 
@@ -250,5 +250,11 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 		public static DiagnosticDescriptor PX1093_GraphDeclarationViolation { get; } =
 			Rule("PX1093", nameof(Resources.PX1093Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
-    }
+
+		public static DiagnosticDescriptor PX1094_DacShouldHaveUiAttribute { get; } =
+			Rule("PX1094", nameof(Resources.PX1094Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+
+		public static DiagnosticDescriptor PX1095_PXDBCalcedMustBeAccompaniedNonDBTypeAttribute { get; } =
+			Rule("PX1095", nameof(Resources.PX1095Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+	}
 }

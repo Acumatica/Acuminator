@@ -27,11 +27,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 								base(dacViewModel?.GraphMemberCategoryVM, memberInfo, isExpanded)
 		{
 			DacViewModel = dacViewModel;
-
-			int startPos = dacViewModel.DacName.Length + 1;
-			int lastUnderscoreIndex = MemberSymbol.Name.LastIndexOf('_');
-			Name = lastUnderscoreIndex > 0
-				? MemberSymbol.Name.Substring(startPos)
+			Name = MemberInfo is GraphEventInfo eventInfo
+				? eventInfo.EventType.ToString()
 				: MemberSymbol.Name;
 		}	
 	}

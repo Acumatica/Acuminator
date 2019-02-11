@@ -41,6 +41,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public ImmutableDictionary<string, ActionHandlerInfo> ActionHandlersByNames { get; }
 		public IEnumerable<ActionHandlerInfo> ActionHandlers => ActionHandlersByNames.Values;
 
+		/// <summary>
+		/// Action handlers which are declared in a graph represented by an instance of the class.
+		/// Use this property for diagnostics of graph action handlers
+		/// </summary>
+		public IEnumerable<ActionHandlerInfo> DeclaredActionHandlers => Type == GraphType.None ?
+			Enumerable.Empty<ActionHandlerInfo>() :
+			ActionHandlers.Where(h => h?.Symbol?.ContainingType?.Equals(Symbol) ?? false);
+
+
 		private PXGraphSemanticModel(PXContext pxContext, GraphType type, INamedTypeSymbol symbol,
 									 CancellationToken cancellation = default)
 		{
@@ -274,9 +283,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			pxContext.ThrowOnNull(nameof(pxContext));
 			typeSymbol.ThrowOnNull(nameof(typeSymbol));
 
-			List<PXGraphSemanticModel> models = new List<PXGraphSemanticModel>();
+			var models = new List<PXGraphSemanticModel>();
+			var explicitModel = InferExplicitModel(pxContext, typeSymbol, cancellation);
 
-			InferExplicitModel(pxContext, typeSymbol, models, cancellation);
+			if (explicitModel != null)
+			{
+				models.Add(explicitModel);
+			}
+
 			InferImplicitModels(pxContext, typeSymbol, models, cancellation);
 
 			return models;
@@ -310,10 +324,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 		}
 
-		private static void InferExplicitModel(PXContext pxContext, INamedTypeSymbol typeSymbol,
-											   List<PXGraphSemanticModel> models, CancellationToken cancellation)
+		public static PXGraphSemanticModel InferExplicitModel(PXContext pxContext, INamedTypeSymbol typeSymbol,
+			CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
+			pxContext.ThrowOnNull(nameof(pxContext));
+			typeSymbol.ThrowOnNull(nameof(typeSymbol));
 
 			GraphType graphType = GraphType.None;
 
@@ -328,10 +344,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			if (graphType != GraphType.None)
 			{
-				PXGraphSemanticModel explicitModel = new PXGraphSemanticModel(pxContext, graphType, typeSymbol, cancellation);
-
-				models.Add(explicitModel);
+				return new PXGraphSemanticModel(pxContext, graphType, typeSymbol, cancellation);
 			}
+
+			return null;
 		}
 
 		private static IEnumerable<InitDelegateInfo> GetInitDelegates(PXContext pxContext, INamedTypeSymbol typeSymbol,

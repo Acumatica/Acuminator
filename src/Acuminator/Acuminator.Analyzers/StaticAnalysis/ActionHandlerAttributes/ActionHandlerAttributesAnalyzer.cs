@@ -1,8 +1,10 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Utilities;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
@@ -15,7 +17,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 
         public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
         {
-            foreach (var actionHandler in pxGraph.ActionHandlers)
+            foreach (var actionHandler in pxGraph.DeclaredActionHandlers)
             {
                 context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -24,20 +26,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
                     continue;
                 }
 
-				CheckActionHandler(context, pxContext, actionHandler.Symbol, actionHandler.Node);
+				CheckActionHandler(context, pxContext, actionHandler.Symbol, actionHandler.Node, pxGraph.Type);
             }
         }
 
 		private void CheckActionHandler(SymbolAnalysisContext context, PXContext pxContext,
-			IMethodSymbol symbol, SyntaxNode node)
+			IMethodSymbol symbol, MethodDeclarationSyntax node, GraphType graphType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			var attributes = symbol.GetAttributes();
 			var pxUIFieldAttributeType = pxContext.AttributeTypes.PXUIFieldAttribute.Type;
 			var pxButtonAttributeType = pxContext.AttributeTypes.PXButtonAttribute;
+			var pxOverrideAttributeType = pxContext.AttributeTypes.PXOverrideAttribute;
 			var hasPXUIFieldAttribute = false;
 			var hasPXButtonAttribute = false;
+			var hasPXOverrideAttribute = false;
 
 			foreach (var attr in attributes)
 			{
@@ -62,6 +66,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 				{
 					return;
 				}
+
+				if (attr.AttributeClass.InheritsFromOrEquals(pxOverrideAttributeType))
+				{
+					hasPXOverrideAttribute = true;
+				}
+
+				if (graphType == GraphType.PXGraphExtension && hasPXOverrideAttribute)
+				{
+					return;
+				}
 			}
 
 			var fixOption = !hasPXUIFieldAttribute && !hasPXButtonAttribute ? FixOption.AddBothAttributes :
@@ -71,10 +85,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 				.Add(ActionHandlerAttributesFix.FixOptionKey, fixOption.ToString());
 			var diagnostic = Diagnostic.Create(
 				Descriptors.PX1092_MissingAttributesOnActionHandler,
-				node.GetLocation(),
+				node.Identifier.GetLocation(),
 				properties);
 
-			context.ReportDiagnostic(diagnostic);
+			context.ReportDiagnosticWithSuppressionCheck(diagnostic);
 		}
     }
 }

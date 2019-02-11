@@ -14,28 +14,28 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 		/// </summary>
 		private class RegionsVisitor : CSharpSyntaxWalker
 		{
-			private readonly Stack<RegionDirectiveTriviaSyntax> regionsStack;
-			private readonly string identifierToRemove;
-			private readonly CancellationToken cancellationToken;
+			private readonly Stack<RegionDirectiveTriviaSyntax> _regionsStack;
+			private readonly string _identifierToRemove;
+			private readonly CancellationToken _cancellationToken;
 
 			public List<DirectiveTriviaSyntax> RegionNodesToRemove { get; } = new List<DirectiveTriviaSyntax>(capacity: 2);
 
 			public RegionsVisitor(string identifierToDelete, CancellationToken cToken) : base(SyntaxWalkerDepth.StructuredTrivia)
 			{
-				regionsStack = new Stack<RegionDirectiveTriviaSyntax>(capacity: 4);
-				identifierToRemove = identifierToDelete.ToUpperInvariant();
-				cancellationToken = cToken;
+				_regionsStack = new Stack<RegionDirectiveTriviaSyntax>(capacity: 4);
+				_identifierToRemove = identifierToDelete.ToUpperInvariant();
+				_cancellationToken = cToken;
 			}
 
 			public override void VisitRegionDirectiveTrivia(RegionDirectiveTriviaSyntax regionDirective)
 			{
-				if (cancellationToken.IsCancellationRequested)
+				if (_cancellationToken.IsCancellationRequested)
 					return;
 
-				regionsStack.Push(regionDirective);
+				_regionsStack.Push(regionDirective);
 				string regionNameUpperCase = GetRegionName(regionDirective).ToUpperInvariant();
 
-				if (regionNameUpperCase.Contains(identifierToRemove))
+				if (regionNameUpperCase.Contains(_identifierToRemove))
 				{
 					RegionNodesToRemove.Add(regionDirective);
 				}
@@ -45,18 +45,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 
 			public override void VisitEndRegionDirectiveTrivia(EndRegionDirectiveTriviaSyntax endRegionDirective)
 			{
-				if (regionsStack.Count == 0 || cancellationToken.IsCancellationRequested)
+				if (_regionsStack.Count == 0 || _cancellationToken.IsCancellationRequested)
 				{
-					if (!cancellationToken.IsCancellationRequested)
+					if (!_cancellationToken.IsCancellationRequested)
 						base.VisitEndRegionDirectiveTrivia(endRegionDirective);
 
 					return;
 				}
 
-				RegionDirectiveTriviaSyntax regionDirective = regionsStack.Pop();
+				RegionDirectiveTriviaSyntax regionDirective = _regionsStack.Pop();
 				string regionNameUpperCase = GetRegionName(regionDirective).ToUpperInvariant();
 
-				if (regionNameUpperCase.Contains(identifierToRemove))
+				if (regionNameUpperCase.Contains(_identifierToRemove))
 				{
 					RegionNodesToRemove.Add(endRegionDirective);
 				}

@@ -6,7 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Threading;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
 
@@ -18,12 +20,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class CodeMapWindowViewModel : ToolWindowViewModelBase
 	{
+		private readonly EnvDTE.WindowEvents _windowEvents;
+
 		private CancellationTokenSource _cancellationTokenSource;
 
 		private DocumentModel _documentModel;
 		private Workspace _workspace;
 
-		public Document Document => _documentModel.Document;
+		public Document Document => _documentModel?.Document;
 
 		private TreeViewModel _tree;
 
@@ -57,39 +61,28 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
+		public Command RefreshCodeMapCommand { get; }
+
 		private CodeMapWindowViewModel(IWpfTextView wpfTextView, Document document)
 		{
 			_documentModel = new DocumentModel(wpfTextView, document);
 			Tree = new TreeViewModel(this);
 
+			RefreshCodeMapCommand = new Command(p => RefreshCodeMapAsync().Forget());
+
 			_workspace = _documentModel.Document.Project.Solution.Workspace;
 			_workspace.WorkspaceChanged += OnWorkspaceChanged;
-		}
 
-		private async void OnWorkspaceChanged(object sender, WorkspaceChangeEventArgs e)
-		{
-			if (e.Kind != WorkspaceChangeKind.DocumentChanged || Document.Id != e.DocumentId ||
-				Document.Project.Id != e.ProjectId || !(sender is Workspace newWorkspace))
+			if (ThreadHelper.CheckAccess())
 			{
-				return;
-			}
+				EnvDTE.DTE dte = AcuminatorVSPackage.Instance.GetService<EnvDTE.DTE>();
+				_windowEvents = dte?.Events?.WindowEvents;                                  //Store reference to DTE WindowEvents to prevent it from being GCed
 
-			_cancellationTokenSource?.Cancel();
-			Tree?.RootItems.Clear();
-			Tree = null;
-			_workspace = newWorkspace;
-			Document changedDocument = e.NewSolution.GetDocument(e.DocumentId);
-
-			if (changedDocument == null)
-				return;
-			
-			var root = await changedDocument.GetSyntaxRootAsync().ConfigureAwait(false);
-
-			if (root == null || root.ContainsDiagnostics)
-				return;
-
-			_documentModel = new DocumentModel(_documentModel.WpfTextView, changedDocument);
-			BuildCodeMapAsync().Forget();
+				if (_windowEvents != null)
+				{
+					_windowEvents.WindowActivated += WindowEvents_WindowActivated;
+				}
+			}		
 		}
 
 		public static CodeMapWindowViewModel InitCodeMap(IWpfTextView wpfTextView, Document document)
@@ -117,6 +110,128 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				_workspace.WorkspaceChanged -= OnWorkspaceChanged;
 			}
+
+			if (_windowEvents != null)
+			{
+				_windowEvents.WindowActivated -= WindowEvents_WindowActivated;
+			}
+		}
+
+		private async Task RefreshCodeMapAsync()
+		{
+			if (IsCalculating)
+				return;
+
+			if (!ThreadHelper.CheckAccess())
+			{
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+			}
+
+			ClearCodeMap();
+			var currentWorkspace = AcuminatorVSPackage.Instance.GetVSWorkspace();
+
+			if (currentWorkspace == null)
+				return;
+
+			_workspace = currentWorkspace;
+			IWpfTextView activeWpfTextView = AcuminatorVSPackage.Instance.GetWpfTextView();
+			Document activeDocument = activeWpfTextView?.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
+
+			if (activeDocument == null)
+				return;
+
+			_documentModel = new DocumentModel(activeWpfTextView, activeDocument);
+			BuildCodeMapAsync().Forget();
+		}
+
+		private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
+		{
+#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
+			if (!ThreadHelper.CheckAccess() || Equals(gotFocus, lostFocus) || gotFocus.Document == null)
+			{
+				return;
+			}
+
+			if (gotFocus.Document.Language != LegacyLanguageNames.CSharp)
+			{
+				ClearCodeMap();
+				return;
+			}
+			else if (gotFocus.Document.FullName == lostFocus?.Document?.FullName ||
+					(lostFocus?.Document == null && Document != null && gotFocus.Document.FullName == Document.FilePath))
+			{
+				return;
+			}
+
+			ClearCodeMap();
+			var currentWorkspace = AcuminatorVSPackage.Instance.GetVSWorkspace();
+
+			if (currentWorkspace == null)
+				return;
+
+			_workspace = currentWorkspace;
+			IWpfTextView activeWpfTextView = AcuminatorVSPackage.Instance.GetWpfTextViewByFilePath(gotFocus.Document.FullName);
+			Document activeDocument = activeWpfTextView?.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
+
+			if (activeDocument == null)
+				return;
+
+			_documentModel = new DocumentModel(activeWpfTextView, activeDocument);
+			BuildCodeMapAsync().Forget();
+#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
+		}
+
+		private async void OnWorkspaceChanged(object sender, WorkspaceChangeEventArgs e)
+		{
+			if (e == null || !(sender is Workspace newWorkspace) || Document == null)
+				return;
+
+			if (!ThreadHelper.CheckAccess())
+			{
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken ?? default);
+			}
+
+			bool isDocumentTabClosed = _documentModel.WpfTextView?.IsClosed ?? true;
+
+			if (isDocumentTabClosed || e.IsActiveDocumentCleared(Document))
+			{
+				ClearCodeMap();
+				return;
+			}
+			else if (e.IsActiveDocumentChanged(Document))
+			{
+				return;
+			}
+			else if (e.IsDocumentTextChanged(Document))
+			{
+				await HandleDocumentTextChangesAsync(newWorkspace, e).ConfigureAwait(false);
+			}		
+		}
+
+		private async Task HandleDocumentTextChangesAsync(Workspace newWorkspace, WorkspaceChangeEventArgs e)
+		{
+			ClearCodeMap();
+
+			_workspace = newWorkspace;
+			Document changedDocument = e.NewSolution.GetDocument(e.DocumentId);
+
+			if (changedDocument == null)
+				return;
+
+			var root = await changedDocument.GetSyntaxRootAsync().ConfigureAwait(false);
+
+			if (root == null || root.ContainsDiagnostics)
+				return;
+
+			_documentModel = new DocumentModel(_documentModel.WpfTextView, changedDocument);
+			BuildCodeMapAsync().Forget();
+		}
+
+		private void ClearCodeMap()
+		{
+			_cancellationTokenSource?.Cancel();
+			Tree?.RootItems.Clear();
+			Tree = null;
 		}
 
 		private async Task BuildCodeMapAsync()
@@ -165,9 +280,18 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return null;
 
 			TreeViewModel tree = new TreeViewModel(this);
-			var rootItems = _documentModel.GraphModels.Select(graph => GraphNodeViewModel.Create(graph, tree))
-													  .Where(graphVM => graphVM != null);
-			tree.RootItems.AddRange(rootItems);
+
+			foreach (PXGraphEventSemanticModel graph in _documentModel.GraphModels)
+			{
+				cancellationToken.ThrowIfCancellationRequested();
+				var graphNodeVM = GraphNodeViewModel.Create(graph, tree, isExpanded: true, expandChildren: false);
+
+				if (graphNodeVM != null)
+				{
+					tree.RootItems.Add(graphNodeVM);
+				}
+			}
+
 			cancellationToken.ThrowIfCancellationRequested();
 			return tree;
 		}

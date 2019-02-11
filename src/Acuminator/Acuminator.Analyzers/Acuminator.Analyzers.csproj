@@ -61,6 +61,8 @@
     <Compile Include="StaticAnalysis\ChangesInPXCache\ChangesInPXCacheDuringPXGraphInitializationAnalyzer.cs" />
     <Compile Include="StaticAnalysis\ChangesInPXCache\Walker.cs" />
     <Compile Include="StaticAnalysis\AnalyzersAggregator\SymbolAnalyzersAggregator.cs" />
+    <Compile Include="StaticAnalysis\DacUiAttributes\DacUiAttributesAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\DacUiAttributes\DacUiAttributesFix.cs" />
     <Compile Include="StaticAnalysis\DatabaseQueries\DatabaseQueriesInPXGraphInitializationAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DatabaseQueries\DatabaseQueriesInRowSelectedAnalyzer.cs" />
     <Compile Include="StaticAnalysis\DatabaseQueries\DatabaseQueriesInRowSelectingAnalyzer.cs" />

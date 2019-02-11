@@ -15,12 +15,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 	{
 		protected class BqlLocalVariableTypeResolver : BqlInvocationDataFlowAnalyserBase
 		{
-			private readonly ResolveVarTypeMethodBodyWalker methodBodyWalker;
+			private readonly ResolveVarTypeMethodBodyWalker _methodBodyWalker;
 
 			public BqlLocalVariableTypeResolver(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext, IdentifierNameSyntax identifierNode) :
 											base(syntaxContext, pxContext, identifierNode)
 			{
-				methodBodyWalker = new ResolveVarTypeMethodBodyWalker(this);
+				_methodBodyWalker = new ResolveVarTypeMethodBodyWalker(this);
 			}
 
 			public bool CheckForBqlModifications()
@@ -33,8 +33,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				if (methodDeclaration == null || CancellationToken.IsCancellationRequested)
 					return false;
 
-				methodBodyWalker.Visit(methodDeclaration);
-				return methodBodyWalker.IsValid && !CancellationToken.IsCancellationRequested;
+				_methodBodyWalker.Visit(methodDeclaration);
+				return _methodBodyWalker.IsValid && !CancellationToken.IsCancellationRequested;
 			}
 
 			public ITypeSymbol ResolveVariableType()
@@ -47,9 +47,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				if (methodDeclaration == null || !SemanticModel.IsLocalVariable(methodDeclaration, VariableName))
 					return null;
 
-				methodBodyWalker.Visit(methodDeclaration);
+				_methodBodyWalker.Visit(methodDeclaration);
 
-				if (CancellationToken.IsCancellationRequested || !methodBodyWalker.IsValid || methodBodyWalker.Candidates.Count == 0)
+				if (CancellationToken.IsCancellationRequested || !_methodBodyWalker.IsValid || _methodBodyWalker.Candidates.Count == 0)
 					return null;
 
 				TypeSyntax assignedType = GetTypeFromCandidates();
@@ -63,9 +63,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			private TypeSyntax GetTypeFromCandidates()
 			{
-				while (methodBodyWalker.Candidates.Count > 0)
+				while (_methodBodyWalker.Candidates.Count > 0)
 				{
-					var (potentialAssignmentStatement, assignedType) = methodBodyWalker.Candidates.Pop();
+					var (potentialAssignmentStatement, assignedType) = _methodBodyWalker.Candidates.Pop();
 					var (analysisSucceded, varAlwaysAssigned) = CheckCandidate(potentialAssignmentStatement);
 
 					if (!analysisSucceded || !varAlwaysAssigned || assignedType == null)
@@ -87,9 +87,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			{
 				private readonly BqlLocalVariableTypeResolver resolver;
 
-				private bool isInAnalysedVariableInvocation;
-				private bool shouldStop;
-				private bool isValid = true;
+				private bool _isInAnalysedVariableInvocation;
+				private bool _shouldStop;
+				private bool _isValid = true;
 
 				private bool IsCancelationRequested => resolver.CancellationToken.IsCancellationRequested;
 
@@ -97,13 +97,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 				public bool IsValid
 				{
-					get => isValid;
+					get => _isValid;
 					set
 					{
 						if (value == false)
 						{
-							isValid = false;
-							shouldStop = true;
+							_isValid = false;
+							_shouldStop = true;
 						}
 					}
 				}
@@ -121,7 +121,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 						IsValid = false;
 					}
 
-					if (shouldStop)
+					if (_shouldStop)
 						return;
 
 					base.Visit(node);
@@ -197,7 +197,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 					if (IsCancelationRequested)
 						return;
 
-					if (isInAnalysedVariableInvocation || !(conditionalAccess.Expression is IdentifierNameSyntax identifier) ||
+					if (_isInAnalysedVariableInvocation || !(conditionalAccess.Expression is IdentifierNameSyntax identifier) ||
 						identifier.Identifier.ValueText != resolver.VariableName)
 					{
 						base.VisitConditionalAccessExpression(conditionalAccess);
@@ -205,12 +205,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 					try
 					{
-						isInAnalysedVariableInvocation = true;
+						_isInAnalysedVariableInvocation = true;
 						base.VisitConditionalAccessExpression(conditionalAccess);
 					}
 					finally
 					{
-						isInAnalysedVariableInvocation = false;
+						_isInAnalysedVariableInvocation = false;
 					}
 				}
 
@@ -224,12 +224,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 				public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
 				{
-					if (shouldStop)
+					if (_shouldStop)
 						return;
 
 					if (invocation.Equals(resolver.Invocation))
 					{
-						shouldStop = true;
+						_shouldStop = true;
 						return;
 					}
 
@@ -284,7 +284,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				[MethodImpl(MethodImplOptions.AggressiveInlining)]
 				private bool IsInvocationOnAnalysedVariable(InvocationExpressionSyntax invocation)
 				{
-					if (isInAnalysedVariableInvocation)
+					if (_isInAnalysedVariableInvocation)
 						return true;
 
 					return invocation.Expression is MemberAccessExpressionSyntax memberAccess &&

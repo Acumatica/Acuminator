@@ -160,7 +160,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// </summary>
 		/// <param name="attribute">Data of the attribute.</param>
 		/// <returns/>
-		public BoundType IsBoundAttribute(AttributeData attribute)
+		public BoundType GetBoundAttributeType(AttributeData attribute)
 		{
 			attribute.ThrowOnNull(nameof(attribute));
 
@@ -202,7 +202,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 			foreach (var attribute in attributes)
 			{
-				BoundType result = IsBoundAttribute(attribute);
+				BoundType result = GetBoundAttributeType(attribute);
 
 				if (result == BoundType.DbBound)
 					return true;
