@@ -22,7 +22,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 				SymbolKind.NamedType);
 		}
 
-		private async void Analyze(SymbolAnalysisContext context, PXContext pxContext)
+		private void Analyze(SymbolAnalysisContext context, PXContext pxContext)
 		{
 			if (context.Symbol is INamedTypeSymbol dacFieldType)
 			{
