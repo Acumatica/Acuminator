@@ -219,6 +219,8 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateInGraphExtensionOverride.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithPXDBCalcedAndWithoutUnboundTypeAttributes.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacPropertyAttributes\Sources\DacWithPXDBCalcedAndUnboundTypeAttributes.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacExtensionWithoutPersistingCheckNothingInvalid.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacExtensionWithoutPersistingCheckNothingValid.cs" />
     <Compile Include="Tests\StaticAnalysis\DacPropertyAttributes\DacFieldWithDBCalcedAttributeTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacUiAttributes\DacUiAttributesTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacUiAttributes\Sources\Dac_Bad.cs" />

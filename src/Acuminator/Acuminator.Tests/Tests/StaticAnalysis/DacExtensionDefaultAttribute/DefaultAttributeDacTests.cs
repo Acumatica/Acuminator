@@ -2,20 +2,31 @@
 using Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacExtensionDefaultAttribute
 {
-	public class DefaultAttributeInDacTests : CodeFixVerifier
+    public class DefaultAttributeInDacTests : CodeFixVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacExtensionDefaultAttributeAnalyzer();
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new DacExtensionDefaultAttributeFix();
 
-		[Theory]
+        [Theory]
+        [EmbeddedFileData("DacExtensionWithoutPersistingCheckNothingValid.cs")]
+        public async Task TestValidDacExtensionWithoutPersistingcheckNothing(string source) =>
+            await VerifyCSharpDiagnosticAsync(source);
+
+        [Theory]
+        [EmbeddedFileData("DacExtensionWithoutPersistingCheckNothingInvalid.cs")]
+        public async Task TestInvalidDacExtensionWithoutPersistingcheckNothing(string source) =>
+            await VerifyCSharpDiagnosticAsync(source,
+                Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(8, 10));
+
+        [Theory]
 		[EmbeddedFileData("DacExtensionWithBoundFields.cs")]
 		public virtual void TestDacExtensionWithBoundAttribute(string source) =>
 			VerifyCSharpDiagnostic(source,
