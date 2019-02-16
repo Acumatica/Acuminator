@@ -64,20 +64,23 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Children.CollectionChanged += DacChildrenChanged;
 		}
 
-		protected virtual IEnumerable<GraphMemberNodeViewModel> GetDacEventsDefault(IEnumerable<GraphEventInfo> graphEventsForDAC,
-																					bool areChildrenExpanded)
+		protected virtual IEnumerable<TreeNodeViewModel> GetDacEventsDefault(IEnumerable<GraphEventInfo> graphEventsForDAC, bool areChildrenExpanded)
 		{
 			return graphEventsForDAC.Select(eventInfo => GraphEventsCategoryVM.CreateNewEventVM(this, eventInfo, areChildrenExpanded))
 									.Where(graphMemberVM => graphMemberVM != null && !graphMemberVM.Name.IsNullOrEmpty())
 									.OrderBy(graphMemberVM => graphMemberVM.Name);
 		}
 
-		protected virtual IEnumerable<GraphMemberNodeViewModel> GetDacFieldEvents(IEnumerable<GraphEventInfo> graphEventsForDAC,
-																				  bool areChildrenExpanded)
+		protected virtual IEnumerable<TreeNodeViewModel> GetDacFieldEvents(IEnumerable<GraphEventInfo> graphEventsForDAC, bool areChildrenExpanded)
 		{
-			return graphEventsForDAC.Select(eventInfo => GraphEventsCategoryVM.CreateNewEventVM(this, eventInfo, areChildrenExpanded))
-											.Where(graphMemberVM => graphMemberVM != null && !graphMemberVM.Name.IsNullOrEmpty())
-											.OrderBy(graphMemberVM => graphMemberVM.Name);
+			return from eventInfo in graphEventsForDAC
+				   group eventInfo by GraphEventInfo.GetDacFieldNameForFieldEvent(eventInfo) 
+						into dacFieldEvents
+				   select DacFieldEventsGroupingNodeViewModel.Create(this, dacFieldEvents.Key, dacFieldEvents) 
+						into dacFieldNodeVM
+				   where dacFieldNodeVM != null && !dacFieldNodeVM.DacFieldName.IsNullOrEmpty()
+				   orderby dacFieldNodeVM.DacFieldName ascending
+				   select dacFieldNodeVM;
 		}
 
 		protected virtual int GetDacNodeEventsCount() =>
