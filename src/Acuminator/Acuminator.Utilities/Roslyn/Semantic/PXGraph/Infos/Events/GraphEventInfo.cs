@@ -36,7 +36,59 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			Base = baseInfo;
 		}
 
-		public static string GetDacFieldNameForDefaultFieldEvent(GraphEventInfo defaultFieldEventInfo)
+		public bool IsDacFieldEvent()
+		{
+			switch (EventType)
+			{
+				case EventType.FieldSelecting:
+				case EventType.FieldDefaulting:
+				case EventType.FieldVerifying:
+				case EventType.FieldUpdating:
+				case EventType.FieldUpdated:
+					return true;
+				default:
+					return false;
+			}
+		}
+
+		public bool IsDacRowEvent()
+		{
+			switch (EventType)
+			{
+				case EventType.RowSelecting:
+				case EventType.RowSelected:
+				case EventType.RowInserting:
+				case EventType.RowInserted:
+				case EventType.RowUpdating:
+				case EventType.RowUpdated:
+				case EventType.RowDeleting:
+				case EventType.RowDeleted:
+				case EventType.RowPersisting:
+				case EventType.RowPersisted:
+					return true;
+				default:
+					return false;
+			}
+		}
+
+		public static string GetDacFieldNameForFieldEvent(GraphEventInfo eventInfo)
+		{
+			if (eventInfo == null || !eventInfo.IsDacFieldEvent())
+				return string.Empty;
+
+			switch (eventInfo.SignatureType)
+			{
+				case EventHandlerSignatureType.Default:
+					return GetDacFieldNameForDefaultFieldEvent(eventInfo);
+				case EventHandlerSignatureType.Generic:
+					return GetDacFieldNameForGenericFieldEvent(eventInfo);
+				default:
+					return string.Empty;
+			}
+		}
+
+
+		private static string GetDacFieldNameForDefaultFieldEvent(GraphEventInfo defaultFieldEventInfo)
 		{
 			if (defaultFieldEventInfo?.SignatureType != EventHandlerSignatureType.Default || !defaultFieldEventInfo.IsDacFieldEvent())
 			{
@@ -73,11 +125,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			if (underscoreCount != 2 || firstUnderscoreIndex < 0 || lastUnderscoreIndex < 0)
 				return string.Empty;
 
-			int length = lastUnderscoreIndex - firstUnderscoreIndex;
-			return eventName.Substring(firstUnderscoreIndex, lastUnderscoreIndex);
+			int length = lastUnderscoreIndex - firstUnderscoreIndex - 1;
+
+			if (length == 0)
+				return string.Empty;
+
+			return eventName.Substring(firstUnderscoreIndex + 1, length);
 		}
 
-		public static string GetDacFieldNameForGenericFieldEvent(GraphEventInfo genericFieldEventInfo)
+		private static string GetDacFieldNameForGenericFieldEvent(GraphEventInfo genericFieldEventInfo)
 		{
 			if (genericFieldEventInfo?.SignatureType != EventHandlerSignatureType.Generic || !genericFieldEventInfo.IsDacFieldEvent() ||
 				genericFieldEventInfo.Symbol.Parameters.IsDefaultOrEmpty)
@@ -95,41 +151,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return dacField.IsDacField()
 				? dacField.Name.ToPascalCase()
 				: string.Empty;
-		}
-
-		public bool IsDacFieldEvent()
-		{ 
-			switch (EventType)
-			{				
-				case EventType.FieldSelecting:
-				case EventType.FieldDefaulting:
-				case EventType.FieldVerifying:
-				case EventType.FieldUpdating:
-				case EventType.FieldUpdated:
-					return true;
-				default:
-					return false;
-			}
-		}
-
-		public bool IsDacRowEvent()
-		{
-			switch (EventType)
-			{
-				case EventType.RowSelecting:
-				case EventType.RowSelected:
-				case EventType.RowInserting:
-				case EventType.RowInserted:
-				case EventType.RowUpdating:
-				case EventType.RowUpdated:
-				case EventType.RowDeleting:
-				case EventType.RowDeleted:
-				case EventType.RowPersisting:
-				case EventType.RowPersisted:
-					return true;				
-				default:
-					return false;
-			}
 		}
 
 		private string GetDacName()
