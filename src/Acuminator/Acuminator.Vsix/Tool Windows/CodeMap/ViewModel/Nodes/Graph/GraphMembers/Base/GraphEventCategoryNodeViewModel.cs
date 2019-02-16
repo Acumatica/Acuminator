@@ -52,7 +52,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 											  eventInfo.Symbol.ContainingType.OriginalDefinition ==
 											  GraphViewModel.GraphSemanticModel.Symbol.OriginalDefinition
 										group eventInfo by eventInfo.DacName into dacFieldEvents
-										select new DacGroupingNodeViewModel(this, dacFieldEvents, EventNodeByDacConstructor);
+										select new DacGroupingNodeViewModel(this, dacFieldEvents, EventNodeByDacConstructor) into dacNodeVM
+										orderby dacNodeVM.DacName ascending
+										select dacNodeVM;
 
 			Children.AddRange(graphMemberViewModels);
 			int eventsCount = Children.Sum(node => node.Children.Count);
