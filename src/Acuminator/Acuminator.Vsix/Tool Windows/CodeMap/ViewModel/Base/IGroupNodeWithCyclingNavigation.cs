@@ -18,7 +18,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			set;
 		}
 
-		void NavigateToItem();
+		IList<TreeNodeViewModel> Children { get; }
 
 		bool CanNavigateToChild(TreeNodeViewModel child);
 	}

@@ -38,6 +38,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			set;
 		}
 
+		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
+
 		protected GraphMemberCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
 												bool isExpanded) : 
 										   base(graphViewModel?.Tree, isExpanded)
@@ -47,29 +49,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			CategoryDescription = CategoryType.Description();
 		}
 
-		public override void NavigateToItem()
-		{
-			if (!AllowNavigation || Children.Count == 0)
-				return;
-
-			int counter = 0;
-			TreeNodeViewModel childToNavigate = null;
-
-			while (counter < Children.Count)
-			{
-				childToNavigate = Children[CurrentNavigationIndex] as GraphMemberNodeViewModel;
-
-				if (childToNavigate != null)
-				{
-					CurrentNavigationIndex = (CurrentNavigationIndex + 1) % Children.Count;
-					break;
-				}
-
-				counter++;
-			}
-
-			childToNavigate?.NavigateToItem();
-		}
+		public override void NavigateToItem() => this.GetChildToNavigateTo()?.NavigateToItem();
 
 		public static GraphMemberCategoryNodeViewModel Create(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
 															  bool isExpanded)
