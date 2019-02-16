@@ -12,7 +12,7 @@ using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public abstract class GraphMemberCategoryNodeViewModel : TreeNodeViewModel
+	public abstract class GraphMemberCategoryNodeViewModel : TreeNodeViewModel, IGroupNodeWithCyclingNavigation
 	{
 		public GraphNodeViewModel GraphViewModel { get; }
 
@@ -28,6 +28,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set { }
 		}
 
+		protected abstract bool AllowNavigation { get; }
+
+		bool IGroupNodeWithCyclingNavigation.AllowNavigation { get; }
+
+		int IGroupNodeWithCyclingNavigation.CurrentNavigationIndex
+		{
+			get;
+			set;
+		}
+
 		protected GraphMemberCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
 												bool isExpanded) : 
 										   base(graphViewModel?.Tree, isExpanded)
@@ -35,6 +45,30 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			GraphViewModel = graphViewModel;
 			CategoryType = graphMemberType;
 			CategoryDescription = CategoryType.Description();
+		}
+
+		public override void NavigateToItem()
+		{
+			if (!AllowNavigation || Children.Count == 0)
+				return;
+
+			int counter = 0;
+			TreeNodeViewModel childToNavigate = null;
+
+			while (counter < Children.Count)
+			{
+				childToNavigate = Children[CurrentNavigationIndex] as GraphMemberNodeViewModel;
+
+				if (childToNavigate != null)
+				{
+					CurrentNavigationIndex = (CurrentNavigationIndex + 1) % Children.Count;
+					break;
+				}
+
+				counter++;
+			}
+
+			childToNavigate?.NavigateToItem();
 		}
 
 		public static GraphMemberCategoryNodeViewModel Create(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
@@ -87,6 +121,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				default:
 					return null;
 			}
-		}	
+		}
+
+		bool IGroupNodeWithCyclingNavigation.CanNavigateToChild(TreeNodeViewModel child) =>
+			CanNavigateToChild(child);
+
+		protected virtual bool CanNavigateToChild(TreeNodeViewModel child) => child is GraphMemberNodeViewModel;
 	}
 }
