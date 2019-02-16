@@ -55,7 +55,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 										select dacNodeVM;
 
 			Children.AddRange(graphMemberViewModels);
-			int eventsCount = Children.Sum(node => node.Children.Count);
+			int eventsCount = Children.OfType<DacEventsGroupingNodeViewModel>()
+									  .Sum(dacVM => dacVM.EventsCount);
 			Name = $"{CategoryDescription}({eventsCount})";
 		}
 

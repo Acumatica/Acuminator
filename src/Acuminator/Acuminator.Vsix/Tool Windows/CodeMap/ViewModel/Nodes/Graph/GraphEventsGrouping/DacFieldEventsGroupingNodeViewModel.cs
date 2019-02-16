@@ -21,7 +21,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override string Name
 		{
-			get => $"{DacFieldName}({Children.Count})";
+			get => DacFieldName;
 			protected set { }
 		}
 
@@ -43,7 +43,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			var dacFieldVM = new DacFieldEventsGroupingNodeViewModel(dacVM, dacFieldName, isExpanded);
 			var dacFieldEventVMs = dacFieldVM.GetDacFieldNodeChildren(dacFieldEvents, isExpanded);
-			dacVM.Children.AddRange(dacFieldEventVMs);
+			dacFieldVM.Children.AddRange(dacFieldEventVMs);
 			return dacFieldVM;
 		}
 
