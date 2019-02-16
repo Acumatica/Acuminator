@@ -395,7 +395,7 @@
     <Resource Include="Resources\CodeMap\DAC.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Resources\CodeMap\Column.ico">
+    <Resource Include="Resources\CodeMap\DacField.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Content Include="Resources\DacExplorer.ico">
