@@ -11,9 +11,9 @@ using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class DacGroupingNodeViewModel : TreeNodeViewModel
+	public class DacEventsGroupingNodeViewModel : TreeNodeViewModel
 	{
-		public GraphMemberCategoryNodeViewModel GraphMemberCategoryVM { get; }
+		public GraphEventCategoryNodeViewModel GraphMemberCategoryVM { get; }
 
 		public string DacName { get; }
 
@@ -29,8 +29,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set { }
 		}
 
-		protected DacGroupingNodeViewModel(GraphMemberCategoryNodeViewModel graphMemberCategoryVM,
-										   string dacName, bool isExpanded = false) :
+		protected DacEventsGroupingNodeViewModel(GraphMemberCategoryNodeViewModel graphMemberCategoryVM,
+										   string dacName, bool isExpanded) :
 									  base(graphMemberCategoryVM?.Tree, isExpanded)
 		{
 			dacName.ThrowOnNullOrWhiteSpace(nameof(dacName));
@@ -39,27 +39,25 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			DacName = dacName;
 		}
 
-		public static DacGroupingNodeViewModel Create(GraphMemberCategoryNodeViewModel graphMemberCategoryVM,
+		public static DacEventsGroupingNodeViewModel Create(GraphMemberCategoryNodeViewModel graphMemberCategoryVM,
 													  string dacName, IEnumerable<GraphEventInfo> graphEventsForDAC,
-													  GraphEventNodeByDacConstructor graphMemberCreator,
 													  bool isDacExpanded = false, bool areChildrenExpanded = false)
 		{
-			if (graphMemberCreator == null || graphEventsForDAC.IsNullOrEmpty() || dacName.IsNullOrWhiteSpace())
+			if (graphEventsForDAC.IsNullOrEmpty() || dacName.IsNullOrWhiteSpace())
 			{
 				return null;
 			}
 
-			DacGroupingNodeViewModel dacVM = new DacGroupingNodeViewModel(graphMemberCategoryVM, dacName, isDacExpanded);
-			dacVM.FillDacNodeChildren(graphEventsForDAC, graphMemberCreator, areChildrenExpanded);
+			DacEventsGroupingNodeViewModel dacVM = new DacEventsGroupingNodeViewModel(graphMemberCategoryVM, dacName, isDacExpanded);
+			dacVM.FillDacNodeChildren(graphEventsForDAC, areChildrenExpanded);
 			return dacVM;
 		}
 
-		protected virtual void FillDacNodeChildren(IEnumerable<GraphEventInfo> graphEventsForDAC, GraphEventNodeByDacConstructor graphMemberCreator, 
-												   bool areChildrenExpanded)
+		protected virtual void FillDacNodeChildren(IEnumerable<GraphEventInfo> graphEventsForDAC, bool areChildrenExpanded)
 		{
 			var dacMembers = GraphMemberCategoryVM.CategoryType == GraphMemberType.FieldEvent
-				? GetDacFieldEvents(graphEventsForDAC, graphMemberCreator, areChildrenExpanded)
-				: GetDacEventsDefault(graphEventsForDAC, graphMemberCreator, areChildrenExpanded);
+				? GetDacFieldEvents(graphEventsForDAC, areChildrenExpanded)
+				: GetDacEventsDefault(graphEventsForDAC, areChildrenExpanded);
 
 			Children.AddRange(dacMembers);
 			EventsCount = GetDacNodeEventsCount();
@@ -67,16 +65,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		protected virtual IEnumerable<GraphMemberNodeViewModel> GetDacEventsDefault(IEnumerable<GraphEventInfo> graphEventsForDAC,
-																					GraphEventNodeByDacConstructor graphMemberCreator,
 																					bool areChildrenExpanded)
 		{
-			return graphEventsForDAC.Select(eventInfo => graphMemberCreator(this, eventInfo, areChildrenExpanded))
-											.Where(graphMemberVM => graphMemberVM != null && !graphMemberVM.Name.IsNullOrEmpty())
-											.OrderBy(graphMemberVM => graphMemberVM.Name);
+			return graphEventsForDAC.Select(eventInfo => GraphMemberCategoryVM.Crea(this, eventInfo, areChildrenExpanded))
+									.Where(graphMemberVM => graphMemberVM != null && !graphMemberVM.Name.IsNullOrEmpty())
+									.OrderBy(graphMemberVM => graphMemberVM.Name);
 		}
 
 		protected virtual IEnumerable<GraphMemberNodeViewModel> GetDacFieldEvents(IEnumerable<GraphEventInfo> graphEventsForDAC,
-																				  GraphEventNodeByDacConstructor graphMemberCreator,
 																				  bool areChildrenExpanded)
 		{
 			return graphEventsForDAC.Select(eventInfo => graphMemberCreator(this, eventInfo, areChildrenExpanded))

@@ -18,7 +18,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 		}
 
-		protected override GraphEventNodeByDacConstructor EventNodeByDacConstructor { get; } =
+		protected override GraphEventNodeConstructor EventNodeByDacConstructor { get; } =
 			(dacGroupVM, eventInfo, isExpanded) => new FieldEventNodeViewModel(dacGroupVM, eventInfo, isExpanded);
 
 		protected override IEnumerable<GraphNodeSymbolItem> GetCategoryGraphNodeSymbols() =>
