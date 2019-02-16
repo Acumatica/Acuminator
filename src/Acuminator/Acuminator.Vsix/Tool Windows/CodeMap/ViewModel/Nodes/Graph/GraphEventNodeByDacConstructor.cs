@@ -9,5 +9,6 @@ using Acuminator.Vsix.Utilities;
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public delegate GraphMemberNodeViewModel GraphEventNodeByDacConstructor(DacGroupingNodeViewModel dacGroup, 
-																			GraphEventInfo graphEventInfo);
+																			GraphEventInfo graphEventInfo,
+																			bool isExpanded);
 }

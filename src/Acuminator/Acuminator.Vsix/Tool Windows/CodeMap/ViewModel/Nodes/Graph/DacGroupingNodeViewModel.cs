@@ -23,25 +23,63 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set { }
 		}
 
-		public DacGroupingNodeViewModel(GraphMemberCategoryNodeViewModel graphMemberCategoryVM,
-										IGrouping<string, GraphEventInfo> graphEventsForDAC,
-										GraphEventNodeByDacConstructor graphMemberCreator,
-										bool isExpanded = false) :
-								   base(graphMemberCategoryVM?.Tree, isExpanded)
+		protected DacGroupingNodeViewModel(GraphMemberCategoryNodeViewModel graphMemberCategoryVM,
+										   string dacName, bool isExpanded = false) :
+									  base(graphMemberCategoryVM?.Tree, isExpanded)
 		{
-			graphMemberCreator.ThrowOnNull(nameof(graphMemberCreator));
-
-			if (graphEventsForDAC.IsNullOrEmpty())
-			{
-				throw new ArgumentNullException(nameof(graphEventsForDAC));
-			}
+			dacName.ThrowOnNullOrWhiteSpace(nameof(dacName));
 
 			GraphMemberCategoryVM = graphMemberCategoryVM;
-			DacName = graphEventsForDAC.Key;
-			var graphMembers = graphEventsForDAC.Select(eventInfo => graphMemberCreator(this, eventInfo))
-												.Where(graphMemberVM => graphMemberVM != null && !graphMemberVM.Name.IsNullOrEmpty())
-												.OrderBy(graphMemberVM => graphMemberVM.Name);
-			Children.AddRange(graphMembers);
+			DacName = dacName;
+		}
+
+		public static DacGroupingNodeViewModel Create(GraphMemberCategoryNodeViewModel graphMemberCategoryVM,
+													  string dacName, IEnumerable<GraphEventInfo> graphEventsForDAC,
+													  GraphEventNodeByDacConstructor graphMemberCreator,
+													  bool isDacExpanded = false, bool areChildrenExpanded = false)
+		{
+			if (graphMemberCreator == null || graphEventsForDAC.IsNullOrEmpty() || dacName.IsNullOrWhiteSpace())
+			{
+				return null;
+			}
+
+			DacGroupingNodeViewModel dacVM = new DacGroupingNodeViewModel(graphMemberCategoryVM, dacName, isDacExpanded);
+			var dacMembers = dacVM.GetDacNodeChildren(graphEventsForDAC, graphMemberCreator, areChildrenExpanded);
+			dacVM.Children.AddRange(dacMembers);
+			return dacVM;
+		}
+
+		protected virtual IEnumerable<GraphMemberNodeViewModel> GetDacNodeChildren(IEnumerable<GraphEventInfo> graphEventsForDAC,
+																				   GraphEventNodeByDacConstructor graphMemberCreator, 
+																				   bool areChildrenExpanded)
+		{
+			switch (GraphMemberCategoryVM.CategoryType)
+			{
+				case GraphMemberType.RowEvent:
+					return GetDacRowEvents(graphEventsForDAC, graphMemberCreator, areChildrenExpanded);
+				case GraphMemberType.FieldEvent:
+					return GetDacFieldEvents(graphEventsForDAC, graphMemberCreator, areChildrenExpanded);
+				default:
+					return Enumerable.Empty<GraphMemberNodeViewModel>();
+			}
+		}
+
+		protected virtual IEnumerable<GraphMemberNodeViewModel> GetDacRowEvents(IEnumerable<GraphEventInfo> graphEventsForDAC,
+																				  GraphEventNodeByDacConstructor graphMemberCreator,
+																				  bool areChildrenExpanded)
+		{
+			return graphEventsForDAC.Select(eventInfo => graphMemberCreator(this, eventInfo, areChildrenExpanded))
+											.Where(graphMemberVM => graphMemberVM != null && !graphMemberVM.Name.IsNullOrEmpty())
+											.OrderBy(graphMemberVM => graphMemberVM.Name);
+		}
+
+		protected virtual IEnumerable<GraphMemberNodeViewModel> GetDacFieldEvents(IEnumerable<GraphEventInfo> graphEventsForDAC,
+																				  GraphEventNodeByDacConstructor graphMemberCreator,
+																				  bool areChildrenExpanded)
+		{
+			return graphEventsForDAC.Select(eventInfo => graphMemberCreator(this, eventInfo, areChildrenExpanded))
+											.Where(graphMemberVM => graphMemberVM != null && !graphMemberVM.Name.IsNullOrEmpty())
+											.OrderBy(graphMemberVM => graphMemberVM.Name);
 		}
 	}
 }
