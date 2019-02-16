@@ -473,7 +473,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\ViewNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\RowEventNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\CacheAttachedNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\GraphNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\Base\GraphMemberNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\TreeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\TreeNodeViewModel.cs" />
