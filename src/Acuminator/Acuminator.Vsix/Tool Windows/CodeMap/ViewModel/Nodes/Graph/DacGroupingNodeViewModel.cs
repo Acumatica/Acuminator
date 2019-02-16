@@ -53,20 +53,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 																				   GraphEventNodeByDacConstructor graphMemberCreator, 
 																				   bool areChildrenExpanded)
 		{
-			switch (GraphMemberCategoryVM.CategoryType)
+			if (GraphMemberCategoryVM.CategoryType == GraphMemberType.FieldEvent)
 			{
-				case GraphMemberType.RowEvent:
-					return GetDacRowEvents(graphEventsForDAC, graphMemberCreator, areChildrenExpanded);
-				case GraphMemberType.FieldEvent:
-					return GetDacFieldEvents(graphEventsForDAC, graphMemberCreator, areChildrenExpanded);
-				default:
-					return Enumerable.Empty<GraphMemberNodeViewModel>();
+				return GetDacFieldEvents(graphEventsForDAC, graphMemberCreator, areChildrenExpanded);
 			}
+
+			return GetDacEventsDefault(graphEventsForDAC, graphMemberCreator, areChildrenExpanded);
 		}
 
-		protected virtual IEnumerable<GraphMemberNodeViewModel> GetDacRowEvents(IEnumerable<GraphEventInfo> graphEventsForDAC,
-																				  GraphEventNodeByDacConstructor graphMemberCreator,
-																				  bool areChildrenExpanded)
+		protected virtual IEnumerable<GraphMemberNodeViewModel> GetDacEventsDefault(IEnumerable<GraphEventInfo> graphEventsForDAC,
+																					GraphEventNodeByDacConstructor graphMemberCreator,
+																					bool areChildrenExpanded)
 		{
 			return graphEventsForDAC.Select(eventInfo => graphMemberCreator(this, eventInfo, areChildrenExpanded))
 											.Where(graphMemberVM => graphMemberVM != null && !graphMemberVM.Name.IsNullOrEmpty())
