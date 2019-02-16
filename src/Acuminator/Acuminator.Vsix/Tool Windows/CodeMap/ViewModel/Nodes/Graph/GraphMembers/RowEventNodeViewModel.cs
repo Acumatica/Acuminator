@@ -23,7 +23,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public RowEventNodeViewModel(DacEventsGroupingNodeViewModel dacViewModel, GraphNodeSymbolItem memberInfo, bool isExpanded = false) :
-								base(dacViewModel?.GraphMemberCategoryVM, memberInfo, isExpanded)
+								base(dacViewModel?.GraphEventsCategoryVM, memberInfo, isExpanded)
 		{
 			DacViewModel = dacViewModel;
 			Name = MemberInfo is GraphEventInfo eventInfo

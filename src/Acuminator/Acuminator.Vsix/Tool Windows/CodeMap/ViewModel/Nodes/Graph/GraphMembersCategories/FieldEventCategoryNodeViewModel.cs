@@ -18,14 +18,19 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 		}
 
-		protected override GraphEventNodeConstructor EventNodeByDacConstructor { get; } =
-			(dacGroupVM, eventInfo, isExpanded) => new FieldEventNodeViewModel(dacGroupVM, eventInfo, isExpanded);
-
 		protected override IEnumerable<GraphNodeSymbolItem> GetCategoryGraphNodeSymbols() =>
 			GraphSemanticModel.FieldDefaultingEvents
 							  .Concat(GraphSemanticModel.FieldVerifyingEvents)
 							  .Concat(GraphSemanticModel.FieldSelectingEvents)
 							  .Concat(GraphSemanticModel.FieldUpdatingEvents)
 							  .Concat(GraphSemanticModel.FieldUpdatedEvents);
+
+		public override GraphMemberNodeViewModel CreateNewEventVM<TEventNodeParent>(TEventNodeParent eventNodeParent, GraphEventInfo eventInfo,
+																					bool isExpanded)
+		{
+			return eventNodeParent is DacFieldGroupingNodeViewModel dacFieldVM
+				? new FieldEventNodeViewModel(dacFieldVM, eventInfo, isExpanded)
+				: base.CreateNewEventVM(eventNodeParent, eventInfo, isExpanded);
+		}
 	}
 }

@@ -49,8 +49,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 											  eventInfo.Symbol.ContainingType.OriginalDefinition ==
 											  GraphViewModel.GraphSemanticModel.Symbol.OriginalDefinition
 										group eventInfo by eventInfo.DacName into dacFieldEvents
-										select DacEventsGroupingNodeViewModel.Create(this, dacFieldEvents.Key, 
-																			   dacFieldEvents, EventNodeByDacConstructor) into dacNodeVM
+										select DacEventsGroupingNodeViewModel.Create(this, dacFieldEvents.Key, dacFieldEvents) into dacNodeVM
 										where dacNodeVM != null
 										orderby dacNodeVM.DacName ascending
 										select dacNodeVM;

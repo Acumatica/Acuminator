@@ -1,18 +1,22 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.Utilities;
-using Acuminator.Vsix.Utilities.Navigation;
+using Acuminator.Utilities.Roslyn.Semantic;
+
+
 
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class DacFieldGroupingNodeViewModel : TreeNodeViewModel
 	{
+		public GraphEventCategoryNodeViewModel GraphEventsCategoryVM => DacVM.GraphEventsCategoryVM;
+
 		public DacEventsGroupingNodeViewModel DacVM { get; }
 
 		public string DacFieldName { get; }
@@ -34,10 +38,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public static DacFieldGroupingNodeViewModel Create(DacEventsGroupingNodeViewModel dacVM, string dacFieldName, 
 														   IEnumerable<GraphEventInfo> dacFieldEvents,
-														   GraphEventNodeConstructor eventVMCreator,
 														   bool isExpanded = false)
 		{
-			if (eventVMCreator == null || dacFieldEvents.IsNullOrEmpty() || dacFieldName.IsNullOrWhiteSpace())
+			if (dacFieldEvents.IsNullOrEmpty() || dacFieldName.IsNullOrWhiteSpace())
 			{
 				return null;
 			}
@@ -48,8 +51,27 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return dacVM;
 		}
 
+		public static string GetDacFieldNameForFieldEvent(GraphEventInfo eventInfo)
+		{
+			if (eventInfo == null)
+				return string.Empty;
+
+			switch (eventInfo.SignatureType)
+			{
+				case EventHandlerSignatureType.Default:
+					
+					return lastUnderscoreIndex > 0 && lastUnderscoreIndex < MemberSymbol.Name.Length - 1
+						? MemberSymbol.Name.Substring(lastUnderscoreIndex + 1)
+						: MemberSymbol.Name;
+				case EventHandlerSignatureType.Generic:
+					return GetDacFieldNameForGenericFieldEvent(eventInfo);
+				case EventHandlerSignatureType.None:
+				default:
+					return MemberSymbol.Name;
+			}
+		}
+
 		protected virtual IEnumerable<GraphMemberNodeViewModel> GetDacFieldNodeChildren(IEnumerable<GraphEventInfo> dacFieldEvents,
-																						GraphEventNodeConstructor eventVMCreator, 
 																						bool isExpanded)
 		{
 			return dacFieldEvents.Select(eventInfo => eventVMCreator(this, eventInfo, isExpanded))
