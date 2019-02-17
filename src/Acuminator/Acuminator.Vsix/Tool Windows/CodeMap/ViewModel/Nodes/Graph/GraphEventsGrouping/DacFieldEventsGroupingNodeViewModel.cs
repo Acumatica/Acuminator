@@ -11,7 +11,7 @@ using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class DacFieldEventsGroupingNodeViewModel : TreeNodeViewModel
+	public class DacFieldEventsGroupingNodeViewModel : TreeNodeViewModel, IGroupNodeWithCyclingNavigation
 	{
 		public GraphEventCategoryNodeViewModel GraphEventsCategoryVM => DacVM.GraphEventsCategoryVM;
 
@@ -24,6 +24,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			get => DacFieldName;
 			protected set { }
 		}
+
+		bool IGroupNodeWithCyclingNavigation.AllowNavigation => true;
+
+		int IGroupNodeWithCyclingNavigation.CurrentNavigationIndex { get; set; }
+
+		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
 
 		protected DacFieldEventsGroupingNodeViewModel(DacEventsGroupingNodeViewModel dacVM, string dacFieldName, bool isExpanded) :
 												 base(dacVM?.Tree, isExpanded)
@@ -54,5 +60,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 								 .Where(graphMemberVM => graphMemberVM != null && !graphMemberVM.Name.IsNullOrEmpty())
 								 .OrderBy(graphMemberVM => graphMemberVM.Name);
 		}
+
+		public override void NavigateToItem() => this.GetChildToNavigateTo()?.NavigateToItem();
+
+		bool IGroupNodeWithCyclingNavigation.CanNavigateToChild(TreeNodeViewModel child) => child is GraphMemberNodeViewModel;
 	}
 }

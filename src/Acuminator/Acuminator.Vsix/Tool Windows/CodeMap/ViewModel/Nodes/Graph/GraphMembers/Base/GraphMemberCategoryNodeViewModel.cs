@@ -30,7 +30,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected abstract bool AllowNavigation { get; }
 
-		bool IGroupNodeWithCyclingNavigation.AllowNavigation { get; }
+		bool IGroupNodeWithCyclingNavigation.AllowNavigation => AllowNavigation;
 
 		int IGroupNodeWithCyclingNavigation.CurrentNavigationIndex
 		{
