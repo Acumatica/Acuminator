@@ -30,5 +30,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			treeNodeVM.NavigateToItem();
 			e.Handled = true;
 		}
+
+		private void CodeMapTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+		{
+			if (!(sender is TreeView codeMapTreeView) || !(codeMapTreeView.DataContext is TreeViewModel treeViewModel))
+				return;
+
+			treeViewModel.SelectedItem = e.NewValue as TreeNodeViewModel;
+		}
 	}
 }

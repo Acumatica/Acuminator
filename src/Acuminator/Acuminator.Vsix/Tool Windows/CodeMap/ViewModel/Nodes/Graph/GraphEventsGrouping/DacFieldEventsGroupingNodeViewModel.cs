@@ -61,7 +61,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 								 .OrderBy(graphMemberVM => graphMemberVM.Name);
 		}
 
-		public override void NavigateToItem() => this.GetChildToNavigateTo()?.NavigateToItem();
+		public override void NavigateToItem()
+		{
+			var childToNavigateTo = this.GetChildToNavigateTo();
+
+			if (childToNavigateTo != null)
+			{
+				IsExpanded = true;
+				childToNavigateTo.Tree.SelectedItem = childToNavigateTo;
+				childToNavigateTo.NavigateToItem();
+			}
+		}
 
 		bool IGroupNodeWithCyclingNavigation.CanNavigateToChild(TreeNodeViewModel child) => child is GraphMemberNodeViewModel;
 	}
