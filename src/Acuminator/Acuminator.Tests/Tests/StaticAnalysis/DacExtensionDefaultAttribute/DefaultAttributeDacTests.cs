@@ -24,37 +24,37 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacExtensionDefaultAttribute
         [EmbeddedFileData("DacExtensionWithoutPersistingCheckNothingInvalid.cs")]
         public async Task TestInvalidDacExtensionWithoutPersistingcheckNothing(string source) =>
             await VerifyCSharpDiagnosticAsync(source,
-                Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(8, 10));
+                Descriptors.PX1030_DefaultAttibuteToExisitingRecordsWarning.CreateFor(8, 10));
 
         [Theory]
-		[EmbeddedFileData("DacExtensionWithBoundFields.cs")]
-		public virtual void TestDacExtensionWithBoundAttribute(string source) =>
-			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 23, column: 4),
-				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 30, column: 4),
-				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 44, column: 4),
-				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 50, column: 13),
-				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 56, column: 13),
-				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 62, column: 4));
+		[EmbeddedFileData("DacExtensionWithBoundFields.cs", "SOOrder.cs")]
+		public virtual void TestDacExtensionWithBoundAttribute(string source, string additionalSource) =>
+			VerifyCSharpDiagnostic(new[] { source, additionalSource },
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecordsWarning.CreateFor(line: 23, column: 4),
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecordsWarning.CreateFor(line: 30, column: 4),
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecordsWarning.CreateFor(line: 44, column: 4),
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecordsWarning.CreateFor(line: 50, column: 13),
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecordsWarning.CreateFor(line: 56, column: 13),
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecordsWarning.CreateFor(line: 62, column: 4));
 
 		[Theory]
-		[EmbeddedFileData("DacExtensionWithUnboundFields.cs")]
-		public virtual void TestDacExtensionWithUnboundFields(string source) =>
-			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 23, column: 4));
+		[EmbeddedFileData("DacExtensionWithUnboundFields.cs", "SOOrder.cs")]
+		public virtual void TestDacExtensionWithUnboundFields(string source, string additionalSource) =>
+			VerifyCSharpDiagnostic(new[] { source, additionalSource },
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecordsError.CreateFor(line: 23, column: 4));
 
 		[Theory]
-		[EmbeddedFileData("DacExtensionWithBoundAndUnboundFields.cs")]
-		public virtual void TestDacExtensionWithBoundAndUnboundAttribute(string source) =>
-			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 16, column: 4),
-				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 35, column: 4));
+		[EmbeddedFileData("DacExtensionWithBoundAndUnboundFields.cs", "SOOrder.cs")]
+		public virtual void TestDacExtensionWithBoundAndUnboundAttribute(string source, string additionalSource) =>
+			VerifyCSharpDiagnostic(new[] { source, additionalSource },
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecordsError.CreateFor(line: 16, column: 4),
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecordsWarning.CreateFor(line: 35, column: 4));
 
 		[Theory]
-		[EmbeddedFileData("AggregateAttributeFields.cs")]
-		public virtual void TestDacExtensionWithAggregateAttributeFields(string source) =>
-			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1030_DefaultAttibuteToExisitingRecords.CreateFor(line: 36, column: 4));
+		[EmbeddedFileData("AggregateAttributeFields.cs", "SOOrder.cs")]
+		public virtual void TestDacExtensionWithAggregateAttributeFields(string source, string additionalSource) =>
+			VerifyCSharpDiagnostic(new[] { source, additionalSource },
+				Descriptors.PX1030_DefaultAttibuteToExisitingRecordsError.CreateFor(line: 36, column: 4));
 
 		[Theory]
 		[EmbeddedFileData("AggregateAttributeFields.cs",

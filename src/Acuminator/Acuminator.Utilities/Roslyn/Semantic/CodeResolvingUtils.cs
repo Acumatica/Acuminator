@@ -215,6 +215,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic
                    typeSymbol.InheritsFrom(pxContext.PXCacheExtensionType);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsDacExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
+        {
+            typeSymbol.ThrowOnNull(nameof(typeSymbol));
+
+            return typeSymbol.InheritsFrom(pxContext.PXCacheExtensionType);
+        }
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsDacExtension(this ITypeSymbol typeSymbol, bool ruleOutBaseTypes = false)
 		{
