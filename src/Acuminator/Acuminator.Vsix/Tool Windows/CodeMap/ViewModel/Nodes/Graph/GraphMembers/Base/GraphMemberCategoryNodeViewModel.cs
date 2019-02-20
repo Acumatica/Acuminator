@@ -12,7 +12,7 @@ using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public abstract class GraphMemberCategoryNodeViewModel : TreeNodeViewModel
+	public abstract class GraphMemberCategoryNodeViewModel : TreeNodeViewModel, IGroupNodeWithCyclingNavigation
 	{
 		public GraphNodeViewModel GraphViewModel { get; }
 
@@ -28,6 +28,18 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set { }
 		}
 
+		protected abstract bool AllowNavigation { get; }
+
+		bool IGroupNodeWithCyclingNavigation.AllowNavigation => AllowNavigation;
+
+		int IGroupNodeWithCyclingNavigation.CurrentNavigationIndex
+		{
+			get;
+			set;
+		}
+
+		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
+
 		protected GraphMemberCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
 												bool isExpanded) : 
 										   base(graphViewModel?.Tree, isExpanded)
@@ -36,6 +48,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			CategoryType = graphMemberType;
 			CategoryDescription = CategoryType.Description();
 		}
+
+		public override void NavigateToItem() => this.GetChildToNavigateTo()?.NavigateToItem();
 
 		public static GraphMemberCategoryNodeViewModel Create(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
 															  bool isExpanded)
@@ -87,6 +101,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				default:
 					return null;
 			}
-		}	
+		}
+
+		bool IGroupNodeWithCyclingNavigation.CanNavigateToChild(TreeNodeViewModel child) =>
+			CanNavigateToChild(child);
+
+		protected virtual bool CanNavigateToChild(TreeNodeViewModel child) => child is GraphMemberNodeViewModel;
 	}
 }

@@ -29,6 +29,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
+		protected override bool AllowNavigation => false;
+
 		protected GraphEventCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
 												  bool isExpanded) :
 										   base(graphViewModel, graphMemberType, isExpanded)

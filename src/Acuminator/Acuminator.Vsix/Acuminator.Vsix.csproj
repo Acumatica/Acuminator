@@ -453,6 +453,7 @@
     <Compile Include="Tool Windows\CodeMap\Convertes\TreeNodeToTooltipConverter.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphMemberInfoType.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphMemberType.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Base\IGroupNodeWithCyclingNavigation.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\DacEventsGroupingNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\DacFieldEventsGroupingNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\Base\GraphEventCategoryNodeViewModel.cs" />
@@ -480,6 +481,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\Base\GraphMemberNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\TreeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\TreeNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Utils\CyclingNavigationUtils.cs" />
     <Compile Include="Tool Windows\Converters\BoolInversionConverter.cs" />
     <Compile Include="Tool Windows\Converters\ObjectToItsTypeConverter.cs" />
     <Compile Include="Tool Windows\Converters\IsBackgroundDarkConverter.cs" />

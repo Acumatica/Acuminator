@@ -11,7 +11,7 @@ using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class DacEventsGroupingNodeViewModel : TreeNodeViewModel
+	public class DacEventsGroupingNodeViewModel : TreeNodeViewModel, IGroupNodeWithCyclingNavigation
 	{
 		public GraphEventCategoryNodeViewModel GraphEventsCategoryVM { get; }
 
@@ -28,6 +28,24 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			get => $"{DacName}({EventsCount})";
 			protected set { }
 		}
+
+		protected bool AllowNavigation => true;
+
+		bool IGroupNodeWithCyclingNavigation.AllowNavigation => AllowNavigation;
+
+		protected int CurrentNavigationIndex
+		{
+			get;
+			set;
+		}
+
+		int IGroupNodeWithCyclingNavigation.CurrentNavigationIndex
+		{
+			get => CurrentNavigationIndex;
+			set => CurrentNavigationIndex = value;
+		}
+
+		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
 
 		protected DacEventsGroupingNodeViewModel(GraphEventCategoryNodeViewModel graphEventsCategoryVM,
 										   string dacName, bool isExpanded) :
@@ -94,6 +112,55 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 
 			EventsCount = GetDacNodeEventsCount();
+		}
+
+		public override void NavigateToItem()
+		{
+			switch (GraphEventsCategoryVM)
+			{
+				case CacheAttachedCategoryNodeViewModel cacheAttachedCategory:
+				case RowEventCategoryNodeViewModel rowEventCategory:
+					this.GetChildToNavigateTo()?.NavigateToItem();
+					return;
+				case FieldEventCategoryNodeViewModel fieldEventCategory:
+					GetChildToNavigateToFromFieldEvents()?.NavigateToItem();
+					return;
+			}
+		}
+
+		bool IGroupNodeWithCyclingNavigation.CanNavigateToChild(TreeNodeViewModel child) => CanNavigateToChild(child);
+
+		protected bool CanNavigateToChild(TreeNodeViewModel child) =>
+			child is RowEventNodeViewModel ||
+			child is FieldEventNodeViewModel ||
+			child is CacheAttachedNodeViewModel;
+
+		private TreeNodeViewModel GetChildToNavigateToFromFieldEvents()
+		{
+			if (AllowNavigation != true || Children.Count == 0)
+				return null;
+	
+			List<TreeNodeViewModel> dacFieldEvents = Children.SelectMany(dacFieldEvent => dacFieldEvent.Children).ToList();
+
+			if (dacFieldEvents.Count == 0)
+				return null;
+
+			int counter = 0;
+
+			while (counter < EventsCount)
+			{
+				TreeNodeViewModel child = dacFieldEvents[CurrentNavigationIndex];
+				CurrentNavigationIndex = (CurrentNavigationIndex + 1) % EventsCount;
+
+				if (CanNavigateToChild(child))
+				{
+					return child;
+				}
+
+				counter++;
+			}
+
+			return null;
 		}
 	}
 }
