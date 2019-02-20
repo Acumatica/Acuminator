@@ -395,6 +395,9 @@
     <Resource Include="Resources\CodeMap\DAC.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\CodeMap\DacField.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Content Include="Resources\DacExplorer.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -450,8 +453,9 @@
     <Compile Include="Tool Windows\CodeMap\Convertes\TreeNodeToTooltipConverter.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphMemberInfoType.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphMemberType.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\DacEventsGroupingNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\DacFieldEventsGroupingNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\Base\GraphEventCategoryNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventNodeByDacConstructor.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\CodeMapWindowViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\CodeMapWindow.cs" />
     <Compile Include="Tool Windows\CodeMap\CodeMapWindowControl.xaml.cs">
@@ -461,7 +465,6 @@
     <Compile Include="Tool Windows\CodeMap\Model\DocumentModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\Base\GraphMemberCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\AttributeNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\DacGroupingNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\FieldEventCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\ActionCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\CacheAttachedCategoryNodeViewModel.cs" />

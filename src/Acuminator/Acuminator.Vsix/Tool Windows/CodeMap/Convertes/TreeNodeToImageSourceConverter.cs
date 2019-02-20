@@ -22,6 +22,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private const string GraphIcon = "Graph";
 		private const string DacIcon = "DAC";
+		private const string DacFieldIcon = "DacField";
 		private const string ViewIcon = "View";
 		private const string ViewDelegateIcon = "ViewDelegate";
 		private const string ActionIcon = "Action";
@@ -73,8 +74,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					return EventIcon;
 				case GraphMemberCategoryNodeViewModel graphMemberCategoryNode:
 					return GroupNodeIcon;
-				case DacGroupingNodeViewModel dacGroupingNodeViewModel:
+				case DacEventsGroupingNodeViewModel dacGroupingNodeViewModel:
 					return DacIcon;
+				case DacFieldEventsGroupingNodeViewModel dacFieldGroupingNodeViewModel:
+					return DacFieldIcon;
 				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.View:
 					return ViewIcon;		
 				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.Action:

@@ -15,7 +15,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class CacheAttachedNodeViewModel : GraphMemberNodeViewModel
 	{
-		public DacGroupingNodeViewModel DacViewModel { get; }
+		public DacEventsGroupingNodeViewModel DacViewModel { get; }
 
 		public override string Name
 		{
@@ -23,9 +23,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set;
 		}
 
-		public CacheAttachedNodeViewModel(DacGroupingNodeViewModel dacViewModel, GraphNodeSymbolItem memberInfo,
+		public CacheAttachedNodeViewModel(DacEventsGroupingNodeViewModel dacViewModel, GraphNodeSymbolItem memberInfo,
 										  bool isExpanded = false) :
-									 base(dacViewModel?.GraphMemberCategoryVM, memberInfo, isExpanded)
+									 base(dacViewModel?.GraphEventsCategoryVM, memberInfo, isExpanded)
 		{
 			DacViewModel = dacViewModel;
 

@@ -18,9 +18,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 		}
 
-		protected override GraphEventNodeByDacConstructor EventNodeByDacConstructor { get; } =
-			(dacGroupVM, eventInfo) => new CacheAttachedNodeViewModel(dacGroupVM, eventInfo);
-
 		protected override IEnumerable<GraphNodeSymbolItem> GetCategoryGraphNodeSymbols() => GraphSemanticModel.CacheAttachedEvents;
+
+		public override GraphMemberNodeViewModel CreateNewEventVM<TEventNodeParent>(TEventNodeParent eventNodeParent, GraphEventInfo eventInfo,
+																					bool isExpanded)
+		{
+			return eventNodeParent is DacEventsGroupingNodeViewModel dacGroupVM
+				? new CacheAttachedNodeViewModel(dacGroupVM, eventInfo, isExpanded)
+				: base.CreateNewEventVM(eventNodeParent, eventInfo, isExpanded);
+		}
 	}
 }

@@ -34,7 +34,9 @@
     <BitmapImage x:Key="DAC" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DAC.ico"/>
 
+    <BitmapImage x:Key="DacField" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DacField.ico"/>
+
     <BitmapImage x:Key="GroupNode" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/GroupNode.ico"/>
-
 </ResourceDictionary>
