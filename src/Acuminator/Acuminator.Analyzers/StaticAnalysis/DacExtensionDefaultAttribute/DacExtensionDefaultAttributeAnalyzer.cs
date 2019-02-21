@@ -6,7 +6,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using PX.Data;
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -16,11 +15,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class DacExtensionDefaultAttributeAnalyzer : PXDiagnosticAnalyzer
 	{
-		private const string _PersistingCheck = "PersistingCheck";
-
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(
-                Descriptors.PX1030_DefaultAttibuteToExisitingRecordsError);
+                Descriptors.PX1030_DefaultAttibuteToExistingRecordsOnDAC,
+                Descriptors.PX1030_DefaultAttibuteToExistingRecordsError,
+                Descriptors.PX1030_DefaultAttibuteToExistingRecordsWarning);
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
@@ -92,8 +91,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
             var diagnosticProperties = ImmutableDictionary<string, string>.Empty
                 .Add(DiagnosticProperty.IsBoundField, bool.FalseString);
             var descriptor = dacOrExtension.IsDac(pxContext) ?
-                Descriptors.PX1030_DefaultAttibuteToExisitingRecordsOnDAC :
-                Descriptors.PX1030_DefaultAttibuteToExisitingRecordsError;
+                Descriptors.PX1030_DefaultAttibuteToExistingRecordsOnDAC :
+                Descriptors.PX1030_DefaultAttibuteToExistingRecordsError;
             var diagnostic = Diagnostic.Create(descriptor, attributeLocation, diagnosticProperties);
 
             symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic);
@@ -119,7 +118,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
             var diagnosticProperties = ImmutableDictionary<string, string>.Empty
                 .Add(DiagnosticProperty.IsBoundField, bool.TrueString);
             var diagnostic = Diagnostic.Create(
-                Descriptors.PX1030_DefaultAttibuteToExisitingRecordsWarning,
+                Descriptors.PX1030_DefaultAttibuteToExistingRecordsWarning,
                 attributeLocation,
                 diagnosticProperties);
 

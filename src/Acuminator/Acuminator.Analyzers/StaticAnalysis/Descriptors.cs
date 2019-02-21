@@ -111,13 +111,13 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1029_PXGraphUsageInDac { get; } =
 			Rule("PX1029", nameof(Resources.PX1029Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
-		public static DiagnosticDescriptor PX1030_DefaultAttibuteToExisitingRecordsError { get; } =
+		public static DiagnosticDescriptor PX1030_DefaultAttibuteToExistingRecordsError { get; } =
 			Rule("PX1030", nameof(Resources.PX1030TitleDefaultAttributeOnDacExtension).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
-        public static DiagnosticDescriptor PX1030_DefaultAttibuteToExisitingRecordsWarning { get; } =
+        public static DiagnosticDescriptor PX1030_DefaultAttibuteToExistingRecordsWarning { get; } =
             Rule("PX1030", nameof(Resources.PX1030TitleDefaultAttributeOnDacExtension).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 
-        public static DiagnosticDescriptor PX1030_DefaultAttibuteToExisitingRecordsOnDAC { get; } =
+        public static DiagnosticDescriptor PX1030_DefaultAttibuteToExistingRecordsOnDAC { get; } =
 			Rule("PX1030", nameof(Resources.PX1030TitleDefaultAttributeOnDac).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
         public static DiagnosticDescriptor PX1031_DacCannotContainInstanceMethods { get; } =

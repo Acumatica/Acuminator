@@ -27,18 +27,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(
-                Descriptors.PX1030_DefaultAttibuteToExisitingRecordsError.Id,
-                Descriptors.PX1030_DefaultAttibuteToExisitingRecordsWarning.Id,
-                Descriptors.PX1030_DefaultAttibuteToExisitingRecordsOnDAC.Id);
+                Descriptors.PX1030_DefaultAttibuteToExistingRecordsError.Id,
+                Descriptors.PX1030_DefaultAttibuteToExistingRecordsWarning.Id,
+                Descriptors.PX1030_DefaultAttibuteToExistingRecordsOnDAC.Id);
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
 			var diagnostic = context.Diagnostics.FirstOrDefault(d => 
-                d.Id == Descriptors.PX1030_DefaultAttibuteToExisitingRecordsError.Id ||
-                d.Id == Descriptors.PX1030_DefaultAttibuteToExisitingRecordsWarning.Id ||
-                d.Id == Descriptors.PX1030_DefaultAttibuteToExisitingRecordsOnDAC.Id);
+                d.Id == Descriptors.PX1030_DefaultAttibuteToExistingRecordsError.Id ||
+                d.Id == Descriptors.PX1030_DefaultAttibuteToExistingRecordsWarning.Id ||
+                d.Id == Descriptors.PX1030_DefaultAttibuteToExistingRecordsOnDAC.Id);
 
 			if (diagnostic == null)
 				return;
