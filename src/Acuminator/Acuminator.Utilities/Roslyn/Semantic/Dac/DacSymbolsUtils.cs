@@ -26,7 +26,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
                 return Enumerable.Empty<ITypeSymbol>();
             }
 
-            var types = new List<ITypeSymbol>() { dacExtension };
+            var types = new List<ITypeSymbol>(typeArguments.Length + 1) { dacExtension };
             var typeArgumentsExceptDac = typeArguments.Take(typeArguments.Length - 1);
 
             foreach (var ta in typeArgumentsExceptDac)
