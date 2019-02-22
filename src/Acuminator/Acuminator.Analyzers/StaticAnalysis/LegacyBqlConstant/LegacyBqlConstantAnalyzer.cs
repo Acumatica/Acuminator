@@ -25,7 +25,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 				SymbolKind.NamedType);
 		}
 
-		private async void Analyze(SymbolAnalysisContext context, PXContext pxContext)
+		private void Analyze(SymbolAnalysisContext context, PXContext pxContext)
 		{
 			if (context.Symbol is INamedTypeSymbol constant)
 			{
