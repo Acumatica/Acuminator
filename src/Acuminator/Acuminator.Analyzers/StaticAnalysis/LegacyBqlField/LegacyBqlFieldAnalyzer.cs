@@ -25,23 +25,29 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 
 		private async void Analyze(SymbolAnalysisContext context, PXContext pxContext)
 		{
-			if (context.Symbol is INamedTypeSymbol dacFieldType)
+			if (context.Symbol is INamedTypeSymbol dacOrDacExt)
 			{
-				if (!IsDacFieldType(dacFieldType, pxContext) || AlreadyStronglyTyped(dacFieldType, pxContext))
+				if (dacOrDacExt == null || (!dacOrDacExt.IsDAC() && !dacOrDacExt.IsDacExtension()) || context.CancellationToken.IsCancellationRequested)
 					return;
 
-				context.CancellationToken.ThrowIfCancellationRequested();
+				var bqlFields = dacOrDacExt.GetMembers().OfType<INamedTypeSymbol>().ToArray();
+				var properties = dacOrDacExt.GetBaseTypesAndThis()
+					.SelectMany(t => t.GetMembers().OfType<IPropertySymbol>().Where(p => !p.IsOverride))
+					.ToDictionary(p => p.Name, p => p, StringComparer.OrdinalIgnoreCase);
 
-				Location location = dacFieldType.Locations.FirstOrDefault();
-				if (location != null)
+				foreach (INamedTypeSymbol dacFieldType in bqlFields)
 				{
-					var property = dacFieldType.ContainingType
-						.GetBaseTypesAndThis()
-						.SelectMany(t => t.GetMembers().OfType<IPropertySymbol>())
-						.FirstOrDefault(f => String.Equals(f.Name, dacFieldType.Name, StringComparison.OrdinalIgnoreCase));
+					if (context.CancellationToken.IsCancellationRequested)
+						return;
 
-					if (property != null)
+					if (!IsDacFieldType(dacFieldType, pxContext) || AlreadyStronglyTyped(dacFieldType, pxContext))
+						continue;
+
+					Location location = dacFieldType.Locations.FirstOrDefault();
+					if (location != null && properties.ContainsKey(dacFieldType.Name))
 					{
+						IPropertySymbol property = properties[dacFieldType.Name];
+
 						string propertyTypeName = property.Type is IArrayTypeSymbol arrType
 							? arrType.ElementType.Name + "[]"
 							: property.Type is INamedTypeSymbol namedType
@@ -50,14 +56,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 									: namedType.Name
 								: null;
 
-						if (propertyTypeName == null || !LegacyBqlFieldFix.PropertyTypeToFieldType.ContainsKey(propertyTypeName))
-							return;
+						if (propertyTypeName == null || !LegacyBqlFieldFix.PropertyTypeToFieldType.ContainsKey(propertyTypeName) || context.CancellationToken.IsCancellationRequested)
+							continue;
 
-						context.CancellationToken.ThrowIfCancellationRequested();
-
-						var properties = ImmutableDictionary.CreateBuilder<string, string>();
-						properties.Add(CorrespondingPropertyType, propertyTypeName);
-						context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1060_LegacyBqlField, location, properties.ToImmutable(), dacFieldType.Name));
+						var args = ImmutableDictionary.CreateBuilder<string, string>();
+						args.Add(CorrespondingPropertyType, propertyTypeName);
+						context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1060_LegacyBqlField, location, args.ToImmutable(), dacFieldType.Name));
 					}
 				}
 			}

@@ -34,15 +34,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 
 			if (diagnostic.Properties == null
 				|| !diagnostic.Properties.TryGetValue(LegacyBqlFieldAnalyzer.CorrespondingPropertyType, out string typeName)
-				|| String.IsNullOrEmpty(typeName))
+				|| String.IsNullOrEmpty(typeName)
+				|| context.CancellationToken.IsCancellationRequested)
 			{
 				return;
 			}
 
-			context.CancellationToken.ThrowIfCancellationRequested();
-
 			TypeSyntax newBaseType = CreateBaseType(typeName, classNode.Identifier.Text);
-
 			if (newBaseType != null)
 			{
 				string title = nameof(Resources.PX1060Fix).GetLocalized().ToString();

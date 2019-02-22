@@ -29,10 +29,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 		{
 			if (context.Symbol is INamedTypeSymbol constant)
 			{
-				if (!IsConstant(constant, pxContext, out string constantType) || LegacyBqlFieldAnalyzer.AlreadyStronglyTyped(constant, pxContext))
+				if (!IsConstant(constant, pxContext, out string constantType) || LegacyBqlFieldAnalyzer.AlreadyStronglyTyped(constant, pxContext) || context.CancellationToken.IsCancellationRequested)
 					return;
-
-				context.CancellationToken.ThrowIfCancellationRequested();
 
 				Location location = constant.Locations.FirstOrDefault();
 				if (location != null)
