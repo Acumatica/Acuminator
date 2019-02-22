@@ -106,6 +106,7 @@
     <Compile Include="Common\ConcurrentExtensions.cs" />
     <Compile Include="Common\EnumerableExtraExtensions.cs" />
     <Compile Include="Common\Enum\SortDirection.cs" />
+    <Compile Include="Roslyn\Semantic\Dac\DacSymbolsUtils.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Base\GraphSymbolItemGeneric.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Infos\ActionInfo.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Infos\ActionHandlerInfo.cs" />

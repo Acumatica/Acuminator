@@ -26,15 +26,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-			ImmutableArray.Create(Descriptors.PX1030_DefaultAttibuteToExisitingRecords.Id,
-								  Descriptors.PX1030_DefaultAttibuteToExisitingRecordsOnDAC.Id);
+			ImmutableArray.Create(
+                Descriptors.PX1030_DefaultAttibuteToExistingRecordsError.Id,
+                Descriptors.PX1030_DefaultAttibuteToExistingRecordsWarning.Id,
+                Descriptors.PX1030_DefaultAttibuteToExistingRecordsOnDAC.Id);
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1030_DefaultAttibuteToExisitingRecords.Id ||
-																	 d.Id == Descriptors.PX1030_DefaultAttibuteToExisitingRecordsOnDAC.Id);
+			var diagnostic = context.Diagnostics.FirstOrDefault(d => 
+                d.Id == Descriptors.PX1030_DefaultAttibuteToExistingRecordsError.Id ||
+                d.Id == Descriptors.PX1030_DefaultAttibuteToExistingRecordsWarning.Id ||
+                d.Id == Descriptors.PX1030_DefaultAttibuteToExistingRecordsOnDAC.Id);
 
 			if (diagnostic == null)
 				return;
@@ -68,7 +72,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 			}
 
 			return;
-
 		}
 
 		private async Task<Document> ReplaceAttributeToPXUnboundDefault(Document document, TextSpan span, CancellationToken cancellationToken)

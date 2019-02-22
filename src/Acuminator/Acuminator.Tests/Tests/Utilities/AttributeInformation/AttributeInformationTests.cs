@@ -75,10 +75,10 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 											new List<BoundType>
 											{
 												BoundType.Unbound,
-												BoundType.Unbound,
+												BoundType.NotDefined,
 												BoundType.Unbound,
 												BoundType.DbBound,
-												BoundType.Unbound,
+												BoundType.NotDefined,
 												BoundType.Unbound
 											});
 
