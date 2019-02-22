@@ -5,6 +5,7 @@ using Acuminator.Analyzers.StaticAnalysis.LegacyBqlField;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Acuminator.Utilities.DiagnosticSuppression;
 
 namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 {
@@ -39,7 +40,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 					var properties = ImmutableDictionary.CreateBuilder<string, string>();
 					properties.Add(CorrespondingType, constantType);
 
-					context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1061_LegacyBqlConstant, location, properties.ToImmutable(), constant.Name)); 
+					context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1061_LegacyBqlConstant, location, properties.ToImmutable(), constant.Name)); 
 				}
 			}
 		}

@@ -41,29 +41,33 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			string title = nameof(Resources.PX1061Fix).GetLocalized().ToString();
+			TypeSyntax newBaseType = CreateBaseType(typeName, classNode.Identifier.Text);
 
-			context.RegisterCodeFix(
-				CodeAction.Create(
-					title,
-					c => Task.FromResult(
-						context.Document.WithSyntaxRoot(
-							root.ReplaceNode(
-								classNode.BaseList,
-								BaseList(
-									SeparatedList(
-										new BaseTypeSyntax[]
-										{
-											SimpleBaseType(CreateBaseType(typeName, classNode.Identifier.Text))
-										}))))),
-					title),
-				context.Diagnostics);
+			if (newBaseType != null)
+			{
+				string title = nameof(Resources.PX1061Fix).GetLocalized().ToString();
+				context.RegisterCodeFix(
+					CodeAction.Create(
+						title,
+						c => Task.Run(() =>
+							context.Document.WithSyntaxRoot(
+								root.ReplaceNode(
+									classNode.BaseList,
+									BaseList(
+										SeparatedList(
+											new BaseTypeSyntax[]
+											{
+												SimpleBaseType(newBaseType)
+											})))), c),
+						title),
+					context.Diagnostics);
+			}
 		}
 
 		private TypeSyntax CreateBaseType(string typeName, string dacFieldName)
 		{
 			if (!LegacyBqlFieldFix.PropertyTypeToFieldType.ContainsKey(typeName))
-				throw new NotSupportedException();
+				return null;
 
 			return IdentifierName($"PX.Data.BQL.Bql{LegacyBqlFieldFix.PropertyTypeToFieldType[typeName]}.Constant<{dacFieldName}>");
 		}

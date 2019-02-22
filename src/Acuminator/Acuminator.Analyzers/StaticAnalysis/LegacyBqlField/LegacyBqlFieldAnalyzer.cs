@@ -4,6 +4,7 @@ using System.Linq;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Acuminator.Utilities.DiagnosticSuppression;
 
 namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 {
@@ -56,7 +57,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 
 						var properties = ImmutableDictionary.CreateBuilder<string, string>();
 						properties.Add(CorrespondingPropertyType, propertyTypeName);
-						context.ReportDiagnostic(Diagnostic.Create(Descriptors.PX1060_LegacyBqlField, location, properties.ToImmutable(), dacFieldType.Name));
+						context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1060_LegacyBqlField, location, properties.ToImmutable(), dacFieldType.Name));
 					}
 				}
 			}
@@ -72,7 +73,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 		internal static bool AlreadyStronglyTyped(INamedTypeSymbol dacFieldType, PXContext pxContext)
 			=> dacFieldType.AllInterfaces.Any(t =>
 				t.IsGenericType
-				&& t.ConstructUnboundGenericType().Name == pxContext.IImplementType.Name
+				&& t.OriginalDefinition.Name == pxContext.IImplementType.Name
 				&& t.TypeArguments.First().AllInterfaces.Any(z => z.Name == pxContext.BqlTypes.BqlDataType.Name));
 	}
 }
