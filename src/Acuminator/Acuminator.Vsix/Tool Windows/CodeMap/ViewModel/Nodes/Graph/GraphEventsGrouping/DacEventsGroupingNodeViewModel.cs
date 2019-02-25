@@ -116,17 +116,32 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override void NavigateToItem()
 		{
+			TreeNodeViewModel childToNavigateTo = null;
+
 			switch (GraphEventsCategoryVM)
 			{
 				case CacheAttachedCategoryNodeViewModel cacheAttachedCategory:
 				case RowEventCategoryNodeViewModel rowEventCategory:
-					this.GetChildToNavigateTo()?.NavigateToItem();
-					return;
+					childToNavigateTo = this.GetChildToNavigateTo();
+					break;
 				case FieldEventCategoryNodeViewModel fieldEventCategory:
-					GetChildToNavigateToFromFieldEvents()?.NavigateToItem();
-					return;
+					childToNavigateTo = GetChildToNavigateToFromFieldEvents();
+					  
+					if (!(childToNavigateTo is FieldEventNodeViewModel fieldEventNode))
+						return;
+
+					fieldEventNode.DacFieldVM.IsExpanded = true;
+					break;
 			}
-		}
+
+
+			if (childToNavigateTo != null)
+			{				
+				childToNavigateTo.NavigateToItem();
+				IsExpanded = true;
+				Tree.SelectedItem = childToNavigateTo;
+			}
+	}
 
 		bool IGroupNodeWithCyclingNavigation.CanNavigateToChild(TreeNodeViewModel child) => CanNavigateToChild(child);
 
@@ -135,7 +150,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			child is FieldEventNodeViewModel ||
 			child is CacheAttachedNodeViewModel;
 
-		private TreeNodeViewModel GetChildToNavigateToFromFieldEvents()
+		protected TreeNodeViewModel GetChildToNavigateToFromFieldEvents()
 		{
 			if (AllowNavigation != true || Children.Count == 0)
 				return null;

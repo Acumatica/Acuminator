@@ -49,7 +49,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			CategoryDescription = CategoryType.Description();
 		}
 
-		public override void NavigateToItem() => this.GetChildToNavigateTo()?.NavigateToItem();
+		public override void NavigateToItem()
+		{
+			var childToNavigateTo = this.GetChildToNavigateTo();
+
+			if (childToNavigateTo != null)
+			{
+				childToNavigateTo.NavigateToItem();
+				IsExpanded = true;
+				Tree.SelectedItem = childToNavigateTo;			
+			}	
+		}
 
 		public static GraphMemberCategoryNodeViewModel Create(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
 															  bool isExpanded)

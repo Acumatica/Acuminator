@@ -21,9 +21,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			get => _selectedItem;
 			set
 			{
-				if (ReferenceEquals(_selectedItem, value))
-					return;
-
 				TreeNodeViewModel previousSelection = _selectedItem;
 				_selectedItem = value;
 
@@ -35,6 +32,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 				NotifyPropertyChanged();
 			}
+		}
+
+		/// <summary>
+		/// A workaround to avoid endless loop of TreeNodeViewModel IsSelected and TreeViewModel SelectedItem setting each other.
+		/// </summary>
+		/// <param name="selected">The selected.</param>
+		internal void SetSelectedWithoutNotification(TreeNodeViewModel selected)
+		{
+			_selectedItem = selected;
+			NotifyPropertyChanged(nameof(SelectedItem));
 		}
 
 		public TreeViewModel(CodeMapWindowViewModel windowViewModel)
