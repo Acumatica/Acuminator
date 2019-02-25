@@ -21,22 +21,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private void TreeViewItem_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
-			if (e.Handled || e.ClickCount != 2 || e.ChangedButton != System.Windows.Input.MouseButton.Left)
+			if (e.Handled || e.ChangedButton != System.Windows.Input.MouseButton.Left || e.ClickCount != 2)
 				return;
+
+			e.Handled = true;
 
 			if (!(sender is StackPanel treeViewItemPanel) || !(treeViewItemPanel.DataContext is TreeNodeViewModel treeNodeVM))
 				return;
 
-			treeNodeVM.NavigateToItem();
-			e.Handled = true;
-		}
-
-		private void CodeMapTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-		{
-			if (!(sender is TreeView codeMapTreeView) || !(codeMapTreeView.DataContext is TreeViewModel treeViewModel))
-				return;
-
-			treeViewModel.SelectedItem = e.NewValue as TreeNodeViewModel;
+			treeNodeVM.NavigateToItem();	
 		}
 	}
 }
