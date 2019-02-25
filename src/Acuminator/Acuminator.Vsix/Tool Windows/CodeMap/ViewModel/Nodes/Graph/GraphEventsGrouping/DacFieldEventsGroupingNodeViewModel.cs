@@ -67,9 +67,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (childToNavigateTo != null)
 			{
-				IsExpanded = true;
-				childToNavigateTo.Tree.SelectedItem = childToNavigateTo;
 				childToNavigateTo.NavigateToItem();
+				IsExpanded = true;
+				Tree.SelectedItem = childToNavigateTo;
 			}
 		}
 

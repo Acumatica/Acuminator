@@ -35,16 +35,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			get => ReferenceEquals(this, Tree.SelectedItem);
 			set
-			{
-				if (IsSelected == value)
-					return;
-				else if (value)
+			{ 
+				if (value)
 				{
-					Tree.SelectedItem = this;
+					Tree.SetSelectedWithoutNotification(this);
 				}
 				else if (ReferenceEquals(this, Tree.SelectedItem))
 				{
-					Tree.SelectedItem = null;
+					Tree.SetSelectedWithoutNotification(null);
 				}
 
 				NotifyPropertyChanged();
