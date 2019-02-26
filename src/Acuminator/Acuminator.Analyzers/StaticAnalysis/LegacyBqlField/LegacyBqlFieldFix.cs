@@ -47,7 +47,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 				context.RegisterCodeFix(
 					CodeAction.Create(
 						title,
-						c => Task.Run(() =>
+						c => Task.FromResult(
 							context.Document.WithSyntaxRoot(
 								root.ReplaceNode(
 									classNode.BaseList,
@@ -56,7 +56,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 											new BaseTypeSyntax[]
 											{
 												SimpleBaseType(newBaseType)
-											})))), c),
+											}))))),
 						title),
 					context.Diagnostics); 
 			}
