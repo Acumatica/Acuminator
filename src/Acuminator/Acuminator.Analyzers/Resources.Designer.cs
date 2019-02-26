@@ -818,6 +818,42 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Make field strongly typed.
+        /// </summary>
+        public static string PX1060Fix {
+            get {
+                return ResourceManager.GetString("PX1060Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} field should be strongly typed to be used in the fluent BQL queries.
+        /// </summary>
+        public static string PX1060Title {
+            get {
+                return ResourceManager.GetString("PX1060Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Make constant strongly typed.
+        /// </summary>
+        public static string PX1061Fix {
+            get {
+                return ResourceManager.GetString("PX1061Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} constant should be strongly typed to be used in the fluent BQL queries.
+        /// </summary>
+        public static string PX1061Title {
+            get {
+                return ResourceManager.GetString("PX1061Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The state of fields and actions can be configured only in the RowSelected event handler.
         /// </summary>
         public static string PX1070Title {
