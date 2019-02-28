@@ -6,8 +6,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 	/// <summary>
 	/// The class holds information about suppression of reported Acuminator's diagnostic 
 	/// </summary>
-	public readonly struct SuppressMessage : IEquatable<SuppressMessage>
-	{
+	public readonly struct SuppressMessage : IEquatable<SuppressMessage>, IComparable<SuppressMessage>
+    {
 		/// <summary>
 		/// Suppressed diagnostic Id
 		/// </summary>
@@ -81,5 +81,33 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			return Equals(message);
 		}
-	}
+
+        public int CompareTo(SuppressMessage other)
+        {
+            if (Equals(other))
+            {
+                return 0;
+            }
+
+            var idComparison = string.Compare(Id, other.Id);
+            if (idComparison != 0)
+            {
+                return idComparison;
+            }
+
+            var targetComparison = string.Compare(Target, other.Target);
+            if (targetComparison != 0)
+            {
+                return targetComparison;
+            }
+
+            var syntaxNodeComparison = string.Compare(SyntaxNode, other.SyntaxNode);
+            if (syntaxNodeComparison != 0)
+            {
+                return syntaxNodeComparison;
+            }
+
+            return 0;
+        }
+    }
 }
