@@ -89,19 +89,19 @@ namespace Acuminator.Utilities.DiagnosticSuppression
                 return 0;
             }
 
-            var idComparison = string.Compare(Id, other.Id);
+            var idComparison = string.CompareOrdinal(Id, other.Id);
             if (idComparison != 0)
             {
                 return idComparison;
             }
 
-            var targetComparison = string.Compare(Target, other.Target);
+            var targetComparison = string.CompareOrdinal(Target, other.Target);
             if (targetComparison != 0)
             {
                 return targetComparison;
             }
 
-            var syntaxNodeComparison = string.Compare(SyntaxNode, other.SyntaxNode);
+            var syntaxNodeComparison = string.CompareOrdinal(SyntaxNode, other.SyntaxNode);
             if (syntaxNodeComparison != 0)
             {
                 return syntaxNodeComparison;
