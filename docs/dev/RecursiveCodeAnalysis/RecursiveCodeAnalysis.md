@@ -2,7 +2,7 @@
 Acuminator can analyze code recursively (that is, it can analyze the whole tree of method invocations in a recursive manner).
 Acuminator performs this recursive code analysis by default. In Visual Studio, you can turn off this behavior by setting the value of **Tools > Options > Acuminator > Code Analysis > Enable recursive code analysis** to `False`. (This option is shown in the following screenshot.) 
 
-![Options Page](Options.png)
+![Options Page](../../images/Options.png)
 
 Recursive code analysis cannot be turned off if Acuminator is used as a NuGet package.
 
