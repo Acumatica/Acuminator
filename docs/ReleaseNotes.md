@@ -11,11 +11,11 @@ In this version, diagnostics and code fixes for the following issues have been a
 | ------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------- | ----------- | ----------- |
 | [PX1060](diagnostics/PX1060.md) | DAC fields should be strongly typed to be used in fluent BQL queries.                                       | Message | Available   | Available   |
 | [PX1061](diagnostics/PX1061.md) | Constants should be strongly typed to be used in fluent BQL queries.                                        | Message | Available   | Available   |
-| [PX1090](diagnostics/PX1090.md) | `PXSetupNotEnteredException` cannot be thrown in action delegates.                                          | Warning | Available   | Unavailable |
+| [PX1090](diagnostics/PX1090.md) | `PXSetupNotEnteredException` cannot be thrown in action handlers.                                           | Warning | Available   | Unavailable |
 | [PX1091](diagnostics/PX1091.md) | This invocation of the base action handler can cause a `StackOverflowException`.                            | Warning | Available   | Unavailable |
-| [PX1092](diagnostics/PX1092.md) | Action handlers must be decorated with the `PXUIField` attribute and the `PXButton` attribute or its successors. | Warning | Available   | Unavailable |
-| [PX1093](diagnostics/PX1093.md) | In a graph declaration, the first type parameter of `PXGraph` must be a graph type.                         | Error   | Available   | Available   |
-| [PX1094](diagnostics/PX1094.md) | Every DAC must be decorated with the `PXHidden` or `PXCacheName` attribute.                                 | Warning | Available   | Available   |
+| [PX1092](diagnostics/PX1092.md) | Action handlers must be decorated with the `PXUIField` attribute and the `PXButton` attribute or its successors. | Error | Available   | Available |
+| [PX1093](diagnostics/PX1093.md) | In a graph declaration, the first type parameter of `PXGraph` must be the graph type.                       | Error   | Available   | Available   |
+| [PX1094](diagnostics/PX1094.md) | Every DAC should be decorated with the `PXHidden` or `PXCacheName` attribute.                               | Warning | Available   | Available   |
 | [PX1095](diagnostics/PX1095.md) | A field with the `PXDBCalced` attribute must have an unbound type attribute, such as `PXDate`, `PXDecimal`. | Error   | Available   | Unavailable |
 
 ### Code Map
