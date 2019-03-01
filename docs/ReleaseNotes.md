@@ -9,6 +9,8 @@ In this version, diagnostics and code fixes for the following issues have been a
 
 | Code                            | Issue Description                                                                                           | Type    | Diagnostics | Code Fix    | 
 | ------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------- | ----------- | ----------- |
+| [PX1060](diagnostics/PX1060.md) | DAC fields should be strongly typed to be used in fluent BQL queries.                                       | Message | Available   | Available   |
+| [PX1061](diagnostics/PX1061.md) | Constants should be strongly typed to be used in fluent BQL queries.                                        | Message | Available   | Available   |
 | [PX1090](diagnostics/PX1090.md) | `PXSetupNotEnteredException` cannot be thrown in action delegates.                                          | Warning | Available   | Unavailable |
 | [PX1091](diagnostics/PX1091.md) | This invocation of the base action handler can cause a `StackOverflowException`.                            | Warning | Available   | Unavailable |
 | [PX1092](diagnostics/PX1092.md) | Action handlers must be decorated with the `PXUIField` attribute and the `PXButton` attribute or its successors. | Warning | Available   | Unavailable |
@@ -30,6 +32,7 @@ In this version of Acuminator, the following bugs have been fixed:
  - More details have been added to the description of the PX1014 diagnostic.
 
 ### Other Enhancements
+Acuminator 1.6 also includes the following minor enhancements:
 
  - With the **Go To Action/View Declaration/Handler** in the context menu or on the **Acuminator** main menu, you can now navigate in code during debugging.
  - Acuminator now uses .Net Framework 4.7.1.
@@ -237,7 +240,7 @@ In the code based on Acumatica Framework, Acuminator finds common mistakes and t
 | [PX1003](diagnostics/PX1003.md) | Consider using a specific implementation of `PXGraph`.                                                                                 | Warning | Available   | Unavailable   | 
 | [PX1004](diagnostics/PX1004.md) | The order of view declarations will cause the creation of two cache instances.                                                         | Warning | Available   | Unavailable   | 
 | [PX1005](diagnostics/PX1005.md) | There is probably a typo in the view delegate name.                                                                                    | Warning | Available   | Available     | 
-| [PX1006](diagnostics/PX1006.md) | The order of view declarations will cause the creation of one cache instance for multiple DACs.                                        | Warning | Available   | Unavailable   | 
+| [PX1006](diagnostics/PX1006.md) | The order of view declarations will cause the creation of one cache instance for multiple DACs.                                        | Message | Available   | Unavailable   | 
 | [PX1008](diagnostics/PX1008.md) | The reference of `@this` graph in the delegate will cause synchronous delegate execution.                                              | Warning | Available   | Unavailable   | 
 | [PX1009](diagnostics/PX1009.md) | Multiple levels of inheritance are not supported for `PXCacheExtension`.                                                               | Error   | Available   | Available     | 
 | [PX1010](diagnostics/PX1010.md) | If a delegate applies paging in an inner select, `StartRow` must be reset. (If `StartRow` is not reset, paging will be applied twice.) | Warning | Available   | Available     | 
