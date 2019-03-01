@@ -1,6 +1,39 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
+## Acuminator 1.6
+Acuminator 1.6 includes the diagnostics, code fixes, and enhancements described in this section, as well as the features that have been implemented in previous versions.
+
+### New Diagnostics and Code Fixes
+In this version, diagnostics and code fixes for the following issues have been added.
+
+| Code                            | Issue Description                                                                                           | Type    | Diagnostics | Code Fix    | 
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------- | ----------- | ----------- |
+| [PX1090](diagnostics/PX1090.md) | `PXSetupNotEnteredException` cannot be thrown in action delegates.                                          | Warning | Available   | Unavailable |
+| [PX1091](diagnostics/PX1091.md) | This invocation of the base action handler can cause a `StackOverflowException`.                            | Warning | Available   | Unavailable |
+| [PX1092](diagnostics/PX1092.md) | Action handlers must be decorated with the `PXUIField` attribute and the `PXButton` attribute or its successors. | Warning | Available   | Unavailable |
+| [PX1093](diagnostics/PX1093.md) | In a graph declaration, the first type parameter of `PXGraph` must be a graph type.                         | Error   | Available   | Available   |
+| [PX1094](diagnostics/PX1094.md) | Every DAC must be decorated with the `PXHidden` or `PXCacheName` attribute.                                 | Warning | Available   | Available   |
+| [PX1095](diagnostics/PX1095.md) | A field with the `PXDBCalced` attribute must have an unbound type attribute, such as `PXDate`, `PXDecimal`. | Error   | Available   | Unavailable |
+
+### Code Map
+In this version, you can navigate through the code of a graph by using the code map. The code map, which is shown in the following screenshot, displays the tree of data views and their delegates, actions and action handlers, and row and field events. Row events are groupped by the DACs to which they are related, field events are groupped by the DACs and DAC fields. By clicking the nodes of the tree, you can navigate between these elements in the code of the graph. If you switch between the files, the code map is updated automatically.
+
+![Code Map](Images/CodeMap.png)
+
+The code map is an experimental feature, which is planned to be improved in the next versions. To open the code map for a graph, click **Code Map (Experimental)** on the **Acuminator** main menu of Visual Studio.
+
+### Fixed Bugs
+In this version of Acuminator, the following bugs have been fixed:
+
+ - The PX1030 diagnostic incorrectly worked with customizations of `PXDefault` on original DAC fields. Now the diagnostic can display either the error or the warning. For details, see the description of the diagnostic in [PX1030](diagnostics/PX1030.md).
+ - More details have been added to the description of the PX1014 diagnostic.
+
+### Other Enhancements
+
+ - With the **Go To Action/View Declaration/Handler** in the context menu or on the **Acuminator** main menu, you can now navigate in code during debugging.
+ - Acuminator now uses .Net Framework 4.7.1.
+
 ## Acuminator 1.5
 Acuminator 1.5 includes the diagnostics, code fixes, and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
