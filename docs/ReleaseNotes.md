@@ -29,6 +29,10 @@ The code map is an experimental feature, which is planned to be improved in the 
 In this version of Acuminator, the following bugs have been fixed:
 
  - The PX1030 diagnostic incorrectly worked with customizations of `PXDefault` on original DAC fields. Now the diagnostic can display either the error or the warning. For details, see the description of the diagnostic in [PX1030](diagnostics/PX1030.md).
+ - Graph-related diagnostic could fail with the _Value cannot be null_ error on some solutions.
+ - The recursive diagnostics could enter endless loop on some solutions.
+ - The use of `PXView.Select` in `FieldSelecting` caused the PX1045 error.
+ - The PX1088 warning could be displayed for non-processing graphs.
  - More details have been added to the description of the PX1014 diagnostic.
 
 ### Other Enhancements
