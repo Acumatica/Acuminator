@@ -33,6 +33,7 @@ In this version of Acuminator, the following bugs have been fixed:
  - The recursive diagnostics could enter endless loop on some solutions.
  - The use of `PXView.Select` in `FieldSelecting` caused the PX1045 error.
  - The PX1088 warning could be displayed for non-processing graphs.
+ - The PX1004 and PX1006 diagnostics stopped working. The diagnostics now supports graphs and graph extensions.
  - More details have been added to the description of the PX1014 diagnostic.
 
 ### Other Enhancements
