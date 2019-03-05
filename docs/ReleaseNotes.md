@@ -13,33 +13,33 @@ In this version, diagnostics and code fixes for the following issues have been a
 | [PX1061](diagnostics/PX1061.md) | Constants should be strongly typed to be used in fluent BQL queries.                                        | Message | Available   | Available   |
 | [PX1090](diagnostics/PX1090.md) | `PXSetupNotEnteredException` cannot be thrown in action handlers.                                           | Warning | Available   | Unavailable |
 | [PX1091](diagnostics/PX1091.md) | This invocation of the base action handler can cause a `StackOverflowException`.                            | Warning | Available   | Unavailable |
-| [PX1092](diagnostics/PX1092.md) | Action handlers must be decorated with the `PXUIField` attribute and the `PXButton` attribute or its successors. | Error | Available   | Available |
+| [PX1092](diagnostics/PX1092.md) | Action handlers must be decorated with the `PXUIField` attribute and with the `PXButton` attribute or its successors. | Error | Available   | Available |
 | [PX1093](diagnostics/PX1093.md) | In a graph declaration, the first type parameter of `PXGraph` must be the graph type.                       | Error   | Available   | Available   |
 | [PX1094](diagnostics/PX1094.md) | Every DAC should be decorated with the `PXHidden` or `PXCacheName` attribute.                               | Warning | Available   | Available   |
-| [PX1095](diagnostics/PX1095.md) | A field with the `PXDBCalced` attribute must have an unbound type attribute, such as `PXDate`, `PXDecimal`. | Error   | Available   | Unavailable |
+| [PX1095](diagnostics/PX1095.md) | A field with the `PXDBCalced` attribute must have an unbound type attribute, such as `PXDate` or `PXDecimal`. | Error   | Available   | Unavailable |
 
 ### Code Map
-In this version, you can navigate through the code of a graph by using the code map. The code map, which is shown in the following screenshot, displays the tree of data views and their delegates, actions and action handlers, and row and field events. Row events are grouped by the DACs to which they are related, field events are grouped by the DACs and DAC fields. By clicking the nodes of the tree, you can navigate between these elements in the code of the graph. If you switch between the files, the code map is updated automatically.
+In this version, you can navigate through the code of a graph by using the code map. The code map, which is shown in the following screenshot, displays the tree of data views and their delegates, actions and action handlers, and row and field events. Row events are grouped by the DACs to which they are related, and field events are grouped by the DACs and DAC fields. By clicking the nodes of the tree, you can navigate between these elements in the code of the graph. If you switch between the files, the code map is updated automatically.
 
 ![Code Map](images/CodeMap.png)
 
-The code map is an experimental feature, which is planned to be improved in the next versions. To open the code map for a graph, click **Code Map (Experimental)** on the **Acuminator** main menu of Visual Studio.
+The code map is an experimental feature, with improvements planned in the coming versions. To open the code map for a graph, click **Code Map (Experimental)** on the **Acuminator** main menu of Visual Studio.
 
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
 
- - The PX1030 diagnostic incorrectly worked with customizations of `PXDefault` on original DAC fields. Now the diagnostic can display either the error or the warning. For details, see the description of the diagnostic in [PX1030](diagnostics/PX1030.md).
- - Graph-related diagnostic could fail with the _Value cannot be null_ error on some solutions.
- - The recursive diagnostics could enter endless loop on some solutions.
+ - The PX1030 diagnostic worked incorrectly with customizations of `PXDefault` on original DAC fields. Now the diagnostic can display either an error or a warning. For details, see the description of the diagnostic in [PX1030](diagnostics/PX1030.md).
+ - Graph-related diagnostics could fail with the _Value cannot be null_ error in some solutions.
+ - The recursive diagnostics could enter an endless loop in some solutions.
  - The use of `PXView.Select` in `FieldSelecting` caused the PX1045 error.
  - The PX1088 warning could be displayed for non-processing graphs.
- - The PX1004 and PX1006 diagnostics stopped working. The diagnostics now supports graphs and graph extensions.
+ - The PX1004 and PX1006 diagnostics stopped working. The diagnostics now support graphs and graph extensions.
  - More details have been added to the description of the PX1014 diagnostic.
 
 ### Other Enhancements
 Acuminator 1.6 also includes the following minor enhancements:
 
- - With the **Go To Action/View Declaration/Handler** in the context menu or on the **Acuminator** main menu, you can now navigate in code during debugging.
+ - By invoking the **Go To Action/View Declaration/Handler** action in the context menu or on the **Acuminator** main menu, you can now navigate in code during debugging.
  - Acuminator now uses .Net Framework 4.7.1.
 
 ## Acuminator 1.5
