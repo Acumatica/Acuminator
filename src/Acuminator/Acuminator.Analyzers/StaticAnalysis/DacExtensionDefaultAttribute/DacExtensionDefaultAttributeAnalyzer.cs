@@ -220,6 +220,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var declaredProperty = GetDeclaredPropertyFromTypeByName(extension, property.Name);
+                if (declaredProperty == null)
+                {
+                    continue;
+                }
+
                 var boundType = GetBoundTypeFromDeclaredProperty(declaredProperty, attributeInformation);
 
                 if (boundType == BoundType.DbBound || boundType == BoundType.Unbound)
