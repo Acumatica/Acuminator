@@ -30,8 +30,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 
 			var bqlFields = dacOrDacExt.GetMembers().OfType<INamedTypeSymbol>().ToArray();
 			var properties = dacOrDacExt.GetBaseTypesAndThis()
-				.SelectMany(t => t.GetMembers().OfType<IPropertySymbol>().Where(p => !p.IsOverride))
-				.ToDictionary(p => p.Name, p => p, StringComparer.OrdinalIgnoreCase);
+				.SelectMany(t => t.GetMembers().OfType<IPropertySymbol>())
+				.GroupBy(p => p.Name, StringComparer.OrdinalIgnoreCase)
+				.ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
 
 			foreach (INamedTypeSymbol dacFieldType in bqlFields)
 			{
