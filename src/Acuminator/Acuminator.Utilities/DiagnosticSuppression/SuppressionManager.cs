@@ -124,7 +124,10 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			if (file.GenerateSuppressionBase)
 			{
-				file.AddMessage(message);
+                if (diagnostic?.Descriptor.DefaultSeverity != DiagnosticSeverity.Info)
+                {
+                    file.AddMessage(message);
+                }
 
 				return true;
 			}
