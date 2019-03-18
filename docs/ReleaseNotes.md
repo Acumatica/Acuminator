@@ -19,9 +19,19 @@ In this version, diagnostics and code fixes for the following issues have been a
 | [PX1095](diagnostics/PX1095.md) | A field with the `PXDBCalced` attribute must have an unbound type attribute, such as `PXDate` or `PXDecimal`. | Error   | Available   | Unavailable |
 
 ### Code Map
-In this version, you can navigate through the code of a graph by using the code map. The code map, which is shown in the following screenshot, displays the tree of data views and their delegates, actions and action handlers, and row and field events. Row events are grouped by the DACs to which they are related, and field events are grouped by the DACs and DAC fields. By clicking the nodes of the tree, you can navigate between these elements in the code of the graph. If you switch between the files, the code map is updated automatically.
+In this version, you can view the structure of a graph and navigate between the graph members by using the code map. The code map, which is shown in the following screenshot, displays the tree of data views and their delegates, actions and action handlers, and row and field events. Row events are grouped by the DACs to which they are related, and field events are grouped by the DACs and DAC fields. 
 
 ![Code Map](images/CodeMap.png)
+
+By clicking the nodes of the tree, you can navigate between the members in the code of the graph. You can also double-click the **Views** or **Actions** node, or a node for a DAC in event nodes to navigate between the graph members of this node. You can use the code map for navigation in code during debugging.
+
+The tooltips for the nodes display the following information:
+
+ - For the data view and action nodes, the full declarations of the data views and actions
+ - For the field nodes in the **Cache Attached** node, the attributes declared on the `CacheAttached` events
+ - For the attribute nodes in the **Cache Attached** node, the full declaration of each attribute
+
+If you switch between the files, the code map is updated automatically. You can also refresh the code map by clicking the **Refresh Code Map** button on the toolbar of the dialog box.
 
 The code map is an experimental feature, with improvements planned in the coming versions. To open the code map for a graph, click **Code Map (Experimental)** on the **Acuminator** main menu of Visual Studio.
 
@@ -33,14 +43,13 @@ In this version of Acuminator, the following bugs have been fixed:
  - The recursive diagnostics could enter an endless loop in some solutions.
  - The use of `PXView.Select` in `FieldSelecting` caused the PX1045 error.
  - The PX1088 warning could be displayed for non-processing graphs.
- - The PX1004 and PX1006 diagnostics stopped working. The diagnostics now support graphs and graph extensions.
- - More details have been added to the description of the PX1014 diagnostic.
 
 ### Other Enhancements
 Acuminator 1.6 also includes the following minor enhancements:
 
  - By invoking the **Go To Action/View Declaration/Handler** action in the context menu or on the **Acuminator** main menu, you can now navigate in code during debugging.
- - Acuminator now uses .Net Framework 4.7.1.
+ - The [PX1004](diagnostics/PX1004.md) and [PX1006](diagnostics/PX1006.md) diagnostics have been reimplemented. The diagnostics now support graphs and graph extensions. The diagnostics work with the code based on Acumatica Framework 2018 R1 or earlier.
+ - More details have been added to the description of the [PX1014](diagnostics/PX1014.md) diagnostic.
 
 ## Acuminator 1.5
 Acuminator 1.5 includes the diagnostics, code fixes, and enhancements described in this section, as well as the features that have been implemented in previous versions.
