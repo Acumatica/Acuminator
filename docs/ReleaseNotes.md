@@ -1,6 +1,56 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
+## Acuminator 1.6
+Acuminator 1.6 includes the diagnostics, code fixes, and enhancements described in this section, as well as the features that have been implemented in previous versions.
+
+### New Diagnostics and Code Fixes
+In this version, diagnostics and code fixes for the following issues have been added.
+
+| Code                            | Issue Description                                                                                           | Type    | Diagnostics | Code Fix    | 
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------- | ----------- | ----------- |
+| [PX1060](diagnostics/PX1060.md) | DAC fields should be strongly typed to be used in fluent BQL queries.                                       | Message | Available   | Available   |
+| [PX1061](diagnostics/PX1061.md) | Constants should be strongly typed to be used in fluent BQL queries.                                        | Message | Available   | Available   |
+| [PX1090](diagnostics/PX1090.md) | `PXSetupNotEnteredException` cannot be thrown in action handlers.                                           | Warning | Available   | Unavailable |
+| [PX1091](diagnostics/PX1091.md) | This invocation of the base action handler can cause a `StackOverflowException`.                            | Warning | Available   | Unavailable |
+| [PX1092](diagnostics/PX1092.md) | Action handlers must be decorated with the `PXUIField` attribute and with the `PXButton` attribute or its successors. | Error | Available   | Available |
+| [PX1093](diagnostics/PX1093.md) | In a graph declaration, the first type parameter of `PXGraph` must be the graph type.                       | Error   | Available   | Available   |
+| [PX1094](diagnostics/PX1094.md) | Every DAC should be decorated with the `PXHidden` or `PXCacheName` attribute.                               | Warning | Available   | Available   |
+| [PX1095](diagnostics/PX1095.md) | A field with the `PXDBCalced` attribute must have an unbound type attribute, such as `PXDate` or `PXDecimal`. | Error   | Available   | Unavailable |
+
+### Code Map
+In this version, you can view the structure of a graph and navigate between the graph members by using the code map. The code map, which is shown in the following screenshot, displays the tree of data views and their delegates, actions and action handlers, and row and field events. Row events are grouped by the DACs to which they are related, and field events are grouped by the DACs and DAC fields. 
+
+![Code Map](images/CodeMap.png)
+
+By clicking the nodes of the tree, you can navigate between the members in the code of the graph. You can also double-click the **Views** or **Actions** node, or a node for a DAC in event nodes to navigate between the graph members of this node. You can use the code map for navigation in code during debugging.
+
+The tooltips for the nodes display the following information:
+
+ - For the data view and action nodes, the full declarations of the data views and actions
+ - For the field nodes in the **Cache Attached** node, the attributes declared on the `CacheAttached` events
+ - For the attribute nodes in the **Cache Attached** node, the full declaration of each attribute
+
+If you switch between the files, the code map is updated automatically. You can also refresh the code map by clicking the **Refresh Code Map** button on the toolbar of the dialog box.
+
+The code map is an experimental feature, with improvements planned in the coming versions. To open the code map for a graph, click **Code Map (Experimental)** on the **Acuminator** main menu of Visual Studio.
+
+### Fixed Bugs
+In this version of Acuminator, the following bugs have been fixed:
+
+ - The PX1030 diagnostic worked incorrectly with customizations of `PXDefault` on original DAC fields. Now the diagnostic can display either an error or a warning. For details, see the description of the diagnostic in [PX1030](diagnostics/PX1030.md).
+ - Graph-related diagnostics could fail with the _Value cannot be null_ error in some solutions.
+ - The recursive diagnostics could enter an endless loop in some solutions.
+ - The use of `PXView.Select` in `FieldSelecting` caused the PX1045 error.
+ - The PX1088 warning could be displayed for non-processing graphs.
+
+### Other Enhancements
+Acuminator 1.6 also includes the following minor enhancements:
+
+ - By invoking the **Go To Action/View Declaration/Handler** action in the context menu or on the **Acuminator** main menu, you can now navigate in code during debugging.
+ - The [PX1004](diagnostics/PX1004.md) and [PX1006](diagnostics/PX1006.md) diagnostics have been reimplemented. The diagnostics now support graphs and graph extensions. The diagnostics work with the code based on Acumatica Framework 2018 R1 or earlier.
+ - More details have been added to the description of the [PX1014](diagnostics/PX1014.md) diagnostic.
+
 ## Acuminator 1.5
 Acuminator 1.5 includes the diagnostics, code fixes, and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
@@ -204,7 +254,7 @@ In the code based on Acumatica Framework, Acuminator finds common mistakes and t
 | [PX1003](diagnostics/PX1003.md) | Consider using a specific implementation of `PXGraph`.                                                                                 | Warning | Available   | Unavailable   | 
 | [PX1004](diagnostics/PX1004.md) | The order of view declarations will cause the creation of two cache instances.                                                         | Warning | Available   | Unavailable   | 
 | [PX1005](diagnostics/PX1005.md) | There is probably a typo in the view delegate name.                                                                                    | Warning | Available   | Available     | 
-| [PX1006](diagnostics/PX1006.md) | The order of view declarations will cause the creation of one cache instance for multiple DACs.                                        | Warning | Available   | Unavailable   | 
+| [PX1006](diagnostics/PX1006.md) | The order of view declarations will cause the creation of one cache instance for multiple DACs.                                        | Message | Available   | Unavailable   | 
 | [PX1008](diagnostics/PX1008.md) | The reference of `@this` graph in the delegate will cause synchronous delegate execution.                                              | Warning | Available   | Unavailable   | 
 | [PX1009](diagnostics/PX1009.md) | Multiple levels of inheritance are not supported for `PXCacheExtension`.                                                               | Error   | Available   | Available     | 
 | [PX1010](diagnostics/PX1010.md) | If a delegate applies paging in an inner select, `StartRow` must be reset. (If `StartRow` is not reset, paging will be applied twice.) | Warning | Available   | Available     | 
