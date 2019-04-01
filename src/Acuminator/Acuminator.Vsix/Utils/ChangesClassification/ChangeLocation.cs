@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 
 
@@ -20,5 +21,13 @@ namespace Acuminator.Vsix.ChangesClassification
 		Attributes = 0b0000_0010,
 		Class     = 0b0100_0000,
 		Namespace = 0b1000_0000
+	}
+
+
+	public static class ChangeLocationUtils
+	{
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool ContainsLocation(this ChangeLocation location, ChangeLocation locationToCheck) =>
+			(location & locationToCheck) == locationToCheck;
 	}
 }
