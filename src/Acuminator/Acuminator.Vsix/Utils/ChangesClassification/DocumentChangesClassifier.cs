@@ -21,6 +21,16 @@ namespace Acuminator.Vsix.ChangesClassification
 	/// </summary>
 	public class DocumentChangesClassifier
 	{
+		/// <summary>
+		/// Values that represent span length changes for a <see cref="TextSpan"/>.
+		/// </summary>
+		protected enum SpanLengthChange : byte
+		{
+			NotChanged,
+			Increased,
+			Decreased
+		} 
+
 		public async Task<ChangeLocation> GetChangesLocationAsync(Document oldDocument, SyntaxNode oldRoot, Document newDocument, 
 																  CancellationToken cancellationToken = default)
 		{
@@ -53,7 +63,7 @@ namespace Acuminator.Vsix.ChangesClassification
 			return accumulatedChangeLocation;
 		}
 
-		protected ChangeLocation GetTextChangeLocation(TextChange textChange, SyntaxNode oldRoot)
+		protected virtual ChangeLocation GetTextChangeLocation(TextChange textChange, SyntaxNode oldRoot)
 		{
 			var containingNode = oldRoot.FindNode(textChange.Span);
 
@@ -62,21 +72,113 @@ namespace Acuminator.Vsix.ChangesClassification
 
 			while (!containingNode.IsKind(SyntaxKind.CompilationUnit))
 			{
-				
+				SpanLengthChange lengthChange = GetTextLengthChange(textChange, containingNode.Span);
+				ChangeLocation? changesLocation = null;
 
 				switch (containingNode)
 				{
-					case MethodDeclarationSyntax methodNode:
-
+					case StatementSyntax statementNode:
+						changesLocation = GetChangeLocationFromStatementNode(statementNode, textChange, lengthChange);
+						break;
+					case BaseMethodDeclarationSyntax baseMethodNode:
+						changesLocation = GetChangeLocationFromMethodBaseSyntaxNode(baseMethodNode, textChange, lengthChange);
+						break;
+					case BasePropertyDeclarationSyntax basePropertyNode:
+						changesLocation = GetChangeLocationFromPropertyBaseSyntaxNode(basePropertyNode, textChange, lengthChange);
+						break;
 				}
+				
+				if (changesLocation.HasValue)
+					return changesLocation.Value;
+
+				containingNode = containingNode.Parent;
 			}
 
 			return ChangeLocation.Namespace;
 		}
 
-		protected ChangeLocation? AnalyzeMethodNode(MethodDeclarationSyntax methodNode, TextChange textChange)
-		{
+		protected virtual ChangeLocation? GetChangeLocationFromStatementNode(StatementSyntax statementNode, TextChange textChange,
+																			 SpanLengthChange lengthChange) =>
+			GetDefaultChangeLocationFromLengthChanges(lengthChange, ChangeLocation.StatementsBlock);
 
+		protected virtual ChangeLocation? GetChangeLocationFromMethodBaseSyntaxNode(BaseMethodDeclarationSyntax methodNodeBase, 
+																					TextChange textChange, SpanLengthChange lengthChange)
+		{
+			TextSpan spanToCheck = new TextSpan(textChange.Span.Start, textChange.NewText.Length);
+
+			if (methodNodeBase.AttributeLists.Span.Contains(spanToCheck))
+			{
+				return ChangeLocation.Attributes;
+			}
+
+			TextSpan? methodBodySpan = methodNodeBase.Body?.Span;
+
+			if (methodBodySpan == null && methodNodeBase is MethodDeclarationSyntax methodNode)
+			{
+				methodBodySpan = methodNode.ExpressionBody?.Span;
+			}
+		
+			return methodBodySpan == null
+					? ChangeLocation.Class
+					: methodBodySpan.Value.Contains(spanToCheck)
+						? ChangeLocation.StatementsBlock
+						: ChangeLocation.Class;
+		}
+
+		protected virtual ChangeLocation? GetChangeLocationFromPropertyBaseSyntaxNode(BasePropertyDeclarationSyntax propertyNodeBase, 
+																					  TextChange textChange, SpanLengthChange lengthChange)
+		{
+			TextSpan spanToCheck = new TextSpan(textChange.Span.Start, textChange.NewText.Length);
+			
+			if (propertyNodeBase.AttributeLists.Span.Contains(spanToCheck))
+			{
+				return ChangeLocation.Attributes;
+			}
+
+			TextSpan? bodySpan = propertyNodeBase.AccessorList?.Span;
+
+			if (bodySpan == null)
+			{
+				switch (propertyNodeBase)
+				{
+					case PropertyDeclarationSyntax property:
+						bodySpan = property.ExpressionBody?.Span;
+						break;
+					case IndexerDeclarationSyntax indexer:
+						bodySpan = indexer.ExpressionBody?.Span;
+						break;
+				}
+			}
+
+			return bodySpan == null
+				? ChangeLocation.Class
+				: bodySpan.Value.Contains(spanToCheck)
+					? ChangeLocation.StatementsBlock
+					: ChangeLocation.Class;
+		}
+
+		protected SpanLengthChange GetTextLengthChange(TextChange textChange, TextSpan existingContainingSpan)
+		{
+			var lengthFromChangeStart = existingContainingSpan.End - textChange.Span.Start;
+
+			return textChange.NewText.Length == lengthFromChangeStart
+				? SpanLengthChange.NotChanged
+				: lengthFromChangeStart < textChange.NewText.Length
+						? SpanLengthChange.Increased
+						: SpanLengthChange.Decreased;
+		}
+
+		protected ChangeLocation? GetDefaultChangeLocationFromLengthChanges(SpanLengthChange lengthChange, ChangeLocation valueIfLengthNotIncreased)
+		{
+			switch (lengthChange)
+			{
+				case SpanLengthChange.NotChanged:
+				case SpanLengthChange.Decreased:
+					return valueIfLengthNotIncreased;
+				case SpanLengthChange.Increased:
+				default:
+					return null;
+			}
 		}
 	}
 }
