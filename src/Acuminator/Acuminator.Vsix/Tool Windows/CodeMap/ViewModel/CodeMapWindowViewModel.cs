@@ -29,6 +29,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public Document Document => _documentModel?.Document;
 
+		private CodeMapDocChangesClassifier DocChangesClassifier { get; } = new CodeMapDocChangesClassifier();
+
 		private TreeViewModel _tree;
 
 		public TreeViewModel Tree
@@ -210,21 +212,33 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private async Task HandleDocumentTextChangesAsync(Workspace newWorkspace, WorkspaceChangeEventArgs e)
 		{
-			ClearCodeMap();
-
 			_workspace = newWorkspace;
 			Document changedDocument = e.NewSolution.GetDocument(e.DocumentId);
 
 			if (changedDocument == null)
+			{
+				ClearCodeMap();
 				return;
+			}
+			
+			bool recalculateCodeMap = 
+				await DocChangesClassifier.ShouldRefreshCodeMapAsync(Document, _documentModel.Root, changedDocument, CancellationToken ?? default);
 
-			var root = await changedDocument.GetSyntaxRootAsync().ConfigureAwait(false);
+			if (!recalculateCodeMap)
+			{
 
-			if (root == null || root.ContainsDiagnostics)
-				return;
+			}
+			else
+			{
+				ClearCodeMap();
+				var root = await changedDocument.GetSyntaxRootAsync().ConfigureAwait(false);
 
-			_documentModel = new DocumentModel(_documentModel.WpfTextView, changedDocument);
-			BuildCodeMapAsync().Forget();
+				if (root == null || root.ContainsDiagnostics)
+					return;
+
+				_documentModel = new DocumentModel(_documentModel.WpfTextView, changedDocument);
+				BuildCodeMapAsync().Forget();
+			}		
 		}
 
 		private void ClearCodeMap()

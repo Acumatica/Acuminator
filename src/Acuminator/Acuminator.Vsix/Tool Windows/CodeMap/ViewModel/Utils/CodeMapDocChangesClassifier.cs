@@ -22,6 +22,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// </summary>
 	internal class CodeMapDocChangesClassifier : DocumentChangesClassifier
 	{
+		public async Task<bool> ShouldRefreshCodeMapAsync(Document oldDocument, SyntaxNode oldRoot, Document newDocument,
+														  CancellationToken cancellationToken = default)
+		{
+			ChangeLocation changeLocation = await GetChangesLocationAsync(oldDocument, oldRoot, newDocument, cancellationToken);
+			return changeLocation == ChangeLocation.Class || 
+				   changeLocation == ChangeLocation.Namespace;
+		}
+
 		protected override ChangeLocation GetChangesLocationImplAsync(Document oldDocument, SyntaxNode oldRoot, Document newDocument,
 																	  IEnumerable<TextChange> textChanges, CancellationToken cancellationToken = default)
 		{
@@ -31,6 +39,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				ChangeLocation changeLocation = GetTextChangeLocation(change, oldRoot);
 
+				//Early exit if we found a change which require the refresh of code map 
 				if (changeLocation.ContainsLocation(ChangeLocation.Class) || changeLocation.ContainsLocation(ChangeLocation.Namespace))
 					return changeLocation;
 
