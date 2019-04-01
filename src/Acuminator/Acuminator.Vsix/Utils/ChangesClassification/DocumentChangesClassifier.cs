@@ -123,38 +123,43 @@ namespace Acuminator.Vsix.ChangesClassification
 		protected virtual ChangeLocation? GetChangeLocationFromMethodBaseSyntaxNode(BaseMethodDeclarationSyntax methodNodeBase,
 																					in TextChange textChange, ContainmentModeChange containingModeChange)
 		{
-			TextSpan spanToCheck = new TextSpan(textChange.Span.Start, textChange.NewText.Length);
-
-			if (methodNodeBase.AttributeLists.Span.Contains(spanToCheck))
-			{
-				return ChangeLocation.Attributes;
-			}
-
-			TextSpan? methodBodySpan = methodNodeBase.Body?.Span;
+			TextSpan spanToCheck = new TextSpan(textChange.Span.Start, textChange.NewText.Length);	
+			TextSpan? methodBodySpan = methodNodeBase.Body?.Span;       //First check body of the property because it is most common place for changes
 
 			if (methodBodySpan == null && methodNodeBase is MethodDeclarationSyntax methodNode)
 			{
 				methodBodySpan = methodNode.ExpressionBody?.Span;
 			}
-		
-			return methodBodySpan == null
+
+			ChangeLocation? changeLocation = methodBodySpan == null
 					? ChangeLocation.Class
 					: methodBodySpan.Value.Contains(spanToCheck)
 						? ChangeLocation.StatementsBlock
-						: ChangeLocation.Class;
-		}
+						: (ChangeLocation?) null;
 
-		protected virtual ChangeLocation? GetChangeLocationFromPropertyBaseSyntaxNode(BasePropertyDeclarationSyntax propertyNodeBase, 
-																					  in TextChange textChange, ContainmentModeChange containingModeChange)
-		{
-			TextSpan spanToCheck = new TextSpan(textChange.Span.Start, textChange.NewText.Length);
-			
-			if (propertyNodeBase.AttributeLists.Span.Contains(spanToCheck))
+			if (changeLocation.HasValue)
+				return changeLocation;
+
+			//Now check trivia
+			changeLocation = GetChangeLocationFromNodeTrivia(methodNodeBase, textChange);
+
+			if (changeLocation.HasValue)
+				return changeLocation;
+
+			//Now check attributes because it is the least frequent case
+			if (methodNodeBase.AttributeLists.Span.Contains(spanToCheck))
 			{
 				return ChangeLocation.Attributes;
 			}
 
-			TextSpan? bodySpan = propertyNodeBase.AccessorList?.Span;
+			return ChangeLocation.Class;
+		}
+
+		protected virtual ChangeLocation? GetChangeLocationFromPropertyBaseSyntaxNode(BasePropertyDeclarationSyntax propertyNodeBase, 
+																					  in TextChange textChange, ContainmentModeChange containingModeChange)
+		{	
+			TextSpan spanToCheck = new TextSpan(textChange.Span.Start, textChange.NewText.Length);		
+			TextSpan? bodySpan = propertyNodeBase.AccessorList?.Span;       //First check body of the property because it is most common place for changes
 
 			if (bodySpan == null)
 			{
@@ -169,11 +174,27 @@ namespace Acuminator.Vsix.ChangesClassification
 				}
 			}
 
-			return bodySpan == null
+			ChangeLocation? changeLocation = bodySpan == null
 				? ChangeLocation.Class
 				: bodySpan.Value.Contains(spanToCheck)
 					? ChangeLocation.StatementsBlock
-					: ChangeLocation.Class;
+					: (ChangeLocation?) null;
+
+			if (changeLocation.HasValue)
+				return changeLocation;
+
+			//Now check trivia
+			changeLocation = GetChangeLocationFromNodeTrivia(propertyNodeBase, textChange) ?? ChangeLocation.Class;
+
+			if (changeLocation.HasValue)
+				return changeLocation;
+
+			if (propertyNodeBase.AttributeLists.Span.Contains(spanToCheck))
+			{
+				return ChangeLocation.Attributes;
+			}
+
+			return ChangeLocation.Class;
 		}
 
 		protected ContainmentModeChange GetContainingSpanNewContainmentModeForTextChange(in TextChange textChange, in TextSpan existingContainingSpan)
