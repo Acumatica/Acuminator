@@ -224,11 +224,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			bool recalculateCodeMap = 
 				await DocChangesClassifier.ShouldRefreshCodeMapAsync(Document, _documentModel.Root, changedDocument, CancellationToken ?? default);
 
-			if (!recalculateCodeMap)
-			{
-
-			}
-			else
+			if (recalculateCodeMap)
 			{
 				ClearCodeMap();
 				var root = await changedDocument.GetSyntaxRootAsync().ConfigureAwait(false);
@@ -238,6 +234,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 				_documentModel = new DocumentModel(_documentModel.WpfTextView, changedDocument);
 				BuildCodeMapAsync().Forget();
+			}
+			else
+			{
+				
 			}		
 		}
 
