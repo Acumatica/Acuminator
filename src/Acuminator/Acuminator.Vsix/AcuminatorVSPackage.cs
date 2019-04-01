@@ -196,6 +196,10 @@ namespace Acuminator.Vsix
 
 		private void InitializeCommands()
 		{
+			// if the package is zombied, we don't want to add commands
+			if (Zombied)
+				return;
+
 			FormatBqlCommand.Initialize(this);
 			GoToDeclarationOrHandlerCommand.Initialize(this);
 			BqlFixer.FixBqlCommand.Initialize(this);
