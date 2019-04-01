@@ -102,11 +102,6 @@ namespace Acuminator.Vsix.ChangesClassification
 		protected virtual ChangeLocation? GetChangeLocationFromTypeMemberNode(MemberDeclarationSyntax memberDeclaration,
 																			  in TextChange textChange, ContainmentModeChange containingModeChange)
 		{
-			ChangeLocation? changeLocation = GetChangeLocationFromNodeTrivia(memberDeclaration, textChange);
-
-			if (changeLocation.HasValue)
-				return changeLocation;
-
 			switch (memberDeclaration)
 			{
 				case BaseMethodDeclarationSyntax baseMethodNode:
@@ -116,7 +111,7 @@ namespace Acuminator.Vsix.ChangesClassification
 					return GetChangeLocationFromPropertyBaseSyntaxNode(basePropertyNode, textChange, containingModeChange);
 
 				default:
-					return ChangeLocation.Class;
+					return GetChangeLocationFromNodeTrivia(memberDeclaration, textChange) ?? ChangeLocation.Class;
 			}
 		}
 
