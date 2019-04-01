@@ -19,6 +19,7 @@ namespace Acuminator.Vsix.ChangesClassification
 		/// </summary>
 		StatementsBlock = 0b0000_0001,
 		Attributes = 0b0000_0010,
+		Trivia = 0b0000_0100,
 		Class     = 0b0100_0000,
 		Namespace = 0b1000_0000
 	}
