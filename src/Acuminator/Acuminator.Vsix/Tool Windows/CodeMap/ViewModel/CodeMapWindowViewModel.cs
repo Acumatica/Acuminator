@@ -266,11 +266,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 				_documentModel = new DocumentModel(_documentModel.WpfTextView, changedDocument);
 				BuildCodeMapAsync().Forget();
-			}
-			else
-			{
-				
-			}		
+			}	
 		}
 
 		private void ClearCodeMap()
