@@ -47,9 +47,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			Name = $"[{attributeName}]";
-			var cancellationToken = Tree.CodeMapViewModel.CancellationToken.GetValueOrDefault();
-			var attributeNode = Attribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken)?.Parent as AttributeListSyntax;
-			Tooltip = attributeNode?.ToString().TrimIndent(attributeNode) ?? $"[{Attribute.ToString()}]";
+			Tooltip = GetAttributeTooltip();
 		}
 
 		public override void NavigateToItem()
@@ -67,67 +65,18 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			AcuminatorVSPackage.Instance.OpenCodeFileAndNavigateToPosition(workspace.CurrentSolution, 
 																			filePath, span.Start);
 		}
-	}
 
-	public static class IndentExt
-	{
-		public static int GetAttributeIndentLevel(this AttributeListSyntax node)
+		private string GetAttributeTooltip()
 		{
-			if (node == null)
-				return 0;
+			var cancellationToken = Tree.CodeMapViewModel.CancellationToken.GetValueOrDefault();
+			var attributeListNode = Attribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken)?.Parent as AttributeListSyntax;
 
-			int indentLevel = 0;
+			if (attributeListNode == null)
+				return $"[{Attribute.ToString()}]";
 
-			SyntaxNode current = node;
-
-			while (current != null)
-			{
-				if (current.HasLeadingTrivia)
-				{
-					indentLevel += node.GetLeadingTrivia()
-									   .Count(t => t.IsKind(SyntaxKind.WhitespaceTrivia));
-				}
-
-				current = current.Parent;
-			}
-
-			return indentLevel;
-		}
-
-		public static string TrimIndent(this string str, AttributeListSyntax node)
-		{
-			if (str.IsNullOrWhiteSpace() || node == null)
-				return str;
-
-			var triviaCount = node.GetAttributeIndentLevel();
-
-			if (triviaCount == 0)
-				return str;
-
-			var sb = new System.Text.StringBuilder(string.Empty, capacity: str.Length);
-			int counter = 0;
-
-			for (int i = 0; i < str.Length; i++)
-			{
-				char c = str[i];
-
-				switch (c)
-				{
-					case '\n':
-						counter = 0;
-						sb.Append(c);
-						continue;
-					case '\t' when counter < triviaCount:
-						counter++;
-						continue;
-					case '\t' when counter >= triviaCount:
-					default:
-						sb.Append(c);
-						continue;
-				}
-			}
-
-			return sb.ToString();
+			string tooltip = attributeListNode.GetAttributeListStringWithRemovedIndent()
+											  .RemoveCommonAcumaticaNamespacePrefixes();
+			return tooltip ?? $"[{Attribute.ToString()}]";
 		}
 	}
 }
