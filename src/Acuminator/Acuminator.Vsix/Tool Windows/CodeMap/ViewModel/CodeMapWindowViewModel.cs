@@ -246,15 +246,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			_workspace = newWorkspace;
 			Document changedDocument = e.NewSolution.GetDocument(e.DocumentId);
+			Document oldDocument = Document;
+			SyntaxNode oldRoot = _documentModel?.Root;
 
-			if (changedDocument == null)
+			if (changedDocument == null || oldDocument == null || oldRoot == null)
 			{
 				ClearCodeMap();
 				return;
 			}
 
 			bool recalculateCodeMap = 
-				await DocChangesClassifier.ShouldRefreshCodeMapAsync(Document, _documentModel.Root, changedDocument, CancellationToken ?? default);
+				await DocChangesClassifier.ShouldRefreshCodeMapAsync(oldDocument, oldRoot, changedDocument, CancellationToken ?? default);
 
 			if (recalculateCodeMap)
 			{
