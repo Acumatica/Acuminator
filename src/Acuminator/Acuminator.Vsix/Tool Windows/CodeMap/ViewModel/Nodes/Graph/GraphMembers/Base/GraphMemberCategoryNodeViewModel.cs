@@ -69,7 +69,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			GraphMemberCategoryNodeViewModel memberCategoryVM = CreateCategory(graphViewModel, graphMemberType, isExpanded);
 			memberCategoryVM?.AddCategoryMembers();
-			return memberCategoryVM;
+			return memberCategoryVM?.Children.Count > 0 
+				? memberCategoryVM
+				: null;
 		}
 
 		protected virtual void AddCategoryMembers()
