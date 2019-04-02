@@ -14,13 +14,14 @@ using Acuminator.Vsix.Utilities;
 
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
-
+using System.Windows;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class CodeMapWindowViewModel : ToolWindowViewModelBase
 	{
 		private readonly EnvDTE.WindowEvents _windowEvents;
+		private readonly EnvDTE80.WindowVisibilityEvents _visibilityEvents;
 
 		private CancellationTokenSource _cancellationTokenSource;
 
@@ -30,6 +31,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public Document Document => _documentModel?.Document;
 
 		private CodeMapDocChangesClassifier DocChangesClassifier { get; } = new CodeMapDocChangesClassifier();
+
+		/// <summary>
+		/// Internal visibility flag for code map control. Serves as a workaround to hacky VS SDK which displays "Visible" in all other visibility properties for a hidden window.
+		/// </summary>
+		private bool IsVisible
+		{
+			get;
+			set;
+		}
 
 		private TreeViewModel _tree;
 
@@ -84,6 +94,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				{
 					_windowEvents.WindowActivated += WindowEvents_WindowActivated;
 				}
+
+				_visibilityEvents = (dte?.Events as EnvDTE80.Events2)?.WindowVisibilityEvents;
+
+				if (_visibilityEvents != null)
+				{
+					_visibilityEvents.WindowShowing += VisibilityEvents_WindowShowing;
+					_visibilityEvents.WindowHiding += VisibilityEvents_WindowHiding;
+				}
 			}		
 		}
 
@@ -117,6 +135,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				_windowEvents.WindowActivated -= WindowEvents_WindowActivated;
 			}
+
+			if (_visibilityEvents != null)
+			{
+				_visibilityEvents.WindowHiding -= VisibilityEvents_WindowHiding;
+				_visibilityEvents.WindowShowing -= VisibilityEvents_WindowShowing;
+			}
 		}
 
 		private async Task RefreshCodeMapAsync()
@@ -144,6 +168,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			_documentModel = new DocumentModel(activeWpfTextView, activeDocument);
 			BuildCodeMapAsync().Forget();
+		}
+
+		private void VisibilityEvents_WindowHiding(EnvDTE.Window window)
+		{
+			IsVisible = false;
+		}
+
+		private void VisibilityEvents_WindowShowing(EnvDTE.Window window)
+		{
+			IsVisible = true;
 		}
 
 		private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
@@ -193,9 +227,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken ?? default);
 			}
 
-			bool isDocumentTabClosed = _documentModel.WpfTextView?.IsClosed ?? true;
-
-			if (isDocumentTabClosed || e.IsActiveDocumentCleared(Document))
+			if (!IsVisible || e.IsActiveDocumentCleared(Document))
 			{
 				ClearCodeMap();
 				return;
@@ -220,7 +252,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				ClearCodeMap();
 				return;
 			}
-			
+
 			bool recalculateCodeMap = 
 				await DocChangesClassifier.ShouldRefreshCodeMapAsync(Document, _documentModel.Root, changedDocument, CancellationToken ?? default);
 
