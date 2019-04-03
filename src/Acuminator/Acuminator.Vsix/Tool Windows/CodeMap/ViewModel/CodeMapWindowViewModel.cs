@@ -255,6 +255,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 			}
 
+			var newRoot = await changedDocument.GetSyntaxRootAsync(CancellationToken ?? default)
+											   .ConfigureAwait(false);
+
+			if (newRoot == null || newRoot.ContainsDiagnostics)
+			{
+				ClearCodeMap();
+				return;
+			}
+
 			bool recalculateCodeMap;
 
 			if (Tree != null)
@@ -270,11 +279,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (recalculateCodeMap)
 			{
 				ClearCodeMap();
-				var root = await changedDocument.GetSyntaxRootAsync().ConfigureAwait(false);
-
-				if (root == null || root.ContainsDiagnostics)
-					return;
-
 				_documentModel = new DocumentModel(_documentModel.WpfTextView, changedDocument);
 				BuildCodeMapAsync().Forget();
 			}	
