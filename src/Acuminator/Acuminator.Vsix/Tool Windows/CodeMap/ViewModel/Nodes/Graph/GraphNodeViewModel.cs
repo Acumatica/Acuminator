@@ -46,7 +46,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			var memberCategories =
 				GraphMemberTypeUtils.GetGraphMemberTypes()
 									.Select(graphMemberType =>
-										 GraphMemberCategoryNodeViewModel.Create(this, graphMemberType, isExpanded: expandChildren));
+										 GraphMemberCategoryNodeViewModel.Create(this, graphMemberType, isExpanded: expandChildren))
+									.Where(graphMemberCategory => graphMemberCategory != null);
 
 			Children.AddRange(memberCategories);
 		}
