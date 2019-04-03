@@ -255,8 +255,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 			}
 
-			bool recalculateCodeMap = 
-				await DocChangesClassifier.ShouldRefreshCodeMapAsync(oldDocument, oldRoot, changedDocument, CancellationToken ?? default);
+			bool recalculateCodeMap;
+
+			if (Tree != null)
+			{
+				recalculateCodeMap = await DocChangesClassifier.ShouldRefreshCodeMapAsync(oldDocument, oldRoot, 
+																						  changedDocument, CancellationToken ?? default);
+			}
+			else
+			{
+				recalculateCodeMap = true;
+			}
 
 			if (recalculateCodeMap)
 			{
