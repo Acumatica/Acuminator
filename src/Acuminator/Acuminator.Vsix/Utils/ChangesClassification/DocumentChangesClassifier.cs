@@ -76,9 +76,12 @@ namespace Acuminator.Vsix.ChangesClassification
 
 				switch (containingNode)
 				{
+					case BlockSyntax blockNode:
+						changesLocation = GetChangeLocationFromBlockNode(blockNode, textChange, containingModeChange);
+						break;
 					case StatementSyntax statementNode:
 						changesLocation = GetChangeLocationFromStatementNode(statementNode, textChange, containingModeChange);
-						break;
+						break;				
 					case MemberDeclarationSyntax memberDeclaration:
 						changesLocation = GetChangeLocationFromTypeMemberNode(memberDeclaration, textChange, containingModeChange);
 						break;			
@@ -91,6 +94,25 @@ namespace Acuminator.Vsix.ChangesClassification
 			}
 
 			return ChangeLocation.Namespace;
+		}
+
+		protected virtual ChangeLocation? GetChangeLocationFromBlockNode(BlockSyntax blockNode, in TextChange textChange,
+																		 ContainmentModeChange containingModeChange)
+		{
+			if (!(blockNode.Parent is MemberDeclarationSyntax))
+				return ChangeLocation.StatementsBlock;
+
+			bool changeContainedOpenBrace = textChange.Span.Contains(blockNode.OpenBraceToken.Span);
+			bool changeContainedCloseBrace = textChange.Span.Contains(blockNode.CloseBraceToken.Span);
+			int openBracesNewCount = textChange.NewText.Count(c => c == '{');
+			int closeBracesNewCount = textChange.NewText.Count(c => c == '}');
+
+			if (changeContainedOpenBrace && openBracesNewCount != 1)
+				return ChangeLocation.Class;
+			else if (changeContainedCloseBrace && closeBracesNewCount != 1)
+				return ChangeLocation.Class;
+			else
+				return ChangeLocation.StatementsBlock;
 		}
 
 		protected virtual ChangeLocation? GetChangeLocationFromStatementNode(StatementSyntax statementNode, in TextChange textChange,
