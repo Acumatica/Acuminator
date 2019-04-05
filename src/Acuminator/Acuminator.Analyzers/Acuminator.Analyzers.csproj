@@ -48,6 +48,8 @@
     <Compile Include="Refactorings\ChangeEventHandlerSignatureToGeneric\ChangeEventHandlerSignatureToGenericRefactoring.cs" />
     <Compile Include="StaticAnalysis\ActionHandlerAttributes\ActionHandlerAttributesAnalyzer.cs" />
     <Compile Include="StaticAnalysis\ActionHandlerAttributes\ActionHandlerAttributesFix.cs" />
+    <Compile Include="StaticAnalysis\ActionHandlerReturnType\ActionHandlerReturnTypeAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\ActionHandlerReturnType\ActionHandlerReturnTypeFix.cs" />
     <Compile Include="StaticAnalysis\AnalyzersAggregator\ISymbolAnalyzer.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\ArrayElemCountLocalVariableResolver.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\BqlInvocationDataFlowAnalyserBase.cs" />

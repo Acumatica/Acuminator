@@ -305,6 +305,24 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change the return type to IEnumerable.
+        /// </summary>
+        public static string PX1013Fix {
+            get {
+                return ResourceManager.GetString("PX1013Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The return type of the action handler initiating a background operation or executed by another background operation must be IEnumerable.
+        /// </summary>
+        public static string PX1013Title {
+            get {
+                return ResourceManager.GetString("PX1013Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Make the type nullable.
         /// </summary>
         public static string PX1014Fix {
