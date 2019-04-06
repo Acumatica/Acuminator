@@ -22,7 +22,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			switch (value)
 			{
 				case ViewNodeViewModel viewNode:
-					return viewNode.ViewInfo.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
+					return viewNode.Tooltip ?? Binding.DoNothing;
 				case ActionNodeViewModel actionNode:
 					return actionNode.ActionInfo.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
 				case CacheAttachedNodeViewModel cacheAttachedNode 

@@ -26,7 +26,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private CancellationTokenSource _cancellationTokenSource;
 
 		private DocumentModel _documentModel;
-		private Workspace _workspace;
+
+		public Workspace Workspace
+		{
+			get;
+			private set;
+		}
 
 		public Document Document => _documentModel?.Document;
 
@@ -82,8 +87,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			RefreshCodeMapCommand = new Command(p => RefreshCodeMapAsync().Forget());
 
-			_workspace = _documentModel.Document.Project.Solution.Workspace;
-			_workspace.WorkspaceChanged += OnWorkspaceChanged;
+			Workspace = _documentModel.Document.Project.Solution.Workspace;
+			Workspace.WorkspaceChanged += OnWorkspaceChanged;
 
 			if (ThreadHelper.CheckAccess())
 			{
@@ -126,9 +131,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			_cancellationTokenSource?.Dispose();
 
-			if (_workspace != null)
+			if (Workspace != null)
 			{
-				_workspace.WorkspaceChanged -= OnWorkspaceChanged;
+				Workspace.WorkspaceChanged -= OnWorkspaceChanged;
 			}
 
 			if (_windowEvents != null)
@@ -159,7 +164,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (currentWorkspace == null)
 				return;
 
-			_workspace = currentWorkspace;
+			Workspace = currentWorkspace;
 			IWpfTextView activeWpfTextView = AcuminatorVSPackage.Instance.GetWpfTextView();
 			Document activeDocument = activeWpfTextView?.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
 
@@ -205,7 +210,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (currentWorkspace == null)
 				return;
 
-			_workspace = currentWorkspace;
+			Workspace = currentWorkspace;
 			IWpfTextView activeWpfTextView = AcuminatorVSPackage.Instance.GetWpfTextViewByFilePath(gotFocus.Document.FullName);
 			Document activeDocument = activeWpfTextView?.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
 
@@ -244,7 +249,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private async Task HandleDocumentTextChangesAsync(Workspace newWorkspace, WorkspaceChangeEventArgs e)
 		{
-			_workspace = newWorkspace;
+			Workspace = newWorkspace;
 			Document changedDocument = e.NewSolution.GetDocument(e.DocumentId);
 			Document oldDocument = Document;
 			SyntaxNode oldRoot = _documentModel?.Root;

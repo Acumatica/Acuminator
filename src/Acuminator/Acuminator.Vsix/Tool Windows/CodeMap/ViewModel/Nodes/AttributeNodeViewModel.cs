@@ -71,10 +71,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			var cancellationToken = Tree.CodeMapViewModel.CancellationToken.GetValueOrDefault();
 			var attributeListNode = Attribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken)?.Parent as AttributeListSyntax;
 
-			if (attributeListNode == null)
+			if (attributeListNode == null || Tree.CodeMapViewModel.Workspace == null)
 				return $"[{Attribute.ToString()}]";
 
-			string tooltip = attributeListNode.GetSyntaxNodeStringWithRemovedIndent()
+			int tabSize = Tree.CodeMapViewModel.Workspace.GetWorkspaceIndentationSize();
+			string tooltip = attributeListNode.GetSyntaxNodeStringWithRemovedIndent(tabSize)
 											  .RemoveCommonAcumaticaNamespacePrefixes();
 			return tooltip ?? $"[{Attribute.ToString()}]";
 		}

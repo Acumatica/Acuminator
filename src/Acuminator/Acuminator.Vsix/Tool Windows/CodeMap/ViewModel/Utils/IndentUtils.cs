@@ -18,31 +18,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private const string PxDataNamespacePrefix = "PX.Data.";
 		private const string PxObjectsNamespacePrefix = "PX.Objects.";
 
-		public static int GetNodeIndentLevel(this SyntaxNode node)
-		{
-			if (node == null)
-				return 0;
-
-			int indentLevel = 0;
-
-			SyntaxNode currentNode = node;
-
-			while (currentNode != null)
-			{
-				var leadingTrivia = currentNode.GetLeadingTrivia();
-
-				if (leadingTrivia.Count > 0)
-				{
-					indentLevel += leadingTrivia.Where(t => t.IsKind(SyntaxKind.WhitespaceTrivia))
-												.Sum(t => t.Span.Length);
-				}
-
-				currentNode = currentNode.Parent;
-			}
-
-			return indentLevel;
-		}
-
 		public static string GetSyntaxNodeStringWithRemovedIndent(this SyntaxNode syntaxNode, int tabSize)
 		{
 			if (tabSize <= 0)
@@ -54,8 +29,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (syntaxNodeString.IsNullOrWhiteSpace())
 				return syntaxNodeString;
-			
-			var indentLength = syntaxNode.GetNodeIndentLevel();
+
+			var indentLength = syntaxNode.GetNodeIndentLength(tabSize);
 
 			if (indentLength == 0)
 				return syntaxNodeString;
@@ -63,10 +38,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			var sb = new System.Text.StringBuilder(string.Empty, capacity: syntaxNodeString.Length);
 			int counter = 0;
 
-			for (int i = 0; i < syntaxNodeString.Length; i++)
+			foreach (char c in syntaxNodeString)
 			{
-				char c = syntaxNodeString[i];
-
 				switch (c)
 				{
 					case '\n':
@@ -77,7 +50,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					case ' ' when counter < indentLength:
 						counter++;
 						continue;
-				
+
 					case '\t' when counter < indentLength:
 						counter += tabSize;
 						continue;
@@ -96,5 +69,55 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public static string RemoveCommonAcumaticaNamespacePrefixes(this string codeFragment) =>
 			codeFragment?.Replace(PxDataNamespacePrefix, string.Empty)
 						?.Replace(PxObjectsNamespacePrefix, string.Empty);
+
+		public static int GetNodeIndentLength(this SyntaxNode node, int tabSize)
+		{
+			if (tabSize <= 0)
+			{
+				throw new ArgumentException("Tab size must be positive", nameof(tabSize));
+			}
+
+			if (node == null)
+				return 0;
+
+			int indentLength = 0;
+			SyntaxNode currentNode = node;
+
+			while (currentNode != null)
+			{
+				var leadingTrivia = currentNode.GetLeadingTrivia();
+				
+				if (leadingTrivia.Count > 0)
+				{
+					indentLength += leadingTrivia.Where(t => t.IsKind(SyntaxKind.WhitespaceTrivia))
+												 .Sum(t => t.GetIndentLengthFromWhitespaceTrivia(tabSize));
+				}
+
+				currentNode = currentNode.Parent;
+			}
+
+			return indentLength;
+		}
+
+		private static int GetIndentLengthFromWhitespaceTrivia(this SyntaxTrivia trivia, int tabSize)
+		{
+			string triviaText = trivia.ToString();
+			int indentLength = 0;
+
+			foreach (char c in triviaText)
+			{
+				switch (c)
+				{
+					case ' ':
+						indentLength++;
+						continue;
+					case '\t':
+						indentLength += tabSize;
+						continue;
+				}
+			}
+
+			return indentLength;
+		}	
 	}
 }
