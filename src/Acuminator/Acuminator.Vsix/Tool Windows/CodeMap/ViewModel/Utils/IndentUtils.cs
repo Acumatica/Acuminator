@@ -33,7 +33,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 				if (leadingTrivia.Count > 0)
 				{
-					indentLevel += leadingTrivia.Count(t => t.IsKind(SyntaxKind.WhitespaceTrivia));
+					indentLevel += leadingTrivia.Where(t => t.IsKind(SyntaxKind.WhitespaceTrivia))
+												.Sum(t => t.Span.Length);
 				}
 
 				currentNode = currentNode.Parent;
@@ -42,17 +43,21 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return indentLevel;
 		}
 
-		public static string GetSyntaxNodeStringWithRemovedIndent<TNode>(this TNode syntaxNode)
-		where TNode : SyntaxNode
+		public static string GetSyntaxNodeStringWithRemovedIndent(this SyntaxNode syntaxNode, int tabSize)
 		{
+			if (tabSize <= 0)
+			{
+				throw new ArgumentException("Tab size must be positive", nameof(tabSize));
+			}
+
 			string syntaxNodeString = syntaxNode?.ToString();
 
 			if (syntaxNodeString.IsNullOrWhiteSpace())
 				return syntaxNodeString;
 			
-			var triviaCount = syntaxNode.GetNodeIndentLevel();
+			var indentLength = syntaxNode.GetNodeIndentLevel();
 
-			if (triviaCount == 0)
+			if (indentLength == 0)
 				return syntaxNodeString;
 
 			var sb = new System.Text.StringBuilder(string.Empty, capacity: syntaxNodeString.Length);
@@ -68,10 +73,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 						counter = 0;
 						sb.Append(c);
 						continue;
-					case '\t' when counter < triviaCount:
+
+					case ' ' when counter < indentLength:
 						counter++;
 						continue;
-					case '\t' when counter >= triviaCount:
+				
+					case '\t' when counter < indentLength:
+						counter += tabSize;
+						continue;
+
+					case ' ' when counter >= indentLength:
+					case '\t' when counter >= indentLength:
 					default:
 						sb.Append(c);
 						continue;
