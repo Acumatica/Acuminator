@@ -268,7 +268,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (Tree != null)
 			{
-				recalculateCodeMap = await DocChangesClassifier.ShouldRefreshCodeMapAsync(oldDocument, oldRoot, 
+				recalculateCodeMap = await DocChangesClassifier.ShouldRefreshCodeMapAsync(oldDocument, newRoot, 
 																						  changedDocument, CancellationToken ?? default);
 			}
 			else
