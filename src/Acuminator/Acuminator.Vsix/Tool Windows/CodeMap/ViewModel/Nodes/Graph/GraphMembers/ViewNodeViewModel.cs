@@ -13,6 +13,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class ViewNodeViewModel : GraphMemberNodeViewModel
 	{
+		public DataViewInfo ViewInfo => MemberInfo as DataViewInfo;
+
 		public ViewNodeViewModel(ViewCategoryNodeViewModel viewCategoryVM, DataViewInfo viewInfo, bool isExpanded = false) :
 							base(viewCategoryVM, viewInfo, isExpanded)
 		{

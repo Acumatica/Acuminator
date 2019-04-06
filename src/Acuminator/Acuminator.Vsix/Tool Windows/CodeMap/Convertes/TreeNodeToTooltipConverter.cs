@@ -21,12 +21,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			switch (value)
 			{
-				case GraphMemberNodeViewModel graphMemberNode
-				when graphMemberNode.MemberInfo is DataViewInfo viewInfo:
-					return viewInfo.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
-				case GraphMemberNodeViewModel graphMemberNode
-				when graphMemberNode.MemberInfo is ActionInfo actionInfo:
-					return actionInfo.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
+				case ViewNodeViewModel viewNode:
+					return viewNode.ViewInfo.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
+				case ActionNodeViewModel actionNode:
+					return actionNode.ActionInfo.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
 				case CacheAttachedNodeViewModel cacheAttachedNode 
 				when cacheAttachedNode.Children.Count > 0:
 					var attributeStrings = cacheAttachedNode.Children
