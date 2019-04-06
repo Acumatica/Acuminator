@@ -30,22 +30,25 @@ namespace Acuminator.Vsix.ChangesClassification
 			NotContaining,		
 		} 
 
-		public async Task<ChangeLocation> GetChangesLocationAsync(Document oldDocument, SyntaxNode oldRoot, Document newDocument, 
+		public async Task<ChangeLocation> GetChangesLocationAsync(Document oldDocument, SyntaxNode newRoot, Document newDocument, 
 																  CancellationToken cancellationToken = default)
 		{
 			oldDocument.ThrowOnNull(nameof(oldDocument));
-			oldRoot.ThrowOnNull(nameof(oldRoot));
+			newRoot.ThrowOnNull(nameof(newRoot));
 			newDocument.ThrowOnNull(nameof(newDocument));
+
+			if (newRoot.ContainsDiagnostics)
+				return ChangeLocation.Namespace;
 
 			IEnumerable<TextChange> textChanges = await newDocument.GetTextChangesAsync(oldDocument, cancellationToken)
 																   .ConfigureAwait(false);
 			if (textChanges.IsNullOrEmpty())
 				return ChangeLocation.None;
 
-			return GetChangesLocationImplAsync(oldDocument, oldRoot, newDocument, textChanges, cancellationToken);
+			return GetChangesLocationImplAsync(oldDocument, newRoot, newDocument, textChanges, cancellationToken);
 		}
 
-		protected virtual ChangeLocation GetChangesLocationImplAsync(Document oldDocument, SyntaxNode oldRoot, Document newDocument,
+		protected virtual ChangeLocation GetChangesLocationImplAsync(Document oldDocument, SyntaxNode newRoot, Document newDocument,
 																	 IEnumerable<TextChange> textChanges, 
 																	 CancellationToken cancellationToken = default)
 		{
@@ -53,7 +56,7 @@ namespace Acuminator.Vsix.ChangesClassification
 
 			foreach (TextChange change in textChanges)
 			{
-				ChangeLocation changeLocation = GetTextChangeLocation(change, oldRoot);
+				ChangeLocation changeLocation = GetTextChangeLocation(change, newRoot);
 				accumulatedChangeLocation = accumulatedChangeLocation | changeLocation;
 
 				cancellationToken.ThrowIfCancellationRequested();
@@ -62,9 +65,9 @@ namespace Acuminator.Vsix.ChangesClassification
 			return accumulatedChangeLocation;
 		}
 
-		protected virtual ChangeLocation GetTextChangeLocation(in TextChange textChange, SyntaxNode oldRoot)
+		protected virtual ChangeLocation GetTextChangeLocation(in TextChange textChange, SyntaxNode newRoot)
 		{
-			var containingNode = oldRoot.FindNode(textChange.Span);
+			var containingNode = newRoot.FindNode(textChange.Span);
 
 			if (containingNode == null)
 				return ChangeLocation.None;
