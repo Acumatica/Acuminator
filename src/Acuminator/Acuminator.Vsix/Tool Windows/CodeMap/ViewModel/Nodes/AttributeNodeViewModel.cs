@@ -74,7 +74,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (attributeListNode == null)
 				return $"[{Attribute.ToString()}]";
 
-			string tooltip = attributeListNode.GetAttributeListStringWithRemovedIndent()
+			string tooltip = attributeListNode.GetSyntaxNodeStringWithRemovedIndent()
 											  .RemoveCommonAcumaticaNamespacePrefixes();
 			return tooltip ?? $"[{Attribute.ToString()}]";
 		}

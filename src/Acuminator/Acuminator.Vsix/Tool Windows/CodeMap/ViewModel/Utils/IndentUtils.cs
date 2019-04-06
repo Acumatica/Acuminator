@@ -42,24 +42,25 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return indentLevel;
 		}
 
-		public static string GetAttributeListStringWithRemovedIndent(this AttributeListSyntax attributeList)
+		public static string GetSyntaxNodeStringWithRemovedIndent<TNode>(this TNode syntaxNode)
+		where TNode : SyntaxNode
 		{
-			string attributeListString = attributeList?.ToString();
+			string syntaxNodeString = syntaxNode?.ToString();
 
-			if (attributeListString.IsNullOrWhiteSpace())
-				return attributeListString;
+			if (syntaxNodeString.IsNullOrWhiteSpace())
+				return syntaxNodeString;
 			
-			var triviaCount = attributeList.GetNodeIndentLevel();
+			var triviaCount = syntaxNode.GetNodeIndentLevel();
 
 			if (triviaCount == 0)
-				return attributeListString;
+				return syntaxNodeString;
 
-			var sb = new System.Text.StringBuilder(string.Empty, capacity: attributeListString.Length);
+			var sb = new System.Text.StringBuilder(string.Empty, capacity: syntaxNodeString.Length);
 			int counter = 0;
 
-			for (int i = 0; i < attributeListString.Length; i++)
+			for (int i = 0; i < syntaxNodeString.Length; i++)
 			{
-				char c = attributeListString[i];
+				char c = syntaxNodeString[i];
 
 				switch (c)
 				{
