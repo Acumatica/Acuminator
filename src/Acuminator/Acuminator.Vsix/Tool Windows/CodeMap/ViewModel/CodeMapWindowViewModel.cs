@@ -255,30 +255,24 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 			}
 
-			var newRoot = await changedDocument.GetSyntaxRootAsync(CancellationToken ?? default)
-											   .ConfigureAwait(false);
+			var newRoot = await changedDocument.GetSyntaxRootAsync(CancellationToken ?? default).ConfigureAwait(false);
+			CodeMapRefreshMode recalculateCodeMap = newRoot == null
+				? CodeMapRefreshMode.Clear
+				: CodeMapRefreshMode.Recalculate;
 
-			if (newRoot == null || newRoot.ContainsDiagnostics)
-			{
-				ClearCodeMap();
-				return;
-			}
-
-			bool recalculateCodeMap;
-
-			if (Tree != null)
+			if (newRoot != null && Tree != null)
 			{
 				recalculateCodeMap = await DocChangesClassifier.ShouldRefreshCodeMapAsync(oldDocument, newRoot, 
 																						  changedDocument, CancellationToken ?? default);
 			}
-			else
-			{
-				recalculateCodeMap = true;
-			}
 
-			if (recalculateCodeMap)
+			if (recalculateCodeMap == CodeMapRefreshMode.NoRefresh)
+				return;
+
+			ClearCodeMap();
+
+			if (recalculateCodeMap == CodeMapRefreshMode.Recalculate)
 			{
-				ClearCodeMap();
 				_documentModel = new DocumentModel(_documentModel.WpfTextView, changedDocument);
 				BuildCodeMapAsync().Forget();
 			}	

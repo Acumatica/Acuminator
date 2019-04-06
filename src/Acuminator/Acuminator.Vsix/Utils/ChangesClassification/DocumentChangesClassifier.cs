@@ -37,9 +37,6 @@ namespace Acuminator.Vsix.ChangesClassification
 			newRoot.ThrowOnNull(nameof(newRoot));
 			newDocument.ThrowOnNull(nameof(newDocument));
 
-			if (newRoot.ContainsDiagnostics)
-				return ChangeLocation.Namespace;
-
 			IEnumerable<TextChange> textChanges = await newDocument.GetTextChangesAsync(oldDocument, cancellationToken)
 																   .ConfigureAwait(false);
 			if (textChanges.IsNullOrEmpty())
@@ -81,7 +78,10 @@ namespace Acuminator.Vsix.ChangesClassification
 				{
 					case BlockSyntax blockNode:
 						changesLocation = GetChangeLocationFromBlockNode(blockNode, textChange, containingModeChange);
-						break;
+						break;			
+
+					//TODO need to add check for local function declaration node here after Roslyn upgrade
+					
 					case StatementSyntax statementNode:
 						changesLocation = GetChangeLocationFromStatementNode(statementNode, textChange, containingModeChange);
 						break;				
