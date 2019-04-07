@@ -17,7 +17,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
                 Descriptors.PX1057_PXGraphCreationDuringInitialization,
                 Descriptors.PX1084_GraphCreationInDataViewDelegate);
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -45,7 +45,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
             private readonly DiagnosticDescriptor _descriptor;
 
             public PXGraphCreateInstanceWalker(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor descriptor)
-                : base(context.Compilation, context.CancellationToken)
+                : base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
             {
                 _context = context;
                 _pxContext = pxContext;

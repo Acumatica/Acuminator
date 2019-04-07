@@ -20,11 +20,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1042_DatabaseQueriesInRowSelecting);
 
-		public override bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings, EventType eventType) =>
+		public override bool ShouldAnalyze(PXContext pxContext, EventType eventType) =>
 			eventType == EventType.RowSelecting;
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings,
-									 EventType eventType)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 

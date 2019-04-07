@@ -16,7 +16,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic
 
 		public Walker(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor diagnosticDescriptor,
 			params object[] messageArgs)
-			: base(context.Compilation, context.CancellationToken)
+			: base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
 		{
 			pxContext.ThrowOnNull(nameof (pxContext));
 			diagnosticDescriptor.ThrowOnNull(nameof (diagnosticDescriptor));

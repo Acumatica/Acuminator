@@ -41,7 +41,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
             if (isHardcodedMessage)
             {
                 _syntaxContext.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(Descriptors.PX1050_HardcodedStringInLocalizationMethod, _messageExpression.GetLocation()));
+					Diagnostic.Create(Descriptors.PX1050_HardcodedStringInLocalizationMethod, _messageExpression.GetLocation()),
+					_pxContext.CodeAnalysisSettings);
                 return;
             }
 
@@ -51,19 +52,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
                 if (IsNonLocalizableMessageType(messageType))
                 {
                     _syntaxContext.ReportDiagnosticWithSuppressionCheck(
-						Diagnostic.Create(Descriptors.PX1051_NonLocalizableString, _messageExpression.GetLocation()));
+						Diagnostic.Create(Descriptors.PX1051_NonLocalizableString, _messageExpression.GetLocation()),
+						_pxContext.CodeAnalysisSettings);
                 }
 
                 if (IsIncorrectStringToFormat())
                 {
                     _syntaxContext.ReportDiagnosticWithSuppressionCheck(
-						Diagnostic.Create(Descriptors.PX1052_IncorrectStringToFormat, _messageExpression.GetLocation()));
+						Diagnostic.Create(Descriptors.PX1052_IncorrectStringToFormat, _messageExpression.GetLocation()),
+						_pxContext.CodeAnalysisSettings);
                 }
             }
             else if (IsStringConcatenation())
             {
                 _syntaxContext.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(Descriptors.PX1053_ConcatenationPriorLocalization, _messageExpression.GetLocation()));
+					Diagnostic.Create(Descriptors.PX1053_ConcatenationPriorLocalization, _messageExpression.GetLocation()),
+					_pxContext.CodeAnalysisSettings);
             }
         }
 

@@ -114,7 +114,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		{
 			compilation.ThrowOnNull(nameof(compilation));
 
-			CodeAnalysisSettings = codeAnalysisSettings ?? CodeAnalysisSettings.Default;
+			CodeAnalysisSettings = codeAnalysisSettings ?? GlobalCodeAnalysisSettings.Instance ?? CodeAnalysisSettings.Default;
 			Compilation = compilation;
 			IsPlatformReferenced = compilation.GetTypeByMetadataName(TypeNames.PXGraphTypeName) != null;
 
