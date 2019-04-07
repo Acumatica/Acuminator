@@ -9,6 +9,7 @@ namespace Acuminator.Utilities.Roslyn
 		public static readonly string IBqlTable = typeof(IBqlTable).Name;
 
 		public static readonly string BqlCommand = typeof(BqlCommand).Name;
+		public const string FbqlCommand = nameof(FbqlCommand);
 
 		public static readonly string IBqlField = typeof(IBqlField).Name;
 		public static readonly string IBqlParameter = typeof(IBqlParameter).Name;
@@ -51,6 +52,14 @@ namespace Acuminator.Utilities.Roslyn
 		public const string IViewConfig_Acumatica2018R2 = "PX.Data.PXSelectBase`2+IViewConfig";
 		public const string PXGraphTypeName = "PX.Data.PXGraph";
 
+		public const string FbqlSelect = nameof(FbqlSelect);
+
+		public const string FullJoin = nameof(FullJoin);
+		public const string RightJoin = nameof(RightJoin);
+		public const string LeftJoin = nameof(LeftJoin);
+		public const string InnerJoin = nameof(InnerJoin);
+		
+
 		public static ImmutableDictionary<string, PXCodeType> TypeNamesToCodeTypesForIdentifier { get; } =
 			new Dictionary<string, PXCodeType>
 			{
@@ -71,6 +80,11 @@ namespace Acuminator.Utilities.Roslyn
 				[IBqlJoin] = PXCodeType.BqlOperator,
 				[IBqlSet] = PXCodeType.BqlOperator,
 
+				[FullJoin] = PXCodeType.BqlOperator,
+				[RightJoin] = PXCodeType.BqlOperator,
+				[LeftJoin] = PXCodeType.BqlOperator,
+				[InnerJoin] = PXCodeType.BqlOperator,
+
 				[PXGraph] = PXCodeType.PXGraph
 			}
 			.ToImmutableDictionary();
@@ -89,7 +103,13 @@ namespace Acuminator.Utilities.Roslyn
 				[IBqlCreator] = PXCodeType.BqlOperator,
 				[IBqlJoin] = PXCodeType.BqlOperator,
 				[IBqlSet] = PXCodeType.BqlOperator,
-				[PXAction] = PXCodeType.PXAction
+				
+				[FullJoin] = PXCodeType.BqlOperator,
+				[RightJoin] = PXCodeType.BqlOperator,
+				[LeftJoin] = PXCodeType.BqlOperator,
+				[InnerJoin] = PXCodeType.BqlOperator,
+
+				[PXAction] = PXCodeType.PXAction,
 			}
 			.ToImmutableDictionary();
 
@@ -105,6 +125,7 @@ namespace Acuminator.Utilities.Roslyn
 		public static ImmutableHashSet<string> NotColoredTypes = new string[]
 		{
 			BqlCommand,
+			FbqlCommand,
 			PXCacheExtension,
 			PXCacheExtensionGeneric,
 			Constant,
@@ -118,7 +139,16 @@ namespace Acuminator.Utilities.Roslyn
 		{
 			PXSelectReadonly,
 			PXSelectReadonly2,
-			PXSelectReadonly3
+			PXSelectReadonly3,
+		}
+		.ToImmutableHashSet();
+
+		public static ImmutableHashSet<string> FBqlJoins = new string[]
+		{
+			FullJoin,
+			RightJoin,
+			LeftJoin,
+			InnerJoin,
 		}
 		.ToImmutableHashSet();
 	}
