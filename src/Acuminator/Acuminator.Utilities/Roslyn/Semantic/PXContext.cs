@@ -13,6 +13,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public bool IsAcumatica2018R2 { get; }
 		public bool IsAcumatica2019R1 { get; }
 
+		public CodeAnalysisSettings CodeAnalysisSettings { get; }
+
 		/// <summary>
 		/// Is platform referenced in the current solution. If not then diagnostic can't run on the solution.
 		/// </summary>
@@ -108,10 +110,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		public INamedTypeSymbol IImplementType => Compilation.GetTypeByMetadataName("PX.Common.IImplement`1");
 
-		public PXContext(Compilation compilation)
+		public PXContext(Compilation compilation, CodeAnalysisSettings codeAnalysisSettings)
 		{
 			compilation.ThrowOnNull(nameof(compilation));
 
+			CodeAnalysisSettings = codeAnalysisSettings ?? CodeAnalysisSettings.Default;
 			Compilation = compilation;
 			IsPlatformReferenced = compilation.GetTypeByMetadataName(TypeNames.PXGraphTypeName) != null;
 
