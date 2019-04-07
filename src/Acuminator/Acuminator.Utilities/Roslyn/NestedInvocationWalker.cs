@@ -68,7 +68,7 @@ namespace Acuminator.Utilities.Roslyn
 		/// <param name="cancellationToken">Cancellation token</param>
 		/// <param name="bypassMethod">Delegate to control if it is needed to bypass analysis of an invocation of a method and do not step into it. If not supplied, default implementation is used to bypass some core types from PX.Data namespace</param>
 		protected NestedInvocationWalker(Compilation compilation, CancellationToken cancellationToken,
-			Func<IMethodSymbol, bool> bypassMethod = null)
+										 Func<IMethodSymbol, bool> bypassMethod = null, CodeAnalysisSettings settings = null)
 		{
 			compilation.ThrowOnNull(nameof (compilation));
 
@@ -87,18 +87,7 @@ namespace Acuminator.Utilities.Roslyn
 				_bypassMethod = m => typesToBypass.Contains(m.ContainingType);
 			}
 
-			try
-			{
-				if (ServiceLocator.IsLocationProviderSet)
-					_settings = ServiceLocator.Current.GetInstance<CodeAnalysisSettings>();
-			}
-			catch
-			{
-				// TODO: log the exception
-			}
-
-			if (_settings == null)
-				_settings = CodeAnalysisSettings.Default;
+			_settings = settings ?? GlobalCodeAnalysisSettings.Instance;
 		}
 
 		protected virtual IEnumerable<INamedTypeSymbol> GetTypesToBypass(PXContext pxContext)
@@ -168,10 +157,9 @@ namespace Acuminator.Utilities.Roslyn
 		/// <remarks>This method takes a report diagnostic method as a parameter because it is different for each analyzer type 
 		/// (<code>SymbolAnalysisContext.ReportDiagnostic</code>, <code>SyntaxNodeAnalysisContext.ReportDiagnostic</code>, etc.)</remarks>
 		protected virtual void ReportDiagnostic(Action<Diagnostic> reportDiagnostic, DiagnosticDescriptor diagnosticDescriptor,
-			SyntaxNode node, params object[] messageArgs)
+												SyntaxNode node, params object[] messageArgs)
 		{
 			var nodeToReport = OriginalNode ?? node;
-
 			var diagnosticKey = (nodeToReport, diagnosticDescriptor);
 
 			if (!_reportedDiagnostics.Contains(diagnosticKey))
@@ -179,7 +167,7 @@ namespace Acuminator.Utilities.Roslyn
 				var diagnostic = Diagnostic.Create(diagnosticDescriptor, nodeToReport.GetLocation(), messageArgs);
 				var semanticModel = GetSemanticModel(nodeToReport.SyntaxTree);
 
-				SuppressionManager.ReportDiagnosticWithSuppressionCheck(semanticModel, reportDiagnostic, diagnostic, CancellationToken);
+				SuppressionManager.ReportDiagnosticWithSuppressionCheck(semanticModel, reportDiagnostic, diagnostic, _settings, CancellationToken);
 				_reportedDiagnostics.Add(diagnosticKey);
 			}
 		}
