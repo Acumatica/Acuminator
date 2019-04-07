@@ -26,12 +26,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
                     continue;
                 }
 
-				CheckActionHandler(context, pxContext, actionHandler.Symbol, actionHandler.Node, pxGraph.Type);
+				CheckActionHandler(context, pxContext, settings, actionHandler.Symbol, actionHandler.Node, pxGraph.Type);
             }
         }
 
-		private void CheckActionHandler(SymbolAnalysisContext context, PXContext pxContext,
-			IMethodSymbol symbol, MethodDeclarationSyntax node, GraphType graphType)
+		private void CheckActionHandler(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings,
+										IMethodSymbol symbol, MethodDeclarationSyntax node, GraphType graphType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -88,7 +88,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 				node.Identifier.GetLocation(),
 				properties);
 
-			context.ReportDiagnosticWithSuppressionCheck(diagnostic);
+			context.ReportDiagnosticWithSuppressionCheck(diagnostic, settings);
 		}
     }
 }
