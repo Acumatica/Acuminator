@@ -51,18 +51,28 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			switch (viewSyntaxNode)
 			{
 				case PropertyDeclarationSyntax propertyDeclaration:
-					return propertyDeclaration.Type.GetSyntaxNodeStringWithRemovedIndent(tabSize);
-
+					{
+						int prependLength = GetPrependLength(propertyDeclaration.Modifiers);
+						return propertyDeclaration.Type.GetSyntaxNodeStringWithRemovedIndent(tabSize, prependLength);
+					}
 				case VariableDeclarationSyntax variableDeclaration:
-					return variableDeclaration.Type.GetSyntaxNodeStringWithRemovedIndent(tabSize);
-
+					{
+						int prependLength = GetPrependLength((variableDeclaration.Parent as FieldDeclarationSyntax)?.Modifiers);
+						return variableDeclaration.Type.GetSyntaxNodeStringWithRemovedIndent(tabSize, prependLength);
+					}
 				case VariableDeclaratorSyntax variableDeclarator 
 				when variableDeclarator.Parent is VariableDeclarationSyntax variableDeclaration:
-					return variableDeclaration.Type.GetSyntaxNodeStringWithRemovedIndent(tabSize);
-
+					{
+						int prependLength = GetPrependLength((variableDeclaration.Parent as FieldDeclarationSyntax)?.Modifiers);
+						return variableDeclaration.Type.GetSyntaxNodeStringWithRemovedIndent(tabSize, prependLength);
+					}
 				default:
 					return viewInfo.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
 			}
 		}
+
+		private static int GetPrependLength(SyntaxTokenList? modifiers) => modifiers != null
+			? modifiers.Value.FullSpan.End - modifiers.Value.Span.Start
+			: 0;
 	}
 }

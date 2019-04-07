@@ -18,7 +18,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private const string PxDataNamespacePrefix = "PX.Data.";
 		private const string PxObjectsNamespacePrefix = "PX.Objects.";
 
-		public static string GetSyntaxNodeStringWithRemovedIndent(this SyntaxNode syntaxNode, int tabSize)
+		public static string GetSyntaxNodeStringWithRemovedIndent(this SyntaxNode syntaxNode, int tabSize, int prependLength = 0)
 		{
 			if (tabSize <= 0)
 			{
@@ -30,7 +30,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (syntaxNodeString.IsNullOrWhiteSpace())
 				return syntaxNodeString;
 
-			var indentLength = syntaxNode.GetNodeIndentLength(tabSize);
+			prependLength = tabSize * (prependLength / tabSize);
+			var indentLength = prependLength + syntaxNode.GetNodeIndentLength(tabSize);
 
 			if (indentLength == 0)
 				return syntaxNodeString;
@@ -89,14 +90,27 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				
 				if (leadingTrivia.Count > 0)
 				{
-					indentLength += leadingTrivia.Where(t => t.IsKind(SyntaxKind.WhitespaceTrivia))
-												 .Sum(t => t.GetIndentLengthFromWhitespaceTrivia(tabSize));
+					indentLength += leadingTrivia.LastWhitespaceTrivia()
+												?.GetIndentLengthFromWhitespaceTrivia(tabSize) ?? 0;										 
 				}
 
 				currentNode = currentNode.Parent;
 			}
 
 			return indentLength;
+		}
+
+		private static SyntaxTrivia? LastWhitespaceTrivia(this SyntaxTriviaList syntaxTrivias)
+		{
+			for (int i = syntaxTrivias.Count - 1; i >= 0; i--)
+			{
+				SyntaxTrivia trivia = syntaxTrivias[i];
+
+				if (trivia.IsKind(SyntaxKind.WhitespaceTrivia))
+					return trivia;
+			}
+
+			return null;
 		}
 
 		private static int GetIndentLengthFromWhitespaceTrivia(this SyntaxTrivia trivia, int tabSize)
