@@ -340,6 +340,42 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enable Acuminator static code analysis for Visual Studio solution..
+        /// </summary>
+        public static string Setting_CodeAnalysis_StaticAnalysisEnabled_Description {
+            get {
+                return ResourceManager.GetString("Setting_CodeAnalysis_StaticAnalysisEnabled_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable code analysis.
+        /// </summary>
+        public static string Setting_CodeAnalysis_StaticAnalysisEnabled_Title {
+            get {
+                return ResourceManager.GetString("Setting_CodeAnalysis_StaticAnalysisEnabled_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable Acuminator diagnostic suppression mechanism for Acumatica. If set to true, the Acuminator will not display suppressed diagnostics stored in the suppression file..
+        /// </summary>
+        public static string Setting_CodeAnalysis_SuppressionMechanismEnabled_Description {
+            get {
+                return ResourceManager.GetString("Setting_CodeAnalysis_SuppressionMechanismEnabled_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable diagnostic suppression mechanism.
+        /// </summary>
+        public static string Setting_CodeAnalysis_SuppressionMechanismEnabled_Title {
+            get {
+                return ResourceManager.GetString("Setting_CodeAnalysis_SuppressionMechanismEnabled_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Colorize BQL syntax. If set to false, all Acuminator coloring is turned off..
         /// </summary>
         public static string Setting_ColoringEnabled_Description {
