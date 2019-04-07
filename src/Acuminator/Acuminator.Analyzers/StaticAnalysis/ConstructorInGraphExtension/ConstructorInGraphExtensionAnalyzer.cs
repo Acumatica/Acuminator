@@ -32,7 +32,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConstructorInGraphExtension
 					.Where(c => !c.IsImplicitlyDeclared))
 				{
 					context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(
-						Descriptors.PX1040_ConstructorInGraphExtension, constructor.Locations.First()));
+						Descriptors.PX1040_ConstructorInGraphExtension, constructor.Locations.First()), pxContext.CodeAnalysisSettings);
 				}
 			}
 		}
