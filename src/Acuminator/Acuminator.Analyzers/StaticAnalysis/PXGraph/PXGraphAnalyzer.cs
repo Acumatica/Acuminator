@@ -48,12 +48,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
         /// <summary>
         /// Constructor for the unit tests.
         /// </summary>
-        public PXGraphAnalyzer(CodeAnalysisSettings settings, params IPXGraphAnalyzer[] innerAnalyzers)
-            : base(settings, innerAnalyzers)
+        public PXGraphAnalyzer(CodeAnalysisSettings settings, params IPXGraphAnalyzer[] innerAnalyzers) : base(settings, innerAnalyzers)
         {
         }
 
-		protected override void AnalyzeSymbol(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings)
+		protected override void AnalyzeSymbol(SymbolAnalysisContext context, PXContext pxContext)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -63,16 +62,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 			}
 
 			var inferredGraphs = PXGraphSemanticModel.InferModels(pxContext, type, context.CancellationToken);
+			var parallelOptions = new ParallelOptions()
+			{
+				CancellationToken = context.CancellationToken
+			};
 
 			foreach (var graph in inferredGraphs)
 			{
-				Parallel.ForEach(_innerAnalyzers, innerAnalyzer =>
+				Parallel.ForEach(_innerAnalyzers, parallelOptions, innerAnalyzer =>
 				{
 					context.CancellationToken.ThrowIfCancellationRequested();
 
-					if (innerAnalyzer.ShouldAnalyze(pxContext, settings, graph))
+					if (innerAnalyzer.ShouldAnalyze(pxContext, CodeAnalysisSettings, graph))
 					{
-						innerAnalyzer.Analyze(context, pxContext, settings, graph);
+						innerAnalyzer.Analyze(context, pxContext, CodeAnalysisSettings, graph);
 					}
 				});
 			}
