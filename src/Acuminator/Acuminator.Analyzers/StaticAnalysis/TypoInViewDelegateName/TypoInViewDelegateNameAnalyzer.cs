@@ -50,8 +50,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 				{
 					var properties = ImmutableDictionary.CreateBuilder<string, string>();
 					properties.Add(ViewFieldNameProperty, nearest.Name);
-					context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1005_TypoInViewDelegateName, 
-						method.Locations.First(), properties.ToImmutable(), nearest.Name));
+					context.ReportDiagnosticWithSuppressionCheck(
+						Diagnostic.Create(Descriptors.PX1005_TypoInViewDelegateName, method.Locations.First(), properties.ToImmutable(), nearest.Name),
+						pxContext.CodeAnalysisSettings);
 		        }
 	        }
 		}

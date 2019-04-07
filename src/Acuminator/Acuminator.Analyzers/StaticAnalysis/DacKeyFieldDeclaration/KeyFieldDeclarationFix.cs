@@ -76,13 +76,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			return Task.FromResult(true);
 		}
 
-		private async Task<Document> RemoveKeysFromFieldsAsync(Document document,
-																CancellationToken cancellationToken,
-																Diagnostic diagnostic,
-																CodeFixModes mode)
+		private async Task<Document> RemoveKeysFromFieldsAsync(Document document, CancellationToken cancellationToken,
+															   Diagnostic diagnostic, CodeFixModes mode)
 		{
 			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
-			var pxContext = new PXContext(semanticModel.Compilation);
+			var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
 			var attributeInformation = new AttributeInformation(pxContext);
 
 			cancellationToken.ThrowIfCancellationRequested();

@@ -60,7 +60,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 				var semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
 				context.RegisterCodeFix(CodeAction.Create(title, c =>
 					{
-						var rewriter = new Rewriter(new PXContext(semanticModel.Compilation), context.Document, semanticModel);
+						var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
+						var rewriter = new Rewriter(pxContext, context.Document, semanticModel);
 						var newNode = rewriter.Visit(node);
 						return Task.FromResult(context.Document.WithSyntaxRoot(root.ReplaceNode(node, newNode)));
 					}, title),

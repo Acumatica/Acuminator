@@ -22,7 +22,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 
 			var methodSymbol = (IMethodSymbol) context.Symbol;
 			var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
-			var walker = new Walker(context);
+			var walker = new Walker(context, pxContext);
 
 			methodSyntax?.Accept(walker);
 		}
@@ -33,8 +33,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 
 			private readonly SymbolAnalysisContext _context;
 
-			public Walker(SymbolAnalysisContext context)
-				: base(context.Compilation, context.CancellationToken)
+			public Walker(SymbolAnalysisContext context, PXContext pxContext)
+				: base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
 			{
 				_context = context;
 			}

@@ -34,7 +34,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 				context.RegisterCodeFix(CodeAction.Create(title, async c =>
 					{
 						var semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
-						var pxContext = new PXContext(semanticModel.Compilation);
+						var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
 						var classType = semanticModel.GetDeclaredSymbol(node);
 						var generator = SyntaxGenerator.GetGenerator(context.Document);
 

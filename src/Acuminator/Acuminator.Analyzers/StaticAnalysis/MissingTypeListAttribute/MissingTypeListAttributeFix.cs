@@ -51,7 +51,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute
 			if (property == null)
 				return document;
 
-			var pxContext = new PXContext(semanticModel.Compilation);
+			var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
 			var lists = new List<INamedTypeSymbol> {
 									pxContext.AttributeTypes.PXIntListAttribute.Type,
 									pxContext.AttributeTypes.PXStringListAttribute.Type };

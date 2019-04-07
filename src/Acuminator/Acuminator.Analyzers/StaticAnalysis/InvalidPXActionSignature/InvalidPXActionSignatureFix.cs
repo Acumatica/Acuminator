@@ -69,7 +69,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 				if (semanticModel == null || cancellationToken.IsCancellationRequested)
 					return _document;
 
-				var pxContext = new PXContext(semanticModel.Compilation);
+				var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
 				var oldRoot = await _document.GetSyntaxRootAsync(cancellationToken)
 											 .ConfigureAwait(false);
 
