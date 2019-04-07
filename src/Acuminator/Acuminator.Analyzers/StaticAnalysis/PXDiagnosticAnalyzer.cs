@@ -26,7 +26,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			//context.EnableConcurrentExecution();
 			context.RegisterCompilationStartAction(compilationStartContext =>
 			{
-				var pxContext = new PXContext(compilationStartContext.Compilation);
+				var pxContext = new PXContext(compilationStartContext.Compilation, CodeAnalysisSettings);
 
 				if (ShouldAnalyze(pxContext))
 				{
@@ -35,7 +35,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			});
 		}
 
-		protected virtual bool ShouldAnalyze(PXContext pxContext) =>  pxContext.IsPlatformReferenced;
+		protected virtual bool ShouldAnalyze(PXContext pxContext) =>  pxContext.IsPlatformReferenced && 
+																	  pxContext.CodeAnalysisSettings.StaticAnalysisEnabled;
 
 		internal abstract void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext);	
 	}
