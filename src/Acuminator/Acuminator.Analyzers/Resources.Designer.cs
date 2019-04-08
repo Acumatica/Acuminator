@@ -314,7 +314,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The return type of the action handler initiating a background operation or executed by another background operation must be IEnumerable.
+        ///   Looks up a localized string similar to The action handler that initiates a background operation or is executed by a background operation must return IEnumerable.
         /// </summary>
         public static string PX1013Title {
             get {
