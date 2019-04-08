@@ -250,16 +250,16 @@
     <value>Enable additional diagnostics for ISV Solution Certification</value>
   </data>
   <data name="Setting_CodeAnalysis_StaticAnalysisEnabled_Description" xml:space="preserve">
-    <value>Enable Acuminator static code analysis for Visual Studio solution.</value>
+    <value>Enable Acuminator static code analysis for Visual Studio solutions.</value>
   </data>
   <data name="Setting_CodeAnalysis_StaticAnalysisEnabled_Title" xml:space="preserve">
     <value>Enable code analysis</value>
   </data>
   <data name="Setting_CodeAnalysis_SuppressionMechanismEnabled_Description" xml:space="preserve">
-    <value>Enable Acuminator diagnostic suppression mechanism for Acumatica. If set to true, the Acuminator will not display suppressed diagnostics stored in the suppression file.</value>
+    <value>Do not display the diagnostics specified in the suppression file. If set to false, Acuminator ignores the suppression file and displays all found diagnostics.</value>
   </data>
   <data name="Setting_CodeAnalysis_SuppressionMechanismEnabled_Title" xml:space="preserve">
-    <value>Enable diagnostic suppression mechanism</value>
+    <value>Suppress selected diagnostics</value>
   </data>
   <data name="CodeMapWindowTitle" xml:space="preserve">
     <value>Code Map (Experimental)</value>
