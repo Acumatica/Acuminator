@@ -340,7 +340,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enable Acuminator static code analysis for Visual Studio solution..
+        ///   Looks up a localized string similar to Enable Acuminator static code analysis for Visual Studio solutions..
         /// </summary>
         public static string Setting_CodeAnalysis_StaticAnalysisEnabled_Description {
             get {
@@ -358,7 +358,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enable Acuminator diagnostic suppression mechanism for Acumatica. If set to true, the Acuminator will not display suppressed diagnostics stored in the suppression file..
+        ///   Looks up a localized string similar to Do not display the diagnostics specified in the suppression file. If set to false, Acuminator ignores the suppression file and displays all found diagnostics..
         /// </summary>
         public static string Setting_CodeAnalysis_SuppressionMechanismEnabled_Description {
             get {
@@ -367,7 +367,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enable diagnostic suppression mechanism.
+        ///   Looks up a localized string similar to Suppress selected diagnostics.
         /// </summary>
         public static string Setting_CodeAnalysis_SuppressionMechanismEnabled_Title {
             get {
