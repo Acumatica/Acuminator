@@ -266,6 +266,7 @@ You should use the `async` / `await` pattern to avoid wrapping exceptions in `Ag
 public async Task TestDiagnostic(string actual) => await VerifyCSharpDiagnosticAsync(actual);
 ```
 
+### Async anonymous delegates 
 You must never use the asynchronous delegates in analyzers because they prevent Visual Studio from catching `OperationCancelledException` which leads to VS silent crash without anything being written to the logs.
 Such bugs have concurrent nature and are very hard to reproduce and debug. So do not write the following code:
 ```C#
