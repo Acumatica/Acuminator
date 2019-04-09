@@ -78,8 +78,7 @@ namespace Acuminator.Utilities.Roslyn
 
 			_compilation = compilation;
             CancellationToken = cancellationToken;
-			_settings = codeAnalysisSettings ?? GlobalCodeAnalysisSettings.Instance;
-
+			
 			if (bypassMethod != null)
 			{
 				_bypassMethod = bypassMethod;
@@ -90,7 +89,9 @@ namespace Acuminator.Utilities.Roslyn
 				var typesToBypass = GetTypesToBypass(pxContext).ToHashSet();
 
 				_bypassMethod = m => typesToBypass.Contains(m.ContainingType);
-			}		
+			}
+
+			_settings = codeAnalysisSettings ?? CodeAnalysisSettings.GetCodeAnalysisSettings();
 		}
 
 		protected virtual IEnumerable<INamedTypeSymbol> GetTypesToBypass(PXContext pxContext)

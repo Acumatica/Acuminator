@@ -4,6 +4,7 @@ using System.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CommonServiceLocator;
 
 namespace Acuminator.Utilities
 {
@@ -21,6 +22,25 @@ namespace Acuminator.Utilities
 				DefaultISVSpecificAnalyzersEnabled,
 				DefaultStaticAnalysisEnabled,
 				DefaultSuppressionMechanismEnabled);
+
+		public static CodeAnalysisSettings GetCodeAnalysisSettings()
+		{
+			CodeAnalysisSettings settings = null;
+
+			try
+			{
+				if (ServiceLocator.IsLocationProviderSet)
+				{
+					settings = ServiceLocator.Current.GetInstance<CodeAnalysisSettings>();
+				}
+			}
+			catch
+			{
+				// TODO: log the exception
+			}
+
+			return settings ?? CodeAnalysisSettings.Default;
+		}
 
 		public virtual bool RecursiveAnalysisEnabled { get; }
 

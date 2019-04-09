@@ -88,7 +88,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GlobalCodeAnalysisSettings.cs" />
     <Compile Include="CodeAnalysisSettings.cs" />
     <Compile Include="Common\DictionaryExtensions.cs" />
     <Compile Include="Common\ExceptionExtensions.cs" />

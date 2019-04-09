@@ -26,6 +26,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
         {
+			if (!ShouldAnalyze(pxContext))
+				return;
+
             compilationStartContext.RegisterSymbolAction(c => AnalyzeSymbolHandleAggregateException(c, pxContext), SymbolKind);
             // TODO: Enable this operation action after migration to Roslyn v2
             //compilationStartContext.RegisterOperationAction(c => AnalyzeLambda(c, pxContext, codeAnalysisSettings), OperationKind.LambdaExpression);
