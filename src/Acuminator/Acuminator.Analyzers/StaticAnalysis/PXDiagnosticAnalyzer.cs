@@ -15,7 +15,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		/// <param name="codeAnalysisSettings">(Optional) The code analysis settings for unit tests.</param>
 		public PXDiagnosticAnalyzer(CodeAnalysisSettings codeAnalysisSettings = null)
 		{
-			CodeAnalysisSettings = codeAnalysisSettings ?? CodeAnalysisSettings.GetCodeAnalysisSettings();
+			CodeAnalysisSettings = codeAnalysisSettings ?? GlobalCodeAnalysisSettings.Instance;
 		}
 
 		public override void Initialize(AnalysisContext context)

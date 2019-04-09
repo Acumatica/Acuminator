@@ -34,8 +34,7 @@ namespace Acuminator.Analyzers.Refactorings.ChangeEventHandlerSignatureToGeneric
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			var semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
-			CodeAnalysisSettings codeAnalysisSettings = CodeAnalysisSettings.GetCodeAnalysisSettings();
-			var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings);
+			var pxContext = new PXContext(semanticModel.Compilation, GlobalCodeAnalysisSettings.Instance);
 
 			if (!pxContext.CodeAnalysisSettings.StaticAnalysisEnabled || !pxContext.IsPlatformReferenced)
 				return;

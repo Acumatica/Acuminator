@@ -59,7 +59,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 			if (eventType == EventType.None)
 				return;
 
-			Parallel.ForEach(_innerAnalyzers, innerAnalyzer =>
+			ParallelOptions parallelOptions = new ParallelOptions
+			{
+				CancellationToken = context.CancellationToken
+			};
+
+			Parallel.ForEach(_innerAnalyzers, parallelOptions, innerAnalyzer =>
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 

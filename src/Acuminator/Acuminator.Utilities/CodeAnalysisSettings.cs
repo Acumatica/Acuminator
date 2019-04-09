@@ -23,25 +23,6 @@ namespace Acuminator.Utilities
 				DefaultStaticAnalysisEnabled,
 				DefaultSuppressionMechanismEnabled);
 
-		public static CodeAnalysisSettings GetCodeAnalysisSettings()
-		{
-			CodeAnalysisSettings settings = null;
-
-			try
-			{
-				if (ServiceLocator.IsLocationProviderSet)
-				{
-					settings = ServiceLocator.Current.GetInstance<CodeAnalysisSettings>();
-				}
-			}
-			catch
-			{
-				// TODO: log the exception
-			}
-
-			return settings ?? CodeAnalysisSettings.Default;
-		}
-
 		public virtual bool RecursiveAnalysisEnabled { get; }
 
 		public virtual bool IsvSpecificAnalyzersEnabled { get; }
