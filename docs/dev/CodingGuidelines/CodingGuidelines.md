@@ -265,3 +265,20 @@ You should use the `async` / `await` pattern to avoid wrapping exceptions in `Ag
 ```C#
 public async Task TestDiagnostic(string actual) => await VerifyCSharpDiagnosticAsync(actual);
 ```
+
+You must never use the asynchronous delegates in analyzers because they prevent Visual Studio from catching `OperationCancelledException` which leads to VS silent crash without anything being written to the logs.
+Such bugs have concurrent nature and are very hard to reproduce and debug. So do not write the following code:
+```C#
+//WRONG
+compilationStartContext.RegisterSymbolAction(async symbolContext => await Analyze_Something_Async(symbolContext, pxContext),
+                                             SymbolKind.NamedType);
+```
+
+Instead write code like this:
+```C#
+//Correct. Pay no attention to the VS warning about not awaited task in this case
+compilationStartContext.RegisterSymbolAction(symbolContext => Analyze_Something_Async(symbolContext, pxContext),
+                                             SymbolKind.NamedType);
+```
+
+The Analyze_Something_Async asynchronous method shoud return Task.
