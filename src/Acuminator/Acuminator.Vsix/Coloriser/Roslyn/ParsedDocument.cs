@@ -50,7 +50,7 @@ namespace Acuminator.Vsix.Coloriser
 			return Document.GetSemanticModelAsync(cancellationToken);
 		}
 
-		public static async Task<ParsedDocument> Resolve(ITextBuffer buffer, ITextSnapshot snapshot, CancellationToken cancellationToken)
+		public static async Task<ParsedDocument> ResolveAsync(ITextBuffer buffer, ITextSnapshot snapshot, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
                 return null;
