@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
 
+
 namespace Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
@@ -19,8 +20,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSymbolAction(async symbolContext =>
-														 await AnalyzeDacFieldTypeAsync(symbolContext, pxContext).ConfigureAwait(false), SymbolKind.NamedType);
+			compilationStartContext.RegisterSymbolAction(symbolContext => AnalyzeDacFieldTypeAsync(symbolContext, pxContext), SymbolKind.NamedType);
 		}
 
 		private static async Task AnalyzeDacFieldTypeAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)

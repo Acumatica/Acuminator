@@ -28,8 +28,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSymbolAction(async symbolContext =>
-				await AnalyzeDacOrDacExtensionDeclarationAsync(symbolContext, pxContext).ConfigureAwait(false), SymbolKind.NamedType);
+			compilationStartContext.RegisterSymbolAction(symbolContext =>
+				AnalyzeDacOrDacExtensionDeclarationAsync(symbolContext, pxContext), SymbolKind.NamedType);
 		}
 
 		private static async Task AnalyzeDacOrDacExtensionDeclarationAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
