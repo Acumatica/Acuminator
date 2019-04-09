@@ -22,7 +22,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSymbolAction(async symbolContext => await AnalyzePXGraphSymbolAsync(symbolContext, pxContext),
+			compilationStartContext.RegisterSymbolAction(async symbolContext => await AnalyzePXGraphSymbolAsync(symbolContext, pxContext).ConfigureAwait(false),
 														 SymbolKind.NamedType);
 		}
 

@@ -23,7 +23,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSymbolAction(async c => await AnalyzeDelegateAsync(c, pxContext), SymbolKind.Method);
+			compilationStartContext.RegisterSymbolAction(async c => await AnalyzeDelegateAsync(c, pxContext).ConfigureAwait(false), SymbolKind.Method);
 		}
 
 		private static async Task AnalyzeDelegateAsync(SymbolAnalysisContext syntaxContext, PXContext pxContext)

@@ -20,7 +20,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
 			compilationStartContext.RegisterSymbolAction(async symbolContext =>
-														 await AnalyzeDacFieldTypeAsync(symbolContext, pxContext), SymbolKind.NamedType);
+														 await AnalyzeDacFieldTypeAsync(symbolContext, pxContext).ConfigureAwait(false), SymbolKind.NamedType);
 		}
 
 		private static async Task AnalyzeDacFieldTypeAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
