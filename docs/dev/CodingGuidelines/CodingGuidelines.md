@@ -20,6 +20,7 @@
     * [Task Awaiting](#task-awaiting)
     * [Parametrized Diagnostic Messages](#parametrized-diagnostic-messages)
     * [Test Methods](#test-methods)
+    * [Async anonymous delegates](#async-anonymous-delegate)
 
 ## Code Style
 
@@ -282,4 +283,4 @@ compilationStartContext.RegisterSymbolAction(symbolContext => Analyze_Something_
                                              SymbolKind.NamedType);
 ```
 
-The Analyze_Something_Async asynchronous method shoud return Task.
+The 'Analyze_Something_Async()' asynchronous method shoud return 'Task' because 'void' return type may prevent the Visual Studio from catching `OperationCancelledException` too.
