@@ -13,6 +13,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class ActionNodeViewModel : GraphMemberNodeViewModel
 	{
+		public ActionInfo ActionInfo => MemberInfo as ActionInfo;
+
 		public ActionNodeViewModel(ActionCategoryNodeViewModel actionCategoryVM, ActionInfo actionInfo, bool isExpanded = false) :
 							  base(actionCategoryVM, actionInfo, isExpanded)
 		{
