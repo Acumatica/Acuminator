@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text;
-using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Acuminator.Analyzers;
 using Acuminator.Analyzers.StaticAnalysis;
@@ -69,12 +69,14 @@ namespace Acuminator.Vsix.Logger
 				logMode = LogMode.Warning;
 			}
 
-			e.Exception.Flatten().InnerExceptions
-								 .ForEach(exception => LogException(exception, logOnlyFromAcuminatorAssemblies: false, logMode));		
+			foreach (Exception exception in e.Exception.Flatten().InnerExceptions)
+			{
+				LogException(exception, logOnlyFromAcuminatorAssemblies: false, logMode);
+			} 
 		}
 
-
-		public void LogException(Exception exception, bool logOnlyFromAcuminatorAssemblies, LogMode logMode)
+		public void LogException(Exception exception, bool logOnlyFromAcuminatorAssemblies, LogMode logMode, 
+								 [CallerMemberName]string reportedFrom = null)
 		{
 			if (exception == null || logMode == LogMode.None)
 			{
@@ -96,7 +98,7 @@ namespace Acuminator.Vsix.Logger
 			if (currentDocument == null)
 				return;
 
-			string logMessage = CreateLogMessageFromException(exception, currentDocument, logMode);
+			string logMessage = CreateLogMessageFromException(exception, currentDocument, logMode, reportedFrom);
 
 			switch (logMode)
 			{
@@ -112,7 +114,7 @@ namespace Acuminator.Vsix.Logger
 			}		
 		}
 
-		private string CreateLogMessageFromException(Exception exception, Document currentDocument, LogMode logMode)
+		private string CreateLogMessageFromException(Exception exception, Document currentDocument, LogMode logMode, string reportedFrom)
 		{
 
 			StringBuilder messageBuilder = new StringBuilder(capacity: 256);
@@ -127,7 +129,8 @@ namespace Acuminator.Vsix.Logger
 						  .AppendLine($"|MESSAGE: {exception.Message}")
 						  .AppendLine($"|STACK TRACE: {exception.StackTrace}")
 						  .AppendLine($"|TARGET SITE: {exception.TargetSite}")
-						  .AppendLine($"|SOURCE: {exception.Source}");
+						  .AppendLine($"|SOURCE: {exception.Source}")
+						  .AppendLine($"|REPORTED FROM: {reportedFrom}");
 
 			return messageBuilder.ToString();
 		}
