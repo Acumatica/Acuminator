@@ -44,38 +44,44 @@ namespace Acuminator.Vsix.Logger
 
 		private void Acuminator_FirstChanceException(object sender, FirstChanceExceptionEventArgs e)
 		{
-			LogException(e.Exception, logOnlyFromAcuminatorAssemblies: true, isCriticalError: false);
+			LogException(e.Exception, logOnlyFromAcuminatorAssemblies: true, LogMode.Warning);
 		}
 
 		private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
 			if (e.ExceptionObject is Exception exception)
 			{
-				LogException(exception, logOnlyFromAcuminatorAssemblies: false, isCriticalError: e.IsTerminating);
+				LogMode logMode = e.IsTerminating 
+					? LogMode.Error 
+					: LogMode.Warning;
+
+				LogException(exception, logOnlyFromAcuminatorAssemblies: false, logMode);
 			}
 		}
 
 		private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
 		{
-			bool isCriticalError = true;
+			LogMode logMode = LogMode.Error;
 
 			if (_swallowUnobservedTaskExceptions && !e.Observed)
 			{
 				e.SetObserved();
-				isCriticalError = false;
+				logMode = LogMode.Warning;
 			}
 
 			e.Exception.Flatten().InnerExceptions
-								 .ForEach(exception => LogException(exception, logOnlyFromAcuminatorAssemblies: false, isCriticalError));		
+								 .ForEach(exception => LogException(exception, logOnlyFromAcuminatorAssemblies: false, logMode));		
 		}
 
 
-		public void LogException(Exception exception, bool logOnlyFromAcuminatorAssemblies, bool isCriticalError)
-		{		
-			if (exception == null)
+		public void LogException(Exception exception, bool logOnlyFromAcuminatorAssemblies, LogMode logMode)
+		{
+			if (exception == null || logMode == LogMode.None)
+			{
 				return;
-			else if (logOnlyFromAcuminatorAssemblies && 
-					 exception.Source != AnalyzersDll && exception.Source != UtilitiesDll && exception.Source != VsixDll)
+			}
+			else if (logOnlyFromAcuminatorAssemblies &&
+					exception.Source != AnalyzersDll && exception.Source != UtilitiesDll && exception.Source != VsixDll)
 			{
 				return;
 			}
@@ -90,16 +96,28 @@ namespace Acuminator.Vsix.Logger
 			if (currentDocument == null)
 				return;
 
-			string logMessage = CreateLogMessageFromException(exception, currentDocument, isCriticalError);
-			ActivityLog.TryLogError(PackageName, logMessage);
+			string logMessage = CreateLogMessageFromException(exception, currentDocument, logMode);
+
+			switch (logMode)
+			{
+				case LogMode.Information:
+					ActivityLog.TryLogInformation(PackageName, logMessage);
+					break;
+				case LogMode.Warning:
+					ActivityLog.TryLogWarning(PackageName, logMessage);
+					break;
+				case LogMode.Error:
+					ActivityLog.TryLogError(PackageName, logMessage);
+					break;
+			}		
 		}
 
-		private string CreateLogMessageFromException(Exception exception, Document currentDocument, bool isCriticalError)
+		private string CreateLogMessageFromException(Exception exception, Document currentDocument, LogMode logMode)
 		{
 
 			StringBuilder messageBuilder = new StringBuilder(capacity: 256);
 
-			if (isCriticalError)
+			if (logMode == LogMode.Error)
 			{
 				messageBuilder.AppendLine($"{PackageName} CAUSED CRITICAL ERROR");
 			}
