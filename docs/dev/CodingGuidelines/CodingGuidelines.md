@@ -269,19 +269,39 @@ public async Task TestDiagnostic(string actual) => await VerifyCSharpDiagnosticA
 
 ### Async anonymous delegates 
 
-You must never use the asynchronous delegates in analyzers because they prevent Visual Studio from catching `OperationCancelledException` which leads to VS silent crash without anything being written to the logs.
-Such bugs have concurrent nature and are very hard to reproduce and debug. So do not write the following code:
+You must never pass the asynchronous methods which have `void` return type to analyzer.RegisterXXX API methods. Internally Roslyn diagnostic engine catches `OperationCancelledException` exceptions.
+However, in .Net the `void`-returning asynchronous methods handle exceptions differently from the `Task`-returning asynchronous methods. 
+The `Task`-returning asynchronous methods actually attach aggregated exception to the `Task` while the `void`-returning ones report it to `SynchronizationContext`. 
+When the exception get there it becomes unhandled and silently crashes Visual Studio. 
+This bugs have concurrent nature because they appear only during the cancellation of the wrongly written analyzer and are very hard to reproduce and debug.
+Therefore such methods prevent Visual Studio from catching `OperationCancelledException` and must never be passed to the analyzer API. 
+Actually, the latest version of Roslyn even has a runtime check for async methods.
+ So do not write code like this:
+```C#
+//WRONG
+compilationStartContext.RegisterSymbolAction(Analyze_Something_Async, SymbolKind.NamedType);
+
+private static async void Analyze_Something_Async(SymbolAnalysisContext symbolContext) 
+{
+    //Analysis
+}
+```
+Note that it is especially easy to introduce this bug with async delegates. Keep in mind that analyzer.RegisterXXX API methods accept `void`-returning `Action<T>` delegate, not a `Func<T, Task>`. Check out the following code:
 ```C#
 //WRONG
 compilationStartContext.RegisterSymbolAction(async symbolContext => await Analyze_Something_Async(symbolContext, pxContext),
                                              SymbolKind.NamedType);
 ```
-
-Instead write code like this:
+So, how to write analyzers correctly? Do not pass asynchronous methods to the analyzer.RegisterXXX at all. The Roslyn has both synchronous and asynchronous API.
+For example, `symbol.GetSyntax(CancellationToken)` and `symbol.GetSyntaxAsync(CancellationToken)`. The analysis is executed on a background threads therefore the 
+usage of the synchronous API shouldn't be a big deal:
 ```C#
 //Correct. Pay no attention to the VS warning about not awaited task in this case
-compilationStartContext.RegisterSymbolAction(symbolContext => Analyze_Something_Async(symbolContext, pxContext),
+compilationStartContext.RegisterSymbolAction(symbolContext => Analyze_Something_Sync(symbolContext, pxContext),
                                              SymbolKind.NamedType);
 ```
-
-The 'Analyze_Something_Async()' asynchronous method shoud return 'Task' because 'void' return type may prevent the Visual Studio from catching `OperationCancelledException` too.
+There is also option of passing `Task`-returning asynchronous method. This is not recommended. 
+The Roslyn diagnostic engine does not expect any return objects, so the returned `Task` won't be ever awaited. 
+You also cannot await it because this will lead to the creation of the async delegate as was described above. And if the cancellation happens the returned 'Task'
+will become 'unobserved' and may throw an exception in the finalization thread (`Task` is `IDisposable`). Such unobserved `Task`s can be swallowed 
+but this is unwanted scenario which should be avoided.
