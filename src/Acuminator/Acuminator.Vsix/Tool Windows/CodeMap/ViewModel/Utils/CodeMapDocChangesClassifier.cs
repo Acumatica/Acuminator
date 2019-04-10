@@ -22,22 +22,31 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// </summary>
 	internal class CodeMapDocChangesClassifier : DocumentChangesClassifier
 	{
-		public async Task<bool> ShouldRefreshCodeMapAsync(Document oldDocument, SyntaxNode oldRoot, Document newDocument,
-														  CancellationToken cancellationToken = default)
+		public async Task<CodeMapRefreshMode> ShouldRefreshCodeMapAsync(Document oldDocument, SyntaxNode newRoot, Document newDocument,
+																		CancellationToken cancellationToken = default)
 		{
-			ChangeLocation changeLocation = await GetChangesLocationAsync(oldDocument, oldRoot, newDocument, cancellationToken);
-			return changeLocation == ChangeLocation.Class || 
-				   changeLocation == ChangeLocation.Namespace;
+			ChangeLocation changeLocation = await GetChangesLocationAsync(oldDocument, newRoot, newDocument, cancellationToken);
+
+			if (changeLocation == ChangeLocation.Class || changeLocation == ChangeLocation.Namespace)
+			{
+				return newRoot.ContainsDiagnostics
+					? CodeMapRefreshMode.Clear
+					: CodeMapRefreshMode.Recalculate;
+			}
+			else
+			{
+				return CodeMapRefreshMode.NoRefresh;
+			}
 		}
 
-		protected override ChangeLocation GetChangesLocationImplAsync(Document oldDocument, SyntaxNode oldRoot, Document newDocument,
+		protected override ChangeLocation GetChangesLocationImplAsync(Document oldDocument, SyntaxNode newRoot, Document newDocument,
 																	  IEnumerable<TextChange> textChanges, CancellationToken cancellationToken = default)
 		{
 			ChangeLocation accumulatedChangeLocation = ChangeLocation.None;
 
 			foreach (TextChange change in textChanges)
 			{
-				ChangeLocation changeLocation = GetTextChangeLocation(change, oldRoot);
+				ChangeLocation changeLocation = GetTextChangeLocation(change, newRoot);
 
 				//Early exit if we found a change which require the refresh of code map 
 				if (changeLocation.ContainsLocation(ChangeLocation.Class) || changeLocation.ContainsLocation(ChangeLocation.Namespace))

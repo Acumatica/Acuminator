@@ -150,9 +150,13 @@ namespace Acuminator.Vsix
         /// where you can put all the initialization code that rely on services provided by VisualStudio.
         /// </summary>
         protected override void Initialize()
-        {
-			InitializeCommands();
+        {		
 			base.Initialize();
+
+			if (Zombied)
+				return;
+
+			InitializeCommands();
 			SubscribeOnSolutionEvents();
 
 			IComponentModel componentModel = Package.GetGlobalService(typeof(SComponentModel)) as IComponentModel;

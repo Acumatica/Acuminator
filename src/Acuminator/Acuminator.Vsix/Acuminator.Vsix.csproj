@@ -481,6 +481,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\Base\GraphMemberNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\TreeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\TreeNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Utils\CodeMapRefreshMode.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Utils\IndentUtils.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Utils\CodeMapDocChangesClassifier.cs" />
     <Compile Include="Utils\ChangesClassification\ChangeLocation.cs" />
