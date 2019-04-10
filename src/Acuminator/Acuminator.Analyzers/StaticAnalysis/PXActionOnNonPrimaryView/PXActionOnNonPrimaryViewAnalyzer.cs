@@ -22,11 +22,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSymbolAction(symbolContext => AnalyzePXGraphSymbolAsync(symbolContext, pxContext),
+			compilationStartContext.RegisterSymbolAction(symbolContext => AnalyzePXGraphSymbol(symbolContext, pxContext),
 														 SymbolKind.NamedType);
 		}
 
-		private static async Task AnalyzePXGraphSymbolAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
+		private static void AnalyzePXGraphSymbol(SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
 			if (!(symbolContext.Symbol is INamedTypeSymbol graphOrGraphExtension) || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
@@ -36,8 +36,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 			if (!isGraph && !graphOrGraphExtension.InheritsFrom(pxContext.PXGraphExtensionType))
 				return;
 
-			ClassDeclarationSyntax graphOrGraphExtNode = await graphOrGraphExtension.GetSyntaxAsync(symbolContext.CancellationToken)
-																					.ConfigureAwait(false) as ClassDeclarationSyntax;
+			var graphOrGraphExtNode = graphOrGraphExtension.GetSyntax(symbolContext.CancellationToken) as ClassDeclarationSyntax;
 
 			if (graphOrGraphExtNode == null || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
@@ -75,10 +74,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 			}
 			.ToImmutableDictionary();
 
-			var registrationTasks = actionsWithWrongDAC.Select(a => RegisterDiagnosticForActionAsync(a.ActionSymbol, primaryDAC.Name, 
-																									 diagnosticExtraData, symbolContext, 
-																									 pxContext));
-			await Task.WhenAll(registrationTasks);
+			foreach (var (actionSymbol, _) in actionsWithWrongDAC)
+			{
+				RegisterDiagnosticForAction(actionSymbol, primaryDAC.Name, diagnosticExtraData, symbolContext, pxContext);
+			}
 		}
 
 		private static bool CheckActionIsDeclaredForPrimaryDAC(INamedTypeSymbol action, ITypeSymbol primaryDAC)
@@ -92,11 +91,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 			return pxActionDacType.Equals(primaryDAC);
 		}
 
-		private static async Task RegisterDiagnosticForActionAsync(ISymbol actionSymbol, string primaryDacName, 
-																   ImmutableDictionary<string, string> diagnosticProperties,
-																   SymbolAnalysisContext symbolContext, PXContext pxContext)
+		private static void RegisterDiagnosticForAction(ISymbol actionSymbol, string primaryDacName, 
+															 ImmutableDictionary<string, string> diagnosticProperties,
+															 SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
-			SyntaxNode symbolSyntax = await actionSymbol.GetSyntaxAsync(symbolContext.CancellationToken).ConfigureAwait(false);
+			SyntaxNode symbolSyntax = actionSymbol.GetSyntax(symbolContext.CancellationToken);
 			Location location = GetLocation(symbolSyntax);
 
 			if (location == null)

@@ -23,10 +23,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSymbolAction(c => AnalyzeDelegateAsync(c, pxContext), SymbolKind.Method);
+			compilationStartContext.RegisterSymbolAction(c => AnalyzeDelegate(c, pxContext), SymbolKind.Method);
 		}
 
-		private static async Task AnalyzeDelegateAsync(SymbolAnalysisContext syntaxContext, PXContext pxContext)
+		private static void AnalyzeDelegate(SymbolAnalysisContext syntaxContext, PXContext pxContext)
 		{
 			IMethodSymbol method = syntaxContext.Symbol as IMethodSymbol;
 
@@ -34,15 +34,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 				return;
 
 			var declaration = method.DeclaringSyntaxReferences[0];
-			var methodDeclaration = await declaration.GetSyntaxAsync(syntaxContext.CancellationToken)
-													 .ConfigureAwait(false) as MethodDeclarationSyntax;
+			var methodDeclaration = declaration.GetSyntax(syntaxContext.CancellationToken) as MethodDeclarationSyntax;
 
 			if (methodDeclaration?.Body == null || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
 
 			SemanticModel semanticModel = syntaxContext.Compilation.GetSemanticModel(declaration.SyntaxTree);
-			ILocalSymbol refStartRow = await GetReferenceToStartRow(methodDeclaration, semanticModel, pxContext, syntaxContext.CancellationToken)
-													.ConfigureAwait(false);
+			ILocalSymbol refStartRow = GetReferenceToStartRow(methodDeclaration, semanticModel, pxContext, syntaxContext.CancellationToken);
 
 			if (refStartRow == null || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
@@ -80,8 +78,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 			return method.IsDelegateForViewInPXGraph(pxContext);
 		}
 
-		private static async Task<ILocalSymbol> GetReferenceToStartRow(MethodDeclarationSyntax methodDeclaration, SemanticModel semanticModel,
-																	   PXContext pxContext, CancellationToken cancellationToken)
+		private static ILocalSymbol GetReferenceToStartRow(MethodDeclarationSyntax methodDeclaration, SemanticModel semanticModel,
+														   PXContext pxContext, CancellationToken cancellationToken)
 		{
 			DataFlowAnalysis df = semanticModel.AnalyzeDataFlow(methodDeclaration.Body);
 
@@ -95,7 +93,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 				if (syntaxReferences.Length == 0)
 					continue;
 
-				SyntaxNode symbolSyntax = await syntaxReferences[0].GetSyntaxAsync(cancellationToken).ConfigureAwait(false);
+				SyntaxNode symbolSyntax = syntaxReferences[0].GetSyntax(cancellationToken);
 
 				if (symbolSyntax == null || cancellationToken.IsCancellationRequested)
 					return null;
@@ -103,7 +101,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 				List<MemberAccessExpressionSyntax> memberAccesses = symbolSyntax.DescendantNodes()
 																				.OfType<MemberAccessExpressionSyntax>()
 																				.ToList();
-
 				if (memberAccesses.Count != 1)
 					continue;
 
