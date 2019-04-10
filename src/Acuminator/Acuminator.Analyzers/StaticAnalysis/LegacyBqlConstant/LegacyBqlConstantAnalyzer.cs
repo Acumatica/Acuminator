@@ -38,7 +38,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 					var properties = ImmutableDictionary.CreateBuilder<string, string>();
 					properties.Add(CorrespondingType, constantType);
 
-					context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1061_LegacyBqlConstant, location, properties.ToImmutable(), constant.Name)); 
+					context.ReportDiagnosticWithSuppressionCheck(
+						Diagnostic.Create(Descriptors.PX1061_LegacyBqlConstant, location, properties.ToImmutable(), constant.Name),
+						pxContext.CodeAnalysisSettings); 
 				}
 			}
 		}

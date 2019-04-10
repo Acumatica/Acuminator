@@ -84,7 +84,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
                 return document;
             }
 
-            var pxContext = new PXContext(semanticModel.Compilation);
+            var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
 			var pxButtonAttributeList = pxContext.AttributeTypes.PXButtonAttribute.GetAttributeList();
 			var pxUIFieldAttributeList = pxContext.AttributeTypes.PXUIFieldAttribute.Type.GetAttributeList();
             var attributeListCollection = new List<AttributeListSyntax>();

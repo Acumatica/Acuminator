@@ -62,18 +62,23 @@ namespace Acuminator.Utilities.Roslyn
 		private readonly Func<IMethodSymbol, bool> _bypassMethod;
 
 		/// <summary>
-		/// Constructor of the class
+		/// Constructor of the class.
 		/// </summary>
-		/// <param name="compilation">Compilation</param>
-		/// <param name="cancellationToken">Cancellation token</param>
-		/// <param name="bypassMethod">Delegate to control if it is needed to bypass analysis of an invocation of a method and do not step into it. If not supplied, default implementation is used to bypass some core types from PX.Data namespace</param>
-		protected NestedInvocationWalker(Compilation compilation, CancellationToken cancellationToken,
-			Func<IMethodSymbol, bool> bypassMethod = null)
+		/// <param name="compilation">Compilation.</param>
+		/// <param name="cancellationToken">Cancellation token.</param>
+		/// <param name="codeAnalysisSettings">The code analysis settings.</param>
+		/// <param name="bypassMethod">
+		/// (Optional) Delegate to control if it is needed to bypass analysis of an invocation of a method and do not step into it. 
+		/// If not supplied, default implementation is used to bypass some core types from PX.Data namespace.
+		/// </param>
+		protected NestedInvocationWalker(Compilation compilation, CancellationToken cancellationToken, CodeAnalysisSettings codeAnalysisSettings,
+										 Func<IMethodSymbol, bool> bypassMethod = null)
 		{
 			compilation.ThrowOnNull(nameof (compilation));
 
 			_compilation = compilation;
             CancellationToken = cancellationToken;
+			_settings = codeAnalysisSettings ?? GlobalCodeAnalysisSettings.Instance;
 
 			if (bypassMethod != null)
 			{
@@ -81,24 +86,11 @@ namespace Acuminator.Utilities.Roslyn
 			}
 			else
 			{
-				var pxContext = new PXContext(_compilation);
+				var pxContext = new PXContext(_compilation, _settings);
 				var typesToBypass = GetTypesToBypass(pxContext).ToHashSet();
 
 				_bypassMethod = m => typesToBypass.Contains(m.ContainingType);
-			}
-
-			try
-			{
-				if (ServiceLocator.IsLocationProviderSet)
-					_settings = ServiceLocator.Current.GetInstance<CodeAnalysisSettings>();
-			}
-			catch
-			{
-				// TODO: log the exception
-			}
-
-			if (_settings == null)
-				_settings = CodeAnalysisSettings.Default;
+			}		
 		}
 
 		protected virtual IEnumerable<INamedTypeSymbol> GetTypesToBypass(PXContext pxContext)
@@ -168,10 +160,9 @@ namespace Acuminator.Utilities.Roslyn
 		/// <remarks>This method takes a report diagnostic method as a parameter because it is different for each analyzer type 
 		/// (<code>SymbolAnalysisContext.ReportDiagnostic</code>, <code>SyntaxNodeAnalysisContext.ReportDiagnostic</code>, etc.)</remarks>
 		protected virtual void ReportDiagnostic(Action<Diagnostic> reportDiagnostic, DiagnosticDescriptor diagnosticDescriptor,
-			SyntaxNode node, params object[] messageArgs)
+												SyntaxNode node, params object[] messageArgs)
 		{
 			var nodeToReport = OriginalNode ?? node;
-
 			var diagnosticKey = (nodeToReport, diagnosticDescriptor);
 
 			if (!_reportedDiagnostics.Contains(diagnosticKey))
@@ -179,7 +170,7 @@ namespace Acuminator.Utilities.Roslyn
 				var diagnostic = Diagnostic.Create(diagnosticDescriptor, nodeToReport.GetLocation(), messageArgs);
 				var semanticModel = GetSemanticModel(nodeToReport.SyntaxTree);
 
-				SuppressionManager.ReportDiagnosticWithSuppressionCheck(semanticModel, reportDiagnostic, diagnostic, CancellationToken);
+				SuppressionManager.ReportDiagnosticWithSuppressionCheck(semanticModel, reportDiagnostic, diagnostic, _settings, CancellationToken);
 				_reportedDiagnostics.Add(diagnosticKey);
 			}
 		}

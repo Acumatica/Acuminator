@@ -22,7 +22,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSymbolAction(symbolContext => AnalyzePXGraphSymbolAsync(symbolContext, pxContext),
+			compilationStartContext.RegisterSymbolAction(async symbolContext => await AnalyzePXGraphSymbolAsync(symbolContext, pxContext),
 														 SymbolKind.NamedType);
 		}
 
@@ -76,7 +76,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 			.ToImmutableDictionary();
 
 			var registrationTasks = actionsWithWrongDAC.Select(a => RegisterDiagnosticForActionAsync(a.ActionSymbol, primaryDAC.Name, 
-																									 diagnosticExtraData, symbolContext));
+																									 diagnosticExtraData, symbolContext, 
+																									 pxContext));
 			await Task.WhenAll(registrationTasks);
 		}
 
@@ -93,7 +94,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 
 		private static async Task RegisterDiagnosticForActionAsync(ISymbol actionSymbol, string primaryDacName, 
 																   ImmutableDictionary<string, string> diagnosticProperties,
-																   SymbolAnalysisContext symbolContext)
+																   SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
 			SyntaxNode symbolSyntax = await actionSymbol.GetSyntaxAsync(symbolContext.CancellationToken).ConfigureAwait(false);
 			Location location = GetLocation(symbolSyntax);
@@ -103,7 +104,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 
 			symbolContext.ReportDiagnosticWithSuppressionCheck(
 				Diagnostic.Create(Descriptors.PX1012_PXActionOnNonPrimaryView, location, diagnosticProperties,
-								  actionSymbol.Name, primaryDacName));
+								  actionSymbol.Name, primaryDacName), pxContext.CodeAnalysisSettings);
 		}
 
 		private static Location GetLocation(SyntaxNode symbolSyntax)

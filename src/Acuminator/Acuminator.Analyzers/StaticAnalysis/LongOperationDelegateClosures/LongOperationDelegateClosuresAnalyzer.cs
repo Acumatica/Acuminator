@@ -41,23 +41,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
                     {
                         syntaxContext.ReportDiagnosticWithSuppressionCheck(
                             Diagnostic.Create(
-                                Descriptors.PX1008_LongOperationDelegateClosures, setDelegateInvocation.GetLocation()));
+                                Descriptors.PX1008_LongOperationDelegateClosures, setDelegateInvocation.GetLocation()),
+							pxContext.CodeAnalysisSettings);
                     }
 
                     return;
 				case MemberAccessExpressionSyntax memberAccess 
 				when memberAccess.Expression is ElementAccessExpressionSyntax arrayIndexAccess:
-					AnalyzeMemberAccessExpressions(arrayIndexAccess.Expression, syntaxContext);
+					AnalyzeMemberAccessExpressions(arrayIndexAccess.Expression, syntaxContext, pxContext);
 					return;
 				case MemberAccessExpressionSyntax memberAccess:
-					AnalyzeMemberAccessExpressions(memberAccess.Expression, syntaxContext);
+					AnalyzeMemberAccessExpressions(memberAccess.Expression, syntaxContext, pxContext);
 					return;
 				case ConditionalAccessExpressionSyntax conditionalAccess 
 				when conditionalAccess.Expression is ElementAccessExpressionSyntax arrayIndexAccess:
-					AnalyzeMemberAccessExpressions(arrayIndexAccess.Expression, syntaxContext);
+					AnalyzeMemberAccessExpressions(arrayIndexAccess.Expression, syntaxContext, pxContext);
 					return;
 				case ConditionalAccessExpressionSyntax conditionalAccess:
-					AnalyzeMemberAccessExpressions(conditionalAccess.Expression, syntaxContext);
+					AnalyzeMemberAccessExpressions(conditionalAccess.Expression, syntaxContext, pxContext);
 					return;
                 case AnonymousMethodExpressionSyntax anonMethodNode:
                     dfa = syntaxContext.SemanticModel.AnalyzeDataFlow(anonMethodNode);
@@ -71,7 +72,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
             {
                 syntaxContext.ReportDiagnosticWithSuppressionCheck(
                     Diagnostic.Create(
-                        Descriptors.PX1008_LongOperationDelegateClosures, setDelegateInvocation.GetLocation()));
+                        Descriptors.PX1008_LongOperationDelegateClosures, setDelegateInvocation.GetLocation()),
+					pxContext.CodeAnalysisSettings);
             }
         }
 
@@ -94,7 +96,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 			return true;
 		}
 
-		private static void AnalyzeMemberAccessExpressions(ExpressionSyntax expression, SyntaxNodeAnalysisContext syntaxContext)
+		private static void AnalyzeMemberAccessExpressions(ExpressionSyntax expression, SyntaxNodeAnalysisContext syntaxContext, 
+														   PXContext pxContext)
 		{
 			if (!(expression is IdentifierNameSyntax identifier))
 				return;
@@ -109,7 +112,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 				var setDelegateInvocation = syntaxContext.Node as InvocationExpressionSyntax;
 				syntaxContext.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(
-						Descriptors.PX1008_LongOperationDelegateClosures, setDelegateInvocation.GetLocation()));
+						Descriptors.PX1008_LongOperationDelegateClosures, setDelegateInvocation.GetLocation()),
+					pxContext.CodeAnalysisSettings);
 			}
 		}
 	}

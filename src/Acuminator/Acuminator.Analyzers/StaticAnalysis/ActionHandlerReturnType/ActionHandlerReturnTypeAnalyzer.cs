@@ -17,7 +17,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerReturnType
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1013_PXActionHandlerInvalidReturnType);
 
-        public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
+        public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
         {
             foreach (var actionHandler in pxGraph.DeclaredActionHandlers)
             {
@@ -50,7 +50,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerReturnType
                 Descriptors.PX1013_PXActionHandlerInvalidReturnType,
                 node.Identifier.GetLocation());
 
-            context.ReportDiagnosticWithSuppressionCheck(diagnostic);
+            context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
         }
 
         private bool StartsLongOperation(PXContext pxContext, Compilation compilation, SyntaxNode node, CancellationToken cancellation)

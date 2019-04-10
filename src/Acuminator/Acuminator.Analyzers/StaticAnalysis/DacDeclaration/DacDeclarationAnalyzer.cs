@@ -51,14 +51,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 				.ToDictionary(group => group.Key,
 								group => group.ToList(), StringComparer.OrdinalIgnoreCase);
 
-			CheckDeclarationForUnderscores(dacOrDacExtNode, syntaxContext, dacProperties);
-			CheckDeclarationForForbiddenNames(dacOrDacExtNode, syntaxContext, dacProperties,dacClassDeclarations);
-			CheckDeclarationForConstructors(dacOrDacExtNode, syntaxContext);
+			CheckDeclarationForUnderscores(pxContext, dacOrDacExtNode, syntaxContext, dacProperties);
+			CheckDeclarationForForbiddenNames(pxContext, dacOrDacExtNode, syntaxContext, dacProperties,dacClassDeclarations);
+			CheckDeclarationForConstructors(pxContext, dacOrDacExtNode, syntaxContext);
 		}
 
-		private static void CheckDeclarationForUnderscores(ClassDeclarationSyntax dacOrDacExtNode,
+		private static void CheckDeclarationForUnderscores(PXContext pxContext, ClassDeclarationSyntax dacOrDacExtNode,
 														   SyntaxNodeAnalysisContext syntaxContext,
-															Dictionary<string, List<PropertyDeclarationSyntax>> dacProperties)
+														   Dictionary<string, List<PropertyDeclarationSyntax>> dacProperties)
 		{
 			SyntaxToken identifier = dacOrDacExtNode.Identifier;
 
@@ -72,7 +72,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 
 				syntaxContext.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(
-						Descriptors.PX1026_UnderscoresInDacDeclaration, identifier.GetLocation(), diagnosticProperties));
+						Descriptors.PX1026_UnderscoresInDacDeclaration, identifier.GetLocation(), diagnosticProperties),
+					pxContext.CodeAnalysisSettings);
 			}
 
 			var identifiersWithUnderscores = from member in dacOrDacExtNode.Members
@@ -91,7 +92,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 
 				syntaxContext.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(
-						Descriptors.PX1026_UnderscoresInDacDeclaration, identifierToReport.GetLocation(), diagnosticProperties));
+						Descriptors.PX1026_UnderscoresInDacDeclaration, identifierToReport.GetLocation(), diagnosticProperties),
+					pxContext.CodeAnalysisSettings);
 			}
 
 			//*************************************Local Functions**********************************************************************
@@ -107,10 +109,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 			}
 		}
 
-		private static void CheckDeclarationForForbiddenNames(ClassDeclarationSyntax dacOrDacExtNode,
-																SyntaxNodeAnalysisContext syntaxContext,
-																Dictionary<string, List<PropertyDeclarationSyntax>> dacProperties,
-																Dictionary<string, List<ClassDeclarationSyntax>> dacClassDeclarations)
+		private static void CheckDeclarationForForbiddenNames(PXContext pxContext, ClassDeclarationSyntax dacOrDacExtNode,
+															  SyntaxNodeAnalysisContext syntaxContext,
+															  Dictionary<string, List<PropertyDeclarationSyntax>> dacProperties,
+															  Dictionary<string, List<ClassDeclarationSyntax>> dacClassDeclarations)
 		{
 			string[] forbiddenNames = GetForbiddenFieldsNames();
 			
@@ -129,7 +131,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 					syntaxContext.ReportDiagnosticWithSuppressionCheck(
 						Diagnostic.Create(
 							Descriptors.PX1027_ForbiddenFieldsInDacDeclaration, iProperty.Identifier.GetLocation(),
-							iProperty.Identifier.Text));
+							iProperty.Identifier.Text), pxContext.CodeAnalysisSettings);
 				}
 			}
 			foreach (var listClasses in invalidClassesByName)
@@ -139,12 +141,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 					syntaxContext.ReportDiagnosticWithSuppressionCheck(
 						Diagnostic.Create(
 							Descriptors.PX1027_ForbiddenFieldsInDacDeclaration, iClass.Identifier.GetLocation(),
-							iClass.Identifier.Text));
+							iClass.Identifier.Text), pxContext.CodeAnalysisSettings);
 				}
 			}
 		}
 		
-		private static void CheckDeclarationForConstructors(ClassDeclarationSyntax dacOrDacExtNode,
+		private static void CheckDeclarationForConstructors(PXContext pxContext, ClassDeclarationSyntax dacOrDacExtNode,
 															SyntaxNodeAnalysisContext syntaxContext)
 		{
 			var dacConstructors = dacOrDacExtNode.Members.OfType<ConstructorDeclarationSyntax>();
@@ -153,11 +155,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 			{
 				syntaxContext.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(
-						Descriptors.PX1028_ConstructorInDacDeclaration, constructor.Identifier.GetLocation()));
+						Descriptors.PX1028_ConstructorInDacDeclaration, constructor.Identifier.GetLocation()),
+					pxContext.CodeAnalysisSettings);
 			}
-
 		}
-
 
 		private static bool ShouldCheckIdentifier(MemberDeclarationSyntax member, Dictionary<string, List<PropertyDeclarationSyntax>> dacProperties)
 		{

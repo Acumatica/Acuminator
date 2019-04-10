@@ -80,7 +80,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 					symbolContext.ReportDiagnosticWithSuppressionCheck(
 						Diagnostic.Create(
-							Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField, attributeLocation, extraLocations));
+							Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField, attributeLocation, extraLocations),
+						pxContext.CodeAnalysisSettings);
 
 					extraLocations.Add(attributeLocation);
 				}

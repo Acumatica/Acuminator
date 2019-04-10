@@ -35,13 +35,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 		        if (!symbol.IsSealed)
 		        {
 			        context.ReportDiagnosticWithSuppressionCheck(
-						Diagnostic.Create(Descriptors.PX1011_InheritanceFromPXCacheExtension, symbol.Locations.First()));
+						Diagnostic.Create(Descriptors.PX1011_InheritanceFromPXCacheExtension, symbol.Locations.First()),
+						pxContext.CodeAnalysisSettings);
 		        }
 	        }
 	        else
 	        {
 		        context.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(Descriptors.PX1009_InheritanceFromPXCacheExtension, symbol.Locations.First()));
+					Diagnostic.Create(Descriptors.PX1009_InheritanceFromPXCacheExtension, symbol.Locations.First()),
+					pxContext.CodeAnalysisSettings);
 	        }
         }
     }

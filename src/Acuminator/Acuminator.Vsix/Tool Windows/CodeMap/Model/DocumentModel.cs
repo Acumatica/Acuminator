@@ -71,7 +71,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				if (!(Root is CompilationUnitSyntax compilationUnit))
 					return false;
 
-				PXContext context = new PXContext(SemanticModel.Compilation);
+				PXContext context = new PXContext(SemanticModel.Compilation, codeAnalysisSettings: null);
 
 				if (!context.IsPlatformReferenced)
 					return false;

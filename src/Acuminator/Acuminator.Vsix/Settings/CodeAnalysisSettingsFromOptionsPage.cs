@@ -17,12 +17,17 @@ namespace Acuminator.Vsix.Settings
 		[ImportingConstructor]
 		public CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage optionsPage)
 		{
-			optionsPage.ThrowOnNull(nameof (optionsPage));
+			optionsPage.ThrowOnNull(nameof(optionsPage));
 
 			_optionsPage = optionsPage;
 		}
 
 		public override bool RecursiveAnalysisEnabled => _optionsPage.RecursiveAnalysisEnabled;
+
 		public override bool IsvSpecificAnalyzersEnabled => _optionsPage.IsvSpecificAnalyzersEnabled;
+
+		public override bool StaticAnalysisEnabled => _optionsPage.StaticAnalysisEnabled;
+
+		public override bool SuppressionMechanismEnabled => _optionsPage.SuppressionMechanismEnabled;
 	}
 }

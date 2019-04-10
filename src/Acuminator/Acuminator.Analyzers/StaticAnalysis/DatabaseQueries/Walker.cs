@@ -24,7 +24,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 		private readonly ImmutableHashSet<IMethodSymbol> _databaseQueryMethods;
 
 		public Walker(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor diagnosticDescriptor)
-			: base(context.Compilation, context.CancellationToken)
+			: base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 			diagnosticDescriptor.ThrowOnNull(nameof(diagnosticDescriptor));

@@ -42,7 +42,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType
 			if (dacFieldLocation == null || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
 	
-			symbolContext.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1024_DacNonAbstractFieldType, dacFieldLocation));		
+			symbolContext.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1024_DacNonAbstractFieldType, dacFieldLocation),
+																pxContext.CodeAnalysisSettings);		
 		}
 
 		private static bool IsDacFieldType(ITypeSymbol dacFieldType, PXContext pxContext)

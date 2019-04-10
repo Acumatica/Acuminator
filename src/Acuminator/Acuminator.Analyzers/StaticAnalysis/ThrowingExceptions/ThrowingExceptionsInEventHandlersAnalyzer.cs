@@ -16,11 +16,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 			Descriptors.PX1073_ThrowingExceptionsInRowPersisted,
 			Descriptors.PX1074_ThrowingSetupNotEnteredExceptionInEventHandlers);
 
-		public override bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings, EventType eventType) =>
-			eventType != EventType.None;
+		public override bool ShouldAnalyze(PXContext pxContext, EventType eventType) => eventType != EventType.None;
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings,
-									 EventType eventType)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 

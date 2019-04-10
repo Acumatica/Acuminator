@@ -32,17 +32,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
 			ImmutableArray.Create(Descriptors.PX1044_ChangesInPXCacheInEventHandlers);
 
-		public override bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings, EventType eventType)
+		public override bool ShouldAnalyze(PXContext pxContext, EventType eventType)
 		{
-			var eventSet = settings.IsvSpecificAnalyzersEnabled
+			var eventSet = pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled
 				? AnalyzedEventTypesForIsv
 				: AnalyzedEventTypes;
 
 			return eventSet.Contains(eventType);
 		}
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings,
-			EventType eventType)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 

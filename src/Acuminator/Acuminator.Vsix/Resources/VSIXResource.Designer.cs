@@ -340,6 +340,42 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enable Acuminator static code analysis for Visual Studio solutions..
+        /// </summary>
+        public static string Setting_CodeAnalysis_StaticAnalysisEnabled_Description {
+            get {
+                return ResourceManager.GetString("Setting_CodeAnalysis_StaticAnalysisEnabled_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable code analysis.
+        /// </summary>
+        public static string Setting_CodeAnalysis_StaticAnalysisEnabled_Title {
+            get {
+                return ResourceManager.GetString("Setting_CodeAnalysis_StaticAnalysisEnabled_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do not display the diagnostics specified in the suppression file. If set to false, Acuminator ignores the suppression file and displays all found diagnostics..
+        /// </summary>
+        public static string Setting_CodeAnalysis_SuppressionMechanismEnabled_Description {
+            get {
+                return ResourceManager.GetString("Setting_CodeAnalysis_SuppressionMechanismEnabled_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Suppress selected diagnostics.
+        /// </summary>
+        public static string Setting_CodeAnalysis_SuppressionMechanismEnabled_Title {
+            get {
+                return ResourceManager.GetString("Setting_CodeAnalysis_SuppressionMechanismEnabled_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Colorize BQL syntax. If set to false, all Acuminator coloring is turned off..
         /// </summary>
         public static string Setting_ColoringEnabled_Description {

@@ -102,7 +102,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 			if (memberNode == null)
 				return;
 
-			PXContext context = new PXContext(semanticModel.Compilation);
+			PXContext context = new PXContext(semanticModel.Compilation, Acuminator.Utilities.CodeAnalysisSettings.Default);
 
 			if (!context.IsPlatformReferenced)
 				return;

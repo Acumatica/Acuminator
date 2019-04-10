@@ -50,7 +50,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac
 				return;
 
 			syntaxContext.ReportDiagnosticWithSuppressionCheck(
-				Diagnostic.Create(Descriptors.PX1018_NoPrimaryViewForPrimaryDac, location));
+				Diagnostic.Create(Descriptors.PX1018_NoPrimaryViewForPrimaryDac, location), pxContext.CodeAnalysisSettings);
 		}
 
 		private static IEnumerable<ITypeSymbol> GetGraphViewDacTypes(INamedTypeSymbol pxGraph, PXContext pxContext) =>

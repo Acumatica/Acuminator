@@ -18,7 +18,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
         public ImmutableArray<SyntaxNode> Delegates => _delegates.ToImmutableArray();
 
         public StartLongOperationDelegateWalker(PXContext pxContext, Compilation compilation, CancellationToken cancellation)
-            : base(compilation, cancellation)
+            : base(compilation, cancellation, pxContext.CodeAnalysisSettings)
         {
             pxContext.ThrowOnNull(nameof(pxContext));
 

@@ -23,7 +23,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSymbolAction(c => AnalyzeDelegateAsync(c, pxContext), SymbolKind.Method);
+			compilationStartContext.RegisterSymbolAction(async c => await AnalyzeDelegateAsync(c, pxContext), SymbolKind.Method);
 		}
 
 		private static async Task AnalyzeDelegateAsync(SymbolAnalysisContext syntaxContext, PXContext pxContext)
@@ -65,7 +65,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 
 			syntaxContext.ReportDiagnosticWithSuppressionCheck(
 				Diagnostic.Create(
-					Descriptors.PX1010_StartRowResetForPaging, selectInvocation.GetLocation(), diagnosticProperties));
+					Descriptors.PX1010_StartRowResetForPaging, selectInvocation.GetLocation(), diagnosticProperties),
+				pxContext.CodeAnalysisSettings);
 		}
 
 		private static bool IsDiagnosticValid(IMethodSymbol method, SymbolAnalysisContext syntaxContext, PXContext pxContext)

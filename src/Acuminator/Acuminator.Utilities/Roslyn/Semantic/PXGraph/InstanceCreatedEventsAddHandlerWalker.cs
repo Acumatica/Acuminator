@@ -16,7 +16,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public List<InitDelegateInfo> GraphInitDelegates { get; private set; } = new List<InitDelegateInfo>();
 
 		public InstanceCreatedEventsAddHandlerWalker(PXContext pxContext, CancellationToken cancellation)
-			: base(pxContext.Compilation, cancellation)
+			: base(pxContext.Compilation, cancellation, pxContext.CodeAnalysisSettings)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
