@@ -42,7 +42,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 		}
 
 		//-------------------------------------Code Action for Fix---------------------------------------------------------------------------
-		private class ChangeSignatureAction : CodeAction
+		internal class ChangeSignatureAction : CodeAction
 		{
 			private const string AdapterParameterName = "adapter";
 			private const string AdapterGetMethodName = "Get";
