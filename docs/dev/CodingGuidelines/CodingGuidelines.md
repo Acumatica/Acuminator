@@ -300,8 +300,11 @@ usage of the synchronous API shouldn't be a big deal:
 compilationStartContext.RegisterSymbolAction(symbolContext => Analyze_Something_Sync(symbolContext, pxContext),
                                              SymbolKind.NamedType);
 ```
-There is also option of passing `Task`-returning asynchronous method. This is not recommended. 
+There is also option of passing `Task`-returning asynchronous method. This is strongly not recommended. 
 The Roslyn diagnostic engine does not expect any return objects, so the returned `Task` won't be ever awaited. 
 You also cannot await it because this will lead to the creation of the async delegate as was described above. And if the cancellation happens the returned 'Task'
 will become 'unobserved' and may throw an exception in the finalization thread (`Task` is `IDisposable`). Such unobserved `Task`s can be swallowed 
-but this is unwanted scenario which should be avoided.
+but this  depends on the configuration of the user runtime. You can find more details here:
+https://docs.microsoft.com/ru-ru/dotnet/framework/configure-apps/file-schema/runtime/throwunobservedtaskexceptions-element
+
+Overall the passing of asynchronous methods to analyzer.RegisterXXX is an unwanted scenario which should be avoided at all costs.
