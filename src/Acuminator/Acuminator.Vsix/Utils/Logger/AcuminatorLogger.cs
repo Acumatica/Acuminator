@@ -119,14 +119,15 @@ namespace Acuminator.Vsix.Logger
 
 			if (logMode == LogMode.Error)
 			{
-				messageBuilder.AppendLine($"{PackageName} CAUSED CRITICAL ERROR");
+				messageBuilder.AppendLine($"{PackageName.ToUpper()} CAUSED CRITICAL ERROR|");
 			}
 
-			messageBuilder.AppendLine($"FILE PATH: {currentDocument.FilePath}")
-						  .AppendLine($"MESSAGE: {exception.Message}")
-						  .AppendLine($"STACK TRACE: {exception.StackTrace}")
-						  .AppendLine($"TARGET SITE: {exception.TargetSite}")
-						  .AppendLine($"SOURCE: {exception.Source}");
+			messageBuilder.AppendLine($"EXCEPTION TYPE: {exception.GetType().Name}")
+						  .AppendLine($"|FILE PATH: {currentDocument.FilePath}")
+						  .AppendLine($"|MESSAGE: {exception.Message}")
+						  .AppendLine($"|STACK TRACE: {exception.StackTrace}")
+						  .AppendLine($"|TARGET SITE: {exception.TargetSite}")
+						  .AppendLine($"|SOURCE: {exception.Source}");
 
 			return messageBuilder.ToString();
 		}
