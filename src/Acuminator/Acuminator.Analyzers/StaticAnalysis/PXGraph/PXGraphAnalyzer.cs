@@ -63,12 +63,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 				return;
 			}
 
-			var inferredGraphs = PXGraphSemanticModel.InferModels(pxContext, type, context.CancellationToken);
-			var parallelOptions = new ParallelOptions()
+			ParallelOptions parallelOptions = new ParallelOptions
 			{
 				CancellationToken = context.CancellationToken
 			};
 
+			var inferredGraphs = PXGraphSemanticModel.InferModels(pxContext, type, context.CancellationToken);
+			
 			foreach (var graph in inferredGraphs)
 			{
 				Parallel.ForEach(_innerAnalyzers, parallelOptions, innerAnalyzer =>

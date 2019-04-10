@@ -481,11 +481,11 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\Base\GraphMemberNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\TreeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\TreeNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Utils\CodeMapRefreshMode.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Utils\IndentUtils.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Utils\CodeMapDocChangesClassifier.cs" />
+    <Compile Include="Tool Windows\CodeMap\Utils\CodeMapRefreshMode.cs" />
+    <Compile Include="Tool Windows\CodeMap\Utils\IndentUtils.cs" />
+    <Compile Include="Tool Windows\CodeMap\Utils\CodeMapDocChangesClassifier.cs" />
     <Compile Include="Utils\ChangesClassification\ChangeLocation.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Utils\CyclingNavigationUtils.cs" />
+    <Compile Include="Tool Windows\CodeMap\Utils\CyclingNavigationUtils.cs" />
     <Compile Include="Tool Windows\Converters\BoolInversionConverter.cs" />
     <Compile Include="Tool Windows\Converters\ObjectToItsTypeConverter.cs" />
     <Compile Include="Tool Windows\Converters\IsBackgroundDarkConverter.cs" />
@@ -495,7 +495,8 @@
     <Compile Include="Tool Windows\ViewModel\Command.cs" />
     <Compile Include="Tool Windows\ViewModel\ToolWindowViewModelBase.cs" />
     <Compile Include="Tool Windows\ViewModel\ViewModelBase.cs" />
-    <Compile Include="Utils\AcuminatorLogger.cs" />
+    <Compile Include="Utils\Logger\LogMode.cs" />
+    <Compile Include="Utils\Logger\AcuminatorLogger.cs" />
     <Compile Include="Utils\ChangesClassification\DocumentChangesClassifier.cs" />
     <Compile Include="Utils\Constants\LegacyLanguageNames.cs" />
     <Compile Include="Utils\EditorExtensions.cs" />
@@ -523,7 +524,7 @@
     </Compile>
     <Compile Include="Utils\SuppressionFileSystemService.cs" />
     <Compile Include="Utils\SuppressionFileWatcherService.cs" />
-    <Compile Include="Utils\WorkspaceChangedUtils.cs" />
+    <Compile Include="Utils\WorkspaceUtils.cs" />
     <Compile Include="Utils\WPF\Collection\ExtendedObservableCollection.cs" />
     <Compile Include="Utils\Navigation\VSDocumentNavigation.cs" />
     <Compile Include="Utils\VSServicesExtensions.cs" />

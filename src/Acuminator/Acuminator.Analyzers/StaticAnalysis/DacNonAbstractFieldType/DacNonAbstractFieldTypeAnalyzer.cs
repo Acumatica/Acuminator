@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
 
+
 namespace Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
@@ -19,11 +20,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSymbolAction(async symbolContext =>
-														 await AnalyzeDacFieldTypeAsync(symbolContext, pxContext), SymbolKind.NamedType);
+			compilationStartContext.RegisterSymbolAction(symbolContext => AnalyzeDacFieldType(symbolContext, pxContext), SymbolKind.NamedType);
 		}
 
-		private static async Task AnalyzeDacFieldTypeAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
+		private static void AnalyzeDacFieldType(SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
 			INamedTypeSymbol dacFieldType = symbolContext.Symbol as INamedTypeSymbol;
 
@@ -35,15 +35,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType
 			if (declarations.Length != 1)
 				return;
 
-			var dacFieldDeclaration = await declarations[0].GetSyntaxAsync(symbolContext.CancellationToken)
-														   .ConfigureAwait(false) as ClassDeclarationSyntax;
+			var dacFieldDeclaration = declarations[0].GetSyntax(symbolContext.CancellationToken) as ClassDeclarationSyntax;
 			Location dacFieldLocation = dacFieldDeclaration?.Identifier.GetLocation();
 
 			if (dacFieldLocation == null || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
 	
 			symbolContext.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1024_DacNonAbstractFieldType, dacFieldLocation),
-																pxContext.CodeAnalysisSettings);		
+															   pxContext.CodeAnalysisSettings);		
 		}
 
 		private static bool IsDacFieldType(ITypeSymbol dacFieldType, PXContext pxContext)

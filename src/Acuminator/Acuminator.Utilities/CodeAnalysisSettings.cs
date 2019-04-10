@@ -4,6 +4,7 @@ using System.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CommonServiceLocator;
 
 namespace Acuminator.Utilities
 {

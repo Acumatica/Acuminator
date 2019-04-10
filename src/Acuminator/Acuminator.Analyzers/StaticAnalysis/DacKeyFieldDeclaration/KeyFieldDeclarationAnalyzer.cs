@@ -28,11 +28,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSymbolAction(async symbolContext =>
-				await AnalyzeDacOrDacExtensionDeclarationAsync(symbolContext, pxContext).ConfigureAwait(false), SymbolKind.NamedType);
+			compilationStartContext.RegisterSymbolAction(symbolContext =>
+				AnalyzeDacOrDacExtensionDeclaration(symbolContext, pxContext), SymbolKind.NamedType);
 		}
 
-		private static async Task AnalyzeDacOrDacExtensionDeclarationAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
+		private static void AnalyzeDacOrDacExtensionDeclaration(SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
@@ -65,39 +65,25 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 			if (isKey && isKeyIdentity)
 			{
-				var locations = new List<Location>();
+				var locations = keyAttributes.Select(attribute => GetAttributeLocation(attribute, symbolContext.CancellationToken)).ToList();
 
-				foreach (var attribute in keyAttributes)
+				foreach (Location attributeLocation in locations)
 				{
-					locations.Add(await GetAttributeLocationAsync(attribute, symbolContext.CancellationToken).ConfigureAwait(false));
-				}
-
-				var extraLocations = new HashSet<Location>(locations);
-
-				foreach (var attributeLocation in locations)
-				{
-					extraLocations.Remove(attributeLocation);
+					var extraLocations = locations.Where(l => l != attributeLocation);
 
 					symbolContext.ReportDiagnosticWithSuppressionCheck(
 						Diagnostic.Create(
 							Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField, attributeLocation, extraLocations),
-						pxContext.CodeAnalysisSettings);
-
-					extraLocations.Add(attributeLocation);
+							pxContext.CodeAnalysisSettings);
 				}
 			}
 		}
 
-		private static async Task<Location> GetAttributeLocationAsync(AttributeData attribute, CancellationToken cancellationToken)
-		{
-			if (attribute.ApplicationSyntaxReference == null)
-				return null;
-
-			SyntaxNode attributeSyntaxNode = await attribute.ApplicationSyntaxReference.GetSyntaxAsync(cancellationToken).ConfigureAwait(false);
-			
-			return attributeSyntaxNode?.GetLocation();
-		}
-
+		private static Location GetAttributeLocation(AttributeData attribute, CancellationToken cancellationToken) =>
+			attribute.ApplicationSyntaxReference
+					?.GetSyntax(cancellationToken)
+					?.GetLocation();
+		
 		private static bool IsDerivedFromIdentityTypes(AttributeData attribute, PXContext pxContext)
 		{
 			var attributeInformation = new AttributeInformation(pxContext);
