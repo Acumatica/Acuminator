@@ -471,4 +471,10 @@
   <data name="PX1095Title" xml:space="preserve">
     <value>A field with the PXDBCalced attribute must have an unbound type attribute, such as PXDate, PXDecimal</value>
   </data>
+  <data name="PX1013Fix" xml:space="preserve">
+    <value>Change the return type to IEnumerable</value>
+  </data>
+  <data name="PX1013Title" xml:space="preserve">
+    <value>The action handler that initiates a background operation or is executed by a background operation must return IEnumerable</value>
+  </data>
 </root>
