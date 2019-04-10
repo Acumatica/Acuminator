@@ -8,6 +8,15 @@ namespace PX.Objects.HackathonDemo
     {
         public PXSelect<SM.Users> Users;
 
+        public PXAction<SM.Users> SyncMyUsers;
+
+        [PXButton]
+        [PXUIField]
+        public virtual void syncMyUsers()
+        {
+            SyncUsers();
+        }
+
         public IEnumerable users()
         {
             SyncUsers();

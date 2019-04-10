@@ -1,4 +1,5 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes;
+using Acuminator.Analyzers.StaticAnalysis.ActionHandlerReturnType;
 using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
 using Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler;
 using Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate;
@@ -41,7 +42,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
             new InvalidViewUsageInProcessingDelegateAnalyzer(),
             new UiPresentationLogicInActionHandlersAnalyzer(),
 			new ViewDeclarationOrderAnalyzer(),
-			new ActionHandlerAttributesAnalyzer())
+			new ActionHandlerAttributesAnalyzer(),
+            new ActionHandlerReturnTypeAnalyzer())
         {
         }
 
