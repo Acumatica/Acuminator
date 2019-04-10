@@ -245,7 +245,7 @@ namespace Acuminator.Vsix
 	    {
 		    try
 		    {
-			    AcuminatorLogger = new AcuminatorLogger(this);
+			    AcuminatorLogger = new AcuminatorLogger(this, swallowUnobservedTaskExceptions: false);
 		    }
 		    catch (Exception ex)
 		    {

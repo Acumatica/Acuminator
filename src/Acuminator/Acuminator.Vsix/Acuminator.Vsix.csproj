@@ -495,7 +495,8 @@
     <Compile Include="Tool Windows\ViewModel\Command.cs" />
     <Compile Include="Tool Windows\ViewModel\ToolWindowViewModelBase.cs" />
     <Compile Include="Tool Windows\ViewModel\ViewModelBase.cs" />
-    <Compile Include="Utils\AcuminatorLogger.cs" />
+    <Compile Include="Utils\Logger\LogMode.cs" />
+    <Compile Include="Utils\Logger\AcuminatorLogger.cs" />
     <Compile Include="Utils\ChangesClassification\DocumentChangesClassifier.cs" />
     <Compile Include="Utils\Constants\LegacyLanguageNames.cs" />
     <Compile Include="Utils\EditorExtensions.cs" />

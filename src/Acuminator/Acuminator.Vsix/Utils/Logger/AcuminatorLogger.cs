@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Runtime.InteropServices;
-using System.Threading;
+using System.Threading.Tasks;
 using Acuminator.Analyzers;
 using Acuminator.Analyzers.StaticAnalysis;
 using Microsoft.CodeAnalysis;
@@ -29,23 +29,56 @@ namespace Acuminator.Vsix.Logger
 		private readonly string VsixDll = typeof(AcuminatorLogger).Assembly.GetName().Name;
 
 		private readonly AcuminatorVSPackage _package;
+		private readonly bool _swallowUnobservedTaskExceptions;
 
-		public AcuminatorLogger(AcuminatorVSPackage acuminatorPackage)
+		public AcuminatorLogger(AcuminatorVSPackage acuminatorPackage, bool swallowUnobservedTaskExceptions)
 		{
 			acuminatorPackage.ThrowOnNull(nameof(acuminatorPackage));
 			_package = acuminatorPackage;
+			_swallowUnobservedTaskExceptions = swallowUnobservedTaskExceptions;
+
 			AppDomain.CurrentDomain.FirstChanceException += Acuminator_FirstChanceException;
+			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+			TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 		}
 
 		private void Acuminator_FirstChanceException(object sender, FirstChanceExceptionEventArgs e)
 		{
-			LogException(e.Exception);
+			LogException(e.Exception, logOnlyFromAcuminatorAssemblies: true, isCriticalError: false);
 		}
 
-		public void LogException(Exception exception)
+		private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+		{
+			if (e.ExceptionObject is Exception exception)
+			{
+				LogException(exception, logOnlyFromAcuminatorAssemblies: false, isCriticalError: e.IsTerminating);
+			}
+		}
+
+		private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+		{
+			bool isCriticalError = true;
+
+			if (_swallowUnobservedTaskExceptions && !e.Observed)
+			{
+				e.SetObserved();
+				isCriticalError = false;
+			}
+
+			e.Exception.Flatten().InnerExceptions
+								 .ForEach(exception => LogException(exception, logOnlyFromAcuminatorAssemblies: false, isCriticalError));		
+		}
+
+
+		public void LogException(Exception exception, bool logOnlyFromAcuminatorAssemblies, bool isCriticalError)
 		{		
-			if (exception == null || (exception.Source != AnalyzersDll && exception.Source != UtilitiesDll && exception.Source != VsixDll))
+			if (exception == null)
 				return;
+			else if (logOnlyFromAcuminatorAssemblies && 
+					 exception.Source != AnalyzersDll && exception.Source != UtilitiesDll && exception.Source != VsixDll)
+			{
+				return;
+			}
 
 			IWpfTextView activeTextView = _package.GetWpfTextView();
 
@@ -57,13 +90,20 @@ namespace Acuminator.Vsix.Logger
 			if (currentDocument == null)
 				return;
 
-			string logMessage = CreateLogMessageFromException(exception, currentDocument);
+			string logMessage = CreateLogMessageFromException(exception, currentDocument, isCriticalError);
 			ActivityLog.TryLogError(PackageName, logMessage);
 		}
 
-		private string CreateLogMessageFromException(Exception exception, Document currentDocument)
+		private string CreateLogMessageFromException(Exception exception, Document currentDocument, bool isCriticalError)
 		{
+
 			StringBuilder messageBuilder = new StringBuilder(capacity: 256);
+
+			if (isCriticalError)
+			{
+				messageBuilder.AppendLine($"{PackageName} CAUSED CRITICAL ERROR");
+			}
+
 			messageBuilder.AppendLine($"FILE PATH: {currentDocument.FilePath}")
 						  .AppendLine($"MESSAGE: {exception.Message}")
 						  .AppendLine($"STACK TRACE: {exception.StackTrace}")
@@ -76,6 +116,8 @@ namespace Acuminator.Vsix.Logger
 		public void Dispose()
 		{
 			AppDomain.CurrentDomain.FirstChanceException -= Acuminator_FirstChanceException;
+			AppDomain.CurrentDomain.UnhandledException -= CurrentDomain_UnhandledException;
+			TaskScheduler.UnobservedTaskException -= TaskScheduler_UnobservedTaskException;
 		}		
 	}
 }
