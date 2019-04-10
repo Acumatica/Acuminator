@@ -62,6 +62,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1012_PXActionOnNonPrimaryView { get; } =
 			Rule("PX1012", nameof(Resources.PX1012Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 
+        public static DiagnosticDescriptor PX1013_PXActionHandlerInvalidReturnType { get; } =
+            Rule("PX1013", nameof(Resources.PX1013Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
 		public static DiagnosticDescriptor PX1014_NonNullableTypeForBqlField { get; } = 
             Rule("PX1014", nameof(Resources.PX1014Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
