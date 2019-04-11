@@ -64,6 +64,13 @@ namespace Acuminator.Vsix.ChangesClassification
 
 		protected virtual ChangeLocation GetTextChangeLocation(in TextChange textChange, SyntaxNode newRoot)
 		{
+			// Performing the same check as FindNode to prevent ArgumentOutOfRange exception. 
+			// If check fails then we can't classify changes and assume that they have max possible scope and influence on the code
+			if (!newRoot.FullSpan.Contains(textChange.Span)) 
+			{
+				return ChangeLocation.Namespace;
+			}
+
 			var containingNode = newRoot.FindNode(textChange.Span);
 
 			if (containingNode == null)
