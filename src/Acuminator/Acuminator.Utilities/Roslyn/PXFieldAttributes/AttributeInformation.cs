@@ -6,6 +6,8 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using PX.Objects.GL;
+
 
 namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 {
@@ -40,6 +42,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
         private readonly INamedTypeSymbol _defaultAttribute;
 
 		public ImmutableHashSet<ITypeSymbol> BoundBaseTypes { get; }
+		public ImmutableHashSet<ITypeSymbol> TypesContainsIsDBField { get; }
 
 		private const string IsDBField = "IsDBField";
 
@@ -50,7 +53,10 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			_context = pxContext;
 
 			var boundBaseTypes = GetBoundBaseTypes(_context);
+			var typesContainsIsDBField = GetTypesContainsIsDBField(_context);
+
 			BoundBaseTypes = boundBaseTypes.ToImmutableHashSet();
+			typesContainsIsDBField.ToImmutableHashSet();
 
 			_eventSubscriberAttribute = _context.AttributeTypes.PXEventSubscriberAttribute;
 			_dynamicAggregateAttribute = _context.AttributeTypes.PXDynamicAggregateAttribute;
@@ -64,6 +70,13 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				context.FieldAttributes.PXDBFieldAttribute,
 				context.FieldAttributes.PXDBCalcedAttribute,
 				context.FieldAttributes.PXDBDataLengthAttribute,
+			};
+
+		private static HashSet<ITypeSymbol> GetTypesContainsIsDBField(PXContext context) =>
+			new HashSet<ITypeSymbol>
+			{
+				context.FieldAttributes.PeriodIDAttribute,
+				context.FieldAttributes.AcctSubAttribute,
 			};
 
 		/// <summary>
@@ -182,6 +195,10 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			if (containsIsDbFieldproperty)
 			{
 				var isDbPropertyAttributeArgs = attribute.NamedArguments.Where(arg => IsDBField.Equals(arg.Key, StringComparison.OrdinalIgnoreCase)).ToList();    //case insensitive check
+
+				if (isDbPropertyAttributeArgs.Count == 0 && // IsDBField property defined in base class 
+					TypesContainsIsDBField.Any(typesContainsIsDBField => IsAttributeDerivedFromClass(attribute.AttributeClass, typesContainsIsDBField))) 
+					return BoundType.DbBound;
 
 				if (isDbPropertyAttributeArgs.Count != 1)  //rare case when there are multiple different "IsDBField" considered
 					return BoundType.Unknown;

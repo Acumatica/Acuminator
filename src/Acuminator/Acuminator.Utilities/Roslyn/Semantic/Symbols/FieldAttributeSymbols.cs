@@ -10,6 +10,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		/// </summary>
 		private const string PXDBPackedIntegerArrayAttributeFullName_Acumatica2018R2 = "PX.Data.PXDBPackedIntegerArrayAttribute";
 
+		private const string PeriodIDAttribute_Acumatica2019R1 = "PX.Objects.GL.PeriodIDAttribute";
+		private const string AcctSubAttribute_Acumatica2019R1 = "PX.Objects.GL.AcctSubAttribute";
+
 		private readonly Compilation _compilation;
 
 		internal FieldAttributeSymbols(Compilation aCompilation)
@@ -64,6 +67,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		#region Special attributes
 		public INamedTypeSymbol PXDBCalcedAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBCalcedAttribute).FullName);
 		public INamedTypeSymbol PXDBScalarAttribute => _compilation.GetTypeByMetadataName(typeof(PXDBScalarAttribute).FullName);
+		#endregion
+
+		#region DBBound  attributes defined by IsDBField 
+
+		public INamedTypeSymbol PeriodIDAttribute => _compilation.GetTypeByMetadataName(PeriodIDAttribute_Acumatica2019R1);
+		public INamedTypeSymbol AcctSubAttribute => _compilation.GetTypeByMetadataName(AcctSubAttribute_Acumatica2019R1); 
+
 		#endregion
 	}
 }

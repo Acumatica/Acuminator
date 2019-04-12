@@ -14,7 +14,6 @@ using FluentAssertions;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 
 
-
 namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 {
 
@@ -127,13 +126,13 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		[EmbeddedFileData(@"PropertyIsDBBoundFieldWithDefinedAttributes.cs")]
 		public Task FieldBoundAttributesWithDynamicIsDBFieldSetInAttributeDefinitionAsync(string source) =>
 		   IsDBFieldPropertyAsync(source,
-								  new List<bool> { false, false, false, false });
+								  new List<bool> { false, false, true, true });
 
 		[Theory]
 		[EmbeddedFileData(@"PropertyIsDBBoundFieldWithoutDefinedAttributes.cs", internalCodeFileNames: new string[] { @"ExternalAttributes1.cs", @"ExternalAttributes2.cs" })]
 		public Task FieldBoundAttributesWithDynamicIsDBFieldSetInExternalAttributeDefinitionAsync(string source, string externalAttribute1, string externalAttribute2) =>
 		   IsDBFieldPropertyAsync(source,
-								  new List<bool> { false, false, true },
+								  new List<bool> { true, false, true },
 								  new string[] { externalAttribute1, externalAttribute2 });
 
 		private async Task IsDBFieldPropertyAsync(string source, List<bool> expected, string[] code = null)
