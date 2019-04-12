@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.IO;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using Acuminator.Vsix.Utilities;
-using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
-
+using Acuminator.Vsix.Utilities;
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Syntax;
 
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 using Document = Microsoft.CodeAnalysis.Document;
@@ -26,7 +27,8 @@ namespace Acuminator.Vsix.Utilities.Navigation
 	public static class VSDocumentNavigation
 	{
 		public static (IWpfTextView WpfTextView, CaretPosition CaretPosition) NavigateToSymbol(this IServiceProvider serviceProvider,
-																							   ISymbol symbol)
+																							   ISymbol symbol, bool selectSpan = true,
+																							   CancellationToken cToken = default)
 		{
 			serviceProvider.ThrowOnNull(nameof(serviceProvider));
 			symbol.ThrowOnNull(nameof(symbol));
@@ -38,9 +40,27 @@ namespace Acuminator.Vsix.Utilities.Navigation
 
 			var filePath = syntaxReferences[0].SyntaxTree?.FilePath;
 			var workspace = AcuminatorVSPackage.Instance.GetVSWorkspace();
-
+			TextSpan textSpanToNavigate = GetTextSpanToNavigateFromSymbol(symbol, syntaxReferences[0], cToken);
 			return AcuminatorVSPackage.Instance.OpenCodeFileAndNavigateToPosition(workspace?.CurrentSolution, filePath,
-																				  syntaxReferences[0].Span.Start);
+																				  textSpanToNavigate, selectSpan);
+		}
+
+		private static TextSpan GetTextSpanToNavigateFromSymbol(ISymbol symbol, SyntaxReference syntaxReference, 
+																CancellationToken cToken = default)
+		{
+			switch (symbol)
+			{
+				case ITypeSymbol typeSymbol:
+				case IMethodSymbol methodSymbol:
+				case IPropertySymbol propertySymbol:
+				case IEventSymbol eventSymbol:
+					var typeMemberNode = syntaxReference.GetSyntax(cToken) as MemberDeclarationSyntax;
+					return typeMemberNode?.GetIdentifiers()
+										  .FirstOrNullable()
+										 ?.Span ?? syntaxReference.Span;
+				default:
+					return syntaxReference.Span;
+			}
 		}
 
 		public static (IWpfTextView WpfTextView, CaretPosition CaretPosition) OpenCodeFileAndNavigateByLineAndChar(
@@ -84,11 +104,7 @@ namespace Acuminator.Vsix.Utilities.Navigation
 				serviceProvider.ExpandAllRegionsContainingSpan(span, wpfTextView);
 				CaretPosition newCaretPosition = wpfTextView.MoveCaretTo(absoluteOffset);
 
-				if (!wpfTextView.TextViewLines.ContainsBufferPosition(newCaretPosition.BufferPosition))
-				{
-					wpfTextView.ViewScroller.EnsureSpanVisible(span, EnsureSpanVisibleOptions.AlwaysCenter);
-				}
-
+				wpfTextView.ViewScroller.EnsureSpanVisible(span, EnsureSpanVisibleOptions.AlwaysCenter);
 				return (wpfTextView, newCaretPosition);
 			}
 			catch
@@ -100,14 +116,10 @@ namespace Acuminator.Vsix.Utilities.Navigation
 		public static (IWpfTextView WpfTextView, CaretPosition CaretPosition) OpenCodeFileAndNavigateToPosition(
 																					this IServiceProvider serviceProvider,
 																					Solution solution, string filePath, 
-																					int? caretPosition = null)
+																					TextSpan? spanToNavigate = null,
+																					bool selectSpan = true)
 		{
 			serviceProvider.ThrowOnNull(nameof(serviceProvider));
-
-			if (caretPosition.HasValue && caretPosition < 0)
-			{
-				throw new ArgumentOutOfRangeException(nameof(caretPosition));
-			}
 
 			IWpfTextView wpfTextView = OpenCodeWindow(serviceProvider, solution, filePath);
 
@@ -126,19 +138,21 @@ namespace Acuminator.Vsix.Utilities.Navigation
 
 			try
 			{
-				if (caretPosition == null)
+				if (spanToNavigate == null)
 				{
 					return (wpfTextView, wpfTextView.Caret.Position);
 				}
 
-				SnapshotPoint point = wpfTextView.TextSnapshot.GetPoint(caretPosition.Value);
-				SnapshotSpan span = new SnapshotSpan(point, length: 0);
+				SnapshotPoint point = wpfTextView.TextSnapshot.GetPoint(spanToNavigate.Value.Start);
+				SnapshotSpan span = new SnapshotSpan(point, spanToNavigate.Value.Length);
 				serviceProvider.ExpandAllRegionsContainingSpan(span, wpfTextView);
-				CaretPosition newCaretPosition = wpfTextView.MoveCaretTo(caretPosition.Value);
+				CaretPosition newCaretPosition = wpfTextView.MoveCaretTo(spanToNavigate.Value.Start);
+				
+				wpfTextView.ViewScroller.EnsureSpanVisible(span, EnsureSpanVisibleOptions.AlwaysCenter);
 
-				if (!wpfTextView.TextViewLines.ContainsBufferPosition(newCaretPosition.BufferPosition))
+				if (selectSpan)
 				{
-					wpfTextView.ViewScroller.EnsureSpanVisible(span, EnsureSpanVisibleOptions.AlwaysCenter);
+					wpfTextView.Selection.Select(span, isReversed: false);
 				}
 
 				return (wpfTextView, newCaretPosition);

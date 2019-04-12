@@ -63,7 +63,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 
 			AcuminatorVSPackage.Instance.OpenCodeFileAndNavigateToPosition(workspace.CurrentSolution, 
-																			filePath, span.Start);
+																			filePath, span);
 		}
 
 		private string GetAttributeTooltip()
