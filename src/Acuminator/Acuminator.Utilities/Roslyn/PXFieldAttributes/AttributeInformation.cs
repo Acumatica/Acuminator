@@ -38,7 +38,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		private readonly INamedTypeSymbol _eventSubscriberAttribute;
 		private readonly INamedTypeSymbol _dynamicAggregateAttribute;
 		private readonly INamedTypeSymbol _aggregateAttribute;
-        private readonly INamedTypeSymbol _defaultAttribute;
+		private readonly INamedTypeSymbol _defaultAttribute;
 
 		public ImmutableHashSet<ITypeSymbol> BoundBaseTypes { get; }
 		public ImmutableHashSet<ITypeSymbol> TypesContainsIsDBField { get; }
@@ -60,7 +60,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			_eventSubscriberAttribute = _context.AttributeTypes.PXEventSubscriberAttribute;
 			_dynamicAggregateAttribute = _context.AttributeTypes.PXDynamicAggregateAttribute;
 			_aggregateAttribute = _context.AttributeTypes.PXAggregateAttribute;
-            _defaultAttribute = _context.AttributeTypes.PXDefaultAttribute;
+			_defaultAttribute = _context.AttributeTypes.PXDefaultAttribute;
 		}
 
 		private static HashSet<ITypeSymbol> GetBoundBaseTypes(PXContext context) =>
@@ -178,11 +178,11 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			attribute.ThrowOnNull(nameof(attribute));
 
-            if (!attribute.AttributeClass.InheritsFromOrEquals(_eventSubscriberAttribute) ||
-                attribute.AttributeClass.InheritsFromOrEquals(_defaultAttribute))
-            {
-                return BoundType.NotDefined;
-            }
+			if (!attribute.AttributeClass.InheritsFromOrEquals(_eventSubscriberAttribute) ||
+			    attribute.AttributeClass.InheritsFromOrEquals(_defaultAttribute))
+			{
+			    return BoundType.NotDefined;
+			}
 
 			if (BoundBaseTypes.Any(boundBaseType => IsAttributeDerivedFromClassInternal(attribute.AttributeClass, boundBaseType)))
 				return BoundType.DbBound;
@@ -222,22 +222,22 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			attributes.ThrowOnNull();
 
-            return attributes.Any(a => GetBoundAttributeType(a) == BoundType.DbBound);
+			return attributes.Any(a => GetBoundAttributeType(a) == BoundType.DbBound);
 		}
 
-        /// <summary>
+		/// <summary>
 		/// Query if collection of attributes contains unbound attribute.
 		/// </summary>
 		/// <param name="attributes">The attributes collection.</param>
 		/// <returns/>
 		public bool ContainsUnboundAttributes(IEnumerable<AttributeData> attributes)
-        {
-            attributes.ThrowOnNull();
+		{
+			attributes.ThrowOnNull();
 
-            return attributes.Any(a => GetBoundAttributeType(a) == BoundType.Unbound);
-        }
+			return attributes.Any(a => GetBoundAttributeType(a) == BoundType.Unbound);
+		}
 
-        private bool IsAttributeDerivedFromClassInternal(ITypeSymbol attributeType, ITypeSymbol typeToCheck, int depth = DefaultRecursionDepth)
+		private bool IsAttributeDerivedFromClassInternal(ITypeSymbol attributeType, ITypeSymbol typeToCheck, int depth = DefaultRecursionDepth)
 		{
 			if (depth < 0)
 				return false;
