@@ -28,8 +28,8 @@ To build the solution, do the following:
 4. Build _Acuminator.sln_.
 
 ## Documentation
-* [Diagnostic Descriptions](docs/summary.md5#diagnostics)
-* [Refactoring Descriptions](docs/summary.md5#refactorings)
+* [Diagnostic Descriptions](docs/summary.md#diagnostics)
+* [Refactoring Descriptions](docs/summary.md#refactorings)
 
 ## Developer Documentation
 * [Coding Guidelines](docs/CodingGuidelines/CodingGuidelines.md)
