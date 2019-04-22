@@ -3,11 +3,11 @@
 ## Table of Contents
 
 * [Code Style](#code-style)
-    * [Private and Protected Fields Naming](#private-and-protected-fields-naming)
-    * [Constants Naming](#constants-naming)
-    * [Asynchronous Methods Naming](#asynchronous-methods-naming)
-    * [Value Tuples Naming](#value-tuples-naming)
-    * [Test Methods Naming](#test-methods-naming)
+    * [Naming of Private and Protected Fields](#naming-of-private-and-protected-fields)
+    * [Naming of Constants](#naming-of-constants)
+    * [Naming of Asynchronous Methods](#naming-of-asynchronous-methods)
+    * [Naming of Value Tuples](#naming-of-value-tuples)
+    * [Naming of Test Methods](#naming-of-test-methods)
     * [Indentation Depth](#indentation-depth)
     * [Control Flow Statements](#control-flow-statements)
     * [Local Functions](#local-functions)
@@ -20,7 +20,7 @@
     * [Task Awaiting](#task-awaiting)
     * [Parametrized Diagnostic Messages](#parametrized-diagnostic-messages)
     * [Test Methods](#test-methods)
-    * [Async anonymous delegates](#async-anonymous-delegates)
+    * [Async Anonymous Delegates](#async-anonymous-delegates)
 
 ## Code Style
 
@@ -267,7 +267,7 @@ You should use the `async` / `await` pattern to avoid wrapping exceptions in `Ag
 public async Task TestDiagnostic(string actual) => await VerifyCSharpDiagnosticAsync(actual);
 ```
 
-### Async Anonymous Delegates 
+### Async Anonymous Delegates
 
 You must never pass the asynchronous methods that have the `void` return type to the `analyzer.RegisterXXX` API methods. 
 
