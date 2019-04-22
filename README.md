@@ -28,13 +28,13 @@ To build the solution, do the following:
 4. Build _Acuminator.sln_.
 
 ## Documentation
-* [Diagnostic Descriptions](docs/diagnostics)
-* [Refactoring Descriptions](docs/refactoring)
+* [Diagnostic Descriptions](docs/summary.md#diagnostics)
+* [Refactoring Descriptions](docs/summary.md#refactorings)
 
 ## Developer Documentation
-* [Coding Guidelines](docs/dev/CodingGuidelines/CodingGuidelines.md)
-* [Recursive Code Analysis](docs/dev/RecursiveCodeAnalysis/RecursiveCodeAnalysis.md)
-* [Documentation Guidelines](docs/dev/DocumentationGuidelines/DiagnosticDescription.md)
+* [Coding Guidelines](docs/CodingGuidelines/CodingGuidelines.md)
+* [Recursive Code Analysis](docs/RecursiveCodeAnalysis/RecursiveCodeAnalysis.md)
+* [Documentation Guidelines](docs/DocumentationGuidelines/DiagnosticDescription.md)
 
 ## Release Notes
 [Release Notes](docs/ReleaseNotes.md)
