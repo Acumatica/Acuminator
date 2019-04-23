@@ -18,9 +18,13 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoPrimaryViewForPrimaryDac
 			
 		[Theory]
 		[EmbeddedFileData("NoPrimaryViewForPrimaryDac.cs")]
-		public virtual void Test_Graph_With_Primary_Dac_Without_Primary_View(string source) =>
+		public virtual void GraphWithPrimaryDac_WithoutPrimaryView(string source) =>
 			VerifyCSharpDiagnostic(source,
 				Descriptors.PX1018_NoPrimaryViewForPrimaryDac.CreateFor(line: 17, column: 56),
 				Descriptors.PX1018_NoPrimaryViewForPrimaryDac.CreateFor(line: 23, column: 15));
+
+		[Theory]
+		[EmbeddedFileData("HasPrimaryViewForPrimaryDac.cs")]
+		public virtual void GraphWithPrimaryDac_WithPrimaryView_NoDiagnostics(string source) => VerifyCSharpDiagnostic(source);
 	}
 }
