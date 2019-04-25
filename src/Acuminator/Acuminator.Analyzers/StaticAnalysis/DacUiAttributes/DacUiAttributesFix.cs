@@ -68,7 +68,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 				return document;
 			}
 
-			var pxContext = new PXContext(semanticModel.Compilation);
+			var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
 			var attributeList = option == FixOption.AddPXCacheNameAttribute ?
 				pxContext.AttributeTypes.PXCacheNameAttribute.GetAttributeList(CreateDefaultArgumentList()) :
 				pxContext.AttributeTypes.PXHiddenAttribute.GetAttributeList();

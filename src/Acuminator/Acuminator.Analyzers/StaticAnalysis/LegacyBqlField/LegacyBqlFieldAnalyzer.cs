@@ -58,7 +58,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 
 					var args = ImmutableDictionary.CreateBuilder<string, string>();
 					args.Add(CorrespondingPropertyType, propertyTypeName);
-					context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1060_LegacyBqlField, location, args.ToImmutable(), dacFieldType.Name));
+					context.ReportDiagnosticWithSuppressionCheck(
+						Diagnostic.Create(Descriptors.PX1060_LegacyBqlField, location, args.ToImmutable(), dacFieldType.Name),
+						pxContext.CodeAnalysisSettings);
 				}
 			}
 		}

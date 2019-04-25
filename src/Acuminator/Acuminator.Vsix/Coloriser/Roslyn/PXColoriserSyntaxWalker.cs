@@ -69,7 +69,7 @@ namespace Acuminator.Vsix.Coloriser
                 if (_cancellationToken.IsCancellationRequested || IsVar(nodeText))
                     return;
 
-                ITypeSymbol typeSymbol = await GetTypeSymbolFromIdentifierNode(node);
+                ITypeSymbol typeSymbol = await GetTypeSymbolFromIdentifierNodeAsync(node);
 
                 if (typeSymbol == null)
                 {
@@ -390,11 +390,10 @@ namespace Acuminator.Vsix.Coloriser
             }
 			#endregion
 
-			private async Task<ITypeSymbol> GetTypeSymbolFromIdentifierNode(SyntaxNode node)
+			private async Task<ITypeSymbol> GetTypeSymbolFromIdentifierNodeAsync(SyntaxNode node)
 			{
 				var semanticModel = await _document.SemanticModelAsync(_cancellationToken);
 				var symbolInfo = semanticModel.GetSymbolInfo(node);
-
 				ISymbol symbol = symbolInfo.Symbol;
 
 				if (symbol == null && symbolInfo.CandidateSymbols.Length == 1)
@@ -507,7 +506,7 @@ namespace Acuminator.Vsix.Coloriser
             /// </summary>
             /// <param name="nodeText">The node text.</param>
             /// <returns/>         
-            private bool IsVar(string nodeText) => nodeText == VarKeyword;           
+            private static bool IsVar(string nodeText) => nodeText == VarKeyword;           
         }
     }
 }

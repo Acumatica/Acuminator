@@ -63,8 +63,17 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			if (!genericName.IsValidForColoring())
 				return null;
 
-			if (genericName.IsStatic && TypeNames.PXUpdateBqlTypes.Contains(genericName.Name))
-				return PXCodeType.BqlCommand;
+			if (genericName.IsStatic)
+			{
+				if (TypeNames.PXUpdateBqlTypes.Contains(genericName.Name))
+				{
+					return PXCodeType.BqlCommand;
+				}
+				else if (genericName.IsFBQLJoin())
+				{
+					return PXCodeType.BqlOperator;
+				}
+			}
 
 			IEnumerable<ITypeSymbol> typeHierarchy = genericName.GetBaseTypes()
 																.ConcatStructList(genericName.AllInterfaces);
@@ -153,6 +162,33 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			return typeHierarchy.Contains(pxContext.PXSelectBase.Type) || typeHierarchy.Contains(pxContext.BQL.BqlCommand);
 		}
 
+		public static bool IsFbqlView(this ITypeSymbol typeSymbol, PXContext pxContext)
+		{
+			if (pxContext.BQL.PXViewOf_BasedOn == null || pxContext.BQL.PXViewOf == null || typeSymbol?.BaseType == null)
+				return false;
+			else if (!typeSymbol.BaseType.OriginalDefinition.Equals(pxContext.BQL.PXViewOf_BasedOn))
+			{
+				return false;
+			}
+
+			return typeSymbol.BaseType.ContainingType?.InheritsFromOrEqualsGeneric(pxContext.BQL.PXViewOf) ?? false;
+		}
+
+		public static bool IsFbqlCommand(this ITypeSymbol typeSymbol)
+		{
+			if (!typeSymbol.IsValidForColoring(checkForNotColoredTypes: false))
+				return false;
+			else if (typeSymbol.IsStatic)
+				return false;
+
+			List<string> typeHierarchyNames = typeSymbol.GetBaseTypesAndThis()
+														.Select(type => type.Name)
+														.ToList();
+
+			return typeHierarchyNames.Contains(TypeNames.FbqlSelect) || 
+				   typeHierarchyNames.Contains(TypeNames.FbqlCommand);
+		}
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsBqlParameter(this ITypeSymbol typeSymbol)
 		{
@@ -178,6 +214,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		{
 			if (!typeSymbol.IsValidForColoring(checkForNotColoredTypes: false))
 				return false;
+			else if (typeSymbol.IsFBQLJoin())
+				return true;
 
 			foreach (var interfaceSymbol in typeSymbol.AllInterfaces)
 			{
@@ -346,6 +384,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		public static TextSpan? GetBqlOperatorOutliningTextSpan(this ITypeSymbol typeSymbol, GenericNameSyntax bqlOperatorNode)
 		{
+			if (typeSymbol.IsFBQLJoin())
+				return null;
+
 			List<string> operatorInterfaces = typeSymbol.AllInterfaces
 														.Select(type => type.Name)
 														.ToList();
@@ -414,6 +455,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				}
 			}
 		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsFBQLJoin(this ITypeSymbol typeSymbol) =>
+			typeSymbol is INamedTypeSymbol namedType && namedType.IsStatic && namedType.TypeArguments.Length == 1 &&
+			TypeNames.FBqlJoins.Contains(namedType.Name);
 
 		/// <summary>
 		/// Returns event handler type for the provided method symbol.

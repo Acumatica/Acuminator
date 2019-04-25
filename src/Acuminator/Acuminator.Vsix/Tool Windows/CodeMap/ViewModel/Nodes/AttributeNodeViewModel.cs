@@ -47,9 +47,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			Name = $"[{attributeName}]";
-			var cancellationToken = Tree.CodeMapViewModel.CancellationToken.GetValueOrDefault();
-			var attributeNode = Attribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken)?.Parent as AttributeListSyntax;
-			Tooltip = attributeNode?.ToString().TrimIndent(attributeNode) ?? $"[{Attribute.ToString()}]";
+			Tooltip = GetAttributeTooltip();
 		}
 
 		public override void NavigateToItem()
@@ -65,69 +63,21 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 
 			AcuminatorVSPackage.Instance.OpenCodeFileAndNavigateToPosition(workspace.CurrentSolution, 
-																			filePath, span.Start);
-		}
-	}
-
-	public static class IndentExt
-	{
-		public static int GetAttributeIndentLevel(this AttributeListSyntax node)
-		{
-			if (node == null)
-				return 0;
-
-			int indentLevel = 0;
-
-			SyntaxNode current = node;
-
-			while (current != null)
-			{
-				if (current.HasLeadingTrivia)
-				{
-					indentLevel += node.GetLeadingTrivia()
-									   .Count(t => t.IsKind(SyntaxKind.WhitespaceTrivia));
-				}
-
-				current = current.Parent;
-			}
-
-			return indentLevel;
+																			filePath, span);
 		}
 
-		public static string TrimIndent(this string str, AttributeListSyntax node)
+		private string GetAttributeTooltip()
 		{
-			if (str.IsNullOrWhiteSpace() || node == null)
-				return str;
+			var cancellationToken = Tree.CodeMapViewModel.CancellationToken.GetValueOrDefault();
+			var attributeListNode = Attribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken)?.Parent as AttributeListSyntax;
 
-			var triviaCount = node.GetAttributeIndentLevel();
+			if (attributeListNode == null || Tree.CodeMapViewModel.Workspace == null)
+				return $"[{Attribute.ToString()}]";
 
-			if (triviaCount == 0)
-				return str;
-
-			var sb = new System.Text.StringBuilder(string.Empty, capacity: str.Length);
-			int counter = 0;
-
-			for (int i = 0; i < str.Length; i++)
-			{
-				char c = str[i];
-
-				switch (c)
-				{
-					case '\n':
-						counter = 0;
-						sb.Append(c);
-						continue;
-					case '\t' when counter < triviaCount:
-						counter++;
-						continue;
-					case '\t' when counter >= triviaCount:
-					default:
-						sb.Append(c);
-						continue;
-				}
-			}
-
-			return sb.ToString();
+			int tabSize = Tree.CodeMapViewModel.Workspace.GetWorkspaceIndentationSize();
+			string tooltip = attributeListNode.GetSyntaxNodeStringWithRemovedIndent(tabSize)
+											  .RemoveCommonAcumaticaNamespacePrefixes();
+			return tooltip ?? $"[{Attribute.ToString()}]";
 		}
 	}
 }

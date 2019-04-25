@@ -18,8 +18,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 			Descriptors.PX1043_SavingChangesInEventHandlers,
 			Descriptors.PX1043_SavingChangesInRowPerstisting);
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings,
-									 EventType eventType)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -35,7 +34,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 			private readonly EventType _eventType;
 
 			public Walker(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
-				: base(context.Compilation, context.CancellationToken)
+				: base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
 			{
 				pxContext.ThrowOnNull(nameof(pxContext));
 

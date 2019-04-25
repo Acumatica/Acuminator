@@ -47,7 +47,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 		{
 		}
 
-		protected override void AnalyzeSymbol(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings)
+		protected override void AnalyzeSymbol(SymbolAnalysisContext context, PXContext pxContext)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -59,30 +59,32 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 			if (eventType == EventType.None)
 				return;
 
-			Parallel.ForEach(_innerAnalyzers, innerAnalyzer =>
+			ParallelOptions parallelOptions = new ParallelOptions
+			{
+				CancellationToken = context.CancellationToken
+			};
+
+			Parallel.ForEach(_innerAnalyzers, parallelOptions, innerAnalyzer =>
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 
-				if (innerAnalyzer.ShouldAnalyze(pxContext, codeAnalysisSettings, eventType))
+				if (innerAnalyzer.ShouldAnalyze(pxContext, eventType))
 				{
-					innerAnalyzer.Analyze(context, pxContext, codeAnalysisSettings, eventType);
+					innerAnalyzer.Analyze(context, pxContext, eventType);
 				}
 			});
 		}
 
-		private void AnalyzeLambda(OperationAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings)
+		private void AnalyzeLambda(OperationAnalysisContext context, PXContext pxContext)
 		{
 			if (context.Operation is ILambdaExpression lambdaExpression)
 			{
-				AnalyzeSymbol(new SymbolAnalysisContext(
-					lambdaExpression.Signature, 
-					context.Compilation,
-					context.Options, 
-					context.ReportDiagnostic, 
-					d => true, // this check is covered inside context.ReportDiagnostic
-					context.CancellationToken),
-					pxContext,
-					codeAnalysisSettings);
+				var symbolAnalysisContext =
+					new SymbolAnalysisContext(lambdaExpression.Signature, context.Compilation, context.Options,
+											  context.ReportDiagnostic, d => true, // this check is covered inside context.ReportDiagnostic
+											  context.CancellationToken);
+
+				AnalyzeSymbol(symbolAnalysisContext, pxContext);
 			}
 		}
 	}

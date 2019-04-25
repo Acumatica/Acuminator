@@ -60,10 +60,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute
             bool hasTypeAttribute = attributeClasses.
                     Any(c => types.Any(l => c.InheritsFromOrEquals(l, true)));
 
-            if(!hasTypeAttribute)
-                context.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(Descriptors.PX1002_MissingTypeListAttributeAnalyzer, property.Locations.First()));
-
+			if (!hasTypeAttribute)
+			{
+				context.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1002_MissingTypeListAttributeAnalyzer, property.Locations.First()),
+					pxContext.CodeAnalysisSettings);
+			}
         }
 	}
 }

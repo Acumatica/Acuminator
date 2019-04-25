@@ -13,7 +13,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
         protected readonly PXContext _pxContext;
 
         protected WalkerBase(SymbolAnalysisContext context, PXContext pxContext)
-            : base(context.Compilation, context.CancellationToken)
+            : base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
         {
             pxContext.ThrowOnNull(nameof(pxContext));
 

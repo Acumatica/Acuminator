@@ -97,23 +97,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
                         continue;
 
                     syntaxContext.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1032_DacPropertyCannotContainMethodInvocations,
-                        invocation.GetLocation()));
+                        invocation.GetLocation()), pxContext.CodeAnalysisSettings);
                 }
 				else if (node is ObjectCreationExpressionSyntax)
 				{
 					syntaxContext.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1032_DacPropertyCannotContainMethodInvocations,
-						node.GetLocation()));
+						node.GetLocation()), pxContext.CodeAnalysisSettings);
 				}
 			}
 		}
 
 		private void AnalyzeMethodDeclarationInDac(MethodDeclarationSyntax method, SyntaxNodeAnalysisContext syntaxContext,
-			PXContext pxContext)
+												   PXContext pxContext)
 		{
 			if (method != null && !method.IsStatic())
 			{
 				syntaxContext.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1031_DacCannotContainInstanceMethods,
-					method.Identifier.GetLocation()));
+					method.Identifier.GetLocation()), pxContext.CodeAnalysisSettings);
 			}
 		}
 

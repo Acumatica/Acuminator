@@ -16,14 +16,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1045_PXGraphCreateInstanceInEventHandlers);
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
-									 EventType eventType)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			var methodSymbol = (IMethodSymbol) context.Symbol;
 			var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
-			var walker = new Walker(context);
+			var walker = new Walker(context, pxContext);
 
 			methodSyntax?.Accept(walker);
 		}
@@ -34,8 +33,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 
 			private readonly SymbolAnalysisContext _context;
 
-			public Walker(SymbolAnalysisContext context)
-				: base(context.Compilation, context.CancellationToken)
+			public Walker(SymbolAnalysisContext context, PXContext pxContext)
+				: base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
 			{
 				_context = context;
 			}

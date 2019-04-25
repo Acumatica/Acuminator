@@ -14,6 +14,9 @@ using Microsoft.CodeAnalysis.Simplification;
 using Microsoft.CodeAnalysis.Text;
 using PX.Data;
 
+using FbqlCommand = PX.Data.BQL.Fluent.FbqlCommand;
+
+
 namespace Acuminator.Tests.Verification
 {
 	public static class VerificationHelper
@@ -23,6 +26,7 @@ namespace Acuminator.Tests.Verification
 		private static readonly MetadataReference CSharpSymbolsReference = MetadataReference.CreateFromFile(typeof(CSharpCompilation).Assembly.Location);
 		private static readonly MetadataReference CodeAnalysisReference = MetadataReference.CreateFromFile(typeof(Compilation).Assembly.Location);
 		private static readonly MetadataReference PXDataReference = MetadataReference.CreateFromFile(typeof(PXGraph).Assembly.Location);
+		private static readonly MetadataReference FluentBqlReference = MetadataReference.CreateFromFile(typeof(FbqlCommand).Assembly.Location);
 		private static readonly MetadataReference PXCommonReference = MetadataReference.CreateFromFile(typeof(PX.Common.PXContext).Assembly.Location);
 
 		internal static string DefaultFilePathPrefix = "Test";
@@ -101,6 +105,7 @@ namespace Acuminator.Tests.Verification
 									.AddMetadataReference(projectId, CSharpSymbolsReference)
 									.AddMetadataReference(projectId, CodeAnalysisReference)
 									.AddMetadataReference(projectId, PXDataReference)
+									.AddMetadataReference(projectId, FluentBqlReference)
 									.AddMetadataReference(projectId, PXCommonReference);
 
 			if (externalCode != null && externalCode.Length > 0)

@@ -17,7 +17,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
                 Descriptors.PX1058_PXGraphSavingChangesDuringInitialization,
                 Descriptors.PX1083_SavingChangesInDataViewDelegate);
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -45,7 +45,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
             private readonly DiagnosticDescriptor _descriptor;
 
             public SaveChangesWalker(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor descriptor)
-                : base(context.Compilation, context.CancellationToken)
+                : base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
             {
                 _context = context;
                 _pxContext = pxContext;

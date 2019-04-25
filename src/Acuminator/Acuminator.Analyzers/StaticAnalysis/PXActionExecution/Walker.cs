@@ -15,8 +15,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionExecution
 		private readonly object[] _messageArgs;
 
 		public Walker(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor diagnosticDescriptor,
-			params object[] messageArgs)
-			: base(context.Compilation, context.CancellationToken)
+					  params object[] messageArgs)
+			: base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
 		{
 			pxContext.ThrowOnNull(nameof (pxContext));
 			diagnosticDescriptor.ThrowOnNull(nameof (diagnosticDescriptor));

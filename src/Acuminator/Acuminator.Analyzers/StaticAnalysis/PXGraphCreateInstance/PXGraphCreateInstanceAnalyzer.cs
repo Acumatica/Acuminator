@@ -45,7 +45,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 
                 if (descriptor != null)
                 {
-                    _context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(descriptor, node.GetLocation()));
+                    _context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(descriptor, node.GetLocation()), 
+						_pxContext.CodeAnalysisSettings);
                 }
 
                 base.VisitObjectCreationExpression(node);

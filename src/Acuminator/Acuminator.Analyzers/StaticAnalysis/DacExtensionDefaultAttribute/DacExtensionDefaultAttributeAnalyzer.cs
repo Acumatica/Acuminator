@@ -95,7 +95,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
                 Descriptors.PX1030_DefaultAttibuteToExistingRecordsError;
             var diagnostic = Diagnostic.Create(descriptor, attributeLocation, diagnosticProperties);
 
-            symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic);
+            symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
         }
 
         private static void AnalyzeBoundPropertyAttributes(SymbolAnalysisContext symbolContext, PXContext pxContext,
@@ -122,7 +122,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
                 attributeLocation,
                 diagnosticProperties);
 
-            symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic);
+            symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
         }
 
         private static AttributeData GetInvalidPXDefaultAttributeFromBoundProperty(PXContext pxContext, INamedTypeSymbol dacExtension,

@@ -5,16 +5,28 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Formatting;
 using Acuminator.Utilities.Common;
 
 
 namespace Acuminator.Vsix.Utilities
 {
     /// <summary>
-    /// A helper class with utility methods related to the workspace changed event.
+    /// A helper class with utility methods related to the Workspace.
     /// </summary>
-    public static class WorkspaceChangedUtils
+    public static class WorkspaceUtils
 	{       
+		/// <summary>
+		/// Get workspace indentation size.
+		/// </summary>
+		/// <param name="workspace">The workspace to act on.</param>
+		/// <returns/>
+		public static int GetWorkspaceIndentationSize(this Workspace workspace)
+		{
+			workspace.ThrowOnNull(nameof(workspace));
+			return workspace.Options.GetOption(FormattingOptions.IndentationSize, LanguageNames.CSharp);
+		}		
+
 		public static bool IsActiveDocumentCleared(this WorkspaceChangeEventArgs changeEventArgs, Document oldDocument)
 		{
 			changeEventArgs.ThrowOnNull(nameof(changeEventArgs));

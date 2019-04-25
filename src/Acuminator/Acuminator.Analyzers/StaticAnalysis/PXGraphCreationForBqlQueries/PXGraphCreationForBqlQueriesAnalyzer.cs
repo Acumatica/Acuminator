@@ -61,14 +61,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 				{
 					context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries,
 						graphArgSyntax.GetLocation(),
-						CreateDiagnosticProperties(availableGraphs, pxContext)));
+						CreateDiagnosticProperties(availableGraphs, pxContext)),
+						pxContext.CodeAnalysisSettings);
 				}
 				else if (availableGraphs.Length > 0 && context.SemanticModel.GetSymbolInfo(graphArgSyntax).Symbol is ILocalSymbol localVar 
 				                                    && !usedGraphs.Contains(localVar))
 				{
 					context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries,
 						graphArgSyntax.GetLocation(),
-						CreateDiagnosticProperties(availableGraphs.Where(g => !Equals(g, localVar)), pxContext)));
+						CreateDiagnosticProperties(availableGraphs.Where(g => !Equals(g, localVar)), pxContext)),
+						pxContext.CodeAnalysisSettings);
 				}
 			}
 		}

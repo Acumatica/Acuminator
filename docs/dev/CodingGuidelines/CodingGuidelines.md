@@ -3,11 +3,11 @@
 ## Table of Contents
 
 * [Code Style](#code-style)
-    * [Private and Protected Fields Naming](#private-and-protected-fields-naming)
-    * [Constants Naming](#constants-naming)
-    * [Asynchronous Methods Naming](#asynchronous-methods-naming)
-    * [Value Tuples Naming](#value-tuples-naming)
-    * [Test Methods Naming](#test-methods-naming)
+    * [Naming of Private and Protected Fields](#naming-of-private-and-protected-fields)
+    * [Naming of Constants](#naming-of-constants)
+    * [Naming of Asynchronous Methods](#naming-of-asynchronous-methods)
+    * [Naming of Value Tuples](#naming-of-value-tuples)
+    * [Naming of Test Methods](#naming-of-test-methods)
     * [Indentation Depth](#indentation-depth)
     * [Control Flow Statements](#control-flow-statements)
     * [Local Functions](#local-functions)
@@ -20,6 +20,7 @@
     * [Task Awaiting](#task-awaiting)
     * [Parametrized Diagnostic Messages](#parametrized-diagnostic-messages)
     * [Test Methods](#test-methods)
+    * [Async Anonymous Delegates](#async-anonymous-delegates)
 
 ## Code Style
 
@@ -265,3 +266,53 @@ You should use the `async` / `await` pattern to avoid wrapping exceptions in `Ag
 ```C#
 public async Task TestDiagnostic(string actual) => await VerifyCSharpDiagnosticAsync(actual);
 ```
+
+### Async Anonymous Delegates
+
+You must never pass the asynchronous methods that have the `void` return type to the `analyzer.RegisterXXX` API methods. 
+
+Internally Roslyn diagnostic engine catches `OperationCancelledException` exceptions. However, in .NET, the asynchronous methods that return `void` handle exceptions differently than the asynchronous methods that return a `Task`. The latter methods attach the aggregated exception to the `Task` while the methods that return `void` report the exception to `SynchronizationContext`. In `SynchronizationContext`, the exception becomes unhandled and silently crashes Visual Studio. 
+
+These bugs have concurrent nature because they appear only during the cancellation of the wrongly-written analyzer and are very hard to reproduce and debug.
+Therefore, such methods prevent Visual Studio from catching `OperationCancelledException` and must never be passed to the analyzer API. 
+The latest version of Roslyn even has a runtime check for async methods.
+
+The following code produces this bug.
+
+```C#
+//WRONG
+compilationStartContext.RegisterSymbolAction(Analyze_Something_Async, SymbolKind.NamedType);
+
+private static async void Analyze_Something_Async(SymbolAnalysisContext symbolContext) 
+{
+    //Analysis
+}
+```
+
+It is especially easy to introduce this bug with async delegates because `analyzer.RegisterXXX` API methods accept `Action<T>` delegates that return `void`, but do not accept `Func<T, Task>`. For example, the following code produces the bug.
+
+```C#
+//WRONG
+compilationStartContext.RegisterSymbolAction(async symbolContext => await Analyze_Something_Async(symbolContext, pxContext),
+                                             SymbolKind.NamedType);
+```
+
+So, how to write analyzers correctly? Do not pass asynchronous methods to the `analyzer.RegisterXXX` methods at all. 
+
+Roslyn has both synchronous and asynchronous API methods, such as `symbol.GetSyntax(CancellationToken)` and `symbol.GetSyntaxAsync(CancellationToken)`. The analysis is executed in a background thread, therefore the 
+use of the synchronous API shouldn't be a big deal.
+
+```C#
+//CORRECT (Pay no attention to the VS warning about a not awaited task in this case)
+compilationStartContext.RegisterSymbolAction(symbolContext => Analyze_Something_Sync(symbolContext, pxContext),
+                                             SymbolKind.NamedType);
+```
+
+There is also an option to pass the asynchronous methods that return a `Task`. However we do not recommend to do like this. 
+The Roslyn diagnostic engine does not expect any return objects, so the returned `Task` won't be ever awaited. 
+You also cannot await it because this will lead to the creation of the async delegate as described above. And if the cancellation happens the returned `Task`
+will become 'unobserved' and may throw an exception in the finalization thread (`Task` is `IDisposable`). Such unobserved `Task`s can be swallowed 
+but this depends on the configuration of the user runtime. For more details, see
+https://docs.microsoft.com/ru-ru/dotnet/framework/configure-apps/file-schema/runtime/throwunobservedtaskexceptions-element.
+
+Overall, the passing of asynchronous methods to `analyzer.RegisterXXX `is an unwanted scenario that should be avoided at all costs.

@@ -15,7 +15,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1092_MissingAttributesOnActionHandler);
 
-        public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph)
+        public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
         {
             foreach (var actionHandler in pxGraph.DeclaredActionHandlers)
             {
@@ -30,8 +30,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
             }
         }
 
-		private void CheckActionHandler(SymbolAnalysisContext context, PXContext pxContext,
-			IMethodSymbol symbol, MethodDeclarationSyntax node, GraphType graphType)
+		private void CheckActionHandler(SymbolAnalysisContext context, PXContext pxContext, IMethodSymbol symbol, MethodDeclarationSyntax node,
+										GraphType graphType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -88,7 +88,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 				node.Identifier.GetLocation(),
 				properties);
 
-			context.ReportDiagnosticWithSuppressionCheck(diagnostic);
+			context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
 		}
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Windows;
+using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Shell;
-
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -25,14 +27,25 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// Initializes a new instance of the <see cref="CodeMapWindow"/> class.
 		/// </summary>
 		public CodeMapWindow() : base(null)
-		{
-			this.Caption = VSIXResource.CodeMapWindowTitle;
-
+		{		
 			// This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
 			// we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on
 			// the object returned by the Content property.
 			CodeMapWPFControl = new CodeMapWindowControl();
 			this.Content = CodeMapWPFControl;
+		}
+
+		/// <summary>
+		/// This is called after our control has been created and sited. 
+		/// This is a good place to initialize the control with data gathered from Visual Studio services.
+		/// </summary>
+		public override void OnToolWindowCreated()
+		{
+			base.OnToolWindowCreated();
+
+			// Set the text that will appear in the title bar of the tool window. Note that because we need access to the package for localization,
+			// we have to wait to do this here. If we used a constant string, we could do this in the constructor.
+			this.Caption = VSIXResource.CodeMapWindowTitle;
 		}
 
 		protected override void OnClose()

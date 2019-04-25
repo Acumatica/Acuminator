@@ -6,17 +6,19 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeRefactorings;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
+using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+
 
 namespace Acuminator.Analyzers.Refactorings.ChangeEventHandlerSignatureToGeneric
 {
@@ -32,9 +34,9 @@ namespace Acuminator.Analyzers.Refactorings.ChangeEventHandlerSignatureToGeneric
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			var semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
-			var pxContext = new PXContext(semanticModel.Compilation);
+			var pxContext = new PXContext(semanticModel.Compilation, GlobalCodeAnalysisSettings.Instance);
 
-			if (!pxContext.IsPlatformReferenced)
+			if (!pxContext.CodeAnalysisSettings.StaticAnalysisEnabled || !pxContext.IsPlatformReferenced)
 				return;
 
 			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);

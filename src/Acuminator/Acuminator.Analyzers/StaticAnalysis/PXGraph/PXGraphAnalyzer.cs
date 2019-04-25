@@ -1,4 +1,5 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes;
+using Acuminator.Analyzers.StaticAnalysis.ActionHandlerReturnType;
 using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
 using Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler;
 using Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate;
@@ -41,19 +42,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
             new InvalidViewUsageInProcessingDelegateAnalyzer(),
             new UiPresentationLogicInActionHandlersAnalyzer(),
 			new ViewDeclarationOrderAnalyzer(),
-			new ActionHandlerAttributesAnalyzer())
+			new ActionHandlerAttributesAnalyzer(),
+            new ActionHandlerReturnTypeAnalyzer())
         {
         }
 
         /// <summary>
         /// Constructor for the unit tests.
         /// </summary>
-        public PXGraphAnalyzer(CodeAnalysisSettings settings, params IPXGraphAnalyzer[] innerAnalyzers)
-            : base(settings, innerAnalyzers)
+        public PXGraphAnalyzer(CodeAnalysisSettings settings, params IPXGraphAnalyzer[] innerAnalyzers) : base(settings, innerAnalyzers)
         {
         }
 
-		protected override void AnalyzeSymbol(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings)
+		protected override void AnalyzeSymbol(SymbolAnalysisContext context, PXContext pxContext)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -62,17 +63,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 				return;
 			}
 
-			var inferredGraphs = PXGraphSemanticModel.InferModels(pxContext, type, context.CancellationToken);
+			ParallelOptions parallelOptions = new ParallelOptions
+			{
+				CancellationToken = context.CancellationToken
+			};
 
+			var inferredGraphs = PXGraphSemanticModel.InferModels(pxContext, type, context.CancellationToken);
+			
 			foreach (var graph in inferredGraphs)
 			{
-				Parallel.ForEach(_innerAnalyzers, innerAnalyzer =>
+				Parallel.ForEach(_innerAnalyzers, parallelOptions, innerAnalyzer =>
 				{
 					context.CancellationToken.ThrowIfCancellationRequested();
 
-					if (innerAnalyzer.ShouldAnalyze(pxContext, settings, graph))
+					if (innerAnalyzer.ShouldAnalyze(pxContext, graph))
 					{
-						innerAnalyzer.Analyze(context, pxContext, settings, graph);
+						innerAnalyzer.Analyze(context, pxContext, graph);
 					}
 				});
 			}

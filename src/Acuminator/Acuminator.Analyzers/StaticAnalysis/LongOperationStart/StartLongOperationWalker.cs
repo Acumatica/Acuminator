@@ -15,7 +15,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationStart
         private readonly DiagnosticDescriptor _descriptor;
 
         public StartLongOperationWalker(SymbolAnalysisContext context, PXContext pxContext, DiagnosticDescriptor descriptor)
-            : base(context.Compilation, context.CancellationToken)
+            : base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
         {
             pxContext.ThrowOnNull(nameof(pxContext));
             descriptor.ThrowOnNull(nameof(descriptor));

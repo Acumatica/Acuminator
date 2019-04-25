@@ -35,7 +35,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonNullableTypeForBqlField
 				if (bqlField != null && propertyType != null
 					&& propertyType.IsValueType && propertyType.ConstructedFrom?.SpecialType != SpecialType.System_Nullable_T)
 				{
-					context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1014_NonNullableTypeForBqlField, property.Locations.First()));
+					context.ReportDiagnosticWithSuppressionCheck(
+						Diagnostic.Create(Descriptors.PX1014_NonNullableTypeForBqlField, property.Locations.First()),
+						pxContext.CodeAnalysisSettings);
 				}
 			}
 		}

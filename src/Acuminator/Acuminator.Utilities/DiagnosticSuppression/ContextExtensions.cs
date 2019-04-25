@@ -5,27 +5,27 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 {
 	public static class ContextExtensions
 	{
-		public static void ReportDiagnosticWithSuppressionCheck(this SymbolAnalysisContext context,
-			Diagnostic diagnostic)
+		public static void ReportDiagnosticWithSuppressionCheck(this SymbolAnalysisContext context, Diagnostic diagnostic,
+																CodeAnalysisSettings settings)
 		{
 			var semanticModel = context.Compilation.GetSemanticModel(diagnostic.Location.SourceTree);
 
 			SuppressionManager.ReportDiagnosticWithSuppressionCheck(
-				semanticModel, context.ReportDiagnostic, diagnostic, context.CancellationToken);
+				semanticModel, context.ReportDiagnostic, diagnostic, settings, context.CancellationToken);
 		}
 
-		public static void ReportDiagnosticWithSuppressionCheck(this SyntaxNodeAnalysisContext context,
-			Diagnostic diagnostic)
+		public static void ReportDiagnosticWithSuppressionCheck(this SyntaxNodeAnalysisContext context, Diagnostic diagnostic,
+																CodeAnalysisSettings settings)
 		{
 			SuppressionManager.ReportDiagnosticWithSuppressionCheck(
-				context.SemanticModel, context.ReportDiagnostic, diagnostic, context.CancellationToken);
+				context.SemanticModel, context.ReportDiagnostic, diagnostic, settings, context.CancellationToken);
 		}
 
-		public static void ReportDiagnosticWithSuppressionCheck(this CodeBlockAnalysisContext context,
-			Diagnostic diagnostic)
+		public static void ReportDiagnosticWithSuppressionCheck(this CodeBlockAnalysisContext context, Diagnostic diagnostic,
+																CodeAnalysisSettings settings)
 		{
 			SuppressionManager.ReportDiagnosticWithSuppressionCheck(
-				context.SemanticModel, context.ReportDiagnostic, diagnostic, context.CancellationToken);
+				context.SemanticModel, context.ReportDiagnostic, diagnostic, settings, context.CancellationToken);
 		}
 	}
 }

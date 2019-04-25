@@ -20,7 +20,7 @@ Acuminator can collapse parts of BQL queries and the code inside attributes to s
 ## The Process of Building the Solution
 To build the solution, do the following:
 1. Create the _lib_ folder in the root folder. 
-2. Add _PX.Data.dll_, _PX.Common.dll_, _PX.BulkInsert.dll_, and _PX.DbServices.dll_ (from Acumatica ERP 2017R2 or higher) to the _lib_ folder.
+2. Add _PX.Data.dll_, _PX.Data.BQL.Fluent.dll_, _PX.Common.dll_, _PX.BulkInsert.dll_, and _PX.DbServices.dll_ (from Acumatica ERP 2019R1 or higher) to the _lib_ folder.
 3. Add your strong-name key file as _src/key.snk_. If you don't have one, run Developer Command Prompt and generate the key by using the following command: _sn.exe -k "src\key.snk"_.
 3. Open _src/Acuminator/Acuminator.Analyzers/Properties/AssemblyInfo.cs_ and change the public key in the _InternalsVisibleTo_ attribute to your own. To extract the key from the strong-name key file, do the following: 
    1. In Developer Command Prompt, extract the public key from the _snk_ file to a _txt_ file as follows: _sn.exe -p "src\key.snk" "src\publickey.txt"_. 
@@ -28,13 +28,13 @@ To build the solution, do the following:
 4. Build _Acuminator.sln_.
 
 ## Documentation
-* [Diagnostic Descriptions](docs/diagnostics)
-* [Refactoring Descriptions](docs/refactoring)
+* [Diagnostic Descriptions](docs/summary.md#diagnostics)
+* [Refactoring Descriptions](docs/summary.md#refactorings)
 
 ## Developer Documentation
-* [Coding Guidelines](docs/dev/CodingGuidelines/CodingGuidelines.md)
-* [Recursive Code Analysis](docs/dev/RecursiveCodeAnalysis/RecursiveCodeAnalysis.md)
-* [Documentation Guidelines](docs/dev/DocumentationGuidelines/DiagnosticDescription.md)
+* [Coding Guidelines](docs/CodingGuidelines/CodingGuidelines.md)
+* [Recursive Code Analysis](docs/RecursiveCodeAnalysis/RecursiveCodeAnalysis.md)
+* [Documentation Guidelines](docs/DocumentationGuidelines/DiagnosticDescription.md)
 
 ## Release Notes
 [Release Notes](docs/ReleaseNotes.md)

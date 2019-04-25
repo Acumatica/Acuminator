@@ -51,7 +51,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 			if (methodLocation != null)
 			{
 				symbolContext.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(Descriptors.PX1000_InvalidPXActionHandlerSignature, methodLocation));
+					Diagnostic.Create(Descriptors.PX1000_InvalidPXActionHandlerSignature, methodLocation),
+					pxContext.CodeAnalysisSettings);
 			}
 		}
 

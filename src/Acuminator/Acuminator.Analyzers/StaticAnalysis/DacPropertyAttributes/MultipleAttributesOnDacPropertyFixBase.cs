@@ -106,7 +106,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				_remainingAttribute = remainingAttribute;
 				_attributeToRemovePredicate = attributeToRemovePredicate;
 
-				PXContext pxContext = new PXContext(_semanticModel.Compilation);
+				PXContext pxContext = new PXContext(_semanticModel.Compilation, codeAnalysisSettings: null);
 				_attributesRegister = new FieldTypeAttributesRegister(pxContext);
 			}
 

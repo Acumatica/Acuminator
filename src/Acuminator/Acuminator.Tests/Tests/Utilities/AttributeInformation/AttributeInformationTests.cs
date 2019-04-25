@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Acuminator.Tests.Helpers;
+using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -45,7 +46,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 			var syntaxRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
 
 			List<bool> actual = new List<bool>();
-			var pxContext = new PXContext(semanticModel.Compilation);
+			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings.Default);
 			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
 
 			foreach (var property in properties)
@@ -98,7 +99,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 			var syntaxRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
 
 			List<BoundType> actual = new List<BoundType>();
-			var pxContext = new PXContext(semanticModel.Compilation);
+			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings.Default);
 			var properties = syntaxRoot.DescendantNodes().OfType<PropertyDeclarationSyntax>();
 			var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
 
@@ -142,7 +143,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 			var syntaxRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
 
 			List<bool> actual = new List<bool>(capacity: expected.Capacity);
-			var pxContext = new PXContext(semanticModel.Compilation);
+			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings.Default);
 			var attributeInformation = new Acuminator.Utilities.Roslyn.PXFieldAttributes.AttributeInformation(pxContext);
 
 			IEnumerable<PropertyDeclarationSyntax> properties = syntaxRoot.DescendantNodes()
@@ -311,7 +312,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 			Document document = CreateDocument(source);
 			SemanticModel semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
 			var syntaxRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
-			var pxContext = new PXContext(semanticModel.Compilation);
+			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings.Default);
 
 			var expectedSymbols = ConvertStringsToITypeSymbols(expected, semanticModel);
 
