@@ -161,13 +161,30 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			if (pxView?.InheritsFrom(pxContext.PXSelectBase.Type) != true)
 				return null;
 
-			INamedTypeSymbol baseViewType = pxView.GetBaseTypesAndThis()
-												  .OfType<INamedTypeSymbol>()
-												  .FirstOrDefault(type => !type.IsCustomBqlCommand(pxContext));
+			INamedTypeSymbol baseViewType;
 
-			if (baseViewType?.IsBqlCommand() != true || baseViewType.TypeArguments.Length == 0)
+			if (pxView.IsFbqlView(pxContext))
+			{
+				
+				baseViewType = pxView.BaseType.ContainingType.GetBaseTypesAndThis()
+															 .OfType<INamedTypeSymbol>()
+															 .FirstOrDefault(t => t.OriginalDefinition.Equals(pxContext.BQL.PXViewOf));
+			}
+			else
+			{
+				baseViewType = pxView.GetBaseTypesAndThis()
+									 .OfType<INamedTypeSymbol>()
+									 .FirstOrDefault(type => !type.IsCustomBqlCommand(pxContext));
+
+				if (baseViewType?.IsBqlCommand() != true)
+					return null;
+			}
+
+			if (baseViewType == null || baseViewType.TypeArguments.Length == 0)
+			{
 				return null;
-
+			}
+			 
 			return baseViewType.TypeArguments[0];
 		}
 
