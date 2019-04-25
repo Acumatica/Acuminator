@@ -77,6 +77,9 @@
     <Reference Include="PX.Data">
       <HintPath>..\..\..\lib\PX.Data.dll</HintPath>
     </Reference>
+	<Reference Include="PX.Data.BQL.Fluent">
+      <HintPath>..\..\..\lib\PX.Data.BQL.Fluent.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.AppContext, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.AppContext.4.1.0\lib\net46\System.AppContext.dll</HintPath>
@@ -286,6 +289,9 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\EventHandlers\PressWithExternalMethod.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\DataViewWithParameterStartsLongOperation.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LongOperationStart\Sources\PXGraph\StaticDataViewStartsLongOperation.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\Sources\NoPrimaryViewForPrimaryDacFluentBQL.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\Sources\HasPrimaryViewForPrimaryDac.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\Sources\HasPrimaryViewForPrimaryDacFluentBQL.cs" />
     <Compile Include="Tests\StaticAnalysis\PXActionExecution\PXActionExecutionInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\EventHandlers\PressWithAdapter.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\EventHandlers\PressOnDerivedType.cs" />

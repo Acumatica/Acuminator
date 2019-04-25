@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using PX.Data;
+using PX.Data.BQL.Fluent;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -49,6 +50,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		public INamedTypeSymbol PXSetupJoin => _compilation.GetTypeByMetadataName(typeof(PXSetup<,,>).FullName);
 
 		public INamedTypeSymbol PXSetupSelect => _compilation.GetTypeByMetadataName(typeof(PXSetupSelect<>).FullName);
+
+		public INamedTypeSymbol FbqlCommand => _compilation.GetTypeByMetadataName(typeof(FbqlCommand).FullName);
+
+		public INamedTypeSymbol PXViewOf => _compilation.GetTypeByMetadataName(typeof(PXViewOf<>).FullName);
+
+		public INamedTypeSymbol PXViewOf_BasedOn => _compilation.GetTypeByMetadataName(typeof(PXViewOf<>.BasedOn<>).FullName);
 
 		public ImmutableArray<INamedTypeSymbol> GetPXSetupTypes() =>
 			ImmutableArray.Create

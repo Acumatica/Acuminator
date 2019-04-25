@@ -162,7 +162,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			return typeHierarchy.Contains(pxContext.PXSelectBase.Type) || typeHierarchy.Contains(pxContext.BQL.BqlCommand);
 		}
 
-		public static bool IsFBqlCommand(this ITypeSymbol typeSymbol)
+		public static bool IsFbqlView(this ITypeSymbol typeSymbol, PXContext pxContext)
+		{
+			if (pxContext.BQL.PXViewOf_BasedOn == null || pxContext.BQL.PXViewOf == null || typeSymbol?.BaseType == null)
+				return false;
+			else if (!typeSymbol.BaseType.OriginalDefinition.Equals(pxContext.BQL.PXViewOf_BasedOn))
+			{
+				return false;
+			}
+
+			return typeSymbol.BaseType.ContainingType?.InheritsFromOrEqualsGeneric(pxContext.BQL.PXViewOf) ?? false;
+		}
+
+		public static bool IsFbqlCommand(this ITypeSymbol typeSymbol)
 		{
 			if (!typeSymbol.IsValidForColoring(checkForNotColoredTypes: false))
 				return false;
