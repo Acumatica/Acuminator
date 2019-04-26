@@ -28,7 +28,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <summary>
 		/// The graph symbol. For the graph is the same as <see cref="Symbol"/>. For graph extensions is the extension's base graph.
 		/// </summary>
-		public INamedTypeSymbol GraphSymbol => BaseGraphModel.GraphSymbol;
+		public ITypeSymbol GraphSymbol => BaseGraphModel.GraphSymbol;
 
 		public ImmutableArray<StaticConstructorInfo> StaticConstructors => BaseGraphModel.StaticConstructors;
 		public ImmutableArray<GraphInitializerInfo> Initializers => BaseGraphModel.Initializers;
