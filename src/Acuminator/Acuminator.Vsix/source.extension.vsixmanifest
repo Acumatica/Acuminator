@@ -11,12 +11,11 @@
         <Tags>acumatica</Tags>
     </Metadata>
     <Installation>
-        <InstallationTarget Version="[14.0,15.0)" Id="Microsoft.VisualStudio.Pro" />
-        <InstallationTarget Version="[14.0,15.0)" Id="Microsoft.VisualStudio.Community" />
+        <InstallationTarget Version="[14.0,17.0)" Id="Microsoft.VisualStudio.Pro" />
+        <InstallationTarget Version="[14.0,17.0)" Id="Microsoft.VisualStudio.Community" />
     </Installation>
     <Dependencies>
         <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
-        <Dependency Id="Microsoft.VisualStudio.MPF.14.0" DisplayName="Visual Studio MPF 14.0" d:Source="Installed" Version="[14.0,15.0)" />
     </Dependencies>
     <Assets>
         <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="Acuminator.Analyzers" Path="|Acuminator.Analyzers|" />
@@ -26,7 +25,7 @@
         <Asset d:Source="Project" Type="Microsoft.VisualStudio.Assembly" d:ProjectName="Acuminator.Utilities" Path="|Acuminator.Utilities|" AssemblyName="|Acuminator.Utilities;AssemblyName|" />
     </Assets>
     <Prerequisites>
-        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,16.0)" DisplayName="Visual Studio core editor" />
-        <Prerequisite Id="Microsoft.VisualStudio.Component.Roslyn.LanguageServices" Version="[15.0,16.0)" DisplayName="Roslyn Language Services" />
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.8.27729.1,)" DisplayName="Visual Studio core editor" />
+        <Prerequisite Id="Microsoft.VisualStudio.Component.Roslyn.LanguageServices" Version="[15.0, )" DisplayName="Roslyn Language Services" />
     </Prerequisites>
 </PackageManifest>
