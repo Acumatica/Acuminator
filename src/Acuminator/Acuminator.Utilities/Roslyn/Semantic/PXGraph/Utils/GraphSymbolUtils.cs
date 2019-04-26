@@ -21,7 +21,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <returns>
 		/// The graph from graph extension.
 		/// </returns>
-		public static INamedTypeSymbol GetGraphFromGraphExtension(this ITypeSymbol graphExtension, PXContext pxContext)
+		public static ITypeSymbol GetGraphFromGraphExtension(this ITypeSymbol graphExtension, PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
@@ -40,11 +40,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				return null;
 
 			ITypeSymbol firstTypeArg = graphExtTypeArgs.Last();
-
-			if (!(firstTypeArg is INamedTypeSymbol pxGraph) || !pxGraph.IsPXGraph())
-				return null;
-
-			return pxGraph;
+			return firstTypeArg.IsPXGraph()
+				? firstTypeArg
+				: null;
 		}
 
 		/// <summary>
@@ -242,7 +240,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <returns>
 		/// The declared primary DAC from graph or graph extension.
 		/// </returns>
-		public static ITypeSymbol GetDeclaredPrimaryDacFromGraphOrGraphExtension(this INamedTypeSymbol graphOrExtension, PXContext pxContext)
+		public static ITypeSymbol GetDeclaredPrimaryDacFromGraphOrGraphExtension(this ITypeSymbol graphOrExtension, PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 			bool isGraph = graphOrExtension?.InheritsFrom(pxContext.PXGraph.Type) ?? false;
