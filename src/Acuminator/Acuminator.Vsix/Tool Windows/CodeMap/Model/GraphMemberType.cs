@@ -15,7 +15,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		RowEvent,
 		FieldEvent,
 		NestedDAC,
-		NestedGraph
+		NestedGraph,
+		PXOverride
 	}
 
 	internal static class GraphMemberTypeUtils
@@ -29,6 +30,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{ GraphMemberType.FieldEvent, "Field Events" },
 			{ GraphMemberType.NestedDAC, "Nested DACs" },
 			{ GraphMemberType.NestedGraph, "Nested Graphs" },
+			{ GraphMemberType.PXOverride, "PXOverrides" },
 		};
 
 		public static string Description(this GraphMemberType graphMemberType) =>
