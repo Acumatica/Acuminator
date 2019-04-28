@@ -25,12 +25,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			{ GraphMemberType.View, "Views" },
 			{ GraphMemberType.Action, "Actions" },
+			{ GraphMemberType.PXOverride, "PXOverrides" },
 			{ GraphMemberType.CacheAttached, "Cache Attached" },
 			{ GraphMemberType.RowEvent, "Row Events" },
 			{ GraphMemberType.FieldEvent, "Field Events" },
 			{ GraphMemberType.NestedDAC, "Nested DACs" },
-			{ GraphMemberType.NestedGraph, "Nested Graphs" },
-			{ GraphMemberType.PXOverride, "PXOverrides" },
+			{ GraphMemberType.NestedGraph, "Nested Graphs" }	
 		};
 
 		public static string Description(this GraphMemberType graphMemberType) =>
