@@ -5,6 +5,7 @@ using Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler;
 using Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate;
 using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
 using Acuminator.Analyzers.StaticAnalysis.DatabaseQueries;
+using Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature;
 using Acuminator.Analyzers.StaticAnalysis.InvalidViewUsageInProcessingDelegate;
 using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
 using Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac;
@@ -47,6 +48,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 			new NoPrimaryViewForPrimaryDacAnalyzer(),
 			new ActionHandlerAttributesAnalyzer(),
             new ActionHandlerReturnTypeAnalyzer(),
+            new InvalidPXActionSignatureAnalyzer(),
 			new TypoInViewDelegateNameAnalyzer())
         {
         }
