@@ -34,7 +34,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 
 			var delegateCandidates = pxGraph.Symbol.GetMembers()
 												   .OfType<IMethodSymbol>()
-												   .Where(method => method.IsValidViewDelegate(pxContext));
+												   .Where(method => !method.IsOverride && method.IsValidViewDelegate(pxContext));
 
 			foreach (IMethodSymbol method in delegateCandidates)
 			{
