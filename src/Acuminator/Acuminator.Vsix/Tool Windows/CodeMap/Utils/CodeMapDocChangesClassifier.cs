@@ -27,11 +27,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			ChangeLocation changeLocation = await GetChangesLocationAsync(oldDocument, newRoot, newDocument, cancellationToken);
 
-			if (changeLocation.ContainsLocation(ChangeLocation.Namespace) || changeLocation.ContainsLocation(ChangeLocation.Class))
+			if (changeLocation.ContainsLocation(ChangeLocation.Namespace))
 			{
 				return newRoot.ContainsDiagnostics
 					? CodeMapRefreshMode.Clear
 					: CodeMapRefreshMode.Recalculate;
+			}
+			else if (changeLocation.ContainsLocation(ChangeLocation.Class))
+			{
+				return CodeMapRefreshMode.Recalculate;
 			}
 			
 			return CodeMapRefreshMode.NoRefresh;
