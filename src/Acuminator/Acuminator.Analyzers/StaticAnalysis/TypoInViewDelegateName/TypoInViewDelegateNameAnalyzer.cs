@@ -32,10 +32,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 			if (viewCandidatesNames.Count == 0)
 				return;
 
-			var delegateCandidates = pxGraph.Symbol.GetMembers()
+			var delegateCandidates = pxGraph.Symbol.GetMembers()						
 												   .OfType<IMethodSymbol>()
-												   .Where(method => !method.IsOverride && method.IsValidViewDelegate(pxContext));
-
+												   .Where(method => method.ContainingType.Equals(pxGraph.Symbol) &&
+																	!method.IsOverride && method.IsValidViewDelegate(pxContext));
 			foreach (IMethodSymbol method in delegateCandidates)
 			{
 				if (viewCandidatesNames.Any(viewName => viewName == method.Name))
