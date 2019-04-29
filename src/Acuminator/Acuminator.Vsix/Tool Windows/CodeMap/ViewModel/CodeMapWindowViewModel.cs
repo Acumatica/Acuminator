@@ -337,7 +337,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			TreeViewModel tree = new TreeViewModel(this);
 
-			foreach (PXGraphEventSemanticModel graph in _documentModel.GraphModels)
+			foreach (GraphSemanticModelForCodeMap graph in _documentModel.GraphModels)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				var graphNodeVM = GraphNodeViewModel.Create(graph, tree, isExpanded: true, expandChildren: false);
