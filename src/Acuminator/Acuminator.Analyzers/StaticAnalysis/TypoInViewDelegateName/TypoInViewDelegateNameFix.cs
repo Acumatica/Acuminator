@@ -9,6 +9,8 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Rename;
+using Acuminator.Utilities.Common;
+
 
 namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 {
@@ -22,29 +24,33 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			var root = await context.Document.GetSyntaxRootAsync().ConfigureAwait(false);
-			var methodNode = root.FindNode(context.Span).FirstAncestorOrSelf<MethodDeclarationSyntax>();
-			if (methodNode == null) return;
+			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+
+			var methodNode = root?.FindNode(context.Span)?.FirstAncestorOrSelf<MethodDeclarationSyntax>();
+			if (methodNode == null)
+				return;
 
 			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1005_TypoInViewDelegateName.Id);
-			if (diagnostic == null) return;
+			if (diagnostic == null)
+				return;
 
 			if (diagnostic.Properties == null
 			    || !diagnostic.Properties.TryGetValue(TypoInViewDelegateNameAnalyzer.ViewFieldNameProperty, out string fieldName)
-				|| String.IsNullOrEmpty(fieldName)
-				|| fieldName.Length <= 1)
+				|| fieldName.IsNullOrWhiteSpace() || fieldName.Length <= 1)
 			{
 				return;
 			}
 
 			string title = nameof(Resources.PX1005Fix).GetLocalized().ToString();
-			context.RegisterCodeFix(CodeAction.Create(title, async c =>
-			{
-				var semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
-				var methodSymbol = semanticModel.GetDeclaredSymbol(methodNode);
-				string newName = GenerateViewDelegateName(fieldName);
-				return await Renamer.RenameSymbolAsync(context.Document.Project.Solution, methodSymbol, newName, null, c);
-			}, title), context.Diagnostics);
+			context.RegisterCodeFix(
+				CodeAction.Create(title, async cToken =>
+				{
+					var semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
+					var methodSymbol = semanticModel.GetDeclaredSymbol(methodNode);
+					string newName = GenerateViewDelegateName(fieldName);
+					return await Renamer.RenameSymbolAsync(context.Document.Project.Solution, methodSymbol, newName, null, cToken);
+				}, title),
+				context.Diagnostics);
 		}
 
 		private static string GenerateViewDelegateName(string viewName)
