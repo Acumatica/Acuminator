@@ -18,7 +18,7 @@ Acuminator 1.6.1 includes the following enhancements in the code map:
  - The tooltip for a data view in the code map now keeps BQL formatting of the source code.
  - The namespace prefixes have been removed from the tooltips in the code map.
  - The categories without child nodes are no longer displayed in the code map.
- - The code map now displays overriden actions and methods of the base graph.
+ - The code map now displays overridden actions and methods of the base graph.
  - The code map performance has been improved.
 
  The following bugs have been fixed:
