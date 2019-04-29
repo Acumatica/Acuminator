@@ -7,10 +7,12 @@ using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
 using Acuminator.Analyzers.StaticAnalysis.DatabaseQueries;
 using Acuminator.Analyzers.StaticAnalysis.InvalidViewUsageInProcessingDelegate;
 using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
+using Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac;
 using Acuminator.Analyzers.StaticAnalysis.PXActionExecution;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization;
 using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
 using Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions;
+using Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName;
 using Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic;
 using Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder;
 using Acuminator.Utilities;
@@ -42,8 +44,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
             new InvalidViewUsageInProcessingDelegateAnalyzer(),
             new UiPresentationLogicInActionHandlersAnalyzer(),
 			new ViewDeclarationOrderAnalyzer(),
+			new NoPrimaryViewForPrimaryDacAnalyzer(),
 			new ActionHandlerAttributesAnalyzer(),
-            new ActionHandlerReturnTypeAnalyzer())
+            new ActionHandlerReturnTypeAnalyzer(),
+			new TypoInViewDelegateNameAnalyzer())
         {
         }
 

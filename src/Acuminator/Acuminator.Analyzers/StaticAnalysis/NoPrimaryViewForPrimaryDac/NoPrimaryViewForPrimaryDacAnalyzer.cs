@@ -15,7 +15,6 @@ using Acuminator.Utilities.Roslyn.Syntax;
 
 namespace Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac
 {
-	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class NoPrimaryViewForPrimaryDacAnalyzer : PXGraphAggregatedAnalyzerBase
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
