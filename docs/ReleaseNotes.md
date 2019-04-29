@@ -1,6 +1,44 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
+## Acuminator 1.6.1
+Acuminator 1.6.1 includes the diagnostics, code fixes, and enhancements described in this section, as well as the features that have been implemented in previous versions.
+
+### New Diagnostics and Code Fixes
+In this version, the diagnostic and a code fix for the following issue has been added.
+
+| Code                            | Issue Description                                                                                           | Type    | Diagnostics | Code Fix    | 
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------- | ----------- | ----------- |
+| [PX1013](diagnostics/PX1013.md) | The action handler that initiates a background operation or is executed by a background operation must return `IEnumerable`. | Error | Available   | Available   |
+
+### Enhancements and Bug Fixes in the Code Map
+Acuminator 1.6.1 includes the following enhancements in the code map:
+
+ - In text editor of Visual Studio, the symbol to which the code map navigates is now highlighted.
+ - The tooltip for a data view in the code map now keeps BQL formatting of the source code.
+ - The namespace prefixes have been removed from the tooltips in the code map.
+ - The categories without child nodes are no longer displayed in the code map.
+ - The code map now displays overriden actions and methods of the base graph.
+ - The code map performance has been improved.
+
+ The following bugs have been fixed:
+
+ - The code map didn't support graphs with complex declaration.
+ - The code map could crash due to unhandled exception from Roslyn.
+ - The code map performed calculations in the hidden mode.
+
+### Other Fixed Bugs
+In this version of Acuminator, the following bugs have been fixed:
+
+ - The PX1018 error was displayed for the data views defined in the fluent BQL style.
+ - Fluent BQL joins were not supported by the Acuminator colorizer.
+
+### Other Enhancements
+Acuminator 1.6.1 also includes the following enhancements:
+
+ - Acuminator now supports Visual Studio 2019. 
+ - Acuminator now includes an option to turn off the suppression mechanism for the Acuminator diagnostics. If you set the value of **Tools > Options > Acuminator > Code Analysis > Suppress selected diagnostics** to `False`, Acuminator ignores the suppression file and displays all found diagnostics.
+
 ## Acuminator 1.6
 Acuminator 1.6 includes the diagnostics, code fixes, and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
