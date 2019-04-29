@@ -32,16 +32,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
                     return;
                 }
 
-                DiagnosticDescriptor descriptor = null;
-
-                if (typeSymbol.InheritsFrom(_pxContext.PXGraph.Type))
-                {
-                    descriptor = Descriptors.PX1001_PXGraphCreateInstance;
-                }
-                else if (typeSymbol.Equals(_pxContext.PXGraph.Type))
-                {
-                    descriptor = Descriptors.PX1003_NonSpecificPXGraphCreateInstance;
-                }
+                DiagnosticDescriptor descriptor = GetDiagnosticDescriptor(typeSymbol);
 
                 if (descriptor != null)
                 {
@@ -51,7 +42,25 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 
                 base.VisitObjectCreationExpression(node);
             }
-        }
+
+			private DiagnosticDescriptor GetDiagnosticDescriptor(ITypeSymbol typeSymbol)
+			{
+				if (typeSymbol is ITypeParameterSymbol typeParameterSymbol && typeParameterSymbol.IsPXGraph(_pxContext))
+				{
+					return Descriptors.PX1001_PXGraphCreateInstance;
+				}
+				else if (typeSymbol.InheritsFrom(_pxContext.PXGraph.Type))
+				{
+					return Descriptors.PX1001_PXGraphCreateInstance;
+				}
+				else if (typeSymbol.Equals(_pxContext.PXGraph.Type))
+				{
+					return Descriptors.PX1003_NonSpecificPXGraphCreateInstance;
+				}
+				
+				return null;
+			}
+		}
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
 				Descriptors.PX1001_PXGraphCreateInstance,
