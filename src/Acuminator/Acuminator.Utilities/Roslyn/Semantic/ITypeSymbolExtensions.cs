@@ -254,8 +254,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public static IEnumerable<ITypeSymbol> GetAllConstraintTypes(this ITypeParameterSymbol typeParameterSymbol, bool includeInterfaces = true)
 		{
 			typeParameterSymbol.ThrowOnNull(nameof(typeParameterSymbol));
-
-			const int maxRecursionLevel = 40;
+			
 			var constraintTypes = includeInterfaces
 				? GetAllConstraintTypesImplementation(typeParameterSymbol)
 				: GetAllConstraintTypesImplementation(typeParameterSymbol)
@@ -266,6 +265,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			//---------------------------------Local Functions--------------------------------------------------------
 			IEnumerable<ITypeSymbol> GetAllConstraintTypesImplementation(ITypeParameterSymbol typeParameter, int recursionLevel = 0)
 			{
+				const int maxRecursionLevel = 40;
+
 				if (recursionLevel > maxRecursionLevel || typeParameter.ConstraintTypes.Length == 0)
 					yield break;
 

@@ -134,14 +134,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			INamedTypeSymbol containingType = method.ContainingType;
 
-			if (containingType == null ||
-			   (!containingType.InheritsFrom(pxContext.PXGraph.Type) && !containingType.InheritsFrom(pxContext.PXGraphExtensionType)))
+			if (containingType == null || !containingType.IsPXGraphOrExtension(pxContext))
 				return false;
 
 			return containingType.GetMembers()
 								 .OfType<IFieldSymbol>()
 								 .Where(field => field.Type.InheritsFrom(pxContext.PXSelectBase.Type))
-								 .Any(field => String.Equals(field.Name, method.Name, StringComparison.OrdinalIgnoreCase));
+								 .Any(field => string.Equals(field.Name, method.Name, StringComparison.OrdinalIgnoreCase));
 		}
 
 		/// <summary>

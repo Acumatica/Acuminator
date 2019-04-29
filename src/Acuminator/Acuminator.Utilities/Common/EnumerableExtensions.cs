@@ -51,6 +51,15 @@ namespace Acuminator.Utilities.Common
 			}
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		[DebuggerStepThrough]
+		public static List<T> ToList<T>(this IEnumerable<T> source, int capacity)
+		{
+			var list = new List<T>(capacity);
+			list.AddRange(source);
+			return list;
+		}
+
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> source) => source != null

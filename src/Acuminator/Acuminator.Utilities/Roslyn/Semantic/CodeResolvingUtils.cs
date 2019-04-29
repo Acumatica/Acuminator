@@ -294,7 +294,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			if (!typeSymbol.IsValidForColoring() || (ruleOutBaseTypes && string.Equals(typeSymbol.Name, TypeNames.PXGraph)))
 				return false;
 
-			return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.PXGraph, includeInterfaces: false);
+			if (typeSymbol is ITypeParameterSymbol typeParameterSymbol)
+			{
+				return typeParameterSymbol.GetAllConstraintTypes(includeInterfaces: false)
+										  .Any(constraint => constraint.InheritsOrImplementsOrEquals(TypeNames.PXGraph, includeInterfaces: false));
+			}
+			else
+			{
+				return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.PXGraph, includeInterfaces: false);
+			}		
 		}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -303,10 +311,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic
             typeSymbol.ThrowOnNull(nameof(typeSymbol));
             pxContext.ThrowOnNull(nameof(pxContext));
 
-            return typeSymbol.InheritsFromOrEquals(pxContext.PXGraph.Type);
-        }
+			if (typeSymbol is ITypeParameterSymbol typeParameterSymbol)
+			{
+				return typeParameterSymbol.GetAllConstraintTypes(includeInterfaces: false)
+										  .Any(constraint => constraint.InheritsFromOrEquals(pxContext.PXGraph.Type));
+			}
+			else
+			{
+				return typeSymbol.InheritsFromOrEquals(pxContext.PXGraph.Type);
+			}
+		}
 
-        public static bool IsPXGraphExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsPXGraphExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
         {
             typeSymbol.ThrowOnNull(nameof(typeSymbol));
             pxContext.ThrowOnNull(nameof(pxContext));
@@ -315,14 +332,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsPXGraphOrExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
-        {
-            typeSymbol.ThrowOnNull(nameof(typeSymbol));
-            pxContext.ThrowOnNull(nameof(pxContext));
-
-            return typeSymbol.InheritsFromOrEquals(pxContext.PXGraph.Type) ||
-                   typeSymbol.InheritsFromOrEquals(pxContext.PXGraphExtensionType);
-        }
+        public static bool IsPXGraphOrExtension(this ITypeSymbol typeSymbol, PXContext pxContext) =>
+			typeSymbol.IsPXGraph(pxContext) || typeSymbol.IsPXGraphExtension(pxContext);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsPXAction(this ITypeSymbol typeSymbol)

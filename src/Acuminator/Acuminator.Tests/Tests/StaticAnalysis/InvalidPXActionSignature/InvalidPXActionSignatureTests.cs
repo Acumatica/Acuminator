@@ -1,10 +1,13 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
+using Acuminator.Utilities;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
+
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.InvalidPXActionSignature
 {
@@ -12,7 +15,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.InvalidPXActionSignature
 	{
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new InvalidPXActionSignatureFix();
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new InvalidPXActionSignatureAnalyzer();
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
+			new PXGraphAnalyzer(CodeAnalysisSettings.Default, 
+				new InvalidPXActionSignatureAnalyzer());
 
 		[Theory]
 		[EmbeddedFileData("InvalidPXActionSignature.cs")]
