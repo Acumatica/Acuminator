@@ -32,7 +32,7 @@ In this version of Acuminator, the following bugs have been fixed:
 
  - The PX1018 error was displayed for data views defined in the fluent BQL style.
  - Fluent BQL joins were not supported by the Acuminator colorizer.
- - Acuminator didn't recognize graphs if they were used as generic type parameters. <br/>Fix description: Graphs as generic type parameters are now supported. Multiple diagnostics (such as PX1000, PX1001, PX1003, and PX1005) have been refactored. The PX1005 diagnostic now supports graph extensions.
+ - Acuminator didn't recognize graphs if they were used as generic type parameters. <br/>**Fix description**: Graphs as generic type parameters are now supported. Multiple diagnostics (such as PX1000, PX1001, PX1003, and PX1005) have been refactored. The PX1005 diagnostic now supports graph extensions.
 
 ### Other Enhancements
 Acuminator 1.6.1 also includes the following enhancements:
