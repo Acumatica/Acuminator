@@ -14,6 +14,7 @@
 | [PX1010](diagnostics/PX1010.md) | If a delegate applies paging in an inner select, `StartRow` must be reset. (If `StartRow` is not reset, paging will be applied twice.) | Warning (Level 1: Significant) | Available |
 | [PX1011](diagnostics/PX1011.md) | Because multiple levels of inheritance are not supported for `PXCacheExtension`, the derived type can be marked as sealed. | Warning (Level 3: Informational) | Available |
 | [PX1012](diagnostics/PX1012.md) | `PXAction` is declared on a non-primary view. | Warning (Level 2: Production Quality) | Available |
+| [PX1013](diagnostics/PX1013.md) | The action handler that initiates a background operation or is executed by a background operation must return `IEnumerable`. | Error | Available   | 
 | [PX1014](diagnostics/PX1014.md) | A DAC field must have a nullable type. | Error   | Available |
 | [PX1015](diagnostics/PX1015.md) | For a BQL statement that contains parameters, the number of arguments of a `Select` method is different from the number of parameters. | Warning (Level 1: Significant) | Unavailable |
 | [PX1018](diagnostics/PX1018.md) | The graph with the specified primary view type parameter doesn't contain the primary view of the specified type. | Error | Unavailable |
