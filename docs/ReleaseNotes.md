@@ -30,8 +30,8 @@ Acuminator 1.6.1 includes the following enhancements in the code map:
 ### Code Analysis Enhancements
 Acuminator now includes the following new options:
 
- - An option to turn off the suppression mechanism for the Acuminator diagnostics. If you set the value of **Tools > Options > Acuminator > Code Analysis > Suppress selected diagnostics** to _False_, Acuminator ignores the suppression file and displays all diagnostics it has found.
  - An option to turn off Acuminator static analysis. If you set the value of **Tools > Options > Acuminator > Code Analysis > Enable code analysis** to _False_, Acuminator diagnostics are not displayed.
+ - An option to turn off the suppression mechanism for the Acuminator diagnostics. If you set the value of **Tools > Options > Acuminator > Code Analysis > Suppress selected diagnostics** to _False_, Acuminator ignores the suppression file and displays all diagnostics it has found. This option is intended for internal use in Acumatica.
 
 ### Other Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
