@@ -44,7 +44,6 @@ In this version of Acuminator, the following bugs have been fixed:
 Acuminator 1.6.1 also includes the following enhancements:
 
  - Acuminator now supports Visual Studio 2019. 
- - Acuminator now includes an option to turn off the suppression mechanism for the Acuminator diagnostics. If you set the value of **Tools > Options > Acuminator > Code Analysis > Suppress selected diagnostics** to _False_, Acuminator ignores the suppression file and displays all diagnostics it has found.
  - The PX1005 diagnostic now supports graph extensions.
 
 ## Acuminator 1.6
