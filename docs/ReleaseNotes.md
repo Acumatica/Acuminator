@@ -27,18 +27,25 @@ Acuminator 1.6.1 includes the following enhancements in the code map:
  - The code map could crash due to an unhandled exception from Roslyn.
  - The code map performed calculations in hidden mode.
 
+### Code Analysis Enhancements
+Acuminator now includes the following new options:
+
+ - An option to turn off the suppression mechanism for the Acuminator diagnostics. If you set the value of **Tools > Options > Acuminator > Code Analysis > Suppress selected diagnostics** to _False_, Acuminator ignores the suppression file and displays all diagnostics it has found.
+ - An option to turn off Acuminator static analysis. If you set the value of **Tools > Options > Acuminator > Code Analysis > Enable code analysis** to _False_, Acuminator diagnostics are not displayed.
+
 ### Other Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
 
  - The PX1018 error was displayed for data views defined in the fluent BQL style.
  - Fluent BQL joins were not supported by the Acuminator colorizer.
- - Acuminator didn't recognize graphs if they were used as generic type parameters. <br/>**Fix description**: Graphs as generic type parameters are now supported. Multiple diagnostics (such as PX1000, PX1001, PX1003, and PX1005) have been refactored. The PX1005 diagnostic now supports graph extensions.
+ - Acuminator didn't recognize graphs if they were used as generic type parameters. <br/>**Fix description**: Graphs as generic type parameters are now supported. Multiple diagnostics (such as PX1000, PX1001, PX1003, and PX1005) have been refactored. 
 
 ### Other Enhancements
 Acuminator 1.6.1 also includes the following enhancements:
 
  - Acuminator now supports Visual Studio 2019. 
  - Acuminator now includes an option to turn off the suppression mechanism for the Acuminator diagnostics. If you set the value of **Tools > Options > Acuminator > Code Analysis > Suppress selected diagnostics** to _False_, Acuminator ignores the suppression file and displays all diagnostics it has found.
+ - The PX1005 diagnostic now supports graph extensions.
 
 ## Acuminator 1.6
 Acuminator 1.6 includes the diagnostics, code fixes, and enhancements described in this section, as well as the features that have been implemented in previous versions.
