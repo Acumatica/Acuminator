@@ -5,7 +5,7 @@ This document provides information about fixes, enhancements, and key features t
 Acuminator 1.6.1 includes the diagnostics, code fixes, and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
 ### New Diagnostics and Code Fixes
-In this version, the diagnostic and a code fix for the following issue has been added.
+In this version, the diagnostic and a code fix have been added for the following issue.
 
 | Code                            | Issue Description                                                                                           | Type    | Diagnostics | Code Fix    | 
 | ------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------- | ----------- | ----------- |
@@ -14,30 +14,30 @@ In this version, the diagnostic and a code fix for the following issue has been 
 ### Enhancements and Bug Fixes in the Code Map
 Acuminator 1.6.1 includes the following enhancements in the code map:
 
- - In text editor of Visual Studio, the symbol to which the code map navigates is now highlighted.
- - The tooltip for a data view in the code map now keeps BQL formatting of the source code.
+ - In the text editor of Visual Studio, the symbol to which the code map navigates is now highlighted.
+ - The tooltip for a data view in the code map now keeps the BQL formatting of the source code.
  - The namespace prefixes have been removed from the tooltips in the code map.
  - The categories without child nodes are no longer displayed in the code map.
- - The code map now displays overridden actions and methods of the base graph.
- - The code map performance has been improved.
+ - The code map now displays the actions and methods of the base graph that have been overridden.
+ - The performance of the code map has been improved.
 
  The following bugs have been fixed:
 
- - The code map didn't support graphs with complex declaration.
- - The code map could crash due to unhandled exception from Roslyn.
- - The code map performed calculations in the hidden mode.
+ - The code map didn't support graphs with complex declarations.
+ - The code map could crash due to an unhandled exception from Roslyn.
+ - The code map performed calculations in hidden mode.
 
 ### Other Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
 
- - The PX1018 error was displayed for the data views defined in the fluent BQL style.
+ - The PX1018 error was displayed for data views defined in the fluent BQL style.
  - Fluent BQL joins were not supported by the Acuminator colorizer.
 
 ### Other Enhancements
 Acuminator 1.6.1 also includes the following enhancements:
 
  - Acuminator now supports Visual Studio 2019. 
- - Acuminator now includes an option to turn off the suppression mechanism for the Acuminator diagnostics. If you set the value of **Tools > Options > Acuminator > Code Analysis > Suppress selected diagnostics** to `False`, Acuminator ignores the suppression file and displays all found diagnostics.
+ - Acuminator now includes an option to turn off the suppression mechanism for the Acuminator diagnostics. If you set the value of **Tools > Options > Acuminator > Code Analysis > Suppress selected diagnostics** to _False_, Acuminator ignores the suppression file and displays all diagnostics it has found.
 
 ## Acuminator 1.6
 Acuminator 1.6 includes the diagnostics, code fixes, and enhancements described in this section, as well as the features that have been implemented in previous versions.
@@ -122,7 +122,7 @@ In this version, diagnostics and code fixes for the following issues have been a
 ### Special Diagnostics for ISV Solutions
 Now Acuminator includes diagnostics that are designed specifically for the certification of ISV solutions developed based on the Acumatica platform. Developers of ISV solutions have to turn on these diagnostics and fix the issues reported by the diagnostics. For non-ISV solutions, these diagnostics are informational. 
 
-To turn on these diagnostics, you set the value of **Tools > Options > Acuminator > Code Analysis > Enable additional diagnostics for ISV Solution Certification** to `True`. By default, these diagnostics are turned off.
+To turn on these diagnostics, you set the value of **Tools > Options > Acuminator > Code Analysis > Enable additional diagnostics for ISV Solution Certification** to _True_. By default, these diagnostics are turned off.
 
 ### Enhanced Code Navigation
 With the **Go To Action/View Declaration/Handler** in the context menu or on the **Acuminator** main menu, you can now navigate from an action handler in a graph extension to the action declaration in the base graph, and from a data view delegate in a graph extension to the data view declaration in the base graph.
@@ -161,7 +161,7 @@ Acuminator 1.4 suggests one type of code refactoring: replacement of the standar
 
 ### Code Analysis Enhancements
 Now Acuminator can analyze the code recursively (that is, it can analyze the whole tree of method invocations in a recursive manner). For example, for the PX1042 diagnostic, the code of a `RowSelecting` event handler can contain no direct requests to the database but can contain a call to another method that performs a request to the database. Acuminator 1.4 can find this indirect request to the database.
-By default, Acuminator analyzes the code recursively. You can turn off this behavior by setting to `False` the value of **Tools > Options > Acuminator > Code Analysis > Enable recursive code analysis**.
+By default, Acuminator analyzes the code recursively. You can turn off this behavior by setting to _False_ the value of **Tools > Options > Acuminator > Code Analysis > Enable recursive code analysis**.
 
 ### Bug Fixes
 In this version of Acuminator, the following bugs have been fixed.
@@ -211,7 +211,7 @@ Acuminator now can navigate between an action and its handler, and between a dat
 In previous versions of Acuminator, you had to manually add the **Format BQL Statements** command to the context menu of the code editor in Visual Studio. In Acuminator 1.3, this command is available in the context menu by default. Also this command is now available on the **Acuminator** main menu. 
 
 ### Code Outlining Enhancements
-* Now you can configure Acuminator to outline entire BQL statements. To do this in Visual Studio, set to `False` the value of **Tools > Options > Acuminator > BQL Outlining > Outline parts of BQL commands**.
+* Now you can configure Acuminator to outline entire BQL statements. To do this in Visual Studio, set to _False_ the value of **Tools > Options > Acuminator > BQL Outlining > Outline parts of BQL commands**.
 * The **Use BQL outlining** has been moved under **Tools > Options > Acuminator > BQL Outlining**.
 
 ### Code Coloring Enhancements
