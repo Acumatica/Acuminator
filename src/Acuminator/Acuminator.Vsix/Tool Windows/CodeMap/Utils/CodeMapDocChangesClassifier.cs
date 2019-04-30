@@ -27,16 +27,18 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			ChangeLocation changeLocation = await GetChangesLocationAsync(oldDocument, newRoot, newDocument, cancellationToken);
 
-			if (changeLocation == ChangeLocation.Class || changeLocation == ChangeLocation.Namespace)
+			if (changeLocation.ContainsLocation(ChangeLocation.Namespace))
 			{
 				return newRoot.ContainsDiagnostics
 					? CodeMapRefreshMode.Clear
 					: CodeMapRefreshMode.Recalculate;
 			}
-			else
+			else if (changeLocation.ContainsLocation(ChangeLocation.Class))
 			{
-				return CodeMapRefreshMode.NoRefresh;
+				return CodeMapRefreshMode.Recalculate;
 			}
+			
+			return CodeMapRefreshMode.NoRefresh;
 		}
 
 		protected override ChangeLocation GetChangesLocationImplAsync(Document oldDocument, SyntaxNode newRoot, Document newDocument,
@@ -57,6 +59,27 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			return accumulatedChangeLocation;
+		}
+
+		protected override ChangeLocation? GetChangeLocationFromMethodBaseSyntaxNode(BaseMethodDeclarationSyntax methodNodeBase, in TextChange textChange, 
+																					 ContainmentModeChange containingModeChange)
+		{
+			var changeLocation = base.GetChangeLocationFromMethodBaseSyntaxNode(methodNodeBase, textChange, containingModeChange);
+
+			if (changeLocation != ChangeLocation.Attributes || !(methodNodeBase is MethodDeclarationSyntax methodDeclaration))
+			{
+				return changeLocation;
+			}
+
+			// In Acumatica one of the most frequent attributes placed on method is the PXOverride attribute. 
+			// If there are changes in attributes then there is a high probability that it was change related to PXOverride attribute.
+			// There could be a more complex and error-prone attempt to detect that the text change is related exactly to the PXOverride attribute
+			// However, currently we do not perform such check because the PXOverride is one of the most frequent cases in Acumatica when the method has attributes. 
+			// The situations which may benefit from complex analysis of change (multiple attributes on a method or an attribute different from attribute on a method) are just too rare.
+			// On the other hand the amount of work for such analysis is quite significant. 
+			// The simple solution is to just refresh code map whenever method attributes are changed, we do not expect that such changes happen frequently.
+			
+			return ChangeLocation.Class;	//Increase change location class
 		}
 	}
 }
