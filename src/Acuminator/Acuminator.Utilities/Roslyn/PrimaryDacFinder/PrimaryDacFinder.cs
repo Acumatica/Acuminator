@@ -20,8 +20,6 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 
 		public CancellationToken CancellationToken { get; }
 
-		public SemanticModel SemanticModel { get; }
-
 		public PXGraphSemanticModel GraphSemanticModel { get; }
 
 		public ImmutableArray<ActionInfo> GraphActions { get; }
@@ -34,11 +32,9 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 		private readonly List<PrimaryDacRuleBase> _absoluteRules;
 		private readonly List<PrimaryDacRuleBase> _heuristicRules;
 
-		private PrimaryDacFinder(PXContext pxContext, SemanticModel semanticModel, PXGraphSemanticModel graphSemanticModel,
-								 ImmutableArray<PrimaryDacRuleBase> rules, CancellationToken cancellationToken,
-								 IEnumerable<DataViewInfo> graphViewInfos, IEnumerable<ActionInfo> actionInfos)
+		private PrimaryDacFinder(PXContext pxContext, PXGraphSemanticModel graphSemanticModel, ImmutableArray<PrimaryDacRuleBase> rules,
+								 CancellationToken cancellationToken, IEnumerable<DataViewInfo> graphViewInfos, IEnumerable<ActionInfo> actionInfos)
 		{
-			SemanticModel = semanticModel;
 			PxContext = pxContext;
 			GraphSemanticModel = graphSemanticModel;
 			CancellationToken = cancellationToken;
@@ -57,16 +53,15 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 			}
 
 			_dacWithViewsLookup = _viewsWithDacAndScores.ToLookup(viewAndDac => viewAndDac.Value.DAC,
-																viewAndDac => viewAndDac.Key);
-
+																  viewAndDac => viewAndDac.Key);
 			_absoluteRules = rules.Where(rule => rule.IsAbsolute).ToList();
 			_heuristicRules = rules.Where(rule => !rule.IsAbsolute).ToList();
 		}
 
-		public static PrimaryDacFinder Create(PXContext pxContext, SemanticModel semanticModel, INamedTypeSymbol graphOrGraphExtension,
-											  CancellationToken cancellationToken, IRulesProvider rulesProvider = null)
+		public static PrimaryDacFinder Create(PXContext pxContext, INamedTypeSymbol graphOrGraphExtension, CancellationToken cancellationToken,
+											  IRulesProvider rulesProvider = null)
 		{
-			if (pxContext == null || semanticModel == null || graphOrGraphExtension == null || cancellationToken.IsCancellationRequested)
+			if (pxContext == null || graphOrGraphExtension == null || cancellationToken.IsCancellationRequested)
 				return null;
 
 			bool isGraph = graphOrGraphExtension.InheritsFrom(pxContext.PXGraph.Type);
@@ -76,8 +71,13 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 
 			PXGraphSemanticModel graphSemanticModel = PXGraphSemanticModel.InferModels(pxContext, graphOrGraphExtension, cancellationToken)
 																		 ?.FirstOrDefault();
+			return Create(pxContext, graphSemanticModel, cancellationToken, rulesProvider);
+		}
 
-			if (graphSemanticModel?.GraphSymbol == null || cancellationToken.IsCancellationRequested)
+		public static PrimaryDacFinder Create(PXContext pxContext, PXGraphSemanticModel graphSemanticModel, CancellationToken cancellationToken,
+											  IRulesProvider rulesProvider = null)
+		{
+			if (pxContext == null || graphSemanticModel?.GraphSymbol == null || cancellationToken.IsCancellationRequested)
 				return null;
 
 			rulesProvider = rulesProvider ?? new DefaultRulesProvider(pxContext);
@@ -93,11 +93,9 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder
 												 .Where(view => view.Symbol.ContainingType.IsPXGraph(pxContext))
 												 .OrderBy(view => view.DeclarationOrder);
 
-			if (cancellationToken.IsCancellationRequested)
-				return null;
-
-			return new PrimaryDacFinder(pxContext, semanticModel, graphSemanticModel, rules, cancellationToken,
-										allViewInfos, allGraphActionInfos);
+			return cancellationToken.IsCancellationRequested
+				? null
+				: new PrimaryDacFinder(pxContext, graphSemanticModel, rules, cancellationToken, allViewInfos, allGraphActionInfos);
 		}
 
 		public ITypeSymbol FindPrimaryDAC()
