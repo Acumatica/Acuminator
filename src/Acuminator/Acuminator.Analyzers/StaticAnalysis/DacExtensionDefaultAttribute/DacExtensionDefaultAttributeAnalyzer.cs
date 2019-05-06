@@ -90,7 +90,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
             var diagnosticProperties = ImmutableDictionary<string, string>.Empty
                 .Add(DiagnosticProperty.IsBoundField, bool.FalseString);
-            var descriptor = dacOrExtension.IsDac(pxContext) ?
+            var descriptor = dacOrExtension.IsDAC(pxContext) ?
                 Descriptors.PX1030_DefaultAttibuteToExistingRecordsOnDAC :
                 Descriptors.PX1030_DefaultAttibuteToExistingRecordsError;
             var diagnostic = Diagnostic.Create(descriptor, attributeLocation, diagnosticProperties);
@@ -206,7 +206,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (dacOrExtension.IsDac(pxContext))
+            if (dacOrExtension.IsDAC(pxContext))
             {
                 return GetBoundTypeFromDeclaredProperty(property, attributeInformation);
             }
