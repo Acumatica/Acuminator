@@ -21,7 +21,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
             var typeArguments = extensionBaseType.TypeArguments;
             var dacType = typeArguments.LastOrDefault();
 
-            if (dacType == null || !dacType.IsDac(pxContext))
+            if (dacType == null || !dacType.IsDAC(pxContext))
             {
                 return Enumerable.Empty<ITypeSymbol>();
             }

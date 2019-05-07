@@ -29,7 +29,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 			}
 
 			var classTypeSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclaration, context.CancellationToken);
-			if (classTypeSymbol == null || !classTypeSymbol.IsDac(pxContext))
+			if (classTypeSymbol == null || !classTypeSymbol.IsDAC(pxContext))
 			{
 				return;
 			}

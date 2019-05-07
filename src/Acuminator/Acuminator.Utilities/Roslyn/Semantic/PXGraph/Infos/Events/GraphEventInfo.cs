@@ -164,21 +164,26 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 						: string.Empty;
 
 				case EventHandlerSignatureType.Generic:
-					if (Symbol.Parameters.IsDefaultOrEmpty ||
-					   !(Symbol.Parameters[0]?.Type is INamedTypeSymbol firstParameter) ||
-					   firstParameter.TypeArguments.IsDefaultOrEmpty)
-					{
-						return string.Empty;
-					}
-
-					return firstParameter.TypeArguments[0].IsDAC()
-						? firstParameter.TypeArguments[0].Name
-						: string.Empty;
+					return GetDacNameFromGenericEvent();
 
 				case EventHandlerSignatureType.None:
 				default:
 					return string.Empty;
 			}
+		}
+
+		private string GetDacNameFromGenericEvent()
+		{
+			if (Symbol.Parameters.IsDefaultOrEmpty ||
+					   !(Symbol.Parameters[0]?.Type is INamedTypeSymbol firstParameter) ||
+					   firstParameter.TypeArguments.IsDefaultOrEmpty)
+			{
+				return string.Empty;
+			}
+
+			return firstParameter.TypeArguments[0].IsDAC()
+				? firstParameter.TypeArguments[0].Name
+				: string.Empty;
 		}
 	}
 }

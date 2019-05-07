@@ -227,8 +227,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			return baseTypes.Any(typeSymbol => typeSymbol.Name == baseTypeName);					
 		}
 
-		public static bool ImplementsInterface(this ITypeSymbol type, string interfaceName) =>
-			type?.AllInterfaces.Any(interfaceType => interfaceType.Name == interfaceName) ?? false;
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool ImplementsInterface(this ITypeSymbol type, string interfaceName)
+		{
+			if (type == null)
+				return false;
+			else if (type.TypeKind == TypeKind.Interface && type.Name == interfaceName)
+				return true;
+			else
+				return type.AllInterfaces.Any(interfaceType => interfaceType.Name == interfaceName);
+		}
 			
 
 		/// <summary>
