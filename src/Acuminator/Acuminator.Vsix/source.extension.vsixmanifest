@@ -1,31 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
-    <Metadata>
-        <Identity Id="Acumatica.Acuminator.778b19d1-1d5e-4fcb-8edb-eb103feeab7c" Version="1.6.1" Language="en-US" Publisher="Acumatica" />
-        <DisplayName>Acuminator</DisplayName>
-        <Description xml:space="preserve">Acuminator is a static code analysis and colorizer tool for Visual Studio that simplifies development with Acumatica Framework. Acuminator provides diagnostics and code fixes for common developer challenges related to Acumatica Framework. Also, Acuminator can colorize and format BQL statements, and can collapse attributes and parts of BQL queries.</Description>
-        <MoreInfo>https://github.com/Acumatica/Acuminator</MoreInfo>
-        <License>license.txt</License>
-        <ReleaseNotes>https://github.com/Acumatica/Acuminator/blob/master/docs/ReleaseNotes.md</ReleaseNotes>
-        <Icon>manifestIcon.ico</Icon>
-        <Tags>acumatica</Tags>
-    </Metadata>
-    <Installation>
-        <InstallationTarget Version="[14.0,17.0)" Id="Microsoft.VisualStudio.Pro" />
-        <InstallationTarget Version="[14.0,17.0)" Id="Microsoft.VisualStudio.Community" />
-    </Installation>
-    <Dependencies>
-        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
-    </Dependencies>
-    <Assets>
-        <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="Acuminator.Analyzers" Path="|Acuminator.Analyzers|" />
-        <Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="Acuminator.Analyzers" Path="|Acuminator.Analyzers|" />
-        <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
-        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
-        <Asset d:Source="Project" Type="Microsoft.VisualStudio.Assembly" d:ProjectName="Acuminator.Utilities" Path="|Acuminator.Utilities|" AssemblyName="|Acuminator.Utilities;AssemblyName|" />
-    </Assets>
-    <Prerequisites>
-        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.8.27729.1,)" DisplayName="Visual Studio core editor" />
-        <Prerequisite Id="Microsoft.VisualStudio.Component.Roslyn.LanguageServices" Version="[15.0, )" DisplayName="Roslyn Language Services" />
-    </Prerequisites>
+  <Metadata>
+    <Identity Id="Acumatica.Acuminator.778b19d1-1d5e-4fcb-8edb-eb103feeab7c" Version="1.7.0" Language="en-US" Publisher="Acumatica" />
+    <DisplayName>Acuminator</DisplayName>
+    <Description xml:space="preserve">Acuminator is a static code analysis and colorizer tool for Visual Studio that simplifies development with Acumatica Framework. Acuminator provides diagnostics and code fixes for common developer challenges related to Acumatica Framework. Also, Acuminator can colorize and format BQL statements, and can collapse attributes and parts of BQL queries.</Description>
+    <MoreInfo>https://github.com/Acumatica/Acuminator</MoreInfo>
+    <License>license.txt</License>
+    <ReleaseNotes>https://github.com/Acumatica/Acuminator/blob/master/docs/ReleaseNotes.md</ReleaseNotes>
+    <Icon>manifestIcon.ico</Icon>
+    <Tags>acumatica</Tags>
+  </Metadata>
+  <Installation>
+    <InstallationTarget Version="[14.0,17.0)" Id="Microsoft.VisualStudio.Pro" />
+    <InstallationTarget Version="[14.0,17.0)" Id="Microsoft.VisualStudio.Community" />
+  </Installation>
+  <Dependencies>
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+  </Dependencies>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="Acuminator.Analyzers" Path="|Acuminator.Analyzers|" />
+    <Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="Acuminator.Analyzers" Path="|Acuminator.Analyzers|" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
+    <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+    <Asset d:Source="Project" Type="Microsoft.VisualStudio.Assembly" d:ProjectName="Acuminator.Utilities" Path="|Acuminator.Utilities|" AssemblyName="|Acuminator.Utilities;AssemblyName|" />
+  </Assets>
+  <Prerequisites>
+    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.8.27729.1,)" DisplayName="Visual Studio core editor" />
+    <Prerequisite Id="Microsoft.VisualStudio.Component.Roslyn.LanguageServices" Version="[15.0, )" DisplayName="Roslyn Language Services" />
+  </Prerequisites>
 </PackageManifest>
