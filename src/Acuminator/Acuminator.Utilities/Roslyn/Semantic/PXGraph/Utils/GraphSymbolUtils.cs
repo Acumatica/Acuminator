@@ -64,63 +64,68 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			INamedTypeSymbol extensionBaseType = graphExtension.BaseType;
 			var typeArguments = extensionBaseType.TypeArguments;
-			ITypeSymbol graphType = typeArguments.LastOrDefault();
+			var (graphIndex, graphType) = GetGraphTypeWithIndexFromTypeArgs();
 
-			if (graphType == null || !graphType.IsPXGraph(pxContext))
+			if (graphIndex < 0)
 				return Enumerable.Empty<ITypeSymbol>();
 
 			return sortDirection == SortDirection.Ascending
 				? GetExtensionInAscendingOrder()
 				: GetExtensionInDescendingOrder();
 
+			//-----------------------------Local Function---------------------------------------------------
+			(int GraphIndex, ITypeSymbol GraphType) GetGraphTypeWithIndexFromTypeArgs()
+			{
+				for (int i = typeArguments.Length - 1; i >= 0; i--)
+				{
+					ITypeSymbol typeArg = typeArguments[i];
 
+					if (typeArg.IsPXGraph(pxContext))
+						return (i, typeArg);
+				}
+
+				return (-1, null);
+			}
+
+			//-------------------------------------------------------------------------------------
 			IEnumerable<ITypeSymbol> GetExtensionInAscendingOrder()
 			{
-				var extensions = new List<ITypeSymbol>(capacity: typeArguments.Length);
+				var extensions = new List<ITypeSymbol>(capacity: graphIndex + 1);
 
-				if (includeGraph)
+				if (includeGraph)				
+					extensions.Add(graphType);				
+
+				for (int i = graphIndex - 1; i >= 0; i--)
 				{
-					extensions.Add(graphType);
+					var baseExtension = typeArguments[i];
+
+					if (!baseExtension.IsPXGraphExtension(pxContext))
+						return Enumerable.Empty<ITypeSymbol>();
+
+					extensions.Add(baseExtension);
 				}
-
-				if (typeArguments.Length >= 2)
-				{
-					for (int i = typeArguments.Length - 2; i >= 0; i--)
-					{
-						var baseExtension = typeArguments[i];
-
-						if (!baseExtension.IsPXGraphExtension(pxContext))
-							return Enumerable.Empty<ITypeSymbol>();
-
-						extensions.Add(baseExtension);
-					}
-				}
-
+				
 				extensions.Add(graphExtension);
 				return extensions;
 			}
 
+			//------------------------------------------------------------
 			IEnumerable<ITypeSymbol> GetExtensionInDescendingOrder()
 			{
-				var extensions = new List<ITypeSymbol>(capacity: typeArguments.Length) { graphExtension };
-
-				if (typeArguments.Length >= 2)
+				var extensions = new List<ITypeSymbol>(capacity: graphIndex + 1) { graphExtension };
+				
+				for (int i = 0; i <= graphIndex - 1; i++)
 				{
-					for (int i = 0; i <= typeArguments.Length - 2; i++)
-					{
-						var baseExtension = typeArguments[i];
+					var baseExtension = typeArguments[i];
 
-						if (!baseExtension.IsPXGraphExtension(pxContext))
-							return Enumerable.Empty<ITypeSymbol>();
+					if (!baseExtension.IsPXGraphExtension(pxContext))
+						return Enumerable.Empty<ITypeSymbol>();
 
-						extensions.Add(baseExtension);
-					}
-				}
+					extensions.Add(baseExtension);
+				}				
 
 				if (includeGraph)
-				{
 					extensions.Add(graphType);
-				}
 
 				return extensions;
 			}
