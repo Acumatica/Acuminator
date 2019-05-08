@@ -59,7 +59,7 @@
     <Reference Include="PX.Data">
       <HintPath>..\..\..\lib\PX.Data.dll</HintPath>
     </Reference>
-	<Reference Include="PX.Data.BQL.Fluent">
+    <Reference Include="PX.Data.BQL.Fluent">
       <HintPath>..\..\..\lib\PX.Data.BQL.Fluent.dll</HintPath>
     </Reference>
     <Reference Include="System.Collections.Immutable, Version=1.1.37.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -122,6 +122,7 @@
     <Compile Include="Roslyn\Semantic\PXGraph\PXGraphEventSemanticModel.EventsCollector.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\PXGraphEventSemanticModel.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Utils\GraphActionSymbolUtils.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\Utils\GraphSymbolHierarchyUtils.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Utils\GraphViewSymbolUtils.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Base\GraphOverridableItemsCollection.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Infos\InitDelegateInfo.cs" />

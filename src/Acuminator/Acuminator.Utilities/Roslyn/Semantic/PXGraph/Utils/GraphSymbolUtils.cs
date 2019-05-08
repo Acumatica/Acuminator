@@ -30,7 +30,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			var baseGraphExtensionType = graphExtension.GetBaseTypesAndThis()
 													   .OfType<INamedTypeSymbol>()
-													   .FirstOrDefault(type => IsGraphExtensionBaseType(type));
+													   .FirstOrDefault(type => type.IsGraphExtensionBaseType());
 			if (baseGraphExtensionType == null)
 				return null;
 
@@ -44,93 +44,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				? firstTypeArg
 				: null;
 		}
-
-		/// <summary>
-		/// Gets the graph extension with base graph extensions from graph extension type.
-		/// </summary>
-		/// <param name="graphExtension">The graph extension to act on.</param>
-		/// <param name="pxContext">Context.</param>
-		/// <param name="sortDirection">The sort direction. The <see cref="SortDirection.Descending"/> order is from the extension to its base extensions/graph.
-		/// The <see cref="SortDirection.Ascending"/> order is from the graph/base extensions to the most derived one.</param>
-		/// <param name="includeGraph">True to include, false to exclude the graph type.</param>
-		/// <returns/>
-		public static IEnumerable<ITypeSymbol> GetGraphExtensionWithBaseExtensions(this ITypeSymbol graphExtension, PXContext pxContext,
-																				   SortDirection sortDirection, bool includeGraph)
-		{
-			pxContext.ThrowOnNull(nameof(pxContext));
-
-			if (graphExtension == null || !graphExtension.InheritsFrom(pxContext.PXGraphExtensionType))
-				return Enumerable.Empty<ITypeSymbol>();
-
-			INamedTypeSymbol extensionBaseType = graphExtension.BaseType;
-			var typeArguments = extensionBaseType.TypeArguments;
-			var (graphIndex, graphType) = GetGraphTypeWithIndexFromTypeArgs();
-
-			if (graphIndex < 0)
-				return Enumerable.Empty<ITypeSymbol>();
-
-			return sortDirection == SortDirection.Ascending
-				? GetExtensionInAscendingOrder()
-				: GetExtensionInDescendingOrder();
-
-			//-----------------------------Local Function---------------------------------------------------
-			(int GraphIndex, ITypeSymbol GraphType) GetGraphTypeWithIndexFromTypeArgs()
-			{
-				for (int i = typeArguments.Length - 1; i >= 0; i--)
-				{
-					ITypeSymbol typeArg = typeArguments[i];
-
-					if (typeArg.IsPXGraph(pxContext))
-						return (i, typeArg);
-				}
-
-				return (-1, null);
-			}
-
-			//-------------------------------------------------------------------------------------
-			IEnumerable<ITypeSymbol> GetExtensionInAscendingOrder()
-			{
-				var extensions = new List<ITypeSymbol>(capacity: graphIndex + 1);
-
-				if (includeGraph)				
-					extensions.Add(graphType);				
-
-				for (int i = graphIndex - 1; i >= 0; i--)
-				{
-					var baseExtension = typeArguments[i];
-
-					if (!baseExtension.IsPXGraphExtension(pxContext))
-						return Enumerable.Empty<ITypeSymbol>();
-
-					extensions.Add(baseExtension);
-				}
-				
-				extensions.Add(graphExtension);
-				return extensions;
-			}
-
-			//------------------------------------------------------------
-			IEnumerable<ITypeSymbol> GetExtensionInDescendingOrder()
-			{
-				var extensions = new List<ITypeSymbol>(capacity: graphIndex + 1) { graphExtension };
-				
-				for (int i = 0; i <= graphIndex - 1; i++)
-				{
-					var baseExtension = typeArguments[i];
-
-					if (!baseExtension.IsPXGraphExtension(pxContext))
-						return Enumerable.Empty<ITypeSymbol>();
-
-					extensions.Add(baseExtension);
-				}				
-
-				if (includeGraph)
-					extensions.Add(graphType);
-
-				return extensions;
-			}
-		}
-
 
 		public static bool IsDelegateForViewInPXGraph(this IMethodSymbol method, PXContext pxContext)
 		{
@@ -265,28 +178,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			ITypeSymbol primaryDacType = baseGraphType.TypeArguments[1];
 			return primaryDacType.IsDAC() ? primaryDacType : null;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private static bool IsGraphOrGraphExtensionBaseType(this ITypeSymbol type)
-		{
-			string typeNameWithoutGenericArgsCount = type.Name.Split('`')[0];
-			return typeNameWithoutGenericArgsCount == TypeNames.PXGraph ||
-				   typeNameWithoutGenericArgsCount == TypeNames.PXGraphExtension;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static bool IsGraphBaseType(this ITypeSymbol type)
-		{
-			string typeNameWithoutGenericArgsCount = type.Name.Split('`')[0];
-			return typeNameWithoutGenericArgsCount == TypeNames.PXGraph;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsGraphExtensionBaseType(this ITypeSymbol type)
-		{
-			string typeNameWithoutGenericArgsCount = type.Name.Split('`')[0];
-			return typeNameWithoutGenericArgsCount == TypeNames.PXGraphExtension;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
