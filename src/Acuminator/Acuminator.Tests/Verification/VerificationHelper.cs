@@ -66,10 +66,11 @@ namespace Acuminator.Tests.Verification
 		/// <param name="source">Classes in the form of a string</param>
 		/// <param name="language">The language the source code is in</param>
 		/// <param name="externalCode">The source codes for new memory compilation. The goal of the external code is to simulate the behaviour of the extenal assembly without source code.</param>
+		/// <param name="compiledAssemblies">The compiled libraries for usage in test. The goal of the library is to simulate the behaviour of the extenal assembly without source code.</param>
 		/// <returns>A Document created from the source string</returns>
-		public static Document CreateDocument(string source, string language = LanguageNames.CSharp, string[] externalCode = null)
+		public static Document CreateDocument(string source, string language = LanguageNames.CSharp, string[] externalCode = null, string[] compiledAssemblies = null)
 		{
-			return CreateProject(new[] { source }, language, externalCode).Documents.First();
+			return CreateProject(new[] { source }, language, externalCode, compiledAssemblies).Documents.First();
 		}
 
 		public static Document CreateCSharpDocument(string source, params string[] additionalSources)
@@ -84,8 +85,9 @@ namespace Acuminator.Tests.Verification
 		/// <param name="sources">Classes in the form of strings</param>
 		/// <param name="language">The language the source code is in</param>
 		/// <param name="externalCode">The source codes for new memory compilation. The goal of the external code is to simulate the behaviour of the extenal assembly without source code.</param>
+		/// <param name="compiledAssemblies">The compiled libraries for usage in test. The goal of the library is to simulate the behaviour of the extenal assembly without source code.</param>
 		/// <returns>A Project created out of the Documents created from the source strings</returns>
-		private static Project CreateProject(string[] sources, string language = LanguageNames.CSharp, string[] externalCode = null)
+		private static Project CreateProject(string[] sources, string language = LanguageNames.CSharp, string[] externalCode = null, string[] externalAssemblies = null)
 		{
 			string fileNamePrefix = DefaultFilePathPrefix;
 			string fileExt = language == LanguageNames.CSharp ? CSharpDefaultFileExt : VisualBasicDefaultExt;
@@ -113,6 +115,15 @@ namespace Acuminator.Tests.Verification
 				IEnumerable<byte> dynamicAssembly = BuildAssemblyFromSources(externalCode);
 				MetadataReference dynamicReference = MetadataReference.CreateFromImage(dynamicAssembly);
 				solution = solution.AddMetadataReference(projectId, dynamicReference);
+			}
+
+			if (externalAssemblies != null && externalAssemblies.Length > 0)
+			{
+				foreach (var assembly in externalAssemblies)
+				{
+					MetadataReference dynamicReference = MetadataReference.CreateFromFile(assembly);
+					solution = solution.AddMetadataReference(projectId, dynamicReference);
+				}
 			}
 
 			var project = solution.GetProject(projectId);

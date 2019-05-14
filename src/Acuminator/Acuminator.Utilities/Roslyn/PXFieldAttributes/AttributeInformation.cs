@@ -55,7 +55,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			var typesContainsIsDBField = GetTypesContainsIsDBField(_context);
 
 			BoundBaseTypes = boundBaseTypes.ToImmutableHashSet();
-			typesContainsIsDBField.ToImmutableHashSet();
+			TypesContainsIsDBField = typesContainsIsDBField.ToImmutableHashSet();
 
 			_eventSubscriberAttribute = _context.AttributeTypes.PXEventSubscriberAttribute;
 			_dynamicAggregateAttribute = _context.AttributeTypes.PXDynamicAggregateAttribute;
@@ -195,8 +195,11 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			{
 				var isDbPropertyAttributeArgs = attribute.NamedArguments.Where(arg => IsDBField.Equals(arg.Key, StringComparison.OrdinalIgnoreCase)).ToList();    //case insensitive check
 
-				if (isDbPropertyAttributeArgs.Count == 0 && // IsDBField property defined in base class 
-					TypesContainsIsDBField.Any(typesContainsIsDBField => IsAttributeDerivedFromClass(attribute.AttributeClass, typesContainsIsDBField))) 
+				
+				var isDBFieldInBaseAcumaticaAttribute = TypesContainsIsDBField.Any(t =>
+					t != null && IsAttributeDerivedFromClass(attribute.AttributeClass, t));
+
+				if (isDbPropertyAttributeArgs.Count == 0 && isDBFieldInBaseAcumaticaAttribute) // IsDBField property defined in base class 
 					return BoundType.DbBound;
 
 				if (isDbPropertyAttributeArgs.Count != 1)  //rare case when there are multiple different "IsDBField" considered

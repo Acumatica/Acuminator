@@ -127,18 +127,27 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		[EmbeddedFileData(@"PropertyIsDBBoundFieldWithDefinedAttributes.cs")]
 		public Task FieldBoundAttributesWithDynamicIsDBFieldSetInAttributeDefinitionAsync(string source) =>
 		   IsDBFieldPropertyAsync(source,
-								  new List<bool> { false, false, true, true });
+								  new List<bool> { false, false, false, false });
 
 		[Theory]
 		[EmbeddedFileData(@"PropertyIsDBBoundFieldWithoutDefinedAttributes.cs", internalCodeFileNames: new string[] { @"ExternalAttributes1.cs", @"ExternalAttributes2.cs" })]
 		public Task FieldBoundAttributesWithDynamicIsDBFieldSetInExternalAttributeDefinitionAsync(string source, string externalAttribute1, string externalAttribute2) =>
 		   IsDBFieldPropertyAsync(source,
-								  new List<bool> { true, false, true },
+								  new List<bool> { false, false, true },
 								  new string[] { externalAttribute1, externalAttribute2 });
 
-		private async Task IsDBFieldPropertyAsync(string source, List<bool> expected, string[] code = null)
+		[Theory]
+		[EmbeddedFileData2(@"PropertyIsBoundFileFromExternalAssembly.cs",  assemblies: new string[] {@"C:\repos\Acuminator\lib\PX.Objects.dll"})]
+		public Task IsDBFieldFromCompiledAsync(string source, string assemblies) =>
+			IsDBFieldPropertyAsync(source,
+									expected: new List<bool> {true, false, true, false},
+									code: new string[] { },
+									assemblies: new string[] {assemblies});
+
+
+		private async Task IsDBFieldPropertyAsync(string source, List<bool> expected, string[] code = null, string[] assemblies = null)
 		{
-			Document document = CreateDocument(source, externalCode: code);
+			Document document = CreateDocument(source, externalCode: code, compiledAssemblies: assemblies);
 			SemanticModel semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
 			var syntaxRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
 

@@ -77,7 +77,7 @@
     <Reference Include="PX.Data">
       <HintPath>..\..\..\lib\PX.Data.dll</HintPath>
     </Reference>
-	<Reference Include="PX.Data.BQL.Fluent">
+    <Reference Include="PX.Data.BQL.Fluent">
       <HintPath>..\..\..\lib\PX.Data.BQL.Fluent.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -423,6 +423,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\ViewDeclarationOrder\Sources\ViewDeclarationOrderWithGraphInheritance.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ViewDeclarationOrder\Sources\ViewDeclarationOrderWithGraphExtension.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ViewDeclarationOrder\Sources\ViewDeclarationOrderWithGraphInheritance_OneCache.cs" />
+    <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\PropertyIsBoundFileFromExternalAssembly.cs" />
     <Compile Include="Verification\CodeRefactoringVerifier.cs" />
     <Compile Include="Verification\VerificationHelper.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\StaticMethod.cs" />
