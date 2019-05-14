@@ -172,8 +172,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		private IEnumerable<IMethodSymbol> GetAllGraphMethodsFromBaseToDerived()
 		{
 			IEnumerable<ITypeSymbol> baseTypes = BaseGraphModel.GraphSymbol
-															   .GetBaseTypesAndThis()
-															   .TakeWhile(baseGraph => !baseGraph.IsGraphBaseType())
+															   .GetGraphWithBaseTypes()
 															   .Reverse();
 
 			if (BaseGraphModel.Type == GraphType.PXGraphExtension)
@@ -194,10 +193,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				return ImmutableDictionary.Create<string, GraphEventInfo>(StringComparer.OrdinalIgnoreCase);
 
 			var rawCollection = selector(eventsCollector);
-			return rawCollection.Values.ToLookup(e => e.Item.Symbol.Name, StringComparer.OrdinalIgnoreCase)
-									   .ToImmutableDictionary(group => group.Key,
-															  group => CreateEventInfo(group.First()),
-															  keyComparer: StringComparer.OrdinalIgnoreCase);
+			var lookup = rawCollection.Values.ToLookup(e => e.Item.DacName, StringComparer.OrdinalIgnoreCase);
+			return lookup.ToImmutableDictionary(group => group.Key,
+												group => CreateEventInfo(group.First()),
+												keyComparer: StringComparer.OrdinalIgnoreCase);
 
 
 			GraphEventInfo CreateEventInfo(GraphOverridableItem<GraphEventInfo> item)
