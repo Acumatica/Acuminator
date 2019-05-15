@@ -137,7 +137,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 								  new string[] { externalAttribute1, externalAttribute2 });
 
 		[Theory]
-		[EmbeddedFileData2(@"PropertyIsBoundFileFromExternalAssembly.cs",  assemblies: new string[] {@"C:\repos\Acuminator\lib\PX.Objects.dll"})]
+		[EmbeddedFileData2(@"PropertyIsBoundFileFromExternalAssembly.cs",  assemblies: new string[] { @"..\..\..\..\..\lib\PX.Objects.dll" })]
 		public Task IsDBFieldFromCompiledAsync(string source, string assemblies) =>
 			IsDBFieldPropertyAsync(source,
 									expected: new List<bool> {true, false, true, false},
