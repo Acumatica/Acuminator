@@ -89,9 +89,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 									.OrderBy(graphMemberVM => graphMemberVM.Name);
 		}
 
-		protected virtual IEnumerable<TreeNodeViewModel> GetDacFieldEvents(IEnumerable<GraphEventInfo> graphEventsForDAC, bool areChildrenExpanded)
+		protected virtual IEnumerable<TreeNodeViewModel> GetDacFieldEvents(IEnumerable<GraphFieldEventInfo> graphFieldEventsForDAC,
+																		   bool areChildrenExpanded)
 		{
-			return from eventInfo in graphEventsForDAC
+			return from eventInfo in graphFieldEventsForDAC
 				   group eventInfo by GraphEventInfo.GetDacFieldNameForFieldEvent(eventInfo) 
 						into dacFieldEvents
 				   select DacFieldEventsGroupingNodeViewModel.Create(this, dacFieldEvents.Key, dacFieldEvents) 

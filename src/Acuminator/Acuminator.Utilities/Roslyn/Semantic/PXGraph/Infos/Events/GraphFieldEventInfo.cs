@@ -34,7 +34,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		private void ValidateEventType(EventType eventType)
 		{
-			if (!IsDacFieldEvent())
+			if (!EventType.IsDacFieldEvent())
 				throw new ArgumentOutOfRangeException(nameof(eventType), $"The {eventType.ToString()} is not a field event type.");
 		}
 
