@@ -118,6 +118,8 @@
     <Compile Include="Roslyn\Semantic\PXGraph\Base\GraphNodeSymbolItem.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Base\GraphOverridableItem.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Base\GraphSymbolItem.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\Infos\Events\GraphEventInfoBase.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\Infos\Events\GraphFieldEventInfo.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Infos\Events\GraphEventInfo.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\PXGraphEventSemanticModel.EventsCollector.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\PXGraphEventSemanticModel.cs" />
