@@ -25,7 +25,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 							  .Concat(GraphSemanticModel.FieldUpdatingEvents)
 							  .Concat(GraphSemanticModel.FieldUpdatedEvents);
 
-		public override GraphMemberNodeViewModel CreateNewEventVM<TEventNodeParent>(TEventNodeParent eventNodeParent, GraphEventInfo eventInfo,
+		public override GraphMemberNodeViewModel CreateNewEventVM<TEventNodeParent>(TEventNodeParent eventNodeParent, GraphEventInfoBase eventInfo,
 																					bool isExpanded)
 		{
 			return eventNodeParent is DacFieldEventsGroupingNodeViewModel dacFieldVM

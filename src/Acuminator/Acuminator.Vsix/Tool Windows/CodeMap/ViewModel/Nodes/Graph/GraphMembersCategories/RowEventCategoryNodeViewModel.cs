@@ -30,7 +30,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 							  .Concat(GraphSemanticModel.RowPersistingEvents)
 							  .Concat(GraphSemanticModel.RowPersistedEvents);
 
-		public override GraphMemberNodeViewModel CreateNewEventVM<TEventNodeParent>(TEventNodeParent eventNodeParent, GraphEventInfo eventInfo,
+		public override GraphMemberNodeViewModel CreateNewEventVM<TEventNodeParent>(TEventNodeParent eventNodeParent, GraphEventInfoBase eventInfo,
 																					bool isExpanded)
 		{
 			return eventNodeParent is DacEventsGroupingNodeViewModel dacGroupVM
