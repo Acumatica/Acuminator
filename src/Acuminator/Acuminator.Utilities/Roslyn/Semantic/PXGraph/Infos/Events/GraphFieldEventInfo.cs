@@ -32,6 +32,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			DacFieldName = GetDacFieldName();
 		}
 
+		internal override string GetEventGroupingKey() => $"{DacName}_{DacFieldName}_{EventType.ToString()}";
+
 		private void ValidateEventType(EventType eventType)
 		{
 			if (!EventType.IsDacFieldEvent())
@@ -102,6 +104,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return dacField.IsDacField()
 				? dacField.Name.ToPascalCase()
 				: string.Empty;
-		}
+		}	
 	}
 }

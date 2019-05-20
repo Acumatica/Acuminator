@@ -95,7 +95,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 					return;
 
 				GraphEventInfoBase eventToAdd = GetEventToAdd(signatureType, eventType, methodNode, methodSymbol, declarationOrder);
-				colectionToAdd.Add(methodSymbol.Name, eventToAdd, declarationOrder);
+				string eventKey = eventToAdd.GetEventGroupingKey();
+				colectionToAdd.Add(eventKey, eventToAdd, declarationOrder);
 			}
 
 			private GraphOverridableItemsCollection<GraphEventInfoBase> GetCollectionToAdd(EventType eventType)

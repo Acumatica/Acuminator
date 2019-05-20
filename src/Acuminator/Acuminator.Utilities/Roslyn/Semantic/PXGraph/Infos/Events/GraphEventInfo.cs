@@ -22,5 +22,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 					   : base(node, symbol, declarationOrder, signatureType, eventType, baseInfo)
 		{		
 		}
+
+		internal override string GetEventGroupingKey() => $"{DacName}_{EventType.ToString()}";
 	}
 }

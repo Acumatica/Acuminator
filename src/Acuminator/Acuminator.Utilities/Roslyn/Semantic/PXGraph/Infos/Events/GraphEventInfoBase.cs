@@ -25,6 +25,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			DacName = GetDacName();
 		}
 
+		/// <summary>
+		/// Gets the event grouping key. The key should contain enough data to distinguish events with different types or different DACs/DAC fields.
+		/// However, it should group together events with same event type, DAC and (if present) DAC field but with different signature types.
+		/// </summary>
+		internal abstract string GetEventGroupingKey();
+
 		private string GetDacName()
 		{
 			switch (SignatureType)

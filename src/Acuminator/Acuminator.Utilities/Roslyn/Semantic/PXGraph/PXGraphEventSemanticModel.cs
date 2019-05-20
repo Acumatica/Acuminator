@@ -186,19 +186,27 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return baseTypes.SelectMany(t => t.GetMembers().OfType<IMethodSymbol>());
 		}
 
-		private ImmutableDictionary<string, GraphEventInfo> GetEvents(EventsCollector eventsCollector, 
-																	  Func<EventsCollector, GraphOverridableItemsCollection<GraphEventInfo>> selector)
+		private ImmutableDictionary<string, TEventInfoType> GetEvents<TEventInfoType>(EventsCollector eventsCollector, 
+																		      Func<EventsCollector, GraphOverridableItemsCollection<GraphEventInfoBase>> selector)
+		where TEventInfoType : GraphEventInfoBase<TEventInfoType>
 		{
 			if (Type == GraphType.None)
-				return ImmutableDictionary.Create<string, GraphEventInfo>(StringComparer.OrdinalIgnoreCase);
+				return ImmutableDictionary.Create<string, TEventInfoType>(StringComparer.OrdinalIgnoreCase);
 
 			var rawCollection = selector(eventsCollector);
-			var lookup = rawCollection.Values.ToLookup(e => e.Item.DacName, StringComparer.OrdinalIgnoreCase);
+			var rawEvents = rawCollection.Values.Select(item => item.Item).OfType<TEventInfoType>();
+
+			
+
+			ILookup<string, TEventInfoType> lookup = TEventInfoType rawEvents.ToLookup(e => e.DacName, StringComparer.OrdinalIgnoreCase);
+
+
 			return lookup.ToImmutableDictionary(group => group.Key,
 												group => CreateEventInfo(group.First()),
 												keyComparer: StringComparer.OrdinalIgnoreCase);
 
 
+			//-----------------------------------Local Function--------------------------------------------------------------
 			GraphEventInfo CreateEventInfo(GraphOverridableItem<GraphEventInfo> item)
 			{
 				GraphEventInfo eventInfo = item.Item;
