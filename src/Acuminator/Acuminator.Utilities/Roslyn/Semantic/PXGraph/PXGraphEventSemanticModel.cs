@@ -187,30 +187,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		}
 
 		private ImmutableDictionary<string, TEventInfoType> GetEvents<TEventInfoType>(EventsCollector eventsCollector, 
-																		      Func<EventsCollector, GraphOverridableItemsCollection<GraphEventInfoBase>> selector)
+																					  Func<EventsCollector, GraphEventsCollection<TEventInfoType>> selector)
 		where TEventInfoType : GraphEventInfoBase<TEventInfoType>
 		{
 			if (Type == GraphType.None)
 				return ImmutableDictionary.Create<string, TEventInfoType>(StringComparer.OrdinalIgnoreCase);
 
 			var rawCollection = selector(eventsCollector);
-			return rawCollection.Values.ToImmutableDictionary(wrappedItem => wrappedItem.Item.GetEventGroupingKey(),
-															  wrappedItem => UnwrapEventInfoWithBaseInfos(wrappedItem));
-
-			//-----------------------------------Local Function--------------------------------------------------------------
-			TEventInfoType UnwrapEventInfoWithBaseInfos(GraphOverridableItem<GraphEventInfoBase> wrappedEventInfo)
-			{
-				GraphEventInfoBase eventInfo = wrappedEventInfo.Item;
-
-				TEventInfoType baseEventInfo = wrappedEventInfo.Base != null
-					? UnwrapEventInfoWithBaseInfos(wrappedEventInfo.Base)
-					: null;
-
-				return baseEventInfo == null
-					? new GraphEventInfo(eventInfo.Node, eventInfo.Symbol, wrappedEventInfo.DeclarationOrder, eventInfo.SignatureType, eventInfo.EventType)
-					: new GraphEventInfo(eventInfo.Node, eventInfo.Symbol, wrappedEventInfo.DeclarationOrder, eventInfo.SignatureType, eventInfo.EventType,
-										 baseEventInfo);
-			}
+			return rawCollection.ToImmutableDictionary(kvp => kvp.Key, kvp => kvp.Value);
 		}
 	}
 }
