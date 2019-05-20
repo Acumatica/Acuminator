@@ -50,19 +50,19 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 										where eventInfo.Symbol.ContainingType == GraphViewModel.GraphSemanticModel.Symbol ||
 											  eventInfo.Symbol.ContainingType.OriginalDefinition ==
 											  GraphViewModel.GraphSemanticModel.Symbol.OriginalDefinition
-										group eventInfo by eventInfo.DacName into dacFieldEvents
-										select DacEventsGroupingNodeViewModel.Create(this, dacFieldEvents.Key, dacFieldEvents) into dacNodeVM
+										group eventInfo by eventInfo.DacName into graphEventsForDAC
+										select DacEventsGroupingNodeViewModel.Create(this, graphEventsForDAC.Key, graphEventsForDAC) into dacNodeVM
 										where dacNodeVM != null
 										orderby dacNodeVM.DacName ascending
 										select dacNodeVM;
 
 			Children.AddRange(graphMemberViewModels);
-			int eventsCount = Children.OfType<DacEventsGroupingNodeViewModel>()
-									  .Sum(dacVM => dacVM.EventsCount);
+
+			int eventsCount = Children.OfType<DacEventsGroupingNodeViewModel>().Sum(dacVM => dacVM.EventsCount);
 			Name = $"{CategoryDescription}({eventsCount})";
 		}
 
-		public virtual GraphMemberNodeViewModel CreateNewEventVM<TEventNodeParent>(TEventNodeParent eventNodeParent, GraphEventInfo eventInfo,
+		public virtual GraphMemberNodeViewModel CreateNewEventVM<TEventNodeParent>(TEventNodeParent eventNodeParent, GraphEventInfoBase eventInfo,
 																				   bool isExpanded)
 		where TEventNodeParent : TreeNodeViewModel
 		{

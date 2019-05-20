@@ -71,11 +71,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return dacVM;
 		}
 
-		protected virtual void FillDacNodeChildren(IEnumerable<GraphEventInfo> graphEventsForDAC, bool areChildrenExpanded)
+		protected virtual void FillDacNodeChildren(IEnumerable<GraphEventInfoBase> graphEventsForDAC, bool areChildrenExpanded)
 		{
 			var dacMembers = GraphEventsCategoryVM.CategoryType == GraphMemberType.FieldEvent
-				? GetDacFieldEvents(graphEventsForDAC, areChildrenExpanded)
-				: GetDacEventsDefault(graphEventsForDAC, areChildrenExpanded);
+				? GetDacFieldEvents(graphEventsForDAC.OfType<GraphFieldEventInfo>(), areChildrenExpanded)
+				: GetDacEventsDefault(graphEventsForDAC.OfType<GraphEventInfo>(), areChildrenExpanded);
 
 			Children.AddRange(dacMembers);
 			EventsCount = GetDacNodeEventsCount();
@@ -93,7 +93,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 																		   bool areChildrenExpanded)
 		{
 			return from eventInfo in graphFieldEventsForDAC
-				   group eventInfo by GraphEventInfo.GetDacFieldNameForFieldEvent(eventInfo) 
+				   group eventInfo by eventInfo.DacFieldName
 						into dacFieldEvents
 				   select DacFieldEventsGroupingNodeViewModel.Create(this, dacFieldEvents.Key, dacFieldEvents) 
 						into dacFieldNodeVM
