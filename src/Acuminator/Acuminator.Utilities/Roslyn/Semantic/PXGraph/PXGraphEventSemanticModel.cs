@@ -80,26 +80,26 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public ImmutableDictionary<string, GraphEventInfo> RowPersistedByName { get; }
 		public IEnumerable<GraphEventInfo> RowPersistedEvents => RowPersistedByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> FieldSelectingByName { get; }
-		public IEnumerable<GraphEventInfo> FieldSelectingEvents => FieldSelectingByName.Values;
+		public ImmutableDictionary<string, GraphFieldEventInfo> FieldSelectingByName { get; }
+		public IEnumerable<GraphFieldEventInfo> FieldSelectingEvents => FieldSelectingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> FieldDefaultingByName { get; }
-		public IEnumerable<GraphEventInfo> FieldDefaultingEvents => FieldDefaultingByName.Values;
+		public ImmutableDictionary<string, GraphFieldEventInfo> FieldDefaultingByName { get; }
+		public IEnumerable<GraphFieldEventInfo> FieldDefaultingEvents => FieldDefaultingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> FieldVerifyingByName { get; }
-		public IEnumerable<GraphEventInfo> FieldVerifyingEvents => FieldVerifyingByName.Values;
+		public ImmutableDictionary<string, GraphFieldEventInfo> FieldVerifyingByName { get; }
+		public IEnumerable<GraphFieldEventInfo> FieldVerifyingEvents => FieldVerifyingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> FieldUpdatingByName { get; }
-		public IEnumerable<GraphEventInfo> FieldUpdatingEvents => FieldUpdatingByName.Values;
+		public ImmutableDictionary<string, GraphFieldEventInfo> FieldUpdatingByName { get; }
+		public IEnumerable<GraphFieldEventInfo> FieldUpdatingEvents => FieldUpdatingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> FieldUpdatedByName { get; }
-		public IEnumerable<GraphEventInfo> FieldUpdatedEvents => FieldUpdatedByName.Values;
+		public ImmutableDictionary<string, GraphFieldEventInfo> FieldUpdatedByName { get; }
+		public IEnumerable<GraphFieldEventInfo> FieldUpdatedEvents => FieldUpdatedByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> CommandPreparingByName { get; }
-		public IEnumerable<GraphEventInfo> CommandPreparingEvents => CommandPreparingByName.Values;
+		public ImmutableDictionary<string, GraphFieldEventInfo> CommandPreparingByName { get; }
+		public IEnumerable<GraphFieldEventInfo> CommandPreparingEvents => CommandPreparingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> ExceptionHandlingByName { get; }
-		public IEnumerable<GraphEventInfo> ExceptionHandlingEvents => ExceptionHandlingByName.Values;
+		public ImmutableDictionary<string, GraphFieldEventInfo> ExceptionHandlingByName { get; }
+		public IEnumerable<GraphFieldEventInfo> ExceptionHandlingEvents => ExceptionHandlingByName.Values;
 		#endregion
 
 

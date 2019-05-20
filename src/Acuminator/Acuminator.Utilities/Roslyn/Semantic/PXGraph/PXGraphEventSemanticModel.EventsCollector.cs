@@ -18,61 +18,59 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			private readonly PXContext _pxContext;
 			private readonly PXGraphEventSemanticModel _graphEventSemanticModel;
 
-			public GraphOverridableItemsCollection<GraphEventInfo> CacheAttachedEvents { get; } =
-				new GraphOverridableItemsCollection<GraphEventInfo>();
+			public GraphOverridableItemsCollection<GraphEventInfoBase> CacheAttachedEvents { get; } =
+				new GraphOverridableItemsCollection<GraphEventInfoBase>();
 
-			public GraphOverridableItemsCollection<GraphEventInfo> RowSelectingEvents { get; } =
-							new GraphOverridableItemsCollection<GraphEventInfo>();
+			public GraphOverridableItemsCollection<GraphEventInfoBase> RowSelectingEvents { get; } =
+							new GraphOverridableItemsCollection<GraphEventInfoBase>();
 
-			public GraphOverridableItemsCollection<GraphEventInfo> RowSelectedEvents { get; } =
-							new GraphOverridableItemsCollection<GraphEventInfo>();
+			public GraphOverridableItemsCollection<GraphEventInfoBase> RowSelectedEvents { get; } =
+							new GraphOverridableItemsCollection<GraphEventInfoBase>();
 
-			public GraphOverridableItemsCollection<GraphEventInfo> RowInsertingEvents { get; } =
-							new GraphOverridableItemsCollection<GraphEventInfo>();
+			public GraphOverridableItemsCollection<GraphEventInfoBase> RowInsertingEvents { get; } =
+							new GraphOverridableItemsCollection<GraphEventInfoBase>();
 
-			public GraphOverridableItemsCollection<GraphEventInfo> RowInsertedEvents { get; } =
-							new GraphOverridableItemsCollection<GraphEventInfo>();
+			public GraphOverridableItemsCollection<GraphEventInfoBase> RowInsertedEvents { get; } =
+							new GraphOverridableItemsCollection<GraphEventInfoBase>();
 
-			public GraphOverridableItemsCollection<GraphEventInfo> RowUpdatingEvents { get; } =
-							new GraphOverridableItemsCollection<GraphEventInfo>();
+			public GraphOverridableItemsCollection<GraphEventInfoBase> RowUpdatingEvents { get; } =
+							new GraphOverridableItemsCollection<GraphEventInfoBase>();
 
-			public GraphOverridableItemsCollection<GraphEventInfo> RowUpdatedEvents { get; } =
-							new GraphOverridableItemsCollection<GraphEventInfo>();
+			public GraphOverridableItemsCollection<GraphEventInfoBase> RowUpdatedEvents { get; } =
+							new GraphOverridableItemsCollection<GraphEventInfoBase>();
 
-			public GraphOverridableItemsCollection<GraphEventInfo> RowDeletingEvents { get; } =
-							new GraphOverridableItemsCollection<GraphEventInfo>();
+			public GraphOverridableItemsCollection<GraphEventInfoBase> RowDeletingEvents { get; } =
+							new GraphOverridableItemsCollection<GraphEventInfoBase>();
 
-			public GraphOverridableItemsCollection<GraphEventInfo> RowDeletedEvents { get; } =
-							new GraphOverridableItemsCollection<GraphEventInfo>();
+			public GraphOverridableItemsCollection<GraphEventInfoBase> RowDeletedEvents { get; } =
+							new GraphOverridableItemsCollection<GraphEventInfoBase>();
 
-			public GraphOverridableItemsCollection<GraphEventInfo> RowPersistingEvents { get; } =
-							new GraphOverridableItemsCollection<GraphEventInfo>();
+			public GraphOverridableItemsCollection<GraphEventInfoBase> RowPersistingEvents { get; } =
+							new GraphOverridableItemsCollection<GraphEventInfoBase>();
 
-			public GraphOverridableItemsCollection<GraphEventInfo> RowPersistedEvents { get; } =
-							new GraphOverridableItemsCollection<GraphEventInfo>();
+			public GraphOverridableItemsCollection<GraphEventInfoBase> RowPersistedEvents { get; } =
+							new GraphOverridableItemsCollection<GraphEventInfoBase>();
 
-			public GraphOverridableItemsCollection<GraphEventInfo> FieldSelectingEvents { get; } =
-							new GraphOverridableItemsCollection<GraphEventInfo>();
+			public GraphOverridableItemsCollection<GraphEventInfoBase> FieldSelectingEvents { get; } =
+							new GraphOverridableItemsCollection<GraphEventInfoBase>();
 
-			public GraphOverridableItemsCollection<GraphEventInfo> FieldDefaultingEvents { get; } =
-							new GraphOverridableItemsCollection<GraphEventInfo>();
+			public GraphOverridableItemsCollection<GraphEventInfoBase> FieldDefaultingEvents { get; } =
+							new GraphOverridableItemsCollection<GraphEventInfoBase>();
 
-			public GraphOverridableItemsCollection<GraphEventInfo> FieldVerifyingEvents { get; } =
-							new GraphOverridableItemsCollection<GraphEventInfo>();
+			public GraphOverridableItemsCollection<GraphEventInfoBase> FieldVerifyingEvents { get; } =
+							new GraphOverridableItemsCollection<GraphEventInfoBase>();
 
-			public GraphOverridableItemsCollection<GraphEventInfo> FieldUpdatingEvents { get; } =
-							new GraphOverridableItemsCollection<GraphEventInfo>();
+			public GraphOverridableItemsCollection<GraphEventInfoBase> FieldUpdatingEvents { get; } =
+							new GraphOverridableItemsCollection<GraphEventInfoBase>();
 
-			public GraphOverridableItemsCollection<GraphEventInfo> FieldUpdatedEvents { get; } =
-							new GraphOverridableItemsCollection<GraphEventInfo>();
+			public GraphOverridableItemsCollection<GraphEventInfoBase> FieldUpdatedEvents { get; } =
+							new GraphOverridableItemsCollection<GraphEventInfoBase>();
 
-			public GraphOverridableItemsCollection<GraphEventInfo> CommandPreparingEvents { get; } =
-							new GraphOverridableItemsCollection<GraphEventInfo>();
+			public GraphOverridableItemsCollection<GraphEventInfoBase> CommandPreparingEvents { get; } =
+							new GraphOverridableItemsCollection<GraphEventInfoBase>();
 
-			public GraphOverridableItemsCollection<GraphEventInfo> ExceptionHandlingEvents { get; } =
-							new GraphOverridableItemsCollection<GraphEventInfo>();
-
-
+			public GraphOverridableItemsCollection<GraphEventInfoBase> ExceptionHandlingEvents { get; } =
+							new GraphOverridableItemsCollection<GraphEventInfoBase>();
 
 			public EventsCollector(PXGraphEventSemanticModel graphEventSemanticModel, PXContext context)
 			{
@@ -81,7 +79,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 
 			public void AddEvent(EventHandlerSignatureType signatureType, EventType eventType, IMethodSymbol methodSymbol,
-								int declarationOrder, CancellationToken cancellationToken)
+								 int declarationOrder, CancellationToken cancellationToken)
 			{
 				if (methodSymbol.DeclaringSyntaxReferences.Length != 1)
 					return;
@@ -91,65 +89,83 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				if (methodNode == null)
 					return;
 
-				GraphOverridableItemsCollection<GraphEventInfo> colectionToAdd = null;
-
-				switch (eventType)
-				{
-					case EventType.CacheAttached:
-						colectionToAdd = CacheAttachedEvents;
-						break;
-					case EventType.RowSelecting:
-						colectionToAdd = RowSelectingEvents;
-						break;
-					case EventType.RowSelected:
-						colectionToAdd = RowSelectedEvents;
-						break;
-					case EventType.RowInserting:
-						colectionToAdd = RowInsertingEvents;
-						break;
-					case EventType.RowInserted:
-						colectionToAdd = RowInsertedEvents;
-						break;
-					case EventType.RowUpdating:
-						colectionToAdd = RowUpdatingEvents;
-						break;
-					case EventType.RowUpdated:
-						colectionToAdd = RowUpdatedEvents;
-						break;
-					case EventType.RowDeleting:
-						colectionToAdd = RowDeletingEvents;
-						break;
-					case EventType.RowDeleted:
-						colectionToAdd = RowDeletedEvents;
-						break;
-					case EventType.RowPersisting:
-						colectionToAdd = RowPersistingEvents;
-						break;
-					case EventType.RowPersisted:
-						colectionToAdd = RowPersistedEvents;
-						break;
-					case EventType.FieldSelecting:
-						colectionToAdd = FieldSelectingEvents;
-						break;
-					case EventType.FieldDefaulting:
-						colectionToAdd = FieldDefaultingEvents;
-						break;
-					case EventType.FieldVerifying:
-						colectionToAdd = FieldVerifyingEvents;
-						break;
-					case EventType.FieldUpdating:
-						colectionToAdd = FieldUpdatingEvents;
-						break;
-					case EventType.FieldUpdated:
-						colectionToAdd = FieldUpdatedEvents;
-						break;		
-				}
+				GraphOverridableItemsCollection<GraphEventInfoBase> colectionToAdd = GetCollectionToAdd(eventType);
 
 				if (colectionToAdd == null)
 					return;
 
-				colectionToAdd.Add(methodSymbol.Name, new GraphEventInfo(methodNode, methodSymbol, declarationOrder, signatureType, eventType),
-								   declarationOrder);
+				GraphEventInfoBase eventToAdd = GetEventToAdd(signatureType, eventType, methodNode, methodSymbol, declarationOrder);
+				colectionToAdd.Add(methodSymbol.Name, eventToAdd, declarationOrder);
+			}
+
+			private GraphOverridableItemsCollection<GraphEventInfoBase> GetCollectionToAdd(EventType eventType)
+			{
+				switch (eventType)
+				{
+					case EventType.CacheAttached:
+						return CacheAttachedEvents;
+
+					case EventType.RowSelecting:
+						return RowSelectingEvents;
+
+					case EventType.RowSelected:
+						return RowSelectedEvents;
+
+					case EventType.RowInserting:
+						return RowInsertingEvents;
+
+					case EventType.RowInserted:
+						return RowInsertedEvents;
+
+					case EventType.RowUpdating:
+						return RowUpdatingEvents;
+
+					case EventType.RowUpdated:
+						return RowUpdatedEvents;
+
+					case EventType.RowDeleting:
+						return RowDeletingEvents;
+
+					case EventType.RowDeleted:
+						return RowDeletedEvents;
+
+					case EventType.RowPersisting:
+						return RowPersistingEvents;
+
+					case EventType.RowPersisted:
+						return RowPersistedEvents;
+
+					case EventType.FieldSelecting:
+						return FieldSelectingEvents;
+
+					case EventType.FieldDefaulting:
+						return FieldDefaultingEvents;
+
+					case EventType.FieldVerifying:
+						return FieldVerifyingEvents;
+
+					case EventType.FieldUpdating:
+						return FieldUpdatingEvents;
+
+					case EventType.FieldUpdated:
+						return FieldUpdatedEvents;
+
+					default:
+						return null;
+				}
+			}
+
+			private GraphEventInfoBase GetEventToAdd(EventHandlerSignatureType signatureType, EventType eventType, MethodDeclarationSyntax methodNode,
+													 IMethodSymbol methodSymbol, int declarationOrder)
+			{
+				if (eventType.IsDacFieldEvent())
+				{
+					return new GraphFieldEventInfo(methodNode, methodSymbol, declarationOrder, signatureType, eventType);
+				}
+				else
+				{
+					return new GraphEventInfo(methodNode, methodSymbol, declarationOrder, signatureType, eventType);
+				}
 			}
 		}
 	}
