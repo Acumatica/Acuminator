@@ -194,30 +194,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				return ImmutableDictionary.Create<string, TEventInfoType>(StringComparer.OrdinalIgnoreCase);
 
 			var rawCollection = selector(eventsCollector);
-			var rawEvents = rawCollection.Values.Select(item => item.Item).OfType<TEventInfoType>();
-
-			
-
-			ILookup<string, TEventInfoType> lookup = TEventInfoType rawEvents.ToLookup(e => e.DacName, StringComparer.OrdinalIgnoreCase);
-
-
-			return lookup.ToImmutableDictionary(group => group.Key,
-												group => CreateEventInfo(group.First()),
-												keyComparer: StringComparer.OrdinalIgnoreCase);
-
+			return rawCollection.Values.ToImmutableDictionary(wrappedItem => wrappedItem.Item.GetEventGroupingKey(),
+															  wrappedItem => UnwrapEventInfoWithBaseInfos(wrappedItem));
 
 			//-----------------------------------Local Function--------------------------------------------------------------
-			GraphEventInfo CreateEventInfo(GraphOverridableItem<GraphEventInfo> item)
+			TEventInfoType UnwrapEventInfoWithBaseInfos(GraphOverridableItem<GraphEventInfoBase> wrappedEventInfo)
 			{
-				GraphEventInfo eventInfo = item.Item;
+				GraphEventInfoBase eventInfo = wrappedEventInfo.Item;
 
-				GraphEventInfo baseEventInfo = item.Base != null
-					? CreateEventInfo(item.Base)
+				TEventInfoType baseEventInfo = wrappedEventInfo.Base != null
+					? UnwrapEventInfoWithBaseInfos(wrappedEventInfo.Base)
 					: null;
 
 				return baseEventInfo == null
-					? new GraphEventInfo(eventInfo.Node, eventInfo.Symbol, item.DeclarationOrder, eventInfo.SignatureType, eventInfo.EventType)
-					: new GraphEventInfo(eventInfo.Node, eventInfo.Symbol, item.DeclarationOrder, eventInfo.SignatureType, eventInfo.EventType,
+					? new GraphEventInfo(eventInfo.Node, eventInfo.Symbol, wrappedEventInfo.DeclarationOrder, eventInfo.SignatureType, eventInfo.EventType)
+					: new GraphEventInfo(eventInfo.Node, eventInfo.Symbol, wrappedEventInfo.DeclarationOrder, eventInfo.SignatureType, eventInfo.EventType,
 										 baseEventInfo);
 			}
 		}

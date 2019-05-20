@@ -11,7 +11,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	public abstract class GraphEventInfoBase<TEventInfoType> : GraphEventInfoBase
 	where TEventInfoType : GraphEventInfoBase<TEventInfoType>
 	{
-		public TEventInfoType BaseEvent { get; }
+		public TEventInfoType BaseEvent
+		{
+			get;
+			private set;
+		}
 
 		protected GraphEventInfoBase(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder,
 									 EventHandlerSignatureType signatureType, EventType eventType) :
@@ -27,5 +31,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			BaseEvent = baseEventInfo;
 		}	
+
+		/// <summary>
+		/// Sets base event. Internal method used for perfomance to avoid recreation of objects during setting of overrides hierarchy.
+		/// </summary>
+		/// <param name="baseEvent">The base event.</param>
+		internal void SetBaseEvent(TEventInfoType baseEvent)
+		{
+			baseEvent.ThrowOnNull(nameof(baseEvent));
+
+			if (!ReferenceEquals(baseEvent, this))
+			{
+				BaseEvent = baseEvent;
+			}
+		}
 	}
 }
