@@ -137,8 +137,8 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 								  new string[] { externalAttribute1, externalAttribute2 });
 
 		[Theory]
-		[EmbeddedFileData(@"PropertyIsBoundFileFromExternalAssembly.cs")]
-		public Task IsDBFieldFromCompiledAsync(string source) =>
+		[EmbeddedFileData(@"PropertyIsDBBoundFieldInheritedFromPXObjects.cs")]
+		public Task IsDBFieldFromPXObjectsAsync(string source) =>
 			IsDBFieldPropertyAsync(source,
 									expected: new List<bool> {true, false, true, false},
 									code: new string[] { });
