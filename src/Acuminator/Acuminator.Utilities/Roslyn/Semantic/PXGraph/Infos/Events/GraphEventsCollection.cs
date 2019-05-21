@@ -19,7 +19,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			{
 				if (!existingEventInfo.Equals(eventInfo))
 				{
-					eventInfo.SetBaseEvent(existingEventInfo);
+					eventInfo.BaseEvent = existingEventInfo;
 					base[key] = eventInfo;
 				}
 			}
