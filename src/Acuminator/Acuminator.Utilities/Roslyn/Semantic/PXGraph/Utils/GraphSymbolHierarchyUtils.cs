@@ -84,36 +84,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			if (extensionBaseType == null)
 				return Enumerable.Empty<ITypeSymbol>();
 
-			ImmutableArray<ITypeSymbol> typeArguments = extensionBaseType.TypeArguments;
-			var (graphIndex, graphType) = GetGraphTypeWithIndexFromTypeArgs(typeArguments, pxContext);
+			var graphType = extensionBaseType.TypeArguments.LastOrDefault();
 
-			if (graphIndex < 0)
+			if (graphType == null || !graphType.IsPXGraph(pxContext))
 				return Enumerable.Empty<ITypeSymbol>();
 
 			return sortDirection == SortDirection.Ascending
-				? GetExtensionInAscendingOrder(typeArguments, graphIndex, graphType, graphExtension,pxContext, includeGraph)
-				: GetExtensionInDescendingOrder(typeArguments, graphIndex, graphType, graphExtension, pxContext, includeGraph);			
+				? GetExtensionInAscendingOrder(graphType, graphExtension, extensionBaseType, pxContext, includeGraph)
+				: GetExtensionInDescendingOrder(graphType, graphExtension, extensionBaseType, pxContext, includeGraph);			
 		}
 
-		private static (int GraphIndex, ITypeSymbol GraphType) GetGraphTypeWithIndexFromTypeArgs(in ImmutableArray<ITypeSymbol> typeArguments, 
-																								 PXContext pxContext)
+		private static IEnumerable<ITypeSymbol> GetExtensionInAscendingOrder(ITypeSymbol graphType, ITypeSymbol graphExtension, 
+																			 INamedTypeSymbol extensionBaseType, PXContext pxContext, bool includeGraph)
 		{
-			for (int i = typeArguments.Length - 1; i >= 0; i--)
-			{
-				ITypeSymbol typeArg = typeArguments[i];
-
-				if (typeArg.IsPXGraph(pxContext))
-					return (i, typeArg);
-			}
-
-			return (-1, null);
-		}
-
-		private static IEnumerable<ITypeSymbol> GetExtensionInAscendingOrder(in ImmutableArray<ITypeSymbol> typeArguments, int graphIndex, 
-																			 ITypeSymbol graphType, ITypeSymbol graphExtension, PXContext pxContext, 
-																			 bool includeGraph)
-		{
-			var extensions = new List<ITypeSymbol>(capacity: graphIndex + 1);
+			int graphIndex = extensionBaseType.TypeArguments.Length - 1;
+			var extensions = new List<ITypeSymbol>(capacity: extensionBaseType.TypeArguments.Length);
 
 			if (includeGraph)
 			{
@@ -122,33 +107,33 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			for (int i = graphIndex - 1; i >= 0; i--)
 			{
-				var baseExtension = typeArguments[i];
+				var baseExtension = extensionBaseType.TypeArguments[i];
 
 				if (!baseExtension.IsPXGraphExtension(pxContext))
 					return Enumerable.Empty<ITypeSymbol>();
 
-				extensions.AddRange(baseExtension.GetExtensionWithBaseTypes().Reverse());
+				extensions.Add(baseExtension);		//According to Platform team we shouldn't consider case when the graph extensions chaining mixes with .Net inheritance
 			}
 
 			extensions.AddRange(graphExtension.GetExtensionWithBaseTypes().Reverse());
 			return extensions.Distinct();
 		}
 
-		private static IEnumerable<ITypeSymbol> GetExtensionInDescendingOrder(in ImmutableArray<ITypeSymbol> typeArguments, int graphIndex,
-																			  ITypeSymbol graphType, ITypeSymbol graphExtension, PXContext pxContext,
-																			  bool includeGraph)
+		private static IEnumerable<ITypeSymbol> GetExtensionInDescendingOrder(ITypeSymbol graphType, ITypeSymbol graphExtension, 
+																			  INamedTypeSymbol extensionBaseType, PXContext pxContext, bool includeGraph)
 		{
-			var extensions = new List<ITypeSymbol>(capacity: graphIndex + 1);
+			int graphIndex = extensionBaseType.TypeArguments.Length - 1;
+			var extensions = new List<ITypeSymbol>(capacity: extensionBaseType.TypeArguments.Length);
 			extensions.AddRange(graphExtension.GetExtensionWithBaseTypes());
 
 			for (int i = 0; i <= graphIndex - 1; i++)
 			{
-				var baseExtension = typeArguments[i];
+				var baseExtension = extensionBaseType.TypeArguments[i];
 
 				if (!baseExtension.IsPXGraphExtension(pxContext))
 					return Enumerable.Empty<ITypeSymbol>();
 
-				extensions.AddRange(baseExtension.GetExtensionWithBaseTypes());
+				extensions.Add(baseExtension);		//According to Platform team we shouldn't consider case when the graph extensions chaining mixes with .Net inheritance
 			}
 
 			if (includeGraph)
