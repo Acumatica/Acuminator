@@ -31,9 +31,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected override bool AllowNavigation => false;
 
-		protected GraphEventCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
-												  bool isExpanded) :
-										   base(graphViewModel, graphMemberType, isExpanded)
+		public abstract bool IsFieldEvent { get; }
+
+		protected GraphEventCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType, bool isExpanded) :
+										     base(graphViewModel, graphMemberType, isExpanded)
 		{
 			_name = CategoryDescription;
 		}
@@ -41,7 +42,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected override void AddCategoryMembers()
 		{
 			var graphSemanticModel = GraphViewModel.GraphSemanticModel;
-			var graphCategoryEvents = GetCategoryGraphNodeSymbols()?.OfType<GraphRowEventInfo>()
+			var graphCategoryEvents = GetCategoryGraphNodeSymbols()?.OfType<GraphEventInfoBase>()
 																	.Where(eventInfo => eventInfo.SignatureType != EventHandlerSignatureType.None);
 			if (graphCategoryEvents.IsNullOrEmpty())
 				return;

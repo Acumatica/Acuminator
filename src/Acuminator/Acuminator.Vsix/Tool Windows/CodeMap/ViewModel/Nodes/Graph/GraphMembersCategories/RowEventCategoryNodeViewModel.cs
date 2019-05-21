@@ -13,6 +13,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class RowEventCategoryNodeViewModel : GraphEventCategoryNodeViewModel
 	{
+		public override bool IsFieldEvent => false;
+
 		public RowEventCategoryNodeViewModel(GraphNodeViewModel graphViewModel, bool isExpanded) : 
 										base(graphViewModel, GraphMemberType.RowEvent, isExpanded)
 		{

@@ -13,6 +13,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class CacheAttachedCategoryNodeViewModel : GraphEventCategoryNodeViewModel
 	{
+		public override bool IsFieldEvent => true;
+
 		public CacheAttachedCategoryNodeViewModel(GraphNodeViewModel graphViewModel, bool isExpanded) :
 									base(graphViewModel, GraphMemberType.CacheAttached, isExpanded)
 		{
