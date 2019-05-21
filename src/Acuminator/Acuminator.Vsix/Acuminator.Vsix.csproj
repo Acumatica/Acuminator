@@ -536,9 +536,6 @@
     </Compile>
     <Compile Include="Utils\DiagnosticSuppression\SuppressionFileSystemService.cs" />
     <Compile Include="Utils\DiagnosticSuppression\SuppressionFileWatcherService.cs" />
-    <Compile Include="Utils\WorkspaceChangedUtils.cs" />
-    <Compile Include="Utils\SuppressionFileSystemService.cs" />
-    <Compile Include="Utils\SuppressionFileWatcherService.cs" />
     <Compile Include="Utils\WorkspaceUtils.cs" />
     <Compile Include="Utils\WPF\Collection\ExtendedObservableCollection.cs" />
     <Compile Include="Utils\Navigation\VSDocumentNavigation.cs" />
