@@ -137,17 +137,16 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 								  new string[] { externalAttribute1, externalAttribute2 });
 
 		[Theory]
-		[EmbeddedFileData2(@"PropertyIsBoundFileFromExternalAssembly.cs",  assemblies: new string[] { @"..\..\..\..\..\lib\PX.Objects.dll" })]
-		public Task IsDBFieldFromCompiledAsync(string source, string assemblies) =>
+		[EmbeddedFileData(@"PropertyIsBoundFileFromExternalAssembly.cs")]
+		public Task IsDBFieldFromCompiledAsync(string source) =>
 			IsDBFieldPropertyAsync(source,
 									expected: new List<bool> {true, false, true, false},
-									code: new string[] { },
-									assemblies: new string[] {assemblies});
+									code: new string[] { });
 
 
-		private async Task IsDBFieldPropertyAsync(string source, List<bool> expected, string[] code = null, string[] assemblies = null)
+		private async Task IsDBFieldPropertyAsync(string source, List<bool> expected, string[] code = null)
 		{
-			Document document = CreateDocument(source, externalCode: code, compiledAssemblies: assemblies);
+			Document document = CreateDocument(source, externalCode: code);
 			SemanticModel semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
 			var syntaxRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
 

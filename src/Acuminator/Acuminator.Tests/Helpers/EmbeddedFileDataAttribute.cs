@@ -9,14 +9,6 @@ using Acuminator.Utilities.Common;
 
 namespace Acuminator.Tests.Helpers
 {
-	public class EmbeddedFileData2Attribute : EmbeddedFileDataAttribute
-	{
-		public EmbeddedFileData2Attribute(string fileName, string[] assemblies, bool overloadParams = true,
-			[CallerFilePath] string testFilePath = null): base( new [] {fileName}, testFilePath, assemblies: assemblies)
-		{
-		}
-	}
-
 	public class EmbeddedFileDataAttribute : DataAttribute
 	{
 		private const string SourcesPrefix = "Sources";
@@ -25,7 +17,6 @@ namespace Acuminator.Tests.Helpers
 
 		private readonly string _prefix;
 		private readonly string[] _fileNames;
-		private readonly string[] _assemblies;
 
 		public EmbeddedFileDataAttribute(string fileName, bool overloadParam = true,
 			[CallerFilePath] string testFilePath = null)
@@ -49,7 +40,7 @@ namespace Acuminator.Tests.Helpers
 			: this(new[] { fileName }, testFilePath, internalCodeFileNames)
 		{ }
 
-		protected EmbeddedFileDataAttribute(string[] fileNames, string testFilePath, string[] externalCodeFileNames = null, string[] assemblies = null)
+		protected EmbeddedFileDataAttribute(string[] fileNames, string testFilePath, string[] externalCodeFileNames = null)
 		{
 			if (fileNames.IsNullOrEmpty())
 				throw new ArgumentNullException(nameof(fileNames));
@@ -68,29 +59,16 @@ namespace Acuminator.Tests.Helpers
 						throw new ArgumentException("File name cannot be empty", nameof(internalCodeFileName));
 				}
 			}
-
-			if (!assemblies.IsNullOrEmpty())
-			{
-				foreach (var assembly in assemblies)
-				{
-					if (String.IsNullOrWhiteSpace(assembly))
-						throw new ArgumentException("File name cannot be empty", nameof(assembly));
-				}
-			}
-
+			
 			_prefix = GetPrefixFromTestFilePath(testFilePath);
 
 			_fileNames = externalCodeFileNames.IsNullOrEmpty() ? fileNames :  fileNames.Concat(externalCodeFileNames).ToArray();
 
-			_assemblies = assemblies;
 		}
 
 		public override IEnumerable<object[]> GetData(MethodInfo testMethod)
 		{
-			List<string> data = _fileNames.Select(ReadFile).ToList();
-			if (_assemblies != null)
-				data.AddRange(_assemblies);
-			yield return data.ToArray<object>();
+			yield return _fileNames.Select(ReadFile).ToArray<object>();
 		}
 
 		private static string GetPrefixFromTestFilePath(string testFilePath)
