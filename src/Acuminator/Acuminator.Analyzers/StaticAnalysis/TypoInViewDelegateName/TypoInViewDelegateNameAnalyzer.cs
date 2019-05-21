@@ -24,24 +24,25 @@ namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
 			ImmutableArray.Create(Descriptors.PX1005_TypoInViewDelegateName);
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel graphModel)
 		{
-			var viewCandidatesNames = pxGraph.Views.Where(view => !pxGraph.ViewDelegatesByNames.ContainsKey(view.Symbol.Name))
-												   .Select(view => view.Symbol.Name)
-												   .ToList(capacity: pxGraph.ViewsByNames.Count);
-			if (viewCandidatesNames.Count == 0)
+			var viewWithoutDelegatesNames = graphModel.Views.Where(view => !graphModel.ViewDelegatesByNames.ContainsKey(view.Symbol.Name))
+															.Select(view => view.Symbol.Name)
+															.ToList(capacity: graphModel.ViewsByNames.Count);
+			if (viewWithoutDelegatesNames.Count == 0)
 				return;
 
-			var delegateCandidates = pxGraph.Symbol.GetMembers()						
-												   .OfType<IMethodSymbol>()
-												   .Where(method => method.ContainingType.Equals(pxGraph.Symbol) &&
-																	!method.IsOverride && method.IsValidViewDelegate(pxContext));
+			var delegateCandidates = from method in graphModel.Symbol.GetMembers().OfType<IMethodSymbol>()
+									 where method.ContainingType.Equals(graphModel.Symbol) && !method.IsOverride &&
+										   method.IsValidViewDelegate(pxContext) && !method.IsValidActionHandler(pxContext)
+									 select method;
+
 			foreach (IMethodSymbol method in delegateCandidates)
 			{
-				if (viewCandidatesNames.Any(viewName => viewName == method.Name))
+				if (viewWithoutDelegatesNames.Any(viewName => viewName == method.Name))
 					continue;
 
-				string nearestViewName = FindNearestView(viewCandidatesNames, method);
+				string nearestViewName = FindNearestView(viewWithoutDelegatesNames, method);
 
 				if (nearestViewName != null && !method.Locations.IsEmpty)
 				{
