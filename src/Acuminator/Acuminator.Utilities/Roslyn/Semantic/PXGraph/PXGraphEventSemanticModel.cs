@@ -167,7 +167,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				if (eventSignatureType == EventHandlerSignatureType.None || eventType == EventType.None)
 					continue;
 
-				eventsCollector.AddEvent(eventSignatureType, eventType, method, declarationOrder, _cancellation);
+				if (eventType.IsDacRowEvent())
+				{
+					eventsCollector.AddEvent(eventSignatureType, eventType, method, declarationOrder, _cancellation);
+				}
+				else if (eventType.IsDacFieldEvent())
+				{
+					eventsCollector.AddFieldEvent(eventSignatureType, eventType, method, declarationOrder, _cancellation);
+				}
+				
 				declarationOrder++;
 			}
 
