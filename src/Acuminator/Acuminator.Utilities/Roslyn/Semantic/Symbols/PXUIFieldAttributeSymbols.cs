@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
+using static Acuminator.Utilities.Common.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -17,15 +18,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
         internal PXUIFieldAttributeSymbols(Compilation compilation)
         {
-            Type = compilation.GetTypeByMetadataName(typeof(PX.Data.PXUIFieldAttribute).FullName);
+            Type = compilation.GetTypeByMetadataName(Types.PXUIFieldAttribute);
 
-	        SetVisible            = Type.GetMethods(nameof(PX.Data.PXUIFieldAttribute.SetVisible));
-	        SetVisibility         = Type.GetMethods(nameof(PX.Data.PXUIFieldAttribute.SetVisibility));
-	        SetEnabled            = Type.GetMethods(nameof(PX.Data.PXUIFieldAttribute.SetEnabled));
-	        SetRequired           = Type.GetMethods(nameof(PX.Data.PXUIFieldAttribute.SetRequired));
-	        SetReadOnly           = Type.GetMethods(nameof(PX.Data.PXUIFieldAttribute.SetReadOnly));
-	        SetDisplayName        = Type.GetMethods(nameof(PX.Data.PXUIFieldAttribute.SetDisplayName));
-	        SetNeutralDisplayName = Type.GetMethods(nameof(PX.Data.PXUIFieldAttribute.SetNeutralDisplayName));
+	        SetVisible            = Type.GetMethods(Types.PXUIFieldAttributeSetVisible);
+	        SetVisibility         = Type.GetMethods(Types.PXUIFieldAttributeSetVisibility);
+	        SetEnabled            = Type.GetMethods(Types.PXUIFieldAttributeSetEnabled);
+	        SetRequired           = Type.GetMethods(Types.PXUIFieldAttributeSetRequired);
+	        SetReadOnly           = Type.GetMethods(Types.PXUIFieldAttributeSetReadOnly);
+	        SetDisplayName        = Type.GetMethods(Types.PXUIFieldAttributeSetDisplayName);
+	        SetNeutralDisplayName = Type.GetMethods(Types.PXUIFieldAttributeSetNeutralDisplayName);
         }
     }
 }
