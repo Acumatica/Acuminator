@@ -29,12 +29,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		protected virtual GraphEventNodeByDacConstructor EventNodeByDacConstructor { get; } =
-			(dacGroupVM, eventInfo) => new GraphMemberNodeViewModel(dacGroupVM.GraphMemberCategoryVM, eventInfo);
+		protected override bool AllowNavigation => false;
 
-		protected GraphEventCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
-												  bool isExpanded) :
-										   base(graphViewModel, graphMemberType, isExpanded)
+		public abstract bool IsFieldEvent { get; }
+
+		protected GraphEventCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType, bool isExpanded) :
+										     base(graphViewModel, graphMemberType, isExpanded)
 		{
 			_name = CategoryDescription;
 		}
@@ -42,7 +42,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected override void AddCategoryMembers()
 		{
 			var graphSemanticModel = GraphViewModel.GraphSemanticModel;
-			var graphCategoryEvents = GetCategoryGraphNodeSymbols()?.OfType<GraphEventInfo>()
+			var graphCategoryEvents = GetCategoryGraphNodeSymbols()?.OfType<GraphEventInfoBase>()
 																	.Where(eventInfo => eventInfo.SignatureType != EventHandlerSignatureType.None);
 			if (graphCategoryEvents.IsNullOrEmpty())
 				return;
@@ -51,12 +51,23 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 										where eventInfo.Symbol.ContainingType == GraphViewModel.GraphSemanticModel.Symbol ||
 											  eventInfo.Symbol.ContainingType.OriginalDefinition ==
 											  GraphViewModel.GraphSemanticModel.Symbol.OriginalDefinition
-										group eventInfo by eventInfo.DacName into dacFieldEvents
-										select new DacGroupingNodeViewModel(this, dacFieldEvents, EventNodeByDacConstructor);
+										group eventInfo by eventInfo.DacName into graphEventsForDAC
+										select DacEventsGroupingNodeViewModel.Create(this, graphEventsForDAC.Key, graphEventsForDAC) into dacNodeVM
+										where dacNodeVM != null
+										orderby dacNodeVM.DacName ascending
+										select dacNodeVM;
 
 			Children.AddRange(graphMemberViewModels);
-			int eventsCount = Children.Sum(node => node.Children.Count);
+
+			int eventsCount = Children.OfType<DacEventsGroupingNodeViewModel>().Sum(dacVM => dacVM.EventsCount);
 			Name = $"{CategoryDescription}({eventsCount})";
+		}
+
+		public virtual GraphMemberNodeViewModel CreateNewEventVM<TEventNodeParent>(TEventNodeParent eventNodeParent, GraphEventInfoBase eventInfo,
+																				   bool isExpanded)
+		where TEventNodeParent : TreeNodeViewModel
+		{
+			return new GraphMemberNodeViewModel(this, eventInfo, isExpanded);
 		}
 	}
 }

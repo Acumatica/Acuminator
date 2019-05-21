@@ -52,7 +52,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DatabaseQueries
 			var newRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
 			var generator = SyntaxGenerator.GetGenerator(document);
-			var pxContext = new PXContext(semanticModel.Compilation);
+			var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
 			var usingNode = (UsingStatementSyntax) generator.UsingStatement(
 				SyntaxFactory.ObjectCreationExpression((TypeSyntax) generator.TypeExpression(pxContext.PXConnectionScope),
 					SyntaxFactory.ArgumentList(), default(InitializerExpressionSyntax)),

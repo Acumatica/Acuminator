@@ -124,7 +124,10 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			if (file.GenerateSuppressionBase)
 			{
-				file.AddMessage(message);
+                if (diagnostic?.Descriptor.DefaultSeverity != DiagnosticSeverity.Info)
+                {
+                    file.AddMessage(message);
+                }
 
 				return true;
 			}
@@ -172,11 +175,11 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		}
 
 		public static void ReportDiagnosticWithSuppressionCheck(SemanticModel semanticModel, Action<Diagnostic> reportDiagnostic,
-			Diagnostic diagnostic, CancellationToken cancellation)
+																Diagnostic diagnostic, CodeAnalysisSettings settings, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			if (Instance?.IsSuppressed(semanticModel, diagnostic, cancellation) == true)
+			if (settings.SuppressionMechanismEnabled && Instance?.IsSuppressed(semanticModel, diagnostic, cancellation) == true)
 			{
 				return;
 			}

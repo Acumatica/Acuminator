@@ -78,7 +78,7 @@
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <CommandName>cmdidOpenCodeMapWindowCommand</CommandName>
-          <ButtonText>CodeMap</ButtonText>
+          <ButtonText>Code Map (Experimental)</ButtonText>
         </Strings>
       </Button>
     </Buttons>

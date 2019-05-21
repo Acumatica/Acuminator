@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media.Imaging;
 using System.Windows.Data;
+using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 
 
@@ -22,16 +21,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			switch (value)
 			{
-				case GraphMemberNodeViewModel graphMemberNode 
-				when graphMemberNode.MemberInfo is DataViewInfo viewInfo:
-					return viewInfo.Type.ToDisplayString();
-				case GraphMemberNodeViewModel graphMemberNode
-				when graphMemberNode.MemberInfo is ActionInfo actionInfo:
-					return actionInfo.Type.ToDisplayString();
-				case CacheAttachedNodeViewModel cacheAttachedNode:
+				case ViewNodeViewModel viewNode:
+					return viewNode.Tooltip ?? Binding.DoNothing;
+				case ActionNodeViewModel actionNode:
+					return actionNode.ActionInfo.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
+				case CacheAttachedNodeViewModel cacheAttachedNode 
+				when cacheAttachedNode.Children.Count > 0:
 					var attributeStrings = cacheAttachedNode.Children
 															.OfType<AttributeNodeViewModel>()
-															.Select(attribute => $"[{attribute.Attribute.ToString()}]");
+															.Select(attribute => attribute.Tooltip);															
 					return string.Join(Environment.NewLine, attributeStrings);
 				case AttributeNodeViewModel attributeNode:
 					return attributeNode.Tooltip;

@@ -1,4 +1,5 @@
-﻿using Acuminator.Tests.Helpers;
+﻿using Acuminator.Utilities;
+using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -23,7 +24,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 			public IReadOnlyList<Location> Locations => _locations;
 
 			public ExceptionWalker(Compilation compilation, CancellationToken cancellationToken) 
-				: base(compilation, cancellationToken)
+				: base(compilation, cancellationToken, CodeAnalysisSettings.Default)
 			{
 			}
 

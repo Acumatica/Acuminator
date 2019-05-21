@@ -98,7 +98,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac
                 if (typeInfo.Type == null || !typeInfo.Type.IsPXGraphOrExtension(_pxContext))
                     return;
 
-                _syntaxContext.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1029_PXGraphUsageInDac, node.GetLocation()));
+                _syntaxContext.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1029_PXGraphUsageInDac, node.GetLocation()),
+					_pxContext.CodeAnalysisSettings);
 
                 base.VisitIdentifierName(node);
             }

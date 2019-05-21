@@ -14,26 +14,28 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class GraphNodeViewModel : TreeNodeViewModel
 	{
-		public PXGraphEventSemanticModel GraphSemanticModel { get; }
+		public GraphSemanticModelForCodeMap CodeMapGraphModel { get; }
+
+		public PXGraphEventSemanticModel GraphSemanticModel => CodeMapGraphModel.GraphModel; 
 
 		public override string Name
 		{
 			get => GraphSemanticModel.Symbol.Name;
 			protected set { }
 		}
-		protected GraphNodeViewModel(PXGraphEventSemanticModel graphSemanticModel, TreeViewModel tree, bool isExpanded) : 
+		protected GraphNodeViewModel(GraphSemanticModelForCodeMap codeMapGraphModel, TreeViewModel tree, bool isExpanded) : 
 							 base(tree, isExpanded)
 		{
-			GraphSemanticModel = graphSemanticModel;
+			CodeMapGraphModel = codeMapGraphModel;
 		}
 
-		public static GraphNodeViewModel Create(PXGraphEventSemanticModel graphSemanticModel, TreeViewModel tree, 
+		public static GraphNodeViewModel Create(GraphSemanticModelForCodeMap codeMapGraphModel, TreeViewModel tree, 
 												bool isExpanded, bool expandChildren)
 		{
-			if (graphSemanticModel == null || tree == null)
+			if (codeMapGraphModel == null || tree == null)
 				return null;
 
-			GraphNodeViewModel graphNodeVM = new GraphNodeViewModel(graphSemanticModel, tree, isExpanded);
+			GraphNodeViewModel graphNodeVM = new GraphNodeViewModel(codeMapGraphModel, tree, isExpanded);
 			graphNodeVM.AddGraphMemberCategories(expandChildren);
 			return graphNodeVM;
 		}
@@ -46,7 +48,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			var memberCategories =
 				GraphMemberTypeUtils.GetGraphMemberTypes()
 									.Select(graphMemberType =>
-										 GraphMemberCategoryNodeViewModel.Create(this, graphMemberType, isExpanded: expandChildren));
+										 GraphMemberCategoryNodeViewModel.Create(this, graphMemberType, isExpanded: expandChildren))
+									.Where(graphMemberCategory => graphMemberCategory != null);
 
 			Children.AddRange(memberCategories);
 		}

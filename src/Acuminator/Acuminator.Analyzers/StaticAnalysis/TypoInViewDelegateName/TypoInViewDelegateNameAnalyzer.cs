@@ -1,79 +1,79 @@
-﻿using Acuminator.Utilities.Common;
-using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+using Acuminator.Analyzers.StaticAnalysis.PXGraph;
+
 
 namespace Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName
 {
-	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class TypoInViewDelegateNameAnalyzer : PXDiagnosticAnalyzer
+    public class TypoInViewDelegateNameAnalyzer : PXGraphAggregatedAnalyzerBase
     {
 	    public const string ViewFieldNameProperty = "field";
 		private const int MaximumDistance = 2;
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
-				Descriptors.PX1005_TypoInViewDelegateName);
+		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) =>
+			base.ShouldAnalyze(pxContext, graph) && graph.Type != GraphType.None;
 
-        internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
-        {
-            compilationStartContext.RegisterSymbolAction(c => Analyze(c, pxContext), 
-                SymbolKind.Method);
-        }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
+			ImmutableArray.Create(Descriptors.PX1005_TypoInViewDelegateName);
 
-        private void Analyze(SymbolAnalysisContext context, PXContext pxContext)
-        {
-			var method = (IMethodSymbol) context.Symbol;
-	        if (method.ReturnType.SpecialType != SpecialType.System_Collections_IEnumerable
-	            || method.IsOverride
-				|| method.Parameters.Length > 0)
-	        {
-		        return;
-	        }
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel graphModel)
+		{
+			var viewWithoutDelegatesNames = graphModel.Views.Where(view => !graphModel.ViewDelegatesByNames.ContainsKey(view.Symbol.Name))
+															.Select(view => view.Symbol.Name)
+															.ToList(capacity: graphModel.ViewsByNames.Count);
+			if (viewWithoutDelegatesNames.Count == 0)
+				return;
 
-	        var parent = method.ContainingType;
-	        if (parent != null && parent.InheritsFrom(pxContext.PXGraph.Type))
-	        {
-		        var views = parent.GetMembers()
-					.OfType<IFieldSymbol>()
-					.Where(f => f.Type.InheritsFrom(pxContext.PXSelectBase.Type))
-					.ToArray();
-		        if (views.Any(f => String.Equals(f.Name, method.Name, StringComparison.OrdinalIgnoreCase)))
-			        return;
+			var delegateCandidates = from method in graphModel.Symbol.GetMembers().OfType<IMethodSymbol>()
+									 where method.ContainingType.Equals(graphModel.Symbol) && !method.IsOverride &&
+										   method.IsValidViewDelegate(pxContext) && !method.IsValidActionHandler(pxContext)
+									 select method;
 
-		        var nearest = FindNearestView(views, method);
-				if (nearest != null)
+			foreach (IMethodSymbol method in delegateCandidates)
+			{
+				if (viewWithoutDelegatesNames.Any(viewName => viewName == method.Name))
+					continue;
+
+				string nearestViewName = FindNearestView(viewWithoutDelegatesNames, method);
+
+				if (nearestViewName != null && !method.Locations.IsEmpty)
 				{
 					var properties = ImmutableDictionary.CreateBuilder<string, string>();
-					properties.Add(ViewFieldNameProperty, nearest.Name);
-					context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1005_TypoInViewDelegateName, 
-						method.Locations.First(), properties.ToImmutable(), nearest.Name));
-		        }
-	        }
+					properties.Add(ViewFieldNameProperty, nearestViewName);
+
+					context.ReportDiagnosticWithSuppressionCheck(
+						Diagnostic.Create(Descriptors.PX1005_TypoInViewDelegateName, method.Locations.First(), properties.ToImmutable(), nearestViewName),
+						pxContext.CodeAnalysisSettings);
+				}
+			}
 		}
 
-	    private IFieldSymbol FindNearestView(IEnumerable<IFieldSymbol> views, IMethodSymbol method)
+	    private string FindNearestView(List<string> viewCandidatesNames, IMethodSymbol method)
 	    {
 			string methodName = method.Name.ToLowerInvariant();
 		    int minDistance = int.MaxValue;
-		    IFieldSymbol nearest = null;
+		    string nearestViewName = null;
 
-		    foreach (var view in views)
+		    foreach (var viewName in viewCandidatesNames)
 		    {
-			    int distance = StringExtensions.LevenshteinDistance(methodName, view.Name.ToLowerInvariant());
+			    int distance = StringExtensions.LevenshteinDistance(methodName, viewName.ToLowerInvariant());
 
 			    if (distance <= MaximumDistance && distance < minDistance)
 			    {
 				    minDistance = distance;
-				    nearest = view;
+				    nearestViewName = viewName;
 			    }
 		    }
 
-		    return nearest;
+		    return nearestViewName;
 	    }
 	}
 }

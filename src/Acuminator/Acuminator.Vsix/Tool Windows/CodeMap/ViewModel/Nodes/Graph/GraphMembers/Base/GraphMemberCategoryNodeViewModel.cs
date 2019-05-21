@@ -12,11 +12,13 @@ using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public abstract class GraphMemberCategoryNodeViewModel : TreeNodeViewModel
+	public abstract class GraphMemberCategoryNodeViewModel : TreeNodeViewModel, IGroupNodeWithCyclingNavigation
 	{
 		public GraphNodeViewModel GraphViewModel { get; }
 
 		public PXGraphEventSemanticModel GraphSemanticModel => GraphViewModel.GraphSemanticModel;
+
+		public GraphSemanticModelForCodeMap CodeMapGraphModel => GraphViewModel.CodeMapGraphModel;
 
 		public GraphMemberType CategoryType { get; }
 
@@ -28,6 +30,18 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set { }
 		}
 
+		protected abstract bool AllowNavigation { get; }
+
+		bool IGroupNodeWithCyclingNavigation.AllowNavigation => AllowNavigation;
+
+		int IGroupNodeWithCyclingNavigation.CurrentNavigationIndex
+		{
+			get;
+			set;
+		}
+
+		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
+
 		protected GraphMemberCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
 												bool isExpanded) : 
 										   base(graphViewModel?.Tree, isExpanded)
@@ -35,6 +49,18 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			GraphViewModel = graphViewModel;
 			CategoryType = graphMemberType;
 			CategoryDescription = CategoryType.Description();
+		}
+
+		public override void NavigateToItem()
+		{
+			var childToNavigateTo = this.GetChildToNavigateTo();
+
+			if (childToNavigateTo != null)
+			{
+				childToNavigateTo.NavigateToItem();
+				IsExpanded = true;
+				Tree.SelectedItem = childToNavigateTo;			
+			}	
 		}
 
 		public static GraphMemberCategoryNodeViewModel Create(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
@@ -45,7 +71,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			GraphMemberCategoryNodeViewModel memberCategoryVM = CreateCategory(graphViewModel, graphMemberType, isExpanded);
 			memberCategoryVM?.AddCategoryMembers();
-			return memberCategoryVM;
+			return memberCategoryVM?.Children.Count > 0 
+				? memberCategoryVM
+				: null;
 		}
 
 		protected virtual void AddCategoryMembers()
@@ -82,11 +110,18 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					return new RowEventCategoryNodeViewModel(graphViewModel, isExpanded);
 				case GraphMemberType.FieldEvent:
 					return new FieldEventCategoryNodeViewModel(graphViewModel, isExpanded);
+				case GraphMemberType.PXOverride:
+					return new PXOverridesCategoryNodeViewModel(graphViewModel, isExpanded);
 				case GraphMemberType.NestedDAC:
 				case GraphMemberType.NestedGraph:
 				default:
 					return null;
 			}
-		}	
+		}
+
+		bool IGroupNodeWithCyclingNavigation.CanNavigateToChild(TreeNodeViewModel child) =>
+			CanNavigateToChild(child);
+
+		protected virtual bool CanNavigateToChild(TreeNodeViewModel child) => child is GraphMemberNodeViewModel;
 	}
 }

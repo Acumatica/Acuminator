@@ -42,7 +42,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 		}
 
 		//-------------------------------------Code Action for Fix---------------------------------------------------------------------------
-		private class ChangeSignatureAction : CodeAction
+		internal class ChangeSignatureAction : CodeAction
 		{
 			private const string AdapterParameterName = "adapter";
 			private const string AdapterGetMethodName = "Get";
@@ -69,7 +69,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 				if (semanticModel == null || cancellationToken.IsCancellationRequested)
 					return _document;
 
-				var pxContext = new PXContext(semanticModel.Compilation);
+				var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
 				var oldRoot = await _document.GetSyntaxRootAsync(cancellationToken)
 											 .ConfigureAwait(false);
 

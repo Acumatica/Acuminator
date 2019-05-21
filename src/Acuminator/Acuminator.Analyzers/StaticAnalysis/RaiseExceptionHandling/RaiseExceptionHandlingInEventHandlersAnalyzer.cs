@@ -26,11 +26,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
 			ImmutableArray.Create(Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers);
 
-		public override bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings, EventType eventType) =>
-			AnalyzedEventTypes.Contains(eventType);
+		public override bool ShouldAnalyze(PXContext pxContext, EventType eventType) => AnalyzedEventTypes.Contains(eventType);
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings,
-			EventType eventType)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -49,7 +47,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 			private readonly object[] _messageArgs;
 
 			public Walker(SymbolAnalysisContext context, PXContext pxContext, params object[] messageArgs)
-				: base(context.Compilation, context.CancellationToken)
+				: base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
 			{
 				pxContext.ThrowOnNull(nameof (pxContext));
 

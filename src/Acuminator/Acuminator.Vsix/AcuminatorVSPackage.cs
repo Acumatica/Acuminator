@@ -151,9 +151,13 @@ namespace Acuminator.Vsix
         /// where you can put all the initialization code that rely on services provided by VisualStudio.
         /// </summary>
         protected override void Initialize()
-        {
-			InitializeCommands();
+        {		
 			base.Initialize();
+
+			if (Zombied)
+				return;
+
+			InitializeCommands();
 			SubscribeOnSolutionEvents();
 
 			IComponentModel componentModel = Package.GetGlobalService(typeof(SComponentModel)) as IComponentModel;
@@ -198,6 +202,10 @@ namespace Acuminator.Vsix
 
 		private void InitializeCommands()
 		{
+			// if the package is zombied, we don't want to add commands
+			if (Zombied)
+				return;
+
 			FormatBqlCommand.Initialize(this);
 			GoToDeclarationOrHandlerCommand.Initialize(this);
 			BqlFixer.FixBqlCommand.Initialize(this);
@@ -240,7 +248,7 @@ namespace Acuminator.Vsix
 	    {
 		    try
 		    {
-			    AcuminatorLogger = new AcuminatorLogger(this);
+			    AcuminatorLogger = new AcuminatorLogger(this, swallowUnobservedTaskExceptions: false);
 		    }
 		    catch (Exception ex)
 		    {

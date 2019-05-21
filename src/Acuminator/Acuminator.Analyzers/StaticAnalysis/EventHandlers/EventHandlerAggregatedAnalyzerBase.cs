@@ -15,8 +15,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 	{
 		public abstract ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
 
-		public abstract void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, EventType eventType);
+		public abstract void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType);
 
-		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings, EventType eventType) => true;
+		public virtual bool ShouldAnalyze(PXContext pxContext, EventType eventType) => true;
 	}
 }

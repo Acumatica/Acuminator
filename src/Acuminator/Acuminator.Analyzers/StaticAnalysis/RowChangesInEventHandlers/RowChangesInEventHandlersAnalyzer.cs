@@ -38,8 +38,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 			Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs,
 			Descriptors.PX1048_RowChangesInEventHandlersAllowedForArgsOnly);
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings codeAnalysisSettings, 
-			EventType eventType)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 

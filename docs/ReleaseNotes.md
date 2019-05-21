@@ -1,6 +1,101 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
+## Acuminator 1.6.1
+Acuminator 1.6.1 includes the diagnostics, code fixes, and enhancements described in this section, as well as the features that have been implemented in previous versions.
+
+### New Diagnostics and Code Fixes
+In this version, the diagnostic and a code fix have been added for the following issue.
+
+| Code                            | Issue Description                                                                                           | Type    | Diagnostics | Code Fix    | 
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------- | ----------- | ----------- |
+| [PX1013](diagnostics/PX1013.md) | The action handler that initiates a background operation or is executed by a background operation must return `IEnumerable`. | Error | Available   | Available   |
+
+### Enhancements and Bug Fixes in the Code Map
+Acuminator 1.6.1 includes the following enhancements in the code map:
+
+ - In the text editor of Visual Studio, the symbol to which the code map navigates is now highlighted.
+ - The tooltip for a data view in the code map now keeps the BQL formatting of the source code.
+ - The namespace prefixes have been removed from the tooltips in the code map.
+ - The categories without child nodes are no longer displayed in the code map.
+ - The code map now displays the methods of the base graph that have been overridden through the `PXOverride` attribute.
+ - The performance of the code map has been improved.
+
+ The following bugs have been fixed:
+
+ - The code map didn't support graphs with complex declarations.
+ - The code map could crash due to an unhandled exception from Roslyn.
+ - The code map performed calculations in hidden mode.
+
+### Code Analysis Enhancements
+Acuminator now includes the following new options:
+
+ - An option to turn off Acuminator static analysis. If you set the value of **Tools > Options > Acuminator > Code Analysis > Enable code analysis** to _False_, Acuminator diagnostics are not displayed.
+ - An option to turn off the suppression mechanism for the Acuminator diagnostics. If you set the value of **Tools > Options > Acuminator > Code Analysis > Suppress selected diagnostics** to _False_, Acuminator ignores the suppression file and displays all diagnostics it has found. This option is intended for internal use in Acumatica.
+
+### Other Fixed Bugs
+In this version of Acuminator, the following bugs have been fixed:
+
+ - The PX1018 error was displayed for data views defined in the fluent BQL style.
+ - Fluent BQL joins were not supported by the Acuminator colorizer.
+ - Acuminator didn't recognize graphs if they were used as generic type parameters. <br/>**Fix description**: Graphs as generic type parameters are now supported. Multiple diagnostics (such as PX1000, PX1001, PX1003, and PX1005) have been refactored. 
+
+### Other Enhancements
+Acuminator 1.6.1 also includes the following enhancements:
+
+ - Acuminator now supports Visual Studio 2019. 
+ - The PX1005 diagnostic now supports graph extensions.
+
+## Acuminator 1.6
+Acuminator 1.6 includes the diagnostics, code fixes, and enhancements described in this section, as well as the features that have been implemented in previous versions.
+
+### New Diagnostics and Code Fixes
+In this version, diagnostics and code fixes for the following issues have been added.
+
+| Code                            | Issue Description                                                                                           | Type    | Diagnostics | Code Fix    | 
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------- | ----------- | ----------- |
+| [PX1060](diagnostics/PX1060.md) | DAC fields should be strongly typed to be used in fluent BQL queries.                                       | Message | Available   | Available   |
+| [PX1061](diagnostics/PX1061.md) | Constants should be strongly typed to be used in fluent BQL queries.                                        | Message | Available   | Available   |
+| [PX1090](diagnostics/PX1090.md) | `PXSetupNotEnteredException` cannot be thrown in action handlers.                                           | Warning | Available   | Unavailable |
+| [PX1091](diagnostics/PX1091.md) | This invocation of the base action handler can cause a `StackOverflowException`.                            | Warning | Available   | Unavailable |
+| [PX1092](diagnostics/PX1092.md) | Action handlers must be decorated with the `PXUIField` attribute and with the `PXButton` attribute or its successors. | Error | Available   | Available |
+| [PX1093](diagnostics/PX1093.md) | In a graph declaration, the first type parameter of `PXGraph` must be the graph type.                       | Error   | Available   | Available   |
+| [PX1094](diagnostics/PX1094.md) | Every DAC should be decorated with the `PXHidden` or `PXCacheName` attribute.                               | Warning | Available   | Available   |
+| [PX1095](diagnostics/PX1095.md) | A field with the `PXDBCalced` attribute must have an unbound type attribute, such as `PXDate` or `PXDecimal`. | Error   | Available   | Unavailable |
+
+### Code Map
+In this version, you can view the structure of a graph and navigate between the graph members by using the code map. The code map, which is shown in the following screenshot, displays the tree of data views and their delegates, actions and action handlers, and row and field events. Row events are grouped by the DACs to which they are related, and field events are grouped by the DACs and DAC fields. 
+
+![Code Map](images/CodeMap.png)
+
+By clicking the nodes of the tree, you can navigate between the members in the code of the graph. You can also double-click the **Views** or **Actions** node, or a node for a DAC in event nodes to navigate between the graph members of this node. You can use the code map for navigation in code during debugging.
+
+The tooltips for the nodes display the following information:
+
+ - For the data view and action nodes, the full declarations of the data views and actions
+ - For the field nodes in the **Cache Attached** node, the attributes declared on the `CacheAttached` events
+ - For the attribute nodes in the **Cache Attached** node, the full declaration of each attribute
+
+If you switch between the files, the code map is updated automatically. You can also refresh the code map by clicking the **Refresh Code Map** button on the toolbar of the dialog box.
+
+The code map is an experimental feature, with improvements planned in the coming versions. To open the code map for a graph, click **Code Map (Experimental)** on the **Acuminator** main menu of Visual Studio.
+
+### Fixed Bugs
+In this version of Acuminator, the following bugs have been fixed:
+
+ - The PX1030 diagnostic worked incorrectly with customizations of `PXDefault` on original DAC fields. Now the diagnostic can display either an error or a warning. For details, see the description of the diagnostic in [PX1030](diagnostics/PX1030.md).
+ - Graph-related diagnostics could fail with the _Value cannot be null_ error in some solutions.
+ - The recursive diagnostics could enter an endless loop in some solutions.
+ - The use of `PXView.Select` in `FieldSelecting` caused the PX1045 error.
+ - The PX1088 warning could be displayed for non-processing graphs.
+
+### Other Enhancements
+Acuminator 1.6 also includes the following minor enhancements:
+
+ - By invoking the **Go To Action/View Declaration/Handler** action in the context menu or on the **Acuminator** main menu, you can now navigate in code during debugging.
+ - The [PX1004](diagnostics/PX1004.md) and [PX1006](diagnostics/PX1006.md) diagnostics have been reimplemented. The diagnostics now support graphs and graph extensions. The diagnostics work with the code based on Acumatica Framework 2018 R1 or earlier.
+ - More details have been added to the description of the [PX1014](diagnostics/PX1014.md) diagnostic.
+
 ## Acuminator 1.5
 Acuminator 1.5 includes the diagnostics, code fixes, and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
@@ -34,7 +129,7 @@ In this version, diagnostics and code fixes for the following issues have been a
 ### Special Diagnostics for ISV Solutions
 Now Acuminator includes diagnostics that are designed specifically for the certification of ISV solutions developed based on the Acumatica platform. Developers of ISV solutions have to turn on these diagnostics and fix the issues reported by the diagnostics. For non-ISV solutions, these diagnostics are informational. 
 
-To turn on these diagnostics, you set the value of **Tools > Options > Acuminator > Code Analysis > Enable additional diagnostics for ISV Solution Certification** to `True`. By default, these diagnostics are turned off.
+To turn on these diagnostics, you set the value of **Tools > Options > Acuminator > Code Analysis > Enable additional diagnostics for ISV Solution Certification** to _True_. By default, these diagnostics are turned off.
 
 ### Enhanced Code Navigation
 With the **Go To Action/View Declaration/Handler** in the context menu or on the **Acuminator** main menu, you can now navigate from an action handler in a graph extension to the action declaration in the base graph, and from a data view delegate in a graph extension to the data view declaration in the base graph.
@@ -73,7 +168,7 @@ Acuminator 1.4 suggests one type of code refactoring: replacement of the standar
 
 ### Code Analysis Enhancements
 Now Acuminator can analyze the code recursively (that is, it can analyze the whole tree of method invocations in a recursive manner). For example, for the PX1042 diagnostic, the code of a `RowSelecting` event handler can contain no direct requests to the database but can contain a call to another method that performs a request to the database. Acuminator 1.4 can find this indirect request to the database.
-By default, Acuminator analyzes the code recursively. You can turn off this behavior by setting to `False` the value of **Tools > Options > Acuminator > Code Analysis > Enable recursive code analysis**.
+By default, Acuminator analyzes the code recursively. You can turn off this behavior by setting to _False_ the value of **Tools > Options > Acuminator > Code Analysis > Enable recursive code analysis**.
 
 ### Bug Fixes
 In this version of Acuminator, the following bugs have been fixed.
@@ -123,7 +218,7 @@ Acuminator now can navigate between an action and its handler, and between a dat
 In previous versions of Acuminator, you had to manually add the **Format BQL Statements** command to the context menu of the code editor in Visual Studio. In Acuminator 1.3, this command is available in the context menu by default. Also this command is now available on the **Acuminator** main menu. 
 
 ### Code Outlining Enhancements
-* Now you can configure Acuminator to outline entire BQL statements. To do this in Visual Studio, set to `False` the value of **Tools > Options > Acuminator > BQL Outlining > Outline parts of BQL commands**.
+* Now you can configure Acuminator to outline entire BQL statements. To do this in Visual Studio, set to _False_ the value of **Tools > Options > Acuminator > BQL Outlining > Outline parts of BQL commands**.
 * The **Use BQL outlining** has been moved under **Tools > Options > Acuminator > BQL Outlining**.
 
 ### Code Coloring Enhancements
@@ -204,7 +299,7 @@ In the code based on Acumatica Framework, Acuminator finds common mistakes and t
 | [PX1003](diagnostics/PX1003.md) | Consider using a specific implementation of `PXGraph`.                                                                                 | Warning | Available   | Unavailable   | 
 | [PX1004](diagnostics/PX1004.md) | The order of view declarations will cause the creation of two cache instances.                                                         | Warning | Available   | Unavailable   | 
 | [PX1005](diagnostics/PX1005.md) | There is probably a typo in the view delegate name.                                                                                    | Warning | Available   | Available     | 
-| [PX1006](diagnostics/PX1006.md) | The order of view declarations will cause the creation of one cache instance for multiple DACs.                                        | Warning | Available   | Unavailable   | 
+| [PX1006](diagnostics/PX1006.md) | The order of view declarations will cause the creation of one cache instance for multiple DACs.                                        | Message | Available   | Unavailable   | 
 | [PX1008](diagnostics/PX1008.md) | The reference of `@this` graph in the delegate will cause synchronous delegate execution.                                              | Warning | Available   | Unavailable   | 
 | [PX1009](diagnostics/PX1009.md) | Multiple levels of inheritance are not supported for `PXCacheExtension`.                                                               | Error   | Available   | Available     | 
 | [PX1010](diagnostics/PX1010.md) | If a delegate applies paging in an inner select, `StartRow` must be reset. (If `StartRow` is not reset, paging will be applied twice.) | Warning | Available   | Available     | 

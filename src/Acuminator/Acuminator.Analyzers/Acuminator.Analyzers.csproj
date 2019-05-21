@@ -48,6 +48,8 @@
     <Compile Include="Refactorings\ChangeEventHandlerSignatureToGeneric\ChangeEventHandlerSignatureToGenericRefactoring.cs" />
     <Compile Include="StaticAnalysis\ActionHandlerAttributes\ActionHandlerAttributesAnalyzer.cs" />
     <Compile Include="StaticAnalysis\ActionHandlerAttributes\ActionHandlerAttributesFix.cs" />
+    <Compile Include="StaticAnalysis\ActionHandlerReturnType\ActionHandlerReturnTypeAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\ActionHandlerReturnType\ActionHandlerReturnTypeFix.cs" />
     <Compile Include="StaticAnalysis\AnalyzersAggregator\ISymbolAnalyzer.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\ArrayElemCountLocalVariableResolver.cs" />
     <Compile Include="StaticAnalysis\BqlParameterMismatch\Helpers\BqlInvocationDataFlowAnalyserBase.cs" />
@@ -75,6 +77,10 @@
     <Compile Include="StaticAnalysis\EventHandlers\EventHandlerAggregatedAnalyzerBase.cs" />
     <Compile Include="StaticAnalysis\EventHandlers\EventHandlerAnalyzer.cs" />
     <Compile Include="StaticAnalysis\EventHandlers\IEventHandlerAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\LegacyBqlConstant\LegacyBqlConstantAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\LegacyBqlConstant\LegacyBqlConstantFix.cs" />
+    <Compile Include="StaticAnalysis\LegacyBqlField\LegacyBqlFieldAnalyzer.cs" />
+    <Compile Include="StaticAnalysis\LegacyBqlField\LegacyBqlFieldFix.cs" />
     <Compile Include="StaticAnalysis\PXGraphDeclarationTypeParameter\PXGraphDeclarationTypeParameterAnalyzer.cs" />
     <Compile Include="StaticAnalysis\PXGraphDeclarationTypeParameter\PXGraphDeclarationTypeParameterFix.cs" />
     <Compile Include="StaticAnalysis\InvalidViewUsageInProcessingDelegate\InvalidViewUsageInProcessingDelegateAnalyzer.cs" />
@@ -218,6 +224,9 @@
     </Reference>
     <Reference Include="PX.Data">
       <HintPath>..\..\..\lib\PX.Data.dll</HintPath>
+    </Reference>
+	<Reference Include="PX.Data.BQL.Fluent">
+      <HintPath>..\..\..\lib\PX.Data.BQL.Fluent.dll</HintPath>
     </Reference>
     <Reference Include="System.Collections.Immutable, Version=1.1.37.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Collections.Immutable.1.1.37\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>

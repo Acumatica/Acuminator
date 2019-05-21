@@ -8,15 +8,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 {
     public interface IPXGraphAnalyzer : ISymbolAnalyzer
     {
-        void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph);
+        void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph);
 
 		/// <summary>
 		/// Determine if the analyzer should run on graph.
 		/// </summary>
 		/// <param name="pxContext">Context.</param>
-		/// <param name="settings">Options for controlling the analysis.</param>
 		/// <param name="pxGraph">The graph semantic model.</param>
 		/// <returns/>
-		bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel graph);
+		bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph);
 	}
 }

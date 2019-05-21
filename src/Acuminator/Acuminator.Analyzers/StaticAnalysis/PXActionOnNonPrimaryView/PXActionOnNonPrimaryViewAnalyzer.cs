@@ -1,4 +1,5 @@
-﻿using Acuminator.Utilities.Common;
+﻿using Acuminator.Analyzers.StaticAnalysis.PXGraph;
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -12,72 +13,51 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 
+
+
 namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 {
-	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class PXActionOnNonPrimaryViewAnalyzer : PXDiagnosticAnalyzer
+	public class PXActionOnNonPrimaryViewAnalyzer : PXGraphAggregatedAnalyzerBase
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1012_PXActionOnNonPrimaryView);
 
-		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) =>
+			graph.Type != GraphType.None && base.ShouldAnalyze(pxContext, graph);
+
+		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphSemanticModel pxGraph)
 		{
-			compilationStartContext.RegisterSymbolAction(symbolContext => AnalyzePXGraphSymbolAsync(symbolContext, pxContext),
-														 SymbolKind.NamedType);
-		}
+			symbolContext.CancellationToken.ThrowIfCancellationRequested();
+			var declaredActions = pxGraph.DeclaredActions.ToList();
 
-		private static async Task AnalyzePXGraphSymbolAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
-		{
-			if (!(symbolContext.Symbol is INamedTypeSymbol graphOrGraphExtension) || symbolContext.CancellationToken.IsCancellationRequested)
+			if (declaredActions.Count == 0 || symbolContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			bool isGraph = graphOrGraphExtension.InheritsFrom(pxContext.PXGraph.Type);
-
-			if (!isGraph && !graphOrGraphExtension.InheritsFrom(pxContext.PXGraphExtensionType))
-				return;
-
-			ClassDeclarationSyntax graphOrGraphExtNode = await graphOrGraphExtension.GetSyntaxAsync(symbolContext.CancellationToken)
-																					.ConfigureAwait(false) as ClassDeclarationSyntax;
-
-			if (graphOrGraphExtNode == null || symbolContext.CancellationToken.IsCancellationRequested)
-				return;
-
-			SemanticModel semanticModel = symbolContext.Compilation.GetSemanticModel(graphOrGraphExtNode.SyntaxTree);
-
-			if (semanticModel == null || symbolContext.CancellationToken.IsCancellationRequested)
-				return;
-			
-			var declaredActionsWithTypes = graphOrGraphExtension.GetActionsFromGraphOrGraphExtensionAndBaseGraph(pxContext)
-																.Select(item => item.Item)
-																.Where(action => action.ActionSymbol.ContainingType == graphOrGraphExtension);
-
-			if (declaredActionsWithTypes.IsNullOrEmpty() || symbolContext.CancellationToken.IsCancellationRequested)
-				return;
-
-			PrimaryDacFinder primaryDacFinder = PrimaryDacFinder.Create(pxContext, semanticModel, graphOrGraphExtension, 
-																		symbolContext.CancellationToken);
+			PrimaryDacFinder primaryDacFinder = PrimaryDacFinder.Create(pxContext, pxGraph, symbolContext.CancellationToken);
 			ITypeSymbol primaryDAC = primaryDacFinder?.FindPrimaryDAC();
 
-			if (primaryDAC == null || symbolContext.CancellationToken.IsCancellationRequested)
+			if (primaryDAC == null)
 				return;
 
-			var actionsWithWrongDAC = declaredActionsWithTypes.TakeWhile(a => !symbolContext.CancellationToken.IsCancellationRequested)
-															  .Where(a => !CheckActionIsDeclaredForPrimaryDAC(a.ActionType, primaryDAC))
-															  .ToList();
+			ImmutableDictionary<string, string> diagnosticExtraData = null;
 
-			if (actionsWithWrongDAC.Count == 0 || symbolContext.CancellationToken.IsCancellationRequested)
-				return;
-
-			var diagnosticExtraData = new Dictionary<string, string>
+			foreach (ActionInfo action in declaredActions)
 			{
-				{ DiagnosticProperty.DacName, primaryDAC.Name },
-				{ DiagnosticProperty.DacMetadataName, primaryDAC.GetCLRTypeNameFromType() }
-			}
-			.ToImmutableDictionary();
+				symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			var registrationTasks = actionsWithWrongDAC.Select(a => RegisterDiagnosticForActionAsync(a.ActionSymbol, primaryDAC.Name, 
-																									 diagnosticExtraData, symbolContext));
-			await Task.WhenAll(registrationTasks);
+				if (CheckActionIsDeclaredForPrimaryDAC(action.Type, primaryDAC))
+					continue;
+
+				diagnosticExtraData = diagnosticExtraData ??
+					new Dictionary<string, string>
+					{
+						{ DiagnosticProperty.DacName, primaryDAC.Name },
+						{ DiagnosticProperty.DacMetadataName, primaryDAC.GetCLRTypeNameFromType() }
+					}
+					.ToImmutableDictionary();
+
+				RegisterDiagnosticForAction(action.Symbol, primaryDAC.Name, diagnosticExtraData, symbolContext, pxContext);
+			}
 		}
 
 		private static bool CheckActionIsDeclaredForPrimaryDAC(INamedTypeSymbol action, ITypeSymbol primaryDAC)
@@ -91,11 +71,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 			return pxActionDacType.Equals(primaryDAC);
 		}
 
-		private static async Task RegisterDiagnosticForActionAsync(ISymbol actionSymbol, string primaryDacName, 
-																   ImmutableDictionary<string, string> diagnosticProperties,
-																   SymbolAnalysisContext symbolContext)
+		private static void RegisterDiagnosticForAction(ISymbol actionSymbol, string primaryDacName, 
+														ImmutableDictionary<string, string> diagnosticProperties,
+														SymbolAnalysisContext symbolContext, PXContext pxContext)
 		{
-			SyntaxNode symbolSyntax = await actionSymbol.GetSyntaxAsync(symbolContext.CancellationToken).ConfigureAwait(false);
+			SyntaxNode symbolSyntax = actionSymbol.GetSyntax(symbolContext.CancellationToken);
 			Location location = GetLocation(symbolSyntax);
 
 			if (location == null)
@@ -103,7 +83,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 
 			symbolContext.ReportDiagnosticWithSuppressionCheck(
 				Diagnostic.Create(Descriptors.PX1012_PXActionOnNonPrimaryView, location, diagnosticProperties,
-								  actionSymbol.Name, primaryDacName));
+								  actionSymbol.Name, primaryDacName), pxContext.CodeAnalysisSettings);
 		}
 
 		private static Location GetLocation(SyntaxNode symbolSyntax)

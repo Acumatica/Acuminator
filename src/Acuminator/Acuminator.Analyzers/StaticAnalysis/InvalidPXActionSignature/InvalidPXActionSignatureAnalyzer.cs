@@ -1,57 +1,46 @@
-﻿using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
-using System;
+﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+using Acuminator.Analyzers.StaticAnalysis.PXGraph;
+
+
 
 namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 {
-	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class InvalidPXActionSignatureAnalyzer : PXDiagnosticAnalyzer
+	public class InvalidPXActionSignatureAnalyzer : PXGraphAggregatedAnalyzerBase
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1000_InvalidPXActionHandlerSignature);
 
-		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) =>
+			base.ShouldAnalyze(pxContext, graph) && graph.Type != GraphType.None;
+
+		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphSemanticModel pxGraph)
 		{
-			compilationStartContext.RegisterSymbolAction(c => AnalyzeMethod(c, pxContext), SymbolKind.Method);
-		}
+			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-		private static void AnalyzeMethod(SymbolAnalysisContext symbolContext, PXContext pxContext)
-		{
-			if (!(symbolContext.Symbol is IMethodSymbol method) || symbolContext.CancellationToken.IsCancellationRequested ||
-				!CheckIfDiagnosticShouldBeRegisteredForMethod(method, pxContext))
+			var actionHandlerWithBadSignature = from method in pxGraph.Symbol.GetMembers().OfType<IMethodSymbol>()
+												where pxGraph.Symbol.Equals(method.ContainingType) &&
+													  CheckIfDiagnosticShouldBeRegisteredForMethod(method, pxContext) &&
+													  pxGraph.ActionsByNames.ContainsKey(method.Name)
+												select method;
+
+			foreach (IMethodSymbol method in actionHandlerWithBadSignature)
 			{
-				return;
-			}
+				symbolContext.CancellationToken.ThrowIfCancellationRequested();
+				Location methodLocation = method.Locations.FirstOrDefault();
 
-			var graphOrGraphExt = method.ContainingType;
-			bool isGraph = graphOrGraphExt?.InheritsFrom(pxContext.PXGraph.Type) ?? false;
-
-			if (graphOrGraphExt == null ||
-				(!isGraph && !graphOrGraphExt.InheritsFrom(pxContext.PXGraphExtensionType)))
-			{
-				return;
-			}
-
-			var action = graphOrGraphExt.GetActionsFromGraphOrGraphExtensionAndBaseGraph(pxContext)
-										.Select(item => item.Item)
-										.FirstOrDefault(a => string.Equals(a.ActionSymbol.Name, method.Name,
-																		   StringComparison.OrdinalIgnoreCase))
-										.ActionSymbol;
-
-			if (action == null || symbolContext.CancellationToken.IsCancellationRequested)
-				return;
-
-			Location methodLocation = method.Locations.FirstOrDefault();
-
-			if (methodLocation != null)
-			{
-				symbolContext.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(Descriptors.PX1000_InvalidPXActionHandlerSignature, methodLocation));
+				if (methodLocation != null)
+				{
+					symbolContext.ReportDiagnosticWithSuppressionCheck(
+						Diagnostic.Create(Descriptors.PX1000_InvalidPXActionHandlerSignature, methodLocation),
+						pxContext.CodeAnalysisSettings);
+				}
 			}
 		}
 

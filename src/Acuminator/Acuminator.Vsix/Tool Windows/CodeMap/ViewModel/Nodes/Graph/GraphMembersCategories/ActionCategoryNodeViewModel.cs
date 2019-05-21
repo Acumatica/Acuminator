@@ -13,6 +13,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class ActionCategoryNodeViewModel : GraphMemberCategoryNodeViewModel
 	{
+		protected override bool AllowNavigation => true;
+
 		public ActionCategoryNodeViewModel(GraphNodeViewModel graphViewModel, bool isExpanded) : 
 									  base(graphViewModel, GraphMemberType.Action, isExpanded)
 		{

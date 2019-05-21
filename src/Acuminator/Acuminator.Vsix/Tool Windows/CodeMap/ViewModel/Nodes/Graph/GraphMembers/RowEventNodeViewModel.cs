@@ -7,7 +7,6 @@ using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.Utilities;
-using Acuminator.Vsix.Utilities.Navigation;
 
 
 
@@ -15,7 +14,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class RowEventNodeViewModel : GraphMemberNodeViewModel
 	{
-		public DacGroupingNodeViewModel DacViewModel { get; }
+		public DacEventsGroupingNodeViewModel DacViewModel { get; }
 
 		public override string Name
 		{
@@ -23,11 +22,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set;
 		}
 
-		public RowEventNodeViewModel(DacGroupingNodeViewModel dacViewModel, GraphNodeSymbolItem memberInfo, bool isExpanded = false) :
-								base(dacViewModel?.GraphMemberCategoryVM, memberInfo, isExpanded)
+		public RowEventNodeViewModel(DacEventsGroupingNodeViewModel dacViewModel, GraphNodeSymbolItem memberInfo, bool isExpanded = false) :
+								base(dacViewModel?.GraphEventsCategoryVM, memberInfo, isExpanded)
 		{
 			DacViewModel = dacViewModel;
-			Name = MemberInfo is GraphEventInfo eventInfo
+			Name = MemberInfo is GraphRowEventInfo eventInfo
 				? eventInfo.EventType.ToString()
 				: MemberSymbol.Name;
 		}	

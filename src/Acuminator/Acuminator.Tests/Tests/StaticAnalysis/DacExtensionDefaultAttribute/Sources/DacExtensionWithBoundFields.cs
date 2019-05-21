@@ -63,4 +63,8 @@ namespace PX.Objects.HackathonDemo
 		public virtual int? UsrNPCADocLineCntr7 { get; set; }
 		#endregion
 	}
+
+    public class SOOrder : IBqlTable
+    {
+    }
 }

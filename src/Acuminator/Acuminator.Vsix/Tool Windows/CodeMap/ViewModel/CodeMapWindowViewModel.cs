@@ -14,20 +14,37 @@ using Acuminator.Vsix.Utilities;
 
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
-
+using System.Windows;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class CodeMapWindowViewModel : ToolWindowViewModelBase
 	{
 		private readonly EnvDTE.WindowEvents _windowEvents;
+		private readonly EnvDTE80.WindowVisibilityEvents _visibilityEvents;
 
 		private CancellationTokenSource _cancellationTokenSource;
 
 		private DocumentModel _documentModel;
-		private Workspace _workspace;
+
+		public Workspace Workspace
+		{
+			get;
+			private set;
+		}
 
 		public Document Document => _documentModel?.Document;
+
+		private CodeMapDocChangesClassifier DocChangesClassifier { get; } = new CodeMapDocChangesClassifier();
+
+		/// <summary>
+		/// Internal visibility flag for code map control. Serves as a workaround to hacky VS SDK which displays "Visible" in all other visibility properties for a hidden window.
+		/// </summary>
+		private bool IsVisible
+		{
+			get;
+			set;
+		}
 
 		private TreeViewModel _tree;
 
@@ -70,8 +87,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			RefreshCodeMapCommand = new Command(p => RefreshCodeMapAsync().Forget());
 
-			_workspace = _documentModel.Document.Project.Solution.Workspace;
-			_workspace.WorkspaceChanged += OnWorkspaceChanged;
+			Workspace = _documentModel.Document.Project.Solution.Workspace;
+			Workspace.WorkspaceChanged += OnWorkspaceChanged;
 
 			if (ThreadHelper.CheckAccess())
 			{
@@ -81,6 +98,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				if (_windowEvents != null)
 				{
 					_windowEvents.WindowActivated += WindowEvents_WindowActivated;
+				}
+
+				_visibilityEvents = (dte?.Events as EnvDTE80.Events2)?.WindowVisibilityEvents;
+
+				if (_visibilityEvents != null)
+				{
+					_visibilityEvents.WindowShowing += VisibilityEvents_WindowShowing;
+					_visibilityEvents.WindowHiding += VisibilityEvents_WindowHiding;
 				}
 			}		
 		}
@@ -106,14 +131,20 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			_cancellationTokenSource?.Dispose();
 
-			if (_workspace != null)
+			if (Workspace != null)
 			{
-				_workspace.WorkspaceChanged -= OnWorkspaceChanged;
+				Workspace.WorkspaceChanged -= OnWorkspaceChanged;
 			}
 
 			if (_windowEvents != null)
 			{
 				_windowEvents.WindowActivated -= WindowEvents_WindowActivated;
+			}
+
+			if (_visibilityEvents != null)
+			{
+				_visibilityEvents.WindowHiding -= VisibilityEvents_WindowHiding;
+				_visibilityEvents.WindowShowing -= VisibilityEvents_WindowShowing;
 			}
 		}
 
@@ -133,7 +164,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (currentWorkspace == null)
 				return;
 
-			_workspace = currentWorkspace;
+			Workspace = currentWorkspace;
 			IWpfTextView activeWpfTextView = AcuminatorVSPackage.Instance.GetWpfTextView();
 			Document activeDocument = activeWpfTextView?.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
 
@@ -142,6 +173,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			_documentModel = new DocumentModel(activeWpfTextView, activeDocument);
 			BuildCodeMapAsync().Forget();
+		}
+
+		private void VisibilityEvents_WindowHiding(EnvDTE.Window window)
+		{
+			IsVisible = false;
+		}
+
+		private void VisibilityEvents_WindowShowing(EnvDTE.Window window)
+		{
+			IsVisible = true;
 		}
 
 		private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
@@ -169,7 +210,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (currentWorkspace == null)
 				return;
 
-			_workspace = currentWorkspace;
+			Workspace = currentWorkspace;
 			IWpfTextView activeWpfTextView = AcuminatorVSPackage.Instance.GetWpfTextViewByFilePath(gotFocus.Document.FullName);
 			Document activeDocument = activeWpfTextView?.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
 
@@ -191,9 +232,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken ?? default);
 			}
 
-			bool isDocumentTabClosed = _documentModel.WpfTextView?.IsClosed ?? true;
-
-			if (isDocumentTabClosed || e.IsActiveDocumentCleared(Document))
+			if (!IsVisible || e.IsActiveDocumentCleared(Document))
 			{
 				ClearCodeMap();
 				return;
@@ -210,21 +249,38 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private async Task HandleDocumentTextChangesAsync(Workspace newWorkspace, WorkspaceChangeEventArgs e)
 		{
+			Workspace = newWorkspace;
+			Document changedDocument = e.NewSolution.GetDocument(e.DocumentId);
+			Document oldDocument = Document;
+			SyntaxNode oldRoot = _documentModel?.Root;
+
+			if (changedDocument == null || oldDocument == null || oldRoot == null)
+			{
+				ClearCodeMap();
+				return;
+			}
+
+			var newRoot = await changedDocument.GetSyntaxRootAsync(CancellationToken ?? default).ConfigureAwait(false);
+			CodeMapRefreshMode recalculateCodeMap = newRoot == null
+				? CodeMapRefreshMode.Clear
+				: CodeMapRefreshMode.Recalculate;
+
+			if (newRoot != null && Tree != null)
+			{
+				recalculateCodeMap = await DocChangesClassifier.ShouldRefreshCodeMapAsync(oldDocument, newRoot, 
+																						  changedDocument, CancellationToken ?? default);
+			}
+
+			if (recalculateCodeMap == CodeMapRefreshMode.NoRefresh)
+				return;
+
 			ClearCodeMap();
 
-			_workspace = newWorkspace;
-			Document changedDocument = e.NewSolution.GetDocument(e.DocumentId);
-
-			if (changedDocument == null)
-				return;
-
-			var root = await changedDocument.GetSyntaxRootAsync().ConfigureAwait(false);
-
-			if (root == null || root.ContainsDiagnostics)
-				return;
-
-			_documentModel = new DocumentModel(_documentModel.WpfTextView, changedDocument);
-			BuildCodeMapAsync().Forget();
+			if (recalculateCodeMap == CodeMapRefreshMode.Recalculate)
+			{
+				_documentModel = new DocumentModel(_documentModel.WpfTextView, changedDocument);
+				BuildCodeMapAsync().Forget();
+			}	
 		}
 
 		private void ClearCodeMap()
@@ -281,7 +337,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			TreeViewModel tree = new TreeViewModel(this);
 
-			foreach (PXGraphEventSemanticModel graph in _documentModel.GraphModels)
+			foreach (GraphSemanticModelForCodeMap graph in _documentModel.GraphModels)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				var graphNodeVM = GraphNodeViewModel.Create(graph, tree, isExpanded: true, expandChildren: false);

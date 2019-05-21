@@ -102,7 +102,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 			if (memberNode == null)
 				return;
 
-			PXContext context = new PXContext(semanticModel.Compilation);
+			PXContext context = new PXContext(semanticModel.Compilation, Acuminator.Utilities.CodeAnalysisSettings.Default);
 
 			if (!context.IsPlatformReferenced)
 				return;
@@ -334,12 +334,9 @@ namespace Acuminator.Vsix.GoToDeclaration
 			SnapshotSpan selectedSpan = new SnapshotSpan(textView.TextSnapshot, textSpan.Start, textSpan.Length);
 			ExpandAllRegionsContainingSpan(selectedSpan, textView);
 			CaretPosition newCaretPosition = textView.MoveCaretTo(textSpan.Start);                      
-
-			if (!textView.TextViewLines.ContainsBufferPosition(newCaretPosition.BufferPosition))
-			{
-				textView.ViewScroller.EnsureSpanVisible(selectedSpan, EnsureSpanVisibleOptions.AlwaysCenter);		
-			}
-
+		
+			textView.ViewScroller.EnsureSpanVisible(selectedSpan, EnsureSpanVisibleOptions.AlwaysCenter);		
+			
 			textView.Selection.Select(selectedSpan, isReversed: false);
 		}
 

@@ -29,7 +29,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 			}
 
 			var classTypeSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclaration, context.CancellationToken);
-			if (classTypeSymbol == null || !classTypeSymbol.IsDac(pxContext))
+			if (classTypeSymbol == null || !classTypeSymbol.IsDAC(pxContext))
 			{
 				return;
 			}
@@ -67,7 +67,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 				Descriptors.PX1094_DacShouldHaveUiAttribute,
 				classDeclaration.Identifier.GetLocation());
 
-			context.ReportDiagnosticWithSuppressionCheck(diagnostic);
+			context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
 		}
 	}
 }

@@ -10,6 +10,8 @@ namespace Acuminator.Vsix
 {
 	public class GeneralOptionsPage : DialogPage
 	{
+		public const string PageTitle = "General";
+
 		private const string AllSettings = "All";
 		private const string ColoringCategoryName = "BQL Coloring";
 		private const string OutliningCategoryName = "BQL Outlining";
@@ -19,8 +21,7 @@ namespace Acuminator.Vsix
 		private bool _codeAnalysisSettingsChanged;
 		public event EventHandler<SettingChangedEventArgs> ColoringSettingChanged;
 		public event EventHandler<SettingChangedEventArgs> CodeAnalysisSettingChanged;
-		public const string PageTitle = "General";
-
+		
 		private bool _coloringEnabled = true;
 
 		[CategoryFromResources(nameof(VSIXResource.Category_Coloring), ColoringCategoryName)]
@@ -147,7 +148,43 @@ namespace Acuminator.Vsix
 			}
 		}
 
-		private bool _recursiveAnalysisEnabled = CodeAnalysisSettings.Default.RecursiveAnalysisEnabled;
+		private bool _staticAnalysisEnabled = CodeAnalysisSettings.DefaultStaticAnalysisEnabled;
+
+		[CategoryFromResources(nameof(VSIXResource.Category_CodeAnalysis), CodeAnalysisCategoryName)]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_StaticAnalysisEnabled_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_StaticAnalysisEnabled_Description))]
+		public bool StaticAnalysisEnabled
+		{
+			get => _staticAnalysisEnabled;
+			set
+			{
+				if (_staticAnalysisEnabled != value)
+				{
+					_staticAnalysisEnabled = value;
+					_codeAnalysisSettingsChanged = true;
+				}
+			}
+		}
+
+		private bool _suppressionMechanismEnabled = CodeAnalysisSettings.DefaultSuppressionMechanismEnabled;
+
+		[CategoryFromResources(nameof(VSIXResource.Category_CodeAnalysis), CodeAnalysisCategoryName)]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_SuppressionMechanismEnabled_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_SuppressionMechanismEnabled_Description))]
+		public bool SuppressionMechanismEnabled
+		{
+			get => _suppressionMechanismEnabled;
+			set
+			{
+				if (_suppressionMechanismEnabled != value)
+				{
+					_suppressionMechanismEnabled = value;
+					_codeAnalysisSettingsChanged = true;
+				}
+			}
+		}
+
+		private bool _recursiveAnalysisEnabled = CodeAnalysisSettings.DefaultRecursiveAnalysisEnabled;
 
 		[CategoryFromResources(nameof(VSIXResource.Category_CodeAnalysis), CodeAnalysisCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_RecursiveAnalysisEnabled_Title))]
@@ -165,7 +202,7 @@ namespace Acuminator.Vsix
 			}
 		}
 
-		private bool _isvSpecificAnalyzersEnabled = CodeAnalysisSettings.Default.IsvSpecificAnalyzersEnabled;
+		private bool _isvSpecificAnalyzersEnabled = CodeAnalysisSettings.DefaultISVSpecificAnalyzersEnabled;
 
 		[CategoryFromResources(nameof(VSIXResource.Category_CodeAnalysis), CodeAnalysisCategoryName)]
 		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_IsvSpecificAnalyzersEnabled_Title))]
@@ -193,8 +230,11 @@ namespace Acuminator.Vsix
 			_pxGraphColoringEnabled = true;
 			_colorOnlyInsideBQL = false;
 
-			_recursiveAnalysisEnabled = CodeAnalysisSettings.Default.RecursiveAnalysisEnabled;
-
+			_staticAnalysisEnabled = CodeAnalysisSettings.DefaultStaticAnalysisEnabled;
+			_suppressionMechanismEnabled = CodeAnalysisSettings.DefaultSuppressionMechanismEnabled;
+			_recursiveAnalysisEnabled = CodeAnalysisSettings.DefaultRecursiveAnalysisEnabled;
+			_isvSpecificAnalyzersEnabled = CodeAnalysisSettings.DefaultISVSpecificAnalyzersEnabled;
+			
 			_colorSettingsChanged = false;
 			_codeAnalysisSettingsChanged = false;
 

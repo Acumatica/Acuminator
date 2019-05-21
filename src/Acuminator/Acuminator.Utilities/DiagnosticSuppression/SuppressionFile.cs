@@ -8,6 +8,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 {
 	public class SuppressionFile
 	{
+        private const string RootEmelent = "suppressions";
 		private const string SuppressMessageElement = "suppressMessage";
 		private const string IdAttribute = "id";
 		private const string TargetElement = "target";
@@ -87,17 +88,32 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			Messages.Add(message);
 		}
 
+        private static void AddMessagesToDocument(XDocument document, IEnumerable<SuppressMessage> messages)
+        {
+            var sortedMessages = messages.Order();
+
+            foreach (var message in sortedMessages)
+            {
+                document.Root.Add(ElementFromMessage(message));
+            }
+        }
+
+        public static XDocument MessagesToDocument(IEnumerable<SuppressMessage> messages)
+        {
+            var root = new XElement(RootEmelent);
+            var document = new XDocument(root);
+
+            AddMessagesToDocument(document, messages);
+
+            return document;
+        }
+
 		internal XDocument MessagesToDocument()
 		{
 			var document = XDocument.Load(Path);
-			var root = document.Root;
 
-			root.RemoveNodes();
-
-			foreach (var message in Messages)
-			{
-				root.Add(ElementFromMessage(message));
-			}
+			document.Root.RemoveNodes();
+            AddMessagesToDocument(document, Messages);
 
 			return document;
 		}
@@ -120,7 +136,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			return new SuppressMessage(id, target, syntaxNode);
 		}
 
-		private static HashSet<SuppressMessage> LoadMessages(ISuppressionFileSystemService fileSystemService, string path)
+		public static HashSet<SuppressMessage> LoadMessages(ISuppressionFileSystemService fileSystemService, string path)
 		{
 			var document = fileSystemService.Load(path);
 

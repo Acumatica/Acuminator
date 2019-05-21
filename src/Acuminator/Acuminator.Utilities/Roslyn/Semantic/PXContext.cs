@@ -11,6 +11,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 	public class PXContext
 	{
 		public bool IsAcumatica2018R2 { get; }
+		public bool IsAcumatica2019R1 { get; }
+
+		public CodeAnalysisSettings CodeAnalysisSettings { get; }
 
 		/// <summary>
 		/// Is platform referenced in the current solution. If not then diagnostic can't run on the solution.
@@ -21,6 +24,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		private readonly Lazy<BQLSymbols> _bql;
 		public BQLSymbols BQL => _bql.Value;
+
+		private readonly Lazy<BqlDataTypeSymbols> _bqlTypes;
+		public BqlDataTypeSymbols BqlTypes => _bqlTypes.Value;
 
 		private readonly Lazy<EventSymbols> _events;
 		public EventSymbols Events => _events.Value;
@@ -82,6 +88,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public INamedTypeSymbol PXAdapterType => Compilation.GetTypeByMetadataName(typeof(PXAdapter).FullName);
 		public INamedTypeSymbol IBqlTableType => Compilation.GetTypeByMetadataName(typeof(IBqlTable).FullName);
 		public INamedTypeSymbol IBqlFieldType => Compilation.GetTypeByMetadataName(typeof(IBqlField).FullName);
+		public INamedTypeSymbol BqlConstantType => Compilation.GetTypeByMetadataName(typeof(Constant<>).FullName);
 
 		public INamedTypeSymbol IPXResultsetType => Compilation.GetTypeByMetadataName(typeof(IPXResultset).FullName);
 		public INamedTypeSymbol PXResult => Compilation.GetTypeByMetadataName(typeof(PXResult).FullName);
@@ -101,14 +108,18 @@ namespace Acuminator.Utilities.Roslyn.Semantic
                                                                .OfType<IMethodSymbol>()
                                                                .ToImmutableArray();
 
-        public PXContext(Compilation compilation)
+		public INamedTypeSymbol IImplementType => Compilation.GetTypeByMetadataName("PX.Common.IImplement`1");
+
+		public PXContext(Compilation compilation, CodeAnalysisSettings codeAnalysisSettings)
 		{
 			compilation.ThrowOnNull(nameof(compilation));
 
+			CodeAnalysisSettings = codeAnalysisSettings ?? CodeAnalysisSettings.Default;
 			Compilation = compilation;
 			IsPlatformReferenced = compilation.GetTypeByMetadataName(TypeNames.PXGraphTypeName) != null;
 
 			_bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation));
+			_bqlTypes = new Lazy<BqlDataTypeSymbols>(() => new BqlDataTypeSymbols(Compilation));
 			_events = new Lazy<EventSymbols>(() => new EventSymbols(Compilation));
 			_fieldAttributes = new Lazy<FieldAttributeSymbols>(() => new FieldAttributeSymbols(Compilation));
 			_systemActionTypes = new Lazy<PXSystemActionSymbols>(() => new PXSystemActionSymbols(Compilation));
@@ -128,6 +139,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			_uiPresentationLogicMethods = new Lazy<ImmutableHashSet<IMethodSymbol>>(GetUiPresentationLogicMethods);
 
             IsAcumatica2018R2 = PXSelectBase2018R2NewType != null;
+			IsAcumatica2019R1 = IImplementType != null;
 		}
 
 		private ImmutableHashSet<IMethodSymbol> GetUiPresentationLogicMethods()

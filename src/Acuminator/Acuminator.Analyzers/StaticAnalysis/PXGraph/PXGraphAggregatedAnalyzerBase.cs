@@ -15,8 +15,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 	{
 		public abstract ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; }
 
-		public abstract void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel pxGraph);
+		public abstract void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph);
 
-		public virtual bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel graph) => true;
+		public virtual bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) => true;
 	}
 }

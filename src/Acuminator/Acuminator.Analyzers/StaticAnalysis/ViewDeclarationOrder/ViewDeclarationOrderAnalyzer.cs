@@ -26,12 +26,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 		/// Starting from the Acumatica 2018R2 version a new method is used to initialize caches with explicit ordering of caches.
 		/// </summary>
 		/// <returns/>
-		public override bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel graph) =>
+		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) =>
 			pxContext.PXGraph.InitCacheMapping != null && 
 			graph.ViewsByNames.Count > 0;
 
-		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, CodeAnalysisSettings settings,
-							PXGraphSemanticModel graphSemanticModel)
+		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphSemanticModel graphSemanticModel)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
@@ -44,7 +43,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 			{
 				symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-				AnalyzeDacViewsForNumberOfCaches(graphSemanticModel, symbolContext, dacViews, viewsGroupedByDAC);
+				AnalyzeDacViewsForNumberOfCaches(graphSemanticModel, symbolContext, pxContext, dacViews, viewsGroupedByDAC);
 			}
 		}
 
@@ -68,7 +67,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 		}
 
 		private static void AnalyzeDacViewsForNumberOfCaches(PXGraphSemanticModel graphSemanticModel, SymbolAnalysisContext symbolContext,
-															 IGrouping<ITypeSymbol, DataViewInfo> dacViews,
+															 PXContext pxContext, IGrouping<ITypeSymbol, DataViewInfo> dacViews,
 															 ILookup<ITypeSymbol, DataViewInfo> viewsGroupedByDAC)
 		{
 			var dacViewsDeclaredInGraph = dacViews.Where(view => GraphContainsViewDeclaration(graphSemanticModel, view));
@@ -91,13 +90,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 			var baseDacViewsDeclaredInGraph = viewsGroupedByDAC[baseDac].Where(view => GraphContainsViewDeclaration(graphSemanticModel, view));
 			var viewsToShowDiagnostic = dacViewsDeclaredInGraph.Concat(baseDacViewsDeclaredInGraph);
 
-			ReportDiagnostic(descriptor, symbolContext, viewsToShowDiagnostic, dac, baseDac);
+			ReportDiagnostic(descriptor, symbolContext, pxContext, viewsToShowDiagnostic, dac, baseDac);
 		}	
 
 		private static bool GraphContainsViewDeclaration(PXGraphSemanticModel graphSemanticModel, DataViewInfo viewInfo) =>
 			graphSemanticModel.Symbol.OriginalDefinition?.Equals(viewInfo.Symbol.ContainingType?.OriginalDefinition) ?? false;
 
-		private static void ReportDiagnostic(DiagnosticDescriptor descriptor, SymbolAnalysisContext symbolContext, 
+		private static void ReportDiagnostic(DiagnosticDescriptor descriptor, SymbolAnalysisContext symbolContext, PXContext pxContext,
 											 IEnumerable<DataViewInfo> viewsToShowDiagnostic, ITypeSymbol dac, ITypeSymbol baseDac)
 		{
 			foreach (DataViewInfo view in viewsToShowDiagnostic)
@@ -107,7 +106,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder
 				if (viewLocation == null)
 					continue;
 
-				symbolContext.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(descriptor, viewLocation, dac.Name, baseDac.Name));
+				symbolContext.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(descriptor, viewLocation, dac.Name, baseDac.Name), pxContext.CodeAnalysisSettings);
 			}		
 		}
 	}

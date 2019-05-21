@@ -18,11 +18,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidViewUsageInProcessingDelega
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1088_InvalidViewUsageInProcessingDelegate);
 
-		public override bool ShouldAnalyze(PXContext pxContext, CodeAnalysisSettings settings, PXGraphSemanticModel graph) =>
-			graph.IsProcessing;
+		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) => graph.IsProcessing;
 
-		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings,
-									 PXGraphSemanticModel pxGraph)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -52,10 +50,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidViewUsageInProcessingDelega
         {
             private readonly SymbolAnalysisContext _context;
             private readonly PXContext _pxContext;
-			private readonly Dictionary<INamedTypeSymbol, bool> _graphProcessingDictionary = new Dictionary<INamedTypeSymbol, bool>();
+			private readonly Dictionary<ITypeSymbol, bool> _graphProcessingDictionary = new Dictionary<ITypeSymbol, bool>();
 
             public Walker(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
-                : base(context.Compilation, context.CancellationToken)
+                : base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
             {
 				pxGraph.ThrowOnNull(nameof(pxGraph));
 

@@ -1,15 +1,19 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes;
+using Acuminator.Analyzers.StaticAnalysis.ActionHandlerReturnType;
 using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
 using Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler;
 using Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate;
 using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
 using Acuminator.Analyzers.StaticAnalysis.DatabaseQueries;
+using Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature;
 using Acuminator.Analyzers.StaticAnalysis.InvalidViewUsageInProcessingDelegate;
 using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
+using Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac;
 using Acuminator.Analyzers.StaticAnalysis.PXActionExecution;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization;
 using Acuminator.Analyzers.StaticAnalysis.SavingChanges;
 using Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions;
+using Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName;
 using Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic;
 using Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder;
 using Acuminator.Utilities;
@@ -41,19 +45,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
             new InvalidViewUsageInProcessingDelegateAnalyzer(),
             new UiPresentationLogicInActionHandlersAnalyzer(),
 			new ViewDeclarationOrderAnalyzer(),
-			new ActionHandlerAttributesAnalyzer())
+			new NoPrimaryViewForPrimaryDacAnalyzer(),
+			new ActionHandlerAttributesAnalyzer(),
+            new ActionHandlerReturnTypeAnalyzer(),
+            new InvalidPXActionSignatureAnalyzer(),
+			new TypoInViewDelegateNameAnalyzer())
         {
         }
 
         /// <summary>
         /// Constructor for the unit tests.
         /// </summary>
-        public PXGraphAnalyzer(CodeAnalysisSettings settings, params IPXGraphAnalyzer[] innerAnalyzers)
-            : base(settings, innerAnalyzers)
+        public PXGraphAnalyzer(CodeAnalysisSettings settings, params IPXGraphAnalyzer[] innerAnalyzers) : base(settings, innerAnalyzers)
         {
         }
 
-		protected override void AnalyzeSymbol(SymbolAnalysisContext context, PXContext pxContext, CodeAnalysisSettings settings)
+		protected override void AnalyzeSymbol(SymbolAnalysisContext context, PXContext pxContext)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -62,17 +69,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 				return;
 			}
 
-			var inferredGraphs = PXGraphSemanticModel.InferModels(pxContext, type, context.CancellationToken);
+			ParallelOptions parallelOptions = new ParallelOptions
+			{
+				CancellationToken = context.CancellationToken
+			};
 
+			var inferredGraphs = PXGraphSemanticModel.InferModels(pxContext, type, context.CancellationToken);
+			
 			foreach (var graph in inferredGraphs)
 			{
-				Parallel.ForEach(_innerAnalyzers, innerAnalyzer =>
+				Parallel.ForEach(_innerAnalyzers, parallelOptions, innerAnalyzer =>
 				{
 					context.CancellationToken.ThrowIfCancellationRequested();
 
-					if (innerAnalyzer.ShouldAnalyze(pxContext, settings, graph))
+					if (innerAnalyzer.ShouldAnalyze(pxContext, graph))
 					{
-						innerAnalyzer.Analyze(context, pxContext, settings, graph);
+						innerAnalyzer.Analyze(context, pxContext, graph);
 					}
 				});
 			}

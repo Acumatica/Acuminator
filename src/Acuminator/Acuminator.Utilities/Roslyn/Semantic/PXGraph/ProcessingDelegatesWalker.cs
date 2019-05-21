@@ -23,7 +23,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			new Dictionary<string, List<ProcessingDelegateInfo>>();
 
 		public ProcessingDelegatesWalker(PXContext pxContext, ImmutableHashSet<ISymbol> processingViewSymbols, CancellationToken cancellation)
-			: base(pxContext.Compilation, cancellation)
+			: base(pxContext.Compilation, cancellation, pxContext.CodeAnalysisSettings)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 			processingViewSymbols.ThrowOnNull(nameof(processingViewSymbols));

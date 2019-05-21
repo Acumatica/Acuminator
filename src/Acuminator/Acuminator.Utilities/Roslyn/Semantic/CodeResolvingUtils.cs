@@ -63,8 +63,17 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			if (!genericName.IsValidForColoring())
 				return null;
 
-			if (genericName.IsStatic && TypeNames.PXUpdateBqlTypes.Contains(genericName.Name))
-				return PXCodeType.BqlCommand;
+			if (genericName.IsStatic)
+			{
+				if (TypeNames.PXUpdateBqlTypes.Contains(genericName.Name))
+				{
+					return PXCodeType.BqlCommand;
+				}
+				else if (genericName.IsFBQLJoin())
+				{
+					return PXCodeType.BqlOperator;
+				}
+			}
 
 			IEnumerable<ITypeSymbol> typeHierarchy = genericName.GetBaseTypes()
 																.ConcatStructList(genericName.AllInterfaces);
@@ -153,6 +162,33 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			return typeHierarchy.Contains(pxContext.PXSelectBase.Type) || typeHierarchy.Contains(pxContext.BQL.BqlCommand);
 		}
 
+		public static bool IsFbqlView(this ITypeSymbol typeSymbol, PXContext pxContext)
+		{
+			if (pxContext.BQL.PXViewOf_BasedOn == null || pxContext.BQL.PXViewOf == null || typeSymbol?.BaseType == null)
+				return false;
+			else if (!typeSymbol.BaseType.OriginalDefinition.Equals(pxContext.BQL.PXViewOf_BasedOn))
+			{
+				return false;
+			}
+
+			return typeSymbol.BaseType.ContainingType?.InheritsFromOrEqualsGeneric(pxContext.BQL.PXViewOf) ?? false;
+		}
+
+		public static bool IsFbqlCommand(this ITypeSymbol typeSymbol)
+		{
+			if (!typeSymbol.IsValidForColoring(checkForNotColoredTypes: false))
+				return false;
+			else if (typeSymbol.IsStatic)
+				return false;
+
+			List<string> typeHierarchyNames = typeSymbol.GetBaseTypesAndThis()
+														.Select(type => type.Name)
+														.ToList();
+
+			return typeHierarchyNames.Contains(TypeNames.FbqlSelect) || 
+				   typeHierarchyNames.Contains(TypeNames.FbqlCommand);
+		}
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsBqlParameter(this ITypeSymbol typeSymbol)
 		{
@@ -178,6 +214,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		{
 			if (!typeSymbol.IsValidForColoring(checkForNotColoredTypes: false))
 				return false;
+			else if (typeSymbol.IsFBQLJoin())
+				return true;
 
 			foreach (var interfaceSymbol in typeSymbol.AllInterfaces)
 			{
@@ -194,25 +232,41 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			if (!typeSymbol.IsValidForColoring())
 				return false;
 
-			return typeSymbol.ImplementsInterface(TypeNames.IBqlTable);
+			if (typeSymbol.ImplementsInterface(TypeNames.IBqlTable))    //Should work for named types and type parameters in most cases
+				return true;
+			else if (typeSymbol is ITypeParameterSymbol typeParameterSymbol)    //fallback for type parameters when Roslyn can't correctly determine interfaces (see ATR-376)
+			{
+				return typeParameterSymbol.GetAllConstraintTypes()
+										  .Any(constraint => constraint.ImplementsInterface(TypeNames.IBqlTable));
+			}
+			else
+				return false;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsDac(this ITypeSymbol typeSymbol, PXContext pxContext)
+		public static bool IsDAC(this ITypeSymbol typeSymbol, PXContext pxContext)
 		{
 			typeSymbol.ThrowOnNull(nameof(typeSymbol));
 
-			return typeSymbol.ImplementsInterface(pxContext.IBqlTableType);
+			if (typeSymbol.ImplementsInterface(pxContext.IBqlTableType))	//Should work for named types and type parameters in most cases
+				return true;
+			else if (typeSymbol is ITypeParameterSymbol typeParameterSymbol)    //fallback for type parameters when Roslyn can't correctly determine interfaces (see ATR-376)
+			{
+				return typeParameterSymbol.GetAllConstraintTypes()
+										  .Any(constraint => constraint.ImplementsInterface(pxContext.IBqlTableType));
+			}
+			else
+				return false;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsDacOrExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
+		public static bool IsDacOrExtension(this ITypeSymbol typeSymbol, PXContext pxContext) => typeSymbol.IsDAC(pxContext) || typeSymbol.IsDacExtension(pxContext);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsDacExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
         {
             typeSymbol.ThrowOnNull(nameof(typeSymbol));
-            pxContext.ThrowOnNull(nameof(pxContext));
-
-            return typeSymbol.ImplementsInterface(pxContext.IBqlTableType) ||
-                   typeSymbol.InheritsFrom(pxContext.PXCacheExtensionType);
+            return typeSymbol.InheritsFrom(pxContext.PXCacheExtensionType);
         }
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -230,7 +284,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			if (!typeSymbol.IsValidForColoring())
 				return false;
 
-			return typeSymbol.ImplementsInterface(TypeNames.IBqlField);
+			else if (typeSymbol.ImplementsInterface(TypeNames.IBqlField))       //Should work for named types and type parameters in most cases
+				return true;
+			else if (typeSymbol is ITypeParameterSymbol typeParameterSymbol)    //fallback for type parameters when Roslyn can't correctly determine interfaces (see ATR-376)
+				return typeParameterSymbol.GetAllConstraintTypes()
+										  .Any(constraint => constraint.ImplementsInterface(TypeNames.IBqlField));
+			else
+				return false;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -248,7 +308,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			if (!typeSymbol.IsValidForColoring() || (ruleOutBaseTypes && string.Equals(typeSymbol.Name, TypeNames.PXGraph)))
 				return false;
 
-			return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.PXGraph, includeInterfaces: false);
+			if (typeSymbol is ITypeParameterSymbol typeParameterSymbol)
+			{
+				return typeParameterSymbol.GetAllConstraintTypes(includeInterfaces: false)
+										  .Any(constraint => constraint.InheritsOrImplementsOrEquals(TypeNames.PXGraph, includeInterfaces: false));
+			}
+			else
+			{
+				return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.PXGraph, includeInterfaces: false);
+			}		
 		}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -257,10 +325,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic
             typeSymbol.ThrowOnNull(nameof(typeSymbol));
             pxContext.ThrowOnNull(nameof(pxContext));
 
-            return typeSymbol.InheritsFromOrEquals(pxContext.PXGraph.Type);
-        }
+			if (typeSymbol is ITypeParameterSymbol typeParameterSymbol)
+			{
+				return typeParameterSymbol.GetAllConstraintTypes(includeInterfaces: false)
+										  .Any(constraint => constraint.InheritsFromOrEquals(pxContext.PXGraph.Type));
+			}
+			else
+			{
+				return typeSymbol.InheritsFromOrEquals(pxContext.PXGraph.Type);
+			}
+		}
 
-        public static bool IsPXGraphExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsPXGraphExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
         {
             typeSymbol.ThrowOnNull(nameof(typeSymbol));
             pxContext.ThrowOnNull(nameof(pxContext));
@@ -269,14 +346,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsPXGraphOrExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
-        {
-            typeSymbol.ThrowOnNull(nameof(typeSymbol));
-            pxContext.ThrowOnNull(nameof(pxContext));
-
-            return typeSymbol.InheritsFromOrEquals(pxContext.PXGraph.Type) ||
-                   typeSymbol.InheritsFromOrEquals(pxContext.PXGraphExtensionType);
-        }
+        public static bool IsPXGraphOrExtension(this ITypeSymbol typeSymbol, PXContext pxContext) =>
+			typeSymbol.IsPXGraph(pxContext) || typeSymbol.IsPXGraphExtension(pxContext);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsPXAction(this ITypeSymbol typeSymbol)
@@ -338,6 +409,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		public static TextSpan? GetBqlOperatorOutliningTextSpan(this ITypeSymbol typeSymbol, GenericNameSyntax bqlOperatorNode)
 		{
+			if (typeSymbol.IsFBQLJoin())
+				return null;
+
 			List<string> operatorInterfaces = typeSymbol.AllInterfaces
 														.Select(type => type.Name)
 														.ToList();
@@ -406,6 +480,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				}
 			}
 		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsFBQLJoin(this ITypeSymbol typeSymbol) =>
+			typeSymbol is INamedTypeSymbol namedType && namedType.IsStatic && namedType.TypeArguments.Length == 1 &&
+			TypeNames.FBqlJoins.Contains(namedType.Name);
 
 		/// <summary>
 		/// Returns event handler type for the provided method symbol.

@@ -62,6 +62,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1012_PXActionOnNonPrimaryView { get; } =
 			Rule("PX1012", nameof(Resources.PX1012Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 
+        public static DiagnosticDescriptor PX1013_PXActionHandlerInvalidReturnType { get; } =
+            Rule("PX1013", nameof(Resources.PX1013Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
 		public static DiagnosticDescriptor PX1014_NonNullableTypeForBqlField { get; } = 
             Rule("PX1014", nameof(Resources.PX1014Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
@@ -111,11 +114,14 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1029_PXGraphUsageInDac { get; } =
 			Rule("PX1029", nameof(Resources.PX1029Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
-		public static DiagnosticDescriptor PX1030_DefaultAttibuteToExisitingRecords { get; } =
-			Rule("PX1030", nameof(Resources.PX1030TitleDefaultAttributeOnDacExtension).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+		public static DiagnosticDescriptor PX1030_DefaultAttibuteToExistingRecordsError { get; } =
+			Rule("PX1030", nameof(Resources.PX1030TitleDefaultAttributeOnDacExtension).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
-		public static DiagnosticDescriptor PX1030_DefaultAttibuteToExisitingRecordsOnDAC { get; } =
-			Rule("PX1030", nameof(Resources.PX1030TitleDefaultAttributeOnDac).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+        public static DiagnosticDescriptor PX1030_DefaultAttibuteToExistingRecordsWarning { get; } =
+            Rule("PX1030", nameof(Resources.PX1030TitleDefaultAttributeOnDacExtension).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+
+        public static DiagnosticDescriptor PX1030_DefaultAttibuteToExistingRecordsOnDAC { get; } =
+			Rule("PX1030", nameof(Resources.PX1030TitleDefaultAttributeOnDac).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
         public static DiagnosticDescriptor PX1031_DacCannotContainInstanceMethods { get; } =
 			Rule("PX1031", nameof(Resources.PX1031Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
@@ -182,6 +188,12 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
         public static DiagnosticDescriptor PX1059_ChangesInPXCacheDuringPXGraphInitialization { get; } =
             Rule("PX1059", nameof(Resources.PX1059Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+		public static DiagnosticDescriptor PX1060_LegacyBqlField { get; } =
+			Rule("PX1060", nameof(Resources.PX1060Title).GetLocalized(), Category.Default, DiagnosticSeverity.Info);
+
+		public static DiagnosticDescriptor PX1061_LegacyBqlConstant { get; } =
+			Rule("PX1061", nameof(Resources.PX1061Title).GetLocalized(), Category.Default, DiagnosticSeverity.Info);
 
 		public static DiagnosticDescriptor PX1070_UiPresentationLogicInEventHandlers { get; } =
 			Rule("PX1070", nameof(Resources.PX1070Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);

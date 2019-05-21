@@ -13,13 +13,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class RowEventCategoryNodeViewModel : GraphEventCategoryNodeViewModel
 	{
+		public override bool IsFieldEvent => false;
+
 		public RowEventCategoryNodeViewModel(GraphNodeViewModel graphViewModel, bool isExpanded) : 
 										base(graphViewModel, GraphMemberType.RowEvent, isExpanded)
 		{
 		}
-
-		protected override GraphEventNodeByDacConstructor EventNodeByDacConstructor { get; } =
-			(dacGroupVM, eventInfo) => new RowEventNodeViewModel(dacGroupVM, eventInfo);
 
 		protected override IEnumerable<GraphNodeSymbolItem> GetCategoryGraphNodeSymbols() =>
 			GraphSemanticModel.RowInsertingEvents
@@ -32,5 +31,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 							  .Concat(GraphSemanticModel.RowDeletedEvents)
 							  .Concat(GraphSemanticModel.RowPersistingEvents)
 							  .Concat(GraphSemanticModel.RowPersistedEvents);
-}
+
+		public override GraphMemberNodeViewModel CreateNewEventVM<TEventNodeParent>(TEventNodeParent eventNodeParent, GraphEventInfoBase eventInfo,
+																					bool isExpanded)
+		{
+			return eventNodeParent is DacEventsGroupingNodeViewModel dacGroupVM
+				? new RowEventNodeViewModel(dacGroupVM, eventInfo, isExpanded)
+				: base.CreateNewEventVM(eventNodeParent, eventInfo, isExpanded);
+		}
+	}
 }
