@@ -47,9 +47,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		#endregion
 
 		#region Events
-		public ImmutableDictionary<string, GraphEventInfo> CacheAttachedByName { get; }
-		public IEnumerable<GraphEventInfo> CacheAttachedEvents => CacheAttachedByName.Values;
-
 		public ImmutableDictionary<string, GraphEventInfo> RowSelectingByName { get; }
 		public IEnumerable<GraphEventInfo> RowSelectingEvents => RowSelectingByName.Values;
 
@@ -95,6 +92,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public ImmutableDictionary<string, GraphFieldEventInfo> FieldUpdatedByName { get; }
 		public IEnumerable<GraphFieldEventInfo> FieldUpdatedEvents => FieldUpdatedByName.Values;
 
+		public ImmutableDictionary<string, GraphFieldEventInfo> CacheAttachedByName { get; }
+		public IEnumerable<GraphFieldEventInfo> CacheAttachedEvents => CacheAttachedByName.Values;
+
 		public ImmutableDictionary<string, GraphFieldEventInfo> CommandPreparingByName { get; }
 		public IEnumerable<GraphFieldEventInfo> CommandPreparingEvents => CommandPreparingByName.Values;
 
@@ -113,25 +113,31 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			if (BaseGraphModel.Type != GraphType.None)
 			{
 				var eventsCollector = InitializeEvents();
+			
+				RowSelectingByName = GetRowEvents(eventsCollector, EventType.RowSelecting);
+				RowSelectedByName = GetRowEvents(eventsCollector, EventType.RowSelected);
 
-				CacheAttachedByName = GetEvents(eventsCollector, collector => collector.CacheAttachedEvents);
-				RowSelectingByName = GetEvents(eventsCollector, collector => collector.RowSelectingEvents);
-				RowSelectedByName = GetEvents(eventsCollector, collector => collector.RowSelectedEvents);
-				RowInsertingByName = GetEvents(eventsCollector, collector => collector.RowInsertingEvents);
-				RowInsertedByName = GetEvents(eventsCollector, collector => collector.RowInsertedEvents);
-				RowUpdatingByName = GetEvents(eventsCollector, collector => collector.RowUpdatingEvents);
-				RowUpdatedByName = GetEvents(eventsCollector, collector => collector.RowUpdatedEvents);
-				RowDeletingByName = GetEvents(eventsCollector, collector => collector.RowDeletingEvents);
-				RowDeletedByName = GetEvents(eventsCollector, collector => collector.RowDeletedEvents);
-				RowPersistingByName = GetEvents(eventsCollector, collector => collector.RowPersistingEvents);
-				RowPersistedByName = GetEvents(eventsCollector, collector => collector.RowPersistedEvents);
-				FieldSelectingByName = GetEvents(eventsCollector, collector => collector.FieldSelectingEvents);
-				FieldDefaultingByName = GetEvents(eventsCollector, collector => collector.FieldDefaultingEvents);
-				FieldVerifyingByName = GetEvents(eventsCollector, collector => collector.FieldVerifyingEvents);
-				FieldUpdatingByName = GetEvents(eventsCollector, collector => collector.FieldUpdatingEvents);
-				FieldUpdatedByName = GetEvents(eventsCollector, collector => collector.FieldUpdatedEvents);
-				CommandPreparingByName = GetEvents(eventsCollector, collector => collector.CommandPreparingEvents);
-				ExceptionHandlingByName = GetEvents(eventsCollector, collector => collector.ExceptionHandlingEvents);
+				RowInsertingByName = GetRowEvents(eventsCollector, EventType.RowInserting);
+				RowInsertedByName = GetRowEvents(eventsCollector, EventType.RowInserted);
+
+				RowUpdatingByName = GetRowEvents(eventsCollector, EventType.RowUpdating);
+				RowUpdatedByName = GetRowEvents(eventsCollector, EventType.RowUpdated);
+
+				RowDeletingByName = GetRowEvents(eventsCollector, EventType.RowDeleting);
+				RowDeletedByName = GetRowEvents(eventsCollector, EventType.RowDeleted);
+
+				RowPersistingByName = GetRowEvents(eventsCollector, EventType.RowPersisting);
+				RowPersistedByName = GetRowEvents(eventsCollector, EventType.RowPersisted);
+
+				FieldSelectingByName = GetFieldEvents(eventsCollector, EventType.FieldSelecting);
+				FieldDefaultingByName = GetFieldEvents(eventsCollector, EventType.FieldDefaulting);
+				FieldVerifyingByName = GetFieldEvents(eventsCollector, EventType.FieldVerifying);
+				FieldUpdatingByName = GetFieldEvents(eventsCollector, EventType.FieldUpdating);
+				FieldUpdatedByName = GetFieldEvents(eventsCollector, EventType.FieldUpdated);
+
+				CacheAttachedByName = GetFieldEvents(eventsCollector, EventType.CacheAttached);
+				CommandPreparingByName = GetFieldEvents(eventsCollector, EventType.CommandPreparing);
+				ExceptionHandlingByName = GetFieldEvents(eventsCollector, EventType.ExceptionHandling);
 			}
 		}
 
@@ -186,15 +192,24 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return baseTypes.SelectMany(t => t.GetMembers().OfType<IMethodSymbol>());
 		}
 
-		private ImmutableDictionary<string, TEventInfoType> GetEvents<TEventInfoType>(EventsCollector eventsCollector, 
-																					  Func<EventsCollector, GraphEventsCollection<TEventInfoType>> selector)
-		where TEventInfoType : GraphEventInfoBase<TEventInfoType>
+		private ImmutableDictionary<string, GraphEventInfo> GetRowEvents(EventsCollector eventsCollector, EventType eventType)
 		{
 			if (Type == GraphType.None)
-				return ImmutableDictionary.Create<string, TEventInfoType>(StringComparer.OrdinalIgnoreCase);
+				return ImmutableDictionary.Create<string, GraphEventInfo>();
 
-			var rawCollection = selector(eventsCollector);
-			return rawCollection.ToImmutableDictionary(kvp => kvp.Key, kvp => kvp.Value);
+			GraphEventsCollection<GraphEventInfo> rawCollection = eventsCollector.GetRowEvents(eventType);
+			return rawCollection.ToImmutableDictionary(kvp => kvp.Key, kvp => kvp.Value) ?? 
+				   ImmutableDictionary.Create<string, GraphEventInfo>();
+		}
+
+		private ImmutableDictionary<string, GraphFieldEventInfo> GetFieldEvents(EventsCollector eventsCollector, EventType eventType)
+		{
+			if (Type == GraphType.None)
+				return ImmutableDictionary.Create<string, GraphFieldEventInfo>();
+
+			GraphEventsCollection<GraphFieldEventInfo> rawCollection = eventsCollector.GetFieldEvents(eventType);
+			return rawCollection.ToImmutableDictionary(kvp => kvp.Key, kvp => kvp.Value) ??
+				   ImmutableDictionary.Create<string, GraphFieldEventInfo>();
 		}
 	}
 }

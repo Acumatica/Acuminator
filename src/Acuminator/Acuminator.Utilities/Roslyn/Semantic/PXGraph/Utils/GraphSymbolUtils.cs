@@ -220,6 +220,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				case EventType.FieldVerifying:
 				case EventType.FieldUpdating:
 				case EventType.FieldUpdated:
+				case EventType.CacheAttached:
 				case EventType.CommandPreparing:
 				case EventType.ExceptionHandling:
 					return true;
