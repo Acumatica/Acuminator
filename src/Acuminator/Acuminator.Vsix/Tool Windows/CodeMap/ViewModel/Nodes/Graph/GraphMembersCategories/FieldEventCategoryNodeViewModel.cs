@@ -13,6 +13,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class FieldEventCategoryNodeViewModel : GraphEventCategoryNodeViewModel
 	{
+		public override bool IsFieldEvent => true;
+
 		public FieldEventCategoryNodeViewModel(GraphNodeViewModel graphViewModel, bool isExpanded) :
 										  base(graphViewModel, GraphMemberType.FieldEvent, isExpanded)
 		{
@@ -25,7 +27,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 							  .Concat(GraphSemanticModel.FieldUpdatingEvents)
 							  .Concat(GraphSemanticModel.FieldUpdatedEvents);
 
-		public override GraphMemberNodeViewModel CreateNewEventVM<TEventNodeParent>(TEventNodeParent eventNodeParent, GraphEventInfo eventInfo,
+		public override GraphMemberNodeViewModel CreateNewEventVM<TEventNodeParent>(TEventNodeParent eventNodeParent, GraphEventInfoBase eventInfo,
 																					bool isExpanded)
 		{
 			return eventNodeParent is DacFieldEventsGroupingNodeViewModel dacFieldVM

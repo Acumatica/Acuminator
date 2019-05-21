@@ -22,7 +22,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 								  base(dacFieldVM?.GraphEventsCategoryVM, memberInfo, isExpanded)
 		{
 			DacFieldVM = dacFieldVM;
-			Name = memberInfo is GraphEventInfo eventInfo
+			Name = memberInfo is GraphRowEventInfo eventInfo
 				? eventInfo.EventType.ToString()
 				: MemberSymbol.Name;
 		}	

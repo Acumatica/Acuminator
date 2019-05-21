@@ -41,7 +41,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public static DacFieldEventsGroupingNodeViewModel Create(DacEventsGroupingNodeViewModel dacVM, string dacFieldName, 
-																 IEnumerable<GraphEventInfo> dacFieldEvents,
+																 IEnumerable<GraphFieldEventInfo> dacFieldEvents,
 																 bool isExpanded = false)
 		{
 			if (dacFieldEvents.IsNullOrEmpty() || dacFieldName.IsNullOrWhiteSpace())
@@ -53,7 +53,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return dacFieldVM;
 		}
 
-		protected virtual IEnumerable<GraphMemberNodeViewModel> GetDacFieldNodeChildren(IEnumerable<GraphEventInfo> dacFieldEvents,
+		protected virtual IEnumerable<GraphMemberNodeViewModel> GetDacFieldNodeChildren(IEnumerable<GraphFieldEventInfo> dacFieldEvents,
 																						bool isExpanded)
 		{
 			return dacFieldEvents.Select(eventInfo => GraphEventsCategoryVM.CreateNewEventVM(this, eventInfo, isExpanded))

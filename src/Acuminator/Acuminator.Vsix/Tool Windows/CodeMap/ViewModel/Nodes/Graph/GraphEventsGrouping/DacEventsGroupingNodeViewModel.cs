@@ -58,7 +58,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public static DacEventsGroupingNodeViewModel Create(GraphEventCategoryNodeViewModel graphEventsCategoryVM,
-															string dacName, IEnumerable<GraphEventInfo> graphEventsForDAC,
+															string dacName, IEnumerable<GraphEventInfoBase> graphEventsForDAC,
 															bool isDacExpanded = false, bool areChildrenExpanded = false)
 		{
 			if (graphEventsForDAC.IsNullOrEmpty() || dacName.IsNullOrWhiteSpace())
@@ -71,28 +71,29 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return dacVM;
 		}
 
-		protected virtual void FillDacNodeChildren(IEnumerable<GraphEventInfo> graphEventsForDAC, bool areChildrenExpanded)
+		protected virtual void FillDacNodeChildren(IEnumerable<GraphEventInfoBase> graphEventsForDAC, bool areChildrenExpanded)
 		{
-			var dacMembers = GraphEventsCategoryVM.CategoryType == GraphMemberType.FieldEvent
-				? GetDacFieldEvents(graphEventsForDAC, areChildrenExpanded)
-				: GetDacEventsDefault(graphEventsForDAC, areChildrenExpanded);
+			var dacMembers = GraphEventsCategoryVM.IsFieldEvent
+				? GetDacFieldEvents(graphEventsForDAC.OfType<GraphFieldEventInfo>(), areChildrenExpanded)
+				: GetDacRowEvents(graphEventsForDAC.OfType<GraphRowEventInfo>(), areChildrenExpanded);
 
 			Children.AddRange(dacMembers);
 			EventsCount = GetDacNodeEventsCount();
 			Children.CollectionChanged += DacChildrenChanged;
 		}
 
-		protected virtual IEnumerable<TreeNodeViewModel> GetDacEventsDefault(IEnumerable<GraphEventInfo> graphEventsForDAC, bool areChildrenExpanded)
+		protected virtual IEnumerable<TreeNodeViewModel> GetDacRowEvents(IEnumerable<GraphRowEventInfo> graphEventsForDAC, bool areChildrenExpanded)
 		{
 			return graphEventsForDAC.Select(eventInfo => GraphEventsCategoryVM.CreateNewEventVM(this, eventInfo, areChildrenExpanded))
 									.Where(graphMemberVM => graphMemberVM != null && !graphMemberVM.Name.IsNullOrEmpty())
 									.OrderBy(graphMemberVM => graphMemberVM.Name);
 		}
 
-		protected virtual IEnumerable<TreeNodeViewModel> GetDacFieldEvents(IEnumerable<GraphEventInfo> graphEventsForDAC, bool areChildrenExpanded)
+		protected virtual IEnumerable<TreeNodeViewModel> GetDacFieldEvents(IEnumerable<GraphFieldEventInfo> graphFieldEventsForDAC,
+																		   bool areChildrenExpanded)
 		{
-			return from eventInfo in graphEventsForDAC
-				   group eventInfo by GraphEventInfo.GetDacFieldNameForFieldEvent(eventInfo) 
+			return from eventInfo in graphFieldEventsForDAC
+				   group eventInfo by eventInfo.DacFieldName
 						into dacFieldEvents
 				   select DacFieldEventsGroupingNodeViewModel.Create(this, dacFieldEvents.Key, dacFieldEvents) 
 						into dacFieldNodeVM
