@@ -58,7 +58,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public static DacEventsGroupingNodeViewModel Create(GraphEventCategoryNodeViewModel graphEventsCategoryVM,
-															string dacName, IEnumerable<GraphEventInfo> graphEventsForDAC,
+															string dacName, IEnumerable<GraphRowEventInfo> graphEventsForDAC,
 															bool isDacExpanded = false, bool areChildrenExpanded = false)
 		{
 			if (graphEventsForDAC.IsNullOrEmpty() || dacName.IsNullOrWhiteSpace())
@@ -75,14 +75,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			var dacMembers = GraphEventsCategoryVM.CategoryType == GraphMemberType.FieldEvent
 				? GetDacFieldEvents(graphEventsForDAC.OfType<GraphFieldEventInfo>(), areChildrenExpanded)
-				: GetDacEventsDefault(graphEventsForDAC.OfType<GraphEventInfo>(), areChildrenExpanded);
+				: GetDacRowEvents(graphEventsForDAC.OfType<GraphRowEventInfo>(), areChildrenExpanded);
 
 			Children.AddRange(dacMembers);
 			EventsCount = GetDacNodeEventsCount();
 			Children.CollectionChanged += DacChildrenChanged;
 		}
 
-		protected virtual IEnumerable<TreeNodeViewModel> GetDacEventsDefault(IEnumerable<GraphEventInfo> graphEventsForDAC, bool areChildrenExpanded)
+		protected virtual IEnumerable<TreeNodeViewModel> GetDacRowEvents(IEnumerable<GraphRowEventInfo> graphEventsForDAC, bool areChildrenExpanded)
 		{
 			return graphEventsForDAC.Select(eventInfo => GraphEventsCategoryVM.CreateNewEventVM(this, eventInfo, areChildrenExpanded))
 									.Where(graphMemberVM => graphMemberVM != null && !graphMemberVM.Name.IsNullOrEmpty())

@@ -21,7 +21,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// 1) Perfomance - to avoid allocation of objects during retrieval of overrides hierarchy.  
 		/// 2) Overcomplicated architecture - the use of completely readonly objects will require a more complex <see cref="GraphEventsCollection{TEventInfoType}"/> class
 		/// which will know how to create a new <typeparamref name="TEventInfoType"/> event info. 
-		/// This will lead to a two concrete implementations of collection for <see cref="GraphEventInfo"/> and <see cref="GraphFieldEventInfo"/> 
+		/// This will lead to a two concrete implementations of collection for <see cref="GraphRowEventInfo"/> and <see cref="GraphFieldEventInfo"/> 
 		/// or to a hard to read code in the <see cref="PXGraphEventSemanticModel.EventsCollector"/> if we choose to pass the delegates to the generic collection class. 
 		/// </remarks>
 		public TEventInfoType BaseEvent

@@ -6,19 +6,19 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
 	/// <summary>
-	/// Information about the event in graph. Used for all events except events related to the DAC fields.
+	/// Information about the row event in graph.
 	/// </summary>
-	public class GraphEventInfo : GraphEventInfoBase<GraphEventInfo>
+	public class GraphRowEventInfo : GraphEventInfoBase<GraphRowEventInfo>
 	{
 		
-		public GraphEventInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder,
+		public GraphRowEventInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder,
 							  EventHandlerSignatureType signatureType, EventType eventType) :
 						 base(node, symbol, declarationOrder, signatureType, eventType)
 		{			
 		}
 
-		public GraphEventInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder,
-							  EventHandlerSignatureType signatureType, EventType eventType, GraphEventInfo baseInfo)
+		public GraphRowEventInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder,
+							  EventHandlerSignatureType signatureType, EventType eventType, GraphRowEventInfo baseInfo)
 					   : base(node, symbol, declarationOrder, signatureType, eventType, baseInfo)
 		{		
 		}

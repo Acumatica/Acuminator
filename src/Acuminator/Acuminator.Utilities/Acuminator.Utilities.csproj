@@ -122,7 +122,7 @@
     <Compile Include="Roslyn\Semantic\PXGraph\Infos\Events\Base\GraphEventInfoBaseGeneric.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Infos\Events\Base\GraphEventInfoBase.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Infos\Events\GraphFieldEventInfo.cs" />
-    <Compile Include="Roslyn\Semantic\PXGraph\Infos\Events\GraphEventInfo.cs" />
+    <Compile Include="Roslyn\Semantic\PXGraph\Infos\Events\GraphRowEventInfo.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\PXGraphEventSemanticModel.EventsCollector.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\PXGraphEventSemanticModel.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Utils\GraphActionSymbolUtils.cs" />

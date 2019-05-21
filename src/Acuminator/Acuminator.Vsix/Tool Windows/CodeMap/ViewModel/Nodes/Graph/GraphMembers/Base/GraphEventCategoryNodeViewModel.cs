@@ -41,7 +41,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected override void AddCategoryMembers()
 		{
 			var graphSemanticModel = GraphViewModel.GraphSemanticModel;
-			var graphCategoryEvents = GetCategoryGraphNodeSymbols()?.OfType<GraphEventInfo>()
+			var graphCategoryEvents = GetCategoryGraphNodeSymbols()?.OfType<GraphRowEventInfo>()
 																	.Where(eventInfo => eventInfo.SignatureType != EventHandlerSignatureType.None);
 			if (graphCategoryEvents.IsNullOrEmpty())
 				return;

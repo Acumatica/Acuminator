@@ -26,7 +26,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 								base(dacViewModel?.GraphEventsCategoryVM, memberInfo, isExpanded)
 		{
 			DacViewModel = dacViewModel;
-			Name = MemberInfo is GraphEventInfo eventInfo
+			Name = MemberInfo is GraphRowEventInfo eventInfo
 				? eventInfo.EventType.ToString()
 				: MemberSymbol.Name;
 		}	

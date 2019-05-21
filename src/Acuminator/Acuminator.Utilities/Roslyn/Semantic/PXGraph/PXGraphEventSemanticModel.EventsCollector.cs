@@ -18,23 +18,23 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			private readonly PXContext _pxContext;
 			private readonly PXGraphEventSemanticModel _graphEventSemanticModel;
 
-			private readonly Dictionary<EventType, GraphEventsCollection<GraphEventInfo>> _rowEvents = 
-				new Dictionary<EventType, GraphEventsCollection<GraphEventInfo>>
+			private readonly Dictionary<EventType, GraphEventsCollection<GraphRowEventInfo>> _rowEvents = 
+				new Dictionary<EventType, GraphEventsCollection<GraphRowEventInfo>>
 				{
-					[EventType.RowSelecting] = new GraphEventsCollection<GraphEventInfo>(),
-					[EventType.RowSelected] = new GraphEventsCollection<GraphEventInfo>(),
+					[EventType.RowSelecting] = new GraphEventsCollection<GraphRowEventInfo>(),
+					[EventType.RowSelected] = new GraphEventsCollection<GraphRowEventInfo>(),
 
-					[EventType.RowInserting] = new GraphEventsCollection<GraphEventInfo>(),
-					[EventType.RowInserted] = new GraphEventsCollection<GraphEventInfo>(),
+					[EventType.RowInserting] = new GraphEventsCollection<GraphRowEventInfo>(),
+					[EventType.RowInserted] = new GraphEventsCollection<GraphRowEventInfo>(),
 
-					[EventType.RowUpdating] = new GraphEventsCollection<GraphEventInfo>(),
-					[EventType.RowUpdated] = new GraphEventsCollection<GraphEventInfo>(),
+					[EventType.RowUpdating] = new GraphEventsCollection<GraphRowEventInfo>(),
+					[EventType.RowUpdated] = new GraphEventsCollection<GraphRowEventInfo>(),
 
-					[EventType.RowDeleting] = new GraphEventsCollection<GraphEventInfo>(),
-					[EventType.RowDeleted] = new GraphEventsCollection<GraphEventInfo>(),
+					[EventType.RowDeleting] = new GraphEventsCollection<GraphRowEventInfo>(),
+					[EventType.RowDeleted] = new GraphEventsCollection<GraphRowEventInfo>(),
 
-					[EventType.RowPersisting] = new GraphEventsCollection<GraphEventInfo>(),
-					[EventType.RowPersisted] = new GraphEventsCollection<GraphEventInfo>(),
+					[EventType.RowPersisting] = new GraphEventsCollection<GraphRowEventInfo>(),
+					[EventType.RowPersisted] = new GraphEventsCollection<GraphRowEventInfo>(),
 				};
 
 			private readonly Dictionary<EventType, GraphEventsCollection<GraphFieldEventInfo>> _fieldEvents =
@@ -58,8 +58,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				_graphEventSemanticModel = graphEventSemanticModel;
 			}
 
-			public GraphEventsCollection<GraphEventInfo> GetRowEvents(EventType eventType) =>
-				_rowEvents.TryGetValue(eventType, out GraphEventsCollection<GraphEventInfo> events)
+			public GraphEventsCollection<GraphRowEventInfo> GetRowEvents(EventType eventType) =>
+				_rowEvents.TryGetValue(eventType, out GraphEventsCollection<GraphRowEventInfo> events)
 					? events
 					: null;
 
@@ -76,7 +76,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				if (methodNode == null || !_rowEvents.TryGetValue(eventType, out var collectionToAdd))
 					return;
 
-				GraphEventInfo eventToAdd = new GraphEventInfo(methodNode, methodSymbol, declarationOrder, signatureType, eventType);
+				GraphRowEventInfo eventToAdd = new GraphRowEventInfo(methodNode, methodSymbol, declarationOrder, signatureType, eventType);
 				string eventKey = eventToAdd.GetEventGroupingKey();
 				collectionToAdd.AddEventInfo(eventKey, eventToAdd);
 			}
