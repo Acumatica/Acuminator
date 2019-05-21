@@ -4,7 +4,7 @@ using System.Linq;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.Symbols;
 using Microsoft.CodeAnalysis;
-using PX.Data;
+using static Acuminator.Utilities.Common.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic
 {
@@ -75,40 +75,40 @@ namespace Acuminator.Utilities.Roslyn.Semantic
         private readonly Lazy<ImmutableHashSet<IMethodSymbol>> _uiPresentationLogicMethods;
 		public ImmutableHashSet<IMethodSymbol> UiPresentationLogicMethods => _uiPresentationLogicMethods.Value;
 
-		public INamedTypeSymbol PXGraphExtensionType => Compilation.GetTypeByMetadataName(typeof(PXGraphExtension).FullName);
-		public INamedTypeSymbol PXCacheExtensionType => Compilation.GetTypeByMetadataName(typeof(PXCacheExtension).FullName);
-		public INamedTypeSymbol PXMappedCacheExtensionType => Compilation.GetTypeByMetadataName(typeof(PXMappedCacheExtension).FullName);
-		public INamedTypeSymbol PXLongOperation => Compilation.GetTypeByMetadataName(typeof(PXLongOperation).FullName);
+		public INamedTypeSymbol PXGraphExtensionType => Compilation.GetTypeByMetadataName(Types.PXGraphExtension);
+		public INamedTypeSymbol PXCacheExtensionType => Compilation.GetTypeByMetadataName(Types.PXCacheExtension);
+		public INamedTypeSymbol PXMappedCacheExtensionType => Compilation.GetTypeByMetadataName(Types.PXMappedCacheExtension);
+		public INamedTypeSymbol PXLongOperation => Compilation.GetTypeByMetadataName(Types.PXLongOperation);
 
 		public INamedTypeSymbol PXSelectBase2018R2NewType => Compilation.GetTypeByMetadataName(TypeNames.PXSelectBase_Acumatica2018R2);
 		public INamedTypeSymbol IViewConfig2018R2 => Compilation.GetTypeByMetadataName(TypeNames.IViewConfig_Acumatica2018R2);
 
-		public INamedTypeSymbol PXActionCollection => Compilation.GetTypeByMetadataName(typeof(PXActionCollection).FullName);
+		public INamedTypeSymbol PXActionCollection => Compilation.GetTypeByMetadataName(Types.PXActionCollection);
 
-		public INamedTypeSymbol PXAdapterType => Compilation.GetTypeByMetadataName(typeof(PXAdapter).FullName);
-		public INamedTypeSymbol IBqlTableType => Compilation.GetTypeByMetadataName(typeof(IBqlTable).FullName);
-		public INamedTypeSymbol IBqlFieldType => Compilation.GetTypeByMetadataName(typeof(IBqlField).FullName);
-		public INamedTypeSymbol BqlConstantType => Compilation.GetTypeByMetadataName(typeof(Constant<>).FullName);
+		public INamedTypeSymbol PXAdapterType => Compilation.GetTypeByMetadataName(Types.PXAdapter);
+		public INamedTypeSymbol IBqlTableType => Compilation.GetTypeByMetadataName(Types.IBqlTable);
+		public INamedTypeSymbol IBqlFieldType => Compilation.GetTypeByMetadataName(Types.IBqlField);
+		public INamedTypeSymbol BqlConstantType => Compilation.GetTypeByMetadataName(Types.Constant);
 
-		public INamedTypeSymbol IPXResultsetType => Compilation.GetTypeByMetadataName(typeof(IPXResultset).FullName);
-		public INamedTypeSymbol PXResult => Compilation.GetTypeByMetadataName(typeof(PXResult).FullName);
+		public INamedTypeSymbol IPXResultsetType => Compilation.GetTypeByMetadataName(Types.IPXResultset);
+		public INamedTypeSymbol PXResult => Compilation.GetTypeByMetadataName(Types.PXResult);
 
-		public INamedTypeSymbol PXFieldState => Compilation.GetTypeByMetadataName(typeof(PXFieldState).FullName);
-		public INamedTypeSymbol PXAttributeFamily => Compilation.GetTypeByMetadataName(typeof(PXAttributeFamilyAttribute).FullName);
+		public INamedTypeSymbol PXFieldState => Compilation.GetTypeByMetadataName(Types.PXFieldState);
+		public INamedTypeSymbol PXAttributeFamily => Compilation.GetTypeByMetadataName(Types.PXAttributeFamilyAttribute);
 
-        public INamedTypeSymbol IPXLocalizableList => Compilation.GetTypeByMetadataName(typeof(IPXLocalizableList).FullName);
-		public INamedTypeSymbol PXConnectionScope => Compilation.GetTypeByMetadataName(typeof(PXConnectionScope).FullName);
+        public INamedTypeSymbol IPXLocalizableList => Compilation.GetTypeByMetadataName(Types.IPXLocalizableList);
+		public INamedTypeSymbol PXConnectionScope => Compilation.GetTypeByMetadataName(Types.PXConnectionScope);
 
         public ImmutableArray<ISymbol> StringFormat => SystemTypes.String.GetMembers(nameof(string.Format));
         public ImmutableArray<ISymbol> StringConcat => SystemTypes.String.GetMembers(nameof(string.Concat));
-        public IMethodSymbol PXGraphExtensionInitializeMethod => PXGraphExtensionType.GetMembers(nameof(PXGraphExtension.Initialize))
+        public IMethodSymbol PXGraphExtensionInitializeMethod => PXGraphExtensionType.GetMembers(Types.PXGraphExtensionInitialize)
                                                                  .OfType<IMethodSymbol>()
                                                                  .First();
-        public ImmutableArray<IMethodSymbol> StartOperation => PXLongOperation.GetMembers(nameof(PX.Data.PXLongOperation.StartOperation))
+        public ImmutableArray<IMethodSymbol> StartOperation => PXLongOperation.GetMembers(Types.PXLongOperationStartOperation)
                                                                .OfType<IMethodSymbol>()
                                                                .ToImmutableArray();
 
-		public INamedTypeSymbol IImplementType => Compilation.GetTypeByMetadataName("PX.Common.IImplement`1");
+		public INamedTypeSymbol IImplementType => Compilation.GetTypeByMetadataName(Types.IImplementType);
 
 		public PXContext(Compilation compilation, CodeAnalysisSettings codeAnalysisSettings)
 		{

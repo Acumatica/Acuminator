@@ -1,13 +1,13 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using static Acuminator.Utilities.Common.Constants;
+
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
     public class PXGraphSymbols
     {
-		private const string InitCacheMappingMethodName = nameof(PX.Data.PXGraph.InitCacheMapping);
-
 		public class InstanceCreatedEventsSymbols
 	    {
 		    public INamedTypeSymbol Type { get; }
@@ -15,8 +15,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		    internal InstanceCreatedEventsSymbols(Compilation compilation)
 		    {
-			    Type = compilation.GetTypeByMetadataName(typeof(PX.Data.PXGraph.InstanceCreatedEvents).FullName);
-				AddHandler = Type.GetMethods(nameof(PX.Data.PXGraph.InstanceCreatedEvents.AddHandler)).First();
+			    Type = compilation.GetTypeByMetadataName(Types.PXGraphNames.InstanceCreatedEvents);
+				AddHandler = Type.GetMethods(Types.PXGraphNames.InstanceCreatedEventsAddHabdler).First();
 		    }
 	    }
 
@@ -29,18 +29,18 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 	    public InstanceCreatedEventsSymbols InstanceCreatedEvents { get; }
 
-		public IMethodSymbol InitCacheMapping => Type.GetMembers(InitCacheMappingMethodName)
+		public IMethodSymbol InitCacheMapping => Type.GetMembers(Types.PXGraphNames.InitCacheMapping)
 													 .OfType<IMethodSymbol>()
 													 .FirstOrDefault(method => method.ReturnsVoid && method.Parameters.Length == 1);
 
 		internal PXGraphSymbols(Compilation compilation)
         {
-            Type = compilation.GetTypeByMetadataName(typeof(PX.Data.PXGraph).FullName);
-			GenericTypeGraph = compilation.GetTypeByMetadataName(typeof(PX.Data.PXGraph<>).FullName);
-			GenericTypeGraphDac = compilation.GetTypeByMetadataName(typeof(PX.Data.PXGraph<,>).FullName);
-			GenericTypeGraphDacField = compilation.GetTypeByMetadataName(typeof(PX.Data.PXGraph<,,>).FullName);
+            Type = compilation.GetTypeByMetadataName(Types.PXGraph);
+			GenericTypeGraph = compilation.GetTypeByMetadataName(Types.PXGraph1);
+			GenericTypeGraphDac = compilation.GetTypeByMetadataName(Types.PXGraph2);
+			GenericTypeGraphDacField = compilation.GetTypeByMetadataName(Types.PXGraph3);
 
-			CreateInstance = Type.GetMethods(nameof(PX.Data.PXGraph.CreateInstance));
+			CreateInstance = Type.GetMethods(Types.PXGraphNames.CreateInstance);
 			InstanceCreatedEvents = new InstanceCreatedEventsSymbols(compilation);
         }
     }

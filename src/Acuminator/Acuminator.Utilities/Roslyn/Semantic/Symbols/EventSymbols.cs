@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
-using PX.Data;
+using static Acuminator.Utilities.Common.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -25,51 +25,51 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		private readonly Lazy<IReadOnlyDictionary<(EventType, EventHandlerSignatureType), INamedTypeSymbol>> _eventHandlerSignatureTypeMap;
 		public IReadOnlyDictionary<(EventType, EventHandlerSignatureType), INamedTypeSymbol> EventHandlerSignatureTypeMap => _eventHandlerSignatureTypeMap.Value;
 
-		public INamedTypeSymbol PXRowSelectingEventArgs => _compilation.GetTypeByMetadataName(typeof(PXRowSelectingEventArgs).FullName);
-		public INamedTypeSymbol PXRowSelectedEventArgs => _compilation.GetTypeByMetadataName(typeof(PXRowSelectedEventArgs).FullName);
-		public INamedTypeSymbol PXRowInsertingEventArgs => _compilation.GetTypeByMetadataName(typeof(PXRowInsertingEventArgs).FullName);
-		public INamedTypeSymbol PXRowInsertedEventArgs => _compilation.GetTypeByMetadataName(typeof(PXRowInsertedEventArgs).FullName);
-		public INamedTypeSymbol PXRowUpdatingEventArgs => _compilation.GetTypeByMetadataName(typeof(PXRowUpdatingEventArgs).FullName);
-		public INamedTypeSymbol PXRowUpdatedEventArgs => _compilation.GetTypeByMetadataName(typeof(PXRowUpdatedEventArgs).FullName);
-		public INamedTypeSymbol PXRowDeletingEventArgs => _compilation.GetTypeByMetadataName(typeof(PXRowDeletingEventArgs).FullName);
-		public INamedTypeSymbol PXRowDeletedEventArgs => _compilation.GetTypeByMetadataName(typeof(PXRowDeletedEventArgs).FullName);
-		public INamedTypeSymbol PXRowPersistingEventArgs => _compilation.GetTypeByMetadataName(typeof(PXRowPersistingEventArgs).FullName);
-		public INamedTypeSymbol PXRowPersistedEventArgs => _compilation.GetTypeByMetadataName(typeof(PXRowPersistedEventArgs).FullName);
+		public INamedTypeSymbol PXRowSelectingEventArgs => _compilation.GetTypeByMetadataName(Types.PXRowSelectingEventArgs);
+		public INamedTypeSymbol PXRowSelectedEventArgs => _compilation.GetTypeByMetadataName(Types.PXRowSelectedEventArgs);
+		public INamedTypeSymbol PXRowInsertingEventArgs => _compilation.GetTypeByMetadataName(Types.PXRowInsertingEventArgs);
+		public INamedTypeSymbol PXRowInsertedEventArgs => _compilation.GetTypeByMetadataName(Types.PXRowInsertedEventArgs);
+		public INamedTypeSymbol PXRowUpdatingEventArgs => _compilation.GetTypeByMetadataName(Types.PXRowUpdatingEventArgs);
+		public INamedTypeSymbol PXRowUpdatedEventArgs => _compilation.GetTypeByMetadataName(Types.PXRowUpdatedEventArgs);
+		public INamedTypeSymbol PXRowDeletingEventArgs => _compilation.GetTypeByMetadataName(Types.PXRowDeletingEventArgs);
+		public INamedTypeSymbol PXRowDeletedEventArgs => _compilation.GetTypeByMetadataName(Types.PXRowDeletedEventArgs);
+		public INamedTypeSymbol PXRowPersistingEventArgs => _compilation.GetTypeByMetadataName(Types.PXRowPersistingEventArgs);
+		public INamedTypeSymbol PXRowPersistedEventArgs => _compilation.GetTypeByMetadataName(Types.PXRowPersistedEventArgs);
 
-		public INamedTypeSymbol PXFieldSelectingEventArgs => _compilation.GetTypeByMetadataName(typeof(PXFieldSelectingEventArgs).FullName);
-		public INamedTypeSymbol PXFieldDefaultingEventArgs => _compilation.GetTypeByMetadataName(typeof(PXFieldDefaultingEventArgs).FullName);
-		public INamedTypeSymbol PXFieldVerifyingEventArgs => _compilation.GetTypeByMetadataName(typeof(PXFieldVerifyingEventArgs).FullName);
-		public INamedTypeSymbol PXFieldUpdatingEventArgs => _compilation.GetTypeByMetadataName(typeof(PXFieldUpdatingEventArgs).FullName);
-		public INamedTypeSymbol PXFieldUpdatedEventArgs => _compilation.GetTypeByMetadataName(typeof(PXFieldUpdatedEventArgs).FullName);
-		public INamedTypeSymbol PXCommandPreparingEventArgs => _compilation.GetTypeByMetadataName(typeof(PXCommandPreparingEventArgs).FullName);
-		public INamedTypeSymbol PXExceptionHandlingEventArgs => _compilation.GetTypeByMetadataName(typeof(PXExceptionHandlingEventArgs).FullName);
+		public INamedTypeSymbol PXFieldSelectingEventArgs => _compilation.GetTypeByMetadataName(Types.PXFieldSelectingEventArgs);
+		public INamedTypeSymbol PXFieldDefaultingEventArgs => _compilation.GetTypeByMetadataName(Types.PXFieldDefaultingEventArgs);
+		public INamedTypeSymbol PXFieldVerifyingEventArgs => _compilation.GetTypeByMetadataName(Types.PXFieldVerifyingEventArgs);
+		public INamedTypeSymbol PXFieldUpdatingEventArgs => _compilation.GetTypeByMetadataName(Types.PXFieldUpdatingEventArgs);
+		public INamedTypeSymbol PXFieldUpdatedEventArgs => _compilation.GetTypeByMetadataName(Types.PXFieldUpdatedEventArgs);
+		public INamedTypeSymbol PXCommandPreparingEventArgs => _compilation.GetTypeByMetadataName(Types.PXCommandPreparingEventArgs);
+		public INamedTypeSymbol PXExceptionHandlingEventArgs => _compilation.GetTypeByMetadataName(Types.PXExceptionHandlingEventArgs);
 
-		public INamedTypeSymbol CacheAttached => _compilation.GetTypeByMetadataName(typeof(Events.CacheAttached<>).FullName);
-		public INamedTypeSymbol RowSelecting => _compilation.GetTypeByMetadataName(typeof(Events.RowSelecting<>).FullName);
-		public INamedTypeSymbol RowSelected => _compilation.GetTypeByMetadataName(typeof(Events.RowSelected<>).FullName);
-		public INamedTypeSymbol RowInserting => _compilation.GetTypeByMetadataName(typeof(Events.RowInserting<>).FullName);
-		public INamedTypeSymbol RowInserted => _compilation.GetTypeByMetadataName(typeof(Events.RowInserted<>).FullName);
-		public INamedTypeSymbol RowUpdating => _compilation.GetTypeByMetadataName(typeof(Events.RowUpdating<>).FullName);
-		public INamedTypeSymbol RowUpdated => _compilation.GetTypeByMetadataName(typeof(Events.RowUpdated<>).FullName);
-		public INamedTypeSymbol RowDeleting => _compilation.GetTypeByMetadataName(typeof(Events.RowDeleting<>).FullName);
-		public INamedTypeSymbol RowDeleted => _compilation.GetTypeByMetadataName(typeof(Events.RowDeleted<>).FullName);
-		public INamedTypeSymbol RowPersisting => _compilation.GetTypeByMetadataName(typeof(Events.RowPersisting<>).FullName);
-		public INamedTypeSymbol RowPersisted => _compilation.GetTypeByMetadataName(typeof(Events.RowPersisted<>).FullName);
+		public INamedTypeSymbol CacheAttached => _compilation.GetTypeByMetadataName(Types.Events.CacheAttached);
+		public INamedTypeSymbol RowSelecting => _compilation.GetTypeByMetadataName(Types.Events.RowSelecting);
+		public INamedTypeSymbol RowSelected => _compilation.GetTypeByMetadataName(Types.Events.RowSelected);
+		public INamedTypeSymbol RowInserting => _compilation.GetTypeByMetadataName(Types.Events.RowInserting);
+		public INamedTypeSymbol RowInserted => _compilation.GetTypeByMetadataName(Types.Events.RowInserted);
+		public INamedTypeSymbol RowUpdating => _compilation.GetTypeByMetadataName(Types.Events.RowUpdating);
+		public INamedTypeSymbol RowUpdated => _compilation.GetTypeByMetadataName(Types.Events.RowUpdated);
+		public INamedTypeSymbol RowDeleting => _compilation.GetTypeByMetadataName(Types.Events.RowDeleting);
+		public INamedTypeSymbol RowDeleted => _compilation.GetTypeByMetadataName(Types.Events.RowDeleted);
+		public INamedTypeSymbol RowPersisting => _compilation.GetTypeByMetadataName(Types.Events.RowPersisting);
+		public INamedTypeSymbol RowPersisted => _compilation.GetTypeByMetadataName(Types.Events.RowPersisted);
 
-		public INamedTypeSymbol FieldSelecting => _compilation.GetTypeByMetadataName(typeof(Events.FieldSelecting<>).FullName);
-		public INamedTypeSymbol FieldDefaulting => _compilation.GetTypeByMetadataName(typeof(Events.FieldDefaulting<>).FullName);
-		public INamedTypeSymbol FieldVerifying => _compilation.GetTypeByMetadataName(typeof(Events.FieldVerifying<>).FullName);
-		public INamedTypeSymbol FieldUpdating => _compilation.GetTypeByMetadataName(typeof(Events.FieldUpdating<>).FullName);
-		public INamedTypeSymbol FieldUpdated => _compilation.GetTypeByMetadataName(typeof(Events.FieldUpdated<>).FullName);
-		public INamedTypeSymbol CommandPreparing => _compilation.GetTypeByMetadataName(typeof(Events.CommandPreparing<>).FullName);
-		public INamedTypeSymbol ExceptionHandling => _compilation.GetTypeByMetadataName(typeof(Events.ExceptionHandling<>).FullName);
+		public INamedTypeSymbol FieldSelecting => _compilation.GetTypeByMetadataName(Types.Events.FieldSelecting);
+		public INamedTypeSymbol FieldDefaulting => _compilation.GetTypeByMetadataName(Types.Events.FieldDefaulting);
+		public INamedTypeSymbol FieldVerifying => _compilation.GetTypeByMetadataName(Types.Events.FieldVerifying);
+		public INamedTypeSymbol FieldUpdating => _compilation.GetTypeByMetadataName(Types.Events.FieldUpdating);
+		public INamedTypeSymbol FieldUpdated => _compilation.GetTypeByMetadataName(Types.Events.FieldUpdated);
+		public INamedTypeSymbol CommandPreparing => _compilation.GetTypeByMetadataName(Types.Events.CommandPreparing);
+		public INamedTypeSymbol ExceptionHandling => _compilation.GetTypeByMetadataName(Types.Events.ExceptionHandling1);
 
-		public INamedTypeSymbol FieldSelectingTypedRow => _compilation.GetTypeByMetadataName(typeof(Events.FieldSelecting<,>).FullName);
-		public INamedTypeSymbol FieldDefaultingTypedRow => _compilation.GetTypeByMetadataName(typeof(Events.FieldDefaulting<,>).FullName);
-		public INamedTypeSymbol FieldVerifyingTypedRow => _compilation.GetTypeByMetadataName(typeof(Events.FieldVerifying<,>).FullName);
-		public INamedTypeSymbol FieldUpdatingTypedRow => _compilation.GetTypeByMetadataName(typeof(Events.FieldUpdating<,>).FullName);
-		public INamedTypeSymbol FieldUpdatedTypedRow => _compilation.GetTypeByMetadataName(typeof(Events.FieldUpdated<,>).FullName);
-		public INamedTypeSymbol ExceptionHandlingTypedRow => _compilation.GetTypeByMetadataName(typeof(Events.ExceptionHandling<,>).FullName);
+		public INamedTypeSymbol FieldSelectingTypedRow => _compilation.GetTypeByMetadataName(Types.Events.FieldSelecting2);
+		public INamedTypeSymbol FieldDefaultingTypedRow => _compilation.GetTypeByMetadataName(Types.Events.FieldDefaulting2);
+		public INamedTypeSymbol FieldVerifyingTypedRow => _compilation.GetTypeByMetadataName(Types.Events.FieldVerifying2);
+		public INamedTypeSymbol FieldUpdatingTypedRow => _compilation.GetTypeByMetadataName(Types.Events.FieldUpdating2);
+		public INamedTypeSymbol FieldUpdatedTypedRow => _compilation.GetTypeByMetadataName(Types.Events.FieldUpdated2);
+		public INamedTypeSymbol ExceptionHandlingTypedRow => _compilation.GetTypeByMetadataName(Types.Events.ExceptionHandling2);
 
 		private static IReadOnlyDictionary<ITypeSymbol, EventType> CreateEventTypeMap(EventSymbols eventSymbols)
 		{

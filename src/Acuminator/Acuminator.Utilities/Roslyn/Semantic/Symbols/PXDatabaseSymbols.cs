@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using static Acuminator.Utilities.Common.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -17,17 +18,17 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
         internal PXDatabaseSymbols(Compilation compilation)
         {
-            Type = compilation.GetTypeByMetadataName(typeof(PX.Data.PXDatabase).FullName);
+            Type = compilation.GetTypeByMetadataName(Types.PXDatabase);
 
 	        Select = Type.GetMethods()
-		        .Where(m => m.Name.StartsWith(nameof(PX.Data.PXDatabase.Select), StringComparison.Ordinal))
+		        .Where(m => m.Name.StartsWith(Types.PXDatabaseNames.Select, StringComparison.Ordinal))
 		        .ToImmutableArray();
-	        Insert = Type.GetMethods(nameof(PX.Data.PXDatabase.Insert));
-	        Update = Type.GetMethods(nameof(PX.Data.PXDatabase.Update));
-	        Delete = Type.GetMethods(nameof(PX.Data.PXDatabase.Delete))
-		        .Concat(Type.GetMethods(nameof(PX.Data.PXDatabase.ForceDelete)))
+	        Insert = Type.GetMethods(Types.PXDatabaseNames.Insert);
+	        Update = Type.GetMethods(Types.PXDatabaseNames.Update);
+	        Delete = Type.GetMethods(Types.PXDatabaseNames.Delete)
+		        .Concat(Type.GetMethods(Types.PXDatabaseNames.ForceDelete))
 		        .ToImmutableArray();
-	        Ensure = Type.GetMethods(nameof(PX.Data.PXDatabase.Ensure));
+	        Ensure = Type.GetMethods(Types.PXDatabaseNames.Ensure);
         }
     }
 }
