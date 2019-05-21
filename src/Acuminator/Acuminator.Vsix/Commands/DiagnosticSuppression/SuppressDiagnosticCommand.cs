@@ -134,7 +134,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 		private bool IsPlatformReferenced(SemanticModel semanticModel)
 		{
-			PXContext context = new PXContext(semanticModel.Compilation);
+			PXContext context = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
 			return context.IsPlatformReferenced;
 		}
 
