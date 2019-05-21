@@ -31,8 +31,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected override bool AllowNavigation => false;
 
-		public abstract bool IsFieldEvent { get; }
-
 		protected GraphEventCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType, bool isExpanded) :
 										     base(graphViewModel, graphMemberType, isExpanded)
 		{
@@ -69,5 +67,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			return new GraphMemberNodeViewModel(this, eventInfo, isExpanded);
 		}
+
+		public abstract IEnumerable<TreeNodeViewModel> GetEventsViewModelsForDAC(DacEventsGroupingNodeViewModel dacVM, 
+																				 IEnumerable<GraphEventInfoBase> graphEventsForDAC,
+																				 bool areChildrenExpanded);
 	}
 }
