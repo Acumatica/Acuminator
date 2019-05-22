@@ -68,7 +68,6 @@ namespace Acuminator.Tests.Verification
 		/// <param name="source">Classes in the form of a string</param>
 		/// <param name="language">The language the source code is in</param>
 		/// <param name="externalCode">The source codes for new memory compilation. The goal of the external code is to simulate the behaviour of the extenal assembly without source code.</param>
-		/// <param name="compiledAssemblies">The compiled libraries for usage in test. The goal of the library is to simulate the behaviour of the extenal assembly without source code.</param>
 		/// <returns>A Document created from the source string</returns>
 		public static Document CreateDocument(string source, string language = LanguageNames.CSharp, string[] externalCode = null)
 		{
