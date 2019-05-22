@@ -15,8 +15,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		    internal InstanceCreatedEventsSymbols(Compilation compilation)
 		    {
-			    Type = compilation.GetTypeByMetadataName(Types.PXGraphNames.InstanceCreatedEvents);
-				AddHandler = Type.GetMethods(Types.PXGraphNames.InstanceCreatedEventsAddHabdler).First();
+			    Type = compilation.GetTypeByMetadataName(Types.PXGraphDelegates.InstanceCreatedEvents);
+				AddHandler = Type.GetMethods(Types.PXGraphDelegates.InstanceCreatedEventsAddHabdler).First();
 		    }
 	    }
 
@@ -29,7 +29,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 	    public InstanceCreatedEventsSymbols InstanceCreatedEvents { get; }
 
-		public IMethodSymbol InitCacheMapping => Type.GetMembers(Types.PXGraphNames.InitCacheMapping)
+		public IMethodSymbol InitCacheMapping => Type.GetMembers(Types.PXGraphDelegates.InitCacheMapping)
 													 .OfType<IMethodSymbol>()
 													 .FirstOrDefault(method => method.ReturnsVoid && method.Parameters.Length == 1);
 
@@ -40,7 +40,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 			GenericTypeGraphDac = compilation.GetTypeByMetadataName(Types.PXGraph2);
 			GenericTypeGraphDacField = compilation.GetTypeByMetadataName(Types.PXGraph3);
 
-			CreateInstance = Type.GetMethods(Types.PXGraphNames.CreateInstance);
+			CreateInstance = Type.GetMethods(Types.PXGraphDelegates.CreateInstance);
 			InstanceCreatedEvents = new InstanceCreatedEventsSymbols(compilation);
         }
     }

@@ -132,15 +132,16 @@ namespace Acuminator.Utilities.Common
 
 			#region BQLSymbols.cs
 			internal static readonly string CustomPredicate = "PX.Data.CustomPredicate";
-			internal static readonly string AreSame = "PX.Data.AreSame`2";
-			internal static readonly string AreDistinct = "PX.Data.AreDistinct`2";
-			internal static readonly string Required = "PX.Data.Required`1";
-			internal static readonly string Argument = "PX.Data.Argument`1";
+			internal static readonly string AreSame2 = "PX.Data.AreSame`2";
+			internal static readonly string AreDistinct2 = "PX.Data.AreDistinct`2";
+			internal static readonly string Required1 = "PX.Data.Required`1";
+			internal static readonly string Argument1 = "PX.Data.Argument`1";
+			internal static readonly string Optional1 = "PX.Data.Optional`1";
 			internal static readonly string Optional2 = "PX.Data.Optional2`1";
 			internal static readonly string BqlCommand = "PX.Data.BqlCommand";
 			internal static readonly string IBqlParameter = "PX.Data.IBqlParameter";
-			internal static readonly string PXSelectBase = "PX.Data.PXSelectBase`1";
-			internal static readonly string PXFilter = "PX.Data.PXFilter`1";
+			//internal static readonly string PXSelectBase1 = "PX.Data.PXSelectBase`1";//dublicate
+			internal static readonly string PXFilter1 = "PX.Data.PXFilter`1";
 			internal static readonly string IPXNonUpdateable = "PX.Data.IPXNonUpdateable";
 			internal static readonly string PXSetup1 = "PX.Data.PXSetup`1";
 			internal static readonly string PXSetup2 = "PX.Data.PXSetup`2";
@@ -211,7 +212,7 @@ namespace Acuminator.Utilities.Common
 
 			internal static readonly string PXAction = "PX.Data.PXAction";
 
-			internal static class PXActionNames
+			internal static class PXActionDelegates
 			{
 				internal static readonly string SetVisible = "SetVisible";
 				internal static readonly string SetEnabled = "SetEnabled";
@@ -226,7 +227,7 @@ namespace Acuminator.Utilities.Common
 			
 			internal static readonly string PXCache = "PX.Data.PXCache";
 
-			internal static class PXCacheNames
+			internal static class PXCacheDelegates
 			{
 				[GenerateConstString("nameof(PX.Data.PXCache.Insert)")]
 				internal static readonly string Insert = "Insert";
@@ -246,7 +247,7 @@ namespace Acuminator.Utilities.Common
 			internal static readonly string PXDatabase = "PX.Data.PXDatabase";
 
 
-			internal static class PXDatabaseNames
+			internal static class PXDatabaseDelegates
 			{
 				internal static readonly string Select = "Select";
 				internal static readonly string Insert = "Insert";
@@ -264,7 +265,8 @@ namespace Acuminator.Utilities.Common
 			internal static readonly string PXGraph1 = "PX.Data.PXGraph`1";
 			internal static readonly string PXGraph2 = "PX.Data.PXGraph`2";
 			internal static readonly string PXGraph3 = "PX.Data.PXGraph`3";
-			internal static class PXGraphNames
+
+			internal static class PXGraphDelegates
 			{
 				internal static readonly string InstanceCreatedEvents = "PX.Data.PXGraph+InstanceCreatedEvents";
 				internal static readonly string InstanceCreatedEventsAddHabdler = "AddHandler";
@@ -273,6 +275,118 @@ namespace Acuminator.Utilities.Common
 			}
 
 			#endregion
+			
+			#region PXIntListAttributeSymbols
+
+			internal static readonly string PXIntListAttribute = "PX.Data.PXIntListAttribute";
+			
+			internal static class PXIntListAttributeDelegates
+			{
+				internal static readonly string SetList = "SetList";
+			}
+
+			#endregion
+			
+			#region PXProcessingBaseSymbols
+
+			internal static readonly string PXProcessingBase = "PX.Data.PXProcessingBase`1";
+			
+			internal static class PXProcessingBaseDelegates
+			{
+				internal static readonly string SetParameters = "SetParametersDelegate";
+				internal static readonly string SetProcess = "SetProcessDelegate";
+			}
+
+			#endregion
+
+			#region PXSelectBaseGenericSymbols
+
+			internal static readonly string PXSelectBase1 = "PX.Data.PXSelectBase`1";
+			
+			internal static class PXSelectBase1Delegates
+			{
+				internal static readonly string Insert = "Insert";
+				internal static readonly string Update = "Update";
+				internal static readonly string Delete = "Delete";
+				internal static readonly string Select = "Select";
+			}
+
+			#endregion
+
+			#region PXSelectBase
+			
+			internal static readonly string  PXSelectBase = "PX.Data.PXSelectBase";
+			
+			internal static class PXSelectBaseDelegates
+			{
+				internal static readonly string View = "View";
+			}
+
+			#endregion
+
+			#region PXSelectorAttribute
+
+			internal static readonly string PXSelectorAttribute = "PX.Data.PXSelectorAttribute";
+			
+			internal static class PXSelectorAttributeDelegates
+			{
+				internal static readonly string Select = "Select";
+				internal static readonly string GetItem = "GetItem";
+			}
+
+			#endregion
+
+			#region PXStringListAttribute
+
+			internal static readonly string PXStringListAttribute = "PX.Data.PXStringListAttribute";
+			
+			internal static class PXStringListAttributeDelegates
+			{
+				internal static readonly string SetList = "SetList";
+				internal static readonly string AppendList = "AppendList";
+				internal static readonly string SetLocalizable = "SetLocalizable";
+			}
+
+			#endregion
+			#region PXSystemActionSymbols
+			internal static class PXSystemActionSymbols
+			{
+				internal static readonly string PXSave = "PX.Data.PXSave`1";
+				internal static readonly string PXCancel = "PX.Data.PXCancel`1";
+				internal static readonly string PXInsert = "PX.Data.PXInsert`1";
+				internal static readonly string PXDelete = "PX.Data.PXDelete`1";
+				internal static readonly string PXCopyPasteAction = "PX.Data.PXCopyPasteAction`1";
+				internal static readonly string PXFirst = "PX.Data.PXFirst`1";
+				internal static readonly string PXPrevious = "PX.Data.PXPrevious`1";
+				internal static readonly string PXNext = "PX.Data.PXNext`1";
+				internal static readonly string PXLast = "PX.Data.PXLast`1";
+				internal static readonly string PXChangeID = "PX.Data.PXChangeID`1";
+			}
+
+			#endregion
+
+			#region PXViewSymbols
+
+			internal static readonly string PXView = "PX.Data.PXView";
+			
+			internal static class PXViewDelegates
+			{
+				internal static readonly string Select = "Select";
+			}
+
+			#endregion
+			#region Template
+
+			internal static readonly string TemplateAttributeOrClass = "typeof(AcumaticaType).FullName";
+			
+			internal static class TemplateDelegates
+			{
+				internal static readonly string SetList = "SetList";
+			}
+
+			#endregion
+
+
 		}
 
 		internal sealed class GenerateConstStringAttribute : Attribute

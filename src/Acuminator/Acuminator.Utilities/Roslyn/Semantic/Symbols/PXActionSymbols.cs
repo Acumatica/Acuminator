@@ -18,11 +18,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
         {
             Type = compilation.GetTypeByMetadataName(Types.PXAction);
 
-	        SetVisible = Type.GetMethods(Types.PXActionNames.SetVisible);
-	        SetEnabled = Type.GetMethods(Types.PXActionNames.SetEnabled);
-	        SetCaption = Type.GetMethods(Types.PXActionNames.SetCaption);
-	        SetTooltip = Type.GetMethods(Types.PXActionNames.SetTooltip);
-	        Press      = Type.GetMethods(Types.PXActionNames.Press);
+	        SetVisible = Type.GetMethods(Types.PXActionDelegates.SetVisible);
+	        SetEnabled = Type.GetMethods(Types.PXActionDelegates.SetEnabled);
+	        SetCaption = Type.GetMethods(Types.PXActionDelegates.SetCaption);
+	        SetTooltip = Type.GetMethods(Types.PXActionDelegates.SetTooltip);
+	        Press      = Type.GetMethods(Types.PXActionDelegates.Press);
         }
     }
 }

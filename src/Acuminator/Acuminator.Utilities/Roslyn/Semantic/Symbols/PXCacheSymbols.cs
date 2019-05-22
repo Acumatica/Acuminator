@@ -18,11 +18,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
         {
             Type = compilation.GetTypeByMetadataName(Types.PXCache);
 
-	        Insert = Type.GetMethods(Types.PXCacheNames.Insert);
-	        Update = Type.GetMethods(Types.PXCacheNames.Update);
-	        Delete = Type.GetMethods(Types.PXCacheNames.Delete);
+	        Insert = Type.GetMethods(Types.PXCacheDelegates.Insert);
+	        Update = Type.GetMethods(Types.PXCacheDelegates.Update);
+	        Delete = Type.GetMethods(Types.PXCacheDelegates.Delete);
 
-	        RaiseExceptionHandling = Type.GetMethods(Types.PXCacheNames.RaiseExceptionHandling));
+	        RaiseExceptionHandling = Type.GetMethods(Types.PXCacheDelegates.RaiseExceptionHandling));
         }
     }
 }

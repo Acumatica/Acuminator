@@ -21,14 +21,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
             Type = compilation.GetTypeByMetadataName(Types.PXDatabase);
 
 	        Select = Type.GetMethods()
-		        .Where(m => m.Name.StartsWith(Types.PXDatabaseNames.Select, StringComparison.Ordinal))
+		        .Where(m => m.Name.StartsWith(Types.PXDatabaseDelegates.Select, StringComparison.Ordinal))
 		        .ToImmutableArray();
-	        Insert = Type.GetMethods(Types.PXDatabaseNames.Insert);
-	        Update = Type.GetMethods(Types.PXDatabaseNames.Update);
-	        Delete = Type.GetMethods(Types.PXDatabaseNames.Delete)
-		        .Concat(Type.GetMethods(Types.PXDatabaseNames.ForceDelete))
+	        Insert = Type.GetMethods(Types.PXDatabaseDelegates.Insert);
+	        Update = Type.GetMethods(Types.PXDatabaseDelegates.Update);
+	        Delete = Type.GetMethods(Types.PXDatabaseDelegates.Delete)
+		        .Concat(Type.GetMethods(Types.PXDatabaseDelegates.ForceDelete))
 		        .ToImmutableArray();
-	        Ensure = Type.GetMethods(Types.PXDatabaseNames.Ensure);
+	        Ensure = Type.GetMethods(Types.PXDatabaseDelegates.Ensure);
         }
     }
 }

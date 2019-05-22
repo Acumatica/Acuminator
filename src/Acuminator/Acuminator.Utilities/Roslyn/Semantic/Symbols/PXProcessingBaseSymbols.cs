@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
-using PX.Data;
 using System.Collections.Immutable;
 using System.Linq;
+using static Acuminator.Utilities.Common.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -16,9 +16,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
         internal PXProcessingBaseSymbols(Compilation compilation)
         {
-            Type = compilation.GetTypeByMetadataName(typeof(PXProcessingBase<>).FullName);
-            SetParametersDelegate = Type.GetMethods(SetParametersDelegateName).First();
-            SetProcessDelegate = Type.GetMethods(SetProcessDelegateName);
+            Type = compilation.GetTypeByMetadataName(Types.PXProcessingBase);
+            SetParametersDelegate = Type.GetMethods(Types.PXProcessingBaseDelegates.SetParameters).First();
+            SetProcessDelegate = Type.GetMethods(Types.PXProcessingBaseDelegates.SetProcess);
         }
     }
 }

@@ -19,25 +19,25 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		#region CustomDelegates
 		public INamedTypeSymbol CustomPredicate => _compilation.GetTypeByMetadataName(Types.CustomPredicate);
 
-		public INamedTypeSymbol AreSame => _compilation.GetTypeByMetadataName(Types.AreSame);
+		public INamedTypeSymbol AreSame => _compilation.GetTypeByMetadataName(Types.AreSame2);
 
-		public INamedTypeSymbol AreDistinct => _compilation.GetTypeByMetadataName(Types.AreDistinct);
+		public INamedTypeSymbol AreDistinct => _compilation.GetTypeByMetadataName(Types.AreDistinct2);
 		#endregion
 
-		public INamedTypeSymbol Required => _compilation.GetTypeByMetadataName(Types.Required);
+		public INamedTypeSymbol Required => _compilation.GetTypeByMetadataName(Types.Required1);
 
-		public INamedTypeSymbol Argument => _compilation.GetTypeByMetadataName(Types.Argument);
+		public INamedTypeSymbol Argument => _compilation.GetTypeByMetadataName(Types.Argument1);
 
-		public INamedTypeSymbol Optional => _compilation.GetTypeByMetadataName(Types.PX.Data.Optional);
+		public INamedTypeSymbol Optional => _compilation.GetTypeByMetadataName(Types.Optional1);
 		public INamedTypeSymbol Optional2 => _compilation.GetTypeByMetadataName(Types.Optional2);
 
 		public INamedTypeSymbol BqlCommand => _compilation.GetTypeByMetadataName(Types.BqlCommand);
 
 		public INamedTypeSymbol IBqlParameter => _compilation.GetTypeByMetadataName(Types.IBqlParameter);
 
-		public INamedTypeSymbol PXSelectBaseGenericType => _compilation.GetTypeByMetadataName(Types.PXSelectBase);
+		public INamedTypeSymbol PXSelectBaseGenericType => _compilation.GetTypeByMetadataName(Types.PXSelectBase1);
 
-		public INamedTypeSymbol PXFilter => _compilation.GetTypeByMetadataName(Types.PXFilter);
+		public INamedTypeSymbol PXFilter => _compilation.GetTypeByMetadataName(Types.PXFilter1);
 
 		public INamedTypeSymbol IPXNonUpdateable => _compilation.GetTypeByMetadataName(Types.IPXNonUpdateable);
 

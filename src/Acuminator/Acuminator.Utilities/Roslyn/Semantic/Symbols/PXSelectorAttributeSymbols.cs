@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using static Acuminator.Utilities.Common.Constants.Types;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -14,12 +15,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
         internal PXSelectorAttributeSymbols(Compilation compilation)
         {
-            Type = compilation.GetTypeByMetadataName(typeof(PX.Data.PXSelectorAttribute).FullName);
+            Type = compilation.GetTypeByMetadataName(PXSelectorAttribute);
 
 	        Select = Type.GetMethods()
-		        .Where(m => m.Name.StartsWith(nameof(PX.Data.PXSelectorAttribute.Select), StringComparison.Ordinal))
+		        .Where(m => m.Name.StartsWith(PXSelectorAttributeDelegates.Select, StringComparison.Ordinal))
 		        .ToImmutableArray();
-	        GetItem = Type.GetMethods(nameof(PX.Data.PXSelectorAttribute.GetItem));
+	        GetItem = Type.GetMethods(PXSelectorAttributeDelegates.GetItem);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
-using PX.Data;
+using static Acuminator.Utilities.Common.Constants;
+
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -12,15 +13,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 			_compilation = aCompilation;
 		}
 
-		public INamedTypeSymbol PXSave => _compilation.GetTypeByMetadataName(typeof(PXSave<>).FullName);
-		public INamedTypeSymbol PXCancel => _compilation.GetTypeByMetadataName(typeof(PXCancel<>).FullName);
-		public INamedTypeSymbol PXInsert => _compilation.GetTypeByMetadataName(typeof(PXInsert<>).FullName);
-		public INamedTypeSymbol PXDelete => _compilation.GetTypeByMetadataName(typeof(PXDelete<>).FullName);
-		public INamedTypeSymbol PXCopyPasteAction => _compilation.GetTypeByMetadataName(typeof(PXCopyPasteAction<>).FullName);
-		public INamedTypeSymbol PXFirst => _compilation.GetTypeByMetadataName(typeof(PXFirst<>).FullName);
-		public INamedTypeSymbol PXPrevious => _compilation.GetTypeByMetadataName(typeof(PXPrevious<>).FullName);
-		public INamedTypeSymbol PXNext => _compilation.GetTypeByMetadataName(typeof(PXNext<>).FullName);
-		public INamedTypeSymbol PXLast => _compilation.GetTypeByMetadataName(typeof(PXLast<>).FullName);
-		public INamedTypeSymbol PXChangeID => _compilation.GetTypeByMetadataName(typeof(PXChangeID<,>).FullName);
+		public INamedTypeSymbol PXSave => _compilation.GetTypeByMetadataName(Types.PXSystemActionSymbols.PXSave);
+		public INamedTypeSymbol PXCancel => _compilation.GetTypeByMetadataName(Types.PXSystemActionSymbols.PXCancel);
+		public INamedTypeSymbol PXInsert => _compilation.GetTypeByMetadataName(Types.PXSystemActionSymbols.PXInsert);
+		public INamedTypeSymbol PXDelete => _compilation.GetTypeByMetadataName(Types.PXSystemActionSymbols.PXDelete);
+		public INamedTypeSymbol PXCopyPasteAction => _compilation.GetTypeByMetadataName(Types.PXSystemActionSymbols.PXCopyPasteAction);
+		public INamedTypeSymbol PXFirst => _compilation.GetTypeByMetadataName(Types.PXSystemActionSymbols.PXFirst);
+		public INamedTypeSymbol PXPrevious => _compilation.GetTypeByMetadataName(Types.PXSystemActionSymbols.PXPrevious);
+		public INamedTypeSymbol PXNext => _compilation.GetTypeByMetadataName(Types.PXSystemActionSymbols.PXNext);
+		public INamedTypeSymbol PXLast => _compilation.GetTypeByMetadataName(Types.PXSystemActionSymbols.PXLast);
+		public INamedTypeSymbol PXChangeID => _compilation.GetTypeByMetadataName(Types.PXSystemActionSymbols.PXChangeID);
 	}
 }
