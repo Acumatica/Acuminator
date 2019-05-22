@@ -22,7 +22,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 	        Update = Type.GetMethods(Types.PXCacheDelegates.Update);
 	        Delete = Type.GetMethods(Types.PXCacheDelegates.Delete);
 
-	        RaiseExceptionHandling = Type.GetMethods(Types.PXCacheDelegates.RaiseExceptionHandling));
+	        RaiseExceptionHandling = Type.GetMethods(Types.PXCacheDelegates.RaiseExceptionHandling);
         }
     }
 }

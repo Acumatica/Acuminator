@@ -17,8 +17,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
             Type = compilation.GetTypeByMetadataName(PXStringListAttribute);
 
 	        SetList        = Type.GetMethods(PXStringListAttributeDelegates.SetList);
-	        AppendList     = Type.GetMethods(PXStringListAttributeDelegates.AppendList));
-	        SetLocalizable = Type.GetMethods(PXStringListAttributeDelegates.SetLocalizable));
+	        AppendList     = Type.GetMethods(PXStringListAttributeDelegates.AppendList);
+	        SetLocalizable = Type.GetMethods(PXStringListAttributeDelegates.SetLocalizable);
         }
     }
 }
