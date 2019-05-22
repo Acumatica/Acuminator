@@ -320,6 +320,11 @@ namespace Acuminator.Utilities.Common
 			internal static class PXSelectBaseDelegates
 			{
 				internal static readonly string View = "View";
+
+				internal static readonly string WhereAnd = "WhereAnd";
+				internal static readonly string WhereNew = "WhereNew";
+				internal static readonly string WhereOr = "WhereOr";
+				internal static readonly string Join = "Join";
 			}
 
 			#endregion
@@ -366,15 +371,86 @@ namespace Acuminator.Utilities.Common
 			#endregion
 
 			#region PXViewSymbols
-
 			internal static readonly string PXView = "PX.Data.PXView";
 			
 			internal static class PXViewDelegates
 			{
 				internal static readonly string Select = "Select";
-			}
 
+				internal static readonly string WhereAnd = "WhereAnd";
+				internal static readonly string WhereNew = "WhereNew";
+				internal static readonly string WhereOr = "WhereOr";
+				internal static readonly string Join = "Join";
+				internal static readonly string JoinNew = "JoinNew";
+			}
 			#endregion
+
+			#region BqlModifyingMethods.cs
+			internal static class BqlCommandDelegates
+			{
+				#region BqlCommandInstance
+				internal static readonly string WhereAnd = "WhereAnd";
+				internal static readonly string WhereNew = "WhereNew";
+				internal static readonly string WhereOr = "WhereOr";
+				internal static readonly string AggregateNew = "AggregateNew";
+				internal static readonly string OrderByNew = "OrderByNew";
+				#endregion
+
+				#region BqlCommandStatic
+				internal static readonly string Compose = "Compose";
+				internal static readonly string CreateInstance = "CreateInstance";
+				internal static readonly string AddJoinConditions = "AddJoinConditions";
+				internal static readonly string AppendJoin = "AppendJoin";
+				internal static readonly string NewJoin = "NewJoin";
+				#endregion
+			}
+			#endregion
+
+			/*#region TypeNames.cs
+			internal static readonly string IBqlTable = "IBqlTable";
+
+			internal static readonly string BqlCommand = "BqlCommand";
+
+			internal static readonly string IBqlField = "IBqlField";
+			internal static readonly string IBqlParameter = "IBqlParameter";
+			internal static readonly string IBqlJoin = "IBqlJoin";
+			internal static readonly string IBqlOrderBy = "IBqlOrderBy";
+			internal static readonly string IBqlAggregate = "IBqlAggregate";
+			internal static readonly string IBqlFunction = "IBqlFunction";
+			internal static readonly string IBqlSortColumn = "IBqlSortColumn";
+			internal static readonly string IBqlComparison = "IBqlComparison";
+			internal static readonly string IBqlCreator = "IBqlCreator";
+			internal static readonly string IBqlPredicateChain = "IBqlPredicateChain";
+			internal static readonly string IBqlOn = "IBqlOn";
+			internal static readonly string IBqlSet = "IBqlSet";
+
+			internal static readonly string PXSelectBaseType = "PXSelectBase";
+
+			internal static readonly string Constant = "Constant";
+			internal static readonly string ConstantGeneric = "Constant`1";
+
+			internal static readonly string PXCacheExtension = "PXCacheExtension";
+			internal static readonly string PXCacheExtensionGeneric = "PXCacheExtension`1";
+
+			internal static readonly string PXGraph = "PXGraph";
+
+			internal static readonly string PXGraphGeneric = "PXGraph`1";
+			internal static readonly string PXGraphExtension = "PXGraphExtension";
+
+			internal static readonly string PXAction = "PXAction";
+			internal static readonly string PXActionGeneric = "PXAction`1";
+
+			internal const string PXUpdate = nameof(PXUpdate);
+			internal const string PXUpdateJoin = nameof(PXUpdateJoin);
+			internal const string PXUpdateGroupBy = nameof(PXUpdateGroupBy);
+			internal const string PXUpdateJoinGroupBy = nameof(PXUpdateJoinGroupBy);
+
+			internal const string PXSelectReadonly = "PXSelectReadonly";
+			internal const string PXSelectReadonly2 = nameof(PXSelectReadonly2);
+			internal const string PXSelectReadonly3 = nameof(PXSelectReadonly3);
+
+			#endregion*/
+
 			#region Template
 
 			internal static readonly string TemplateAttributeOrClass = "typeof(AcumaticaType).FullName";

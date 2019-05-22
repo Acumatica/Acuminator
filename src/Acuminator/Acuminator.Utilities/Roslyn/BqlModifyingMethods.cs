@@ -3,47 +3,45 @@ using System.Collections.Immutable;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
-using PX.Data;
+using static Acuminator.Utilities.Common.Constants;
 
 namespace Acuminator.Utilities.Roslyn
 {
-	internal class DummyDac : IBqlTable { }
-
 	public static class BqlModifyingMethods
 	{
 		public static readonly ImmutableHashSet<string> PXSelectbaseBqlModifiers = ImmutableHashSet.Create
 		(
-			nameof(PXSelectBase<DummyDac>.WhereAnd),
-			nameof(PXSelectBase<DummyDac>.WhereNew),
-			nameof(PXSelectBase<DummyDac>.WhereOr),
-			nameof(PXSelectBase<DummyDac>.Join)
+			Types.PXSelectBaseDelegates.WhereAnd,
+			Types.PXSelectBaseDelegates.WhereNew,
+			Types.PXSelectBaseDelegates.WhereOr,
+			Types.PXSelectBaseDelegates.Join
 		);
 
 		public static readonly ImmutableHashSet<string> PXViewBqlModifiers = ImmutableHashSet.Create
 		(
-			nameof(PXView.WhereAnd),
-			nameof(PXView.WhereNew),
-			nameof(PXView.WhereOr),
-			nameof(PXView.Join),
-			nameof(PXView.JoinNew)
+			Types.PXViewDelegates.WhereAnd,
+			Types.PXViewDelegates.WhereNew,
+			Types.PXViewDelegates.WhereOr,
+			Types.PXViewDelegates.Join,
+			Types.PXViewDelegates.JoinNew
 		);
 
 		public static readonly ImmutableHashSet<string> BqlCommandInstanceBqlModifiers = ImmutableHashSet.Create
 		(
-			nameof(BqlCommand.WhereAnd),
-			nameof(BqlCommand.WhereNew),
-			nameof(BqlCommand.WhereOr),
-			nameof(BqlCommand.AggregateNew),
-			nameof(BqlCommand.OrderByNew)
+			Types.BqlCommandDelegates.WhereAnd,
+			Types.BqlCommandDelegates.WhereNew,
+			Types.BqlCommandDelegates.WhereOr,
+			Types.BqlCommandDelegates.AggregateNew,
+			Types.BqlCommandDelegates.OrderByNew
 		);
 
 		public static readonly ImmutableHashSet<string> BqlCommandStaticBqlModifiers = ImmutableHashSet.Create
 		(
-			nameof(BqlCommand.Compose),
-			nameof(BqlCommand.CreateInstance),
-			nameof(BqlCommand.AddJoinConditions),
-			nameof(BqlCommand.AppendJoin),
-			nameof(BqlCommand.NewJoin)
+			Types.BqlCommandDelegates.Compose,
+			Types.BqlCommandDelegates.CreateInstance,
+			Types.BqlCommandDelegates.AddJoinConditions,
+			Types.BqlCommandDelegates.AppendJoin,
+			Types.BqlCommandDelegates.NewJoin
 		);
 
 
