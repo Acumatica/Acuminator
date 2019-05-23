@@ -22,13 +22,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set;
 		}
 
-		public RowEventNodeViewModel(DacEventsGroupingNodeViewModel dacViewModel, GraphNodeSymbolItem memberInfo, bool isExpanded = false) :
-								base(dacViewModel?.GraphEventsCategoryVM, memberInfo, isExpanded)
+		public RowEventNodeViewModel(DacEventsGroupingNodeViewModel dacViewModel, GraphRowEventInfo eventInfo, bool isExpanded = false) :
+								base(dacViewModel?.GraphEventsCategoryVM, eventInfo, isExpanded)
 		{
 			DacViewModel = dacViewModel;
-			Name = MemberInfo is GraphRowEventInfo eventInfo
-				? eventInfo.EventType.ToString()
-				: MemberSymbol.Name;
+			Name = eventInfo.EventType.ToString();
 		}	
 	}
 }
