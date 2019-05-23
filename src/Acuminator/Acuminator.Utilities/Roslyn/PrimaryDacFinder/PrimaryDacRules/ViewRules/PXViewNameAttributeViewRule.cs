@@ -4,7 +4,7 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
-using static Acuminator.Utilities.Common.Constants;
+using static Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 {

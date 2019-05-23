@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using System.Linq;
-using static Acuminator.Utilities.Common.Constants;
+using static Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {

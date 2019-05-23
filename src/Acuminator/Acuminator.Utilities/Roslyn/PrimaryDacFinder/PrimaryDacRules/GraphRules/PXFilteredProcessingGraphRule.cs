@@ -5,7 +5,7 @@ using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
-using static Acuminator.Utilities.Common.Constants;
+using static Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRules
 {

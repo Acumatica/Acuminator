@@ -1,17 +1,13 @@
 ﻿using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 {

@@ -10,7 +10,6 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Text;
-using PX.Data;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 {

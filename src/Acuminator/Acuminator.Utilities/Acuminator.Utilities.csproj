@@ -82,7 +82,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\Constants.cs" />
+    <Compile Include="Roslyn\Constants.cs" />
     <Compile Include="GlobalCodeAnalysisSettings.cs" />
     <Compile Include="CodeAnalysisSettings.cs" />
     <Compile Include="Common\DictionaryExtensions.cs" />
