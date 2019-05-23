@@ -61,7 +61,8 @@
         </Strings>
       </Button>-->
 
-      <Button guid="guidAcuminatorCmdSet" id="SuppressDiagnosticCommandId" type="Button">
+      <!-- The Suppression command is disabled until the command will be implemented-->
+      <!--<Button guid="guidAcuminatorCmdSet" id="SuppressDiagnosticCommandId" type="Button">
         <Icon guid="guidAcumaticaIcon" id="acumaticaIcon" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -69,7 +70,7 @@
           <CommandName>cmdidSuppressDiagnosticCommand</CommandName>
           <ButtonText>Suppress Diagnostic</ButtonText>
         </Strings>
-      </Button>
+      </Button>-->
 
       <!--Tool Windows Commands-->
       <Button guid="guidAcuminatorCmdSet" id="OpenCodeMapWindowCommand" type="Button">
