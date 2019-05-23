@@ -41,7 +41,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		private readonly INamedTypeSymbol _defaultAttribute;
 
 		public ImmutableHashSet<ITypeSymbol> BoundBaseTypes { get; }
-		public ImmutableHashSet<ITypeSymbol> TypesContainsIsDBField { get; }
+		public ImmutableDictionary<ITypeSymbol,bool> TypesContainingIsDBField { get; }
 
 		private const string IsDBField = "IsDBField";
 
@@ -52,10 +52,10 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			_context = pxContext;
 
 			var boundBaseTypes = GetBoundBaseTypes(_context);
-			var typesContainsIsDBField = GetTypesContainsIsDBField(_context);
+			Dictionary<ITypeSymbol, bool> typesContainingIsDBField = GetTypesContainingIsDBField(_context);
 
 			BoundBaseTypes = boundBaseTypes.ToImmutableHashSet();
-			TypesContainsIsDBField = typesContainsIsDBField.ToImmutableHashSet();
+			TypesContainingIsDBField = typesContainingIsDBField.ToImmutableDictionary();
 
 			_eventSubscriberAttribute = _context.AttributeTypes.PXEventSubscriberAttribute;
 			_dynamicAggregateAttribute = _context.AttributeTypes.PXDynamicAggregateAttribute;
@@ -71,11 +71,11 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				context.FieldAttributes.PXDBDataLengthAttribute,
 			};
 
-		private static HashSet<ITypeSymbol> GetTypesContainsIsDBField(PXContext context) =>
-			new HashSet<ITypeSymbol>
+		private static Dictionary<ITypeSymbol, bool> GetTypesContainingIsDBField(PXContext context) =>
+			new Dictionary<ITypeSymbol, bool>
 			{
-				context.FieldAttributes.PeriodIDAttribute,
-				context.FieldAttributes.AcctSubAttribute,
+				{	context.FieldAttributes.PeriodIDAttribute, true },
+				{	context.FieldAttributes.AcctSubAttribute, true },
 			};
 
 		/// <summary>
@@ -195,12 +195,19 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			{
 				var isDbPropertyAttributeArgs = attribute.NamedArguments.Where(arg => IsDBField.Equals(arg.Key, StringComparison.OrdinalIgnoreCase)).ToList();    //case insensitive check
 
-				
-				var isDBFieldInBaseAcumaticaAttribute = TypesContainsIsDBField.Any(t =>
-					t != null && IsAttributeDerivedFromClass(attribute.AttributeClass, t));
+				var isDBFieldSetInFalseInBaseAttribute = TypesContainingIsDBField.Any(t => 
+					t.Key != null && t.Value == false && IsAttributeDerivedFromClass(attribute.AttributeClass, t.Key));
 
-				if (isDbPropertyAttributeArgs.Count == 0 && isDBFieldInBaseAcumaticaAttribute) // IsDBField property defined in base class 
-					return BoundType.DbBound;
+				var isDBFieldSetInTrueInBaseAttribute = TypesContainingIsDBField.Any(t =>
+					t.Key != null && t.Value == true && IsAttributeDerivedFromClass(attribute.AttributeClass, t.Key));
+
+				if (isDbPropertyAttributeArgs.Count == 0)
+				{
+					if (isDBFieldSetInFalseInBaseAttribute) // IsDBField = false property defined in base Acumatica class
+						return BoundType.Unbound;
+					else if (isDBFieldSetInTrueInBaseAttribute) // IsDBField = true property defined in base Acumatica class 
+						return BoundType.DbBound;
+				}
 
 				if (isDbPropertyAttributeArgs.Count != 1)  //rare case when there are multiple different "IsDBField" considered
 					return BoundType.Unknown;
