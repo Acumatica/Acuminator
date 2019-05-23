@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
+namespace Acuminator.Utilities.Roslyn
 {
 	public static class Constants
 	{

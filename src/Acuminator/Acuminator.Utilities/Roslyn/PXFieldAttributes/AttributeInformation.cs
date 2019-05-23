@@ -195,6 +195,12 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			{
 				var isDbPropertyAttributeArgs = attribute.NamedArguments.Where(arg => IsDBField.Equals(arg.Key, StringComparison.OrdinalIgnoreCase)).ToList();    //case insensitive check
 
+				if (!(isDbPropertyAttributeArgs[0].Value.Value is bool isDbPropertyAttributeArgument))
+					return BoundType.Unknown;  //if there is null or values of type other than bool then we don't know if attribute is bound
+
+				if (isDbPropertyAttributeArgs.Count != 1)  //rare case when there are multiple different "IsDBField" considered
+					return BoundType.Unknown;
+
 				var isDBFieldSetInFalseInBaseAttribute = TypesContainingIsDBField.Any(t => 
 					t.Key != null && t.Value == false && IsAttributeDerivedFromClass(attribute.AttributeClass, t.Key));
 
@@ -208,12 +214,6 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 					else if (isDBFieldSetInTrueInBaseAttribute) // IsDBField = true property defined in base Acumatica class 
 						return BoundType.DbBound;
 				}
-
-				if (isDbPropertyAttributeArgs.Count != 1)  //rare case when there are multiple different "IsDBField" considered
-					return BoundType.Unknown;
-
-				if (!(isDbPropertyAttributeArgs[0].Value.Value is bool isDbPropertyAttributeArgument))
-					return BoundType.Unknown;  //if there is null or values of type other than bool then we don't know if attribute is bound
 
 				return isDbPropertyAttributeArgument
 					? BoundType.DbBound
