@@ -17,6 +17,6 @@ namespace PX.Objects.HackathonDemo
 
     public class StudentsFBQLMaint : PXGraph<StudentsFBQLMaint, Student>
     {
-		public SelectFrom<Student> Students;
+		public SelectFrom<Student>.View Students;
     }
 }
