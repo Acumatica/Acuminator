@@ -8,6 +8,7 @@ using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+using static Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 {
@@ -181,9 +182,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
             }
 
             var hasPersistingCheckNothing = pxDefaultAttribute.NamedArguments
-                .Where(na => nameof(PXDefaultAttribute.PersistingCheck).Equals(na.Key, StringComparison.Ordinal))
+                .Where(na => Types.PXDefaultAttributeFields.PersistingCheck.Equals(na.Key, StringComparison.Ordinal))
                 .Select(na => na.Value.Value)
-                .Where(v => v is int persistingCheck && persistingCheck == (int)PXPersistingCheck.Nothing)
+                .Where(v => v is int persistingCheck && persistingCheck == (int)Types.PXPersistingCheck.Nothing)
                 .Any();
 
             return (pxDefaultAttribute, hasPersistingCheckNothing);

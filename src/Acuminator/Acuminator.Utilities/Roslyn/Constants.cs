@@ -14,7 +14,7 @@ namespace Acuminator.Utilities.Roslyn
 			/// <summary>
 			/// The PXDBPackedIntegerArrayAttribute type full name in Acumatica 2018R2. Doesn't exist in previous versions.
 			/// </summary>
-			internal static readonly string PXDBPackedIntegerArrayAttributeFullNameAcumatica2018R2 = "PX.Data.PXDBPackedIntegerArrayAttribute";
+			internal static readonly string PXDBPackedIntegerArrayAttributeFullName_Acumatica2018R2 = "PX.Data.PXDBPackedIntegerArrayAttribute";
 
 			internal static readonly string PeriodIDAttribute = "PX.Objects.GL.PeriodIDAttribute";
 			internal static readonly string AcctSubAttribute = "PX.Objects.GL.AcctSubAttribute";
@@ -110,7 +110,7 @@ namespace Acuminator.Utilities.Roslyn
 			internal static readonly string PXCopyPasteHiddenViewAttribute = "PX.Data.PXCopyPasteHiddenViewAttribute";
 			internal static readonly string PXOverrideAttribute = "PX.Data.PXOverrideAttribute";
 			internal static readonly string PXEventSubscriberAttribute = "PX.Data.PXEventSubscriberAttribute";
-			//internal static readonly string PXAttributeFamilyAttribute = "PX.Data.PXAttributeFamilyAttribute"; // dublicate
+			//internal static readonly string PXAttributeFamilyAttribute PersistingCheck= "PX.Data.PXAttributeFamilyAttribute"; // dublicate
 			internal static readonly string PXAggregateAttribute = "PX.Data.PXAggregateAttribute";
 			internal static readonly string PXDynamicAggregateAttribute = "PX.Data.PXDynamicAggregateAttribute";
 			internal static readonly string PXDefaultAttribute = "PX.Data.PXDefaultAttribute";
@@ -265,17 +265,17 @@ namespace Acuminator.Utilities.Roslyn
 
 			#region PXGraphSymbols.cs
 
-			internal static readonly string PXGraph = "PX.Data.PXGraph";
-			internal static readonly string PXGraph1 = "PX.Data.PXGraph`1";
-			internal static readonly string PXGraph2 = "PX.Data.PXGraph`2";
-			internal static readonly string PXGraph3 = "PX.Data.PXGraph`3";
+			public static readonly string PXGraph = "PX.Data.PXGraph";
+			public static readonly string PXGraph1 = "PX.Data.PXGraph`1";
+			public static readonly string PXGraph2 = "PX.Data.PXGraph`2";
+			public static readonly string PXGraph3 = "PX.Data.PXGraph`3";
 
-			internal static class PXGraphDelegates
+			public static class PXGraphDelegates
 			{
-				internal static readonly string InstanceCreatedEvents = "PX.Data.PXGraph+InstanceCreatedEvents";
-				internal static readonly string InstanceCreatedEventsAddHabdler = "AddHandler";
-				internal static readonly string InitCacheMapping = "InitCacheMapping";
-				internal static readonly string CreateInstance = "CreateInstance";
+				public static readonly string InstanceCreatedEvents = "PX.Data.PXGraph+InstanceCreatedEvents";
+				public static readonly string InstanceCreatedEventsAddHabdler = "AddHandler";
+				public static readonly string InitCacheMapping = "InitCacheMapping";
+				public static readonly string CreateInstance = "CreateInstance";
 			}
 
 			#endregion
@@ -423,6 +423,18 @@ namespace Acuminator.Utilities.Roslyn
 			}
 
 			#endregion
+
+			public static class PXDefaultAttributeFields
+			{
+				public static readonly string PersistingCheck = "PersistingCheck";
+			}
+
+			public enum PXPersistingCheck
+			{
+				Null = 0,
+				NullOrBlank = 1,
+				Nothing = 2
+			}
 
 			#region BqlContext.cs
 

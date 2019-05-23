@@ -9,6 +9,8 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
+using static Acuminator.Utilities.Roslyn.Constants;
+
 
 namespace Acuminator.Analyzers.StaticAnalysis.NonNullableTypeForBqlField
 {
@@ -37,7 +39,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonNullableTypeForBqlField
 					return generator.InvocationExpression(
 						generator.MemberAccessExpression(
 							generator.TypeExpression(_pxContext.PXGraph.Type),
-							generator.GenericName(nameof(PX.Data.PXGraph.CreateInstance), typeSymbol)));
+							generator.GenericName(Types.PXGraphDelegates.CreateInstance, typeSymbol)));
 				}
 
 				return base.VisitObjectCreationExpression(node);

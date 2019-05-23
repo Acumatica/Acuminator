@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
+using static Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Vsix;
 using Acuminator.Vsix.Utilities;
 

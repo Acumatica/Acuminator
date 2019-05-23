@@ -1,27 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using static Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
 	public class PXGraphCreationForBqlQueriesFix : CodeFixProvider
 	{
-		private const string PXGraphExtensionTypeName = nameof (PX.Data.PXGraphExtension);
-
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1072_PXGraphCreationForBqlQueries.Id);
 

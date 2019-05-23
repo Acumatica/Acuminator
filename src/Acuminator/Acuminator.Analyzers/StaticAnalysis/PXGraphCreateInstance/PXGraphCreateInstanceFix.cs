@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Composition;
 using System.Threading.Tasks;
-using Acuminator.Utilities.Roslyn;
+using static Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -37,7 +37,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 					return generator.InvocationExpression(
 						generator.MemberAccessExpression(
 							generator.TypeExpression(_pxContext.PXGraph.Type),
-							generator.GenericName(nameof(PX.Data.PXGraph.CreateInstance), typeSymbol)));
+							generator.GenericName(Types.PXGraphDelegates.CreateInstance, typeSymbol)));
 				}
 
 				return base.VisitObjectCreationExpression(node);
