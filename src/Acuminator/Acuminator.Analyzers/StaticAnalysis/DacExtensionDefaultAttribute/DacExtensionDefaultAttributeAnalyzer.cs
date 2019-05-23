@@ -4,7 +4,6 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using PX.Data;
 using System;
 using System.Collections.Immutable;
 using System.Linq;

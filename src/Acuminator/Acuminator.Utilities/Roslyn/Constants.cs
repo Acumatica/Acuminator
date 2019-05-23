@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace Acuminator.Utilities.Roslyn
 {
-	internal static class Constants
+	public static class Constants
 	{
-		internal static class Types
+		public static class Types
 		{
 
 			#region FieldAttributeSymbols
@@ -12,7 +14,7 @@ namespace Acuminator.Utilities.Roslyn
 			/// <summary>
 			/// The PXDBPackedIntegerArrayAttribute type full name in Acumatica 2018R2. Doesn't exist in previous versions.
 			/// </summary>
-			internal static readonly string PXDBPackedIntegerArrayAttributeFullName_Acumatica2018R2 = "PX.Data.PXDBPackedIntegerArrayAttribute";
+			internal static readonly string PXDBPackedIntegerArrayAttributeFullNameAcumatica2018R2 = "PX.Data.PXDBPackedIntegerArrayAttribute";
 
 			internal static readonly string PeriodIDAttribute = "PX.Objects.GL.PeriodIDAttribute";
 			internal static readonly string AcctSubAttribute = "PX.Objects.GL.AcctSubAttribute";
@@ -44,6 +46,12 @@ namespace Acuminator.Utilities.Roslyn
 			internal static readonly string PXGuidAttribute = "PX.Data.PXGuidAttribute";
 			internal static readonly string PXBoolAttribute = "PX.Data.PXBoolAttribute";
 			internal static readonly string PXDBFieldAttribute = "PX.Data.PXDBFieldAttribute";
+
+			public static class PXDBFieldAttributeFields
+			{
+				public static readonly string IsKey = "IsKey";
+			}
+
 			internal static readonly string PXDBLongAttribute = "PX.Data.PXDBLongAttribute";
 			internal static readonly string PXDBIntAttribute = "PX.Data.PXDBIntAttribute";
 			internal static readonly string PXDBShortAttribute = "PX.Data.PXDBShortAttribute";
@@ -79,7 +87,7 @@ namespace Acuminator.Utilities.Roslyn
 			internal static readonly string PXLongOperation = "PX.Data.PXLongOperation";
 			internal static readonly string PXActionCollection = "PX.Data.PXActionCollection";
 			internal static readonly string PXAdapter = "PX.Data.PXAdapter";
-			internal static readonly string IBqlTable = "PX.Data.IBqlTable";
+			
 			internal static readonly string IBqlField = "PX.Data.IBqlField";
 			internal static readonly string Constant = "PX.Data.Constant`1";
 			internal static readonly string IPXResultset = "PX.Data.IPXResultset";
@@ -311,8 +319,6 @@ namespace Acuminator.Utilities.Roslyn
 
 			#region PXSelectBase
 			
-			internal static readonly string  PXSelectBase = "PX.Data.PXSelectBase";
-			
 			internal static class PXSelectBaseDelegates
 			{
 				internal static readonly string View = "View";
@@ -368,16 +374,17 @@ namespace Acuminator.Utilities.Roslyn
 
 			#region PXViewSymbols
 			internal static readonly string PXView = "PX.Data.PXView";
-			
-			internal static class PXViewDelegates
+			public static class PXViewDelegates
 			{
-				internal static readonly string Select = "Select";
+				public static readonly string Select = "Select";
 
-				internal static readonly string WhereAnd = "WhereAnd";
-				internal static readonly string WhereNew = "WhereNew";
-				internal static readonly string WhereOr = "WhereOr";
-				internal static readonly string Join = "Join";
-				internal static readonly string JoinNew = "JoinNew";
+				public static readonly string WhereAnd = "WhereAnd";
+				public static readonly string WhereNew = "WhereNew";
+				public static readonly string WhereOr = "WhereOr";
+				public static readonly string Join = "Join";
+				public static readonly string JoinNew = "JoinNew";
+
+				public static readonly string StartRow = "StartRow";
 			}
 			#endregion
 
@@ -402,50 +409,46 @@ namespace Acuminator.Utilities.Roslyn
 			}
 			#endregion
 
-			/*#region TypeNames.cs
-			internal static readonly string IBqlTable = "IBqlTable";
 
-			internal static readonly string BqlCommand = "BqlCommand";
 
-			internal static readonly string IBqlField = "IBqlField";
-			internal static readonly string IBqlParameter = "IBqlParameter";
-			internal static readonly string IBqlJoin = "IBqlJoin";
-			internal static readonly string IBqlOrderBy = "IBqlOrderBy";
-			internal static readonly string IBqlAggregate = "IBqlAggregate";
-			internal static readonly string IBqlFunction = "IBqlFunction";
-			internal static readonly string IBqlSortColumn = "IBqlSortColumn";
-			internal static readonly string IBqlComparison = "IBqlComparison";
-			internal static readonly string IBqlCreator = "IBqlCreator";
-			internal static readonly string IBqlPredicateChain = "IBqlPredicateChain";
-			internal static readonly string IBqlOn = "IBqlOn";
-			internal static readonly string IBqlSet = "IBqlSet";
+			#region DacExtensionDefaultAttributeFix.cs
 
-			internal static readonly string PXSelectBaseType = "PXSelectBase";
+			public static class DacExtensionDefaultAttributeFixDelegates
+			{
+				public static readonly string PXUnboundDefaultAttributeName = "PXUnboundDefault";
+				public static readonly string PXPersistingCheck = "PXPersistingCheck";
+				public static readonly string PersistingCheck = "PersistingCheck";
+				public static readonly string PersistingCheckNothing = "Nothing";
+				public static readonly string PXDefault = "PXDefault";
+			}
 
-			internal static readonly string Constant = "Constant";
-			internal static readonly string ConstantGeneric = "Constant`1";
+			#endregion
 
-			internal static readonly string PXCacheExtension = "PXCacheExtension";
-			internal static readonly string PXCacheExtensionGeneric = "PXCacheExtension`1";
+			#region BqlContext.cs
 
-			internal static readonly string PXGraph = "PXGraph";
+			public static readonly string SelectBase5 = "PX.Data.SelectBase`5";
+			public static readonly string SearchBase5 = "PX.Data.SearchBase`5";
+			public static readonly string PXSelectBase = "PX.Data.PXSelectBase";
+			public static readonly string Where2 = "PX.Data.Where2`2";
+			public static readonly string And2 = "PX.Data.And2`2";
+			public static readonly string Or2 = "PX.Data.Or2`2";
+			public static readonly string Aggregate = "PX.Data.Aggregate`1";
+			public static readonly string GroupByBase2 = "PX.Data.GroupByBase`2";
+			public static readonly string BqlPredicateBinaryBase2 = "PX.Data.BqlPredicateBinaryBase`2";
+			public static readonly string IBqlCreator = "PX.Data.IBqlCreator";
+			public static readonly string IBqlSelect = "PX.Data.IBqlSelect";
+			public static readonly string IBqlSearch = "PX.Data.IBqlSearch";
+			public static readonly string IBqlJoin = "PX.Data.IBqlJoin";
+			public static readonly string IBqlOn = "PX.Data.IBqlOn";
+			public static readonly string IBqlWhere = "PX.Data.IBqlWhere";
+			public static readonly string IBqlOrderBy = "PX.Data.IBqlOrderBy";
+			public static readonly string IBqlSortColumn = "PX.Data.IBqlSortColumn";
+			public static readonly string IBqlFunction = "PX.Data.IBqlFunction";
+			public static readonly string IBqlPredicateChain = "PX.Data.IBqlPredicateChain";
+			public static readonly string IBqlTable = "PX.Data.IBqlTable";
 
-			internal static readonly string PXGraphGeneric = "PXGraph`1";
-			internal static readonly string PXGraphExtension = "PXGraphExtension";
+			#endregion
 
-			internal static readonly string PXAction = "PXAction";
-			internal static readonly string PXActionGeneric = "PXAction`1";
-
-			internal const string PXUpdate = nameof(PXUpdate);
-			internal const string PXUpdateJoin = nameof(PXUpdateJoin);
-			internal const string PXUpdateGroupBy = nameof(PXUpdateGroupBy);
-			internal const string PXUpdateJoinGroupBy = nameof(PXUpdateJoinGroupBy);
-
-			internal const string PXSelectReadonly = "PXSelectReadonly";
-			internal const string PXSelectReadonly2 = nameof(PXSelectReadonly2);
-			internal const string PXSelectReadonly3 = nameof(PXSelectReadonly3);
-
-			#endregion*/
 
 			#region Template
 
@@ -469,5 +472,158 @@ namespace Acuminator.Utilities.Roslyn
 			}
 		}
 
+
+		public class TypeNames
+		{
+
+			#region TypeNames.cs
+
+			public static readonly string PXView = "PXView";
+
+			public static readonly string IBqlTable = "IBqlTable";
+
+			public static readonly string BqlCommand = "BqlCommand";
+			public static readonly string FbqlCommand = "FbqlCommand";
+			public static readonly string IBqlField = "IBqlField";
+			public static readonly string IBqlParameter = "IBqlParameter";
+			public static readonly string IBqlJoin = "IBqlJoin";
+			public static readonly string IBqlOrderBy = "IBqlOrderBy";
+			public static readonly string IBqlAggregate = "IBqlAggregate";
+			public static readonly string IBqlFunction = "IBqlFunction";
+			public static readonly string IBqlSortColumn = "IBqlSortColumn";
+			public static readonly string IBqlComparison = "IBqlComparison";
+			public static readonly string IBqlCreator = "IBqlCreator";
+			public static readonly string IBqlPredicateChain = "IBqlPredicateChain";
+			public static readonly string IBqlOn = "IBqlOn";
+			public static readonly string IBqlSet = "IBqlSet";
+
+			public static readonly string PXSelectBaseType = "PXSelectBase";
+
+			public static readonly string Constant = "Constant";
+			public static readonly string ConstantGeneric = "Constant`1";
+
+			public static readonly string PXCacheExtension = "PXCacheExtension";
+			public static readonly string PXCacheExtensionGeneric = "PXCacheExtension`1";
+
+			public static readonly string PXGraph = "PXGraph";
+
+			public static readonly string PXGraphGeneric = "PXGraph`1";
+			public static readonly string PXGraphExtension = "PXGraphExtension";
+
+			public static readonly string PXAction = "PXAction";
+			public static readonly string PXActionGeneric = "PXAction`1";
+
+			public static readonly string PXUpdate = nameof(PXUpdate);
+			public static readonly string PXUpdateJoin = nameof(PXUpdateJoin);
+			public static readonly string PXUpdateGroupBy = nameof(PXUpdateGroupBy);
+			public static readonly string PXUpdateJoinGroupBy = nameof(PXUpdateJoinGroupBy);
+
+			public static readonly string PXSelectReadonly = "PXSelectReadonly";
+			public static readonly string PXSelectReadonly2 = nameof(PXSelectReadonly2);
+			public static readonly string PXSelectReadonly3 = nameof(PXSelectReadonly3);
+
+			public static readonly string PXSelectBase_Acumatica2018R2 = "PX.Data.PXSelectBase`2";
+			public static readonly string IViewConfig_Acumatica2018R2 = "PX.Data.PXSelectBase`2+IViewConfig";
+			public static readonly string PXGraphTypeName = "PX.Data.PXGraph";
+
+			public static readonly string FbqlSelect = nameof(FbqlSelect);
+
+			public static readonly string FullJoin = nameof(FullJoin);
+			public static readonly string RightJoin = nameof(RightJoin);
+			public static readonly string LeftJoin = nameof(LeftJoin);
+			public static readonly string InnerJoin = nameof(InnerJoin);
+
+
+
+			public static ImmutableDictionary<string, PXCodeType> TypeNamesToCodeTypesForIdentifier { get; } =
+			new Dictionary<string, PXCodeType>
+			{
+				[IBqlTable] = PXCodeType.Dac,
+				[IBqlField] = PXCodeType.DacField,
+				[PXCacheExtension] = PXCodeType.DacExtension,
+				[IBqlParameter] = PXCodeType.BqlParameter,
+				[Constant] = PXCodeType.BQLConstantEnding,
+
+				[PXSelectBaseType] = PXCodeType.BqlCommand,
+				[BqlCommand] = PXCodeType.BqlCommand,
+				[PXUpdate] = PXCodeType.BqlCommand,
+				[PXUpdateJoin] = PXCodeType.BqlCommand,
+				[PXUpdateGroupBy] = PXCodeType.BqlCommand,
+				[PXUpdateJoinGroupBy] = PXCodeType.BqlCommand,
+
+				[IBqlCreator] = PXCodeType.BqlOperator,
+				[IBqlJoin] = PXCodeType.BqlOperator,
+				[IBqlSet] = PXCodeType.BqlOperator,
+
+				[FullJoin] = PXCodeType.BqlOperator,
+				[RightJoin] = PXCodeType.BqlOperator,
+				[LeftJoin] = PXCodeType.BqlOperator,
+				[InnerJoin] = PXCodeType.BqlOperator,
+
+				[PXGraph] = PXCodeType.PXGraph
+			}
+			.ToImmutableDictionary();
+
+			public static ImmutableDictionary<string, PXCodeType> TypeNamesToCodeTypesForGenericName { get; } =
+				new Dictionary<string, PXCodeType>
+				{
+					[PXSelectBaseType] = PXCodeType.BqlCommand,
+					[BqlCommand] = PXCodeType.BqlCommand,
+					[PXUpdate] = PXCodeType.BqlCommand,
+					[PXUpdateJoin] = PXCodeType.BqlCommand,
+					[PXUpdateGroupBy] = PXCodeType.BqlCommand,
+					[PXUpdateJoinGroupBy] = PXCodeType.BqlCommand,
+
+					[IBqlParameter] = PXCodeType.BqlParameter,
+					[IBqlCreator] = PXCodeType.BqlOperator,
+					[IBqlJoin] = PXCodeType.BqlOperator,
+					[IBqlSet] = PXCodeType.BqlOperator,
+
+					[FullJoin] = PXCodeType.BqlOperator,
+					[RightJoin] = PXCodeType.BqlOperator,
+					[LeftJoin] = PXCodeType.BqlOperator,
+					[InnerJoin] = PXCodeType.BqlOperator,
+
+					[PXAction] = PXCodeType.PXAction,
+				}
+				.ToImmutableDictionary();
+
+			public static ImmutableHashSet<string> PXUpdateBqlTypes = new string[]
+			{
+				PXUpdate,
+				PXUpdateJoin,
+				PXUpdateGroupBy,
+				PXUpdateJoinGroupBy
+			}.ToImmutableHashSet();
+			
+			public static ImmutableHashSet<string> NotColoredTypes = new string[]
+			{
+				BqlCommand,
+				FbqlCommand,
+				PXCacheExtension,
+				PXCacheExtensionGeneric,
+				Constant,
+				ConstantGeneric,
+				PXGraph,
+				PXGraphGeneric
+			}.ToImmutableHashSet();
+
+			public static ImmutableHashSet<string> ReadOnlySelects { get; } = new string[]
+			{
+				PXSelectReadonly,
+				PXSelectReadonly2,
+				PXSelectReadonly3,
+			}.ToImmutableHashSet();
+
+			public static ImmutableHashSet<string> FBqlJoins = new string[]
+			{
+				FullJoin,
+				RightJoin,
+				LeftJoin,
+				InnerJoin,
+			}.ToImmutableHashSet();
+
+			#endregion
+		}
 	}
 }

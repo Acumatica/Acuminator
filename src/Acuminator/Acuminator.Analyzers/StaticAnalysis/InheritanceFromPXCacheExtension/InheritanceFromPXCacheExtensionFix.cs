@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Threading.Tasks;
-using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -11,8 +9,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
-using PX.Data;
-
+using static Acuminator.Utilities.Roslyn.Constants;
 namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
@@ -43,7 +40,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 						while (currentType != null
 							&& !currentType.Equals(pxContext.PXCacheExtensionType))
 						{
-							if (currentType.Name == nameof(PXCacheExtension))
+							if (currentType.Name == TypeNames.PXCacheExtension)
 							{
 								genericArgs.AddRange(currentType.TypeArguments);
 								break;
@@ -55,7 +52,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 						
 						var newRoot = await context.Document.GetSyntaxRootAsync(c);
 						var oldBaseNode = node.BaseList.Types.First();
-						var newBaseNode = SyntaxFactory.SimpleBaseType((TypeSyntax) generator.GenericName(nameof(PXCacheExtension), genericArgs));
+						var newBaseNode = SyntaxFactory.SimpleBaseType((TypeSyntax) generator.GenericName(TypeNames.PXCacheExtension, genericArgs));
 						newRoot = newRoot.ReplaceNode(oldBaseNode, newBaseNode);
 
 						return context.Document.WithSyntaxRoot(newRoot);
