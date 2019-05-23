@@ -39,6 +39,9 @@
     <Reference Include="PX.Data">
       <HintPath>..\..\..\..\lib\PX.Data.dll</HintPath>
     </Reference>
+    <Reference Include="PX.Data.BQL.Fluent">
+      <HintPath>..\..\..\..\lib\PX.Data.BQL.Fluent.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -78,6 +81,7 @@
     <Compile Include="Graph\Graph starts long operaton from incorrect places\SMUserProcess.cs" />
     <Compile Include="Graph\Graph with creation of other graphs\ARTranEntry.cs" />
     <Compile Include="Graph\Graph Reusing\SOOrdersInqExt.cs" />
+    <Compile Include="Graph\Graph with no primary view and actions not on primary DAC\StudentsFBQLMaint.cs" />
     <Compile Include="Graph\Graph with processing delegate uses incorrect view and throws setup exceptions\UsersProcess.cs" />
     <Compile Include="Graph\Start row reset for paging\LEPMaint.cs" />
     <Compile Include="Graph\View Order\DAC\ARTran.cs" />
