@@ -1,5 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Title>Acumatica.Analyzers</Title>
+    <AssemblyTitle>Acumatica.Analyzers</AssemblyTitle>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Version>2.0.0</Version>
     <PackageProjectUrl>https://github.com/Acumatica/Acuminator</PackageProjectUrl>
@@ -9,7 +11,11 @@
     <PackageReleaseNotes>https://github.com/Acumatica/Acuminator/blob/dev/docs/ReleaseNotes.md</PackageReleaseNotes>
     <LangVersion>latest</LangVersion>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
+    <Company>Acumatica</Company>
+    <Description>The static analyzers for Acumatica</Description>
+    <Authors>Acumatica</Authors>
+    <NeutralLanguage>en</NeutralLanguage> 
   </PropertyGroup>
 
   <ItemGroup>
