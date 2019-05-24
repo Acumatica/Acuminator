@@ -25,10 +25,8 @@ namespace Acuminator.Vsix.Formatter
 
 			if (useTabs && indentSize >= tabSize)
 			{
-				var items = Enumerable
-					.Repeat(SyntaxFactory.Tab, indentSize / tabSize)
-					.Append(SyntaxFactory.Whitespace(new string(' ', indentSize % tabSize)));
-			    IndentationTrivia = items.ToSyntaxTriviaList();
+				var indentItems = GetUseTabsModeIndentTrivias(indentSize, tabSize);
+			    IndentationTrivia = indentItems.ToSyntaxTriviaList();
 			}
 			else
 			{
@@ -53,6 +51,21 @@ namespace Acuminator.Vsix.Formatter
 			string newLineCharacter = textView.Options.GetOptionValue(DefaultOptions.NewLineCharacterOptionId);
 
 			return new BqlFormatter(newLineCharacter, !convertTabsToSpaces, tabSize, indentSize);
+		}
+
+		private static IEnumerable<SyntaxTrivia> GetUseTabsModeIndentTrivias(int indentSize, int tabSize)
+		{
+			foreach (SyntaxTrivia indentTabTrivia in Enumerable.Repeat(SyntaxFactory.Tab, indentSize / tabSize))
+			{
+				yield return indentTabTrivia;
+			}
+
+			int remainingSpaceTrivia = indentSize % tabSize;
+
+			if (remainingSpaceTrivia != 0)
+			{
+				yield return SyntaxFactory.Whitespace(new string(' ', remainingSpaceTrivia));
+			}
 		}
 	}
 }
