@@ -72,9 +72,7 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="packages.config" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -163,8 +161,8 @@
     <Reference Include="Microsoft.VisualStudio.Composition.NetFxAttributes, Version=15.8.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.VisualStudio.Composition.NetFxAttributes.15.8.98\lib\net45\Microsoft.VisualStudio.Composition.NetFxAttributes.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.VisualStudio.CoreUtility.16.0.428\lib\net472\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
+    <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.VisualStudio.CoreUtility.15.8.525\lib\net46\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Debugger.Interop, Version=8.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\..\packages\Microsoft.VisualStudio.Debugger.Interop.8.0.50729\lib\net11\Microsoft.VisualStudio.Debugger.Interop.dll</HintPath>
@@ -774,6 +772,7 @@
     <Compile Include="Commands\BQL Fixer\FixBqlCommand.cs" />
     <Compile Include="Commands\GoToDeclarationOrHandler\GoToDeclarationOrHandlerCommand.cs" />
     <Compile Include="Commands\VSCommandBase.cs" />
+    <Compile Include="ProjectProperties.cs" />
     <Compile Include="Resources\VSIXResource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -906,12 +905,12 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.2.9.2\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
-    <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.2.9.2\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+    <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.1\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
+    <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.1\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
     <Analyzer Include="..\..\packages\Microsoft.VisualStudio.SDK.Analyzers.16.0.29\analyzers\cs\Microsoft.VisualStudio.SDK.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\..\packages\Microsoft.VisualStudio.SDK.Analyzers.16.0.29\analyzers\cs\Microsoft.VisualStudio.SDK.Analyzers.dll" />
+    <Analyzer Include="..\..\packages\Microsoft.VisualStudio.Threading.Analyzers.15.8.192\analyzers\cs\Microsoft.VisualStudio.Threading.Analyzers.dll" />
     <Analyzer Include="..\..\packages\Microsoft.VisualStudio.Threading.Analyzers.16.0.102\analyzers\cs\Microsoft.VisualStudio.Threading.Analyzers.CodeFixes.dll" />
-    <Analyzer Include="..\..\packages\Microsoft.VisualStudio.Threading.Analyzers.16.0.102\analyzers\cs\Microsoft.VisualStudio.Threading.Analyzers.dll" />
   </ItemGroup>
   <Import Project="..\..\packages\GitVersionTask.3.6.5\build\portable-net+sl+win+wpa+wp\GitVersionTask.targets" Condition="Exists('..\..\packages\GitVersionTask.3.6.5\build\portable-net+sl+win+wpa+wp\GitVersionTask.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -925,26 +924,26 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\Microsoft.CodeAnalysis.Analyzers.2.9.2\build\Microsoft.CodeAnalysis.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.CodeAnalysis.Analyzers.2.9.2\build\Microsoft.CodeAnalysis.Analyzers.props'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.VisualStudio.SDK.EmbedInteropTypes.15.0.16\build\Microsoft.VisualStudio.SDK.EmbedInteropTypes.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.VisualStudio.SDK.EmbedInteropTypes.15.0.16\build\Microsoft.VisualStudio.SDK.EmbedInteropTypes.targets'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.VisualStudio.Threading.Analyzers.16.0.102\build\Microsoft.VisualStudio.Threading.Analyzers.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.VisualStudio.Threading.Analyzers.16.0.102\build\Microsoft.VisualStudio.Threading.Analyzers.targets'))" />
-    <Error Condition="!Exists('..\..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.linux.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.linux.targets'))" />
-    <Error Condition="!Exists('..\..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.osx.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.osx.targets'))" />
-    <Error Condition="!Exists('..\..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.VisualStudio.SDK.Analyzers.16.0.29\build\Microsoft.VisualStudio.SDK.Analyzers.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.VisualStudio.SDK.Analyzers.16.0.29\build\Microsoft.VisualStudio.SDK.Analyzers.targets'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.VSSDK.BuildTools.15.9.3039\build\Microsoft.VSSDK.BuildTools.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.VSSDK.BuildTools.15.9.3039\build\Microsoft.VSSDK.BuildTools.props'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.VSSDK.BuildTools.15.9.3039\build\Microsoft.VSSDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.VSSDK.BuildTools.15.9.3039\build\Microsoft.VSSDK.BuildTools.targets'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.VisualStudio.ProjectSystem.Sdk.Tools.15.8.243\build\Microsoft.VisualStudio.ProjectSystem.Sdk.Tools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.VisualStudio.ProjectSystem.Sdk.Tools.15.8.243\build\Microsoft.VisualStudio.ProjectSystem.Sdk.Tools.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.VisualStudio.SDK.EmbedInteropTypes.15.0.16\build\Microsoft.VisualStudio.SDK.EmbedInteropTypes.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.VisualStudio.SDK.EmbedInteropTypes.15.0.16\build\Microsoft.VisualStudio.SDK.EmbedInteropTypes.targets'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.VisualStudio.Threading.Analyzers.15.8.192\build\Microsoft.VisualStudio.Threading.Analyzers.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.VisualStudio.Threading.Analyzers.15.8.192\build\Microsoft.VisualStudio.Threading.Analyzers.targets'))" />
+    <Error Condition="!Exists('..\..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.linux.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.linux.targets'))" />
+    <Error Condition="!Exists('..\..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.osx.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.osx.targets'))" />
+    <Error Condition="!Exists('..\..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.VisualStudio.ProjectSystem.15.8.243\build\Microsoft.VisualStudio.ProjectSystem.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.VisualStudio.ProjectSystem.15.8.243\build\Microsoft.VisualStudio.ProjectSystem.targets'))" />
   </Target>
-  <Import Project="..\..\packages\Microsoft.VisualStudio.SDK.EmbedInteropTypes.15.0.16\build\Microsoft.VisualStudio.SDK.EmbedInteropTypes.targets" Condition="Exists('..\..\packages\Microsoft.VisualStudio.SDK.EmbedInteropTypes.15.0.16\build\Microsoft.VisualStudio.SDK.EmbedInteropTypes.targets')" />
   <Import Project="..\..\packages\Microsoft.VisualStudio.Threading.Analyzers.16.0.102\build\Microsoft.VisualStudio.Threading.Analyzers.targets" Condition="Exists('..\..\packages\Microsoft.VisualStudio.Threading.Analyzers.16.0.102\build\Microsoft.VisualStudio.Threading.Analyzers.targets')" />
-  <Import Project="..\..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.linux.targets" Condition="Exists('..\..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.linux.targets')" />
-  <Import Project="..\..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.osx.targets" Condition="Exists('..\..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.osx.targets')" />
-  <Import Project="..\..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets" Condition="Exists('..\..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets')" />
   <Import Project="..\..\packages\Microsoft.VisualStudio.SDK.Analyzers.16.0.29\build\Microsoft.VisualStudio.SDK.Analyzers.targets" Condition="Exists('..\..\packages\Microsoft.VisualStudio.SDK.Analyzers.16.0.29\build\Microsoft.VisualStudio.SDK.Analyzers.targets')" />
   <Import Project="..\..\packages\Microsoft.VSSDK.BuildTools.15.9.3039\build\Microsoft.VSSDK.BuildTools.targets" Condition="Exists('..\..\packages\Microsoft.VSSDK.BuildTools.15.9.3039\build\Microsoft.VSSDK.BuildTools.targets')" />
   <Import Project="..\..\packages\Microsoft.VisualStudio.ProjectSystem.Sdk.Tools.15.8.243\build\Microsoft.VisualStudio.ProjectSystem.Sdk.Tools.targets" Condition="Exists('..\..\packages\Microsoft.VisualStudio.ProjectSystem.Sdk.Tools.15.8.243\build\Microsoft.VisualStudio.ProjectSystem.Sdk.Tools.targets')" />
+  <Import Project="..\..\packages\Microsoft.VisualStudio.SDK.EmbedInteropTypes.15.0.16\build\Microsoft.VisualStudio.SDK.EmbedInteropTypes.targets" Condition="Exists('..\..\packages\Microsoft.VisualStudio.SDK.EmbedInteropTypes.15.0.16\build\Microsoft.VisualStudio.SDK.EmbedInteropTypes.targets')" />
   <Import Project="..\..\packages\Microsoft.VisualStudio.Threading.Analyzers.15.8.192\build\Microsoft.VisualStudio.Threading.Analyzers.targets" Condition="Exists('..\..\packages\Microsoft.VisualStudio.Threading.Analyzers.15.8.192\build\Microsoft.VisualStudio.Threading.Analyzers.targets')" />
+  <Import Project="..\..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.linux.targets" Condition="Exists('..\..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.linux.targets')" />
+  <Import Project="..\..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.osx.targets" Condition="Exists('..\..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.osx.targets')" />
+  <Import Project="..\..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets" Condition="Exists('..\..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.2\build\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets')" />
   <Import Project="..\..\packages\Microsoft.VisualStudio.ProjectSystem.15.8.243\build\Microsoft.VisualStudio.ProjectSystem.targets" Condition="Exists('..\..\packages\Microsoft.VisualStudio.ProjectSystem.15.8.243\build\Microsoft.VisualStudio.ProjectSystem.targets')" />
 </Project>
