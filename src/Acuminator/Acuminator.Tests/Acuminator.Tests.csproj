@@ -218,10 +218,8 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -740,21 +738,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="FormatterTests.playlist" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Acuminator.Utilities\Acuminator.Utilities.csproj">
-      <Project>{B902103C-831B-4BBF-A88B-3DAE6F601CF0}</Project>
-      <Name>Acuminator.Utilities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Acuminator.Vsix\Acuminator.Vsix.csproj">
-      <Project>{6deb14bb-d8f6-4f5b-bbd7-e756ceb67d42}</Project>
-      <Name>Acuminator.Vsix</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Acuminator.Analyzers\Acuminator.Analyzers.csproj">
-      <Project>{984DBFAC-91A7-4059-A5B2-CDE33CD93EA0}</Project>
-      <Name>Acuminator.Analyzers</Name>
-    </ProjectReference>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
@@ -764,6 +750,20 @@
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.1\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.1\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
     <Analyzer Include="..\..\packages\xunit.analyzers.0.10.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Acuminator.Analyzers\Acuminator.Analyzers.csproj">
+      <Project>{984dbfac-91a7-4059-a5b2-cde33cd93ea0}</Project>
+      <Name>Acuminator.Analyzers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Acuminator.Utilities\Acuminator.Utilities.csproj">
+      <Project>{b902103c-831b-4bbf-a88b-3dae6f601cf0}</Project>
+      <Name>Acuminator.Utilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Acuminator.Vsix\Acuminator.Vsix.csproj">
+      <Project>{6deb14bb-d8f6-4f5b-bbd7-e756ceb67d42}</Project>
+      <Name>Acuminator.Vsix</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
