@@ -218,7 +218,9 @@ namespace Acuminator.Vsix.Utilities.Navigation
 
 			try
 			{
-				var window = dte.ItemOperations.OpenFile(filePath, EnvDTE.Constants.vsViewKindCode);
+				//EnvDTE.Constants.vsViewKindCode, removed due to CS1752 error  Interop type 'EnvDTE.Constants' cannot be embedded
+				const string vsViewKindCode = "{7651A701-06E5-11D1-8EBD-00A0C90F26EA}";  
+				var window = dte.ItemOperations.OpenFile(filePath, vsViewKindCode);
 				var textDocument = window?.GetTextDocumentFromWindow();
 
 				if (textDocument == null)
