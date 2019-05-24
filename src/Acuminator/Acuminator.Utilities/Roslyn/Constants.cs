@@ -233,16 +233,10 @@ namespace Acuminator.Utilities.Roslyn
 
 			internal static class PXCacheDelegates
 			{
-				[GenerateConstString("nameof(PX.Data.PXCache.Insert)")]
 				internal static readonly string Insert = "Insert";
 				
-				[GenerateConstString("nameof(PX.Data.PXCache.Update)")]
 				internal static readonly string Update = "Update";
-
-				[GenerateConstString("nameof(PX.Data.PXCache.Delete)")]
 				internal static readonly string Delete = "Delete";
-
-				[GenerateConstString("nameof(PX.Data.PXCache.RaiseExceptionHandling)")]
 				internal static readonly string RaiseExceptionHandling = "RaiseExceptionHandling";
 			}
 			#endregion
@@ -409,8 +403,6 @@ namespace Acuminator.Utilities.Roslyn
 			}
 			#endregion
 
-
-
 			#region DacExtensionDefaultAttributeFix.cs
 
 			public static class DacExtensionDefaultAttributeFixDelegates
@@ -461,29 +453,7 @@ namespace Acuminator.Utilities.Roslyn
 
 			#endregion
 
-
-			#region Template
-
-			internal static readonly string TemplateAttributeOrClass = "typeof(AcumaticaType).FullName";
-			
-			internal static class TemplateDelegates
-			{
-				internal static readonly string SetList = "SetList";
-			}
-
-			#endregion
-
-
 		}
-
-		internal sealed class GenerateConstStringAttribute : Attribute
-		{
-			public GenerateConstStringAttribute(string name)
-			{
-
-			}
-		}
-
 
 		public class TypeNames
 		{
@@ -525,25 +495,25 @@ namespace Acuminator.Utilities.Roslyn
 			public static readonly string PXAction = "PXAction";
 			public static readonly string PXActionGeneric = "PXAction`1";
 
-			public static readonly string PXUpdate = nameof(PXUpdate);
-			public static readonly string PXUpdateJoin = nameof(PXUpdateJoin);
-			public static readonly string PXUpdateGroupBy = nameof(PXUpdateGroupBy);
-			public static readonly string PXUpdateJoinGroupBy = nameof(PXUpdateJoinGroupBy);
+			public static readonly string PXUpdate = "PXUpdate";
+			public static readonly string PXUpdateJoin = "PXUpdateJoin";
+			public static readonly string PXUpdateGroupBy = "PXUpdateGroupBy";
+			public static readonly string PXUpdateJoinGroupBy = "PXUpdateJoinGroupBy";
 
 			public static readonly string PXSelectReadonly = "PXSelectReadonly";
-			public static readonly string PXSelectReadonly2 = nameof(PXSelectReadonly2);
-			public static readonly string PXSelectReadonly3 = nameof(PXSelectReadonly3);
+			public static readonly string PXSelectReadonly2 = "PXSelectReadonly2";
+			public static readonly string PXSelectReadonly3 = "PXSelectReadonly3";
 
 			public static readonly string PXSelectBase_Acumatica2018R2 = "PX.Data.PXSelectBase`2";
 			public static readonly string IViewConfig_Acumatica2018R2 = "PX.Data.PXSelectBase`2+IViewConfig";
 			public static readonly string PXGraphTypeName = "PX.Data.PXGraph";
 
-			public static readonly string FbqlSelect = nameof(FbqlSelect);
+			public static readonly string FbqlSelect = "FbqlSelect";
 
-			public static readonly string FullJoin = nameof(FullJoin);
-			public static readonly string RightJoin = nameof(RightJoin);
-			public static readonly string LeftJoin = nameof(LeftJoin);
-			public static readonly string InnerJoin = nameof(InnerJoin);
+			public static readonly string FullJoin = "FullJoin";
+			public static readonly string RightJoin = "RightJoin";
+			public static readonly string LeftJoin = "LeftJoin";
+			public static readonly string InnerJoin = "InnerJoin";
 
 
 
