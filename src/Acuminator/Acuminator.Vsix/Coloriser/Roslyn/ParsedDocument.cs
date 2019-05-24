@@ -16,6 +16,9 @@ namespace Acuminator.Vsix.Coloriser
 {
     public class ParsedDocument
     {
+        private static MetadataReference PXDataReference { get; } = 
+            MetadataReference.CreateFromFile(typeof(PX.Data.PXGraph).Assembly.Location);
+
         private static readonly HashSet<string> allowedExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             ".cs"
@@ -88,7 +91,7 @@ namespace Acuminator.Vsix.Coloriser
             syntaxRoot = syntaxRootTask.Result;
 
             //Add reference to PX.Data
-            Compilation newCompilation = semanticModelTask.Result.Compilation;
+            Compilation newCompilation = semanticModelTask.Result.Compilation.AddReferences(PXDataReference);
 
             if (cancellationToken.IsCancellationRequested)
                 return null;
