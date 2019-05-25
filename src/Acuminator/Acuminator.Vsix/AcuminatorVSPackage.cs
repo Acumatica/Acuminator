@@ -53,7 +53,8 @@ namespace Acuminator.Vsix
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
-	//[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExistsAndNotBuildingAndNotDebugging_string)] // Auto-load for dynamic menu enabling/disabling; this context seems to work for SSMS and VS
+	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExistsAndFullyLoaded_string, PackageAutoLoadFlags.BackgroundLoad)]
+	[ProvideAutoLoad(VSConstants.UICONTEXT.Debugging_string, PackageAutoLoadFlags.BackgroundLoad)]
 	[ProvideMenuResource("Menus.ctmenu", 1)]
 	[Guid(AcuminatorVSPackage.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", 
@@ -64,6 +65,7 @@ namespace Acuminator.Vsix
 					   Style = VsDockStyle.Linked)]
 	public sealed class AcuminatorVSPackage : AsyncPackage
 	{
+		private const int TotalLoadSteps = 5;
 		private const string SettingsCategoryName = "Acuminator";
 
 		/// <summary>
@@ -157,16 +159,23 @@ namespace Acuminator.Vsix
 				return;
 
 			await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-			InitializeCommands();
-			SubscribeOnSolutionEvents();
+
+			await InitializeCommandsAsync(progress);		
+			await SubscribeOnSolutionEventsAsync();
+			cancellationToken.ThrowIfCancellationRequested();
 
 			IComponentModel componentModel = Package.GetGlobalService(typeof(SComponentModel)) as IComponentModel;
 
 			if (componentModel == null)
 				return;
 
-			InitializeLogger();
-			InitializeSuppressionManager();
+			InitializeLogger(progress);
+			await InitializeSuppressionManagerAsync(progress);
+			cancellationToken.ThrowIfCancellationRequested();
+
+			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCompositionContainer,
+													   currentStep: 4, TotalLoadSteps);
+			progress?.Report(progressData);
 
 			try
 			{
@@ -187,23 +196,22 @@ namespace Acuminator.Vsix
 			{
 				// Exception will be logged in FCEL
 			}
-		}
 
-		private void InitializeSuppressionManager()
-		{
-			var workspace = this.GetVSWorkspaceAsync();
-			var additionalFiles = workspace.CurrentSolution.Projects
-														   .SelectMany(p => p.AdditionalDocuments)
-														   .Select(d => (path: d.FilePath, generateSuppressionBase: false));
+			cancellationToken.ThrowIfCancellationRequested();
+			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_Done,
+												   currentStep: 5, TotalLoadSteps);
+			progress?.Report(progressData);
+		}	
 
-			SuppressionManager.Init(new SuppressionFileSystemService(), additionalFiles);
-		}
-
-		private void InitializeCommands()
+		private async System.Threading.Tasks.Task InitializeCommandsAsync(IProgress<ServiceProgressData> progress)
 		{
 			// if the package is zombied, we don't want to add commands
 			if (Zombied)
 				return;
+
+			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCommands,
+													   currentStep: 1, TotalLoadSteps);
+			progress?.Report(progressData);
 
 			FormatBqlCommand.Initialize(this);
 			GoToDeclarationOrHandlerCommand.Initialize(this);
@@ -212,13 +220,15 @@ namespace Acuminator.Vsix
 			OpenCodeMapWindowCommand.Initialize(this);
 		}
 
-		private void SubscribeOnSolutionEvents()
+		private async System.Threading.Tasks.Task SubscribeOnSolutionEventsAsync()
 		{
 			if (!ThreadHelper.CheckAccess())
 				return;
 
 #pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
-			if (GetService(typeof(DTE)) is DTE dte)
+			DTE dte = await this.GetServiceAsync<DTE>();
+
+			if (dte != null)
 			{
 				_dteSolutionEvents = dte.Events.SolutionEvents;						//Save DTE events object to prevent it from being GCed
 				_dteSolutionEvents.AfterClosing += SolutionEvents_AfterClosing;
@@ -230,7 +240,7 @@ namespace Acuminator.Vsix
 		{
 			CloseOpenToolWindows();
 		}
-
+		
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
@@ -242,9 +252,13 @@ namespace Acuminator.Vsix
 			}
 		}
 
-	    private void InitializeLogger()
+	    private void InitializeLogger(IProgress<ServiceProgressData> progress)
 	    {
-		    try
+			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitLogger,
+													   currentStep: 2, TotalLoadSteps);
+			progress?.Report(progressData);
+
+			try
 		    {
 			    AcuminatorLogger = new AcuminatorLogger(this, swallowUnobservedTaskExceptions: false);
 		    }
@@ -254,6 +268,20 @@ namespace Acuminator.Vsix
 				    $"An error occurred during the logger initialization ({ex.GetType().Name}, message: \"{ex.Message}\")");
 		    }
 	    }
+
+		private async System.Threading.Tasks.Task InitializeSuppressionManagerAsync(IProgress<ServiceProgressData> progress)
+		{
+			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitSuppressionManager
+													   currentStep: 3, TotalLoadSteps);
+			progress?.Report(progressData);
+
+			var workspace = await this.GetVSWorkspaceAsync();
+			var additionalFiles = workspace.CurrentSolution.Projects
+														   .SelectMany(p => p.AdditionalDocuments)
+														   .Select(d => (path: d.FilePath, generateSuppressionBase: false));
+
+			SuppressionManager.Init(new SuppressionFileSystemService(), additionalFiles);
+		}
 
 		protected override int QueryClose(out bool canClose)
 		{
