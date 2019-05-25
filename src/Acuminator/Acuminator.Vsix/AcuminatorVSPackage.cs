@@ -23,12 +23,14 @@ using Acuminator.Vsix.Settings;
 using Acuminator.Vsix.Logger;
 using Acuminator.Vsix.ToolWindows.CodeMap;
 using Acuminator.Vsix.Utilities;
+using Acuminator.Vsix.Utils;
 using Acuminator.Utilities.DiagnosticSuppression;
 
 using EnvDTE80;
 using EnvDTE;
 using System.Linq;
-using Acuminator.Vsix.Utils;
+
+
 
 namespace Acuminator.Vsix
 {
@@ -61,7 +63,7 @@ namespace Acuminator.Vsix
 	[ProvideToolWindow(typeof(CodeMapWindow), MultiInstances = false, Transient = true, Orientation = ToolWindowOrientation.Left,
 					   Style = VsDockStyle.Linked)]
 	public sealed class AcuminatorVSPackage : Package
-    {
+	{
 		private const string SettingsCategoryName = "Acuminator";
 
 		/// <summary>
@@ -145,11 +147,17 @@ namespace Acuminator.Vsix
             }
         }
 
-        /// <summary>
-        /// Initialization of the package; this method is called right after the package is sited, so this is the place
-        /// where you can put all the initialization code that rely on services provided by VisualStudio.
-        /// </summary>
-        protected override void Initialize()
+		//protected override System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, 
+		//															   IProgress<Microsoft.VisualStudio.Shell.ServiceProgressData> progress)
+		//{
+		//	return base.InitializeAsync(cancellationToken, progress);
+		//}
+
+		/// <summary>
+		/// Initialization of the package; this method is called right after the package is sited, so this is the place
+		/// where you can put all the initialization code that rely on services provided by VisualStudio.
+		/// </summary>
+		protected override void Initialize()
         {		
 			base.Initialize();
 
