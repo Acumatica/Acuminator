@@ -51,7 +51,7 @@ namespace Acuminator.Vsix
     /// To get loaded into VS, the package must be referred by &lt;Asset Type="Microsoft.VisualStudio.VsPackage" ...&gt; in .vsixmanifest file.
     /// </para>
     /// </remarks>
-    [PackageRegistration(UseManagedResourcesOnly = true)]
+    [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
 	//[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExistsAndNotBuildingAndNotDebugging_string)] // Auto-load for dynamic menu enabling/disabling; this context seems to work for SSMS and VS
 	[ProvideMenuResource("Menus.ctmenu", 1)]
@@ -62,7 +62,7 @@ namespace Acuminator.Vsix
 					   categoryResourceID: 201, pageNameResourceID: 202, supportsAutomation: true, SupportsProfiles = true)]
 	[ProvideToolWindow(typeof(CodeMapWindow), MultiInstances = false, Transient = true, Orientation = ToolWindowOrientation.Left,
 					   Style = VsDockStyle.Linked)]
-	public sealed class AcuminatorVSPackage : Package
+	public sealed class AcuminatorVSPackage : AsyncPackage
 	{
 		private const string SettingsCategoryName = "Acuminator";
 
@@ -147,30 +147,23 @@ namespace Acuminator.Vsix
             }
         }
 
-		//protected override System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, 
-		//															   IProgress<Microsoft.VisualStudio.Shell.ServiceProgressData> progress)
-		//{
-		//	return base.InitializeAsync(cancellationToken, progress);
-		//}
-
-		/// <summary>
-		/// Initialization of the package; this method is called right after the package is sited, so this is the place
-		/// where you can put all the initialization code that rely on services provided by VisualStudio.
-		/// </summary>
-		protected override void Initialize()
-        {		
-			base.Initialize();
+		protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
+		{
+			// When initialized asynchronously, the current thread may be a background thread at this point.
+			// Do any initialization that requires the UI thread after switching to the UI thread
+			await base.InitializeAsync(cancellationToken, progress);
 
 			if (Zombied)
 				return;
 
+			await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 			InitializeCommands();
 			SubscribeOnSolutionEvents();
 
 			IComponentModel componentModel = Package.GetGlobalService(typeof(SComponentModel)) as IComponentModel;
 
-            if (componentModel == null)
-                return;
+			if (componentModel == null)
+				return;
 
 			InitializeLogger();
 			InitializeSuppressionManager();
