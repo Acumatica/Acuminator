@@ -286,6 +286,60 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Finished Acuminator package loading.
+        /// </summary>
+        public static string PackageLoad_Done {
+            get {
+                return ResourceManager.GetString("PackageLoad_Done", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initializing Acuminator commands.
+        /// </summary>
+        public static string PackageLoad_InitCommands {
+            get {
+                return ResourceManager.GetString("PackageLoad_InitCommands", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initializing Acuminator DI container.
+        /// </summary>
+        public static string PackageLoad_InitCompositionContainer {
+            get {
+                return ResourceManager.GetString("PackageLoad_InitCompositionContainer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initializing Acuminator logger.
+        /// </summary>
+        public static string PackageLoad_InitLogger {
+            get {
+                return ResourceManager.GetString("PackageLoad_InitLogger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initializing Acuminator suppression manager.
+        /// </summary>
+        public static string PackageLoad_InitSuppressionManager {
+            get {
+                return ResourceManager.GetString("PackageLoad_InitSuppressionManager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Acuminator Package is loading.
+        /// </summary>
+        public static string PackageLoad_WaitMessage {
+            get {
+                return ResourceManager.GetString("PackageLoad_WaitMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Acuminator - PXAction.
         /// </summary>
         public static string PXActionFormatLabel {

@@ -264,4 +264,22 @@
   <data name="CodeMapWindowTitle" xml:space="preserve">
     <value>Code Map (Experimental)</value>
   </data>
+  <data name="PackageLoad_Done" xml:space="preserve">
+    <value>Finished Acuminator package loading</value>
+  </data>
+  <data name="PackageLoad_InitCommands" xml:space="preserve">
+    <value>Initializing Acuminator commands</value>
+  </data>
+  <data name="PackageLoad_InitCompositionContainer" xml:space="preserve">
+    <value>Initializing Acuminator DI container</value>
+  </data>
+  <data name="PackageLoad_InitLogger" xml:space="preserve">
+    <value>Initializing Acuminator logger</value>
+  </data>
+  <data name="PackageLoad_InitSuppressionManager" xml:space="preserve">
+    <value>Initializing Acuminator suppression manager</value>
+  </data>
+  <data name="PackageLoad_WaitMessage" xml:space="preserve">
+    <value>The Acuminator Package is loading</value>
+  </data>
 </root>
