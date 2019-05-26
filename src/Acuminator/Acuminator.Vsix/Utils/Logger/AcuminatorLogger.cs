@@ -88,7 +88,7 @@ namespace Acuminator.Vsix.Logger
 				return;
 			}
 
-			IWpfTextView activeTextView = _package.GetWpfTextView();
+			IWpfTextView activeTextView = ThreadHelper.JoinableTaskFactory.Run(() => _package.GetWpfTextViewAsync());
 
 			if (activeTextView == null)
 				return;
