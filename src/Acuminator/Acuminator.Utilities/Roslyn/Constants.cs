@@ -110,7 +110,6 @@ namespace Acuminator.Utilities.Roslyn
 			internal static readonly string PXCopyPasteHiddenViewAttribute = "PX.Data.PXCopyPasteHiddenViewAttribute";
 			internal static readonly string PXOverrideAttribute = "PX.Data.PXOverrideAttribute";
 			internal static readonly string PXEventSubscriberAttribute = "PX.Data.PXEventSubscriberAttribute";
-			//internal static readonly string PXAttributeFamilyAttribute PersistingCheck= "PX.Data.PXAttributeFamilyAttribute"; // dublicate
 			internal static readonly string PXAggregateAttribute = "PX.Data.PXAggregateAttribute";
 			internal static readonly string PXDynamicAggregateAttribute = "PX.Data.PXDynamicAggregateAttribute";
 			internal static readonly string PXDefaultAttribute = "PX.Data.PXDefaultAttribute";
@@ -134,7 +133,7 @@ namespace Acuminator.Utilities.Roslyn
 			internal static readonly string BqlByteArrayType = "PX.Data.BQL.IBqlByteArray";
 			#endregion
 
-			#region BQLSymbols.cs
+			#region BQLSymbols
 			internal static readonly string CustomPredicate = "PX.Data.CustomPredicate";
 			internal static readonly string AreSame2 = "PX.Data.AreSame`2";
 			internal static readonly string AreDistinct2 = "PX.Data.AreDistinct`2";
@@ -144,7 +143,6 @@ namespace Acuminator.Utilities.Roslyn
 			internal static readonly string Optional2 = "PX.Data.Optional2`1";
 			internal static readonly string BqlCommand = "PX.Data.BqlCommand";
 			internal static readonly string IBqlParameter = "PX.Data.IBqlParameter";
-			//internal static readonly string PXSelectBase1 = "PX.Data.PXSelectBase`1";//dublicate
 			internal static readonly string PXFilter1 = "PX.Data.PXFilter`1";
 			internal static readonly string IPXNonUpdateable = "PX.Data.IPXNonUpdateable";
 			internal static readonly string PXSetup1 = "PX.Data.PXSetup`1";
@@ -156,7 +154,7 @@ namespace Acuminator.Utilities.Roslyn
 			internal static readonly string FbqlCommand = "PX.Data.BQL.Fluent.FbqlCommand";
 			#endregion
 
-			#region EventSymbols.cs
+			#region EventSymbols
 
 			internal static readonly string PXRowSelectingEventArgs = "PX.Data.PXRowSelectingEventArgs";
 			internal static readonly string PXRowSelectedEventArgs = "PX.Data.PXRowSelectedEventArgs";
@@ -206,13 +204,13 @@ namespace Acuminator.Utilities.Roslyn
 			}
 			#endregion
 
-			#region ExceprionSymbols.cs
+			#region ExceptionSymbols
 			internal static readonly string PXException = "PX.Data.PXException";
 			internal static readonly string PXBaseRedirectException = "PX.Data.PXBaseRedirectException";
 			internal static readonly string PXSetupNotEnteredException = "PX.Data.PXSetupNotEnteredException";
 			#endregion
 
-			#region PXActionSymbol.cs
+			#region PXActionSymbol
 
 			internal static readonly string PXAction = "PX.Data.PXAction";
 
@@ -227,7 +225,7 @@ namespace Acuminator.Utilities.Roslyn
 
 			#endregion
 
-			#region PXCacheSymbols.cs
+			#region PXCacheSymbols
 			
 			internal static readonly string PXCache = "PX.Data.PXCache";
 
@@ -241,7 +239,7 @@ namespace Acuminator.Utilities.Roslyn
 			}
 			#endregion
 
-			#region PXDatabaseSymbols.cs
+			#region PXDatabaseSymbols
 			internal static readonly string PXDatabase = "PX.Data.PXDatabase";
 
 
@@ -257,7 +255,7 @@ namespace Acuminator.Utilities.Roslyn
 
 			#endregion
 
-			#region PXGraphSymbols.cs
+			#region PXGraphSymbols
 
 			public static readonly string PXGraph = "PX.Data.PXGraph";
 			public static readonly string PXGraph1 = "PX.Data.PXGraph`1";
