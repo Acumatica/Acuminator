@@ -193,31 +193,35 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			
 			if (containsIsDbFieldproperty)
 			{
-				var isDbPropertyAttributeArgs = attribute.NamedArguments.Where(arg => IsDBField.Equals(arg.Key, StringComparison.OrdinalIgnoreCase)).ToList();    //case insensitive check
+				var isDbPropertyAttributeArgs = attribute.NamedArguments.Where(arg => IsDBField.Equals(arg.Key, StringComparison.OrdinalIgnoreCase)).ToList();
 
-				if (!(isDbPropertyAttributeArgs[0].Value.Value is bool isDbPropertyAttributeArgument))
-					return BoundType.Unknown;  //if there is null or values of type other than bool then we don't know if attribute is bound
-
-				if (isDbPropertyAttributeArgs.Count != 1)  //rare case when there are multiple different "IsDBField" considered
-					return BoundType.Unknown;
-
-				var isDBFieldSetInFalseInBaseAttribute = TypesContainingIsDBField.Any(t => 
-					t.Key != null && t.Value == false && IsAttributeDerivedFromClass(attribute.AttributeClass, t.Key));
-
-				var isDBFieldSetInTrueInBaseAttribute = TypesContainingIsDBField.Any(t =>
-					t.Key != null && t.Value == true && IsAttributeDerivedFromClass(attribute.AttributeClass, t.Key));
-
-				if (isDbPropertyAttributeArgs.Count == 0)
+				if (isDbPropertyAttributeArgs.Count > 0)
 				{
-					if (isDBFieldSetInFalseInBaseAttribute) // IsDBField = false property defined in base Acumatica class
-						return BoundType.Unbound;
-					else if (isDBFieldSetInTrueInBaseAttribute) // IsDBField = true property defined in base Acumatica class 
-						return BoundType.DbBound;
-				}
+					if (isDbPropertyAttributeArgs.Count != 1)  //rare case when there are multiple different "IsDBField" considered
+						return BoundType.Unknown;
 
-				return isDbPropertyAttributeArgument
-					? BoundType.DbBound
-					: BoundType.Unbound;
+					if (!(isDbPropertyAttributeArgs[0].Value.Value is bool isDbPropertyAttributeArgument))
+						return BoundType.Unknown;  //if there is null or values of type other than bool then we don't know if attribute is bound
+
+					return isDbPropertyAttributeArgument
+						? BoundType.DbBound
+						: BoundType.Unbound;
+
+				}
+				else
+				{
+					ITypeSymbol typeFromRegister = TypesContainingIsDBField.Keys.FirstOrDefault(t => IsAttributeDerivedFromClass(attribute.AttributeClass, t));
+					bool? isDbFieldFromBase = typeFromRegister != null
+						? TypesContainingIsDBField[typeFromRegister]
+						: (bool?)null;
+
+					if (isDbPropertyAttributeArgs.Count == 0 && isDbFieldFromBase.HasValue)
+					{
+						return isDbFieldFromBase.Value
+							? BoundType.DbBound// "IsDBField = true" property defined in base Acumatica class 
+							: BoundType.Unbound;// "IsDBField = false" property defined in base Acumatica class
+					}
+				}
 			}
 
 			return BoundType.Unbound;
