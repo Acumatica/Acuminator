@@ -7,8 +7,7 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.Utilities;
-
-
+using System.Threading.Tasks;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -51,13 +50,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			CategoryDescription = CategoryType.Description();
 		}
 
-		public override void NavigateToItem()
+		public async override Task NavigateToItemAsync()
 		{
 			var childToNavigateTo = this.GetChildToNavigateTo();
 
 			if (childToNavigateTo != null)
 			{
-				childToNavigateTo.NavigateToItem();
+				await childToNavigateTo.NavigateToItemAsync();
 				IsExpanded = true;
 				Tree.SelectedItem = childToNavigateTo;			
 			}	
