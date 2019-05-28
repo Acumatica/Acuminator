@@ -67,6 +67,8 @@ namespace Acuminator.Vsix
 		private const int TotalLoadSteps = 5;
 		private const string SettingsCategoryName = "Acuminator";
 
+		public const string PackageName = "Acuminator";
+
 		/// <summary>
 		/// AcuminatorVSPackage GUID string.
 		/// </summary>
@@ -237,7 +239,7 @@ namespace Acuminator.Vsix
 				AcuminatorLogger.LogException(loadCommandServiceException, logOnlyFromAcuminatorAssemblies: false, LogMode.Error);
 				return;
 			}
-
+			
 			FormatBqlCommand.Initialize(this);
 			GoToDeclarationOrHandlerCommand.Initialize(this, oleCommandService);
 			BqlFixer.FixBqlCommand.Initialize(this);

@@ -22,8 +22,6 @@ namespace Acuminator.Vsix.Logger
 	/// </summary>
 	internal class AcuminatorLogger : IDisposable
 	{
-		public const string PackageName = "Acuminator";
-
 		private readonly string AnalyzersDll = typeof(PXDiagnosticAnalyzer).Assembly.GetName().Name;
 		private readonly string UtilitiesDll = typeof(CodeAnalysisSettings).Assembly.GetName().Name;
 		private readonly string VsixDll = typeof(AcuminatorLogger).Assembly.GetName().Name;
@@ -103,13 +101,13 @@ namespace Acuminator.Vsix.Logger
 			switch (logMode)
 			{
 				case LogMode.Information:
-					ActivityLog.TryLogInformation(PackageName, logMessage);
+					ActivityLog.TryLogInformation(AcuminatorVSPackage.PackageName, logMessage);
 					break;
 				case LogMode.Warning:
-					ActivityLog.TryLogWarning(PackageName, logMessage);
+					ActivityLog.TryLogWarning(AcuminatorVSPackage.PackageName, logMessage);
 					break;
 				case LogMode.Error:
-					ActivityLog.TryLogError(PackageName, logMessage);
+					ActivityLog.TryLogError(AcuminatorVSPackage.PackageName, logMessage);
 					break;
 			}		
 		}
@@ -121,7 +119,7 @@ namespace Acuminator.Vsix.Logger
 
 			if (logMode == LogMode.Error)
 			{
-				messageBuilder.AppendLine($"{PackageName.ToUpper()} CAUSED CRITICAL ERROR|");
+				messageBuilder.AppendLine($"{AcuminatorVSPackage.PackageName.ToUpper()} CAUSED CRITICAL ERROR|");
 			}
 
 			messageBuilder.AppendLine($"EXCEPTION TYPE: {exception.GetType().Name}")
