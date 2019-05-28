@@ -28,6 +28,8 @@ namespace Acuminator.Tests.Verification
 		private static readonly MetadataReference PXDataReference = MetadataReference.CreateFromFile(typeof(PXGraph).Assembly.Location);
 		private static readonly MetadataReference FluentBqlReference = MetadataReference.CreateFromFile(typeof(FbqlCommand).Assembly.Location);
 		private static readonly MetadataReference PXCommonReference = MetadataReference.CreateFromFile(typeof(PX.Common.PXContext).Assembly.Location);
+		private static readonly MetadataReference PXObjectsReference =
+			MetadataReference.CreateFromFile(typeof(PX.Objects.GL.PeriodIDAttribute).Assembly.Location);
 
 		internal static string DefaultFilePathPrefix = "Test";
 		internal static string CSharpDefaultFileExt = "cs";
@@ -106,7 +108,8 @@ namespace Acuminator.Tests.Verification
 									.AddMetadataReference(projectId, CodeAnalysisReference)
 									.AddMetadataReference(projectId, PXDataReference)
 									.AddMetadataReference(projectId, FluentBqlReference)
-									.AddMetadataReference(projectId, PXCommonReference);
+									.AddMetadataReference(projectId, PXCommonReference)
+									.AddMetadataReference(projectId, PXObjectsReference);
 
 			if (externalCode != null && externalCode.Length > 0)
 			{

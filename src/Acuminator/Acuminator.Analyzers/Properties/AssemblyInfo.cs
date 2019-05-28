@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Acuminator.Analyzers")]
-[assembly: AssemblyCopyright("Copyright © 2017-2018 Acumatica Ltd.")]
+[assembly: AssemblyCopyright("Copyright © 2017-2019 Acumatica Ltd.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

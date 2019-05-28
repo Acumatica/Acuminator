@@ -15,7 +15,6 @@ using FluentAssertions;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 
 
-
 namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 {
 
@@ -136,6 +135,13 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		   IsDBFieldPropertyAsync(source,
 								  new List<bool> { false, false, true },
 								  new string[] { externalAttribute1, externalAttribute2 });
+
+		[Theory]
+		[EmbeddedFileData(@"PropertyIsDBBoundFieldInheritedFromPXObjects.cs")]
+		public Task IsDBFieldFromPXObjectsAsync(string source) =>
+			IsDBFieldPropertyAsync(source,
+									expected: new List<bool> {true, false, true, false});
+
 
 		private async Task IsDBFieldPropertyAsync(string source, List<bool> expected, string[] code = null)
 		{
