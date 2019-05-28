@@ -216,7 +216,7 @@ namespace Acuminator.Vsix
 			}
 			catch (Exception ex)
 			{
-				ActivityLog.TryLogError(AcuminatorLogger.PackageName,
+				ActivityLog.TryLogError(PackageName,
 					$"An error occurred during the logger initialization ({ex.GetType().Name}, message: \"{ex.Message}\")");
 			}
 		}
@@ -244,7 +244,7 @@ namespace Acuminator.Vsix
 			GoToDeclarationOrHandlerCommand.Initialize(this, oleCommandService);
 			BqlFixer.FixBqlCommand.Initialize(this);
 
-			OpenCodeMapWindowCommand.Initialize(this);
+			OpenCodeMapWindowCommand.Initialize(this, oleCommandService);
 		}
 
 		private async System.Threading.Tasks.Task SubscribeOnSolutionEventsAsync()
