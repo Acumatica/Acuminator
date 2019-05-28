@@ -140,8 +140,7 @@ namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 		[EmbeddedFileData(@"PropertyIsDBBoundFieldInheritedFromPXObjects.cs")]
 		public Task IsDBFieldFromPXObjectsAsync(string source) =>
 			IsDBFieldPropertyAsync(source,
-									expected: new List<bool> {true, false, true, false},
-									code: new string[] { });
+									expected: new List<bool> {true, false, true, false});
 
 
 		private async Task IsDBFieldPropertyAsync(string source, List<bool> expected, string[] code = null)
