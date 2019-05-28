@@ -79,10 +79,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 			}
 		}
 
-		protected override async void CommandCallback(object sender, EventArgs e)
-		{
-			CommandCallbackAsync().Forget
-		}
+		protected override void CommandCallback(object sender, EventArgs e) => CommandCallbackAsync().Forget();
 
 		private async Task CommandCallbackAsync()
 		{
@@ -105,10 +102,10 @@ namespace Acuminator.Vsix.GoToDeclaration
 			Task<SemanticModel> semanticModelTask = document.GetSemanticModelAsync();
 			await Task.WhenAll(syntaxRootTask, semanticModelTask);
 
-			#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits - the results are already obtained
+			#pragma warning disable VSTHRD002, VSTHRD103 // Avoid problematic synchronous waits - the results are already obtained
 			SyntaxNode syntaxRoot = syntaxRootTask.Result;
 			SemanticModel semanticModel = semanticModelTask.Result;
-			#pragma warning restore VSTHRD002
+			#pragma warning restore VSTHRD002, VSTHRD103
 
 			if (syntaxRoot == null || semanticModel == null)
 				return;
