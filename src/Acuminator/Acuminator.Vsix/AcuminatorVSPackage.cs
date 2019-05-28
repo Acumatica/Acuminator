@@ -29,8 +29,7 @@ using Acuminator.Utilities.DiagnosticSuppression;
 using EnvDTE80;
 using EnvDTE;
 using System.Linq;
-
-
+using System.ComponentModel.Design;
 
 namespace Acuminator.Vsix
 {
@@ -160,16 +159,16 @@ namespace Acuminator.Vsix
 
 			await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
+			InitializeLogger(progress);
 			await InitializeCommandsAsync(progress);		
 			await SubscribeOnSolutionEventsAsync();
 			cancellationToken.ThrowIfCancellationRequested();
 
-			IComponentModel componentModel = Package.GetGlobalService(typeof(SComponentModel)) as IComponentModel;
+			IComponentModel componentModel = await this.GetServiceAsync<SComponentModel, IComponentModel>();
 
 			if (componentModel == null)
 				return;
 
-			InitializeLogger(progress);
 			await InitializeSuppressionManagerAsync(progress);
 			cancellationToken.ThrowIfCancellationRequested();
 
@@ -201,7 +200,24 @@ namespace Acuminator.Vsix
 			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_Done,
 												   currentStep: 5, TotalLoadSteps);
 			progress?.Report(progressData);
-		}	
+		}
+
+		private void InitializeLogger(IProgress<ServiceProgressData> progress)
+		{
+			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitLogger,
+													   currentStep: 1, TotalLoadSteps);
+			progress?.Report(progressData);
+
+			try
+			{
+				AcuminatorLogger = new AcuminatorLogger(this, swallowUnobservedTaskExceptions: false);
+			}
+			catch (Exception ex)
+			{
+				ActivityLog.TryLogError(AcuminatorLogger.PackageName,
+					$"An error occurred during the logger initialization ({ex.GetType().Name}, message: \"{ex.Message}\")");
+			}
+		}
 
 		private async System.Threading.Tasks.Task InitializeCommandsAsync(IProgress<ServiceProgressData> progress)
 		{
@@ -210,11 +226,20 @@ namespace Acuminator.Vsix
 				return;
 
 			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCommands,
-													   currentStep: 1, TotalLoadSteps);
+													   currentStep: 2, TotalLoadSteps);
 			progress?.Report(progressData);
 
+			OleMenuCommandService oleCommandService = await this.GetServiceAsync<IMenuCommandService, OleMenuCommandService>();
+
+			if (oleCommandService == null)
+			{
+				InvalidOperationException loadCommandServiceException = new InvalidOperationException("Failed to load OLE command service");
+				AcuminatorLogger.LogException(loadCommandServiceException, logOnlyFromAcuminatorAssemblies: false, LogMode.Error);
+				return;
+			}
+
 			FormatBqlCommand.Initialize(this);
-			GoToDeclarationOrHandlerCommand.Initialize(this);
+			GoToDeclarationOrHandlerCommand.Initialize(this, oleCommandService);
 			BqlFixer.FixBqlCommand.Initialize(this);
 
 			OpenCodeMapWindowCommand.Initialize(this);
@@ -251,23 +276,6 @@ namespace Acuminator.Vsix
 				_dteSolutionEvents.AfterClosing -= SolutionEvents_AfterClosing;		
 			}
 		}
-
-	    private void InitializeLogger(IProgress<ServiceProgressData> progress)
-	    {
-			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitLogger,
-													   currentStep: 2, TotalLoadSteps);
-			progress?.Report(progressData);
-
-			try
-		    {
-			    AcuminatorLogger = new AcuminatorLogger(this, swallowUnobservedTaskExceptions: false);
-		    }
-		    catch (Exception ex)
-		    {
-			    ActivityLog.TryLogError(AcuminatorLogger.PackageName,
-				    $"An error occurred during the logger initialization ({ex.GetType().Name}, message: \"{ex.Message}\")");
-		    }
-	    }
 
 		private async System.Threading.Tasks.Task InitializeSuppressionManagerAsync(IProgress<ServiceProgressData> progress)
 		{
