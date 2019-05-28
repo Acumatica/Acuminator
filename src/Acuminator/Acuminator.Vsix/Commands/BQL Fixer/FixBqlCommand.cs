@@ -14,7 +14,6 @@ using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.Common;
 
 
-using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 using Document = Microsoft.CodeAnalysis.Document;
 using Acuminator.Vsix.Formatter;
 

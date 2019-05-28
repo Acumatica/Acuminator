@@ -240,9 +240,9 @@ namespace Acuminator.Vsix
 				return;
 			}
 			
-			FormatBqlCommand.Initialize(this);
+			FormatBqlCommand.Initialize(this, oleCommandService);
 			GoToDeclarationOrHandlerCommand.Initialize(this, oleCommandService);
-			BqlFixer.FixBqlCommand.Initialize(this);
+			BqlFixer.FixBqlCommand.Initialize(this, oleCommandService);
 
 			OpenCodeMapWindowCommand.Initialize(this, oleCommandService);
 		}
