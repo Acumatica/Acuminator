@@ -12,8 +12,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
@@ -79,7 +77,11 @@ namespace Acuminator.Vsix.GoToDeclaration
 			}
 		}
 
-		protected override void CommandCallback(object sender, EventArgs e) => CommandCallbackAsync().Forget();
+		protected override void CommandCallback(object sender, EventArgs e)
+		{
+			Task task = CommandCallbackAsync();
+			Shell.VsTaskLibraryHelper.FileAndForget(task, $"vs/{AcuminatorVSPackage.PackageName}/{nameof(GoToDeclarationOrHandlerCommand)}");
+		}
 
 		private async Task CommandCallbackAsync()
 		{
