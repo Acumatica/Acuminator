@@ -23,17 +23,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set;
 		}
 
-		public CacheAttachedNodeViewModel(DacEventsGroupingNodeViewModel dacViewModel, GraphNodeSymbolItem memberInfo,
+		public CacheAttachedNodeViewModel(DacEventsGroupingNodeViewModel dacViewModel, GraphFieldEventInfo eventInfo,
 										  bool isExpanded = false) :
-									 base(dacViewModel?.GraphEventsCategoryVM, memberInfo, isExpanded)
+									 base(dacViewModel?.GraphEventsCategoryVM, eventInfo, isExpanded)
 		{
 			DacViewModel = dacViewModel;
-
-			int startPos = dacViewModel.DacName.Length + 1;
-			int lastUnderscoreIndex = MemberSymbol.Name.LastIndexOf('_');
-			Name = lastUnderscoreIndex > 0
-				? MemberSymbol.Name.Substring(startPos, lastUnderscoreIndex - startPos)
-				: MemberSymbol.Name;
+			Name = eventInfo.DacFieldName;
 			
 			var attributeVMs = MemberSymbol.GetAttributes()
 										   .Select(a => new AttributeNodeViewModel(this, a));

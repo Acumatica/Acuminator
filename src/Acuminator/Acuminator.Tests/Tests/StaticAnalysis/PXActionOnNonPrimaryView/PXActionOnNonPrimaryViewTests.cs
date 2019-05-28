@@ -1,5 +1,7 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Analyzers.StaticAnalysis.PXGraph;
 using Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView;
+using Acuminator.Utilities;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis;
@@ -7,11 +9,15 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
 
+
+
 namespace Acuminator.Tests.Tests.StaticAnalysis.PXActionOnNonPrimaryView
 {
 	public class PXActionOnNonPrimaryViewTests : CodeFixVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new PXActionOnNonPrimaryViewAnalyzer();
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
+			new PXGraphAnalyzer(CodeAnalysisSettings.Default,
+				new PXActionOnNonPrimaryViewAnalyzer());
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new PXActionOnNonPrimaryViewFix();
 

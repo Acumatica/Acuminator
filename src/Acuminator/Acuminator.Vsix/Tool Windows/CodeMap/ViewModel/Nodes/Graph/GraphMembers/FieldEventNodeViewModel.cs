@@ -18,13 +18,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set;
 		}
 
-		public FieldEventNodeViewModel(DacFieldEventsGroupingNodeViewModel dacFieldVM, GraphNodeSymbolItem memberInfo, bool isExpanded = false) :
-								  base(dacFieldVM?.GraphEventsCategoryVM, memberInfo, isExpanded)
+		public FieldEventNodeViewModel(DacFieldEventsGroupingNodeViewModel dacFieldVM, GraphFieldEventInfo eventInfo, bool isExpanded = false) :
+								  base(dacFieldVM?.GraphEventsCategoryVM, eventInfo, isExpanded)
 		{
 			DacFieldVM = dacFieldVM;
-			Name = memberInfo is GraphEventInfo eventInfo
-				? eventInfo.EventType.ToString()
-				: MemberSymbol.Name;
+			Name = eventInfo.EventType.ToString();
 		}	
 	}
 }

@@ -23,7 +23,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <summary>
 		/// The graph symbol. For the graph is the same as <see cref="Symbol"/>. For graph extensions is the extension's base graph.
 		/// </summary>
-		public INamedTypeSymbol GraphSymbol { get; }
+		public ITypeSymbol GraphSymbol { get; }
 
 		public ImmutableArray<StaticConstructorInfo> StaticConstructors { get; }
 		public ImmutableArray<GraphInitializerInfo> Initializers { get; private set; }
@@ -40,6 +40,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		public ImmutableDictionary<string, ActionHandlerInfo> ActionHandlersByNames { get; }
 		public IEnumerable<ActionHandlerInfo> ActionHandlers => ActionHandlersByNames.Values;
+
+		/// <summary>
+		/// Actions which are declared in a graph/graph extension represented by this semantic model instance.
+		/// </summary>
+		public IEnumerable<ActionInfo> DeclaredActions => Type == GraphType.None 
+			? Enumerable.Empty<ActionInfo>() 
+			: Actions.Where(action => Symbol?.Equals(action.Symbol?.ContainingType) ?? false);
 
 		/// <summary>
 		/// Action handlers which are declared in a graph represented by an instance of the class.

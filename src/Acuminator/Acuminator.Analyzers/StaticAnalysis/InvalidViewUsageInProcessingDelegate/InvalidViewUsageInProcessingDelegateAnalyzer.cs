@@ -50,7 +50,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidViewUsageInProcessingDelega
         {
             private readonly SymbolAnalysisContext _context;
             private readonly PXContext _pxContext;
-			private readonly Dictionary<INamedTypeSymbol, bool> _graphProcessingDictionary = new Dictionary<INamedTypeSymbol, bool>();
+			private readonly Dictionary<ITypeSymbol, bool> _graphProcessingDictionary = new Dictionary<ITypeSymbol, bool>();
 
             public Walker(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
                 : base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)

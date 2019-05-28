@@ -21,7 +21,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <returns>
 		/// The graph from graph extension.
 		/// </returns>
-		public static INamedTypeSymbol GetGraphFromGraphExtension(this ITypeSymbol graphExtension, PXContext pxContext)
+		public static ITypeSymbol GetGraphFromGraphExtension(this ITypeSymbol graphExtension, PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
@@ -30,7 +30,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			var baseGraphExtensionType = graphExtension.GetBaseTypesAndThis()
 													   .OfType<INamedTypeSymbol>()
-													   .FirstOrDefault(type => IsGraphExtensionBaseType(type));
+													   .FirstOrDefault(type => type.IsGraphExtensionBaseType());
 			if (baseGraphExtensionType == null)
 				return null;
 
@@ -40,94 +40,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				return null;
 
 			ITypeSymbol firstTypeArg = graphExtTypeArgs.Last();
-
-			if (!(firstTypeArg is INamedTypeSymbol pxGraph) || !pxGraph.IsPXGraph())
-				return null;
-
-			return pxGraph;
+			return firstTypeArg.IsPXGraph()
+				? firstTypeArg
+				: null;
 		}
-
-		/// <summary>
-		/// Gets the graph extension with base graph extensions from graph extension type.
-		/// </summary>
-		/// <param name="graphExtension">The graph extension to act on.</param>
-		/// <param name="pxContext">Context.</param>
-		/// <param name="sortDirection">The sort direction. The <see cref="SortDirection.Descending"/> order is from the extension to its base extensions/graph.
-		/// The <see cref="SortDirection.Ascending"/> order is from the graph/base extensions to the most derived one.</param>
-		/// <param name="includeGraph">True to include, false to exclude the graph type.</param>
-		/// <returns/>
-		public static IEnumerable<ITypeSymbol> GetGraphExtensionWithBaseExtensions(this ITypeSymbol graphExtension, PXContext pxContext,
-																				   SortDirection sortDirection, bool includeGraph)
-		{
-			pxContext.ThrowOnNull(nameof(pxContext));
-
-			if (graphExtension == null || !graphExtension.InheritsFrom(pxContext.PXGraphExtensionType))
-				return Enumerable.Empty<ITypeSymbol>();
-
-			INamedTypeSymbol extensionBaseType = graphExtension.BaseType;
-			var typeArguments = extensionBaseType.TypeArguments;
-			ITypeSymbol graphType = typeArguments.LastOrDefault();
-
-			if (graphType == null || !graphType.IsPXGraph(pxContext))
-				return Enumerable.Empty<ITypeSymbol>();
-
-			return sortDirection == SortDirection.Ascending
-				? GetExtensionInAscendingOrder()
-				: GetExtensionInDescendingOrder();
-
-
-			IEnumerable<ITypeSymbol> GetExtensionInAscendingOrder()
-			{
-				var extensions = new List<ITypeSymbol>(capacity: typeArguments.Length);
-
-				if (includeGraph)
-				{
-					extensions.Add(graphType);
-				}
-
-				if (typeArguments.Length >= 2)
-				{
-					for (int i = typeArguments.Length - 2; i >= 0; i--)
-					{
-						var baseExtension = typeArguments[i];
-
-						if (!baseExtension.IsPXGraphExtension(pxContext))
-							return Enumerable.Empty<ITypeSymbol>();
-
-						extensions.Add(baseExtension);
-					}
-				}
-
-				extensions.Add(graphExtension);
-				return extensions;
-			}
-
-			IEnumerable<ITypeSymbol> GetExtensionInDescendingOrder()
-			{
-				var extensions = new List<ITypeSymbol>(capacity: typeArguments.Length) { graphExtension };
-
-				if (typeArguments.Length >= 2)
-				{
-					for (int i = 0; i <= typeArguments.Length - 2; i++)
-					{
-						var baseExtension = typeArguments[i];
-
-						if (!baseExtension.IsPXGraphExtension(pxContext))
-							return Enumerable.Empty<ITypeSymbol>();
-
-						extensions.Add(baseExtension);
-					}
-				}
-
-				if (includeGraph)
-				{
-					extensions.Add(graphType);
-				}
-
-				return extensions;
-			}
-		}
-
 
 		public static bool IsDelegateForViewInPXGraph(this IMethodSymbol method, PXContext pxContext)
 		{
@@ -136,14 +52,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			INamedTypeSymbol containingType = method.ContainingType;
 
-			if (containingType == null ||
-			   (!containingType.InheritsFrom(pxContext.PXGraph.Type) && !containingType.InheritsFrom(pxContext.PXGraphExtensionType)))
+			if (containingType == null || !containingType.IsPXGraphOrExtension(pxContext))
 				return false;
 
 			return containingType.GetMembers()
 								 .OfType<IFieldSymbol>()
 								 .Where(field => field.Type.InheritsFrom(pxContext.PXSelectBase.Type))
-								 .Any(field => String.Equals(field.Name, method.Name, StringComparison.OrdinalIgnoreCase));
+								 .Any(field => string.Equals(field.Name, method.Name, StringComparison.OrdinalIgnoreCase));
 		}
 
 		/// <summary>
@@ -242,7 +157,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <returns>
 		/// The declared primary DAC from graph or graph extension.
 		/// </returns>
-		public static ITypeSymbol GetDeclaredPrimaryDacFromGraphOrGraphExtension(this INamedTypeSymbol graphOrExtension, PXContext pxContext)
+		public static ITypeSymbol GetDeclaredPrimaryDacFromGraphOrGraphExtension(this ITypeSymbol graphOrExtension, PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 			bool isGraph = graphOrExtension?.InheritsFrom(pxContext.PXGraph.Type) ?? false;
@@ -263,28 +178,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			ITypeSymbol primaryDacType = baseGraphType.TypeArguments[1];
 			return primaryDacType.IsDAC() ? primaryDacType : null;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private static bool IsGraphOrGraphExtensionBaseType(this ITypeSymbol type)
-		{
-			string typeNameWithoutGenericArgsCount = type.Name.Split('`')[0];
-			return typeNameWithoutGenericArgsCount == TypeNames.PXGraph ||
-				   typeNameWithoutGenericArgsCount == TypeNames.PXGraphExtension;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static bool IsGraphBaseType(this ITypeSymbol type)
-		{
-			string typeNameWithoutGenericArgsCount = type.Name.Split('`')[0];
-			return typeNameWithoutGenericArgsCount == TypeNames.PXGraph;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsGraphExtensionBaseType(this ITypeSymbol type)
-		{
-			string typeNameWithoutGenericArgsCount = type.Name.Split('`')[0];
-			return typeNameWithoutGenericArgsCount == TypeNames.PXGraphExtension;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -311,6 +204,54 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				return (null, null);
 
 			return (node, initialize);
+		}
+
+		/// <summary>
+		/// Check if <paramref name="eventType"/> is DAC field event.
+		/// </summary>
+		/// <param name="eventType">The eventType to check.</param>
+		/// <returns/>
+		public static bool IsDacFieldEvent(this EventType eventType)
+		{
+			switch (eventType)
+			{
+				case EventType.FieldSelecting:
+				case EventType.FieldDefaulting:
+				case EventType.FieldVerifying:
+				case EventType.FieldUpdating:
+				case EventType.FieldUpdated:
+				case EventType.CacheAttached:
+				case EventType.CommandPreparing:
+				case EventType.ExceptionHandling:
+					return true;
+				default:
+					return false;
+			}
+		}
+
+		/// <summary>
+		/// Check if <paramref name="eventType"/> is DAC row event.
+		/// </summary>
+		/// <param name="eventType">The eventType to check.</param>
+		/// <returns/>
+		public static bool IsDacRowEvent(this EventType eventType)
+		{
+			switch (eventType)
+			{
+				case EventType.RowSelecting:
+				case EventType.RowSelected:
+				case EventType.RowInserting:
+				case EventType.RowInserted:
+				case EventType.RowUpdating:
+				case EventType.RowUpdated:
+				case EventType.RowDeleting:
+				case EventType.RowDeleted:
+				case EventType.RowPersisting:
+				case EventType.RowPersisted:
+					return true;
+				default:
+					return false;
+			}
 		}
 	}
 }

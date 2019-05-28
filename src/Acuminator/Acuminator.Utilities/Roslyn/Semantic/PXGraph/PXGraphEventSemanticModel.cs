@@ -28,7 +28,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <summary>
 		/// The graph symbol. For the graph is the same as <see cref="Symbol"/>. For graph extensions is the extension's base graph.
 		/// </summary>
-		public INamedTypeSymbol GraphSymbol => BaseGraphModel.GraphSymbol;
+		public ITypeSymbol GraphSymbol => BaseGraphModel.GraphSymbol;
 
 		public ImmutableArray<StaticConstructorInfo> StaticConstructors => BaseGraphModel.StaticConstructors;
 		public ImmutableArray<GraphInitializerInfo> Initializers => BaseGraphModel.Initializers;
@@ -47,59 +47,59 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		#endregion
 
 		#region Events
-		public ImmutableDictionary<string, GraphEventInfo> CacheAttachedByName { get; }
-		public IEnumerable<GraphEventInfo> CacheAttachedEvents => CacheAttachedByName.Values;
+		public ImmutableDictionary<string, GraphRowEventInfo> RowSelectingByName { get; }
+		public IEnumerable<GraphRowEventInfo> RowSelectingEvents => RowSelectingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> RowSelectingByName { get; }
-		public IEnumerable<GraphEventInfo> RowSelectingEvents => RowSelectingByName.Values;
+		public ImmutableDictionary<string, GraphRowEventInfo> RowSelectedByName { get; }
+		public IEnumerable<GraphRowEventInfo> RowSelectedEvents => RowSelectedByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> RowSelectedByName { get; }
-		public IEnumerable<GraphEventInfo> RowSelectedEvents => RowSelectedByName.Values;
+		public ImmutableDictionary<string, GraphRowEventInfo> RowInsertingByName { get; }
+		public IEnumerable<GraphRowEventInfo> RowInsertingEvents => RowInsertingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> RowInsertingByName { get; }
-		public IEnumerable<GraphEventInfo> RowInsertingEvents => RowInsertingByName.Values;
+		public ImmutableDictionary<string, GraphRowEventInfo> RowInsertedByName { get; }
+		public IEnumerable<GraphRowEventInfo> RowInsertedEvents => RowInsertedByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> RowInsertedByName { get; }
-		public IEnumerable<GraphEventInfo> RowInsertedEvents => RowInsertedByName.Values;
+		public ImmutableDictionary<string, GraphRowEventInfo> RowUpdatingByName { get; }
+		public IEnumerable<GraphRowEventInfo> RowUpdatingEvents => RowUpdatingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> RowUpdatingByName { get; }
-		public IEnumerable<GraphEventInfo> RowUpdatingEvents => RowUpdatingByName.Values;
+		public ImmutableDictionary<string, GraphRowEventInfo> RowUpdatedByName { get; }
+		public IEnumerable<GraphRowEventInfo> RowUpdatedEvents => RowUpdatedByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> RowUpdatedByName { get; }
-		public IEnumerable<GraphEventInfo> RowUpdatedEvents => RowUpdatedByName.Values;
+		public ImmutableDictionary<string, GraphRowEventInfo> RowDeletingByName { get; }
+		public IEnumerable<GraphRowEventInfo> RowDeletingEvents => RowDeletingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> RowDeletingByName { get; }
-		public IEnumerable<GraphEventInfo> RowDeletingEvents => RowDeletingByName.Values;
+		public ImmutableDictionary<string, GraphRowEventInfo> RowDeletedByName { get; }
+		public IEnumerable<GraphRowEventInfo> RowDeletedEvents => RowDeletedByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> RowDeletedByName { get; }
-		public IEnumerable<GraphEventInfo> RowDeletedEvents => RowDeletedByName.Values;
+		public ImmutableDictionary<string, GraphRowEventInfo> RowPersistingByName { get; }
+		public IEnumerable<GraphRowEventInfo> RowPersistingEvents => RowPersistingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> RowPersistingByName { get; }
-		public IEnumerable<GraphEventInfo> RowPersistingEvents => RowPersistingByName.Values;
+		public ImmutableDictionary<string, GraphRowEventInfo> RowPersistedByName { get; }
+		public IEnumerable<GraphRowEventInfo> RowPersistedEvents => RowPersistedByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> RowPersistedByName { get; }
-		public IEnumerable<GraphEventInfo> RowPersistedEvents => RowPersistedByName.Values;
+		public ImmutableDictionary<string, GraphFieldEventInfo> FieldSelectingByName { get; }
+		public IEnumerable<GraphFieldEventInfo> FieldSelectingEvents => FieldSelectingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> FieldSelectingByName { get; }
-		public IEnumerable<GraphEventInfo> FieldSelectingEvents => FieldSelectingByName.Values;
+		public ImmutableDictionary<string, GraphFieldEventInfo> FieldDefaultingByName { get; }
+		public IEnumerable<GraphFieldEventInfo> FieldDefaultingEvents => FieldDefaultingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> FieldDefaultingByName { get; }
-		public IEnumerable<GraphEventInfo> FieldDefaultingEvents => FieldDefaultingByName.Values;
+		public ImmutableDictionary<string, GraphFieldEventInfo> FieldVerifyingByName { get; }
+		public IEnumerable<GraphFieldEventInfo> FieldVerifyingEvents => FieldVerifyingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> FieldVerifyingByName { get; }
-		public IEnumerable<GraphEventInfo> FieldVerifyingEvents => FieldVerifyingByName.Values;
+		public ImmutableDictionary<string, GraphFieldEventInfo> FieldUpdatingByName { get; }
+		public IEnumerable<GraphFieldEventInfo> FieldUpdatingEvents => FieldUpdatingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> FieldUpdatingByName { get; }
-		public IEnumerable<GraphEventInfo> FieldUpdatingEvents => FieldUpdatingByName.Values;
+		public ImmutableDictionary<string, GraphFieldEventInfo> FieldUpdatedByName { get; }
+		public IEnumerable<GraphFieldEventInfo> FieldUpdatedEvents => FieldUpdatedByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> FieldUpdatedByName { get; }
-		public IEnumerable<GraphEventInfo> FieldUpdatedEvents => FieldUpdatedByName.Values;
+		public ImmutableDictionary<string, GraphFieldEventInfo> CacheAttachedByName { get; }
+		public IEnumerable<GraphFieldEventInfo> CacheAttachedEvents => CacheAttachedByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> CommandPreparingByName { get; }
-		public IEnumerable<GraphEventInfo> CommandPreparingEvents => CommandPreparingByName.Values;
+		public ImmutableDictionary<string, GraphFieldEventInfo> CommandPreparingByName { get; }
+		public IEnumerable<GraphFieldEventInfo> CommandPreparingEvents => CommandPreparingByName.Values;
 
-		public ImmutableDictionary<string, GraphEventInfo> ExceptionHandlingByName { get; }
-		public IEnumerable<GraphEventInfo> ExceptionHandlingEvents => ExceptionHandlingByName.Values;
+		public ImmutableDictionary<string, GraphFieldEventInfo> ExceptionHandlingByName { get; }
+		public IEnumerable<GraphFieldEventInfo> ExceptionHandlingEvents => ExceptionHandlingByName.Values;
 		#endregion
 
 
@@ -113,25 +113,31 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			if (BaseGraphModel.Type != GraphType.None)
 			{
 				var eventsCollector = InitializeEvents();
+			
+				RowSelectingByName = GetRowEvents(eventsCollector, EventType.RowSelecting);
+				RowSelectedByName = GetRowEvents(eventsCollector, EventType.RowSelected);
 
-				CacheAttachedByName = GetEvents(eventsCollector, collector => collector.CacheAttachedEvents);
-				RowSelectingByName = GetEvents(eventsCollector, collector => collector.RowSelectingEvents);
-				RowSelectedByName = GetEvents(eventsCollector, collector => collector.RowSelectedEvents);
-				RowInsertingByName = GetEvents(eventsCollector, collector => collector.RowInsertingEvents);
-				RowInsertedByName = GetEvents(eventsCollector, collector => collector.RowInsertedEvents);
-				RowUpdatingByName = GetEvents(eventsCollector, collector => collector.RowUpdatingEvents);
-				RowUpdatedByName = GetEvents(eventsCollector, collector => collector.RowUpdatedEvents);
-				RowDeletingByName = GetEvents(eventsCollector, collector => collector.RowDeletingEvents);
-				RowDeletedByName = GetEvents(eventsCollector, collector => collector.RowDeletedEvents);
-				RowPersistingByName = GetEvents(eventsCollector, collector => collector.RowPersistingEvents);
-				RowPersistedByName = GetEvents(eventsCollector, collector => collector.RowPersistedEvents);
-				FieldSelectingByName = GetEvents(eventsCollector, collector => collector.FieldSelectingEvents);
-				FieldDefaultingByName = GetEvents(eventsCollector, collector => collector.FieldDefaultingEvents);
-				FieldVerifyingByName = GetEvents(eventsCollector, collector => collector.FieldVerifyingEvents);
-				FieldUpdatingByName = GetEvents(eventsCollector, collector => collector.FieldUpdatingEvents);
-				FieldUpdatedByName = GetEvents(eventsCollector, collector => collector.FieldUpdatedEvents);
-				CommandPreparingByName = GetEvents(eventsCollector, collector => collector.CommandPreparingEvents);
-				ExceptionHandlingByName = GetEvents(eventsCollector, collector => collector.ExceptionHandlingEvents);
+				RowInsertingByName = GetRowEvents(eventsCollector, EventType.RowInserting);
+				RowInsertedByName = GetRowEvents(eventsCollector, EventType.RowInserted);
+
+				RowUpdatingByName = GetRowEvents(eventsCollector, EventType.RowUpdating);
+				RowUpdatedByName = GetRowEvents(eventsCollector, EventType.RowUpdated);
+
+				RowDeletingByName = GetRowEvents(eventsCollector, EventType.RowDeleting);
+				RowDeletedByName = GetRowEvents(eventsCollector, EventType.RowDeleted);
+
+				RowPersistingByName = GetRowEvents(eventsCollector, EventType.RowPersisting);
+				RowPersistedByName = GetRowEvents(eventsCollector, EventType.RowPersisted);
+
+				FieldSelectingByName = GetFieldEvents(eventsCollector, EventType.FieldSelecting);
+				FieldDefaultingByName = GetFieldEvents(eventsCollector, EventType.FieldDefaulting);
+				FieldVerifyingByName = GetFieldEvents(eventsCollector, EventType.FieldVerifying);
+				FieldUpdatingByName = GetFieldEvents(eventsCollector, EventType.FieldUpdating);
+				FieldUpdatedByName = GetFieldEvents(eventsCollector, EventType.FieldUpdated);
+
+				CacheAttachedByName = GetFieldEvents(eventsCollector, EventType.CacheAttached);
+				CommandPreparingByName = GetFieldEvents(eventsCollector, EventType.CommandPreparing);
+				ExceptionHandlingByName = GetFieldEvents(eventsCollector, EventType.ExceptionHandling);
 			}
 		}
 
@@ -161,7 +167,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				if (eventSignatureType == EventHandlerSignatureType.None || eventType == EventType.None)
 					continue;
 
-				eventsCollector.AddEvent(eventSignatureType, eventType, method, declarationOrder, _cancellation);
+				if (eventType.IsDacRowEvent())
+				{
+					eventsCollector.AddEvent(eventSignatureType, eventType, method, declarationOrder, _cancellation);
+				}
+				else if (eventType.IsDacFieldEvent())
+				{
+					eventsCollector.AddFieldEvent(eventSignatureType, eventType, method, declarationOrder, _cancellation);
+				}
+				
 				declarationOrder++;
 			}
 
@@ -172,8 +186,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		private IEnumerable<IMethodSymbol> GetAllGraphMethodsFromBaseToDerived()
 		{
 			IEnumerable<ITypeSymbol> baseTypes = BaseGraphModel.GraphSymbol
-															   .GetBaseTypesAndThis()
-															   .TakeWhile(baseGraph => !baseGraph.IsGraphBaseType())
+															   .GetGraphWithBaseTypes()
 															   .Reverse();
 
 			if (BaseGraphModel.Type == GraphType.PXGraphExtension)
@@ -187,32 +200,24 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return baseTypes.SelectMany(t => t.GetMembers().OfType<IMethodSymbol>());
 		}
 
-		private ImmutableDictionary<string, GraphEventInfo> GetEvents(EventsCollector eventsCollector, 
-																	  Func<EventsCollector, GraphOverridableItemsCollection<GraphEventInfo>> selector)
+		private ImmutableDictionary<string, GraphRowEventInfo> GetRowEvents(EventsCollector eventsCollector, EventType eventType)
 		{
 			if (Type == GraphType.None)
-				return ImmutableDictionary.Create<string, GraphEventInfo>(StringComparer.OrdinalIgnoreCase);
+				return ImmutableDictionary.Create<string, GraphRowEventInfo>();
 
-			var rawCollection = selector(eventsCollector);
-			return rawCollection.Values.ToLookup(e => e.Item.Symbol.Name, StringComparer.OrdinalIgnoreCase)
-									   .ToImmutableDictionary(group => group.Key,
-															  group => CreateEventInfo(group.First()),
-															  keyComparer: StringComparer.OrdinalIgnoreCase);
+			GraphEventsCollection<GraphRowEventInfo> rawCollection = eventsCollector.GetRowEvents(eventType);
+			return rawCollection.ToImmutableDictionary(kvp => kvp.Key, kvp => kvp.Value) ?? 
+				   ImmutableDictionary.Create<string, GraphRowEventInfo>();
+		}
 
+		private ImmutableDictionary<string, GraphFieldEventInfo> GetFieldEvents(EventsCollector eventsCollector, EventType eventType)
+		{
+			if (Type == GraphType.None)
+				return ImmutableDictionary.Create<string, GraphFieldEventInfo>();
 
-			GraphEventInfo CreateEventInfo(GraphOverridableItem<GraphEventInfo> item)
-			{
-				GraphEventInfo eventInfo = item.Item;
-
-				GraphEventInfo baseEventInfo = item.Base != null
-					? CreateEventInfo(item.Base)
-					: null;
-
-				return baseEventInfo == null
-					? new GraphEventInfo(eventInfo.Node, eventInfo.Symbol, item.DeclarationOrder, eventInfo.SignatureType, eventInfo.EventType)
-					: new GraphEventInfo(eventInfo.Node, eventInfo.Symbol, item.DeclarationOrder, eventInfo.SignatureType, eventInfo.EventType,
-										 baseEventInfo);
-			}
+			GraphEventsCollection<GraphFieldEventInfo> rawCollection = eventsCollector.GetFieldEvents(eventType);
+			return rawCollection.ToImmutableDictionary(kvp => kvp.Key, kvp => kvp.Value) ??
+				   ImmutableDictionary.Create<string, GraphFieldEventInfo>();
 		}
 	}
 }

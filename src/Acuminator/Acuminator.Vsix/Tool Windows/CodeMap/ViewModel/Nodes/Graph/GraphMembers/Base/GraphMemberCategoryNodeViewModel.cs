@@ -18,6 +18,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public PXGraphEventSemanticModel GraphSemanticModel => GraphViewModel.GraphSemanticModel;
 
+		public GraphSemanticModelForCodeMap CodeMapGraphModel => GraphViewModel.CodeMapGraphModel;
+
 		public GraphMemberType CategoryType { get; }
 
 		protected string CategoryDescription { get; }
@@ -108,6 +110,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					return new RowEventCategoryNodeViewModel(graphViewModel, isExpanded);
 				case GraphMemberType.FieldEvent:
 					return new FieldEventCategoryNodeViewModel(graphViewModel, isExpanded);
+				case GraphMemberType.PXOverride:
+					return new PXOverridesCategoryNodeViewModel(graphViewModel, isExpanded);
 				case GraphMemberType.NestedDAC:
 				case GraphMemberType.NestedGraph:
 				default:
