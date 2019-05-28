@@ -37,6 +37,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			MemberCategory = graphMemberCategoryVM;		
 		}
 
-		public override void NavigateToItem() => AcuminatorVSPackage.Instance.NavigateToSymbol(MemberSymbol);
+		public override void NavigateToItemAsync() => AcuminatorVSPackage.Instance.NavigateToSymbolAsync(MemberSymbol);
 	}
 }
