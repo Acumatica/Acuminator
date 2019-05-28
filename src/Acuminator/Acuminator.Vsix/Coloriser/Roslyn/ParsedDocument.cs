@@ -7,9 +7,11 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Path = System.IO.Path;
+
+
+using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
 
 namespace Acuminator.Vsix.Coloriser
@@ -42,13 +44,10 @@ namespace Acuminator.Vsix.Coloriser
             Snapshot = snapshot;     
         }
 
-		public Task<SemanticModel> SemanticModelAsync(CancellationToken cancellationToken = default)
-		{
-			if (Document.TryGetSemanticModel(out var semanticModel))
-				return Task.FromResult(semanticModel);
-
-			return Document.GetSemanticModelAsync(cancellationToken);
-		}
+		public SemanticModel GetSemanticModel(CancellationToken cancellationToken = default) =>
+			Document.TryGetSemanticModel(out var semanticModel)
+				? semanticModel
+				: ThreadHelper.JoinableTaskFactory.Run(() =>  Document.GetSemanticModelAsync(cancellationToken));
 
 		public static async Task<ParsedDocument> ResolveAsync(ITextBuffer buffer, ITextSnapshot snapshot, CancellationToken cancellationToken)
         {
@@ -73,13 +72,12 @@ namespace Acuminator.Vsix.Coloriser
             if (cancellationToken.IsCancellationRequested)
                 return null;
 
-            // the ConfigureAwait() calls are important, otherwise we'll deadlock VS
             Task<SemanticModel> semanticModelTask = document.GetSemanticModelAsync(cancellationToken);
             Task<SyntaxNode> syntaxRootTask = document.GetSyntaxRootAsync(cancellationToken);
 
             bool success = await Task.WhenAll(semanticModelTask, syntaxRootTask)
-                                     .TryAwait();
-
+                                     .TryAwait()
+									 .ConfigureAwait(false);
             if (!success)
                 return null;
 
@@ -88,12 +86,12 @@ namespace Acuminator.Vsix.Coloriser
                 return null;
             }
 
-            syntaxRoot = syntaxRootTask.Result;
+			#pragma warning disable VSTHRD103 // Call async methods when in an async method - task already finished
+			syntaxRoot = syntaxRootTask.Result;	
+			Compilation newCompilation = semanticModelTask.Result.Compilation.AddReferences(PXDataReference);   //Add reference to PX.Data
+			#pragma warning restore VSTHRD103 
 
-            //Add reference to PX.Data
-            Compilation newCompilation = semanticModelTask.Result.Compilation.AddReferences(PXDataReference);
-
-            if (cancellationToken.IsCancellationRequested)
+			if (cancellationToken.IsCancellationRequested)
                 return null;
 
             semanticModel = newCompilation.GetSemanticModel(syntaxRoot.SyntaxTree);

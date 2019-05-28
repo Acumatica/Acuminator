@@ -11,16 +11,13 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Editing;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
+
 
 
 namespace Acuminator.Vsix.Coloriser
@@ -53,7 +50,7 @@ namespace Acuminator.Vsix.Coloriser
                 _cancellationToken = cToken;
             }
 
-            public async override void VisitIdentifierName(IdentifierNameSyntax node)
+            public override void VisitIdentifierName(IdentifierNameSyntax node)
             {
                 if (_tagger.Provider.Package.ColorOnlyInsideBQL && !IsInsideBqlCommand)
                 {
@@ -69,7 +66,7 @@ namespace Acuminator.Vsix.Coloriser
                 if (_cancellationToken.IsCancellationRequested || IsVar(nodeText))
                     return;
 
-                ITypeSymbol typeSymbol = await GetTypeSymbolFromIdentifierNodeAsync(node);
+                ITypeSymbol typeSymbol = GetTypeSymbolFromIdentifierNode(node);
 
                 if (typeSymbol == null)
                 {
@@ -100,12 +97,12 @@ namespace Acuminator.Vsix.Coloriser
                 UpdateCodeEditorIfNecessary();				
             }
 
-            public async override void VisitGenericName(GenericNameSyntax genericNode)
+            public override void VisitGenericName(GenericNameSyntax genericNode)
             {
                 if (_cancellationToken.IsCancellationRequested)
                     return;
 
-				SemanticModel semanticModel = await _document.SemanticModelAsync(_cancellationToken);
+				SemanticModel semanticModel = _document.GetSemanticModel(_cancellationToken);
                 ITypeSymbol typeSymbol = semanticModel.GetSymbolInfo(genericNode).Symbol as ITypeSymbol;
               
                 if (typeSymbol == null)
@@ -251,7 +248,7 @@ namespace Acuminator.Vsix.Coloriser
                 }
             }
 
-            public async override void VisitQualifiedName(QualifiedNameSyntax node)
+            public override void VisitQualifiedName(QualifiedNameSyntax node)
             {
                 if (_cancellationToken.IsCancellationRequested)
                     return;
@@ -264,7 +261,7 @@ namespace Acuminator.Vsix.Coloriser
                     return;
                 }
 
-				var semanticModel = await _document.SemanticModelAsync(_cancellationToken);
+				var semanticModel = _document.GetSemanticModel(_cancellationToken);
 
 				string nodeText = node.ToString();
                 TextSpan leftSpan = node.Left.Span;
@@ -390,9 +387,9 @@ namespace Acuminator.Vsix.Coloriser
             }
 			#endregion
 
-			private async Task<ITypeSymbol> GetTypeSymbolFromIdentifierNodeAsync(SyntaxNode node)
+			private ITypeSymbol GetTypeSymbolFromIdentifierNode(SyntaxNode node)
 			{
-				var semanticModel = await _document.SemanticModelAsync(_cancellationToken);
+				var semanticModel = _document.GetSemanticModel(_cancellationToken);
 				var symbolInfo = semanticModel.GetSymbolInfo(node);
 				ISymbol symbol = symbolInfo.Symbol;
 
