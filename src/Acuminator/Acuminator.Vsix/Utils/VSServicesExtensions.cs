@@ -27,6 +27,18 @@ namespace Acuminator.Vsix.Utilities
     /// </summary>
     internal static class VSServicesExtensions
 	{
+		/// <summary>
+		/// A synchronous version of <see cref="GetServiceAsync{TService}(Shell.IAsyncServiceProvider)"/> method. The async version should be used if possible. 
+		/// </summary>
+		/// <typeparam name="TService">Type of the service.</typeparam>
+		/// <param name="serviceProvider">The package Service Provider.</param>
+		/// <returns/>
+		public static TService GetService<TService>(this IServiceProvider serviceProvider)
+		where TService : class
+		{
+			return serviceProvider?.GetService(typeof(TService)) as TService;
+		}
+
 		public static async Task<TService> GetServiceAsync<TService>(this Shell.IAsyncServiceProvider serviceProvider)
 		where TService : class
 		{

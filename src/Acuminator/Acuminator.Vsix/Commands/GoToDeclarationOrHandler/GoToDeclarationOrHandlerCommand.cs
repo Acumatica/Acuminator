@@ -26,6 +26,7 @@ using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 using Document = Microsoft.CodeAnalysis.Document;
 
 using Shell =  Microsoft.VisualStudio.Shell;
+using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
 
 
 namespace Acuminator.Vsix.GoToDeclaration
@@ -77,12 +78,10 @@ namespace Acuminator.Vsix.GoToDeclaration
 			}
 		}
 
-		protected override void CommandCallback(object sender, EventArgs e)
-		{
-			Task task = CommandCallbackAsync();
-			Shell.VsTaskLibraryHelper.FileAndForget(task, $"vs/{AcuminatorVSPackage.PackageName}/{nameof(GoToDeclarationOrHandlerCommand)}");
-		}
-
+		protected override void CommandCallback(object sender, EventArgs e) =>
+			CommandCallbackAsync()
+				.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(GoToDeclarationOrHandlerCommand)}");
+		
 		private async Task CommandCallbackAsync()
 		{
 			IWpfTextView textView = await ServiceProvider.GetWpfTextViewAsync();
