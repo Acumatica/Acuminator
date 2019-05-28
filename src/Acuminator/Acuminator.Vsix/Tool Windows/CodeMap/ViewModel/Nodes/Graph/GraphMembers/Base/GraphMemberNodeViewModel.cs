@@ -7,7 +7,7 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
-
+using System.Threading.Tasks;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -37,6 +37,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			MemberCategory = graphMemberCategoryVM;		
 		}
 
-		public override void NavigateToItemAsync() => AcuminatorVSPackage.Instance.NavigateToSymbolAsync(MemberSymbol);
+		public override Task NavigateToItemAsync() => MemberSymbol.NavigateToAsync();
 	}
 }
