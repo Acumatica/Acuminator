@@ -80,7 +80,7 @@ namespace Acuminator.Vsix.Coloriser
             return activeTagger.GetTagsSynchronousImplementation(snapshot);
         }
 
-        protected internal override Task<IEnumerable<ITagSpan<IClassificationTag>>> GetTagsAsyncImplementation(ITextSnapshot snapshot, 
+        protected internal override Task<IEnumerable<ITagSpan<IClassificationTag>>> GetTagsAsyncImplementationAsync(ITextSnapshot snapshot, 
                                                                                                                CancellationToken cancellationToken)
         {
             TaggerType currentTaggerType = GetCurrentTaggerTypeFromSettings();
@@ -90,7 +90,7 @@ namespace Acuminator.Vsix.Coloriser
 
             if (activeTagger.UseAsyncTagging)
             {
-                return activeTagger.GetTagsAsyncImplementation(snapshot, cancellationToken);
+                return activeTagger.GetTagsAsyncImplementationAsync(snapshot, cancellationToken);
             }
             else
             {

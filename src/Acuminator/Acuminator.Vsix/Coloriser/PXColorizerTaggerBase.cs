@@ -66,16 +66,18 @@ namespace Acuminator.Vsix.Coloriser
                 return GetTagsSynchronousImplementation(snapshot);
             }                      
         }
-       
-        /// <summary>
-        /// Gets the tags asynchronous in this collection.
-        /// </summary>
-        /// <param name="snapshot">The snapshot.</param>
-        /// <returns>
-        /// An enumerator that allows foreach to be used to process the tags asynchronous in this collection.
-        /// </returns>
-        protected virtual IEnumerable<ITagSpan<IClassificationTag>> GetTagsAsync(ITextSnapshot snapshot)
-        {
+
+		#pragma warning disable VSTHRD200 // Use "Async" suffix for async methods - this method is async by its nature.
+		/// <summary>
+		/// Gets the tags asynchronous in this collection.
+		/// </summary>
+		/// <param name="snapshot">The snapshot.</param>
+		/// <returns>
+		/// An enumerator that allows foreach to be used to process the tags asynchronous in this collection.
+		/// </returns>
+		protected virtual IEnumerable<ITagSpan<IClassificationTag>> GetTagsAsync(ITextSnapshot snapshot)
+
+		{
             if (BackgroundTagging != null)
             {
                 BackgroundTagging.CancelTagging();   //Cancel currently running task
@@ -87,11 +89,12 @@ namespace Acuminator.Vsix.Coloriser
 
             return ClassificationTagsCache.ProcessedTags;
         }
+		#pragma warning restore VSTHRD200
 
-        protected internal abstract IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot);
+		protected internal abstract IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot);
 
-        protected internal abstract Task<IEnumerable<ITagSpan<IClassificationTag>>> GetTagsAsyncImplementation(ITextSnapshot snapshot, 
-                                                                                                               CancellationToken cancellationToken);
+        protected internal abstract Task<IEnumerable<ITagSpan<IClassificationTag>>> GetTagsAsyncImplementationAsync(ITextSnapshot snapshot, 
+																													CancellationToken cancellationToken);
 
         public override void Dispose()
         {

@@ -37,7 +37,7 @@ namespace Acuminator.Vsix.Coloriser
 		{                    
 		}
 
-        protected internal async override Task<IEnumerable<ITagSpan<IClassificationTag>>> GetTagsAsyncImplementation(ITextSnapshot snapshot,
+        protected internal async override Task<IEnumerable<ITagSpan<IClassificationTag>>> GetTagsAsyncImplementationAsync(ITextSnapshot snapshot,
                                                                                                                CancellationToken cancellationToken)
         {
             var taggingInfo = await Task.Run(() => GetTagsSynchronousImplementation(snapshot))

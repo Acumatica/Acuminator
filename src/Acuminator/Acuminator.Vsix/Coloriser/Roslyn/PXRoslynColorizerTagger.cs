@@ -119,7 +119,7 @@ namespace Acuminator.Vsix.Coloriser
             return ClassificationTagsCache.ProcessedTags;
         }
 
-        protected internal async override Task<IEnumerable<ITagSpan<IClassificationTag>>> GetTagsAsyncImplementation(ITextSnapshot snapshot,
+        protected internal async override Task<IEnumerable<ITagSpan<IClassificationTag>>> GetTagsAsyncImplementationAsync(ITextSnapshot snapshot,
                                                                                                                      CancellationToken cToken)
         {
             _classificationTagsCache.SetCancellation(cToken);
