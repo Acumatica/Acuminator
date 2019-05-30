@@ -26,8 +26,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		private static SuppressionManager Instance { get; set; }
 
-		private SuppressionManager(ISuppressionFileSystemService fileSystemService,
-			IEnumerable<(string path, bool generateSuppressionBase)> suppressionFiles)
+		private SuppressionManager(ISuppressionFileSystemService fileSystemService, IEnumerable<SuppressionManagerInitInfo> suppressionFiles)
 		{
 			fileSystemService.ThrowOnNull(nameof(fileSystemService));
 
@@ -35,12 +34,12 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			foreach (var fileInfo in suppressionFiles)
 			{
-				if (!SuppressionFile.IsSuppressionFile(fileInfo.path))
+				if (!SuppressionFile.IsSuppressionFile(fileInfo.Path))
 				{
-					throw new ArgumentException($"File {fileInfo.path} is not a suppression file");
+					throw new ArgumentException($"File {fileInfo.Path} is not a suppression file");
 				}
 
-				var (file, assembly) = CreateFileTrackChanges(fileInfo);
+				var (file, assembly) = CreateFileTrackChanges(fileInfo.Path, fileInfo.GenerateSuppressionBase);
 
 				if (!_fileByAssembly.TryAdd(assembly, file))
 				{
@@ -49,9 +48,9 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			}
 		}
 
-		private (SuppressionFile File, string Assembly) CreateFileTrackChanges((string Path, bool GenerateSuppressionBase) fileInfo)
+		private (SuppressionFile File, string Assembly) CreateFileTrackChanges(string suppressionFilePath, bool generateSuppressionBase)
 		{
-			var suppressionFile = SuppressionFile.Load(_fileSystemService, fileInfo);
+			var suppressionFile = SuppressionFile.Load(_fileSystemService, suppressionFilePath, generateSuppressionBase);
 			var assemblyName = suppressionFile.AssemblyName;
 
 			suppressionFile.Changed += ReloadFile;
@@ -60,9 +59,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		}
 
 		public void ReloadFile(object sender, SuppressionFileEventArgs e)
-		{
-			var fileInfo = (path: e.FullPath, generateSuppressionBase: false);
-			var (newFile, assembly) = CreateFileTrackChanges(fileInfo);
+		{	
+			var (newFile, assembly) = CreateFileTrackChanges(suppressionFilePath: e.FullPath, generateSuppressionBase: false);
 			var oldFile = _fileByAssembly.GetOrAdd(assembly, (SuppressionFile)null);
 
 			// We need to unsubscribe from the old file's event because it can be fired until the link to the file will be collected by GC
@@ -74,8 +72,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			_fileByAssembly[assembly] = newFile;
 		}
 
-		public static void Init(ISuppressionFileSystemService fileSystemService,
-			IEnumerable<(string Path, bool GenerateSuppressionBase)> additionalFiles)
+		public static void Init(ISuppressionFileSystemService fileSystemService, IEnumerable<SuppressionManagerInitInfo> additionalFiles)
 		{
 			additionalFiles.ThrowOnNull(nameof(additionalFiles));
 
@@ -152,7 +149,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			foreach (var entry in Instance._fileByAssembly)
 			{
 				var currentFile = entry.Value;
-				var oldFile = SuppressionFile.Load(Instance._fileSystemService, (currentFile.Path, false));
+				var oldFile = SuppressionFile.Load(Instance._fileSystemService, suppressionFilePath: currentFile.Path,
+												   generateSuppressionBase: false);
 
 				diffList.Add(CompareFiles(oldFile, currentFile));
 			}
