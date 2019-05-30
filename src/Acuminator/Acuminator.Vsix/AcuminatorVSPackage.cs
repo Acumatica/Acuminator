@@ -174,33 +174,11 @@ namespace Acuminator.Vsix
 			await InitializeSuppressionManagerAsync(progress);
 			cancellationToken.ThrowIfCancellationRequested();
 
-			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCompositionContainer,
-													   currentStep: 4, TotalLoadSteps);
-			progress?.Report(progressData);
-
-			try
-			{
-				componentModel.DefaultCompositionService.SatisfyImportsOnce(this);
-
-				var container = new CompositionContainer(CompositionOptions.Default, componentModel.DefaultExportProvider);
-				container.ComposeExportedValue<CodeAnalysisSettings>(new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage));
-
-				// Service Locator
-				IServiceLocator serviceLocator = new MefServiceLocator(container);
-
-				if (ServiceLocator.IsLocationProviderSet)
-					serviceLocator = new DelegatingServiceLocator(ServiceLocator.Current, serviceLocator);
-
-				ServiceLocator.SetLocatorProvider(() => serviceLocator);
-			}
-			catch
-			{
-				// Exception will be logged in FCEL
-			}
+			InitializeCodeAnalysisSettings(progress);
 
 			cancellationToken.ThrowIfCancellationRequested();
-			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_Done,
-												   currentStep: 5, TotalLoadSteps);
+			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_Done,
+													   currentStep: 5, TotalLoadSteps);
 			progress?.Report(progressData);
 		}
 
@@ -291,6 +269,15 @@ namespace Acuminator.Vsix
 														   .Select(d => (path: d.FilePath, generateSuppressionBase: false));
 
 			SuppressionManager.Init(new SuppressionFileSystemService(), additionalFiles);
+		}
+
+		private void InitializeCodeAnalysisSettings(IProgress<ServiceProgressData> progress)
+		{
+			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCodeAnalysisSettings,
+													   currentStep: 4, TotalLoadSteps);
+			progress?.Report(progressData);
+			var codeAnalysisSettings = new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage);
+			GlobalCodeAnalysisSettings.InitializeGlobalSettingsOnce(codeAnalysisSettings);
 		}
 
 		protected override int QueryClose(out bool canClose)

@@ -270,8 +270,8 @@
   <data name="PackageLoad_InitCommands" xml:space="preserve">
     <value>Initializing Acuminator commands</value>
   </data>
-  <data name="PackageLoad_InitCompositionContainer" xml:space="preserve">
-    <value>Initializing Acuminator DI container</value>
+  <data name="PackageLoad_InitCodeAnalysisSettings" xml:space="preserve">
+    <value>Initializing Acuminator code analysis settings</value>
   </data>
   <data name="PackageLoad_InitLogger" xml:space="preserve">
     <value>Initializing Acuminator logger</value>

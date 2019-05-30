@@ -295,20 +295,20 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Initializing Acuminator code analysis settings.
+        /// </summary>
+        public static string PackageLoad_InitCodeAnalysisSettings {
+            get {
+                return ResourceManager.GetString("PackageLoad_InitCodeAnalysisSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Initializing Acuminator commands.
         /// </summary>
         public static string PackageLoad_InitCommands {
             get {
                 return ResourceManager.GetString("PackageLoad_InitCommands", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Initializing Acuminator DI container.
-        /// </summary>
-        public static string PackageLoad_InitCompositionContainer {
-            get {
-                return ResourceManager.GetString("PackageLoad_InitCompositionContainer", resourceCulture);
             }
         }
         
