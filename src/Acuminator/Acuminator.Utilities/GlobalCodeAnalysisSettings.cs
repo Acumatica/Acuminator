@@ -3,38 +3,35 @@ using System.Collections.Generic;
 using System.Composition;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using CommonServiceLocator;
+using System.Threading;
+using Acuminator.Utilities.Common;
+
+
 
 
 namespace Acuminator.Utilities
 {
 	public class GlobalCodeAnalysisSettings
 	{
-		public static CodeAnalysisSettings Instance { get; }
+		private const int NOT_INITIALIZED = 0, INITIALIZED = 1;
+		private static int _isInitialized = NOT_INITIALIZED;
 
-		static GlobalCodeAnalysisSettings()
+		private static CodeAnalysisSettings _cachedSettings;
+
+		public static CodeAnalysisSettings Instance => _cachedSettings ?? CodeAnalysisSettings.Default;
+
+		/// <summary>
+		/// Initializes the global settings once. Must be called on package initialization.
+		/// </summary>
+		/// <param name="instance">The instance.</param>
+		public static void InitializeGlobalSettingsOnce(CodeAnalysisSettings instance)
 		{
-			Instance = GetCodeAnalysisSettings();
-		}
+			instance.ThrowOnNull(nameof(instance));
 
-		public static CodeAnalysisSettings GetCodeAnalysisSettings()
-		{
-			CodeAnalysisSettings settings = null;
-
-			try
+			if (Interlocked.CompareExchange(ref _isInitialized, value: INITIALIZED, comparand: NOT_INITIALIZED) == NOT_INITIALIZED)
 			{
-				if (ServiceLocator.IsLocationProviderSet)
-				{
-					settings = ServiceLocator.Current.GetInstance<CodeAnalysisSettings>();
-				}
+				_cachedSettings = instance;
 			}
-			catch
-			{
-				// TODO: log the exception
-			}
-
-			return settings ?? CodeAnalysisSettings.Default;
 		}
 	}
 }
