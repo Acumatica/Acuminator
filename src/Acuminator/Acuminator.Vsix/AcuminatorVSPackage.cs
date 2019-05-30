@@ -166,17 +166,12 @@ namespace Acuminator.Vsix
 			await SubscribeOnSolutionEventsAsync();
 			cancellationToken.ThrowIfCancellationRequested();
 
-			IComponentModel componentModel = await this.GetServiceAsync<SComponentModel, IComponentModel>();
-
-			if (componentModel == null)
-				return;
-
 			await InitializeSuppressionManagerAsync(progress);
 			cancellationToken.ThrowIfCancellationRequested();
 
 			InitializeCodeAnalysisSettings(progress);
-
 			cancellationToken.ThrowIfCancellationRequested();
+
 			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_Done,
 													   currentStep: 5, TotalLoadSteps);
 			progress?.Report(progressData);
