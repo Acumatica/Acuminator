@@ -80,8 +80,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		public INamedTypeSymbol PXMappedCacheExtensionType => Compilation.GetTypeByMetadataName(Types.PXMappedCacheExtension);
 		public INamedTypeSymbol PXLongOperation => Compilation.GetTypeByMetadataName(Types.PXLongOperation);
 
-		public INamedTypeSymbol PXSelectBase2018R2NewType => Compilation.GetTypeByMetadataName(TypeNames.PXSelectBase_Acumatica2018R2);
-		public INamedTypeSymbol IViewConfig2018R2 => Compilation.GetTypeByMetadataName(TypeNames.IViewConfig_Acumatica2018R2);
+		public INamedTypeSymbol PXSelectBase2018R2NewType => Compilation.GetTypeByMetadataName(Types.PXSelectBase_Acumatica2018R2);
+		public INamedTypeSymbol IViewConfig2018R2 => Compilation.GetTypeByMetadataName(Types.IViewConfig_Acumatica2018R2);
 
 		public INamedTypeSymbol PXActionCollection => Compilation.GetTypeByMetadataName(Types.PXActionCollection);
 
@@ -116,7 +116,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 			CodeAnalysisSettings = codeAnalysisSettings ?? CodeAnalysisSettings.Default;
 			Compilation = compilation;
-			IsPlatformReferenced = compilation.GetTypeByMetadataName(TypeNames.PXGraphTypeName) != null;
+			IsPlatformReferenced = compilation.GetTypeByMetadataName(Types.PXGraph) != null;
 
 			_bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation));
 			_bqlTypes = new Lazy<BqlDataTypeSymbols>(() => new BqlDataTypeSymbols(Compilation));

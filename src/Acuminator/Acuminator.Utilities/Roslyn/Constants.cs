@@ -451,6 +451,10 @@ namespace Acuminator.Utilities.Roslyn
 
 			#endregion
 
+
+			public static readonly string PXSelectBase_Acumatica2018R2 = "PX.Data.PXSelectBase`2";
+			public static readonly string IViewConfig_Acumatica2018R2 = "PX.Data.PXSelectBase`2+IViewConfig";
+			
 		}
 
 		public class TypeNames
@@ -501,10 +505,6 @@ namespace Acuminator.Utilities.Roslyn
 			public static readonly string PXSelectReadonly = "PXSelectReadonly";
 			public static readonly string PXSelectReadonly2 = "PXSelectReadonly2";
 			public static readonly string PXSelectReadonly3 = "PXSelectReadonly3";
-
-			public static readonly string PXSelectBase_Acumatica2018R2 = "PX.Data.PXSelectBase`2";
-			public static readonly string IViewConfig_Acumatica2018R2 = "PX.Data.PXSelectBase`2+IViewConfig";
-			public static readonly string PXGraphTypeName = "PX.Data.PXGraph";
 
 			public static readonly string FbqlSelect = "FbqlSelect";
 

@@ -78,7 +78,7 @@ namespace Acuminator.Vsix.Formatter
 			if (syntaxRoot == null || semanticModel == null)
 				return;
 
-			bool isPlatformReferenced = semanticModel.Compilation.GetTypeByMetadataName(TypeNames.PXGraphTypeName) != null;
+			bool isPlatformReferenced = semanticModel.Compilation.GetTypeByMetadataName(Types.PXGraph) != null;
 
 			if (!isPlatformReferenced)
 				return;
