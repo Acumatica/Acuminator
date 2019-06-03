@@ -19,6 +19,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 		NullOrBlank = 1,
 		Nothing = 2
 	}
+
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class DacExtensionDefaultAttributeAnalyzer : PXDiagnosticAnalyzer
 	{

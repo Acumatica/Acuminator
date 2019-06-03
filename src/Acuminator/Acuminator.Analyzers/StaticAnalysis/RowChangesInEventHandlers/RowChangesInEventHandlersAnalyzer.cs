@@ -7,7 +7,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-
 namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 {
 	public partial class RowChangesInEventHandlersAnalyzer : EventHandlerAggregatedAnalyzerBase

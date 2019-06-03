@@ -9,8 +9,6 @@ namespace Acuminator.Vsix.Formatter
 {
 	class BqlAggregateRewriter : BqlRewriterBase
 	{
-		private readonly INamedTypeSymbol _currentType;
-
 		public BqlAggregateRewriter(BqlRewriterBase parent, SyntaxTriviaList defaultLeadingTrivia) 
 			: base(parent, defaultLeadingTrivia)
 		{
