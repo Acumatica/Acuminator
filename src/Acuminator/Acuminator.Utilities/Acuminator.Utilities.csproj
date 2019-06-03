@@ -20,18 +20,6 @@
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.9.2" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.10.0" PrivateAssets="all" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
-    <Reference Include="PX.Common">
-      <HintPath>..\..\..\lib\PX.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="PX.Data">
-      <HintPath>..\..\..\lib\PX.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="PX.Data.BQL.Fluent">
-      <HintPath>..\..\..\lib\PX.Data.BQL.Fluent.dll</HintPath>
-    </Reference>
-    <Reference Include="PX.DbServices">
-      <HintPath>..\..\..\lib\PX.DbServices.dll</HintPath>
-    </Reference>
     <PackageReference Update="NETStandard.Library" PrivateAssets="all" />
   </ItemGroup>
 </Project>
