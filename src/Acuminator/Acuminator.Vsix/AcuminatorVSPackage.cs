@@ -14,11 +14,11 @@ using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Classification;
+using EnvDTE80;
+using EnvDTE;
+using System.Linq;
+using System.ComponentModel.Design;
 using Acuminator.Vsix.GoToDeclaration;
-using Acuminator.Vsix.ServiceLocation;
-using CommonServiceLocator;
-using System.Composition.Hosting;
-using System.Composition.Hosting.Core;
 using Acuminator.Vsix.Settings;
 using Acuminator.Vsix.Logger;
 using Acuminator.Vsix.ToolWindows.CodeMap;
@@ -26,10 +26,6 @@ using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utils;
 using Acuminator.Utilities.DiagnosticSuppression;
 
-using EnvDTE80;
-using EnvDTE;
-using System.Linq;
-using System.ComponentModel.Design;
 
 namespace Acuminator.Vsix
 {
