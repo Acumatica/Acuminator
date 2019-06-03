@@ -541,7 +541,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="FormatterTests.playlist" />
   </ItemGroup>
   <ItemGroup>
