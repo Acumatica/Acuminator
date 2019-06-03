@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
-using static Acuminator.Utilities.Roslyn.Constants.Types;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 {
@@ -43,7 +43,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 			foreach (var attribute in dacPropertiesDeclarations.SelectMany(a => a.GetAttributes()))
 			{
-				bool hasKeys = attribute.NamedArguments.Any(a => a.Key.Contains(PXDBFieldAttributeFields.IsKey) &&
+				bool hasKeys = attribute.NamedArguments.Any(a => a.Key.Contains(DelegateNames.IsKey) &&
 																	a.Value.Value is bool isKeyValue &&
 																	isKeyValue == true);
 

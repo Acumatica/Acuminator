@@ -5,7 +5,7 @@ using Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.Base;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
-using static Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRules
 {
@@ -22,7 +22,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 		{
 			context.ThrowOnNull(nameof(context));
 
-			_pxFilteredProcessingType = context.Compilation.GetTypeByMetadataName(Types.PXFilteredProcessing);
+			_pxFilteredProcessingType = context.Compilation.GetTypeByMetadataName(TypeFullNames.PXFilteredProcessing);
 		}
 
 		public override IEnumerable<ITypeSymbol> GetCandidatesFromGraphRule(PrimaryDacFinder dacFinder)

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using static Acuminator.Utilities.Roslyn.Constants.Types;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -14,11 +14,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
         internal PXStringListAttributeSymbols(Compilation compilation)
         {
-            Type = compilation.GetTypeByMetadataName(PXStringListAttribute);
+            Type = compilation.GetTypeByMetadataName(TypeFullNames.PXStringListAttribute);
 
-	        SetList        = Type.GetMethods(PXStringListAttributeDelegates.SetList);
-	        AppendList     = Type.GetMethods(PXStringListAttributeDelegates.AppendList);
-	        SetLocalizable = Type.GetMethods(PXStringListAttributeDelegates.SetLocalizable);
+	        SetList        = Type.GetMethods(DelegateNames.SetList);
+	        AppendList     = Type.GetMethods(DelegateNames.AppendList);
+	        SetLocalizable = Type.GetMethods(DelegateNames.SetLocalizable);
         }
     }
 }

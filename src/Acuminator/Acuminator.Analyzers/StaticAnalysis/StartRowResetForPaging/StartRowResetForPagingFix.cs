@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using static Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 {
@@ -85,7 +85,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 		private static SyntaxNode InsertStartRowAssignmentBeforeReturn(SyntaxNode root, ReturnStatementSyntax returnStatement)
 		{
 			var startRowAssignment = SyntaxFactory.ExpressionStatement(
-											SyntaxFactory.ParseExpression($"{TypeNames.PXView}.{Types.PXViewDelegates.StartRow} = 0")
+											SyntaxFactory.ParseExpression($"{TypeNames.PXView}.{DelegateNames.StartRow} = 0")
 														 .WithLeadingTrivia(returnStatement.GetLeadingTrivia()));
 			switch (returnStatement.Parent)
 			{

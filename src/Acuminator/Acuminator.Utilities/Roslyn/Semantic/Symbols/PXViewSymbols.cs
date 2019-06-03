@@ -2,7 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using static Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -14,10 +14,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
         internal PXViewSymbols(Compilation compilation)
         {
-            Type = compilation.GetTypeByMetadataName(Types.PXView);
+            Type = compilation.GetTypeByMetadataName(TypeFullNames.PXView);
 
 	        Select = Type.GetMethods()
-		        .Where(m => m.Name.StartsWith(Types.PXViewDelegates.Select, StringComparison.Ordinal))
+		        .Where(m => m.Name.StartsWith(DelegateNames.Select, StringComparison.Ordinal))
 		        .ToImmutableArray();
         }
     }

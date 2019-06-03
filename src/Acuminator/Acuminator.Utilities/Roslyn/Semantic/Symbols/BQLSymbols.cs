@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using static Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -17,44 +17,44 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		}
 
 		#region CustomDelegates
-		public INamedTypeSymbol CustomPredicate => _compilation.GetTypeByMetadataName(Types.CustomPredicate);
+		public INamedTypeSymbol CustomPredicate => _compilation.GetTypeByMetadataName(TypeFullNames.CustomPredicate);
 
-		public INamedTypeSymbol AreSame => _compilation.GetTypeByMetadataName(Types.AreSame2);
+		public INamedTypeSymbol AreSame => _compilation.GetTypeByMetadataName(TypeFullNames.AreSame2);
 
-		public INamedTypeSymbol AreDistinct => _compilation.GetTypeByMetadataName(Types.AreDistinct2);
+		public INamedTypeSymbol AreDistinct => _compilation.GetTypeByMetadataName(TypeFullNames.AreDistinct2);
 		#endregion
 
-		public INamedTypeSymbol Required => _compilation.GetTypeByMetadataName(Types.Required1);
+		public INamedTypeSymbol Required => _compilation.GetTypeByMetadataName(TypeFullNames.Required1);
 
-		public INamedTypeSymbol Argument => _compilation.GetTypeByMetadataName(Types.Argument1);
+		public INamedTypeSymbol Argument => _compilation.GetTypeByMetadataName(TypeFullNames.Argument1);
 
-		public INamedTypeSymbol Optional => _compilation.GetTypeByMetadataName(Types.Optional1);
-		public INamedTypeSymbol Optional2 => _compilation.GetTypeByMetadataName(Types.Optional2);
+		public INamedTypeSymbol Optional => _compilation.GetTypeByMetadataName(TypeFullNames.Optional1);
+		public INamedTypeSymbol Optional2 => _compilation.GetTypeByMetadataName(TypeFullNames.Optional2);
 
-		public INamedTypeSymbol BqlCommand => _compilation.GetTypeByMetadataName(Types.BqlCommand);
+		public INamedTypeSymbol BqlCommand => _compilation.GetTypeByMetadataName(TypeFullNames.BqlCommand);
 
-		public INamedTypeSymbol IBqlParameter => _compilation.GetTypeByMetadataName(Types.IBqlParameter);
+		public INamedTypeSymbol IBqlParameter => _compilation.GetTypeByMetadataName(TypeFullNames.IBqlParameter);
 
-		public INamedTypeSymbol PXSelectBaseGenericType => _compilation.GetTypeByMetadataName(Types.PXSelectBase1);
+		public INamedTypeSymbol PXSelectBaseGenericType => _compilation.GetTypeByMetadataName(TypeFullNames.PXSelectBase1);
 
-		public INamedTypeSymbol PXFilter => _compilation.GetTypeByMetadataName(Types.PXFilter1);
+		public INamedTypeSymbol PXFilter => _compilation.GetTypeByMetadataName(TypeFullNames.PXFilter1);
 
-		public INamedTypeSymbol IPXNonUpdateable => _compilation.GetTypeByMetadataName(Types.IPXNonUpdateable);
+		public INamedTypeSymbol IPXNonUpdateable => _compilation.GetTypeByMetadataName(TypeFullNames.IPXNonUpdateable);
 
 		#region PXSetup
-		public INamedTypeSymbol PXSetup => _compilation.GetTypeByMetadataName(Types.PXSetup1);
+		public INamedTypeSymbol PXSetup => _compilation.GetTypeByMetadataName(TypeFullNames.PXSetup1);
 
-		public INamedTypeSymbol PXSetupWhere => _compilation.GetTypeByMetadataName(Types.PXSetup2);
+		public INamedTypeSymbol PXSetupWhere => _compilation.GetTypeByMetadataName(TypeFullNames.PXSetup2);
 
-		public INamedTypeSymbol PXSetupJoin => _compilation.GetTypeByMetadataName(Types.PXSetup3);
+		public INamedTypeSymbol PXSetupJoin => _compilation.GetTypeByMetadataName(TypeFullNames.PXSetup3);
 
-		public INamedTypeSymbol PXSetupSelect => _compilation.GetTypeByMetadataName(Types.PXSetupSelect);
+		public INamedTypeSymbol PXSetupSelect => _compilation.GetTypeByMetadataName(TypeFullNames.PXSetupSelect);
 
-		public INamedTypeSymbol FbqlCommand => _compilation.GetTypeByMetadataName(Types.FbqlCommand);
+		public INamedTypeSymbol FbqlCommand => _compilation.GetTypeByMetadataName(TypeFullNames.FbqlCommand);
 
-		public INamedTypeSymbol PXViewOf => _compilation.GetTypeByMetadataName(Types.PXViewOf);
+		public INamedTypeSymbol PXViewOf => _compilation.GetTypeByMetadataName(TypeFullNames.PXViewOf);
 
-		public INamedTypeSymbol PXViewOf_BasedOn => _compilation.GetTypeByMetadataName(Types.PXViewOfBasedOn);
+		public INamedTypeSymbol PXViewOf_BasedOn => _compilation.GetTypeByMetadataName(TypeFullNames.PXViewOfBasedOn);
 
 		public ImmutableArray<INamedTypeSymbol> GetPXSetupTypes() =>
 			ImmutableArray.Create

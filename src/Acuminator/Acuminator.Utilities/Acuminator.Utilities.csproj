@@ -101,6 +101,11 @@
     <Compile Include="Common\ConcurrentExtensions.cs" />
     <Compile Include="Common\EnumerableExtraExtensions.cs" />
     <Compile Include="Common\Enum\SortDirection.cs" />
+    <Compile Include="Roslyn\Constants\DelegateNames.cs" />
+    <Compile Include="Roslyn\Constants\EventArgsNames.cs" />
+    <Compile Include="Roslyn\Constants\EventsNames.cs" />
+    <Compile Include="Roslyn\Constants\TypeFullNames.cs" />
+    <Compile Include="Roslyn\Constants\TypeNames.cs" />
     <Compile Include="Roslyn\Semantic\Dac\DacSymbolsUtils.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Infos\Events\GraphEventsCollection.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\Base\GraphSymbolItemGeneric.cs" />
@@ -125,7 +130,6 @@
     <Compile Include="Roslyn\Semantic\PXGraph\Infos\ProcessingDelegateInfo.cs" />
     <Compile Include="Roslyn\Semantic\PXGraph\ProcessingDelegatesWalker.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\BqlDataTypeSymbols.cs" />
-    <Compile Include="Roslyn\Constants.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\EventSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\BQLSymbols.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\ExceptionSymbols.cs" />
@@ -200,7 +204,6 @@
     <Compile Include="Roslyn\Semantic\CodeResolvingUtils.cs" />
     <Compile Include="Roslyn\Semantic\PXContext.cs" />
     <Compile Include="Roslyn\Semantic\Symbols\SystemTypeSymbols.cs" />
-    <Compile Include="Roslyn\TypeNames.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

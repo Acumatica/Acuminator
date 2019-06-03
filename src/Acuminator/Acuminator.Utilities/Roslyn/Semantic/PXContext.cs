@@ -4,7 +4,7 @@ using System.Linq;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.Symbols;
 using Microsoft.CodeAnalysis;
-using static Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic
 {
@@ -75,40 +75,40 @@ namespace Acuminator.Utilities.Roslyn.Semantic
         private readonly Lazy<ImmutableHashSet<IMethodSymbol>> _uiPresentationLogicMethods;
 		public ImmutableHashSet<IMethodSymbol> UiPresentationLogicMethods => _uiPresentationLogicMethods.Value;
 
-		public INamedTypeSymbol PXGraphExtensionType => Compilation.GetTypeByMetadataName(Types.PXGraphExtension);
-		public INamedTypeSymbol PXCacheExtensionType => Compilation.GetTypeByMetadataName(Types.PXCacheExtension);
-		public INamedTypeSymbol PXMappedCacheExtensionType => Compilation.GetTypeByMetadataName(Types.PXMappedCacheExtension);
-		public INamedTypeSymbol PXLongOperation => Compilation.GetTypeByMetadataName(Types.PXLongOperation);
+		public INamedTypeSymbol PXGraphExtensionType => Compilation.GetTypeByMetadataName(TypeFullNames.PXGraphExtension);
+		public INamedTypeSymbol PXCacheExtensionType => Compilation.GetTypeByMetadataName(TypeFullNames.PXCacheExtension);
+		public INamedTypeSymbol PXMappedCacheExtensionType => Compilation.GetTypeByMetadataName(TypeFullNames.PXMappedCacheExtension);
+		public INamedTypeSymbol PXLongOperation => Compilation.GetTypeByMetadataName(TypeFullNames.PXLongOperation);
 
-		public INamedTypeSymbol PXSelectBase2018R2NewType => Compilation.GetTypeByMetadataName(Types.PXSelectBase_Acumatica2018R2);
-		public INamedTypeSymbol IViewConfig2018R2 => Compilation.GetTypeByMetadataName(Types.IViewConfig_Acumatica2018R2);
+		public INamedTypeSymbol PXSelectBase2018R2NewType => Compilation.GetTypeByMetadataName(TypeFullNames.PXSelectBase_Acumatica2018R2);
+		public INamedTypeSymbol IViewConfig2018R2 => Compilation.GetTypeByMetadataName(TypeFullNames.IViewConfig_Acumatica2018R2);
 
-		public INamedTypeSymbol PXActionCollection => Compilation.GetTypeByMetadataName(Types.PXActionCollection);
+		public INamedTypeSymbol PXActionCollection => Compilation.GetTypeByMetadataName(TypeFullNames.PXActionCollection);
 
-		public INamedTypeSymbol PXAdapterType => Compilation.GetTypeByMetadataName(Types.PXAdapter);
-		public INamedTypeSymbol IBqlTableType => Compilation.GetTypeByMetadataName(Types.IBqlTable);
-		public INamedTypeSymbol IBqlFieldType => Compilation.GetTypeByMetadataName(Types.IBqlField);
-		public INamedTypeSymbol BqlConstantType => Compilation.GetTypeByMetadataName(Types.Constant);
+		public INamedTypeSymbol PXAdapterType => Compilation.GetTypeByMetadataName(TypeFullNames.PXAdapter);
+		public INamedTypeSymbol IBqlTableType => Compilation.GetTypeByMetadataName(TypeFullNames.IBqlTable);
+		public INamedTypeSymbol IBqlFieldType => Compilation.GetTypeByMetadataName(TypeFullNames.IBqlField);
+		public INamedTypeSymbol BqlConstantType => Compilation.GetTypeByMetadataName(TypeFullNames.Constant);
 
-		public INamedTypeSymbol IPXResultsetType => Compilation.GetTypeByMetadataName(Types.IPXResultset);
-		public INamedTypeSymbol PXResult => Compilation.GetTypeByMetadataName(Types.PXResult);
+		public INamedTypeSymbol IPXResultsetType => Compilation.GetTypeByMetadataName(TypeFullNames.IPXResultset);
+		public INamedTypeSymbol PXResult => Compilation.GetTypeByMetadataName(TypeFullNames.PXResult);
 
-		public INamedTypeSymbol PXFieldState => Compilation.GetTypeByMetadataName(Types.PXFieldState);
-		public INamedTypeSymbol PXAttributeFamily => Compilation.GetTypeByMetadataName(Types.PXAttributeFamilyAttribute);
+		public INamedTypeSymbol PXFieldState => Compilation.GetTypeByMetadataName(TypeFullNames.PXFieldState);
+		public INamedTypeSymbol PXAttributeFamily => Compilation.GetTypeByMetadataName(TypeFullNames.PXAttributeFamilyAttribute);
 
-        public INamedTypeSymbol IPXLocalizableList => Compilation.GetTypeByMetadataName(Types.IPXLocalizableList);
-		public INamedTypeSymbol PXConnectionScope => Compilation.GetTypeByMetadataName(Types.PXConnectionScope);
+        public INamedTypeSymbol IPXLocalizableList => Compilation.GetTypeByMetadataName(TypeFullNames.IPXLocalizableList);
+		public INamedTypeSymbol PXConnectionScope => Compilation.GetTypeByMetadataName(TypeFullNames.PXConnectionScope);
 
         public ImmutableArray<ISymbol> StringFormat => SystemTypes.String.GetMembers(nameof(string.Format));
         public ImmutableArray<ISymbol> StringConcat => SystemTypes.String.GetMembers(nameof(string.Concat));
-        public IMethodSymbol PXGraphExtensionInitializeMethod => PXGraphExtensionType.GetMembers(Types.PXGraphExtensionInitialize)
+        public IMethodSymbol PXGraphExtensionInitializeMethod => PXGraphExtensionType.GetMembers(DelegateNames.Initialize)
                                                                  .OfType<IMethodSymbol>()
                                                                  .First();
-        public ImmutableArray<IMethodSymbol> StartOperation => PXLongOperation.GetMembers(Types.PXLongOperationStartOperation)
+        public ImmutableArray<IMethodSymbol> StartOperation => PXLongOperation.GetMembers(DelegateNames.StartOperation)
                                                                .OfType<IMethodSymbol>()
                                                                .ToImmutableArray();
 
-		public INamedTypeSymbol IImplementType => Compilation.GetTypeByMetadataName(Types.IImplementType);
+		public INamedTypeSymbol IImplementType => Compilation.GetTypeByMetadataName(TypeFullNames.IImplementType);
 
 		public PXContext(Compilation compilation, CodeAnalysisSettings codeAnalysisSettings)
 		{
@@ -116,7 +116,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 			CodeAnalysisSettings = codeAnalysisSettings ?? CodeAnalysisSettings.Default;
 			Compilation = compilation;
-			IsPlatformReferenced = compilation.GetTypeByMetadataName(Types.PXGraph) != null;
+			IsPlatformReferenced = compilation.GetTypeByMetadataName(TypeFullNames.PXGraph) != null;
 
 			_bql = new Lazy<BQLSymbols>(() => new BQLSymbols(Compilation));
 			_bqlTypes = new Lazy<BqlDataTypeSymbols>(() => new BqlDataTypeSymbols(Compilation));

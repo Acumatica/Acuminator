@@ -1,5 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
-using static Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -13,58 +13,58 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		}
 
 		#region Field Unbound Attributes
-		public INamedTypeSymbol PXLongAttribute => _compilation.GetTypeByMetadataName(Types.PXLongAttribute);
-		public INamedTypeSymbol PXIntAttribute => _compilation.GetTypeByMetadataName(Types.PXIntAttribute);
-		public INamedTypeSymbol PXShortAttribute => _compilation.GetTypeByMetadataName(Types.PXShortAttribute);
-		public INamedTypeSymbol PXStringAttribute => _compilation.GetTypeByMetadataName(Types.PXStringAttribute);
-		public INamedTypeSymbol PXByteAttribute => _compilation.GetTypeByMetadataName(Types.PXByteAttribute);
-		public INamedTypeSymbol PXDecimalAttribute => _compilation.GetTypeByMetadataName(Types.PXDecimalAttribute);
-		public INamedTypeSymbol PXDoubleAttribute => _compilation.GetTypeByMetadataName(Types.PXDoubleAttribute);
+		public INamedTypeSymbol PXLongAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXLongAttribute);
+		public INamedTypeSymbol PXIntAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXIntAttribute);
+		public INamedTypeSymbol PXShortAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXShortAttribute);
+		public INamedTypeSymbol PXStringAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXStringAttribute);
+		public INamedTypeSymbol PXByteAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXByteAttribute);
+		public INamedTypeSymbol PXDecimalAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDecimalAttribute);
+		public INamedTypeSymbol PXDoubleAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDoubleAttribute);
 
-		public INamedTypeSymbol PXFloatAttribute => _compilation.GetTypeByMetadataName(Types.PXFloatAttribute);
-		public INamedTypeSymbol PXDateAttribute => _compilation.GetTypeByMetadataName(Types.PXDateAttribute);
-		public INamedTypeSymbol PXGuidAttribute => _compilation.GetTypeByMetadataName(Types.PXGuidAttribute);
-		public INamedTypeSymbol PXBoolAttribute => _compilation.GetTypeByMetadataName(Types.PXBoolAttribute);
+		public INamedTypeSymbol PXFloatAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXFloatAttribute);
+		public INamedTypeSymbol PXDateAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDateAttribute);
+		public INamedTypeSymbol PXGuidAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXGuidAttribute);
+		public INamedTypeSymbol PXBoolAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXBoolAttribute);
 		#endregion
 
 		#region DBField Attributes
-		public INamedTypeSymbol PXDBFieldAttribute => _compilation.GetTypeByMetadataName(Types.PXDBFieldAttribute);
+		public INamedTypeSymbol PXDBFieldAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDBFieldAttribute);
 
-		public INamedTypeSymbol PXDBLongAttribute => _compilation.GetTypeByMetadataName(Types.PXDBLongAttribute);
-		public INamedTypeSymbol PXDBIntAttribute => _compilation.GetTypeByMetadataName(Types.PXDBIntAttribute);
-		public INamedTypeSymbol PXDBShortAttribute => _compilation.GetTypeByMetadataName(Types.PXDBShortAttribute);
-		public INamedTypeSymbol PXDBStringAttribute => _compilation.GetTypeByMetadataName(Types.PXDBStringAttribute);
-		public INamedTypeSymbol PXDBByteAttribute => _compilation.GetTypeByMetadataName(Types.PXDBByteAttribute);
-		public INamedTypeSymbol PXDBDecimalAttribute => _compilation.GetTypeByMetadataName(Types.PXDBDecimalAttribute);
-		public INamedTypeSymbol PXDBDoubleAttribute => _compilation.GetTypeByMetadataName(Types.PXDBDoubleAttribute);
-		public INamedTypeSymbol PXDBFloatAttribute => _compilation.GetTypeByMetadataName(Types.PXDBFloatAttribute);
-		public INamedTypeSymbol PXDBDateAttribute => _compilation.GetTypeByMetadataName(Types.PXDBDateAttribute);
-		public INamedTypeSymbol PXDBGuidAttribute => _compilation.GetTypeByMetadataName(Types.PXDBGuidAttribute);
-		public INamedTypeSymbol PXDBBoolAttribute => _compilation.GetTypeByMetadataName(Types.PXDBBoolAttribute);
-		public INamedTypeSymbol PXDBTimestampAttribute => _compilation.GetTypeByMetadataName(Types.PXDBTimestampAttribute);
+		public INamedTypeSymbol PXDBLongAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDBLongAttribute);
+		public INamedTypeSymbol PXDBIntAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDBIntAttribute);
+		public INamedTypeSymbol PXDBShortAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDBShortAttribute);
+		public INamedTypeSymbol PXDBStringAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDBStringAttribute);
+		public INamedTypeSymbol PXDBByteAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDBByteAttribute);
+		public INamedTypeSymbol PXDBDecimalAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDBDecimalAttribute);
+		public INamedTypeSymbol PXDBDoubleAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDBDoubleAttribute);
+		public INamedTypeSymbol PXDBFloatAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDBFloatAttribute);
+		public INamedTypeSymbol PXDBDateAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDBDateAttribute);
+		public INamedTypeSymbol PXDBGuidAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDBGuidAttribute);
+		public INamedTypeSymbol PXDBBoolAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDBBoolAttribute);
+		public INamedTypeSymbol PXDBTimestampAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDBTimestampAttribute);
 
-		public INamedTypeSymbol PXDBIdentityAttribute => _compilation.GetTypeByMetadataName(Types.PXDBIdentityAttribute);
-		public INamedTypeSymbol PXDBLongIdentityAttribute => _compilation.GetTypeByMetadataName(Types.PXDBLongIdentityAttribute);
-		public INamedTypeSymbol PXDBBinaryAttribute => _compilation.GetTypeByMetadataName(Types.PXDBBinaryAttribute);
+		public INamedTypeSymbol PXDBIdentityAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDBIdentityAttribute);
+		public INamedTypeSymbol PXDBLongIdentityAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDBLongIdentityAttribute);
+		public INamedTypeSymbol PXDBBinaryAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDBBinaryAttribute);
 
 		public INamedTypeSymbol PXDBPackedIntegerArrayAttribute =>
-			_compilation.GetTypeByMetadataName(Types.PXDBPackedIntegerArrayAttributeFullName_Acumatica2018R2);
+			_compilation.GetTypeByMetadataName(TypeFullNames.PXDBPackedIntegerArrayAttributeFullName_Acumatica2018R2);
 
-		public INamedTypeSymbol PXDBUserPasswordAttribute => _compilation.GetTypeByMetadataName(Types.PXDBUserPasswordAttribute);
+		public INamedTypeSymbol PXDBUserPasswordAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDBUserPasswordAttribute);
 
-		public INamedTypeSymbol PXDBAttributeAttribute => _compilation.GetTypeByMetadataName(Types.PXDBAttributeAttribute);
-		public INamedTypeSymbol PXDBDataLengthAttribute => _compilation.GetTypeByMetadataName(Types.PXDBDataLengthAttribute);
+		public INamedTypeSymbol PXDBAttributeAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDBAttributeAttribute);
+		public INamedTypeSymbol PXDBDataLengthAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDBDataLengthAttribute);
 		#endregion
 
 		#region Special attributes
-		public INamedTypeSymbol PXDBCalcedAttribute => _compilation.GetTypeByMetadataName(Types.PXDBCalcedAttribute);
-		public INamedTypeSymbol PXDBScalarAttribute => _compilation.GetTypeByMetadataName(Types.PXDBScalarAttribute);
+		public INamedTypeSymbol PXDBCalcedAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDBCalcedAttribute);
+		public INamedTypeSymbol PXDBScalarAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDBScalarAttribute);
 		#endregion
 
 		#region DBBound  attributes defined by IsDBField 
 
-		public INamedTypeSymbol PeriodIDAttribute => _compilation.GetTypeByMetadataName(Types.PeriodIDAttribute);
-		public INamedTypeSymbol AcctSubAttribute => _compilation.GetTypeByMetadataName(Types.AcctSubAttribute);
+		public INamedTypeSymbol PeriodIDAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PeriodIDAttribute);
+		public INamedTypeSymbol AcctSubAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.AcctSubAttribute);
 
 		#endregion
 	}

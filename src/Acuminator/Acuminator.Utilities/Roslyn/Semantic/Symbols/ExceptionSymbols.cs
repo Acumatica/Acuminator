@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using static Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -13,8 +13,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 	        _compilation = compilation;
         }
 
-	    public INamedTypeSymbol PXException => _compilation.GetTypeByMetadataName(Types.PXException);
-	    public INamedTypeSymbol PXBaseRedirectException => _compilation.GetTypeByMetadataName(Types.PXBaseRedirectException);
-	    public INamedTypeSymbol PXSetupNotEnteredException => _compilation.GetTypeByMetadataName(Types.PXSetupNotEnteredException);
+	    public INamedTypeSymbol PXException => _compilation.GetTypeByMetadataName(TypeFullNames.PXException);
+	    public INamedTypeSymbol PXBaseRedirectException => _compilation.GetTypeByMetadataName(TypeFullNames.PXBaseRedirectException);
+	    public INamedTypeSymbol PXSetupNotEnteredException => _compilation.GetTypeByMetadataName(TypeFullNames.PXSetupNotEnteredException);
     }
 }

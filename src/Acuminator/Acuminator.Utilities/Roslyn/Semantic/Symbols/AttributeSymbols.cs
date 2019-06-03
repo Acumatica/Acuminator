@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.CodeAnalysis;
-using static Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -18,19 +18,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 			_pxIntListAttribute = new Lazy<PXIntListAttributeSymbols>(() => new PXIntListAttributeSymbols(compilation));
 		}
 
-		public INamedTypeSymbol PXImportAttribute => _compilation.GetTypeByMetadataName(Types.PXImportAttribute);
-		public INamedTypeSymbol PXHiddenAttribute => _compilation.GetTypeByMetadataName(Types.PXHiddenAttribute);
-		public INamedTypeSymbol PXCacheNameAttribute => _compilation.GetTypeByMetadataName(Types.PXCacheNameAttribute);
-		public INamedTypeSymbol PXCopyPasteHiddenViewAttribute => _compilation.GetTypeByMetadataName(Types.PXCopyPasteHiddenViewAttribute);
-		public INamedTypeSymbol PXOverrideAttribute => _compilation.GetTypeByMetadataName(Types.PXOverrideAttribute);
+		public INamedTypeSymbol PXImportAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXImportAttribute);
+		public INamedTypeSymbol PXHiddenAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXHiddenAttribute);
+		public INamedTypeSymbol PXCacheNameAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXCacheNameAttribute);
+		public INamedTypeSymbol PXCopyPasteHiddenViewAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXCopyPasteHiddenViewAttribute);
+		public INamedTypeSymbol PXOverrideAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXOverrideAttribute);
 
-		public INamedTypeSymbol PXEventSubscriberAttribute => _compilation.GetTypeByMetadataName(Types.PXEventSubscriberAttribute);
-		public INamedTypeSymbol PXAttributeFamily => _compilation.GetTypeByMetadataName(Types.PXAttributeFamilyAttribute);
-		public INamedTypeSymbol PXAggregateAttribute => _compilation.GetTypeByMetadataName(Types.PXAggregateAttribute);
-		public INamedTypeSymbol PXDynamicAggregateAttribute => _compilation.GetTypeByMetadataName(Types.PXDynamicAggregateAttribute);
-		public INamedTypeSymbol PXDefaultAttribute => _compilation.GetTypeByMetadataName(Types.PXDefaultAttribute);
-		public INamedTypeSymbol PXUnboundDefaultAttribute => _compilation.GetTypeByMetadataName(Types.PXUnboundDefaultAttribute);
-        public INamedTypeSymbol PXButtonAttribute => _compilation.GetTypeByMetadataName(Types.PXButtonAttribute);
+		public INamedTypeSymbol PXEventSubscriberAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXEventSubscriberAttribute);
+		public INamedTypeSymbol PXAttributeFamily => _compilation.GetTypeByMetadataName(TypeFullNames.PXAttributeFamilyAttribute);
+		public INamedTypeSymbol PXAggregateAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXAggregateAttribute);
+		public INamedTypeSymbol PXDynamicAggregateAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDynamicAggregateAttribute);
+		public INamedTypeSymbol PXDefaultAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXDefaultAttribute);
+		public INamedTypeSymbol PXUnboundDefaultAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXUnboundDefaultAttribute);
+        public INamedTypeSymbol PXButtonAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXButtonAttribute);
 
 		private readonly Lazy<PXUIFieldAttributeSymbols> _pxUiFieldAttribute;
 		public PXUIFieldAttributeSymbols PXUIFieldAttribute => _pxUiFieldAttribute.Value;

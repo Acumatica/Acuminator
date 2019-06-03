@@ -8,8 +8,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
-using static Acuminator.Utilities.Roslyn.Constants;
-
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 {

@@ -15,7 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static Acuminator.Utilities.Roslyn.Constants.Types;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 {
@@ -138,7 +138,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			return attributeNode
 				.ArgumentList
 				.Arguments
-				.Where(a => (a.NameEquals?.Name.Identifier.ValueText.Equals(PXDBFieldAttributeFields.IsKey, StringComparison.OrdinalIgnoreCase) ?? false) &&
+				.Where(a => (a.NameEquals?.Name.Identifier.ValueText.Equals(DelegateNames.IsKey, StringComparison.OrdinalIgnoreCase) ?? false) &&
 				(a.Expression as LiteralExpressionSyntax).Token.ValueText.Equals(bool.TrueString,StringComparison.OrdinalIgnoreCase));
 		}
 

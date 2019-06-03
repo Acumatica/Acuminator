@@ -28,8 +28,10 @@ namespace Acuminator.Tests.Verification
 			IEnumerable<(int Line, int Column)> extraLocations,
 			params object[] messageArgs)
 		{
-			var mergedLocations  = new List<(int Line, int Column)>();
-			mergedLocations.Add(location);
+			var mergedLocations = new List<(int Line, int Column)>
+			{
+				location
+			};
 			mergedLocations.AddRange(extraLocations.ToList());
 			return CreateDiagnosticResult(descriptor, null, mergedLocations);
 		}

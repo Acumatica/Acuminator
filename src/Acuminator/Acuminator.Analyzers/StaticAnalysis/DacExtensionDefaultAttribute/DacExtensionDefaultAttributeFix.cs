@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Text;
-using static Acuminator.Utilities.Roslyn.Constants.Types.DacExtensionDefaultAttributeFixDelegates;
+using static Acuminator.Utilities.Roslyn.Constants.DelegateNames;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 {

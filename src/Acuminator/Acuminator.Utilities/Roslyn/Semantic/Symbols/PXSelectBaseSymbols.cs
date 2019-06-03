@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using System.Linq;
-using static Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -11,8 +11,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
         internal PXSelectBaseSymbols(Compilation compilation)
         {
-            Type = compilation.GetTypeByMetadataName(Types.PXSelectBase);
-            View = Type.GetMembers(Types.PXSelectBaseDelegates.View)
+            Type = compilation.GetTypeByMetadataName(TypeFullNames.PXSelectBase);
+            View = Type.GetMembers(DelegateNames.View)
                    .OfType<IFieldSymbol>()
                    .First();
         }
