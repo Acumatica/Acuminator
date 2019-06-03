@@ -2,7 +2,6 @@
 {
 	public class TypeFullNames
 	{
-		#region FieldAttributeSymbols
 		/// <summary>
 		/// The PXDBPackedIntegerArrayAttribute type full name in Acumatica 2018R2. Doesn't exist in previous versions.
 		/// </summary>
@@ -45,21 +44,13 @@
 		internal static readonly string PXDBByteAttribute = "PX.Data.PXDBByteAttribute";
 		internal static readonly string PXDBDecimalAttribute = "PX.Data.PXDBDecimalAttribute";
 
-		#endregion
-
-		#region PXUIFieldAttributeSymbols
+	
 		internal static readonly string PXUIFieldAttribute = "PX.Data.PXUIFieldAttribute";
-		#endregion
 
-		#region PXFilteredProcessingGraphRule
 		internal static readonly string PXFilteredProcessing = "PX.Data.PXFilteredProcessing`2";
-		#endregion
 
-		#region ViewsWithoutPXViewNameAttributeGraphRule && PXViewNameAttributeViewRule
 		internal static readonly string PXViewNameAttribute = "PX.Data.PXViewNameAttribute";
-		#endregion
 
-		#region PXContext
 		internal static readonly string PXGraphExtension = "PX.Data.PXGraphExtension";
 		internal static readonly string PXCacheExtension = "PX.Data.PXCacheExtension";
 		internal static readonly string PXMappedCacheExtension = "PX.Data.PXMappedCacheExtension";
@@ -77,9 +68,7 @@
 		internal static readonly string PXConnectionScope = "PX.Data.PXConnectionScope";
 
 		internal static readonly string IImplementType = "PX.Common.IImplement`1";
-		#endregion
 
-		#region AttributeSymbol
 		internal static readonly string PXImportAttribute = "PX.Data.PXImportAttribute";
 		internal static readonly string PXHiddenAttribute = "PX.Data.PXHiddenAttribute";
 		internal static readonly string PXCacheNameAttribute = "PX.Data.PXCacheNameAttribute";
@@ -91,9 +80,7 @@
 		internal static readonly string PXDefaultAttribute = "PX.Data.PXDefaultAttribute";
 		internal static readonly string PXUnboundDefaultAttribute = "PX.Data.PXUnboundDefaultAttribute";
 		internal static readonly string PXButtonAttribute = "PX.Data.PXButtonAttribute";
-		#endregion
 
-		#region BqlDataTypeSymbols
 		internal static readonly string BqlDataTypeType = "PX.Data.BQL.IBqlDataType";
 		internal static readonly string BqlStringType = "PX.Data.BQL.IBqlString";
 		internal static readonly string BqlGuidType = "PX.Data.BQL.IBqlGuid";
@@ -107,9 +94,7 @@
 		internal static readonly string BqlDoubleType = "PX.Data.BQL.IBqlDouble";
 		internal static readonly string BqlDecimalType = "PX.Data.BQL.IBqlDecimal";
 		internal static readonly string BqlByteArrayType = "PX.Data.BQL.IBqlByteArray";
-		#endregion
 
-		#region BQLSymbols
 		internal static readonly string CustomPredicate = "PX.Data.CustomPredicate";
 		internal static readonly string AreSame2 = "PX.Data.AreSame`2";
 		internal static readonly string AreDistinct2 = "PX.Data.AreDistinct`2";
@@ -128,58 +113,34 @@
 		internal static readonly string PXViewOfBasedOn = "PX.Data.BQL.Fluent.PXViewOf`1+BasedOn`1";
 		internal static readonly string PXViewOf = "PX.Data.BQL.Fluent.PXViewOf`1";
 		internal static readonly string FbqlCommand = "PX.Data.BQL.Fluent.FbqlCommand";
-		#endregion
 
-		#region ExceptionSymbols
 		internal static readonly string PXException = "PX.Data.PXException";
 		internal static readonly string PXBaseRedirectException = "PX.Data.PXBaseRedirectException";
 		internal static readonly string PXSetupNotEnteredException = "PX.Data.PXSetupNotEnteredException";
-		#endregion
 
-		#region PXActionSymbol
 		internal static readonly string PXAction = "PX.Data.PXAction";
-		#endregion
 
-		#region PXCacheSymbols
 		internal static readonly string PXCache = "PX.Data.PXCache";
-		#endregion
 
-		#region PXDatabaseSymbols
 		internal static readonly string PXDatabase = "PX.Data.PXDatabase";
-		#endregion
 
-		#region PXGraphSymbols
 		public static readonly string PXGraph = "PX.Data.PXGraph";
 		public static readonly string PXGraph1 = "PX.Data.PXGraph`1";
 		public static readonly string PXGraph2 = "PX.Data.PXGraph`2";
 		public static readonly string PXGraph3 = "PX.Data.PXGraph`3";
-		#endregion
 
-		#region PXIntListAttributeSymbols
 		internal static readonly string PXIntListAttribute = "PX.Data.PXIntListAttribute";
-		#endregion
 
-		#region PXProcessingBaseSymbols
 		internal static readonly string PXProcessingBase = "PX.Data.PXProcessingBase`1";
-		#endregion
 
-		#region PXSelectBaseGenericSymbols
 		internal static readonly string PXSelectBase1 = "PX.Data.PXSelectBase`1";
-		#endregion
 
-		#region PXSelectorAttribute
 		internal static readonly string PXSelectorAttribute = "PX.Data.PXSelectorAttribute";
-		#endregion
 
-		#region PXStringListAttribute
 		internal static readonly string PXStringListAttribute = "PX.Data.PXStringListAttribute";
-		#endregion
 
-		#region PXViewSymbols
 		internal static readonly string PXView = "PX.Data.PXView";
-		#endregion
 
-		#region BqlContext.cs
 		public static readonly string SelectBase5 = "PX.Data.SelectBase`5";
 		public static readonly string SearchBase5 = "PX.Data.SearchBase`5";
 		public static readonly string PXSelectBase = "PX.Data.PXSelectBase";
@@ -200,7 +161,6 @@
 		public static readonly string IBqlFunction = "PX.Data.IBqlFunction";
 		public static readonly string IBqlPredicateChain = "PX.Data.IBqlPredicateChain";
 		public static readonly string IBqlTable = "PX.Data.IBqlTable";
-		#endregion
 
 		public static readonly string PXSelectBase_Acumatica2018R2 = "PX.Data.PXSelectBase`2";
 		public static readonly string IViewConfig_Acumatica2018R2 = "PX.Data.PXSelectBase`2+IViewConfig";
