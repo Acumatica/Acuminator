@@ -100,12 +100,5 @@ namespace Acuminator.Utilities.Roslyn.Constants
 			public static readonly string NewJoin = "NewJoin";
 		#endregion
 		#endregion
-
-		public enum PXPersistingCheckValues
-		{
-			Null = 0,
-			NullOrBlank = 1,
-			Nothing = 2
-		}
 	}
 }
