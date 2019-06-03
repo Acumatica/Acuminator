@@ -101,14 +101,6 @@ namespace Acuminator.Utilities.Roslyn.Constants
 		#endregion
 		#endregion
 
-
-		public static readonly string PXUnboundDefaultAttributeName = "PXUnboundDefault";
-		public static readonly string PXPersistingCheck = "PXPersistingCheck";
-		public static readonly string PersistingCheck = "PersistingCheck";
-		public static readonly string PersistingCheckNothing = "Nothing";
-		public static readonly string PXDefault = "PXDefault";
-
-
 		public enum PXPersistingCheckValues
 		{
 			Null = 0,

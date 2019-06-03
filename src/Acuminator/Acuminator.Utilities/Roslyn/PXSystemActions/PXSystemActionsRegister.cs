@@ -5,7 +5,6 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 
-
 namespace Acuminator.Utilities.Roslyn.PXSystemActions
 {
 	/// <summary>

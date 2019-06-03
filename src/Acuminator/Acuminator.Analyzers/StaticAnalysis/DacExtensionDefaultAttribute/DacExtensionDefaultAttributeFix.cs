@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Text;
-using static Acuminator.Utilities.Roslyn.Constants.DelegateNames;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 {
@@ -40,7 +40,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 			SyntaxNode codeFixNode = root?.FindNode(context.Span);
 			AttributeSyntax attributeNode = codeFixNode as AttributeSyntax;
 
-			if (attributeNode != null && (attributeNode.Name as IdentifierNameSyntax).Identifier.Text.Equals(PXDefault))
+			if (attributeNode != null && (attributeNode.Name as IdentifierNameSyntax).Identifier.Text.Equals(TypeNames.PXDefault))
 			{
 				bool isBoundField = IsBoundField(diagnostic);
 				string codeActionNameBound = nameof(Resources.PX1030FixBound).GetLocalized().ToString();
@@ -81,7 +81,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 			SyntaxGenerator generator = SyntaxGenerator.GetGenerator(document);
 
-			var pxUnboundDefaultAttribute = generator.Attribute(PXUnboundDefaultAttributeName) as AttributeListSyntax;
+			var pxUnboundDefaultAttribute = generator.Attribute(TypeNames.PXUnboundDefault) as AttributeListSyntax;
 
 			SyntaxNode modifiedRoot;
 
@@ -105,9 +105,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 			SyntaxGenerator generator = SyntaxGenerator.GetGenerator(document);
 
-			var memberAccessExpression = generator.MemberAccessExpression(generator.IdentifierName(PXPersistingCheck),
-																		  generator.IdentifierName(PersistingCheckNothing));
-			var persistingAttributeArgument = generator.AttributeArgument(PersistingCheck,
+			var memberAccessExpression = generator.MemberAccessExpression(generator.IdentifierName(TypeNames.PXPersistingCheck),
+																		  generator.IdentifierName(TypeNames.PersistingCheckNothing));
+			var persistingAttributeArgument = generator.AttributeArgument(TypeNames.PersistingCheck,
 																		  memberAccessExpression) as AttributeArgumentSyntax;
 
 			SyntaxNode modifiedRoot;
@@ -142,7 +142,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 				foreach (AttributeArgumentSyntax _argument in attributeNode.ArgumentList.Arguments)
 				{
 					if (_argument.NameEquals != null
-						&& _argument.NameEquals.Name.Identifier.Text.Contains(PersistingCheck))
+						&& _argument.NameEquals.Name.Identifier.Text.Contains(TypeNames.PersistingCheck))
 					{
 						return _argument;
 					}

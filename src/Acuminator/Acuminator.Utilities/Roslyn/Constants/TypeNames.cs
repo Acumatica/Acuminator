@@ -57,6 +57,13 @@ namespace Acuminator.Utilities.Roslyn.Constants
 		public static readonly string LeftJoin = "LeftJoin";
 		public static readonly string InnerJoin = "InnerJoin";
 
+		public static readonly string PXUnboundDefault = "PXUnboundDefault";
+		public static readonly string PXPersistingCheck = "PXPersistingCheck";
+		public static readonly string PXDefault = "PXDefault";
+		public static readonly string PersistingCheck = "PersistingCheck";
+		public static readonly string PersistingCheckNothing = "Nothing";
+
+
 
 		public static ImmutableDictionary<string, PXCodeType> TypeNamesToCodeTypesForIdentifier { get; } =
 			new Dictionary<string, PXCodeType>
