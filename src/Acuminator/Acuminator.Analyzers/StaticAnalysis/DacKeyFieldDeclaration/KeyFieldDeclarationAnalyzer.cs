@@ -1,25 +1,20 @@
 ﻿using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class KeyFieldDeclarationAnalyzer : PXDiagnosticAnalyzer
 	{
-		private const string IsKey = nameof(PX.Data.PXDBFieldAttribute.IsKey);
-
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
 			(
@@ -48,7 +43,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 			foreach (var attribute in dacPropertiesDeclarations.SelectMany(a => a.GetAttributes()))
 			{
-				bool hasKeys = attribute.NamedArguments.Any(a => a.Key.Contains(IsKey) &&
+				bool hasKeys = attribute.NamedArguments.Any(a => a.Key.Contains(DelegateNames.IsKey) &&
 																	a.Value.Value is bool isKeyValue &&
 																	isKeyValue == true);
 

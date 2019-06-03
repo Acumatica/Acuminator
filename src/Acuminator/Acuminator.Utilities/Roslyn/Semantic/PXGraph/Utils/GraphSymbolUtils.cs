@@ -1,6 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -8,6 +6,7 @@ using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Threading;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {

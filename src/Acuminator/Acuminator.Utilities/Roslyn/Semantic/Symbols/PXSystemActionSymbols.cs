@@ -1,5 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
-using PX.Data;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -12,15 +12,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 			_compilation = aCompilation;
 		}
 
-		public INamedTypeSymbol PXSave => _compilation.GetTypeByMetadataName(typeof(PXSave<>).FullName);
-		public INamedTypeSymbol PXCancel => _compilation.GetTypeByMetadataName(typeof(PXCancel<>).FullName);
-		public INamedTypeSymbol PXInsert => _compilation.GetTypeByMetadataName(typeof(PXInsert<>).FullName);
-		public INamedTypeSymbol PXDelete => _compilation.GetTypeByMetadataName(typeof(PXDelete<>).FullName);
-		public INamedTypeSymbol PXCopyPasteAction => _compilation.GetTypeByMetadataName(typeof(PXCopyPasteAction<>).FullName);
-		public INamedTypeSymbol PXFirst => _compilation.GetTypeByMetadataName(typeof(PXFirst<>).FullName);
-		public INamedTypeSymbol PXPrevious => _compilation.GetTypeByMetadataName(typeof(PXPrevious<>).FullName);
-		public INamedTypeSymbol PXNext => _compilation.GetTypeByMetadataName(typeof(PXNext<>).FullName);
-		public INamedTypeSymbol PXLast => _compilation.GetTypeByMetadataName(typeof(PXLast<>).FullName);
-		public INamedTypeSymbol PXChangeID => _compilation.GetTypeByMetadataName(typeof(PXChangeID<,>).FullName);
+		public INamedTypeSymbol PXSave => _compilation.GetTypeByMetadataName(DelegateNames.PXSave);
+		public INamedTypeSymbol PXCancel => _compilation.GetTypeByMetadataName(DelegateNames.PXCancel);
+		public INamedTypeSymbol PXInsert => _compilation.GetTypeByMetadataName(DelegateNames.PXInsert);
+		public INamedTypeSymbol PXDelete => _compilation.GetTypeByMetadataName(DelegateNames.PXDelete);
+		public INamedTypeSymbol PXCopyPasteAction => _compilation.GetTypeByMetadataName(DelegateNames.PXCopyPasteAction);
+		public INamedTypeSymbol PXFirst => _compilation.GetTypeByMetadataName(DelegateNames.PXFirst);
+		public INamedTypeSymbol PXPrevious => _compilation.GetTypeByMetadataName(DelegateNames.PXPrevious);
+		public INamedTypeSymbol PXNext => _compilation.GetTypeByMetadataName(DelegateNames.PXNext);
+		public INamedTypeSymbol PXLast => _compilation.GetTypeByMetadataName(DelegateNames.PXLast);
+		public INamedTypeSymbol PXChangeID => _compilation.GetTypeByMetadataName(DelegateNames.PXChangeID);
 	}
 }

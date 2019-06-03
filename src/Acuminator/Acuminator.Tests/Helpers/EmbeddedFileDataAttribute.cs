@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using Xunit.Sdk;
-using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 
 namespace Acuminator.Tests.Helpers
@@ -42,6 +39,7 @@ namespace Acuminator.Tests.Helpers
 			[CallerFilePath] string testFilePath = null)
 			: this(new[] { fileName }, testFilePath, internalCodeFileNames)
 		{ }
+
 		protected EmbeddedFileDataAttribute(string[] fileNames, string testFilePath, string[] externalCodeFileNames = null)
 		{
 			if (fileNames.IsNullOrEmpty())
@@ -61,7 +59,7 @@ namespace Acuminator.Tests.Helpers
 						throw new ArgumentException("File name cannot be empty", nameof(internalCodeFileName));
 				}
 			}
-
+			
 			_prefix = GetPrefixFromTestFilePath(testFilePath);
 
 			_fileNames = externalCodeFileNames.IsNullOrEmpty() ? fileNames :  fileNames.Concat(externalCodeFileNames).ToArray();
