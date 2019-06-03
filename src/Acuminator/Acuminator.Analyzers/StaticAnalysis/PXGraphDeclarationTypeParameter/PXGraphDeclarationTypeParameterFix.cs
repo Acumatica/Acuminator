@@ -19,7 +19,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		public override Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -29,6 +29,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 				cancellation => FixGraphDeclarationTypeParameter(context.Document, context.Span, cancellation));
 
 			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			return Task.CompletedTask;
 		}
 
 		private async Task<Document> FixGraphDeclarationTypeParameter(Document document, TextSpan span, CancellationToken cancellation)
