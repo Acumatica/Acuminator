@@ -10,9 +10,13 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 
+using SuppressMessageAttribute = System.Diagnostics.CodeAnalysis.SuppressMessageAttribute;
 
 namespace Acuminator.Vsix.Coloriser
 {
+	[SuppressMessage("Style", 
+		"VSTHRD010: Accessing \"Acuminator.Vsix.Coloriser.VSColors.IsDarkTheme\" should only be done on the main thread.Call Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread() first.",
+		Justification = "Already called inside", Scope = "type")]
     public static class VSColors
     {
 		private const int NOT_INITIALIZED = 0, INITIALIZED = 1;
