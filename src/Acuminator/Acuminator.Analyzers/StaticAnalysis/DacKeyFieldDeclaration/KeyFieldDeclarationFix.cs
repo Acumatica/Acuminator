@@ -30,6 +30,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			RemoveIdentityAttribute
 		}
 
+		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+		
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField.Id);
 
