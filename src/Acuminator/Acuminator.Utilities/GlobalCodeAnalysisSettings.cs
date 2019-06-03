@@ -6,9 +6,6 @@ using System.Text;
 using System.Threading;
 using Acuminator.Utilities.Common;
 
-
-
-
 namespace Acuminator.Utilities
 {
 	public class GlobalCodeAnalysisSettings
