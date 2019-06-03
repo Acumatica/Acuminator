@@ -15,8 +15,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public partial class PXGraphCreationForBqlQueriesAnalyzer : PXDiagnosticAnalyzer
 	{
-		public const string IdentifierNamePropertyPrefix = "IdentifierName";
-		public const string IsGraphExtensionPropertyPrefix = "IsGraphExtension";
+		public static readonly string IdentifierNamePropertyPrefix = "IdentifierName";
+		public static readonly string IsGraphExtensionPropertyPrefix = "IsGraphExtension";
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
 			Descriptors.PX1072_PXGraphCreationForBqlQueries);

@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Vsix;
 using Acuminator.Vsix.Utilities;
 
@@ -78,7 +78,7 @@ namespace Acuminator.Vsix.Formatter
 			if (syntaxRoot == null || semanticModel == null)
 				return;
 
-			bool isPlatformReferenced = semanticModel.Compilation.GetTypeByMetadataName(TypeNames.PXGraphTypeName) != null;
+			bool isPlatformReferenced = semanticModel.Compilation.GetTypeByMetadataName(TypeFullNames.PXGraph) != null;
 
 			if (!isPlatformReferenced)
 				return;

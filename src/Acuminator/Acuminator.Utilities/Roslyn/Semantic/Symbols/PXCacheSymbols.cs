@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -15,13 +16,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
         internal PXCacheSymbols(Compilation compilation)
         {
-            Type = compilation.GetTypeByMetadataName(typeof(PX.Data.PXCache).FullName);
+            Type = compilation.GetTypeByMetadataName(TypeFullNames.PXCache);
 
-	        Insert = Type.GetMethods(nameof(PX.Data.PXCache.Insert));
-	        Update = Type.GetMethods(nameof(PX.Data.PXCache.Update));
-	        Delete = Type.GetMethods(nameof(PX.Data.PXCache.Delete));
+	        Insert = Type.GetMethods(DelegateNames.Insert);
+	        Update = Type.GetMethods(DelegateNames.Update);
+	        Delete = Type.GetMethods(DelegateNames.Delete);
 
-	        RaiseExceptionHandling = Type.GetMethods(nameof(PX.Data.PXCache.RaiseExceptionHandling));
+	        RaiseExceptionHandling = Type.GetMethods(DelegateNames.RaiseExceptionHandling);
         }
     }
 }

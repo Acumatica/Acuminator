@@ -6,12 +6,11 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using PX.Data;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 {
@@ -106,7 +105,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 
 				var symbol = semanticModel.GetSymbolInfo(memberAccesses[0]).Symbol;
 
-				if (symbol != null && symbol.ContainingType.Equals(pxContext.PXView.Type) && symbol.Name == nameof(PXView.StartRow))
+				if (symbol != null && symbol.ContainingType.Equals(pxContext.PXView.Type) && symbol.Name == DelegateNames.StartRow)
 				{
 					return localSymbol;
 				}
@@ -154,7 +153,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging
 			var startRowAccesses = methodDeclaration.DescendantNodes()
 													.OfType<MemberAccessExpressionSyntax>()
 													.Where(m => m.Name is IdentifierNameSyntax i &&
-																i.Identifier.ValueText == nameof(PXView.StartRow));
+																i.Identifier.ValueText == DelegateNames.StartRow);
 
 			foreach (var memberAccess in startRowAccesses)
 			{

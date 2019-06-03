@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -15,13 +16,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
         internal PXActionSymbols(Compilation compilation)
         {
-            Type = compilation.GetTypeByMetadataName(typeof(PX.Data.PXAction).FullName);
+            Type = compilation.GetTypeByMetadataName(TypeFullNames.PXAction);
 
-	        SetVisible = Type.GetMethods(nameof(PX.Data.PXAction.SetVisible));
-	        SetEnabled = Type.GetMethods(nameof(PX.Data.PXAction.SetEnabled));
-	        SetCaption = Type.GetMethods(nameof(PX.Data.PXAction.SetCaption));
-	        SetTooltip = Type.GetMethods(nameof(PX.Data.PXAction.SetTooltip));
-	        Press      = Type.GetMethods(nameof(PX.Data.PXAction.Press));
+	        SetVisible = Type.GetMethods(DelegateNames.SetVisible);
+	        SetEnabled = Type.GetMethods(DelegateNames.SetEnabled);
+	        SetCaption = Type.GetMethods(DelegateNames.SetCaption);
+	        SetTooltip = Type.GetMethods(DelegateNames.SetTooltip);
+	        Press      = Type.GetMethods(DelegateNames.Press);
         }
     }
 }
