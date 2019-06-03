@@ -19,7 +19,6 @@ using Acuminator.Utilities.Common;
 
 using Shell = Microsoft.VisualStudio.Shell;
 
-
 namespace Acuminator.Vsix.Utilities
 {
     /// <summary>

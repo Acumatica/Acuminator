@@ -28,7 +28,6 @@ using Document = Microsoft.CodeAnalysis.Document;
 using Shell =  Microsoft.VisualStudio.Shell;
 using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
 
-
 namespace Acuminator.Vsix.GoToDeclaration
 {
 	/// <summary>
