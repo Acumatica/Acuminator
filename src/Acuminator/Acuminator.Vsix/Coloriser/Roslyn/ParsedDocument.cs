@@ -8,11 +8,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
+
 using Path = System.IO.Path;
-
-
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
-
 
 namespace Acuminator.Vsix.Coloriser
 {

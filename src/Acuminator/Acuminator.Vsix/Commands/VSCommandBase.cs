@@ -18,7 +18,6 @@ using Acuminator.Vsix.Utilities;
 
 using IAsyncServiceProvider = Microsoft.VisualStudio.Shell.IAsyncServiceProvider;
 
-
 namespace Acuminator.Vsix
 {
 	/// <summary>
