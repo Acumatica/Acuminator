@@ -25,7 +25,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			: false;
 
 		public bool Equals(SuppressionManagerInitInfo other) => 
-			GenerateSuppressionBase == other.GenerateSuppressionBase && Path == other.Path;
+			GenerateSuppressionBase == other.GenerateSuppressionBase && 
+			string.Equals(Path, other.Path, StringComparison.OrdinalIgnoreCase);
 
 		public override int GetHashCode()
 		{
@@ -33,7 +34,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			unchecked
 			{
-				hash = 23 * hash + (Path?.GetHashCode() ?? 0);
+				hash = 23 * hash + (Path?.ToUpper().GetHashCode() ?? 0);
 				hash = 23 * hash + GenerateSuppressionBase.GetHashCode();
 			}
 
