@@ -32,26 +32,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 
         public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
             var diagnostic = context.Diagnostics
                 .FirstOrDefault(d => d.Id.Equals(Descriptors.PX1092_MissingAttributesOnActionHandler.Id));
 
-            if (diagnostic == null || diagnostic.Properties == null)
+            if (diagnostic?.Properties == null || !diagnostic.Properties.TryGetValue(FixOptionKey, out string value) ||
+				!Enum.TryParse(value, out FixOption option))
             {
-                return;
-            }
-
-            if (!diagnostic.Properties.TryGetValue(FixOptionKey, out string value))
-            {
-                return;
-            }
-
-            if (!Enum.TryParse(value, out FixOption option))
-            {
-                return;
+                return Task.CompletedTask;
             }
 
             var codeActionName = nameof(Resources.PX1092Fix).GetLocalized().ToString();
@@ -60,7 +51,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
                 cancellation => FixActionHandlerAttributes(context.Document, context.Span, option, cancellation));
 
             context.RegisterCodeFix(codeAction, context.Diagnostics);
-        }
+			return Task.CompletedTask;
+		}
 
         private async Task<Document> FixActionHandlerAttributes(Document document, TextSpan span, FixOption option, CancellationToken cancellation)
         {

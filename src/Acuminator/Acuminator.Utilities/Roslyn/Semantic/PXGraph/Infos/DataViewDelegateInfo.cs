@@ -39,7 +39,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 					? this 
 					: Base;
 
-			while (Base != null && counter <= recursionMax)
+			while (currentDelegate != null && counter <= recursionMax)
 			{
 				yield return currentDelegate;
 				currentDelegate = currentDelegate.Base;

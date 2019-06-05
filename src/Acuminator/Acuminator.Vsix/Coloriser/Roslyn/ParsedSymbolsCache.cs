@@ -1,18 +1,10 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio.Text;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Acuminator.Utilities;
-using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Vsix.Coloriser
 {
-    internal class ParsedSymbolsCache
+	internal class ParsedSymbolsCache
     {
         public static Dictionary<string, HashSet<string>> DocTypes { get; } = new Dictionary<string, HashSet<string>>
         {

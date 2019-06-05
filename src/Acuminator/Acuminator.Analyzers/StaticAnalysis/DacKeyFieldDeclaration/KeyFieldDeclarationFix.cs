@@ -15,6 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 {
@@ -29,8 +30,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			RemoveIdentityAttribute
 		}
 
-		private const string IsKey = nameof(PX.Data.PXDBFieldAttribute.IsKey);
-
+		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+		
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField.Id);
 
@@ -139,7 +140,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			return attributeNode
 				.ArgumentList
 				.Arguments
-				.Where(a => (a.NameEquals?.Name.Identifier.ValueText.Equals(IsKey, StringComparison.OrdinalIgnoreCase) ?? false) &&
+				.Where(a => (a.NameEquals?.Name.Identifier.ValueText.Equals(DelegateNames.IsKey, StringComparison.OrdinalIgnoreCase) ?? false) &&
 				(a.Expression as LiteralExpressionSyntax).Token.ValueText.Equals(bool.TrueString,StringComparison.OrdinalIgnoreCase));
 		}
 

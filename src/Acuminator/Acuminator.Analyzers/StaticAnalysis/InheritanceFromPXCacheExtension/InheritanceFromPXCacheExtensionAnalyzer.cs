@@ -2,9 +2,9 @@
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using PX.Data;
 using System.Collections.Immutable;
 using System.Linq;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 {
@@ -24,13 +24,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
         {
 	        var symbol = (INamedTypeSymbol) context.Symbol;
 	        if (!symbol.InheritsFrom(pxContext.PXCacheExtensionType)
-	            || symbol.Name == nameof(PXCacheExtension)
+	            || symbol.Name == TypeNames.PXCacheExtension
 				|| symbol.InheritsFromOrEquals(pxContext.PXMappedCacheExtensionType))
 	        {
 		        return;
 	        }
 
-	        if (symbol.BaseType.Name == nameof(PXCacheExtension))
+	        if (symbol.BaseType.Name == TypeNames.PXCacheExtension)
 	        {
 		        if (!symbol.IsSealed)
 		        {

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard1.6</TargetFramework>
     <Version>2.0.0</Version>
     <Copyright>Copyright © 2017-2019 Acumatica Ltd.</Copyright>
     <NeutralLanguage>en</NeutralLanguage>
@@ -19,18 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.9.2" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.10.0" PrivateAssets="all" />
-    <Reference Include="PX.Common">
-      <HintPath>..\..\..\lib\PX.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="PX.Data">
-      <HintPath>..\..\..\lib\PX.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="PX.Data.BQL.Fluent">
-      <HintPath>..\..\..\lib\PX.Data.BQL.Fluent.dll</HintPath>
-    </Reference>
-    <Reference Include="PX.DbServices">
-      <HintPath>..\..\..\lib\PX.DbServices.dll</HintPath>
-    </Reference>
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
     <PackageReference Update="NETStandard.Library" PrivateAssets="all" />
   </ItemGroup>
 </Project>

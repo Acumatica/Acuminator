@@ -4,15 +4,23 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using PX.Data;
 using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+
+	public enum PXPersistingCheckValues
+	{
+		Null = 0,
+		NullOrBlank = 1,
+		Nothing = 2
+	}
+
+	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class DacExtensionDefaultAttributeAnalyzer : PXDiagnosticAnalyzer
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
@@ -182,9 +190,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
             }
 
             var hasPersistingCheckNothing = pxDefaultAttribute.NamedArguments
-                .Where(na => nameof(PXDefaultAttribute.PersistingCheck).Equals(na.Key, StringComparison.Ordinal))
+                .Where(na => TypeNames.PersistingCheck.Equals(na.Key, StringComparison.Ordinal))
                 .Select(na => na.Value.Value)
-                .Where(v => v is int persistingCheck && persistingCheck == (int)PXPersistingCheck.Nothing)
+                .Where(v => v is int persistingCheck && persistingCheck == (int)PXPersistingCheckValues.Nothing)
                 .Any();
 
             return (pxDefaultAttribute, hasPersistingCheckNothing);

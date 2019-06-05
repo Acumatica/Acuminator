@@ -7,6 +7,7 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+
 namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 {
 	/// <summary>
@@ -37,9 +38,10 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		private readonly INamedTypeSymbol _eventSubscriberAttribute;
 		private readonly INamedTypeSymbol _dynamicAggregateAttribute;
 		private readonly INamedTypeSymbol _aggregateAttribute;
-        private readonly INamedTypeSymbol _defaultAttribute;
+		private readonly INamedTypeSymbol _defaultAttribute;
 
 		public ImmutableHashSet<ITypeSymbol> BoundBaseTypes { get; }
+		public ImmutableDictionary<ITypeSymbol,bool> TypesContainingIsDBField { get; }
 
 		private const string IsDBField = "IsDBField";
 
@@ -50,12 +52,15 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			_context = pxContext;
 
 			var boundBaseTypes = GetBoundBaseTypes(_context);
+			Dictionary<ITypeSymbol, bool> typesContainingIsDBField = GetTypesContainingIsDBField(_context);
+
 			BoundBaseTypes = boundBaseTypes.ToImmutableHashSet();
+			TypesContainingIsDBField = typesContainingIsDBField.ToImmutableDictionary();
 
 			_eventSubscriberAttribute = _context.AttributeTypes.PXEventSubscriberAttribute;
 			_dynamicAggregateAttribute = _context.AttributeTypes.PXDynamicAggregateAttribute;
 			_aggregateAttribute = _context.AttributeTypes.PXAggregateAttribute;
-            _defaultAttribute = _context.AttributeTypes.PXDefaultAttribute;
+			_defaultAttribute = _context.AttributeTypes.PXDefaultAttribute;
 		}
 
 		private static HashSet<ITypeSymbol> GetBoundBaseTypes(PXContext context) =>
@@ -64,6 +69,13 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 				context.FieldAttributes.PXDBFieldAttribute,
 				context.FieldAttributes.PXDBCalcedAttribute,
 				context.FieldAttributes.PXDBDataLengthAttribute,
+			};
+
+		private static Dictionary<ITypeSymbol, bool> GetTypesContainingIsDBField(PXContext context) =>
+			new Dictionary<ITypeSymbol, bool>
+			{
+				{	context.FieldAttributes.PeriodIDAttribute, true },
+				{	context.FieldAttributes.AcctSubAttribute, true },
 			};
 
 		/// <summary>
@@ -166,11 +178,11 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			attribute.ThrowOnNull(nameof(attribute));
 
-            if (!attribute.AttributeClass.InheritsFromOrEquals(_eventSubscriberAttribute) ||
-                attribute.AttributeClass.InheritsFromOrEquals(_defaultAttribute))
-            {
-                return BoundType.NotDefined;
-            }
+			if (!attribute.AttributeClass.InheritsFromOrEquals(_eventSubscriberAttribute) ||
+			    attribute.AttributeClass.InheritsFromOrEquals(_defaultAttribute))
+			{
+			    return BoundType.NotDefined;
+			}
 
 			if (BoundBaseTypes.Any(boundBaseType => IsAttributeDerivedFromClassInternal(attribute.AttributeClass, boundBaseType)))
 				return BoundType.DbBound;
@@ -181,17 +193,35 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			
 			if (containsIsDbFieldproperty)
 			{
-				var isDbPropertyAttributeArgs = attribute.NamedArguments.Where(arg => IsDBField.Equals(arg.Key, StringComparison.OrdinalIgnoreCase)).ToList();    //case insensitive check
+				var isDbPropertyAttributeArgs = attribute.NamedArguments.Where(arg => IsDBField.Equals(arg.Key, StringComparison.OrdinalIgnoreCase)).ToList();
 
-				if (isDbPropertyAttributeArgs.Count != 1)  //rare case when there are multiple different "IsDBField" considered
-					return BoundType.Unknown;
+				if (isDbPropertyAttributeArgs.Count > 0)
+				{
+					if (isDbPropertyAttributeArgs.Count != 1)  //rare case when there are multiple different "IsDBField" considered
+						return BoundType.Unknown;
 
-				if (!(isDbPropertyAttributeArgs[0].Value.Value is bool isDbPropertyAttributeArgument))
-					return BoundType.Unknown;  //if there is null or values of type other than bool then we don't know if attribute is bound
+					if (!(isDbPropertyAttributeArgs[0].Value.Value is bool isDbPropertyAttributeArgument))
+						return BoundType.Unknown;  //if there is null or values of type other than bool then we don't know if attribute is bound
 
-				return isDbPropertyAttributeArgument
-					? BoundType.DbBound
-					: BoundType.Unbound;
+					return isDbPropertyAttributeArgument
+						? BoundType.DbBound
+						: BoundType.Unbound;
+
+				}
+				else
+				{
+					ITypeSymbol typeFromRegister = TypesContainingIsDBField.Keys.FirstOrDefault(t => IsAttributeDerivedFromClass(attribute.AttributeClass, t));
+					bool? isDbFieldFromBase = typeFromRegister != null
+						? TypesContainingIsDBField[typeFromRegister]
+						: (bool?)null;
+
+					if (isDbPropertyAttributeArgs.Count == 0 && isDbFieldFromBase.HasValue)
+					{
+						return isDbFieldFromBase.Value
+							? BoundType.DbBound// "IsDBField = true" property defined in base Acumatica class 
+							: BoundType.Unbound;// "IsDBField = false" property defined in base Acumatica class
+					}
+				}
 			}
 
 			return BoundType.Unbound;
@@ -206,22 +236,22 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			attributes.ThrowOnNull();
 
-            return attributes.Any(a => GetBoundAttributeType(a) == BoundType.DbBound);
+			return attributes.Any(a => GetBoundAttributeType(a) == BoundType.DbBound);
 		}
 
-        /// <summary>
+		/// <summary>
 		/// Query if collection of attributes contains unbound attribute.
 		/// </summary>
 		/// <param name="attributes">The attributes collection.</param>
 		/// <returns/>
 		public bool ContainsUnboundAttributes(IEnumerable<AttributeData> attributes)
-        {
-            attributes.ThrowOnNull();
+		{
+			attributes.ThrowOnNull();
 
-            return attributes.Any(a => GetBoundAttributeType(a) == BoundType.Unbound);
-        }
+			return attributes.Any(a => GetBoundAttributeType(a) == BoundType.Unbound);
+		}
 
-        private bool IsAttributeDerivedFromClassInternal(ITypeSymbol attributeType, ITypeSymbol typeToCheck, int depth = DefaultRecursionDepth)
+		private bool IsAttributeDerivedFromClassInternal(ITypeSymbol attributeType, ITypeSymbol typeToCheck, int depth = DefaultRecursionDepth)
 		{
 			if (depth < 0)
 				return false;

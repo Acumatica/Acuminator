@@ -3,8 +3,6 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
 using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent; 
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
@@ -14,7 +12,7 @@ using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
 namespace Acuminator.Vsix.Coloriser
 {
-    public class ParsedDocument
+	public class ParsedDocument
     {
         private static MetadataReference PXDataReference { get; } = 
             MetadataReference.CreateFromFile(typeof(PX.Data.PXGraph).Assembly.Location);

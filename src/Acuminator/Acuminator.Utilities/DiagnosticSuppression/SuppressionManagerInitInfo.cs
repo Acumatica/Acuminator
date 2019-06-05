@@ -34,7 +34,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			unchecked
 			{
-				hash = 23 * hash + (Path?.ToUpper().GetHashCode() ?? 0);
+				hash = 23 * hash + (Path?.ToUpperInvariant().GetHashCode() ?? 0);
 				hash = 23 * hash + GenerateSuppressionBase.GetHashCode();
 			}
 

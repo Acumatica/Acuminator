@@ -63,9 +63,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 			}
 			else
 			{
-				return firstDacCandidate != null
-					? firstDacCandidate
-					: secondDacCandidate;
+				return firstDacCandidate ?? secondDacCandidate;
 			}
 		}
 	}
