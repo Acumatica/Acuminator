@@ -25,8 +25,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// </summary>
 		public const int CommandId = 0x0201;
 
-		protected override bool CanModifyDocument => false;
-
 		private OpenCodeMapWindowCommand(AsyncPackage package, OleMenuCommandService commandService) : 
 									base(package, commandService, CommandId)
 		{		

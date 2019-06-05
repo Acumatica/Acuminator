@@ -28,8 +28,6 @@ namespace Acuminator.Vsix.Formatter
 		/// </summary>
 		public const int FormatCommandId = 0x0101;
 
-		protected override bool CanModifyDocument => true;
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FormatBqlCommand"/> class. Adds our command handlers for menu (commands must exist in the command table file)
 		/// </summary>

@@ -38,11 +38,6 @@ namespace Acuminator.Vsix
 		protected AsyncPackage Package { get; }
 
 		/// <summary>
-		/// True if the command can modify document in some way - text or properties.
-		/// </summary>
-		protected abstract bool CanModifyDocument { get; }
-
-		/// <summary>
 		/// Initializes a new instance of the command.
 		/// Adds our command handlers for menu (commands must exist in the command table file)
 		/// </summary>
@@ -68,32 +63,11 @@ namespace Acuminator.Vsix
 			}
 		}
 
-
 		/// <summary>
 		/// Gets the service provider from the owner package.
 		/// </summary>
 		protected IAsyncServiceProvider ServiceProvider => Package;
 		
-		//protected virtual void QueryFormatButtonStatus(object sender, EventArgs e)
-		//{
-		//	if (!(sender is OleMenuCommand menuCommand))
-		//		return;
-
-		//	ThreadHelper.ThrowIfNotOnUIThread();
-		//	DTE2 dte = ServiceProvider.GetService<DTE, DTE2>();
-		//	bool visible = false;
-		//	bool enabled = false;
-
-		//	if (dte?.ActiveDocument != null && dte.ActiveDocument.Language == LegacyLanguageNames.CSharp)
-		//	{
-		//		visible = true;
-		//		enabled = !CanModifyDocument || !dte.ActiveDocument.ReadOnly;
-		//	}
-
-		//	menuCommand.Visible = visible;
-		//	menuCommand.Enabled = enabled;
-		//}
-
 		protected abstract void CommandCallback(object sender, EventArgs e);	
 	}
 }

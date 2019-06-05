@@ -42,8 +42,6 @@ namespace Acuminator.Vsix.GoToDeclaration
 		/// </summary>
 		public const int GoToDeclarationCommandId = 0x0102;
 
-		protected override bool CanModifyDocument => false;
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GoToDeclarationOrHandlerCommand"/> class. Adds our command handlers for menu (commands must exist in the command table file)
 		/// </summary>
