@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis.Text;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
-
+using System.Threading.Tasks;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -50,20 +50,19 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Tooltip = GetAttributeTooltip();
 		}
 
-		public override void NavigateToItem()
+		public async override Task NavigateToItemAsync()
 		{
 			if (Attribute.ApplicationSyntaxReference?.SyntaxTree == null)
 				return;
 
 			TextSpan span = Attribute.ApplicationSyntaxReference.Span;
 			string filePath =  Attribute.ApplicationSyntaxReference.SyntaxTree.FilePath;
-			Workspace workspace = AcuminatorVSPackage.Instance.GetVSWorkspace();
+			Workspace workspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
 
 			if (workspace?.CurrentSolution == null)
 				return;
 
-			AcuminatorVSPackage.Instance.OpenCodeFileAndNavigateToPosition(workspace.CurrentSolution, 
-																			filePath, span);
+			await AcuminatorVSPackage.Instance.OpenCodeFileAndNavigateToPositionAsync(workspace.CurrentSolution, filePath, span);
 		}
 
 		private string GetAttributeTooltip()

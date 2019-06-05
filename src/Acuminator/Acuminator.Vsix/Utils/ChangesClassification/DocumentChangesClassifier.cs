@@ -42,12 +42,12 @@ namespace Acuminator.Vsix.ChangesClassification
 			if (textChanges.IsNullOrEmpty())
 				return ChangeLocation.None;
 
-			return GetChangesLocationImplAsync(oldDocument, newRoot, newDocument, textChanges, cancellationToken);
+			return GetChangesLocationImpl(oldDocument, newRoot, newDocument, textChanges, cancellationToken);
 		}
 
-		protected virtual ChangeLocation GetChangesLocationImplAsync(Document oldDocument, SyntaxNode newRoot, Document newDocument,
-																	 IEnumerable<TextChange> textChanges, 
-																	 CancellationToken cancellationToken = default)
+		protected virtual ChangeLocation GetChangesLocationImpl(Document oldDocument, SyntaxNode newRoot, Document newDocument,
+																IEnumerable<TextChange> textChanges, 
+																CancellationToken cancellationToken = default)
 		{
 			ChangeLocation accumulatedChangeLocation = ChangeLocation.None;
 

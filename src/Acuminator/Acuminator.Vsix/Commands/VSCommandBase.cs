@@ -16,6 +16,8 @@ using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
 
+using IAsyncServiceProvider = Microsoft.VisualStudio.Shell.IAsyncServiceProvider;
+
 namespace Acuminator.Vsix
 {
 	/// <summary>
@@ -31,9 +33,9 @@ namespace Acuminator.Vsix
 		protected Guid DefaultCommandSet { get; } = new Guid(AcuminatorVSPackage.AcuminatorDefaultCommandSetGuidString);
 
 		/// <summary>
-		/// VS Package that provides this command, not null.
+		/// VS AsyncPackage that provides this command, not null.
 		/// </summary>
-		protected Package Package { get; }
+		protected AsyncPackage Package { get; }
 
 		/// <summary>
 		/// True if the command can modify document in some way - text or properties.
@@ -45,48 +47,53 @@ namespace Acuminator.Vsix
 		/// Adds our command handlers for menu (commands must exist in the command table file)
 		/// </summary>
 		/// <param name="package">Owner package, not null.</param>
-		protected VSCommandBase(Package package, int commandID, Guid? customCommandSet = null)
+		protected VSCommandBase(AsyncPackage package, OleMenuCommandService commandService, int commandID, Guid? customCommandSet = null)
 		{
 			package.ThrowOnNull(nameof(package));
+			commandService.ThrowOnNull(nameof(commandService));
 
 			Package = package;
 			Guid commandSet = customCommandSet ?? DefaultCommandSet;
-			OleMenuCommandService commandService = ServiceProvider.GetService<IMenuCommandService, OleMenuCommandService>();
 
 			if (commandService != null)
 			{
 				var menuCommandID = new CommandID(commandSet, commandID);
-				var menuItem = new OleMenuCommand(CommandCallback, menuCommandID);
-				menuItem.BeforeQueryStatus += QueryFormatButtonStatus;
+				var menuItem = new OleMenuCommand(CommandCallback, menuCommandID)
+				{
+					// This defers the visibility logic back to the VisibilityConstraints in the .vsct file
+					Supported = false
+				};
+
 				commandService.AddCommand(menuItem);
 			}
 		}
 
+
 		/// <summary>
 		/// Gets the service provider from the owner package.
 		/// </summary>
-		protected IServiceProvider ServiceProvider => Package;
+		protected IAsyncServiceProvider ServiceProvider => Package;
 		
-		protected virtual void QueryFormatButtonStatus(object sender, EventArgs e)
-		{
-			if (!(sender is OleMenuCommand menuCommand))
-				return;
+		//protected virtual void QueryFormatButtonStatus(object sender, EventArgs e)
+		//{
+		//	if (!(sender is OleMenuCommand menuCommand))
+		//		return;
 
-			ThreadHelper.ThrowIfNotOnUIThread();
-			DTE2 dte = ServiceProvider.GetService<DTE, DTE2>();
-			bool visible = false;
-			bool enabled = false;
+		//	ThreadHelper.ThrowIfNotOnUIThread();
+		//	DTE2 dte = ServiceProvider.GetService<DTE, DTE2>();
+		//	bool visible = false;
+		//	bool enabled = false;
 
-			if (dte?.ActiveDocument != null && dte.ActiveDocument.Language == LegacyLanguageNames.CSharp)
-			{
-				visible = true;
-				enabled = !CanModifyDocument || !dte.ActiveDocument.ReadOnly;
-			}
+		//	if (dte?.ActiveDocument != null && dte.ActiveDocument.Language == LegacyLanguageNames.CSharp)
+		//	{
+		//		visible = true;
+		//		enabled = !CanModifyDocument || !dte.ActiveDocument.ReadOnly;
+		//	}
 
-			menuCommand.Visible = visible;
-			menuCommand.Enabled = enabled;
-		}
+		//	menuCommand.Visible = visible;
+		//	menuCommand.Enabled = enabled;
+		//}
 
-		protected abstract void CommandCallback(object sender, EventArgs e);
+		protected abstract void CommandCallback(object sender, EventArgs e);	
 	}
 }

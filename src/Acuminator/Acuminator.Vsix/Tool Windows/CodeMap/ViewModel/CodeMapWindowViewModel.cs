@@ -12,9 +12,8 @@ using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
 
-
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
-using System.Windows;
+using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -159,13 +158,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			ClearCodeMap();
-			var currentWorkspace = AcuminatorVSPackage.Instance.GetVSWorkspace();
+			var currentWorkspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
 
 			if (currentWorkspace == null)
 				return;
 
 			Workspace = currentWorkspace;
-			IWpfTextView activeWpfTextView = AcuminatorVSPackage.Instance.GetWpfTextView();
+			IWpfTextView activeWpfTextView = await AcuminatorVSPackage.Instance.GetWpfTextViewAsync();
 			Document activeDocument = activeWpfTextView?.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
 
 			if (activeDocument == null)
@@ -185,15 +184,20 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			IsVisible = true;
 		}
 
-		private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
+		private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus) =>
+			WindowEventsWindowActivatedAsync(gotFocus, lostFocus)
+				.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(WindowEvents_WindowActivated)}");
+
+		private async Task WindowEventsWindowActivatedAsync(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
 		{
-#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
-			if (!ThreadHelper.CheckAccess() || Equals(gotFocus, lostFocus) || gotFocus.Document == null)
+			if (!ThreadHelper.CheckAccess())
 			{
-				return;
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken ?? AcuminatorVSPackage.Instance.DisposalToken);
 			}
 
-			if (gotFocus.Document.Language != LegacyLanguageNames.CSharp)
+			if (Equals(gotFocus, lostFocus) || gotFocus.Document == null)
+				return;
+			else if (gotFocus.Document.Language != LegacyLanguageNames.CSharp)
 			{
 				ClearCodeMap();
 				return;
@@ -205,22 +209,22 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			ClearCodeMap();
-			var currentWorkspace = AcuminatorVSPackage.Instance.GetVSWorkspace();
+			var currentWorkspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
 
 			if (currentWorkspace == null)
 				return;
 
 			Workspace = currentWorkspace;
-			IWpfTextView activeWpfTextView = AcuminatorVSPackage.Instance.GetWpfTextViewByFilePath(gotFocus.Document.FullName);
+			IWpfTextView activeWpfTextView = await AcuminatorVSPackage.Instance.GetWpfTextViewByFilePathAsync(gotFocus.Document.FullName);
 			Document activeDocument = activeWpfTextView?.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
 
 			if (activeDocument == null)
 				return;
 
 			_documentModel = new DocumentModel(activeWpfTextView, activeDocument);
-			BuildCodeMapAsync().Forget();
-#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
+			await BuildCodeMapAsync();
 		}
+
 
 		private async void OnWorkspaceChanged(object sender, WorkspaceChangeEventArgs e)
 		{
@@ -229,7 +233,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (!ThreadHelper.CheckAccess())
 			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken ?? default);
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken ?? AcuminatorVSPackage.Instance.DisposalToken);
 			}
 
 			if (!IsVisible || e.IsActiveDocumentCleared(Document))

@@ -6,8 +6,7 @@ using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.Utilities;
-
-
+using System.Threading.Tasks;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -94,7 +93,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			EventsCount = GetDacNodeEventsCount();
 		}
 
-		public override void NavigateToItem()
+		public async override Task NavigateToItemAsync()
 		{
 			TreeNodeViewModel childToNavigateTo = null;
 
@@ -117,7 +116,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (childToNavigateTo != null)
 			{				
-				childToNavigateTo.NavigateToItem();
+				await childToNavigateTo.NavigateToItemAsync();
 				IsExpanded = true;
 				Tree.SelectedItem = childToNavigateTo;
 			}
