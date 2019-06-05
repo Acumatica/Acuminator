@@ -1,6 +1,18 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
+## Acuminator 1.6.2
+Acuminator 1.6.2 includes the bug fixes described in this section, as well as the features that have been implemented in previous versions.
+
+### Fixed Bugs
+In this version of Acuminator, the following bugs have been fixed:
+
+ - The PX1005 diagnostic (for typos in the names of view delegates) displayed warnings for action handlers.
+ - Acuminator diagnostics incorrectly worked for `PeriodIDAttribute` and descending classes (such as `FinPeriodAttribute`) and `AcctSubAttribute` and descending classes.
+ - Acuminator NuGet package generated warnings about Acumatica-related dependencies.
+ - In the code map, the graph events were collected incorrectly. The generic and non-generic events were not grouped together. The hierarchy of graph extensions was created incorrectly.
+ - In some cases, because Roslyn incorrectly determined the effective set of interfaces for the generic type parameter, the code map did not display generic events.
+
 ## Acuminator 1.6.1
 Acuminator 1.6.1 includes the diagnostics, code fixes, and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
