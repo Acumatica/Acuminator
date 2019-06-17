@@ -13,7 +13,6 @@ using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-//using Microsoft.CodeAnalysis.Semantics;
 using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
