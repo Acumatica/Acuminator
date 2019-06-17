@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -12,18 +11,15 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Classification;
 using EnvDTE80;
 using EnvDTE;
-using System.Linq;
 using System.ComponentModel.Design;
 using Acuminator.Vsix.GoToDeclaration;
 using Acuminator.Vsix.Settings;
 using Acuminator.Vsix.Logger;
 using Acuminator.Vsix.ToolWindows.CodeMap;
 using Acuminator.Vsix.DiagnosticSuppression;
-using Acuminator.Vsix.GoToDeclaration;
-using Acuminator.Vsix.ServiceLocation;
 using Acuminator.Vsix.Formatter;
 using Acuminator.Vsix.Utilities;
-using Acuminator.Vsix.Utils;
+using Acuminator.Utilities;
 using Acuminator.Utilities.DiagnosticSuppression;
 
 

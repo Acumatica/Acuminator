@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
@@ -12,8 +13,6 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Acuminator.Utilities.Common;
@@ -25,7 +24,8 @@ using Acuminator.Utilities.DiagnosticSuppression;
 
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 using Document = Microsoft.CodeAnalysis.Document;
-
+using Shell = Microsoft.VisualStudio.Shell;
+using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
 
 namespace Acuminator.Vsix.DiagnosticSuppression
 {
@@ -41,14 +41,13 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		/// </summary>
 		public const int SuppressDiagnosticCommandId = 0x0104;
 
-		protected override bool CanModifyDocument => true;
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SuppressDiagnosticCommand"/> class.
 		/// Adds our command handlers for menu (commands must exist in the command table file)
 		/// </summary>
 		/// <param name="package">Owner package, not null.</param>
-		private SuppressDiagnosticCommand(Package package) : base(package, SuppressDiagnosticCommandId)
+		private SuppressDiagnosticCommand(Shell.AsyncPackage package, Shell.OleMenuCommandService commandService) : 
+									 base(package, commandService, SuppressDiagnosticCommandId)
 		{
 		}
 
@@ -65,17 +64,22 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		/// Initializes the singleton instance of the command.
 		/// </summary>
 		/// <param name="package">Owner package, not null.</param>
-		public static void Initialize(Package package)
+		/// <param name="commandService">The command service.</param>
+		public static void Initialize(Shell.AsyncPackage package, Shell.OleMenuCommandService commandService)
 		{
 			if (Interlocked.CompareExchange(ref _isCommandInitialized, value: INITIALIZED, comparand: NOT_INITIALIZED) == NOT_INITIALIZED)
 			{
-				Instance = new SuppressDiagnosticCommand(package);
+				Instance = new SuppressDiagnosticCommand(package, commandService);
 			}
 		}
 
-		protected override void CommandCallback(object sender, EventArgs e)
+		protected override void CommandCallback(object sender, EventArgs e) =>
+			CommandCallbackAsync()
+				.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(SuppressDiagnosticCommand)}");
+
+		private async Task CommandCallbackAsync()
 		{		
-			IWpfTextView textView = ServiceProvider.GetWpfTextView();
+			IWpfTextView textView = await ServiceProvider.GetWpfTextViewAsync();
 
 			if (textView == null)
 				return;
@@ -90,15 +94,27 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			if (document == null || !document.SupportsSyntaxTree /*|| document.SourceCodeKind ==*/)
 				return;
 
-			(SyntaxNode syntaxRoot, SemanticModel semanticModel) = ThreadHelper.JoinableTaskFactory.Run(
-				async () => (await document.GetSyntaxRootAsync(), await document.GetSemanticModelAsync()));
+			Task<SyntaxNode> syntaxRootTask = document.GetSyntaxRootAsync(Package.DisposalToken);
+			Task<SemanticModel> semanticModelTask = document.GetSemanticModelAsync(Package.DisposalToken);
+			await Task.WhenAll(syntaxRootTask, semanticModelTask);
 
-			if (syntaxRoot == null || semanticModel == null || !IsPlatformReferenced(semanticModel))
+#pragma warning disable VSTHRD002, VSTHRD103 // Avoid problematic synchronous waits - the results are already obtained
+			SyntaxNode syntaxRoot = syntaxRootTask.Result;
+			SemanticModel semanticModel = semanticModelTask.Result;
+#pragma warning restore VSTHRD002, VSTHRD103
+
+			if (syntaxRoot == null || semanticModel == null || !IsPlatformReferenced(semanticModel) ||
+				Package.DisposalToken.IsCancellationRequested)
+			{
 				return;
+			}
 
 			TextSpan caretSpan = GetTextSpanFromCaret(caretPosition, caretLine);
+			List<DiagnosticData> diagnosticData = await GetDiagnosticsAsync(document, caretSpan);
+
 			SyntaxNode syntaxNode = syntaxRoot.FindNode(caretSpan);
-			List<DiagnosticData> diagnosticData = GetDiagnostics(document, caretSpan).ToList();
+			 
+			
 
 			switch (diagnosticData.Count)
 			{
@@ -138,21 +154,23 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			return context.IsPlatformReferenced;
 		}
 
-		private IEnumerable<DiagnosticData> GetDiagnostics(Document document, TextSpan caretSpan)
+		private async Task<List<DiagnosticData>> GetDiagnosticsAsync(Document document, TextSpan caretSpan)
 		{
 			IEnumerable<DiagnosticData> diagnosticData = null;
 
 			try
 			{
-				diagnosticData = ThreadHelper.JoinableTaskFactory.Run(
-					async () => await RoslynDiagnosticService.Instance.GetCurrentDiagnosticForDocumentSpanAsync(document, caretSpan));
+				await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(Package.DisposalToken);
+				diagnosticData = await Shell.ThreadHelper.JoinableTaskFactory.RunAsync(() =>
+					RoslynDiagnosticService.Instance.GetCurrentDiagnosticForDocumentSpanAsync(document, caretSpan));
 			}
-			catch (Exception e)
+			catch
 			{
-				return Enumerable.Empty<DiagnosticData>();
+				return new List<DiagnosticData>();
 			}
 
-			return diagnosticData?.Where(d => IsAcuminatorDiagnostic(d)) ?? Enumerable.Empty<DiagnosticData>();
+			return diagnosticData?.Where(d => IsAcuminatorDiagnostic(d)).ToList(capacity: 1) ??
+				   new List<DiagnosticData>();
 		}
 
 		private static bool IsAcuminatorDiagnostic(DiagnosticData diagnosticData) =>

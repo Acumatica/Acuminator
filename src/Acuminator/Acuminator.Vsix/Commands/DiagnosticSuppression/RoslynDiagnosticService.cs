@@ -1,32 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
-using System.Windows;
+using System.Threading.Tasks;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.Utilities;
-using Acuminator.Utilities.DiagnosticSuppression;
 
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 using Document = Microsoft.CodeAnalysis.Document;
-
+using Shell = Microsoft.VisualStudio.Shell;
 
 namespace Acuminator.Vsix.DiagnosticSuppression
 {
@@ -43,8 +30,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		private const string DiagnosticDataTypeName = "DiagnosticData";
 		private const string GetDiagnosticsForSpanAsyncMethodName = "GetDiagnosticsForSpanAsync";
 
-
-		private readonly Package _package;
+		private readonly Shell.AsyncPackage _package;
 		private readonly IComponentModel _componentModel;
 
 		public Type DiagnosticAnalyzerServiceType { get; }
@@ -68,17 +54,18 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		/// Initializes the singleton instance of the command.
 		/// </summary>
 		/// <param name="package">Owner package, not null.</param>
-		public static void Initialize(Package package)
+		/// <param name="componentModel">The component model service.</param>
+		public static void Initialize(Shell.AsyncPackage package, IComponentModel componentModel)
 		{
 			if (Interlocked.CompareExchange(ref _isServiceInitialized, value: INITIALIZED, comparand: NOT_INITIALIZED) == NOT_INITIALIZED)
 			{
-				var componentModel = package?.GetService<SComponentModel, IComponentModel>();
+				//var componentModel = package?.GetService<SComponentModel, IComponentModel>();
 
 				Instance = new RoslynDiagnosticService(package, componentModel);
 			}
 		}
 
-		private RoslynDiagnosticService(Package package, IComponentModel componentModel)
+		private RoslynDiagnosticService(Shell.AsyncPackage package, IComponentModel componentModel)
 		{
 			package.ThrowOnNull(nameof(package));
 			componentModel.ThrowOnNull(nameof(componentModel));
@@ -108,8 +95,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 												  from type in assembly.GetTypes()
 												  where type.IsInterface && type.Name == RoslynDiagnosticServiceTypeName
 												  select type)
-												 .FirstOrDefault();
-							  
+												 .FirstOrDefault();							  
 			return diagnosticAnalyzerServiceType;
 		}
 
@@ -148,14 +134,15 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			return genericTask?.GetProperty(nameof(System.Threading.Tasks.Task<object>.Result));
 		}
 
-		public async System.Threading.Tasks.Task<List<DiagnosticData>> GetCurrentDiagnosticForDocumentSpanAsync(Document document, TextSpan caretSpan)
+		public async System.Threading.Tasks.Task<List<DiagnosticData>> GetCurrentDiagnosticForDocumentSpanAsync(Document document, TextSpan caretSpan,
+																											CancellationToken cancellationToken = default)
 		{		
 			var componentModelType = _componentModel.GetType();
 			
 			try
 			{
-				dynamic dataTask = _getDiagnosticOnTextSpanMethod.Invoke(_roslynAnalyzersService, 
-																		 new object[] { document, caretSpan, null, false, CancellationToken.None });
+				object dataTask = _getDiagnosticOnTextSpanMethod.Invoke(_roslynAnalyzersService, 
+																new object[] { document, caretSpan, null, false, cancellationToken });
 				if (!(dataTask is System.Threading.Tasks.Task task))
 					return new List<DiagnosticData>();
 
