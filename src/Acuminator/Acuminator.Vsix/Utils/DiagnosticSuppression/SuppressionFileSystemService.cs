@@ -4,7 +4,7 @@ using System.IO;
 using System.Security;
 using System.Xml.Linq;
 
-namespace Acuminator.Vsix.Utils
+namespace Acuminator.Vsix.Utilities
 {
 	internal class SuppressionFileSystemService : ISuppressionFileSystemService
 	{

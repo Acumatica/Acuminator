@@ -286,6 +286,24 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There are multiple Acuminator diagnostics on this code snippet. The Acuminator can&apos;t shoose between them..
+        /// </summary>
+        public static string DiagnosticSuppression_MultipleDiagnosticFound {
+            get {
+                return ResourceManager.GetString("DiagnosticSuppression_MultipleDiagnosticFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are no Acuminator diagnostic on this code snippet..
+        /// </summary>
+        public static string DiagnosticSuppression_NoDiagnosticFound {
+            get {
+                return ResourceManager.GetString("DiagnosticSuppression_NoDiagnosticFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Finished Acuminator package loading.
         /// </summary>
         public static string PackageLoad_Done {

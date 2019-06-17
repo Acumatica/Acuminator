@@ -13,7 +13,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		private const string IdAttribute = "id";
 		private const string TargetElement = "target";
 		private const string SyntaxNodeElement = "syntaxNode";
-		private const string SuppressionFileExtension = ".acuminator";
+		public const string SuppressionFileExtension = ".acuminator";
 
 		internal string AssemblyName { get; }
 

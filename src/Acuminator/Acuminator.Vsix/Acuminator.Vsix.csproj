@@ -222,7 +222,11 @@
     <Compile Include="Coloriser\Roslyn\Utils\RoslynVSEditorExtensions.cs" />
     <Compile Include="Commands\BQL Fixer\AngleBracesBqlRewriter.cs" />
     <Compile Include="Commands\BQL Fixer\FixBqlCommand.cs" />
+    <Compile Include="Commands\DiagnosticSuppression\DiagnosticData.cs" />
+    <Compile Include="Commands\DiagnosticSuppression\ProjectSuppressionFileGenerator.cs" />
+    <Compile Include="Commands\DiagnosticSuppression\RoslynDiagnosticService.cs" />
     <Compile Include="Commands\GoToDeclarationOrHandler\GoToDeclarationOrHandlerCommand.cs" />
+    <Compile Include="Commands\DiagnosticSuppression\SuppressDiagnosticCommand.cs" />
     <Compile Include="Commands\VSCommandBase.cs" />
     <Compile Include="Resources\VSIXResource.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -284,6 +288,7 @@
     <Compile Include="Utils\Logger\AcuminatorLogger.cs" />
     <Compile Include="Utils\ChangesClassification\DocumentChangesClassifier.cs" />
     <Compile Include="Utils\Constants\LegacyLanguageNames.cs" />
+    <Compile Include="Utils\DiagnosticSuppression\ReflectionUtils.cs" />
     <Compile Include="Utils\EditorExtensions.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheAsync.cs" />
     <Compile Include="Coloriser\Formats\ClassificationTypeDefinitions.cs" />
@@ -307,8 +312,8 @@
     <Compile Include="Settings\UI\GeneralOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Utils\SuppressionFileSystemService.cs" />
-    <Compile Include="Utils\SuppressionFileWatcherService.cs" />
+    <Compile Include="Utils\DiagnosticSuppression\SuppressionFileSystemService.cs" />
+    <Compile Include="Utils\DiagnosticSuppression\SuppressionFileWatcherService.cs" />
     <Compile Include="Utils\WorkspaceUtils.cs" />
     <Compile Include="Utils\WPF\Collection\ExtendedObservableCollection.cs" />
     <Compile Include="Utils\Navigation\VSDocumentNavigation.cs" />
