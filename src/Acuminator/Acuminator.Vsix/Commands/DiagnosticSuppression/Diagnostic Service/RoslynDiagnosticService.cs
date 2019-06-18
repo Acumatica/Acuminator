@@ -28,6 +28,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		private const string RoslynDiagnosticServiceAssemblyName = "Microsoft.CodeAnalysis.Features";
 		private const string RoslynDiagnosticServiceTypeName = "IDiagnosticAnalyzerService";
 		private const string DiagnosticDataTypeName = "DiagnosticData";
+		private const string DiagnosticDataLocationTypeName = "DiagnosticDataLocation";
 		private const string GetDiagnosticsForSpanAsyncMethodName = "GetDiagnosticsForSpanAsync";
 
 		private readonly Shell.AsyncPackage _package;
@@ -36,6 +37,8 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		public Type DiagnosticAnalyzerServiceType { get; }
 
 		public Type DiagnosticDataType { get; }
+
+		public Type DiagnosticDataLocationType { get; }
 
 		private readonly object _roslynAnalyzersService;
 		private readonly MethodInfo _getDiagnosticOnTextSpanMethod;
@@ -72,9 +75,18 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			_componentModel = componentModel;
 
 			DiagnosticAnalyzerServiceType = GetInternalRoslynServiceType();
-			DiagnosticDataType = GetDiagnosticDataType();
+
+			foreach (Type type in typeof(DocumentId).Assembly.GetTypes())
+			{
+				if (type.Name == DiagnosticDataTypeName)
+					DiagnosticDataType = type;
+				else if (type.Name == DiagnosticDataLocationTypeName)
+					DiagnosticDataLocationType = type;
+			}
+
 			DiagnosticAnalyzerServiceType.ThrowOnNull(nameof(DiagnosticAnalyzerServiceType));
 			DiagnosticDataType.ThrowOnNull(nameof(DiagnosticDataType));
+			DiagnosticDataLocationType.ThrowOnNull(nameof(DiagnosticDataLocationType));
 
 			_roslynAnalyzersService = GetDiagnosticServiceInstance(componentModel, DiagnosticAnalyzerServiceType);
 			_roslynAnalyzersService.ThrowOnNull(nameof(_roslynAnalyzersService));
@@ -97,10 +109,6 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			return diagnosticAnalyzerServiceType;
 		}
 
-		private static Type GetDiagnosticDataType() =>
-			typeof(DocumentId).Assembly.GetTypes()
-									   .FirstOrDefault(type => type.Name == DiagnosticDataTypeName);
-			
 		private static object GetDiagnosticServiceInstance(IComponentModel componentModel, Type diagnosticAnalyzerServiceType)
 		{
 			Type componentModelType = componentModel.GetType();
