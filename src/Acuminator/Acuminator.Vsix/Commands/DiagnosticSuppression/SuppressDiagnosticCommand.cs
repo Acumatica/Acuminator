@@ -32,7 +32,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 	/// <summary>
 	/// Suppress Diagnostic Command.
 	/// </summary>
-	internal sealed class SuppressDiagnosticCommand : VSCommandBase
+	internal sealed class SuppressDiagnosticCommand : SuppressDiagnosticCommandBase
 	{
 		private static int _isCommandInitialized = NOT_INITIALIZED;
 
@@ -72,117 +72,19 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 				Instance = new SuppressDiagnosticCommand(package, commandService);
 			}
 		}
-
-		protected override void CommandCallback(object sender, EventArgs e) =>
-			CommandCallbackAsync()
-				.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(SuppressDiagnosticCommand)}");
-
-		private async Task CommandCallbackAsync()
-		{		
-			IWpfTextView textView = await ServiceProvider.GetWpfTextViewAsync();
-
-			if (textView == null)
-				return;
-
-			SnapshotPoint caretPosition = textView.Caret.Position.BufferPosition;
-			ITextSnapshotLine caretLine = caretPosition.GetContainingLine();
-
-			if (caretLine == null)
-				return;
-
-			Document document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
-			if (document == null || !document.SupportsSyntaxTree /*|| document.SourceCodeKind ==*/)
-				return;
-
-			Task<SyntaxNode> syntaxRootTask = document.GetSyntaxRootAsync(Package.DisposalToken);
-			Task<SemanticModel> semanticModelTask = document.GetSemanticModelAsync(Package.DisposalToken);
-			await Task.WhenAll(syntaxRootTask, semanticModelTask);
-
-#pragma warning disable VSTHRD002, VSTHRD103 // Avoid problematic synchronous waits - the results are already obtained
-			SyntaxNode syntaxRoot = syntaxRootTask.Result;
-			SemanticModel semanticModel = semanticModelTask.Result;
-#pragma warning restore VSTHRD002, VSTHRD103
-
-			if (syntaxRoot == null || semanticModel == null || !IsPlatformReferenced(semanticModel) ||
-				Package.DisposalToken.IsCancellationRequested)
-			{
-				return;
-			}
-
-			TextSpan caretSpan = GetTextSpanFromCaret(caretPosition, caretLine);
-			List<DiagnosticData> diagnosticData = await GetDiagnosticsAsync(document, caretSpan);
-
-			SyntaxNode syntaxNode = syntaxRoot.FindNode(caretSpan);
-			 
-			
-
-			switch (diagnosticData.Count)
-			{
-				case 0:
-					MessageBox.Show(VSIXResource.DiagnosticSuppression_NoDiagnosticFound, AcuminatorVSPackage.PackageName);
-					return;
-				case 1:
-					SuppressDiagnosticsOnNode(syntaxNode, semanticModel, diagnosticData[0]);
-					return;
-				default:
-					MessageBox.Show(VSIXResource.DiagnosticSuppression_MultipleDiagnosticFound, AcuminatorVSPackage.PackageName);
-					return;
-			}	
-		}
-
-		private TextSpan GetTextSpanFromCaret(SnapshotPoint caretPosition, ITextSnapshotLine caretLine)
+		protected override void SuppressSingleDiagnosticOnNode(DiagnosticData diagnostic, Document document, SyntaxNode syntaxRoot,
+															   SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic)
 		{
-			if (caretLine.Length == 0)
-			{
-				return TextSpan.FromBounds(caretLine.Start.Position, caretLine.End.Position);
-			}
-			else if (caretPosition.Position < caretLine.End.Position)
-			{
-				var nextPoint = caretPosition.Add(1);
-				return TextSpan.FromBounds(caretPosition.Position, nextPoint.Position);
-			}
-			else
-			{
-				var prevPoint = caretPosition.Add(-1);
-				return TextSpan.FromBounds(prevPoint.Position, caretPosition.Position);
-			}
-		}
-
-		private bool IsPlatformReferenced(SemanticModel semanticModel)
-		{
-			PXContext context = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
-			return context.IsPlatformReferenced;
-		}
-
-		private async Task<List<DiagnosticData>> GetDiagnosticsAsync(Document document, TextSpan caretSpan)
-		{
-			List<DiagnosticData> diagnosticData = null;
-
-			try
-			{
-				await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(Package.DisposalToken);
-				diagnosticData = await Shell.ThreadHelper.JoinableTaskFactory.RunAsync(() =>
-					RoslynDiagnosticService.Instance.GetCurrentAcuminatorDiagnosticForDocumentSpanAsync(document, caretSpan));
-			}
-			catch
-			{
-				return new List<DiagnosticData>();
-			}
-
-			return diagnosticData ?? new List<DiagnosticData>();
-		}
-
-		
-
-
-		private void SuppressDiagnosticsOnNode(SyntaxNode syntaxNode, SemanticModel semanticModel, DiagnosticData diagnostic)
-		{
-			SyntaxNode targetNode = SuppressionManager.FindTargetNode(syntaxNode);
+			SyntaxNode targetNode = SuppressionManager.FindTargetNode(nodeWithDiagnostic);
 
 			if (targetNode == null)
 				return;
+		}
 
-			
+		protected override void SupressMultipleDiagnosticOnNode(List<DiagnosticData> diagnosticData, Document document, SyntaxNode syntaxRoot,
+																SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic)
+		{
+			MessageBox.Show(VSIXResource.DiagnosticSuppression_MultipleDiagnosticFound, AcuminatorVSPackage.PackageName);
 		}
 	}
 }

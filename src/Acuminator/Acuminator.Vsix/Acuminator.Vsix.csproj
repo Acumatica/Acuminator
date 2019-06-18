@@ -222,9 +222,10 @@
     <Compile Include="Coloriser\Roslyn\Utils\RoslynVSEditorExtensions.cs" />
     <Compile Include="Commands\BQL Fixer\AngleBracesBqlRewriter.cs" />
     <Compile Include="Commands\BQL Fixer\FixBqlCommand.cs" />
-    <Compile Include="Commands\DiagnosticSuppression\DiagnosticData.cs" />
-    <Compile Include="Commands\DiagnosticSuppression\ProjectSuppressionFileGenerator.cs" />
-    <Compile Include="Commands\DiagnosticSuppression\RoslynDiagnosticService.cs" />
+    <Compile Include="Commands\DiagnosticSuppression\Diagnostic Service\DiagnosticData.cs" />
+    <Compile Include="Commands\DiagnosticSuppression\Base\SuppressDiagnosticCommandBase.cs" />
+    <Compile Include="Commands\DiagnosticSuppression\Suppression File\ProjectSuppressionFileGenerator.cs" />
+    <Compile Include="Commands\DiagnosticSuppression\Diagnostic Service\RoslynDiagnosticService.cs" />
     <Compile Include="Commands\GoToDeclarationOrHandler\GoToDeclarationOrHandlerCommand.cs" />
     <Compile Include="Commands\DiagnosticSuppression\SuppressDiagnosticCommand.cs" />
     <Compile Include="Commands\VSCommandBase.cs" />
@@ -453,6 +454,7 @@
       <Version>1.1.2</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="..\..\packages\GitVersionTask.3.6.5\build\portable-net+sl+win+wpa+wp\GitVersionTask.targets" Condition="Exists('..\..\packages\GitVersionTask.3.6.5\build\portable-net+sl+win+wpa+wp\GitVersionTask.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
