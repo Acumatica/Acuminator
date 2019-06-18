@@ -42,6 +42,15 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		public const int SuppressDiagnosticCommandId = 0x0201;
 
 		/// <summary>
+		/// Gets the instance of the command.
+		/// </summary>
+		public static SuppressDiagnosticCommand Instance
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="SuppressDiagnosticCommand"/> class.
 		/// Adds our command handlers for menu (commands must exist in the command table file)
 		/// </summary>
@@ -49,15 +58,6 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		private SuppressDiagnosticCommand(Shell.AsyncPackage package, Shell.OleMenuCommandService commandService) : 
 									 base(package, commandService, SuppressDiagnosticCommandId)
 		{
-		}
-
-		/// <summary>
-		/// Gets the instance of the command.
-		/// </summary>
-		public static SuppressDiagnosticCommand Instance
-		{
-			get;
-			private set;
 		}
 
 		/// <summary>
