@@ -39,7 +39,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		/// <summary>
 		/// Suppress Diagnostic command ID.
 		/// </summary>
-		public const int SuppressDiagnosticCommandId = 0x0104;
+		public const int SuppressDiagnosticCommandId = 0x0201;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SuppressDiagnosticCommand"/> class.
@@ -156,29 +156,26 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 		private async Task<List<DiagnosticData>> GetDiagnosticsAsync(Document document, TextSpan caretSpan)
 		{
-			IEnumerable<DiagnosticData> diagnosticData = null;
+			List<DiagnosticData> diagnosticData = null;
 
 			try
 			{
 				await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(Package.DisposalToken);
 				diagnosticData = await Shell.ThreadHelper.JoinableTaskFactory.RunAsync(() =>
-					RoslynDiagnosticService.Instance.GetCurrentDiagnosticForDocumentSpanAsync(document, caretSpan));
+					RoslynDiagnosticService.Instance.GetCurrentAcuminatorDiagnosticForDocumentSpanAsync(document, caretSpan));
 			}
 			catch
 			{
 				return new List<DiagnosticData>();
 			}
 
-			return diagnosticData?.Where(d => IsAcuminatorDiagnostic(d)).ToList(capacity: 1) ??
-				   new List<DiagnosticData>();
+			return diagnosticData ?? new List<DiagnosticData>();
 		}
 
-		private static bool IsAcuminatorDiagnostic(DiagnosticData diagnosticData) =>
-			diagnosticData.Id.StartsWith(SharedConstants.AcuminatorDiagnosticPrefix);
+		
 
 
-		private void SuppressDiagnosticsOnNode(SyntaxNode syntaxNode, SemanticModel semanticModel, 
-											   DiagnosticData diagnostic)
+		private void SuppressDiagnosticsOnNode(SyntaxNode syntaxNode, SemanticModel semanticModel, DiagnosticData diagnostic)
 		{
 			SyntaxNode targetNode = SuppressionManager.FindTargetNode(syntaxNode);
 

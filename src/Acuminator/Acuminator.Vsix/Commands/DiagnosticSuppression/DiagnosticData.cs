@@ -12,11 +12,6 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Vsix.Utilities;
 
-
-using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
-using Document = Microsoft.CodeAnalysis.Document;
-
-
 namespace Acuminator.Vsix.DiagnosticSuppression
 {
 	/// <summary>
@@ -82,19 +77,14 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			{
 				return new DiagnosticData(roslynDTO);
 			}	
-			catch (MissingMemberException reflectionException)
+			catch (Exception e) when (e is MissingMemberException || e is KeyNotFoundException || e is InvalidCastException)
 			{
-				return null;
-			}
-			catch(KeyNotFoundException missingInfoException)
-			{
-				return null;
-			}
-			catch (InvalidCastException wrongDataTypeException)
-			{
+				AcuminatorVSPackage.Instance.AcuminatorLogger.LogException(e, logOnlyFromAcuminatorAssemblies: false, 
+																		   Logger.LogMode.Warning);
 				return null;
 			}
 		}
+
 
 		private DiagnosticData(object roslynDTO)
 		{

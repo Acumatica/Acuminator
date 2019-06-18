@@ -59,8 +59,6 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		{
 			if (Interlocked.CompareExchange(ref _isServiceInitialized, value: INITIALIZED, comparand: NOT_INITIALIZED) == NOT_INITIALIZED)
 			{
-				
-
 				Instance = new RoslynDiagnosticService(package, componentModel);
 			}
 		}
@@ -100,11 +98,9 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		}
 
 		private static Type GetDiagnosticDataType() =>
-			(from type in typeof(DocumentId).Assembly.GetTypes()
-			 where type.Name == DiagnosticDataTypeName
-			 select type)
-			.FirstOrDefault();
-
+			typeof(DocumentId).Assembly.GetTypes()
+									   .FirstOrDefault(type => type.Name == DiagnosticDataTypeName);
+			
 		private static object GetDiagnosticServiceInstance(IComponentModel componentModel, Type diagnosticAnalyzerServiceType)
 		{
 			Type componentModelType = componentModel.GetType();
@@ -130,20 +126,18 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			if (genericIEnumerableType == null)
 				return null;
 
-			Type genericTask = typeof(System.Threading.Tasks.Task<>).MakeGenericType(genericIEnumerableType);
-			return genericTask?.GetProperty(nameof(System.Threading.Tasks.Task<object>.Result));
+			Type genericTask = typeof(Task<>).MakeGenericType(genericIEnumerableType);
+			return genericTask?.GetProperty(nameof(Task<object>.Result));
 		}
 
-		public async System.Threading.Tasks.Task<List<DiagnosticData>> GetCurrentDiagnosticForDocumentSpanAsync(Document document, TextSpan caretSpan,
-																											CancellationToken cancellationToken = default)
-		{		
-			var componentModelType = _componentModel.GetType();
-			
+		public async Task<List<DiagnosticData>> GetCurrentDiagnosticForDocumentSpanAsync(Document document, TextSpan caretSpan,
+																						 CancellationToken cancellationToken = default)
+		{					
 			try
 			{
 				object dataTask = _getDiagnosticOnTextSpanMethod.Invoke(_roslynAnalyzersService, 
 																new object[] { document, caretSpan, null, false, cancellationToken });
-				if (!(dataTask is System.Threading.Tasks.Task task))
+				if (!(dataTask is Task task))
 					return new List<DiagnosticData>();
 
 				await task;
@@ -153,13 +147,44 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 					return new List<DiagnosticData>();
 
 				return diagnosticsRaw.Select(rawData => DiagnosticData.Create(rawData))
-									 .Where(wrappedData => wrappedData != null)
-									 .ToList();
+									 .Where(diagnosticData => diagnosticData != null)
+									 .ToList(capacity: 1);
 			}
 			catch (Exception e)
 			{
 				return new List<DiagnosticData>();
 			}
 		}
+
+		public async Task<List<DiagnosticData>> GetCurrentAcuminatorDiagnosticForDocumentSpanAsync(Document document, TextSpan caretSpan,
+																								   CancellationToken cancellationToken = default)
+		{
+			var componentModelType = _componentModel.GetType();
+
+			try
+			{
+				object dataTask = _getDiagnosticOnTextSpanMethod.Invoke(_roslynAnalyzersService,
+																new object[] { document, caretSpan, null, false, cancellationToken });
+				if (!(dataTask is Task task))
+					return new List<DiagnosticData>();
+
+				await task;
+				object rawResult = _taskResultPropertyInfo.GetValue(dataTask);
+
+				if (!(rawResult is IEnumerable<object> diagnosticsRaw) || diagnosticsRaw.IsNullOrEmpty())
+					return new List<DiagnosticData>();
+
+				return diagnosticsRaw.Select(rawData => DiagnosticData.Create(rawData))
+									 .Where(diagnosticData => diagnosticData != null && IsAcuminatorDiagnostic(diagnosticData))
+									 .ToList(capacity: 1);
+			}
+			catch (Exception e)
+			{
+				return new List<DiagnosticData>();
+			}
+		}
+
+		private static bool IsAcuminatorDiagnostic(DiagnosticData diagnosticData) => 
+			diagnosticData.Id.StartsWith(SharedConstants.AcuminatorDiagnosticPrefix);
 	}
 }
