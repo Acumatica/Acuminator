@@ -21,6 +21,12 @@
           <ButtonText>Acuminator</ButtonText>
         </Strings>
       </Menu>
+
+      <Menu guid="guidAcuminatorCmdSet" id="AcuminatorSuppressionMenu" type="Menu">
+        <Strings>
+          <ButtonText>Suppress Acuminator diagnostic</ButtonText>
+        </Strings>
+      </Menu>
     </Menus>
 
     <!--Buttons section. -->
@@ -62,16 +68,15 @@
         </Strings>
       </Button>-->
 
-      <!-- The Suppression command is disabled until the command will be implemented-->
-      <!--<Button guid="guidAcuminatorCmdSet" id="SuppressDiagnosticCommandId" type="Button">
+      <Button guid="guidAcuminatorCmdSet" id="SuppressDiagnosticCommandId" type="Button">
         <Icon guid="guidAcumaticaIcon" id="acumaticaIcon" />
-        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <CommandName>cmdidSuppressDiagnosticCommand</CommandName>
-          <ButtonText>Suppress Diagnostic</ButtonText>
+          <ButtonText>In Supression File</ButtonText>
         </Strings>
-      </Button>-->
+      </Button>
 
       <!--Tool Windows Commands-->
       <Button guid="guidAcuminatorCmdSet" id="OpenCodeMapWindowCommand" type="Button">
@@ -129,17 +134,6 @@
     <CommandPlacement guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" priority="0x0003">
       <Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" />
     </CommandPlacement>
-    
-    <!--Placement for Acuminator Suppress Diagnostic command in Top Menu
-				The order is: AcuminatorTopMenu > AcuminatorGroupForDiagnosticSuppression > SuppressDiagnosticCommandId-->
-
-    <CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorGroupForDiagnosticSuppression" priority="0x0003">
-      <Parent guid="guidAcuminatorCmdSet" id="AcuminatorTopMenu" />
-    </CommandPlacement>
-
-    <CommandPlacement guid="guidAcuminatorCmdSet" id="SuppressDiagnosticCommandId" priority="0x0001">
-      <Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForDiagnosticSuppression" />
-    </CommandPlacement>
 
     <!-- Placement for Acuminator commands in context menu
          The order is: Context Menu > AcuminatorContextMenuGroup > FormatBqlCommandId, GoToDeclarationOrHandlerCommandId, FixBqlCommandId-  -->
@@ -161,8 +155,23 @@
       <Parent guid="guidAcuminatorCmdSet" id="AcuminatorContextMenuGroup" />
     </CommandPlacement>
 
-    <CommandPlacement guid="guidAcuminatorCmdSet" id="SuppressDiagnosticCommandId" priority="0x0004">
+    <!--Suppression placement in context menu:-->
+    <!--AcuminatorTopMenu > AcuminatorGroupForCommands > AcuminatorSuppressionMenu > AcuminatorGroupForDiagnosticSuppression > Suppression Commands-->
+    <CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorSuppressionMenu" priority="0x0004">
+      <Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" />
+    </CommandPlacement>
+    
+    <!--Context Menu > AcuminatorContextMenuGroup > AcuminatorSuppressionMenu > AcuminatorGroupForDiagnosticSuppression > Suppression Commands--> 
+    <CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorSuppressionMenu" priority="0x0004">
       <Parent guid="guidAcuminatorCmdSet" id="AcuminatorContextMenuGroup" />
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorGroupForDiagnosticSuppression" priority="0x0001">
+      <Parent guid="guidAcuminatorCmdSet" id="AcuminatorSuppressionMenu" />
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidAcuminatorCmdSet" id="SuppressDiagnosticCommandId" priority="0x0001">
+      <Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForDiagnosticSuppression" />
     </CommandPlacement>
   </CommandPlacements>
 
@@ -170,6 +179,7 @@
   <VisibilityConstraints>
     <VisibilityItem guid="guidAcuminatorCmdSet" id="FormatBqlCommandId" context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging"/>   
     <VisibilityItem guid="guidAcuminatorCmdSet" id="FixBqlCommandId" context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging"/>
+    <VisibilityItem guid="guidAcuminatorCmdSet" id="SuppressDiagnosticCommandId" context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging"/>
     
     <VisibilityItem guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" context="solutionExistsAndFullyLoadedUIContextGuid"/>
     <VisibilityItem guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" context="UICONTEXT_Debugging"/>
@@ -192,20 +202,25 @@
 
     <!-- This is the guid used to group the menu commands together -->
     <GuidSymbol name="guidAcuminatorCmdSet" value="{3cd59430-1e8d-40af-b48d-9007624b3d77}">
-      <IDSymbol name="AcuminatorTopMenu" value="0x0100" />
+      <IDSymbol name="AcuminatorTopMenu" value="0x0100" />        
       <IDSymbol name="AcuminatorContextMenuGroup" value="0x1021" />
       <IDSymbol name="AcuminatorGroupForCommands" value="0x1022" />
       <IDSymbol name="AcuminatorGroupForCodeMap" value="0x1023" />
-      <IDSymbol name="AcuminatorGroupForDiagnosticSuppression" value="0x1024" />
-
+     
       <!-- Warning!!: Keep the values in sync with the code in FormatBqlCommand.cs and etc -->
       <IDSymbol name="FormatBqlCommandId" value="0x0101" />
       <IDSymbol name="GoToDeclarationOrHandlerCommandId" value="0x0102" />
       <IDSymbol name="FixBqlCommandId" value="0x0103" />
-      <IDSymbol name="SuppressDiagnosticCommandId" value="0x0104" />
 
       <!--Tool Windows commands-->
-      <IDSymbol  name="OpenCodeMapWindowCommand" value="0x0201"/>
+      <IDSymbol  name="OpenCodeMapWindowCommand" value="0x0104"/>
+
+      <!--Suppression menu and commands-->
+      <IDSymbol name="AcuminatorSuppressionMenu" value="0x0200" />
+      <IDSymbol name="AcuminatorGroupForDiagnosticSuppression" value="0x1024" />
+     
+      
+      <IDSymbol name="SuppressDiagnosticCommandId" value="0x0201" />
     </GuidSymbol>
 
     <GuidSymbol name="guidAcumaticaIcon" value="{D87E7D18-43E1-4C9E-9550-EBF39A85F071}">
