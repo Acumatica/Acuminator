@@ -59,7 +59,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		{
 			if (Interlocked.CompareExchange(ref _isServiceInitialized, value: INITIALIZED, comparand: NOT_INITIALIZED) == NOT_INITIALIZED)
 			{
-				//var componentModel = package?.GetService<SComponentModel, IComponentModel>();
+				
 
 				Instance = new RoslynDiagnosticService(package, componentModel);
 			}
