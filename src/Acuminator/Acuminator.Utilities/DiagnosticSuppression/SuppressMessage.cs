@@ -38,6 +38,11 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		/// </summary>
 		public string SyntaxNode { get; }
 
+		/// <summary>
+		/// True if this structure is correctly initialized, false if not.
+		/// </summary>
+		public bool IsValid => !Id.IsNullOrWhiteSpace() && !Target.IsNullOrWhiteSpace() && !SyntaxNode.IsNullOrWhiteSpace();
+
 		private readonly int _hashCode;
 
 		public SuppressMessage(string id, string target, string syntaxNode)

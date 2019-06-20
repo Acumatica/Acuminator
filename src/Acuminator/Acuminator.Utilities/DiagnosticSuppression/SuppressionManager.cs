@@ -1,12 +1,13 @@
 ﻿using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.IO;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
 {
@@ -112,7 +113,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			if (file.GenerateSuppressionBase)
 			{
-                if (diagnostic?.Descriptor.DefaultSeverity != DiagnosticSeverity.Info)
+                if (IsSuppressableSeverity(diagnostic?.Descriptor.DefaultSeverity))
                 {
                     file.AddMessage(message);
                 }
@@ -126,6 +127,28 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			}
 
 			return true;
+		}
+
+		public static bool SuppressDiagnostic(SemanticModel semanticModel, string diagnosticID, TextSpan diagnosticSpan,
+											  DiagnosticSeverity defaultDiagnosticSeverity, CancellationToken cancellation = default)
+		{
+			if (Instance == null || !IsSuppressableSeverity(defaultDiagnosticSeverity))
+				return false;
+
+			var (fileAssemblyName, suppressMessage) = SuppressMessage.GetSuppressionInfo(semanticModel, diagnosticID, 
+																						 diagnosticSpan, cancellation);
+
+			if (fileAssemblyName.IsNullOrWhiteSpace() || !suppressMessage.IsValid)
+				return false;
+
+			SuppressionFile file = Instance._fileByAssembly.GetOrAdd(fileAssemblyName, (SuppressionFile)null);
+
+			if (file == null)
+				return false;
+	
+			file.AddMessage(suppressMessage);
+			Instance._fileSystemService.Save(file.MessagesToDocument(), file.Path);
+			return true;			
 		}
 
 		public static IEnumerable<SuppressionDiffResult> ValidateSuppressionBaseDiff()
@@ -175,5 +198,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			reportDiagnostic(diagnostic);
 		}
+
+		private static bool IsSuppressableSeverity(DiagnosticSeverity? diagnosticSeverity) =>
+			diagnosticSeverity == DiagnosticSeverity.Error || diagnosticSeverity == DiagnosticSeverity.Warning;
 	}
 }
