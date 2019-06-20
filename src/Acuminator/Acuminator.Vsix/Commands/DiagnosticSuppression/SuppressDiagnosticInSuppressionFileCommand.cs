@@ -32,31 +32,31 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 	/// <summary>
 	/// Suppress Diagnostic Command.
 	/// </summary>
-	internal sealed class SuppressDiagnosticCommand : SuppressDiagnosticCommandBase
+	internal sealed class SuppressDiagnosticInSuppressionFileCommand : SuppressDiagnosticCommandBase
 	{
 		private static int _isCommandInitialized = NOT_INITIALIZED;
 
 		/// <summary>
 		/// Suppress Diagnostic command ID.
 		/// </summary>
-		public const int SuppressDiagnosticCommandId = 0x0201;
+		public const int SuppressDiagnosticInSuppressionFileId = 0x0201;
 
 		/// <summary>
 		/// Gets the instance of the command.
 		/// </summary>
-		public static SuppressDiagnosticCommand Instance
+		public static SuppressDiagnosticInSuppressionFileCommand Instance
 		{
 			get;
 			private set;
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="SuppressDiagnosticCommand"/> class.
+		/// Initializes a new instance of the <see cref="SuppressDiagnosticInSuppressionFileCommand"/> class.
 		/// Adds our command handlers for menu (commands must exist in the command table file)
 		/// </summary>
 		/// <param name="package">Owner package, not null.</param>
-		private SuppressDiagnosticCommand(Shell.AsyncPackage package, Shell.OleMenuCommandService commandService) : 
-									 base(package, commandService, SuppressDiagnosticCommandId)
+		private SuppressDiagnosticInSuppressionFileCommand(Shell.AsyncPackage package, Shell.OleMenuCommandService commandService) : 
+									 base(package, commandService, SuppressDiagnosticInSuppressionFileId)
 		{
 		}
 
@@ -69,16 +69,18 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		{
 			if (Interlocked.CompareExchange(ref _isCommandInitialized, value: INITIALIZED, comparand: NOT_INITIALIZED) == NOT_INITIALIZED)
 			{
-				Instance = new SuppressDiagnosticCommand(package, commandService);
+				Instance = new SuppressDiagnosticInSuppressionFileCommand(package, commandService);
 			}
 		}
 		protected override void SuppressSingleDiagnosticOnNode(DiagnosticData diagnostic, Document document, SyntaxNode syntaxRoot,
 															   SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic)
 		{
-			SyntaxNode targetNode = SuppressionManager.FindTargetNode(nodeWithDiagnostic);
+			//SyntaxNode targetNode = SuppressionManager.FindTargetNode(nodeWithDiagnostic);
 
-			if (targetNode == null)
-				return;
+			//if (targetNode == null)
+			//	return;
+
+			//SuppressionManager.SaveSuppressionBase();
 		}
 
 		protected override void SupressMultipleDiagnosticOnNode(List<DiagnosticData> diagnosticData, Document document, SyntaxNode syntaxRoot,
