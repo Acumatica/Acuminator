@@ -58,17 +58,19 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		public ProjectId ProjectId { get; }
 
 		public DocumentId DocumentId { get; }
+
+		public DiagnosticDataLocation DataLocation { get; }
 		#endregion
 
-		public static DiagnosticData Create(object roslynDTO)
+		public static DiagnosticData Create(object roslynDiagnosticDTO)
 		{
-			roslynDTO.ThrowOnNull(nameof(roslynDTO));
+			roslynDiagnosticDTO.ThrowOnNull(nameof(roslynDiagnosticDTO));
 
-			InitializeSharedStaticData(roslynDTO);
+			InitializeSharedStaticData(roslynDiagnosticDTO);
 
 			try
 			{
-				return new DiagnosticData(roslynDTO);
+				return new DiagnosticData(roslynDiagnosticDTO);
 			}	
 			catch (Exception e) when (e is MissingMemberException || e is KeyNotFoundException || e is InvalidCastException)
 			{
@@ -78,29 +80,38 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			}
 		}
 
-		private DiagnosticData(object roslynDTO)
+		private DiagnosticData(object roslynDiagnosticDTO)
 		{
-			Id = DtoFields[nameof(Id)].GetValue<string>(roslynDTO);
-			Category = DtoFields[nameof(Category)].GetValue<string>(roslynDTO); 
+			Id = DtoFields[nameof(Id)].GetValue<string>(roslynDiagnosticDTO);
+			Category = DtoFields[nameof(Category)].GetValue<string>(roslynDiagnosticDTO); 
 			 
-			Message = DtoFields[nameof(Message)].GetValue<string>(roslynDTO);
-			Description = DtoFields[nameof(Description)].GetValue<string>(roslynDTO);
-			Title = DtoFields[nameof(Title)].GetValue<string>(roslynDTO);
-			HelpLink = DtoFields[nameof(HelpLink)].GetValue<string>(roslynDTO);
+			Message = DtoFields[nameof(Message)].GetValue<string>(roslynDiagnosticDTO);
+			Description = DtoFields[nameof(Description)].GetValue<string>(roslynDiagnosticDTO);
+			Title = DtoFields[nameof(Title)].GetValue<string>(roslynDiagnosticDTO);
+			HelpLink = DtoFields[nameof(HelpLink)].GetValue<string>(roslynDiagnosticDTO);
 
-			Severity = DtoFields[nameof(Severity)].GetValue<DiagnosticSeverity>(roslynDTO);
-			DefaultSeverity = DtoFields[nameof(DefaultSeverity)].GetValue<DiagnosticSeverity>(roslynDTO);
+			Severity = DtoFields[nameof(Severity)].GetValue<DiagnosticSeverity>(roslynDiagnosticDTO);
+			DefaultSeverity = DtoFields[nameof(DefaultSeverity)].GetValue<DiagnosticSeverity>(roslynDiagnosticDTO);
 
-			IsEnabledByDefault = DtoFields[nameof(IsEnabledByDefault)].GetValue<bool>(roslynDTO);
-			WarningLevel = DtoFields[nameof(WarningLevel)].GetValue<int>(roslynDTO);
-			CustomTags = DtoFields[nameof(CustomTags)].GetValue<IList<string>>(roslynDTO);
+			IsEnabledByDefault = DtoFields[nameof(IsEnabledByDefault)].GetValue<bool>(roslynDiagnosticDTO);
+			WarningLevel = DtoFields[nameof(WarningLevel)].GetValue<int>(roslynDiagnosticDTO);
+			CustomTags = DtoFields[nameof(CustomTags)].GetValue<IList<string>>(roslynDiagnosticDTO);
 
-			Properties = DtoFields[nameof(Properties)].GetValue<ImmutableDictionary<string, string>>(roslynDTO);
-			IsSuppressed = DtoFields[nameof(IsSuppressed)].GetValue<bool>(roslynDTO);
-			Workspace = DtoFields[nameof(Workspace)].GetValue<Workspace>(roslynDTO);
-			ProjectId = DtoFields[nameof(ProjectId)].GetValue<ProjectId>(roslynDTO);
+			Properties = DtoFields[nameof(Properties)].GetValue<ImmutableDictionary<string, string>>(roslynDiagnosticDTO);
+			IsSuppressed = DtoFields[nameof(IsSuppressed)].GetValue<bool>(roslynDiagnosticDTO);
+			Workspace = DtoFields[nameof(Workspace)].GetValue<Workspace>(roslynDiagnosticDTO);
+			ProjectId = DtoFields[nameof(ProjectId)].GetValue<ProjectId>(roslynDiagnosticDTO);
+			DocumentId = DtoProperties[nameof(DocumentId)].GetValue<DocumentId>(roslynDiagnosticDTO);
 
-			DocumentId = DtoProperties[nameof(DocumentId)].GetValue<DocumentId>(roslynDTO);
+			DataLocation = GetDiagnosticLocationWrapper(roslynDiagnosticDTO);
+		}
+
+		private DiagnosticDataLocation GetDiagnosticLocationWrapper(object roslynDiagnosticDTO)
+		{
+			object roslynDiagnosticLocationDTO = DtoFields[nameof(DataLocation)].GetValue(roslynDiagnosticDTO);
+			return roslynDiagnosticLocationDTO != null
+				? DiagnosticDataLocation.Create(roslynDiagnosticLocationDTO)
+				: null;
 		}
 	}
 }

@@ -26,10 +26,6 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			private set;
 		}
 
-		private static Dictionary<string, FieldInfo> _publicInternalFields;
-		private static Dictionary<string, PropertyInfo> _publicInternalProperties;
-
-
 		#region DTO properties
 		public DocumentId DocumentId { get; }
 
@@ -67,11 +63,11 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		{
 			roslynLocationDTO.ThrowOnNull(nameof(roslynLocationDTO));
 
-			InitializeDiagnosticDataLocationReflectionInfo(roslynLocationDTO);
+			InitializeSharedStaticData(roslynLocationDTO);
 
 			try
 			{
-				return new DiagnosticData(roslynLocationDTO);
+				return new DiagnosticDataLocation(roslynLocationDTO);
 			}	
 			catch (Exception e) when (e is MissingMemberException || e is KeyNotFoundException || e is InvalidCastException)
 			{
@@ -81,39 +77,20 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			}
 		}
 
-
 		private DiagnosticDataLocation(object roslynLocationDTO)
 		{
-			Id = _publicInternalFields[nameof(Id)].GetValue<string>(roslynLocationDTO);
-			Category = _publicInternalFields[nameof(Category)].GetValue<string>(roslynLocationDTO); 
-			 
-			Message = _publicInternalFields[nameof(Message)].GetValue<string>(roslynLocationDTO);
-			Description = _publicInternalFields[nameof(Description)].GetValue<string>(roslynLocationDTO);
-			Title = _publicInternalFields[nameof(Title)].GetValue<string>(roslynLocationDTO);
-			HelpLink = _publicInternalFields[nameof(HelpLink)].GetValue<string>(roslynLocationDTO);
-
-			Severity = _publicInternalFields[nameof(Severity)].GetValue<DiagnosticSeverity>(roslynLocationDTO);
-			DefaultSeverity = _publicInternalFields[nameof(DefaultSeverity)].GetValue<DiagnosticSeverity>(roslynLocationDTO);
-
-			IsEnabledByDefault = _publicInternalFields[nameof(IsEnabledByDefault)].GetValue<bool>(roslynLocationDTO);
-			WarningLevel = _publicInternalFields[nameof(WarningLevel)].GetValue<int>(roslynLocationDTO);
-			CustomTags = _publicInternalFields[nameof(CustomTags)].GetValue<IList<string>>(roslynLocationDTO);
-
-			Properties = _publicInternalFields[nameof(Properties)].GetValue<ImmutableDictionary<string, string>>(roslynLocationDTO);
-			IsSuppressed = _publicInternalFields[nameof(IsSuppressed)].GetValue<bool>(roslynLocationDTO);
-			Workspace = _publicInternalFields[nameof(Workspace)].GetValue<Workspace>(roslynLocationDTO);
-			ProjectId = _publicInternalFields[nameof(ProjectId)].GetValue<ProjectId>(roslynLocationDTO);
-
-			DocumentId = _publicInternalProperties[nameof(DocumentId)].GetValue<DocumentId>(roslynLocationDTO);
-		}
-
-		private static void InitializeDiagnosticDataLocationReflectionInfo(object roslynLocationDTO)
-		{
-			DiagnosticDataLocationType = roslynLocationDTO.GetType();
-			var bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
-
-			_publicInternalFields = DiagnosticDataLocationType.GetFields(bindingFlags).ToDictionary(field => field.Name);
-			_publicInternalProperties = DiagnosticDataLocationType.GetProperties(bindingFlags).ToDictionary(property => property.Name);
+			DocumentId          = DtoFields[nameof(DocumentId)].GetValue<DocumentId>(roslynLocationDTO);
+			SourceSpan          = DtoFields[nameof(SourceSpan)].GetValue<TextSpan?>(roslynLocationDTO);
+			MappedFilePath      = DtoFields[nameof(MappedFilePath)].GetValue<string>(roslynLocationDTO);
+			MappedStartLine     = DtoFields[nameof(MappedStartLine)].GetValue<int>(roslynLocationDTO);
+			MappedStartColumn   = DtoFields[nameof(MappedStartColumn)].GetValue<int>(roslynLocationDTO);
+			MappedEndLine       = DtoFields[nameof(MappedEndLine)].GetValue<int>(roslynLocationDTO);
+			MappedEndColumn     = DtoFields[nameof(MappedEndColumn)].GetValue<int>(roslynLocationDTO);
+			OriginalFilePath    = DtoFields[nameof(OriginalFilePath)].GetValue<string>(roslynLocationDTO);
+			OriginalStartLine   = DtoFields[nameof(OriginalStartLine)].GetValue<int>(roslynLocationDTO);
+			OriginalStartColumn = DtoFields[nameof(OriginalStartColumn)].GetValue<int>(roslynLocationDTO);
+			OriginalEndLine     = DtoFields[nameof(OriginalEndLine)].GetValue<int>(roslynLocationDTO);
+			OriginalEndColumn   = DtoFields[nameof(OriginalEndColumn)].GetValue<int>(roslynLocationDTO);
 		}
 	}
 }
