@@ -286,6 +286,15 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to add diagnostic to the suppression file. Check if the file {0} is accessible..
+        /// </summary>
+        public static string DiagnosticSuppression_FailedToAddToSuppressionFile {
+            get {
+                return ResourceManager.GetString("DiagnosticSuppression_FailedToAddToSuppressionFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There are multiple Acuminator diagnostics on this code snippet. The Acuminator can&apos;t shoose between them..
         /// </summary>
         public static string DiagnosticSuppression_MultipleDiagnosticFound {
