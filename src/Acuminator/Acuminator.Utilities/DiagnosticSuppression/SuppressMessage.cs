@@ -5,6 +5,7 @@ using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
@@ -127,16 +128,24 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		public static (string Assembly, SuppressMessage Message) GetSuppressionInfo(SemanticModel semanticModel, Diagnostic diagnostic,
 																					 CancellationToken cancellation = default)
 		{
+			return diagnostic?.Location != null
+				? GetSuppressionInfo(semanticModel, diagnostic?.Id, diagnostic.Location.SourceSpan, cancellation)
+				: (null, default);
+		}
+
+		public static (string Assembly, SuppressMessage Message) GetSuppressionInfo(SemanticModel semanticModel, string diagnosticID, 
+																					TextSpan diagnosticSpan, CancellationToken cancellation = default)
+		{
 			cancellation.ThrowIfCancellationRequested();
 
-			if (semanticModel == null || diagnostic?.Location == null)
+			if (semanticModel == null || diagnosticID.IsNullOrWhiteSpace())
 				return (null, default);
 
 			var rootNode = semanticModel.SyntaxTree.GetRoot(cancellation);
 			if (rootNode == null)
 				return (null, default);
 
-			var diagnosticNode = rootNode.FindNode(diagnostic.Location.SourceSpan);
+			var diagnosticNode = rootNode.FindNode(diagnosticSpan);
 			if (diagnosticNode == null)
 				return (null, default);
 
@@ -154,8 +163,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			var target = targetSymbol.ToDisplayString();
 			string syntaxNodeString = GetSyntaxNodeStringForSuppressionMessage(diagnosticNode,
-																			   diagnosticPosition: diagnostic.Location.SourceSpan.Start);
-			var message = new SuppressMessage(diagnostic.Id, target, syntaxNodeString);
+																			   diagnosticPosition: diagnosticSpan.Start);
+			var message = new SuppressMessage(diagnosticID, target, syntaxNodeString);
 			return (assemblyName, message);
 		}
 
