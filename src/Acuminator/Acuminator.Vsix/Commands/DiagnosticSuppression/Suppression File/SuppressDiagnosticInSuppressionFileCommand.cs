@@ -1,31 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Reflection;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.DiagnosticSuppression;
 
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 using Document = Microsoft.CodeAnalysis.Document;
 using Shell = Microsoft.VisualStudio.Shell;
-using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
 
 namespace Acuminator.Vsix.DiagnosticSuppression
 {
@@ -72,21 +59,42 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 				Instance = new SuppressDiagnosticInSuppressionFileCommand(package, commandService);
 			}
 		}
-		protected override void SuppressSingleDiagnosticOnNode(DiagnosticData diagnostic, Document document, SyntaxNode syntaxRoot,
-															   SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic)
+		protected override Task SuppressSingleDiagnosticOnNodeAsync(DiagnosticData diagnostic, Document document, SyntaxNode syntaxRoot,
+																	SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic)
 		{
-			//SyntaxNode targetNode = SuppressionManager.FindTargetNode(nodeWithDiagnostic);
+			if (diagnostic?.DataLocation?.SourceSpan == null)
+				return Task.CompletedTask;
 
-			//if (targetNode == null)
-			//	return;
+			if (!SuppressionManager.SuppressDiagnostic(semanticModel, diagnostic.Id, diagnostic.DataLocation.SourceSpan.Value,
+													   diagnostic.DefaultSeverity, Package.DisposalToken))
+			{
+				return ShowErrorMessageAsync(diagnostic.ProjectId);
+			}
 
-			//SuppressionManager.SaveSuppressionBase();
+			return Task.CompletedTask;
 		}
 
-		protected override void SupressMultipleDiagnosticOnNode(List<DiagnosticData> diagnosticData, Document document, SyntaxNode syntaxRoot,
-																SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic)
+		private async Task ShowErrorMessageAsync(ProjectId projectId)
+		{
+			await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(Package.DisposalToken);
+			var workspace = await Package.GetVSWorkspaceAsync();
+			Project project = workspace?.CurrentSolution?.GetProject(projectId);
+
+			if (project?.Name == null)
+				return;
+
+			string suppressionFileName = Path.Combine(project.Name, SuppressionFile.SuppressionFileExtension);
+			var errorMessage = new LocalizableResourceString(nameof(VSIXResource.DiagnosticSuppression_FailedToAddToSuppressionFile),
+															 VSIXResource.ResourceManager, typeof(VSIXResource), suppressionFileName);
+
+			MessageBox.Show(errorMessage.ToString(), AcuminatorVSPackage.PackageName);
+		}
+
+		protected override Task SupressMultipleDiagnosticOnNodeAsync(List<DiagnosticData> diagnosticData, Document document, SyntaxNode syntaxRoot,
+																	 SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic)
 		{
 			MessageBox.Show(VSIXResource.DiagnosticSuppression_MultipleDiagnosticFound, AcuminatorVSPackage.PackageName);
+			return Task.CompletedTask;
 		}
 	}
 }

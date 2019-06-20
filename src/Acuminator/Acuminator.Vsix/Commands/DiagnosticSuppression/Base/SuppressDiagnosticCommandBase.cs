@@ -80,7 +80,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 			if (nodeWithDiagnostic != null)
 			{
-				SuppressDiagnostics(diagnosticData, document, syntaxRoot, semanticModel, nodeWithDiagnostic);
+				await SuppressDiagnosticsAsync(diagnosticData, document, syntaxRoot, semanticModel, nodeWithDiagnostic);
 			}
 		}
 
@@ -126,27 +126,25 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			return diagnosticData ?? new List<DiagnosticData>();
 		}
 
-		protected virtual void SuppressDiagnostics(List<DiagnosticData> diagnosticData, Document document, SyntaxNode syntaxRoot, 
-												   SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic)
+		protected virtual Task SuppressDiagnosticsAsync(List<DiagnosticData> diagnosticData, Document document, SyntaxNode syntaxRoot, 
+														SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic)
 		{
 			switch (diagnosticData.Count)
 			{
 				case 0:
 					MessageBox.Show(VSIXResource.DiagnosticSuppression_NoDiagnosticFound, AcuminatorVSPackage.PackageName);
-					return;
+					return Task.CompletedTask;
 				case 1:
-					SuppressSingleDiagnosticOnNode(diagnosticData[0], document, syntaxRoot, semanticModel, nodeWithDiagnostic);
-					return;
+					return SuppressSingleDiagnosticOnNodeAsync(diagnosticData[0], document, syntaxRoot, semanticModel, nodeWithDiagnostic);
 				default:
-					SupressMultipleDiagnosticOnNode(diagnosticData, document, syntaxRoot, semanticModel, nodeWithDiagnostic);
-					return;
+					return SupressMultipleDiagnosticOnNodeAsync(diagnosticData, document, syntaxRoot, semanticModel, nodeWithDiagnostic);
 			}
 		}
 
-		protected abstract void SuppressSingleDiagnosticOnNode(DiagnosticData diagnostic, Document document, SyntaxNode syntaxRoot,
-															   SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic);
+		protected abstract Task SuppressSingleDiagnosticOnNodeAsync(DiagnosticData diagnostic, Document document, SyntaxNode syntaxRoot,
+																	SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic);
 
-		protected abstract void SupressMultipleDiagnosticOnNode(List<DiagnosticData> diagnosticData, Document document, SyntaxNode syntaxRoot,
-																SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic);
+		protected abstract Task SupressMultipleDiagnosticOnNodeAsync(List<DiagnosticData> diagnosticData, Document document, SyntaxNode syntaxRoot,
+																	 SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic);
 	}
 }
