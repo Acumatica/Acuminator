@@ -185,74 +185,42 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			reportDiagnostic(diagnostic);
 		}
 
-		private static (string Assembly, SuppressMessage Message) GetSuppressionInfo(
-			SemanticModel semanticModel, Diagnostic diagnostic, CancellationToken cancellation)
+		public static (string Assembly, SuppressMessage Message) GetSuppressionInfo(SemanticModel semanticModel, Diagnostic diagnostic,
+																					 CancellationToken cancellation = default)
 		{
 			cancellation.ThrowIfCancellationRequested();
 
 			if (semanticModel == null || diagnostic?.Location == null)
-			{
 				return (null, default);
-			}
 
 			var rootNode = semanticModel.SyntaxTree.GetRoot(cancellation);
 			if (rootNode == null)
-			{
 				return (null, default);
-			}
 
 			var diagnosticNode = rootNode.FindNode(diagnostic.Location.SourceSpan);
 			if (diagnosticNode == null)
-			{
 				return (null, default);
-			}
 
 			var targetNode = FindTargetNode(diagnosticNode);
 			if (targetNode == null)
-			{
 				return (null, default);
-			}
 
 			var targetSymbol = semanticModel.GetDeclaredSymbol(targetNode, cancellation);
 			if (targetSymbol == null)
-			{
 				return (null, default);
-			}
 
 			var assemblyName = targetSymbol.ContainingAssembly?.Name;
 			if (string.IsNullOrEmpty(assemblyName))
-			{
 				return (null, default);
-			}
 
-			var id = diagnostic.Id;
 			var target = targetSymbol.ToDisplayString();
-
-			// Try to obtain token in case of member declaration syntax as we do not want to store the text
-			// of the entire declaration node
-			var token = default(SyntaxToken?);
-			if (diagnosticNode is MemberDeclarationSyntax memberDeclaration)
-			{
-				try
-				{
-					token = memberDeclaration.FindToken(diagnostic.Location.SourceSpan.Start);
-				}
-				catch (ArgumentOutOfRangeException)
-				{
-					token = null;
-				}
-			}
-
-			var syntaxNode = token != null ?
-				token.ToString() :
-				// Replace \r symbol as XDocument does not preserve it in suppression file
-				diagnosticNode.ToString().Replace("\r", "");
-			var message = new SuppressMessage(id, target, syntaxNode);
-
+			string syntaxNodeString = GetSyntaxNodeStringForSuppressionMessage(diagnosticNode, 
+																			   diagnosticPosition: diagnostic.Location.SourceSpan.Start);
+			var message = new SuppressMessage(diagnostic.Id, target, syntaxNodeString);
 			return (assemblyName, message);
 		}
 
-		public static SyntaxNode FindTargetNode(SyntaxNode node)
+		private static SyntaxNode FindTargetNode(SyntaxNode node)
 		{
 			if (node == null)
 				return null;
@@ -278,6 +246,28 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				default:
 					return declaredVariables.FirstOrDefault(variableDeclarator => variableDeclarator.Contains(node));
 			}
+		}
+
+		private static string GetSyntaxNodeStringForSuppressionMessage(SyntaxNode diagnosticNode, int diagnosticPosition)
+		{
+			// Try to obtain token in case of member declaration syntax as we do not want to store the text of the entire declaration node
+			SyntaxToken? token = null;
+
+			if (diagnosticNode is MemberDeclarationSyntax memberDeclaration)
+			{
+				try
+				{
+					token = memberDeclaration.FindToken(diagnosticPosition);
+				}
+				catch (ArgumentOutOfRangeException)
+				{
+					token = null;
+				}
+			}
+
+			return token != null 
+				? token.ToString()
+				: diagnosticNode.ToString().Replace("\r", "");	// Replace \r symbol as XDocument does not preserve it in suppression file
 		}
 	}
 }
