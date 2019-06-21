@@ -5,9 +5,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
-using System.IO;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
 {
@@ -31,7 +31,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 					throw new ArgumentException($"File {fileInfo.Path} is not a suppression file");
 				}
 
-				var (file, assembly) = CreateFileTrackChanges(fileInfo.Path, fileInfo.GenerateSuppressionBase);
+				var (file, assembly) = LoadFileAndTrackItsChanges(fileInfo.Path, fileInfo.GenerateSuppressionBase);
 
 				if (!_fileByAssembly.TryAdd(assembly, file))
 				{
@@ -42,7 +42,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		public void ReloadFile(object sender, SuppressionFileEventArgs e)
 		{	
-			var (newFile, assembly) = CreateFileTrackChanges(suppressionFilePath: e.FullPath, generateSuppressionBase: false);
+			var (newFile, assembly) = LoadFileAndTrackItsChanges(suppressionFilePath: e.FullPath, generateSuppressionBase: false);
 			var oldFile = _fileByAssembly.GetOrAdd(assembly, (SuppressionFile)null);
 
 			// We need to unsubscribe from the old file's event because it can be fired until the link to the file will be collected by GC
@@ -54,20 +54,17 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			_fileByAssembly[assembly] = newFile;
 		}
 
-		private (SuppressionFile File, string Assembly) CreateFileTrackChanges(string suppressionFilePath, bool generateSuppressionBase)
+		private (SuppressionFile File, string Assembly) LoadFileAndTrackItsChanges(string suppressionFilePath, bool generateSuppressionBase)
 		{
-			SuppressionFile suppressionFile;
-
 			lock (_fileSystemService)
 			{
-				suppressionFile = SuppressionFile.Load(_fileSystemService, suppressionFilePath, generateSuppressionBase);
-			}
-			
-			var assemblyName = suppressionFile.AssemblyName;
+				SuppressionFile suppressionFile = SuppressionFile.Load(_fileSystemService, suppressionFilePath, generateSuppressionBase);
+				var assemblyName = suppressionFile.AssemblyName;
 
-			suppressionFile.Changed += ReloadFile;
+				suppressionFile.Changed += ReloadFile;
 
-			return (suppressionFile, assemblyName);
+				return (suppressionFile, assemblyName);
+			}		
 		}
 
 		public static void Init(ISuppressionFileSystemService fileSystemService, IEnumerable<SuppressionManagerInitInfo> additionalFiles)
@@ -86,15 +83,13 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		public static void SaveSuppressionBase()
 		{
-			if (Instance == null)
-			{
-				throw new InvalidOperationException($"{nameof(SuppressionManager)} instance was not initialized");
-			}
-
-			var filesWithGeneratedSuppression = Instance._fileByAssembly.Values.Where(f => f.GenerateSuppressionBase);
-
+			CheckIfInstanceIsInitialized();
+			
 			lock (Instance._fileSystemService)
 			{
+				//Create local copy in order to avoid concurency problem when the collection is changed during the iteration
+				var filesWithGeneratedSuppression = Instance._fileByAssembly.Values.Where(f => f.GenerateSuppressionBase).ToList();
+
 				foreach (var file in filesWithGeneratedSuppression)
 				{
 					Instance._fileSystemService.Save(file.MessagesToDocument(), file.Path);
@@ -102,46 +97,49 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			}
 		}
 
-		private bool IsSuppressed(SemanticModel semanticModel, Diagnostic diagnostic, CancellationToken cancellation)
+		public static SuppressionFile CreateSuppressionFileForProject(Project project)
 		{
-			cancellation.ThrowIfCancellationRequested();
+			project.ThrowOnNull(nameof(project));
+			CheckIfInstanceIsInitialized();
 
-			var (assembly, message) = SuppressMessage.GetSuppressionInfo(semanticModel, diagnostic, cancellation);
+			//First check if file already exists to dismiss threads withou acquiring the lock
+			SuppressionFile existingSuppressionFile = Instance._fileByAssembly.GetOrAdd(project.Name, (SuppressionFile)null);
 
-			if (assembly == null)
+			if (existingSuppressionFile != null)
+				return existingSuppressionFile;
+
+			lock (Instance._fileSystemService)
 			{
-				return false;
+				//Second check inside the lock if file already exists 
+				existingSuppressionFile = Instance._fileByAssembly.GetOrAdd(project.Name, (SuppressionFile)null);
+				return existingSuppressionFile ?? AddNewSuppressionFileImpl();
 			}
 
-			var file = _fileByAssembly.GetOrAdd(assembly, (SuppressionFile)null);
-
-			if (file == null)
+			//---------------------------------------------Local Function--------------------------------------------------
+			SuppressionFile AddNewSuppressionFileImpl()
 			{
-				return false;
+				string suppressionFileName = project.Name + SuppressionFile.SuppressionFileExtension;
+				string projectDir = Instance._fileSystemService.GetFileDirectory(project.FilePath);
+				string suppressionFilePath = Path.Combine(projectDir, suppressionFileName);
+
+				//Create new xml document and save it on disk
+				System.Xml.Linq.XDocument newXDocument = SuppressionFile.NewDocumentFromMessages(Enumerable.Empty<SuppressMessage>());
+
+				if (!Instance._fileSystemService.Save(newXDocument, suppressionFilePath))
+					return null;
+
+				var (suppressionFile, assembly) = Instance.LoadFileAndTrackItsChanges(suppressionFilePath, generateSuppressionBase: false);
+				Instance._fileByAssembly.TryAdd(assembly, suppressionFile);
+				return suppressionFile;
 			}
-
-			if (file.GenerateSuppressionBase)
-			{
-                if (IsSuppressableSeverity(diagnostic?.Descriptor.DefaultSeverity))
-                {
-                    file.AddMessage(message);
-                }
-
-				return true;
-			}
-
-			if (!file.ContainsMessage(message))
-			{
-				return false;
-			}
-
-			return true;
 		}
 
 		public static bool SuppressDiagnostic(SemanticModel semanticModel, string diagnosticID, TextSpan diagnosticSpan,
 											  DiagnosticSeverity defaultDiagnosticSeverity, CancellationToken cancellation = default)
 		{
-			if (Instance == null || !IsSuppressableSeverity(defaultDiagnosticSeverity))
+			CheckIfInstanceIsInitialized();
+
+			if (!IsSuppressableSeverity(defaultDiagnosticSeverity))
 				return false;
 
 			var (fileAssemblyName, suppressMessage) = SuppressMessage.GetSuppressionInfo(semanticModel, diagnosticID, 
@@ -150,15 +148,14 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			if (fileAssemblyName.IsNullOrWhiteSpace() || !suppressMessage.IsValid)
 				return false;
 
-			SuppressionFile file = Instance._fileByAssembly.GetOrAdd(fileAssemblyName, (SuppressionFile)null);
-
-			if (file == null)
-				return false;
-	
-			file.AddMessage(suppressMessage);
-
 			lock (Instance._fileSystemService)
 			{
+				SuppressionFile file = Instance._fileByAssembly.GetOrAdd(fileAssemblyName, (SuppressionFile)null);
+
+				if (file == null)
+					return false;
+
+				file.AddMessage(suppressMessage);
 				Instance._fileSystemService.Save(file.MessagesToDocument(), file.Path);
 			}
 		
@@ -216,7 +213,51 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			reportDiagnostic(diagnostic);
 		}
 
+		private bool IsSuppressed(SemanticModel semanticModel, Diagnostic diagnostic, CancellationToken cancellation)
+		{
+			cancellation.ThrowIfCancellationRequested();
+
+			var (assembly, message) = SuppressMessage.GetSuppressionInfo(semanticModel, diagnostic, cancellation);
+
+			if (assembly == null)
+			{
+				return false;
+			}
+
+			var file = _fileByAssembly.GetOrAdd(assembly, (SuppressionFile)null);
+
+			if (file == null)
+			{
+				return false;
+			}
+
+			if (file.GenerateSuppressionBase)
+			{
+				if (IsSuppressableSeverity(diagnostic?.Descriptor.DefaultSeverity))
+				{
+					file.AddMessage(message);
+				}
+
+				return true;
+			}
+
+			if (!file.ContainsMessage(message))
+			{
+				return false;
+			}
+
+			return true;
+		}
+
 		private static bool IsSuppressableSeverity(DiagnosticSeverity? diagnosticSeverity) =>
 			diagnosticSeverity == DiagnosticSeverity.Error || diagnosticSeverity == DiagnosticSeverity.Warning;
+
+		private static void CheckIfInstanceIsInitialized()
+		{
+			if (Instance == null)
+			{
+				throw new InvalidOperationException($"{nameof(SuppressionManager)} instance was not initialized");
+			}
+		}
 	}
 }

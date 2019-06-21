@@ -76,8 +76,13 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				messages = LoadMessages(fileSystemService, suppressionFilePath);
 			}
 
-			var fileWatcher = fileSystemService.CreateWatcher(suppressionFilePath);
+			ISuppressionFileWatcherService fileWatcher;
 
+			lock (fileSystemService)
+			{
+				fileWatcher = fileSystemService.CreateWatcher(suppressionFilePath);
+			}
+			
 			return new SuppressionFile(assemblyName, suppressionFilePath, generateSuppressionBase, messages, fileWatcher);
 		}
 
@@ -93,7 +98,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
             }
         }
 
-        public static XDocument MessagesToDocument(IEnumerable<SuppressMessage> messages)
+        public static XDocument NewDocumentFromMessages(IEnumerable<SuppressMessage> messages)
         {
             var root = new XElement(RootEmelent);
             var document = new XDocument(root);
@@ -123,7 +128,12 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		public static HashSet<SuppressMessage> LoadMessages(ISuppressionFileSystemService fileSystemService, string path)
 		{
-			var document = fileSystemService.Load(path);
+			XDocument document;
+
+			lock (fileSystemService)
+			{
+				document = fileSystemService.Load(path);
+			}		
 
 			if (document == null)
 			{
@@ -131,8 +141,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			}
 
 			return document.Root.Elements(SuppressMessageElement)
-				.Select(e => MessageFromElement(e))
-				.ToHashSet();
+								.Select(e => MessageFromElement(e))
+								.ToHashSet();
 		}
 
 		private static SuppressMessage MessageFromElement(XElement element)

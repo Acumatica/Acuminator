@@ -59,34 +59,47 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 				Instance = new SuppressDiagnosticInSuppressionFileCommand(package, commandService);
 			}
 		}
-		protected override Task SuppressSingleDiagnosticOnNodeAsync(DiagnosticData diagnostic, Document document, SyntaxNode syntaxRoot,
+		protected override async Task SuppressSingleDiagnosticOnNodeAsync(DiagnosticData diagnostic, Document document, SyntaxNode syntaxRoot,
 																	SemanticModel semanticModel, SyntaxNode nodeWithDiagnostic)
 		{
 			if (diagnostic?.DataLocation?.SourceSpan == null)
-				return Task.CompletedTask;
+				return;
 
-			if (!SuppressionManager.SuppressDiagnostic(semanticModel, diagnostic.Id, diagnostic.DataLocation.SourceSpan.Value,
-													   diagnostic.DefaultSeverity, Package.DisposalToken))
+			var (suppressionFile, project) = await GetProjectAndSuppressionFileAsync(diagnostic.ProjectId);
+
+			if (suppressionFile == null)
 			{
-				return ShowErrorMessageAsync(diagnostic.ProjectId);
+				if (project == null)
+					return;
+
+
 			}
 
-			return Task.CompletedTask;
+			if (suppressionFile == null || 
+				!SuppressionManager.SuppressDiagnostic(semanticModel, diagnostic.Id, diagnostic.DataLocation.SourceSpan.Value,
+													   diagnostic.DefaultSeverity, Package.DisposalToken))
+			{
+				ShowErrorMessage(suppressionFile, project);
+			}
 		}
 
-		private async Task ShowErrorMessageAsync(ProjectId projectId)
+		private async Task<(TextDocument SuppressionFile, Project Project)> GetProjectAndSuppressionFileAsync(ProjectId projectId)
 		{
 			await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(Package.DisposalToken);
 			var workspace = await Package.GetVSWorkspaceAsync();
 			Project project = workspace?.CurrentSolution?.GetProject(projectId);
 
 			if (project?.Name == null)
-				return;
+				return default;
 
 			string suppressionFileName = project.Name + SuppressionFile.SuppressionFileExtension;
-			TextDocument suppressionFile = project.AdditionalDocuments
-												  .FirstOrDefault(d => string.Equals(suppressionFileName, d.Name, 
-																					 StringComparison.OrdinalIgnoreCase));
+			TextDocument suppressionFile = project.AdditionalDocuments.FirstOrDefault(d => string.Equals(suppressionFileName, d.Name,
+																						   StringComparison.OrdinalIgnoreCase));
+			return (suppressionFile, project);
+		}
+
+		private void ShowErrorMessage(TextDocument suppressionFile, Project project)
+		{
 			LocalizableResourceString errorMessage;
 
 			if (suppressionFile?.FilePath != null)
