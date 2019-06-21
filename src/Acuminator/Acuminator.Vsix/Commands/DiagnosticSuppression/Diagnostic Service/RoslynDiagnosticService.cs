@@ -22,8 +22,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 	/// </summary>
 	internal class RoslynDiagnosticService 
 	{
-		protected const int NOT_INITIALIZED = 0, INITIALIZED = 1;
-		private static int _isServiceInitialized = NOT_INITIALIZED;
+		private static readonly object _locker = new object();
 
 		private const string RoslynDiagnosticServiceAssemblyName = "Microsoft.CodeAnalysis.Features";
 		private const string RoslynDiagnosticServiceTypeName = "IDiagnosticAnalyzerService";
@@ -31,7 +30,6 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		private const string DiagnosticDataLocationTypeName = "DiagnosticDataLocation";
 		private const string GetDiagnosticsForSpanAsyncMethodName = "GetDiagnosticsForSpanAsync";
 
-		private readonly Shell.AsyncPackage _package;
 		private readonly IComponentModel _componentModel;
 
 		public Type DiagnosticAnalyzerServiceType { get; }
@@ -45,33 +43,40 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		private readonly PropertyInfo _taskResultPropertyInfo;
 
 		/// <summary>
-		/// Gets the instance of the service.
+		/// Cached instance of the service.
 		/// </summary>
-		public static RoslynDiagnosticService Instance
-		{
-			get;
-			private set;
-		}
+		private static RoslynDiagnosticService _instance;
 
 		/// <summary>
-		/// Initializes the singleton instance of the command.
+		/// Create wrapper for Roslyn internal diagnostic service.
 		/// </summary>
-		/// <param name="package">Owner package, not null.</param>
 		/// <param name="componentModel">The component model service.</param>
-		public static void Initialize(Shell.AsyncPackage package, IComponentModel componentModel)
+		public static RoslynDiagnosticService Create(IComponentModel componentModel)
 		{
-			if (Interlocked.CompareExchange(ref _isServiceInitialized, value: INITIALIZED, comparand: NOT_INITIALIZED) == NOT_INITIALIZED)
+			if (_instance != null)
+				return _instance;
+
+			lock (_locker)
 			{
-				Instance = new RoslynDiagnosticService(package, componentModel);
-			}
+				if (_instance != null)
+					return _instance;
+
+				try
+				{
+					_instance = new RoslynDiagnosticService(componentModel);
+				}
+				catch (Exception)
+				{
+					_instance = null;
+				}
+
+				return _instance;
+			}		
 		}
 
-		private RoslynDiagnosticService(Shell.AsyncPackage package, IComponentModel componentModel)
+		private RoslynDiagnosticService(IComponentModel componentModel)
 		{
-			package.ThrowOnNull(nameof(package));
 			componentModel.ThrowOnNull(nameof(componentModel));
-
-			_package = package;
 			_componentModel = componentModel;
 
 			DiagnosticAnalyzerServiceType = GetInternalRoslynServiceType();

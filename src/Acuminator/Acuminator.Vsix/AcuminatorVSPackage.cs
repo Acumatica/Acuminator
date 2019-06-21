@@ -157,7 +157,6 @@ namespace Acuminator.Vsix
 			await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
 			InitializeLogger(progress);
-			await InitializeRoslynDiagnosticServiceAsync(progress);
 			await InitializeCommandsAsync(progress);		
 			await SubscribeOnSolutionEventsAsync();
 			cancellationToken.ThrowIfCancellationRequested();
@@ -188,23 +187,6 @@ namespace Acuminator.Vsix
 				ActivityLog.TryLogError(PackageName,
 					$"An error occurred during the logger initialization ({ex.GetType().Name}, message: \"{ex.Message}\")");
 			}
-		}
-
-		private async System.Threading.Tasks.Task InitializeRoslynDiagnosticServiceAsync(IProgress<ServiceProgressData> progress)
-		{
-			if (Zombied)
-				return;
-
-			IComponentModel componentModel = await this.GetServiceAsync<SComponentModel, IComponentModel>();
-
-			if (componentModel == null)
-			{
-				InvalidOperationException loadCommandServiceException = new InvalidOperationException("Failed to load component model service");
-				AcuminatorLogger.LogException(loadCommandServiceException, logOnlyFromAcuminatorAssemblies: false, LogMode.Error);
-				return;
-			}
-
-			RoslynDiagnosticService.Initialize(this, componentModel);
 		}
 
 		private async System.Threading.Tasks.Task InitializeCommandsAsync(IProgress<ServiceProgressData> progress)

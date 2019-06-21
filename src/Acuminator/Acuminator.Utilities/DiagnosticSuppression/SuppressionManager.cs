@@ -146,7 +146,6 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			var (fileAssemblyName, suppressMessage) = SuppressMessage.GetSuppressionInfo(semanticModel, diagnosticID, 
 																						 diagnosticSpan, cancellation);
-
 			if (fileAssemblyName.IsNullOrWhiteSpace() || !suppressMessage.IsValid)
 				return false;
 

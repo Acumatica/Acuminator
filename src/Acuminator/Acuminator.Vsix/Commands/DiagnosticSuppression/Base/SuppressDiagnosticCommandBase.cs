@@ -25,6 +25,7 @@ using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 using Document = Microsoft.CodeAnalysis.Document;
 using Shell = Microsoft.VisualStudio.Shell;
 using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
+using Microsoft.VisualStudio.ComponentModelHost;
 
 namespace Acuminator.Vsix.DiagnosticSuppression
 {
@@ -110,13 +111,23 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 		protected async Task<List<DiagnosticData>> GetDiagnosticsAsync(Document document, TextSpan caretSpan)
 		{
+			await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(Package.DisposalToken);
+			IComponentModel componentModel = await Package.GetServiceAsync<SComponentModel, IComponentModel>();
+
+			if (componentModel == null)
+				return new List<DiagnosticData>();
+
 			List<DiagnosticData> diagnosticData = null;
 
 			try
 			{
-				await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(Package.DisposalToken);
-				diagnosticData = await Shell.ThreadHelper.JoinableTaskFactory.RunAsync(() =>
-					RoslynDiagnosticService.Instance.GetCurrentAcuminatorDiagnosticForDocumentSpanAsync(document, caretSpan));
+				var roslynService = RoslynDiagnosticService.Create(componentModel);
+
+				if (roslynService != null)
+				{
+					diagnosticData = await roslynService.GetCurrentAcuminatorDiagnosticForDocumentSpanAsync(document, caretSpan,
+																											Package.DisposalToken);
+				}
 			}
 			catch
 			{
