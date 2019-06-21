@@ -40,16 +40,6 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			}
 		}
 
-		private (SuppressionFile File, string Assembly) CreateFileTrackChanges(string suppressionFilePath, bool generateSuppressionBase)
-		{
-			var suppressionFile = SuppressionFile.Load(_fileSystemService, suppressionFilePath, generateSuppressionBase);
-			var assemblyName = suppressionFile.AssemblyName;
-
-			suppressionFile.Changed += ReloadFile;
-
-			return (suppressionFile, assemblyName);
-		}
-
 		public void ReloadFile(object sender, SuppressionFileEventArgs e)
 		{	
 			var (newFile, assembly) = CreateFileTrackChanges(suppressionFilePath: e.FullPath, generateSuppressionBase: false);
@@ -62,6 +52,22 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			}
 
 			_fileByAssembly[assembly] = newFile;
+		}
+
+		private (SuppressionFile File, string Assembly) CreateFileTrackChanges(string suppressionFilePath, bool generateSuppressionBase)
+		{
+			SuppressionFile suppressionFile;
+
+			lock (_fileSystemService)
+			{
+				suppressionFile = SuppressionFile.Load(_fileSystemService, suppressionFilePath, generateSuppressionBase);
+			}
+			
+			var assemblyName = suppressionFile.AssemblyName;
+
+			suppressionFile.Changed += ReloadFile;
+
+			return (suppressionFile, assemblyName);
 		}
 
 		public static void Init(ISuppressionFileSystemService fileSystemService, IEnumerable<SuppressionManagerInitInfo> additionalFiles)
@@ -87,9 +93,12 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			var filesWithGeneratedSuppression = Instance._fileByAssembly.Values.Where(f => f.GenerateSuppressionBase);
 
-			foreach (var file in filesWithGeneratedSuppression)
+			lock (Instance._fileSystemService)
 			{
-				Instance._fileSystemService.Save(file.MessagesToDocument(), file.Path);
+				foreach (var file in filesWithGeneratedSuppression)
+				{
+					Instance._fileSystemService.Save(file.MessagesToDocument(), file.Path);
+				}
 			}
 		}
 
@@ -147,7 +156,12 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				return false;
 	
 			file.AddMessage(suppressMessage);
-			Instance._fileSystemService.Save(file.MessagesToDocument(), file.Path);
+
+			lock (Instance._fileSystemService)
+			{
+				Instance._fileSystemService.Save(file.MessagesToDocument(), file.Path);
+			}
+		
 			return true;			
 		}
 
@@ -160,13 +174,16 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			var diffList = new List<SuppressionDiffResult>();
 
-			foreach (var entry in Instance._fileByAssembly)
+			lock (Instance._fileSystemService)
 			{
-				var currentFile = entry.Value;
-				var oldFile = SuppressionFile.Load(Instance._fileSystemService, suppressionFilePath: currentFile.Path,
-												   generateSuppressionBase: false);
+				foreach (var entry in Instance._fileByAssembly)
+				{
+					var currentFile = entry.Value;
+					var oldFile = SuppressionFile.Load(Instance._fileSystemService, suppressionFilePath: currentFile.Path,
+													   generateSuppressionBase: false);
 
-				diffList.Add(CompareFiles(oldFile, currentFile));
+					diffList.Add(CompareFiles(oldFile, currentFile));
+				}
 			}
 
 			return diffList;
