@@ -227,7 +227,6 @@
     <Compile Include="Commands\DiagnosticSuppression\Base\SuppressDiagnosticCommandBase.cs" />
     <Compile Include="Commands\DiagnosticSuppression\Diagnostic Service\RoslynDTOWrapperBase.cs" />
     <Compile Include="Commands\DiagnosticSuppression\Suppression File\SuppressDiagnosticInSuppressionFileCommand.cs" />
-    <Compile Include="Commands\DiagnosticSuppression\Suppression File\ProjectSuppressionFileGenerator.cs" />
     <Compile Include="Commands\DiagnosticSuppression\Diagnostic Service\RoslynDiagnosticService.cs" />
     <Compile Include="Commands\GoToDeclarationOrHandler\GoToDeclarationOrHandlerCommand.cs" />
     <Compile Include="Commands\VSCommandBase.cs" />
