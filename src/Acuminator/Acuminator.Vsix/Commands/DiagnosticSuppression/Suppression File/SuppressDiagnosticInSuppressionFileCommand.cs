@@ -83,9 +83,22 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			if (project?.Name == null)
 				return;
 
-			string suppressionFileName = Path.Combine(project.Name, SuppressionFile.SuppressionFileExtension);
-			var errorMessage = new LocalizableResourceString(nameof(VSIXResource.DiagnosticSuppression_FailedToAddToSuppressionFile),
-															 VSIXResource.ResourceManager, typeof(VSIXResource), suppressionFileName);
+			string suppressionFileName = project.Name + SuppressionFile.SuppressionFileExtension;
+			TextDocument suppressionFile = project.AdditionalDocuments
+												  .FirstOrDefault(d => string.Equals(suppressionFileName, d.Name, 
+																					 StringComparison.OrdinalIgnoreCase));
+			LocalizableResourceString errorMessage;
+
+			if (suppressionFile?.FilePath != null)
+			{
+				errorMessage = new LocalizableResourceString(nameof(VSIXResource.DiagnosticSuppression_FailedToAddToSuppressionFile),
+															 VSIXResource.ResourceManager, typeof(VSIXResource), suppressionFile.FilePath);
+			}
+			else
+			{
+				errorMessage = new LocalizableResourceString(nameof(VSIXResource.DiagnosticSuppression_FailedToFindSuppressionFile),
+															 VSIXResource.ResourceManager, typeof(VSIXResource), project.Name);
+			}
 
 			MessageBox.Show(errorMessage.ToString(), AcuminatorVSPackage.PackageName);
 		}
