@@ -1,8 +1,9 @@
-﻿using Acuminator.Utilities.Common;
-using Acuminator.Utilities.DiagnosticSuppression;
+﻿using System;
 using System.IO;
 using System.Security;
 using System.Xml.Linq;
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.DiagnosticSuppression;
 
 namespace Acuminator.Vsix.Utilities
 {
@@ -26,12 +27,25 @@ namespace Acuminator.Vsix.Utilities
 			return null;
 		}
 
-		public void Save(XDocument document, string path)
+		public bool Save(XDocument document, string path)
 		{
 			document.ThrowOnNull(nameof(document));
 			path.ThrowOnNullOrWhiteSpace(nameof(path));
 
-			document.Save(path);
+			try
+			{
+				document.Save(path);
+			}
+			catch (SecurityException)
+			{
+				return false;
+			}
+			catch (IOException)
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		public string GetFileName(string path)
@@ -39,6 +53,12 @@ namespace Acuminator.Vsix.Utilities
 			path.ThrowOnNullOrWhiteSpace(nameof(path));
 
 			return Path.GetFileNameWithoutExtension(path);
+		}
+
+		public string GetFileDirectory(string path)
+		{
+			path.ThrowOnNullOrWhiteSpace(nameof(path));
+			return Path.GetDirectoryName(path);
 		}
 
 		public ISuppressionFileWatcherService CreateWatcher(string path)

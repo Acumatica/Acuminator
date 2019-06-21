@@ -6,10 +6,12 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 	{
 		XDocument Load(string path);
 
-		void Save(XDocument document, string path);
+		bool Save(XDocument document, string path);
 
 		ISuppressionFileWatcherService CreateWatcher(string path);
 
 		string GetFileName(string path);
+
+		string GetFileDirectory(string path);
 	}
 }
