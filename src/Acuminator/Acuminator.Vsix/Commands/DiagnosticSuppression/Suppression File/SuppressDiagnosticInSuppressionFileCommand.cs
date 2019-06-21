@@ -65,21 +65,23 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			if (diagnostic?.DataLocation?.SourceSpan == null)
 				return;
 
-			var (suppressionFile, project) = await GetProjectAndSuppressionFileAsync(diagnostic.ProjectId);
+			var (suppressionFileRoslynDoc, project) = await GetProjectAndSuppressionFileAsync(diagnostic.ProjectId);
+			bool suppressionFileExists = suppressionFileRoslynDoc != null;
 
-			if (suppressionFile == null)
+			if (!suppressionFileExists)
 			{
 				if (project == null)
 					return;
 
-
+				SuppressionFile suppressionFile = SuppressionManager.CreateSuppressionFileForProject(project);
+				suppressionFileExists = suppressionFile != null;
 			}
 
-			if (suppressionFile == null || 
+			if (!suppressionFileExists || 
 				!SuppressionManager.SuppressDiagnostic(semanticModel, diagnostic.Id, diagnostic.DataLocation.SourceSpan.Value,
 													   diagnostic.DefaultSeverity, Package.DisposalToken))
 			{
-				ShowErrorMessage(suppressionFile, project);
+				ShowErrorMessage(suppressionFileRoslynDoc, project);
 			}
 		}
 

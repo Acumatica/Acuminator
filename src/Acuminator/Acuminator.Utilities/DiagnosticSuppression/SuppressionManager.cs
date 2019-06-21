@@ -122,14 +122,18 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				string projectDir = Instance._fileSystemService.GetFileDirectory(project.FilePath);
 				string suppressionFilePath = Path.Combine(projectDir, suppressionFileName);
 
-				//Create new xml document and save it on disk
+				//Create new xml document and get its text
 				System.Xml.Linq.XDocument newXDocument = SuppressionFile.NewDocumentFromMessages(Enumerable.Empty<SuppressMessage>());
+				string docText = GetXDocumentStringWithDeclaration(newXDocument);
 
-				if (!Instance._fileSystemService.Save(newXDocument, suppressionFilePath))
+				//Add file to project and hard drive
+				var roslynSuppressionFile = project.AddAdditionalDocument(suppressionFileName, docText, filePath: suppressionFilePath);
+
+				if (!project.Solution.Workspace.TryApplyChanges(roslynSuppressionFile.Project.Solution))
 					return null;
 
 				var (suppressionFile, assembly) = Instance.LoadFileAndTrackItsChanges(suppressionFilePath, generateSuppressionBase: false);
-				Instance._fileByAssembly.TryAdd(assembly, suppressionFile);
+				Instance._fileByAssembly[assembly] = suppressionFile;
 				return suppressionFile;
 			}
 		}
@@ -258,6 +262,18 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			{
 				throw new InvalidOperationException($"{nameof(SuppressionManager)} instance was not initialized");
 			}
+		}
+
+		private static string GetXDocumentStringWithDeclaration(System.Xml.Linq.XDocument xDocument)
+		{
+			var builder = new System.Text.StringBuilder(capacity: 65);
+
+			using (TextWriter writer = new Utf8StringWriter(builder))
+			{
+				xDocument.Save(writer);
+			}
+
+			return builder.ToString();
 		}
 	}
 }
