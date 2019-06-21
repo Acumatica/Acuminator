@@ -103,15 +103,13 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			CheckIfInstanceIsInitialized();
 
 			//First check if file already exists to dismiss threads withou acquiring the lock
-			SuppressionFile existingSuppressionFile = Instance._fileByAssembly.GetOrAdd(project.Name, (SuppressionFile)null);
-
-			if (existingSuppressionFile != null)
+			if (Instance._fileByAssembly.TryGetValue(project.Name, out var existingSuppressionFile) && existingSuppressionFile != null)
 				return existingSuppressionFile;
 
 			lock (Instance._fileSystemService)
 			{
 				//Second check inside the lock if file already exists 
-				existingSuppressionFile = Instance._fileByAssembly.GetOrAdd(project.Name, (SuppressionFile)null);
+				Instance._fileByAssembly.TryGetValue(project.Name, out existingSuppressionFile);
 				return existingSuppressionFile ?? AddNewSuppressionFileImpl();
 			}
 
