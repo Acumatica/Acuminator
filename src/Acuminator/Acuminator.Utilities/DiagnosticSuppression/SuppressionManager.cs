@@ -154,9 +154,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			lock (Instance._fileSystemService)
 			{
-				SuppressionFile file = Instance._fileByAssembly.GetOrAdd(fileAssemblyName, (SuppressionFile)null);
-
-				if (file == null)
+				if (!Instance._fileByAssembly.TryGetValue(fileAssemblyName, out var file))
 					return false;
 
 				file.AddMessage(suppressMessage);
