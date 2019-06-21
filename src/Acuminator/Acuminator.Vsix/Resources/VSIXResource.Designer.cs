@@ -295,6 +295,15 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to find the suppression file for project {0}..
+        /// </summary>
+        public static string DiagnosticSuppression_FailedToFindSuppressionFile {
+            get {
+                return ResourceManager.GetString("DiagnosticSuppression_FailedToFindSuppressionFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There are multiple Acuminator diagnostics on this code snippet. The Acuminator can&apos;t shoose between them..
         /// </summary>
         public static string DiagnosticSuppression_MultipleDiagnosticFound {
