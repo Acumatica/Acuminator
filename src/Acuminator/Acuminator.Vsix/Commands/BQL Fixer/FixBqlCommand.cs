@@ -1,30 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.ComponentModel.Design;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
-using EnvDTE;
-using EnvDTE80;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Threading;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Outlining;
-using Microsoft.VisualStudio.TextManager.Interop;
-using Acuminator.Vsix;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.Common;
 
 
-using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 using Document = Microsoft.CodeAnalysis.Document;
 using Acuminator.Vsix.Formatter;
 
@@ -39,9 +28,8 @@ namespace Acuminator.Vsix.BqlFixer
 		/// </summary>
 		public const int FixBqlCommandId = 0x0103;
 
-		protected override bool CanModifyDocument => true;
-
-		private FixBqlCommand(Package aPackage) : base(aPackage, FixBqlCommandId)
+		private FixBqlCommand(AsyncPackage package, OleMenuCommandService commandService) :
+						 base(package, commandService, FixBqlCommandId)
 		{
 		}
 
@@ -58,17 +46,23 @@ namespace Acuminator.Vsix.BqlFixer
 		/// Initializes the singleton instance of the command.
 		/// </summary>
 		/// <param name="package">Owner package, not null.</param>
-		public static void Initialize(Package package)
+		/// <param name="commandService">The OLE command service.</param>
+		public static void Initialize(AsyncPackage package, OleMenuCommandService commandService)
 		{
 			if (Interlocked.CompareExchange(ref _isCommandInitialized, value: INITIALIZED, comparand: NOT_INITIALIZED) == NOT_INITIALIZED)
 			{
-				Instance = new FixBqlCommand(package);
+				Instance = new FixBqlCommand(package, commandService);
 			}
 		}
 
-		protected override void CommandCallback(object sender, EventArgs e)
+		protected override void CommandCallback(object sender, EventArgs e) =>
+			CommandCallbackAsync()
+				.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(FixBqlCommand)}");
+
+		private async System.Threading.Tasks.Task CommandCallbackAsync()
 		{
-			IWpfTextView textView = ServiceProvider.GetWpfTextView();
+			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(Package.DisposalToken);
+			IWpfTextView textView = await ServiceProvider.GetWpfTextViewAsync();
 
 			if (textView == null)
 				return;
@@ -80,10 +74,13 @@ namespace Acuminator.Vsix.BqlFixer
 				return;
 
 			Document document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
-			if (document == null) return;
+			if (document == null)
+				return;
 
-			(SyntaxNode syntaxRoot, SemanticModel semanticModel) = ThreadHelper.JoinableTaskFactory.Run(
-				async () => (await document.GetSyntaxRootAsync(), await document.GetSemanticModelAsync()));
+			await TaskScheduler.Default;    //Go to background thread
+
+			SyntaxNode syntaxRoot = await document.GetSyntaxRootAsync();
+			SemanticModel semanticModel = await document.GetSemanticModelAsync();
 
 			if (syntaxRoot == null || semanticModel == null)
 				return;
@@ -120,15 +117,19 @@ namespace Acuminator.Vsix.BqlFixer
 			}
 			#endregion
 			fixedRoot = new AngleBracesBqlRewriter(semanticModel).Visit(syntaxRoot);
+			var newDocument = document.WithSyntaxRoot(fixedRoot);
+			SyntaxNode newSyntaxRoot = await newDocument.GetSyntaxRootAsync();
+			SemanticModel newSemanticModel = await newDocument.GetSemanticModelAsync();
+
+			if (newSyntaxRoot == null || newSemanticModel == null)
+				return;
 
 			// have to format, because cannot save all original indention
 			BqlFormatter formatter = BqlFormatter.FromTextView(textView);
-
-			var newDocument = document.WithSyntaxRoot(fixedRoot);
-			(SyntaxNode newSyntaxRoot, SemanticModel newSemanticModel) = ThreadHelper.JoinableTaskFactory.Run(
-				async () => (await newDocument.GetSyntaxRootAsync(), await newDocument.GetSemanticModelAsync()));
-
 			var formatedRoot = formatter.Format(newSyntaxRoot, newSemanticModel);
+
+			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(Package.DisposalToken); // Return to UI thread
+
 			if (!textView.TextBuffer.EditInProgress)
 			{
 				var formattedDocument = document.WithSyntaxRoot(formatedRoot);
@@ -136,13 +137,13 @@ namespace Acuminator.Vsix.BqlFixer
 			}
 		}
 
-		private void ApplyChanges(Microsoft.CodeAnalysis.Document oldDocument, Microsoft.CodeAnalysis.Document newDocument)
+		private void ApplyChanges(Document oldDocument, Document newDocument)
 		{
 			oldDocument.ThrowOnNull(nameof(oldDocument));
 			newDocument.ThrowOnNull(nameof(newDocument));
 
 			Workspace workspace = oldDocument.Project?.Solution?.Workspace;
-			Microsoft.CodeAnalysis.Solution newSolution = newDocument.Project?.Solution;
+			Solution newSolution = newDocument.Project?.Solution;
 
 			if (workspace != null && newSolution != null)
 			{

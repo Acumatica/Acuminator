@@ -1,6 +1,5 @@
 ﻿using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
-using CommonServiceLocator;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis

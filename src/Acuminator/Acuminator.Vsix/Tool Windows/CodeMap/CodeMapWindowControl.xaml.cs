@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.VisualStudio.Shell;
 
 
 
@@ -29,7 +30,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (!(sender is StackPanel treeViewItemPanel) || !(treeViewItemPanel.DataContext is TreeNodeViewModel treeNodeVM))
 				return;
 
-			treeNodeVM.NavigateToItem();	
+			treeNodeVM.NavigateToItemAsync()
+					  .FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(TreeViewItem_PreviewMouseLeftButtonDown)}");	
 		}
 	}
 }

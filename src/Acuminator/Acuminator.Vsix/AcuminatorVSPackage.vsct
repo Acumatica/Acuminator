@@ -17,31 +17,30 @@
     <Menus>
       <Menu guid="guidAcuminatorCmdSet" id="AcuminatorTopMenu" type="Menu">
         <Strings>
-          <ButtonText>Acuminator</ButtonText> 
+          <ButtonText>Acuminator</ButtonText>
         </Strings>
       </Menu>
     </Menus>
-    
+
     <!--Buttons section. -->
     <!--This section defines the elements the user can interact with, like a menu command or a button
         or combo box in a toolbar. -->
     <Buttons>
-      
-     <Button guid="guidAcuminatorCmdSet" id="FormatBqlCommandId" type="Button">
+
+      <Button guid="guidAcuminatorCmdSet" id="FormatBqlCommandId" type="Button">
         <Icon guid="guidAcumaticaIcon" id="acumaticaIcon" />
-        <CommandFlag>DefaultDisabled</CommandFlag>
-        <!--<CommandFlag>DefaultInvisible</CommandFlag>
-					  <CommandFlag>DynamicVisibility</CommandFlag>-->
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <CommandName>cmdidFormatBQLCommand</CommandName>
           <ButtonText>Format BQL Statements</ButtonText>
         </Strings>
       </Button>
 
-     <Button guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" type="Button">
+      <Button guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" type="Button">
         <Icon guid="guidAcumaticaIcon" id="acumaticaIcon" />
-        <CommandFlag>DefaultDisabled</CommandFlag>
-				<CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <CommandName>cmdidGoToDeclarationOrHandlerCommand</CommandName>
           <ButtonText>Go To Action/View Declaration/Handler</ButtonText>
@@ -52,8 +51,10 @@
         <Icon guid="guidBqlFixerIcon" id="bqlFixerIcon" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         
-        --><!--<CommandFlag>DefaultInvisible</CommandFlag>
-					  <CommandFlag>DynamicVisibility</CommandFlag>--><!--
+        -->
+      <!--<CommandFlag>DefaultInvisible</CommandFlag>
+					  <CommandFlag>DynamicVisibility</CommandFlag>-->
+      <!--
         <Strings>
           <CommandName>cmdidFixBqlCommand</CommandName>
           <ButtonText>Fix BQL Braces</ButtonText>
@@ -63,7 +64,7 @@
       <!--Tool Windows Commands-->
       <Button guid="guidAcuminatorCmdSet" id="OpenCodeMapWindowCommand" type="Button">
         <Icon guid="guidCodeMapIcon" id="codemapIcon" />
-        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <CommandName>cmdidOpenCodeMapWindowCommand</CommandName>
@@ -74,7 +75,7 @@
 
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
     <Bitmaps>
-      <Bitmap guid="guidAcumaticaIcon" href="Resources\acumatica.ico" usedList="acumaticaIcon" />     
+      <Bitmap guid="guidAcumaticaIcon" href="Resources\acumatica.ico" usedList="acumaticaIcon" />
       <Bitmap guid="guidCodeMapIcon" href="Resources\codemap.ico" usedList="codemapIcon" />
       <Bitmap guid="guidBqlFixerIcon" href="Resources\bqlFixer.ico" usedList="bqlFixerIcon" />
     </Bitmaps>
@@ -138,6 +139,18 @@
     </CommandPlacement>
   </CommandPlacements>
 
+  <!--The commands visibility is specified here-->
+  <VisibilityConstraints>
+    <VisibilityItem guid="guidAcuminatorCmdSet" id="FormatBqlCommandId" context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging"/>   
+    <VisibilityItem guid="guidAcuminatorCmdSet" id="FixBqlCommandId" context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging"/>
+    
+    <VisibilityItem guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" context="solutionExistsAndFullyLoadedUIContextGuid"/>
+    <VisibilityItem guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" context="UICONTEXT_Debugging"/>
+
+    <VisibilityItem guid="guidAcuminatorCmdSet" id="OpenCodeMapWindowCommand" context="solutionExistsAndFullyLoadedUIContextGuid"/>
+    <VisibilityItem guid="guidAcuminatorCmdSet" id="OpenCodeMapWindowCommand" context="UICONTEXT_Debugging"/>
+  </VisibilityConstraints>
+
   <KeyBindings>
     <!-- guidVSStd97 is global scope -->
     <KeyBinding guid="guidAcuminatorCmdSet" id="FormatBqlCommandId"
@@ -169,13 +182,16 @@
     <GuidSymbol name="guidAcumaticaIcon" value="{D87E7D18-43E1-4C9E-9550-EBF39A85F071}">
       <IDSymbol name="acumaticaIcon" value="1" />
     </GuidSymbol>
-    
+
     <GuidSymbol name="guidCodeMapIcon" value="{6C8C4200-07AF-4D31-89D4-8AD464805E08}">
       <IDSymbol name="codemapIcon" value="1" />
     </GuidSymbol>
-   
+
     <GuidSymbol name="guidBqlFixerIcon" value="{6D21BFF5-3EE6-45B9-B463-CBF2CBF24652}">
       <IDSymbol name="bqlFixerIcon" value="1" />
     </GuidSymbol>
+
+    <!-- This is the UI Context guid -->
+    <GuidSymbol name="solutionExistsAndFullyLoadedUIContextGuid" value="{10534154-102D-46E2-ABA8-A6BFA25BA0BE}" />
   </Symbols>
 </CommandTable>

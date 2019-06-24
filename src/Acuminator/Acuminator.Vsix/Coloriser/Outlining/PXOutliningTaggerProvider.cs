@@ -26,7 +26,7 @@ namespace Acuminator.Vsix.Coloriser
     {
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
-            if (buffer == null)
+            if (buffer == null || !ThreadHelper.CheckAccess())
                 return null;
 
             Initialize(buffer);

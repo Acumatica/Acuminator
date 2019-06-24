@@ -5,19 +5,17 @@ using System.ComponentModel.Design;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
+using Microsoft.VisualStudio.Threading;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
@@ -27,6 +25,8 @@ using Acuminator.Vsix.Utilities;
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 using Document = Microsoft.CodeAnalysis.Document;
 
+using Shell =  Microsoft.VisualStudio.Shell;
+using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
 
 namespace Acuminator.Vsix.GoToDeclaration
 {
@@ -42,14 +42,13 @@ namespace Acuminator.Vsix.GoToDeclaration
 		/// </summary>
 		public const int GoToDeclarationCommandId = 0x0102;
 
-		protected override bool CanModifyDocument => false;
-
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GoToDeclarationOrHandlerCommand"/> class.
-		/// Adds our command handlers for menu (commands must exist in the command table file)
+		/// Initializes a new instance of the <see cref="GoToDeclarationOrHandlerCommand"/> class. Adds our command handlers for menu (commands must exist in the command table file)
 		/// </summary>
-		/// <param name="aPackage">Owner package, not null.</param>
-		private GoToDeclarationOrHandlerCommand(Package aPackage) : base(aPackage, GoToDeclarationCommandId)
+		/// <param name="package">Owner package, not null.</param>
+		/// <param name="commandService">The command service.</param>
+		private GoToDeclarationOrHandlerCommand(Shell.AsyncPackage package, Shell.OleMenuCommandService commandService) :
+										   base(package, commandService, GoToDeclarationCommandId)
 		{
 		}
 
@@ -63,22 +62,28 @@ namespace Acuminator.Vsix.GoToDeclaration
 		}
 
 		/// <summary>
-		/// Initializes the singleton instance of the command.
+		/// Initializes the singleton instance of the command. Internal method shich should be called only from UI thread.
 		/// </summary>
 		/// <param name="package">Owner package, not null.</param>
-		public static void Initialize(Package package)
+		/// <param name="oleCommandService">The OLE command service.</param>
+		/// <returns/>
+		internal static void Initialize(Shell.AsyncPackage package, Shell.OleMenuCommandService oleCommandService)
 		{
 			if (Interlocked.CompareExchange(ref _isCommandInitialized, value: INITIALIZED, comparand: NOT_INITIALIZED) == NOT_INITIALIZED)
 			{
-				Instance = new GoToDeclarationOrHandlerCommand(package);
+				Instance = new GoToDeclarationOrHandlerCommand(package, oleCommandService);
 			}
 		}
 
-		protected override void CommandCallback(object sender, EventArgs e)
+		protected override void CommandCallback(object sender, EventArgs e) =>
+			CommandCallbackAsync()
+				.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(GoToDeclarationOrHandlerCommand)}");
+		
+		private async Task CommandCallbackAsync()
 		{
-			IWpfTextView textView = ServiceProvider.GetWpfTextView();
+			IWpfTextView textView = await ServiceProvider.GetWpfTextViewAsync();
 
-			if (textView == null)
+			if (textView == null || Package.DisposalToken.IsCancellationRequested)
 				return;
 
 			SnapshotPoint caretPosition = textView.Caret.Position.BufferPosition;
@@ -88,23 +93,29 @@ namespace Acuminator.Vsix.GoToDeclaration
 				return;
 
 			Document document = caretPosition.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
-			if (document == null) return;
+			if (document == null || Package.DisposalToken.IsCancellationRequested)
+				return;
 
-			(SyntaxNode syntaxRoot, SemanticModel semanticModel) = ThreadHelper.JoinableTaskFactory.Run(
-				async () => (await document.GetSyntaxRootAsync(), await document.GetSemanticModelAsync()));
+			Task<SyntaxNode> syntaxRootTask = document.GetSyntaxRootAsync();
+			Task<SemanticModel> semanticModelTask = document.GetSemanticModelAsync();
+			await Task.WhenAll(syntaxRootTask, semanticModelTask);
+
+			#pragma warning disable VSTHRD002, VSTHRD103 // Avoid problematic synchronous waits - the results are already obtained
+			SyntaxNode syntaxRoot = syntaxRootTask.Result;
+			SemanticModel semanticModel = semanticModelTask.Result;
+			#pragma warning restore VSTHRD002, VSTHRD103
 
 			if (syntaxRoot == null || semanticModel == null)
 				return;
 
 			TextSpan lineSpan = TextSpan.FromBounds(caretLine.Start.Position, caretLine.End.Position);
-			var memberNode = syntaxRoot.FindNode(lineSpan) as MemberDeclarationSyntax;  
 
-			if (memberNode == null)
+			if (!(syntaxRoot.FindNode(lineSpan) is MemberDeclarationSyntax memberNode))
 				return;
 
 			PXContext context = new PXContext(semanticModel.Compilation, Acuminator.Utilities.CodeAnalysisSettings.Default);
 
-			if (!context.IsPlatformReferenced)
+			if (!context.IsPlatformReferenced || Package.DisposalToken.IsCancellationRequested)
 				return;
 
 			ISymbol memberSymbol = GetMemberSymbol(memberNode, semanticModel, caretPosition);
@@ -112,7 +123,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 			if (!CheckMemberSymbol(memberSymbol, context))
 				return;
 
-			NavigateToHandlerOrDeclaration(document, textView, memberSymbol, memberNode, semanticModel, context);
+			await NavigateToHandlerOrDeclarationAsync(document, textView, memberSymbol, memberNode, semanticModel, context);
 		}
 
 		private ISymbol GetMemberSymbol(MemberDeclarationSyntax memberDeclaration, SemanticModel semanticModel, SnapshotPoint caretPosition)
@@ -147,8 +158,8 @@ namespace Acuminator.Vsix.GoToDeclaration
 			}
 		}
 
-		private void NavigateToHandlerOrDeclaration(Document document, IWpfTextView textView, ISymbol memberSymbol,
-													MemberDeclarationSyntax memberNode, SemanticModel semanticModel, PXContext context)
+		private async Task NavigateToHandlerOrDeclarationAsync(Document document, IWpfTextView textView, ISymbol memberSymbol,
+															   MemberDeclarationSyntax memberNode, SemanticModel semanticModel, PXContext context)
 		{
 			INamedTypeSymbol graphOrExtensionType = memberSymbol.ContainingType;
 			PXGraphSemanticModel graphSemanticModel = PXGraphSemanticModel.InferModels(context, graphOrExtensionType)
@@ -160,19 +171,19 @@ namespace Acuminator.Vsix.GoToDeclaration
 			switch (memberSymbol)
 			{
 				case IFieldSymbol fieldSymbol when fieldSymbol.Type.IsPXAction():
-					NavigateToPXActionHandler(document, textView, fieldSymbol, graphSemanticModel, context);
+					await NavigateToPXActionHandlerAsync(document, textView, fieldSymbol, graphSemanticModel, context);
 					return;
 				case IFieldSymbol fieldSymbol when fieldSymbol.Type.IsBqlCommand(context):
-					NavigateToPXViewDelegate(document, textView, fieldSymbol, graphSemanticModel, context);
+					await NavigateToPXViewDelegateAsync(document, textView, fieldSymbol, graphSemanticModel, context);
 					return;								
 				case IMethodSymbol methodSymbol:
-					NavigateToActionOrViewDeclaration(document, textView, methodSymbol, graphSemanticModel, context);
+					await NavigateToActionOrViewDeclarationAsync(document, textView, methodSymbol, graphSemanticModel, context);
 					return;
 			}
 		}
 
-		private void NavigateToPXActionHandler(Document document, IWpfTextView textView, ISymbol actionSymbol, PXGraphSemanticModel graphSemanticModel,
-											   PXContext context)
+		private async Task NavigateToPXActionHandlerAsync(Document document, IWpfTextView textView, ISymbol actionSymbol,
+														  PXGraphSemanticModel graphSemanticModel, PXContext context)
 		{
 			if (!graphSemanticModel.ActionHandlersByNames.TryGetValue(actionSymbol.Name, out ActionHandlerInfo actionHandler))
 				return;
@@ -184,60 +195,59 @@ namespace Acuminator.Vsix.GoToDeclaration
 
 			if (handlerNode.SyntaxTree.FilePath != document.FilePath)
 			{
-				textViewToNavigateTo = OpenOtherDocumentForNavigationAndGetItsTextView(document, handlerNode.SyntaxTree);
+				textViewToNavigateTo = await OpenOtherDocumentForNavigationAndGetItsTextViewAsync(document, handlerNode.SyntaxTree);
 			}	
 
 			if (textViewToNavigateTo == null)
 				return;
 
-			SetNewPositionInTextView(textViewToNavigateTo, handlerNode.Identifier.Span);
+			await SetNewPositionInTextViewAsync(textViewToNavigateTo, handlerNode.Identifier.Span);
 		}	
 										
-		private void NavigateToPXViewDelegate(Document document, IWpfTextView textView, ISymbol viewSymbol, 
-											  PXGraphSemanticModel graphSemanticModel, PXContext context)
-		{		
-			var viewDelegates = graphSemanticModel.ViewDelegates
-												  .Where(vDelegate => string.Equals(viewSymbol.Name, vDelegate.Symbol.Name,
-																					StringComparison.OrdinalIgnoreCase))
-												  .ToList();
-			if (viewDelegates.Count == 0)
+		private async Task NavigateToPXViewDelegateAsync(Document document, IWpfTextView textView, ISymbol viewSymbol, 
+														 PXGraphSemanticModel graphSemanticModel, PXContext context)
+		{
+			if (!graphSemanticModel.ViewDelegatesByNames.TryGetValue(viewSymbol.Name, out var viewDelegate))
 				return;
 
-			DataViewDelegateInfo viewDelegateInfo;
+			var viewDelegates = viewDelegate.GetDelegateWithAllOverrides().ToList();
+
+			DataViewDelegateInfo viewDelegateInfoToNavigateTo;
 
 			if (viewDelegates.Count == 1)
 			{
-				viewDelegateInfo = viewDelegates.First();
+				viewDelegateInfoToNavigateTo = viewDelegates.First();
 			}
 			else
 			{
-				viewDelegateInfo = viewDelegates.Where(vDelegate => vDelegate.Symbol.ContainingType == viewSymbol.ContainingType)
-												.FirstOrDefault();
+				viewDelegateInfoToNavigateTo = viewDelegates.Where(vDelegate => vDelegate.Symbol.ContainingType == viewSymbol.ContainingType)
+															.FirstOrDefault();
 			}
 
-			if (!(viewDelegateInfo.Node is MethodDeclarationSyntax methodNode) || methodNode.SyntaxTree == null)
+			if (!(viewDelegateInfoToNavigateTo.Node is MethodDeclarationSyntax methodNode) || methodNode.SyntaxTree == null)
 				return;
 
-			string viewDelegateFilePath = viewDelegateInfo.Node.SyntaxTree.FilePath;
+			string viewDelegateFilePath = viewDelegateInfoToNavigateTo.Node.SyntaxTree.FilePath;
 			IWpfTextView textViewToNavigateTo = textView;
 
 			if (viewDelegateFilePath != document.FilePath)
 			{
-				textViewToNavigateTo = OpenOtherDocumentForNavigationAndGetItsTextView(document, viewDelegateInfo.Node.SyntaxTree);
+				textViewToNavigateTo = await OpenOtherDocumentForNavigationAndGetItsTextViewAsync(document,
+																								  viewDelegateInfoToNavigateTo.Node.SyntaxTree);
 			}
 
 			if (textViewToNavigateTo == null)
 				return;
 
-			SetNewPositionInTextView(textViewToNavigateTo, methodNode.Identifier.Span);
+			await SetNewPositionInTextViewAsync(textViewToNavigateTo, methodNode.Identifier.Span);
 		}
 
-		private void NavigateToActionOrViewDeclaration(Document document, IWpfTextView textView, IMethodSymbol methodSymbol, 
-													   PXGraphSemanticModel graphSemanticModel, PXContext context)
+		private async Task NavigateToActionOrViewDeclarationAsync(Document document, IWpfTextView textView, IMethodSymbol methodSymbol, 
+																  PXGraphSemanticModel graphSemanticModel, PXContext context)
 		{
 			ISymbol symbolToNavigate = GetActionOrViewSymbolToNavigateTo(methodSymbol, graphSemanticModel, context);
 
-			if (symbolToNavigate == null)
+			if (symbolToNavigate == null || Package.DisposalToken.IsCancellationRequested)
 				return;
 
 			ImmutableArray<SyntaxReference> syntaxReferences = symbolToNavigate.DeclaringSyntaxReferences;
@@ -249,13 +259,13 @@ namespace Acuminator.Vsix.GoToDeclaration
 
 			if (syntaxReference.SyntaxTree.FilePath != document.FilePath)
 			{
-				textView = OpenOtherDocumentForNavigationAndGetItsTextView(document, syntaxReference.SyntaxTree);
+				textView = await OpenOtherDocumentForNavigationAndGetItsTextViewAsync(document, syntaxReference.SyntaxTree);
 			}
 
 			if (textView == null)
 				return;
 
-			SyntaxNode declarationNode = syntaxReference.GetSyntax();
+			SyntaxNode declarationNode = await syntaxReference.GetSyntaxAsync(Package.DisposalToken);
 			TextSpan textSpan;
 
 			switch (declarationNode)
@@ -270,7 +280,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 					return;
 			}
 
-			SetNewPositionInTextView(textView, textSpan);
+			await SetNewPositionInTextViewAsync(textView, textSpan);
 		}
 
 		private static ISymbol GetActionOrViewSymbolToNavigateTo(IMethodSymbol methodSymbol, PXGraphSemanticModel graphSemanticModel,
@@ -305,7 +315,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 			}
 		}
 
-		private IWpfTextView OpenOtherDocumentForNavigationAndGetItsTextView(Document originalDocument, SyntaxTree syntaxTreeToNavigate)
+		private async Task<IWpfTextView> OpenOtherDocumentForNavigationAndGetItsTextViewAsync(Document originalDocument, SyntaxTree syntaxTreeToNavigate)
 		{
 			DocumentId documentToNavigateId = originalDocument.Project.GetDocumentId(syntaxTreeToNavigate);
 
@@ -317,7 +327,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 
 			if (!wasAlreadyOpened)
 			{		
-				return ServiceProvider.GetWpfTextView();
+				return await ServiceProvider.GetWpfTextViewAsync();
 			}
 
 			var documentToNavigate = originalDocument.Project.GetDocument(documentToNavigateId);
@@ -325,24 +335,24 @@ namespace Acuminator.Vsix.GoToDeclaration
 			if (documentToNavigate == null)
 				return null;
 
-			var wpfTextView = ServiceProvider.GetWpfTextViewByFilePath(documentToNavigate.FilePath);
+			var wpfTextView = await ServiceProvider.GetWpfTextViewByFilePathAsync(documentToNavigate.FilePath);
 			return wpfTextView;
 		}
 
-		private void SetNewPositionInTextView(IWpfTextView textView, TextSpan textSpan)
+		private async Task SetNewPositionInTextViewAsync(IWpfTextView textView, TextSpan textSpan)
 		{
 			SnapshotSpan selectedSpan = new SnapshotSpan(textView.TextSnapshot, textSpan.Start, textSpan.Length);
-			ExpandAllRegionsContainingSpan(selectedSpan, textView);
-			CaretPosition newCaretPosition = textView.MoveCaretTo(textSpan.Start);                      
-		
-			textView.ViewScroller.EnsureSpanVisible(selectedSpan, EnsureSpanVisibleOptions.AlwaysCenter);		
-			
+
+		 	await ExpandAllRegionsContainingSpanAsync(selectedSpan, textView);
+
+			textView.MoveCaretTo(textSpan.Start);                      
+			textView.ViewScroller.EnsureSpanVisible(selectedSpan, EnsureSpanVisibleOptions.AlwaysCenter);			
 			textView.Selection.Select(selectedSpan, isReversed: false);
 		}
 
-		private void ExpandAllRegionsContainingSpan(SnapshotSpan selectedSpan, IWpfTextView textView)
+		private async Task ExpandAllRegionsContainingSpanAsync(SnapshotSpan selectedSpan, IWpfTextView textView)
 		{
-			IOutliningManager outliningManager = ServiceProvider.GetOutliningManager(textView);
+			IOutliningManager outliningManager = await ServiceProvider.GetOutliningManagerAsync(textView);
 
 			if (outliningManager == null)
 				return;

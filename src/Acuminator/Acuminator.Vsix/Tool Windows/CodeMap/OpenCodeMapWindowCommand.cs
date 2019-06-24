@@ -25,9 +25,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// </summary>
 		public const int CommandId = 0x0201;
 
-		protected override bool CanModifyDocument => false;
-
-		private OpenCodeMapWindowCommand(Package package) : base(package, CommandId)
+		private OpenCodeMapWindowCommand(AsyncPackage package, OleMenuCommandService commandService) : 
+									base(package, commandService, CommandId)
 		{		
 		}
 
@@ -44,23 +43,24 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// Initializes the singleton instance of the command.
 		/// </summary>
 		/// <param name="package">Owner package, not null.</param>
-		public static void Initialize(Package package)
+		/// <param name="oleCommandService">The OLE command service, not null.</param>
+		public static void Initialize(AsyncPackage package, OleMenuCommandService oleCommandService)
 		{
 			if (Interlocked.CompareExchange(ref _isCommandInitialized, value: INITIALIZED, comparand: NOT_INITIALIZED) == NOT_INITIALIZED)
 			{
-				Instance = new OpenCodeMapWindowCommand(package);
+				Instance = new OpenCodeMapWindowCommand(package, oleCommandService);
 			}
 		}
 
-		protected override CodeMapWindow OpenToolWindow()
+		protected override async Task<CodeMapWindow> OpenToolWindowAsync()
 		{
-			CodeMapWindow codeMapWindow = base.OpenToolWindow();
+			CodeMapWindow codeMapWindow = await base.OpenToolWindowAsync();
 
 			if (codeMapWindow?.CodeMapWPFControl == null)
 				return codeMapWindow;
 
 			CodeMapWindowViewModel codeMapViewModel = codeMapWindow.CodeMapWPFControl.DataContext as CodeMapWindowViewModel;
-			IWpfTextView textView = ServiceProvider.GetWpfTextView();
+			IWpfTextView textView = await ServiceProvider.GetWpfTextViewAsync();
 			Document document = textView?.TextSnapshot?.GetOpenDocumentInCurrentContextWithChanges();
 
 			if (document == null)

@@ -34,6 +34,12 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 				ReportDiagnostic(AddDiagnostic, DiagnosticDescriptor, node);
 			}
 
+			public override void VisitThrowExpression(ThrowExpressionSyntax node)
+			{
+				base.VisitThrowExpression(node);
+				ReportDiagnostic(AddDiagnostic, DiagnosticDescriptor, node);
+			}
+
 			private void AddDiagnostic(Diagnostic diagnostic)
 			{
 				_locations.Add(diagnostic.Location);
@@ -159,7 +165,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 			walker.Locations.Should().BeEquivalentTo((Line: 13, Column: 14));
 		}
 
-		[Theory]
+		[Theory(Skip = "The test is incorrect for current implementation of nested walker which does not step inside lambdas")]
 		[EmbeddedFileData("LocalLambda.cs")]
 		public async Task LocalLambda(string text)
 		{
@@ -189,7 +195,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 			walker.Locations.Should().BeEquivalentTo((Line: 14, Column: 4));
 		}
 
-		[Theory(Skip = "Expression-bodied methods are not supported by Roslyn v1")]
+		[Theory]
 		[EmbeddedFileData("InstanceExpressionBodiedMethod.cs")]
 		public async Task InstanceExpressionBodiedMethod(string text)
 		{

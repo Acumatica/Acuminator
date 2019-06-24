@@ -6,10 +6,13 @@ using Microsoft.VisualStudio.PlatformUI;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Coloriser;
 
-
+using SuppressMessageAttribute = System.Diagnostics.CodeAnalysis.SuppressMessageAttribute;
 
 namespace Acuminator.Vsix.ToolWindows
 {
+	[SuppressMessage("Style",
+		"VSTHRD010: Accessing \"Acuminator.Vsix.Coloriser.VSColors.IsDarkTheme\" should only be done on the main thread.Call Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread() first.",
+		Justification = "Already called inside", Scope = "type")]
 	public class ToolWindowViewModelBase : ViewModelBase, IDisposable
 	{
 		private bool _isDarkTheme;

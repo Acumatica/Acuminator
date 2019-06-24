@@ -41,8 +41,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return CodeMapRefreshMode.NoRefresh;
 		}
 
-		protected override ChangeLocation GetChangesLocationImplAsync(Document oldDocument, SyntaxNode newRoot, Document newDocument,
-																	  IEnumerable<TextChange> textChanges, CancellationToken cancellationToken = default)
+		protected override ChangeLocation GetChangesLocationImpl(Document oldDocument, SyntaxNode newRoot, Document newDocument,
+																 IEnumerable<TextChange> textChanges, CancellationToken cancellationToken = default)
 		{
 			ChangeLocation accumulatedChangeLocation = ChangeLocation.None;
 

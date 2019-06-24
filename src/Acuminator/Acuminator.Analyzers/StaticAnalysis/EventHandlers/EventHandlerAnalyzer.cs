@@ -13,7 +13,6 @@ using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Semantics;
 using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
@@ -75,17 +74,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 			});
 		}
 
-		private void AnalyzeLambda(OperationAnalysisContext context, PXContext pxContext)
-		{
-			if (context.Operation is ILambdaExpression lambdaExpression)
-			{
-				var symbolAnalysisContext =
-					new SymbolAnalysisContext(lambdaExpression.Signature, context.Compilation, context.Options,
-											  context.ReportDiagnostic, d => true, // this check is covered inside context.ReportDiagnostic
-											  context.CancellationToken);
+		//private void AnalyzeLambda(OperationAnalysisContext context, PXContext pxContext)
+		//{
+		//	if (context.Operation is ILambdaExpression lambdaExpression)
+		//	{
+		//		var symbolAnalysisContext =
+		//			new SymbolAnalysisContext(lambdaExpression.Signature, context.Compilation, context.Options,
+		//									  context.ReportDiagnostic, d => true, // this check is covered inside context.ReportDiagnostic
+		//									  context.CancellationToken);
 
-				AnalyzeSymbol(symbolAnalysisContext, pxContext);
-			}
-		}
+		//		AnalyzeSymbol(symbolAnalysisContext, pxContext);
+		//	}
+		//}
 	}
 }

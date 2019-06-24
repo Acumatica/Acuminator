@@ -59,13 +59,13 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			return SuppressionFileExtension.Equals(System.IO.Path.GetExtension(path), StringComparison.Ordinal);
 		}
 
-		internal static SuppressionFile Load(ISuppressionFileSystemService fileSystemService,
-			(string Path, bool GenerateSuppressionBase) loadInfo)
+		internal static SuppressionFile Load(ISuppressionFileSystemService fileSystemService, string suppressionFilePath, 
+											 bool generateSuppressionBase)
 		{
 			fileSystemService.ThrowOnNull(nameof(fileSystemService));
-			loadInfo.Path.ThrowOnNull(nameof(loadInfo.Path));
+			suppressionFilePath.ThrowOnNullOrWhiteSpace(nameof(suppressionFilePath));
 
-			string assemblyName = fileSystemService.GetFileName(loadInfo.Path);
+			string assemblyName = fileSystemService.GetFileName(suppressionFilePath);
 			if (string.IsNullOrEmpty(assemblyName))
 			{
 				throw new FormatException("Acuminator suppression file name cannot be empty");
@@ -73,14 +73,14 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			var messages = new HashSet<SuppressMessage>();
 
-			if (!loadInfo.GenerateSuppressionBase)
+			if (!generateSuppressionBase)
 			{
-				messages = LoadMessages(fileSystemService, loadInfo.Path);
+				messages = LoadMessages(fileSystemService, suppressionFilePath);
 			}
 
-			var fileWatcher = fileSystemService.CreateWatcher(loadInfo.Path);
+			var fileWatcher = fileSystemService.CreateWatcher(suppressionFilePath);
 
-			return new SuppressionFile(assemblyName, loadInfo.Path, loadInfo.GenerateSuppressionBase, messages, fileWatcher);
+			return new SuppressionFile(assemblyName, suppressionFilePath, generateSuppressionBase, messages, fileWatcher);
 		}
 
 		internal void AddMessage(SuppressMessage message)

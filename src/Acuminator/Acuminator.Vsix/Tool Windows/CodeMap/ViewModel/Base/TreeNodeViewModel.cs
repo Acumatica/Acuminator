@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
 
@@ -57,8 +57,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			_isExpanded = isExpanded;
 		}
 
-		public virtual void NavigateToItem()
-		{
-		}
+		public virtual Task NavigateToItemAsync() => Microsoft.VisualStudio.Threading.TplExtensions.CompletedTask;
 	}
 }

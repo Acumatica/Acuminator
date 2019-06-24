@@ -36,7 +36,7 @@ namespace Acuminator.Vsix.Coloriser
             Workspace = buffer?.GetWorkspace();
             HasReferenceToAcumaticaPlatform = CheckIfCurrentSolutionHasReferenceToAcumatica();
 
-            if (IsInitialized)
+            if (IsInitialized || !ThreadHelper.CheckAccess())
                 return;
 
             IsInitialized = true;
