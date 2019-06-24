@@ -286,7 +286,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to add diagnostic to the suppression file. Check if the file {0} is accessible..
+        ///   Looks up a localized string similar to The diagnostic cannot be added to the suppression file. Check if the {0} file is accessible..
         /// </summary>
         public static string DiagnosticSuppression_FailedToAddToSuppressionFile {
             get {
@@ -295,7 +295,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to find the suppression file for project {0}..
+        ///   Looks up a localized string similar to The suppression file for the {0} project cannot be found..
         /// </summary>
         public static string DiagnosticSuppression_FailedToFindSuppressionFile {
             get {
@@ -304,7 +304,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There are multiple Acuminator diagnostics on this code snippet. The Acuminator can&apos;t shoose between them..
+        ///   Looks up a localized string similar to There are multiple Acuminator diagnostics in this code snippet. Acuminator can suppress only one diagnostic at a time..
         /// </summary>
         public static string DiagnosticSuppression_MultipleDiagnosticFound {
             get {
@@ -313,7 +313,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There are no Acuminator diagnostic on this code snippet..
+        ///   Looks up a localized string similar to There are no Acuminator diagnostics in this code snippet..
         /// </summary>
         public static string DiagnosticSuppression_NoDiagnosticFound {
             get {
@@ -322,7 +322,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Finished Acuminator package loading.
+        ///   Looks up a localized string similar to The Acuminator package loaded.
         /// </summary>
         public static string PackageLoad_Done {
             get {

@@ -74,7 +74,7 @@
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <CommandName>cmdidSuppressDiagnosticCommand</CommandName>
-          <ButtonText>In Supression File</ButtonText>
+          <ButtonText>in Acuminator Suppression File</ButtonText>
         </Strings>
       </Button>
 
