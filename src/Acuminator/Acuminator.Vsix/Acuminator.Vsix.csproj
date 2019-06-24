@@ -435,6 +435,11 @@
     <PackageReference Include="Microsoft.VisualStudio.Workspace.VSIntegration">
       <Version>15.0.485</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.VSSDK.BuildTools">
+      <Version>15.9.3039</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="SQLitePCLRaw.bundle_green">
       <Version>1.1.2</Version>
     </PackageReference>
