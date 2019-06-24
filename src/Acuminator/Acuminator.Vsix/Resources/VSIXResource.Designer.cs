@@ -367,7 +367,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Acuminator Package is loading.
+        ///   Looks up a localized string similar to Loading the Acuminator package.
         /// </summary>
         public static string PackageLoad_WaitMessage {
             get {

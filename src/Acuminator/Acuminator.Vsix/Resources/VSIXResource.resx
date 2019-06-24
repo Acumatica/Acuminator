@@ -277,7 +277,7 @@
     <value>Failed to find the suppression file for project {0}.</value>
   </data>
   <data name="PackageLoad_Done" xml:space="preserve">
-    <value>Finished Acuminator package loading</value>
+    <value>The Acuminator package loaded</value>
   </data>
   <data name="PackageLoad_InitCommands" xml:space="preserve">
     <value>Initializing Acuminator commands</value>
@@ -292,6 +292,6 @@
     <value>Initializing Acuminator suppression manager</value>
   </data>
   <data name="PackageLoad_WaitMessage" xml:space="preserve">
-    <value>The Acuminator Package is loading</value>
+    <value>Loading the Acuminator package</value>
   </data>
 </root>
