@@ -63,20 +63,35 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			_defaultAttribute = _context.AttributeTypes.PXDefaultAttribute;
 		}
 
-		private static HashSet<ITypeSymbol> GetBoundBaseTypes(PXContext context) =>
-			new HashSet<ITypeSymbol>
-			{
-				context.FieldAttributes.PXDBFieldAttribute,
-				context.FieldAttributes.PXDBCalcedAttribute,
-				context.FieldAttributes.PXDBDataLengthAttribute,
-			};
+		private static HashSet<ITypeSymbol> GetBoundBaseTypes(PXContext context)
+		{
+			var types = new HashSet<ITypeSymbol>();
 
-		private static Dictionary<ITypeSymbol, bool> GetTypesContainingIsDBField(PXContext context) =>
-			new Dictionary<ITypeSymbol, bool>
-			{
-				{	context.FieldAttributes.PeriodIDAttribute, true },
-				{	context.FieldAttributes.AcctSubAttribute, true },
-			};
+			if (context.FieldAttributes.PXDBFieldAttribute != null)
+				types.Add(context.FieldAttributes.PXDBFieldAttribute);
+
+			if (context.FieldAttributes.PXDBCalcedAttribute != null)
+				types.Add(context.FieldAttributes.PXDBCalcedAttribute);
+
+			if (context.FieldAttributes.PXDBDataLengthAttribute != null)
+				types.Add(context.FieldAttributes.PXDBDataLengthAttribute);
+
+			return types;
+		}
+
+		private static Dictionary<ITypeSymbol, bool> GetTypesContainingIsDBField(PXContext context)
+		{
+			var types = new Dictionary<ITypeSymbol, bool>();
+
+			if (context.FieldAttributes.PeriodIDAttribute != null)
+				types.Add(context.FieldAttributes.PeriodIDAttribute, true);
+
+			if (context.FieldAttributes.AcctSubAttribute != null)
+				types.Add(context.FieldAttributes.AcctSubAttribute, true);
+
+			return types;
+		}
+			
 
 		/// <summary>
 		/// Get the collection of Acumatica attributes defined by the <paramref name="attributeType"/> including attributes on aggregates.
