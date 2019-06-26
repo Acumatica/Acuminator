@@ -79,7 +79,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.RowChangesInEventHandlers
 		[EmbeddedFileData("NonRowAssignment.cs")]
 		public Task NonRowAssignment_ShouldNotShowDiagnostic(string actual) => VerifyCSharpDiagnosticAsync(actual);
 
-		
+
+		[Theory]
+		[EmbeddedFileData(@"Reversed\IsPatternAssignment.cs")]
+		public Task Reversed_IsPatternAssignment_ShouldNotShowDiagnostic(string actual) => VerifyCSharpDiagnosticAsync(actual);
+
 		[Theory]
 		[EmbeddedFileData(@"Reversed\DirectAssignment.cs")]
 		public Task Reversed_DirectAssignment(string actual) => VerifyCSharpDiagnosticAsync(actual, 
