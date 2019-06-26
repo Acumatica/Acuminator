@@ -23,7 +23,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.RaiseExceptionHandling
 		[EmbeddedFileData(@"EventHandlers\EventHandlers.cs")]
 		public async Task EventHandlers(string actual) => await VerifyCSharpDiagnosticAsync(actual,
 			Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers.CreateFor(14, 4, EventType.FieldDefaulting),
-			Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers_NonIsv.CreateFor(19, 4, EventType.FieldSelecting),
+			Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers_NonISV.CreateFor(19, 4, EventType.FieldSelecting),
 			Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers.CreateFor(24, 4, EventType.RowSelecting),
 			Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers.CreateFor(29, 4, EventType.RowPersisted));
 
@@ -31,7 +31,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.RaiseExceptionHandling
 		[EmbeddedFileData(@"EventHandlers\EventHandlersWithExternalMethod.cs")]
 		public async Task EventHandlersWithExternalMethod(string actual) => await VerifyCSharpDiagnosticAsync(actual,
 			Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers.CreateFor(14, 4, EventType.FieldDefaulting),
-			Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers_NonIsv.CreateFor(19, 4, EventType.FieldSelecting),
+			Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers_NonISV.CreateFor(19, 4, EventType.FieldSelecting),
 			Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers.CreateFor(24, 4, EventType.RowSelecting),
 			Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers.CreateFor(29, 4, EventType.RowPersisted));
 

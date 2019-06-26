@@ -26,7 +26,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
 			ImmutableArray.Create( 
 				Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers,
-				Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers_NonIsv
+				Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers_NonISV
 			);
 
 		public override bool ShouldAnalyze(PXContext pxContext, EventType eventType) => 
@@ -73,7 +73,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 					    _messageArgs.Contains(EventType.FieldSelecting))
 					{
 						ReportDiagnostic(_context.ReportDiagnostic,
-							Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers_NonIsv,
+							Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers_NonISV,
 							node, _messageArgs);
 					}else
 					{

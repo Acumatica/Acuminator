@@ -207,6 +207,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1073_ThrowingExceptionsInRowPersisted { get; } =
 			Rule("PX1073", nameof(Resources.PX1073Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
+		public static DiagnosticDescriptor PX1073_ThrowingExceptionsInRowPersisted_NonISV { get; } =
+			Rule("PX1073", nameof(Resources.PX1073Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+
 		public static DiagnosticDescriptor PX1074_ThrowingSetupNotEnteredExceptionInEventHandlers { get; } =
 			Rule("PX1074", nameof(Resources.PX1074Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning,
 				nameof(Resources.PX1074MessageFormat).GetLocalized());
@@ -215,7 +218,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			Rule("PX1075", nameof(Resources.PX1075Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error,
 				nameof(Resources.PX1075MessageFormat).GetLocalized());
 
-		public static DiagnosticDescriptor PX1075_RaiseExceptionHandlingInEventHandlers_NonIsv { get; } =
+		public static DiagnosticDescriptor PX1075_RaiseExceptionHandlingInEventHandlers_NonISV { get; } =
 			Rule("PX1075", nameof(Resources.PX1075Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning,
 				nameof(Resources.PX1075MessageFormat).GetLocalized());
 

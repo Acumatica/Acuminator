@@ -14,6 +14,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
 			Descriptors.PX1073_ThrowingExceptionsInRowPersisted,
+			Descriptors.PX1073_ThrowingExceptionsInRowPersisted_NonISV,
 			Descriptors.PX1074_ThrowingSetupNotEnteredExceptionInEventHandlers);
 
 		public override bool ShouldAnalyze(PXContext pxContext, EventType eventType) => eventType != EventType.None;
@@ -51,7 +52,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 
                 if (_eventType == EventType.RowPersisted)
                 {
-                    ReportDiagnostic(_context.ReportDiagnostic,	Descriptors.PX1073_ThrowingExceptionsInRowPersisted, node);
+                    ReportDiagnostic(_context.ReportDiagnostic, 
+									_pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled 
+										? Descriptors.PX1073_ThrowingExceptionsInRowPersisted 
+										: Descriptors.PX1073_ThrowingExceptionsInRowPersisted_NonISV, 
+									node);
                     isReported = true;
                 }
 
