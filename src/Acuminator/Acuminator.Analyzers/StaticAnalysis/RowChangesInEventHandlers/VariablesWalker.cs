@@ -64,34 +64,31 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				if (node.Left is IdentifierNameSyntax variableNode && node.Right != null)
 				{
 					var variableSymbol = _semanticModel.GetSymbolInfo(variableNode).Symbol as ILocalSymbol;
-
-					if (variableSymbol != null && _variables.Contains(variableSymbol))
-					{
-						_eventArgsRowWalker.Reset();
-						node.Right.Accept(_eventArgsRowWalker);
-
-						if (_eventArgsRowWalker.Success)
-							_result.Add(variableSymbol);
-					}
+					ValidateThatVariableIsSetToDacFromEvent(variableSymbol, node.Right);
 				}
 			}
 
 			public override void VisitVariableDeclaration(VariableDeclarationSyntax node)
 			{
-				foreach (var variableDeclarator in node.Variables
-					.Where(v => v.Initializer?.Value != null))
+				_cancellationToken.ThrowIfCancellationRequested();
+
+				foreach (var variableDeclarator in node.Variables.Where(v => v.Initializer?.Value != null))
 				{
 					var variableSymbol = _semanticModel.GetDeclaredSymbol(variableDeclarator) as ILocalSymbol;
-
-					if (variableSymbol != null && _variables.Contains(variableSymbol))
-					{
-						_eventArgsRowWalker.Reset();
-						variableDeclarator.Initializer.Value.Accept(_eventArgsRowWalker);
-
-						if (_eventArgsRowWalker.Success)
-							_result.Add(variableSymbol);
-					}
+					ValidateThatVariableIsSetToDacFromEvent(variableSymbol, variableDeclarator.Initializer.Value);
 				}
+			}
+
+			private void ValidateThatVariableIsSetToDacFromEvent(ILocalSymbol variableSymbol, ExpressionSyntax variableInitializerExpression)
+			{
+				if (variableSymbol == null || !_variables.Contains(variableSymbol))
+					return;
+
+				_eventArgsRowWalker.Reset();
+				variableInitializerExpression.Accept(_eventArgsRowWalker);
+
+				if (_eventArgsRowWalker.Success)
+					_result.Add(variableSymbol);
 			}
 		}
 
