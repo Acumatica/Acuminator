@@ -109,6 +109,10 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			Rule("PX1027", nameof(Resources.PX1027Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error,
 				nameof(Resources.PX1027MessageFormat).GetLocalized());
 
+		public static DiagnosticDescriptor PX1027_ForbiddenFieldsInDacDeclaration_NonISV { get; } =
+			Rule("PX1027", nameof(Resources.PX1027Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning,
+				nameof(Resources.PX1027MessageFormat).GetLocalized());
+
 		public static DiagnosticDescriptor PX1028_ConstructorInDacDeclaration { get; } =
 			Rule("PX1028", nameof(Resources.PX1028Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
