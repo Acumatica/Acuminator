@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Analyzers.StaticAnalysis
@@ -200,6 +201,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 		public static DiagnosticDescriptor PX1071_PXActionExecutionInEventHandlers { get; } =
 			Rule("PX1071", nameof(Resources.PX1071Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+		public static DiagnosticDescriptor PX1071_PXActionExecutionInEventHandlers_NonISV { get; } =
+			Rule("PX1071", nameof(Resources.PX1071Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 
 		public static DiagnosticDescriptor PX1072_PXGraphCreationForBqlQueries { get; } =
 			Rule("PX1072", nameof(Resources.PX1072Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);

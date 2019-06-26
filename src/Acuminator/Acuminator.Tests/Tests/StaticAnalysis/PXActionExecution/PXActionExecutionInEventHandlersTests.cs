@@ -21,7 +21,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXActionExecution
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new EventHandlerAnalyzer(CodeAnalysisSettings.Default
-					.WithRecursiveAnalysisEnabled(),
+					.WithRecursiveAnalysisEnabled()
+					.WithIsvSpecificAnalyzersEnabled(),
 				new PXActionExecutionInEventHandlersAnalyzer());
 
 		[Theory]

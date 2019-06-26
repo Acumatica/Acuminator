@@ -180,6 +180,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\Sources\NoPrimaryViewForPrimaryDacFluentBQL.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\Sources\HasPrimaryViewForPrimaryDac.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoPrimaryViewForPrimaryDac\Sources\HasPrimaryViewForPrimaryDacFluentBQL.cs" />
+    <Compile Include="Tests\StaticAnalysis\PXActionExecution\PXActionExecutionInEventHandlersNonISVTests.cs" />
     <Compile Include="Tests\StaticAnalysis\PXActionExecution\PXActionExecutionInEventHandlersTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\EventHandlers\PressWithAdapter.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PXActionExecution\Sources\EventHandlers\PressOnDerivedType.cs" />
