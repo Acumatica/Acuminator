@@ -40,7 +40,7 @@ namespace Acuminator.Utilities.Roslyn
 
 		private readonly Compilation _compilation;
 		
-		private readonly CodeAnalysisSettings _settings;
+		protected readonly CodeAnalysisSettings _settings;
 		private readonly Dictionary<SyntaxTree, SemanticModel> _semanticModels = new Dictionary<SyntaxTree, SemanticModel>();
 
 		private readonly ISet<(SyntaxNode, DiagnosticDescriptor)> _reportedDiagnostics = new HashSet<(SyntaxNode, DiagnosticDescriptor)>();
