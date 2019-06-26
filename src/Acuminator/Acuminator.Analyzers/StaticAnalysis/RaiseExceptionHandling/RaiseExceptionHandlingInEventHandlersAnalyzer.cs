@@ -24,9 +24,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 		};
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
-			ImmutableArray.Create(Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers);
+			ImmutableArray.Create( 
+				Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers,
+				Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers_NonIsv
+			);
 
-		public override bool ShouldAnalyze(PXContext pxContext, EventType eventType) => AnalyzedEventTypes.Contains(eventType);
+		public override bool ShouldAnalyze(PXContext pxContext, EventType eventType) => 
+			AnalyzedEventTypes.Contains(eventType);
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 		{
@@ -65,9 +69,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 
 				if (methodSymbol != null && _pxContext.PXCache.RaiseExceptionHandling.Contains(methodSymbol))
 				{
-					ReportDiagnostic(_context.ReportDiagnostic,
-						Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers, 
-						node, _messageArgs);
+					if (!_pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled &&
+					    _messageArgs.Contains(EventType.FieldSelecting))
+					{
+						ReportDiagnostic(_context.ReportDiagnostic,
+							Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers_NonIsv,
+							node, _messageArgs);
+					}else
+					{
+						ReportDiagnostic(_context.ReportDiagnostic,
+							Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers, 
+							node, _messageArgs);
+					}
 				}
 				else
 				{
