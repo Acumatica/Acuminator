@@ -271,15 +271,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		/// <summary>
-		/// Returns one or multiple semantic models of PXGraph and PXGraphExtension descendants which are inferred from <paramref name="typeSymbol"/>
+		/// Returns semantic model of DAC or DAC Extension which is inferred from <paramref name="typeSymbol"/>
 		/// </summary>
 		/// <param name="pxContext">Context instance</param>
-		/// <param name="typeSymbol">Symbol which is PXGraph or PXGraphExtension descendant and/or which uses PXGraph.InstanceCreated AddHandler method</param>
+		/// <param name="typeSymbol">Symbol which is DAC or DAC Extension descendant</param>
 		/// <param name="semanticModel">Semantic model</param>
 		/// <param name="cancellation">Cancellation</param>
-		/// <returns></returns>
-		public static IEnumerable<PXGraphSemanticModel> InferModels(PXContext pxContext, INamedTypeSymbol typeSymbol,
-																	CancellationToken cancellation = default)
+		/// <returns/>
+		public static DacSemanticModel InferModel(PXContext pxContext, INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
 		{
 			cancellation.ThrowIfCancellationRequested();
 			pxContext.ThrowOnNull(nameof(pxContext));
