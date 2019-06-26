@@ -23,7 +23,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var methodSymbol = (IMethodSymbol)context.Symbol;
+			var methodSymbol = (IMethodSymbol) context.Symbol;
 			var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
 
 			if (methodSyntax != null)
@@ -32,14 +32,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 
 				methodSyntax.Accept(walker);
 			}
-		}	
+		}
 
 		private class Walker : WalkerBase
 		{
 			private readonly EventType _eventType;
 
 			public Walker(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
-                : base(context, pxContext)
+				: base(context, pxContext)
 			{
 				_eventType = eventType;
 			}
@@ -48,30 +48,31 @@ namespace Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions
 			{
 				ThrowIfCancellationRequested();
 
-                var isReported = false;
+				var isReported = false;
 
-                if (_eventType == EventType.RowPersisted)
-                {
-                    ReportDiagnostic(_context.ReportDiagnostic, 
-									_pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled 
-										? Descriptors.PX1073_ThrowingExceptionsInRowPersisted 
-										: Descriptors.PX1073_ThrowingExceptionsInRowPersisted_NonISV, 
-									node);
-                    isReported = true;
-                }
+				if (_eventType == EventType.RowPersisted)
+				{
+					ReportDiagnostic(
+						_context.ReportDiagnostic,
+						_pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled
+							? Descriptors.PX1073_ThrowingExceptionsInRowPersisted
+							: Descriptors.PX1073_ThrowingExceptionsInRowPersisted_NonISV,
+						node);
+					isReported = true;
+				}
 
-                if (_eventType != EventType.RowSelected && IsPXSetupNotEnteredException(node))
-                {
-                    ReportDiagnostic(_context.ReportDiagnostic,
+				if (_eventType != EventType.RowSelected && IsPXSetupNotEnteredException(node))
+				{
+					ReportDiagnostic(_context.ReportDiagnostic,
 						Descriptors.PX1074_ThrowingSetupNotEnteredExceptionInEventHandlers,
 						node, _eventType);
-                    isReported = true;
-                }
+					isReported = true;
+				}
 
-                if (!isReported)
-                {
-                    base.VisitThrowStatement(node);
-                }
+				if (!isReported)
+				{
+					base.VisitThrowStatement(node);
+				}
 			}
 		}
 	}

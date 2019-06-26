@@ -16,7 +16,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionExecution
 {
 	public class PXActionExecutionInEventHandlersAnalyzer : EventHandlerAggregatedAnalyzerBase
 	{
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(
 				Descriptors.PX1071_PXActionExecutionInEventHandlers,
 				Descriptors.PX1071_PXActionExecutionInEventHandlers_NonISV);
@@ -27,11 +27,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionExecution
 
 			var methodSymbol = (IMethodSymbol) context.Symbol;
 			var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
-			var walker = new Walker(context, 
-										pxContext, 
-										pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled
-											? Descriptors.PX1071_PXActionExecutionInEventHandlers
-											: Descriptors.PX1071_PXActionExecutionInEventHandlers_NonISV);
+			var walker = new Walker(
+				context,
+				pxContext,
+				pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled
+					? Descriptors.PX1071_PXActionExecutionInEventHandlers
+					: Descriptors.PX1071_PXActionExecutionInEventHandlers_NonISV);
 
 			methodSyntax?.Accept(walker);
 		}

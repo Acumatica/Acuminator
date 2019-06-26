@@ -23,27 +23,27 @@ namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 			EventType.RowPersisted
 		};
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
-			ImmutableArray.Create( 
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+			ImmutableArray.Create(
 				Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers,
 				Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers_NonISV
 			);
 
-		public override bool ShouldAnalyze(PXContext pxContext, EventType eventType) => 
+		public override bool ShouldAnalyze(PXContext pxContext, EventType eventType) =>
 			AnalyzedEventTypes.Contains(eventType);
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var methodSymbol = (IMethodSymbol)context.Symbol;
+			var methodSymbol = (IMethodSymbol) context.Symbol;
 			var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
 			var walker = new Walker(context, pxContext, eventType);
 
 			methodSyntax?.Accept(walker);
 		}
 
-		
+
 		private class Walker : NestedInvocationWalker
 		{
 			private readonly SymbolAnalysisContext _context;
@@ -53,7 +53,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 			public Walker(SymbolAnalysisContext context, PXContext pxContext, params object[] messageArgs)
 				: base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
 			{
-				pxContext.ThrowOnNull(nameof (pxContext));
+				pxContext.ThrowOnNull(nameof(pxContext));
 
 				_context = context;
 				_pxContext = pxContext;
@@ -75,10 +75,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 						ReportDiagnostic(_context.ReportDiagnostic,
 							Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers_NonISV,
 							node, _messageArgs);
-					}else
+					}
+					else
 					{
 						ReportDiagnostic(_context.ReportDiagnostic,
-							Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers, 
+							Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers,
 							node, _messageArgs);
 					}
 				}

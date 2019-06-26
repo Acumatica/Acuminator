@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.EventHandlers;
 using Acuminator.Analyzers.StaticAnalysis.PXActionExecution;
-using Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
-using Acuminator.Utilities.Roslyn;
-using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
 
@@ -28,7 +21,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXActionExecution
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\Press.cs")]
 		public Task Press(string actual) =>
-			VerifyCSharpDiagnosticAsync(actual, 
+			VerifyCSharpDiagnosticAsync(actual,
 				Descriptors.PX1071_PXActionExecutionInEventHandlers_NonISV.CreateFor(16, 4),
 				Descriptors.PX1071_PXActionExecutionInEventHandlers_NonISV.CreateFor(21, 4),
 				Descriptors.PX1071_PXActionExecutionInEventHandlers_NonISV.CreateFor(26, 4),
@@ -45,7 +38,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXActionExecution
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\PressOnDerivedType.cs")]
 		public Task PressOnDerivedType(string actual) =>
-			VerifyCSharpDiagnosticAsync(actual, 
+			VerifyCSharpDiagnosticAsync(actual,
 				Descriptors.PX1071_PXActionExecutionInEventHandlers_NonISV.CreateFor(16, 4),
 				Descriptors.PX1071_PXActionExecutionInEventHandlers_NonISV.CreateFor(21, 4),
 				Descriptors.PX1071_PXActionExecutionInEventHandlers_NonISV.CreateFor(26, 4),
@@ -62,7 +55,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXActionExecution
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\PressWithAdapter.cs")]
 		public Task PressWithAdapter(string actual) =>
-			VerifyCSharpDiagnosticAsync(actual, 
+			VerifyCSharpDiagnosticAsync(actual,
 				Descriptors.PX1071_PXActionExecutionInEventHandlers_NonISV.CreateFor(16, 4),
 				Descriptors.PX1071_PXActionExecutionInEventHandlers_NonISV.CreateFor(21, 4),
 				Descriptors.PX1071_PXActionExecutionInEventHandlers_NonISV.CreateFor(26, 4),
@@ -79,7 +72,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXActionExecution
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\PressWithExternalMethod.cs")]
 		public Task PressWithExternalMethod(string actual) =>
-			VerifyCSharpDiagnosticAsync(actual, 
+			VerifyCSharpDiagnosticAsync(actual,
 				Descriptors.PX1071_PXActionExecutionInEventHandlers_NonISV.CreateFor(16, 4),
 				Descriptors.PX1071_PXActionExecutionInEventHandlers_NonISV.CreateFor(21, 4),
 				Descriptors.PX1071_PXActionExecutionInEventHandlers_NonISV.CreateFor(26, 4),
