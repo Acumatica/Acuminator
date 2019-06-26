@@ -15,7 +15,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.GraphCreation
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
             new PXGraphAnalyzer(
                 CodeAnalysisSettings.Default
-                .WithRecursiveAnalysisEnabled(),
+                .WithRecursiveAnalysisEnabled()
+                .WithIsvSpecificAnalyzersEnabled(),
                 new PXGraphCreationInGraphSemanticModelAnalyzer());
 
         [Theory]

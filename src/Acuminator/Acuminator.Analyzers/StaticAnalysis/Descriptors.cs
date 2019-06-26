@@ -181,7 +181,10 @@ namespace Acuminator.Analyzers.StaticAnalysis
         public static DiagnosticDescriptor PX1057_PXGraphCreationDuringInitialization { get; } =
             Rule("PX1057", nameof(Resources.PX1057Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
-        public static DiagnosticDescriptor PX1058_PXGraphSavingChangesDuringInitialization { get; } =
+        public static DiagnosticDescriptor PX1057_PXGraphCreationDuringInitialization_NonISV { get; } =
+	        Rule("PX1057", nameof(Resources.PX1057Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+
+		public static DiagnosticDescriptor PX1058_PXGraphSavingChangesDuringInitialization { get; } =
             Rule("PX1058", nameof(Resources.PX1058Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
 		public static DiagnosticDescriptor PX1055_DacKeyFieldsWithIdentityKeyField { get; } =

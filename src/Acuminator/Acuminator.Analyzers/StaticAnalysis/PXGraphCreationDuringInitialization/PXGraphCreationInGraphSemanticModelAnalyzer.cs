@@ -15,13 +15,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitializatio
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(
                 Descriptors.PX1057_PXGraphCreationDuringInitialization,
-                Descriptors.PX1084_GraphCreationInDataViewDelegate);
+                Descriptors.PX1057_PXGraphCreationDuringInitialization_NonISV,
+				Descriptors.PX1084_GraphCreationInDataViewDelegate);
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
-            PXGraphCreateInstanceWalker walker = new PXGraphCreateInstanceWalker(context, pxContext, Descriptors.PX1057_PXGraphCreationDuringInitialization);
+            PXGraphCreateInstanceWalker walker = new PXGraphCreateInstanceWalker(
+	            context, 
+				pxContext,
+				pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled
+					? Descriptors.PX1057_PXGraphCreationDuringInitialization
+					: Descriptors.PX1057_PXGraphCreationDuringInitialization_NonISV);
 
             foreach(GraphInitializerInfo initializer in pxGraph.Initializers)
             {
