@@ -23,6 +23,13 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.RowChangesInEventHandlers
 				new RowChangesInEventHandlersAnalyzer());
 
 		[Theory]
+		[EmbeddedFileData("IsPatternAssignment.cs")]
+		public Task IsPatternAssignment(string actual) => VerifyCSharpDiagnosticAsync(actual,
+			Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs.CreateFor(17, 4, EventType.RowSelected),
+			Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs.CreateFor(25, 4, EventType.FieldDefaulting),
+			Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs.CreateFor(33, 4, EventType.FieldVerifying));
+
+		[Theory]
 		[EmbeddedFileData("DirectAssignment.cs")]
 		public Task DirectAssignment(string actual) => VerifyCSharpDiagnosticAsync(actual,
 			Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs.CreateFor(14, 4, EventType.RowSelected),
