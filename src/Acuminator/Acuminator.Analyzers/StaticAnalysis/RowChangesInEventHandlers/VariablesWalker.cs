@@ -57,25 +57,36 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 				
 			}
 
-			public override void VisitAssignmentExpression(AssignmentExpressionSyntax node)
+			public override void VisitAssignmentExpression(AssignmentExpressionSyntax assignment)
 			{
 				_cancellationToken.ThrowIfCancellationRequested();
 
-				if (node.Left is IdentifierNameSyntax variableNode && node.Right != null)
+				if (assignment.Left is IdentifierNameSyntax variableNode && assignment.Right != null)
 				{
-					var variableSymbol = _semanticModel.GetSymbolInfo(variableNode).Symbol as ILocalSymbol;
-					ValidateThatVariableIsSetToDacFromEvent(variableSymbol, node.Right);
+					var variableSymbol = _semanticModel.GetSymbolInfo(variableNode, _cancellationToken).Symbol as ILocalSymbol;
+					ValidateThatVariableIsSetToDacFromEvent(variableSymbol, assignment.Right);
 				}
 			}
 
-			public override void VisitVariableDeclaration(VariableDeclarationSyntax node)
+			public override void VisitVariableDeclaration(VariableDeclarationSyntax variableDeclaration)
 			{
 				_cancellationToken.ThrowIfCancellationRequested();
 
-				foreach (var variableDeclarator in node.Variables.Where(v => v.Initializer?.Value != null))
+				foreach (var variableDeclarator in variableDeclaration.Variables.Where(v => v.Initializer?.Value != null))
 				{
-					var variableSymbol = _semanticModel.GetDeclaredSymbol(variableDeclarator) as ILocalSymbol;
+					var variableSymbol = _semanticModel.GetDeclaredSymbol(variableDeclarator, _cancellationToken) as ILocalSymbol;
 					ValidateThatVariableIsSetToDacFromEvent(variableSymbol, variableDeclarator.Initializer.Value);
+				}
+			}
+
+			public override void VisitIsPatternExpression(IsPatternExpressionSyntax isPatternExpression)
+			{
+				_cancellationToken.ThrowIfCancellationRequested();
+
+				if (isPatternExpression.Pattern is DeclarationPatternSyntax declarationPattern && declarationPattern.Designation != null)
+				{
+					var variableSymbol = _semanticModel.GetDeclaredSymbol(declarationPattern.Designation, _cancellationToken) as ILocalSymbol;
+					ValidateThatVariableIsSetToDacFromEvent(variableSymbol, isPatternExpression.Expression);
 				}
 			}
 
@@ -91,6 +102,5 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 					_result.Add(variableSymbol);
 			}
 		}
-
 	}
 }
