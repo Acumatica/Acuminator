@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
+using Acuminator.Utilities;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -16,6 +18,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class DacDeclarationAnalyzer : PXDiagnosticAnalyzer, ISymbolAnalyzer
 	{
+
+		public DacDeclarationAnalyzer(CodeAnalysisSettings settings = null) : base(settings){}
+
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
 			(
@@ -132,10 +137,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 				{
 					syntaxContext.ReportDiagnosticWithSuppressionCheck(
 						Diagnostic.Create(
-							(pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled &&
-							 iProperty.Identifier.Text == _DeletedDatabaseRecord)
-								? Descriptors.PX1027_ForbiddenFieldsInDacDeclaration
-								: Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV,
+							(string.Equals(iProperty.Identifier.Text, _DeletedDatabaseRecord, StringComparison.CurrentCultureIgnoreCase) &&
+							 pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled == false)
+								? Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV
+								: Descriptors.PX1027_ForbiddenFieldsInDacDeclaration,
 							iProperty.Identifier.GetLocation(),
 							iProperty.Identifier.Text), pxContext.CodeAnalysisSettings);
 				}
@@ -147,10 +152,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 				{
 					syntaxContext.ReportDiagnosticWithSuppressionCheck(
 						Diagnostic.Create(
-							(pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled &&
-							 iClass.Identifier.Text == _DeletedDatabaseRecord)
-								? Descriptors.PX1027_ForbiddenFieldsInDacDeclaration
-								: Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV,
+							(string.Equals(iClass.Identifier.Text, _DeletedDatabaseRecord, StringComparison.CurrentCultureIgnoreCase) && 
+							 pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled == false)
+								? Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV
+								: Descriptors.PX1027_ForbiddenFieldsInDacDeclaration,
 							iClass.Identifier.GetLocation(),
 							iClass.Identifier.Text), pxContext.CodeAnalysisSettings);
 				}

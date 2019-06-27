@@ -2,6 +2,7 @@
 using Acuminator.Analyzers.StaticAnalysis.DacDeclaration;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
+using Acuminator.Utilities;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -10,8 +11,10 @@ using Xunit;
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacDeclaration
 {
     public class DacForbiddenFieldsTests : CodeFixVerifier
-	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacDeclarationAnalyzer();
+    {
+	    protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => 
+		    new DacDeclarationAnalyzer(CodeAnalysisSettings.Default
+			    .WithIsvSpecificAnalyzersEnabled());
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new ForbiddenFieldsInDacFix();
 
