@@ -1,6 +1,5 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
 using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
-using Acuminator.Analyzers.StaticAnalysis.DacDeclaration;
 using Acuminator.Analyzers.StaticAnalysis.DatabaseQueries;
 using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
 using Acuminator.Analyzers.StaticAnalysis.PXActionExecution;
@@ -18,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class EventHandlerAnalyzer : SymbolAnalyzersAggregator<IEventHandlerAnalyzer>
 	{
         protected override SymbolKind SymbolKind => SymbolKind.Method;
@@ -35,8 +34,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 			new UiPresentationLogicInEventHandlersAnalyzer(),
 			new PXActionExecutionInEventHandlersAnalyzer(),
 			new ThrowingExceptionsInEventHandlersAnalyzer(),
-			new RaiseExceptionHandlingInEventHandlersAnalyzer(),
-			new DacDeclarationAnalyzer())
+			new RaiseExceptionHandlingInEventHandlersAnalyzer())
 		{
 		}
 
