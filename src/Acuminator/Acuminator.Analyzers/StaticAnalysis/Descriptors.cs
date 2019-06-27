@@ -146,6 +146,12 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1043_SavingChangesInRowPerstisting { get; } =
 			Rule("PX1043", nameof(Resources.PX1043TitleRowPersisting).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
+		public static DiagnosticDescriptor PX1043_SavingChangesInRowPerstisted { get; } =
+			Rule("PX1043", nameof(Resources.PX1043TitleRowPersisting).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+
+		public static DiagnosticDescriptor PX1043_SavingChangesInRowPerstistedNonISV { get; } =
+			Rule("PX1043", nameof(Resources.PX1043TitleRowPersisting).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+
 		public static DiagnosticDescriptor PX1044_ChangesInPXCacheInEventHandlers { get; } =
 			Rule("PX1044", nameof(Resources.PX1044Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error,
 				nameof(Resources.PX1044MessageFormat).GetLocalized());

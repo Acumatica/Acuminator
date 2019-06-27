@@ -16,7 +16,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
 			Descriptors.PX1043_SavingChangesInEventHandlers,
-			Descriptors.PX1043_SavingChangesInRowPerstisting);
+			Descriptors.PX1043_SavingChangesInRowPerstisting,
+			Descriptors.PX1043_SavingChangesInRowPerstisted,
+			Descriptors.PX1043_SavingChangesInRowPerstistedNonISV);
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 		{
