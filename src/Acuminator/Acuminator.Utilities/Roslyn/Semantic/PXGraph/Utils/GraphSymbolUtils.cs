@@ -39,7 +39,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				return null;
 
 			ITypeSymbol firstTypeArg = graphExtTypeArgs.Last();
-			return firstTypeArg.IsPXGraph()
+			return firstTypeArg.IsPXGraph(pxContext)
 				? firstTypeArg
 				: null;
 		}

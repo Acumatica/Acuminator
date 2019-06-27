@@ -48,11 +48,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			typeSymbol.IsDAC(pxContext) || typeSymbol.IsDacExtension(pxContext);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsDacExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
-		{
-			typeSymbol.ThrowOnNull(nameof(typeSymbol));
-			return typeSymbol.InheritsFrom(pxContext.PXCacheExtensionType);
-		}
+		public static bool IsDacExtension(this ITypeSymbol typeSymbol, PXContext pxContext) => 
+			typeSymbol.CheckIfNull(nameof(typeSymbol))
+					  .InheritsFrom(pxContext.PXCacheExtensionType);
 
 		/// <summary>
 		/// An extension method that query if <paramref name="typeSymbol"/> is DAC extension.
@@ -143,6 +141,38 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			ITypeSymbol pxActionDacType = actionTypeArgs[0];
 			return pxActionDacType.IsDAC()
 				? pxActionDacType
+				: null;
+		}
+
+		/// <summary>
+		/// Gets the DAC type from DAC extension type.
+		/// </summary>
+		/// <param name="dacExtension">The DAC extension to act on.</param>
+		/// <param name="pxContext">Context.</param>
+		/// <returns>
+		/// The DAC from DAC extension.
+		/// </returns>
+		public static ITypeSymbol GetDacFromDacExtension(this ITypeSymbol dacExtension, PXContext pxContext)
+		{
+			pxContext.ThrowOnNull(nameof(pxContext));
+
+			if (dacExtension == null || !dacExtension.IsDacExtension(pxContext))
+				return null;
+
+			var baseDacExtensionType = dacExtension.GetBaseTypesAndThis()
+												   .OfType<INamedTypeSymbol>()
+												   .FirstOrDefault(type => type.IsDacExtensionBaseType());
+			if (baseDacExtensionType == null)
+				return null;
+
+			var dacExtTypeArgs = baseDacExtensionType.TypeArguments;
+
+			if (dacExtTypeArgs.Length == 0)
+				return null;
+
+			ITypeSymbol dacType = dacExtTypeArgs.Last();
+			return dacType.IsDAC(pxContext)
+				? dacType
 				: null;
 		}
 
