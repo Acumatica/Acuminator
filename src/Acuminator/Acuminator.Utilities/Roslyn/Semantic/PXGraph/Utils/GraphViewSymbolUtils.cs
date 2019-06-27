@@ -6,11 +6,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using DataViewDelegatesOverridableCollection = System.Collections.Generic.IEnumerable<Acuminator.Utilities.Roslyn.Semantic.PXGraph.GraphOverridableItem<(Microsoft.CodeAnalysis.CSharp.Syntax.MethodDeclarationSyntax Node, Microsoft.CodeAnalysis.IMethodSymbol Symbol)>>;
-using ViewOverridableCollection = System.Collections.Generic.IEnumerable<Acuminator.Utilities.Roslyn.Semantic.PXGraph.GraphOverridableItem<(Microsoft.CodeAnalysis.ISymbol ViewSymbol, Microsoft.CodeAnalysis.INamedTypeSymbol ViewType)>>;
+
+using DataViewDelegatesOverridableCollection = 
+	System.Collections.Generic.IEnumerable<
+		Acuminator.Utilities.Roslyn.Semantic.OverridableItem<(Microsoft.CodeAnalysis.CSharp.Syntax.MethodDeclarationSyntax Node, Microsoft.CodeAnalysis.IMethodSymbol Symbol)>>;
+
+using ViewOverridableCollection = 
+	System.Collections.Generic.IEnumerable<
+		Acuminator.Utilities.Roslyn.Semantic.OverridableItem<(Microsoft.CodeAnalysis.ISymbol ViewSymbol, Microsoft.CodeAnalysis.INamedTypeSymbol ViewType)>>;
+
 using ViewSymbolWithTypeCollection = System.Collections.Generic.IEnumerable<(Microsoft.CodeAnalysis.ISymbol ViewSymbol, Microsoft.CodeAnalysis.INamedTypeSymbol ViewType)>;
-
-
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
@@ -26,7 +31,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <param name="graphOrgraphExtension">The graph orgraph extension.</param>
 		/// <param name="startingOrder">The declaration order which should be assigned to the first DTO.</param>
 		/// <returns/>
-		private delegate int AddViewInfoWithOrderDelegate<T>(GraphOverridableItemsCollection<T> viewInfos,
+		private delegate int AddViewInfoWithOrderDelegate<T>(OverridableItemsCollection<T> viewInfos,
 															 ITypeSymbol graphOrgraphExtension, int startingOrder);
 
 		/// <summary>
@@ -58,9 +63,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			pxContext.ThrowOnNull(nameof(pxContext));
 
 			if (graph?.InheritsFrom(pxContext.PXGraph.Type) != true)
-				return Enumerable.Empty<GraphOverridableItem<(ISymbol, INamedTypeSymbol)>>();
+				return Enumerable.Empty<OverridableItem<(ISymbol, INamedTypeSymbol)>>();
 
-			var viewsByName = new GraphOverridableItemsCollection<(ISymbol Symbol, INamedTypeSymbol Type)>();
+			var viewsByName = new OverridableItemsCollection<(ISymbol Symbol, INamedTypeSymbol Type)>();
 			var graphViews = GetViewsFromGraphImpl(graph, pxContext, includeViewsFromInheritanceChain);
 			viewsByName.AddRangeWithDeclarationOrder(graphViews, startingOrder: 0,
 													 keySelector: view => view.Symbol.Name);
@@ -81,7 +86,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			bool isGraph = graphOrExtension.IsPXGraph(pxContext);
 
 			if (!isGraph && !graphOrExtension.IsPXGraphExtension(pxContext))
-				return Enumerable.Empty<GraphOverridableItem<(ISymbol, INamedTypeSymbol)>>();
+				return Enumerable.Empty<OverridableItem<(ISymbol, INamedTypeSymbol)>>();
 
 			return isGraph
 				? graphOrExtension.GetViewsWithSymbolsFromPXGraph(pxContext)
@@ -102,14 +107,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return GetViewInfoFromGraphExtension<(ISymbol, INamedTypeSymbol)>(graphExtension, pxContext, AddViewsFromGraph, AddViewsFromGraphExtension);
 
 
-			int AddViewsFromGraph(GraphOverridableItemsCollection<(ISymbol Symbol, INamedTypeSymbol Type)> views,
+			int AddViewsFromGraph(OverridableItemsCollection<(ISymbol Symbol, INamedTypeSymbol Type)> views,
 								  ITypeSymbol graph, int startingOrder)
 			{
 				var graphViews = graph.GetViewsFromGraphImpl(pxContext);
 				return views.AddRangeWithDeclarationOrder(graphViews, startingOrder, keySelector: v => v.Symbol.Name);
 			}
 
-			int AddViewsFromGraphExtension(GraphOverridableItemsCollection<(ISymbol Symbol, INamedTypeSymbol Type)> views,
+			int AddViewsFromGraphExtension(OverridableItemsCollection<(ISymbol Symbol, INamedTypeSymbol Type)> views,
 											ITypeSymbol graphExt, int startingOrder)
 			{
 				var extentionsViews = GetAllViewSymbolsWithTypesFromPXGraphOrPXGraphExtensionImpl(graphExt, pxContext);
@@ -166,9 +171,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			pxContext.ThrowOnNull(nameof(pxContext));
 
 			if (!graph.IsPXGraph(pxContext))
-				return Enumerable.Empty<GraphOverridableItem<(MethodDeclarationSyntax, IMethodSymbol)>>();
+				return Enumerable.Empty<OverridableItem<(MethodDeclarationSyntax, IMethodSymbol)>>();
 
-			var viewDelegatesByName = new GraphOverridableItemsCollection<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)>();
+			var viewDelegatesByName = new OverridableItemsCollection<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)>();
 			var graphViewDelegates = GetViewDelegatesFromGraphImpl(graph, viewsByName, pxContext, inheritance, cancellation);
 
 			viewDelegatesByName.AddRangeWithDeclarationOrder(graphViewDelegates, startingOrder: 0, keySelector: viewDel => viewDel.Symbol.Name);
@@ -195,7 +200,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return GetViewInfoFromGraphExtension<(MethodDeclarationSyntax, IMethodSymbol)>(
 				graphExtension, pxContext, AddDelegatesFromGraph, AddDelegatesFromGraphExtension);
 
-			int AddDelegatesFromGraph(GraphOverridableItemsCollection<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> delegates,
+			int AddDelegatesFromGraph(OverridableItemsCollection<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> delegates,
 									   ITypeSymbol graph, int startingOrder)
 			{
 				var graphViewDelegates = graph.GetViewDelegatesFromGraphImpl(viewsByName, pxContext, inheritance: true, cancellation);
@@ -203,7 +208,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 							startingOrder, keySelector: viewDelegate => viewDelegate.Symbol.Name);
 			}
 
-			int AddDelegatesFromGraphExtension(GraphOverridableItemsCollection<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> delegates,
+			int AddDelegatesFromGraphExtension(OverridableItemsCollection<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> delegates,
 												ITypeSymbol graphExt, int startingOrder)
 			{
 				var extensionViewDelegates = graphExt.GetViewDelegatesFromGraphOrGraphExtension(viewsByName, pxContext, cancellation);
@@ -212,11 +217,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 		}
 
-		private static IEnumerable<GraphOverridableItem<T>> GetViewInfoFromGraphExtension<T>(ITypeSymbol graphExtension, PXContext pxContext,
+		private static IEnumerable<OverridableItem<T>> GetViewInfoFromGraphExtension<T>(ITypeSymbol graphExtension, PXContext pxContext,
 																						AddViewInfoWithOrderDelegate<T> addGraphViewInfo,
 																						AddViewInfoWithOrderDelegate<T> addGraphExtensionViewInfo)
 		{
-			var empty = Enumerable.Empty<GraphOverridableItem<T>>();
+			var empty = Enumerable.Empty<OverridableItem<T>>();
 
 			if (!graphExtension.InheritsFrom(pxContext.PXGraphExtensionType) || !graphExtension.BaseType.IsGenericType)
 			{
@@ -233,7 +238,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			if (allExtensionsFromBaseToDerived.IsNullOrEmpty())
 				return empty;
 
-			var infoByView = new GraphOverridableItemsCollection<T>();
+			var infoByView = new OverridableItemsCollection<T>();
 			int declarationOrder = addGraphViewInfo(infoByView, graphType, startingOrder: 0);
 
 			foreach (ITypeSymbol extension in allExtensionsFromBaseToDerived)

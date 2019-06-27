@@ -8,7 +8,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	/// <summary>
 	/// The DTO with information about the action declared in graph.
 	/// </summary>
-	public class ActionInfo : GraphNodeSymbolItem<ISymbol>
+	public class ActionInfo : SymbolItem<ISymbol>
 	{
 		/// <summary>
 		/// The overriden action if any

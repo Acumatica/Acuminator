@@ -2,7 +2,7 @@
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
-	public class GraphInitializerInfo : GraphNodeSymbolItem<SyntaxNode, ISymbol>
+	public class GraphInitializerInfo : NodeSymbolItem<SyntaxNode, ISymbol>
 	{
 		public GraphInitializerType Type { get; }
 

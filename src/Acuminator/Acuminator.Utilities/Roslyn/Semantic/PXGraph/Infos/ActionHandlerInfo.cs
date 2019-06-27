@@ -8,7 +8,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	/// <summary>
 	/// Information about the action's handler in graph.
 	/// </summary>
-	public class ActionHandlerInfo : GraphNodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol>
+	public class ActionHandlerInfo : NodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol>
 	{
 		/// <summary>
 		/// The overriden handler if any

@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
-	public class DataViewDelegateInfo : GraphNodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol>
+	public class DataViewDelegateInfo : NodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol>
 	{
 		/// <summary>
 		/// The overriden item if any

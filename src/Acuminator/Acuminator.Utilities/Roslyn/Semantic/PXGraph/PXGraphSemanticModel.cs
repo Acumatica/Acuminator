@@ -144,7 +144,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 													  keyComparer: StringComparer.OrdinalIgnoreCase);
 
 
-			DataViewInfo CreateViewInfo(GraphOverridableItem<(ISymbol ViewSymbol, INamedTypeSymbol ViewType)> item)
+			DataViewInfo CreateViewInfo(OverridableItem<(ISymbol ViewSymbol, INamedTypeSymbol ViewType)> item)
 			{
 				var (viewSymbol, viewType) = item.Item;
 
@@ -173,7 +173,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 														  keyComparer: StringComparer.OrdinalIgnoreCase);
 
 
-			DataViewDelegateInfo CreateViewDelegateInfo(GraphOverridableItem<(MethodDeclarationSyntax, IMethodSymbol)> item)
+			DataViewDelegateInfo CreateViewDelegateInfo(OverridableItem<(MethodDeclarationSyntax, IMethodSymbol)> item)
 			{
 				var (node, method) = item.Item;
 
@@ -204,7 +204,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 
 
-			ActionInfo CreateActionInfo(GraphOverridableItem<(ISymbol ActionSymbol, INamedTypeSymbol ActionType)> item)
+			ActionInfo CreateActionInfo(OverridableItem<(ISymbol ActionSymbol, INamedTypeSymbol ActionType)> item)
 			{
 				var (actionSymbol, actionType) = item.Item;
 
@@ -233,7 +233,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 															   group => CreateActionHandlerInfo(group.First()),
 															   keyComparer: StringComparer.OrdinalIgnoreCase);
 
-			ActionHandlerInfo CreateActionHandlerInfo(GraphOverridableItem<(MethodDeclarationSyntax, IMethodSymbol)> item)
+			ActionHandlerInfo CreateActionHandlerInfo(OverridableItem<(MethodDeclarationSyntax, IMethodSymbol)> item)
 			{
 				var (node, method) = item.Item;
 

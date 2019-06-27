@@ -18,7 +18,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 		}
 
-		protected override IEnumerable<GraphNodeSymbolItem> GetCategoryGraphNodeSymbols() => GraphSemanticModel.CacheAttachedEvents;
+		protected override IEnumerable<SymbolItem> GetCategoryGraphNodeSymbols() => GraphSemanticModel.CacheAttachedEvents;
 
 		public override IEnumerable<TreeNodeViewModel> GetEventsViewModelsForDAC(DacEventsGroupingNodeViewModel dacVM,
 																				 IEnumerable<GraphEventInfoBase> graphEventsForDAC,

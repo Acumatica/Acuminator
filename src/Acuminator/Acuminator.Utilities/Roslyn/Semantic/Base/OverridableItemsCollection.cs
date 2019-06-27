@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using Acuminator.Utilities.Common;
 
-namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
+namespace Acuminator.Utilities.Roslyn.Semantic
 {
-	public class GraphOverridableItemsCollection<T> : Dictionary<string, GraphOverridableItem<T>>
+	public class OverridableItemsCollection<T> : Dictionary<string, OverridableItem<T>>
 	{
-		public IEnumerable<GraphOverridableItem<T>> Items => Values;
+		public IEnumerable<OverridableItem<T>> Items => Values;
 
-		public GraphOverridableItemsCollection()
+		public OverridableItemsCollection()
 			: base(StringComparer.OrdinalIgnoreCase)
 		{
 		}
@@ -39,16 +39,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		public void Add(string key, T value, int declarationOrder)
 		{
-			if (TryGetValue(key, out GraphOverridableItem<T> existingValue))
+			if (TryGetValue(key, out OverridableItem<T> existingValue))
 			{
 				if (!existingValue.Item.Equals(value))
 				{
-					base[key] = new GraphOverridableItem<T>(value, declarationOrder, existingValue);
+					base[key] = new OverridableItem<T>(value, declarationOrder, existingValue);
 				}
 			}
 			else
 			{
-				Add(key, new GraphOverridableItem<T>(value, declarationOrder));
+				Add(key, new OverridableItem<T>(value, declarationOrder));
 			}
 		}
 	}

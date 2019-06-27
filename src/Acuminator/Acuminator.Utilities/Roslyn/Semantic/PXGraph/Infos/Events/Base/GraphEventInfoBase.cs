@@ -8,7 +8,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	/// <summary>
 	/// A common non-generic graph event info DTO base class.
 	/// </summary>
-	public abstract class GraphEventInfoBase : GraphNodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol>
+	public abstract class GraphEventInfoBase : NodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol>
 	{
 		public EventHandlerSignatureType SignatureType { get; }
 

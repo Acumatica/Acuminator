@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
-	public class DataViewInfo : GraphNodeSymbolItem<ISymbol>
+	public class DataViewInfo : SymbolItem<ISymbol>
 	{
 		/// <summary>
 		/// The overriden item if any
