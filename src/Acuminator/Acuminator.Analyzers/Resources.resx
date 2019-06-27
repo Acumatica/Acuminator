@@ -219,8 +219,8 @@
   <data name="PX1023MultipleTypeAttributesOnPropertyTitle" xml:space="preserve">
     <value>The DAC property cannot be marked with multiple field type attributes</value>
   </data>
+    <value>The attribute aggregates is not match with field type attributes</value>
   <data name="PX1023MultipleTypeAttributesOnAggregatorsTitle" xml:space="preserve">
-    <value>The attribute aggregates incompatible field type attributes</value>
   </data>
   <data name="PX1023MultipleSpecialTypeAttributesOnPropertyTitle" xml:space="preserve">
     <value>The DAC property cannot be marked with multiple PXDBScalar or PXDBCalced attributes</value>
