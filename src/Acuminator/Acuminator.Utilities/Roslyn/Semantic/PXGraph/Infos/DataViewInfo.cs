@@ -1,6 +1,7 @@
-﻿using Acuminator.Utilities.Common;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
