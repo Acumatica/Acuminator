@@ -19,7 +19,7 @@
 | [PX1015](diagnostics/PX1015.md) | For a BQL statement that contains parameters, the number of arguments of a `Select` method is different from the number of parameters. | Warning (Level 1: Significant) | Unavailable |
 | [PX1018](diagnostics/PX1018.md) | The graph with the specified primary view type parameter doesn't contain the primary view of the specified type. | Error | Unavailable |
 | [PX1021](diagnostics/PX1021.md) | The DAC property field has a type that is not match with the field attribute assigned to this property. | Error | Available |
-| [PX1023](diagnostics/PX1023.md) | The DAC property is marked with multiple type attributes. | Error | Available |
+| [PX1023](diagnostics/PX1023.md) | The DAC property is marked with multiple field attributes. | Error | Available |
 | [PX1024](diagnostics/PX1024.md) | The DAC class field must be abstract. | Error | Available |
 | [PX1026](diagnostics/PX1026.md) | Underscores cannot be used in the names of DACs and DAC fields. | Error | Available |
 | [PX1027](diagnostics/PX1027.md) | The `CompanyMask`, `CompanyID`, and `DeletedDatabaseRecord` fields cannot be declared in DACs. | Error | Available |
