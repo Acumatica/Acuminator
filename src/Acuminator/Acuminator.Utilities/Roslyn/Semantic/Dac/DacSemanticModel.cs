@@ -1,11 +1,11 @@
-﻿using Acuminator.Utilities.Common;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
@@ -24,34 +24,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public ITypeSymbol DacSymbol { get; }
 
 		public ImmutableDictionary<string, DacPropertyInfo> PropertiesByNames { get; }
-
 		public IEnumerable<DacPropertyInfo> Properties => PropertiesByNames.Values;
 
-		//public ImmutableDictionary<string, DataViewDelegateInfo> ViewDelegatesByNames { get; }
-		//public IEnumerable<DataViewDelegateInfo> ViewDelegates => ViewDelegatesByNames.Values;
-
-
-		//public ImmutableDictionary<string, ActionInfo> ActionsByNames { get; }
-		//public IEnumerable<ActionInfo> Actions => ActionsByNames.Values;
-
-		//public ImmutableDictionary<string, ActionHandlerInfo> ActionHandlersByNames { get; }
-		//public IEnumerable<ActionHandlerInfo> ActionHandlers => ActionHandlersByNames.Values;
-
-		///// <summary>
-		///// Actions which are declared in a graph/graph extension represented by this semantic model instance.
-		///// </summary>
-		//public IEnumerable<ActionInfo> DeclaredActions => Type == GraphType.None 
-		//	? Enumerable.Empty<ActionInfo>() 
-		//	: Actions.Where(action => Symbol?.Equals(action.Symbol?.ContainingType) ?? false);
-
-		///// <summary>
-		///// Action handlers which are declared in a graph represented by an instance of the class.
-		///// Use this property for diagnostics of graph action handlers
-		///// </summary>
-		//public IEnumerable<ActionHandlerInfo> DeclaredActionHandlers => Type == GraphType.None ?
-		//	Enumerable.Empty<ActionHandlerInfo>() :
-		//	ActionHandlers.Where(h => h?.Symbol?.ContainingType?.Equals(Symbol) ?? false);
-
+		public ImmutableDictionary<string, DacFieldInfo> FieldsByNames { get; }
+		public IEnumerable<DacFieldInfo> Fields => FieldsByNames.Values;
 
 		private DacSemanticModel(PXContext pxContext, DacType dacType, INamedTypeSymbol symbol,
 								 CancellationToken cancellation)
@@ -69,7 +45,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 					DacSymbol = Symbol;
 					break;
 				case DacType.DacExtension:
-					//DacSymbol = Symbol.GetDacExtensionsWithDac(_pxContext);
+					DacSymbol = Symbol.GetDacFromDacExtension(_pxContext);
 					break;
 				case DacType.None:
 				default:
