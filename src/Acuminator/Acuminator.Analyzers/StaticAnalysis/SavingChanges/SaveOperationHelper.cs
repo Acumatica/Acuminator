@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -61,6 +62,26 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 			return SaveOperationKind.None;
 		}
 
+		public static PXDatabaseKind GetPXDatabaseSaveOperationKind(IMethodSymbol symbol, PXContext pxContext)
+		{
+			symbol.ThrowOnNull(nameof(symbol));
+			pxContext.ThrowOnNull(nameof(pxContext));
+
+			var containingType = symbol.ContainingType?.OriginalDefinition;
+
+			if (containingType != null && 
+			    containingType.InheritsFromOrEquals(pxContext.PXDatabase.Type))
+			{
+				if (string.Equals(symbol.Name, DelegateNames.Insert))
+					return PXDatabaseKind.Insert;
+				else if (string.Equals(symbol.Name, DelegateNames.Delete))
+					return PXDatabaseKind.Delete;
+				else if (string.Equals(symbol.Name, DelegateNames.Update))
+					return PXDatabaseKind.Update;
+			}
+			return PXDatabaseKind.None;
+		}
+
 		private class SavePressWalker : CSharpSyntaxWalker
 		{
 			private readonly SemanticModel _semanticModel;
@@ -85,6 +106,31 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 				{
 					Found = true;
 				}
+			}
+		}
+		
+		private class TransactionOpenWalker : CSharpSyntaxWalker
+		{
+			private readonly SemanticModel _semanticModel;
+			private readonly PXContext _pxContext;
+
+			public TransactionOpenWalker(SemanticModel semanticModel, PXContext pxContext)
+			{
+				semanticModel.ThrowOnNull(nameof(semanticModel));
+				pxContext.ThrowOnNull(nameof(pxContext));
+
+				_semanticModel = semanticModel;
+				_pxContext = pxContext;
+			}
+
+			public override void Visit(SyntaxNode node) => base.Visit(node);
+
+			public bool TransactionOpened { get; private set; }
+
+			public override void VisitIfStatement(IfStatementSyntax node)
+			{
+				TransactionOpened = true;
+				base.VisitIfStatement(node);
 			}
 		}
 	}

@@ -17,7 +17,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
 			Descriptors.PX1043_SavingChangesInEventHandlers,
 			Descriptors.PX1043_SavingChangesInRowPerstisting,
-			Descriptors.PX1043_SavingChangesInRowPerstisted,
 			Descriptors.PX1043_SavingChangesInRowPerstistedNonISV);
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
@@ -34,7 +33,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 			private SymbolAnalysisContext _context;
 			private readonly PXContext _pxContext;
 			private readonly EventType _eventType;
-
+			private bool IsTransactionOpened = false;
+			
 			public Walker(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 				: base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
 			{
@@ -43,6 +43,31 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 				_context = context;
 				_pxContext = pxContext;
 				_eventType = eventType;
+			}
+
+			public override void VisitIfStatement(IfStatementSyntax node)
+			{
+				ThrowIfCancellationRequested();
+
+				if (IsTransactionOpened == false)
+				{
+					MemberAccessExpressionSyntax leftExpression = SyntaxFactory.MemberAccessExpression(
+							SyntaxKind.SimpleMemberAccessExpression,
+							SyntaxFactory.IdentifierName("PXTranStatus"),
+							SyntaxFactory.IdentifierName("Open")),
+						rightExpression = SyntaxFactory.MemberAccessExpression(
+							SyntaxKind.SimpleMemberAccessExpression,
+							SyntaxFactory.IdentifierName("e"),
+							SyntaxFactory.IdentifierName("TranStatus"));
+
+					BinaryExpressionSyntax tranStatus = SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, rightExpression, SyntaxFactory.Token(SyntaxKind.EqualsEqualsToken), leftExpression);
+
+					if (node.Condition.IsEquivalentTo(tranStatus, true))
+						IsTransactionOpened = true;
+				}
+
+				base.VisitIfStatement(node);
+				IsTransactionOpened = false;
 			}
 
 			public override void VisitInvocationExpression(InvocationExpressionSyntax node)
@@ -63,7 +88,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 				SaveOperationKind saveOperationKind = SaveOperationHelper.GetSaveOperationKind(
 					symbol, node, semanticModel, _pxContext);
 
-				if (saveOperationKind != SaveOperationKind.None)
+				PXDatabaseKind saveDatabaseKind = SaveOperationHelper.GetPXDatabaseSaveOperationKind(symbol, _pxContext);
+
+				if (saveOperationKind != SaveOperationKind.None || 
+				    saveDatabaseKind != PXDatabaseKind.None)
 				{
 					if (_eventType == EventType.RowPersisting)
 					{
@@ -72,6 +100,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 							ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1043_SavingChangesInRowPerstisting, node);
 							return true;
 						}
+					}
+					else if (_pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled == false &&
+					         IsTransactionOpened == true &&
+							_eventType == EventType.RowPersisted &&
+					         saveOperationKind != SaveOperationKind.CachePersist)
+					{
+						ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1043_SavingChangesInRowPerstistedNonISV, node);
+						return true;
 					}
 					else
 					{

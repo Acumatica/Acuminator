@@ -250,6 +250,10 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\ThrowingExceptions\Sources\ActionHandlers\Handlers_Good.cs" />
     <Compile Include="Tests\StaticAnalysis\RaiseExceptionHandling\RaiseExceptionHandlingInEventHandlersNonIsvTests.cs" />
     <Compile Include="Tests\StaticAnalysis\RowChangesInEventHandlers\RowChangesInEventHandlersNonISVTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PXDatabaseInsertInsideRowPersisted.cs" />
+    <Compile Include="Tests\StaticAnalysis\SavingChanges\SavingChangesInEventHandlersNonISVTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PXDatabaseInsertContainedInMethodInsideRowPersisted.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PXDatabaseInsertWithoutTranStatusOpenInsideRowPersisted.cs" />
     <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInActionHandlersTests.cs" />
     <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInEventHandlersNonISVTests.cs" />
     <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInLongRunningOperationTests.cs" />
