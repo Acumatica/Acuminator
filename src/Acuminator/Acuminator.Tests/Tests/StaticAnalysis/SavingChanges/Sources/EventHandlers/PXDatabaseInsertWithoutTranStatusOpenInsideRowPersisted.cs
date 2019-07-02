@@ -12,8 +12,6 @@ namespace PX.Objects.AR
 	{
 		public virtual void RowPersisted(PXCache sender, PXRowPersistedEventArgs e)
 		{
-			ARInvoiceNbr record = new ARInvoiceNbr();
-			PXCache cache = sender.Graph.Caches[typeof(ARInvoiceNbr)];
 			List<PXDataFieldAssign> field = new List<PXDataFieldAssign>();
 			PXDatabase.Insert<ARInvoiceNbr>(fields.ToArray());
 		}

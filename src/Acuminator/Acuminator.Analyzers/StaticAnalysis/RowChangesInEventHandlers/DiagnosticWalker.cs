@@ -78,9 +78,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 					{
 						_context.ReportDiagnosticWithSuppressionCheck(
 							Diagnostic.Create(
-								_pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled ?
-									Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs :
-									Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs_NonISV, 
+								_pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled 
+									? Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs
+									: Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs_NonISV, 
 								node.GetLocation(),
 								_messageArgs), 
 							_pxContext.CodeAnalysisSettings);
@@ -116,9 +116,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 					{
 						_context.ReportDiagnosticWithSuppressionCheck(
 							Diagnostic.Create(
-								_pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled ?
-									Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs :
-									Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs_NonISV, 
+								_pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled
+									? Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs 
+									: Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs_NonISV, 
 								node.GetLocation(), _messageArgs),
 							_pxContext.CodeAnalysisSettings);
 					}

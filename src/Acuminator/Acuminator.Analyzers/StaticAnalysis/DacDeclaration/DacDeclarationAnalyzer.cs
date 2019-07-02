@@ -18,6 +18,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class DacDeclarationAnalyzer : PXDiagnosticAnalyzer, ISymbolAnalyzer
 	{
+		private static readonly string _DeletedDatabaseRecord = "DeletedDatabaseRecord";
 
 		public DacDeclarationAnalyzer(CodeAnalysisSettings settings = null) : base(settings){}
 
@@ -196,7 +197,5 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 				"CompanyMask"
 			};
 		}
-
-		private static readonly string _DeletedDatabaseRecord = "DeletedDatabaseRecord";
 	}
 }

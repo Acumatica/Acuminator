@@ -108,30 +108,5 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 				}
 			}
 		}
-		
-		private class TransactionOpenWalker : CSharpSyntaxWalker
-		{
-			private readonly SemanticModel _semanticModel;
-			private readonly PXContext _pxContext;
-
-			public TransactionOpenWalker(SemanticModel semanticModel, PXContext pxContext)
-			{
-				semanticModel.ThrowOnNull(nameof(semanticModel));
-				pxContext.ThrowOnNull(nameof(pxContext));
-
-				_semanticModel = semanticModel;
-				_pxContext = pxContext;
-			}
-
-			public override void Visit(SyntaxNode node) => base.Visit(node);
-
-			public bool TransactionOpened { get; private set; }
-
-			public override void VisitIfStatement(IfStatementSyntax node)
-			{
-				TransactionOpened = true;
-				base.VisitIfStatement(node);
-			}
-		}
 	}
 }

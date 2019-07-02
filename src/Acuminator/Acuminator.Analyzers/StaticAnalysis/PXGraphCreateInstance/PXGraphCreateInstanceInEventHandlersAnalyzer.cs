@@ -47,9 +47,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 
 				var methodSymbol = GetSymbol<IMethodSymbol>(node);
 
-				if (methodSymbol?.ContainingType?.OriginalDefinition != null
-				    && methodSymbol.ContainingType.OriginalDefinition.IsPXGraph()
-				    && methodSymbol.Name == CreateInstanceMethodName)
+				if (methodSymbol?.ContainingType?.OriginalDefinition != null &&
+					methodSymbol.ContainingType.OriginalDefinition.IsPXGraph() &&
+					methodSymbol.Name == CreateInstanceMethodName)
 				{
 					ReportDiagnostic(
 						_context.ReportDiagnostic,

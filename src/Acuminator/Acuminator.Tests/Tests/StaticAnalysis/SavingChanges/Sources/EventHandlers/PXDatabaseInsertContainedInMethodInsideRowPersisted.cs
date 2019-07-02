@@ -20,12 +20,8 @@ namespace PX.Objects.AR
 
 		protected virtual void InsertNumber(PXCache sender)
 		{
-			ARInvoiceNbr record = new ARInvoiceNbr();
-			PXCache cache = sender.Graph.Caches[typeof(ARInvoiceNbr)];
 			List<PXDataFieldAssign> field = new List<PXDataFieldAssign>();
-
 			PXDatabase.Insert<ARInvoiceNbr>(fields.ToArray());
-
 		}
 	}
 }

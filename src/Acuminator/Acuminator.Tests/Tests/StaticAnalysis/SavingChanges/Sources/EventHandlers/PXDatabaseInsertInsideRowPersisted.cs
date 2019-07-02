@@ -14,11 +14,7 @@ namespace PX.Objects.AR
 		{
 			if (e.TranStatus == PXTranStatus.Open)
 			{
-				ARInvoiceNbr record = new ARInvoiceNbr();
-				PXCache cache = sender.Graph.Caches[typeof(ARInvoiceNbr)];
-
 				List<PXDataFieldAssign> field = new List<PXDataFieldAssign>();
-
 				PXDatabase.Insert<ARInvoiceNbr>(fields.ToArray());
 			}
 		}
