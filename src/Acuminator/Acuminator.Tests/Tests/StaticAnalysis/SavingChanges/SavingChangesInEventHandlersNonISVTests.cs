@@ -28,7 +28,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.SavingChanges
 		public Task ISV_TestDiagnostic_PXDatabaseInsertInsideRowPersisting(string actual) => 
 			VerifyCSharpDiagnosticAsync(
 				source: actual, 
-				expected: Descriptors.PX1043_SavingChangesInRowPerstistedNonISV.CreateFor(22, 5));
+				expected: Descriptors.PX1043_SavingChangesInRowPerstistedNonISV.CreateFor(18, 5));
 
 		[Theory]
 		[EmbeddedFileData(@"EventHandlers\PXDatabaseInsertContainedInMethodInsideRowPersisted.cs")]
@@ -42,6 +42,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.SavingChanges
 		public Task ISV_TestDiagnostic_PXDatabaseInsertWithoutTranStatusOpenInsideRowPersisted(string actual) =>
 			VerifyCSharpDiagnosticAsync(
 				source: actual,
-				expected: Descriptors.PX1043_SavingChangesInEventHandlers.CreateFor(18, 4));
+				expected: Descriptors.PX1043_SavingChangesInEventHandlers.CreateFor(16, 4));
 	}
 }

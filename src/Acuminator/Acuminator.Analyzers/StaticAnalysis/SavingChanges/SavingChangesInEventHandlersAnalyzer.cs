@@ -34,6 +34,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 			private readonly PXContext _pxContext;
 			private readonly EventType _eventType;
 			private bool IsTransactionOpened = false;
+
+			private readonly MemberAccessExpressionSyntax leftExpression, rightExpression;
+			private readonly BinaryExpressionSyntax tranStatus;
 			
 			public Walker(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 				: base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
@@ -43,6 +46,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 				_context = context;
 				_pxContext = pxContext;
 				_eventType = eventType;
+
+				leftExpression = SyntaxFactory.MemberAccessExpression(
+					SyntaxKind.SimpleMemberAccessExpression,
+					SyntaxFactory.IdentifierName("PXTranStatus"),
+					SyntaxFactory.IdentifierName("Open"));
+
+				rightExpression = SyntaxFactory.MemberAccessExpression(
+					SyntaxKind.SimpleMemberAccessExpression,
+					SyntaxFactory.IdentifierName("e"),
+					SyntaxFactory.IdentifierName("TranStatus"));
+
+				tranStatus = SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, 
+					rightExpression, 
+					SyntaxFactory.Token(SyntaxKind.EqualsEqualsToken), 
+					leftExpression);
 			}
 
 			public override void VisitIfStatement(IfStatementSyntax node)
@@ -51,17 +69,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 
 				if (IsTransactionOpened == false)
 				{
-					MemberAccessExpressionSyntax leftExpression = SyntaxFactory.MemberAccessExpression(
-							SyntaxKind.SimpleMemberAccessExpression,
-							SyntaxFactory.IdentifierName("PXTranStatus"),
-							SyntaxFactory.IdentifierName("Open")),
-						rightExpression = SyntaxFactory.MemberAccessExpression(
-							SyntaxKind.SimpleMemberAccessExpression,
-							SyntaxFactory.IdentifierName("e"),
-							SyntaxFactory.IdentifierName("TranStatus"));
-
-					BinaryExpressionSyntax tranStatus = SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, rightExpression, SyntaxFactory.Token(SyntaxKind.EqualsEqualsToken), leftExpression);
-
+					
 					if (node.Condition.IsEquivalentTo(tranStatus, true))
 						IsTransactionOpened = true;
 				}
