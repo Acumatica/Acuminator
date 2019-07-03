@@ -78,6 +78,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 					return PXDatabaseKind.Delete;
 				else if (string.Equals(symbol.Name, DelegateNames.Update))
 					return PXDatabaseKind.Update;
+				else if (string.Equals(symbol.Name, DelegateNames.Ensure))
+					return PXDatabaseKind.Ensure;
 			}
 			return PXDatabaseKind.None;
 		}
