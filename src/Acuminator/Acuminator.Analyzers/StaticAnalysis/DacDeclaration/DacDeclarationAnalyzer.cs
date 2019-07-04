@@ -18,7 +18,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class DacDeclarationAnalyzer : PXDiagnosticAnalyzer, ISymbolAnalyzer
 	{
-		private static readonly string _DeletedDatabaseRecord = "DeletedDatabaseRecord";
+		private const string DeletedDatabaseRecord = "DeletedDatabaseRecord";
 
 		public DacDeclarationAnalyzer(CodeAnalysisSettings settings = null) : base(settings){}
 
@@ -132,16 +132,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 				where dacClassDeclarations.ContainsKey(forbiddenClassName)
 				select dacClassDeclarations[forbiddenClassName];
 
+			bool isDeletedDatabaseRecord;
+			DiagnosticDescriptor showedDescriptor;
+
 			foreach (var listProperties in invalidPropertiesByName)
 			{
 				foreach (var iProperty in listProperties)
 				{
+					isDeletedDatabaseRecord = string.Equals(iProperty.Identifier.Text,
+						DeletedDatabaseRecord, StringComparison.OrdinalIgnoreCase);
+
+					showedDescriptor = (isDeletedDatabaseRecord && 
+					                    pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled == false )
+									   ? Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV
+									   : Descriptors.PX1027_ForbiddenFieldsInDacDeclaration;
+
 					syntaxContext.ReportDiagnosticWithSuppressionCheck(
 						Diagnostic.Create(
-							(string.Equals(iProperty.Identifier.Text, _DeletedDatabaseRecord, StringComparison.CurrentCultureIgnoreCase) &&
-							 pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled == false)
-								? Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV
-								: Descriptors.PX1027_ForbiddenFieldsInDacDeclaration,
+							showedDescriptor,
 							iProperty.Identifier.GetLocation(),
 							iProperty.Identifier.Text), pxContext.CodeAnalysisSettings);
 				}
@@ -151,12 +159,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 			{
 				foreach (var iClass in listClasses)
 				{
+					isDeletedDatabaseRecord = string.Equals(iClass.Identifier.Text,
+						DeletedDatabaseRecord, StringComparison.OrdinalIgnoreCase);
+
+					showedDescriptor = (isDeletedDatabaseRecord &&
+					                    pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled == false)
+										? Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV
+										: Descriptors.PX1027_ForbiddenFieldsInDacDeclaration;
+
 					syntaxContext.ReportDiagnosticWithSuppressionCheck(
 						Diagnostic.Create(
-							(string.Equals(iClass.Identifier.Text, _DeletedDatabaseRecord, StringComparison.CurrentCultureIgnoreCase) && 
-							 pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled == false)
-								? Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV
-								: Descriptors.PX1027_ForbiddenFieldsInDacDeclaration,
+							showedDescriptor,
 							iClass.Identifier.GetLocation(),
 							iClass.Identifier.Text), pxContext.CodeAnalysisSettings);
 				}
@@ -193,7 +206,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 			return new string[]
 			{
 				"CompanyID",
-				_DeletedDatabaseRecord ,
+				DeletedDatabaseRecord ,
 				"CompanyMask"
 			};
 		}

@@ -48,16 +48,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 		{
 			private readonly SymbolAnalysisContext _context;
 			private readonly PXContext _pxContext;
-			private readonly object[] _messageArgs;
+			private readonly EventType _eventType;
 
-			public Walker(SymbolAnalysisContext context, PXContext pxContext, params object[] messageArgs)
+			public Walker(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 				: base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
 			{
 				pxContext.ThrowOnNull(nameof(pxContext));
 
 				_context = context;
 				_pxContext = pxContext;
-				_messageArgs = messageArgs;
+				_eventType= eventType;
 			}
 
 			public override void VisitInvocationExpression(InvocationExpressionSyntax node)
@@ -70,17 +70,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 				if (methodSymbol != null && _pxContext.PXCache.RaiseExceptionHandling.Contains(methodSymbol))
 				{
 					if (!_pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled &&
-					    _messageArgs.Contains(EventType.FieldSelecting))
+					    _eventType == EventType.FieldSelecting)
 					{
 						ReportDiagnostic(_context.ReportDiagnostic,
 							Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers_NonISV,
-							node, _messageArgs);
+							node, _eventType);
 					}
 					else
 					{
 						ReportDiagnostic(_context.ReportDiagnostic,
 							Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers,
-							node, _messageArgs);
+							node, _eventType);
 					}
 				}
 				else

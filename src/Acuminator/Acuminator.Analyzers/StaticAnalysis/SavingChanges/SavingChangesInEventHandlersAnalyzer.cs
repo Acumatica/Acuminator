@@ -96,10 +96,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 				SaveOperationKind saveOperationKind = SaveOperationHelper.GetSaveOperationKind(
 					symbol, node, semanticModel, _pxContext);
 
-				PXDatabaseKind saveDatabaseKind = SaveOperationHelper.GetPXDatabaseSaveOperationKind(symbol, _pxContext);
+				PXDBOperationKind saveDatabaseKind = SaveOperationHelper.GetPXDatabaseSaveOperationKind(symbol, _pxContext);
 
 				if (saveOperationKind != SaveOperationKind.None || 
-				    saveDatabaseKind != PXDatabaseKind.None)
+				    saveDatabaseKind != PXDBOperationKind.None)
 				{
 					if (_eventType == EventType.RowPersisting)
 					{

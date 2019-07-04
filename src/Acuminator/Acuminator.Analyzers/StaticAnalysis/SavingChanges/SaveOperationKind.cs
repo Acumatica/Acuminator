@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 {
-	enum SaveOperationKind
+	internal enum SaveOperationKind
 	{
 		None,
 
@@ -26,7 +26,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 		CachePersist,
 	}
 
-	enum PXDatabaseKind
+	internal enum PXDBOperationKind
 	{
 		None,
 

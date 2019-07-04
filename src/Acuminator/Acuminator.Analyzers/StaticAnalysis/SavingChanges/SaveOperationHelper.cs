@@ -62,7 +62,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 			return SaveOperationKind.None;
 		}
 
-		public static PXDatabaseKind GetPXDatabaseSaveOperationKind(IMethodSymbol symbol, PXContext pxContext)
+		public static PXDBOperationKind GetPXDatabaseSaveOperationKind(IMethodSymbol symbol, PXContext pxContext)
 		{
 			symbol.ThrowOnNull(nameof(symbol));
 			pxContext.ThrowOnNull(nameof(pxContext));
@@ -73,15 +73,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 			    containingType.InheritsFromOrEquals(pxContext.PXDatabase.Type))
 			{
 				if (string.Equals(symbol.Name, DelegateNames.Insert))
-					return PXDatabaseKind.Insert;
+					return PXDBOperationKind.Insert;
 				else if (string.Equals(symbol.Name, DelegateNames.Delete))
-					return PXDatabaseKind.Delete;
+					return PXDBOperationKind.Delete;
 				else if (string.Equals(symbol.Name, DelegateNames.Update))
-					return PXDatabaseKind.Update;
+					return PXDBOperationKind.Update;
 				else if (string.Equals(symbol.Name, DelegateNames.Ensure))
-					return PXDatabaseKind.Ensure;
+					return PXDBOperationKind.Ensure;
 			}
-			return PXDatabaseKind.None;
+			return PXDBOperationKind.None;
 		}
 
 		private class SavePressWalker : CSharpSyntaxWalker
