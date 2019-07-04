@@ -13,7 +13,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacDeclaration
 {
 	public class DacForbiddenFieldsNonISVTests : CodeFixVerifier
 	{
-
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new DacDeclarationAnalyzer(CodeAnalysisSettings.Default
 				.WithIsvSpecificAnalyzersDisabled());
