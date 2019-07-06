@@ -22,12 +22,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	{
 		/// <summary>
 		/// A delegate type for an action which extracts info DTOs about graph actions/action handlers from <paramref name="graphOrgraphExtension"/> 
-		/// and adds them to the <paramref name="actionInfos"/> collection with account for actions/action handlers declaration order.
+		/// and adds them to the <paramref name="actionInfos"/> collection with a consideration for actions/action handlers declaration order.
 		/// Returns the number following the last assigned declaration order.
 		/// </summary>
 		/// <typeparam name="T">Generic type parameter.</typeparam>
 		/// <param name="actionInfos">The action infos.</param>
-		/// <param name="graphOrgraphExtension">The graph orgraph extension.</param>
+		/// <param name="graphOrgraphExtension">The graph or graph extension.</param>
 		/// <param name="startingOrder">The declaration order which should be assigned to the first DTO.</param>
 		/// <returns/>
 		private delegate int AddActionInfoWithOrderDelegate<T>(OverridableItemsCollection<T> actionInfos,
