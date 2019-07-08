@@ -174,7 +174,20 @@ The [C# Coding Conventions](https://docs.microsoft.com/en-us/dotnet/csharp/progr
 
 ### Unit Tests
 
-Each analyzer, code fix, or refactoring should be covered with unit tests.
+Each analyzer, code fix, or refactoring should be covered with unit tests. Each unit test must specify explicitly all code analysis settings that could affect its result. The tests should be independent of default code analysis settings values.
+Specifying settings that don't affect the test is not required. For example:
+  ```C#
+  public class ThrowingExceptionsInEventHandlersTests : DiagnosticVerifier
+  {
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
+			new EventHandlerAnalyzer(CodeAnalysisSettings.Default
+										.WithStaticAnalysisEnabled()
+										.WithSuppressionMechanismDisabled(),
+				new ThrowingExceptionsInEventHandlersAnalyzer());
+
+	//The rest of the code
+  }
+  ```
 
 ### Cancellation Support
 
