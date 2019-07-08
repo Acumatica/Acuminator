@@ -638,6 +638,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Only the methods of the PXCache.Persist family can be used to save changes to the database from a RowPersisted event handler.
+        /// </summary>
+        public static string PX1043TitleRowPersistedNonISV {
+            get {
+                return ResourceManager.GetString("PX1043TitleRowPersistedNonISV", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Only the methods of the PXCache.Persist family can be used to save changes to the database from a RowPersisting event handler.
         /// </summary>
         public static string PX1043TitleRowPersisting {
