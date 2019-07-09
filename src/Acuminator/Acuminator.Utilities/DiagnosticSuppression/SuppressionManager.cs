@@ -1,10 +1,11 @@
 ﻿using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 
@@ -13,15 +14,6 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 	public class SuppressionManager
 	{
 		private readonly ConcurrentDictionary<string, SuppressionFile> _fileByAssembly = new ConcurrentDictionary<string, SuppressionFile>();
-
-		private static HashSet<SyntaxKind> _targetKinds = new HashSet<SyntaxKind>(new[] {
-			SyntaxKind.ClassDeclaration,
-			SyntaxKind.MethodDeclaration,
-			SyntaxKind.ConstructorDeclaration,
-			SyntaxKind.PropertyDeclaration,
-			SyntaxKind.FieldDeclaration
-		});
-
 		private readonly ISuppressionFileSystemService _fileSystemService;
 
 		private static SuppressionManager Instance { get; set; }
@@ -39,7 +31,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 					throw new ArgumentException($"File {fileInfo.Path} is not a suppression file");
 				}
 
-				var (file, assembly) = CreateFileTrackChanges(fileInfo.Path, fileInfo.GenerateSuppressionBase);
+				var (file, assembly) = LoadFileAndTrackItsChanges(fileInfo.Path, fileInfo.GenerateSuppressionBase);
 
 				if (!_fileByAssembly.TryAdd(assembly, file))
 				{
@@ -48,19 +40,9 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			}
 		}
 
-		private (SuppressionFile File, string Assembly) CreateFileTrackChanges(string suppressionFilePath, bool generateSuppressionBase)
-		{
-			var suppressionFile = SuppressionFile.Load(_fileSystemService, suppressionFilePath, generateSuppressionBase);
-			var assemblyName = suppressionFile.AssemblyName;
-
-			suppressionFile.Changed += ReloadFile;
-
-			return (suppressionFile, assemblyName);
-		}
-
 		public void ReloadFile(object sender, SuppressionFileEventArgs e)
 		{	
-			var (newFile, assembly) = CreateFileTrackChanges(suppressionFilePath: e.FullPath, generateSuppressionBase: false);
+			var (newFile, assembly) = LoadFileAndTrackItsChanges(suppressionFilePath: e.FullPath, generateSuppressionBase: false);
 			var oldFile = _fileByAssembly.GetOrAdd(assembly, (SuppressionFile)null);
 
 			// We need to unsubscribe from the old file's event because it can be fired until the link to the file will be collected by GC
@@ -70,6 +52,19 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			}
 
 			_fileByAssembly[assembly] = newFile;
+		}
+
+		private (SuppressionFile File, string Assembly) LoadFileAndTrackItsChanges(string suppressionFilePath, bool generateSuppressionBase)
+		{
+			lock (_fileSystemService)
+			{
+				SuppressionFile suppressionFile = SuppressionFile.Load(_fileSystemService, suppressionFilePath, generateSuppressionBase);
+				var assemblyName = suppressionFile.AssemblyName;
+
+				suppressionFile.Changed += ReloadFile;
+
+				return (suppressionFile, assemblyName);
+			}		
 		}
 
 		public static void Init(ISuppressionFileSystemService fileSystemService, IEnumerable<SuppressionManagerInitInfo> additionalFiles)
@@ -88,53 +83,82 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		public static void SaveSuppressionBase()
 		{
-			if (Instance == null)
+			CheckIfInstanceIsInitialized();
+			
+			lock (Instance._fileSystemService)
 			{
-				throw new InvalidOperationException($"{nameof(SuppressionManager)} instance was not initialized");
-			}
+				//Create local copy in order to avoid concurency problem when the collection is changed during the iteration
+				var filesWithGeneratedSuppression = Instance._fileByAssembly.Values.Where(f => f.GenerateSuppressionBase).ToList();
 
-			var filesWithGeneratedSuppression = Instance._fileByAssembly.Values.Where(f => f.GenerateSuppressionBase);
-
-			foreach (var file in filesWithGeneratedSuppression)
-			{
-				Instance._fileSystemService.Save(file.MessagesToDocument(), file.Path);
+				foreach (var file in filesWithGeneratedSuppression)
+				{
+					Instance._fileSystemService.Save(file.MessagesToDocument(), file.Path);
+				}
 			}
 		}
 
-		private bool IsSuppressed(SemanticModel semanticModel, Diagnostic diagnostic, CancellationToken cancellation)
+		public static SuppressionFile CreateSuppressionFileForProject(Project project)
 		{
-			cancellation.ThrowIfCancellationRequested();
+			project.ThrowOnNull(nameof(project));
+			CheckIfInstanceIsInitialized();
 
-			var (assembly, message) = GetSuppressionInfo(semanticModel, diagnostic, cancellation);
+			//First check if file already exists to dismiss threads withou acquiring the lock
+			if (Instance._fileByAssembly.TryGetValue(project.Name, out var existingSuppressionFile) && existingSuppressionFile != null)
+				return existingSuppressionFile;
 
-			if (assembly == null)
+			lock (Instance._fileSystemService)
 			{
+				//Second check inside the lock if file already exists 
+				Instance._fileByAssembly.TryGetValue(project.Name, out existingSuppressionFile);
+				return existingSuppressionFile ?? AddNewSuppressionFileImpl();
+			}
+
+			//---------------------------------------------Local Function--------------------------------------------------
+			SuppressionFile AddNewSuppressionFileImpl()
+			{
+				string suppressionFileName = project.Name + SuppressionFile.SuppressionFileExtension;
+				string projectDir = Instance._fileSystemService.GetFileDirectory(project.FilePath);
+				string suppressionFilePath = Path.Combine(projectDir, suppressionFileName);
+
+				//Create new xml document and get its text
+				var newXDocument = SuppressionFile.NewDocumentFromMessages(Enumerable.Empty<SuppressMessage>());
+				string docText = GetXDocumentStringWithDeclaration(newXDocument);
+
+				//Add file to project and hard drive
+				var roslynSuppressionFile = project.AddAdditionalDocument(suppressionFileName, docText, filePath: suppressionFilePath);
+
+				if (!project.Solution.Workspace.TryApplyChanges(roslynSuppressionFile.Project.Solution))
+					return null;
+
+				var (suppressionFile, assembly) = Instance.LoadFileAndTrackItsChanges(suppressionFilePath, generateSuppressionBase: false);
+				Instance._fileByAssembly[assembly] = suppressionFile;
+				return suppressionFile;
+			}
+		}
+
+		public static bool SuppressDiagnostic(SemanticModel semanticModel, string diagnosticID, TextSpan diagnosticSpan,
+											  DiagnosticSeverity defaultDiagnosticSeverity, CancellationToken cancellation = default)
+		{
+			CheckIfInstanceIsInitialized();
+
+			if (!IsSuppressableSeverity(defaultDiagnosticSeverity))
 				return false;
-			}
 
-			var file = _fileByAssembly.GetOrAdd(assembly, (SuppressionFile)null);
-
-			if (file == null)
-			{
+			var (fileAssemblyName, suppressMessage) = SuppressMessage.GetSuppressionInfo(semanticModel, diagnosticID, 
+																						 diagnosticSpan, cancellation);
+			if (fileAssemblyName.IsNullOrWhiteSpace() || !suppressMessage.IsValid)
 				return false;
-			}
 
-			if (file.GenerateSuppressionBase)
+			lock (Instance._fileSystemService)
 			{
-                if (diagnostic?.Descriptor.DefaultSeverity != DiagnosticSeverity.Info)
-                {
-                    file.AddMessage(message);
-                }
+				if (!Instance._fileByAssembly.TryGetValue(fileAssemblyName, out var file) || file == null)
+					return false;
 
-				return true;
+				file.AddMessage(suppressMessage);
+				Instance._fileSystemService.Save(file.MessagesToDocument(), file.Path);
 			}
-
-			if (!file.ContainsMessage(message))
-			{
-				return false;
-			}
-
-			return true;
+		
+			return true;			
 		}
 
 		public static IEnumerable<SuppressionDiffResult> ValidateSuppressionBaseDiff()
@@ -146,13 +170,16 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			var diffList = new List<SuppressionDiffResult>();
 
-			foreach (var entry in Instance._fileByAssembly)
+			lock (Instance._fileSystemService)
 			{
-				var currentFile = entry.Value;
-				var oldFile = SuppressionFile.Load(Instance._fileSystemService, suppressionFilePath: currentFile.Path,
-												   generateSuppressionBase: false);
+				foreach (var entry in Instance._fileByAssembly)
+				{
+					var currentFile = entry.Value;
+					var oldFile = SuppressionFile.Load(Instance._fileSystemService, suppressionFilePath: currentFile.Path,
+													   generateSuppressionBase: false);
 
-				diffList.Add(CompareFiles(oldFile, currentFile));
+					diffList.Add(CompareFiles(oldFile, currentFile));
+				}
 			}
 
 			return diffList;
@@ -185,85 +212,63 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			reportDiagnostic(diagnostic);
 		}
 
-		private static (string Assembly, SuppressMessage Message) GetSuppressionInfo(
-			SemanticModel semanticModel, Diagnostic diagnostic, CancellationToken cancellation)
+		private bool IsSuppressed(SemanticModel semanticModel, Diagnostic diagnostic, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			if (semanticModel == null || diagnostic?.Location == null)
+			var (assembly, message) = SuppressMessage.GetSuppressionInfo(semanticModel, diagnostic, cancellation);
+
+			if (assembly == null)
 			{
-				return (null, default);
+				return false;
 			}
 
-			var rootNode = semanticModel.SyntaxTree.GetRoot(cancellation);
-			if (rootNode == null)
+			var file = _fileByAssembly.GetOrAdd(assembly, (SuppressionFile)null);
+
+			if (file == null)
 			{
-				return (null, default);
+				return false;
 			}
 
-			var diagnosticNode = rootNode.FindNode(diagnostic.Location.SourceSpan);
-			if (diagnosticNode == null)
+			if (file.GenerateSuppressionBase)
 			{
-				return (null, default);
-			}
-
-			var targetNode = FindTargetNode(diagnosticNode);
-			if (targetNode == null)
-			{
-				return (null, default);
-			}
-
-			var targetSymbol = semanticModel.GetDeclaredSymbol(targetNode, cancellation);
-			if (targetSymbol == null)
-			{
-				return (null, default);
-			}
-
-			var assemblyName = targetSymbol.ContainingAssembly?.Name;
-			if (string.IsNullOrEmpty(assemblyName))
-			{
-				return (null, default);
-			}
-
-			var id = diagnostic.Id;
-			var target = targetSymbol.ToDisplayString();
-
-			// Try to obtain token in case of member declaration syntax as we do not want to store the text
-			// of the entire declaration node
-			var token = default(SyntaxToken?);
-			if (diagnosticNode is MemberDeclarationSyntax memberDeclaration)
-			{
-				try
+				if (IsSuppressableSeverity(diagnostic?.Descriptor.DefaultSeverity))
 				{
-					token = memberDeclaration.FindToken(diagnostic.Location.SourceSpan.Start);
+					file.AddMessage(message);
 				}
-				catch (ArgumentOutOfRangeException)
-				{
-					token = null;
-				}
+
+				return true;
 			}
 
-			var syntaxNode = token != null ?
-				token.ToString() :
-				// Replace \r symbol as XDocument does not preserve it in suppression file
-				diagnosticNode.ToString().Replace("\r", "");
-			var message = new SuppressMessage(id, target, syntaxNode);
+			if (!file.ContainsMessage(message))
+			{
+				return false;
+			}
 
-			return (assemblyName, message);
+			return true;
 		}
 
-		private static SyntaxNode FindTargetNode(SyntaxNode node)
-		{
-			var targetNode = node
-				.AncestorsAndSelf()
-				.Where(a => _targetKinds.Contains(a.Kind()))
-				.FirstOrDefault();
+		private static bool IsSuppressableSeverity(DiagnosticSeverity? diagnosticSeverity) =>
+			diagnosticSeverity == DiagnosticSeverity.Error || diagnosticSeverity == DiagnosticSeverity.Warning;
 
-			// Use first variable in case of field declaration as it may contain multiple variables and therefore
-			// cannot be used to obtain declared symbol
-			return targetNode is FieldDeclarationSyntax fieldDeclaration ?
-				fieldDeclaration.Declaration?.Variables[0] :
-				targetNode;
+		private static void CheckIfInstanceIsInitialized()
+		{
+			if (Instance == null)
+			{
+				throw new InvalidOperationException($"{nameof(SuppressionManager)} instance was not initialized");
+			}
+		}
+
+		private static string GetXDocumentStringWithDeclaration(System.Xml.Linq.XDocument xDocument)
+		{
+			var builder = new System.Text.StringBuilder(capacity: 65);
+
+			using (TextWriter writer = new Utf8StringWriter(builder))
+			{
+				xDocument.Save(writer);
+			}
+
+			return builder.ToString();
 		}
 	}
 }

@@ -264,6 +264,18 @@
   <data name="CodeMapWindowTitle" xml:space="preserve">
     <value>Code Map (Experimental)</value>
   </data>
+  <data name="DiagnosticSuppression_NoDiagnosticFound" xml:space="preserve">
+    <value>There are no Acuminator diagnostics in this code snippet.</value>
+  </data>
+  <data name="DiagnosticSuppression_MultipleDiagnosticFound" xml:space="preserve">
+    <value>There are multiple Acuminator diagnostics in this code snippet. Acuminator can suppress only one diagnostic at a time.</value>
+  </data>
+  <data name="DiagnosticSuppression_FailedToAddToSuppressionFile" xml:space="preserve">
+    <value>The diagnostic cannot be added to the suppression file. Check if the {0} file is accessible.</value>
+  </data>
+  <data name="DiagnosticSuppression_FailedToFindSuppressionFile" xml:space="preserve">
+    <value>The suppression file for the {0} project cannot be found.</value>
+  </data>
   <data name="PackageLoad_Done" xml:space="preserve">
     <value>The Acuminator package loaded</value>
   </data>
