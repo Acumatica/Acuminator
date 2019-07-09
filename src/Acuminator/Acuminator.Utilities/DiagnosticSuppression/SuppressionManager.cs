@@ -121,7 +121,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				string suppressionFilePath = Path.Combine(projectDir, suppressionFileName);
 
 				//Create new xml document and get its text
-				System.Xml.Linq.XDocument newXDocument = SuppressionFile.NewDocumentFromMessages(Enumerable.Empty<SuppressMessage>());
+				var newXDocument = SuppressionFile.NewDocumentFromMessages(Enumerable.Empty<SuppressMessage>());
 				string docText = GetXDocumentStringWithDeclaration(newXDocument);
 
 				//Add file to project and hard drive
