@@ -3,18 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acuminator.Analyzers", "Acuminator\Acuminator.Analyzers\Acuminator.Analyzers.csproj", "{984DBFAC-91A7-4059-A5B2-CDE33CD93EA0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Acuminator.Analyzers", "Acuminator\Acuminator.Analyzers\Acuminator.Analyzers.csproj", "{984DBFAC-91A7-4059-A5B2-CDE33CD93EA0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acuminator.Tests", "Acuminator\Acuminator.Tests\Acuminator.Tests.csproj", "{3C74FF92-B17D-4C26-A16E-FCB5348C5B46}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acuminator.Vsix", "Acuminator\Acuminator.Vsix\Acuminator.Vsix.csproj", "{6DEB14BB-D8F6-4F5B-BBD7-E756CEB67D42}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acuminator.Utilities", "Acuminator\Acuminator.Utilities\Acuminator.Utilities.csproj", "{B902103C-831B-4BBF-A88B-3DAE6F601CF0}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C6643C09-70D1-40BC-B5F0-94D86F253B7B}"
-	ProjectSection(SolutionItems) = preProject
-		Acuminator\GitVersionDump.targets = Acuminator\GitVersionDump.targets
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Acuminator.Utilities", "Acuminator\Acuminator.Utilities\Acuminator.Utilities.csproj", "{B902103C-831B-4BBF-A88B-3DAE6F601CF0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
