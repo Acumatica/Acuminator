@@ -15,7 +15,8 @@
     <Company>Acumatica</Company>
     <Description>The static analyzers for Acumatica</Description>
     <Authors>Acumatica</Authors>
-    <NeutralLanguage>en</NeutralLanguage> 
+    <NeutralLanguage>en</NeutralLanguage>
+    <RestorePackagesPath>../../packages</RestorePackagesPath> 
   </PropertyGroup>
 
   <ItemGroup>
