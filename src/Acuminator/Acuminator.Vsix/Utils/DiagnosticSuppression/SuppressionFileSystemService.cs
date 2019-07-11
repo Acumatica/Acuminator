@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Security;
+using System.Xml;
 using System.Xml.Linq;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
@@ -17,11 +19,9 @@ namespace Acuminator.Vsix.Utilities
 			{
 				return XDocument.Load(path);
 			}
-			catch (SecurityException)
+			catch (Exception exception) when (FilterException(exception))
 			{
-			}
-			catch (IOException)
-			{
+				ProcessError(exception);
 			}
 
 			return null;
@@ -36,12 +36,9 @@ namespace Acuminator.Vsix.Utilities
 			{
 				document.Save(path);
 			}
-			catch (SecurityException)
+			catch (Exception exception) when (FilterException(exception))
 			{
-				return false;
-			}
-			catch (IOException)
-			{
+				ProcessError(exception);
 				return false;
 			}
 
@@ -72,6 +69,28 @@ namespace Acuminator.Vsix.Utilities
 			};
 
 			return new SuppressionFileWatcherService(watcher);
+		}
+
+		private bool FilterException(Exception exception)
+		{
+			switch (exception)
+			{
+				case XmlException _:
+				case SecurityException _:
+				case IOException _:
+					return true;
+				default:
+					return false;
+			}
+		}
+
+		private void ProcessError(Exception exception, [CallerMemberName]string reportedFrom = null)
+		{
+			string errorMsg = VSIXResource.FailedToLoadTheSuppressionFile + Environment.NewLine +
+							  string.Format(VSIXResource.FailedToLoadTheSuppressionFileDetails, Environment.NewLine + exception.Message);
+			System.Windows.MessageBox.Show(errorMsg);
+			AcuminatorVSPackage.Instance.AcuminatorLogger?.LogException(exception, logOnlyFromAcuminatorAssemblies: false,
+																		Logger.LogMode.Warning, reportedFrom);
 		}
 	}
 }
