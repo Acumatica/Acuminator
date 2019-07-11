@@ -76,13 +76,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 
 					if (found && _analysisMode == RowChangesAnalysisMode.ChangesForbiddenForRowFromEventArgs)
 					{
-						_context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs, 
-							node.GetLocation(), _messageArgs), _pxContext.CodeAnalysisSettings);
+						_context.ReportDiagnosticWithSuppressionCheck(
+							Diagnostic.Create(
+								_pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled 
+									? Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs
+									: Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs_NonISV, 
+								node.GetLocation(),
+								_messageArgs), 
+							_pxContext.CodeAnalysisSettings);
 					}
 					else if (!found && _analysisMode == RowChangesAnalysisMode.ChangesAllowedOnlyForRowFromEventArgs)
 					{
-						_context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1048_RowChangesInEventHandlersAllowedForArgsOnly, 
-							node.GetLocation(), _messageArgs), _pxContext.CodeAnalysisSettings);
+						_context.ReportDiagnosticWithSuppressionCheck(
+							Diagnostic.Create(
+								Descriptors.PX1048_RowChangesInEventHandlersAllowedForArgsOnly, 
+								node.GetLocation(), 
+								_messageArgs), 
+							_pxContext.CodeAnalysisSettings);
 					}
 				}
 			}
@@ -104,8 +114,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 					
 					if (found && _analysisMode == RowChangesAnalysisMode.ChangesForbiddenForRowFromEventArgs)
 					{
-						_context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs, 
-							node.GetLocation(), _messageArgs), _pxContext.CodeAnalysisSettings);
+						_context.ReportDiagnosticWithSuppressionCheck(
+							Diagnostic.Create(
+								_pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled
+									? Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs 
+									: Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs_NonISV, 
+								node.GetLocation(), _messageArgs),
+							_pxContext.CodeAnalysisSettings);
 					}
 					else if (!found && _analysisMode == RowChangesAnalysisMode.ChangesAllowedOnlyForRowFromEventArgs)
 					{
@@ -114,8 +129,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 
 						if (_dacInstanceAccessWalker.Success)
 						{
-							_context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(Descriptors.PX1048_RowChangesInEventHandlersAllowedForArgsOnly,
-								node.GetLocation(), _messageArgs), _pxContext.CodeAnalysisSettings);
+							_context.ReportDiagnosticWithSuppressionCheck(
+								Diagnostic.Create(
+									Descriptors.PX1048_RowChangesInEventHandlersAllowedForArgsOnly,
+									node.GetLocation(), 
+									_messageArgs), 
+								_pxContext.CodeAnalysisSettings);
 						}
 					}
 				}

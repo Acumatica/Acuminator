@@ -23,7 +23,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 	public partial class ForbiddenFieldsInDacFix : CodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-			ImmutableArray.Create(Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.Id);
+			ImmutableArray.Create(
+				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.Id,
+				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV.Id);
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
@@ -31,7 +33,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 		{
 			return Task.Run(() =>
 			{
-				var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.Id);
+				var diagnostic = context.Diagnostics.FirstOrDefault(d => 
+											d.Id == Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.Id ||
+											d.Id == Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV.Id);
 
 				if (diagnostic == null || context.CancellationToken.IsCancellationRequested)
 					return;

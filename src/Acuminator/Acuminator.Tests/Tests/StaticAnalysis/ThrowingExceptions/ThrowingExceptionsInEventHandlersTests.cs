@@ -18,7 +18,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ThrowingExceptions
 	public class ThrowingExceptionsInEventHandlersTests : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-			new EventHandlerAnalyzer(CodeAnalysisSettings.Default,
+			new EventHandlerAnalyzer(CodeAnalysisSettings.Default
+					.WithIsvSpecificAnalyzersEnabled(),
 				new ThrowingExceptionsInEventHandlersAnalyzer());
 
 		[Theory]

@@ -13,11 +13,13 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.LanguageServices;
+using Microsoft.VisualStudio.Shell.Interop;
 using EnvDTE80;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 
 using Shell = Microsoft.VisualStudio.Shell;
+
 
 namespace Acuminator.Vsix.Utilities
 {
@@ -148,6 +150,59 @@ namespace Acuminator.Vsix.Utilities
 			IComponentModel componentModel = await serviceProvider.GetServiceAsync<SComponentModel, IComponentModel>();
 			IVsEditorAdaptersFactoryService vsEditorAdaptersFactoryService = componentModel?.GetService<IVsEditorAdaptersFactoryService>();
 			return vsEditorAdaptersFactoryService?.GetWpfTextView(vsTextView);
+		}
+
+		/// <summary>
+		/// Get error items from "Error List" window asynchronously. In case of error returns <c>null</c>.
+		/// </summary>
+		/// <param name="serviceProvider">The package Service Provider.</param>
+		/// <returns/>
+		internal static async Task<List<IVsTaskItem>> GetErrorListAsync(this Shell.IAsyncServiceProvider serviceProvider)
+		{
+			if (serviceProvider == null)
+				return null;
+
+			await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+			var errorService = await serviceProvider.GetServiceAsync<SVsErrorList, IVsTaskList>();
+
+			if (errorService == null)
+				return null;
+
+			int result = VSConstants.S_OK;
+			List<IVsTaskItem> taskItemsList = new List<IVsTaskItem>(capacity: 8);
+
+			try
+			{
+				ErrorHandler.ThrowOnFailure(errorService.EnumTaskItems(out IVsEnumTaskItems errorItems));
+
+				if (errorItems == null)
+					return null;
+
+				// Retrieve the task item text and check whether it is equal with one that supposed to be thrown.
+				uint[] fetched = new uint[1];
+
+				do
+				{
+					IVsTaskItem[] taskItems = new IVsTaskItem[1];
+					result = errorItems.Next(1, taskItems, fetched);
+
+					if (fetched[0] == 1 && taskItems[0] is IVsTaskItem2 taskItem)
+					{
+						taskItemsList.Add(taskItem);
+					}
+
+				}
+				while (result == VSConstants.S_OK && fetched[0] == 1);
+
+			}
+			catch (System.Runtime.InteropServices.COMException e)
+			{
+				result = e.ErrorCode;
+			}
+
+			return result == VSConstants.S_OK
+				? taskItemsList
+				: null;
 		}
 	}
 }

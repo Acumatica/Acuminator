@@ -23,7 +23,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// <summary>
 		/// Command ID.
 		/// </summary>
-		public const int CommandId = 0x0201;
+		public const int CommandId = 0x0104;
 
 		private OpenCodeMapWindowCommand(AsyncPackage package, OleMenuCommandService commandService) : 
 									base(package, commandService, CommandId)

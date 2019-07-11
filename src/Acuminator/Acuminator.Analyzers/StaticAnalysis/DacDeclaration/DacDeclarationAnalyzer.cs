@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
+using Acuminator.Utilities;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
@@ -14,13 +16,18 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class DacDeclarationAnalyzer : PXDiagnosticAnalyzer
+	public class DacDeclarationAnalyzer : PXDiagnosticAnalyzer, ISymbolAnalyzer
 	{
+		private const string DeletedDatabaseRecord = "DeletedDatabaseRecord";
+
+		public DacDeclarationAnalyzer(CodeAnalysisSettings settings = null) : base(settings){}
+
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
 			(
 				Descriptors.PX1026_UnderscoresInDacDeclaration,
 				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration,
+				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV,
 				Descriptors.PX1028_ConstructorInDacDeclaration
 			);
 
@@ -109,43 +116,66 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 			}
 		}
 
-		private static void CheckDeclarationForForbiddenNames(PXContext pxContext, ClassDeclarationSyntax dacOrDacExtNode,
-															  SyntaxNodeAnalysisContext syntaxContext,
-															  Dictionary<string, List<PropertyDeclarationSyntax>> dacProperties,
-															  Dictionary<string, List<ClassDeclarationSyntax>> dacClassDeclarations)
+		private static void CheckDeclarationForForbiddenNames(PXContext pxContext,
+			ClassDeclarationSyntax dacOrDacExtNode,
+			SyntaxNodeAnalysisContext syntaxContext,
+			Dictionary<string, List<PropertyDeclarationSyntax>> dacProperties,
+			Dictionary<string, List<ClassDeclarationSyntax>> dacClassDeclarations)
 		{
 			string[] forbiddenNames = GetForbiddenFieldsNames();
-			
+
 			var invalidPropertiesByName = from forbiddenFieldName in forbiddenNames
-										  where dacProperties.ContainsKey(forbiddenFieldName)
-										  select dacProperties[forbiddenFieldName];
+				where dacProperties.ContainsKey(forbiddenFieldName)
+				select dacProperties[forbiddenFieldName];
 
 			var invalidClassesByName = from forbiddenClassName in forbiddenNames
-									   where dacClassDeclarations.ContainsKey(forbiddenClassName)
-									   select dacClassDeclarations[forbiddenClassName];
+				where dacClassDeclarations.ContainsKey(forbiddenClassName)
+				select dacClassDeclarations[forbiddenClassName];
+
+			bool isDeletedDatabaseRecord;
+			DiagnosticDescriptor showedDescriptor;
 
 			foreach (var listProperties in invalidPropertiesByName)
 			{
 				foreach (var iProperty in listProperties)
 				{
+					isDeletedDatabaseRecord = string.Equals(iProperty.Identifier.Text,
+						DeletedDatabaseRecord, StringComparison.OrdinalIgnoreCase);
+
+					showedDescriptor = (isDeletedDatabaseRecord && 
+					                    pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled == false )
+									   ? Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV
+									   : Descriptors.PX1027_ForbiddenFieldsInDacDeclaration;
+
 					syntaxContext.ReportDiagnosticWithSuppressionCheck(
 						Diagnostic.Create(
-							Descriptors.PX1027_ForbiddenFieldsInDacDeclaration, iProperty.Identifier.GetLocation(),
+							showedDescriptor,
+							iProperty.Identifier.GetLocation(),
 							iProperty.Identifier.Text), pxContext.CodeAnalysisSettings);
 				}
 			}
+
 			foreach (var listClasses in invalidClassesByName)
 			{
 				foreach (var iClass in listClasses)
 				{
+					isDeletedDatabaseRecord = string.Equals(iClass.Identifier.Text,
+						DeletedDatabaseRecord, StringComparison.OrdinalIgnoreCase);
+
+					showedDescriptor = (isDeletedDatabaseRecord &&
+					                    pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled == false)
+										? Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV
+										: Descriptors.PX1027_ForbiddenFieldsInDacDeclaration;
+
 					syntaxContext.ReportDiagnosticWithSuppressionCheck(
 						Diagnostic.Create(
-							Descriptors.PX1027_ForbiddenFieldsInDacDeclaration, iClass.Identifier.GetLocation(),
+							showedDescriptor,
+							iClass.Identifier.GetLocation(),
 							iClass.Identifier.Text), pxContext.CodeAnalysisSettings);
 				}
 			}
 		}
-		
+
 		private static void CheckDeclarationForConstructors(PXContext pxContext, ClassDeclarationSyntax dacOrDacExtNode,
 															SyntaxNodeAnalysisContext syntaxContext)
 		{
@@ -176,7 +206,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 			return new string[]
 			{
 				"CompanyID",
-				"DeletedDatabaseRecord",
+				DeletedDatabaseRecord ,
 				"CompanyMask"
 			};
 		}

@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.EventHandlers
 {
-    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class EventHandlerAnalyzer : SymbolAnalyzersAggregator<IEventHandlerAnalyzer>
 	{
         protected override SymbolKind SymbolKind => SymbolKind.Method;
