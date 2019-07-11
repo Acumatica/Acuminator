@@ -294,4 +294,10 @@
   <data name="PackageLoad_WaitMessage" xml:space="preserve">
     <value>Loading the Acuminator package</value>
   </data>
+  <data name="FailedToLoadTheSuppressionFile" xml:space="preserve">
+    <value>Acuminator failed to load the suppression file. The suppression mechanism will be disabled.</value>
+  </data>
+  <data name="FailedToLoadTheSuppressionFileDetails" xml:space="preserve">
+    <value>The details of error: {0}.</value>
+  </data>
 </root>
