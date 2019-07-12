@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Security;
 using System.Xml;
 using System.Xml.Linq;
+using System.Windows;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 
@@ -86,9 +87,9 @@ namespace Acuminator.Vsix.Utilities
 
 		private void ProcessError(Exception exception, [CallerMemberName]string reportedFrom = null)
 		{
-			string errorMsg = VSIXResource.FailedToLoadTheSuppressionFile + Environment.NewLine +
+			string errorMsg = VSIXResource.FailedToLoadTheSuppressionFile + Environment.NewLine + Environment.NewLine +
 							  string.Format(VSIXResource.FailedToLoadTheSuppressionFileDetails, Environment.NewLine + exception.Message);
-			System.Windows.MessageBox.Show(errorMsg);
+			MessageBox.Show(errorMsg, AcuminatorVSPackage.PackageName, MessageBoxButton.OK, MessageBoxImage.Error);
 			AcuminatorVSPackage.Instance.AcuminatorLogger?.LogException(exception, logOnlyFromAcuminatorAssemblies: false,
 																		Logger.LogMode.Warning, reportedFrom);
 		}
