@@ -295,9 +295,9 @@
     <value>Loading the Acuminator package</value>
   </data>
   <data name="FailedToLoadTheSuppressionFile" xml:space="preserve">
-    <value>Acuminator failed to load the suppression file. The suppression mechanism will be disabled.</value>
+    <value>Acuminator cannot load the suppression file. The suppression mechanism will be turned off. If you fix the error, the suppression mechanism will be turned on automatically.</value>
   </data>
   <data name="FailedToLoadTheSuppressionFileDetails" xml:space="preserve">
-    <value>The details of error: {0}.</value>
+    <value>Error details:{0}.</value>
   </data>
 </root>

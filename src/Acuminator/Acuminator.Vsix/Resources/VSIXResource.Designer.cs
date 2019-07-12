@@ -322,7 +322,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Acuminator failed to load the suppression file. The suppression mechanism will be disabled..
+        ///   Looks up a localized string similar to Acuminator cannot load the suppression file. The suppression mechanism will be turned off. If you fix the error, the suppression mechanism will be turned on automatically..
         /// </summary>
         public static string FailedToLoadTheSuppressionFile {
             get {
@@ -331,7 +331,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The details of error: {0}..
+        ///   Looks up a localized string similar to Error details:{0}..
         /// </summary>
         public static string FailedToLoadTheSuppressionFileDetails {
             get {
