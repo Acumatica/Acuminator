@@ -286,6 +286,42 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The diagnostic cannot be added to the suppression file. Check if the {0} file is accessible..
+        /// </summary>
+        public static string DiagnosticSuppression_FailedToAddToSuppressionFile {
+            get {
+                return ResourceManager.GetString("DiagnosticSuppression_FailedToAddToSuppressionFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The suppression file for the {0} project cannot be found..
+        /// </summary>
+        public static string DiagnosticSuppression_FailedToFindSuppressionFile {
+            get {
+                return ResourceManager.GetString("DiagnosticSuppression_FailedToFindSuppressionFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are multiple Acuminator diagnostics in this code snippet. Acuminator can suppress only one diagnostic at a time..
+        /// </summary>
+        public static string DiagnosticSuppression_MultipleDiagnosticFound {
+            get {
+                return ResourceManager.GetString("DiagnosticSuppression_MultipleDiagnosticFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are no Acuminator diagnostics in this code snippet..
+        /// </summary>
+        public static string DiagnosticSuppression_NoDiagnosticFound {
+            get {
+                return ResourceManager.GetString("DiagnosticSuppression_NoDiagnosticFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Acuminator package loaded.
         /// </summary>
         public static string PackageLoad_Done {

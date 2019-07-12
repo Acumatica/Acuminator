@@ -477,4 +477,7 @@
   <data name="PX1013Title" xml:space="preserve">
     <value>The action handler that initiates a background operation or is executed by a background operation must return IEnumerable</value>
   </data>
+  <data name="PX1043TitleRowPersistedNonISV" xml:space="preserve">
+    <value>Only the methods of the PXCache.Persist family can be used to save changes to the database from a RowPersisted event handler</value>
+  </data>
 </root>

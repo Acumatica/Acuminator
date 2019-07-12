@@ -18,7 +18,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphCreateInstance
 	public class PXGraphCreateInstanceInEventHandlersTests : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-			new EventHandlerAnalyzer(CodeAnalysisSettings.Default.WithRecursiveAnalysisEnabled(),
+			new EventHandlerAnalyzer(CodeAnalysisSettings.Default
+					.WithRecursiveAnalysisEnabled()
+					.WithIsvSpecificAnalyzersEnabled(),
 				new PXGraphCreateInstanceInEventHandlersAnalyzer());
 
 		[Theory]

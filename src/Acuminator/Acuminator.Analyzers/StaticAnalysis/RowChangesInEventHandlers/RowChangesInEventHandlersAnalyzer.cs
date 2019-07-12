@@ -31,6 +31,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.RowChangesInEventHandlers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
 			Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs,
+			Descriptors.PX1047_RowChangesInEventHandlersForbiddenForArgs_NonISV,
 			Descriptors.PX1048_RowChangesInEventHandlersAllowedForArgsOnly);
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)

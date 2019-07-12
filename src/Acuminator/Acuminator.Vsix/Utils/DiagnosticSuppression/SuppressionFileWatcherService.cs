@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace Acuminator.Vsix.Utils
+namespace Acuminator.Vsix.Utilities
 {
 	internal class SuppressionFileWatcherService : ISuppressionFileWatcherService
 	{

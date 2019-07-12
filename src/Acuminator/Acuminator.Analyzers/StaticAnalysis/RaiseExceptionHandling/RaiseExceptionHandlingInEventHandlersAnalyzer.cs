@@ -23,37 +23,41 @@ namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 			EventType.RowPersisted
 		};
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
-			ImmutableArray.Create(Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers);
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+			ImmutableArray.Create(
+				Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers,
+				Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers_NonISV
+			);
 
-		public override bool ShouldAnalyze(PXContext pxContext, EventType eventType) => AnalyzedEventTypes.Contains(eventType);
+		public override bool ShouldAnalyze(PXContext pxContext, EventType eventType) =>
+			AnalyzedEventTypes.Contains(eventType);
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var methodSymbol = (IMethodSymbol)context.Symbol;
+			var methodSymbol = (IMethodSymbol) context.Symbol;
 			var methodSyntax = methodSymbol.GetSyntax(context.CancellationToken) as CSharpSyntaxNode;
 			var walker = new Walker(context, pxContext, eventType);
 
 			methodSyntax?.Accept(walker);
 		}
 
-		
+
 		private class Walker : NestedInvocationWalker
 		{
 			private readonly SymbolAnalysisContext _context;
 			private readonly PXContext _pxContext;
-			private readonly object[] _messageArgs;
+			private readonly EventType _eventType;
 
-			public Walker(SymbolAnalysisContext context, PXContext pxContext, params object[] messageArgs)
+			public Walker(SymbolAnalysisContext context, PXContext pxContext, EventType eventType)
 				: base(context.Compilation, context.CancellationToken, pxContext.CodeAnalysisSettings)
 			{
-				pxContext.ThrowOnNull(nameof (pxContext));
+				pxContext.ThrowOnNull(nameof(pxContext));
 
 				_context = context;
 				_pxContext = pxContext;
-				_messageArgs = messageArgs;
+				_eventType= eventType;
 			}
 
 			public override void VisitInvocationExpression(InvocationExpressionSyntax node)
@@ -65,9 +69,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.RaiseExceptionHandling
 
 				if (methodSymbol != null && _pxContext.PXCache.RaiseExceptionHandling.Contains(methodSymbol))
 				{
-					ReportDiagnostic(_context.ReportDiagnostic,
-						Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers, 
-						node, _messageArgs);
+					if (!_pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled &&
+					    _eventType == EventType.FieldSelecting)
+					{
+						ReportDiagnostic(_context.ReportDiagnostic,
+							Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers_NonISV,
+							node, _eventType);
+					}
+					else
+					{
+						ReportDiagnostic(_context.ReportDiagnostic,
+							Descriptors.PX1075_RaiseExceptionHandlingInEventHandlers,
+							node, _eventType);
+					}
 				}
 				else
 				{
