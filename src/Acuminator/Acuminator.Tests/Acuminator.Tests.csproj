@@ -254,6 +254,8 @@
     <Compile Include="Tests\StaticAnalysis\SavingChanges\SavingChangesInEventHandlersNonISVTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PXDatabaseInsertContainedInMethodInsideRowPersisted.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PXDatabaseInsertWithoutTranStatusOpenInsideRowPersisted.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\IsPatternAssignment.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\IsPatternAssignment.cs" />
     <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInActionHandlersTests.cs" />
     <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInEventHandlersNonISVTests.cs" />
     <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInLongRunningOperationTests.cs" />
