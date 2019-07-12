@@ -61,6 +61,7 @@
     <WarningLevel>4</WarningLevel>
     <LangVersion>latest</LangVersion>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <DeployExtension>False</DeployExtension>
   </PropertyGroup>
   <PropertyGroup>
     <StartAction>Program</StartAction>
@@ -225,6 +226,7 @@
     <Compile Include="Commands\DiagnosticSuppression\Diagnostic Service\RoslynDiagnosticService.cs" />
     <Compile Include="Commands\GoToDeclarationOrHandler\GoToDeclarationOrHandlerCommand.cs" />
     <Compile Include="Commands\VSCommandBase.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\VSIXResource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
