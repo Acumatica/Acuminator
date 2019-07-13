@@ -47,7 +47,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			if (graph?.InheritsFrom(pxContext.PXGraph.Type) != true)
+			if (!graph.IsPXGraph(pxContext))
 				return Enumerable.Empty<OverridableItem<(ISymbol, INamedTypeSymbol)>>();
 
 			var actionsByName = new OverridableItemsCollection<(ISymbol Symbol, INamedTypeSymbol Type)>();
@@ -116,8 +116,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			if (includeActionsFromInheritanceChain)
 			{
-				return graph.GetBaseTypesAndThis()
-							.TakeWhile(baseGraph => !baseGraph.IsGraphBaseType())
+				return graph.GetGraphWithBaseTypes()
 							.Reverse()
 							.SelectMany(baseGraph => baseGraph.GetActionsFromGraphOrGraphExtensionImpl(pxContext));
 			}
@@ -214,8 +213,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			if (inheritance)
 			{
-				return graph.GetBaseTypesAndThis()
-							.TakeWhile(baseGraph => !baseGraph.IsGraphBaseType())
+				return graph.GetGraphWithBaseTypes()
 							.Reverse()
 							.SelectMany(baseGraph => GetActionHandlersFromGraphOrGraphExtension(baseGraph, actionsByName, pxContext, cancellation));
 			}
