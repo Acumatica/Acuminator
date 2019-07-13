@@ -47,7 +47,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			if (dac.IsDAC(pxContext))
+			if (!dac.IsDAC(pxContext))
 				return Enumerable.Empty<OverridableItem<(PropertyDeclarationSyntax, IPropertySymbol)>>();
 
 			var propertiesByName = new OverridableItemsCollection<(PropertyDeclarationSyntax Node, IPropertySymbol DacProperty)>();
@@ -76,7 +76,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				return Enumerable.Empty<OverridableItem<(PropertyDeclarationSyntax, IPropertySymbol)>>();
 
 			return isDac
-				? dacOrExtension.GetActionSymbolsWithTypesFromGraph(pxContext)
+				? dacOrExtension.GetDacPropertySymbolsWithNodesFromDac(pxContext)
 				: dacOrExtension.GetPropertiesFromDacExtensionAndBaseDac(pxContext);
 		}
 
@@ -92,24 +92,24 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			dacExtension.ThrowOnNull(nameof(dacExtension));
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			return GetActionInfoFromGraphExtension<(ISymbol, INamedTypeSymbol)>(dacExtension, pxContext,
-																				AddPropertiesFromDac, AddPropertiesFromDacExtension);
+			return GetPropertiesInfoFromDacExtension<(PropertyDeclarationSyntax, IPropertySymbol)>(dacExtension, pxContext,
+																								   AddPropertiesFromDac, AddPropertiesFromDacExtension);
 
 			//-----------------------Local function----------------------------------------
-			int AddPropertiesFromDac(OverridableItemsCollection<(ISymbol Symbol, INamedTypeSymbol Type)> actionsCollection,
-									 ITypeSymbol graph, int startingOrder)
+			int AddPropertiesFromDac(OverridableItemsCollection<(PropertyDeclarationSyntax Node, IPropertySymbol Symbol)> propertiesCollection,
+									 ITypeSymbol dac, int startingOrder)
 			{
-				var graphActions = graph.GetPropertiesFromDacImpl(pxContext, includeFromInheritanceChain: true);
-				return actionsCollection.AddRangeWithDeclarationOrder(graphActions, startingOrder,
-																	  keySelector: action => action.Symbol.Name);
+				var dacProperties = dac.GetPropertiesFromDacImpl(pxContext, includeFromInheritanceChain: true, cancellation);
+				return propertiesCollection.AddRangeWithDeclarationOrder(dacProperties, startingOrder,
+																		 keySelector: dacProperty => dacProperty.Symbol.Name);
 			}
 
-			int AddPropertiesFromDacExtension(OverridableItemsCollection<(ISymbol Symbol, INamedTypeSymbol Type)> actionsCollection,
-											  ITypeSymbol graphExt, int startingOrder)
+			int AddPropertiesFromDacExtension(OverridableItemsCollection<(PropertyDeclarationSyntax Node, IPropertySymbol Symbol)> propertiesCollection,
+											  ITypeSymbol dacExt, int startingOrder)
 			{
-				var extensionActions = GetActionsFromGraphOrGraphExtensionImpl(graphExt, pxContext);
-				return actionsCollection.AddRangeWithDeclarationOrder(extensionActions, startingOrder,
-																	  keySelector: action => action.Symbol.Name);
+				var dacExtensionProperties = GetPropertiesFromDacOrDacExtensionImpl(dacExt, pxContext, cancellation);
+				return propertiesCollection.AddRangeWithDeclarationOrder(dacExtensionProperties, startingOrder,
+																		 keySelector: dacProperty => dacProperty.Symbol.Name);
 			}
 		}
 
@@ -198,7 +198,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			actionsByName.ThrowOnNull(nameof(actionsByName));
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			return GetActionInfoFromGraphExtension<(MethodDeclarationSyntax, IMethodSymbol)>(
+			return GetPropertiesInfoFromDacExtension<(MethodDeclarationSyntax, IMethodSymbol)>(
 				graphExtension, pxContext, AddHandlersFromGraph, AddHandlersFromGraphExtension);
 
 
@@ -258,33 +258,33 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
         #endregion
 
 		private static IEnumerable<OverridableItem<T>> GetPropertiesInfoFromDacExtension<T>(ITypeSymbol dacExtension, PXContext pxContext,
-															AddDacPropertyInfoWithOrderDelegate<T> addGraphActionInfoWithOrder,
-															AddDacPropertyInfoWithOrderDelegate<T> addGraphExtensionActionInfoWithOrder)
+															AddDacPropertyInfoWithOrderDelegate<T> addDacPropertyInfoWithOrder,
+															AddDacPropertyInfoWithOrderDelegate<T> addDacExtensionPropertyInfoWithOrder)
 		{
 			var empty = Enumerable.Empty<OverridableItem<T>>();
 
-			if (!graphExtension.InheritsFrom(pxContext.PXGraphExtensionType) || !graphExtension.BaseType.IsGenericType)
-				return Enumerable.Empty<OverridableItem<T>>();
-
-			var graphType = graphExtension.GetGraphFromGraphExtension(pxContext);
-
-			if (graphType == null)
+			if (!dacExtension.IsDacExtension(pxContext))
 				return empty;
 
-			var allExtensionsFromBaseToDerived = graphExtension.GetGraphExtensionWithBaseExtensions(pxContext, SortDirection.Ascending,
-																									includeGraph: false);
+			var dacType = dacExtension.GetDacFromDacExtension(pxContext);
+
+			if (dacType == null)
+				return empty;
+
+			var allExtensionsFromBaseToDerived = dacExtension.GetDacExtensionWithBaseExtensions(pxContext, SortDirection.Ascending,
+																								includeDac: false);
 			if (allExtensionsFromBaseToDerived.IsNullOrEmpty())
 				return empty;
 
-			var actionsByName = new OverridableItemsCollection<T>();
-			int declarationOrder = addGraphActionInfoWithOrder(actionsByName, graphType, startingOrder: 0);
+			var propertiesByName = new OverridableItemsCollection<T>();
+			int declarationOrder = addDacPropertyInfoWithOrder(propertiesByName, dacType, startingOrder: 0);
 
 			foreach (ITypeSymbol extension in allExtensionsFromBaseToDerived)
 			{
-				declarationOrder = addGraphExtensionActionInfoWithOrder(actionsByName, extension, declarationOrder);
+				declarationOrder = addDacExtensionPropertyInfoWithOrder(propertiesByName, extension, declarationOrder);
 			}
 
-			return actionsByName.Items;
+			return propertiesByName.Items;
 		}
 	}
 }
