@@ -79,6 +79,22 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				return false;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsDacField(this ITypeSymbol typeSymbol, PXContext pxContext)
+		{
+			typeSymbol.ThrowOnNull(nameof(typeSymbol));
+
+			if (typeSymbol.ImplementsInterface(pxContext.IBqlFieldType))    
+				return true;
+			else if (typeSymbol is ITypeParameterSymbol typeParameterSymbol)    //fallback for type parameters when Roslyn can't correctly determine interfaces (see ATR-376)
+			{
+				return typeParameterSymbol.GetAllConstraintTypes()
+										  .Any(constraint => constraint.ImplementsInterface(pxContext.IBqlFieldType));
+			}
+			else
+				return false;
+		}
+
 		/// <summary>
 		/// Get view's DAC for which the view was declared.
 		/// </summary>
