@@ -17,33 +17,33 @@ using DacFieldOverridableCollection =
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
 	public static class DacPropertySymbolUtils
-    {
-        /// <summary>
-        /// A delegate type for a DAC property which extracts info DTOs about DAC properties/fields from <paramref name="dacOrDacExtension"/> 
-        /// and adds them to the <paramref name="dacInfos"/> collection with a consideration for DAC properties/fields declaration order.
-        /// Returns the number following the last assigned declaration order.
-        /// </summary>
-        /// <typeparam name="T">Generic type parameter.</typeparam>
-        /// <param name="dacPropertyInfos">The DAC property infos.</param>
-        /// <param name="dacOrDacExtension">The DAC or DAC extension.</param>
-        /// <param name="startingOrder">The declaration order which should be assigned to the first DTO.</param>
-        /// <returns/>
-        private delegate int AddDacPropertyInfoWithOrderDelegate<T>(OverridableItemsCollection<T> dacPropertyInfos,
-																    ITypeSymbol dacOrDacExtension, int startingOrder);
+	{
+		/// <summary>
+		/// A delegate type for a DAC property which extracts info DTOs about DAC properties/fields from <paramref name="dacOrDacExtension"/> 
+		/// and adds them to the <paramref name="dacInfos"/> collection with a consideration for DAC properties/fields declaration order.
+		/// Returns the number following the last assigned declaration order.
+		/// </summary>
+		/// <typeparam name="T">Generic type parameter.</typeparam>
+		/// <param name="dacPropertyInfos">The DAC property infos.</param>
+		/// <param name="dacOrDacExtension">The DAC or DAC extension.</param>
+		/// <param name="startingOrder">The declaration order which should be assigned to the first DTO.</param>
+		/// <returns/>
+		private delegate int AddDacPropertyInfoWithOrderDelegate<T>(OverridableItemsCollection<T> dacPropertyInfos,
+																	ITypeSymbol dacOrDacExtension, int startingOrder);
 
 
 		#region Dac Properties
-        /// <summary>
-        /// Gets the DAC property symbols and syntax nodes from DAC and, if <paramref name="includeFromInheritanceChain"/> is <c>true</c>, its base DACs.
-        /// </summary>
-        /// <param name="dac">The DAC to act on.</param>
-        /// <param name="pxContext">Context.</param>
-        /// <param name="includeFromInheritanceChain">(Optional) True to include, false to exclude the properties from the inheritance chain.</param>
-        /// <param name="cancellation">(Optional) Cancellation token.</param>
-        /// <returns>The DAC property symbols with nodes from DAC.</returns>
+		/// <summary>
+		/// Gets the DAC property symbols and syntax nodes from DAC and, if <paramref name="includeFromInheritanceChain"/> is <c>true</c>, its base DACs.
+		/// </summary>
+		/// <param name="dac">The DAC to act on.</param>
+		/// <param name="pxContext">Context.</param>
+		/// <param name="includeFromInheritanceChain">(Optional) True to include, false to exclude the properties from the inheritance chain.</param>
+		/// <param name="cancellation">(Optional) Cancellation token.</param>
+		/// <returns>The DAC property symbols with nodes from DAC.</returns>
 		public static DacPropertyOverridableCollection GetDacPropertySymbolsWithNodesFromDac(this ITypeSymbol dac, PXContext pxContext,
-																					         bool includeFromInheritanceChain = true,
-                                                                                             CancellationToken cancellation = default)
+																							 bool includeFromInheritanceChain = true,
+																							 CancellationToken cancellation = default)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
@@ -53,20 +53,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			var propertiesByName = new OverridableItemsCollection<(PropertyDeclarationSyntax Node, IPropertySymbol DacProperty)>();
 			var dacProperties = GetPropertiesFromDacImpl(dac, pxContext, includeFromInheritanceChain, cancellation);
 
-            propertiesByName.AddRangeWithDeclarationOrder(dacProperties, startingOrder: 0, keySelector: p => p.DacProperty.Name);
+			propertiesByName.AddRangeWithDeclarationOrder(dacProperties, startingOrder: 0, keySelector: p => p.DacProperty.Name);
 			return propertiesByName.Items;
 		}
 
-        /// <summary>
-        /// Get all properties from DAC or DAC extension and its base DACs and base DAC extensions (extended via Acumatica Customization).
-        /// </summary>
-        /// <param name="dacOrExtension">The DAC or DAC extension to act on.</param>
-        /// <param name="pxContext">Context.</param>
-        /// <param name="cancellation">(Optional) Cancellation token.</param>
-        /// <returns>The properties from DAC or DAC extension and base DAC.</returns>
+		/// <summary>
+		/// Get all properties from DAC or DAC extension and its base DACs and base DAC extensions (extended via Acumatica Customization).
+		/// </summary>
+		/// <param name="dacOrExtension">The DAC or DAC extension to act on.</param>
+		/// <param name="pxContext">Context.</param>
+		/// <param name="cancellation">(Optional) Cancellation token.</param>
+		/// <returns>The properties from DAC or DAC extension and base DAC.</returns>
 		public static DacPropertyOverridableCollection GetPropertiesFromDacOrDacExtensionAndBaseDac(this ITypeSymbol dacOrExtension,
-																								    PXContext pxContext, 
-                                                                                                    CancellationToken cancellation = default)
+																									PXContext pxContext,
+																									CancellationToken cancellation = default)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
@@ -87,12 +87,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <param name="pxContext">Context</param>
 		/// <returns/>
 		public static DacPropertyOverridableCollection GetPropertiesFromDacExtensionAndBaseDac(this ITypeSymbol dacExtension, PXContext pxContext,
-                                                                                               CancellationToken cancellation = default)
+																							   CancellationToken cancellation = default)
 		{
 			dacExtension.ThrowOnNull(nameof(dacExtension));
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			return GetPropertiesInfoFromDacExtension<(PropertyDeclarationSyntax, IPropertySymbol)>(dacExtension, pxContext,
+			return GetPropertiesOrFieldsInfoFromDacExtension<(PropertyDeclarationSyntax, IPropertySymbol)>(dacExtension, pxContext,
 																								   AddPropertiesFromDac, AddPropertiesFromDacExtension);
 
 			//-----------------------Local function----------------------------------------
@@ -113,15 +113,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			}
 		}
 
-		private static IEnumerable<(PropertyDeclarationSyntax Node, IPropertySymbol Symbol)> GetPropertiesFromDacImpl(this ITypeSymbol dac, 
-                                                                                                                      PXContext pxContext,
-																			                                          bool includeFromInheritanceChain,
-                                                                                                                      CancellationToken cancellation)
+		private static IEnumerable<(PropertyDeclarationSyntax Node, IPropertySymbol Symbol)> GetPropertiesFromDacImpl(this ITypeSymbol dac,
+																													  PXContext pxContext,
+																													  bool includeFromInheritanceChain,
+																													  CancellationToken cancellation)
 		{
 			if (includeFromInheritanceChain)
 			{
-				return dac.GetBaseTypesAndThis()
-						  .TakeWhile(type => !type.IsDacBaseType())
+				return dac.GetDacWithBaseTypes()
 						  .Reverse()
 						  .SelectMany(baseDac => baseDac.GetPropertiesFromDacOrDacExtensionImpl(pxContext, cancellation));
 			}
@@ -131,135 +130,127 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			}
 		}
 
-		private static IEnumerable<(PropertyDeclarationSyntax Node, IPropertySymbol Symbol)> GetPropertiesFromDacOrDacExtensionImpl(this ITypeSymbol dacOrExtension, 
-                                                                                                                                    PXContext pxContext,
-                                                                                                                                    CancellationToken cancellation)
+		private static IEnumerable<(PropertyDeclarationSyntax Node, IPropertySymbol Symbol)> GetPropertiesFromDacOrDacExtensionImpl(this ITypeSymbol dacOrExtension,
+																																	PXContext pxContext,
+																																	CancellationToken cancellation)
 		{
-            var dacProperties = dacOrExtension.GetMembers().OfType<IPropertySymbol>()
-                                                           .Where(p => p.DeclaredAccessibility == Accessibility.Public && !p.IsStatic);
+			var dacProperties = dacOrExtension.GetMembers().OfType<IPropertySymbol>()
+														   .Where(p => p.DeclaredAccessibility == Accessibility.Public && !p.IsStatic);
 
-            foreach (IPropertySymbol property in dacProperties)
+			foreach (IPropertySymbol property in dacProperties)
 			{
-                cancellation.ThrowIfCancellationRequested();
+				cancellation.ThrowIfCancellationRequested();
 
-                if (property.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(cancellation) is PropertyDeclarationSyntax node)
-                {
-                    yield return (node, property);
-                }
+				if (property.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(cancellation) is PropertyDeclarationSyntax node)
+				{
+					yield return (node, property);
+				}
 			}
 		}
 		#endregion
 
-		#region Action Handlers
+		#region DAC fields
 		/// <summary>
-		/// Get the action handlers method symbols and syntax nodes from the graph. 
-		/// The <paramref name="actionsByName"/> must have <see cref="StringComparer.OrdinalIgnoreCase"/> comparer.
+		/// Get the DAC fields symbols and syntax nodes from the DAC.
 		/// </summary>
-		/// <param name="graph">The graph to act on</param>
-		/// <param name="actionsByName">The actions of the graph dictionary with <see cref="StringComparer.OrdinalIgnoreCase"/> comparer</param>
-		/// <param name="pxContext">Context</param>
-		/// <param name="cancellation">Cancellation token</param>
-		/// <param name="inheritance">If true includes action handlers from the graph inheritance chain</param>
-		/// <returns></returns>
-		public static ActionHandlersOverridableCollection GetActionHandlersFromGraph(this ITypeSymbol graph, IDictionary<string, ActionInfo> actionsByName,
-																					 PXContext pxContext, CancellationToken cancellation,
-																					 bool inheritance = true)
+		/// <param name="dac">The DAC to act on.</param>
+		/// <param name="pxContext">Context.</param>
+		/// <param name="includeFromInheritanceChain">(Optional) True to include, false to exclude the DAC fields from the inheritance chain.</param>
+		/// <param name="cancellation">(Optional) Cancellation token.</param>
+		/// <returns>
+		/// The DAC fields from DAC.
+		/// </returns>
+		public static DacFieldOverridableCollection GetDacFieldsFromDac(this ITypeSymbol dac, PXContext pxContext,
+																		bool includeFromInheritanceChain = true,
+																		CancellationToken cancellation = default)
 		{
-			graph.ThrowOnNull(nameof(graph));
-			actionsByName.ThrowOnNull(nameof(actionsByName));
+			dac.ThrowOnNull(nameof(dac));
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			if (!graph.IsPXGraph(pxContext))
-			{
-				return Enumerable.Empty<OverridableItem<(MethodDeclarationSyntax, IMethodSymbol)>>();
-			}
+			if (!dac.IsDAC(pxContext))
+				return Enumerable.Empty<OverridableItem<(ClassDeclarationSyntax, INamedTypeSymbol)>>();
 
-			var actionHandlersByName = new OverridableItemsCollection<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)>();
-			var graphHandlers = GetActionHandlersFromGraphImpl(graph, actionsByName, pxContext, cancellation, inheritance);
+			var dacFieldsByName = new OverridableItemsCollection<(ClassDeclarationSyntax Node, INamedTypeSymbol DacField)>();
+			var dacFields = GetDacFieldsFromDacImpl(dac, pxContext, includeFromInheritanceChain, cancellation);
 
-			actionHandlersByName.AddRangeWithDeclarationOrder(graphHandlers, startingOrder: 0, keySelector: h => h.Symbol.Name);
-			return actionHandlersByName.Items;
+			dacFieldsByName.AddRangeWithDeclarationOrder(dacFields, startingOrder: 0, keySelector: p => p.DacField.Name);
+			return dacFieldsByName.Items;
 		}
 
 		/// <summary>
-		/// Get the action handlers symbols and syntax nodes from the graph extension.
-		/// The <paramref name="actionsByName"/> must have <see cref="StringComparer.OrdinalIgnoreCase"/> comparer.
+		/// Get the DAC field symbols and syntax nodes from the DAC extension.
 		/// </summary>
-		/// <param name="graphExtension">The graph extension to act on</param>
-		/// <param name="actionsByName">The actions of the graph dictionary with <see cref="StringComparer.OrdinalIgnoreCase"/> comparer</param>
-		/// <param name="pxContext">Context</param>
-		/// <param name="cancellation">Cancellation token</param>
-		/// <returns></returns>
-		public static ActionHandlersOverridableCollection GetActionHandlersFromGraphExtensionAndBaseGraph(this ITypeSymbol graphExtension,
-																				IDictionary<string, ActionInfo> actionsByName, PXContext pxContext,
-																				CancellationToken cancellation)
+		/// <param name="dacExtension">The DAC extension to act on.</param>
+		/// <param name="pxContext">Context.</param>
+		/// <param name="cancellation">Cancellation token.</param>
+		/// <returns>
+		/// The DAC fields from DAC extension and base DAC.
+		/// </returns>
+		public static DacFieldOverridableCollection GetDacFieldsFromDacExtensionAndBaseDac(this ITypeSymbol dacExtension, PXContext pxContext,
+																						   CancellationToken cancellation)
 		{
-			graphExtension.ThrowOnNull(nameof(graphExtension));
-			actionsByName.ThrowOnNull(nameof(actionsByName));
+			dacExtension.ThrowOnNull(nameof(dacExtension));
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			return GetPropertiesInfoFromDacExtension<(MethodDeclarationSyntax, IMethodSymbol)>(
-				graphExtension, pxContext, AddHandlersFromGraph, AddHandlersFromGraphExtension);
+			return GetPropertiesOrFieldsInfoFromDacExtension<(ClassDeclarationSyntax, INamedTypeSymbol)>(
+				dacExtension, pxContext, AddFieldsFromDac, AddFieldsFromDacExtension);
 
 
-			int AddHandlersFromGraph(OverridableItemsCollection<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> handlersCollection,
-									  ITypeSymbol graph, int startingOrder)
+			int AddFieldsFromDac(OverridableItemsCollection<(ClassDeclarationSyntax Node, INamedTypeSymbol Symbol)> fieldsCollection,
+									 ITypeSymbol dac, int startingOrder)
 			{
-				var graphHandlers = graph.GetActionHandlersFromGraphImpl(actionsByName, pxContext,
-																		 cancellation, inheritance: true);
-				return handlersCollection.AddRangeWithDeclarationOrder(graphHandlers, startingOrder, keySelector: h => h.Symbol.Name);
+				var dacFields = dac.GetDacFieldsFromDacImpl(pxContext, includeFromInheritanceChain: true, cancellation);
+				return fieldsCollection.AddRangeWithDeclarationOrder(dacFields, startingOrder, keySelector: h => h.Symbol.Name);
 			}
 
-			int AddHandlersFromGraphExtension(OverridableItemsCollection<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> handlersCollection,
-											   ITypeSymbol graphExt, int startingOrder)
+			int AddFieldsFromDacExtension(OverridableItemsCollection<(ClassDeclarationSyntax Node, INamedTypeSymbol Symbol)> fieldsCollection,
+											   ITypeSymbol dacExt, int startingOrder)
 			{
-				var extensionHandlers = graphExt.GetActionHandlersFromGraphOrGraphExtension(actionsByName, pxContext, cancellation);
-				return handlersCollection.AddRangeWithDeclarationOrder(extensionHandlers, startingOrder, keySelector: h => h.Symbol.Name);
+				var dacExtensionFields = dacExt.GetDacFieldsFromDacOrDacExtension(pxContext, cancellation);
+				return fieldsCollection.AddRangeWithDeclarationOrder(dacExtensionFields, startingOrder, keySelector: h => h.Symbol.Name);
 			}
 		}
 
-		private static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetActionHandlersFromGraphImpl(
-																this ITypeSymbol graph, IDictionary<string, ActionInfo> actionsByName,
-																PXContext pxContext, CancellationToken cancellation, bool inheritance)
+		private static IEnumerable<(ClassDeclarationSyntax Node, INamedTypeSymbol Symbol)> GetDacFieldsFromDacImpl(this ITypeSymbol dac,
+																								PXContext pxContext, bool includeFromInheritanceChain,
+																								CancellationToken cancellation)
 		{
-			if (inheritance)
+			if (includeFromInheritanceChain)
 			{
-				return graph.GetBaseTypesAndThis()
-							.TakeWhile(baseGraph => !baseGraph.IsGraphBaseType())
-							.Reverse()
-							.SelectMany(baseGraph => GetActionHandlersFromGraphOrGraphExtension(baseGraph, actionsByName, pxContext, cancellation));
+				return dac.GetDacWithBaseTypes()
+						  .Reverse()
+						  .SelectMany(baseGraph => GetDacFieldsFromDacOrDacExtension(baseGraph, pxContext, cancellation));
 			}
 			else
 			{
-				return GetActionHandlersFromGraphOrGraphExtension(graph, actionsByName, pxContext, cancellation);
+				return GetDacFieldsFromDacOrDacExtension(dac, pxContext, cancellation);
 			}
 		}
 
-		private static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetActionHandlersFromGraphOrGraphExtension(
-															this ITypeSymbol graphOrExtension, IDictionary<string, ActionInfo> actionsByName,
-															PXContext pxContext, CancellationToken cancellation)
+		private static IEnumerable<(ClassDeclarationSyntax Node, INamedTypeSymbol Symbol)> GetDacFieldsFromDacOrDacExtension(
+																								this ITypeSymbol dacOrDacExtension,
+																								PXContext pxContext, CancellationToken cancellation)
 		{
-			IEnumerable<IMethodSymbol> handlers = from method in graphOrExtension.GetMembers().OfType<IMethodSymbol>()
-												  where method.IsValidActionHandler(pxContext) && actionsByName.ContainsKey(method.Name)
-												  select method;
-
-			foreach (IMethodSymbol handler in handlers)
+			IEnumerable<INamedTypeSymbol> dacFields = dacOrDacExtension.GetMembers()
+																	   .OfType<INamedTypeSymbol>()
+																	   .Where(type => type.IsDacField(pxContext));												 
+			foreach (INamedTypeSymbol field in dacFields)
 			{
 				cancellation.ThrowIfCancellationRequested();
 
-				SyntaxReference reference = handler.DeclaringSyntaxReferences.FirstOrDefault();
+				SyntaxReference reference = field.DeclaringSyntaxReferences.FirstOrDefault();
 
-				if (reference?.GetSyntax(cancellation) is MethodDeclarationSyntax declaration)
+				if (reference?.GetSyntax(cancellation) is ClassDeclarationSyntax declaration)
 				{
-					yield return (declaration, handler);
+					yield return (declaration, field);
 				}
 			}
 		}
-        #endregion
+		#endregion
 
-		private static IEnumerable<OverridableItem<T>> GetPropertiesInfoFromDacExtension<T>(ITypeSymbol dacExtension, PXContext pxContext,
-															AddDacPropertyInfoWithOrderDelegate<T> addDacPropertyInfoWithOrder,
-															AddDacPropertyInfoWithOrderDelegate<T> addDacExtensionPropertyInfoWithOrder)
+		private static IEnumerable<OverridableItem<T>> GetPropertiesOrFieldsInfoFromDacExtension<T>(ITypeSymbol dacExtension, PXContext pxContext,
+																		AddDacPropertyInfoWithOrderDelegate<T> addDacPropertyInfoWithOrder,
+																		AddDacPropertyInfoWithOrderDelegate<T> addDacExtensionPropertyInfoWithOrder)
 		{
 			var empty = Enumerable.Empty<OverridableItem<T>>();
 
