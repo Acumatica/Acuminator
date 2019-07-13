@@ -254,7 +254,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			var empty = Enumerable.Empty<OverridableItem<T>>();
 
 			if (!graphExtension.InheritsFrom(pxContext.PXGraphExtensionType) || !graphExtension.BaseType.IsGenericType)
-				return Enumerable.Empty<OverridableItem<T>>();
+				return empty;
 
 			var graphType = graphExtension.GetGraphFromGraphExtension(pxContext);
 
