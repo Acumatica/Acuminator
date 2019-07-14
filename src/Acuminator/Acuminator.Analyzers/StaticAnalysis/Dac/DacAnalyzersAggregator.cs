@@ -38,6 +38,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 
 			var inferredDacModel = DacSemanticModel.InferModel(pxContext, type, context.CancellationToken);
 
+			if (inferredDacModel == null)
+				return;
+
 			Parallel.ForEach(_innerAnalyzers, parallelOptions, innerAnalyzer =>
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
