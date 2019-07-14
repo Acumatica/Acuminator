@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
@@ -14,6 +15,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		private readonly PXContext _pxContext;
 
 		public DacType DacType { get; }
+
+		public ClassDeclarationSyntax DacNode { get; }
 
 		public INamedTypeSymbol Symbol { get; }
 
@@ -28,7 +31,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public ImmutableDictionary<string, DacFieldInfo> FieldsByNames { get; }
 		public IEnumerable<DacFieldInfo> Fields => FieldsByNames.Values;
 
-		private DacSemanticModel(PXContext pxContext, DacType dacType, INamedTypeSymbol symbol,
+		private DacSemanticModel(PXContext pxContext, DacType dacType, INamedTypeSymbol symbol, ClassDeclarationSyntax dacNode,
 								 CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
@@ -36,6 +39,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			_pxContext = pxContext;
 			DacType = dacType;
 			Symbol = symbol;
+			DacNode = dacNode;
 			_cancellation = cancellation;
 
 			switch (DacType)
@@ -81,9 +85,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				dacType = DacType.DacExtension;
 			}
 
-			return dacType != DacType.None
-				? new DacSemanticModel(pxContext, dacType, typeSymbol, cancellation)
-				: null;
+			if (dacType == DacType.None ||
+				!(typeSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(cancellation) is ClassDeclarationSyntax dacNode))
+			{
+				return null;
+			}
+
+			return new DacSemanticModel(pxContext, dacType, typeSymbol, dacNode,  cancellation);
 		}
 
 		private ImmutableDictionary<string, DacPropertyInfo> GetDacProperties() =>
