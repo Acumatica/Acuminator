@@ -15,6 +15,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// </summary>
 		public ISymbol SymbolBase { get; }
 
+		public string Name => SymbolBase.Name;
+
 		/// <summary>
 		/// The declaration order.
 		/// </summary>
@@ -28,6 +30,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		}
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		protected virtual string DebuggerDisplay => $"{SymbolBase.Name}";
+		protected virtual string DebuggerDisplay => $"{Name}";
 	}
 }

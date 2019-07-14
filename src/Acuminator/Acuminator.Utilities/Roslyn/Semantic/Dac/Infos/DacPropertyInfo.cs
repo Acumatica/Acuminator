@@ -16,15 +16,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			internal set;
 		}
 
-		DacPropertyInfo IOverridableItem<DacPropertyInfo>.Base => Base;
-
 		DacPropertyInfo IWriteableBaseItem<DacPropertyInfo>.Base
 		{
 			get => Base;
 			set => Base = value;
 		}
-
-		public string Name => Symbol.Name;
 
 		public DacPropertyInfo(PropertyDeclarationSyntax node, IPropertySymbol symbol, int declarationOrder) :
 						  base(node, symbol, declarationOrder)

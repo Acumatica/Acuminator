@@ -16,15 +16,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			internal set;
 		}
 	
-		DacFieldInfo IOverridableItem<DacFieldInfo>.Base => Base;
-
 		DacFieldInfo IWriteableBaseItem<DacFieldInfo>.Base
 		{
 			get => Base;
 			set => Base = value;
 		}
-
-		public string Name => Symbol.Name;
 
 		public DacFieldInfo(ClassDeclarationSyntax node, INamedTypeSymbol symbol, int declarationOrder) :
 					   base(node, symbol, declarationOrder)

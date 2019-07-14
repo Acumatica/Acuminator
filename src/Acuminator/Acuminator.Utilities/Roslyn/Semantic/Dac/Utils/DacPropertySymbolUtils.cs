@@ -6,13 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-using DacPropertyOverridableCollection = 
-	System.Collections.Generic.IEnumerable<
-		Acuminator.Utilities.Roslyn.Semantic.OverridableItem<(Microsoft.CodeAnalysis.CSharp.Syntax.PropertyDeclarationSyntax Node, Microsoft.CodeAnalysis.IPropertySymbol DacProperty)>>;
-
-using DacFieldOverridableCollection = 
-	System.Collections.Generic.IEnumerable<
-		Acuminator.Utilities.Roslyn.Semantic.OverridableItem<(Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax Node, Microsoft.CodeAnalysis.INamedTypeSymbol FieldType)>>;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
