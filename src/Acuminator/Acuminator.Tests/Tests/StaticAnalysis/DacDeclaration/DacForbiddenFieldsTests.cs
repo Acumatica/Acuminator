@@ -13,7 +13,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacDeclaration
 	public class DacForbiddenFieldsTests : CodeFixVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-			new DacDeclarationAnalyzer(CodeAnalysisSettings.Default
+			new DacDeclarationSyntaxAnalyzer(CodeAnalysisSettings.Default
 				.WithIsvSpecificAnalyzersEnabled());
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new ForbiddenFieldsInDacFix();

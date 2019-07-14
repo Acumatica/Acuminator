@@ -18,7 +18,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacDeclaration
 {
 	public class UnderscoresInDacTests : CodeFixVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacDeclarationAnalyzer();
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacDeclarationSyntaxAnalyzer();
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new UnderscoresInDacFix();
 

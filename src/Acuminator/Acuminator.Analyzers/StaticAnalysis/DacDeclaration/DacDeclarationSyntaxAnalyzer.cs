@@ -16,11 +16,11 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class DacDeclarationAnalyzer : PXDiagnosticAnalyzer, ISymbolAnalyzer
+	public class DacDeclarationSyntaxAnalyzer : PXDiagnosticAnalyzer, ISymbolAnalyzer
 	{
 		private const string DeletedDatabaseRecord = "DeletedDatabaseRecord";
 
-		public DacDeclarationAnalyzer(CodeAnalysisSettings settings = null) : base(settings){}
+		public DacDeclarationSyntaxAnalyzer(CodeAnalysisSettings settings = null) : base(settings){}
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
