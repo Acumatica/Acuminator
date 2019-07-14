@@ -205,9 +205,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			if (Type == GraphType.None)
 				return ImmutableDictionary.Create<string, GraphRowEventInfo>();
 
-			GraphEventsCollection<GraphRowEventInfo> rawCollection = eventsCollector.GetRowEvents(eventType);
-			return rawCollection.ToImmutableDictionary(kvp => kvp.Key, kvp => kvp.Value) ?? 
-				   ImmutableDictionary.Create<string, GraphRowEventInfo>();
+			OverridableItemsCollection<GraphRowEventInfo> rawCollection = eventsCollector.GetRowEvents(eventType);
+			return rawCollection?.ToImmutableDictionary() ?? ImmutableDictionary.Create<string, GraphRowEventInfo>();
 		}
 
 		private ImmutableDictionary<string, GraphFieldEventInfo> GetFieldEvents(EventsCollector eventsCollector, EventType eventType)
@@ -215,9 +214,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			if (Type == GraphType.None)
 				return ImmutableDictionary.Create<string, GraphFieldEventInfo>();
 
-			GraphEventsCollection<GraphFieldEventInfo> rawCollection = eventsCollector.GetFieldEvents(eventType);
-			return rawCollection.ToImmutableDictionary(kvp => kvp.Key, kvp => kvp.Value) ??
-				   ImmutableDictionary.Create<string, GraphFieldEventInfo>();
+			OverridableItemsCollection<GraphFieldEventInfo> rawCollection = eventsCollector.GetFieldEvents(eventType);
+			return rawCollection.ToImmutableDictionary() ?? ImmutableDictionary.Create<string, GraphFieldEventInfo>();
 		}
 	}
 }

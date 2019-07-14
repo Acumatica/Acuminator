@@ -8,11 +8,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	/// <summary>
 	/// A common generic graph event info DTO base class.
 	/// </summary>
-	public abstract class GraphEventInfoBase<TEventInfoType> : GraphEventInfoBase
+	public abstract class GraphEventInfoBase<TEventInfoType> : GraphEventInfoBase, IWriteableBaseItem<TEventInfoType>
 	where TEventInfoType : GraphEventInfoBase<TEventInfoType>
 	{
-		private TEventInfoType _baseEvent;
-
 		/// <summary>
 		/// The base event. 
 		/// </summary>		
@@ -24,18 +22,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// This will lead to a two concrete implementations of collection for <see cref="GraphRowEventInfo"/> and <see cref="GraphFieldEventInfo"/> 
 		/// or to a hard to read code in the <see cref="PXGraphEventSemanticModel.EventsCollector"/> if we choose to pass the delegates to the generic collection class. 
 		/// </remarks>
-		public TEventInfoType BaseEvent
+		public TEventInfoType Base
 		{
-			get => _baseEvent;
-			internal set
-			{
-				value.ThrowOnNull(nameof(value));
+			get;
+			internal set;
+		}
 
-				if (!ReferenceEquals(value, _baseEvent) && !ReferenceEquals(value, this))
-				{
-					_baseEvent = value;
-				}
-			}
+		TEventInfoType IWriteableBaseItem<TEventInfoType>.Base
+		{
+			get => Base;
+			set => Base = value;
 		}
 
 		protected GraphEventInfoBase(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder,
@@ -50,7 +46,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		{
 			baseEventInfo.ThrowOnNull(nameof(baseEventInfo));
 
-			BaseEvent = baseEventInfo;
+			Base = baseEventInfo;
 		}	
 	}
 }

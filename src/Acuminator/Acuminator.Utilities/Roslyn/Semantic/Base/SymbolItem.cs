@@ -15,7 +15,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// </summary>
 		public ISymbol SymbolBase { get; }
 
-		public string Name => SymbolBase.Name;
+		public virtual string Name => SymbolBase.Name;
 
 		/// <summary>
 		/// The declaration order.

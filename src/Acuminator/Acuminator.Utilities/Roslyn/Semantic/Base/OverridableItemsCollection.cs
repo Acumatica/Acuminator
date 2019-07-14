@@ -44,7 +44,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		{
 			infoConstructor.ThrowOnNull(nameof(infoConstructor));
 			TInfo info = infoConstructor(rawData, declarationOrder);
+			Add(info);
+		}
 
+		public void Add(TInfo info)
+		{
 			if (info?.Name == null)
 				return;
 

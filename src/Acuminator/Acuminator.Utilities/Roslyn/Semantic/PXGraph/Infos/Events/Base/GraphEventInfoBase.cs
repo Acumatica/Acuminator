@@ -17,6 +17,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		public string DacName { get; }
 
+		public override string Name => GetEventGroupingKey();
+
 		protected GraphEventInfoBase(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder,
 									 EventHandlerSignatureType signatureType, EventType eventType) :
 								base(node, symbol, declarationOrder)
