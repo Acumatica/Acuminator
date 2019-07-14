@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
+using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Utilities;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -15,12 +16,14 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 {
-	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class DacDeclarationSyntaxAnalyzer : PXDiagnosticAnalyzer, ISymbolAnalyzer
+	/// <summary>
+	/// A DAC declaration syntax analyzer.
+	/// </summary>
+	public class DacDeclarationAnalyzer : DacAggregatedAnalyzerBase
 	{
 		private const string DeletedDatabaseRecord = "DeletedDatabaseRecord";
-
-		public DacDeclarationSyntaxAnalyzer(CodeAnalysisSettings settings = null) : base(settings){}
+		private const string CompanyID = "CompanyID";
+		private const string CompanyMask = "CompanyMask";
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
@@ -31,36 +34,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 				Descriptors.PX1028_ConstructorInDacDeclaration
 			);
 
-		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac)
 		{
-			compilationStartContext.RegisterSyntaxNodeAction(syntaxContext =>
-				AnalyzeDacOrDacExtensionDeclaration(syntaxContext, pxContext), SyntaxKind.ClassDeclaration);
+			context.CancellationToken.ThrowIfCancellationRequested();
+
+			CheckDeclarationForUnderscores(pxContext, dacOrDacExtNode, context, dacProperties);
+			CheckDeclarationForForbiddenNames(pxContext, dacOrDacExtNode, context, dacProperties, dacClassDeclarations);
+			CheckDeclarationForConstructors(pxContext, dacOrDacExtNode, context);
 		}
 
-		private static void AnalyzeDacOrDacExtensionDeclaration(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+		private static void AnalyzeDacOrDacExtensionDeclaration(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac)
 		{
-			if (!(syntaxContext.Node is ClassDeclarationSyntax dacOrDacExtNode) || syntaxContext.CancellationToken.IsCancellationRequested)
-				return;
-
-			INamedTypeSymbol dacOrDacExt = syntaxContext.SemanticModel.GetDeclaredSymbol(dacOrDacExtNode, syntaxContext.CancellationToken);
-
-			if (dacOrDacExt == null || (!dacOrDacExt.IsDAC() && !dacOrDacExt.IsDacExtension()) ||
-				syntaxContext.CancellationToken.IsCancellationRequested)
-				return;
-
-
-			var dacProperties = dacOrDacExtNode.Members.OfType<PropertyDeclarationSyntax>()
-													   .GroupBy(p => p.Identifier.ValueText, StringComparer.OrdinalIgnoreCase)
-													   .ToDictionary(group => group.Key,
-																	 group => group.ToList(), StringComparer.OrdinalIgnoreCase);
-			var dacClassDeclarations = dacOrDacExtNode.Members.OfType<ClassDeclarationSyntax>()
-				.GroupBy(p => p.Identifier.ValueText, StringComparer.OrdinalIgnoreCase)
-				.ToDictionary(group => group.Key,
-								group => group.ToList(), StringComparer.OrdinalIgnoreCase);
-
-			CheckDeclarationForUnderscores(pxContext, dacOrDacExtNode, syntaxContext, dacProperties);
-			CheckDeclarationForForbiddenNames(pxContext, dacOrDacExtNode, syntaxContext, dacProperties,dacClassDeclarations);
-			CheckDeclarationForConstructors(pxContext, dacOrDacExtNode, syntaxContext);
+			
 		}
 
 		private static void CheckDeclarationForUnderscores(PXContext pxContext, ClassDeclarationSyntax dacOrDacExtNode,
@@ -205,10 +190,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 		{
 			return new string[]
 			{
-				"CompanyID",
-				DeletedDatabaseRecord ,
-				"CompanyMask"
+				DeletedDatabaseRecord,
+				CompanyID,
+				CompanyMask
 			};
-		}
+		}	
 	}
 }

@@ -12,7 +12,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacDeclaration
 {
     public class DacWithConstructorTests : CodeFixVerifier
     {
-	    protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacDeclarationSyntaxAnalyzer();
+	    protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacDeclarationAnalyzer();
 	    protected override CodeFixProvider GetCSharpCodeFixProvider() => new ConstructorInDacFix();
 
 		[Theory]
