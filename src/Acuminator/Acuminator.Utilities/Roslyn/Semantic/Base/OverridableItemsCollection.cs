@@ -4,51 +4,61 @@ using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.Roslyn.Semantic
 {
-	public class OverridableItemsCollection<T> : Dictionary<string, OverridableItem<T>>
+	public class OverridableItemsCollection<TInfo> : Dictionary<string, TInfo>
+	where TInfo : IOverridableItem<TInfo>
 	{
-		public IEnumerable<OverridableItem<T>> Items => Values;
+		public IEnumerable<TInfo> Items => Values;
 
-		public OverridableItemsCollection()
-			: base(StringComparer.OrdinalIgnoreCase)
+		public OverridableItemsCollection() : base(StringComparer.OrdinalIgnoreCase)
+		{
+		}
+
+		public OverridableItemsCollection(int capacity) : base(capacity, StringComparer.OrdinalIgnoreCase)
 		{
 		}
 
 		/// <summary>
-		/// Adds a range of items maintaining the declaration order. Returns the number following the last assigned declaration order.
+		/// Adds a range of DTO info items from the raw datas maintaining the declaration order. Returns the number following the last assigned declaration order.
 		/// </summary>
+		/// <typeparam name="TRawData">Type of the raw data.</typeparam>
 		/// <param name="itemsToAdd">The items to add.</param>
 		/// <param name="startingOrder">The starting order.</param>
-		/// <param name="keySelector">The key selector.</param>
+		/// <param name="infoConstructor">The DTO info constructor.</param>
 		/// <returns/>
-		public int AddRangeWithDeclarationOrder(IEnumerable<T> itemsToAdd, int startingOrder, Func<T, string> keySelector)
+		public int AddRangeWithDeclarationOrder<TRawData>(IEnumerable<TRawData> itemsToAdd, int startingOrder, Func<TRawData, int, TInfo> infoConstructor)
 		{
-			keySelector.ThrowOnNull(nameof(keySelector));
 			itemsToAdd.ThrowOnNull(nameof(itemsToAdd));
 
 			int order = startingOrder;
 
-			foreach (T item in itemsToAdd)
+			foreach (TRawData rawData in itemsToAdd)
 			{
-				string key = keySelector(item);
-				Add(key, item, order);
+				Add(rawData, order, infoConstructor);
 				order++;
 			}
 
 			return order;
 		}
 
-		public void Add(string key, T value, int declarationOrder)
+		public void Add<TRawData>(TRawData rawData, int declarationOrder, Func<TRawData, int, TInfo> infoConstructor)
 		{
-			if (TryGetValue(key, out OverridableItem<T> existingValue))
+			infoConstructor.ThrowOnNull(nameof(infoConstructor));
+			TInfo info = infoConstructor(rawData, declarationOrder);
+
+			if (info?.Name == null)
+				return;
+
+			if (TryGetValue(info.Name, out TInfo existingValue))
 			{
-				if (!existingValue.Item.Equals(value))
+				if (!existingValue.Equals(info) && info is IWriteableBaseItem<TInfo> infoWithWriteableBase)
 				{
-					base[key] = new OverridableItem<T>(value, declarationOrder, existingValue);
+					infoWithWriteableBase.Base = existingValue;
+					base[info.Name] = info;
 				}
 			}
 			else
 			{
-				Add(key, new OverridableItem<T>(value, declarationOrder));
+				Add(info.Name, info);
 			}
 		}
 	}
