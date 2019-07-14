@@ -64,71 +64,34 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			//InitDeclaredInitializers();
 		}
 
-		//private void InitProcessingDelegatesInfo()
-		//{
-		//	var processingViewSymbols = Views.Where(v => v.IsProcessing)
-		//									 .Select(v => v.Symbol)
-		//									 .ToImmutableHashSet();
-		//	IsProcessing = processingViewSymbols.Count > 0;
+		private ImmutableDictionary<string, DacPropertyInfo> GetDacProperties()
+		{
+			if (DacType == DacType.None)
+				return ImmutableDictionary.Create<string, DacPropertyInfo>(StringComparer.OrdinalIgnoreCase);
 
-		//	if (!IsProcessing)
-		//	{
-		//		return;
-		//	}
+			var rawPropertyInfos = DacType == DacType.Dac
+				? Symbol.GetDacPropertySymbolsWithNodesFromDac(_pxContext)
+				: Symbol.GetPropertiesFromDacExtensionAndBaseDac(_pxContext);
 
-		//	var declaringNodes = Symbol.DeclaringSyntaxReferences
-		//							   .Select(r => r.GetSyntax(_cancellation));
-		//	var walker = new ProcessingDelegatesWalker(_pxContext, processingViewSymbols, _cancellation);
-
-		//	foreach (var node in declaringNodes)
-		//	{
-		//		walker.Visit(node);
-		//	}
-
-		//	foreach (var delegateInfo in walker.ParametersDelegateListByView)
-		//	{
-		//		ViewsByNames[delegateInfo.Key].ParametersDelegates = delegateInfo.Value.ToImmutableArray();
-		//	}
-
-		//	foreach (var delegateInfo in walker.ProcessDelegateListByView)
-		//	{
-		//		ViewsByNames[delegateInfo.Key].ProcessDelegates = delegateInfo.Value.ToImmutableArray();
-		//	}
-
-		//	foreach (var delegateInfo in walker.FinallyProcessDelegateListByView)
-		//	{
-		//		ViewsByNames[delegateInfo.Key].FinallyProcessDelegates = delegateInfo.Value.ToImmutableArray();
-		//	}
-		//}
-
-		//private ImmutableDictionary<string, DataViewInfo> GetDataViews()
-		//{
-		//	if (Type == GraphType.None)
-		//		return ImmutableDictionary.Create<string, DataViewInfo>(StringComparer.OrdinalIgnoreCase);
-
-		//	var rawViewInfos = Type == GraphType.PXGraph
-		//		? Symbol.GetViewsWithSymbolsFromPXGraph(_pxContext)
-		//		: Symbol.GetViewsFromGraphExtensionAndBaseGraph(_pxContext);
-
-		//	return rawViewInfos.ToLookup(a => a.Item.ViewSymbol.Name, StringComparer.OrdinalIgnoreCase)
-		//					   .ToImmutableDictionary(group => group.Key,
-		//											  group => CreateViewInfo(group.First()),
-		//											  keyComparer: StringComparer.OrdinalIgnoreCase);
+			return rawPropertyInfos.ToLookup(a => a.Item.DacProperty.Name, StringComparer.OrdinalIgnoreCase)
+								   .ToImmutableDictionary(group => group.Key,
+														  group => CreateViewInfo(group.First()),
+														  keyComparer: StringComparer.OrdinalIgnoreCase);
 
 
-		//	DataViewInfo CreateViewInfo(GraphOverridableItem<(ISymbol ViewSymbol, INamedTypeSymbol ViewType)> item)
-		//	{
-		//		var (viewSymbol, viewType) = item.Item;
+			DataViewInfo CreateDacPropertyInfo(GraphOverridableItem<(ISymbol ViewSymbol, INamedTypeSymbol ViewType)> item)
+			{
+				var (viewSymbol, viewType) = item.Item;
 
-		//		DataViewInfo baseViewInfo = item.Base != null
-		//			? CreateViewInfo(item.Base)
-		//			: null;
+				DataViewInfo baseViewInfo = item.Base != null
+					? CreateViewInfo(item.Base)
+					: null;
 
-		//		return baseViewInfo == null
-		//			? new DataViewInfo(viewSymbol, viewType, _pxContext, item.DeclarationOrder)
-		//			: new DataViewInfo(viewSymbol, viewType, _pxContext, item.DeclarationOrder, baseViewInfo);
-		//	}
-		//}
+				return baseViewInfo == null
+					? new DataViewInfo(viewSymbol, viewType, _pxContext, item.DeclarationOrder)
+					: new DataViewInfo(viewSymbol, viewType, _pxContext, item.DeclarationOrder, baseViewInfo);
+			}
+		}
 
 		//private ImmutableDictionary<string, DataViewDelegateInfo> GetDataViewDelegates()
 		//{
