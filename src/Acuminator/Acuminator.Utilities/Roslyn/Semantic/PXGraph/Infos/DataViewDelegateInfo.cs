@@ -6,12 +6,22 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
-	public class DataViewDelegateInfo : NodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol>
+	public class DataViewDelegateInfo : NodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol>, IWriteableBaseItem<DataViewDelegateInfo>
 	{
 		/// <summary>
 		/// The overriden item if any
 		/// </summary>
-		public DataViewDelegateInfo Base { get; }
+		public DataViewDelegateInfo Base
+		{
+			get;
+			internal set;
+		}
+
+		DataViewDelegateInfo IWriteableBaseItem<DataViewDelegateInfo>.Base
+		{
+			get => Base;
+			set => Base = value;
+		}
 
 		public DataViewDelegateInfo(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder)
 			: base(node, symbol, declarationOrder)
