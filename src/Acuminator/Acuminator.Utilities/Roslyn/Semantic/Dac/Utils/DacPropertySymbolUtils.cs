@@ -35,9 +35,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <param name="includeFromInheritanceChain">(Optional) True to include, false to exclude the properties from the inheritance chain.</param>
 		/// <param name="cancellation">(Optional) Cancellation token.</param>
 		/// <returns>The DAC property symbols with nodes from DAC.</returns>
-		public static OverridableItemsCollection<DacPropertyInfo> GetDacPropertySymbolsWithNodesFromDac(this ITypeSymbol dac, PXContext pxContext,
-																										bool includeFromInheritanceChain = true,
-																										CancellationToken cancellation = default)
+		public static OverridableItemsCollection<DacPropertyInfo> GetDacPropertiesFromDac(this ITypeSymbol dac, PXContext pxContext,
+																						  bool includeFromInheritanceChain = true,
+																						  CancellationToken cancellation = default)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
@@ -72,7 +72,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				return new OverridableItemsCollection<DacPropertyInfo>();
 
 			return isDac
-				? dacOrExtension.GetDacPropertySymbolsWithNodesFromDac(pxContext)
+				? dacOrExtension.GetDacPropertiesFromDac(pxContext)
 				: dacOrExtension.GetPropertiesFromDacExtensionAndBaseDac(pxContext);
 		}
 
@@ -181,7 +181,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// The DAC fields from DAC extension and base DAC.
 		/// </returns>
 		public static OverridableItemsCollection<DacFieldInfo> GetDacFieldsFromDacExtensionAndBaseDac(this ITypeSymbol dacExtension, PXContext pxContext,
-																									  CancellationToken cancellation)
+																									  CancellationToken cancellation = default)
 		{
 			dacExtension.ThrowOnNull(nameof(dacExtension));
 			pxContext.ThrowOnNull(nameof(pxContext));
