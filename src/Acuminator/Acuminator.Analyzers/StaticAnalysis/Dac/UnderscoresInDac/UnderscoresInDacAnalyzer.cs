@@ -27,9 +27,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 			SyntaxToken dacIdentifier = dacOrDacExt.DacNode.Identifier;
 			CheckIdentifierForUnderscores(dacIdentifier, context, pxContext);
 
-			var fieldsIdentifiers = dacOrDacExt.Fields.Where(field => ShouldCheckDacMember(field.Symbol))
+			var fieldsIdentifiers = dacOrDacExt.Fields.Where(field => CheckDacMemberAccessibility(field.Symbol) && 
+																	  dacOrDacExt.PropertiesByNames.ContainsKey(field.Name))
 													  .SelectMany(field => field.Node.GetIdentifiers());
-			var propertiesIdentifiers = dacOrDacExt.Properties.Where(property => ShouldCheckDacMember(property.Symbol))
+
+			var propertiesIdentifiers = dacOrDacExt.Properties.Where(property => CheckDacMemberAccessibility(property.Symbol))
 															  .SelectMany(property => property.Node.GetIdentifiers());
 
 			var identifiersToCheck = fieldsIdentifiers.Concat(propertiesIdentifiers);
@@ -74,7 +76,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 			return true;
 		}
 
-		private static bool ShouldCheckDacMember(ISymbol memberSymbol) =>
+		private static bool CheckDacMemberAccessibility(ISymbol memberSymbol) =>
 			memberSymbol.DeclaredAccessibility == Accessibility.Public ||
 			memberSymbol.DeclaredAccessibility == Accessibility.Internal;
 	
