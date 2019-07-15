@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
 using Acuminator.Analyzers.StaticAnalysis.Dac;
-using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
@@ -37,8 +37,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 			ImmutableArray.Create
 			(
 				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration,
-				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV,
-				Descriptors.PX1028_ConstructorInDacDeclaration
+				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV
 			);
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dacOrDacExtension)
@@ -50,16 +49,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 									where dacOrDacExtension.PropertiesByNames.ContainsKey(forbiddenFieldName)
 									select dacOrDacExtension.PropertiesByNames[forbiddenFieldName];
 
-			var invalidFields = from forbiddenClassName in forbiddenNames
-								where dacOrDacExtension.FieldsByNames.ContainsKey(forbiddenClassName)
-								select dacOrDacExtension.FieldsByNames[forbiddenClassName];
-
-			var identifiers = invalidProperties.Select(property => property.Node.Identifier)
-											   .Concat(invalidFields.Select(field => field.Node.Identifier));
-
-			foreach (SyntaxToken identifier in identifiers)
+			foreach (DacPropertyInfo property in invalidProperties)
 			{
-				RegisterDiagnosticForIdentifier(identifier, pxContext, context);
+				RegisterDiagnosticForIdentifier(property.Node.Identifier, pxContext, context);
+			}
+
+			context.CancellationToken.ThrowIfCancellationRequested();
+			var allNestedTypesDictionary = dacOrDacExtension.GetMemberNodes<ClassDeclarationSyntax>()
+															.ToLookup(node => node.Identifier.ValueText, StringComparer.OrdinalIgnoreCase);
+			var allInvalidFields = forbiddenNames.Where(forbiddenClassName => allNestedTypesDictionary.Contains(forbiddenClassName))
+												 .SelectMany(forbiddenClassName => allNestedTypesDictionary[forbiddenClassName]);
+
+			foreach (ClassDeclarationSyntax fieldNode in allInvalidFields)
+			{
+				RegisterDiagnosticForIdentifier(fieldNode.Identifier, pxContext, context);
 			}
 		}		
 
