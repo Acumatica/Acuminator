@@ -28,8 +28,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public ImmutableDictionary<string, DacPropertyInfo> PropertiesByNames { get; }
 		public IEnumerable<DacPropertyInfo> Properties => PropertiesByNames.Values;
 
+		public IEnumerable<DacPropertyInfo> DeclaredProperties => Properties.Where(p => p.Symbol.ContainingType == Symbol);
+
 		public ImmutableDictionary<string, DacFieldInfo> FieldsByNames { get; }
 		public IEnumerable<DacFieldInfo> Fields => FieldsByNames.Values;
+
+		public IEnumerable<DacFieldInfo> DeclaredFields => Fields.Where(f => f.Symbol.ContainingType == Symbol);
 
 		private DacSemanticModel(PXContext pxContext, DacType dacType, INamedTypeSymbol symbol, ClassDeclarationSyntax dacNode,
 								 CancellationToken cancellation)
@@ -96,6 +100,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		/// <summary>
 		/// Gets the member nodes of the specified type from the DAC/Dac extension declaration.
+		/// Does not perform boxing of <see cref="SyntaxList{TNode}"/> <see cref="DacNode.Members"/> which is good for performance.
 		/// </summary>
 		/// <typeparam name="TMemberNode">Type of the member node.</typeparam>
 		/// <returns/>
