@@ -68,11 +68,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 
 		private void RegisterDiagnosticForIdentifier(SyntaxToken identifier, PXContext pxContext, SymbolAnalysisContext context)
 		{
-			Location location = identifier.GetLocation();
-
-			if (location == null)
-				return;
-
 			bool isDeletedDatabaseRecord = string.Equals(identifier.ValueText, DeletedDatabaseRecord, StringComparison.OrdinalIgnoreCase);
 			DiagnosticDescriptor descriptorToShow = 
 				isDeletedDatabaseRecord && !pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled
@@ -80,7 +75,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 					: Descriptors.PX1027_ForbiddenFieldsInDacDeclaration;
 
 			context.ReportDiagnosticWithSuppressionCheck(
-				Diagnostic.Create(descriptorToShow, location, identifier.ValueText), 
+				Diagnostic.Create(descriptorToShow, identifier.GetLocation(), identifier.ValueText), 
 				pxContext.CodeAnalysisSettings);
 		}
 	}

@@ -33,13 +33,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType
 			if (dacFieldInfo.Symbol.IsAbstract)
 				return;
 
-			Location dacFieldLocation = dacFieldInfo.Node.Identifier.GetLocation();
-
-			if (dacFieldLocation == null)
-				return;
-
 			symbolContext.ReportDiagnosticWithSuppressionCheck(
-				Diagnostic.Create(Descriptors.PX1024_DacNonAbstractFieldType, dacFieldLocation),
+				Diagnostic.Create(Descriptors.PX1024_DacNonAbstractFieldType, dacFieldInfo.Node.Identifier.GetLocation()),
 				pxContext.CodeAnalysisSettings);
 		}
 	}

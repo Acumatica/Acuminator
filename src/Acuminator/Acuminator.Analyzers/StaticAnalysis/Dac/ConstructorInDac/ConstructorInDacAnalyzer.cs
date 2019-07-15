@@ -29,14 +29,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConstructorInDac
 			foreach (var constructor in dacConstructors)
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
-				Location location = constructor.Identifier.GetLocation();
-
-				if (location != null)
-				{
-					context.ReportDiagnosticWithSuppressionCheck(
-						Diagnostic.Create(Descriptors.PX1028_ConstructorInDacDeclaration, location),
-						pxContext.CodeAnalysisSettings);
-				}
+			
+				context.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1028_ConstructorInDacDeclaration, constructor.Identifier.GetLocation()),
+					pxContext.CodeAnalysisSettings);
 			}
 		}
 	}

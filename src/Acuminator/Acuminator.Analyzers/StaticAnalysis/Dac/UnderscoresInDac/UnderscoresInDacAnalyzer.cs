@@ -48,11 +48,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 			if (!identifier.ValueText.Contains("_"))
 				return;
 
-			Location location = identifier.GetLocation();
-
-			if (location == null)
-				return;
-
 			bool registerCodeFix = !IdentifierContainsOnlyUnderscores(identifier.ValueText);
 
 			var diagnosticProperties = new Dictionary<string, string>
@@ -61,7 +56,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 			}.ToImmutableDictionary();
 
 			context.ReportDiagnosticWithSuppressionCheck(
-				Diagnostic.Create(Descriptors.PX1026_UnderscoresInDacDeclaration, location, diagnosticProperties),
+				Diagnostic.Create(Descriptors.PX1026_UnderscoresInDacDeclaration, identifier.GetLocation(), diagnosticProperties),
 				pxContext.CodeAnalysisSettings);
 		}
 
