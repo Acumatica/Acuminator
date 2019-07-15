@@ -16,7 +16,7 @@ using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
+namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]

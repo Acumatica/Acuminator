@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
+namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 {
 	public partial class ForbiddenFieldsInDacFix : CodeFixProvider
 	{	
