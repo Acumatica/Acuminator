@@ -39,15 +39,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 			if (!(context.Symbol is INamedTypeSymbol type))
 				return;
 
-			ParallelOptions parallelOptions = new ParallelOptions
-			{
-				CancellationToken = context.CancellationToken
-			};
-
 			var inferredDacModel = DacSemanticModel.InferModel(pxContext, type, context.CancellationToken);
 
 			if (inferredDacModel == null)
 				return;
+
+			ParallelOptions parallelOptions = new ParallelOptions
+			{
+				CancellationToken = context.CancellationToken
+			};
 
 			Parallel.ForEach(_innerAnalyzers, parallelOptions, innerAnalyzer =>
 			{
