@@ -4,6 +4,7 @@ using Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType;
 using Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes;
 using Acuminator.Analyzers.StaticAnalysis.DacUiAttributes;
 using Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac;
+using Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension;
 using Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -25,7 +26,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 			new ConstructorInDacAnalyzer(),
 			new UnderscoresInDacAnalyzer(),
 			new ForbiddenFieldsInDacAnalyzer(),
-			new DacUiAttributesAnalyzer())
+			new DacUiAttributesAnalyzer(),
+			new InheritanceFromPXCacheExtensionAnalyzer())
         {
         }
 

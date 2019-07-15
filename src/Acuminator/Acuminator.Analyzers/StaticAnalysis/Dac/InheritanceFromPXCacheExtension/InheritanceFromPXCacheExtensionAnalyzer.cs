@@ -5,46 +5,42 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Linq;
 using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Analyzers.StaticAnalysis.Dac;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
 namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 {
-	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class InheritanceFromPXCacheExtensionAnalyzer : PXDiagnosticAnalyzer
-    {
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
+    public class InheritanceFromPXCacheExtensionAnalyzer : DacAggregatedAnalyzerBase
+	{
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => 
+			ImmutableArray.Create
+			(
 				Descriptors.PX1009_InheritanceFromPXCacheExtension,
-				Descriptors.PX1011_InheritanceFromPXCacheExtension);
-        internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
-        {
-            compilationStartContext.RegisterSymbolAction(c => Analyze(c, pxContext), 
-                SymbolKind.NamedType);
-        }
+				Descriptors.PX1011_InheritanceFromPXCacheExtension
+			);
 
-        private void Analyze(SymbolAnalysisContext context, PXContext pxContext)
-        {
-	        var symbol = (INamedTypeSymbol) context.Symbol;
-	        if (!symbol.InheritsFrom(pxContext.PXCacheExtensionType)
-	            || symbol.Name == TypeNames.PXCacheExtension
-				|| symbol.InheritsFromOrEquals(pxContext.PXMappedCacheExtensionType))
-	        {
-		        return;
-	        }
+		public override bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) =>
+			dac?.DacType == DacType.DacExtension && 
+			dac.Symbol.Name != TypeNames.PXCacheExtension && !dac.Symbol.InheritsFromOrEquals(pxContext.PXMappedCacheExtensionType) &&
+			base.ShouldAnalyze(pxContext, dac);
 
-	        if (symbol.BaseType.Name == TypeNames.PXCacheExtension)
-	        {
-		        if (!symbol.IsSealed)
-		        {
-			        context.ReportDiagnosticWithSuppressionCheck(
-						Diagnostic.Create(Descriptors.PX1011_InheritanceFromPXCacheExtension, symbol.Locations.First()),
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac)
+		{
+			if (dac.Symbol.BaseType.Name == TypeNames.PXCacheExtension)
+			{
+				if (!dac.Symbol.IsSealed)
+				{
+					context.ReportDiagnosticWithSuppressionCheck(
+						Diagnostic.Create(Descriptors.PX1011_InheritanceFromPXCacheExtension, dac.Symbol.Locations.First()),
 						pxContext.CodeAnalysisSettings);
-		        }
-	        }
-	        else
-	        {
-		        context.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(Descriptors.PX1009_InheritanceFromPXCacheExtension, symbol.Locations.First()),
+				}
+			}
+			else
+			{
+				context.ReportDiagnosticWithSuppressionCheck(
+					Diagnostic.Create(Descriptors.PX1009_InheritanceFromPXCacheExtension, dac.Symbol.Locations.First()),
 					pxContext.CodeAnalysisSettings);
-	        }
-        }
+			}
+		}
     }
 }
