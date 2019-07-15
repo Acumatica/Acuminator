@@ -1,6 +1,8 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
 using Acuminator.Analyzers.StaticAnalysis.ConstructorInDac;
 using Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType;
+using Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes;
+using Acuminator.Analyzers.StaticAnalysis.DacUiAttributes;
 using Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac;
 using Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac;
 using Acuminator.Utilities;
@@ -18,10 +20,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
         protected override SymbolKind SymbolKind => SymbolKind.NamedType;
 
         public DacAnalyzersAggregator() : this(null,
+			new DacPropertyAttributesAnalyzer(),
 			new DacNonAbstractFieldTypeAnalyzer(),
 			new ConstructorInDacAnalyzer(),
 			new UnderscoresInDacAnalyzer(),
-			new ForbiddenFieldsInDacAnalyzer())
+			new ForbiddenFieldsInDacAnalyzer(),
+			new DacUiAttributesAnalyzer())
         {
         }
 
