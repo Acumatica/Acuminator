@@ -1,5 +1,8 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
+using Acuminator.Analyzers.StaticAnalysis.ConstructorInDac;
 using Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType;
+using Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac;
+using Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
@@ -15,7 +18,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
         protected override SymbolKind SymbolKind => SymbolKind.NamedType;
 
         public DacAnalyzersAggregator() : this(null,
-			new DacNonAbstractFieldTypeAnalyzer())
+			new DacNonAbstractFieldTypeAnalyzer(),
+			new ConstructorInDacAnalyzer(),
+			new UnderscoresInDacAnalyzer(),
+			new ForbiddenFieldsInDacAnalyzer())
         {
         }
 
