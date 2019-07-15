@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.DacDeclaration
+namespace Acuminator.Tests.Tests.StaticAnalysis.ConstructorInDac
 {
     public class ConstructorInDacAnalyzerTests : CodeFixVerifier
     {
