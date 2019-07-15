@@ -116,6 +116,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacExtensionWithoutPersistingCheckNothingInvalid.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacExtensionWithoutPersistingCheckNothingValid.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\SOOrder.cs" />
+    <Compile Include="Tests\StaticAnalysis\ConstructorInDac\ConstructorInDacAnalyzerTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacDeclaration\DacForbiddenFieldsNonISVTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacNonAbstractFieldType\DacFieldNotAbstractTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacPropertyAttributes\DacFieldWithDBCalcedAttributeTests.cs" />
@@ -404,8 +405,8 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\UnderscoresInDac\Sources\DacWithUnderscores_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacDeclaration\Sources\DacForbiddenFields.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacDeclaration\Sources\DacForbiddenFields_Expected.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\DacDeclaration\Sources\DacWithConstructor_Expected.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\DacDeclaration\Sources\DacWithConstructor.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ConstructorInDac\Sources\DacWithConstructor_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\ConstructorInDac\Sources\DacWithConstructor.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacDeclaration\Sources\DacForbiddenFieldsWithoutRegions.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacDeclaration\Sources\DacForbiddenFieldsRegions_Case3.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacDeclaration\Sources\DacForbiddenFieldsRegions_Case1.cs" />
@@ -470,7 +471,6 @@
     <Compile Include="Tests\Utilities\NestedInvocationWalker\NestedInvocationWalkerTests.cs" />
     <Compile Include="Tests\StaticAnalysis\UnderscoresInDac\UnderscoresInDacTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacDeclaration\DacForbiddenFieldsTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacDeclaration\DacWithConstructorTests.cs" />
     <Compile Include="Tests\StaticAnalysis\PXGraphUsageInDac\PXGraphUsageInDacTests.cs" />
     <Compile Include="Tests\StaticAnalysis\MethodsUsageInDac\MethodsUsageInDacTests.cs" />
     <Compile Include="Tests\StaticAnalysis\ConstructorInGraphExtension\ConstructorInGraphExtensionTests.cs" />
