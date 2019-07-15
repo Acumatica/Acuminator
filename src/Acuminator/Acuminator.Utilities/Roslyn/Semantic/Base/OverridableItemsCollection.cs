@@ -21,11 +21,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// Adds a range of DTO info items from the raw datas maintaining the declaration order. Returns the number following the last assigned declaration order.
 		/// </summary>
 		/// <typeparam name="TRawData">Type of the raw data.</typeparam>
+		/// <typeparam name="TWriteableInfo">Type of the writeable information.</typeparam>
 		/// <param name="itemsToAdd">The items to add.</param>
 		/// <param name="startingOrder">The starting order.</param>
 		/// <param name="infoConstructor">The DTO info constructor.</param>
 		/// <returns/>
-		public int AddRangeWithDeclarationOrder<TRawData>(IEnumerable<TRawData> itemsToAdd, int startingOrder, Func<TRawData, int, TInfo> infoConstructor)
+		internal int AddRangeWithDeclarationOrder<TRawData, TWriteableInfo>(IEnumerable<TRawData> itemsToAdd, int startingOrder, 
+																			Func<TRawData, int, TWriteableInfo> infoConstructor)
+		where TWriteableInfo : TInfo, IWriteableBaseItem<TInfo>
 		{
 			itemsToAdd.ThrowOnNull(nameof(itemsToAdd));
 
@@ -40,23 +43,25 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			return order;
 		}
 
-		public void Add<TRawData>(TRawData rawData, int declarationOrder, Func<TRawData, int, TInfo> infoConstructor)
+		internal void Add<TRawData, TWriteableInfo>(TRawData rawData, int declarationOrder, Func<TRawData, int, TWriteableInfo> infoConstructor)
+		where TWriteableInfo : TInfo, IWriteableBaseItem<TInfo>
 		{
 			infoConstructor.ThrowOnNull(nameof(infoConstructor));
-			TInfo info = infoConstructor(rawData, declarationOrder);
+			TWriteableInfo info = infoConstructor(rawData, declarationOrder);
 			Add(info);
 		}
 
-		public void Add(TInfo info)
+		internal void Add<TWriteableInfo>(TWriteableInfo info)
+		where TWriteableInfo : TInfo, IWriteableBaseItem<TInfo>
 		{
 			if (info?.Name == null)
 				return;
 
 			if (TryGetValue(info.Name, out TInfo existingValue))
 			{
-				if (!existingValue.Equals(info) && info is IWriteableBaseItem<TInfo> infoWithWriteableBase)
+				if (!existingValue.Equals(info))
 				{
-					infoWithWriteableBase.Base = existingValue;
+					info.Base = existingValue;
 					base[info.Name] = info;
 				}
 			}
