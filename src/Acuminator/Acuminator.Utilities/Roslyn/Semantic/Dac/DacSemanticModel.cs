@@ -94,6 +94,23 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			return new DacSemanticModel(pxContext, dacType, typeSymbol, dacNode,  cancellation);
 		}
 
+		/// <summary>
+		/// Gets the member nodes of the specified type from the DAC/Dac extension declaration.
+		/// </summary>
+		/// <typeparam name="TMemberNode">Type of the member node.</typeparam>
+		/// <returns/>
+		public IEnumerable<TMemberNode> GetMemberNodes<TMemberNode>()
+		where TMemberNode : MemberDeclarationSyntax
+		{
+			var memberList = DacNode.Members;
+
+			for (int i = 0; i < memberList.Count; i++)
+			{
+				if (memberList[i] is TMemberNode memberNode)
+					yield return memberNode;
+			}
+		}
+
 		private ImmutableDictionary<string, DacPropertyInfo> GetDacProperties() =>
 			GetInfos(() => Symbol.GetDacPropertiesFromDac(_pxContext, cancellation: _cancellation),
 					 () => Symbol.GetPropertiesFromDacExtensionAndBaseDac(_pxContext, _cancellation));
