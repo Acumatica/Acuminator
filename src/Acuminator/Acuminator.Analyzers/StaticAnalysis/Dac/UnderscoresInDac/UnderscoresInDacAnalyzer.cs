@@ -2,16 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
 using Acuminator.Analyzers.StaticAnalysis.Dac;
-using Acuminator.Utilities;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
@@ -40,6 +36,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 
 			foreach (SyntaxToken identifier in identifiersToCheck)
 			{
+				context.CancellationToken.ThrowIfCancellationRequested();
 				CheckIdentifierForUnderscores(identifier, context, pxContext);
 			}			
 		}
