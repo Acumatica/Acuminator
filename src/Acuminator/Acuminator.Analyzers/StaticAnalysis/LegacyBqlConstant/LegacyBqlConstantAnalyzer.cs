@@ -27,9 +27,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 
 		private void Analyze(SymbolAnalysisContext context, PXContext pxContext)
 		{
+			context.CancellationToken.ThrowIfCancellationRequested();
+
 			if (context.Symbol is INamedTypeSymbol constant)
 			{
-				if (!IsConstant(constant, pxContext, out string constantType) || LegacyBqlFieldAnalyzer.AlreadyStronglyTyped(constant, pxContext) || context.CancellationToken.IsCancellationRequested)
+				if (!IsConstant(constant, pxContext, out string constantType) || LegacyBqlFieldAnalyzer.AlreadyStronglyTyped(constant, pxContext))
 					return;
 
 				Location location = constant.Locations.FirstOrDefault();
@@ -56,6 +58,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 				.GetBaseTypes()
 				.FirstOrDefault(t => t.IsGenericType && t.InheritsFromOrEqualsGeneric(pxContext.BqlConstantType))?
 				.TypeArguments[0];
+
 			if (constantUnderlyingType == null)
 				return false;
 
