@@ -28,7 +28,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
 			(
-				Descriptors.PX1026_UnderscoresInDacDeclaration,
 				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration,
 				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV,
 				Descriptors.PX1028_ConstructorInDacDeclaration
@@ -38,7 +37,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			CheckDeclarationForUnderscores(pxContext, dacOrDacExtNode, context, dacProperties);
 			CheckDeclarationForForbiddenNames(pxContext, dacOrDacExtNode, context, dacProperties, dacClassDeclarations);
 			CheckDeclarationForConstructors(pxContext, dacOrDacExtNode, context);
 		}
@@ -48,58 +46,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 			
 		}
 
-		private static void CheckDeclarationForUnderscores(PXContext pxContext, ClassDeclarationSyntax dacOrDacExtNode,
-														   SyntaxNodeAnalysisContext syntaxContext,
-														   Dictionary<string, List<PropertyDeclarationSyntax>> dacProperties)
-		{
-			SyntaxToken identifier = dacOrDacExtNode.Identifier;
-
-			if (identifier.ValueText.Contains("_"))
-			{
-				bool registerCodeFix = !IdentifierContainsOnlyUnderscores(identifier.ValueText);
-				var diagnosticProperties = new Dictionary<string, string>
-				{
-					{ DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString() }
-				}.ToImmutableDictionary();
-
-				syntaxContext.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(
-						Descriptors.PX1026_UnderscoresInDacDeclaration, identifier.GetLocation(), diagnosticProperties),
-					pxContext.CodeAnalysisSettings);
-			}
-
-			var identifiersWithUnderscores = from member in dacOrDacExtNode.Members
-											 where ShouldCheckIdentifier(member, dacProperties)
-											 from memberIdentifier in member.GetIdentifiers()
-											 where memberIdentifier.ValueText.Contains("_")
-											 select memberIdentifier;
-
-			foreach (SyntaxToken identifierToReport in identifiersWithUnderscores)
-			{
-				bool registerCodeFix = !IdentifierContainsOnlyUnderscores(identifierToReport.ValueText);
-				var diagnosticProperties = new Dictionary<string, string>
-				{
-					{ DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString() }
-				}.ToImmutableDictionary();
-
-				syntaxContext.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(
-						Descriptors.PX1026_UnderscoresInDacDeclaration, identifierToReport.GetLocation(), diagnosticProperties),
-					pxContext.CodeAnalysisSettings);
-			}
-
-			//*************************************Local Functions**********************************************************************
-			bool IdentifierContainsOnlyUnderscores(string identifierName)
-			{
-				for (int i = 0; i < identifierName.Length; i++)
-				{
-					if (identifierName[i] != '_')
-						return false;
-				}
-
-				return true;
-			}
-		}
+		
 
 		private static void CheckDeclarationForForbiddenNames(PXContext pxContext,
 			ClassDeclarationSyntax dacOrDacExtNode,
@@ -175,16 +122,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 			}
 		}
 
-		private static bool ShouldCheckIdentifier(MemberDeclarationSyntax member, Dictionary<string, List<PropertyDeclarationSyntax>> dacProperties)
-		{
-			if (!member.IsPublic() && !member.IsInternal())
-				return false;
-
-			if (member is ClassDeclarationSyntax dacFieldClassNode && !dacProperties.ContainsKey(dacFieldClassNode.Identifier.ValueText))
-				return false;
-
-			return true;
-		}
 
 		public static string[] GetForbiddenFieldsNames()
 		{
