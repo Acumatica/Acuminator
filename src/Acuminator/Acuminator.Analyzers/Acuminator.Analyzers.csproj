@@ -15,7 +15,8 @@
     <Company>Acumatica</Company>
     <Description>The static analyzers for Acumatica</Description>
     <Authors>Acumatica</Authors>
-    <NeutralLanguage>en</NeutralLanguage> 
+    <NeutralLanguage>en</NeutralLanguage>
+    <RestorePackagesPath>../../packages</RestorePackagesPath> 
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +24,10 @@
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.9.2" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.10.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.10.0" PrivateAssets="all" />
+    <PackageReference Include="NuGet.CommandLine" Version="5.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
     <PackageReference Update="NETStandard.Library" PrivateAssets="all" />
   </ItemGroup>
@@ -45,6 +50,23 @@
       <HintPath>..\..\..\lib\PX.DbServices.dll</HintPath>
     </Reference>
   </ItemGroup>
-
-
+  <ItemGroup>
+    <None Update="Diagnostic.nuspec">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="tools\install.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="tools\uninstall.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+   <Target Name="NugetTarget" AfterTargets="Build">
+    <GetAssemblyIdentity AssemblyFiles="$(OutDir)\$(AssemblyName).dll">
+      <Output TaskParameter="Assemblies" ItemName="AnalyzerAssemblyInfo" />
+    </GetAssemblyIdentity>
+    <Exec Command="&quot;$(SolutionDir)packages\NuGet.CommandLine\5.0.2\tools\NuGet.exe&quot; pack Diagnostic.nuspec -NoPackageAnalysis -Version %(AnalyzerAssemblyInfo.Version) -OutputDirectory ." WorkingDirectory="$(OutDir)" LogStandardErrorAsError="true" ConsoleToMSBuild="true">
+      <Output TaskParameter="ConsoleOutput" PropertyName="OutputOfExec" />
+    </Exec>
+  </Target>
 </Project>

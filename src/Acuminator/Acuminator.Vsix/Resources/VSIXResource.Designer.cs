@@ -322,6 +322,24 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Acuminator cannot load the suppression file. The suppression mechanism will be turned off. If you fix the error, the suppression mechanism will be turned on automatically..
+        /// </summary>
+        public static string FailedToLoadTheSuppressionFile {
+            get {
+                return ResourceManager.GetString("FailedToLoadTheSuppressionFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error details:{0}..
+        /// </summary>
+        public static string FailedToLoadTheSuppressionFileDetails {
+            get {
+                return ResourceManager.GetString("FailedToLoadTheSuppressionFileDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Acuminator package loaded.
         /// </summary>
         public static string PackageLoad_Done {

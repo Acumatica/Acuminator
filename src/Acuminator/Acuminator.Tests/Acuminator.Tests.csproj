@@ -17,6 +17,7 @@
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <RestorePackagesPath>../../packages</RestorePackagesPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -256,6 +257,8 @@
     <Compile Include="Tests\StaticAnalysis\SavingChanges\SavingChangesInEventHandlersNonISVTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PXDatabaseInsertContainedInMethodInsideRowPersisted.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PXDatabaseInsertWithoutTranStatusOpenInsideRowPersisted.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\IsPatternAssignment.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\IsPatternAssignment.cs" />
     <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInActionHandlersTests.cs" />
     <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInEventHandlersNonISVTests.cs" />
     <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInLongRunningOperationTests.cs" />
@@ -560,7 +563,6 @@
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
-  <Import Project="..\..\packages\GitVersionTask.3.6.5\build\portable-net+sl+win+wpa+wp\GitVersionTask.targets" Condition="Exists('..\..\packages\GitVersionTask.3.6.5\build\portable-net+sl+win+wpa+wp\GitVersionTask.targets')" />
   <ItemGroup>
     <ProjectReference Include="..\Acuminator.Analyzers\Acuminator.Analyzers.csproj">
       <Project>{984dbfac-91a7-4059-a5b2-cde33cd93ea0}</Project>
