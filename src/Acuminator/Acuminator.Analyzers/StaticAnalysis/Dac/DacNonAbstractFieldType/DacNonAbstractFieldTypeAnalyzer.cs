@@ -20,7 +20,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac)
 		{
-			foreach (DacFieldInfo dacFieldInfo in dac.Fields)
+			foreach (DacFieldInfo dacFieldInfo in dac.DeclaredFields)
 			{
 				AnalyzeDacField(dacFieldInfo, context, pxContext);
 			}

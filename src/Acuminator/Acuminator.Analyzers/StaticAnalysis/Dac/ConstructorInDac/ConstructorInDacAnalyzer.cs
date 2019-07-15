@@ -24,7 +24,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConstructorInDac
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var dacConstructors = dacOrDacExtenstion.DacNode.Members.OfType<ConstructorDeclarationSyntax>();
+			var dacConstructors = dacOrDacExtenstion.GetMemberNodes<ConstructorDeclarationSyntax>();
 
 			foreach (var constructor in dacConstructors)
 			{

@@ -49,7 +49,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 									where dacOrDacExtension.PropertiesByNames.ContainsKey(forbiddenFieldName)
 									select dacOrDacExtension.PropertiesByNames[forbiddenFieldName];
 
-			foreach (DacPropertyInfo property in invalidProperties)
+			foreach (DacPropertyInfo property in invalidProperties.Where(p => p.Symbol.ContainingSymbol == dacOrDacExtension.Symbol))
 			{
 				RegisterDiagnosticForIdentifier(property.Node.Identifier, pxContext, context);
 			}
