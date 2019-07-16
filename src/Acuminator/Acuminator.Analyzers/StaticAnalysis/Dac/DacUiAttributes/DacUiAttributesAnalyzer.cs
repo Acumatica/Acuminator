@@ -18,8 +18,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 			ImmutableArray.Create(Descriptors.PX1094_DacShouldHaveUiAttribute);
 
 		public override bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) =>
-			dac?.DacType == DacType.Dac && 
-			base.ShouldAnalyze(pxContext, dac);
+			base.ShouldAnalyze(pxContext, dac) && 
+			dac.DacType == DacType.Dac;
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac)
 		{

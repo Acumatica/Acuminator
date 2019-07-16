@@ -20,9 +20,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension
 			);
 
 		public override bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) =>
-			dac?.DacType == DacType.DacExtension && 
-			dac.Symbol.Name != TypeNames.PXCacheExtension && !dac.Symbol.InheritsFromOrEquals(pxContext.PXMappedCacheExtensionType) &&
-			base.ShouldAnalyze(pxContext, dac);
+			base.ShouldAnalyze(pxContext, dac) &&
+			dac.DacType == DacType.DacExtension && 
+			dac.Symbol.Name != TypeNames.PXCacheExtension && !dac.Symbol.InheritsFromOrEquals(pxContext.PXMappedCacheExtensionType);
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac)
 		{
