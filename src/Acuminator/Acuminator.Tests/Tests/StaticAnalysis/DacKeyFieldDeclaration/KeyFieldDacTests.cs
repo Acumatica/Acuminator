@@ -1,9 +1,10 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute;
 using Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
-using Microsoft.CodeAnalysis;
+using Acuminator.Utilities;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Threading.Tasks;
@@ -13,7 +14,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacKeyFieldDeclaration
 {
 	public class KeyFieldInDacTests : CodeFixVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new KeyFieldDeclarationAnalyzer();
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
+			new DacAnalyzersAggregator(
+				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
+											.WithSuppressionMechanismDisabled(),
+				new KeyFieldDeclarationAnalyzer());
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new KeyFieldDeclarationFix();
 

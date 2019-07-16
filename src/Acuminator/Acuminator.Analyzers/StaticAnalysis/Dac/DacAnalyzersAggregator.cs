@@ -1,5 +1,6 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
 using Acuminator.Analyzers.StaticAnalysis.ConstructorInDac;
+using Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration;
 using Acuminator.Analyzers.StaticAnalysis.DacNonAbstractFieldType;
 using Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes;
 using Acuminator.Analyzers.StaticAnalysis.DacUiAttributes;
@@ -34,6 +35,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 			new InheritanceFromPXCacheExtensionAnalyzer(),
 			new LegacyBqlFieldAnalyzer(),
 			new MethodsUsageInDacAnalyzer(),
+			new KeyFieldDeclarationAnalyzer(),
 			new NonNullableTypeForBqlFieldAnalyzer(),
 			new MissingTypeListAttributeAnalyzer())
 		{
