@@ -30,7 +30,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LegacyBqlConstant
 			Descriptors.PX1061_LegacyBqlConstant.CreateFor(46, 15, "LegacyDateConst"),
 			Descriptors.PX1061_LegacyBqlConstant.CreateFor(50, 15, "LegacyGuidConst"));
 
-		[Theory(Skip = "Bug in roslyn")]
+		[Theory]
 		[EmbeddedFileData("LegacyBqlConstantBad.cs", "LegacyBqlConstantBad_Expected.cs")]
 		public void TestCodeFix(string actual, string expected) => VerifyCSharpFix(actual, expected);
 
