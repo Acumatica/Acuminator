@@ -45,7 +45,7 @@ namespace PX.Analyzers.Test.Sources
 		[PXString]
 		public string LegacyStringField { get; set; }
 
-		public abstract class legacyDateField : PX.Data.BQL.BqlDate.Field<legacyDateField> { }
+		public abstract class legacyDateField : PX.Data.BQL.BqlDateTime.Field<legacyDateField> { }
 		[PXDate]
 		public DateTime? LegacyDateField { get; set; }
 

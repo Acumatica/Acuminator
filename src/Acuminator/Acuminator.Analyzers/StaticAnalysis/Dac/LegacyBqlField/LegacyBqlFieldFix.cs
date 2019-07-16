@@ -41,7 +41,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 				return;
 			}
 
-			TypeSyntax newBaseType = CreateBaseType(typeName, classNode.Identifier.Text);
+			SimpleBaseTypeSyntax newBaseType = CreateBaseType(typeName, classNode.Identifier.Text);
 			if (newBaseType == null)
 				return;
 		
@@ -53,25 +53,40 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 				context.Diagnostics); 
 		}
 
-		private TypeSyntax CreateBaseType(string typeName, string dacFieldName)
+		private SimpleBaseTypeSyntax CreateBaseType(string typeName, string dacFieldName)
 		{
 			if (!PropertyTypeToFieldType.ContainsKey(typeName))
 				return null;
 
-			return IdentifierName($"PX.Data.BQL.Bql{PropertyTypeToFieldType[typeName]}.Field<{dacFieldName}>");
+			string bqlTypeName = $"Bql{ PropertyTypeToFieldType[typeName]}";
+			GenericNameSyntax fieldTypeNode =
+				GenericName(Identifier("Field"))
+					.WithTypeArgumentList(
+						TypeArgumentList(
+							SingletonSeparatedList<TypeSyntax>(IdentifierName(dacFieldName))));
+
+			var newBaseType =
+				SimpleBaseType(
+					QualifiedName(
+						QualifiedName(
+							QualifiedName(
+								QualifiedName(
+									IdentifierName("PX"),
+									IdentifierName("Data")),
+									IdentifierName("BQL")),
+									IdentifierName(bqlTypeName)),
+						fieldTypeNode));
+
+			return newBaseType;
 		}
 
-		private Document GetDocumentWithUpdatedBqlField(Document oldDOcument, SyntaxNode root, ClassDeclarationSyntax classNode, TypeSyntax newBaseType)
+		private Document GetDocumentWithUpdatedBqlField(Document oldDOcument, SyntaxNode root, ClassDeclarationSyntax classNode, SimpleBaseTypeSyntax newBaseType)
 		{
-			var newRoot = 
-				root.ReplaceNode(classNode.BaseList,
-								 BaseList(
-									SeparatedList(
-										new BaseTypeSyntax[]
-										{
-											SimpleBaseType(newBaseType)
-										})));
-
+			var newClassNode =
+				classNode.WithBaseList(
+					BaseList(
+						SingletonSeparatedList<BaseTypeSyntax>(newBaseType)));
+			var newRoot = root.ReplaceNode(classNode, newClassNode);
 			return oldDOcument.WithSyntaxRoot(newRoot);
 		}
 

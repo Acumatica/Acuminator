@@ -32,7 +32,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LegacyBqlField
 			Descriptors.PX1060_LegacyBqlField.CreateFor(52, 25, "legacyGuidField"),
 			Descriptors.PX1060_LegacyBqlField.CreateFor(56, 25, "legacyBinaryField"));
 
-		[Theory(Skip = "Code fix introduces new compiler diagnostic caused by missing using directive for the Fluent BQL namespace. This leads to the failure of this test. Let's Remove it completely.")]
+		[Theory]
 		[EmbeddedFileData("LegacyBqlFieldBad.cs", "LegacyBqlFieldBad_Expected.cs")]
 		public void TestCodeFix(string actual, string expected) => VerifyCSharpFix(actual, expected);
 
