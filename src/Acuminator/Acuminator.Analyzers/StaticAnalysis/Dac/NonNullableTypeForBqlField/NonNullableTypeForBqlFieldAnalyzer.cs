@@ -1,5 +1,7 @@
-﻿using Acuminator.Utilities.DiagnosticSuppression;
+﻿using Acuminator.Analyzers.StaticAnalysis.Dac;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System;
@@ -8,38 +10,28 @@ using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.NonNullableTypeForBqlField
 {
-	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class NonNullableTypeForBqlFieldAnalyzer : PXDiagnosticAnalyzer
+	public class NonNullableTypeForBqlFieldAnalyzer : DacAggregatedAnalyzerBase
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1014_NonNullableTypeForBqlField);
 
-		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac)
 		{
-			compilationStartContext.RegisterSymbolAction(c => AnalyzeProperty(c, pxContext), SymbolKind.Property);
-		}
-
-		private static void AnalyzeProperty(SymbolAnalysisContext context, PXContext pxContext)
-		{
-			var property = (IPropertySymbol) context.Symbol;
-			var parent = property.ContainingType;
-
-			if (parent != null 
-				&& (parent.ImplementsInterface(pxContext.IBqlTableType) || parent.InheritsFrom(pxContext.PXCacheExtensionType)))
+			foreach (DacPropertyInfo property in dac.DeclaredProperties)
 			{
-				var bqlField = parent.GetTypeMembers().FirstOrDefault(t => t.ImplementsInterface(pxContext.IBqlFieldType)
-					&& String.Equals(t.Name, property.Name, StringComparison.OrdinalIgnoreCase));
+				context.CancellationToken.ThrowIfCancellationRequested();
 
-				var propertyType = property.Type as INamedTypeSymbol;
+				if (!dac.FieldsByNames.TryGetValue(property.Name, out DacFieldInfo field))
+					continue;
 
-				if (bqlField != null && propertyType != null
-					&& propertyType.IsValueType && propertyType.ConstructedFrom?.SpecialType != SpecialType.System_Nullable_T)
+				if (property.Symbol.Type is INamedTypeSymbol propertyType && propertyType.IsValueType &&
+					propertyType.ConstructedFrom?.SpecialType != SpecialType.System_Nullable_T)
 				{
 					context.ReportDiagnosticWithSuppressionCheck(
-						Diagnostic.Create(Descriptors.PX1014_NonNullableTypeForBqlField, property.Locations.First()),
+						Diagnostic.Create(Descriptors.PX1014_NonNullableTypeForBqlField, property.Symbol.Locations.First()),
 						pxContext.CodeAnalysisSettings);
 				}
-			}
+			}			
 		}
 	}
 }
