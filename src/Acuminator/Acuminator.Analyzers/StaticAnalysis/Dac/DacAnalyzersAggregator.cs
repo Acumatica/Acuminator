@@ -7,6 +7,7 @@ using Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac;
 using Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension;
 using Acuminator.Analyzers.StaticAnalysis.LegacyBqlField;
 using Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac;
+using Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute;
 using Acuminator.Analyzers.StaticAnalysis.NonNullableTypeForBqlField;
 using Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac;
 using Acuminator.Utilities;
@@ -33,7 +34,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 			new InheritanceFromPXCacheExtensionAnalyzer(),
 			new LegacyBqlFieldAnalyzer(),
 			new MethodsUsageInDacAnalyzer(),
-			new NonNullableTypeForBqlFieldAnalyzer())
+			new NonNullableTypeForBqlFieldAnalyzer(),
+			new MissingTypeListAttributeAnalyzer())
 		{
         }
 
