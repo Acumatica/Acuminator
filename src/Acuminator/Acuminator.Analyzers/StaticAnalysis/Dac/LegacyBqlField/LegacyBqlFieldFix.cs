@@ -80,14 +80,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 			return newBaseType;
 		}
 
-		private Document GetDocumentWithUpdatedBqlField(Document oldDOcument, SyntaxNode root, ClassDeclarationSyntax classNode, SimpleBaseTypeSyntax newBaseType)
+		private Document GetDocumentWithUpdatedBqlField(Document oldDocument, SyntaxNode root, ClassDeclarationSyntax classNode, SimpleBaseTypeSyntax newBaseType)
 		{
 			var newClassNode =
 				classNode.WithBaseList(
 					BaseList(
 						SingletonSeparatedList<BaseTypeSyntax>(newBaseType)));
 			var newRoot = root.ReplaceNode(classNode, newClassNode);
-			return oldDOcument.WithSyntaxRoot(newRoot);
+			return oldDocument.WithSyntaxRoot(newRoot);
 		}
 
 		public static readonly IReadOnlyDictionary<string, string> PropertyTypeToFieldType = new Dictionary<string, string>
