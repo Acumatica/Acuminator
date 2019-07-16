@@ -6,6 +6,7 @@ using Acuminator.Analyzers.StaticAnalysis.DacUiAttributes;
 using Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac;
 using Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension;
 using Acuminator.Analyzers.StaticAnalysis.LegacyBqlField;
+using Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac;
 using Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -29,8 +30,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 			new ForbiddenFieldsInDacAnalyzer(),
 			new DacUiAttributesAnalyzer(),
 			new InheritanceFromPXCacheExtensionAnalyzer(),
-			new LegacyBqlFieldAnalyzer())
-        {
+			new LegacyBqlFieldAnalyzer(),
+			new MethodsUsageInDacAnalyzer())
+
+		{
         }
 
         /// <summary>
