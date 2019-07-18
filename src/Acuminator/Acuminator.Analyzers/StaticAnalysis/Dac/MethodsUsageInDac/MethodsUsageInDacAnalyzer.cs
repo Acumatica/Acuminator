@@ -26,7 +26,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
-			SemanticModel semanticModel = context.Compilation.GetSemanticModel(dac.DacNode.SyntaxTree);
+			SemanticModel semanticModel = context.Compilation.GetSemanticModel(dac.Node.SyntaxTree);
 
 			if (semanticModel == null)
 				return;

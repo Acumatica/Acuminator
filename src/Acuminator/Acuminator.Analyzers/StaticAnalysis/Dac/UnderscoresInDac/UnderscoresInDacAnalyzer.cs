@@ -24,7 +24,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			SyntaxToken dacIdentifier = dacOrDacExt.DacNode.Identifier;
+			SyntaxToken dacIdentifier = dacOrDacExt.Node.Identifier;
 			CheckIdentifierForUnderscores(dacIdentifier, context, pxContext);
 
 			var fieldsIdentifiers = dacOrDacExt.DeclaredFields.Where(field => CheckDacMemberAccessibility(field.Symbol) && 

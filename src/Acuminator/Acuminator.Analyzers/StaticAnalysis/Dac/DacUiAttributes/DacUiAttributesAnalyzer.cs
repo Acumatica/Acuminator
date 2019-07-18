@@ -48,7 +48,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 			}
 
 			var diagnostic = Diagnostic.Create(Descriptors.PX1094_DacShouldHaveUiAttribute,
-											   dac.DacNode.Identifier.GetLocation());
+											   dac.Node.Identifier.GetLocation());
 
 			context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
 		}

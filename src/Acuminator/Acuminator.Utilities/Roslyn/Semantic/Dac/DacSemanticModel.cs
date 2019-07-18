@@ -16,7 +16,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		public DacType DacType { get; }
 
-		public ClassDeclarationSyntax DacNode { get; }
+		public ClassDeclarationSyntax Node { get; }
 
 		public INamedTypeSymbol Symbol { get; }
 
@@ -35,7 +35,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		public IEnumerable<DacFieldInfo> DeclaredFields => Fields.Where(f => f.Symbol.ContainingType == Symbol);
 
-		private DacSemanticModel(PXContext pxContext, DacType dacType, INamedTypeSymbol symbol, ClassDeclarationSyntax dacNode,
+		private DacSemanticModel(PXContext pxContext, DacType dacType, INamedTypeSymbol symbol, ClassDeclarationSyntax node,
 								 CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
@@ -43,6 +43,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			_pxContext = pxContext;
 			_cancellation = cancellation;
 			DacType = dacType;
+			Node = node;
 			Symbol = symbol;		
 			DacSymbol = DacType == DacType.Dac
 				? Symbol
@@ -73,12 +74,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 					: (DacType?)null;
 
 			if (dacType == null ||
-				!(typeSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(cancellation) is ClassDeclarationSyntax dacNode))
+				!(typeSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(cancellation) is ClassDeclarationSyntax node))
 			{
 				return null;
 			}
 
-			return new DacSemanticModel(pxContext, dacType.Value, typeSymbol, dacNode, cancellation);
+			return new DacSemanticModel(pxContext, dacType.Value, typeSymbol, node, cancellation);
 		}
 
 		/// <summary>
@@ -90,7 +91,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public IEnumerable<TMemberNode> GetMemberNodes<TMemberNode>()
 		where TMemberNode : MemberDeclarationSyntax
 		{
-			var memberList = DacNode.Members;
+			var memberList = Node.Members;
 
 			for (int i = 0; i < memberList.Count; i++)
 			{
