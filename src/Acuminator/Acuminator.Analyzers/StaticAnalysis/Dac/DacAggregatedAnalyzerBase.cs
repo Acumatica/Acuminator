@@ -17,6 +17,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 
 		public abstract void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac);
 
-		public virtual bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) => dac != null && dac.DacType != DacType.None;
+		public virtual bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) => dac != null;
 	}
 }
