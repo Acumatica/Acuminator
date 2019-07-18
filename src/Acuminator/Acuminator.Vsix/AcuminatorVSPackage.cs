@@ -154,7 +154,7 @@ namespace Acuminator.Vsix
 			if (Zombied)
 				return;
 
-			await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+			await JoinableTaskFactory.SwitchToMainThreadAsync();
 
 			InitializeLogger(progress);
 			await InitializeCommandsAsync(progress);		
