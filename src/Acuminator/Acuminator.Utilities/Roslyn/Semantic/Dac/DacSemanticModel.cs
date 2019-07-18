@@ -66,23 +66,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			typeSymbol.ThrowOnNull(nameof(typeSymbol));
 			cancellation.ThrowIfCancellationRequested();
 
-			if (typeSymbol.IsDAC(pxContext))
-				return new DacSemanticModel(pxContext, DacType.Dac, typeSymbol, cancellation);
-			else if (typeSymbol.IsDacExtension(pxContext))
-				return new DacSemanticModel(pxContext, DacType.DacExtension, typeSymbol, cancellation);
-			else
-				return null;
-			{
-				dacType = DacType.DacExtension;
-			}
+			DacType? dacType = typeSymbol.IsDAC(pxContext)
+				? DacType.Dac
+				: typeSymbol.IsDacExtension(pxContext)
+					? DacType.DacExtension
+					: (DacType?)null;
 
-			if (dacType == DacType.None ||
+			if (dacType == null ||
 				!(typeSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax(cancellation) is ClassDeclarationSyntax dacNode))
 			{
 				return null;
 			}
 
-			return new DacSemanticModel(pxContext, dacType, typeSymbol, dacNode,  cancellation);
+			return new DacSemanticModel(pxContext, dacType.Value, typeSymbol, dacNode, cancellation);
 		}
 
 		/// <summary>
