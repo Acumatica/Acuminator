@@ -2,7 +2,6 @@
 {
 	public enum DacType
 	{
-		None,
 		Dac,
 		DacExtension
 	}

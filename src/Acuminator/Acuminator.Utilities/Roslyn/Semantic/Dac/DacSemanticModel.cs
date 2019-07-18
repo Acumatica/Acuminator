@@ -41,24 +41,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			cancellation.ThrowIfCancellationRequested();
 
 			_pxContext = pxContext;
-			DacType = dacType;
-			Symbol = symbol;
-			DacNode = dacNode;
 			_cancellation = cancellation;
-
-			switch (DacType)
-			{
-				case DacType.Dac:
-					DacSymbol = Symbol;
-					break;
-				case DacType.DacExtension:
-					DacSymbol = Symbol.GetDacFromDacExtension(_pxContext);
-					break;
-				case DacType.None:
-				default:
-					DacSymbol = null;
-					break;
-			}
+			DacType = dacType;
+			Symbol = symbol;		
+			DacSymbol = DacType == DacType.Dac
+				? Symbol
+				: Symbol.GetDacFromDacExtension(_pxContext);
 
 			PropertiesByNames = GetDacProperties();
 			FieldsByNames = GetDacFields();
@@ -78,13 +66,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			typeSymbol.ThrowOnNull(nameof(typeSymbol));
 			cancellation.ThrowIfCancellationRequested();
 
-			DacType dacType = DacType.None;
-
 			if (typeSymbol.IsDAC(pxContext))
-			{
-				dacType = DacType.Dac;
-			}
+				return new DacSemanticModel(pxContext, DacType.Dac, typeSymbol, cancellation);
 			else if (typeSymbol.IsDacExtension(pxContext))
+				return new DacSemanticModel(pxContext, DacType.DacExtension, typeSymbol, cancellation);
+			else
+				return null;
 			{
 				dacType = DacType.DacExtension;
 			}
@@ -128,9 +115,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 																   Func<OverridableItemsCollection<TInfo>> dacExtInfosSelector)
 		where TInfo : IOverridableItem<TInfo>
 		{
-			if (DacType == DacType.None)
-				return ImmutableDictionary.Create<string, TInfo>(StringComparer.OrdinalIgnoreCase);
-
 			var infos = DacType == DacType.Dac
 				? dacInfosSelector()
 				: dacExtInfosSelector();

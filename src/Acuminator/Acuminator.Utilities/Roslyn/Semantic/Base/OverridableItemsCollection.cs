@@ -55,7 +55,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		where TWriteableInfo : TInfo, IWriteableBaseItem<TInfo>
 		{
 			if (info?.Name == null)
-				return;
+			{
+				throw new ArgumentNullException($"{nameof(info)}.{nameof(info.Name)}");
+			}
 
 			if (TryGetValue(info.Name, out TInfo existingValue))
 			{
