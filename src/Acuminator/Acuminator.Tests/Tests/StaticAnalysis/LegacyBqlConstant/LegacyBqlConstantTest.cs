@@ -19,16 +19,16 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LegacyBqlConstant
 		[EmbeddedFileData("LegacyBqlConstantBad.cs")]
 		public void TestDiagnostic_Bad(string actual) => VerifyCSharpDiagnostic(actual,
 			Descriptors.PX1061_LegacyBqlConstant.CreateFor(10, 15, "LegacyBoolConst"),
-			Descriptors.PX1061_LegacyBqlConstant.CreateFor(14, 15, "LegacyByteConst"),
-			Descriptors.PX1061_LegacyBqlConstant.CreateFor(18, 15, "LegacyShortConst"),
-			Descriptors.PX1061_LegacyBqlConstant.CreateFor(22, 15, "LegacyIntConst"),
-			Descriptors.PX1061_LegacyBqlConstant.CreateFor(26, 15, "LegacyLongConst"),
-			Descriptors.PX1061_LegacyBqlConstant.CreateFor(30, 15, "LegacyFloatConst"),
-			Descriptors.PX1061_LegacyBqlConstant.CreateFor(34, 15, "LegacyDoubleConst"),
-			Descriptors.PX1061_LegacyBqlConstant.CreateFor(38, 15, "LegacyDecimalConst"),
-			Descriptors.PX1061_LegacyBqlConstant.CreateFor(42, 15, "LegacyStringConst"),
-			Descriptors.PX1061_LegacyBqlConstant.CreateFor(46, 15, "LegacyDateConst"),
-			Descriptors.PX1061_LegacyBqlConstant.CreateFor(50, 15, "LegacyGuidConst"));
+			Descriptors.PX1061_LegacyBqlConstant.CreateFor(15, 15, "LegacyByteConst"),
+			Descriptors.PX1061_LegacyBqlConstant.CreateFor(20, 15, "LegacyShortConst"),
+			Descriptors.PX1061_LegacyBqlConstant.CreateFor(25, 15, "LegacyIntConst"),
+			Descriptors.PX1061_LegacyBqlConstant.CreateFor(30, 15, "LegacyLongConst"),
+			Descriptors.PX1061_LegacyBqlConstant.CreateFor(35, 15, "LegacyFloatConst"),
+			Descriptors.PX1061_LegacyBqlConstant.CreateFor(40, 15, "LegacyDoubleConst"),
+			Descriptors.PX1061_LegacyBqlConstant.CreateFor(45, 15, "LegacyDecimalConst"),
+			Descriptors.PX1061_LegacyBqlConstant.CreateFor(50, 15, "LegacyStringConst"),
+			Descriptors.PX1061_LegacyBqlConstant.CreateFor(55, 15, "LegacyDateConst"),
+			Descriptors.PX1061_LegacyBqlConstant.CreateFor(60, 15, "LegacyGuidConst"));
 
 		[Theory]
 		[EmbeddedFileData("LegacyBqlConstantBad.cs", "LegacyBqlConstantBad_Expected.cs")]
