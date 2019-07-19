@@ -198,9 +198,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			IsVisible = true;
 		}
 
+		/// <summary>
+		/// Solution events after closing. Clear up the document data.
+		/// </summary>
 		private void SolutionEvents_AfterClosing()
 		{
-			
+			ClearCodeMap();
+			_documentModel = null;
+			NotifyPropertyChanged(nameof(Document));
 		}
 
 		private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus) =>
