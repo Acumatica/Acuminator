@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Acuminator.Utilities;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
@@ -64,10 +65,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			var parameters = methodSymbol.Parameters;
 
-			if (parameters.IsDefaultOrEmpty || !parameters[parameters.Length - 1].IsParams)
+			if (parameters.IsDefaultOrEmpty || !parameters[parameters.Length - 1].IsParams ||
+				!methodSymbol.ContainingType.IsBqlCommand(pxContext) || !IsValidReturnType(methodSymbol, pxContext))
+			{
 				return false;
+			}
 
-			return methodSymbol.ContainingType.IsBqlCommand(pxContext) && IsValidReturnType(methodSymbol, pxContext);
+			return !pxContext.PXSelectExtensionSymbols.IsDefined || 
+				   !methodSymbol.ContainingType.InheritsFromOrEquals(pxContext.PXSelectExtensionSymbols.Type);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
