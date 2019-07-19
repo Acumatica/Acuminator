@@ -2,7 +2,7 @@
 using Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
-using Microsoft.CodeAnalysis;
+using Acuminator.Utilities;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
 
@@ -10,7 +10,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.BqlParameterMismatch
 {
 	public class BqlParameterMismatchTests : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new BqlParameterMismatchAnalyzer();
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => 
+			new BqlParameterMismatchAnalyzer(
+				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
+											.WithSuppressionMechanismDisabled());
 
 		[Theory]
 		[EmbeddedFileData("StaticCall.cs")]

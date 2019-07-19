@@ -22,6 +22,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			ImmutableArray.Create(Descriptors.PX1015_PXBqlParametersMismatchWithOnlyRequiredParams,
 								  Descriptors.PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams);
 
+		public BqlParameterMismatchAnalyzer() : this(null)
+		{ }
+
+		public BqlParameterMismatchAnalyzer(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings)
+		{ }
+
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
 			compilationStartContext.RegisterSyntaxNodeAction(c => AnalyzeNode(c, pxContext), SyntaxKind.InvocationExpression);
