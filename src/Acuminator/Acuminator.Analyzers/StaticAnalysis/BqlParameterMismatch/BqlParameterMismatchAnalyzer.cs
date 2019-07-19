@@ -30,26 +30,30 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSyntaxNodeAction(c => AnalyzeNode(c, pxContext), SyntaxKind.InvocationExpression);
+			compilationStartContext.RegisterSyntaxNodeAction(c => AnalyzeNode(c, pxContext), SyntaxKind.ClassDeclaration);
 		}
 
 		private static void AnalyzeNode(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
 		{
-			if (syntaxContext.CancellationToken.IsCancellationRequested || !(syntaxContext.Node is InvocationExpressionSyntax invocationNode) ||
-				invocationNode.ContainsDiagnostics)
+			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+
+			if (!(syntaxContext.Node is ClassDeclarationSyntax classDeclaration) || classDeclaration.Members.Count == 0)
+				return;
+
+			var invocationNodes = classDeclaration.DescendantNodes().OfType<InvocationExpressionSyntax>();
+
+			foreach (InvocationExpressionSyntax invocationNode in invocationNodes)
 			{
-				return;
-			}
+				var symbolInfo = syntaxContext.SemanticModel.GetSymbolInfo(invocationNode);
 
-			var symbolInfo = syntaxContext.SemanticModel.GetSymbolInfo(invocationNode);
+				if (!(symbolInfo.Symbol is IMethodSymbol methodSymbol) || !IsValidMethodGeneralCheck(methodSymbol, pxContext))
+					continue;
 
-			if (!(symbolInfo.Symbol is IMethodSymbol methodSymbol) || !IsValidMethodGeneralCheck(methodSymbol, pxContext))
-				return;
-
-			if (methodSymbol.IsStatic)
-				AnalyzeStaticInvocation(methodSymbol, pxContext, syntaxContext, invocationNode);
-			else
-				AnalyzeInstanceInvocation(methodSymbol, pxContext, syntaxContext, invocationNode);
+				if (methodSymbol.IsStatic)
+					AnalyzeStaticInvocation(methodSymbol, pxContext, syntaxContext, invocationNode);
+				else
+					AnalyzeInstanceInvocation(methodSymbol, pxContext, syntaxContext, invocationNode);
+			}		
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -78,7 +82,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			}
 
 			return !pxContext.PXSelectExtensionSymbols.IsDefined || 
-				   !methodSymbol.ContainingType.InheritsFromOrEquals(pxContext.PXSelectExtensionSymbols.Type);
+				   !methodSymbol.ContainingType.InheritsFromOrEqualsGeneric(pxContext.PXSelectExtensionSymbols.Type);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -102,9 +106,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			TypeNames.PXUpdateBqlTypes.Contains(methodSymbol.ContainingType?.Name);
 
 		private static void AnalyzeStaticInvocation(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
-													InvocationExpressionSyntax invocationNode)
+													InvocationExpressionSyntax invocation)
 		{
-			ExpressionSyntax accessExpression = invocationNode.GetAccessNodeFromInvocationNode();
+			ExpressionSyntax accessExpression = invocation.GetAccessNodeFromInvocationNode();
 
 			if (accessExpression == null || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
@@ -116,24 +120,25 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			if (callerStaticType.IsCustomBqlCommand(pxContext))
 			{
-				AnalyzeDerivedBqlStaticCall(methodSymbol, pxContext, syntaxContext);
+				AnalyzeDerivedBqlStaticCall(methodSymbol, invocation, pxContext, syntaxContext);
 				return;
 			}
 
-			int? argsCount = GetBqlArgumentsCount(methodSymbol, pxContext, syntaxContext, invocationNode);
+			int? argsCount = GetBqlArgumentsCount(methodSymbol, pxContext, syntaxContext, invocation);
 
 			if (argsCount == null || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
 
 			ParametersCounterSyntaxWalker walker = new ParametersCounterSyntaxWalker(syntaxContext, pxContext);
 
-			if (!walker.CountParametersInNode(invocationNode))
+			if (!walker.CountParametersInNode(invocation))
 				return;
 
-			VerifyBqlArgumentsCount(argsCount.Value, walker.ParametersCounter, syntaxContext, invocationNode, methodSymbol, pxContext);
+			VerifyBqlArgumentsCount(argsCount.Value, walker.ParametersCounter, syntaxContext, invocation, methodSymbol, pxContext);
 		}
 
-		private static void AnalyzeDerivedBqlStaticCall(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext)
+		private static void AnalyzeDerivedBqlStaticCall(IMethodSymbol methodSymbol, InvocationExpressionSyntax invocation, PXContext pxContext,
+														SyntaxNodeAnalysisContext syntaxContext)
 		{
 			INamedTypeSymbol containingType = methodSymbol.ContainingType;
 
@@ -143,8 +148,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				return;
 			}
 
-			var invocationNode = syntaxContext.Node as InvocationExpressionSyntax; 
-			int? argsCount = GetBqlArgumentsCount(methodSymbol, pxContext, syntaxContext, invocationNode);
+			int? argsCount = GetBqlArgumentsCount(methodSymbol, pxContext, syntaxContext, invocation);
 
 			if (argsCount == null || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
@@ -154,23 +158,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			if (!walker.CountParametersInTypeSymbol(containingType))
 				return;
 
-			VerifyBqlArgumentsCount(argsCount.Value, walker.ParametersCounter, syntaxContext, invocationNode, methodSymbol, pxContext);
+			VerifyBqlArgumentsCount(argsCount.Value, walker.ParametersCounter, syntaxContext, invocation, methodSymbol, pxContext);
 		}
 
 		private static void AnalyzeInstanceInvocation(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
-													  InvocationExpressionSyntax invocationNode)
+													  InvocationExpressionSyntax invocation)
 		{
-			ExpressionSyntax accessExpression = invocationNode.GetAccessNodeFromInvocationNode();
+			ExpressionSyntax accessExpression = invocation.GetAccessNodeFromInvocationNode();
 
 			if (accessExpression == null || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			int? argsCount = GetBqlArgumentsCount(methodSymbol, pxContext, syntaxContext, invocationNode);
+			int? argsCount = GetBqlArgumentsCount(methodSymbol, pxContext, syntaxContext, invocation);
 
 			if (argsCount == null || syntaxContext.CancellationToken.IsCancellationRequested)
 				return;
 
-			ITypeSymbol containingType = GetContainingTypeForInstanceCall(pxContext, syntaxContext, accessExpression);
+			ITypeSymbol containingType = GetContainingTypeForInstanceCall(pxContext, syntaxContext, invocation, accessExpression);
 
 			if (containingType == null)
 				return;
@@ -180,7 +184,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			if (!walker.CountParametersInTypeSymbol(containingType))
 				return;
 
-			VerifyBqlArgumentsCount(argsCount.Value, walker.ParametersCounter, syntaxContext, invocationNode, methodSymbol, pxContext);
+			VerifyBqlArgumentsCount(argsCount.Value, walker.ParametersCounter, syntaxContext, invocation, methodSymbol, pxContext);
 		}
 
 		/// <summary>
@@ -189,20 +193,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 		/// <param name="methodSymbol">The method symbol.</param>
 		/// <param name="pxContext">Acumatica-specific context.</param>
 		/// <param name="syntaxContext">Syntax context.</param>
-		/// <param name="invocationNode">The invocation node.</param>
+		/// <param name="invocation">The invocation node.</param>
 		/// <returns/>
 		private static int? GetBqlArgumentsCount(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
-												 InvocationExpressionSyntax invocationNode)
+												 InvocationExpressionSyntax invocation)
 		{
 			var parameters = methodSymbol.Parameters;
 			var bqlArgsParam = parameters[parameters.Length - 1];
-			var argumentsList = invocationNode.ArgumentList.Arguments;
+			var argumentsList = invocation.ArgumentList.Arguments;
 			var argumentPassedViaName = argumentsList.FirstOrDefault(a => a.NameColon?.Name?.Identifier.ValueText == bqlArgsParam.Name);
 			int searchArgsCount;
 
 			if (argumentPassedViaName != null)
 			{
-				int? possibleArgsCount = GetBqlArgumentsCountWhenCouldBePassedAsArray(argumentPassedViaName, syntaxContext, pxContext);
+				int? possibleArgsCount = GetBqlArgumentsCountWhenCouldBePassedAsArray(argumentPassedViaName, invocation, syntaxContext, pxContext);
 
 				if (possibleArgsCount == null)
 					return null;
@@ -216,7 +220,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			if (argsCount == 1)
 			{
-				int? possibleArgsCount = GetBqlArgumentsCountWhenCouldBePassedAsArray(argumentsList[argumentsList.Count - 1], syntaxContext,
+				int? possibleArgsCount = GetBqlArgumentsCountWhenCouldBePassedAsArray(argumentsList[argumentsList.Count - 1], invocation, syntaxContext,
 																					  pxContext);
 				if (possibleArgsCount == null)
 					return null;
@@ -239,7 +243,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			}
 		}
 
-		private static int? GetBqlArgumentsCountWhenCouldBePassedAsArray(ArgumentSyntax argumentWhichCanBeArray,
+		private static int? GetBqlArgumentsCountWhenCouldBePassedAsArray(ArgumentSyntax argumentWhichCanBeArray, InvocationExpressionSyntax invocation,
 																		 SyntaxNodeAnalysisContext syntaxContext,
 																		 PXContext pxContext)
 		{
@@ -256,7 +260,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			if (argumentWhichCanBeArray.Expression is IdentifierNameSyntax arrayVariable)
 			{
-				var elementsCountResolver = new ArrayElemCountLocalVariableResolver(syntaxContext, pxContext, arrayVariable);
+				var elementsCountResolver = new ArrayElemCountLocalVariableResolver(syntaxContext, pxContext, invocation, arrayVariable);
 				return elementsCountResolver.GetArrayElementsCount();
 			}
 
@@ -265,7 +269,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 		}
 
 		private static ITypeSymbol GetContainingTypeForInstanceCall(PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
-																	ExpressionSyntax accessExpression)
+																	InvocationExpressionSyntax invocation, ExpressionSyntax accessExpression)
 		{
 			TypeInfo typeInfo = syntaxContext.SemanticModel.GetTypeInfo(accessExpression, syntaxContext.CancellationToken);
 			ITypeSymbol containingType = typeInfo.ConvertedType ?? typeInfo.Type;
@@ -276,7 +280,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			if (!(accessExpression is IdentifierNameSyntax identifierNode) || syntaxContext.CancellationToken.IsCancellationRequested)
 				return null;
 
-			var resolver = new BqlLocalVariableTypeResolver(syntaxContext, pxContext, identifierNode);
+			var resolver = new BqlLocalVariableTypeResolver(syntaxContext, pxContext, invocation, identifierNode);
 
 			return containingType.IsAbstract 
 				? resolver.ResolveVariableType()
@@ -286,7 +290,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 		}
 
 		private static void VerifyBqlArgumentsCount(int argsCount, ParametersCounter parametersCounter, SyntaxNodeAnalysisContext syntaxContext,
-													InvocationExpressionSyntax invocationNode, IMethodSymbol methodSymbol, PXContext pxContext)
+													InvocationExpressionSyntax invocation, IMethodSymbol methodSymbol, PXContext pxContext)
 		{
 			if (syntaxContext.CancellationToken.IsCancellationRequested || !parametersCounter.IsCountingValid)
 				return;
@@ -303,7 +307,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			if (argsCount < minCount || argsCount > maxCount)
 			{
-				Location location = GetLocation(invocationNode);
+				Location location = GetLocation(invocation);
 
 				if (parametersCounter.OptionalParametersCount == 0)
 				{
@@ -320,18 +324,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			}
 		}
 
-		private static Location GetLocation(InvocationExpressionSyntax invocationNode)
+		private static Location GetLocation(InvocationExpressionSyntax invocation)
 		{
-			if (invocationNode.Expression is MemberAccessExpressionSyntax memberAccessNode)
+			if (invocation.Expression is MemberAccessExpressionSyntax memberAccessNode)
 			{
-				return memberAccessNode.Name?.GetLocation() ?? invocationNode.GetLocation();
+				return memberAccessNode.Name?.GetLocation() ?? invocation.GetLocation();
 			}
-			else if (invocationNode.Expression is MemberBindingExpressionSyntax memberBindingNode)
+			else if (invocation.Expression is MemberBindingExpressionSyntax memberBindingNode)
 			{
-				return memberBindingNode.Name?.GetLocation() ?? invocationNode.GetLocation();
+				return memberBindingNode.Name?.GetLocation() ?? invocation.GetLocation();
 			}
 
-			return invocationNode.GetLocation();
+			return invocation.GetLocation();
 		}
 	}
 }
