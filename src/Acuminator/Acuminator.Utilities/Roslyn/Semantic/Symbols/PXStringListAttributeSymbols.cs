@@ -4,18 +4,14 @@ using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-    public class PXStringListAttributeSymbols
+    public class PXStringListAttributeSymbols : SymbolsSetForTypeBase
     {
-        public INamedTypeSymbol Type { get; }
-
 		public ImmutableArray<IMethodSymbol> SetList { get; }
 	    public ImmutableArray<IMethodSymbol> AppendList { get; }
 	    public ImmutableArray<IMethodSymbol> SetLocalizable { get; }
 
-        internal PXStringListAttributeSymbols(Compilation compilation)
+        internal PXStringListAttributeSymbols(Compilation compilation) : base(compilation, TypeFullNames.PXStringListAttribute)
         {
-            Type = compilation.GetTypeByMetadataName(TypeFullNames.PXStringListAttribute);
-
 	        SetList        = Type.GetMethods(DelegateNames.SetList);
 	        AppendList     = Type.GetMethods(DelegateNames.AppendList);
 	        SetLocalizable = Type.GetMethods(DelegateNames.SetLocalizable);

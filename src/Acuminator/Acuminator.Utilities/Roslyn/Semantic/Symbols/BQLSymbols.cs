@@ -7,14 +7,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 	/// <summary>
 	/// BQL Symbols are stored in separate file.
 	/// </summary>
-	public class BQLSymbols
+	public class BQLSymbols : SymbolsSetBase
 	{
-		private readonly Compilation _compilation;
-
-		internal BQLSymbols(Compilation aCompilation)
-		{
-			_compilation = aCompilation;
-		}
+		internal BQLSymbols(Compilation compilation) : base(compilation)
+		{ }
 
 		#region CustomDelegates
 		public INamedTypeSymbol CustomPredicate => _compilation.GetTypeByMetadataName(TypeFullNames.CustomPredicate);
