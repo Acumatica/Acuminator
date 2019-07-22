@@ -138,6 +138,35 @@ namespace Acuminator.Utilities.Common
 		}
 
 		/// <summary>
+		/// Select many implementation for <see cref="ImmutableArray{T}"/> without boxing.
+		/// </summary>
+		/// <typeparam name="TCollectionHolder">Type of the item with collection.</typeparam>
+		/// <typeparam name="TCollectionItem">Type of the collection item.</typeparam>
+		/// <param name="array">The array to act on.</param>
+		/// <param name="selector">The selector.</param>
+		/// <returns/>
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<TCollectionItem> SelectMany<TCollectionHolder, TCollectionItem>(this ImmutableArray<TCollectionHolder> array, 
+																								  Func<TCollectionHolder, IEnumerable<TCollectionItem>> selector)
+		{
+			selector.ThrowOnNull(nameof(selector));
+			return GeneratorMethod();
+
+
+			IEnumerable<TCollectionItem> GeneratorMethod()
+			{
+				foreach (TCollectionHolder collectionHolder in array)
+				{
+					foreach (TCollectionItem item in selector(collectionHolder))
+					{
+						yield return item;
+					}
+				}
+			}
+		}
+
+		/// <summary>
 		/// Reverses <see cref="ImmutableArray{T}"/>. This is an optimization method which allows to avoid boxing.
 		/// </summary>
 		/// <typeparam name="TItem">Type of the item.</typeparam>
