@@ -13,7 +13,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 	/// </summary>
 	public class FieldTypeAttributesRegister
 	{
-		private readonly PXContext _context;
+		public PXContext Context { get; }
 
 		public AttributeInformation AttributeInformation { get; }
 
@@ -30,22 +30,22 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			_context = pxContext;
-			AttributeInformation = new AttributeInformation(_context);
-			var unboundFieldAttributes = GetCorrespondingSimpleUnboundTypes(_context).Keys;
+			Context = pxContext;
+			AttributeInformation = new AttributeInformation(Context);
+			var unboundFieldAttributes = GetCorrespondingSimpleUnboundTypes(Context).Keys;
 			UnboundTypeAttributes = unboundFieldAttributes.ToImmutableHashSet();
 
-			var boundFieldAttributes = GetCorrespondingSimpleBoundTypes(_context).Keys;
+			var boundFieldAttributes = GetCorrespondingSimpleBoundTypes(Context).Keys;
 			BoundTypeAttributes = boundFieldAttributes.ToImmutableHashSet();
 
-			var specialAttributes = GetSpecialAttributes(_context);
+			var specialAttributes = GetSpecialAttributes(Context);
 			SpecialAttributes = specialAttributes.ToImmutableHashSet();
 			AllTypeAttributes = unboundFieldAttributes.Concat(boundFieldAttributes)
 													  .Concat(specialAttributes)
 													  .ToImmutableHashSet();
 
-			CorrespondingSimpleUnboundTypes = GetCorrespondingSimpleUnboundTypes(_context).ToImmutableDictionary();
-			CorrespondingSimpleBoundTypes = GetCorrespondingSimpleBoundTypes(_context).ToImmutableDictionary();
+			CorrespondingSimpleUnboundTypes = GetCorrespondingSimpleUnboundTypes(Context).ToImmutableDictionary();
+			CorrespondingSimpleBoundTypes = GetCorrespondingSimpleBoundTypes(Context).ToImmutableDictionary();
 		}
 
 		public IEnumerable<FieldTypeAttributeInfo> GetFieldTypeAttributeInfos(ITypeSymbol attributeSymbol)
@@ -79,9 +79,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			if (firstTypeAttribute == null)
 				return null;
 
-			if (firstTypeAttribute.Equals(_context.FieldAttributes.PXDBScalarAttribute))
+			if (firstTypeAttribute.Equals(Context.FieldAttributes.PXDBScalarAttribute))
 				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.PXDBScalarAttribute, fieldType: null);
-			else if (firstTypeAttribute.Equals(_context.FieldAttributes.PXDBCalcedAttribute))
+			else if (firstTypeAttribute.Equals(Context.FieldAttributes.PXDBCalcedAttribute))
 				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.PXDBCalcedAttribute, fieldType: null);
 
 			if (CorrespondingSimpleBoundTypes.TryGetValue(firstTypeAttribute, out var boundFieldType))
