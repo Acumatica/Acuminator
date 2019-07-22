@@ -192,7 +192,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			if (!ThreadHelper.CheckAccess())
 			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken ?? AcuminatorVSPackage.Instance.DisposalToken);
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			}
 
 			if (Equals(gotFocus, lostFocus) || gotFocus.Document == null)
@@ -233,7 +233,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (!ThreadHelper.CheckAccess())
 			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken ?? AcuminatorVSPackage.Instance.DisposalToken);
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			}
 
 			if (!IsVisible || e.IsActiveDocumentCleared(Document))
@@ -304,7 +304,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 					if (!ThreadHelper.CheckAccess())
 					{
-						await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+						await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 					}
 				
 					IsCalculating = true;
@@ -318,7 +318,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					if (newTreeVM == null)
 						return;
 
-					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 					Tree = newTreeVM;
 					IsCalculating = false;
