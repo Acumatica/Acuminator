@@ -19,8 +19,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			private readonly ResolveArrayElemCountMethodBodyWalker _methodBodyWalker;
 
 			public ArrayElemCountLocalVariableResolver(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext,
-													   IdentifierNameSyntax identifierNode) :
-												  base(syntaxContext, pxContext, identifierNode)
+													   InvocationExpressionSyntax invocation, IdentifierNameSyntax identifierNode) :
+												  base(syntaxContext, invocation, pxContext, identifierNode)
 			{
 				_methodBodyWalker = new ResolveArrayElemCountMethodBodyWalker(this);
 			}

@@ -4,16 +4,12 @@ using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-    public class PXIntListAttributeSymbols
+    public class PXIntListAttributeSymbols : SymbolsSetForTypeBase
     {
-        public INamedTypeSymbol Type { get; }
-
 		public ImmutableArray<IMethodSymbol> SetList { get; }
 
-        internal PXIntListAttributeSymbols(Compilation compilation)
+        internal PXIntListAttributeSymbols(Compilation compilation) : base(compilation, TypeFullNames.PXIntListAttribute)
         {
-            Type = compilation.GetTypeByMetadataName(TypeFullNames.PXIntListAttribute);
-
 	        SetList = Type.GetMethods(DelegateNames.SetList);
         }
     }

@@ -4,14 +4,10 @@ using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-	public class AttributeSymbols
+	public class AttributeSymbols : SymbolsSetBase
 	{
-		private readonly Compilation _compilation;
-
-		internal AttributeSymbols(Compilation compilation)
+		internal AttributeSymbols(Compilation compilation) : base(compilation)
 		{
-			_compilation = compilation;
-
 			_pxUiFieldAttribute = new Lazy<PXUIFieldAttributeSymbols>(() => new PXUIFieldAttributeSymbols(compilation));
 			_pxSelectorAttribute = new Lazy<PXSelectorAttributeSymbols>(() => new PXSelectorAttributeSymbols(compilation));
 			_pxStringListAttribute = new Lazy<PXStringListAttributeSymbols>(() => new PXStringListAttributeSymbols(compilation));
