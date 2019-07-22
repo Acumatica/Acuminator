@@ -19,6 +19,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class CodeMapWindowViewModel : ToolWindowViewModelBase
 	{
+		private readonly EnvDTE.SolutionEvents _solutionEvents;
 		private readonly EnvDTE.WindowEvents _windowEvents;
 		private readonly EnvDTE80.WindowVisibilityEvents _visibilityEvents;
 
@@ -92,7 +93,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (ThreadHelper.CheckAccess())
 			{
 				EnvDTE.DTE dte = AcuminatorVSPackage.Instance.GetService<EnvDTE.DTE>();
-				_windowEvents = dte?.Events?.WindowEvents;                                  //Store reference to DTE WindowEvents to prevent it from being GCed
+
+				//Store reference to DTE SolutionEvents and WindowEvents to prevent them from being GCed
+				_solutionEvents = dte?.Events?.SolutionEvents;
+				_windowEvents = dte?.Events?.WindowEvents;
+
+				if (_solutionEvents != null)
+				{
+					_solutionEvents.AfterClosing += SolutionEvents_AfterClosing;
+				}
 
 				if (_windowEvents != null)
 				{
@@ -133,6 +142,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (Workspace != null)
 			{
 				Workspace.WorkspaceChanged -= OnWorkspaceChanged;
+			}
+
+			if (_solutionEvents != null)
+			{
+				_solutionEvents.AfterClosing -= SolutionEvents_AfterClosing;
 			}
 
 			if (_windowEvents != null)
@@ -182,6 +196,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private void VisibilityEvents_WindowShowing(EnvDTE.Window window)
 		{
 			IsVisible = true;
+		}
+
+		/// <summary>
+		/// Solution events after closing. Clear up the document data.
+		/// </summary>
+		private void SolutionEvents_AfterClosing()
+		{
+			ClearCodeMap();
+			_documentModel = null;
+			NotifyPropertyChanged(nameof(Document));
 		}
 
 		private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus) =>
