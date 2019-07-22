@@ -12,12 +12,10 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		public FieldTypeAttributeKind Kind { get; }
 
 		public bool IsSpecial =>
-			Kind != FieldTypeAttributeKind.BoundTypeAttribute &&
-			Kind != FieldTypeAttributeKind.UnboundTypeAttribute;
+			Kind == FieldTypeAttributeKind.PXDBCalcedAttribute || Kind == FieldTypeAttributeKind.PXDBCalcedAttribute;
 
 		public bool IsFieldAttribute =>
-			Kind == FieldTypeAttributeKind.BoundTypeAttribute ||
-			Kind == FieldTypeAttributeKind.UnboundTypeAttribute;
+			Kind == FieldTypeAttributeKind.BoundTypeAttribute || Kind == FieldTypeAttributeKind.UnboundTypeAttribute;
 
 		public FieldTypeAttributeInfo(FieldTypeAttributeKind attributeKind, ITypeSymbol fieldType)
 		{

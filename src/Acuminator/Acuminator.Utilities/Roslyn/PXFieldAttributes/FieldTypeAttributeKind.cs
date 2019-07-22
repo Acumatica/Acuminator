@@ -6,6 +6,11 @@
 	public enum FieldTypeAttributeKind
 	{
 		/// <summary>
+		/// The property doesn't have type attributes.
+		/// </summary>
+		NoKind,
+
+		/// <summary>
 		/// DB bound type attribute
 		/// </summary>
 		BoundTypeAttribute,
