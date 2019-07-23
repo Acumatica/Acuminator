@@ -1,0 +1,115 @@
+﻿using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.PXFieldAttributes;
+using Acuminator.Utilities.Roslyn.Semantic.Attribute;
+
+namespace Acuminator.Utilities.Roslyn.Semantic.Dac
+{
+	public class DacPropertyInfo : NodeSymbolItem<PropertyDeclarationSyntax, IPropertySymbol>, IWriteableBaseItem<DacPropertyInfo>
+	{
+		/// <summary>
+		/// The overriden property if any
+		/// </summary>
+		public DacPropertyInfo Base
+		{
+			get;
+			internal set;
+		}
+
+		DacPropertyInfo IWriteableBaseItem<DacPropertyInfo>.Base
+		{
+			get => Base;
+			set => Base = value;
+		}
+
+		public ImmutableArray<AttributeInfo> Attributes { get; }
+
+		/// <summary>
+		///  True if this property is DAC property - it has a corresponding DAC field.
+		/// </summary
+		public bool IsDacProperty { get; }
+
+		/// <value>
+		/// The type of the property.
+		/// </value>
+		public ITypeSymbol PropertyType => Symbol.Type;
+
+		public BoundType BoundType { get; }
+
+		public bool IsIdentity
+		{
+			get;
+			private set;
+		}
+
+		public bool IsKey
+		{
+			get;
+			private set;
+		}
+
+		protected DacPropertyInfo(PropertyDeclarationSyntax node, IPropertySymbol symbol, int declarationOrder, bool isDacProperty,
+								  IEnumerable<AttributeInfo> attributeInfos, DacPropertyInfo baseInfo) :
+							 this(node, symbol, declarationOrder, isDacProperty, attributeInfos)
+		{
+			baseInfo.ThrowOnNull(nameof(baseInfo));
+			Base = baseInfo;
+		}
+
+		protected DacPropertyInfo(PropertyDeclarationSyntax node, IPropertySymbol symbol, int declarationOrder,
+								  bool isDacProperty, IEnumerable<AttributeInfo> attributeInfos) :
+							 base(node, symbol, declarationOrder)
+		{
+			Attributes = attributeInfos.ToImmutableArray();
+			IsDacProperty = isDacProperty;
+		}
+
+		public static DacPropertyInfo Create(PropertyDeclarationSyntax node, IPropertySymbol property, int declarationOrder,
+											 AttributeInformation attributesInformation, Dictionary<string, DacFieldInfo> dacFields,
+											 DacPropertyInfo baseInfo = null)
+		{
+			property.ThrowOnNull(nameof(property));
+			attributesInformation.ThrowOnNull(nameof(attributesInformation));
+			dacFields.ThrowOnNull(nameof(dacFields));
+
+			bool isDacProperty = dacFields.ContainsKey(property.Name);
+			var attributeInfos = GetAttributeInfos(property, attributesInformation);
+
+
+			DacPropertyInfo propertyInfo = baseInfo != null
+				? new DacPropertyInfo(node, property, declarationOrder, isDacProperty, attributeInfos, baseInfo)
+				: new DacPropertyInfo(node, property, declarationOrder, isDacProperty, attributeInfos);
+
+			if (!propertyInfo.IsDacProperty || propertyInfo.Attributes.Length == 0)
+				return propertyInfo;
+
+			
+			//foreach (var item in collection)
+			//{
+			//	attributesRegister.GetFieldTypeAttributeInfos
+			//}
+
+			
+
+			return propertyInfo;
+		}
+
+		private static IEnumerable<AttributeInfo> GetAttributeInfos(IPropertySymbol property, AttributeInformation attributesInformation)
+		{
+			int relativeDeclarationOrder = 0;
+
+			foreach (AttributeData attributeData in property.GetAttributes())
+			{
+				BoundType boundType = attributesInformation.GetBoundAttributeType(attributeData);
+				yield return new AttributeInfo(attributeData, boundType, relativeDeclarationOrder);
+
+				relativeDeclarationOrder++;
+			}
+		}
+	}
+}
