@@ -19,12 +19,13 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 	public class AttributeInformation
 	{
 		private const int DefaultRecursionDepth = 10;
-		private readonly PXContext _context;
-
+		
 		private readonly INamedTypeSymbol _eventSubscriberAttribute;
 		private readonly INamedTypeSymbol _dynamicAggregateAttribute;
 		private readonly INamedTypeSymbol _aggregateAttribute;
 		private readonly INamedTypeSymbol _defaultAttribute;
+
+		public PXContext Context { get; }
 
 		public ImmutableHashSet<ITypeSymbol> BoundBaseTypes { get; }
 		public ImmutableDictionary<ITypeSymbol,bool> TypesContainingIsDBField { get; }
@@ -35,18 +36,18 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			_context = pxContext;
+			Context = pxContext;
 
-			var boundBaseTypes = GetBoundBaseTypes(_context);
-			Dictionary<ITypeSymbol, bool> typesContainingIsDBField = GetTypesContainingIsDBField(_context);
+			var boundBaseTypes = GetBoundBaseTypes(Context);
+			Dictionary<ITypeSymbol, bool> typesContainingIsDBField = GetTypesContainingIsDBField(Context);
 
 			BoundBaseTypes = boundBaseTypes.ToImmutableHashSet();
 			TypesContainingIsDBField = typesContainingIsDBField.ToImmutableDictionary();
 
-			_eventSubscriberAttribute = _context.AttributeTypes.PXEventSubscriberAttribute;
-			_dynamicAggregateAttribute = _context.AttributeTypes.PXDynamicAggregateAttribute;
-			_aggregateAttribute = _context.AttributeTypes.PXAggregateAttribute;
-			_defaultAttribute = _context.AttributeTypes.PXDefaultAttribute;
+			_eventSubscriberAttribute = Context.AttributeTypes.PXEventSubscriberAttribute;
+			_dynamicAggregateAttribute = Context.AttributeTypes.PXDynamicAggregateAttribute;
+			_aggregateAttribute = Context.AttributeTypes.PXAggregateAttribute;
+			_defaultAttribute = Context.AttributeTypes.PXDefaultAttribute;
 		}
 
 		private static HashSet<ITypeSymbol> GetBoundBaseTypes(PXContext context)
