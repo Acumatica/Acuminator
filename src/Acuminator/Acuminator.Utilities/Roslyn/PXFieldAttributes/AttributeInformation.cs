@@ -247,24 +247,35 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// </summary>
 		/// <param name="attributes">The attributes collection.</param>
 		/// <returns/>
-		public bool ContainsBoundAttributes(IEnumerable<AttributeData> attributes)
-		{
-			attributes.ThrowOnNull();
+		public bool ContainsBoundAttributes(IEnumerable<AttributeData> attributes) => 
+			attributes.CheckIfNull(nameof(attributes))
+					  .Any(a => GetBoundAttributeType(a) == BoundType.DbBound);
+		
 
-			return attributes.Any(a => GetBoundAttributeType(a) == BoundType.DbBound);
-		}
+		/// <summary>
+		/// Query if collection of attributes contains bound attribute. Overload for immutable array to prevent boxing.
+		/// </summary>
+		/// <param name="attributes">The attributes collection.</param>
+		/// <returns/>
+		public bool ContainsBoundAttributes(ImmutableArray<AttributeData> attributes) => 
+			attributes.Any(a => GetBoundAttributeType(a) == BoundType.DbBound);
 
 		/// <summary>
 		/// Query if collection of attributes contains unbound attribute.
 		/// </summary>
 		/// <param name="attributes">The attributes collection.</param>
 		/// <returns/>
-		public bool ContainsUnboundAttributes(IEnumerable<AttributeData> attributes)
-		{
-			attributes.ThrowOnNull();
+		public bool ContainsUnboundAttributes(IEnumerable<AttributeData> attributes) =>
+			attributes.CheckIfNull(nameof(attributes))
+					  .Any(a => GetBoundAttributeType(a) == BoundType.Unbound);
 
-			return attributes.Any(a => GetBoundAttributeType(a) == BoundType.Unbound);
-		}
+		/// <summary>
+		/// Query if collection of attributes contains unbound attribute. Overload for immutable array to prevent boxing.
+		/// </summary>
+		/// <param name="attributes">The attributes collection.</param>
+		/// <returns/>
+		public bool ContainsUnboundAttributes(ImmutableArray<AttributeData> attributes) =>
+			attributes.Any(a => GetBoundAttributeType(a) == BoundType.Unbound);
 
 		private bool IsAttributeDerivedFromClassInternal(ITypeSymbol attributeType, ITypeSymbol typeToCheck, int depth = DefaultRecursionDepth)
 		{
