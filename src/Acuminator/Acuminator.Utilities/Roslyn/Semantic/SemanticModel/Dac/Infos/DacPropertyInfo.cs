@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic.Attribute;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
@@ -80,36 +81,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			bool isDacProperty = dacFields.ContainsKey(property.Name);
 			var attributeInfos = GetAttributeInfos(property, attributesInformation);
 
-
-			DacPropertyInfo propertyInfo = baseInfo != null
+			return baseInfo != null
 				? new DacPropertyInfo(node, property, declarationOrder, isDacProperty, attributeInfos, baseInfo)
 				: new DacPropertyInfo(node, property, declarationOrder, isDacProperty, attributeInfos);
-
-			if (!propertyInfo.IsDacProperty || propertyInfo.Attributes.Length == 0)
-				return propertyInfo;
-
-			
-			//foreach (var item in collection)
-			//{
-			//	attributesRegister.GetFieldTypeAttributeInfos
-			//}
-
-			
-
-			return propertyInfo;
 		}
 
-		private static IEnumerable<AttributeInfo> GetAttributeInfos(IPropertySymbol property, AttributeInformation attributesInformation)
+		private static IEnumerable<AttributeInfo> GetAttributeInfos(IPropertySymbol property, AttributeInformation attributeInformation)
 		{
 			int relativeDeclarationOrder = 0;
 
-			foreach (AttributeData attributeData in property.GetAttributes())
-			{
-				BoundType boundType = attributesInformation.GetBoundAttributeType(attributeData);
-				yield return new AttributeInfo(attributeData, boundType, relativeDeclarationOrder);
+			foreach (AttributeData attribute in property.GetAttributes())
+			{			
+				yield return AttributeInfo.Create(attribute, attributeInformation, relativeDeclarationOrder);
 
 				relativeDeclarationOrder++;
 			}
-		}
+		}	
 	}
 }
