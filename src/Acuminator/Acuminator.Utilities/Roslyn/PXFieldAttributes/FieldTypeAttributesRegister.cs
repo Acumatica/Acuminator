@@ -13,9 +13,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 	/// </summary>
 	public class FieldTypeAttributesRegister
 	{
-		public PXContext Context { get; }
+		private readonly PXContext _pxContext;
 
-		public AttributeInformation AttributeInformation { get; }
+		private readonly AttributeInformation _attributeInformation;
 
 		public ImmutableDictionary<ITypeSymbol, ITypeSymbol> CorrespondingSimpleUnboundTypes { get; }
 
@@ -30,29 +30,29 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			Context = pxContext;
-			AttributeInformation = new AttributeInformation(Context);
-			var unboundFieldAttributes = GetCorrespondingSimpleUnboundTypes(Context).Keys;
+			_pxContext = pxContext;
+			_attributeInformation = new AttributeInformation(_pxContext);
+			var unboundFieldAttributes = GetCorrespondingSimpleUnboundTypes(_pxContext).Keys;
 			UnboundTypeAttributes = unboundFieldAttributes.ToImmutableHashSet();
 
-			var boundFieldAttributes = GetCorrespondingSimpleBoundTypes(Context).Keys;
+			var boundFieldAttributes = GetCorrespondingSimpleBoundTypes(_pxContext).Keys;
 			BoundTypeAttributes = boundFieldAttributes.ToImmutableHashSet();
 
-			var specialAttributes = GetSpecialAttributes(Context);
+			var specialAttributes = GetSpecialAttributes(_pxContext);
 			SpecialAttributes = specialAttributes.ToImmutableHashSet();
 			AllTypeAttributes = unboundFieldAttributes.Concat(boundFieldAttributes)
 													  .Concat(specialAttributes)
 													  .ToImmutableHashSet();
 
-			CorrespondingSimpleUnboundTypes = GetCorrespondingSimpleUnboundTypes(Context).ToImmutableDictionary();
-			CorrespondingSimpleBoundTypes = GetCorrespondingSimpleBoundTypes(Context).ToImmutableDictionary();
+			CorrespondingSimpleUnboundTypes = GetCorrespondingSimpleUnboundTypes(_pxContext).ToImmutableDictionary();
+			CorrespondingSimpleBoundTypes = GetCorrespondingSimpleBoundTypes(_pxContext).ToImmutableDictionary();
 		}
 
 		public IEnumerable<FieldTypeAttributeInfo> GetFieldTypeAttributeInfos(ITypeSymbol attributeSymbol)
 		{
 			attributeSymbol.ThrowOnNull(nameof(attributeSymbol));
 
-			var expandedAttributes = AttributeInformation.GetAcumaticaAttributesFullList(attributeSymbol);
+			var expandedAttributes = _attributeInformation.GetAcumaticaAttributesFullList(attributeSymbol);
 
 			if (expandedAttributes.IsNullOrEmpty())
 				return Enumerable.Empty<FieldTypeAttributeInfo>();
@@ -79,9 +79,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			if (firstTypeAttribute == null)
 				return null;
 
-			if (firstTypeAttribute.Equals(Context.FieldAttributes.PXDBScalarAttribute))
+			if (firstTypeAttribute.Equals(_pxContext.FieldAttributes.PXDBScalarAttribute))
 				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.PXDBScalarAttribute, fieldType: null);
-			else if (firstTypeAttribute.Equals(Context.FieldAttributes.PXDBCalcedAttribute))
+			else if (firstTypeAttribute.Equals(_pxContext.FieldAttributes.PXDBCalcedAttribute))
 				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.PXDBCalcedAttribute, fieldType: null);
 
 			if (CorrespondingSimpleBoundTypes.TryGetValue(firstTypeAttribute, out var boundFieldType))
