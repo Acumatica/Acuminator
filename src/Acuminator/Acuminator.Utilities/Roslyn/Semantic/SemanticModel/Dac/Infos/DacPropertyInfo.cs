@@ -42,17 +42,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		public BoundType BoundType { get; }
 
-		public bool IsIdentity
-		{
-			get;
-			private set;
-		}
+		public bool IsIdentity { get; }
 
-		public bool IsKey
-		{
-			get;
-			private set;
-		}
+		public bool IsKey { get; }
 
 		protected DacPropertyInfo(PropertyDeclarationSyntax node, IPropertySymbol symbol, int declarationOrder, bool isDacProperty,
 								  IEnumerable<AttributeInfo> attributeInfos, DacPropertyInfo baseInfo) :
@@ -68,6 +60,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		{
 			Attributes = attributeInfos.ToImmutableArray();
 			IsDacProperty = isDacProperty;
+
+			BoundType boundType = BoundType.NotDefined;
+			bool isIdentity = false;
+			bool isPrimaryKey = false;
+
+			foreach (AttributeInfo attributeInfo in Attributes)
+			{
+				boundType = boundType.Combine(attributeInfo.BoundType);
+				isIdentity = isIdentity || attributeInfo.IsIdentity;
+				isPrimaryKey = isPrimaryKey || attributeInfo.IsKey;
+			}
+
+			BoundType = boundType;
+			IsIdentity = isIdentity;
+			IsKey = isPrimaryKey;
 		}
 
 		public static DacPropertyInfo Create(PropertyDeclarationSyntax node, IPropertySymbol property, int declarationOrder,
