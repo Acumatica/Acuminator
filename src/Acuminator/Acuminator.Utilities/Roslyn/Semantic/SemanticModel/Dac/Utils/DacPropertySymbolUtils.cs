@@ -1,4 +1,5 @@
 ﻿using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
@@ -30,14 +31,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// </summary>
 		/// <param name="dac">The DAC to act on.</param>
 		/// <param name="pxContext">Context.</param>
+		/// <param name="dacFields">The DAC fields.</param>
 		/// <param name="includeFromInheritanceChain">(Optional) True to include, false to exclude the properties from the inheritance chain.</param>
 		/// <param name="cancellation">(Optional) Cancellation token.</param>
-		/// <returns>The DAC property symbols with nodes from DAC.</returns>
+		/// <returns>
+		/// The DAC property symbols with nodes from DAC.
+		/// </returns>
 		public static OverridableItemsCollection<DacPropertyInfo> GetDacPropertiesFromDac(this ITypeSymbol dac, PXContext pxContext,
-																						  bool includeFromInheritanceChain = true,
+																						  IDictionary<string, DacFieldInfo> dacFields,
+																						  bool includeFromInheritanceChain = true,																					  
 																						  CancellationToken cancellation = default)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
+			dacFields.ThrowOnNull(nameof(dacFields));
 
 			if (!dac.IsDAC(pxContext))
 				return new OverridableItemsCollection<DacPropertyInfo>();
@@ -45,9 +51,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			int estimatedCapacity = dac.GetTypeMembers().Length;
 			var propertiesByName = new OverridableItemsCollection<DacPropertyInfo>(estimatedCapacity);
 			var dacProperties = GetRawPropertiesFromDacImpl(dac, pxContext, includeFromInheritanceChain, cancellation);
+			var attributeInformation = new AttributeInformation(pxContext);
 
 			propertiesByName.AddRangeWithDeclarationOrder(dacProperties, startingOrder: 0, 
-														  (rawData, order) => new DacPropertyInfo(rawData.Node, rawData.Symbol, order));
+												(rawData, order) => DacPropertyInfo.Create(rawData.Node, rawData.Symbol, order, attributeInformation, dacFields));
 			return propertiesByName;
 		}
 
@@ -56,10 +63,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// </summary>
 		/// <param name="dacOrExtension">The DAC or DAC extension to act on.</param>
 		/// <param name="pxContext">Context.</param>
+		/// <param name="dacFields">The DAC fields.</param>
 		/// <param name="cancellation">(Optional) Cancellation token.</param>
-		/// <returns>The properties from DAC or DAC extension and base DAC.</returns>
+		/// <returns>
+		/// The properties from DAC or DAC extension and base DAC.
+		/// </returns>
 		public static OverridableItemsCollection<DacPropertyInfo> GetPropertiesFromDacOrDacExtensionAndBaseDac(this ITypeSymbol dacOrExtension,
 																											   PXContext pxContext,
+																											   IDictionary<string, DacFieldInfo> dacFields,
 																											   CancellationToken cancellation = default)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
@@ -70,22 +81,28 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				return new OverridableItemsCollection<DacPropertyInfo>();
 
 			return isDac
-				? dacOrExtension.GetDacPropertiesFromDac(pxContext)
-				: dacOrExtension.GetPropertiesFromDacExtensionAndBaseDac(pxContext);
+				? dacOrExtension.GetDacPropertiesFromDac(pxContext, dacFields)
+				: dacOrExtension.GetPropertiesFromDacExtensionAndBaseDac(pxContext, dacFields);
 		}
 
 		/// <summary>
 		/// Get DAC properties from the DAC extension and its base DAC.
 		/// </summary>
-		/// <param name="dacExtension">The DAC extension to act on</param>
-		/// <param name="pxContext">Context</param>
-		/// <returns/>
+		/// <param name="dacExtension">The DAC extension to act on.</param>
+		/// <param name="pxContext">Context.</param>
+		/// <param name="dacFields">The DAC fields.</param>
+		/// <param name="cancellation">(Optional) Cancellation token.</param>
+		/// <returns>
+		/// The properties from DAC extension and base DAC.
+		/// </returns>
 		public static OverridableItemsCollection<DacPropertyInfo> GetPropertiesFromDacExtensionAndBaseDac(this ITypeSymbol dacExtension, PXContext pxContext,
+																										  IDictionary<string, DacFieldInfo> dacFields,
 																										  CancellationToken cancellation = default)
 		{
 			dacExtension.ThrowOnNull(nameof(dacExtension));
 			pxContext.ThrowOnNull(nameof(pxContext));
 
+			var attributeInformation = new AttributeInformation(pxContext);
 			return GetPropertiesOrFieldsInfoFromDacExtension<DacPropertyInfo>(dacExtension, pxContext, AddPropertiesFromDac, AddPropertiesFromDacExtension);
 
 			//-----------------------Local function----------------------------------------
@@ -93,14 +110,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			{
 				var rawDacProperties = dac.GetRawPropertiesFromDacImpl(pxContext, includeFromInheritanceChain: true, cancellation);
 				return propertiesCollection.AddRangeWithDeclarationOrder(rawDacProperties, startingOrder,
-																		 (dacProperty, order) => new DacPropertyInfo(dacProperty.Node, dacProperty.Symbol, order));
+													(dacProperty, order) => DacPropertyInfo.Create(dacProperty.Node, dacProperty.Symbol, order, attributeInformation, dacFields));
 			}
 
 			int AddPropertiesFromDacExtension(OverridableItemsCollection<DacPropertyInfo> propertiesCollection, ITypeSymbol dacExt, int startingOrder)
 			{
 				var rawDacExtensionProperties = GetRawPropertiesFromDacOrDacExtensionImpl(dacExt, pxContext, cancellation);
 				return propertiesCollection.AddRangeWithDeclarationOrder(rawDacExtensionProperties, startingOrder,
-																		  (dacProperty, order) => new DacPropertyInfo(dacProperty.Node, dacProperty.Symbol, order));
+													(dacProperty, order) => DacPropertyInfo.Create(dacProperty.Node, dacProperty.Symbol, order, attributeInformation, dacFields));
 			}
 		}
 

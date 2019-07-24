@@ -53,8 +53,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				? Symbol
 				: Symbol.GetDacFromDacExtension(_pxContext);
 
-			PropertiesByNames = GetDacProperties();
 			FieldsByNames = GetDacFields();
+			PropertiesByNames = GetDacProperties();		
 		}
 
 		/// <summary>
@@ -105,8 +105,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		private ImmutableDictionary<string, DacPropertyInfo> GetDacProperties() =>
-			GetInfos(() => Symbol.GetDacPropertiesFromDac(_pxContext, cancellation: _cancellation),
-					 () => Symbol.GetPropertiesFromDacExtensionAndBaseDac(_pxContext, _cancellation));
+			GetInfos(() => Symbol.GetDacPropertiesFromDac(_pxContext, FieldsByNames, cancellation: _cancellation),
+					 () => Symbol.GetPropertiesFromDacExtensionAndBaseDac(_pxContext, FieldsByNames, _cancellation));
 
 		private ImmutableDictionary<string, DacFieldInfo> GetDacFields() =>
 			GetInfos(() => Symbol.GetDacFieldsFromDac(_pxContext, cancellation: _cancellation),

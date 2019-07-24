@@ -7,7 +7,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic.Attribute;
-using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
@@ -78,7 +77,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		public static DacPropertyInfo Create(PropertyDeclarationSyntax node, IPropertySymbol property, int declarationOrder,
-											 AttributeInformation attributesInformation, Dictionary<string, DacFieldInfo> dacFields,
+											 AttributeInformation attributesInformation, IDictionary<string, DacFieldInfo> dacFields,
 											 DacPropertyInfo baseInfo = null)
 		{
 			property.ThrowOnNull(nameof(property));
