@@ -34,7 +34,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 		{
 			var attributeInformation = new AttributeInformation(pxContext);
 
-			foreach (DacPropertyInfo property in dacOrExtension.DeclaredProperties)
+			foreach (DacPropertyInfo property in dacOrExtension.AllDeclaredProperties)
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 				AnalyzeProperty(context, pxContext, attributeInformation, dacOrExtension, property);

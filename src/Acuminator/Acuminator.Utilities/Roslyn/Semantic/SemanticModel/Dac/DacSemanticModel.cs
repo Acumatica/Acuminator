@@ -28,7 +28,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public ImmutableDictionary<string, DacPropertyInfo> PropertiesByNames { get; }
 		public IEnumerable<DacPropertyInfo> Properties => PropertiesByNames.Values;
 
-		public IEnumerable<DacPropertyInfo> DeclaredProperties => Properties.Where(p => p.Symbol.ContainingType == Symbol);
+		public IEnumerable<DacPropertyInfo> DacProperties => Properties.Where(p => p.IsDacProperty);
+
+		public IEnumerable<DacPropertyInfo> AllDeclaredProperties => Properties.Where(p => p.Symbol.ContainingType == Symbol);
+
+		public IEnumerable<DacPropertyInfo> DeclaredDacProperties => Properties.Where(p => p.IsDacProperty && p.Symbol.ContainingType == Symbol);
 
 		public ImmutableDictionary<string, DacFieldInfo> FieldsByNames { get; }
 		public IEnumerable<DacFieldInfo> Fields => FieldsByNames.Values;
