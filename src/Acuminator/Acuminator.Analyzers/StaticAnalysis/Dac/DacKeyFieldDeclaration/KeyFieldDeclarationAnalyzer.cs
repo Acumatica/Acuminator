@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading;
 using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Analyzers.StaticAnalysis.Dac;
+using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 {
@@ -26,33 +27,25 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			var attributeInformation = new AttributeInformation(pxContext);
-			var keyAttributes = new List<AttributeData>(capacity: 2);
+			var keyAttributes = new List<AttributeInfo>(capacity: 2);
 
 			bool containsNaturalPrimaryKeys = false;
 			bool containsIdentityKeys = false;
-			var propertyAttributes = dac.DeclaredProperties.SelectMany(property => property.Symbol.GetAttributes());
 
-			foreach (var attribute in propertyAttributes)
+			foreach (DacPropertyInfo property in dac.DeclaredDacProperties.Where(p => p.IsKey))
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
-				bool isAttributeWithPrimaryKey = attribute.NamedArguments.Any(arg => arg.Key.Contains(DelegateNames.IsKey) && 
-																			  arg.Value.Value is bool isKeyValue && isKeyValue == true);
-				if (isAttributeWithPrimaryKey)
-				{
-					if (!containsNaturalPrimaryKeys || !containsIdentityKeys)  //If we already know that DAC contains both then no need to analyse more
-					{
-						bool isIdentityAttribute = IsDerivedFromIdentityTypes(attribute, pxContext, attributeInformation);
-						containsNaturalPrimaryKeys = containsNaturalPrimaryKeys || !isIdentityAttribute;
-						containsIdentityKeys = containsIdentityKeys || isIdentityAttribute;
-					}
 
-					keyAttributes.Add(attribute);
-				}
+				containsNaturalPrimaryKeys = true;
+				IEnumerable<AttributeInfo> propertyKeyAttributes = property.Attributes.Where(a => a.IsKey);
+				containsIdentityKeys = containsIdentityKeys || property.IsIdentity;
+
+				keyAttributes.AddRange(propertyKeyAttributes);
 			}
 
 			if (containsNaturalPrimaryKeys && containsIdentityKeys)
 			{
-				var locations = keyAttributes.Select(attribute => GetAttributeLocation(attribute, context.CancellationToken)).ToList();
+				var locations = keyAttributes.Select(attribute => GetAttributeLocation(attribute.AttributeData, context.CancellationToken)).ToList();
 
 				foreach (Location attributeLocation in locations)
 				{
