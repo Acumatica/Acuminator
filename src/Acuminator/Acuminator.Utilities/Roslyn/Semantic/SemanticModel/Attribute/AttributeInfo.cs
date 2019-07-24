@@ -34,10 +34,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 
 		public bool IsKey { get; }
 
+		public bool IsDefaultAttribute { get; }
+
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		protected virtual string DebuggerDisplay => $"{Name}";
 
-		public AttributeInfo(AttributeData attributeData, BoundType boundType, int declarationOrder, bool isKey, bool isIdentity)
+		public AttributeInfo(AttributeData attributeData, BoundType boundType, int declarationOrder, bool isKey, bool isIdentity, 
+							 bool isDefaultAttribute)
 		{
 			attributeData.ThrowOnNull(nameof(attributeData));
 			AttributeData = attributeData;
@@ -45,6 +48,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 			DeclarationOrder = declarationOrder;
 			IsKey = isKey;
 			IsIdentity = isIdentity;
+			IsDefaultAttribute = isDefaultAttribute;
 		}
 
 		public static AttributeInfo Create(AttributeData attribute, AttributeInformation attributeInformation, int declarationOrder)
@@ -53,15 +57,25 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 			attributeInformation.ThrowOnNull(nameof(attributeInformation));
 
 			BoundType boundType = attributeInformation.GetBoundAttributeType(attribute);
+			bool isPXDefaultAttribute = IsPXDefaultAttribute(attribute, attributeInformation);
 			bool isIdentityAttribute = IsDerivedFromIdentityTypes(attribute, attributeInformation);
 			bool isAttributeWithPrimaryKey = attribute.NamedArguments.Any(arg => arg.Key.Contains(DelegateNames.IsKey) &&
 																				 arg.Value.Value is bool isKeyValue && isKeyValue == true);
 
-			return new AttributeInfo(attribute, boundType, declarationOrder, isAttributeWithPrimaryKey, isIdentityAttribute);
+			return new AttributeInfo(attribute, boundType, declarationOrder, isAttributeWithPrimaryKey, isIdentityAttribute, isPXDefaultAttribute);
 		}
 
 		private static bool IsDerivedFromIdentityTypes(AttributeData attribute, AttributeInformation attributeInformation) =>
 			attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, attributeInformation.Context.FieldAttributes.PXDBIdentityAttribute) ||
 			attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, attributeInformation.Context.FieldAttributes.PXDBLongIdentityAttribute);
+
+		private static bool IsPXDefaultAttribute(AttributeData attribute, AttributeInformation attributeInformation)
+		{
+			var pxDefaultAttribute = attributeInformation.Context.AttributeTypes.PXDefaultAttribute;
+			var pxUnboundDefaultAttribute = attributeInformation.Context.AttributeTypes.PXUnboundDefaultAttribute;
+
+			return attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, pxDefaultAttribute) &&
+				   !attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, pxUnboundDefaultAttribute);
+		}
 	}
 }
