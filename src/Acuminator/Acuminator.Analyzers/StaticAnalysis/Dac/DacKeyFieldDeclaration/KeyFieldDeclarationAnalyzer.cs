@@ -28,22 +28,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 
 			var attributeInformation = new AttributeInformation(pxContext);
 			var keyAttributes = new List<AttributeInfo>(capacity: 2);
-
-			bool containsNaturalPrimaryKeys = false;
 			bool containsIdentityKeys = false;
 
 			foreach (DacPropertyInfo property in dac.DeclaredDacProperties.Where(p => p.IsKey))
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 
-				containsNaturalPrimaryKeys = true;
 				IEnumerable<AttributeInfo> propertyKeyAttributes = property.Attributes.Where(a => a.IsKey);
 				containsIdentityKeys = containsIdentityKeys || property.IsIdentity;
 
 				keyAttributes.AddRange(propertyKeyAttributes);
 			}
 
-			if (containsNaturalPrimaryKeys && containsIdentityKeys)
+			if (keyAttributes.Count > 1 && containsIdentityKeys)
 			{
 				var locations = keyAttributes.Select(attribute => GetAttributeLocation(attribute.AttributeData, context.CancellationToken)).ToList();
 
