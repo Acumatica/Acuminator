@@ -32,20 +32,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dacOrExtension)
 		{
-			var attributeInformation = new AttributeInformation(pxContext);
-
-			foreach (DacPropertyInfo property in dacOrExtension.AllDeclaredProperties)
+			foreach (DacPropertyInfo property in dacOrExtension.DeclaredDacProperties)
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
-				AnalyzeProperty(context, pxContext, attributeInformation, dacOrExtension, property);
+				AnalyzeProperty(context, pxContext, dacOrExtension, property);
 			}
 		}
 
-        private static void AnalyzeProperty(SymbolAnalysisContext symbolContext, PXContext pxContext, AttributeInformation attributeInformation,
-											DacSemanticModel dacOrExtension, DacPropertyInfo property)
+        private static void AnalyzeProperty(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dacOrExtension,
+											DacPropertyInfo property)
         {         
             var attributes = property.Symbol.GetAttributes();
-            var boundType = GetPropertyBoundType(dacOrExtension, property, attributeInformation);
+            var boundType = GetPropertyBoundType(dacOrExtension, property);
 
             switch (boundType)
             {
@@ -59,9 +57,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
             }
         }
 
-        private static void AnalyzeUnboundProperty(SymbolAnalysisContext symbolContext, PXContext pxContext,
-												   DacSemanticModel dacOrExtension, AttributeInformation attributeInformation,
-												   ImmutableArray<AttributeData> attributes)
+        private static void AnalyzeUnboundProperty(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dacOrExtension)
         {
             var (pxDefaultAttribute, hasPersistingCheckNothing) = GetPXDefaultInfo(pxContext, attributeInformation, attributes);
 
@@ -132,11 +128,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
             return pxDefaultAttribute;
         }
 
-        private static (AttributeData PXDefaultAttribute, bool HasPersistingCheckNothing) GetPXDefaultInfo(PXContext pxContext,
-																								AttributeInformation attributeInformation,
-																								ImmutableArray<AttributeData> attributes)
+        private static (AttributeData PXDefaultAttribute, bool HasPersistingCheckNothing) GetPXDefaultInfo(PXContext pxContext, DacPropertyInfo property)
         {
-            var pxDefaultAttribute = GetPXDefaultAttributeFromAttributes(attributes, pxContext, attributeInformation);
+			var pxDefaultAttribute = property.Attributes.FirstOrDefault(a => a.IsDefaultAttribute)?.AttributeData;
             if (pxDefaultAttribute == null)
             {
                 return (null, false);
@@ -150,56 +144,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
             return (pxDefaultAttribute, hasPersistingCheckNothing);
         }
 
-        private static AttributeData GetPXDefaultAttributeFromAttributes(ImmutableArray<AttributeData> attributes, PXContext pxContext, 
-																		 AttributeInformation attributeInformation)
-        {
-			var pxDefaultAttribute = pxContext.AttributeTypes.PXDefaultAttribute;
-			var pxUnboundDefaultAttribute = pxContext.AttributeTypes.PXUnboundDefaultAttribute;
-
-			return attributes.FirstOrDefault(attribute => IsDefaultAttribute(attribute.AttributeClass));
-
-			bool IsDefaultAttribute(INamedTypeSymbol attributeType) =>
-				attributeInformation.IsAttributeDerivedFromClass(attributeType, pxDefaultAttribute) &&
-				!attributeInformation.IsAttributeDerivedFromClass(attributeType, pxUnboundDefaultAttribute);
-		}
-
-        private static BoundType GetPropertyBoundType(DacSemanticModel dacOrExtension, DacPropertyInfo property,
-													  AttributeInformation attributeInformation)
+        private static BoundType GetPropertyBoundType(DacSemanticModel dacOrExtension, DacPropertyInfo property)
         {
             if (dacOrExtension.DacType == DacType.Dac)
-            {
-                return GetBoundTypeFromDeclaredProperty(property, attributeInformation);
-            }
-
+                return property.BoundType;
+            
             // We need to analyze base Dac extensions and Dac to find a first occurrence of bound/unbound attribute
             // because extension can be PXNonInstantiatedExtension
             foreach (DacPropertyInfo propertyInOverridesChain in property.ThisAndOverridenItems())
             {			         
-                var boundType = GetBoundTypeFromDeclaredProperty(propertyInOverridesChain, attributeInformation);
+                var boundType = property.BoundType;
 
-                if (boundType == BoundType.DbBound || boundType == BoundType.Unbound)
+                if (boundType == BoundType.DbBound || boundType == BoundType.Unbound || boundType == BoundType.Unknown)
                     return boundType;
             }
 
-            return BoundType.NotDefined;
-        }
-
-        private static BoundType GetBoundTypeFromDeclaredProperty(DacPropertyInfo property, AttributeInformation attributeInformation)
-        {
-            var propertyAttributes = property.Symbol.GetAttributes();
-
-            if (attributeInformation.ContainsBoundAttributes(propertyAttributes))
-            {
-                return BoundType.DbBound;
-            }
-            else if (attributeInformation.ContainsUnboundAttributes(propertyAttributes))
-            {
-                return BoundType.Unbound;
-            }
-			else
-			{
-				return BoundType.NotDefined;
-			}           
+            return property.BoundType;
         }
 
         public static Location GetAttributeLocation(AttributeData attribute, CancellationToken cancellationToken) =>
