@@ -20,7 +20,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 	{
 		private const string DeletedDatabaseRecord = "DeletedDatabaseRecord";
 
-		public DacDeclarationAnalyzer(CodeAnalysisSettings settings = null) : base(settings){}
+		public DacDeclarationAnalyzer() : this(null)
+		{ }
+
+		public DacDeclarationAnalyzer(CodeAnalysisSettings settings) : base(settings){}
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
