@@ -13,7 +13,7 @@ Acuminator 2.0 includes the following key changes:
 ### Enhancements to Suppression Mechanism
 With the new version of Acuminator, you can suppress a particular diagnostic in a particular place in your project as follows:
 
- 1. Click the code that is highlighted by the Acuminator diagnostic so that the editor coursor is in the highlighted element.
+ 1. Click the code that is highlighted by the Acuminator diagnostic so that the editor cursor is in the highlighted element.
  2. Click **Suppress Acuminator Diagnostic > in Acuminator Suppression File** on the **Acuminator** main menu of Visual Studio.
 
 The suppressed diagnostic is saved in the Acuminator suppression file, which is located in the folder of your Visual Studio project. This file has the same name as the project file and has the `acuminator` extension. If there is no Acuminator suppression file in the project folder, the file is created automatically.
@@ -25,16 +25,16 @@ To stop suppression of the diagnostic in the particular place of code, remove th
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
 
- - Syntax highlighting and other fuctions could stop working because of incorrect format of XML suppression file.
+ - Syntax highlighting and other functions could stop working because of incorrect format of XML suppression file.
  - The [PX1015](diagnostics/PX1015.md) diagnostic was displayed for `PXSelectExtension.Select` methods. Now the diagnostic is not performed on these methods.
  - The [PX1048](diagnostics/PX1048.md) diagnostic was displayed if the code contained the `is` C# 7 pattern. In Acuminator 2.0, the version of Roslyn that is used internally has been updated to 2.0, which supports the `is` pattern.
- - The analyser for the [PX1030](diagnostics/PX1030.md) diagnostic failed with an error on some solutions.
+ - The analyzer for the [PX1030](diagnostics/PX1030.md) diagnostic failed with an error on some solutions.
 
 ### Other Enhancements
 Acuminator 2.0 also includes the following enhancements:
 
  - The code map stays open when the Visual Studio solution is closed.
- - Acuminator now stops analysis if the code file is beeing edited. Acuminator restarts the analysis once the editing stops.
+ - Acuminator now stops analysis if the code file is being edited. Acuminator restarts the analysis once the editing stops.
  - The following diagnostics now display warnings instead of errors if the value of **Tools > Options > Acuminator > Code Analysis > Enable additional diagnostics for ISV Solution Certification** is _False_: [PX1027](diagnostics/PX1027.md), [PX1045](diagnostics/PX1045.md), [PX1047](diagnostics/PX1047.md), [PX1057](diagnostics/PX1057.md), [PX1071](diagnostics/PX1071.md), [PX1073](diagnostics/PX1073.md), and [PX1075](diagnostics/PX1075.md).
 
 ## Acuminator 1.6.2
