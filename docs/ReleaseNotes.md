@@ -20,7 +20,7 @@ The suppressed diagnostic is saved in the Acuminator suppression file, which is 
 
 Acuminator suppression mechanism differs from the standard suppression mechanism of Visual Studio. With the Acuminator suppression mechanism, you can suppress a particular diagnostic in a particular place in the project, while the standard mechanism suppresses all diagnostics with this ID in the method.
 
-To remove the diagnostic from the Acuminator suppression file, remove the diagnostic from the Acuminator suppression file manually.
+To stop suppression of the diagnostic in the particular place of code, remove the diagnostic from the Acuminator suppression file manually.
 
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
@@ -35,7 +35,7 @@ Acuminator 2.0 also includes the following enhancements:
 
  - The code map stays open when the Visual Studio solution is closed.
  - Acuminator now stops analysis if the code file is beeing edited. Acuminator restarts the analysis once the editing stops.
- - The following diagnostics now display warnings instead of errors if the value of **Tools > Options > Acuminator > Code Analysis > Enable additional diagnostics for ISV Solution Certification** is _False_ (which is default): [PX1027](diagnostics/PX1027.md), [PX1045](diagnostics/PX1045.md), [PX1047](diagnostics/PX1047.md), [PX1057](diagnostics/PX1057.md), [PX1071](diagnostics/PX1071.md), [PX1073](diagnostics/PX1073.md), and [PX1075](diagnostics/PX1075.md).
+ - The following diagnostics now display warnings instead of errors if the value of **Tools > Options > Acuminator > Code Analysis > Enable additional diagnostics for ISV Solution Certification** is _False_: [PX1027](diagnostics/PX1027.md), [PX1045](diagnostics/PX1045.md), [PX1047](diagnostics/PX1047.md), [PX1057](diagnostics/PX1057.md), [PX1071](diagnostics/PX1071.md), [PX1073](diagnostics/PX1073.md), and [PX1075](diagnostics/PX1075.md).
 
 ## Acuminator 1.6.2
 Acuminator 1.6.2 includes the bug fixes described in this section, as well as the features that have been implemented in previous versions.

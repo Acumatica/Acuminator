@@ -1,5 +1,7 @@
 ## Diagnostics
 
+**Note:** In the following table, the types of the diagnostics are specified for the ISV solution certification&#8212;that is, for the **Enable additional diagnostics for ISV Solution Certification** option (in **Tools > Options > Acuminator > Code Analysis**) set to `True`. The type of the diagnostic can be different if this option is set to `False`. For details about the type of the diagnostic, see the description of the diagnostic.
+
 | Code   | Short Description                                       | Type  | Code Fix  |
 | ------ | ------------------------------------------------------- | ----- | --------- |
 | [PX1000](diagnostics/PX1000.md) | An invalid signature of the `PXAction` handler is used. | Error | Available |
@@ -18,8 +20,8 @@
 | [PX1014](diagnostics/PX1014.md) | A DAC field must have a nullable type. | Error   | Available |
 | [PX1015](diagnostics/PX1015.md) | For a BQL statement that contains parameters, the number of arguments of a `Select` method is different from the number of parameters. | Warning (Level 1: Significant) | Unavailable |
 | [PX1018](diagnostics/PX1018.md) | The graph with the specified primary view type parameter doesn't contain the primary view of the specified type. | Error | Unavailable |
-| [PX1021](diagnostics/PX1021.md) | The DAC property field has a type that is not compatible with the field attribute assigned to this property. | Error | Available |
-| [PX1023](diagnostics/PX1023.md) | The DAC property is marked with multiple field attributes. | Error | Available |
+| [PX1021](diagnostics/PX1021.md) | The type of the DAC field attribute does not correspond to the property type. | Error | Available |
+| [PX1023](diagnostics/PX1023.md) | The DAC property is marked with multiple field type attributes. | Error | Available |
 | [PX1024](diagnostics/PX1024.md) | The DAC class field must be abstract. | Error | Available |
 | [PX1026](diagnostics/PX1026.md) | Underscores cannot be used in the names of DACs and DAC fields. | Error | Available |
 | [PX1027](diagnostics/PX1027.md) | The `CompanyMask`, `CompanyID`, and `DeletedDatabaseRecord` fields cannot be declared in DACs. | Error | Available |
