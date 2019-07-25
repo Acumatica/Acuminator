@@ -26,7 +26,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var attributeInformation = new AttributeInformation(pxContext);
 			var keyAttributes = new List<AttributeInfo>(capacity: 2);
 			bool containsIdentityKeys = false;
 
@@ -55,10 +54,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 				}
 			}
 		}
-
-		private static bool IsDerivedFromIdentityTypes(AttributeData attribute, PXContext pxContext, AttributeInformation attributeInformation) =>
-			attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, pxContext.FieldAttributes.PXDBIdentityAttribute) ||
-			attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, pxContext.FieldAttributes.PXDBLongIdentityAttribute);
 
 		private static Location GetAttributeLocation(AttributeData attribute, CancellationToken cancellationToken) =>
 			attribute.ApplicationSyntaxReference
