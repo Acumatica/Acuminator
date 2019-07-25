@@ -1,5 +1,4 @@
 ﻿using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Microsoft.CodeAnalysis;
@@ -8,7 +7,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
-using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 
