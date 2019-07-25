@@ -42,24 +42,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
         private static void AnalyzeProperty(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dacOrExtension,
 											DacPropertyInfo property)
         {         
-            var attributes = property.Symbol.GetAttributes();
             var boundType = GetPropertyBoundType(dacOrExtension, property);
 
             switch (boundType)
             {
                 case BoundType.Unbound:
-                    AnalyzeUnboundProperty(symbolContext, pxContext, dacOrExtension, attributeInformation, attributes);
+                    AnalyzeUnboundProperty(symbolContext, pxContext, dacOrExtension, property);
                     return;
                 case BoundType.DbBound
                 when dacOrExtension.DacType == DacType.DacExtension: // Analyze bound property only for extensions
-                    AnalyzeBoundPropertyAttributes(symbolContext, pxContext, dacOrExtension, attributeInformation, property, attributes);
+                    AnalyzeBoundPropertyAttributes(symbolContext, pxContext, property);
 					return;
             }
         }
 
-        private static void AnalyzeUnboundProperty(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dacOrExtension)
+        private static void AnalyzeUnboundProperty(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dacOrExtension,
+												   DacPropertyInfo property)
         {
-            var (pxDefaultAttribute, hasPersistingCheckNothing) = GetPXDefaultInfo(pxContext, attributeInformation, attributes);
+            var (pxDefaultAttribute, hasPersistingCheckNothing) = GetPXDefaultInfo(pxContext, property);
 
             if (pxDefaultAttribute == null || hasPersistingCheckNothing)
                 return;
@@ -80,11 +80,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
             symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
         }
 
-        private static void AnalyzeBoundPropertyAttributes(SymbolAnalysisContext symbolContext, PXContext pxContext,
-														   DacSemanticModel dacExtension, AttributeInformation attributeInformation,
-														   DacPropertyInfo property, ImmutableArray<AttributeData> attributes)
+        private static void AnalyzeBoundPropertyAttributes(SymbolAnalysisContext symbolContext, PXContext pxContext, DacPropertyInfo property)
         {
-            var pxDefaultAttribute = GetInvalidPXDefaultAttributeFromBoundProperty(pxContext, property, attributeInformation, attributes);
+            var pxDefaultAttribute = GetInvalidPXDefaultAttributeFromBoundProperty(pxContext, property);
 
             if (pxDefaultAttribute == null)
                 return;
@@ -100,11 +98,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
             symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
         }
 
-        private static AttributeData GetInvalidPXDefaultAttributeFromBoundProperty(PXContext pxContext, DacPropertyInfo property,
-																				   AttributeInformation attributeInformation, 
-																				   ImmutableArray<AttributeData> attributes)
+        private static AttributeData GetInvalidPXDefaultAttributeFromBoundProperty(PXContext pxContext, DacPropertyInfo property)
         {
-            var (pxDefaultAttribute, hasPersistingCheckNothing) = GetPXDefaultInfo(pxContext, attributeInformation, attributes);
+            var (pxDefaultAttribute, hasPersistingCheckNothing) = GetPXDefaultInfo(pxContext, property);
 
             if (pxDefaultAttribute == null || hasPersistingCheckNothing)
                 return null;
@@ -112,10 +108,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
             // If Dac extension contains PXDefaultAttribute without PersistingCheck.Nothing
             // we need to look to attribute wich it overrides:
             // if base attribute is also doesn't contain PersistingCheck.Nothing it is legitimately
-            foreach (DacPropertyInfo overridenProperties in property.JustOverridenItems())
+            foreach (DacPropertyInfo overridenProperty in property.JustOverridenItems())
             {
-				ImmutableArray<AttributeData> attributesBase = overridenProperties.Symbol.GetAttributes();
-                var (pxDefaultAttributeBase, hasPersistingCheckNothingBase) = GetPXDefaultInfo(pxContext, attributeInformation, attributesBase);
+                var (pxDefaultAttributeBase, hasPersistingCheckNothingBase) = GetPXDefaultInfo(pxContext, overridenProperty);
 
                 if (pxDefaultAttributeBase == null)
                     continue;      
@@ -130,16 +125,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
         private static (AttributeData PXDefaultAttribute, bool HasPersistingCheckNothing) GetPXDefaultInfo(PXContext pxContext, DacPropertyInfo property)
         {
-			var pxDefaultAttribute = property.Attributes.FirstOrDefault(a => a.IsDefaultAttribute)?.AttributeData;
-            if (pxDefaultAttribute == null)
-            {
-                return (null, false);
-            }
+			var defaultAttributes = property.Attributes.Where(a => a.IsDefaultAttribute).ToList();
 
+			if (defaultAttributes.Count != 1)	//We don't check in case of multiple pxdefault
+				return (null, false);
+
+			var pxDefaultAttribute = defaultAttributes[0].AttributeData;
 			var hasPersistingCheckNothing = (from arg in pxDefaultAttribute.NamedArguments
 											 where TypeNames.PersistingCheck.Equals(arg.Key, StringComparison.Ordinal)
 											 select arg.Value.Value)
-											.Any(value => value is int persistingCheck && persistingCheck == (int)PXPersistingCheckValues.Nothing);
+											.Any(value => value is int persistingCheck && 
+														  persistingCheck == (int)PXPersistingCheckValues.Nothing);
 
             return (pxDefaultAttribute, hasPersistingCheckNothing);
         }
@@ -152,11 +148,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
             // We need to analyze base Dac extensions and Dac to find a first occurrence of bound/unbound attribute
             // because extension can be PXNonInstantiatedExtension
             foreach (DacPropertyInfo propertyInOverridesChain in property.ThisAndOverridenItems())
-            {			         
-                var boundType = property.BoundType;
-
-                if (boundType == BoundType.DbBound || boundType == BoundType.Unbound || boundType == BoundType.Unknown)
-                    return boundType;
+            {
+				switch (propertyInOverridesChain.BoundType)
+				{		
+					case BoundType.Unbound:
+					case BoundType.DbBound:
+					case BoundType.Unknown:
+						return propertyInOverridesChain.BoundType;				
+				}
             }
 
             return property.BoundType;
