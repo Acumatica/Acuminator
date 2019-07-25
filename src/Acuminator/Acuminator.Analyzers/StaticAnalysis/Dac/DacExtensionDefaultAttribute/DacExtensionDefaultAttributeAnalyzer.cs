@@ -32,21 +32,33 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dacOrExtension)
 		{
+			context.CancellationToken.ThrowIfCancellationRequested();
+
+			bool isDacFullyUnbound = IsDacFullyUnbound(dacOrExtension);
+
 			foreach (DacPropertyInfo property in dacOrExtension.DeclaredDacProperties)
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
-				AnalyzeProperty(context, pxContext, dacOrExtension, property);
+				AnalyzeProperty(context, pxContext, dacOrExtension, property, isDacFullyUnbound);
 			}
 		}
 
+		private static bool IsDacFullyUnbound(DacSemanticModel dacOrExtension)
+		{
+			if (dacOrExtension.DacType != DacType.Dac)
+				return false;
+
+			return dacOrExtension.DacProperties.All(p => p.BoundType != BoundType.DbBound && p.BoundType != BoundType.Unknown);
+		}
+
         private static void AnalyzeProperty(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dacOrExtension,
-											DacPropertyInfo property)
+											DacPropertyInfo property, bool isDacFullyUnbound)
         {         
             var boundType = GetPropertyBoundType(dacOrExtension, property);
 
             switch (boundType)
             {
-                case BoundType.Unbound:
+                case BoundType.Unbound when !isDacFullyUnbound:
                     AnalyzeUnboundProperty(symbolContext, pxContext, dacOrExtension, property);
                     return;
                 case BoundType.DbBound
