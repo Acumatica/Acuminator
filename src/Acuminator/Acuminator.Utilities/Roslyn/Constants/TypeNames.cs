@@ -20,6 +20,7 @@ namespace Acuminator.Utilities.Roslyn.Constants
 		public static readonly string IBqlSortColumn = "IBqlSortColumn";
 		public static readonly string IBqlComparison = "IBqlComparison";
 		public static readonly string IBqlCreator = "IBqlCreator";
+		public static readonly string IBqlOperand = "IBqlOperand";
 		public static readonly string IBqlPredicateChain = "IBqlPredicateChain";
 		public static readonly string IBqlOn = "IBqlOn";
 		public static readonly string IBqlSet = "IBqlSet";

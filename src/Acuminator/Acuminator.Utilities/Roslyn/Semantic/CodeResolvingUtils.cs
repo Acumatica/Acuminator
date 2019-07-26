@@ -445,18 +445,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				case 1:	
 					return typeParamsListSyntax.Span;
 
-				case 2:		
-					
-
-
-					if (!(typeSymbol is INamedTypeSymbol namedTypeSymbol) || 
-						!namedTypeSymbol.TypeArguments[0].ImplementsInterface(TypeNames.IBqlCreator))
-					{
-						return typeParamsListSyntax.Span;
-					}
-
-					int twoArgsLength = typeArgumentsList.GetSeparator(0).SpanStart - typeParamsListSyntax.SpanStart;
-					return new TextSpan(typeParamsListSyntax.SpanStart, twoArgsLength);
+				case 2:
+					return GetOutliningSpanForTypeArgumentsListWithTwoTypeArgs(typeParamsListSyntax, typeSymbol);
 
 				default:				
 					int threeArgsLength = typeArgumentsList.GetSeparator(1).SpanStart - typeParamsListSyntax.SpanStart;
@@ -485,7 +475,33 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 		private static TextSpan? GetOutliningSpanForTypeArgumentsListWithTwoTypeArgs(TypeArgumentListSyntax typeParamsListSyntax, ITypeSymbol typeSymbol)
 		{
-			var typeArgumentsList = typeParamsListSyntax.Arguments;
+			if (!(typeSymbol is INamedTypeSymbol namedTypeSymbol))
+				return typeParamsListSyntax.Span;
+
+			var typeArgs = namedTypeSymbol.TypeArguments;
+			bool shouldOutlineTwoArgs = typeArgs[0].ImplementsInterface(TypeNames.IBqlCreator) && 
+										!typeArgs[0].IsUnaryBqlFunction();
+			if (shouldOutlineTwoArgs)
+			{
+				var typeArgumentsList = typeParamsListSyntax.Arguments;
+				int twoArgsLength = typeArgumentsList.GetSeparator(0).SpanStart - typeParamsListSyntax.SpanStart;
+				return new TextSpan(typeParamsListSyntax.SpanStart, twoArgsLength);
+			}
+
+			return typeParamsListSyntax.Span;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static bool IsUnaryBqlFunction(this ITypeSymbol typeSymbol)
+		{
+			if (!(typeSymbol is INamedTypeSymbol namedTypeSymbol) || namedTypeSymbol.TypeArguments.Length > 1 ||
+				!namedTypeSymbol.ImplementsInterface(TypeNames.IBqlOperand))
+			{
+				return false;
+			}
+
+			return namedTypeSymbol.TypeArguments.IsDefaultOrEmpty || 
+				   namedTypeSymbol.TypeArguments[0].ImplementsInterface(TypeNames.IBqlOperand);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
