@@ -34,7 +34,7 @@ In this version of Acuminator, the following bugs have been fixed:
 Acuminator 2.0 also includes the following enhancements:
 
  - The code map stays open when the Visual Studio solution is closed.
- - If the value of **Tools > Options > Acuminator > Code Analysis > Enable additional diagnostics for ISV Solution Certification** is _False_, the following diagnostics now display warnings instead of errors: [PX1027](diagnostics/PX1027.md), [PX1045](diagnostics/PX1045.md), [PX1047](diagnostics/PX1047.md), [PX1057](diagnostics/PX1057.md), [PX1071](diagnostics/PX1071.md), [PX1073](diagnostics/PX1073.md), and [PX1075](diagnostics/PX1075.md).
+ - If the value of **Tools > Options > Acuminator > Code Analysis > Enable additional diagnostics for ISV Solution Certification** is _False_, the following diagnostics can now display warnings instead of errors: [PX1027](diagnostics/PX1027.md), [PX1043](diagnostics/PX1043.md), [PX1045](diagnostics/PX1045.md), [PX1047](diagnostics/PX1047.md), [PX1057](diagnostics/PX1057.md), [PX1071](diagnostics/PX1071.md), [PX1073](diagnostics/PX1073.md), and [PX1075](diagnostics/PX1075.md).
 
 ## Acuminator 1.6.2
 Acuminator 1.6.2 includes the bug fixes described in this section, as well as the features that have been implemented in previous versions.
