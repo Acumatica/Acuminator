@@ -7,7 +7,7 @@ Acuminator 2.0 includes the bug fixes and enhancements described in this section
 ### Key Changes
 Acuminator 2.0 includes the following key changes:
 
- - Acuminator no longer supports Visual Studio 2015. 
+ - Acuminator no longer supports Visual Studio 2015. With drop of support of Visual Studio 2015, Acuminator has been moved to Roslyn 2.0 and new Visual Studio SDK methods. These changes improve UX and UI response time and the Acuminator load time.
  - Acuminator now supports C# 7.3.
 
 ### Enhancements to Suppression Mechanism
