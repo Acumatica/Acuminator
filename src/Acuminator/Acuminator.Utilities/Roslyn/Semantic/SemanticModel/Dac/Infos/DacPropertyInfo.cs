@@ -28,9 +28,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			{
 				Base = value;
 				
-				if (value != null)
+				if (value != null && BoundType == BoundType.NotDefined) //Inherit BoundType from the base property only if we don't override it
 				{
-					EffectiveBoundType = EffectiveBoundType.Combine(value.EffectiveBoundType);
+					EffectiveBoundType = value.EffectiveBoundType;
 				}
 			}
 		}
@@ -71,7 +71,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		{
 			baseInfo.ThrowOnNull(nameof(baseInfo));
 			Base = baseInfo;
-			EffectiveBoundType = EffectiveBoundType.Combine(baseInfo.EffectiveBoundType);
+
+			if (BoundType == BoundType.NotDefined)
+			{
+				EffectiveBoundType = baseInfo.EffectiveBoundType;
+			}		
 		}
 
 		protected DacPropertyInfo(PropertyDeclarationSyntax node, IPropertySymbol symbol, int declarationOrder,
