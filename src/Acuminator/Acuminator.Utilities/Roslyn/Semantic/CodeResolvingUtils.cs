@@ -445,7 +445,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				case 1:	
 					return typeParamsListSyntax.Span;
 
-				case 2:			
+				case 2:		
+					
+
+
 					if (!(typeSymbol is INamedTypeSymbol namedTypeSymbol) || 
 						!namedTypeSymbol.TypeArguments[0].ImplementsInterface(TypeNames.IBqlCreator))
 					{
@@ -478,6 +481,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 						return new TextSpan(bqlJoinTypeParamsListSyntax.SpanStart, length);
 				}
 			}
+		}
+
+		private static TextSpan? GetOutliningSpanForTypeArgumentsListWithTwoTypeArgs(TypeArgumentListSyntax typeParamsListSyntax, ITypeSymbol typeSymbol)
+		{
+			var typeArgumentsList = typeParamsListSyntax.Arguments;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
