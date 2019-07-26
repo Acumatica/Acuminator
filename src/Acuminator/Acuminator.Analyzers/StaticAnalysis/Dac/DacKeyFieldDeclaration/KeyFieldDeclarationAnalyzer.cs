@@ -25,9 +25,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			var keyAttributes = new List<AttributeInfo>(capacity: 2);
+			var declaredInDacKeyAttributes = new List<AttributeInfo>(capacity: 2);
 			bool containsIdentityKeys = false;
 
-			foreach (DacPropertyInfo property in dac.DeclaredDacProperties.Where(p => p.IsKey))
+			foreach (DacPropertyInfo property in dac.DacProperties.Where(p => p.IsKey))
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -35,11 +36,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 				containsIdentityKeys = containsIdentityKeys || property.IsIdentity;
 
 				keyAttributes.AddRange(propertyKeyAttributes);
+
+				if (property.Symbol.ContainingType == dac.Symbol)
+				{
+					declaredInDacKeyAttributes.AddRange(propertyKeyAttributes);
+				}
 			}
 
-			if (keyAttributes.Count > 1 && containsIdentityKeys)
-			{
-				var locations = keyAttributes.Select(attribute => GetAttributeLocation(attribute.AttributeData, context.CancellationToken)).ToList();
+			if (keyAttributes.Count > 1 && containsIdentityKeys && declaredInDacKeyAttributes.Count > 0)
+			{		
+				var locations = declaredInDacKeyAttributes.Select(attribute => GetAttributeLocation(attribute.AttributeData, context.CancellationToken)).ToList();
 
 				foreach (Location attributeLocation in locations)
 				{
