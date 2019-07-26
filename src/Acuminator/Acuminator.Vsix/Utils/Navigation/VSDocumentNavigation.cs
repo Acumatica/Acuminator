@@ -26,22 +26,31 @@ namespace Acuminator.Vsix.Utilities.Navigation
 {
 	public static class VSDocumentNavigation
 	{
-		public static async Task<(IWpfTextView WpfTextView, CaretPosition CaretPosition)> NavigateToAsync(this ISymbol symbol,
-																											   bool selectSpan = true,
-																											   CancellationToken cToken = default)
+		public static Task<(IWpfTextView WpfTextView, CaretPosition CaretPosition)> NavigateToAsync(this ISymbol symbol,
+																									bool selectSpan = true,
+																									CancellationToken cToken = default)
 		{
 			symbol.ThrowOnNull(nameof(symbol));
 
 			var syntaxReferences = symbol.DeclaringSyntaxReferences;
 
 			if (syntaxReferences.Length != 1)
-				return default;
+				return Task.FromResult(default((IWpfTextView, CaretPosition)));
 
-			var filePath = syntaxReferences[0].SyntaxTree?.FilePath;
+			return symbol.NavigateToAsync(syntaxReferences[0], selectSpan, cToken);
+		}
 
-			await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cToken);
+		public static async Task<(IWpfTextView WpfTextView, CaretPosition CaretPosition)> NavigateToAsync(this ISymbol symbol, 
+																										  SyntaxReference reference, bool selectSpan = true,
+																										  CancellationToken cToken = default)
+		{
+			symbol.ThrowOnNull(nameof(symbol));
+			reference.ThrowOnNull(nameof(reference));
+			var filePath = reference.SyntaxTree?.FilePath;
+
+			await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			var workspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
-			TextSpan textSpanToNavigate = await GetTextSpanToNavigateFromSymbolAsync(symbol, syntaxReferences[0], cToken);
+			TextSpan textSpanToNavigate = await GetTextSpanToNavigateFromSymbolAsync(symbol, reference, cToken);
 			return await AcuminatorVSPackage.Instance.OpenCodeFileAndNavigateToPositionAsync(workspace?.CurrentSolution, filePath,
 																							 textSpanToNavigate, selectSpan);
 		}
