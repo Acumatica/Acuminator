@@ -50,13 +50,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 		private static void AnalyzeProperty(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dacOrExtension,
 											DacPropertyInfo property, bool isDacFullyUnbound)
         {         
-            var boundType = GetPropertyBoundType(dacOrExtension, property);
-
-            switch (boundType)
+            switch (property.EffectiveBoundType)
             {
                 case BoundType.Unbound when !isDacFullyUnbound:
                     AnalyzeUnboundProperty(symbolContext, pxContext, dacOrExtension, property);
                     return;
+
                 case BoundType.DbBound
                 when dacOrExtension.DacType == DacType.DacExtension: // Analyze bound property only for extensions
                     AnalyzeBoundPropertyAttributes(symbolContext, pxContext, property);
@@ -146,27 +145,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 														  persistingCheck == (int)PXPersistingCheckValues.Nothing);
 
             return (pxDefaultAttribute, hasPersistingCheckNothing);
-        }
-
-        private static BoundType GetPropertyBoundType(DacSemanticModel dacOrExtension, DacPropertyInfo property)
-        {
-            if (dacOrExtension.DacType == DacType.Dac)
-                return property.BoundType;
-            
-            // We need to analyze base Dac extensions and Dac to find a first occurrence of bound/unbound attribute
-            // because extension can be PXNonInstantiatedExtension
-            foreach (DacPropertyInfo propertyInOverridesChain in property.ThisAndOverridenItems())
-            {
-				switch (propertyInOverridesChain.BoundType)
-				{		
-					case BoundType.Unbound:
-					case BoundType.DbBound:
-					case BoundType.Unknown:
-						return propertyInOverridesChain.BoundType;				
-				}
-            }
-
-            return property.BoundType;
         }
 
         public static Location GetAttributeLocation(AttributeData attribute, CancellationToken cancellationToken) =>
