@@ -24,7 +24,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		DacPropertyInfo IWriteableBaseItem<DacPropertyInfo>.Base
 		{
 			get => Base;
-			set => Base = value;
+			set
+			{
+				Base = value;
+				
+				if (value != null)
+				{
+					EffectiveBoundType = EffectiveBoundType.Combine(value.EffectiveBoundType);
+				}
+			}
 		}
 
 		public ImmutableArray<AttributeInfo> Attributes { get; }
@@ -39,7 +47,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// </value>
 		public ITypeSymbol PropertyType => Symbol.Type;
 
+		/// <summary>
+		/// The bound type declared on this property.
+		/// </summary>
 		public BoundType BoundType { get; }
+
+		/// <summary>
+		/// The effective bound type for this property obtained by the combination of <see cref="BoundType"/>s of this propety's override chain. 
+		/// </summary>
+		public BoundType EffectiveBoundType
+		{
+			get;
+			private set;
+		}
 
 		public bool IsIdentity { get; }
 
@@ -51,6 +71,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		{
 			baseInfo.ThrowOnNull(nameof(baseInfo));
 			Base = baseInfo;
+			EffectiveBoundType = EffectiveBoundType.Combine(baseInfo.EffectiveBoundType);
 		}
 
 		protected DacPropertyInfo(PropertyDeclarationSyntax node, IPropertySymbol symbol, int declarationOrder,
@@ -72,6 +93,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			}
 
 			BoundType = boundType;
+			EffectiveBoundType = BoundType;
 			IsIdentity = isIdentity;
 			IsKey = isPrimaryKey;
 		}
