@@ -119,6 +119,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\SOOrder.cs" />
     <Compile Include="Tests\StaticAnalysis\ConstructorInDac\ConstructorInDacAnalyzerTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\FullyUnboundDac.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\FullyUnboundDacExtension.cs" />
     <Compile Include="Tests\StaticAnalysis\ForbiddenFieldsInDac\DacForbiddenFieldsNonISVTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacNonAbstractFieldType\DacFieldNotAbstractTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacPropertyAttributes\DacFieldWithDBCalcedAttributeTests.cs" />

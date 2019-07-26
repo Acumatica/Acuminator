@@ -91,6 +91,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacExtensionDefaultAttribute
 		public virtual void FullyUnboundDac_ShouldNotShow(string source) => VerifyCSharpDiagnostic(source);
 
 		[Theory]
+		[EmbeddedFileData("FullyUnboundDacExtension.cs")]
+		public virtual void FullyUnboundDacExtension_ShouldNotShow(string source) => VerifyCSharpDiagnostic(source);
+
+		[Theory]
 		[EmbeddedFileData("DacAggregateAttributeFields.cs")]
 		public virtual void DacWithAggregateAttributeFields(string source) =>
 			VerifyCSharpDiagnostic(source,
