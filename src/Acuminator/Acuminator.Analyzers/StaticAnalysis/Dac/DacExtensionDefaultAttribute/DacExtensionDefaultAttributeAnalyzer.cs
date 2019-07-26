@@ -43,15 +43,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 			}
 		}
 
-		private static bool IsDacFullyUnbound(DacSemanticModel dacOrExtension)
-		{
-			if (dacOrExtension.DacType != DacType.Dac)
-				return false;
+		private static bool IsDacFullyUnbound(DacSemanticModel dacOrExtension) => 
+			dacOrExtension.DacProperties.All(p => p.EffectiveBoundType != BoundType.DbBound &&
+												  p.EffectiveBoundType != BoundType.Unknown);
 
-			return dacOrExtension.DacProperties.All(p => p.BoundType != BoundType.DbBound && p.BoundType != BoundType.Unknown);
-		}
-
-        private static void AnalyzeProperty(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dacOrExtension,
+		private static void AnalyzeProperty(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dacOrExtension,
 											DacPropertyInfo property, bool isDacFullyUnbound)
         {         
             var boundType = GetPropertyBoundType(dacOrExtension, property);
