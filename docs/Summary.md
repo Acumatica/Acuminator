@@ -1,6 +1,6 @@
 ## Diagnostics
 
-**Note:** In the following table, the types of the diagnostics are specified for the ISV solution certification&#8212;that is, for the **Enable additional diagnostics for ISV Solution Certification** option (in **Tools > Options > Acuminator > Code Analysis**) set to `True`. The type of the diagnostic can be different if this option is set to `False`. For details about the type of the diagnostic, see the description of the diagnostic.
+**Note:** In the following table, the types of the diagnostics are specified for the ISV solution certification&#8212;that is, if the **Enable additional diagnostics for ISV Solution Certification** option (in **Tools > Options > Acuminator > Code Analysis**) is set to `True`. The type of the diagnostic can be different if this option is set to `False`. For details about the type of the diagnostic, see the description of the diagnostic.
 
 | Code   | Short Description                                       | Type  | Code Fix  |
 | ------ | ------------------------------------------------------- | ----- | --------- |
