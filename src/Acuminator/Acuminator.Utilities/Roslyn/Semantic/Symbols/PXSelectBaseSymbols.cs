@@ -4,14 +4,12 @@ using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-    public class PXSelectBaseSymbols
+    public class PXSelectBaseSymbols : SymbolsSetForTypeBase
     {
-        public INamedTypeSymbol Type { get; }
         public IFieldSymbol View { get; }
 
-        internal PXSelectBaseSymbols(Compilation compilation)
+        internal PXSelectBaseSymbols(Compilation compilation) : base(compilation, TypeFullNames.PXSelectBase)
         {
-            Type = compilation.GetTypeByMetadataName(TypeFullNames.PXSelectBase);
             View = Type.GetMembers(DelegateNames.View)
                    .OfType<IFieldSymbol>()
                    .First();

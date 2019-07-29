@@ -6,13 +6,10 @@ using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-	public class EventSymbols
+	public class EventSymbols : SymbolsSetBase
 	{
-		private readonly Compilation _compilation;
-
-		internal EventSymbols(Compilation compilation)
+		internal EventSymbols(Compilation compilation) : base(compilation)
 		{
-			_compilation = compilation;
 			_eventTypeMap = new Lazy<IReadOnlyDictionary<ITypeSymbol, EventType>>(
 				() => CreateEventTypeMap(this));
 			_eventHandlerSignatureTypeMap = new Lazy<IReadOnlyDictionary<(EventType, EventHandlerSignatureType), INamedTypeSymbol>>(

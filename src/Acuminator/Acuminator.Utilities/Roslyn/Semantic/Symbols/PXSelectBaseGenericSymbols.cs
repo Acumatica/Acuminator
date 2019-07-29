@@ -6,17 +6,15 @@ using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-    public class PXSelectBaseGenericSymbols
+    public class PXSelectBaseGenericSymbols : SymbolsSetForTypeBase
     {
-        public INamedTypeSymbol Type { get; }
         public ImmutableArray<IMethodSymbol> Insert { get; }
         public ImmutableArray<IMethodSymbol> Update { get; }
         public ImmutableArray<IMethodSymbol> Delete { get; }
         public ImmutableArray<IMethodSymbol> Select { get; }
 
-        internal PXSelectBaseGenericSymbols(Compilation compilation)
+        internal PXSelectBaseGenericSymbols(Compilation compilation) : base(compilation, TypeFullNames.PXSelectBase1)
         {
-            Type = compilation.GetTypeByMetadataName(TypeFullNames.PXSelectBase1);
 	        Insert = Type.GetMethods(DelegateNames.Insert);
 	        Update = Type.GetMethods(DelegateNames.Update);
 	        Delete = Type.GetMethods(DelegateNames.Delete);

@@ -111,7 +111,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 		protected async Task<List<DiagnosticData>> GetDiagnosticsAsync(Document document, TextSpan caretSpan)
 		{
-			await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(Package.DisposalToken);
+			await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			IComponentModel componentModel = await Package.GetServiceAsync<SComponentModel, IComponentModel>();
 
 			if (componentModel == null)

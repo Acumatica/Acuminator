@@ -4,14 +4,10 @@ using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-    public class ExceptionSymbols
+    public class ExceptionSymbols : SymbolsSetBase
     {
-	    private readonly Compilation _compilation;
-
-        internal ExceptionSymbols(Compilation compilation)
-        {
-	        _compilation = compilation;
-        }
+        internal ExceptionSymbols(Compilation compilation) : base(compilation)
+        { }
 
 	    public INamedTypeSymbol PXException => _compilation.GetTypeByMetadataName(TypeFullNames.PXException);
 	    public INamedTypeSymbol PXBaseRedirectException => _compilation.GetTypeByMetadataName(TypeFullNames.PXBaseRedirectException);

@@ -6,13 +6,12 @@ using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-    public class LocalizationSymbols
+    public class LocalizationSymbols : SymbolsSetBase
     {
         private const string _pxMessagesMetadataName = "PX.Data.PXMessages";
         private const string _pxLocalizerMetadataName = "PX.Data.PXLocalizer";
         private const string _pxLocalizableAttributeMetadataName = "PX.Common.PXLocalizableAttribute";
 
-        private readonly Compilation _compilation;
         private readonly string[] _pxMessagesSimpleMethodNames = new[]
         {
                 "Localize",
@@ -36,9 +35,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
         public ImmutableArray<ISymbol> PXLocalizerSimpleMethods { get; private set; }
         public ImmutableArray<ISymbol> PXLocalizerFormatMethods { get; private set; }
 
-        internal LocalizationSymbols(Compilation compilation)
+        internal LocalizationSymbols(Compilation compilation) : base(compilation)
         {
-            _compilation = compilation;
             InitMethods();
         }
 

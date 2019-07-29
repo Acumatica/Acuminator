@@ -61,7 +61,7 @@ namespace Acuminator.Vsix.BqlFixer
 
 		private async System.Threading.Tasks.Task CommandCallbackAsync()
 		{
-			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(Package.DisposalToken);
+			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			IWpfTextView textView = await ServiceProvider.GetWpfTextViewAsync();
 
 			if (textView == null)
@@ -128,7 +128,7 @@ namespace Acuminator.Vsix.BqlFixer
 			BqlFormatter formatter = BqlFormatter.FromTextView(textView);
 			var formatedRoot = formatter.Format(newSyntaxRoot, newSemanticModel);
 
-			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(Package.DisposalToken); // Return to UI thread
+			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(); // Return to UI thread
 
 			if (!textView.TextBuffer.EditInProgress)
 			{

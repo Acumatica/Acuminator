@@ -31,7 +31,7 @@ namespace Acuminator.Vsix.ToolWindows
 
 		protected virtual async Task<TWindow> OpenToolWindowAsync()
 		{
-			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(Package.DisposalToken);
+			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 			// Get the instance number 0 of this tool window. This window is single instance so this instance
 			// is actually the only one.

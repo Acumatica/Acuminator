@@ -5,21 +5,18 @@ using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-    public class PXGraphSymbols
-    {
-		public class InstanceCreatedEventsSymbols
+    public class PXGraphSymbols : SymbolsSetForTypeBase
+	{
+		public class InstanceCreatedEventsSymbols : SymbolsSetForTypeBase
 	    {
-		    public INamedTypeSymbol Type { get; }
 			public IMethodSymbol AddHandler { get; }
 
-		    internal InstanceCreatedEventsSymbols(Compilation compilation)
+		    internal InstanceCreatedEventsSymbols(Compilation compilation) : base(compilation, DelegateNames.InstanceCreatedEvents)
 		    {
-			    Type = compilation.GetTypeByMetadataName(DelegateNames.InstanceCreatedEvents);
-				AddHandler = Type.GetMethods(DelegateNames.InstanceCreatedEventsAddHabdler).First();
+				AddHandler = Type?.GetMethods(DelegateNames.InstanceCreatedEventsAddHandler).First();
 		    }
 	    }
 
-        public INamedTypeSymbol Type { get; }
 		public INamedTypeSymbol GenericTypeGraph { get; }
 		public INamedTypeSymbol GenericTypeGraphDac { get; }
 		public INamedTypeSymbol GenericTypeGraphDacField { get; }
@@ -32,9 +29,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 													 .OfType<IMethodSymbol>()
 													 .FirstOrDefault(method => method.ReturnsVoid && method.Parameters.Length == 1);
 
-		internal PXGraphSymbols(Compilation compilation)
+		internal PXGraphSymbols(Compilation compilation) : base(compilation, TypeFullNames.PXGraph)
         {
-            Type = compilation.GetTypeByMetadataName(TypeFullNames.PXGraph);
 			GenericTypeGraph = compilation.GetTypeByMetadataName(TypeFullNames.PXGraph1);
 			GenericTypeGraphDac = compilation.GetTypeByMetadataName(TypeFullNames.PXGraph2);
 			GenericTypeGraphDacField = compilation.GetTypeByMetadataName(TypeFullNames.PXGraph3);
