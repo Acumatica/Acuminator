@@ -77,7 +77,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected virtual void AddCategoryMembers()
 		{
-			IEnumerable<GraphNodeSymbolItem> categoryTreeNodes = GetCategoryGraphNodeSymbols();
+			IEnumerable<SymbolItem> categoryTreeNodes = GetCategoryGraphNodeSymbols();
 
 			if (categoryTreeNodes.IsNullOrEmpty())
 				return;
@@ -92,7 +92,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Children.AddRange(graphMemberViewModels);
 		}
 
-		protected abstract IEnumerable<GraphNodeSymbolItem> GetCategoryGraphNodeSymbols();
+		protected abstract IEnumerable<SymbolItem> GetCategoryGraphNodeSymbols();
 
 		private static GraphMemberCategoryNodeViewModel CreateCategory(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
 																		bool isExpanded)

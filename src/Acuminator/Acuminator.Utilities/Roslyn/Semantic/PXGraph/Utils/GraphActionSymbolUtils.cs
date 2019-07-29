@@ -4,30 +4,29 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 
-using ActionHandlersOverridableCollection = System.Collections.Generic.IEnumerable<Acuminator.Utilities.Roslyn.Semantic.PXGraph.GraphOverridableItem<(Microsoft.CodeAnalysis.CSharp.Syntax.MethodDeclarationSyntax Node, Microsoft.CodeAnalysis.IMethodSymbol Symbol)>>;
-using ActionsOverridableCollection = System.Collections.Generic.IEnumerable<Acuminator.Utilities.Roslyn.Semantic.PXGraph.GraphOverridableItem<(Microsoft.CodeAnalysis.ISymbol ActionSymbol, Microsoft.CodeAnalysis.INamedTypeSymbol ActionType)>>;
 using ActionSymbolWithTypeCollection = System.Collections.Generic.IEnumerable<(Microsoft.CodeAnalysis.ISymbol ActionSymbol, Microsoft.CodeAnalysis.INamedTypeSymbol ActionType)>;
-
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
 	public static class GraphActionSymbolUtils
 	{
+		private const int EstimatedNumberOfActionsInGraph = 8;
+
 		/// <summary>
-		/// A delegate type for an action which extracts info DTOs about graph actions/action handlers from <paramref name="graphOrgraphExtension"/> 
-		/// and adds them to the <paramref name="actionInfos"/> collection with account for actions/action handlers declaration order.
+		/// A delegate type for an action which extracts info DTOs about graph actions/action handlers from <paramref name="graphOrGraphExtension"/> 
+		/// and adds them to the <paramref name="actionInfos"/> collection with a consideration for actions/action handlers declaration order.
 		/// Returns the number following the last assigned declaration order.
 		/// </summary>
-		/// <typeparam name="T">Generic type parameter.</typeparam>
+		/// <typeparam name="TInfo">Generic type parameter representing overridable info type.</typeparam>
 		/// <param name="actionInfos">The action infos.</param>
-		/// <param name="graphOrgraphExtension">The graph orgraph extension.</param>
+		/// <param name="graphOrGraphExtension">The graph or graph extension.</param>
 		/// <param name="startingOrder">The declaration order which should be assigned to the first DTO.</param>
 		/// <returns/>
-		private delegate int AddActionInfoWithOrderDelegate<T>(GraphOverridableItemsCollection<T> actionInfos,
-																ITypeSymbol graphOrgraphExtension, int startingOrder);
+		private delegate int AddActionInfoWithOrderDelegate<TInfo>(OverridableItemsCollection<TInfo> actionInfos,
+																   ITypeSymbol graphOrGraphExtension, int startingOrder)
+		where TInfo : IOverridableItem<TInfo>;
 
 
 		#region ActionsGet
@@ -38,19 +37,22 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <param name="pxContext">Context.</param>
 		/// <param name="includeActionsFromInheritanceChain">(Optional) True to include, false to exclude the actions from the inheritance chain.</param>
 		/// <returns/>
-		public static ActionsOverridableCollection GetActionSymbolsWithTypesFromGraph(this ITypeSymbol graph, PXContext pxContext,
-																					  bool includeActionsFromInheritanceChain = true)
+		public static OverridableItemsCollection<ActionInfo> GetActionSymbolsWithTypesFromGraph(this ITypeSymbol graph, PXContext pxContext,
+																								bool includeActionsFromInheritanceChain = true)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			if (graph?.InheritsFrom(pxContext.PXGraph.Type) != true)
-				return Enumerable.Empty<GraphOverridableItem<(ISymbol, INamedTypeSymbol)>>();
+			if (!graph.IsPXGraph(pxContext))
+				return new OverridableItemsCollection<ActionInfo>();
 
-			var actionsByName = new GraphOverridableItemsCollection<(ISymbol Symbol, INamedTypeSymbol Type)>();
-			var graphActions = GetActionsFromGraphImpl(graph, pxContext, includeActionsFromInheritanceChain);
+			var actionsByName = new OverridableItemsCollection<ActionInfo>(capacity: EstimatedNumberOfActionsInGraph);
+			var graphActions = GetRawActionsFromGraphImpl(graph, pxContext, includeActionsFromInheritanceChain);
+			var systemActionsRegister = new PXSystemActions.PXSystemActionsRegister(pxContext);
 
-			actionsByName.AddRangeWithDeclarationOrder(graphActions, startingOrder: 0, keySelector: action => action.Symbol.Name);
-			return actionsByName.Items;
+			actionsByName.AddRangeWithDeclarationOrder(graphActions, startingOrder: 0,
+													   (action, order) => new ActionInfo(action.ActionSymbol, action.ActionType, order, 
+																						 systemActionsRegister.IsSystemAction(action.ActionType)));
+			return actionsByName;
 		}
 
 		/// <summary>
@@ -59,8 +61,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <param name="graphOrExtension">The graph Or graph extension to act on.</param>
 		/// <param name="pxContext">Context.</param>
 		/// <returns/>
-		public static ActionsOverridableCollection GetActionsFromGraphOrGraphExtensionAndBaseGraph(this ITypeSymbol graphOrExtension,
-																								   PXContext pxContext)
+		public static OverridableItemsCollection<ActionInfo> GetActionsFromGraphOrGraphExtensionAndBaseGraph(this ITypeSymbol graphOrExtension,
+																											 PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 			graphOrExtension.ThrowOnNull(nameof(graphOrExtension));
@@ -68,7 +70,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			bool isGraph = graphOrExtension.IsPXGraph(pxContext);
 
 			if (!isGraph && !graphOrExtension.IsPXGraphExtension(pxContext))
-				return Enumerable.Empty<GraphOverridableItem<(ISymbol, INamedTypeSymbol)>>();
+				return new OverridableItemsCollection<ActionInfo>();
 
 			return isGraph
 				? graphOrExtension.GetActionSymbolsWithTypesFromGraph(pxContext)
@@ -81,49 +83,48 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <param name="graphExtension">The graph extension to act on</param>
 		/// <param name="pxContext">Context</param>
 		/// <returns/>
-		public static ActionsOverridableCollection GetActionsFromGraphExtensionAndBaseGraph(this ITypeSymbol graphExtension, PXContext pxContext)
+		public static OverridableItemsCollection<ActionInfo> GetActionsFromGraphExtensionAndBaseGraph(this ITypeSymbol graphExtension, PXContext pxContext)
 		{
 			graphExtension.ThrowOnNull(nameof(graphExtension));
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			return GetActionInfoFromGraphExtension<(ISymbol, INamedTypeSymbol)>(graphExtension, pxContext,
-																				AddActionsFromGraph, AddActionsFromGraphExtension);
+			var systemActionsRegister = new PXSystemActions.PXSystemActionsRegister(pxContext);
+			return GetActionInfoFromGraphExtension<ActionInfo>(graphExtension, pxContext, AddActionsFromGraph, AddActionsFromGraphExtension);
 
 
-			int AddActionsFromGraph(GraphOverridableItemsCollection<(ISymbol Symbol, INamedTypeSymbol Type)> actionsCollection,
-									ITypeSymbol graph, int startingOrder)
+			int AddActionsFromGraph(OverridableItemsCollection<ActionInfo> actionsCollection, ITypeSymbol graph, int startingOrder)
 			{
-				var graphActions = graph.GetActionsFromGraphImpl(pxContext, includeActionsFromInheritanceChain: true);
+				var graphActions = graph.GetRawActionsFromGraphImpl(pxContext, includeActionsFromInheritanceChain: true);
 				return actionsCollection.AddRangeWithDeclarationOrder(graphActions, startingOrder,
-																	  keySelector: action => action.Symbol.Name);
+																	  (action, order) => new ActionInfo(action.ActionSymbol, action.ActionType, order,
+																										systemActionsRegister.IsSystemAction(action.ActionType)));
 			}
 
-			int AddActionsFromGraphExtension(GraphOverridableItemsCollection<(ISymbol Symbol, INamedTypeSymbol Type)> actionsCollection,
-											 ITypeSymbol graphExt, int startingOrder)
+			int AddActionsFromGraphExtension(OverridableItemsCollection<ActionInfo> actionsCollection, ITypeSymbol graphExt, int startingOrder)
 			{
-				var extensionActions = GetActionsFromGraphOrGraphExtensionImpl(graphExt, pxContext);
+				var extensionActions = GetRawActionsFromGraphOrGraphExtensionImpl(graphExt, pxContext);
 				return actionsCollection.AddRangeWithDeclarationOrder(extensionActions, startingOrder,
-																	  keySelector: action => action.Symbol.Name);
+																	 (action, order) => new ActionInfo(action.ActionSymbol, action.ActionType, order,
+																										systemActionsRegister.IsSystemAction(action.ActionType)));
 			}
 		}
 
-		private static ActionSymbolWithTypeCollection GetActionsFromGraphImpl(this ITypeSymbol graph, PXContext pxContext,
+		private static ActionSymbolWithTypeCollection GetRawActionsFromGraphImpl(this ITypeSymbol graph, PXContext pxContext,
 																			  bool includeActionsFromInheritanceChain)
 		{
 			if (includeActionsFromInheritanceChain)
 			{
-				return graph.GetBaseTypesAndThis()
-							.TakeWhile(baseGraph => !baseGraph.IsGraphBaseType())
+				return graph.GetGraphWithBaseTypes()
 							.Reverse()
-							.SelectMany(baseGraph => baseGraph.GetActionsFromGraphOrGraphExtensionImpl(pxContext));
+							.SelectMany(baseGraph => baseGraph.GetRawActionsFromGraphOrGraphExtensionImpl(pxContext));
 			}
 			else
 			{
-				return graph.GetActionsFromGraphOrGraphExtensionImpl(pxContext);
+				return graph.GetRawActionsFromGraphOrGraphExtensionImpl(pxContext);
 			}
 		}
 
-		private static ActionSymbolWithTypeCollection GetActionsFromGraphOrGraphExtensionImpl(this ITypeSymbol graphOrExtension, PXContext pxContext)
+		private static ActionSymbolWithTypeCollection GetRawActionsFromGraphOrGraphExtensionImpl(this ITypeSymbol graphOrExtension, PXContext pxContext)
 		{
 			foreach (IFieldSymbol field in graphOrExtension.GetMembers().OfType<IFieldSymbol>())
 			{
@@ -138,18 +139,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		#region Action Handlers
 		/// <summary>
-		/// Get the action handlers method symbols and syntax nodes from the graph. 
-		/// The <paramref name="actionsByName"/> must have <see cref="StringComparer.OrdinalIgnoreCase"/> comparer.
+		/// Get the action handlers method symbols and syntax nodes from the graph. The <paramref name="actionsByName"/> must have <see cref="StringComparer.OrdinalIgnoreCase"/> comparer.
 		/// </summary>
-		/// <param name="graph">The graph to act on</param>
-		/// <param name="actionsByName">The actions of the graph dictionary with <see cref="StringComparer.OrdinalIgnoreCase"/> comparer</param>
-		/// <param name="pxContext">Context</param>
-		/// <param name="cancellation">Cancellation token</param>
-		/// <param name="inheritance">If true includes action handlers from the graph inheritance chain</param>
-		/// <returns></returns>
-		public static ActionHandlersOverridableCollection GetActionHandlersFromGraph(this ITypeSymbol graph, IDictionary<string, ActionInfo> actionsByName,
-																					 PXContext pxContext, CancellationToken cancellation,
-																					 bool inheritance = true)
+		/// <param name="graph">The graph to act on.</param>
+		/// <param name="actionsByName">The actions of the graph dictionary with <see cref="StringComparer.OrdinalIgnoreCase"/> comparer.</param>
+		/// <param name="pxContext">Context.</param>
+		/// <param name="inheritance">(Optional) If true includes action handlers from the graph inheritance chain.</param>
+		/// <param name="cancellation">(Optional) Cancellation token.</param>
+		/// <returns>
+		/// The action handlers from graph.
+		/// </returns>
+		public static OverridableItemsCollection<ActionHandlerInfo> GetActionHandlersFromGraph(this ITypeSymbol graph, IDictionary<string, ActionInfo> actionsByName,
+																							   PXContext pxContext, bool inheritance = true, 
+																							   CancellationToken cancellation = default)
 		{
 			graph.ThrowOnNull(nameof(graph));
 			actionsByName.ThrowOnNull(nameof(actionsByName));
@@ -157,14 +159,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			if (!graph.IsPXGraph(pxContext))
 			{
-				return Enumerable.Empty<GraphOverridableItem<(MethodDeclarationSyntax, IMethodSymbol)>>();
+				return new OverridableItemsCollection<ActionHandlerInfo>();
 			}
 
-			var actionHandlersByName = new GraphOverridableItemsCollection<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)>();
-			var graphHandlers = GetActionHandlersFromGraphImpl(graph, actionsByName, pxContext, cancellation, inheritance);
+			var actionHandlersByName = new OverridableItemsCollection<ActionHandlerInfo>(capacity: EstimatedNumberOfActionsInGraph);
+			var graphHandlers = GetRawActionHandlersFromGraphImpl(graph, actionsByName, pxContext, cancellation, inheritance);
 
-			actionHandlersByName.AddRangeWithDeclarationOrder(graphHandlers, startingOrder: 0, keySelector: h => h.Symbol.Name);
-			return actionHandlersByName.Items;
+			actionHandlersByName.AddRangeWithDeclarationOrder(graphHandlers, startingOrder: 0, 
+															  (hander, order) => new ActionHandlerInfo(hander.Node, hander.Symbol, order));
+			return actionHandlersByName;
 		}
 
 		/// <summary>
@@ -176,52 +179,50 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <param name="pxContext">Context</param>
 		/// <param name="cancellation">Cancellation token</param>
 		/// <returns></returns>
-		public static ActionHandlersOverridableCollection GetActionHandlersFromGraphExtensionAndBaseGraph(this ITypeSymbol graphExtension,
-																				IDictionary<string, ActionInfo> actionsByName, PXContext pxContext,
-																				CancellationToken cancellation)
+		public static OverridableItemsCollection<ActionHandlerInfo> GetActionHandlersFromGraphExtensionAndBaseGraph(this ITypeSymbol graphExtension,
+																							IDictionary<string, ActionInfo> actionsByName, PXContext pxContext,
+																							CancellationToken cancellation)
 		{
 			graphExtension.ThrowOnNull(nameof(graphExtension));
 			actionsByName.ThrowOnNull(nameof(actionsByName));
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			return GetActionInfoFromGraphExtension<(MethodDeclarationSyntax, IMethodSymbol)>(
-				graphExtension, pxContext, AddHandlersFromGraph, AddHandlersFromGraphExtension);
+			return GetActionInfoFromGraphExtension<ActionHandlerInfo>(graphExtension, pxContext, AddHandlersFromGraph, AddHandlersFromGraphExtension);
 
 
-			int AddHandlersFromGraph(GraphOverridableItemsCollection<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> handlersCollection,
-									  ITypeSymbol graph, int startingOrder)
+			int AddHandlersFromGraph(OverridableItemsCollection<ActionHandlerInfo> handlersCollection, ITypeSymbol graph, int startingOrder)
 			{
-				var graphHandlers = graph.GetActionHandlersFromGraphImpl(actionsByName, pxContext,
+				var graphHandlers = graph.GetRawActionHandlersFromGraphImpl(actionsByName, pxContext,
 																		 cancellation, inheritance: true);
-				return handlersCollection.AddRangeWithDeclarationOrder(graphHandlers, startingOrder, keySelector: h => h.Symbol.Name);
+				return handlersCollection.AddRangeWithDeclarationOrder(graphHandlers, startingOrder,
+																	   (hander, order) => new ActionHandlerInfo(hander.Node, hander.Symbol, order));
 			}
 
-			int AddHandlersFromGraphExtension(GraphOverridableItemsCollection<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> handlersCollection,
-											   ITypeSymbol graphExt, int startingOrder)
+			int AddHandlersFromGraphExtension(OverridableItemsCollection<ActionHandlerInfo> handlersCollection, ITypeSymbol graphExt, int startingOrder)
 			{
-				var extensionHandlers = graphExt.GetActionHandlersFromGraphOrGraphExtension(actionsByName, pxContext, cancellation);
-				return handlersCollection.AddRangeWithDeclarationOrder(extensionHandlers, startingOrder, keySelector: h => h.Symbol.Name);
+				var extensionHandlers = graphExt.GetRawActionHandlersFromGraphOrGraphExtension(actionsByName, pxContext, cancellation);
+				return handlersCollection.AddRangeWithDeclarationOrder(extensionHandlers, startingOrder,
+																	   (hander, order) => new ActionHandlerInfo(hander.Node, hander.Symbol, order));
 			}
 		}
 
-		private static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetActionHandlersFromGraphImpl(
+		private static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetRawActionHandlersFromGraphImpl(
 																this ITypeSymbol graph, IDictionary<string, ActionInfo> actionsByName,
 																PXContext pxContext, CancellationToken cancellation, bool inheritance)
 		{
 			if (inheritance)
 			{
-				return graph.GetBaseTypesAndThis()
-							.TakeWhile(baseGraph => !baseGraph.IsGraphBaseType())
+				return graph.GetGraphWithBaseTypes()
 							.Reverse()
-							.SelectMany(baseGraph => GetActionHandlersFromGraphOrGraphExtension(baseGraph, actionsByName, pxContext, cancellation));
+							.SelectMany(baseGraph => GetRawActionHandlersFromGraphOrGraphExtension(baseGraph, actionsByName, pxContext, cancellation));
 			}
 			else
 			{
-				return GetActionHandlersFromGraphOrGraphExtension(graph, actionsByName, pxContext, cancellation);
+				return GetRawActionHandlersFromGraphOrGraphExtension(graph, actionsByName, pxContext, cancellation);
 			}
 		}
 
-		private static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetActionHandlersFromGraphOrGraphExtension(
+		private static IEnumerable<(MethodDeclarationSyntax Node, IMethodSymbol Symbol)> GetRawActionHandlersFromGraphOrGraphExtension(
 															this ITypeSymbol graphOrExtension, IDictionary<string, ActionInfo> actionsByName,
 															PXContext pxContext, CancellationToken cancellation)
 		{
@@ -243,26 +244,25 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		}
 		#endregion
 
-		private static IEnumerable<GraphOverridableItem<T>> GetActionInfoFromGraphExtension<T>(ITypeSymbol graphExtension, PXContext pxContext,
-															AddActionInfoWithOrderDelegate<T> addGraphActionInfoWithOrder,
-															AddActionInfoWithOrderDelegate<T> addGraphExtensionActionInfoWithOrder)
+		private static OverridableItemsCollection<TInfo> GetActionInfoFromGraphExtension<TInfo>(ITypeSymbol graphExtension, PXContext pxContext,
+																		AddActionInfoWithOrderDelegate<TInfo> addGraphActionInfoWithOrder,
+																		AddActionInfoWithOrderDelegate<TInfo> addGraphExtensionActionInfoWithOrder)
+		where TInfo : IOverridableItem<TInfo>
 		{
-			var empty = Enumerable.Empty<GraphOverridableItem<T>>();
-
 			if (!graphExtension.InheritsFrom(pxContext.PXGraphExtensionType) || !graphExtension.BaseType.IsGenericType)
-				return Enumerable.Empty<GraphOverridableItem<T>>();
+				return new OverridableItemsCollection<TInfo>();
 
 			var graphType = graphExtension.GetGraphFromGraphExtension(pxContext);
 
 			if (graphType == null)
-				return empty;
+				return new OverridableItemsCollection<TInfo>();
 
 			var allExtensionsFromBaseToDerived = graphExtension.GetGraphExtensionWithBaseExtensions(pxContext, SortDirection.Ascending,
 																									includeGraph: false);
 			if (allExtensionsFromBaseToDerived.IsNullOrEmpty())
-				return empty;
+				return new OverridableItemsCollection<TInfo>();
 
-			var actionsByName = new GraphOverridableItemsCollection<T>();
+			var actionsByName = new OverridableItemsCollection<TInfo>(capacity: EstimatedNumberOfActionsInGraph);
 			int declarationOrder = addGraphActionInfoWithOrder(actionsByName, graphType, startingOrder: 0);
 
 			foreach (ITypeSymbol extension in allExtensionsFromBaseToDerived)
@@ -270,7 +270,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				declarationOrder = addGraphExtensionActionInfoWithOrder(actionsByName, extension, declarationOrder);
 			}
 
-			return actionsByName.Items;
+			return actionsByName;
 		}
 	}
 }

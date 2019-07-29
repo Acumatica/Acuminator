@@ -1,16 +1,12 @@
-﻿using Acuminator.Utilities.Common;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
-	public class DataViewInfo : GraphNodeSymbolItem<ISymbol>
-	{
-		/// <summary>
-		/// The overriden item if any
-		/// </summary>
-		public DataViewInfo Base { get; }
-
+	public class DataViewInfo : SymbolItem<ISymbol>, IWriteableBaseItem<DataViewInfo>
+	{	
 		/// <summary>
 		/// Indicates whether the data view is processing data view
 		/// </summary>
@@ -42,6 +38,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			ImmutableArray<ProcessingDelegateInfo>.Empty;
 
 		protected override string DebuggerDisplay => $"{base.DebuggerDisplay} |Type: {Type.ToString()}";
+
+		/// <summary>
+		/// The overriden item if any
+		/// </summary>
+		public DataViewInfo Base
+		{
+			get;
+			internal set;
+		}
+
+		DataViewInfo IWriteableBaseItem<DataViewInfo>.Base
+		{
+			get => Base;
+			set => Base = value;
+		}
 
 		public DataViewInfo(ISymbol symbol, INamedTypeSymbol type, PXContext pxContext, int declarationOrder)
 					 : base(symbol, declarationOrder)

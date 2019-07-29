@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Acuminator.Utilities.DiagnosticSuppression;

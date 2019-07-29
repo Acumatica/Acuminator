@@ -18,7 +18,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 		}
 
-		protected override IEnumerable<GraphNodeSymbolItem> GetCategoryGraphNodeSymbols() =>
+		protected override IEnumerable<SymbolItem> GetCategoryGraphNodeSymbols() =>
 			GraphSemanticModel.FieldDefaultingEvents
 							  .Concat(GraphSemanticModel.FieldVerifyingEvents)
 							  .Concat(GraphSemanticModel.FieldSelectingEvents)

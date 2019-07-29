@@ -223,74 +223,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			}
 
 			return false;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsDAC(this ITypeSymbol typeSymbol)
-		{
-			if (!typeSymbol.IsValidForColoring())
-				return false;
-
-			if (typeSymbol.ImplementsInterface(TypeNames.IBqlTable))    //Should work for named types and type parameters in most cases
-				return true;
-			else if (typeSymbol is ITypeParameterSymbol typeParameterSymbol)    //fallback for type parameters when Roslyn can't correctly determine interfaces (see ATR-376)
-			{
-				return typeParameterSymbol.GetAllConstraintTypes()
-										  .Any(constraint => constraint.ImplementsInterface(TypeNames.IBqlTable));
-			}
-			else
-				return false;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsDAC(this ITypeSymbol typeSymbol, PXContext pxContext)
-		{
-			typeSymbol.ThrowOnNull(nameof(typeSymbol));
-
-			if (typeSymbol.ImplementsInterface(pxContext.IBqlTableType))	//Should work for named types and type parameters in most cases
-				return true;
-			else if (typeSymbol is ITypeParameterSymbol typeParameterSymbol)    //fallback for type parameters when Roslyn can't correctly determine interfaces (see ATR-376)
-			{
-				return typeParameterSymbol.GetAllConstraintTypes()
-										  .Any(constraint => constraint.ImplementsInterface(pxContext.IBqlTableType));
-			}
-			else
-				return false;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsDacOrExtension(this ITypeSymbol typeSymbol, PXContext pxContext) => typeSymbol.IsDAC(pxContext) || typeSymbol.IsDacExtension(pxContext);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsDacExtension(this ITypeSymbol typeSymbol, PXContext pxContext)
-        {
-            typeSymbol.ThrowOnNull(nameof(typeSymbol));
-            return typeSymbol.InheritsFrom(pxContext.PXCacheExtensionType);
-        }
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsDacExtension(this ITypeSymbol typeSymbol, bool ruleOutBaseTypes = false)
-		{
-			if (!typeSymbol.IsValidForColoring() || (ruleOutBaseTypes && string.Equals(typeSymbol.Name, TypeNames.PXCacheExtension)))
-				return false;
-
-			return typeSymbol.InheritsOrImplementsOrEquals(TypeNames.PXCacheExtension, includeInterfaces: false);
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsDacField(this ITypeSymbol typeSymbol)
-		{
-			if (!typeSymbol.IsValidForColoring())
-				return false;
-
-			else if (typeSymbol.ImplementsInterface(TypeNames.IBqlField))       //Should work for named types and type parameters in most cases
-				return true;
-			else if (typeSymbol is ITypeParameterSymbol typeParameterSymbol)    //fallback for type parameters when Roslyn can't correctly determine interfaces (see ATR-376)
-				return typeParameterSymbol.GetAllConstraintTypes()
-										  .Any(constraint => constraint.ImplementsInterface(TypeNames.IBqlField));
-			else
-				return false;
-		}
+		}	
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsBqlConstant(this ITypeSymbol typeSymbol)

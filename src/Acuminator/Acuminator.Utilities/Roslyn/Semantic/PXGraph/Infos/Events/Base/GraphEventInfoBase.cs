@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -8,13 +9,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 	/// <summary>
 	/// A common non-generic graph event info DTO base class.
 	/// </summary>
-	public abstract class GraphEventInfoBase : GraphNodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol>
+	public abstract class GraphEventInfoBase : NodeSymbolItem<MethodDeclarationSyntax, IMethodSymbol>
 	{
 		public EventHandlerSignatureType SignatureType { get; }
 
 		public EventType EventType { get; }
 
 		public string DacName { get; }
+
+		public override string Name => GetEventGroupingKey();
 
 		protected GraphEventInfoBase(MethodDeclarationSyntax node, IMethodSymbol symbol, int declarationOrder,
 									 EventHandlerSignatureType signatureType, EventType eventType) :

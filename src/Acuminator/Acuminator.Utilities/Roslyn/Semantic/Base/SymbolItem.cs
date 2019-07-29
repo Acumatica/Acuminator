@@ -2,25 +2,27 @@
 using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Common;
 
-namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
+namespace Acuminator.Utilities.Roslyn.Semantic
 {
 	/// <summary>
-	///  A non generic class for items of a graph with symbol
+	///  A non generic class for items of a graph or DAC with symbol
 	/// </summary>
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]
-	public abstract class GraphNodeSymbolItem
+	public abstract class SymbolItem
 	{
 		/// <summary>
-		/// Declaration symbol of the item of a graph
+		/// Declaration symbol of the item
 		/// </summary>
 		public ISymbol SymbolBase { get; }
+
+		public virtual string Name => SymbolBase.Name;
 
 		/// <summary>
 		/// The declaration order.
 		/// </summary>
 		public int DeclarationOrder { get; }
 
-		public GraphNodeSymbolItem(ISymbol symbol, int declarationOrder)
+		public SymbolItem(ISymbol symbol, int declarationOrder)
 		{
 			symbol.ThrowOnNull(nameof(symbol));
 			SymbolBase = symbol;
@@ -28,6 +30,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		}
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		protected virtual string DebuggerDisplay => $"{SymbolBase.Name}";
+		protected virtual string DebuggerDisplay => $"{Name}";
 	}
 }

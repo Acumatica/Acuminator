@@ -21,11 +21,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			
 		}
 
-		protected override IEnumerable<GraphNodeSymbolItem> GetCategoryGraphNodeSymbols() => GraphSemanticModel.Actions;
+		protected override IEnumerable<SymbolItem> GetCategoryGraphNodeSymbols() => GraphSemanticModel.Actions;
 
 		protected override void AddCategoryMembers()
 		{
-			IEnumerable<GraphNodeSymbolItem> categoryTreeNodes = GetCategoryGraphNodeSymbols();
+			IEnumerable<SymbolItem> categoryTreeNodes = GetCategoryGraphNodeSymbols();
 
 			if (categoryTreeNodes.IsNullOrEmpty())
 				return;

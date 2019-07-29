@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Acuminator.Utilities.Common;
@@ -7,6 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Threading;
 using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
@@ -39,7 +39,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				return null;
 
 			ITypeSymbol firstTypeArg = graphExtTypeArgs.Last();
-			return firstTypeArg.IsPXGraph()
+			return firstTypeArg.IsPXGraph(pxContext)
 				? firstTypeArg
 				: null;
 		}
@@ -58,71 +58,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 								 .OfType<IFieldSymbol>()
 								 .Where(field => field.Type.InheritsFrom(pxContext.PXSelectBase.Type))
 								 .Any(field => string.Equals(field.Name, method.Name, StringComparison.OrdinalIgnoreCase));
-		}
-
-		/// <summary>
-		/// Get view's DAC for which the view was declared.
-		/// </summary>
-		/// <param name="pxView">The view to act on.</param>
-		/// <param name="pxContext">Context.</param>
-		/// <returns>
-		/// The DAC from view.
-		/// </returns>
-		public static ITypeSymbol GetDacFromView(this ITypeSymbol pxView, PXContext pxContext)
-		{
-			pxContext.ThrowOnNull(nameof(pxContext));
-
-			if (pxView?.InheritsFrom(pxContext.PXSelectBase.Type) != true)
-				return null;
-
-			INamedTypeSymbol baseViewType;
-
-			if (pxView.IsFbqlView(pxContext))
-			{
-				
-				baseViewType = pxView.BaseType.ContainingType.GetBaseTypesAndThis()
-															 .OfType<INamedTypeSymbol>()
-															 .FirstOrDefault(t => t.OriginalDefinition.Equals(pxContext.BQL.PXViewOf));
-			}
-			else
-			{
-				baseViewType = pxView.GetBaseTypesAndThis()
-									 .OfType<INamedTypeSymbol>()
-									 .FirstOrDefault(type => !type.IsCustomBqlCommand(pxContext));
-
-				if (baseViewType?.IsBqlCommand() != true)
-					return null;
-			}
-
-			if (baseViewType == null || baseViewType.TypeArguments.Length == 0)
-			{
-				return null;
-			}
-			 
-			return baseViewType.TypeArguments[0];
-		}
-
-		/// <summary>
-		/// Get action's DAC for which the action was declared.
-		/// </summary>
-		/// <param name="pxAction">The action to act on.</param>
-		/// <returns>
-		/// The DAC from action.
-		/// </returns>
-		public static ITypeSymbol GetDacFromAction(this INamedTypeSymbol pxAction)
-		{
-			if (pxAction?.IsPXAction() != true)
-				return null;
-
-			ImmutableArray<ITypeSymbol> actionTypeArgs = pxAction.TypeArguments;
-
-			if (actionTypeArgs.Length == 0)
-				return null;
-
-			ITypeSymbol pxActionDacType = actionTypeArgs[0];
-			return pxActionDacType.IsDAC()
-				? pxActionDacType
-				: null;
 		}
 
 		public static bool IsValidActionHandler(this IMethodSymbol method, PXContext pxContext)

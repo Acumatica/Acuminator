@@ -129,122 +129,34 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 		}
 
-		private ImmutableDictionary<string, DataViewInfo> GetDataViews()
+		private ImmutableDictionary<string, DataViewInfo> GetDataViews() =>
+			GetInfos(() => Symbol.GetViewsWithSymbolsFromPXGraph(_pxContext),
+					 () => Symbol.GetViewsFromGraphExtensionAndBaseGraph(_pxContext));
+		
+		private ImmutableDictionary<string, DataViewDelegateInfo> GetDataViewDelegates() =>
+			GetInfos(() => Symbol.GetViewDelegatesFromGraph(ViewsByNames, _pxContext, cancellation: _cancellation),
+					 () => Symbol.GetViewDelegatesFromGraphExtensionAndBaseGraph(ViewsByNames, _pxContext, _cancellation));
+
+		private ImmutableDictionary<string, ActionInfo> GetActions() =>
+			GetInfos(() => Symbol.GetActionSymbolsWithTypesFromGraph(_pxContext),
+					 () => Symbol.GetActionsFromGraphExtensionAndBaseGraph(_pxContext));
+		
+		private ImmutableDictionary<string, ActionHandlerInfo> GetActionHandlers() => 
+			GetInfos(() => Symbol.GetActionHandlersFromGraph(ActionsByNames, _pxContext, cancellation: _cancellation),
+					 () => Symbol.GetActionHandlersFromGraphExtensionAndBaseGraph(ActionsByNames, _pxContext, _cancellation));
+		
+		private ImmutableDictionary<string, TInfo> GetInfos<TInfo>(Func<OverridableItemsCollection<TInfo>> graphInfosSelector,
+																   Func<OverridableItemsCollection<TInfo>> graphExtInfosSelector)
+		where TInfo : IOverridableItem<TInfo>
 		{
 			if (Type == GraphType.None)
-				return ImmutableDictionary.Create<string, DataViewInfo>(StringComparer.OrdinalIgnoreCase);
+				return ImmutableDictionary.Create<string, TInfo>(StringComparer.OrdinalIgnoreCase);
 
-			var rawViewInfos = Type == GraphType.PXGraph
-				? Symbol.GetViewsWithSymbolsFromPXGraph(_pxContext)
-				: Symbol.GetViewsFromGraphExtensionAndBaseGraph(_pxContext);
+			var infos = Type == GraphType.PXGraph
+				? graphInfosSelector()
+				: graphExtInfosSelector();
 
-			return rawViewInfos.ToLookup(a => a.Item.ViewSymbol.Name, StringComparer.OrdinalIgnoreCase)
-							   .ToImmutableDictionary(group => group.Key,
-													  group => CreateViewInfo(group.First()),
-													  keyComparer: StringComparer.OrdinalIgnoreCase);
-
-
-			DataViewInfo CreateViewInfo(GraphOverridableItem<(ISymbol ViewSymbol, INamedTypeSymbol ViewType)> item)
-			{
-				var (viewSymbol, viewType) = item.Item;
-
-				DataViewInfo baseViewInfo = item.Base != null
-					? CreateViewInfo(item.Base)
-					: null;
-
-				return baseViewInfo == null
-					? new DataViewInfo(viewSymbol, viewType, _pxContext, item.DeclarationOrder)
-					: new DataViewInfo(viewSymbol, viewType, _pxContext, item.DeclarationOrder, baseViewInfo);
-			}
-		}
-
-		private ImmutableDictionary<string, DataViewDelegateInfo> GetDataViewDelegates()
-		{
-			if (Type == GraphType.None)
-				return ImmutableDictionary.Create<string, DataViewDelegateInfo>(StringComparer.OrdinalIgnoreCase);
-
-			var rawDelegateInfos = Type == GraphType.PXGraph
-				? Symbol.GetViewDelegatesFromGraph(ViewsByNames, _pxContext, _cancellation)
-				: Symbol.GetViewDelegatesFromGraphExtensionAndBaseGraph(ViewsByNames, _pxContext, _cancellation);
-
-			return rawDelegateInfos.ToLookup(d => d.Item.Symbol.Name, StringComparer.OrdinalIgnoreCase)
-								   .ToImmutableDictionary(group => group.Key,
-														  group => CreateViewDelegateInfo(group.First()),
-														  keyComparer: StringComparer.OrdinalIgnoreCase);
-
-
-			DataViewDelegateInfo CreateViewDelegateInfo(GraphOverridableItem<(MethodDeclarationSyntax, IMethodSymbol)> item)
-			{
-				var (node, method) = item.Item;
-
-				DataViewDelegateInfo baseDelegateInfo = item.Base != null
-					? CreateViewDelegateInfo(item.Base)
-					: null;
-
-				return baseDelegateInfo == null
-					? new DataViewDelegateInfo(node, method, item.DeclarationOrder)
-					: new DataViewDelegateInfo(node, method, item.DeclarationOrder, baseDelegateInfo);
-			}
-		}
-
-		private ImmutableDictionary<string, ActionInfo> GetActions()
-		{
-			if (Type == GraphType.None)
-				return ImmutableDictionary.Create<string, ActionInfo>(StringComparer.OrdinalIgnoreCase);
-
-			var systemActionsRegister = new PXSystemActions.PXSystemActionsRegister(_pxContext);
-			var rawActionInfos = Type == GraphType.PXGraph
-				? Symbol.GetActionSymbolsWithTypesFromGraph(_pxContext)
-				: Symbol.GetActionsFromGraphExtensionAndBaseGraph(_pxContext);
-
-			return rawActionInfos.ToLookup(a => a.Item.ActionSymbol.Name, StringComparer.OrdinalIgnoreCase)
-								 .ToImmutableDictionary(group => group.Key,
-														group => CreateActionInfo(group.First()),
-														keyComparer: StringComparer.OrdinalIgnoreCase);
-
-
-
-			ActionInfo CreateActionInfo(GraphOverridableItem<(ISymbol ActionSymbol, INamedTypeSymbol ActionType)> item)
-			{
-				var (actionSymbol, actionType) = item.Item;
-
-				ActionInfo baseActionInfo = item.Base != null
-					? CreateActionInfo(item.Base)
-					: null;
-
-				return baseActionInfo == null
-					? new ActionInfo(actionSymbol, actionType, item.DeclarationOrder, systemActionsRegister.IsSystemAction(actionType))
-					: new ActionInfo(actionSymbol, actionType, item.DeclarationOrder,
-									 systemActionsRegister.IsSystemAction(actionType), baseActionInfo);
-			}
-		}
-
-		private ImmutableDictionary<string, ActionHandlerInfo> GetActionHandlers()
-		{
-			if (Type == GraphType.None)
-				return ImmutableDictionary.Create<string, ActionHandlerInfo>(StringComparer.OrdinalIgnoreCase);
-
-			var rawActionHandlerInfos = Type == GraphType.PXGraph
-				? Symbol.GetActionHandlersFromGraph(ActionsByNames, _pxContext, _cancellation)
-				: Symbol.GetActionHandlersFromGraphExtensionAndBaseGraph(ActionsByNames, _pxContext, _cancellation);
-
-			return rawActionHandlerInfos.ToLookup(handler => handler.Item.Symbol.Name, StringComparer.OrdinalIgnoreCase)
-										.ToImmutableDictionary(group => group.Key,
-															   group => CreateActionHandlerInfo(group.First()),
-															   keyComparer: StringComparer.OrdinalIgnoreCase);
-
-			ActionHandlerInfo CreateActionHandlerInfo(GraphOverridableItem<(MethodDeclarationSyntax, IMethodSymbol)> item)
-			{
-				var (node, method) = item.Item;
-
-				ActionHandlerInfo baseActionHandlerInfo = item.Base != null
-					? CreateActionHandlerInfo(item.Base)
-					: null;
-
-				return baseActionHandlerInfo == null
-					? new ActionHandlerInfo(node, method, item.DeclarationOrder)
-					: new ActionHandlerInfo(node, method, item.DeclarationOrder, baseActionHandlerInfo);
-			}
+			return infos.ToImmutableDictionary(keyComparer: StringComparer.OrdinalIgnoreCase);
 		}
 
 		private void InitDeclaredInitializers()
