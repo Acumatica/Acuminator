@@ -135,6 +135,8 @@
 
 		internal static readonly string PXSelectBase1 = "PX.Data.PXSelectBase`1";
 
+		internal static readonly string PXSelectExtension1 = "PX.Data.PXSelectExtension`1";
+
 		internal static readonly string PXSelectorAttribute = "PX.Data.PXSelectorAttribute";
 
 		internal static readonly string PXStringListAttribute = "PX.Data.PXStringListAttribute";

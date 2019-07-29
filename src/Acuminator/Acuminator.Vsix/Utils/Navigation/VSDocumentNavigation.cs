@@ -39,7 +39,7 @@ namespace Acuminator.Vsix.Utilities.Navigation
 
 			var filePath = syntaxReferences[0].SyntaxTree?.FilePath;
 
-			await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cToken);
+			await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			var workspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
 			TextSpan textSpanToNavigate = await GetTextSpanToNavigateFromSymbolAsync(symbol, syntaxReferences[0], cToken);
 			return await AcuminatorVSPackage.Instance.OpenCodeFileAndNavigateToPositionAsync(workspace?.CurrentSolution, filePath,
