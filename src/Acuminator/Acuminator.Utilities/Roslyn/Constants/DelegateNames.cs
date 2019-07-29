@@ -35,7 +35,7 @@ namespace Acuminator.Utilities.Roslyn.Constants
 		public static readonly string Ensure = "Ensure";
 		
 		public static readonly string InstanceCreatedEvents = "PX.Data.PXGraph+InstanceCreatedEvents";
-		public static readonly string InstanceCreatedEventsAddHabdler = "AddHandler";
+		public static readonly string InstanceCreatedEventsAddHandler = "AddHandler";
 		public static readonly string InitCacheMapping = "InitCacheMapping";
 		public static readonly string CreateInstance = "CreateInstance";
 

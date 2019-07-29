@@ -29,11 +29,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			protected CancellationToken CancellationToken => SyntaxContext.CancellationToken;
 
-			public BqlInvocationDataFlowAnalyserBase(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext, IdentifierNameSyntax identifierNode)
+			public BqlInvocationDataFlowAnalyserBase(SyntaxNodeAnalysisContext syntaxContext, InvocationExpressionSyntax invocation,
+													 PXContext pxContext, IdentifierNameSyntax identifierNode)
 			{
 				SyntaxContext = syntaxContext;
 				PXContext = pxContext;
-				Invocation = SyntaxContext.Node as InvocationExpressionSyntax;
+				Invocation = invocation;
 				InvocationStatement = Invocation.GetStatementNode();
 				VariableName = identifierNode.Identifier.ValueText;
 			}

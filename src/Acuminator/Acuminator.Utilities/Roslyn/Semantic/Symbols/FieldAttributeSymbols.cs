@@ -3,14 +3,10 @@ using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-	public class FieldAttributeSymbols
+	public class FieldAttributeSymbols : SymbolsSetBase
 	{
-		private readonly Compilation _compilation;
-
-		internal FieldAttributeSymbols(Compilation aCompilation)
-		{
-			_compilation = aCompilation;
-		}
+		internal FieldAttributeSymbols(Compilation compilation) : base(compilation)
+		{ }
 
 		#region Field Unbound Attributes
 		public INamedTypeSymbol PXLongAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXLongAttribute);

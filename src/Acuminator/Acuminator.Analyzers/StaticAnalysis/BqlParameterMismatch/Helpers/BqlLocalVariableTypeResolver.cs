@@ -17,8 +17,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 		{
 			private readonly ResolveVarTypeMethodBodyWalker _methodBodyWalker;
 
-			public BqlLocalVariableTypeResolver(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext, IdentifierNameSyntax identifierNode) :
-											base(syntaxContext, pxContext, identifierNode)
+			public BqlLocalVariableTypeResolver(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext, 
+												InvocationExpressionSyntax invocation, IdentifierNameSyntax identifierNode) :
+										   base(syntaxContext, invocation, pxContext, identifierNode)
 			{
 				_methodBodyWalker = new ResolveVarTypeMethodBodyWalker(this);
 			}

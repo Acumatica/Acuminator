@@ -201,6 +201,9 @@ The check for cancellation via cancellation token must be done using the followi
 cancellationToken.ThrowIfCancellationRequested();
 ```
 
+There is one exception to this rule. Do not pass cancellation token to the `ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync()` in the VSIX project. This method has overload that accepts cancellation.
+However, it doesn't cancel the operation. It just cancels the transition to the UI thread if it weren't already done scheduling the continuation on a threadpool. This is not expected by our code and should be avoided.
+
 ### Demo Solution
 
 If you add a new diagnostic or other functionality to the Acuminator, you also should add corresponding examples to the demo solution, which is located under the */src/Samples* folder.

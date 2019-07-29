@@ -4,10 +4,8 @@ using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-    public class PXUIFieldAttributeSymbols
+    public class PXUIFieldAttributeSymbols : SymbolsSetForTypeBase
     {
-        public INamedTypeSymbol Type { get; }
-
 		public ImmutableArray<IMethodSymbol> SetVisible { get; }
 	    public ImmutableArray<IMethodSymbol> SetVisibility { get; }
 	    public ImmutableArray<IMethodSymbol> SetEnabled { get; }
@@ -16,10 +14,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 	    public ImmutableArray<IMethodSymbol> SetDisplayName { get; }
 	    public ImmutableArray<IMethodSymbol> SetNeutralDisplayName { get; }
 
-        internal PXUIFieldAttributeSymbols(Compilation compilation)
+        internal PXUIFieldAttributeSymbols(Compilation compilation) : base(compilation, TypeFullNames.PXUIFieldAttribute)
         {
-            Type = compilation.GetTypeByMetadataName(TypeFullNames.PXUIFieldAttribute);
-
 	        SetVisible            = Type.GetMethods(DelegateNames.SetVisible);
 	        SetVisibility         = Type.GetMethods(DelegateNames.SetVisibility);
 	        SetEnabled            = Type.GetMethods(DelegateNames.SetEnabled);

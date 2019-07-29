@@ -5,15 +5,14 @@ using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-    public class PXProcessingBaseSymbols
+    public class PXProcessingBaseSymbols : SymbolsSetForTypeBase
     {
-        public INamedTypeSymbol Type { get; }
         public IMethodSymbol SetParametersDelegate { get; }
+
         public ImmutableArray<IMethodSymbol> SetProcessDelegate { get; }
 
-        internal PXProcessingBaseSymbols(Compilation compilation)
+        internal PXProcessingBaseSymbols(Compilation compilation) : base(compilation, typeName: TypeFullNames.PXProcessingBase)
         {
-            Type = compilation.GetTypeByMetadataName(TypeFullNames.PXProcessingBase);
             SetParametersDelegate = Type.GetMethods(DelegateNames.SetParameters).First();
             SetProcessDelegate = Type.GetMethods(DelegateNames.SetProcess);
         }

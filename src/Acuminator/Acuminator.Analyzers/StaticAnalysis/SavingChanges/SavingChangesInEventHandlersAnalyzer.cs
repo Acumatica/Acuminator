@@ -109,12 +109,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 							return true;
 						}
 					}
-					else if (_pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled == false &&
-					         IsTransactionOpened == true &&
-							_eventType == EventType.RowPersisted &&
-					         saveOperationKind != SaveOperationKind.CachePersist)
+					else if (_eventType == EventType.RowPersisted)
 					{
-						ReportDiagnostic(_context.ReportDiagnostic, Descriptors.PX1043_SavingChangesInRowPerstistedNonISV, node);
+						if (IsTransactionOpened) 
+							return false;
+
+						ReportDiagnostic(_context.ReportDiagnostic, 
+							_pxContext.CodeAnalysisSettings.IsvSpecificAnalyzersEnabled
+								? Descriptors.PX1043_SavingChangesInEventHandlers
+								: Descriptors.PX1043_SavingChangesInRowPerstistedNonISV, node);
 						return true;
 					}
 					else
