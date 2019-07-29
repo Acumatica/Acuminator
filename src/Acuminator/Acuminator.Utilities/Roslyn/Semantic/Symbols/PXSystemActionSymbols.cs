@@ -3,13 +3,10 @@ using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-	public class PXSystemActionSymbols
+	public class PXSystemActionSymbols : SymbolsSetBase
 	{
-		private readonly Compilation _compilation;
-
-		internal PXSystemActionSymbols(Compilation aCompilation)
+		internal PXSystemActionSymbols(Compilation compilation) : base(compilation)
 		{
-			_compilation = aCompilation;
 		}
 
 		public INamedTypeSymbol PXSave => _compilation.GetTypeByMetadataName(DelegateNames.PXSave);

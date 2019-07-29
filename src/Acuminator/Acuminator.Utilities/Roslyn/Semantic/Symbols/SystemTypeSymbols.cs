@@ -3,14 +3,10 @@ using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-	public class SystemTypeSymbols
+	public class SystemTypeSymbols : SymbolsSetBase
 	{
-		private readonly Compilation _compilation;
-
-		internal SystemTypeSymbols(Compilation aCompilation)
-		{
-			_compilation = aCompilation;
-		}
+		internal SystemTypeSymbols(Compilation compilation) : base(compilation)
+		{ }
 
 		public INamedTypeSymbol Array => _compilation.GetSpecialType(SpecialType.System_Array);
 

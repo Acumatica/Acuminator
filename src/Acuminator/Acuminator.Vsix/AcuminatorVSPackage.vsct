@@ -24,7 +24,7 @@
 
       <Menu guid="guidAcuminatorCmdSet" id="AcuminatorSuppressionMenu" type="Menu">
         <Strings>
-          <ButtonText>Suppress Acuminator diagnostic</ButtonText>
+          <ButtonText>Suppress Acuminator Diagnostic</ButtonText>
         </Strings>
       </Menu>
     </Menus>
