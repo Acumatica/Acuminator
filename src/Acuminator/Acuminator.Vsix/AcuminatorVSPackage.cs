@@ -154,7 +154,7 @@ namespace Acuminator.Vsix
 			if (Zombied)
 				return;
 
-			await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+			await JoinableTaskFactory.SwitchToMainThreadAsync();
 
 			InitializeLogger(progress);
 			await InitializeCommandsAsync(progress);		
@@ -234,7 +234,7 @@ namespace Acuminator.Vsix
 
 		private void SolutionEvents_AfterClosing()
 		{
-			CloseOpenToolWindows();
+			//TODO place suppression manager registry clearing  here
 		}
 		
 		protected override void Dispose(bool disposing)
@@ -269,29 +269,6 @@ namespace Acuminator.Vsix
 			progress?.Report(progressData);
 			var codeAnalysisSettings = new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage);
 			GlobalCodeAnalysisSettings.InitializeGlobalSettingsOnce(codeAnalysisSettings);
-		}
-
-		protected override int QueryClose(out bool canClose)
-		{
-			CloseOpenToolWindows();
-			return base.QueryClose(out canClose);
-		}
-
-		private void CloseOpenToolWindows()
-		{
-			if (!ThreadHelper.CheckAccess())
-				return;
-
-			try
-			{
-#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
-				DTE dte = GetService(typeof(DTE)) as DTE;
-				dte?.Windows.Item($"{{{CodeMapWindow.CodeMapWindowGuidString}}}")?.Close();
-#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
-			}
-			catch
-			{
-			}
 		}
 
 		#region Package Settings         

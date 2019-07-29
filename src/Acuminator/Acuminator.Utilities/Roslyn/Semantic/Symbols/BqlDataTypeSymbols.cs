@@ -3,14 +3,10 @@ using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-	public class BqlDataTypeSymbols
+	public class BqlDataTypeSymbols : SymbolsSetBase
 	{
-
-		private readonly Compilation _compilation;
-
-		public BqlDataTypeSymbols(Compilation aCompilation)
+		public BqlDataTypeSymbols(Compilation compilation) : base(compilation)
 		{
-			_compilation = aCompilation;
 		}
 
 		public INamedTypeSymbol BqlDataType => _compilation.GetTypeByMetadataName(TypeFullNames.BqlDataTypeType);

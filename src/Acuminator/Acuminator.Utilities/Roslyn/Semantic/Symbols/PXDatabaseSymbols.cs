@@ -6,20 +6,16 @@ using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
-    public class PXDatabaseSymbols
+    public class PXDatabaseSymbols : SymbolsSetForTypeBase
     {
-        public INamedTypeSymbol Type { get; }
-
 	    public ImmutableArray<IMethodSymbol> Select { get; }
 		public ImmutableArray<IMethodSymbol> Insert { get; }
 	    public ImmutableArray<IMethodSymbol> Update { get; }
 	    public ImmutableArray<IMethodSymbol> Delete { get; }
 	    public ImmutableArray<IMethodSymbol> Ensure { get; }
 
-        internal PXDatabaseSymbols(Compilation compilation)
+        internal PXDatabaseSymbols(Compilation compilation) : base(compilation, TypeFullNames.PXDatabase)
         {
-            Type = compilation.GetTypeByMetadataName(TypeFullNames.PXDatabase);
-
 	        Select = Type.GetMethods()
 		        .Where(m => m.Name.StartsWith(DelegateNames.Select, StringComparison.Ordinal))
 		        .ToImmutableArray();

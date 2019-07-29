@@ -60,7 +60,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic
         private readonly Lazy<PXSelectBaseSymbols> _pxSelectBase;
         public PXSelectBaseSymbols PXSelectBase => _pxSelectBase.Value;
 
-        private readonly Lazy<PXDatabaseSymbols> _pxDatabase;
+		private readonly Lazy<PXSelectExtensionSymbols> _pxSelectExtensionSymbols;
+
+		public PXSelectExtensionSymbols PXSelectExtensionSymbols => _pxSelectExtensionSymbols.Value;
+
+		private readonly Lazy<PXDatabaseSymbols> _pxDatabase;
 		public PXDatabaseSymbols PXDatabase => _pxDatabase.Value;
 
 		private readonly Lazy<PXViewSymbols> _pxView;
@@ -134,6 +138,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			_exceptions = new Lazy<ExceptionSymbols>(() => new ExceptionSymbols(Compilation));
             _pxSelectBaseGeneric = new Lazy<PXSelectBaseGenericSymbols>(() => new PXSelectBaseGenericSymbols(Compilation));
             _pxSelectBase = new Lazy<PXSelectBaseSymbols>(() => new PXSelectBaseSymbols(Compilation));
+			_pxSelectExtensionSymbols = new Lazy<PXSelectExtensionSymbols>(() => new PXSelectExtensionSymbols(Compilation));
             _pxProcessingBase = new Lazy<PXProcessingBaseSymbols>(() => new PXProcessingBaseSymbols(Compilation));
 
 			_uiPresentationLogicMethods = new Lazy<ImmutableHashSet<IMethodSymbol>>(GetUiPresentationLogicMethods);

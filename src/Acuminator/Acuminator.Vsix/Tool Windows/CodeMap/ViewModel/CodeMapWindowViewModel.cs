@@ -19,6 +19,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class CodeMapWindowViewModel : ToolWindowViewModelBase
 	{
+		private readonly EnvDTE.SolutionEvents _solutionEvents;
 		private readonly EnvDTE.WindowEvents _windowEvents;
 		private readonly EnvDTE80.WindowVisibilityEvents _visibilityEvents;
 
@@ -92,7 +93,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (ThreadHelper.CheckAccess())
 			{
 				EnvDTE.DTE dte = AcuminatorVSPackage.Instance.GetService<EnvDTE.DTE>();
-				_windowEvents = dte?.Events?.WindowEvents;                                  //Store reference to DTE WindowEvents to prevent it from being GCed
+
+				//Store reference to DTE SolutionEvents and WindowEvents to prevent them from being GCed
+				_solutionEvents = dte?.Events?.SolutionEvents;
+				_windowEvents = dte?.Events?.WindowEvents;
+
+				if (_solutionEvents != null)
+				{
+					_solutionEvents.AfterClosing += SolutionEvents_AfterClosing;
+				}
 
 				if (_windowEvents != null)
 				{
@@ -133,6 +142,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (Workspace != null)
 			{
 				Workspace.WorkspaceChanged -= OnWorkspaceChanged;
+			}
+
+			if (_solutionEvents != null)
+			{
+				_solutionEvents.AfterClosing -= SolutionEvents_AfterClosing;
 			}
 
 			if (_windowEvents != null)
@@ -184,6 +198,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			IsVisible = true;
 		}
 
+		/// <summary>
+		/// Solution events after closing. Clear up the document data.
+		/// </summary>
+		private void SolutionEvents_AfterClosing()
+		{
+			ClearCodeMap();
+			_documentModel = null;
+			NotifyPropertyChanged(nameof(Document));
+		}
+
 		private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus) =>
 			WindowEventsWindowActivatedAsync(gotFocus, lostFocus)
 				.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(WindowEvents_WindowActivated)}");
@@ -192,7 +216,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			if (!ThreadHelper.CheckAccess())
 			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken ?? AcuminatorVSPackage.Instance.DisposalToken);
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			}
 
 			if (Equals(gotFocus, lostFocus) || gotFocus.Document == null)
@@ -233,7 +257,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (!ThreadHelper.CheckAccess())
 			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(CancellationToken ?? AcuminatorVSPackage.Instance.DisposalToken);
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			}
 
 			if (!IsVisible || e.IsActiveDocumentCleared(Document))
@@ -304,7 +328,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 					if (!ThreadHelper.CheckAccess())
 					{
-						await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+						await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 					}
 				
 					IsCalculating = true;
@@ -318,7 +342,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					if (newTreeVM == null)
 						return;
 
-					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 					Tree = newTreeVM;
 					IsCalculating = false;
