@@ -9,11 +9,11 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Analyzers.StaticAnalysis.Dac;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 {
-	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class KeyFieldDeclarationAnalyzer : PXDiagnosticAnalyzer
+	public class KeyFieldDeclarationAnalyzer : DacAggregatedAnalyzerBase
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
@@ -21,52 +21,44 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 				Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField
 			);
 
-		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac)
 		{
-			compilationStartContext.RegisterSymbolAction(symbolContext =>
-				AnalyzeDacOrDacExtensionDeclaration(symbolContext, pxContext), SymbolKind.NamedType);
-		}
+			context.CancellationToken.ThrowIfCancellationRequested();
 
-		private static void AnalyzeDacOrDacExtensionDeclaration(SymbolAnalysisContext symbolContext, PXContext pxContext)
-		{
-			symbolContext.CancellationToken.ThrowIfCancellationRequested();
+			var attributeInformation = new AttributeInformation(pxContext);
+			var keyAttributes = new List<AttributeData>(capacity: 2);
 
-			if (!(symbolContext.Symbol is INamedTypeSymbol dacOrDacExtSymbol) || !dacOrDacExtSymbol.IsDacOrExtension(pxContext))
-				return;
+			bool containsNaturalPrimaryKeys = false;
+			bool containsIdentityKeys = false;
+			var propertyAttributes = dac.DeclaredProperties.SelectMany(property => property.Symbol.GetAttributes());
 
-			var dacPropertiesDeclarations = dacOrDacExtSymbol.GetMembers().OfType<IPropertySymbol>();
-
-			var keyAttributes = new List<AttributeData>();
-
-			bool isKey = false;
-			bool isKeyIdentity = false;
-
-			foreach (var attribute in dacPropertiesDeclarations.SelectMany(a => a.GetAttributes()))
+			foreach (var attribute in propertyAttributes)
 			{
-				bool hasKeys = attribute.NamedArguments.Any(a => a.Key.Contains(DelegateNames.IsKey) &&
-																	a.Value.Value is bool isKeyValue &&
-																	isKeyValue == true);
-
-				if (hasKeys)
+				context.CancellationToken.ThrowIfCancellationRequested();
+				bool isAttributeWithPrimaryKey = attribute.NamedArguments.Any(arg => arg.Key.Contains(DelegateNames.IsKey) && 
+																			  arg.Value.Value is bool isKeyValue && isKeyValue == true);
+				if (isAttributeWithPrimaryKey)
 				{
-					var identityOrKey = CheckAttributeIdentityOrKey(attribute, pxContext);
-
-					isKey = identityOrKey.IsKey || isKey;
-					isKeyIdentity = identityOrKey.IsKeyIdentity || isKeyIdentity;
+					if (!containsNaturalPrimaryKeys || !containsIdentityKeys)  //If we already know that DAC contains both then no need to analyse more
+					{
+						bool isIdentityAttribute = IsDerivedFromIdentityTypes(attribute, pxContext, attributeInformation);
+						containsNaturalPrimaryKeys = containsNaturalPrimaryKeys || !isIdentityAttribute;
+						containsIdentityKeys = containsIdentityKeys || isIdentityAttribute;
+					}
 
 					keyAttributes.Add(attribute);
 				}
 			}
 
-			if (isKey && isKeyIdentity)
+			if (containsNaturalPrimaryKeys && containsIdentityKeys)
 			{
-				var locations = keyAttributes.Select(attribute => GetAttributeLocation(attribute, symbolContext.CancellationToken)).ToList();
+				var locations = keyAttributes.Select(attribute => GetAttributeLocation(attribute, context.CancellationToken)).ToList();
 
 				foreach (Location attributeLocation in locations)
 				{
 					var extraLocations = locations.Where(l => l != attributeLocation);
 
-					symbolContext.ReportDiagnosticWithSuppressionCheck(
+					context.ReportDiagnosticWithSuppressionCheck(
 						Diagnostic.Create(
 							Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField, attributeLocation, extraLocations),
 							pxContext.CodeAnalysisSettings);
@@ -74,25 +66,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 			}
 		}
 
+		private static bool IsDerivedFromIdentityTypes(AttributeData attribute, PXContext pxContext, AttributeInformation attributeInformation) =>
+			attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, pxContext.FieldAttributes.PXDBIdentityAttribute) ||
+			attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, pxContext.FieldAttributes.PXDBLongIdentityAttribute);
+
 		private static Location GetAttributeLocation(AttributeData attribute, CancellationToken cancellationToken) =>
 			attribute.ApplicationSyntaxReference
 					?.GetSyntax(cancellationToken)
-					?.GetLocation();
-		
-		private static bool IsDerivedFromIdentityTypes(AttributeData attribute, PXContext pxContext)
-		{
-			var attributeInformation = new AttributeInformation(pxContext);
-
-			return attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, pxContext.FieldAttributes.PXDBIdentityAttribute) ||
-				   attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, pxContext.FieldAttributes.PXDBLongIdentityAttribute);
-		}
-
-		private static (bool IsKey, bool IsKeyIdentity) CheckAttributeIdentityOrKey(AttributeData attribute, PXContext pxContext)
-		{
-			if (!IsDerivedFromIdentityTypes(attribute, pxContext))
-				return (IsKey: true, IsKeyIdentity: false);
-			else
-				return (IsKey: false, IsKeyIdentity: true);
-		}
+					?.GetLocation();	
 	}
 }

@@ -1,8 +1,9 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Analyzers.StaticAnalysis.InheritanceFromPXCacheExtension;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
-using Microsoft.CodeAnalysis;
+using Acuminator.Utilities;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
@@ -13,7 +14,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.InheritanceFromPXCacheExtension
     {
 	    protected override CodeFixProvider GetCSharpCodeFixProvider() => new InheritanceFromPXCacheExtensionFix();
 	    
-	    protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new InheritanceFromPXCacheExtensionAnalyzer();
+	    protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
+			new DacAnalyzersAggregator(
+				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
+											.WithSuppressionMechanismDisabled(),
+				new InheritanceFromPXCacheExtensionAnalyzer());
 
 		[Theory]
         [EmbeddedFileData("InheritanceFromPXCacheExtension_Good.cs")]
@@ -51,7 +56,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.InheritanceFromPXCacheExtension
 	{
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new InheritanceFromPXCacheExtensionMakeSealedFix();
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new InheritanceFromPXCacheExtensionAnalyzer();
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
+			new DacAnalyzersAggregator(
+				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
+											.WithSuppressionMechanismDisabled(),
+				new InheritanceFromPXCacheExtensionAnalyzer());
 
 		[Theory]
 		[EmbeddedFileData("InheritanceFromPXCacheExtensionMakeSealed_Bad.cs", "InheritanceFromPXCacheExtensionMakeSealed_Bad_Expected.cs")]

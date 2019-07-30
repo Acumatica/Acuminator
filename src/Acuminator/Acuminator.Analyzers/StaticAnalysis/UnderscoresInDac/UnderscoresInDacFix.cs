@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
+namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]

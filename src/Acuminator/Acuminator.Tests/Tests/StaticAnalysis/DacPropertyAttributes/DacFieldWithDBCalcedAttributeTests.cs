@@ -1,7 +1,9 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
+using Acuminator.Utilities;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Threading.Tasks;
 using Xunit;
@@ -11,7 +13,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 	public class DacFieldWithDBCalcedAttributeTests : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-			new DacPropertyAttributesAnalyzer();
+			new DacAnalyzersAggregator(
+				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
+											.WithSuppressionMechanismDisabled(),
+				new DacPropertyAttributesAnalyzer());
 
 		[Theory]
 		[EmbeddedFileData("DacWithPXDBCalcedAndUnboundTypeAttributes.cs")]

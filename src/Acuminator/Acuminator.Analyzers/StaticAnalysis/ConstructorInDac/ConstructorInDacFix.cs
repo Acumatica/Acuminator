@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
+namespace Acuminator.Analyzers.StaticAnalysis.ConstructorInDac
 {
     [Shared]
     [ExportCodeFixProvider(LanguageNames.CSharp)]

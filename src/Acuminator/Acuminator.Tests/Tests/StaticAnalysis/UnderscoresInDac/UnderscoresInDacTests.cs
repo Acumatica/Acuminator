@@ -1,30 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Acuminator.Analyzers;
 using Acuminator.Analyzers.StaticAnalysis;
-using Acuminator.Analyzers.StaticAnalysis.DacDeclaration;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
-using FluentAssertions;
+using Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac;
+using Acuminator.Analyzers.StaticAnalysis.Dac;
+using Acuminator.Utilities;
 using Xunit;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.DacDeclaration
+namespace Acuminator.Tests.Tests.StaticAnalysis.UnderscoresInDac
 {
 	public class UnderscoresInDacTests : CodeFixVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacDeclarationAnalyzer();
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
+			new DacAnalyzersAggregator(
+				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
+											.WithSuppressionMechanismDisabled(),
+				new UnderscoresInDacAnalyzer());
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new UnderscoresInDacFix();
 
 		[Theory]
 		[EmbeddedFileData("DacWithUnderscores.cs")]
-		public virtual void Test_Dac_With_Underscores_In_Declaration(string source) =>
+		public virtual void Dac_WithUnderscoresInDeclaration(string source) =>
 			VerifyCSharpDiagnostic(source,
 				Descriptors.PX1026_UnderscoresInDacDeclaration.CreateFor(line: 10, column: 15),
 				Descriptors.PX1026_UnderscoresInDacDeclaration.CreateFor(line: 13, column: 25),
@@ -33,7 +34,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacDeclaration
 
 		[Theory]
 		[EmbeddedFileData("DacExtensionWithUnderscores.cs")]
-		public virtual void Test_Dac_Extension_With_Underscores_In_Declaration(string source) =>
+		public virtual void DacExtension_WithUnderscoresInDeclaration(string source) =>
 			VerifyCSharpDiagnostic(source,
 				Descriptors.PX1026_UnderscoresInDacDeclaration.CreateFor(line: 10, column: 15),
 				Descriptors.PX1026_UnderscoresInDacDeclaration.CreateFor(line: 13, column: 25),
@@ -44,13 +45,13 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacDeclaration
 		[Theory]
 		[EmbeddedFileData("DacWithUnderscores.cs",
 						  "DacWithUnderscores_Expected.cs")]
-		public virtual void Test__Fix_For_Dac_With_Underscores_In_Declaration(string actual, string expected) =>
+		public virtual void Fix_Dac_WithUnderscoresInDeclaration(string actual, string expected) =>
 			VerifyCSharpFix(actual, expected);
 
 		[Theory]
 		[EmbeddedFileData("DacExtensionWithUnderscores.cs",
 						  "DacExtensionWithUnderscores_Expected.cs")]
-		public virtual void Test__Fix_For_Dac_Extension_With_Underscores_In_Declaration(string actual, string expected) =>
+		public virtual void Fix_DacExtension_WithUnderscoresInDeclaration(string actual, string expected) =>
 			VerifyCSharpFix(actual, expected);
 	}
 }

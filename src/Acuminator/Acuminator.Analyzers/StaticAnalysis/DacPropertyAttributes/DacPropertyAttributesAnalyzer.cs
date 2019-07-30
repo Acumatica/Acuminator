@@ -1,4 +1,5 @@
-﻿using Acuminator.Utilities.Common;
+﻿using Acuminator.Analyzers.StaticAnalysis.Dac;
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -15,8 +16,7 @@ using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 {
-	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class DacPropertyAttributesAnalyzer : PXDiagnosticAnalyzer
+	public class DacPropertyAttributesAnalyzer : DacAggregatedAnalyzerBase
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
@@ -29,30 +29,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				Descriptors.PX1095_PXDBCalcedMustBeAccompaniedNonDBTypeAttribute
 			);
 
-		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dacOrDacExt)
 		{
-			compilationStartContext.RegisterSymbolAction(symbolContext => AnalyzePropertyAsync(symbolContext, pxContext), SymbolKind.NamedType);
-		}
-
-		private static Task AnalyzePropertyAsync(SymbolAnalysisContext symbolContext, PXContext pxContext)
-		{
-			if (!(symbolContext.Symbol is INamedTypeSymbol dacOrDacExt) || !dacOrDacExt.IsDacOrExtension(pxContext))
-				return Task.FromResult(false);
-
 			FieldTypeAttributesRegister fieldAttributesRegister = new FieldTypeAttributesRegister(pxContext);
-			Task[] allTasks = dacOrDacExt.GetMembers()
-										 .OfType<IPropertySymbol>()
-										 .Select(property => CheckDacPropertyAsync(property, symbolContext, pxContext, fieldAttributesRegister))
-										 .ToArray();
+			ParallelOptions parallelOptions = new ParallelOptions
+			{
+				CancellationToken = context.CancellationToken
+			};
 
-			return Task.WhenAll(allTasks);
+			Parallel.ForEach(dacOrDacExt.DeclaredProperties, parallelOptions,
+							 property => CheckDacProperty(property, context, pxContext, fieldAttributesRegister));
 		}
 
-		private static async Task CheckDacPropertyAsync(IPropertySymbol property, SymbolAnalysisContext symbolContext, PXContext pxContext,
-														FieldTypeAttributesRegister fieldAttributesRegister)
+		private static void CheckDacProperty(DacPropertyInfo property, SymbolAnalysisContext symbolContext, PXContext pxContext,
+											 FieldTypeAttributesRegister fieldAttributesRegister)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
-			ImmutableArray<AttributeData> attributes = property.GetAttributes();
+			ImmutableArray<AttributeData> attributes = property.Symbol.GetAttributes();
 
 			if (attributes.Length == 0)
 				return;
@@ -62,17 +55,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			if (attributesWithInfos.Count == 0)
 				return;
 
-			bool validSpecialTypes = await CheckForMultipleSpecialAttributesAsync(symbolContext, pxContext, attributesWithInfos)
-												.ConfigureAwait(false);
+			bool validSpecialTypes = CheckForMultipleSpecialAttributes(symbolContext, pxContext, attributesWithInfos);
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
 			if (!validSpecialTypes)
 				return;
 
-			CheckForPXDBCalcedAndUnboundTypeAttributes(symbolContext, pxContext, fieldAttributesRegister, property, attributesWithInfos);
-
-			await CheckForFieldTypeAttributesAsync(property, symbolContext, pxContext, attributesWithInfos)
-					.ConfigureAwait(false);
+			CheckForPXDBCalcedAndUnboundTypeAttributes(symbolContext, pxContext, fieldAttributesRegister, property.Symbol, attributesWithInfos);
+			CheckForFieldTypeAttributes(property.Symbol, symbolContext, pxContext, attributesWithInfos);
 		}
 
 		private static void CheckForPXDBCalcedAndUnboundTypeAttributes(SymbolAnalysisContext symbolContext, PXContext pxContext,
@@ -91,18 +81,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			}
 
 			if (!hasPXDBCalcedAttribute || hasUnboundTypeAttribute)
-			{
 				return;
-			}
 
 			if (!(propertySymbol.GetSyntax(symbolContext.CancellationToken) is PropertyDeclarationSyntax propertyNode))
-			{
 				return;
-			}
-
+	
 			var diagnostic = Diagnostic.Create(Descriptors.PX1095_PXDBCalcedMustBeAccompaniedNonDBTypeAttribute, propertyNode.Identifier.GetLocation());
-
-			symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
+			symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);		
 		}
 
 		private static List<(AttributeData Attribute, List<FieldTypeAttributeInfo> Infos)> GetFieldTypeAttributesInfos(PXContext pxContext,
@@ -127,8 +112,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			return fieldInfosList;
 		}
 
-		private static async Task<bool> CheckForMultipleSpecialAttributesAsync(SymbolAnalysisContext symbolContext, PXContext pxContext,
-															List<(AttributeData Attribute, List<FieldTypeAttributeInfo> Infos)> attributesWithInfos)
+		private static bool CheckForMultipleSpecialAttributes(SymbolAnalysisContext symbolContext, PXContext pxContext,
+															  List<(AttributeData Attribute, List<FieldTypeAttributeInfo> Infos)> attributesWithInfos)
 		{
 			var (specialAttributesDeclaredOnDacProperty, specialAttributesWithConflictingAggregatorDeclarations) = FilterSpecialAttributes();
 
@@ -140,16 +125,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 			if (specialAttributesDeclaredOnDacProperty.Count > 1)
 			{
-				await RegisterDiagnosticForAttributesAsync(symbolContext, pxContext, specialAttributesDeclaredOnDacProperty,
-														   Descriptors.PX1023_MultipleSpecialTypeAttributesOnProperty)
-													  .ConfigureAwait(false);
+				RegisterDiagnosticForAttributes(symbolContext, pxContext, specialAttributesDeclaredOnDacProperty,
+												Descriptors.PX1023_MultipleSpecialTypeAttributesOnProperty);
 			}
 
 			if (specialAttributesWithConflictingAggregatorDeclarations.Count > 0)
 			{
-				await RegisterDiagnosticForAttributesAsync(symbolContext, pxContext, specialAttributesDeclaredOnDacProperty,
-														   Descriptors.PX1023_MultipleSpecialTypeAttributesOnAggregators)
-													  .ConfigureAwait(false);
+				RegisterDiagnosticForAttributes(symbolContext, pxContext, specialAttributesDeclaredOnDacProperty,
+												Descriptors.PX1023_MultipleSpecialTypeAttributesOnAggregators);
 			}
 
 			return false;
@@ -160,18 +143,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				List<AttributeData> specialAttributesOnDacProperty = new List<AttributeData>(2);
 				List<AttributeData> specialAttributesInvalidAggregatorDeclarations = new List<AttributeData>(2);
 
-				foreach (var attrWithInfos in attributesWithInfos)
+				foreach (var (attribute, infos) in attributesWithInfos)
 				{
-					int countOfSpecialAttributeInfos = attrWithInfos.Infos.Count(atrInfo => atrInfo.IsSpecial);
+					int countOfSpecialAttributeInfos = infos.Count(atrInfo => atrInfo.IsSpecial);
 
 					if (countOfSpecialAttributeInfos > 0)
 					{
-						specialAttributesOnDacProperty.Add(attrWithInfos.Attribute);
+						specialAttributesOnDacProperty.Add(attribute);
 					}
 
 					if (countOfSpecialAttributeInfos > 1)
 					{
-						specialAttributesInvalidAggregatorDeclarations.Add(attrWithInfos.Attribute);
+						specialAttributesInvalidAggregatorDeclarations.Add(attribute);
 					}
 				}
 
@@ -179,7 +162,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			}
 		}
 
-		private static async Task CheckForFieldTypeAttributesAsync(IPropertySymbol property, SymbolAnalysisContext symbolContext, PXContext pxContext,
+		private static void CheckForFieldTypeAttributes(IPropertySymbol property, SymbolAnalysisContext symbolContext, PXContext pxContext,
 														List<(AttributeData Attribute, List<FieldTypeAttributeInfo> Infos)> attributesWithInfos)
 		{
 			var (typeAttributesDeclaredOnDacProperty, typeAttributesWithConflictingAggregatorDeclarations) = FilterTypeAttributes();
@@ -189,16 +172,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 
 			if (typeAttributesWithConflictingAggregatorDeclarations.Count > 0)
 			{
-				await RegisterDiagnosticForAttributesAsync(symbolContext, pxContext, typeAttributesWithConflictingAggregatorDeclarations,
-														   Descriptors.PX1023_MultipleTypeAttributesOnAggregators)
-													  .ConfigureAwait(false);
+				RegisterDiagnosticForAttributes(symbolContext, pxContext, typeAttributesWithConflictingAggregatorDeclarations,
+												Descriptors.PX1023_MultipleTypeAttributesOnAggregators);
 			}
 
 			if (typeAttributesDeclaredOnDacProperty.Count > 1)					
 			{
-				await RegisterDiagnosticForAttributesAsync(symbolContext, pxContext, typeAttributesDeclaredOnDacProperty,
-														   Descriptors.PX1023_MultipleTypeAttributesOnProperty)
-													  .ConfigureAwait(false);
+				RegisterDiagnosticForAttributes(symbolContext, pxContext, typeAttributesDeclaredOnDacProperty,
+												Descriptors.PX1023_MultipleTypeAttributesOnProperty);
 			} 
 			else if (typeAttributesWithConflictingAggregatorDeclarations.Count == 0)
 			{
@@ -210,7 +191,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 												   .Distinct()
 												   .SingleOrDefault();
 		
-				await CheckAttributeAndPropertyTypesForCompatibilityAsync(property, typeAttribute, fieldType, pxContext, symbolContext);
+				CheckAttributeAndPropertyTypesForCompatibility(property, typeAttribute, fieldType, pxContext, symbolContext);
 			}
 
 			//-----------------------------------------------Local Functions---------------------------------------
@@ -219,24 +200,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				List<AttributeData> typeAttributesOnDacProperty = new List<AttributeData>(2);
 				List<AttributeData> typeAttributesWithInvalidAggregatorDeclarations = new List<AttributeData>(2);
 
-				foreach (var attrWithInfos in attributesWithInfos)
+				foreach (var (attribute, infos) in attributesWithInfos)
 				{
-					int countOfTypeAttributeInfos = attrWithInfos.Infos.Count(info => info.IsFieldAttribute);
+					int countOfTypeAttributeInfos = infos.Count(info => info.IsFieldAttribute);
 
 					if (countOfTypeAttributeInfos == 0)
 						continue;
 
-					typeAttributesOnDacProperty.Add(attrWithInfos.Attribute);
+					typeAttributesOnDacProperty.Add(attribute);
 
 					if (countOfTypeAttributeInfos == 1)
 						continue;
 
-					int countOfDeclaredFieldTypes = attrWithInfos.Infos.Select(info => info.FieldType)
-																	   .Distinct()
-																	   .Count();
+					int countOfDeclaredFieldTypes = infos.Select(info => info.FieldType)
+														 .Distinct()
+														 .Count();
 					if (countOfDeclaredFieldTypes > 1)
 					{
-						typeAttributesWithInvalidAggregatorDeclarations.Add(attrWithInfos.Attribute);
+						typeAttributesWithInvalidAggregatorDeclarations.Add(attribute);
 					}
 				}
 
@@ -244,13 +225,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			}
 		}
 
-		private static Task CheckAttributeAndPropertyTypesForCompatibilityAsync(IPropertySymbol property, AttributeData fieldAttribute,
-																				ITypeSymbol fieldType, PXContext pxContext,
-																				SymbolAnalysisContext symbolContext)
+		private static void CheckAttributeAndPropertyTypesForCompatibility(IPropertySymbol property, AttributeData fieldAttribute, ITypeSymbol fieldType,
+																		   PXContext pxContext, SymbolAnalysisContext symbolContext)
 		{
-			if (fieldType == null)                                                               //PXDBFieldAttribute case
+			if (fieldType == null)                           //PXDBFieldAttribute case
 			{
-				return ReportIncompatibleTypesDiagnosticsAsync(property, fieldAttribute, symbolContext, pxContext, registerCodeFix: false);
+				ReportIncompatibleTypesDiagnostics(property, fieldAttribute, symbolContext, pxContext, registerCodeFix: false);
+				return;
 			}
 
 			ITypeSymbol typeToCompare;
@@ -258,9 +239,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			if (property.Type.IsValueType)
 			{
 				if (!(property.Type is INamedTypeSymbol namedPropertyType))
-				{
-					return Task.FromResult(false);
-				}
+					return;
 
 				typeToCompare = namedPropertyType.IsNullable(pxContext)
 									? namedPropertyType.GetUnderlyingTypeFromNullable(pxContext)
@@ -271,68 +250,58 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				typeToCompare = property.Type;
 			}
 
-			if (fieldType.Equals(typeToCompare))
+			if (!fieldType.Equals(typeToCompare))
 			{
-				return Task.FromResult(false);
+				ReportIncompatibleTypesDiagnostics(property, fieldAttribute, symbolContext, pxContext, registerCodeFix: true);
 			}
-
-			return ReportIncompatibleTypesDiagnosticsAsync(property, fieldAttribute, symbolContext, pxContext, registerCodeFix: true);
 		}
 
-		private static async Task ReportIncompatibleTypesDiagnosticsAsync(IPropertySymbol property, AttributeData fieldAttribute,
-																		  SymbolAnalysisContext symbolContext, PXContext pxContext,
-																		  bool registerCodeFix)
+		private static void ReportIncompatibleTypesDiagnostics(IPropertySymbol property, AttributeData fieldAttribute,
+															   SymbolAnalysisContext symbolContext, PXContext pxContext, bool registerCodeFix)
 		{
 			var diagnosticProperties = ImmutableDictionary.Create<string, string>()
 														  .Add(DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString());
-			Location[] locations = await Task.WhenAll(GetPropertyTypeLocationAsync(property, symbolContext.CancellationToken),
-													  GetAttributeLocationAsync(fieldAttribute, symbolContext.CancellationToken));
-
-			Location propertyTypeLocation = locations[0];
-			Location attributeLocation = locations[1];
+			Location propertyTypeLocation = GetPropertyTypeLocation(property, symbolContext.CancellationToken);
+			Location attributeLocation = GetAttributeLocation(fieldAttribute, symbolContext.CancellationToken);
 
 			if (propertyTypeLocation != null)
 			{
 				symbolContext.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(
-						Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, propertyTypeLocation, attributeLocation.ToEnumerable(),
-						diagnosticProperties), pxContext.CodeAnalysisSettings);
+					Diagnostic.Create(Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, propertyTypeLocation, attributeLocation.ToEnumerable(),
+									  diagnosticProperties),
+					pxContext.CodeAnalysisSettings);
 			}
 
 			if (attributeLocation != null)
 			{
 				symbolContext.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(
-						Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, attributeLocation, propertyTypeLocation.ToEnumerable(),
-						diagnosticProperties), pxContext.CodeAnalysisSettings);
+					Diagnostic.Create(Descriptors.PX1021_PXDBFieldAttributeNotMatchingDacProperty, attributeLocation, propertyTypeLocation.ToEnumerable(),
+									  diagnosticProperties),
+					pxContext.CodeAnalysisSettings);
 			}
 		}
 
-		private static async Task RegisterDiagnosticForAttributesAsync(SymbolAnalysisContext symbolContext, PXContext pxContext,
-																	   IEnumerable<AttributeData> attributesToReport,
-																	   DiagnosticDescriptor diagnosticDescriptor)
+		private static void RegisterDiagnosticForAttributes(SymbolAnalysisContext symbolContext, PXContext pxContext,
+															IEnumerable<AttributeData> attributesToReport, DiagnosticDescriptor diagnosticDescriptor)
 		{
-			var locationTasks = attributesToReport.Select(a => GetAttributeLocationAsync(a, symbolContext.CancellationToken)).ToArray();
-			Location[] attributeLocations = await Task.WhenAll(locationTasks).ConfigureAwait(false);
+			Location[] attributeLocations = attributesToReport.Select(a => GetAttributeLocation(a, symbolContext.CancellationToken))
+															  .Where(location => location != null)
+															  .ToArray();
 
-			foreach (Location attrLocation in attributeLocations.Where(location => location != null))
+			foreach (Location location in attributeLocations)
 			{
 				symbolContext.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(diagnosticDescriptor, attrLocation), pxContext.CodeAnalysisSettings);
+					Diagnostic.Create(diagnosticDescriptor, location), 
+					pxContext.CodeAnalysisSettings);
 			}
 		}
 
-		private static async Task<Location> GetAttributeLocationAsync(AttributeData attribute, CancellationToken cancellationToken)
-		{
-			SyntaxNode attributeSyntaxNode = await attribute.ApplicationSyntaxReference.GetSyntaxAsync(cancellationToken)
-																					   .ConfigureAwait(false);
-			return attributeSyntaxNode?.GetLocation();
-		}
+		private static Location GetAttributeLocation(AttributeData attribute, CancellationToken cancellationToken) =>
+			attribute.ApplicationSyntaxReference.GetSyntax(cancellationToken)?.GetLocation();
 
-		private static async Task<Location> GetPropertyTypeLocationAsync(IPropertySymbol property, CancellationToken cancellationToken)
+		private static Location GetPropertyTypeLocation(IPropertySymbol property, CancellationToken cancellationToken)
 		{
-			SyntaxNode propertySyntaxNode = await property.GetSyntaxAsync(cancellationToken)
-														  .ConfigureAwait(false);
+			SyntaxNode propertySyntaxNode = property.GetSyntax(cancellationToken);
 
 			return propertySyntaxNode is PropertyDeclarationSyntax propertyDeclarationSyntax
 				? propertyDeclarationSyntax.Type.GetLocation()

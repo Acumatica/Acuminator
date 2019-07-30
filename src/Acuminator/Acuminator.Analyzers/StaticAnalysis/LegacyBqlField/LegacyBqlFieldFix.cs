@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading.Tasks;
+using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -34,40 +35,59 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 
 			if (diagnostic.Properties == null
 				|| !diagnostic.Properties.TryGetValue(LegacyBqlFieldAnalyzer.CorrespondingPropertyType, out string typeName)
-				|| String.IsNullOrEmpty(typeName)
+				|| typeName.IsNullOrEmpty()
 				|| context.CancellationToken.IsCancellationRequested)
 			{
 				return;
 			}
 
-			TypeSyntax newBaseType = CreateBaseType(typeName, classNode.Identifier.Text);
-			if (newBaseType != null)
-			{
-				string title = nameof(Resources.PX1060Fix).GetLocalized().ToString();
-				context.RegisterCodeFix(
-					CodeAction.Create(
-						title,
-						c => Task.FromResult(
-							context.Document.WithSyntaxRoot(
-								root.ReplaceNode(
-									classNode.BaseList,
-									BaseList(
-										SeparatedList(
-											new BaseTypeSyntax[]
-											{
-												SimpleBaseType(newBaseType)
-											}))))),
-						title),
-					context.Diagnostics); 
-			}
+			SimpleBaseTypeSyntax newBaseType = CreateBaseType(typeName, classNode.Identifier.Text);
+			if (newBaseType == null)
+				return;
+		
+			string title = nameof(Resources.PX1060Fix).GetLocalized().ToString();
+			context.RegisterCodeFix(
+				CodeAction.Create(title,
+								  c => Task.FromResult(GetDocumentWithUpdatedBqlField(context.Document, root, classNode, newBaseType)),
+								  equivalenceKey: title),
+				context.Diagnostics); 
 		}
 
-		private TypeSyntax CreateBaseType(string typeName, string dacFieldName)
+		private SimpleBaseTypeSyntax CreateBaseType(string typeName, string dacFieldName)
 		{
 			if (!PropertyTypeToFieldType.ContainsKey(typeName))
 				return null;
 
-			return IdentifierName($"PX.Data.BQL.Bql{PropertyTypeToFieldType[typeName]}.Field<{dacFieldName}>");
+			string bqlTypeName = $"Bql{ PropertyTypeToFieldType[typeName]}";
+			GenericNameSyntax fieldTypeNode =
+				GenericName(Identifier("Field"))
+					.WithTypeArgumentList(
+						TypeArgumentList(
+							SingletonSeparatedList<TypeSyntax>(IdentifierName(dacFieldName))));
+
+			var newBaseType =
+				SimpleBaseType(
+					QualifiedName(
+						QualifiedName(
+							QualifiedName(
+								QualifiedName(
+									IdentifierName("PX"),
+									IdentifierName("Data")),
+									IdentifierName("BQL")),
+									IdentifierName(bqlTypeName)),
+						fieldTypeNode));
+
+			return newBaseType;
+		}
+
+		private Document GetDocumentWithUpdatedBqlField(Document oldDocument, SyntaxNode root, ClassDeclarationSyntax classNode, SimpleBaseTypeSyntax newBaseType)
+		{
+			var newClassNode =
+				classNode.WithBaseList(
+					BaseList(
+						SingletonSeparatedList<BaseTypeSyntax>(newBaseType)));
+			var newRoot = root.ReplaceNode(classNode, newClassNode);
+			return oldDocument.WithSyntaxRoot(newRoot);
 		}
 
 		public static readonly IReadOnlyDictionary<string, string> PropertyTypeToFieldType = new Dictionary<string, string>

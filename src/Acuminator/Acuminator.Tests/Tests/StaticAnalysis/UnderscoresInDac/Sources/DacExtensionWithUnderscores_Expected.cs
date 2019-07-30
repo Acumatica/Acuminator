@@ -7,14 +7,14 @@ using PX.Data;
 
 namespace PX.Objects.HackathonDemo
 {
-	public class SOOrder_With_Total : PXCacheExtension<SOOrder>
+	public class SOOrderWithTotal : PXCacheExtension<SOOrder>
 	{
 		#region Total_Amount
-		public abstract class total_Amount : IBqlField { }
+		public abstract class totalAmount : IBqlField { }
 
 		[PXDBDecimal]
 		[PXUIField(DisplayName = "Total")]
-		public decimal Total_Amount { get; set; }
+		public decimal TotalAmount { get; set; }
 		#endregion
 
 		#region Test
@@ -29,5 +29,10 @@ namespace PX.Objects.HackathonDemo
 		{
 		}
 		#endregion
+	}
+
+	public class SOOrder : IBqlTable
+	{
+		//Dummy DAC for tests
 	}
 }
