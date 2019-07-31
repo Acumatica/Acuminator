@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Title>Acumatica.Analyzers</Title>
     <AssemblyTitle>Acumatica.Analyzers</AssemblyTitle>
@@ -16,9 +16,8 @@
     <Description>The static analyzers for Acumatica</Description>
     <Authors>Acumatica</Authors>
     <NeutralLanguage>en</NeutralLanguage>
-    <RestorePackagesPath>../../packages</RestorePackagesPath> 
+    <RestorePackagesPath>../../packages</RestorePackagesPath>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis" Version="2.10.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.9.2" PrivateAssets="all" />
@@ -31,11 +30,9 @@
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
     <PackageReference Update="NETStandard.Library" PrivateAssets="all" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Acuminator.Utilities\Acuminator.Utilities.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="PX.Common">
       <HintPath>..\..\..\lib\PX.Common.dll</HintPath>
@@ -61,7 +58,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-   <Target Name="NugetTarget" AfterTargets="Build">
+  <Target Name="NugetTarget" AfterTargets="Build">
     <GetAssemblyIdentity AssemblyFiles="$(OutDir)\$(AssemblyName).dll">
       <Output TaskParameter="Assemblies" ItemName="AnalyzerAssemblyInfo" />
     </GetAssemblyIdentity>
