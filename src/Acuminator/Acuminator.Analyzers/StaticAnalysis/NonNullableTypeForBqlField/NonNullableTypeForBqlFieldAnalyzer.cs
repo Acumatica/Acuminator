@@ -17,7 +17,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonNullableTypeForBqlField
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac)
 		{
-			foreach (DacPropertyInfo property in dac.DeclaredProperties)
+			foreach (DacPropertyInfo property in dac.AllDeclaredProperties)
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 

@@ -26,8 +26,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// <param name="startingOrder">The starting order.</param>
 		/// <param name="infoConstructor">The DTO info constructor.</param>
 		/// <returns/>
-		internal int AddRangeWithDeclarationOrder<TRawData, TWriteableInfo>(IEnumerable<TRawData> itemsToAdd, int startingOrder, 
-																			Func<TRawData, int, TWriteableInfo> infoConstructor)
+		internal virtual int AddRangeWithDeclarationOrder<TRawData, TWriteableInfo>(IEnumerable<TRawData> itemsToAdd, int startingOrder, 
+																					Func<TRawData, int, TWriteableInfo> infoConstructor)
 		where TWriteableInfo : TInfo, IWriteableBaseItem<TInfo>
 		{
 			itemsToAdd.ThrowOnNull(nameof(itemsToAdd));
@@ -43,7 +43,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			return order;
 		}
 
-		internal void Add<TRawData, TWriteableInfo>(TRawData rawData, int declarationOrder, Func<TRawData, int, TWriteableInfo> infoConstructor)
+		internal virtual void Add<TRawData, TWriteableInfo>(TRawData rawData, int declarationOrder, Func<TRawData, int, TWriteableInfo> infoConstructor)
 		where TWriteableInfo : TInfo, IWriteableBaseItem<TInfo>
 		{
 			infoConstructor.ThrowOnNull(nameof(infoConstructor));
@@ -51,7 +51,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			Add(info);
 		}
 
-		internal void Add<TWriteableInfo>(TWriteableInfo info)
+		internal virtual void Add<TWriteableInfo>(TWriteableInfo info)
 		where TWriteableInfo : TInfo, IWriteableBaseItem<TInfo>
 		{
 			if (info?.Name == null)

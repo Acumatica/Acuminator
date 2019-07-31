@@ -28,7 +28,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public ImmutableDictionary<string, DacPropertyInfo> PropertiesByNames { get; }
 		public IEnumerable<DacPropertyInfo> Properties => PropertiesByNames.Values;
 
-		public IEnumerable<DacPropertyInfo> DeclaredProperties => Properties.Where(p => p.Symbol.ContainingType == Symbol);
+		public IEnumerable<DacPropertyInfo> DacProperties => Properties.Where(p => p.IsDacProperty);
+
+		public IEnumerable<DacPropertyInfo> AllDeclaredProperties => Properties.Where(p => p.Symbol.ContainingType == Symbol);
+
+		public IEnumerable<DacPropertyInfo> DeclaredDacProperties => Properties.Where(p => p.IsDacProperty && p.Symbol.ContainingType == Symbol);
 
 		public ImmutableDictionary<string, DacFieldInfo> FieldsByNames { get; }
 		public IEnumerable<DacFieldInfo> Fields => FieldsByNames.Values;
@@ -49,8 +53,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				? Symbol
 				: Symbol.GetDacFromDacExtension(_pxContext);
 
-			PropertiesByNames = GetDacProperties();
 			FieldsByNames = GetDacFields();
+			PropertiesByNames = GetDacProperties();		
 		}
 
 		/// <summary>
@@ -101,8 +105,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		}
 
 		private ImmutableDictionary<string, DacPropertyInfo> GetDacProperties() =>
-			GetInfos(() => Symbol.GetDacPropertiesFromDac(_pxContext, cancellation: _cancellation),
-					 () => Symbol.GetPropertiesFromDacExtensionAndBaseDac(_pxContext, _cancellation));
+			GetInfos(() => Symbol.GetDacPropertiesFromDac(_pxContext, FieldsByNames, cancellation: _cancellation),
+					 () => Symbol.GetPropertiesFromDacExtensionAndBaseDac(_pxContext, FieldsByNames, _cancellation));
 
 		private ImmutableDictionary<string, DacFieldInfo> GetDacFields() =>
 			GetInfos(() => Symbol.GetDacFieldsFromDac(_pxContext, cancellation: _cancellation),

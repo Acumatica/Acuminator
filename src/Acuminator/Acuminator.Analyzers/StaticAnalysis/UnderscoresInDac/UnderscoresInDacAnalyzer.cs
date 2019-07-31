@@ -31,7 +31,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 																			  dacOrDacExt.PropertiesByNames.ContainsKey(field.Name))
 															  .SelectMany(field => field.Node.GetIdentifiers());
 
-			var propertiesIdentifiers = dacOrDacExt.DeclaredProperties.Where(property => CheckDacMemberAccessibility(property.Symbol))
+			var propertiesIdentifiers = dacOrDacExt.AllDeclaredProperties.Where(property => CheckDacMemberAccessibility(property.Symbol))
 																	  .SelectMany(property => property.Node.GetIdentifiers());
 
 			var identifiersToCheck = fieldsIdentifiers.Concat(propertiesIdentifiers);

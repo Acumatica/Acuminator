@@ -13,7 +13,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 	/// </summary>
 	public class FieldTypeAttributesRegister
 	{
-		private readonly PXContext _context;
+		private readonly PXContext _pxContext;
+
 		private readonly AttributeInformation _attributeInformation;
 
 		public ImmutableDictionary<ITypeSymbol, ITypeSymbol> CorrespondingSimpleUnboundTypes { get; }
@@ -29,22 +30,22 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			_context = pxContext;
-			_attributeInformation = new AttributeInformation(_context);
-			var unboundFieldAttributes = GetCorrespondingSimpleUnboundTypes(_context).Keys;
+			_pxContext = pxContext;
+			_attributeInformation = new AttributeInformation(_pxContext);
+			var unboundFieldAttributes = GetCorrespondingSimpleUnboundTypes(_pxContext).Keys;
 			UnboundTypeAttributes = unboundFieldAttributes.ToImmutableHashSet();
 
-			var boundFieldAttributes = GetCorrespondingSimpleBoundTypes(_context).Keys;
+			var boundFieldAttributes = GetCorrespondingSimpleBoundTypes(_pxContext).Keys;
 			BoundTypeAttributes = boundFieldAttributes.ToImmutableHashSet();
 
-			var specialAttributes = GetSpecialAttributes(_context);
+			var specialAttributes = GetSpecialAttributes(_pxContext);
 			SpecialAttributes = specialAttributes.ToImmutableHashSet();
 			AllTypeAttributes = unboundFieldAttributes.Concat(boundFieldAttributes)
 													  .Concat(specialAttributes)
 													  .ToImmutableHashSet();
 
-			CorrespondingSimpleUnboundTypes = GetCorrespondingSimpleUnboundTypes(_context).ToImmutableDictionary();
-			CorrespondingSimpleBoundTypes = GetCorrespondingSimpleBoundTypes(_context).ToImmutableDictionary();
+			CorrespondingSimpleUnboundTypes = GetCorrespondingSimpleUnboundTypes(_pxContext).ToImmutableDictionary();
+			CorrespondingSimpleBoundTypes = GetCorrespondingSimpleBoundTypes(_pxContext).ToImmutableDictionary();
 		}
 
 		public IEnumerable<FieldTypeAttributeInfo> GetFieldTypeAttributeInfos(ITypeSymbol attributeSymbol)
@@ -78,9 +79,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			if (firstTypeAttribute == null)
 				return null;
 
-			if (firstTypeAttribute.Equals(_context.FieldAttributes.PXDBScalarAttribute))
+			if (firstTypeAttribute.Equals(_pxContext.FieldAttributes.PXDBScalarAttribute))
 				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.PXDBScalarAttribute, fieldType: null);
-			else if (firstTypeAttribute.Equals(_context.FieldAttributes.PXDBCalcedAttribute))
+			else if (firstTypeAttribute.Equals(_pxContext.FieldAttributes.PXDBCalcedAttribute))
 				return new FieldTypeAttributeInfo(FieldTypeAttributeKind.PXDBCalcedAttribute, fieldType: null);
 
 			if (CorrespondingSimpleBoundTypes.TryGetValue(firstTypeAttribute, out var boundFieldType))

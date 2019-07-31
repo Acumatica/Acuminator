@@ -37,7 +37,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 				CancellationToken = context.CancellationToken
 			};
 
-			Parallel.ForEach(dacOrDacExt.DeclaredProperties, parallelOptions,
+			Parallel.ForEach(dacOrDacExt.AllDeclaredProperties, parallelOptions,
 							 property => CheckDacProperty(property, context, pxContext, fieldAttributesRegister));
 		}
 

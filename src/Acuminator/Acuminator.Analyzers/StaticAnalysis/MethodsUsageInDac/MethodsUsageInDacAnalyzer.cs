@@ -39,7 +39,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
 
 			HashSet<INamedTypeSymbol> whiteList = GetWhitelist(pxContext);
 			
-			foreach (DacPropertyInfo property in dac.DeclaredProperties)
+			foreach (DacPropertyInfo property in dac.AllDeclaredProperties)
 			{
 				AnalyzeMethodInvocationInDacProperty(property, whiteList, context, pxContext, semanticModel);
 			}

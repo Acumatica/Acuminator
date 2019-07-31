@@ -20,7 +20,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute
 		{
 			var typeAttributesSet = GetTypeAttributesSet(pxContext);
 
-			foreach (DacPropertyInfo property in dac.DeclaredProperties)
+			foreach (DacPropertyInfo property in dac.AllDeclaredProperties)
 			{
 				context.CancellationToken.ThrowIfCancellationRequested();
 				AnalyzeProperty(property, context, pxContext, typeAttributesSet);
