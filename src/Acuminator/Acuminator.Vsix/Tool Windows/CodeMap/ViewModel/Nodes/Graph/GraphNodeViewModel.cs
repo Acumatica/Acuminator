@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
-
-
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class GraphNodeViewModel : TreeNodeViewModel
 	{
+		private int _currentNavigationIndex;
+
 		public GraphSemanticModelForCodeMap CodeMapGraphModel { get; }
 
 		public PXGraphEventSemanticModel GraphSemanticModel => CodeMapGraphModel.GraphModel; 
@@ -39,10 +37,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			GraphNodeViewModel graphNodeVM = new GraphNodeViewModel(codeMapGraphModel, tree, isExpanded);
 			graphNodeVM.AddGraphMemberCategories(expandChildren);
 			return graphNodeVM;
-		}
-
-		public override Task NavigateToItemAsync() => GraphSemanticModel.Symbol.NavigateToAsync();
-		
+		}		
 
 		private void AddGraphMemberCategories(bool expandChildren)
 		{
@@ -54,5 +49,27 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			Children.AddRange(memberCategories);
 		}
+
+		public override Task NavigateToItemAsync()
+		{
+			var syntaxReferences = GraphSemanticModel.Symbol.DeclaringSyntaxReferences;
+
+			switch (syntaxReferences.Length)
+			{
+				case 0:
+					return Task.CompletedTask;
+				case 1:
+					return GraphSemanticModel.Symbol.NavigateToAsync();
+				default:
+
+					if (_currentNavigationIndex >= syntaxReferences.Length)
+						return Task.CompletedTask;
+
+					SyntaxReference reference = syntaxReferences[_currentNavigationIndex];
+					_currentNavigationIndex = (_currentNavigationIndex + 1) % syntaxReferences.Length;
+
+					return GraphSemanticModel.Symbol.NavigateToAsync(reference);
+			}		
+		}	
 	}
 }
