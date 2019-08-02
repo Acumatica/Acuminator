@@ -106,5 +106,21 @@ namespace Acuminator.Vsix.Utilities
 
 			AddRange(range);
 		}
+
+		public void Sort<TValue>(Func<T, TValue> selector, SortDirection direction = SortDirection.Ascending)
+		{
+			selector.ThrowOnNull(nameof(selector));
+
+			if (Count == 0)
+				return;
+
+			var orderedCopy =
+				(direction == SortDirection.Ascending
+					? Items.OrderBy(selector)
+					: Items.OrderByDescending(selector))
+				.ToList(Count);                        //Need a copy of the collection because we can't reset collection with IEnumerable which is based on the collection
+
+			Reset(orderedCopy);
+		}
 	}
 }
