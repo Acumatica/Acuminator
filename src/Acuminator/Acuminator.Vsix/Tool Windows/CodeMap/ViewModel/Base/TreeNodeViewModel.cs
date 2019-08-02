@@ -58,21 +58,5 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public virtual Task NavigateToItemAsync() => Microsoft.VisualStudio.Threading.TplExtensions.CompletedTask;
-
-		public virtual void OrderChildren<TValue>(Func<TreeNodeViewModel, TValue> selector, SortDirection direction = SortDirection.Ascending)
-		{
-			selector.ThrowOnNull(nameof(selector));
-
-			if (Children.Count == 0)
-				return;
-
-			var orderedChildren = 
-				(direction == SortDirection.Ascending
-					? Children.OrderBy(selector)
-					: Children.OrderByDescending(selector))
-				.ToList(Children.Count);                        //Need a copy of the collection because we can't reset collection with IEnumerable which is based on the collection
-
-			Children.Reset(orderedChildren);
-		}
 	}
 }
