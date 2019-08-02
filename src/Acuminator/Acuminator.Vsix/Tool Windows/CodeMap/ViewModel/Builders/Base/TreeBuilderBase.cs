@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Threading;
 using Acuminator.Utilities.Common;
-using Acuminator.Vsix.Utilities;
-
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -15,35 +13,42 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public virtual TreeViewModel CreateEmptyCodeMapTree(CodeMapWindowViewModel windowViewModel) => new TreeViewModel(windowViewModel);
 
-		public TreeViewModel BuildCodeMapTree(CodeMapWindowViewModel windowViewModel)
+		public TreeViewModel BuildCodeMapTree(CodeMapWindowViewModel windowViewModel, CancellationToken cancellation)
 		{
+			windowViewModel.ThrowOnNull(nameof(windowViewModel));
+			cancellation.ThrowIfCancellationRequested();
+
 			TreeViewModel codeMapTree = CreateEmptyCodeMapTree(windowViewModel);
 
 			if (codeMapTree == null)
 				return null;
 
-			var roots = CreateRoots()?.Where(root => root != null);
+			cancellation.ThrowIfCancellationRequested();
+			var roots = CreateRoots(windowViewModel, cancellation)?.Where(root => root != null);
 
 			if (roots.IsNullOrEmpty())
 				return codeMapTree;
 
 			codeMapTree.RootItems.AddRange(roots);
+			cancellation.ThrowIfCancellationRequested();
 
 			foreach (TreeNodeViewModel root in codeMapTree.RootItems)
 			{
-				var rootNodes = CreateChildrenNodes(root)?.Where(node => node != null);
+				var rootNodes = CreateChildrenNodes(root, cancellation)?.Where(node => node != null);
 
 				if (!rootNodes.IsNullOrEmpty())
 				{
 					root.Children.AddRange(rootNodes);
 				}
+
+				cancellation.ThrowIfCancellationRequested();
 			}
 
 			return codeMapTree;
 		}
 
-		protected abstract IEnumerable<TreeNodeViewModel> CreateRoots();
+		protected abstract IEnumerable<TreeNodeViewModel> CreateRoots(CodeMapWindowViewModel windowViewModel, CancellationToken cancellation);
 
-		public abstract IEnumerable<TreeNodeViewModel> CreateChildrenNodes(TreeNodeViewModel parentNode);
+		public abstract IEnumerable<TreeNodeViewModel> CreateChildrenNodes(TreeNodeViewModel parentNode, CancellationToken cancellation);
 	}
 }
