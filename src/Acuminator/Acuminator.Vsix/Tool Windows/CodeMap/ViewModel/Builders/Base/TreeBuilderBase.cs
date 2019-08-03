@@ -24,48 +24,63 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return null;
 
 			cancellation.ThrowIfCancellationRequested();
-			var roots = CreateRoots(codeMapTree, expandRoots, cancellation)?.Where(root => root != null);
+			var roots = CreateRoots(codeMapTree, expandRoots, cancellation)?.Where(root => root != null).ToList();
 
 			if (roots.IsNullOrEmpty())
 				return codeMapTree;
-
-			codeMapTree.RootItems.AddRange(roots);
+	
 			cancellation.ThrowIfCancellationRequested();
 
-			foreach (TreeNodeViewModel root in codeMapTree.RootItems)
+			foreach (TreeNodeViewModel root in roots)
 			{
-				CreateAndFillChildrenNodes(root, expandChildren, cancellation);
+				CreateRootTree(root, expandChildren, cancellation);
 			}
 
+			var rootsToAdd = roots.Where(root => root.Children.Count > 0 || root.DisplayNodeWithoutChildren);
+			codeMapTree.RootItems.AddRange(rootsToAdd);
 			return codeMapTree;
 		}
 
-		protected void CreateAndFillChildrenNodes(TreeNodeViewModel parentNode, bool expandChildren, CancellationToken cancellation)
+		protected virtual void CreateRootTree(TreeNodeViewModel root, bool expandChildren, CancellationToken cancellation)
 		{
-			var parentsStack = new Stack<TreeNodeViewModel>(capacity: 32);
-			parentsStack.Push(parentNode);
+			cancellation.ThrowIfCancellationRequested();
 
-			while (parentsStack.Count > 0)
+			var parentWithChildrenStack = new Stack<(TreeNodeViewModel Parent, List<TreeNodeViewModel> Children)>(64);
+			var parentNodesStack = new Stack<TreeNodeViewModel>(64);
+			parentNodesStack.Push(root);
+
+			//Fill the parentWithChildrenStack with tree structure
+			while (parentNodesStack.Count > 0)
 			{
 				cancellation.ThrowIfCancellationRequested();
 
-				TreeNodeViewModel currentParent = parentsStack.Pop();
-				var children = CreateChildrenNodes(currentParent, expandChildren, cancellation)?.Where(node => node != null);
+				TreeNodeViewModel currentParent = parentNodesStack.Pop();
+				var children = GetChildrenNodes(currentParent, expandChildren, cancellation)?.Where(node => node != null).ToList();
 
-				if (children == null)
+				if (children.IsNullOrEmpty())
 					continue;
 
-				currentParent.Children.AddRange(children);
+				parentWithChildrenStack.Push((currentParent, children));
 
-				foreach (TreeNodeViewModel child in currentParent.Children)
-				{		
-					parentsStack.Push(child);				
+				foreach (var child in children)
+				{
+					parentNodesStack.Push(child);
 				}
+			}
+
+			//Set the references walking upward tree
+			while (parentWithChildrenStack.Count > 0)
+			{
+				cancellation.ThrowIfCancellationRequested();
+
+				var (parent, children) = parentWithChildrenStack.Pop();
+				var childrenToSet = children.Where(c => c.Children.Count > 0 || c.DisplayNodeWithoutChildren);
+				parent.Children.Reset(childrenToSet);
 			}
 		}
 
-		protected abstract IEnumerable<TreeNodeViewModel> CreateChildrenNodes(TreeNodeViewModel parentNode, bool expandChildren,
-																			  CancellationToken cancellation);
+		protected abstract IEnumerable<TreeNodeViewModel> GetChildrenNodes(TreeNodeViewModel parentNode, bool expandChildren,
+																		   CancellationToken cancellation);
 
 		protected abstract IEnumerable<TreeNodeViewModel> CreateRoots(TreeViewModel tree, bool expandRoots, CancellationToken cancellation);		
 	}
