@@ -14,6 +14,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public abstract string Name { get; protected set; }
 
+		/// <summary>
+		/// True to display node without children in a tree, false if not.
+		/// </summary>
+		public abstract bool DisplayNodeWithoutChildren { get; }
+
 		public ExtendedObservableCollection<TreeNodeViewModel> Children { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
 
 		private bool _isExpanded;
@@ -49,7 +54,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public TreeNodeViewModel(TreeViewModel tree, bool isExpanded = true)
+		protected TreeNodeViewModel(TreeViewModel tree, bool isExpanded = true)
 		{
 			tree.ThrowOnNull(nameof(tree));
 
