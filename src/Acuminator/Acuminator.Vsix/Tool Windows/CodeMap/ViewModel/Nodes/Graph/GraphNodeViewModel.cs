@@ -23,6 +23,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set { }
 		}
 
+		public override bool DisplayNodeWithoutChildren => true;
+
 		public GraphNodeViewModel(GraphSemanticModelForCodeMap codeMapGraphModel, TreeViewModel tree, bool isExpanded) : 
 							 base(tree, isExpanded)
 		{

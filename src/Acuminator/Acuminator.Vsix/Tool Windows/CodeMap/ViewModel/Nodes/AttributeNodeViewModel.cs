@@ -26,6 +26,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public string Tooltip { get; }
 
+		public override bool DisplayNodeWithoutChildren => true;
+
 		public AttributeNodeViewModel(GraphMemberNodeViewModel graphMemberVM, AttributeData attribute, 
 									  bool isExpanded = false) :
 								 base(graphMemberVM?.Tree, isExpanded)

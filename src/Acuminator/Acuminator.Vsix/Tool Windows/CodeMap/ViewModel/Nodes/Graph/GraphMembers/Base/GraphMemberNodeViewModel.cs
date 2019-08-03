@@ -27,6 +27,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set { }
 		}
 
+		public override bool DisplayNodeWithoutChildren => true;
+
 		public GraphMemberNodeViewModel(GraphMemberCategoryNodeViewModel graphMemberCategoryVM, SymbolItem memberInfo, 
 										bool isExpanded = false) :
 								   base(graphMemberCategoryVM?.Tree, isExpanded)

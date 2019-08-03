@@ -6,10 +6,6 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Vsix.Utilities;
-using Acuminator.Vsix.Utilities.Navigation;
-
-
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -28,8 +24,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 									 base(dacViewModel?.GraphEventsCategoryVM, eventInfo, isExpanded)
 		{
 			DacViewModel = dacViewModel;
-			Name = eventInfo.DacFieldName;
-			
+			Name = eventInfo.DacFieldName;			
 			var attributeVMs = MemberSymbol.GetAttributes()
 										   .Select(a => new AttributeNodeViewModel(this, a));
 			Children.AddRange(attributeVMs);

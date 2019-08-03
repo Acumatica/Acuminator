@@ -8,8 +8,6 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.Utilities;
 
-
-
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public abstract class GraphEventCategoryNodeViewModel : GraphMemberCategoryNodeViewModel
@@ -28,6 +26,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				}
 			}
 		}
+
+		public override bool DisplayNodeWithoutChildren => false;
 
 		protected override bool AllowNavigation => false;
 

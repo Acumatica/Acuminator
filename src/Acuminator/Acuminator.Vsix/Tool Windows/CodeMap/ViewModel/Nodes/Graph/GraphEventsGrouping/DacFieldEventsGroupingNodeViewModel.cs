@@ -24,6 +24,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set { }
 		}
 
+		public override bool DisplayNodeWithoutChildren => false;
+
 		bool IGroupNodeWithCyclingNavigation.AllowNavigation => true;
 
 		int IGroupNodeWithCyclingNavigation.CurrentNavigationIndex { get; set; }
