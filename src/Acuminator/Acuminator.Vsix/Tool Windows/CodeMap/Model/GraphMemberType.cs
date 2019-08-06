@@ -37,7 +37,5 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			_descriptions.TryGetValue(graphMemberType, out string description)
 				? description
 				: string.Empty;
-
-		public static ImmutableArray<GraphMemberType> GetGraphMemberTypes() => _descriptions.Keys.ToImmutableArray();
 	}
 }
