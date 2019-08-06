@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+using System.Threading;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -25,9 +26,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			DacViewModel = dacViewModel;
 			Name = eventInfo.DacFieldName;			
-			var attributeVMs = MemberSymbol.GetAttributes()
-										   .Select(a => new AttributeNodeViewModel(this, a));
-			Children.AddRange(attributeVMs);
-		}	
+		}
+
+		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren,
+																		 CancellationToken cancellation) =>
+			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
 	}
 }

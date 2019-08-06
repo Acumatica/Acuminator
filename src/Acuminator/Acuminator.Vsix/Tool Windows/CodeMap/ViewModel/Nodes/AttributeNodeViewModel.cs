@@ -10,6 +10,7 @@ using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -67,6 +68,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			await AcuminatorVSPackage.Instance.OpenCodeFileAndNavigateToPositionAsync(workspace.CurrentSolution, filePath, span);
 		}
 
+		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren,
+																		 CancellationToken cancellation) =>
+			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
+
 		private string GetAttributeTooltip()
 		{
 			var cancellationToken = Tree.CodeMapViewModel.CancellationToken.GetValueOrDefault();
@@ -79,6 +84,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			string tooltip = attributeListNode.GetSyntaxNodeStringWithRemovedIndent(tabSize)
 											  .RemoveCommonAcumaticaNamespacePrefixes();
 			return tooltip ?? $"[{Attribute.ToString()}]";
-		}
+		}	
 	}
 }

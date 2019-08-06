@@ -21,8 +21,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public ViewCategoryNodeViewModel(GraphNodeViewModel graphViewModel, bool isExpanded) : 
 									base(graphViewModel, GraphMemberType.View, isExpanded)
-		{
-			
+		{			
 		}
 
 		public override IEnumerable<SymbolItem> GetCategoryGraphNodeSymbols() => GraphSemanticModel.Views;
@@ -44,7 +43,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Children.AddRange(graphMemberViewModels);
 		}
 
-		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation) =>
+		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren, 
+																		 CancellationToken cancellation) =>
 			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
 	}
 }
