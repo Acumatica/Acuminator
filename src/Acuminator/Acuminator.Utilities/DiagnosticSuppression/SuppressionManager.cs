@@ -1,13 +1,14 @@
 ﻿using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Text.RegularExpressions;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
 {
@@ -17,6 +18,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		private readonly ISuppressionFileSystemService _fileSystemService;
 
 		private static SuppressionManager Instance { get; set; }
+
+		private static Regex _suppressPattern = new Regex(@"acuminator\s+suppress\s+((\w+)|(all))");
 
 		private SuppressionManager(ISuppressionFileSystemService fileSystemService, IEnumerable<SuppressionManagerInitInfo> suppressionFiles)
 		{
@@ -204,12 +207,48 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			if (settings.SuppressionMechanismEnabled && Instance?.IsSuppressed(semanticModel, diagnostic, cancellation) == true)
+			if (settings.SuppressionMechanismEnabled && 
+			    (Instance?.IsSuppressed(semanticModel, diagnostic, cancellation) == true ||
+			    CheckSuppressedComment(diagnostic, cancellation)))
 			{
 				return;
 			}
 
 			reportDiagnostic(diagnostic);
+		}
+
+		private static bool CheckSuppressedComment(Diagnostic diagnostic, CancellationToken cancellation)
+		{
+			cancellation.ThrowIfCancellationRequested();
+			SyntaxNode node = diagnostic.Location.SourceTree.GetRoot().FindNode(diagnostic.Location.SourceSpan);
+
+			return CheckSuppressionCommentOnNode(diagnostic, node, cancellation) || 
+			       CheckSuppressionCommentOnNode(diagnostic, node.Parent, cancellation);
+		}
+
+		private static bool CheckSuppressionCommentOnNode(Diagnostic diagnostic, SyntaxNode node, CancellationToken cancellation)
+		{
+			cancellation.ThrowIfCancellationRequested();
+
+			if (node != null && node.HasLeadingTrivia && node.GetLeadingTrivia().Any(SyntaxKind.SingleLineCommentTrivia))
+			{
+				var comments = node.GetLeadingTrivia()
+					.Where(x => x.RawKind == (int)SyntaxKind.SingleLineCommentTrivia);
+
+				foreach (SyntaxTrivia comment in comments)
+				{
+					Match match = _suppressPattern.Match(comment.ToString().ToLower());
+
+					if (match.Success &&
+					    string.Equals(diagnostic.Id, match.Groups[1].Value, StringComparison.OrdinalIgnoreCase) ||
+					    string.Equals(match.Groups[1].Value, "all", StringComparison.OrdinalIgnoreCase))
+					{
+						return true;
+					}
+				}
+			}
+
+			return false;
 		}
 
 		private bool IsSuppressed(SemanticModel semanticModel, Diagnostic diagnostic, CancellationToken cancellation)

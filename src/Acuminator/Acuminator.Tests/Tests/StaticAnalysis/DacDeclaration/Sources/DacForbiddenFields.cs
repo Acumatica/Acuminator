@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 using PX.Data;
 
 namespace PX.Objects.HackathonDemo
-{
+{	
 	public partial class SOOrder : IBqlTable
 	{
-		#region CompanyID         
+
+		#region CompanyID
+		// Acuminator suppress PX1027
 		public abstract class companyId : IBqlField { }
 		[PXDBString(IsKey = true, InputMask = "")]
 		[PXDefault]
