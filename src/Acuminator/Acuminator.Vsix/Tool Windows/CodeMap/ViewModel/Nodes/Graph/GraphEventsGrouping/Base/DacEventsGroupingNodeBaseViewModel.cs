@@ -11,7 +11,7 @@ using System.Threading;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public abstract class DacEventsGroupingNodeViewModel : TreeNodeViewModel, IGroupNodeWithCyclingNavigation
+	public abstract class DacEventsGroupingNodeBaseViewModel : TreeNodeViewModel, IGroupNodeWithCyclingNavigation
 	{
 		public GraphEventCategoryNodeViewModel GraphEventsCategoryVM { get; }
 
@@ -49,8 +49,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
 
-		protected DacEventsGroupingNodeViewModel(GraphEventCategoryNodeViewModel graphEventsCategoryVM, string dacName, bool isExpanded) :
-											base(graphEventsCategoryVM?.Tree, isExpanded)
+		protected DacEventsGroupingNodeBaseViewModel(GraphEventCategoryNodeViewModel graphEventsCategoryVM, string dacName, bool isExpanded) :
+												base(graphEventsCategoryVM?.Tree, isExpanded)
 		{
 			dacName.ThrowOnNullOrWhiteSpace(nameof(dacName));
 

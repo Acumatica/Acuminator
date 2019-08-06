@@ -34,7 +34,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override void AcceptBuilder(TreeBuilderBase treeBuilder, bool expandRoots, CancellationToken cancellation)
 		{
 			base.AcceptBuilder(treeBuilder, expandRoots, cancellation);
-			int eventsCount = Children.OfType<DacEventsGroupingNodeViewModel>()
+			int eventsCount = Children.OfType<DacEventsGroupingNodeBaseViewModel>()
 									  .Sum(dacVM => dacVM.EventsCount);
 			if (Children.Count <= 0)
 				return;

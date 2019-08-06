@@ -25,7 +25,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private CancellationTokenSource _cancellationTokenSource;
 
-		private DocumentModel _documentModel;
+		public DocumentModel DocumentModel
+		{
+			get;
+			private set;
+		}
 
 		public Workspace Workspace
 		{
@@ -33,7 +37,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			private set;
 		}
 
-		public Document Document => _documentModel?.Document;
+		public Document Document => DocumentModel?.Document;
 
 		private CodeMapDocChangesClassifier DocChangesClassifier { get; } = new CodeMapDocChangesClassifier();
 
@@ -82,12 +86,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private CodeMapWindowViewModel(IWpfTextView wpfTextView, Document document)
 		{
-			_documentModel = new DocumentModel(wpfTextView, document);
+			DocumentModel = new DocumentModel(wpfTextView, document);
 			Tree = new TreeViewModel(this);
 
 			RefreshCodeMapCommand = new Command(p => RefreshCodeMapAsync().Forget());
 
-			Workspace = _documentModel.Document.Project.Solution.Workspace;
+			Workspace = DocumentModel.Document.Project.Solution.Workspace;
 			Workspace.WorkspaceChanged += OnWorkspaceChanged;
 
 			if (ThreadHelper.CheckAccess())
@@ -184,7 +188,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (activeDocument == null)
 				return;
 
-			_documentModel = new DocumentModel(activeWpfTextView, activeDocument);
+			DocumentModel = new DocumentModel(activeWpfTextView, activeDocument);
 			BuildCodeMapAsync().Forget();
 		}
 
@@ -204,7 +208,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private void SolutionEvents_AfterClosing()
 		{
 			ClearCodeMap();
-			_documentModel = null;
+			DocumentModel = null;
 			NotifyPropertyChanged(nameof(Document));
 		}
 
@@ -245,7 +249,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (activeDocument == null)
 				return;
 
-			_documentModel = new DocumentModel(activeWpfTextView, activeDocument);
+			DocumentModel = new DocumentModel(activeWpfTextView, activeDocument);
 			await BuildCodeMapAsync();
 		}
 
@@ -280,7 +284,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Workspace = newWorkspace;
 			Document changedDocument = e.NewSolution.GetDocument(e.DocumentId);
 			Document oldDocument = Document;
-			SyntaxNode oldRoot = _documentModel?.Root;
+			SyntaxNode oldRoot = DocumentModel?.Root;
 
 			if (changedDocument == null || oldDocument == null || oldRoot == null)
 			{
@@ -306,7 +310,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (recalculateCodeMap == CodeMapRefreshMode.Recalculate)
 			{
-				_documentModel = new DocumentModel(_documentModel.WpfTextView, changedDocument);
+				DocumentModel = new DocumentModel(DocumentModel.WpfTextView, changedDocument);
 				BuildCodeMapAsync().Forget();
 			}	
 		}
@@ -334,7 +338,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					IsCalculating = true;
 					await TaskScheduler.Default;
 
-					await _documentModel.LoadCodeFileDataAsync(cancellationToken)
+					await DocumentModel.LoadCodeFileDataAsync(cancellationToken)
 										.ConfigureAwait(false);
 
 					TreeViewModel newTreeVM = BuildCodeMapTreeView(cancellationToken);
@@ -360,12 +364,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private TreeViewModel BuildCodeMapTreeView(CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested || !_documentModel.IsCodeFileDataLoaded)
+			if (cancellationToken.IsCancellationRequested || !DocumentModel.IsCodeFileDataLoaded)
 				return null;
 
 			TreeViewModel tree = new TreeViewModel(this);
 
-			foreach (GraphSemanticModelForCodeMap graph in _documentModel.GraphModels)
+			foreach (GraphSemanticModelForCodeMap graph in DocumentModel.GraphModels)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				var graphNodeVM = GraphNodeViewModel.Create(graph, tree, isExpanded: true, expandChildren: false);

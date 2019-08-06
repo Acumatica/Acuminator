@@ -14,7 +14,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public GraphEventCategoryNodeViewModel GraphEventsCategoryVM => DacVM.GraphEventsCategoryVM;
 
-		public DacEventsGroupingNodeViewModel DacVM { get; }
+		public DacEventsGroupingNodeBaseViewModel DacVM { get; }
 
 		public string DacFieldName { get; }
 
@@ -32,7 +32,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
 
-		protected DacFieldEventsGroupingNodeViewModel(DacEventsGroupingNodeViewModel dacVM, string dacFieldName, bool isExpanded) :
+		protected DacFieldEventsGroupingNodeViewModel(DacEventsGroupingNodeBaseViewModel dacVM, string dacFieldName, bool isExpanded) :
 												 base(dacVM?.Tree, isExpanded)
 		{
 			dacFieldName.ThrowOnNullOrWhiteSpace(nameof(dacFieldName));
@@ -41,7 +41,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			DacFieldName = dacFieldName;
 		}
 
-		public static DacFieldEventsGroupingNodeViewModel Create(DacEventsGroupingNodeViewModel dacVM, string dacFieldName, 
+		public static DacFieldEventsGroupingNodeViewModel Create(DacEventsGroupingNodeBaseViewModel dacVM, string dacFieldName, 
 																 IEnumerable<GraphFieldEventInfo> dacFieldEvents,
 																 bool isExpanded = false)
 		{
