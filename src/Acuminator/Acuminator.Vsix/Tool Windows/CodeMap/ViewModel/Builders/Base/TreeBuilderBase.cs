@@ -33,7 +33,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			foreach (TreeNodeViewModel root in roots)
 			{
-				CreateRootTree(root, expandChildren, cancellation);
+				root.AcceptBuilder(this, expandChildren, cancellation);
 			}
 
 			var rootsToAdd = roots.Where(root => root.Children.Count > 0 || root.DisplayNodeWithoutChildren);
@@ -41,47 +41,46 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return codeMapTree;
 		}
 
-		protected virtual void CreateRootTree(TreeNodeViewModel root, bool expandChildren, CancellationToken cancellation)
-		{
-			cancellation.ThrowIfCancellationRequested();
+		protected abstract IEnumerable<TreeNodeViewModel> CreateRoots(TreeViewModel tree, bool expandRoots, CancellationToken cancellation);
 
-			var parentWithChildrenStack = new Stack<(TreeNodeViewModel Parent, List<TreeNodeViewModel> Children)>(64);
-			var parentNodesStack = new Stack<TreeNodeViewModel>(64);
-			parentNodesStack.Push(root);
+		public virtual IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(GraphNodeViewModel graph, bool expandChildren,
+																				CancellationToken cancellation) =>
+			Enumerable.Empty<TreeNodeViewModel>();
 
-			//Fill the parentWithChildrenStack with tree structure
-			while (parentNodesStack.Count > 0)
-			{
-				cancellation.ThrowIfCancellationRequested();
+		public virtual IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(GraphEventCategoryNodeViewModel graphEventCategory, bool expandChildren,
+																				CancellationToken cancellation) =>
+			Enumerable.Empty<TreeNodeViewModel>();
 
-				TreeNodeViewModel currentParent = parentNodesStack.Pop();
-				var children = GetChildrenNodes(currentParent, expandChildren, cancellation)?.Where(node => node != null).ToList();
+		public virtual IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(GraphMemberCategoryNodeViewModel graphMemberCategory, bool expandChildren,
+																				CancellationToken cancellation) =>
+			Enumerable.Empty<TreeNodeViewModel>();
 
-				if (children.IsNullOrEmpty())
-					continue;
+		public virtual IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(PXOverrideNodeViewModel pxOverrideNode, bool expandChildren,
+																				CancellationToken cancellation) =>
+			Enumerable.Empty<TreeNodeViewModel>();
 
-				parentWithChildrenStack.Push((currentParent, children));
+		public virtual IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(ActionNodeViewModel actionNode, bool expandChildren,
+																				CancellationToken cancellation) =>
+			Enumerable.Empty<TreeNodeViewModel>();
 
-				foreach (var child in children)
-				{
-					parentNodesStack.Push(child);
-				}
-			}
+		public virtual IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(ViewNodeViewModel viewNode, bool expandChildren,
+																				CancellationToken cancellation) =>
+			Enumerable.Empty<TreeNodeViewModel>();
 
-			//Set the references walking upward tree
-			while (parentWithChildrenStack.Count > 0)
-			{
-				cancellation.ThrowIfCancellationRequested();
+		public virtual IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(GraphMemberNodeViewModel graphMember, bool expandChildren,
+																				CancellationToken cancellation) =>
+			Enumerable.Empty<TreeNodeViewModel>();
 
-				var (parent, children) = parentWithChildrenStack.Pop();
-				var childrenToSet = children.Where(c => c.Children.Count > 0 || c.DisplayNodeWithoutChildren);
-				parent.Children.Reset(childrenToSet);
-			}
-		}
+		public virtual IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(AttributeNodeViewModel attributeNode, bool expandChildren,
+																				CancellationToken cancellation) =>
+			Enumerable.Empty<TreeNodeViewModel>();
 
-		protected abstract IEnumerable<TreeNodeViewModel> GetChildrenNodes(TreeNodeViewModel parentNode, bool expandChildren,
-																		   CancellationToken cancellation);
+		public virtual IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacEventsGroupingNodeViewModel dacEventsGroupingNode, bool expandChildren,
+																				CancellationToken cancellation) =>
+			Enumerable.Empty<TreeNodeViewModel>();
 
-		protected abstract IEnumerable<TreeNodeViewModel> CreateRoots(TreeViewModel tree, bool expandRoots, CancellationToken cancellation);		
+		public virtual IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacFieldEventsGroupingNodeViewModel dacFieldEventsGroupingNode,
+																				bool expandChildren, CancellationToken cancellation) =>
+			Enumerable.Empty<TreeNodeViewModel>();
 	}
 }

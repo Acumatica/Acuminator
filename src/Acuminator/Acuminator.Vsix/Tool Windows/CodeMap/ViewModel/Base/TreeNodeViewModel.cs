@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
@@ -63,5 +64,25 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public virtual Task NavigateToItemAsync() => Microsoft.VisualStudio.Threading.TplExtensions.CompletedTask;
+
+		public virtual void AcceptBuilder(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation)
+		{
+			treeBuilder.ThrowOnNull(nameof(treeBuilder));
+			var children = BuildSubTree(treeBuilder, expandChildren, cancellation);
+
+			if (children.IsNullOrEmpty())
+				return;
+
+			foreach (var c in children)
+			{
+				c.AcceptBuilder(treeBuilder, expandChildren, cancellation);
+			}
+
+			var childrenToSet = children.Where(c => c.Children.Count > 0 || c.DisplayNodeWithoutChildren);
+			Children.Reset(childrenToSet);
+		}
+
+		protected abstract IEnumerable<TreeNodeViewModel> BuildSubTree(TreeBuilderBase treeBuilder, bool expandChildren,
+																	   CancellationToken cancellation);
 	}
 }
