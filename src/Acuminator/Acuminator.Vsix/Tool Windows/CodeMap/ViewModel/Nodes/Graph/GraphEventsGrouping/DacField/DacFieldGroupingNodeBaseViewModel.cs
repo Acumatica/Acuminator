@@ -47,10 +47,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			FieldEvents = dacFieldEvents?.ToImmutableArray() ?? ImmutableArray.Create<GraphFieldEventInfo>();
 		}
 
-		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren,
-																		 CancellationToken cancellation) =>
-			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
-
 		public async override Task NavigateToItemAsync()
 		{
 			var childToNavigateTo = this.GetChildToNavigateTo();

@@ -12,7 +12,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class CacheAttachedNodeViewModel : GraphMemberNodeViewModel
 	{
-		public DacGroupingNodeBaseViewModel DacViewModel { get; }
+		public DacFieldGroupingNodeBaseViewModel DacFieldVM { get; }
 
 		public override string Name
 		{
@@ -20,11 +20,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set;
 		}
 
-		public CacheAttachedNodeViewModel(DacGroupingNodeBaseViewModel dacViewModel, GraphFieldEventInfo eventInfo,
-										  bool isExpanded = false) :
-									 base(dacViewModel?.GraphEventsCategoryVM, eventInfo, isExpanded)
+		public CacheAttachedNodeViewModel(DacFieldGroupingNodeBaseViewModel dacFieldVM, GraphFieldEventInfo eventInfo, bool isExpanded = false) :
+									 base(dacFieldVM?.GraphEventsCategoryVM, eventInfo, isExpanded)
 		{
-			DacViewModel = dacViewModel;
+			DacFieldVM = dacFieldVM;
 			Name = eventInfo.DacFieldName;			
 		}
 
