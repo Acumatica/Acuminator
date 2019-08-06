@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
@@ -51,6 +52,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 					return GraphSemanticModel.Symbol.NavigateToAsync(reference);
 			}		
-		}	
+		}
 	}
 }

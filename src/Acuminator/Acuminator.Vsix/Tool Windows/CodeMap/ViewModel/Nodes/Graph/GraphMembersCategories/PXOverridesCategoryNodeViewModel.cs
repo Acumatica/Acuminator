@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
@@ -21,7 +22,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			
 		}
 
-		protected override IEnumerable<SymbolItem> GetCategoryGraphNodeSymbols() => CodeMapGraphModel.PXOverrides;
+		public override IEnumerable<SymbolItem> GetCategoryGraphNodeSymbols() => CodeMapGraphModel.PXOverrides;
 
 		protected override void AddCategoryMembers()
 		{
@@ -36,5 +37,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			Children.AddRange(graphMemberViewModels);
 		}
+
+		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation) =>
+			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
 	}
 }

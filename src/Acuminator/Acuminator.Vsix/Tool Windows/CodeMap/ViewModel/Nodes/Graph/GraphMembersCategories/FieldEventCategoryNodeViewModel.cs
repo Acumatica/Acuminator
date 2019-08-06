@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
@@ -18,7 +19,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 		}
 
-		protected override IEnumerable<SymbolItem> GetCategoryGraphNodeSymbols() =>
+		public override IEnumerable<SymbolItem> GetCategoryGraphNodeSymbols() =>
 			GraphSemanticModel.FieldDefaultingEvents
 							  .Concat(GraphSemanticModel.FieldVerifyingEvents)
 							  .Concat(GraphSemanticModel.FieldSelectingEvents)
@@ -49,5 +50,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			else
 				return base.CreateNewEventVM(eventNodeParent, eventInfo, isExpanded);
 		}
+
+		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation) =>
+			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
 	}
 }

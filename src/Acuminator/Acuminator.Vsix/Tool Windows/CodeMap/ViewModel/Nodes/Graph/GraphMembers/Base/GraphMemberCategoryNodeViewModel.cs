@@ -8,6 +8,7 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.Utilities;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -18,6 +19,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public PXGraphEventSemanticModel GraphSemanticModel => GraphViewModel.GraphSemanticModel;
 
 		public GraphSemanticModelForCodeMap CodeMapGraphModel => GraphViewModel.CodeMapGraphModel;
+
+		public override bool DisplayNodeWithoutChildren => false;
 
 		public GraphMemberType CategoryType { get; }
 
@@ -62,19 +65,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}	
 		}
 
-		public static GraphMemberCategoryNodeViewModel Create(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
-															  bool isExpanded)
-		{
-			if (graphViewModel == null)
-				return null;
-
-			GraphMemberCategoryNodeViewModel memberCategoryVM = CreateCategory(graphViewModel, graphMemberType, isExpanded);
-			memberCategoryVM?.AddCategoryMembers();
-			return memberCategoryVM?.Children.Count > 0 
-				? memberCategoryVM
-				: null;
-		}
-
 		protected virtual void AddCategoryMembers()
 		{
 			IEnumerable<SymbolItem> categoryTreeNodes = GetCategoryGraphNodeSymbols();
@@ -92,31 +82,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Children.AddRange(graphMemberViewModels);
 		}
 
-		protected abstract IEnumerable<SymbolItem> GetCategoryGraphNodeSymbols();
-
-		private static GraphMemberCategoryNodeViewModel CreateCategory(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
-																		bool isExpanded)
-		{
-			switch (graphMemberType)
-			{
-				case GraphMemberType.View:
-					return new ViewCategoryNodeViewModel(graphViewModel, isExpanded);
-				case GraphMemberType.Action:
-					return new ActionCategoryNodeViewModel(graphViewModel, isExpanded);
-				case GraphMemberType.CacheAttached:
-					return new CacheAttachedCategoryNodeViewModel(graphViewModel, isExpanded);
-				case GraphMemberType.RowEvent:
-					return new RowEventCategoryNodeViewModel(graphViewModel, isExpanded);
-				case GraphMemberType.FieldEvent:
-					return new FieldEventCategoryNodeViewModel(graphViewModel, isExpanded);
-				case GraphMemberType.PXOverride:
-					return new PXOverridesCategoryNodeViewModel(graphViewModel, isExpanded);
-				case GraphMemberType.NestedDAC:
-				case GraphMemberType.NestedGraph:
-				default:
-					return null;
-			}
-		}
+		public abstract IEnumerable<SymbolItem> GetCategoryGraphNodeSymbols();
 
 		bool IGroupNodeWithCyclingNavigation.CanNavigateToChild(TreeNodeViewModel child) =>
 			CanNavigateToChild(child);

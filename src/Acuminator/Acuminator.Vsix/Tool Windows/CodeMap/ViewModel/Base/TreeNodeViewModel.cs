@@ -68,21 +68,21 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public virtual void AcceptBuilder(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation)
 		{
 			treeBuilder.ThrowOnNull(nameof(treeBuilder));
-			var children = BuildSubTree(treeBuilder, expandChildren, cancellation);
+			var children = CreateChildren(treeBuilder, expandChildren, cancellation);
 
 			if (children.IsNullOrEmpty())
 				return;
 
-			foreach (var c in children)
+			foreach (var child in children)
 			{
-				c.AcceptBuilder(treeBuilder, expandChildren, cancellation);
+				child?.AcceptBuilder(treeBuilder, expandChildren, cancellation);
 			}
 
 			var childrenToSet = children.Where(c => c.Children.Count > 0 || c.DisplayNodeWithoutChildren);
 			Children.Reset(childrenToSet);
 		}
 
-		protected abstract IEnumerable<TreeNodeViewModel> BuildSubTree(TreeBuilderBase treeBuilder, bool expandChildren,
-																	   CancellationToken cancellation);
+		protected abstract IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren,
+																	     CancellationToken cancellation);
 	}
 }

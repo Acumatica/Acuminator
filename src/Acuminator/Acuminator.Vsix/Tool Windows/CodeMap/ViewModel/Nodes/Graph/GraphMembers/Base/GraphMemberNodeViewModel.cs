@@ -8,6 +8,7 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -40,5 +41,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public override Task NavigateToItemAsync() => MemberSymbol.NavigateToAsync();
+
+		protected override IEnumerable<TreeNodeViewModel> BuildSubTree(IRootTreeBuilderVisitor treeBuilder, bool expandChildren,
+																	   CancellationToken cancellation) =>
+			treeBuilder?.VisitNodeAndBuildChildren(this, expandChildren, cancellation) ?? 
+			Enumerable.Empty<TreeNodeViewModel>();
 	}
 }
