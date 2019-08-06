@@ -68,7 +68,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public virtual void AcceptBuilder(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation)
 		{
 			treeBuilder.ThrowOnNull(nameof(treeBuilder));
-			var children = CreateChildren(treeBuilder, expandChildren, cancellation);
+			var children = CreateChildren(treeBuilder, expandChildren, cancellation)?.ToList();
 
 			if (children.IsNullOrEmpty())
 				return;
