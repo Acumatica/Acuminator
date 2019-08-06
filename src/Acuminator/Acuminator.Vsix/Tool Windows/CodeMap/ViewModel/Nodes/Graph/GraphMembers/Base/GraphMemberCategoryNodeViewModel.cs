@@ -52,23 +52,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			CategoryDescription = CategoryType.Description();
 		}
 
-		protected virtual void AddCategoryMembers()
-		{
-			IEnumerable<SymbolItem> categoryTreeNodes = GetCategoryGraphNodeSymbols();
-
-			if (categoryTreeNodes.IsNullOrEmpty())
-				return;
-
-			var graphMemberViewModels = from graphMemberInfo in categoryTreeNodes
-										where graphMemberInfo.SymbolBase.ContainingType == GraphViewModel.GraphSemanticModel.Symbol ||
-											  graphMemberInfo.SymbolBase.ContainingType.OriginalDefinition ==
-											  GraphViewModel.GraphSemanticModel.Symbol.OriginalDefinition
-										orderby graphMemberInfo.SymbolBase.Name
-										select new GraphMemberNodeViewModel(this, graphMemberInfo);
-
-			Children.AddRange(graphMemberViewModels);
-		}
-
 		public abstract IEnumerable<SymbolItem> GetCategoryGraphNodeSymbols();
 
 		public async override Task NavigateToItemAsync()

@@ -10,13 +10,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class DacGroupingNodeForFieldEventViewModel : DacGroupingNodeBaseViewModel
 	{
-		public ImmutableArray<GraphFieldEventInfo> FieldEvents { get; }
+		public ImmutableArray<GraphFieldEventInfo> AllFieldEvents { get; }
 
 		public DacGroupingNodeForFieldEventViewModel(GraphEventCategoryNodeViewModel graphEventsCategoryVM, string dacName,
 														IEnumerable<GraphFieldEventInfo> fieldEvents, bool isExpanded) :
 												   base(graphEventsCategoryVM, dacName, isExpanded)
 		{
-			FieldEvents = fieldEvents?.ToImmutableArray() ?? ImmutableArray.Create<GraphFieldEventInfo>(); 
+			AllFieldEvents = fieldEvents?.ToImmutableArray() ?? ImmutableArray.Create<GraphFieldEventInfo>(); 
 		}
 
 		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation) =>

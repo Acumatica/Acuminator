@@ -8,7 +8,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class FieldEventNodeViewModel : GraphMemberNodeViewModel
 	{
-		public DacFieldGroupingNodeViewModel DacFieldVM { get; }
+		public DacFieldGroupingNodeBaseViewModel DacFieldVM { get; }
 
 		public override string Name
 		{
@@ -16,7 +16,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set;
 		}
 
-		public FieldEventNodeViewModel(DacFieldGroupingNodeViewModel dacFieldVM, GraphFieldEventInfo eventInfo, bool isExpanded = false) :
+		public FieldEventNodeViewModel(DacFieldGroupingNodeBaseViewModel dacFieldVM, GraphFieldEventInfo eventInfo, bool isExpanded = false) :
 								  base(dacFieldVM?.GraphEventsCategoryVM, eventInfo, isExpanded)
 		{
 			DacFieldVM = dacFieldVM;
