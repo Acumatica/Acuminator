@@ -78,7 +78,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				child?.AcceptBuilder(treeBuilder, expandChildren, cancellation);
 			}
 
-			var childrenToSet = children.Where(c => c.Children.Count > 0 || c.DisplayNodeWithoutChildren);
+			var childrenToSet = children.Where(c => c != null && (c.Children.Count > 0 || c.DisplayNodeWithoutChildren));
 			Children.Reset(childrenToSet);
 		}
 

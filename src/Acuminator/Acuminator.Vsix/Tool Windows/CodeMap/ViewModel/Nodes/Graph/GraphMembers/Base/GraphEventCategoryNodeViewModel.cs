@@ -31,17 +31,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			_name = CategoryDescription;
 		}
 
-		public virtual GraphMemberNodeViewModel CreateNewEventVM<TEventNodeParent>(TEventNodeParent eventNodeParent, GraphEventInfoBase eventInfo,
-																				   bool isExpanded)
-		where TEventNodeParent : TreeNodeViewModel
-		{
-			return new GraphMemberNodeViewModel(this, eventInfo, isExpanded);
-		}
-
-		public abstract IEnumerable<TreeNodeViewModel> GetEventsViewModelsForDAC(DacEventsGroupingNodeViewModel dacVM, 
-																				 IEnumerable<GraphEventInfoBase> graphEventsForDAC,
-																				 bool areChildrenExpanded);
-
 		public override void AcceptBuilder(TreeBuilderBase treeBuilder, bool expandRoots, CancellationToken cancellation)
 		{
 			base.AcceptBuilder(treeBuilder, expandRoots, cancellation);

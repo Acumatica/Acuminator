@@ -7,10 +7,11 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.Utilities;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class DacEventsGroupingNodeViewModel : TreeNodeViewModel, IGroupNodeWithCyclingNavigation
+	public abstract class DacEventsGroupingNodeViewModel : TreeNodeViewModel, IGroupNodeWithCyclingNavigation
 	{
 		public GraphEventCategoryNodeViewModel GraphEventsCategoryVM { get; }
 
@@ -48,51 +49,28 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
 
-		protected DacEventsGroupingNodeViewModel(GraphEventCategoryNodeViewModel graphEventsCategoryVM,
-										   string dacName, bool isExpanded) :
-									  base(graphEventsCategoryVM?.Tree, isExpanded)
+		protected DacEventsGroupingNodeViewModel(GraphEventCategoryNodeViewModel graphEventsCategoryVM, string dacName, bool isExpanded) :
+											base(graphEventsCategoryVM?.Tree, isExpanded)
 		{
 			dacName.ThrowOnNullOrWhiteSpace(nameof(dacName));
 
 			GraphEventsCategoryVM = graphEventsCategoryVM;
 			DacName = dacName;
-		}
 
-		public static DacEventsGroupingNodeViewModel Create(GraphEventCategoryNodeViewModel graphEventsCategoryVM,
-															string dacName, IEnumerable<GraphEventInfoBase> graphEventsForDAC,
-															bool isDacExpanded = false, bool areChildrenExpanded = false)
-		{
-			if (graphEventsForDAC.IsNullOrEmpty() || dacName.IsNullOrWhiteSpace())
-			{
-				return null;
-			}
-
-			DacEventsGroupingNodeViewModel dacVM = new DacEventsGroupingNodeViewModel(graphEventsCategoryVM, dacName, isDacExpanded);
-			dacVM.FillDacNodeChildren(graphEventsForDAC, areChildrenExpanded);
-			return dacVM;
-		}
-
-		protected virtual void FillDacNodeChildren(IEnumerable<GraphEventInfoBase> graphEventsForDAC, bool areChildrenExpanded)
-		{
-			var dacMembers = GraphEventsCategoryVM.GetEventsViewModelsForDAC(this, graphEventsForDAC, areChildrenExpanded)
-												 ?.Where(eventVM => eventVM != null)
-												 ?? Enumerable.Empty<TreeNodeViewModel>();
-			Children.AddRange(dacMembers);
-			EventsCount = GetDacNodeEventsCount();
 			Children.CollectionChanged += DacChildrenChanged;
 		}
 
-		protected virtual int GetDacNodeEventsCount() =>
-			GraphEventsCategoryVM.CategoryType == GraphMemberType.FieldEvent
-				? Children.Sum(dacFieldVM => dacFieldVM.Children.Count)
-				: Children.Count;
+		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation) =>
+			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
 
 		protected virtual void DacChildrenChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (e.Action == NotifyCollectionChangedAction.Move)
 				return;
 
-			EventsCount = GetDacNodeEventsCount();
+			EventsCount = GraphEventsCategoryVM.CategoryType == GraphMemberType.FieldEvent
+				? Children.Sum(dacFieldVM => dacFieldVM.Children.Count)
+				: Children.Count; ;
 		}
 
 		public async override Task NavigateToItemAsync()
@@ -157,6 +135,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			return null;
-		}
+		}	
 	}
 }

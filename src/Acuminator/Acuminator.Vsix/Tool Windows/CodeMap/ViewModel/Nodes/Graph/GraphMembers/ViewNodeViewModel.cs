@@ -8,8 +8,7 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Syntax;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.Utilities;
-
-
+using System.Threading;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -26,17 +25,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public ViewNodeViewModel(ViewCategoryNodeViewModel viewCategoryVM, DataViewInfo viewInfo, bool isExpanded = false) :
 							base(viewCategoryVM, viewInfo, isExpanded)
 		{
-			AddViewDelegate();
 			Tooltip = GetTooltip(viewInfo);
 		}	
-
-		protected virtual void AddViewDelegate()
-		{
-			if (MemberCategory.GraphSemanticModel.ViewDelegatesByNames.TryGetValue(MemberSymbol.Name, out DataViewDelegateInfo viewDelegate))
-			{
-				Children.Add(new GraphMemberInfoNodeViewModel(this, viewDelegate, GraphMemberInfoType.ViewDelegate));
-			}
-		}
 
 		protected string GetTooltip(DataViewInfo viewInfo)
 		{
@@ -74,5 +64,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private static int GetPrependLength(SyntaxTokenList? modifiers) => modifiers != null
 			? modifiers.Value.FullSpan.End - modifiers.Value.Span.Start
 			: 0;
+
+		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation) =>
+			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
 	}
 }

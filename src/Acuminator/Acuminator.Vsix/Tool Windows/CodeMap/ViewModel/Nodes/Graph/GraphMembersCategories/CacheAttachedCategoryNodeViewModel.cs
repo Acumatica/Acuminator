@@ -21,27 +21,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override IEnumerable<SymbolItem> GetCategoryGraphNodeSymbols() => GraphSemanticModel.CacheAttachedEvents;
 
-		public override IEnumerable<TreeNodeViewModel> GetEventsViewModelsForDAC(DacEventsGroupingNodeViewModel dacVM,
-																				 IEnumerable<GraphEventInfoBase> graphEventsForDAC,
-																				 bool areChildrenExpanded)
-		{
-			return graphEventsForDAC.OfType<GraphFieldEventInfo>()
-									.Select(eventInfo => CreateNewEventVM(dacVM, eventInfo, areChildrenExpanded))
-									.Where(graphMemberVM => graphMemberVM != null && !graphMemberVM.Name.IsNullOrEmpty())
-									.OrderBy(graphMemberVM => graphMemberVM.Name);
-		}
-
-		public override GraphMemberNodeViewModel CreateNewEventVM<TEventNodeParent>(TEventNodeParent eventNodeParent, GraphEventInfoBase eventInfo,
-																					bool isExpanded)
-		{
-			return eventNodeParent is DacEventsGroupingNodeViewModel dacGroupVM && eventInfo is GraphFieldEventInfo fieldEventInfo
-				? new CacheAttachedNodeViewModel(dacGroupVM, fieldEventInfo, isExpanded)
-				: base.CreateNewEventVM(eventNodeParent, eventInfo, isExpanded);
-		}
-
 		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren,
-																	     CancellationToken cancellation) =>
-			treeBuilder?.VisitNodeAndBuildChildren(this, expandChildren, cancellation) ??
-			Enumerable.Empty<TreeNodeViewModel>();
+																		 CancellationToken cancellation) =>
+			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
 	}
 }

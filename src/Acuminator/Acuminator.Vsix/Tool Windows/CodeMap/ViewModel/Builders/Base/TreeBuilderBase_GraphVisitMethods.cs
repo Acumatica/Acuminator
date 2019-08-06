@@ -78,7 +78,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 																				CancellationToken cancellation) =>
 			Enumerable.Empty<TreeNodeViewModel>();
 
-		public virtual IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(GraphMemberNodeViewModel graphMember, bool expandChildren,
+		public virtual IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(GraphMemberInfoNodeViewModel graphMemberInfo, bool expandChildren,
 																				CancellationToken cancellation) =>
 			Enumerable.Empty<TreeNodeViewModel>();
 		#endregion

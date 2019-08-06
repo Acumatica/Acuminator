@@ -44,25 +44,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
 
-		protected GraphMemberCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType,
-												bool isExpanded) : 
-										   base(graphViewModel?.Tree, isExpanded)
+		protected GraphMemberCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType, bool isExpanded) : 
+										      base(graphViewModel?.Tree, isExpanded)
 		{
 			GraphViewModel = graphViewModel;
 			CategoryType = graphMemberType;
 			CategoryDescription = CategoryType.Description();
-		}
-
-		public async override Task NavigateToItemAsync()
-		{
-			var childToNavigateTo = this.GetChildToNavigateTo();
-
-			if (childToNavigateTo != null)
-			{
-				await childToNavigateTo.NavigateToItemAsync();
-				IsExpanded = true;
-				Tree.SelectedItem = childToNavigateTo;			
-			}	
 		}
 
 		protected virtual void AddCategoryMembers()
@@ -83,6 +70,18 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public abstract IEnumerable<SymbolItem> GetCategoryGraphNodeSymbols();
+
+		public async override Task NavigateToItemAsync()
+		{
+			var childToNavigateTo = this.GetChildToNavigateTo();
+
+			if (childToNavigateTo != null)
+			{
+				await childToNavigateTo.NavigateToItemAsync();
+				IsExpanded = true;
+				Tree.SelectedItem = childToNavigateTo;
+			}
+		}
 
 		bool IGroupNodeWithCyclingNavigation.CanNavigateToChild(TreeNodeViewModel child) =>
 			CanNavigateToChild(child);

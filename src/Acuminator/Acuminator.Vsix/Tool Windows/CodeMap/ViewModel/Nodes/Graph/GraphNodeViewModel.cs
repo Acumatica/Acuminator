@@ -53,5 +53,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					return GraphSemanticModel.Symbol.NavigateToAsync(reference);
 			}		
 		}
+
+		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation) =>
+			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
 	}
 }

@@ -32,14 +32,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 																				 IEnumerable<GraphEventInfoBase> graphFieldEventsForDAC,
 																				 bool areChildrenExpanded)
 		{
-			return from eventInfo in graphFieldEventsForDAC.OfType<GraphFieldEventInfo>()
-				   group eventInfo by eventInfo.DacFieldName
-						into dacFieldEvents
-				   select DacFieldEventsGroupingNodeViewModel.Create(dacVM, dacFieldEvents.Key, dacFieldEvents)
-						into dacFieldNodeVM
-				   where dacFieldNodeVM != null && !dacFieldNodeVM.DacFieldName.IsNullOrEmpty()
-				   orderby dacFieldNodeVM.DacFieldName ascending
-				   select dacFieldNodeVM;
+			
 		}
 
 		public override GraphMemberNodeViewModel CreateNewEventVM<TEventNodeParent>(TEventNodeParent eventNodeParent, GraphEventInfoBase eventInfo,

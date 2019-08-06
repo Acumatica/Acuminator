@@ -15,20 +15,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public ActionNodeViewModel(ActionCategoryNodeViewModel actionCategoryVM, ActionInfo actionInfo, bool isExpanded = false) :
 							  base(actionCategoryVM, actionInfo, isExpanded)
 		{
-			AddActionHandler();
 		}	
 
-		protected virtual void AddActionHandler()
-		{
-			if (MemberCategory.GraphSemanticModel.ActionHandlersByNames.TryGetValue(MemberSymbol.Name, out ActionHandlerInfo actionHandler))
-			{
-				Children.Add(new GraphMemberInfoNodeViewModel(this, actionHandler, GraphMemberInfoType.ActionHandler));
-			}
-		}
-
 		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren,
-																	   CancellationToken cancellation) =>
-			treeBuilder?.VisitNodeAndBuildChildren(this, expandChildren, cancellation) ??
-			Enumerable.Empty<TreeNodeViewModel>();
+																	     CancellationToken cancellation) =>
+			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
 	}
 }

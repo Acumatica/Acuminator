@@ -12,7 +12,7 @@ using System.Threading;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class GraphMemberNodeViewModel : TreeNodeViewModel
+	public abstract class GraphMemberNodeViewModel : TreeNodeViewModel
 	{
 		public GraphMemberCategoryNodeViewModel MemberCategory { get; }
 
@@ -41,10 +41,5 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public override Task NavigateToItemAsync() => MemberSymbol.NavigateToAsync();
-
-		protected override IEnumerable<TreeNodeViewModel> BuildSubTree(IRootTreeBuilderVisitor treeBuilder, bool expandChildren,
-																	   CancellationToken cancellation) =>
-			treeBuilder?.VisitNodeAndBuildChildren(this, expandChildren, cancellation) ?? 
-			Enumerable.Empty<TreeNodeViewModel>();
 	}
 }
