@@ -124,14 +124,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 										where eventInfo.Symbol.ContainingType == graphSemanticModel.Symbol ||
 											  eventInfo.Symbol.ContainingType.OriginalDefinition == graphSemanticModel.Symbol.OriginalDefinition
 										group eventInfo by eventInfo.DacName into graphEventsForDAC
-										select DacEventsGroupingNodeBaseViewModel.Create(this, graphEventsForDAC.Key, graphEventsForDAC) into dacNodeVM
+										select DacGroupingNodeBaseViewModel.Create(this, graphEventsForDAC.Key, graphEventsForDAC) into dacNodeVM
 										where dacNodeVM != null
 										orderby dacNodeVM.DacName ascending
 										select dacNodeVM;
 
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacEventsGroupingNodeBaseViewModel dacEventsGroupingNode, bool expandChildren,
+		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacGroupingNodeBaseViewModel dacEventsGroupingNode, bool expandChildren,
 																				 CancellationToken cancellation)
 		{
 			switch (dacEventsGroupingNode.GraphEventsCategoryVM)
@@ -145,12 +145,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					return base.VisitNodeAndBuildChildren(dacEventsGroupingNode, expandChildren, cancellation);
 			}
 
-			return eventNodeParent is DacEventsGroupingNodeBaseViewModel dacGroupVM && eventInfo is GraphFieldEventInfo fieldEventInfo
+			return eventNodeParent is DacGroupingNodeBaseViewModel dacGroupVM && eventInfo is GraphFieldEventInfo fieldEventInfo
 			? new CacheAttachedNodeViewModel(dacGroupVM, fieldEventInfo, isExpanded)
 			: base.CreateNewEventVM(eventNodeParent, eventInfo, isExpanded);
 		}
 
-		protected virtual IEnumerable<TreeNodeViewModel> CreateDacRowEventChildren(DacEventsGroupingNodeBaseViewModel dacEventsGroupingNode,
+		protected virtual IEnumerable<TreeNodeViewModel> CreateDacRowEventChildren(DacGroupingNodeBaseViewModel dacEventsGroupingNode,
 																				   bool expandChildren, Func<GraphRowEventInfo, TreeNodeViewModel> constructor,
 																				   CancellationToken cancellation)
 		{ 
@@ -161,7 +161,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 								 .OrderBy(graphMemberVM => graphMemberVM.Name);
 		}
 
-		protected virtual IEnumerable<TreeNodeViewModel> CreateDacFieldEventChildren(DacEventsGroupingNodeBaseViewModel dacEventsGroupingNode, bool expandChildren,
+		protected virtual IEnumerable<TreeNodeViewModel> CreateDacFieldEventChildren(DacGroupingNodeBaseViewModel dacEventsGroupingNode, bool expandChildren,
 																					 CancellationToken cancellation)
 		{
 			return from eventInfo in dacEventsGroupingNode.GraphEventsForDAC.OfType<GraphFieldEventInfo>()

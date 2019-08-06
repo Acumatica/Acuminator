@@ -28,7 +28,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 							  .Concat(GraphSemanticModel.ExceptionHandlingEvents)
 							  .Concat(GraphSemanticModel.CommandPreparingEvents);
 
-		public override IEnumerable<TreeNodeViewModel> GetEventsViewModelsForDAC(DacEventsGroupingNodeBaseViewModel dacVM,
+		public override IEnumerable<TreeNodeViewModel> GetEventsViewModelsForDAC(DacGroupingNodeBaseViewModel dacVM,
 																				 IEnumerable<GraphEventInfoBase> graphFieldEventsForDAC,
 																				 bool areChildrenExpanded)
 		{

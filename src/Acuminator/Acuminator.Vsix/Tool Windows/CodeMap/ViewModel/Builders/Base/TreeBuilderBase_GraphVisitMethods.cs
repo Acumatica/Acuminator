@@ -44,7 +44,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		#endregion
 
 		#region DAC Grouping
-		public virtual IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacEventsGroupingNodeBaseViewModel dacEventsGroupingNode, bool expandChildren,
+		public virtual IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacGroupingNodeBaseViewModel dacEventsGroupingNode, bool expandChildren,
 																				CancellationToken cancellation) =>
 			Enumerable.Empty<TreeNodeViewModel>();
 
