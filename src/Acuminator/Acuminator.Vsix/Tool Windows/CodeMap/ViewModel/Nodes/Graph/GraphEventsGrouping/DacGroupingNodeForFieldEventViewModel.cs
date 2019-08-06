@@ -8,15 +8,15 @@ using System.Threading;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class DacGroupingNodeForRowEventViewModel : DacGroupingNodeBaseViewModel
+	public class DacGroupingNodeForFieldEventViewModel : DacGroupingNodeBaseViewModel
 	{
-		public ImmutableArray<GraphRowEventInfo> RowEvents { get; }
+		public ImmutableArray<GraphFieldEventInfo> FieldEvents { get; }
 
-		public DacGroupingNodeForRowEventViewModel(GraphEventCategoryNodeViewModel graphEventsCategoryVM, string dacName,
-												   IEnumerable<GraphRowEventInfo> rowEvents, bool isExpanded) :
-											  base(graphEventsCategoryVM, dacName, isExpanded)
+		public DacGroupingNodeForFieldEventViewModel(GraphEventCategoryNodeViewModel graphEventsCategoryVM, string dacName,
+														IEnumerable<GraphFieldEventInfo> fieldEvents, bool isExpanded) :
+												   base(graphEventsCategoryVM, dacName, isExpanded)
 		{
-			RowEvents = rowEvents?.ToImmutableArray() ?? ImmutableArray.Create<GraphRowEventInfo>(); 
+			FieldEvents = fieldEvents?.ToImmutableArray() ?? ImmutableArray.Create<GraphFieldEventInfo>(); 
 		}
 
 		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation) =>

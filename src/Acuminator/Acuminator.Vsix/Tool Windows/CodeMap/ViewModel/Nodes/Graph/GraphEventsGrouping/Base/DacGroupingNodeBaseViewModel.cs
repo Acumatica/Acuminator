@@ -60,9 +60,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Children.CollectionChanged += DacChildrenChanged;
 		}
 
-		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation) =>
-			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
-
 		protected virtual void DacChildrenChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (e.Action == NotifyCollectionChangedAction.Move)
