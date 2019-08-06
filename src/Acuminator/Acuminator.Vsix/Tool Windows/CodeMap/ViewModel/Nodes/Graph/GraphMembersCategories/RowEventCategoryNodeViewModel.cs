@@ -31,14 +31,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 							  .Concat(GraphSemanticModel.RowPersistingEvents)
 							  .Concat(GraphSemanticModel.RowPersistedEvents);
 
-		public override GraphMemberNodeViewModel CreateNewEventVM<TEventNodeParent>(TEventNodeParent eventNodeParent, GraphEventInfoBase eventInfo,
-																					bool isExpanded)
-		{
-			return eventNodeParent is DacGroupingNodeBaseViewModel dacGroupVM && eventInfo is GraphRowEventInfo rowEventInfo
-				? new RowEventNodeViewModel(dacGroupVM, rowEventInfo, isExpanded)
-				: base.CreateNewEventVM(eventNodeParent, eventInfo, isExpanded);
-		}
-
 		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation) =>
 			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
 	}

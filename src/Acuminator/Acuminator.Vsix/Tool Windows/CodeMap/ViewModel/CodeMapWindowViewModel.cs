@@ -25,6 +25,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private CancellationTokenSource _cancellationTokenSource;
 
+		public TreeBuilderBase TreeBuilder
+		{
+			get;
+			internal set;
+		}
+
 		public DocumentModel DocumentModel
 		{
 			get;
@@ -87,7 +93,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private CodeMapWindowViewModel(IWpfTextView wpfTextView, Document document)
 		{
 			DocumentModel = new DocumentModel(wpfTextView, document);
-			Tree = new TreeViewModel(this);
+			TreeBuilder = new DefaultCodeMapTreeBuilder();
+			Tree = TreeBuilder.CreateEmptyCodeMapTree(this);
 
 			RefreshCodeMapCommand = new Command(p => RefreshCodeMapAsync().Forget());
 
@@ -341,7 +348,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					await DocumentModel.LoadCodeFileDataAsync(cancellationToken)
 										.ConfigureAwait(false);
 
-					TreeViewModel newTreeVM = BuildCodeMapTreeView(cancellationToken);
+					if (cancellationToken.IsCancellationRequested || !DocumentModel.IsCodeFileDataLoaded)
+						return;
+
+					TreeViewModel newTreeVM = TreeBuilder.BuildCodeMapTree(this, expandRoots: true, expandChildren: false, cancellationToken);
 
 					if (newTreeVM == null)
 						return;
@@ -360,28 +370,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				_cancellationTokenSource = null;
 			}
-		}
-
-		private TreeViewModel BuildCodeMapTreeView(CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested || !DocumentModel.IsCodeFileDataLoaded)
-				return null;
-
-			TreeViewModel tree = new TreeViewModel(this);
-
-			foreach (GraphSemanticModelForCodeMap graph in DocumentModel.GraphModels)
-			{
-				cancellationToken.ThrowIfCancellationRequested();
-				var graphNodeVM = GraphNodeViewModel.Create(graph, tree, isExpanded: true, expandChildren: false);
-
-				if (graphNodeVM != null)
-				{
-					tree.RootItems.Add(graphNodeVM);
-				}
-			}
-
-			cancellationToken.ThrowIfCancellationRequested();
-			return tree;
 		}
 	}
 }
