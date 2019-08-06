@@ -38,7 +38,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override GraphMemberNodeViewModel CreateNewEventVM<TEventNodeParent>(TEventNodeParent eventNodeParent, GraphEventInfoBase eventInfo,
 																					bool isExpanded)
 		{
-			if (eventNodeParent is DacFieldEventsGroupingNodeViewModel dacFieldVM && eventInfo is GraphFieldEventInfo fieldEventInfo)
+			if (eventNodeParent is DacFieldGroupingNodeViewModel dacFieldVM && eventInfo is GraphFieldEventInfo fieldEventInfo)
 				return new FieldEventNodeViewModel(dacFieldVM, fieldEventInfo, isExpanded);		
 			else
 				return base.CreateNewEventVM(eventNodeParent, eventInfo, isExpanded);

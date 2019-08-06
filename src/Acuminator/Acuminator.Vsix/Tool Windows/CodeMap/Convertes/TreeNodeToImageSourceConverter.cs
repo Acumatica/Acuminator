@@ -80,7 +80,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					return GroupNodeIcon;
 				case DacGroupingNodeBaseViewModel dacGroupingNodeViewModel:
 					return DacIcon;
-				case DacFieldEventsGroupingNodeViewModel dacFieldGroupingNodeViewModel:
+				case DacFieldGroupingNodeViewModel dacFieldGroupingNodeViewModel:
 					return DacFieldIcon;
 				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.View:
 					return ViewIcon;		

@@ -48,7 +48,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 																				CancellationToken cancellation) =>
 			Enumerable.Empty<TreeNodeViewModel>();
 
-		public virtual IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacFieldEventsGroupingNodeViewModel dacFieldEventsGroupingNode,
+		public virtual IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacFieldGroupingNodeViewModel dacFieldEventsGroupingNode,
 																				bool expandChildren, CancellationToken cancellation) =>
 			Enumerable.Empty<TreeNodeViewModel>();
 		#endregion

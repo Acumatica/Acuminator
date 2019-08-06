@@ -167,7 +167,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return from eventInfo in dacEventsGroupingNode.GraphEventsForDAC.OfType<GraphFieldEventInfo>()
 				   group eventInfo by eventInfo.DacFieldName
 						into dacFieldEvents
-				   select DacFieldEventsGroupingNodeViewModel.Create(dacEventsGroupingNode, dacFieldEvents.Key, dacFieldEvents)
+				   select DacFieldGroupingNodeViewModel.Create(dacEventsGroupingNode, dacFieldEvents.Key, dacFieldEvents)
 						into dacFieldNodeVM
 				   where dacFieldNodeVM != null && !dacFieldNodeVM.DacFieldName.IsNullOrEmpty()
 				   orderby dacFieldNodeVM.DacFieldName ascending
