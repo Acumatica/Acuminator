@@ -119,6 +119,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\DacExtensionWithoutPersistingCheckNothingValid.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\SOOrder.cs" />
     <Compile Include="Tests\StaticAnalysis\DacDeclaration\DacForbiddenFieldsNonISVTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacDeclaration\Sources\DacForbiddenFieldsSuppressComment_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\DacPropertyAttributes\DacFieldWithDBCalcedAttributeTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacUiAttributes\DacUiAttributesTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacUiAttributes\Sources\Dac_Bad.cs" />

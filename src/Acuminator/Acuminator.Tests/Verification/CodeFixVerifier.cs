@@ -119,10 +119,12 @@ namespace Acuminator.Tests.Verification
 				if (codeFixIndex != null)
 				{
 					document = await ApplyCodeActionAsync(document, actions.ElementAt((int)codeFixIndex)).ConfigureAwait(false);
-					break;
+				}
+				else
+				{
+					document = await ApplyCodeActionAsync(document, actions.ElementAt(0)).ConfigureAwait(false);
 				}
 
-				document = await ApplyCodeActionAsync(document, actions.ElementAt(0)).ConfigureAwait(false);
 				analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document }).ConfigureAwait(false);
 
 				var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnosticsAsync(document).ConfigureAwait(false));
