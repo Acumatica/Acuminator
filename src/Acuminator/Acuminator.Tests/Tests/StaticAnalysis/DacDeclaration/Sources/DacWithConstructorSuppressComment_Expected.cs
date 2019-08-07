@@ -11,13 +11,23 @@ namespace PX.Objects.HackathonDemo
 	{
 		#region Cons
 
-		
+		// Acuminator disable once PX1028 Description [Justification]
+		public SOOrder() : base()
+		{
+		}
 
 		#endregion
 
 		#region ConsParams
 
-		
+		// Acuminator disable once PX1028 Description [Justification]
+		public SOOrder(string orderType, string orderNbr, string status, DateTime? orderDate)
+		{
+			OrderType = orderType;
+			OrderNbr = orderNbr;
+			Status = status;
+			OrderDate = orderDate;
+		}
 
 		#endregion
 
@@ -86,7 +96,10 @@ namespace PX.Objects.HackathonDemo
 	{
 		#region Cons
 
-		
+		// Acuminator disable once PX1028 Description [Justification]
+		public SOOrderWithTotal()
+		{
+		}
 
 		#endregion
 
@@ -107,13 +120,20 @@ namespace PX.Objects.HackathonDemo
 	{
 		#region Cons
 
-		
+		// Acuminator disable once PX1028 Description [Justification]
+		public SOOrderWithHold()
+		{
+		}
 
 		#endregion
 
 		#region Cons
 
-		
+		// Acuminator disable once PX1028 Description [Justification]
+		public SOOrderWithHold(bool? hold)
+		{
+			Hold = hold;
+		}
 
 		#endregion
 
