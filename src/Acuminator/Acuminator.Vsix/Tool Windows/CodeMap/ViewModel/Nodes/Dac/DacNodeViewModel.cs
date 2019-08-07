@@ -1,0 +1,38 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Vsix.Utilities.Navigation;
+using Microsoft.CodeAnalysis;
+
+namespace Acuminator.Vsix.ToolWindows.CodeMap
+{
+	public class DacNodeViewModel : TreeNodeViewModel
+	{
+		private int _currentNavigationIndex;
+
+		public DacSemanticModel DacModel { get; }
+
+		public override string Name
+		{
+			get => DacModel.Symbol.Name;
+			protected set { }
+		}
+
+		public override bool DisplayNodeWithoutChildren => true;
+
+		public DacNodeViewModel(DacSemanticModel dacModel, TreeViewModel tree, bool isExpanded) : base(tree, isExpanded)
+		{
+			dacModel.ThrowOnNull(nameof(dacModel));
+			DacModel = dacModel;
+		}
+
+		public override Task NavigateToItemAsync() => DacModel.Symbol.NavigateToAsync();
+
+		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation) =>
+			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
+	}
+}
