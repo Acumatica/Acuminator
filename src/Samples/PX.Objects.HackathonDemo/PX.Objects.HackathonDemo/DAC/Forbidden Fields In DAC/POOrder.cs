@@ -9,13 +9,15 @@ namespace PX.Objects.HackathonDemo
 {
     public partial class POOrder : IBqlTable
     {
-        #region CompanyID
-        public abstract class companyId : IBqlField { }
+		#region CompanyID
+		// Acuminator disable once all text [Justification]
+		public abstract class companyId : IBqlField { }
 
-        [PXDBString(IsKey = true, InputMask = "")]
+		// Acuminator disable once PX1027 Description [Justification]
+		[PXDBString(IsKey = true, InputMask = "")]
         [PXDefault]
         [PXUIField(DisplayName = "Company ID")]
-        public string CompanyID { get; set; }
+		public string CompanyID { get; set; }
         #endregion
 
         #region  DeletedDatabaseRecord
