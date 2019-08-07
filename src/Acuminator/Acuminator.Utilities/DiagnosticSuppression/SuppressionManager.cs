@@ -19,7 +19,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		private static SuppressionManager Instance { get; set; }
 
-		private static Regex _suppressPattern = new Regex(@"acuminator\s+suppress\s+((\w+)|(all))");
+		private static readonly Regex _suppressPattern = new Regex(@"acuminator\s+disable\s+once\s+((\w+)|(all))\s+((\w+))");
 
 		private SuppressionManager(ISuppressionFileSystemService fileSystemService, IEnumerable<SuppressionManagerInitInfo> suppressionFiles)
 		{
@@ -222,8 +222,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			cancellation.ThrowIfCancellationRequested();
 			SyntaxNode node = diagnostic.Location.SourceTree.GetRoot().FindNode(diagnostic.Location.SourceSpan);
 
-			return CheckSuppressionCommentOnNode(diagnostic, node, cancellation) || 
-			       CheckSuppressionCommentOnNode(diagnostic, node.Parent, cancellation);
+			return CheckSuppressionCommentOnNode(diagnostic, node, cancellation);
 		}
 
 		private static bool CheckSuppressionCommentOnNode(Diagnostic diagnostic, SyntaxNode node, CancellationToken cancellation)

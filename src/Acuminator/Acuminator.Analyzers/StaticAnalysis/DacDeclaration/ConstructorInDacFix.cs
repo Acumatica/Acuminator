@@ -12,8 +12,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 {
     [Shared]
     [ExportCodeFixProvider(LanguageNames.CSharp)]
-    public class ConstructorInDacFix : CodeFixProvider
-    {
+    public class ConstructorInDacFix : PXCodeFixProvider
+	{
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(Descriptors.PX1028_ConstructorInDacDeclaration.Id);
         public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
@@ -33,6 +33,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
                                                           equivalenceKey: codeActionName);
 
                 context.RegisterCodeFix(codeAction, context.Diagnostics);
+				base.RegisterSuppressionComment(context);
             }, context.CancellationToken);
         }
 
