@@ -24,7 +24,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacDeclaration
 
 		[Theory]
 		[EmbeddedFileData("DacWithUnderscores.cs")]
-		public virtual void Test_Dac_With_Underscores_In_Declaration(string source) =>
+		public virtual void DacWithUnderscoresInDeclaration(string source) =>
 			VerifyCSharpDiagnostic(source,
 				Descriptors.PX1026_UnderscoresInDacDeclaration.CreateFor(line: 10, column: 15),
 				Descriptors.PX1026_UnderscoresInDacDeclaration.CreateFor(line: 13, column: 25),
@@ -33,7 +33,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacDeclaration
 
 		[Theory]
 		[EmbeddedFileData("DacExtensionWithUnderscores.cs")]
-		public virtual void Test_Dac_Extension_With_Underscores_In_Declaration(string source) =>
+		public virtual void DacExtensionWithUnderscoresInDeclaration(string source) =>
 			VerifyCSharpDiagnostic(source,
 				Descriptors.PX1026_UnderscoresInDacDeclaration.CreateFor(line: 10, column: 15),
 				Descriptors.PX1026_UnderscoresInDacDeclaration.CreateFor(line: 13, column: 25),
@@ -44,13 +44,19 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacDeclaration
 		[Theory]
 		[EmbeddedFileData("DacWithUnderscores.cs",
 						  "DacWithUnderscores_Expected.cs")]
-		public virtual void Test__Fix_For_Dac_With_Underscores_In_Declaration(string actual, string expected) =>
+		public virtual void ForDacWithUnderscoresInDeclaration_CodeFix(string actual, string expected) =>
 			VerifyCSharpFix(actual, expected);
 
 		[Theory]
 		[EmbeddedFileData("DacExtensionWithUnderscores.cs",
 						  "DacExtensionWithUnderscores_Expected.cs")]
-		public virtual void Test__Fix_For_Dac_Extension_With_Underscores_In_Declaration(string actual, string expected) =>
+		public virtual void ForDacExtensionWithUnderscoresInDeclaration_CodeFix(string actual, string expected) =>
 			VerifyCSharpFix(actual, expected);
+
+		[Theory]
+		[EmbeddedFileData("DacWithConstructor.cs",
+			"DacWithConstructorSuppressComment_Expected.cs")]
+		public virtual void DacWithConstructorSuppressComment_CodeFix(string actual, string expected) =>
+			VerifyCSharpFix(actual, expected, codeFixIndex: 1);
 	}
 }
