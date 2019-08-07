@@ -244,7 +244,9 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Base\TreeBuilderBase_DacVisitMethods.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Base\TreeBuilderBase_GraphVisitMethods.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Base\TreeBuilderBase.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Dac\DefaultCodeMapTreeBuilder_Dac.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\DefaultCodeMapTreeBuilder.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Graph\DefaultCodeMapTreeBuilder_Graph.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\DacField\DacFieldGroupingNodeForCacheAttachedEventViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\DacField\DacFieldGroupingNodeForFieldEventViewModel.cs" />

@@ -12,8 +12,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class DacNodeViewModel : TreeNodeViewModel
 	{
-		private int _currentNavigationIndex;
-
 		public DacSemanticModel DacModel { get; }
 
 		public override string Name
