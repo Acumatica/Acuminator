@@ -8,10 +8,11 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class GraphMemberNodeViewModel : TreeNodeViewModel
+	public abstract class GraphMemberNodeViewModel : TreeNodeViewModel
 	{
 		public GraphMemberCategoryNodeViewModel MemberCategory { get; }
 
@@ -26,6 +27,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			get => MemberSymbol.Name;
 			protected set { }
 		}
+
+		public override bool DisplayNodeWithoutChildren => true;
 
 		public GraphMemberNodeViewModel(GraphMemberCategoryNodeViewModel graphMemberCategoryVM, SymbolItem memberInfo, 
 										bool isExpanded = false) :

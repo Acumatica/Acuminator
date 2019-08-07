@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Vsix.Utilities;
-
-
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class FieldEventNodeViewModel : GraphMemberNodeViewModel
 	{
-		public DacFieldEventsGroupingNodeViewModel DacFieldVM { get; }
+		public DacFieldGroupingNodeBaseViewModel DacFieldVM { get; }
 
 		public override string Name
 		{
@@ -18,11 +16,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set;
 		}
 
-		public FieldEventNodeViewModel(DacFieldEventsGroupingNodeViewModel dacFieldVM, GraphFieldEventInfo eventInfo, bool isExpanded = false) :
+		public FieldEventNodeViewModel(DacFieldGroupingNodeBaseViewModel dacFieldVM, GraphFieldEventInfo eventInfo, bool isExpanded = false) :
 								  base(dacFieldVM?.GraphEventsCategoryVM, eventInfo, isExpanded)
 		{
 			DacFieldVM = dacFieldVM;
 			Name = eventInfo.EventType.ToString();
-		}	
+		}
+
+		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren,
+																		 CancellationToken cancellation) =>
+			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
 	}
 }

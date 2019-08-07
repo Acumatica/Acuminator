@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
@@ -22,32 +23,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			get => GraphSemanticModel.Symbol.Name;
 			protected set { }
 		}
-		protected GraphNodeViewModel(GraphSemanticModelForCodeMap codeMapGraphModel, TreeViewModel tree, bool isExpanded) : 
+
+		public override bool DisplayNodeWithoutChildren => true;
+
+		public GraphNodeViewModel(GraphSemanticModelForCodeMap codeMapGraphModel, TreeViewModel tree, bool isExpanded) : 
 							 base(tree, isExpanded)
 		{
 			CodeMapGraphModel = codeMapGraphModel;
-		}
-
-		public static GraphNodeViewModel Create(GraphSemanticModelForCodeMap codeMapGraphModel, TreeViewModel tree, 
-												bool isExpanded, bool expandChildren)
-		{
-			if (codeMapGraphModel == null || tree == null)
-				return null;
-
-			GraphNodeViewModel graphNodeVM = new GraphNodeViewModel(codeMapGraphModel, tree, isExpanded);
-			graphNodeVM.AddGraphMemberCategories(expandChildren);
-			return graphNodeVM;
-		}		
-
-		private void AddGraphMemberCategories(bool expandChildren)
-		{
-			var memberCategories =
-				GraphMemberTypeUtils.GetGraphMemberTypes()
-									.Select(graphMemberType =>
-										 GraphMemberCategoryNodeViewModel.Create(this, graphMemberType, isExpanded: expandChildren))
-									.Where(graphMemberCategory => graphMemberCategory != null);
-
-			Children.AddRange(memberCategories);
 		}
 
 		public override Task NavigateToItemAsync()
@@ -70,6 +52,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 					return GraphSemanticModel.Symbol.NavigateToAsync(reference);
 			}		
-		}	
+		}
+
+		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation) =>
+			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
 	}
 }

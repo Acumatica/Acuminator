@@ -8,6 +8,7 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -27,6 +28,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set { }
 		}
 
+		public override bool DisplayNodeWithoutChildren => true;
+
 		public GraphMemberInfoNodeViewModel(GraphMemberNodeViewModel graphMemberVM, SymbolItem memberInfoData, 
 											GraphMemberInfoType graphMemberInfoType, bool isExpanded = false) :
 									  base(graphMemberVM?.Tree, isExpanded)
@@ -39,5 +42,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public override Task NavigateToItemAsync() => GraphMemberInfoSymbol.NavigateToAsync();
+
+		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation) =>
+			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
 	}
 }
