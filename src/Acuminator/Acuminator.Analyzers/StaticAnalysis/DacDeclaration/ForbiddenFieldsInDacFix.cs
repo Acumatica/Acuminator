@@ -33,7 +33,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 		{
 			return Task.Run(() =>
 			{
-				Diagnostic diagnostic = context.Diagnostics.FirstOrDefault(d => 
+				var diagnostic = context.Diagnostics.FirstOrDefault(d => 
 											d.Id == Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.Id ||
 											d.Id == Descriptors.PX1027_ForbiddenFieldsInDacDeclaration_NonISV.Id);
 

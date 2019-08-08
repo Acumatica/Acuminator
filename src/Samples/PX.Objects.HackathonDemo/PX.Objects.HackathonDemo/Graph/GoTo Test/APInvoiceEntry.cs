@@ -111,6 +111,7 @@ namespace PX.Objects.HackathonDemo
 
 			startRow = PXView.StartRow;
 
+			// Acuminator disable once PX1010 Description [Justification]
 			IEnumerable<ListEntryPoint> rows = new PXView(this, false, new Select<ListEntryPoint>())
 					.Select(PXView.Currents, PXView.Parameters, PXView.Searches, PXView.SortColumns, PXView.Descendings, PXView.Filters,
 					ref startRow, PXView.MaximumRows, ref totalRows).Cast<ListEntryPoint>();

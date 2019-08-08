@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -20,6 +21,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		private static SuppressionManager Instance { get; set; }
 
 		private static readonly Regex _suppressPattern = new Regex(@"acuminator\s+disable\s+once\s+((\w+)|(all))\s+(\w+)");
+		private static readonly ImmutableHashSet<string> _complicatedDiagnostics;
 
 		private SuppressionManager(ISuppressionFileSystemService fileSystemService, IEnumerable<SuppressionManagerInitInfo> suppressionFiles)
 		{
@@ -220,9 +222,21 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		private static bool CheckSuppressedComment(Diagnostic diagnostic, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
-			SyntaxNode node = diagnostic.Location.SourceTree.GetRoot().FindNode(diagnostic.Location.SourceSpan);
+			SyntaxNode root = diagnostic.Location.SourceTree.GetRoot();
+			SyntaxNode node;
 
-			return CheckSuppressionCommentOnNode(diagnostic, node, cancellation);
+			bool containsComment = false;
+
+			// Climb to the hill. Looking for comment on parents nodes.
+			for (node = root.FindNode(diagnostic.Location.SourceSpan); containsComment == false && node != root ; node = node.Parent)
+			{
+				containsComment = CheckSuppressionCommentOnNode(diagnostic, node, cancellation);
+				
+				if (node.HasLeadingTrivia)
+					break;
+			}
+
+			return containsComment;
 		}
 
 		private static bool CheckSuppressionCommentOnNode(Diagnostic diagnostic, SyntaxNode node, CancellationToken cancellation)

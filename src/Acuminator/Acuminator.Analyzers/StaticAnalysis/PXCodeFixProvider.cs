@@ -79,17 +79,15 @@ namespace Acuminator.Analyzers.StaticAnalysis
 						SyntaxFactory.SyntaxTrivia(SyntaxKind.SingleLineCommentTrivia, string.Format(_comment, diagnostic.Id, "Description")),
 						SyntaxFactory.ElasticEndOfLine(""));
 			}
-			
-			if (diagnosticNode.HasLeadingTrivia)
+
+			while (!diagnosticNode.HasLeadingTrivia)
 			{
-				SyntaxTriviaList leadingTrivia = diagnosticNode.GetLeadingTrivia();
-				
-				var modifiedRoot = root.InsertTriviaAfter(leadingTrivia.Last(), commentNode);
-				return document.WithSyntaxRoot(modifiedRoot);
+				diagnosticNode = diagnosticNode.Parent;
 			}
-
-			return document;
-
+			SyntaxTriviaList leadingTrivia = diagnosticNode.GetLeadingTrivia();
+			
+			var modifiedRoot = root.InsertTriviaAfter(leadingTrivia.Last(), commentNode);
+			return document.WithSyntaxRoot(modifiedRoot);
 		}
 	}
 }
