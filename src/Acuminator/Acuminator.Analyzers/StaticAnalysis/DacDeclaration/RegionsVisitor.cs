@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 {
-	public partial class ForbiddenFieldsInDacFix : PXCodeFixProvider
+	public partial class ForbiddenFieldsInDacFix : CodeFixProvider
 	{	
 		/// <summary>
 		/// The #regions rewriter helper.

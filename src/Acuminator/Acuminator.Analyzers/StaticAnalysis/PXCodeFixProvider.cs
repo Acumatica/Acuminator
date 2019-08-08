@@ -1,28 +1,57 @@
 ﻿using System;
+using System.Collections.Immutable;
+using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Acuminator.Utilities.Common;
+using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Text;
-using PX.Common;
+using System.Collections.Generic;
 
 namespace Acuminator.Analyzers.StaticAnalysis
 {
-	public abstract class PXCodeFixProvider: CodeFixProvider
+	[Shared]
+	[ExportCodeFixProvider(LanguageNames.CSharp)]
+	public class PXCodeFixProvider: CodeFixProvider
 	{
 		private const string _comment = @"// Acuminator disable once {0} {1} [Justification]";
 
-		public void RegisterSuppressionComment(CodeFixContext context)
+		private static ImmutableArray<string> _FixableDiagnosticIds;
+
+		static PXCodeFixProvider()
 		{
-			string codeActionName = "Suppress diagnostic";
-			CodeAction codeAction = CodeAction.Create(codeActionName,
-												cToken => AddSuppressionComment(context, cToken),
-												codeActionName);
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			Type diagnosticsType = typeof(Descriptors);
+			var fieldInfo = diagnosticsType.GetRuntimeProperties();
+
+			List<string> idsDiagnosticDescriptors = new List<string>();
+
+			foreach (var field in fieldInfo
+									.Where(x => x.PropertyType == typeof(DiagnosticDescriptor))
+									.Select(x => x))
+			{
+				DiagnosticDescriptor descriptor = field.GetValue(field, null) as  DiagnosticDescriptor;
+				idsDiagnosticDescriptors.Add(descriptor.Id);
+			}
+			
+			_FixableDiagnosticIds = idsDiagnosticDescriptors.ToImmutableArray();
+		}
+
+		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
+			_FixableDiagnosticIds;
+
+		public override Task RegisterCodeFixesAsync(CodeFixContext context)
+		{
+			return Task.Run(() =>
+			{
+				string codeActionName = "Suppress diagnostic";
+				CodeAction codeAction = CodeAction.Create(codeActionName,
+					cToken => AddSuppressionComment(context, cToken),
+					codeActionName);
+				context.RegisterCodeFix(codeAction, context.Diagnostics);
+			}, context.CancellationToken);
 		}
 
 		private async Task<Document> AddSuppressionComment(CodeFixContext context, CancellationToken cancellationToken)

@@ -20,7 +20,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public partial class ForbiddenFieldsInDacFix : PXCodeFixProvider
+	public partial class ForbiddenFieldsInDacFix : CodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(
@@ -46,7 +46,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacDeclaration
 														  equivalenceKey: codeActionName);
 
 				context.RegisterCodeFix(codeAction, context.Diagnostics);
-				base.RegisterSuppressionComment(context);
 			}, context.CancellationToken);
 		}
 

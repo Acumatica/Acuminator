@@ -23,7 +23,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
     }
 
     [ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-    public class ActionHandlerAttributesFix : PXCodeFixProvider
+    public class ActionHandlerAttributesFix : CodeFixProvider
     {
         internal const string FixOptionKey = nameof(FixOptionKey);
 
@@ -51,7 +51,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
                 cancellation => FixActionHandlerAttributes(context.Document, context.Span, option, cancellation));
 
             context.RegisterCodeFix(codeAction, context.Diagnostics);
-			base.RegisterSuppressionComment(context);
 			return Task.CompletedTask;
 		}
 
