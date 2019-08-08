@@ -14,7 +14,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 {
 	public abstract class PXCodeFixProvider: CodeFixProvider
 	{
-		private const string comment = @"// Acuminator disable once {0} {1} [Justification]";
+		private const string _comment = @"// Acuminator disable once {0} {1} [Justification]";
 
 		public void RegisterSuppressionComment(CodeFixContext context)
 		{
@@ -40,14 +40,14 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			if (context.Diagnostics.Length > 1)
 			{
 				commentNode = SyntaxFactory.TriviaList(
-					SyntaxFactory.SyntaxTrivia(SyntaxKind.SingleLineCommentTrivia, string.Format(comment, "all", "diagnostics")),
+					SyntaxFactory.SyntaxTrivia(SyntaxKind.SingleLineCommentTrivia, string.Format(_comment, "all", "diagnostics")),
 					SyntaxFactory.ElasticEndOfLine(""));
 			}
 			else
 			{
 				commentNode =
 					SyntaxFactory.TriviaList(
-						SyntaxFactory.SyntaxTrivia(SyntaxKind.SingleLineCommentTrivia, string.Format(comment, diagnostic.Id, "Description")),
+						SyntaxFactory.SyntaxTrivia(SyntaxKind.SingleLineCommentTrivia, string.Format(_comment, diagnostic.Id, "Description")),
 						SyntaxFactory.ElasticEndOfLine(""));
 			}
 			
