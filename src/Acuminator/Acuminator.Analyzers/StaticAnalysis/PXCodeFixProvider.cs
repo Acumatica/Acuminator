@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Collections.Generic;
+using Acuminator.Utilities.Common;
 
 namespace Acuminator.Analyzers.StaticAnalysis
 {
@@ -20,14 +21,14 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		private const string _comment = @"// Acuminator disable once {0} {1} [Justification]";
 		private const string _diagnosticName = @"Suppress diagnostic {0}";
 
-		private static ImmutableList<KeyValuePair<string, string>> _fixableDiagnosticIds;
+		private static ImmutableDictionary<string, string> _fixableDiagnosticIds;
 
 		static PXCodeFixProvider()
 		{
 			Type diagnosticsType = typeof(Descriptors);
 			var fieldInfo = diagnosticsType.GetRuntimeProperties();
 
-			List<KeyValuePair<string,string>> idsDiagnosticDescriptors = new List<KeyValuePair<string, string>>();
+			Dictionary<string,string> idsDiagnosticDescriptors = new Dictionary<string, string>();
 
 			foreach (var field in fieldInfo
 									.Where(x => x.PropertyType == typeof(DiagnosticDescriptor))
@@ -35,14 +36,14 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			{
 				DiagnosticDescriptor descriptor = field.GetValue(field, null) as DiagnosticDescriptor;
 
-				idsDiagnosticDescriptors.Add(new KeyValuePair<string, string>(descriptor.Id, field.Name.Substring(7)));
+				idsDiagnosticDescriptors.TryAdd(key: descriptor.Id, value: descriptor.CustomTags.FirstOrDefault());
 			}
 			
-			_fixableDiagnosticIds = idsDiagnosticDescriptors.ToImmutableList();
+			_fixableDiagnosticIds = idsDiagnosticDescriptors.ToImmutableDictionary();
 		}
 
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-			_fixableDiagnosticIds.Select(x => x.Key).ToImmutableArray();
+			_fixableDiagnosticIds.Keys.ToImmutableArray();
 
 		public override Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
@@ -71,8 +72,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 			SyntaxTriviaList commentNode = SyntaxFactory.TriviaList(
 				SyntaxFactory.SyntaxTrivia(SyntaxKind.SingleLineCommentTrivia, 
-													string.Format(_comment, diagnostic.Id, 
-														_fixableDiagnosticIds.FirstOrDefault( x => x.Key == diagnostic.Id).Value.ToString())),
+													string.Format(_comment, diagnostic.Id,
+														_fixableDiagnosticIds.GetValueOrDefault(diagnostic.Id))),
 				SyntaxFactory.ElasticEndOfLine(""));
 
 			while (!diagnosticNode.HasLeadingTrivia)

@@ -1,6 +1,9 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Linq;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
+using PX.Common;
 
 namespace Acuminator.Analyzers.StaticAnalysis
 {
@@ -17,102 +20,125 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		private static readonly ConcurrentDictionary<Category, string> _categoryMapping = new ConcurrentDictionary<Category, string>();
 
         private static DiagnosticDescriptor Rule(string id, LocalizableString title, Category category, DiagnosticSeverity defaultSeverity, 
-										 LocalizableString messageFormat = null, LocalizableString description = null)
+										 LocalizableString messageFormat = null, LocalizableString description = null, string name = null)
 		{
 			bool isEnabledByDefault = true;
 			messageFormat = messageFormat ?? title;
 			string diagnosticLink = $"{DocumentationLinkPrefix}/{id}.{DocumentatonFileExtension}"; 
 			return new DiagnosticDescriptor(id, title, messageFormat, _categoryMapping.GetOrAdd(category, c => c.ToString()), defaultSeverity,
-											isEnabledByDefault, description, diagnosticLink);
+											isEnabledByDefault, description, diagnosticLink, customTags: name);
 		}
 
 		public static DiagnosticDescriptor PX1000_InvalidPXActionHandlerSignature { get; } = 
-            Rule("PX1000", nameof(Resources.PX1000Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+            Rule("PX1000", nameof(Resources.PX1000Title).GetLocalized(), Category.Default, 
+	            DiagnosticSeverity.Error, name: DiagnosticsShortName.PX1000);
 
 		public static DiagnosticDescriptor PX1001_PXGraphCreateInstance { get; } = 
-            Rule("PX1001", nameof(Resources.PX1001Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+            Rule("PX1001", nameof(Resources.PX1001Title).GetLocalized(), Category.Default, 
+	            DiagnosticSeverity.Error, name: DiagnosticsShortName.PX1001);
 
 		public static DiagnosticDescriptor PX1002_MissingTypeListAttributeAnalyzer { get; } = 
-            Rule("PX1002", nameof(Resources.PX1002Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+            Rule("PX1002", nameof(Resources.PX1002Title).GetLocalized(), Category.Default, 
+	            DiagnosticSeverity.Error, name: DiagnosticsShortName.PX1002);
 
 		public static DiagnosticDescriptor PX1003_NonSpecificPXGraphCreateInstance { get; } = 
-            Rule("PX1003", nameof(Resources.PX1003Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+            Rule("PX1003", nameof(Resources.PX1003Title).GetLocalized(), Category.Default,
+	            DiagnosticSeverity.Warning, name: DiagnosticsShortName.PX1003);
 
         public static DiagnosticDescriptor PX1004_ViewDeclarationOrder { get; } = 
-            Rule("PX1004", nameof(Resources.PX1004Title).GetLocalized(), Category.Default, DiagnosticSeverity.Info);
+            Rule("PX1004", nameof(Resources.PX1004Title).GetLocalized(), Category.Default, 
+	            DiagnosticSeverity.Info, name: DiagnosticsShortName.PX1004);
 
 		public static DiagnosticDescriptor PX1005_TypoInViewDelegateName { get; } = 
             Rule("PX1005", nameof(Resources.PX1005Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, 
-                nameof(Resources.PX1005MessageFormat).GetLocalized());
+                nameof(Resources.PX1005MessageFormat).GetLocalized(), name: DiagnosticsShortName.PX1005);
 
 		public static DiagnosticDescriptor PX1006_ViewDeclarationOrder { get; } = 
-            Rule("PX1006", nameof(Resources.PX1006Title).GetLocalized(), Category.Default, DiagnosticSeverity.Info);
+            Rule("PX1006", nameof(Resources.PX1006Title).GetLocalized(), Category.Default,
+	            DiagnosticSeverity.Info, name: DiagnosticsShortName.PX1006);
 
         public static DiagnosticDescriptor PX1008_LongOperationDelegateClosures { get; } = 
-            Rule("PX1008", nameof(Resources.PX1008Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+            Rule("PX1008", nameof(Resources.PX1008Title).GetLocalized(), Category.Default, 
+	            DiagnosticSeverity.Warning, name: DiagnosticsShortName.PX1008);
 
         public static DiagnosticDescriptor PX1010_StartRowResetForPaging { get; } = 
-            Rule("PX1010", nameof(Resources.PX1010Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+            Rule("PX1010", nameof(Resources.PX1010Title).GetLocalized(), Category.Default, 
+	            DiagnosticSeverity.Warning, name: DiagnosticsShortName.PX1010);
 
 		public static DiagnosticDescriptor PX1009_InheritanceFromPXCacheExtension { get; } = 
-            Rule("PX1009", nameof(Resources.PX1009Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+            Rule("PX1009", nameof(Resources.PX1009Title).GetLocalized(), Category.Default, 
+	            DiagnosticSeverity.Error, name: DiagnosticsShortName.PX1009);
 
 		public static DiagnosticDescriptor PX1011_InheritanceFromPXCacheExtension { get; } =
-            Rule("PX1011", nameof(Resources.PX1011Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+            Rule("PX1011", nameof(Resources.PX1011Title).GetLocalized(), Category.Default, 
+	            DiagnosticSeverity.Warning, name: DiagnosticsShortName.PX1011);
 
 		public static DiagnosticDescriptor PX1012_PXActionOnNonPrimaryView { get; } =
-			Rule("PX1012", nameof(Resources.PX1012Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+			Rule("PX1012", nameof(Resources.PX1012Title).GetLocalized(), Category.Default, 
+				DiagnosticSeverity.Warning, 
+				name: DiagnosticsShortName.PX1012);
 
         public static DiagnosticDescriptor PX1013_PXActionHandlerInvalidReturnType { get; } =
-            Rule("PX1013", nameof(Resources.PX1013Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+            Rule("PX1013", nameof(Resources.PX1013Title).GetLocalized(), Category.Default, 
+	            DiagnosticSeverity.Error, 
+	            name: DiagnosticsShortName.PX1013);
 
 		public static DiagnosticDescriptor PX1014_NonNullableTypeForBqlField { get; } = 
-            Rule("PX1014", nameof(Resources.PX1014Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+            Rule("PX1014", nameof(Resources.PX1014Title).GetLocalized(), Category.Default, 
+	            DiagnosticSeverity.Error, 
+	            name: DiagnosticsShortName.PX1014);
 
 		public static DiagnosticDescriptor PX1015_PXBqlParametersMismatchWithOnlyRequiredParams { get; } = 
             Rule("PX1015", nameof(Resources.PX1015Title).GetLocalized(), 
                 Category.Default, DiagnosticSeverity.Warning,
-	            nameof(Resources.PX1015MessageFormatWithOnlyRequiredParams).GetLocalized());
+	            nameof(Resources.PX1015MessageFormatWithOnlyRequiredParams).GetLocalized(), name: DiagnosticsShortName.PX1015);
 
         public static DiagnosticDescriptor PX1015_PXBqlParametersMismatchWithRequiredAndOptionalParams { get; } =
             Rule("PX1015", nameof(Resources.PX1015Title).GetLocalized(), 
                  Category.Default, DiagnosticSeverity.Warning,
-	            nameof(Resources.PX1015MessageFormatWithRequiredAndOptionalParams).GetLocalized());
+	            nameof(Resources.PX1015MessageFormatWithRequiredAndOptionalParams).GetLocalized(), 
+                 name: DiagnosticsShortName.PX1015);
 
 		public static DiagnosticDescriptor PX1018_NoPrimaryViewForPrimaryDac { get; } =
-			Rule("PX1018", nameof(Resources.PX1018Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+			Rule("PX1018", nameof(Resources.PX1018Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, 
+				name: DiagnosticsShortName.PX1018);
 
 		public static DiagnosticDescriptor PX1021_PXDBFieldAttributeNotMatchingDacProperty { get; } =
-            Rule("PX1021", nameof(Resources.PX1021Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+            Rule("PX1021", nameof(Resources.PX1021Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, 
+	            name: DiagnosticsShortName.PX1021);
 
 		public static DiagnosticDescriptor PX1023_MultipleTypeAttributesOnProperty { get; } =
-			Rule("PX1023", nameof(Resources.PX1023MultipleTypeAttributesOnPropertyTitle).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+			Rule("PX1023", nameof(Resources.PX1023MultipleTypeAttributesOnPropertyTitle).GetLocalized(), Category.Default, 
+				DiagnosticSeverity.Error, name: DiagnosticsShortName.PX1023);
 
 		public static DiagnosticDescriptor PX1023_MultipleTypeAttributesOnAggregators { get; } =
-			Rule("PX1023", nameof(Resources.PX1023MultipleTypeAttributesOnAggregatorsTitle).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+			Rule("PX1023", nameof(Resources.PX1023MultipleTypeAttributesOnAggregatorsTitle).GetLocalized(), Category.Default, 
+				DiagnosticSeverity.Error, name: DiagnosticsShortName.PX1023);
 
         public static DiagnosticDescriptor PX1023_MultipleSpecialTypeAttributesOnProperty { get; } =
             Rule("PX1023", nameof(Resources.PX1023MultipleSpecialTypeAttributesOnPropertyTitle).GetLocalized(),
-                 Category.Default, DiagnosticSeverity.Error);
+                 Category.Default, DiagnosticSeverity.Error, name: DiagnosticsShortName.PX1023);
 
         public static DiagnosticDescriptor PX1023_MultipleSpecialTypeAttributesOnAggregators { get; } =
 			Rule("PX1023", nameof(Resources.PX1023MultipleSpecialTypeAttributesOnAggregatorsTitle).GetLocalized(),
-				 Category.Default, DiagnosticSeverity.Error);
+				 Category.Default, DiagnosticSeverity.Error, name: DiagnosticsShortName.PX1023);
 
 		public static DiagnosticDescriptor PX1024_DacNonAbstractFieldType { get; } =
-			Rule("PX1024", nameof(Resources.PX1024Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+			Rule("PX1024", nameof(Resources.PX1024Title).GetLocalized(), Category.Default, 
+				DiagnosticSeverity.Error, name: DiagnosticsShortName.PX1024);
 
 		public static DiagnosticDescriptor PX1026_UnderscoresInDacDeclaration { get; } =
-			Rule("PX1026", nameof(Resources.PX1026Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
+			Rule("PX1026", nameof(Resources.PX1026Title).GetLocalized(), Category.Default, 
+				DiagnosticSeverity.Error, name: DiagnosticsShortName.PX1026);
 
 		public static DiagnosticDescriptor PX1027_ForbiddenFieldsInDacDeclaration { get; } =
 			Rule("PX1027", nameof(Resources.PX1027Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error,
-				nameof(Resources.PX1027MessageFormat).GetLocalized());
+				nameof(Resources.PX1027MessageFormat).GetLocalized(), name: DiagnosticsShortName.PX1027);
 
 		public static DiagnosticDescriptor PX1027_ForbiddenFieldsInDacDeclaration_NonISV { get; } =
 			Rule("PX1027", nameof(Resources.PX1027Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning,
 				nameof(Resources.PX1027MessageFormat).GetLocalized());
-
+		
 		public static DiagnosticDescriptor PX1028_ConstructorInDacDeclaration { get; } =
 			Rule("PX1028", nameof(Resources.PX1028Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error);
 
