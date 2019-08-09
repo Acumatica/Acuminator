@@ -46,46 +46,37 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		{
 			return Task.Run(() =>
 			{
-				string codeActionName = "Suppress diagnostic";
-				CodeAction codeAction = CodeAction.Create(codeActionName,
-					cToken => AddSuppressionComment(context, cToken),
-					codeActionName);
-				context.RegisterCodeFix(codeAction, context.Diagnostics);
+				foreach (var diagnostic in context.Diagnostics)
+				{
+					string codeActionName = string.Format("Suppress diagnostic {0}", diagnostic.Id);
+					CodeAction codeAction = CodeAction.Create(codeActionName,
+						cToken => AddSuppressionComment(context, diagnostic, cToken),
+						codeActionName);
+					context.RegisterCodeFix(codeAction, diagnostic);
+				}
 			}, context.CancellationToken);
 		}
 
-		private async Task<Document> AddSuppressionComment(CodeFixContext context, CancellationToken cancellationToken)
+		private async Task<Document> AddSuppressionComment(CodeFixContext context, Diagnostic diagnostic, CancellationToken cancellationToken)
 		{
 			var document = context.Document;
 			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 			var diagnosticNode = root?.FindNode(context.Span);
 
-			var diagnostic = context.Diagnostics.FirstOrDefault();
-			SyntaxTriviaList commentNode;
-
 			if (diagnostic == null || diagnosticNode == null || cancellationToken.IsCancellationRequested)
 				return document;
 
-			if (context.Diagnostics.Length > 1)
-			{
-				commentNode = SyntaxFactory.TriviaList(
-					SyntaxFactory.SyntaxTrivia(SyntaxKind.SingleLineCommentTrivia, string.Format(_comment, "all", "diagnostics")),
-					SyntaxFactory.ElasticEndOfLine(""));
-			}
-			else
-			{
-				commentNode =
-					SyntaxFactory.TriviaList(
-						SyntaxFactory.SyntaxTrivia(SyntaxKind.SingleLineCommentTrivia, string.Format(_comment, diagnostic.Id, "Description")),
-						SyntaxFactory.ElasticEndOfLine(""));
-			}
+
+			SyntaxTriviaList commentNode = SyntaxFactory.TriviaList(
+				SyntaxFactory.SyntaxTrivia(SyntaxKind.SingleLineCommentTrivia, string.Format(_comment, diagnostic.Id, "Description")),
+				SyntaxFactory.ElasticEndOfLine(""));
 
 			while (!diagnosticNode.HasLeadingTrivia)
 			{
 				diagnosticNode = diagnosticNode.Parent;
 			}
+
 			SyntaxTriviaList leadingTrivia = diagnosticNode.GetLeadingTrivia();
-			
 			var modifiedRoot = root.InsertTriviaAfter(leadingTrivia.Last(), commentNode);
 			return document.WithSyntaxRoot(modifiedRoot);
 		}
