@@ -228,11 +228,11 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			bool containsComment = false;
 
 			// Climb to the hill. Looking for comment on parents nodes.
-			for (node = root.FindNode(diagnostic.Location.SourceSpan); containsComment == false && node != root ; node = node.Parent)
+			for (node = root.FindNode(diagnostic.Location.SourceSpan); node != root ; node = node.Parent)
 			{
 				containsComment = CheckSuppressionCommentOnNode(diagnostic, node, cancellation);
 				
-				if (node.HasLeadingTrivia)
+				if (node.HasLeadingTrivia || containsComment)
 					break;
 			}
 
