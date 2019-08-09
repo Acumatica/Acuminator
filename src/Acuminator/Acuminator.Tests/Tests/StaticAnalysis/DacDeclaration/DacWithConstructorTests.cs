@@ -19,22 +19,16 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacDeclaration
         [EmbeddedFileData("DacWithConstructor.cs")]
         public virtual void TestDacWithConstructor(string source) =>
             VerifyCSharpDiagnostic(source,
-                Descriptors.PX1028_ConstructorInDacDeclaration.CreateFor(line: 14, column: 10),
-	            Descriptors.PX1028_ConstructorInDacDeclaration.CreateFor(line: 22, column: 10),
-	            Descriptors.PX1028_ConstructorInDacDeclaration.CreateFor(line: 97, column: 10),
-	            Descriptors.PX1028_ConstructorInDacDeclaration.CreateFor(line: 120, column: 10),
-	            Descriptors.PX1028_ConstructorInDacDeclaration.CreateFor(line: 128, column: 10));
+                Descriptors.PX1028_ConstructorInDacDeclaration.CreateFor(line: 13, column: 16),
+	            Descriptors.PX1028_ConstructorInDacDeclaration.CreateFor(line: 17, column: 16),
+	            Descriptors.PX1028_ConstructorInDacDeclaration.CreateFor(line: 74, column: 16),
+	            Descriptors.PX1028_ConstructorInDacDeclaration.CreateFor(line: 88, column: 16),
+	            Descriptors.PX1028_ConstructorInDacDeclaration.CreateFor(line: 92, column: 16));
 
         [Theory]
         [EmbeddedFileData("DacWithConstructor.cs",
                           "DacWithConstructor_Expected.cs")]
         public virtual void TestCodeFixDacWithConstructor(string actual, string expected) =>
             VerifyCSharpFix(actual,expected);
-
-        [Theory]
-        [EmbeddedFileData("DacWithConstructor.cs",
-	        "DacWithConstructorSuppressComment_Expected.cs")]
-        public virtual void TestCodeFixDacWithConstructorSuppressComment(string actual, string expected) =>
-	        VerifyCSharpFix(actual, expected, codeFixIndex:1);
-	}
+    }
 }
