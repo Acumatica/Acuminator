@@ -20,28 +20,29 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		private const string _comment = @"// Acuminator disable once {0} {1} [Justification]";
 		private const string _diagnosticName = @"Suppress diagnostic {0}";
 
-		private static ImmutableArray<string> _FixableDiagnosticIds;
+		private static ImmutableList<KeyValuePair<string, string>> _fixableDiagnosticIds;
 
 		static PXCodeFixProvider()
 		{
 			Type diagnosticsType = typeof(Descriptors);
 			var fieldInfo = diagnosticsType.GetRuntimeProperties();
 
-			List<string> idsDiagnosticDescriptors = new List<string>();
+			List<KeyValuePair<string,string>> idsDiagnosticDescriptors = new List<KeyValuePair<string, string>>();
 
 			foreach (var field in fieldInfo
 									.Where(x => x.PropertyType == typeof(DiagnosticDescriptor))
 									.Select(x => x))
 			{
-				DiagnosticDescriptor descriptor = field.GetValue(field, null) as  DiagnosticDescriptor;
-				idsDiagnosticDescriptors.Add(descriptor.Id);
+				DiagnosticDescriptor descriptor = field.GetValue(field, null) as DiagnosticDescriptor;
+
+				idsDiagnosticDescriptors.Add(new KeyValuePair<string, string>(descriptor.Id, field.Name.Substring(7)));
 			}
 			
-			_FixableDiagnosticIds = idsDiagnosticDescriptors.ToImmutableArray();
+			_fixableDiagnosticIds = idsDiagnosticDescriptors.ToImmutableList();
 		}
 
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-			_FixableDiagnosticIds;
+			_fixableDiagnosticIds.Select(x => x.Key).ToImmutableArray();
 
 		public override Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
@@ -69,7 +70,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 
 			SyntaxTriviaList commentNode = SyntaxFactory.TriviaList(
-				SyntaxFactory.SyntaxTrivia(SyntaxKind.SingleLineCommentTrivia, string.Format(_comment, diagnostic.Id, "Description")),
+				SyntaxFactory.SyntaxTrivia(SyntaxKind.SingleLineCommentTrivia, 
+													string.Format(_comment, diagnostic.Id, 
+														_fixableDiagnosticIds.FirstOrDefault( x => x.Key == diagnostic.Id).Value.ToString())),
 				SyntaxFactory.ElasticEndOfLine(""));
 
 			while (!diagnosticNode.HasLeadingTrivia)
