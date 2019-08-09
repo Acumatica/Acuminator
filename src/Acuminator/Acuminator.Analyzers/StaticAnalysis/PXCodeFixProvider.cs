@@ -18,6 +18,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 	public class PXCodeFixProvider: CodeFixProvider
 	{
 		private const string _comment = @"// Acuminator disable once {0} {1} [Justification]";
+		private const string _diagnosticName = @"Suppress diagnostic {0}";
 
 		private static ImmutableArray<string> _FixableDiagnosticIds;
 
@@ -48,7 +49,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			{
 				foreach (var diagnostic in context.Diagnostics)
 				{
-					string codeActionName = string.Format("Suppress diagnostic {0}", diagnostic.Id);
+					string codeActionName = string.Format(_diagnosticName, diagnostic.Id);
 					CodeAction codeAction = CodeAction.Create(codeActionName,
 						cToken => AddSuppressionComment(context, diagnostic, cToken),
 						codeActionName);
