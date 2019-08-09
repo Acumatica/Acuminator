@@ -53,6 +53,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
+		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacKeysCategoryNodeViewModel dacKeysCategory,
+																				 bool expandChildren, CancellationToken cancellation)
+		{
+			dacKeysCategory.ThrowOnNull(nameof(dacKeysCategory));
+			return CreateDacMemberCategoryChildren<DacPropertyInfo>(dacKeysCategory,
+																	propertyInfo => new PropertyNodeViewModel(dacKeysCategory, propertyInfo, expandChildren),
+																	cancellation);
+		}
+
 		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacPropertiesCategoryNodeViewModel dacPropertiesCategory,
 																				 bool expandChildren, CancellationToken cancellation)
 		{
