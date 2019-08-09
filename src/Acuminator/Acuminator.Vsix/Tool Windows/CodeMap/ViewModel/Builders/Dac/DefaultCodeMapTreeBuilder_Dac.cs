@@ -13,6 +13,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public partial class DefaultCodeMapTreeBuilder : TreeBuilderBase
 	{
+		protected virtual DacNodeViewModel CreateDacNode(DacSemanticModel dacSemanticModel, TreeViewModel tree, bool expand) =>
+			new DacNodeViewModel(dacSemanticModel, tree, expand);
+
 		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacNodeViewModel dac, bool expandChildren, CancellationToken cancellation)
 		{
 			foreach (DacMemberCategory dacMemberCategory in GetDacMemberCategoriesInOrder())
