@@ -3,7 +3,6 @@ using Acuminator.Analyzers.StaticAnalysis.DacDeclaration;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
@@ -58,11 +57,5 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacDeclaration
 			"DacForbiddenFieldsRegions_Case3_Expected.cs")]
 		public virtual void TestFixForDacWithForbiddenFieldsWithRegions_Case3(string actual, string expected) =>
 			VerifyCSharpFix(actual, expected);
-
-		[Theory]
-		[EmbeddedFileData("DacForbiddenFields.cs",
-			"DacForbiddenFieldsSuppressComment_Expected.cs")]
-		public virtual void TestFixForDacWithForbidden_SuppressComment(string actual, string expected) =>
-			VerifyCSharpFix(actual, expected,codeFixIndex: 1);
 	}
 }

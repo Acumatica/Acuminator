@@ -52,11 +52,5 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacDeclaration
 						  "DacExtensionWithUnderscores_Expected.cs")]
 		public virtual void ForDacExtensionWithUnderscoresInDeclaration_CodeFix(string actual, string expected) =>
 			VerifyCSharpFix(actual, expected);
-
-		[Theory]
-		[EmbeddedFileData("DacWithConstructor.cs",
-			"DacWithConstructorSuppressComment_Expected.cs")]
-		public virtual void DacWithConstructorSuppressComment_CodeFix(string actual, string expected) =>
-			VerifyCSharpFix(actual, expected, codeFixIndex: 1);
 	}
 }
