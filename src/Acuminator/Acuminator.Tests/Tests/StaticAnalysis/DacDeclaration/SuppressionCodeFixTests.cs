@@ -21,13 +21,13 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacDeclaration
 		[Theory]
 		[EmbeddedFileData("DacForbiddenFields.cs",
 			"DacForbiddenFieldsSuppressComment_Expected.cs")]
-		public virtual void TestFixForDacWithForbidden_SuppressComment(string actual, string expected) =>
+		public virtual void DacWithForbidden_SuppressComment_CodeFix(string actual, string expected) =>
 			VerifyCSharpFix(actual, expected);
 
 		[Theory]
 		[EmbeddedFileData("DacWithConstructor.cs",
 			"DacWithConstructorSuppressComment_Expected.cs")]
-		public virtual void DacWithConstructorSuppressComment_CodeFix(string actual, string expected) =>
+		public virtual void DacWithConstructor_SuppressComment_CodeFix(string actual, string expected) =>
 			VerifyCSharpFix(actual, expected);
 	}
 }

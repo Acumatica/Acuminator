@@ -10,12 +10,12 @@ namespace PX.Objects.HackathonDemo
 	public class SOOrder : IBqlTable
 	{
 		#region Cons
-		// Acuminator disable once PX1028 Description [Justification]
+		// Acuminator disable once PX1028 ConstructorInDacDeclaration [Justification]
 		public SOOrder() : base() { }
 		#endregion
 
 		#region ConsParams
-		// Acuminator disable once PX1028 Description [Justification]
+		// Acuminator disable once PX1028 ConstructorInDacDeclaration [Justification]
 		public SOOrder(string orderType, string orderNbr, string status, DateTime? orderDate)
 		{
 			OrderType = orderType;
@@ -73,7 +73,7 @@ namespace PX.Objects.HackathonDemo
 	public class SOOrderWithTotal : PXCacheExtension<SOOrder>
 	{
 		#region Cons
-		// Acuminator disable once PX1028 Description [Justification]
+		// Acuminator disable once PX1028 ConstructorInDacDeclaration [Justification]
 		public SOOrderWithTotal() { }
 		#endregion
 
@@ -88,12 +88,12 @@ namespace PX.Objects.HackathonDemo
 	public class SOOrderWithHold : SOOrderWithTotal
 	{
 		#region Cons
-		// Acuminator disable once PX1028 Description [Justification]
+		// Acuminator disable once PX1028 ConstructorInDacDeclaration [Justification]
 		public SOOrderWithHold() { }
 		#endregion
 
 		#region Cons
-		// Acuminator disable once PX1028 Description [Justification]
+		// Acuminator disable once PX1028 ConstructorInDacDeclaration [Justification]
 		public SOOrderWithHold(bool? hold) { Hold = hold; }
 		#endregion
 
