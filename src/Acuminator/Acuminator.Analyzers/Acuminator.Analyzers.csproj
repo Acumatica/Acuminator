@@ -48,6 +48,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="DiagnosticsShortName.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DiagnosticsShortName.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="DiagnosticsShortName.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>DiagnosticsShortName.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
     <None Update="Diagnostic.nuspec">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

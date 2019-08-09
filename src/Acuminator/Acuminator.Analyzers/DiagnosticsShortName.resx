@@ -1,0 +1,324 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="PX1000" xml:space="preserve">
+    <value>InvalidPXActionHandlerSignature</value>
+  </data>
+  <data name="PX1001" xml:space="preserve">
+    <value>PXGraphCreateInstance</value>
+  </data>
+  <data name="PX1002" xml:space="preserve">
+    <value>MissingTypeListAttributeAnalyzer</value>
+  </data>
+  <data name="PX1003" xml:space="preserve">
+    <value>NonSpecificPXGraphCreateInstance</value>
+  </data>
+  <data name="PX1004" xml:space="preserve">
+    <value>ViewDeclarationOrder</value>
+  </data>
+  <data name="PX1005" xml:space="preserve">
+    <value>TypoInViewDelegateName</value>
+  </data>
+  <data name="PX1006" xml:space="preserve">
+    <value>ViewDeclarationOrder</value>
+  </data>
+  <data name="PX1008" xml:space="preserve">
+    <value>LongOperationDelegateClosures</value>
+  </data>
+  <data name="PX1010" xml:space="preserve">
+    <value>StartRowResetForPaging</value>
+  </data>
+  <data name="PX1009" xml:space="preserve">
+    <value>InheritanceFromPXCacheExtension</value>
+  </data>
+  <data name="PX1011" xml:space="preserve">
+    <value>InheritanceFromPXCacheExtension</value>
+  </data>
+  <data name="PX1012" xml:space="preserve">
+    <value>PXActionOnNonPrimaryView</value>
+  </data>
+  <data name="PX1013" xml:space="preserve">
+    <value>PXActionHandlerInvalidReturnType</value>
+  </data>
+  <data name="PX1014" xml:space="preserve">
+    <value>NonNullableTypeForBqlField</value>
+  </data>
+  <data name="PX1015" xml:space="preserve">
+    <value>PXBqlParametersMismatchWithOnlyRequiredParams</value>
+  </data>
+  <data name="PX1018" xml:space="preserve">
+    <value>NoPrimaryViewForPrimaryDac</value>
+  </data>
+  <data name="PX1021" xml:space="preserve">
+    <value>PXDBFieldAttributeNotMatchingDacProperty</value>
+  </data>
+  <data name="PX1023" xml:space="preserve">
+    <value>MultipleTypeAttributesOnProperty</value>
+  </data>
+  <data name="PX1024" xml:space="preserve">
+    <value>DacNonAbstractFieldType</value>
+  </data>
+  <data name="PX1026" xml:space="preserve">
+    <value>UnderscoresInDacDeclaration</value>
+  </data>
+  <data name="PX1027" xml:space="preserve">
+    <value>ForbiddenFieldsInDacDeclaration</value>
+  </data>
+  <data name="PX1028" xml:space="preserve">
+    <value>ConstructorInDacDeclaration</value>
+  </data>
+  <data name="PX1029" xml:space="preserve">
+    <value>PXGraphUsageInDac</value>
+  </data>
+  <data name="PX1030" xml:space="preserve">
+    <value>DefaultAttibuteToExistingRecordsError</value>
+  </data>
+  <data name="PX1031" xml:space="preserve">
+    <value>DacCannotContainInstanceMethods</value>
+  </data>
+  <data name="PX1032" xml:space="preserve">
+    <value>DacPropertyCannotContainMethodInvocations</value>
+  </data>
+  <data name="PX1040" xml:space="preserve">
+    <value>ConstructorInGraphExtension</value>
+  </data>
+  <data name="PX1042" xml:space="preserve">
+    <value>DatabaseQueriesInRowSelecting</value>
+  </data>
+  <data name="PX1043" xml:space="preserve">
+    <value>SavingChangesInEventHandlers</value>
+  </data>
+  <data name="PX1044" xml:space="preserve">
+    <value>ChangesInPXCacheInEventHandlers</value>
+  </data>
+  <data name="PX1045" xml:space="preserve">
+    <value>PXGraphCreateInstanceInEventHandlers</value>
+  </data>
+  <data name="PX1046" xml:space="preserve">
+    <value>LongOperationInEventHandlers</value>
+  </data>
+  <data name="PX1048" xml:space="preserve">
+    <value>RowChangesInEventHandlersAllowedForArgsOnly</value>
+  </data>
+  <data name="PX1047" xml:space="preserve">
+    <value>RowChangesInEventHandlersForbiddenForArgs</value>
+  </data>
+  <data name="PX1049" xml:space="preserve">
+    <value>DatabaseQueriesInRowSelected</value>
+  </data>
+  <data name="PX1050" xml:space="preserve">
+    <value>HardcodedStringInLocalizationMethod</value>
+  </data>
+  <data name="PX1051" xml:space="preserve">
+    <value>NonLocalizableString</value>
+  </data>
+  <data name="PX1052" xml:space="preserve">
+    <value>IncorrectStringToFormat</value>
+  </data>
+  <data name="PX1053" xml:space="preserve">
+    <value>ConcatenationPriorLocalization</value>
+  </data>
+  <data name="PX1054" xml:space="preserve">
+    <value>PXGraphLongRunOperationDuringInitialization</value>
+  </data>
+  <data name="PX1057" xml:space="preserve">
+    <value>PXGraphCreationDuringInitialization</value>
+  </data>
+  <data name="PX1058" xml:space="preserve">
+    <value>PXGraphSavingChangesDuringInitialization</value>
+  </data>
+  <data name="PX1055" xml:space="preserve">
+    <value>DacKeyFieldsWithIdentityKeyField</value>
+  </data>
+  <data name="PX1059" xml:space="preserve">
+    <value>ChangesInPXCacheDuringPXGraphInitialization</value>
+  </data>
+  <data name="PX1060" xml:space="preserve">
+    <value>LegacyBqlField</value>
+  </data>
+  <data name="PX1061" xml:space="preserve">
+    <value>LegacyBqlConstant</value>
+  </data>
+  <data name="PX1070" xml:space="preserve">
+    <value>UiPresentationLogicInEventHandlers</value>
+  </data>
+  <data name="PX1071" xml:space="preserve">
+    <value>PXActionExecutionInEventHandlers</value>
+  </data>
+  <data name="PX1072" xml:space="preserve">
+    <value>PXGraphCreationForBqlQueries</value>
+  </data>
+  <data name="PX1073" xml:space="preserve">
+    <value>ThrowingExceptionsInRowPersisted</value>
+  </data>
+  <data name="PX1074" xml:space="preserve">
+    <value>ThrowingSetupNotEnteredExceptionInEventHandlers</value>
+  </data>
+  <data name="PX1075" xml:space="preserve">
+    <value>RaiseExceptionHandlingInEventHandlers</value>
+  </data>
+  <data name="PX1080" xml:space="preserve">
+    <value>DataViewDelegateLongOperationStart</value>
+  </data>
+  <data name="PX1081" xml:space="preserve">
+    <value>PXGraphExecutesActionDuringInitialization</value>
+  </data>
+  <data name="PX1082" xml:space="preserve">
+    <value>ActionExecutionInDataViewDelegate</value>
+  </data>
+  <data name="PX1083" xml:space="preserve">
+    <value>SavingChangesInDataViewDelegate</value>
+  </data>
+  <data name="PX1084" xml:space="preserve">
+    <value>GraphCreationInDataViewDelegate</value>
+  </data>
+  <data name="PX1085" xml:space="preserve">
+    <value>DatabaseQueriesInPXGraphInitialization</value>
+  </data>
+  <data name="PX1086" xml:space="preserve">
+    <value>ThrowingSetupNotEnteredExceptionInLongRunningOperation</value>
+  </data>
+  <data name="PX1087" xml:space="preserve">
+    <value>CausingStackOverflowExceptionInBaseViewDelegateInvocation</value>
+  </data>
+  <data name="PX1088" xml:space="preserve">
+    <value>InvalidViewUsageInProcessingDelegate</value>
+  </data>
+  <data name="PX1089" xml:space="preserve">
+    <value>UiPresentationLogicInActionDelegates</value>
+  </data>
+  <data name="PX1090" xml:space="preserve">
+    <value>ThrowingSetupNotEnteredExceptionInActionHandlers</value>
+  </data>
+  <data name="PX1091" xml:space="preserve">
+    <value>CausingStackOverflowExceptionInBaseActionHandlerInvocation</value>
+  </data>
+  <data name="PX1092" xml:space="preserve">
+    <value>MissingAttributesOnActionHandler</value>
+  </data>
+  <data name="PX1093" xml:space="preserve">
+    <value>GraphDeclarationViolation</value>
+  </data>
+  <data name="PX1094" xml:space="preserve">
+    <value>DacShouldHaveUiAttribute</value>
+  </data>
+  <data name="PX1095" xml:space="preserve">
+    <value>PXDBCalcedMustBeAccompaniedNonDBTypeAttribute</value>
+  </data>
+</root>
