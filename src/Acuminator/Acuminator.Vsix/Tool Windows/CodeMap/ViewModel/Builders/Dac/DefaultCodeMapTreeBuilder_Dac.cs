@@ -25,6 +25,39 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			yield return DacMemberCategory.FieldsWithoutProperty;
 		}
 
+		
 
+		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacPropertiesCategoryNodeViewModel dacPropertiesCategory,
+																				 bool expandChildren, CancellationToken cancellation)
+		{
+			dacPropertiesCategory.ThrowOnNull(nameof(dacPropertiesCategory));
+			return CreateDacMemberCategoryChildren<DacPropertyInfo>(dacPropertiesCategory, 
+																	propertyInfo => new PropertyNodeViewModel(dacPropertiesCategory, propertyInfo, expandChildren),
+																	cancellation);
+		}
+
+		protected virtual IEnumerable<TreeNodeViewModel> CreateDacMemberCategoryChildren<TInfo>(DacMemberCategoryNodeViewModel dacMemberCategory,
+																								Func<TInfo, TreeNodeViewModel> constructor,
+																								CancellationToken cancellation)
+		where TInfo : SymbolItem
+		{
+			var categorySymbols = dacMemberCategory.GetCategoryDacNodeSymbols();
+
+			if (categorySymbols == null)
+			{
+				yield break;
+			}
+
+			foreach (TInfo info in categorySymbols)
+			{
+				cancellation.ThrowIfCancellationRequested();
+				TreeNodeViewModel childNode = constructor(info);
+
+				if (childNode != null)
+				{
+					yield return childNode;
+				}
+			}
+		}
 	}
 }
