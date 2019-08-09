@@ -7,22 +7,24 @@ using System.Threading.Tasks;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public enum DacMemberType
+	public enum DacMemberCategory
 	{
-		Property,
-		Field
+		Keys,
+		Property,		
+		FieldsWithoutProperty
 	}
 
 	internal static class DacMemberTypeTypeUtils
 	{
-		private static readonly Dictionary<DacMemberType, string> _descriptions = new Dictionary<DacMemberType, string>
+		private static readonly Dictionary<DacMemberCategory, string> _descriptions = new Dictionary<DacMemberCategory, string>
 		{
-			{ DacMemberType.Property, "Properties" },
-			{ DacMemberType.Field, "Fields" },
+			{ DacMemberCategory.Keys, "Keys" },
+			{ DacMemberCategory.Property, "Properties" },
+			{ DacMemberCategory.FieldsWithoutProperty, "Fields without property" },
 		};
 
-		public static string Description(this DacMemberType dacMemberType) =>
-			_descriptions.TryGetValue(dacMemberType, out string description)
+		public static string Description(this DacMemberCategory dacMemberCategory) =>
+			_descriptions.TryGetValue(dacMemberCategory, out string description)
 				? description
 				: string.Empty;
 	}

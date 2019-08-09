@@ -18,10 +18,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return base.VisitNodeAndBuildChildren(dac, expandChildren, cancellation);
 		}
 
-		protected virtual IEnumerable<DacMemberType> GetDacMemberTypesInOrder()
+		protected virtual IEnumerable<DacMemberCategory> GetDacMemberCategoriesInOrder()
 		{
-			yield return DacMemberType.Property;
-			yield return DacMemberType.Field;
+			yield return DacMemberCategory.Keys;
+			yield return DacMemberCategory.Property;
+			yield return DacMemberCategory.FieldsWithoutProperty;
 		}
 
 
