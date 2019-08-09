@@ -47,7 +47,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			CategoryDescription = CategoryType.Description();
 		}
 
-		public abstract IEnumerable<SymbolItem> GetCategoryGraphNodeSymbols();
+		public abstract IEnumerable<SymbolItem> GetCategoryDacNodeSymbols();
 
 		public async override Task NavigateToItemAsync()
 		{
