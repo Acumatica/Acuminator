@@ -9,6 +9,8 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Analyzers.StaticAnalysis.Dac;
+using System.Collections.Generic;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 {
@@ -20,8 +22,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
 		Nothing = 2
 	}
 
-	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class DacExtensionDefaultAttributeAnalyzer : PXDiagnosticAnalyzer
+	public class DacExtensionDefaultAttributeAnalyzer : DacAggregatedAnalyzerBase
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(
@@ -29,66 +30,46 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
                 Descriptors.PX1030_DefaultAttibuteToExistingRecordsError,
                 Descriptors.PX1030_DefaultAttibuteToExistingRecordsWarning);
 
-		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dacOrExtension)
 		{
-			compilationStartContext.RegisterSymbolAction(symbolContext =>
-                AnalyzeDacOrExtension(symbolContext, pxContext), SymbolKind.NamedType);
+			context.CancellationToken.ThrowIfCancellationRequested();
+
+			bool isDacFullyUnbound = IsDacFullyUnbound(dacOrExtension);
+
+			foreach (DacPropertyInfo property in dacOrExtension.DeclaredDacProperties)
+			{
+				context.CancellationToken.ThrowIfCancellationRequested();
+				AnalyzeProperty(context, pxContext, dacOrExtension, property, isDacFullyUnbound);
+			}
 		}
 
-		private static void AnalyzeDacOrExtension(SymbolAnalysisContext symbolContext, PXContext pxContext)
-		{
-            symbolContext.CancellationToken.ThrowIfCancellationRequested();
+		private static bool IsDacFullyUnbound(DacSemanticModel dacOrExtension) => 
+			dacOrExtension.DacProperties.All(p => p.EffectiveBoundType != BoundType.DbBound &&
+												  p.EffectiveBoundType != BoundType.Unknown);
 
-            if (!(symbolContext.Symbol is INamedTypeSymbol namedTypeSymbol) ||
-                !namedTypeSymbol.IsDacOrExtension(pxContext))
+		private static void AnalyzeProperty(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dacOrExtension,
+											DacPropertyInfo property, bool isDacFullyUnbound)
+        {         
+            switch (property.EffectiveBoundType)
             {
-                return;
-            }
+                case BoundType.Unbound when !isDacFullyUnbound:
+                    AnalyzeUnboundProperty(symbolContext, pxContext, dacOrExtension, property);
+                    return;
 
-            // Analyze only declared properties
-            var properties = namedTypeSymbol.GetMembers()
-                .OfType<IPropertySymbol>()
-                .Where(p => namedTypeSymbol.Equals(p.ContainingType));
-
-            foreach (var p in properties)
-            {
-                AnalyzeProperty(symbolContext, pxContext, namedTypeSymbol, p);
-            }
-		}
-
-        private static void AnalyzeProperty(SymbolAnalysisContext symbolContext, PXContext pxContext,
-            INamedTypeSymbol dacOrExtension, IPropertySymbol property)
-        {
-            symbolContext.CancellationToken.ThrowIfCancellationRequested();
-
-            var attributeInformation = new AttributeInformation(pxContext);
-            var attributes = property.GetAttributes();
-            var boundType = GetPropertyBoundType(pxContext, dacOrExtension, property,
-                attributeInformation, symbolContext.CancellationToken);
-
-            switch (boundType)
-            {
-                case BoundType.Unbound:
-                    AnalyzeUnboundProperty(symbolContext, pxContext, dacOrExtension, attributeInformation, attributes);
-                    break;
                 case BoundType.DbBound
-                when dacOrExtension.IsDacExtension(pxContext): // Analyze bound property only for extensions
-                    AnalyzeBoundPropertyAttributes(symbolContext, pxContext, dacOrExtension, attributeInformation, property.Name, attributes);
-                    break;
-                default:
-                    break;
+                when dacOrExtension.DacType == DacType.DacExtension: // Analyze bound property only for extensions
+                    AnalyzeBoundPropertyAttributes(symbolContext, pxContext, property);
+					return;
             }
         }
 
-        private static void AnalyzeUnboundProperty(SymbolAnalysisContext symbolContext, PXContext pxContext,
-            INamedTypeSymbol dacOrExtension, AttributeInformation attributeInformation, ImmutableArray<AttributeData> attributes)
+        private static void AnalyzeUnboundProperty(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dacOrExtension,
+												   DacPropertyInfo property)
         {
-            var (pxDefaultAttribute, hasPersistingCheckNothing) =
-                GetPXDefaultInfo(pxContext, attributeInformation, attributes, symbolContext.CancellationToken);
+            var (pxDefaultAttribute, hasPersistingCheckNothing) = GetPXDefaultInfo(pxContext, property);
+
             if (pxDefaultAttribute == null || hasPersistingCheckNothing)
-            {
                 return;
-            }
 
             var attributeLocation = GetAttributeLocation(pxDefaultAttribute, symbolContext.CancellationToken);
             if (attributeLocation == null)
@@ -97,185 +78,78 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute
             }
 
             var diagnosticProperties = ImmutableDictionary<string, string>.Empty
-                .Add(DiagnosticProperty.IsBoundField, bool.FalseString);
-            var descriptor = dacOrExtension.IsDAC(pxContext) ?
-                Descriptors.PX1030_DefaultAttibuteToExistingRecordsOnDAC :
-                Descriptors.PX1030_DefaultAttibuteToExistingRecordsError;
+																		  .Add(DiagnosticProperty.IsBoundField, bool.FalseString);
+            var descriptor = dacOrExtension.DacType == DacType.Dac
+				? Descriptors.PX1030_DefaultAttibuteToExistingRecordsOnDAC 
+				: Descriptors.PX1030_DefaultAttibuteToExistingRecordsError;
             var diagnostic = Diagnostic.Create(descriptor, attributeLocation, diagnosticProperties);
 
             symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
         }
 
-        private static void AnalyzeBoundPropertyAttributes(SymbolAnalysisContext symbolContext, PXContext pxContext,
-            INamedTypeSymbol dacExtension, AttributeInformation attributeInformation, string propertyName,
-            ImmutableArray<AttributeData> attributes)
+        private static void AnalyzeBoundPropertyAttributes(SymbolAnalysisContext symbolContext, PXContext pxContext, DacPropertyInfo property)
         {
-            var pxDefaultAttribute = GetInvalidPXDefaultAttributeFromBoundProperty(
-                pxContext, dacExtension, attributeInformation, propertyName, attributes, symbolContext.CancellationToken);
+            var pxDefaultAttribute = GetInvalidPXDefaultAttributeFromBoundProperty(pxContext, property);
+
             if (pxDefaultAttribute == null)
-            {
                 return;
-            }
 
             var attributeLocation = GetAttributeLocation(pxDefaultAttribute, symbolContext.CancellationToken);
             if (attributeLocation == null)
-            {
                 return;
-            }
 
             var diagnosticProperties = ImmutableDictionary<string, string>.Empty
-                .Add(DiagnosticProperty.IsBoundField, bool.TrueString);
-            var diagnostic = Diagnostic.Create(
-                Descriptors.PX1030_DefaultAttibuteToExistingRecordsWarning,
-                attributeLocation,
-                diagnosticProperties);
+																		  .Add(DiagnosticProperty.IsBoundField, bool.TrueString);
+            var diagnostic = Diagnostic.Create(Descriptors.PX1030_DefaultAttibuteToExistingRecordsWarning, attributeLocation, diagnosticProperties);
 
             symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
         }
 
-        private static AttributeData GetInvalidPXDefaultAttributeFromBoundProperty(PXContext pxContext, INamedTypeSymbol dacExtension,
-            AttributeInformation attributeInformation, string propertyName, ImmutableArray<AttributeData> attributes,
-            CancellationToken cancellationToken)
+        private static AttributeData GetInvalidPXDefaultAttributeFromBoundProperty(PXContext pxContext, DacPropertyInfo property)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            var (pxDefaultAttribute, hasPersistingCheckNothing) = GetPXDefaultInfo(pxContext, property);
 
-            var (pxDefaultAttribute, hasPersistingCheckNothing) =
-                GetPXDefaultInfo(pxContext, attributeInformation, attributes, cancellationToken);
             if (pxDefaultAttribute == null || hasPersistingCheckNothing)
-            {
                 return null;
-            }
-
-            
-            var baseExtensionAndDacTypes = dacExtension.GetDacExtensionsWithDac(pxContext).Skip(1);
 
             // If Dac extension contains PXDefaultAttribute without PersistingCheck.Nothing
             // we need to look to attribute wich it overrides:
             // if base attribute is also doesn't contain PersistingCheck.Nothing it is legitimately
-            foreach (var darOrExtension in baseExtensionAndDacTypes)
+            foreach (DacPropertyInfo overridenProperty in property.JustOverridenItems())
             {
-                var declaredProperty = GetDeclaredPropertyFromTypeByName(darOrExtension, propertyName);
-                if (declaredProperty == null)
-                {
-                    continue;
-                }
-
-                var attributesBase = declaredProperty.GetAttributes();
-                var (pxDefaultAttributeBase, hasPersistingCheckNothingBase) =
-                    GetPXDefaultInfo(pxContext, attributeInformation, attributesBase, cancellationToken);
+                var (pxDefaultAttributeBase, hasPersistingCheckNothingBase) = GetPXDefaultInfo(pxContext, overridenProperty);
 
                 if (pxDefaultAttributeBase == null)
-                {
-                    continue;
-                }
+                    continue;      
 
-                return hasPersistingCheckNothingBase ?
-                    pxDefaultAttribute :
-                    null;
+                return hasPersistingCheckNothingBase	//The values from the latest appropriate override should be used
+					? pxDefaultAttribute
+					: null;
             }
 
             return pxDefaultAttribute;
         }
 
-        private static (AttributeData PXDefaultAttribute, bool HasPersistingCheckNothing) GetPXDefaultInfo (
-            PXContext pxContext, AttributeInformation attributeInformation,
-            ImmutableArray<AttributeData> attributes, CancellationToken cancellationToken)
+        private static (AttributeData PXDefaultAttribute, bool HasPersistingCheckNothing) GetPXDefaultInfo(PXContext pxContext, DacPropertyInfo property)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+			var defaultAttributes = property.Attributes.Where(a => a.IsDefaultAttribute).ToList();
 
-            var pxDefaultAttribute = GetPXDefaultAttribute(pxContext, attributeInformation, attributes, cancellationToken);
-            if (pxDefaultAttribute == null)
-            {
-                return (null, false);
-            }
+			if (defaultAttributes.Count != 1)	//We don't check in case of multiple pxdefault
+				return (null, false);
 
-            var hasPersistingCheckNothing = pxDefaultAttribute.NamedArguments
-                .Where(na => TypeNames.PersistingCheck.Equals(na.Key, StringComparison.Ordinal))
-                .Select(na => na.Value.Value)
-                .Where(v => v is int persistingCheck && persistingCheck == (int)PXPersistingCheckValues.Nothing)
-                .Any();
+			var pxDefaultAttribute = defaultAttributes[0].AttributeData;
+			var hasPersistingCheckNothing = (from arg in pxDefaultAttribute.NamedArguments
+											 where TypeNames.PersistingCheck.Equals(arg.Key, StringComparison.Ordinal)
+											 select arg.Value.Value)
+											.Any(value => value is int persistingCheck && 
+														  persistingCheck == (int)PXPersistingCheckValues.Nothing);
 
             return (pxDefaultAttribute, hasPersistingCheckNothing);
         }
 
-        private static AttributeData GetPXDefaultAttribute(PXContext pxContext, AttributeInformation attributeInformation,
-            ImmutableArray<AttributeData> attributes, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            return attributes
-                .Where(a => attributeInformation.IsAttributeDerivedFromClass(a.AttributeClass, pxContext.AttributeTypes.PXDefaultAttribute) &&
-                !attributeInformation.IsAttributeDerivedFromClass(a.AttributeClass, pxContext.AttributeTypes.PXUnboundDefaultAttribute))
-                .FirstOrDefault();
-        }
-
-        private static BoundType GetPropertyBoundType(PXContext pxContext, INamedTypeSymbol dacOrExtension,
-            IPropertySymbol property, AttributeInformation attributeInformation, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            if (dacOrExtension.IsDAC(pxContext))
-            {
-                return GetBoundTypeFromDeclaredProperty(property, attributeInformation);
-            }
-
-            var extensionAndDacTypes = dacOrExtension.GetDacExtensionsWithDac(pxContext);
-
-            // We need to analyze base Dac extensions and Dac to find a first occurrence of bound/unbound attribute
-            // because extension can be PXNonInstantiatedExtension
-            foreach (var extension in extensionAndDacTypes)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                var declaredProperty = GetDeclaredPropertyFromTypeByName(extension, property.Name);
-                if (declaredProperty == null)
-                {
-                    continue;
-                }
-
-                var boundType = GetBoundTypeFromDeclaredProperty(declaredProperty, attributeInformation);
-
-                if (boundType == BoundType.DbBound || boundType == BoundType.Unbound)
-                {
-                    return boundType;
-                }
-            }
-
-            return BoundType.NotDefined;
-        }
-
-        private static BoundType GetBoundTypeFromDeclaredProperty(IPropertySymbol prop, AttributeInformation attributeInformation)
-        {
-            var propertyAttributes = prop.GetAttributes();
-
-            if (attributeInformation.ContainsBoundAttributes(propertyAttributes))
-            {
-                return BoundType.DbBound;
-            }
-
-            if (attributeInformation.ContainsUnboundAttributes(propertyAttributes))
-            {
-                return BoundType.Unbound;
-            }
-
-            return BoundType.NotDefined;
-        }
-
-        private static IPropertySymbol GetDeclaredPropertyFromTypeByName(ITypeSymbol typeSymbol, string name)
-        {
-            return typeSymbol.GetMembers(name)
-                .OfType<IPropertySymbol>()
-                .Where(p => typeSymbol.Equals(p.ContainingType))
-                .FirstOrDefault();
-        }
-
-        public static Location GetAttributeLocation(AttributeData attribute, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var attributeSyntaxNode = attribute.ApplicationSyntaxReference.GetSyntax(cancellationToken);
-
-            return attributeSyntaxNode?.GetLocation();
-        }
+        public static Location GetAttributeLocation(AttributeData attribute, CancellationToken cancellationToken) =>
+			attribute.ApplicationSyntaxReference
+					?.GetSyntax(cancellationToken)
+					?.GetLocation();
 	}
 }

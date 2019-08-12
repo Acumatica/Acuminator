@@ -1,5 +1,8 @@
-﻿using Acuminator.Utilities.DiagnosticSuppression;
+﻿using Acuminator.Analyzers.StaticAnalysis.Dac;
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
@@ -8,64 +11,60 @@ using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute
 {
-	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class MissingTypeListAttributeAnalyzer : PXDiagnosticAnalyzer
-    {
+    public class MissingTypeListAttributeAnalyzer : DacAggregatedAnalyzerBase
+	{
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1002_MissingTypeListAttributeAnalyzer);
 
-		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac)
 		{
-            compilationStartContext.RegisterSymbolAction(c => AnalyzeMethod(c, pxContext), SymbolKind.Property);
+			var typeAttributesSet = GetTypeAttributesSet(pxContext);
+
+			foreach (DacPropertyInfo property in dac.AllDeclaredProperties)
+			{
+				context.CancellationToken.ThrowIfCancellationRequested();
+				AnalyzeProperty(property, context, pxContext, typeAttributesSet);
+			}
 		}
 
-		private static void AnalyzeMethod(SymbolAnalysisContext context, PXContext pxContext)
+		private static void AnalyzeProperty(DacPropertyInfo property, SymbolAnalysisContext context, PXContext pxContext,
+											IEnumerable<INamedTypeSymbol> typeAttributesSet)
 		{
-			var property = (IPropertySymbol) context.Symbol;
-            var parent = property.ContainingType;
+			var attributeTypes = property.Symbol.GetAttributes()
+												.Select(a => a.AttributeClass)
+												.ToList(capacity: 4);
 
-            if (parent == null || !parent.InheritsFromOrEquals(pxContext.IBqlTableType, true))
-                return;
-            var types = new List<INamedTypeSymbol>
-            {
-                pxContext.FieldAttributes.PXIntAttribute,
-                pxContext.FieldAttributes.PXShortAttribute,
-                pxContext.FieldAttributes.PXStringAttribute,
-                pxContext.FieldAttributes.PXByteAttribute,
-                pxContext.FieldAttributes.PXDBDecimalAttribute,
-                pxContext.FieldAttributes.PXDBDoubleAttribute,
-                pxContext.FieldAttributes.PXDBIntAttribute,
-                pxContext.FieldAttributes.PXDBShortAttribute,
-                pxContext.FieldAttributes.PXDBStringAttribute,
-                pxContext.FieldAttributes.PXDBByteAttribute,
-                pxContext.FieldAttributes.PXDecimalAttribute,
-                pxContext.FieldAttributes.PXDoubleAttribute
-            };
+			bool hasListAttribute = attributeTypes.Any(type => type.ImplementsInterface(pxContext.IPXLocalizableList));
 
+			if (!hasListAttribute)
+				return;
 
-            var attributeClasses = property.GetAttributes().
-                    Select(a => a.AttributeClass);
-
-            var listAttribute = attributeClasses.
-                    FirstOrDefault(c => c.InheritsFromOrEquals(pxContext.IPXLocalizableList, true));
-
-            if (listAttribute == null)
-                return;
-
-            var systemObject = context.Compilation.GetTypeByMetadataName(typeof(System.Object).FullName);
-            while (!listAttribute.BaseType.Equals(pxContext.AttributeTypes.PXEventSubscriberAttribute) &&
-                   !listAttribute.BaseType.Equals(systemObject))
-                listAttribute = listAttribute.BaseType;
-            //hardcode
-            bool hasTypeAttribute = attributeClasses.
-                    Any(c => types.Any(l => c.InheritsFromOrEquals(l, true)));
-
+			//TODO we need to use FieldTypeAttributesRegister to perform complete analysis with consideration for aggregate attributes 
+			bool hasTypeAttribute = attributeTypes.Any(propertyAttributeType => 
+										typeAttributesSet.Any(typeAttribute => propertyAttributeType.InheritsFromOrEquals(typeAttribute)));
 			if (!hasTypeAttribute)
 			{
 				context.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(Descriptors.PX1002_MissingTypeListAttributeAnalyzer, property.Locations.First()),
+					Diagnostic.Create(Descriptors.PX1002_MissingTypeListAttributeAnalyzer, property.Symbol.Locations.FirstOrDefault()),
 					pxContext.CodeAnalysisSettings);
 			}
-        }
+		}
+
+		private static IEnumerable<INamedTypeSymbol> GetTypeAttributesSet(PXContext pxContext) =>
+			new INamedTypeSymbol[]
+			{
+				pxContext.FieldAttributes.PXIntAttribute,
+				pxContext.FieldAttributes.PXShortAttribute,
+				pxContext.FieldAttributes.PXStringAttribute,
+				pxContext.FieldAttributes.PXByteAttribute,
+				pxContext.FieldAttributes.PXDBDecimalAttribute,
+				pxContext.FieldAttributes.PXDBDoubleAttribute,
+				pxContext.FieldAttributes.PXDBIntAttribute,
+				pxContext.FieldAttributes.PXDBShortAttribute,
+				pxContext.FieldAttributes.PXDBStringAttribute,
+				pxContext.FieldAttributes.PXDBByteAttribute,
+				pxContext.FieldAttributes.PXDecimalAttribute,
+				pxContext.FieldAttributes.PXDoubleAttribute
+			};
 	}
 }

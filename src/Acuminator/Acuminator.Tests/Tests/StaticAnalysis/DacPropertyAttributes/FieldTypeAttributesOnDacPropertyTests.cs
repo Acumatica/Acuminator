@@ -1,8 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
+using Acuminator.Utilities;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
@@ -11,7 +13,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacPropertyAttributes
 {
 	public class FieldTypeAttributesOnDacPropertyTests : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacPropertyAttributesAnalyzer();
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
+			new DacAnalyzersAggregator(
+				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
+											.WithSuppressionMechanismDisabled(),
+				new DacPropertyAttributesAnalyzer());
 
 		[Theory]
 		[EmbeddedFileData("DacWithMultipleFieldTypeAttributes.cs")]

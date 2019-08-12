@@ -196,12 +196,22 @@ namespace Acuminator.Tests.Verification
 		/// <summary>
 		/// Get the existing compiler diagnostics on the inputted document.
 		/// </summary>
-		/// <param name="document">The Document to run the compiler diagnostic analyzers on</param>
-		/// <returns>The compiler diagnostics that were found in the code</returns>
-		public static async Task<IEnumerable<Diagnostic>> GetCompilerDiagnosticsAsync(Document document)
+		/// <param name="document">The Document to run the compiler diagnostic analyzers on.</param>
+		/// <param name="ignoreHiddenDiagnostics">(Optional) True to ignore hidden diagnostics.</param>
+		/// <returns>
+		/// The compiler diagnostics that were found in the code.
+		/// </returns>
+		public static async Task<IEnumerable<Diagnostic>> GetCompilerDiagnosticsAsync(Document document, bool ignoreHiddenDiagnostics = true)
 		{
 			var semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
-			return semanticModel.GetDiagnostics();
+			IEnumerable<Diagnostic> diagnostics = semanticModel.GetDiagnostics();
+
+			if (ignoreHiddenDiagnostics)
+			{
+				diagnostics = diagnostics.Where(d => d.DefaultSeverity != DiagnosticSeverity.Hidden);
+			}
+
+			return diagnostics;
 		}
 
 		/// <summary>

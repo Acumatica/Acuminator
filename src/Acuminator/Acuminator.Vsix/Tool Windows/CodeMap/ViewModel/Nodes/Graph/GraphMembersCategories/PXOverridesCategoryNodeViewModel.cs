@@ -21,11 +21,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			
 		}
 
-		protected override IEnumerable<GraphNodeSymbolItem> GetCategoryGraphNodeSymbols() => CodeMapGraphModel.PXOverrides;
+		protected override IEnumerable<SymbolItem> GetCategoryGraphNodeSymbols() => CodeMapGraphModel.PXOverrides;
 
 		protected override void AddCategoryMembers()
 		{
-			IEnumerable<GraphNodeSymbolItem> categoryTreeNodes = GetCategoryGraphNodeSymbols();
+			IEnumerable<SymbolItem> categoryTreeNodes = GetCategoryGraphNodeSymbols();
 
 			if (categoryTreeNodes.IsNullOrEmpty())
 				return;

@@ -1,19 +1,18 @@
 ﻿using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
-using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Analyzers.StaticAnalysis.Dac;
+using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 {
-	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class KeyFieldDeclarationAnalyzer : PXDiagnosticAnalyzer
+	public class KeyFieldDeclarationAnalyzer : DacAggregatedAnalyzerBase
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
@@ -21,52 +20,38 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 				Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField
 			);
 
-		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac)
 		{
-			compilationStartContext.RegisterSymbolAction(symbolContext =>
-				AnalyzeDacOrDacExtensionDeclaration(symbolContext, pxContext), SymbolKind.NamedType);
-		}
+			context.CancellationToken.ThrowIfCancellationRequested();
 
-		private static void AnalyzeDacOrDacExtensionDeclaration(SymbolAnalysisContext symbolContext, PXContext pxContext)
-		{
-			symbolContext.CancellationToken.ThrowIfCancellationRequested();
+			var keyAttributes = new List<AttributeInfo>(capacity: 2);
+			var declaredInDacKeyAttributes = new List<AttributeInfo>(capacity: 2);
+			bool containsIdentityKeys = false;
 
-			if (!(symbolContext.Symbol is INamedTypeSymbol dacOrDacExtSymbol) || !dacOrDacExtSymbol.IsDacOrExtension(pxContext))
-				return;
-
-			var dacPropertiesDeclarations = dacOrDacExtSymbol.GetMembers().OfType<IPropertySymbol>();
-
-			var keyAttributes = new List<AttributeData>();
-
-			bool isKey = false;
-			bool isKeyIdentity = false;
-
-			foreach (var attribute in dacPropertiesDeclarations.SelectMany(a => a.GetAttributes()))
+			foreach (DacPropertyInfo property in dac.DacProperties.Where(p => p.IsKey))
 			{
-				bool hasKeys = attribute.NamedArguments.Any(a => a.Key.Contains(DelegateNames.IsKey) &&
-																	a.Value.Value is bool isKeyValue &&
-																	isKeyValue == true);
+				context.CancellationToken.ThrowIfCancellationRequested();
 
-				if (hasKeys)
+				IEnumerable<AttributeInfo> propertyKeyAttributes = property.Attributes.Where(a => a.IsKey);
+				containsIdentityKeys = containsIdentityKeys || property.IsIdentity;
+
+				keyAttributes.AddRange(propertyKeyAttributes);
+
+				if (property.Symbol.ContainingType == dac.Symbol)
 				{
-					var identityOrKey = CheckAttributeIdentityOrKey(attribute, pxContext);
-
-					isKey = identityOrKey.IsKey || isKey;
-					isKeyIdentity = identityOrKey.IsKeyIdentity || isKeyIdentity;
-
-					keyAttributes.Add(attribute);
+					declaredInDacKeyAttributes.AddRange(propertyKeyAttributes);
 				}
 			}
 
-			if (isKey && isKeyIdentity)
-			{
-				var locations = keyAttributes.Select(attribute => GetAttributeLocation(attribute, symbolContext.CancellationToken)).ToList();
+			if (keyAttributes.Count > 1 && containsIdentityKeys && declaredInDacKeyAttributes.Count > 0)
+			{		
+				var locations = declaredInDacKeyAttributes.Select(attribute => GetAttributeLocation(attribute.AttributeData, context.CancellationToken)).ToList();
 
 				foreach (Location attributeLocation in locations)
 				{
 					var extraLocations = locations.Where(l => l != attributeLocation);
 
-					symbolContext.ReportDiagnosticWithSuppressionCheck(
+					context.ReportDiagnosticWithSuppressionCheck(
 						Diagnostic.Create(
 							Descriptors.PX1055_DacKeyFieldsWithIdentityKeyField, attributeLocation, extraLocations),
 							pxContext.CodeAnalysisSettings);
@@ -77,22 +62,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration
 		private static Location GetAttributeLocation(AttributeData attribute, CancellationToken cancellationToken) =>
 			attribute.ApplicationSyntaxReference
 					?.GetSyntax(cancellationToken)
-					?.GetLocation();
-		
-		private static bool IsDerivedFromIdentityTypes(AttributeData attribute, PXContext pxContext)
-		{
-			var attributeInformation = new AttributeInformation(pxContext);
-
-			return attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, pxContext.FieldAttributes.PXDBIdentityAttribute) ||
-				   attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, pxContext.FieldAttributes.PXDBLongIdentityAttribute);
-		}
-
-		private static (bool IsKey, bool IsKeyIdentity) CheckAttributeIdentityOrKey(AttributeData attribute, PXContext pxContext)
-		{
-			if (!IsDerivedFromIdentityTypes(attribute, pxContext))
-				return (IsKey: true, IsKeyIdentity: false);
-			else
-				return (IsKey: false, IsKeyIdentity: true);
-		}
+					?.GetLocation();	
 	}
 }

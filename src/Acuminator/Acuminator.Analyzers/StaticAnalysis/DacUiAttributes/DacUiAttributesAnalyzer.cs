@@ -1,52 +1,38 @@
-﻿using Acuminator.Utilities.DiagnosticSuppression;
+﻿using System.Collections.Immutable;
+using System.Linq;
+using Acuminator.Analyzers.StaticAnalysis.Dac;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
+
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 {
-	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class DacUiAttributesAnalyzer : PXDiagnosticAnalyzer
+	public class DacUiAttributesAnalyzer : DacAggregatedAnalyzerBase
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1094_DacShouldHaveUiAttribute);
 
-		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
-		{
-			compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzeDacUiAttributes(syntaxContext, pxContext), SyntaxKind.ClassDeclaration);
-		}
+		public override bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) =>
+			base.ShouldAnalyze(pxContext, dac) && 
+			dac.DacType == DacType.Dac;
 
-		private void AnalyzeDacUiAttributes(SyntaxNodeAnalysisContext context, PXContext pxContext)
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (!(context.Node is ClassDeclarationSyntax classDeclaration))
-			{
-				return;
-			}
-
-			var classTypeSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclaration, context.CancellationToken);
-			if (classTypeSymbol == null || !classTypeSymbol.IsDAC(pxContext))
-			{
-				return;
-			}
-
-			var dacAttributes = classTypeSymbol.GetAttributes();
+			var dacAttributes = dac.Symbol.GetAttributes();
 			var pxCacheNameAttribute = pxContext.AttributeTypes.PXCacheNameAttribute;
 			var pxHiddenAttribute = pxContext.AttributeTypes.PXHiddenAttribute;
-			var hasPXCacheNameAttribute = false;
-			var hasPXHiddenAttribute = false;
+			bool hasPXCacheNameAttribute = false;
+			bool hasPXHiddenAttribute = false;
 
-			foreach (var attribute in dacAttributes)
+			foreach (var attribute in dacAttributes.Where(a => a.AttributeClass != null))
 			{
-				if (attribute.AttributeClass == null)
-				{
-					continue;
-				}
-
 				if (attribute.AttributeClass.InheritsFromOrEquals(pxCacheNameAttribute))
 				{
 					hasPXCacheNameAttribute = true;
@@ -58,14 +44,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 				}
 
 				if (hasPXCacheNameAttribute || hasPXHiddenAttribute)
-				{
 					return;
-				}
 			}
 
-			var diagnostic = Diagnostic.Create(
-				Descriptors.PX1094_DacShouldHaveUiAttribute,
-				classDeclaration.Identifier.GetLocation());
+			var diagnostic = Diagnostic.Create(Descriptors.PX1094_DacShouldHaveUiAttribute,
+											   dac.Node.Identifier.GetLocation());
 
 			context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
 		}

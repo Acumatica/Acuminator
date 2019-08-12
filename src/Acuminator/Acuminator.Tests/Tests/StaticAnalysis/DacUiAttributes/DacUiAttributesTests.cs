@@ -1,7 +1,9 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Analyzers.StaticAnalysis.DacUiAttributes;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
+using Acuminator.Utilities;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Threading.Tasks;
@@ -11,7 +13,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacUiAttributes
 {
 	public class DacUiAttributesTests : CodeFixVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DacUiAttributesAnalyzer();
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
+			new DacAnalyzersAggregator(
+				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
+											.WithSuppressionMechanismDisabled(),
+				new DacUiAttributesAnalyzer());
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new DacUiAttributesFix();
 

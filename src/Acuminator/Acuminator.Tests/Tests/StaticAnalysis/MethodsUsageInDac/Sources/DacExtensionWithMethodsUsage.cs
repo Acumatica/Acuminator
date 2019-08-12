@@ -56,4 +56,9 @@ namespace Acuminator.Tests.Sources
         {
         }
     }
+
+	public class IIGPOALCLandedCost : IBqlTable
+	{
+		//DAC is required for correct collection of DAC semantic model for DAC extension
+	}
 }

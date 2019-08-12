@@ -7,6 +7,18 @@ using PX.Data;
 
 namespace PX.Objects.HackathonDemo
 {
+	public class SOOrder : IBqlTable
+	{
+		#region OrderNbr
+		public abstract class orderNbr : IBqlField { }
+
+		[PXDBString(IsKey = true, InputMask = "")]
+		[PXDefault]
+		[PXUIField(DisplayName = "Order Nbr.")]
+		public string OrderNbr { get; set; }
+		#endregion
+	}
+
 	public class SOOrderWithTotal : PXCacheExtension<SOOrder>
 	{
 		#region TotalAmount
@@ -38,8 +50,4 @@ namespace PX.Objects.HackathonDemo
 		public virtual int? UsrNPCADocLineCntr3 { get; set; }
 		#endregion
 	}
-
-    public class SOOrder : IBqlTable
-    {
-    }
 }

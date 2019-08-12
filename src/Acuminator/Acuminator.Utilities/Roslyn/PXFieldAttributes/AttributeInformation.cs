@@ -11,20 +11,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 {
 	/// <summary>
-	/// Helper used to classify Acumatica attributes.
-	/// </summary>
-	/// <remarks>
-	/// By Acumatica atribute we mean an attribute derived from PXEventSubscriberAttribute.
-	/// </remarks>
-	
-	public enum BoundType
-	{
-		Unknown = 0,
-		Unbound = 1,
-		DbBound = 2,
-		NotDefined = 3
-	}
-	/// <summary>
 	/// Helper used to retrieve information about the Acumatica attributes.
 	/// </summary>
 	/// <remarks>
@@ -33,12 +19,13 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 	public class AttributeInformation
 	{
 		private const int DefaultRecursionDepth = 10;
-		private readonly PXContext _context;
-
+		
 		private readonly INamedTypeSymbol _eventSubscriberAttribute;
 		private readonly INamedTypeSymbol _dynamicAggregateAttribute;
 		private readonly INamedTypeSymbol _aggregateAttribute;
 		private readonly INamedTypeSymbol _defaultAttribute;
+
+		public PXContext Context { get; }
 
 		public ImmutableHashSet<ITypeSymbol> BoundBaseTypes { get; }
 		public ImmutableDictionary<ITypeSymbol,bool> TypesContainingIsDBField { get; }
@@ -49,18 +36,18 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 
-			_context = pxContext;
+			Context = pxContext;
 
-			var boundBaseTypes = GetBoundBaseTypes(_context);
-			Dictionary<ITypeSymbol, bool> typesContainingIsDBField = GetTypesContainingIsDBField(_context);
+			var boundBaseTypes = GetBoundBaseTypes(Context);
+			Dictionary<ITypeSymbol, bool> typesContainingIsDBField = GetTypesContainingIsDBField(Context);
 
 			BoundBaseTypes = boundBaseTypes.ToImmutableHashSet();
 			TypesContainingIsDBField = typesContainingIsDBField.ToImmutableDictionary();
 
-			_eventSubscriberAttribute = _context.AttributeTypes.PXEventSubscriberAttribute;
-			_dynamicAggregateAttribute = _context.AttributeTypes.PXDynamicAggregateAttribute;
-			_aggregateAttribute = _context.AttributeTypes.PXAggregateAttribute;
-			_defaultAttribute = _context.AttributeTypes.PXDefaultAttribute;
+			_eventSubscriberAttribute = Context.AttributeTypes.PXEventSubscriberAttribute;
+			_dynamicAggregateAttribute = Context.AttributeTypes.PXDynamicAggregateAttribute;
+			_aggregateAttribute = Context.AttributeTypes.PXAggregateAttribute;
+			_defaultAttribute = Context.AttributeTypes.PXDefaultAttribute;
 		}
 
 		private static HashSet<ITypeSymbol> GetBoundBaseTypes(PXContext context)
@@ -247,24 +234,35 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		/// </summary>
 		/// <param name="attributes">The attributes collection.</param>
 		/// <returns/>
-		public bool ContainsBoundAttributes(IEnumerable<AttributeData> attributes)
-		{
-			attributes.ThrowOnNull();
+		public bool ContainsBoundAttributes(IEnumerable<AttributeData> attributes) => 
+			attributes.CheckIfNull(nameof(attributes))
+					  .Any(a => GetBoundAttributeType(a) == BoundType.DbBound);
+		
 
-			return attributes.Any(a => GetBoundAttributeType(a) == BoundType.DbBound);
-		}
+		/// <summary>
+		/// Query if collection of attributes contains bound attribute. Overload for immutable array to prevent boxing.
+		/// </summary>
+		/// <param name="attributes">The attributes collection.</param>
+		/// <returns/>
+		public bool ContainsBoundAttributes(ImmutableArray<AttributeData> attributes) => 
+			attributes.Any(a => GetBoundAttributeType(a) == BoundType.DbBound);
 
 		/// <summary>
 		/// Query if collection of attributes contains unbound attribute.
 		/// </summary>
 		/// <param name="attributes">The attributes collection.</param>
 		/// <returns/>
-		public bool ContainsUnboundAttributes(IEnumerable<AttributeData> attributes)
-		{
-			attributes.ThrowOnNull();
+		public bool ContainsUnboundAttributes(IEnumerable<AttributeData> attributes) =>
+			attributes.CheckIfNull(nameof(attributes))
+					  .Any(a => GetBoundAttributeType(a) == BoundType.Unbound);
 
-			return attributes.Any(a => GetBoundAttributeType(a) == BoundType.Unbound);
-		}
+		/// <summary>
+		/// Query if collection of attributes contains unbound attribute. Overload for immutable array to prevent boxing.
+		/// </summary>
+		/// <param name="attributes">The attributes collection.</param>
+		/// <returns/>
+		public bool ContainsUnboundAttributes(ImmutableArray<AttributeData> attributes) =>
+			attributes.Any(a => GetBoundAttributeType(a) == BoundType.Unbound);
 
 		private bool IsAttributeDerivedFromClassInternal(ITypeSymbol attributeType, ITypeSymbol typeToCheck, int depth = DefaultRecursionDepth)
 		{
