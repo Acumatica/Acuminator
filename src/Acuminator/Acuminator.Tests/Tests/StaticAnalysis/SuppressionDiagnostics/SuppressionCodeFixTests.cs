@@ -1,5 +1,7 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis;
-using Acuminator.Analyzers.StaticAnalysis.DacDeclaration;
+using Acuminator.Analyzers.StaticAnalysis.ConstructorInDac;
+using Acuminator.Analyzers.StaticAnalysis.Dac;
+using Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
@@ -8,13 +10,16 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.DacDeclaration
+namespace Acuminator.Tests.Tests.StaticAnalysis.ForbiddenFieldsInDac
 {
 	public class SuppressionCodeFixTests : CodeFixVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-			new DacDeclarationAnalyzer(CodeAnalysisSettings.Default
-				.WithIsvSpecificAnalyzersEnabled());
+			new DacAnalyzersAggregator(
+				CodeAnalysisSettings.Default
+				.WithIsvSpecificAnalyzersEnabled(),
+				new ForbiddenFieldsInDacAnalyzer(),
+				new ConstructorInDacAnalyzer());
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new PXCodeFixProvider();
 

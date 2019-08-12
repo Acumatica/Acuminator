@@ -124,9 +124,10 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\BaseAndDerivedDac.cs" />
     <Compile Include="Tests\StaticAnalysis\ForbiddenFieldsInDac\DacForbiddenFieldsNonISVTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacNonAbstractFieldType\DacFieldNotAbstractTests.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\ForbiddenFieldsInDac\Sources\DacForbiddenFieldsSuppressComment_Expected.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\ForbiddenFieldsInDac\Sources\DacWithConstructorSuppressComment_Expected.cs" />
-    <Compile Include="Tests\StaticAnalysis\ForbiddenFieldsInDac\SuppressionCodeFixTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\DacForbiddenFieldsSuppressComment_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\DacWithConstructorSuppressComment_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\DacWithConstructor.cs" />
+    <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\SuppressionCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacPropertyAttributes\DacFieldWithDBCalcedAttributeTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacUiAttributes\DacUiAttributesTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacUiAttributes\Sources\Dac_Bad.cs" />
@@ -266,6 +267,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\SavingChanges\Sources\EventHandlers\PXDatabaseInsertWithoutTranStatusOpenInsideRowPersisted.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\IsPatternAssignment.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\RowChangesInEventHandlers\Sources\Reversed\IsPatternAssignment.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\DacForbiddenFields.cs" />
     <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInActionHandlersTests.cs" />
     <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInEventHandlersNonISVTests.cs" />
     <Compile Include="Tests\StaticAnalysis\ThrowingExceptions\ThrowingExceptionsInLongRunningOperationTests.cs" />
