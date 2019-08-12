@@ -307,7 +307,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
             Rule("PX1088", nameof(Resources.PX1088Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, name: DiagnosticsShortName.PX1088);
 
         public static DiagnosticDescriptor PX1089_UiPresentationLogicInActionDelegates { get; } =
-            Rule("PX1089", nameof(Resources.PX1089Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, name: DiagnosticsShortName.PX1088);
+            Rule("PX1089", nameof(Resources.PX1089Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, name: DiagnosticsShortName.PX1089);
 
         public static DiagnosticDescriptor PX1090_ThrowingSetupNotEnteredExceptionInActionHandlers { get; } =
             Rule("PX1090", nameof(Resources.PX1090Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, name: DiagnosticsShortName.PX1090);
