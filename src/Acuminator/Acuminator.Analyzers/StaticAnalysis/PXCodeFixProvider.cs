@@ -11,7 +11,6 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Collections.Generic;
 using Acuminator.Utilities.Common;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Analyzers.StaticAnalysis
 {
@@ -21,8 +20,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 	{
 		private const string _comment = @"// Acuminator disable once {0} {1} [Justification]";
 		private const string _diagnosticName = @"Suppress diagnostic {0}";
-		
-private static ImmutableDictionary<string, string> _fixableDiagnosticIds;
+
+		private static ImmutableDictionary<string, string> _fixableDiagnosticIds;
 
 		static PXCodeFixProvider()
 		{
@@ -56,12 +55,6 @@ private static ImmutableDictionary<string, string> _fixableDiagnosticIds;
 					CodeAction codeAction = CodeAction.Create(codeActionName,
 						cToken => AddSuppressionComment(context, diagnostic, cToken),
 						codeActionName);
-					var actionType = typeof(CodeAction);
-					var priority = actionType.GetRuntimeProperty("Priority");
-					/*var myCodeFix = new CodeActionWithNestedActions(codeActionName,
-						codeAction, codeActionName);
-						*/
-
 					context.RegisterCodeFix(codeAction, diagnostic);
 				}
 			}, context.CancellationToken);
@@ -93,66 +86,4 @@ private static ImmutableDictionary<string, string> _fixableDiagnosticIds;
 			return document.WithSyntaxRoot(modifiedRoot);
 		}
 	}
-
-	internal enum CodeActionPriority
-	{
-		//
-		// Summary:
-		//     No particular priority.
-		None = 0,
-		//
-		// Summary:
-		//     Low priority suggestion.
-		Low = 1,
-		//
-		// Summary:
-		//     Medium priority suggestion.
-		Medium = 2,
-		//
-		// Summary:
-		//     High priority suggestion.
-		High = 3
-	}
-
-	internal abstract class SimpleCodeAction : CodeAction
-	{
-		public SimpleCodeAction(string title, string equivalenceKey)
-		{
-			Title = title;
-			EquivalenceKey = equivalenceKey;
-		}
-
-		public sealed override string Title { get; }
-		public sealed override string EquivalenceKey { get; }
-
-		internal virtual CodeActionPriority Priority => CodeActionPriority.None;
-
-
-		protected override Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken)
-		{
-			return Task.FromResult<Document>(null);
-		}
-	}
-
-	internal class CodeActionWithNestedActions : SimpleCodeAction
-	{
-		public CodeActionWithNestedActions(
-			string title, CodeAction nestedAction, string equivalenceKey,
-			CodeActionPriority priority = CodeActionPriority.None)
-			: base(title, equivalenceKey)
-		{ 
-			//NestedCodeActions = nestedAction.ToImmutab;
-			//IsInlinable = isInlinable;
-			Priority = priority;
-		}
-
-		internal override CodeActionPriority Priority { get; }
-
-//		internal bool IsInlinable { get; }
-
-		//internal ImmutableArray<CodeAction> NestedCodeActions { get; }
-
-	}
-
-
 }
