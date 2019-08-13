@@ -30,9 +30,17 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			var propertiesInfo = diagnosticsType.GetRuntimeProperties();
 			
 			_fixableDiagnosticIds = propertiesInfo.Where(x => x.PropertyType == typeof(DiagnosticDescriptor))
-													.Select(x => new {
-														((DiagnosticDescriptor)x.GetValue(x, null)).Id,
-														Name = ((DiagnosticDescriptor)x.GetValue(x, null)).CustomTags.FirstOrDefault()
+													.Select(x =>
+													{
+														var descriptor = (DiagnosticDescriptor) x.GetValue(x, null);
+														return new
+														{
+															descriptor.Id,
+															Name = descriptor
+																.CustomTags.FirstOrDefault()
+																.CheckIfNullOrWhiteSpace(
+																	message: "Diagnostic short name can't be null.")
+														};
 													}).Distinct()
 													.ToImmutableDictionary(x => x.Id, x => x.Name);
 		}
