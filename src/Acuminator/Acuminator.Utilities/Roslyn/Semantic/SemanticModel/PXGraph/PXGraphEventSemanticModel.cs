@@ -13,6 +13,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
 	public partial class PXGraphEventSemanticModel
 	{
+		Timer
 		private readonly CancellationToken _cancellation;
 		private readonly PXContext _pxContext;
 
