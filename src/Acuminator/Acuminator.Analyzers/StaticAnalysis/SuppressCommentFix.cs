@@ -32,10 +32,10 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 			idsDiagnosticDescriptors = propertiesInfo.Where(x => x.PropertyType == typeof(DiagnosticDescriptor))
 													.Select(x => new {
-														Key = ((DiagnosticDescriptor)x.GetValue(x, null)).Id,
+														((DiagnosticDescriptor)x.GetValue(x, null)).Id,
 														Name = ((DiagnosticDescriptor)x.GetValue(x, null)).CustomTags.FirstOrDefault()
 													}).Distinct()
-													.ToDictionary(x => x.Key, x => x.Name);
+													.ToDictionary(x => x.Id, x => x.Name);
 			
 			_fixableDiagnosticIds = idsDiagnosticDescriptors.ToImmutableDictionary();
 		}
