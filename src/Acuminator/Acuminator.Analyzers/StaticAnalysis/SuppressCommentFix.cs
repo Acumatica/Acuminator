@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Collections.Generic;
 using Acuminator.Utilities.Common;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Analyzers.StaticAnalysis
 {
@@ -58,9 +59,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		{
 			var document = context.Document;
 			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-			var diagnosticNode = root?.FindNode(context.Span);
+			var node = root?.FindNode(context.Span);
 
-			if (diagnostic == null || diagnosticNode == null || cancellationToken.IsCancellationRequested)
+			if (diagnostic == null || node == null || cancellationToken.IsCancellationRequested)
 				return document;
 
 			var diagnosticName = _fixableDiagnosticIds.GetValueOrDefault(diagnostic.Id);
@@ -72,12 +73,12 @@ namespace Acuminator.Analyzers.StaticAnalysis
 						string.Format(_comment, diagnostic.Id, diagnosticName)),
 					SyntaxFactory.ElasticEndOfLine(""));
 
-				while (!diagnosticNode.HasLeadingTrivia)
+				while (!(node is StatementSyntax || node is MemberDeclarationSyntax))
 				{
-					diagnosticNode = diagnosticNode.Parent;
+					node = node.Parent;
 				}
 
-				SyntaxTriviaList leadingTrivia = diagnosticNode.GetLeadingTrivia();
+				SyntaxTriviaList leadingTrivia = node.GetLeadingTrivia();
 				var modifiedRoot = root.InsertTriviaAfter(leadingTrivia.Last(), commentNode);
 				return document.WithSyntaxRoot(modifiedRoot);
 

@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
 {
@@ -231,7 +232,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			{
 				containsComment = CheckSuppressionCommentOnNode(diagnostic, node, cancellation);
 				
-				if (node.HasLeadingTrivia || containsComment)
+				if (node is StatementSyntax || node is MemberDeclarationSyntax || containsComment)
 					break;
 			}
 
