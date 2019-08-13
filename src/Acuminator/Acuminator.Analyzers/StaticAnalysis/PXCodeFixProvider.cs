@@ -21,7 +21,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		private const string _comment = @"// Acuminator disable once {0} {1} [Justification]";
 		private const string _diagnosticName = @"Suppress diagnostic {0}";
 
-		private static ImmutableDictionary<string, string> _fixableDiagnosticIds;
+		private static readonly ImmutableDictionary<string, string> _fixableDiagnosticIds;
 
 		static PXCodeFixProvider()
 		{
