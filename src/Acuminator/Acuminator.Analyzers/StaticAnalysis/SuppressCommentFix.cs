@@ -16,28 +16,26 @@ namespace Acuminator.Analyzers.StaticAnalysis
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public class PXCodeFixProvider: CodeFixProvider
+	public class SuppressCommentFix : CodeFixProvider
 	{
 		private const string _comment = @"// Acuminator disable once {0} {1} [Justification]";
 		private const string _diagnosticName = @"Suppress diagnostic {0}";
 
-		private static readonly ImmutableDictionary<string, string> _fixableDiagnosticIds;
+		public static readonly ImmutableDictionary<string, string> _fixableDiagnosticIds;
 
-		static PXCodeFixProvider()
+		static SuppressCommentFix()
 		{
 			Type diagnosticsType = typeof(Descriptors);
-			var fieldInfo = diagnosticsType.GetRuntimeProperties();
+			var propertiesInfo = diagnosticsType.GetRuntimeProperties();
 
 			Dictionary<string,string> idsDiagnosticDescriptors = new Dictionary<string, string>();
 
-			foreach (var field in fieldInfo
-									.Where(x => x.PropertyType == typeof(DiagnosticDescriptor))
-									.Select(x => x))
-			{
-				DiagnosticDescriptor descriptor = field.GetValue(field, null) as DiagnosticDescriptor;
-
-				idsDiagnosticDescriptors.TryAdd(key: descriptor.Id, value: descriptor.CustomTags.FirstOrDefault());
-			}
+			idsDiagnosticDescriptors = propertiesInfo.Where(x => x.PropertyType == typeof(DiagnosticDescriptor))
+													.Select(x => new {
+														Key = ((DiagnosticDescriptor)x.GetValue(x, null)).Id,
+														Name = ((DiagnosticDescriptor)x.GetValue(x, null)).CustomTags.FirstOrDefault()
+													}).Distinct()
+													.ToDictionary(x => x.Key, x => x.Name);
 			
 			_fixableDiagnosticIds = idsDiagnosticDescriptors.ToImmutableDictionary();
 		}
@@ -69,21 +67,27 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			if (diagnostic == null || diagnosticNode == null || cancellationToken.IsCancellationRequested)
 				return document;
 
+			var diagnosticName = _fixableDiagnosticIds.GetValueOrDefault(diagnostic.Id);
 
-			SyntaxTriviaList commentNode = SyntaxFactory.TriviaList(
-				SyntaxFactory.SyntaxTrivia(SyntaxKind.SingleLineCommentTrivia, 
-													string.Format(_comment, diagnostic.Id,
-														_fixableDiagnosticIds.GetValueOrDefault(diagnostic.Id))),
-				SyntaxFactory.ElasticEndOfLine(""));
-
-			while (!diagnosticNode.HasLeadingTrivia)
+			if (!string.IsNullOrWhiteSpace(diagnosticName))
 			{
-				diagnosticNode = diagnosticNode.Parent;
+				SyntaxTriviaList commentNode = SyntaxFactory.TriviaList(
+					SyntaxFactory.SyntaxTrivia(SyntaxKind.SingleLineCommentTrivia,
+						string.Format(_comment, diagnostic.Id, diagnosticName)),
+					SyntaxFactory.ElasticEndOfLine(""));
+
+				while (!diagnosticNode.HasLeadingTrivia)
+				{
+					diagnosticNode = diagnosticNode.Parent;
+				}
+
+				SyntaxTriviaList leadingTrivia = diagnosticNode.GetLeadingTrivia();
+				var modifiedRoot = root.InsertTriviaAfter(leadingTrivia.Last(), commentNode);
+				return document.WithSyntaxRoot(modifiedRoot);
+
 			}
 
-			SyntaxTriviaList leadingTrivia = diagnosticNode.GetLeadingTrivia();
-			var modifiedRoot = root.InsertTriviaAfter(leadingTrivia.Last(), commentNode);
-			return document.WithSyntaxRoot(modifiedRoot);
+			return document;
 		}
 	}
 }

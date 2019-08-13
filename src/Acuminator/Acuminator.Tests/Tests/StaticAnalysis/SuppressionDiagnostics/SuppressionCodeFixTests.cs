@@ -21,7 +21,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.SuppressionCommentCodeFix
 				new ForbiddenFieldsInDacAnalyzer(),
 				new ConstructorInDacAnalyzer());
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider() => new PXCodeFixProvider();
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new SuppressCommentFix();
 
 		[Theory]
 		[EmbeddedFileData("DacForbiddenFields.cs",

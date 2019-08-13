@@ -20,8 +20,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		private static SuppressionManager Instance { get; set; }
 
-		private static readonly Regex _suppressPattern = new Regex(@"acuminator\s+disable\s+once\s+((\w+)|(all))\s+(\w+)");
-		private static readonly ImmutableHashSet<string> _complicatedDiagnostics;
+		private static readonly Regex _suppressPattern = new Regex(@"acuminator\s+disable\s+once\s+(\w+)\s+(\w+)");
 
 		private SuppressionManager(ISuppressionFileSystemService fileSystemService, IEnumerable<SuppressionManagerInitInfo> suppressionFiles)
 		{
@@ -250,11 +249,11 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 				foreach (SyntaxTrivia comment in comments)
 				{
-					Match match = _suppressPattern.Match(comment.ToString().ToLower());
+					Match match = _suppressPattern.Match(comment.ToString());
 
 					if (match.Success &&
-					    string.Equals(diagnostic.Id, match.Groups[1].Value, StringComparison.OrdinalIgnoreCase) ||
-					    string.Equals(match.Groups[1].Value, "all", StringComparison.OrdinalIgnoreCase))
+					    string.Equals(diagnostic.Id, match.Groups[1].Value, StringComparison.OrdinalIgnoreCase) && 
+					    string.Equals(diagnostic.Descriptor.CustomTags.FirstOrDefault(), match.Groups[2].Value, StringComparison.OrdinalIgnoreCase))
 					{
 						return true;
 					}
