@@ -38,8 +38,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 															descriptor.Id,
 															Name = descriptor
 																.CustomTags.FirstOrDefault()
-																.CheckIfNullOrWhiteSpace(
-																	message: "Diagnostic short name can't be null.")
+																.CheckIfNullOrWhiteSpace(descriptor.Id)
 														};
 													}).Distinct()
 													.ToImmutableDictionary(x => x.Id, x => x.Name);
