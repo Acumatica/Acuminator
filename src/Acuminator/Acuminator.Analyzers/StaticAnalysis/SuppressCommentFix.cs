@@ -38,7 +38,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 															descriptor.Id,
 															Name = descriptor
 																.CustomTags.FirstOrDefault()
-																.CheckIfNullOrWhiteSpace(descriptor.Id)
+																.CheckIfNullOrWhiteSpace(nameof(descriptor.CustomTags))
 														};
 													}).Distinct()
 													.ToImmutableDictionary(x => x.Id, x => x.Name);
