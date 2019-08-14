@@ -73,15 +73,20 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			var suppressionFiles = additionalFiles.Where(f => SuppressionFile.IsSuppressionFile(f.Path));
 
-			if (Instance != null)
-			{
-				throw new InvalidOperationException($"{typeof(SuppressionManager).Name} has been already initialized");
-			}
+            if (Instance?._fileSystemService != null)
+            {
+                lock (Instance._fileSystemService)
+                {
+                    Instance = new SuppressionManager(fileSystemService, suppressionFiles);
+                }
+            }
+            else
+            {
+                Instance = new SuppressionManager(fileSystemService, suppressionFiles);
+            }
+        }
 
-			Instance = new SuppressionManager(fileSystemService, suppressionFiles);
-		}
-
-		public static void SaveSuppressionBase()
+        public static void SaveSuppressionBase()
 		{
 			CheckIfInstanceIsInitialized();
 			
