@@ -29,19 +29,20 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			Type diagnosticsType = typeof(Descriptors);
 			var propertiesInfo = diagnosticsType.GetRuntimeProperties();
 			
-			_fixableDiagnosticIds = propertiesInfo.Where(x => x.PropertyType == typeof(DiagnosticDescriptor))
-													.Select(x =>
-													{
-														var descriptor = (DiagnosticDescriptor) x.GetValue(x, null);
-														return new
-														{
-															descriptor.Id,
-															Name = descriptor
-																.CustomTags.FirstOrDefault()
-																.CheckIfNullOrWhiteSpace(nameof(descriptor.CustomTags))
-														};
-													}).Distinct()
-													.ToImmutableDictionary(x => x.Id, x => x.Name);
+			_fixableDiagnosticIds = propertiesInfo
+				.Where(x => x.PropertyType == typeof(DiagnosticDescriptor))
+				.Select(x =>
+				{
+					var descriptor = (DiagnosticDescriptor) x.GetValue(x, null);
+					return new
+					{
+						descriptor.Id,
+						Name = descriptor
+							.CustomTags.FirstOrDefault()
+							.CheckIfNullOrWhiteSpace(nameof(descriptor.CustomTags))
+					};
+				}).Distinct()
+				.ToImmutableDictionary(x => x.Id, x => x.Name);
 		}
 
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
