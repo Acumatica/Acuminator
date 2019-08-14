@@ -80,7 +80,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MissingTypeListAttributeAnalyzer.
+        ///   Looks up a localized string similar to IncorrectTypeAttributeForListAttribute.
         /// </summary>
         internal static string PX1002 {
             get {
@@ -98,7 +98,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ViewDeclarationOrder.
+        ///   Looks up a localized string similar to ViewDeclarationOrderTwoCacheInstances.
         /// </summary>
         internal static string PX1004 {
             get {
@@ -116,7 +116,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ViewDeclarationOrder.
+        ///   Looks up a localized string similar to ViewDeclarationOrderOneCacheInstance.
         /// </summary>
         internal static string PX1006 {
             get {
@@ -125,7 +125,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to LongOperationDelegateClosures.
+        ///   Looks up a localized string similar to LongOperationDelegateSynchronousExecution.
         /// </summary>
         internal static string PX1008 {
             get {
@@ -188,7 +188,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PXBqlParametersMismatchWithOnlyRequiredParams.
+        ///   Looks up a localized string similar to IncorrectNumberOfSelectParameters.
         /// </summary>
         internal static string PX1015 {
             get {
@@ -206,7 +206,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PXDBFieldAttributeNotMatchingDacProperty.
+        ///   Looks up a localized string similar to FieldTypeAttributeAndPropertyTypeMismatch.
         /// </summary>
         internal static string PX1021 {
             get {
@@ -269,7 +269,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DefaultAttibuteToExistingRecordsError.
+        ///   Looks up a localized string similar to PXDefaultIncorrectUse.
         /// </summary>
         internal static string PX1030 {
             get {
@@ -278,7 +278,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DacCannotContainInstanceMethods.
+        ///   Looks up a localized string similar to InstanceMethodInDac.
         /// </summary>
         internal static string PX1031 {
             get {
@@ -287,7 +287,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DacPropertyCannotContainMethodInvocations.
+        ///   Looks up a localized string similar to MethodInvocationInDac.
         /// </summary>
         internal static string PX1032 {
             get {
@@ -503,7 +503,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ThrowingExceptionsInRowPersisted.
+        ///   Looks up a localized string similar to ExceptionsInRowPersisted.
         /// </summary>
         internal static string PX1073 {
             get {
@@ -512,7 +512,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ThrowingSetupNotEnteredExceptionInEventHandlers.
+        ///   Looks up a localized string similar to SetupNotEnteredExceptionInEventHandlers.
         /// </summary>
         internal static string PX1074 {
             get {
@@ -530,7 +530,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DataViewDelegateLongOperationStart.
+        ///   Looks up a localized string similar to LongRunOperationInDataViewDelegate.
         /// </summary>
         internal static string PX1080 {
             get {
@@ -539,7 +539,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PXGraphExecutesActionDuringInitialization.
+        ///   Looks up a localized string similar to ActionExecutionDuringPXGraphInitialization.
         /// </summary>
         internal static string PX1081 {
             get {
@@ -584,7 +584,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ThrowingSetupNotEnteredExceptionInLongRunningOperation.
+        ///   Looks up a localized string similar to SetupNotEnteredExceptionInLongRunOperation.
         /// </summary>
         internal static string PX1086 {
             get {
@@ -593,7 +593,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CausingStackOverflowExceptionInBaseViewDelegateInvocation.
+        ///   Looks up a localized string similar to StackOverflowExceptionInBaseViewDelegateInvocation.
         /// </summary>
         internal static string PX1087 {
             get {
@@ -620,7 +620,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ThrowingSetupNotEnteredExceptionInActionHandlers.
+        ///   Looks up a localized string similar to SetupNotEnteredExceptionInActionHandlers.
         /// </summary>
         internal static string PX1090 {
             get {
@@ -629,7 +629,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CausingStackOverflowExceptionInBaseActionHandlerInvocation.
+        ///   Looks up a localized string similar to StackOverflowExceptionInBaseActionHandlerInvocation.
         /// </summary>
         internal static string PX1091 {
             get {
@@ -638,7 +638,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MissingAttributesOnActionHandler.
+        ///   Looks up a localized string similar to IncorrectAttributesOnActionHandler.
         /// </summary>
         internal static string PX1092 {
             get {
@@ -656,7 +656,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DacShouldHaveUiAttribute.
+        ///   Looks up a localized string similar to NoPXHiddenOrPXCacheNameOnDac.
         /// </summary>
         internal static string PX1094 {
             get {
@@ -665,7 +665,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PXDBCalcedMustBeAccompaniedNonDBTypeAttribute.
+        ///   Looks up a localized string similar to NoUnboundTypeAttributeWithPXDBCalced.
         /// </summary>
         internal static string PX1095 {
             get {

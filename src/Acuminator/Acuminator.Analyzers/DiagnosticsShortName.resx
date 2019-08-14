@@ -124,22 +124,22 @@
     <value>PXGraphCreateInstance</value>
   </data>
   <data name="PX1002" xml:space="preserve">
-    <value>MissingTypeListAttributeAnalyzer</value>
+    <value>IncorrectTypeAttributeForListAttribute</value>
   </data>
   <data name="PX1003" xml:space="preserve">
     <value>NonSpecificPXGraphCreateInstance</value>
   </data>
   <data name="PX1004" xml:space="preserve">
-    <value>ViewDeclarationOrder</value>
+    <value>ViewDeclarationOrderTwoCacheInstances</value>
   </data>
   <data name="PX1005" xml:space="preserve">
     <value>TypoInViewDelegateName</value>
   </data>
   <data name="PX1006" xml:space="preserve">
-    <value>ViewDeclarationOrder</value>
+    <value>ViewDeclarationOrderOneCacheInstance</value>
   </data>
   <data name="PX1008" xml:space="preserve">
-    <value>LongOperationDelegateClosures</value>
+    <value>LongOperationDelegateSynchronousExecution</value>
   </data>
   <data name="PX1010" xml:space="preserve">
     <value>StartRowResetForPaging</value>
@@ -160,13 +160,13 @@
     <value>NonNullableTypeForBqlField</value>
   </data>
   <data name="PX1015" xml:space="preserve">
-    <value>PXBqlParametersMismatchWithOnlyRequiredParams</value>
+    <value>IncorrectNumberOfSelectParameters</value>
   </data>
   <data name="PX1018" xml:space="preserve">
     <value>NoPrimaryViewForPrimaryDac</value>
   </data>
   <data name="PX1021" xml:space="preserve">
-    <value>PXDBFieldAttributeNotMatchingDacProperty</value>
+    <value>FieldTypeAttributeAndPropertyTypeMismatch</value>
   </data>
   <data name="PX1023" xml:space="preserve">
     <value>MultipleTypeAttributesOnProperty</value>
@@ -187,13 +187,13 @@
     <value>PXGraphUsageInDac</value>
   </data>
   <data name="PX1030" xml:space="preserve">
-    <value>DefaultAttibuteToExistingRecordsError</value>
+    <value>PXDefaultIncorrectUse</value>
   </data>
   <data name="PX1031" xml:space="preserve">
-    <value>DacCannotContainInstanceMethods</value>
+    <value>InstanceMethodInDac</value>
   </data>
   <data name="PX1032" xml:space="preserve">
-    <value>DacPropertyCannotContainMethodInvocations</value>
+    <value>MethodInvocationInDac</value>
   </data>
   <data name="PX1040" xml:space="preserve">
     <value>ConstructorInGraphExtension</value>
@@ -265,19 +265,19 @@
     <value>PXGraphCreationForBqlQueries</value>
   </data>
   <data name="PX1073" xml:space="preserve">
-    <value>ThrowingExceptionsInRowPersisted</value>
+    <value>ExceptionsInRowPersisted</value>
   </data>
   <data name="PX1074" xml:space="preserve">
-    <value>ThrowingSetupNotEnteredExceptionInEventHandlers</value>
+    <value>SetupNotEnteredExceptionInEventHandlers</value>
   </data>
   <data name="PX1075" xml:space="preserve">
     <value>RaiseExceptionHandlingInEventHandlers</value>
   </data>
   <data name="PX1080" xml:space="preserve">
-    <value>DataViewDelegateLongOperationStart</value>
+    <value>LongRunOperationInDataViewDelegate</value>
   </data>
   <data name="PX1081" xml:space="preserve">
-    <value>PXGraphExecutesActionDuringInitialization</value>
+    <value>ActionExecutionDuringPXGraphInitialization</value>
   </data>
   <data name="PX1082" xml:space="preserve">
     <value>ActionExecutionInDataViewDelegate</value>
@@ -292,10 +292,10 @@
     <value>DatabaseQueriesInPXGraphInitialization</value>
   </data>
   <data name="PX1086" xml:space="preserve">
-    <value>ThrowingSetupNotEnteredExceptionInLongRunningOperation</value>
+    <value>SetupNotEnteredExceptionInLongRunOperation</value>
   </data>
   <data name="PX1087" xml:space="preserve">
-    <value>CausingStackOverflowExceptionInBaseViewDelegateInvocation</value>
+    <value>StackOverflowExceptionInBaseViewDelegateInvocation</value>
   </data>
   <data name="PX1088" xml:space="preserve">
     <value>InvalidViewUsageInProcessingDelegate</value>
@@ -304,21 +304,21 @@
     <value>UiPresentationLogicInActionDelegates</value>
   </data>
   <data name="PX1090" xml:space="preserve">
-    <value>ThrowingSetupNotEnteredExceptionInActionHandlers</value>
+    <value>SetupNotEnteredExceptionInActionHandlers</value>
   </data>
   <data name="PX1091" xml:space="preserve">
-    <value>CausingStackOverflowExceptionInBaseActionHandlerInvocation</value>
+    <value>StackOverflowExceptionInBaseActionHandlerInvocation</value>
   </data>
   <data name="PX1092" xml:space="preserve">
-    <value>MissingAttributesOnActionHandler</value>
+    <value>IncorrectAttributesOnActionHandler</value>
   </data>
   <data name="PX1093" xml:space="preserve">
     <value>GraphDeclarationViolation</value>
   </data>
   <data name="PX1094" xml:space="preserve">
-    <value>DacShouldHaveUiAttribute</value>
+    <value>NoPXHiddenOrPXCacheNameOnDac</value>
   </data>
   <data name="PX1095" xml:space="preserve">
-    <value>PXDBCalcedMustBeAccompaniedNonDBTypeAttribute</value>
+    <value>NoUnboundTypeAttributeWithPXDBCalced</value>
   </data>
 </root>
