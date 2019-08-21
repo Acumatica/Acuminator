@@ -173,10 +173,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacGroupingNodeForCacheAttachedEventViewModel dacGroupingNode,
 																				 bool expandChildren, CancellationToken cancellation)
 		{
-			return CreateDacChildrenForFieldEvents(dacGroupingNode,
-						constructor: (dacVm, dacFieldName, dacFieldEvents, isExpanded) => 
-														new DacFieldGroupingNodeForCacheAttachedEventViewModel(dacVm, dacFieldName, dacFieldEvents, isExpanded),
-						expandChildren, cancellation);
+			return dacGroupingNode?.AllFieldEvents.Select(fieldEvent => new CacheAttachedNodeViewModel(dacGroupingNode, fieldEvent, expandChildren))
+												  .Where(graphMemberVM => !graphMemberVM.Name.IsNullOrEmpty())
+												  .OrderBy(graphMemberVM => graphMemberVM.Name);
 		}
 
 		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacGroupingNodeForFieldEventViewModel dacGroupingNode,
@@ -206,14 +205,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 																				 bool expandChildren, CancellationToken cancellation)
 		{
 			return dacFieldGroupingNode?.FieldEvents.Select(fieldEvent => new FieldEventNodeViewModel(dacFieldGroupingNode, fieldEvent, expandChildren))
-													.Where(graphMemberVM => !graphMemberVM.Name.IsNullOrEmpty())
-													.OrderBy(graphMemberVM => graphMemberVM.Name);
-		}
-
-		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacFieldGroupingNodeForCacheAttachedEventViewModel dacFieldGroupingNode, 
-																				 bool expandChildren, CancellationToken cancellation)
-		{
-			return dacFieldGroupingNode?.FieldEvents.Select(fieldEvent => new CacheAttachedNodeViewModel(dacFieldGroupingNode, fieldEvent, expandChildren))
 													.Where(graphMemberVM => !graphMemberVM.Name.IsNullOrEmpty())
 													.OrderBy(graphMemberVM => graphMemberVM.Name);
 		}
