@@ -12,8 +12,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
         public static IParameterSymbol DetermineParameter(
             this ArgumentSyntax argument,
             ImmutableArray<IParameterSymbol> parameters,
-            bool allowParams = false,
-            CancellationToken cancellationToken = default)
+            bool allowParams = false)
         {
             argument.ThrowOnNull(nameof(argument));
 

@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace PX.Objects
 {
-	/// <summary>With empty summary</summary>
+	/// <summary>
+	/// With empty summary
+	/// </summary>
 	public class WithEmptySummary
 	{
 	}
