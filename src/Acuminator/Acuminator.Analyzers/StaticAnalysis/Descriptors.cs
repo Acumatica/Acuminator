@@ -48,6 +48,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public static DiagnosticDescriptor PX1006_ViewDeclarationOrder { get; } = 
             Rule("PX1006", nameof(Resources.PX1006Title).GetLocalized(), Category.Default, DiagnosticSeverity.Info);
 
+        public static DiagnosticDescriptor PX1007_PublicClassXmlComment { get; } =
+            Rule("PX1007", nameof(Resources.PX1007Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
+
         public static DiagnosticDescriptor PX1008_LongOperationDelegateClosures { get; } = 
             Rule("PX1008", nameof(Resources.PX1008Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning);
 

@@ -195,27 +195,29 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1006Title", resourceCulture);
             }
         }
-        
+
         /// <summary>
-        ///   Looks up a localized string similar to Create a DAC instance by using the factory method.
+        ///   Looks up a localized string similar to Create a Add description.
         /// </summary>
-        public static string PX1007Fix {
+        public static string PX1007FixAddDescription
+        {
             get {
-                return ResourceManager.GetString("PX1007Fix", resourceCulture);
+                return ResourceManager.GetString("PX1007FixAddDescription", resourceCulture);
             }
         }
-        
+
         /// <summary>
-        ///   Looks up a localized string similar to An instance of {0} must be created with the PXCache&lt;{0}&gt;.CreateInstance() factory method.
+        ///   Looks up a localized string similar to Exclude class from API Reference.
         /// </summary>
-        public static string PX1007MessageFormat {
+        public static string PX1007FixExcludeClass
+        {
             get {
-                return ResourceManager.GetString("PX1007MessageFormat", resourceCulture);
+                return ResourceManager.GetString("PX1007FixExcludeClass", resourceCulture);
             }
         }
-        
+
         /// <summary>
-        ///   Looks up a localized string similar to A DAC instance must be created with the PXCache.CreateInstance() factory method.
+        ///   Looks up a localized string similar to A public class should have description in the summary tag of the XML annotation.
         /// </summary>
         public static string PX1007Title {
             get {
