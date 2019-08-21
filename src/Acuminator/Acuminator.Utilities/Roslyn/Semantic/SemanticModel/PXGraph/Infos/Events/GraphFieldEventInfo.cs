@@ -47,7 +47,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			{
 				case EventHandlerSignatureType.Default:
 					return GetDacFieldNameForDefaultFieldEvent();
-				case EventHandlerSignatureType.Generic when !Symbol.Parameters.IsDefaultOrEmpty:
+				case EventHandlerSignatureType.Generic:
 					return GetDacFieldNameForGenericFieldEvent();
 				default:
 					return string.Empty;
@@ -96,15 +96,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		private string GetDacFieldNameForGenericFieldEvent()
 		{
-			if (!(Symbol.Parameters[0]?.Type is INamedTypeSymbol firstParameter) || firstParameter.TypeArguments.Length < 2)
+			if (Symbol.Parameters.IsDefaultOrEmpty || !(Symbol.Parameters[0]?.Type is INamedTypeSymbol firstParameter))
 			{
 				return string.Empty;
 			}
 
-			ITypeSymbol dacField = firstParameter.TypeArguments[1];
-			return dacField.IsDacField()
-				? dacField.Name.ToPascalCase()
-				: string.Empty;
+			ITypeSymbol dacField = firstParameter.TypeArguments.Length > 1
+				? firstParameter.TypeArguments[1]
+				: firstParameter.TypeArguments.Length == 1
+					? firstParameter.TypeArguments[0]
+					: null;
+
+			return dacField != null && dacField.IsDacField()
+					? dacField.Name.ToPascalCase()
+					: string.Empty;
 		}	
 	}
 }
