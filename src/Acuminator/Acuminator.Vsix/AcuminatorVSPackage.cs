@@ -21,10 +21,7 @@ using Acuminator.Vsix.Formatter;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities;
 using Acuminator.Utilities.DiagnosticSuppression;
-
-
-
-
+using Microsoft.VisualStudio.Threading;
 
 namespace Acuminator.Vsix
 {
@@ -161,7 +158,7 @@ namespace Acuminator.Vsix
 			await SubscribeOnSolutionEventsAsync();
 			cancellationToken.ThrowIfCancellationRequested();
 
-			await InitializeSuppressionManagerAsync(progress);
+			await InitializeSuppressionManagerWithProgressAsync(progress);
 			cancellationToken.ThrowIfCancellationRequested();
 
 			InitializeCodeAnalysisSettings(progress);
@@ -228,11 +225,19 @@ namespace Acuminator.Vsix
 			{
 				_dteSolutionEvents = dte.Events.SolutionEvents;						//Save DTE events object to prevent it from being GCed
 				_dteSolutionEvents.AfterClosing += SolutionEvents_AfterClosing;
+                _dteSolutionEvents.Opened += SolutionEvents_Opened;
 			}
 #pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 		}
 
-		private void SolutionEvents_AfterClosing()
+        private void SolutionEvents_Opened()
+        {
+#pragma warning disable VSTHRD102 // Implement internal logic asynchronously
+            JoinableTaskFactory.Run(InitializeSuppressionManagerAsync);
+#pragma warning restore VSTHRD102 // Implement internal logic asynchronously
+        }
+
+        private void SolutionEvents_AfterClosing()
 		{
 			//TODO place suppression manager registry clearing  here
 		}
@@ -244,25 +249,32 @@ namespace Acuminator.Vsix
 
 			if (ThreadHelper.CheckAccess() && _dteSolutionEvents != null)
 			{		
-				_dteSolutionEvents.AfterClosing -= SolutionEvents_AfterClosing;		
+				_dteSolutionEvents.AfterClosing -= SolutionEvents_AfterClosing;
+                _dteSolutionEvents.Opened -= SolutionEvents_Opened;
 			}
 		}
 
-		private async System.Threading.Tasks.Task InitializeSuppressionManagerAsync(IProgress<ServiceProgressData> progress)
+		private System.Threading.Tasks.Task InitializeSuppressionManagerWithProgressAsync(IProgress<ServiceProgressData> progress)
 		{
 			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitSuppressionManager,
 													   currentStep: 3, TotalLoadSteps);
 			progress?.Report(progressData);
 
-			var workspace = await this.GetVSWorkspaceAsync();
-			var additionalFiles = workspace.CurrentSolution.Projects
-														   .SelectMany(p => p.AdditionalDocuments)
-														   .Select(d => new SuppressionManagerInitInfo(d.FilePath, generateSuppressionBase: false));
+            return InitializeSuppressionManagerAsync();
+        }
 
-			SuppressionManager.Init(new SuppressionFileSystemService(), additionalFiles);
-		}
+        private async System.Threading.Tasks.Task InitializeSuppressionManagerAsync()
+        {
+            var workspace = await this.GetVSWorkspaceAsync();
+            var additionalFiles = workspace.CurrentSolution.Projects
+                .SelectMany(p => p.AdditionalDocuments)
+                .Select(d => new SuppressionManagerInitInfo(d.FilePath, generateSuppressionBase: false));
 
-		private void InitializeCodeAnalysisSettings(IProgress<ServiceProgressData> progress)
+            SuppressionManager.Init(new SuppressionFileSystemService(), additionalFiles);
+        }
+
+
+        private void InitializeCodeAnalysisSettings(IProgress<ServiceProgressData> progress)
 		{
 			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCodeAnalysisSettings,
 													   currentStep: 4, TotalLoadSteps);
