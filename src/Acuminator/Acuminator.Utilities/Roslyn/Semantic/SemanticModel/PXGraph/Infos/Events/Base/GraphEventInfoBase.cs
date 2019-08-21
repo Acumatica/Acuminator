@@ -62,9 +62,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				return string.Empty;
 			}
 
-			return firstParameter.TypeArguments[0].IsDAC()
-				? firstParameter.TypeArguments[0].Name
-				: string.Empty;
+			ITypeSymbol dacOrDacField = firstParameter.TypeArguments[0];
+
+			if (dacOrDacField.IsDAC())
+				return dacOrDacField.Name;
+			else if (dacOrDacField.IsDacField())
+				return dacOrDacField.ContainingType?.Name ?? string.Empty;
+			else
+				return string.Empty;
 		}
 	}
 }
