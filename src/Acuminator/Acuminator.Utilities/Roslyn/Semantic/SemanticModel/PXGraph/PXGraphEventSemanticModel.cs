@@ -164,7 +164,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 				var (eventType, eventSignatureType) = method.GetEventHandlerInfo(_pxContext);
 
-				if (eventSignatureType == EventHandlerSignatureType.None || eventType == EventType.None)
+				if (eventSignatureType == EventHandlerSignatureType.None || eventType == EventType.None || !IsValidGraphEvent(method))
 					continue;
 
 				if (eventType.IsDacRowEvent())
@@ -181,7 +181,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			return eventsCollector;
 		}
-
 
 		private IEnumerable<IMethodSymbol> GetAllGraphMethodsFromBaseToDerived()
 		{
@@ -217,5 +216,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			OverridableItemsCollection<GraphFieldEventInfo> rawCollection = eventsCollector.GetFieldEvents(eventType);
 			return rawCollection.ToImmutableDictionary() ?? ImmutableDictionary.Create<string, GraphFieldEventInfo>();
 		}
+
+		/// <summary>
+		/// <see cref="CodeResolvingUtils.GetEventHandlerInfo"/> helper allows not only graph events but also helper methods with appropriate signature. 
+		/// However, for graph events semantic model we are interested only in graph events, so we need to rule out helper methods by checking their signature.
+		/// </summary>
+		/// <param name="eventCandidate">The event candidate.</param>
+		/// <returns/>
+		private bool IsValidGraphEvent(IMethodSymbol eventCandidate) => !eventCandidate.IsStatic && eventCandidate.Parameters.Length <= 2; 
 	}
 }
