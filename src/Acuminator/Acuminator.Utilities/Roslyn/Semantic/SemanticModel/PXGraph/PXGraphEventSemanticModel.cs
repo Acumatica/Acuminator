@@ -13,6 +13,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
 	public partial class PXGraphEventSemanticModel
 	{
+		private enum GraphEventCategory
+		{
+			None,
+			Row,
+			Field
+		};
+
 		private readonly CancellationToken _cancellation;
 		private readonly PXContext _pxContext;
 
@@ -164,14 +171,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 				var (eventType, eventSignatureType) = method.GetEventHandlerInfo(_pxContext);
 
-				if (eventSignatureType == EventHandlerSignatureType.None || eventType == EventType.None || !IsValidGraphEvent(method))
+				if (eventSignatureType == EventHandlerSignatureType.None || eventType == EventType.None)
 					continue;
 
-				if (eventType.IsDacRowEvent())
+				GraphEventCategory eventCategory = GetEventCategoryByEventType(eventType);
+
+				if (!IsValidGraphEvent(method, eventSignatureType, eventCategory))
+					continue;
+
+				if (eventCategory == GraphEventCategory.Row)
 				{
 					eventsCollector.AddEvent(eventSignatureType, eventType, method, declarationOrder, _cancellation);
 				}
-				else if (eventType.IsDacFieldEvent())
+				else if (eventCategory == GraphEventCategory.Field)
 				{
 					eventsCollector.AddFieldEvent(eventSignatureType, eventType, method, declarationOrder, _cancellation);
 				}
@@ -217,12 +229,44 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return rawCollection.ToImmutableDictionary() ?? ImmutableDictionary.Create<string, GraphFieldEventInfo>();
 		}
 
+		private GraphEventCategory GetEventCategoryByEventType(EventType eventType) =>
+			eventType.IsDacRowEvent()
+				? GraphEventCategory.Row
+				: eventType.IsDacFieldEvent()
+					? GraphEventCategory.Field
+					: GraphEventCategory.None;
+
 		/// <summary>
 		/// <see cref="CodeResolvingUtils.GetEventHandlerInfo"/> helper allows not only graph events but also helper methods with appropriate signature. 
 		/// However, for graph events semantic model we are interested only in graph events, so we need to rule out helper methods by checking their signature.
 		/// </summary>
 		/// <param name="eventCandidate">The event candidate.</param>
+		/// <param name="signatureType">Type of the signature.</param>
+		/// <param name="eventCategory">Category the event belongs to.</param>
 		/// <returns/>
-		private bool IsValidGraphEvent(IMethodSymbol eventCandidate) => !eventCandidate.IsStatic && eventCandidate.Parameters.Length <= 2; 
+		private bool IsValidGraphEvent(IMethodSymbol eventCandidate, EventHandlerSignatureType signatureType, GraphEventCategory eventCategory)
+		{
+			if (eventCandidate.IsStatic || eventCandidate.Parameters.Length > 2 || eventCategory == GraphEventCategory.None)
+				return false;
+			else if (signatureType != EventHandlerSignatureType.Default)
+				return true;
+
+			const char underscore = '_';
+
+			if (eventCandidate.Name[0] == underscore || eventCandidate.Name[eventCandidate.Name.Length - 1] == underscore)
+				return false;
+
+			int underscoresCount = eventCandidate.Name.Count(c => c == underscore);
+
+			switch (eventCategory)
+			{
+				case GraphEventCategory.Row:
+					return underscoresCount == 1; 
+				case GraphEventCategory.Field:
+					return underscoresCount == 2;
+				default:
+					return false;
+			}
+		}
 	}
 }
