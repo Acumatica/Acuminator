@@ -159,14 +159,11 @@
   <data name="PX1006Title" xml:space="preserve">
     <value>This order of view declarations will cause creation of one cache instance for the following DACs: {0} and {1}</value>
   </data>
-  <data name="PX1007Fix" xml:space="preserve">
-    <value>Create a DAC instance by using the factory method</value>
-  </data>
-  <data name="PX1007MessageFormat" xml:space="preserve">
-    <value>An instance of {0} must be created with the PXCache&lt;{0}&gt;.CreateInstance() factory method</value>
+  <data name="PX1007FixExcludeClass" xml:space="preserve">
+    <value>Exclude the class from the API Reference</value>
   </data>
   <data name="PX1007Title" xml:space="preserve">
-    <value>A DAC instance must be created with the PXCache.CreateInstance() factory method</value>
+    <value>A public class should have a description in the summary XML tag</value>
   </data>
   <data name="PX1008Title" xml:space="preserve">
     <value>Reference of @this graph in this delegate will cause synchronous delegate execution</value>
@@ -479,5 +476,8 @@
   </data>
   <data name="PX1043TitleRowPersistedNonISV" xml:space="preserve">
     <value>Only the methods of the PXCache.Persist family can be used to save changes to the database from a RowPersisted event handler</value>
+  </data>
+  <data name="PX1007FixAddDescription" xml:space="preserve">
+    <value>Add a description</value>
   </data>
 </root>
