@@ -111,7 +111,7 @@ namespace Acuminator.Utilities.Common
 		private static ArgumentNullException NewArgumentNullException(string parameter = null, string message = null)
 		{
 			return parameter == null
-			   ? throw new ArgumentNullException()
+			   ? new ArgumentNullException()
 			   : message == null
 				   ? new ArgumentNullException(parameter)
 				   : new ArgumentNullException(parameter, message);
@@ -120,7 +120,7 @@ namespace Acuminator.Utilities.Common
 		private static ArgumentException NewArgumentException(string parameter = null, string message = null)
 		{
 			return parameter == null
-			   ? throw new ArgumentNullException()
+			   ? new ArgumentNullException()
 			   : message == null
 				   ? new ArgumentNullException(parameter)
 				   : new ArgumentNullException(parameter, message);
