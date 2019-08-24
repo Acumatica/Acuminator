@@ -11,10 +11,11 @@ using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.ViewDeclarationOrder
 {
-    public class ViewDeclarationOrderTests : CodeFixVerifier
+    public class ViewDeclarationOrderTests : DiagnosticVerifier
     {
 	    protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>  
-			new PXGraphAnalyzer(CodeAnalysisSettings.Default, 
+			new PXGraphAnalyzer(CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
+															.WithSuppressionMechanismDisabled(), 
 								new ViewDeclarationOrderAnalyzerForTests());
 
 		[Theory]
