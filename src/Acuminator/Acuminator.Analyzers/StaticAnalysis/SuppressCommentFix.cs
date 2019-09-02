@@ -51,14 +51,13 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		{
 			return Task.Run(() =>
 			{
-				foreach (var diagnostic in context.Diagnostics)
-				{
+				Parallel.ForEach(context.Diagnostics, (diagnostic) => {
 					string codeActionName = string.Format(_diagnosticName, diagnostic.Id);
 					CodeAction codeAction = CodeAction.Create(codeActionName,
 						cToken => AddSuppressionComment(context, diagnostic, cToken),
 						codeActionName);
 					context.RegisterCodeFix(codeAction, diagnostic);
-				}
+				});
 			}, context.CancellationToken);
 		}
 
