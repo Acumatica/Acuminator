@@ -55,22 +55,15 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.SuppressionDiagnostics
 		[EmbeddedFileData(@"BqlParameterMismatch\PXUpdateCall_Suppressed.cs", @"BqlParameterMismatch\SOOrder.cs")]
 		public virtual void PXUpdateCalls_Suppressed(string source, string dacSource) =>
 			VerifyCSharpDiagnostic(new[] { source, dacSource });
-
-		// Problems with CodeFix with dacSource
 		
 		[Theory]
 		[EmbeddedFileData(@"BqlParameterMismatch\SearchCall_Suppressed.cs", @"BqlParameterMismatch\SOOrder.cs")]
 		public virtual void SearchCalls_Suppressed(string source, string dacSource) =>
 			VerifyCSharpDiagnostic(new[] { source, dacSource });
 
-		// Problems with CodeFix with dacSource
-
 		[Theory]
 		[EmbeddedFileData(@"BqlParameterMismatch\VariableInstanceCall_Suppressed.cs", @"BqlParameterMismatch\SOOrder.cs")]
 		public virtual void VariableInstanceCalls_Suppressed(string source, string dacSource) =>
 			VerifyCSharpDiagnostic(new[] { source, dacSource });
-
-		// Problems with CodeFix with dacSource
-
 	}
 }
