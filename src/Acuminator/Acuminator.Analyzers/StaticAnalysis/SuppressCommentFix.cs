@@ -46,7 +46,14 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		{
 			return Task.Run(() =>
 			{
-				Parallel.ForEach(context.Diagnostics, (diagnostic) => {
+				ParallelOptions parallelOptions = new ParallelOptions
+				{
+					CancellationToken = context.CancellationToken
+				};
+
+				Parallel.ForEach(context.Diagnostics, parallelOptions, (diagnostic) => {
+					parallelOptions.CancellationToken.ThrowIfCancellationRequested();
+
 					string codeActionName = string.Format(_diagnosticName, diagnostic.Id);
 					CodeAction codeAction = CodeAction.Create(codeActionName,
 						cToken => AddSuppressionComment(context, diagnostic, cToken),
