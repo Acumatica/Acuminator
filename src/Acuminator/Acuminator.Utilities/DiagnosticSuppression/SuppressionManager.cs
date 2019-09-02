@@ -20,7 +20,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		private static SuppressionManager Instance { get; set; }
 
-		private static readonly Regex _suppressPattern = new Regex(@"Acuminator\s+disable\s+once\s+(\w+)\s+(\w+)");
+		private static readonly Regex _suppressPattern = new Regex(@"Acuminator\s+disable\s+once\s+(\w+)\s+(\w+)", RegexOptions.Compiled);
 
 		private SuppressionManager(ISuppressionFileSystemService fileSystemService, IEnumerable<SuppressionManagerInitInfo> suppressionFiles)
 		{
