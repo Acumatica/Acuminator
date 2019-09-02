@@ -79,7 +79,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 						string.Format(_comment, diagnostic.Id, diagnosticName)),
 					SyntaxFactory.ElasticEndOfLine(""));
 
-				while (!(node is StatementSyntax || node is MemberDeclarationSyntax))
+				while (!(node == null || node is StatementSyntax || node is MemberDeclarationSyntax))
 				{
 					node = node.Parent;
 				}
