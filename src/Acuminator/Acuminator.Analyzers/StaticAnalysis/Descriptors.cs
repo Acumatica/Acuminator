@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Linq;
-using Acuminator.Utilities.Roslyn.Semantic;
+﻿using System.Collections.Concurrent;
 using Microsoft.CodeAnalysis;
-using PX.Common;
 
 namespace Acuminator.Analyzers.StaticAnalysis
 {
