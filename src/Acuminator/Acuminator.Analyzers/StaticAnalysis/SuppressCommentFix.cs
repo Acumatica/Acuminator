@@ -21,31 +21,26 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		private const string _comment = @"// Acuminator disable once {0} {1} [Justification]";
 		private const string _diagnosticName = @"Suppress diagnostic {0}";
 
-		public static readonly ImmutableDictionary<string, string> _fixableDiagnosticIds;
+		private static readonly ImmutableArray<string> _fixableDiagnosticIds;
 
 		static SuppressCommentFix()
 		{
 			Type diagnosticsType = typeof(Descriptors);
 			var propertiesInfo = diagnosticsType.GetRuntimeProperties();
-			
+
+
 			_fixableDiagnosticIds = propertiesInfo
 				.Where(x => x.PropertyType == typeof(DiagnosticDescriptor))
 				.Select(x =>
 				{
-					var descriptor = (DiagnosticDescriptor) x.GetValue(x, null);
-					return new
-					{
-						descriptor.Id,
-						Name = descriptor
-							.CustomTags.FirstOrDefault()
-							.CheckIfNullOrWhiteSpace(nameof(descriptor.CustomTags))
-					};
-				}).Distinct()
-				.ToImmutableDictionary(x => x.Id, x => x.Name);
+					var descriptor = (DiagnosticDescriptor)x.GetValue(x);
+					return descriptor.Id;
+				})
+				.ToImmutableArray();
 		}
 
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
-			_fixableDiagnosticIds.Keys.ToImmutableArray();
+			_fixableDiagnosticIds;
 
 		public override Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
@@ -70,13 +65,13 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			if (diagnostic == null || node == null || cancellationToken.IsCancellationRequested)
 				return document;
 
-			var diagnosticName = _fixableDiagnosticIds.GetValueOrDefault(diagnostic.Id);
+			var diagnosticShortName = diagnostic.Descriptor.CustomTags.FirstOrDefault();
 
-			if (!string.IsNullOrWhiteSpace(diagnosticName))
+			if (!string.IsNullOrWhiteSpace(diagnosticShortName))
 			{
 				SyntaxTriviaList commentNode = SyntaxFactory.TriviaList(
 					SyntaxFactory.SyntaxTrivia(SyntaxKind.SingleLineCommentTrivia,
-						string.Format(_comment, diagnostic.Id, diagnosticName)),
+						string.Format(_comment, diagnostic.Id, diagnosticShortName)),
 					SyntaxFactory.ElasticEndOfLine(""));
 
 				while (!(node == null || node is StatementSyntax || node is MemberDeclarationSyntax))
