@@ -221,46 +221,37 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		private static bool CheckSuppressedComment(Diagnostic diagnostic, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
-			SyntaxNode root = diagnostic.Location.SourceTree.GetRoot();
+
+			SyntaxNode root = diagnostic.Location.SourceTree?.GetRoot();
 			SyntaxNode node;
 
 			bool containsComment = false;
 
 			// Climb to the hill. Looking for comment on parents nodes.
-			for (node = root.FindNode(diagnostic.Location.SourceSpan); node != root ; node = node.Parent)
+			node = root?.FindNode(diagnostic.Location.SourceSpan);
+
+			while (node != null && node != root)
 			{
-				containsComment = CheckSuppressionCommentOnNode(diagnostic, node, cancellation);
+				containsComment = CheckSuppressionCommentOnNode(diagnostic, diagnostic.Descriptor.CustomTags.FirstOrDefault(), node, cancellation);
 				
 				if (node is StatementSyntax || node is MemberDeclarationSyntax || containsComment)
 					break;
+
+				node = node.Parent;
 			}
 
 			return containsComment;
 		}
 
-		private static bool CheckSuppressionCommentOnNode(Diagnostic diagnostic, SyntaxNode node, CancellationToken cancellation)
+		private static bool CheckSuppressionCommentOnNode(Diagnostic diagnostic, string diagnosticShortName, SyntaxNode node, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
-
-			if (node != null && node.HasLeadingTrivia && node.GetLeadingTrivia().Any(SyntaxKind.SingleLineCommentTrivia))
-			{
-				var comments = node.GetLeadingTrivia()
-					.Where(x => x.RawKind == (int)SyntaxKind.SingleLineCommentTrivia);
-
-				foreach (SyntaxTrivia comment in comments)
-				{
-					Match match = _suppressPattern.Match(comment.ToString());
-
-					if (match.Success &&
-					    string.Equals(diagnostic.Id, match.Groups[1].Value, StringComparison.OrdinalIgnoreCase) && 
-					    string.Equals(diagnostic.Descriptor.CustomTags.FirstOrDefault(), match.Groups[2].Value, StringComparison.OrdinalIgnoreCase))
-					{
-						return true;
-					}
-				}
-			}
-
-			return false;
+			var successfulMatch = node?.GetLeadingTrivia()
+				.Where(x => x.RawKind == (int)SyntaxKind.SingleLineCommentTrivia)
+				.Select(trivia => _suppressPattern.Match(trivia.ToString()))
+				.FirstOrDefault(match => match.Success &&
+					diagnostic.Id == match.Groups[1].Value && diagnosticShortName == match.Groups[2].Value);
+			return successfulMatch != null;
 		}
 
 		private bool IsSuppressed(SemanticModel semanticModel, Diagnostic diagnostic, CancellationToken cancellation)
