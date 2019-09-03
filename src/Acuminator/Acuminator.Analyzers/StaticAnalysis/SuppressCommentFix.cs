@@ -28,7 +28,6 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			Type diagnosticsType = typeof(Descriptors);
 			var propertiesInfo = diagnosticsType.GetRuntimeProperties();
 
-
 			_fixableDiagnosticIds = propertiesInfo
 				.Where(x => x.PropertyType == typeof(DiagnosticDescriptor))
 				.Select(x =>
@@ -88,8 +87,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 				SyntaxTriviaList leadingTrivia = node.GetLeadingTrivia();
 				var modifiedRoot = root.InsertTriviaAfter(leadingTrivia.Last(), commentNode);
-				return document.WithSyntaxRoot(modifiedRoot);
 
+				return document.WithSyntaxRoot(modifiedRoot);
 			}
 
 			return document;

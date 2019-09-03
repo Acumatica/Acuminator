@@ -13,8 +13,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ConstructorInDac
     [Shared]
     [ExportCodeFixProvider(LanguageNames.CSharp)]
     public class ConstructorInDacFix : CodeFixProvider
-	{
-		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
+    {
+        public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(Descriptors.PX1028_ConstructorInDacDeclaration.Id);
         public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
