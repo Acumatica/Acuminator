@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PX.Objects.HackathonDemo
+namespace PX.Objects.HackathonDemo.Suppression.Comments
 {
 	public partial class APInvoiceEntry : PXGraph<APInvoiceEntry>
 	{
@@ -36,7 +36,7 @@ namespace PX.Objects.HackathonDemo
 			if (doc == null) return;
 
 			if (doc.Released != true)
-			{ 
+			{
 				if (doc.Released != true)
 				{
 					if (true)
@@ -95,13 +95,13 @@ namespace PX.Objects.HackathonDemo
 			}
 		}
 
-        protected virtual void APInvoice_RowInserting(PXCache sender, PXRowInsertingEventArgs e)
-        {
-        }
+		protected virtual void APInvoice_RowInserting(PXCache sender, PXRowInsertingEventArgs e)
+		{
+		}
 
-        protected virtual void APInvoice_DocDate_FieldVerifying(PXCache sender, PXFieldVerifyingEventArgs e)
-        {
-        }
+		protected virtual void APInvoice_DocDate_FieldVerifying(PXCache sender, PXFieldVerifyingEventArgs e)
+		{
+		}
 
 		#region Delegate
 		public IEnumerable items()
@@ -111,6 +111,7 @@ namespace PX.Objects.HackathonDemo
 
 			startRow = PXView.StartRow;
 
+			// Acuminator disable once PX1010 StartRowResetForPaging [Justification]
 			IEnumerable<ListEntryPoint> rows = new PXView(this, false, new Select<ListEntryPoint>())
 					.Select(PXView.Currents, PXView.Parameters, PXView.Searches, PXView.SortColumns, PXView.Descendings, PXView.Filters,
 					ref startRow, PXView.MaximumRows, ref totalRows).Cast<ListEntryPoint>();
@@ -130,6 +131,7 @@ namespace PX.Objects.HackathonDemo
 		}
 		#endregion
 
+		// Acuminator disable once PX1092 IncorrectAttributesOnActionHandler [Justification]
 		public IEnumerable release(PXAdapter adapter)
 		{
 			return adapter.Get();

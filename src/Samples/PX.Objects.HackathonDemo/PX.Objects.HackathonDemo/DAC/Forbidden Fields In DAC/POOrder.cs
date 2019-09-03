@@ -10,11 +10,8 @@ namespace PX.Objects.HackathonDemo
     public partial class POOrder : IBqlTable
     {
         #region CompanyID
-        // Acuminator disable once PX1060 LegacyBqlField [Justification]
-        // Acuminator disable once PX1027 ForbiddenFieldsInDacDeclaration [Justification]
         public abstract class companyId : IBqlField { }
 
-        // Acuminator disable once PX1027 ForbiddenFieldsInDacDeclaration [Justification]
         [PXDBString(IsKey = true, InputMask = "")]
         [PXDefault]
         [PXUIField(DisplayName = "Company ID")]
