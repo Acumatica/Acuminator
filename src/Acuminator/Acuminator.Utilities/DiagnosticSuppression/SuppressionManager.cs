@@ -223,12 +223,10 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			cancellation.ThrowIfCancellationRequested();
 
 			SyntaxNode root = diagnostic.Location.SourceTree?.GetRoot();
-			SyntaxNode node;
-
+			SyntaxNode node = root?.FindNode(diagnostic.Location.SourceSpan);
 			bool containsComment = false;
 
 			// Climb to the hill. Looking for comment on parents nodes.
-			node = root?.FindNode(diagnostic.Location.SourceSpan);
 
 			while (node != null && node != root)
 			{
