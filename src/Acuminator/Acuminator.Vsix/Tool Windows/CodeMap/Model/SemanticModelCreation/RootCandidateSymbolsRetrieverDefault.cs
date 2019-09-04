@@ -24,9 +24,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// <param name="semanticModel">The semantic model.</param>
 		/// <param name="cancellationToken">(Optional) A token that allows processing to be cancelled.</param>
 		/// <returns/>
-		public IEnumerable<(INamedTypeSymbol RootSymbol, SyntaxNode RootNode)> GetCodeMapRootCandidates(SyntaxNode treeRoot, PXContext context,
-																										SemanticModel semanticModel,
-																										CancellationToken cancellationToken = default)
+		public IEnumerable<(INamedTypeSymbol Symbol, SyntaxNode Node)> GetCodeMapRootCandidates(SyntaxNode treeRoot, PXContext context,
+																								SemanticModel semanticModel,
+																								CancellationToken cancellationToken = default)
 		{
 			treeRoot.ThrowOnNull(nameof(treeRoot));
 			context.ThrowOnNull(nameof(context));

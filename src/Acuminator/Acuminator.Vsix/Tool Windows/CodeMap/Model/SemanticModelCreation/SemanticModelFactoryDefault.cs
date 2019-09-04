@@ -17,30 +17,31 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	public class SemanticModelFactoryDefault : ISemanticModelFactory
 	{
 		/// <summary>
-		/// Try to infer semantic model for <paramref name="typeSymbol"/>. 
+		/// Try to infer semantic model for <paramref name="rootSymbol"/>. 
 		/// If semantic model can't be inferred the <paramref name="semanticModel"/> is null and the method returns false.
 		/// </summary>
-		/// <param name="typeSymbol">The type symbol.</param>
+		/// <param name="rootSymbol">The root symbol.</param>
+		/// <param name="rootNode">The root node.</param>
 		/// <param name="context">The context.</param>
 		/// <param name="semanticModel">[out] The inferred semantic model.</param>
 		/// <param name="cancellationToken">(Optional) A token that allows processing to be cancelled.</param>
 		/// <returns>
 		/// True if it succeeds, false if it fails.
 		/// </returns>
-		public virtual bool TryToInferSemanticModel(INamedTypeSymbol typeSymbol, PXContext context, out ISemanticModel semanticModel, 
+		public virtual bool TryToInferSemanticModel(INamedTypeSymbol rootSymbol, SyntaxNode rootNode, PXContext context, out ISemanticModel semanticModel, 
 													CancellationToken cancellationToken = default)
 		{
-			typeSymbol.ThrowOnNull(nameof(typeSymbol));
+			rootSymbol.ThrowOnNull(nameof(rootSymbol));
 			context.ThrowOnNull(nameof(context));
 			cancellationToken.ThrowIfCancellationRequested();
 
-			if (typeSymbol.IsPXGraphOrExtension(context))
+			if (rootSymbol.IsPXGraphOrExtension(context))
 			{
-				return TryToInferGraphOrGraphExtensionSemanticModel(typeSymbol, context, out semanticModel, cancellationToken);
+				return TryToInferGraphOrGraphExtensionSemanticModel(rootSymbol, context, out semanticModel, cancellationToken);
 			}
-			else if (typeSymbol.IsDacOrExtension(context))
+			else if (rootSymbol.IsDacOrExtension(context))
 			{
-				return TryToInferDacOrDacExtensionSemanticModel(typeSymbol, context, out semanticModel, cancellationToken);
+				return TryToInferDacOrDacExtensionSemanticModel(rootSymbol, context, out semanticModel, cancellationToken);
 			}
 
 			semanticModel = null;
