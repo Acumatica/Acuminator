@@ -10,12 +10,7 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Utilities.Roslyn.Syntax.PXGraph;
 using Acuminator.Vsix.Utilities;
-
-using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
-
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -41,9 +36,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public SemanticModel SemanticModel { get; private set; }
 
-		private readonly List<GraphSemanticModelForCodeMap> _graphModels = new List<GraphSemanticModelForCodeMap>(capacity: 2);
+		private readonly List<ISemanticModel> _codeMapSemanticModels = new List<ISemanticModel>(capacity: 4);
 
-		public ReadOnlyCollection<GraphSemanticModelForCodeMap> GraphModels { get; }
+		public ReadOnlyCollection<ISemanticModel> CodeMapSemanticModels { get; }
 
 		public bool IsCodeFileDataLoaded => Root != null && SemanticModel != null;
 
@@ -54,17 +49,18 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			
 			WpfTextView = wpfTextView;
 			Document = document;
-			GraphModels = _graphModels.AsReadOnly();
+			CodeMapSemanticModels = _codeMapSemanticModels.AsReadOnly();
 		}
 
-		public async Task<bool> LoadCodeFileDataAsync(CancellationToken cancellationToken)
+		public async Task<bool> LoadCodeFileDataAsync(IRootCandidateSymbolsRetriever rootCandidatesRetriever, ISemanticModelFactory semanticModelFactory,
+													  CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			if (semanticModelFactory == null || rootCandidatesRetriever == null || cancellationToken.IsCancellationRequested)
 				return false;
 
 			try
 			{
-				_graphModels.Clear();
+				_codeMapSemanticModels.Clear();
 				SemanticModel = await GetSemanticModelAsync(cancellationToken);
 				Root = await GetRootAsync(cancellationToken);
 
@@ -76,24 +72,18 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				if (!context.IsPlatformReferenced)
 					return false;
 
-				var graphs = compilationUnit.GetDeclaredGraphsAndExtensions(SemanticModel, context, cancellationToken)
-											.Select(graphInfo => graphInfo.GraphSymbol)
-											.OfType<INamedTypeSymbol>()
-											.ToList();
-				if (graphs.Count == 0)
-					return false;
+				var candidateSymbols = rootCandidatesRetriever.GetCodeMapRootCandidates(compilationUnit, context, SemanticModel, cancellationToken);
 
-				var graphSemanticModels = graphs.Select(graph => PXGraphEventSemanticModel.InferModels(context, graph, cancellationToken)
-																						  .FirstOrDefault())
-												.Where(graphModel => graphModel != null && graphModel.Type != GraphType.None)
-												.Select(graphModel => new GraphSemanticModelForCodeMap(graphModel, context))
-												.ToList();
+				foreach (var (candidateSymbol, candidateNode) in candidateSymbols)
+				{
+					if (semanticModelFactory.TryToInferSemanticModel(candidateSymbol, candidateNode, context, out ISemanticModel codeMapSemanticModel, cancellationToken) &&
+						codeMapSemanticModel != null)
+					{
+						_codeMapSemanticModels.Add(codeMapSemanticModel);
+					}
+				}
 
-				if (graphSemanticModels.Count == 0)
-					return false;
-
-				_graphModels.AddRange(graphSemanticModels);
-				return true;
+				return _codeMapSemanticModels.Count > 0;
 			}
 			catch
 			{

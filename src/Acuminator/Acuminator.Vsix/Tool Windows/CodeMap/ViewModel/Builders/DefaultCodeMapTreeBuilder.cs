@@ -14,7 +14,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (tree.CodeMapViewModel.DocumentModel == null)
 				yield break;
 
-			foreach (GraphSemanticModelForCodeMap graph in tree.CodeMapViewModel.DocumentModel.GraphModels)
+			foreach (GraphSemanticModelForCodeMap graph in tree.CodeMapViewModel.DocumentModel.CodeMapSemanticModels)
 			{
 				cancellation.ThrowIfCancellationRequested();
 				yield return CreateGraphNode(graph, tree, expandRoots);
