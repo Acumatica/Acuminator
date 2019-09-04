@@ -373,8 +373,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-					Tree = newTreeVM;
-					IsCalculating = false;
+					Tree = newTreeVM;			
 				}
 			}
 			catch (OperationCanceledException e)
@@ -383,6 +382,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 			finally
 			{
+				IsCalculating = false;
 				_cancellationTokenSource = null;
 			}
 		}
