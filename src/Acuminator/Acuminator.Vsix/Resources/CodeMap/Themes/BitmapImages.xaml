@@ -32,7 +32,7 @@
     <BitmapImage x:Key="CacheAttached" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/CacheAttached.ico"/>
 
-    <BitmapImage x:Key="GroupingDAC" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+	<BitmapImage x:Key="GroupingDac" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DAC.ico"/>
 
 	<BitmapImage x:Key="GroupingDacField" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
@@ -43,7 +43,16 @@
 
 	<BitmapImage x:Key="DacProperty" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DacField.ico"/>
-	
-    <BitmapImage x:Key="GroupNode" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+
+	<BitmapImage x:Key="DacKeyProperty" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DacKeyProperty.ico"/>
+
+	<BitmapImage x:Key="DacKeysCategory" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DacKeysCategory.ico"/>
+
+	<BitmapImage x:Key="DacPropertiesCategory" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DacPropertiesCategory.ico"/> 
+
+	<BitmapImage x:Key="GroupNode" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/GroupNode.ico"/>
 </ResourceDictionary>

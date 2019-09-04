@@ -16,6 +16,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		protected override bool AllowNavigation => true;
 
+		public override Icon NodeIcon => Icon.DacKeysCategory;
+
 		public DacKeysCategoryNodeViewModel(DacNodeViewModel dacViewModel, bool isExpanded) : 
 									   base(dacViewModel, DacMemberCategory.Keys, isExpanded)
 		{		
