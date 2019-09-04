@@ -35,6 +35,23 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.SuppressionDiagnostics
 		public virtual void SuppressMuiltipleDiagnostics_One_CodeFix(string actual, string expected) =>
 			VerifyCSharpFix(actual, expected);
 
+		[Theory]
+		[EmbeddedFileData(@"Dac\SuppressMuiltipleDiagnostics_All.cs")]
+		public virtual void ShowAllUnsuppressedDiagnostics(string source) =>
+			VerifyCSharpDiagnostic(source,
+				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(line: 13, column: 25, "companyMask"),
+				Descriptors.PX1030_DefaultAttibuteToExistingRecordsOnDAC.CreateFor(line: 14, column: 4),
+				Descriptors.PX1027_ForbiddenFieldsInDacDeclaration.CreateFor(line: 16, column: 17, "CompanyMask"));
 
+		[Theory]
+		[EmbeddedFileData(@"Dac\SuppressMuiltipleDiagnostics_One.cs")]
+		public virtual void ShowUnsuppressedDiagnostic(string source) =>
+			VerifyCSharpDiagnostic(source,
+				Descriptors.PX1030_DefaultAttibuteToExistingRecordsOnDAC.CreateFor(line: 16, column: 4));
+
+		[Theory]
+		[EmbeddedFileData(@"Dac\SuppressMuiltipleDiagnostics_One_Suppressed.cs")]
+		public virtual void SuppressMultipleDiagnostics(string source) =>
+			VerifyCSharpDiagnostic(source);
 	}
 }
