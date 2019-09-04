@@ -15,27 +15,27 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// <summary>
 	/// Values that represent icons for tree nodes in code map tree.
 	/// </summary>
-	public enum Icons
+	public enum Icon
 	{
-		GraphIcon,
-		EventIcon,
-		DacIcon,
-		DacFieldIcon,
+		Graph,
+		Event,
+		Dac,
+		DacField,
 
-		GroupNodeIcon,
-		GroupingDacIcon,
-		GroupingDacFieldIcon,
+		GroupNode,
+		GroupingDac,
+		GroupingDacField,
 
-		ViewIcon,
-		ViewDelegateIcon,
+		View,
+		ViewDelegate,
 
-		ActionIcon,
-		ActionHandlerIcon,
+		Action,
+		ActionHandler,
 
-		PXOverrideIcon,
+		PXOverride,
 
-		RowEventIcon,
-		FieldEventIcon,
-		CacheAttachedIcon	
+		RowEvent,
+		FieldEvent,
+		CacheAttached	
 	}
 }
