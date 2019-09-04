@@ -21,8 +21,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private const string BitmapsCollectionURI = @"pack://application:,,,/Acuminator;component/Resources/CodeMap/Themes/BitmapImages.xaml";
 
 		private const string GraphIcon = "Graph";
+		private const string GroupingDacIcon = "GroupingDAC";
+		private const string GroupingDacFieldIcon = "GroupingDacField";
+
 		private const string DacIcon = "DAC";
-		private const string DacFieldIcon = "DacField";
+		private const string DacField = "DacField";
 
 		private const string ViewIcon = "View";
 		private const string ViewDelegateIcon = "ViewDelegate";
@@ -79,9 +82,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				case GraphMemberCategoryNodeViewModel graphMemberCategoryNode:
 					return GroupNodeIcon;
 				case DacGroupingNodeBaseViewModel dacGroupingNodeViewModel:
-					return DacIcon;
+					return GroupingDacIcon;
 				case DacFieldGroupingNodeBaseViewModel dacFieldGroupingNodeViewModel:
-					return DacFieldIcon;
+					return GroupingDacFieldIcon;
 				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.View:
 					return ViewIcon;		
 				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.Action:
