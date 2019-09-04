@@ -24,6 +24,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set { }
 		}
 
+		public override Icon NodeIcon => Icon.Graph;
+
 		public override bool DisplayNodeWithoutChildren => true;
 
 		public GraphNodeViewModel(GraphSemanticModelForCodeMap codeMapGraphModel, TreeViewModel tree, bool isExpanded) : 

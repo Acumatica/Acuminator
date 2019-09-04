@@ -20,90 +20,25 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		private const string BitmapsCollectionURI = @"pack://application:,,,/Acuminator;component/Resources/CodeMap/Themes/BitmapImages.xaml";
 
-		private const string GraphIcon = "Graph";
-		private const string GroupingDacIcon = "GroupingDAC";
-		private const string GroupingDacFieldIcon = "GroupingDacField";
-
-		private const string DacIcon = "DAC";
-		private const string DacField = "DacField";
-
-		private const string ViewIcon = "View";
-		private const string ViewDelegateIcon = "ViewDelegate";
-
-		private const string ActionIcon = "Action";
-		private const string ActionHandlerIcon = "ActionHandler";
-
-		private const string PXOverrideIcon = "PXOverride";
-
-		private const string EventIcon = "Event";
-		private const string RowEventIcon = "RowEvent";
-		private const string FieldEventIcon = "FieldEvent";
-		private const string CacheAttachedIcon = "CacheAttached";
-
-		private const string GroupNodeIcon = "GroupNode";
-
 		private ResourceDictionary _resourceDictionary = new ResourceDictionary()
 		{
 			Source = new Uri(BitmapsCollectionURI)
 		};
 
-
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			if (!(value is TreeNodeViewModel treeNodeViewModel))
+			if (!(value is TreeNodeViewModel treeNodeViewModel) || treeNodeViewModel.NodeIcon == Icon.None)
 				return null;
 
-			string iconKey = GetIconResourceKeyForNode(treeNodeViewModel);
-
-			if (iconKey == null)
-				return null;
-
-			if (!_resourceDictionary.TryGetValue(iconKey, out BitmapImage icon))
-				return null;
-
-			return icon;
+			string iconKey = treeNodeViewModel.NodeIcon.ToString();
+			return _resourceDictionary.TryGetValue(iconKey, out BitmapImage icon)
+				? icon
+				: null;
 		}
 
 		public object ConvertBack(object value, Type targetTypes, object parameter, CultureInfo culture)
 		{
 			throw new NotSupportedException();
-		}
-
-		private string GetIconResourceKeyForNode(TreeNodeViewModel treeNodeViewModel)
-		{
-			switch (treeNodeViewModel)
-			{
-				case GraphNodeViewModel graphNode:
-					return GraphIcon;
-				case CacheAttachedCategoryNodeViewModel cacheAttachedCategoryNode:
-				case RowEventCategoryNodeViewModel rowEventCategoryNode:		
-				case FieldEventCategoryNodeViewModel fieldEventCategoryNode:
-					return EventIcon;
-				case GraphMemberCategoryNodeViewModel graphMemberCategoryNode:
-					return GroupNodeIcon;
-				case DacGroupingNodeBaseViewModel dacGroupingNodeViewModel:
-					return GroupingDacIcon;
-				case DacFieldGroupingNodeBaseViewModel dacFieldGroupingNodeViewModel:
-					return GroupingDacFieldIcon;
-				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.View:
-					return ViewIcon;		
-				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.Action:
-					return ActionIcon;
-				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.PXOverride:
-					return PXOverrideIcon;
-				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.RowEvent:
-					return RowEventIcon;
-				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.FieldEvent:
-					return FieldEventIcon;
-				case GraphMemberNodeViewModel graphMember when graphMember.MemberType == GraphMemberType.CacheAttached:
-					return CacheAttachedIcon;
-				case GraphMemberInfoNodeViewModel graphMemberInfo when graphMemberInfo.GraphMemberInfoType == GraphMemberInfoType.ViewDelegate:
-					return ViewDelegateIcon;
-				case GraphMemberInfoNodeViewModel graphMemberInfo when graphMemberInfo.GraphMemberInfoType == GraphMemberInfoType.ActionHandler:
-					return ActionHandlerIcon;
-				default:
-					return null;
-			}
 		}
 	}
 }

@@ -18,6 +18,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override string Tooltip => GetTooltip();
 
+		public override Icon NodeIcon => Icon.View;
+
 		public ViewNodeViewModel(ViewCategoryNodeViewModel viewCategoryVM, DataViewInfo viewInfo, bool isExpanded = false) :
 							base(viewCategoryVM, viewInfo, isExpanded)
 		{

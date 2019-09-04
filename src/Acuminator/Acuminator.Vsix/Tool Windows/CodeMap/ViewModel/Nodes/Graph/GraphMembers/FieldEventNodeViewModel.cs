@@ -16,6 +16,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set;
 		}
 
+		public override Icon NodeIcon => Icon.FieldEvent;
+
 		public FieldEventNodeViewModel(DacFieldGroupingNodeBaseViewModel dacFieldVM, GraphFieldEventInfo eventInfo, bool isExpanded = false) :
 								  base(dacFieldVM?.GraphEventsCategoryVM, eventInfo, isExpanded)
 		{
