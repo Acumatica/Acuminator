@@ -11,7 +11,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// </summary>
 	public abstract partial class TreeBuilderBase
 	{
-		System.Timers.Timer
 		#region Roots
 		public virtual IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacNodeViewModel dac, bool expandChildren,
 																				CancellationToken cancellation) =>

@@ -11,7 +11,7 @@ using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
-	public partial class PXGraphEventSemanticModel
+	public partial class PXGraphEventSemanticModel : ISemanticModel
 	{
 		private enum GraphEventCategory
 		{
