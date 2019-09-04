@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -480,6 +481,24 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				.GetMembers(methodName)
 				.OfType<IMethodSymbol>()
 				.ToImmutableArray();
+		}
+
+		/// <summary>
+		/// Returns true if a type is declared in Acumatica root namespace
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsInAcumaticaRootNamespace(this ITypeSymbol type)
+		{
+			type.ThrowOnNull(nameof(type));
+
+			var typeRootNamespace = type
+				.GetContainingNamespaces()
+				.Where(n => !string.IsNullOrEmpty(n.Name))
+				.Last();
+
+			return NamespaceNames.AcumaticaRootNamespace.Equals(typeRootNamespace.Name, StringComparison.Ordinal);
 		}
 	}
 }

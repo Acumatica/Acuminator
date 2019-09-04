@@ -70,7 +70,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 
             foreach (ArgumentSyntax a in args.Arguments)
             {
-                IParameterSymbol p = a.DetermineParameter(pars, false, syntaxContext.CancellationToken);
+                IParameterSymbol p = a.DetermineParameter(pars, false);
 
                 if (_messageArgNames.Contains(p?.Name, StringComparer.Ordinal))
                 {

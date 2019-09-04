@@ -77,7 +77,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 					return;
 
 				GraphRowEventInfo eventToAdd = new GraphRowEventInfo(methodNode, methodSymbol, declarationOrder, signatureType, eventType);
-				collectionToAdd.Add(eventToAdd);
+
+				if (!eventToAdd.DacName.IsNullOrEmpty())
+				{
+					collectionToAdd.Add(eventToAdd);
+				}
 			}
 
 			public void AddFieldEvent(EventHandlerSignatureType signatureType, EventType eventType, IMethodSymbol methodSymbol,
@@ -89,7 +93,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 					return;
 
 				GraphFieldEventInfo eventToAdd = new GraphFieldEventInfo(methodNode, methodSymbol, declarationOrder, signatureType, eventType);
-				collectionToAdd.Add(eventToAdd);
+
+				if (!eventToAdd.DacName.IsNullOrEmpty() && !eventToAdd.DacFieldName.IsNullOrEmpty())
+				{
+					collectionToAdd.Add(eventToAdd);
+				}
 			}
 
 			private MethodDeclarationSyntax GetMethodNode(IMethodSymbol methodSymbol, CancellationToken cancellationToken) =>
