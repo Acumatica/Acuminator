@@ -240,6 +240,9 @@
     <Compile Include="Tool Windows\CodeMap\Model\GraphMemberInfoType.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphMemberType.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\PXOverrideInfoForCodeMap.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\SemanticModelFabric\Base\ISemanticModelFactory.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\SemanticModelFabric\SemanticModelFactoryDefault.cs" />
+    <Compile Include="Tool Windows\CodeMap\Utils\CodeMapSyntaxUtils.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\IGroupNodeWithCyclingNavigation.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Base\TreeBuilderBase_DacVisitMethods.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Base\TreeBuilderBase_GraphVisitMethods.cs" />
