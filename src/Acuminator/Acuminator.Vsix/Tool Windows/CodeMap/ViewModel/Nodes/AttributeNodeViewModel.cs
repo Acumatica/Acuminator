@@ -25,7 +25,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set;
 		}
 
-		public string Tooltip { get; }
+		public override string Tooltip => GetAttributeTooltip();
 
 		public override bool DisplayNodeWithoutChildren => true;
 
@@ -50,7 +50,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			Name = $"[{attributeName}]";
-			Tooltip = GetAttributeTooltip();
 		}
 
 		public async override Task NavigateToItemAsync()

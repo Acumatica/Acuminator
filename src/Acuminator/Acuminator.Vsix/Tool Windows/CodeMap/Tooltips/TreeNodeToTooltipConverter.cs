@@ -6,7 +6,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Data;
 using Microsoft.CodeAnalysis;
-using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+using Acuminator.Utilities.Common;
 
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
@@ -19,23 +19,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			switch (value)
-			{
-				case ViewNodeViewModel viewNode:
-					return viewNode.Tooltip ?? Binding.DoNothing;
-				case ActionNodeViewModel actionNode:
-					return actionNode.ActionInfo.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
-				case CacheAttachedNodeViewModel cacheAttachedNode 
-				when cacheAttachedNode.Children.Count > 0:
-					var attributeStrings = cacheAttachedNode.Children
-															.OfType<AttributeNodeViewModel>()
-															.Select(attribute => attribute.Tooltip);															
-					return string.Join(Environment.NewLine, attributeStrings);
-				case AttributeNodeViewModel attributeNode:
-					return attributeNode.Tooltip;
-				default:
-					return Binding.DoNothing;
-			}
+			return value is TreeNodeViewModel treeNode && !treeNode.Tooltip.IsNullOrWhiteSpace()
+				? treeNode.Tooltip
+				: Binding.DoNothing;
 		}
 
 		public object ConvertBack(object value, Type targetTypes, object parameter, CultureInfo culture)
