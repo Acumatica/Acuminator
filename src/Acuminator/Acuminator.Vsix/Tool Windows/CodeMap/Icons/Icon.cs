@@ -17,6 +17,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// </summary>
 	public enum Icon
 	{
+		None,
 		Graph,
 		Event,
 		Dac,
