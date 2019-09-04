@@ -18,7 +18,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Themes/Styles.xaml"/>
+				<ResourceDictionary Source="../../Resources/CodeMap/Themes/Styles.xaml"/>
 
                 <ResourceDictionary>
                     <!--Converters-->                  
