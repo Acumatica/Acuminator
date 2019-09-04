@@ -138,6 +138,11 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\BqlParameterMismatch\SearchCall_Suppressed.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\BqlParameterMismatch\StaticCall_Suppressed.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\BqlParameterMismatch\StaticCallWithCustomPredicate_Suppressed.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_All_Suppressed.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_All.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_One_Suppressed.cs" />
+    <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\MultipleSuppressionCodeFixTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_One.cs" />
     <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\SuppressionOnDacCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacPropertyAttributes\DacFieldWithDBCalcedAttributeTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacUiAttributes\DacUiAttributesTests.cs" />
