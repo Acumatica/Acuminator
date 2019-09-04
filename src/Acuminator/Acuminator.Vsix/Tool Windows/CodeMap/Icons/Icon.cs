@@ -1,14 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media.Imaging;
-using System.Windows.Data;
-using Acuminator.Vsix.Utilities;
-
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -21,7 +11,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		Graph,
 		Event,
 		Dac,
-		DacField,
+		DacProperty,
 
 		GroupNode,
 		GroupingDac,

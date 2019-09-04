@@ -20,6 +20,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set { }
 		}
 
+		public override Icon NodeIcon => Icon.Dac;
+
 		public override bool DisplayNodeWithoutChildren => true;
 
 		public DacNodeViewModel(DacSemanticModel dacModel, TreeViewModel tree, bool isExpanded) : base(tree, isExpanded)

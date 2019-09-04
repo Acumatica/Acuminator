@@ -11,6 +11,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class PropertyNodeViewModel : DacMemberNodeViewModel
 	{
+		public override Icon NodeIcon => Icon.DacField;
+
 		public DacPropertyInfo PropertyInfo => MemberInfo as DacPropertyInfo;
 
 		public bool IsDacProperty => PropertyInfo.IsDacProperty;
