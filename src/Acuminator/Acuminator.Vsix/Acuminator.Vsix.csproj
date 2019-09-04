@@ -369,11 +369,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Tool Windows\Themes\BitmapImages.xaml">
+    <Page Include="Resources\CodeMap\Themes\BitmapImages.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Tool Windows\Themes\Styles.xaml">
+    <Page Include="Resources\CodeMap\Themes\Styles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
