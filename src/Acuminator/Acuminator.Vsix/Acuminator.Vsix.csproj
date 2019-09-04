@@ -177,9 +177,15 @@
     <Resource Include="Resources\CodeMap\PXOverride.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Content Include="Resources\CodeMap\DacKeyProperty.ico">
+    <Resource Include="Resources\CodeMap\DacIdentityProperty.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </Resource>
+    <Resource Include="Resources\CodeMap\DacKeyIdentityProperty.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\CodeMap\DacKeyProperty.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\CodeMap\DacKeysCategory.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>

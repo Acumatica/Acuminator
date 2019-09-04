@@ -10,11 +10,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		None,
 		Graph,
 		Event,
-
 		Dac,
-		DacProperty,
-		DacPropertiesCategory,
+
+		DacProperty,	
 		DacKeyProperty,
+		DacIdentityProperty,
+		DacKeyIdentityProperty,
+
+		DacPropertiesCategory,
 		DacKeysCategory,
 
 		GroupNode,

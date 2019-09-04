@@ -47,6 +47,12 @@
 	<BitmapImage x:Key="DacKeyProperty" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DacKeyProperty.ico"/>
 
+	<BitmapImage x:Key="DacIdentityProperty" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DacIdentityProperty.ico"/>
+
+	<BitmapImage x:Key="DacKeyIdentityProperty" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DacKeyIdentityProperty.ico"/>
+
 	<BitmapImage x:Key="DacKeysCategory" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DacKeysCategory.ico"/>
 
