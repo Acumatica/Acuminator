@@ -7,7 +7,7 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Utilities.Common;
-
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -16,65 +16,62 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// </summary>
 	public class RootCandidateSymbolsRetrieverDefault : IRootCandidateSymbolsRetriever
 	{
-		public IEnumerable<INamedTypeSymbol> GetCodeMapRootCandidates(SyntaxNode treeRoot, PXContext context, 
-																CancellationToken cancellationToken = default)
+		/// <summary>
+		/// Get the code map root candidate symbol + node pairs.
+		/// </summary>
+		/// <param name="treeRoot">The tree root.</param>
+		/// <param name="context">The context.</param>
+		/// <param name="semanticModel">The semantic model.</param>
+		/// <param name="cancellationToken">(Optional) A token that allows processing to be cancelled.</param>
+		/// <returns/>
+		public IEnumerable<(INamedTypeSymbol RootSymbol, SyntaxNode RootNode)> GetCodeMapRootCandidates(SyntaxNode treeRoot, PXContext context,
+																										SemanticModel semanticModel,
+																										CancellationToken cancellationToken = default)
 		{
 			treeRoot.ThrowOnNull(nameof(treeRoot));
 			context.ThrowOnNull(nameof(context));
+			semanticModel.ThrowOnNull(nameof(semanticModel));
 
 			cancellationToken.ThrowIfCancellationRequested();
-
-
+			return GetDeclaredCodeMapRoots(treeRoot, context, semanticModel, cancellationToken);
 		}
 
-		protected  IEnumerable<(ITypeSymbol RootSymbol, SyntaxNode RootNode)> GetDeclaredCodeMapRoots(
-																						SyntaxNode syntaxTreeRoot, SemanticModel semanticModel,
-																						PXContext context, CancellationToken cancellationToken = default)
+		protected virtual IEnumerable<(INamedTypeSymbol RootSymbol, SyntaxNode RootNode)> GetDeclaredCodeMapRoots(SyntaxNode treeRoot, PXContext context,
+																												  SemanticModel semanticModel,
+																												  CancellationToken cancellationToken)
 		{
-			if (!context.CheckIfNull(nameof(context)).IsPlatformReferenced)
-				return Enumerable.Empty<(ITypeSymbol, SyntaxNode)>();
+			var declaredClasses = treeRoot.DescendantNodesAndSelf().OfType<ClassDeclarationSyntax>();
 
-			syntaxTreeRoot.ThrowOnNull(nameof(syntaxTreeRoot));
-			semanticModel.ThrowOnNull(nameof(semanticModel));
-			cancellationToken.ThrowIfCancellationRequested();
-
-			return GetDeclaredGraphsAndExtensionsImpl();
-
-
-			IEnumerable<(ITypeSymbol GraphSymbol, SyntaxNode GraphNode)> GetDeclaredGraphsAndExtensionsImpl()
+			foreach (ClassDeclarationSyntax classNode in declaredClasses)
 			{
-				var declaredClasses = syntaxTreeRoot.DescendantNodesAndSelf().OfType<ClassDeclarationSyntax>();
+				cancellationToken.ThrowIfCancellationRequested();
+				INamedTypeSymbol classTypeSymbol = GetTypeSymbolFromClassDeclaration(classNode, semanticModel, cancellationToken);
 
-				foreach (ClassDeclarationSyntax classNode in declaredClasses)
+				if (classTypeSymbol != null && IsRootCandidate(classTypeSymbol, context))
 				{
-					ITypeSymbol classTypeSymbol = classNode.GetTypeSymbolFromClassDeclaration(semanticModel, cancellationToken);
-
-					if (classTypeSymbol != null && classTypeSymbol.IsPXGraphOrExtension(context))
-					{
-						yield return (classTypeSymbol, classNode);
-					}
+					yield return (classTypeSymbol, classNode);
 				}
 			}
 		}
 
-		protected ITypeSymbol GetTypeSymbolFromClassDeclaration(ClassDeclarationSyntax classDeclaration, SemanticModel semanticModel,
-																	CancellationToken cancellationToken = default)
-		{
-			classDeclaration.ThrowOnNull(nameof(classDeclaration));
-			semanticModel.ThrowOnNull(nameof(semanticModel));
-			cancellationToken.ThrowIfCancellationRequested();
+		protected virtual bool IsRootCandidate(INamedTypeSymbol classTypeSymbol, PXContext context) =>
+			classTypeSymbol.IsPXGraphOrExtension(context) ||
+			classTypeSymbol.IsDacOrExtension(context);
 
-			var typeSymbol = semanticModel.GetDeclaredSymbol(classDeclaration, cancellationToken) as ITypeSymbol;
+		protected INamedTypeSymbol GetTypeSymbolFromClassDeclaration(ClassDeclarationSyntax classNode, SemanticModel semanticModel,
+																	 CancellationToken cancellationToken)
+		{
+			var typeSymbol = semanticModel.GetDeclaredSymbol(classNode, cancellationToken) as INamedTypeSymbol;
 
 			if (typeSymbol != null)
 				return typeSymbol;
 
-			SymbolInfo symbolInfo = semanticModel.GetSymbolInfo(classDeclaration, cancellationToken);
-			typeSymbol = symbolInfo.Symbol as ITypeSymbol;
+			SymbolInfo symbolInfo = semanticModel.GetSymbolInfo(classNode, cancellationToken);
+			typeSymbol = symbolInfo.Symbol as INamedTypeSymbol;
 
 			if (typeSymbol == null && symbolInfo.CandidateSymbols.Length == 1)
 			{
-				typeSymbol = symbolInfo.CandidateSymbols[0] as ITypeSymbol;
+				typeSymbol = symbolInfo.CandidateSymbols[0] as INamedTypeSymbol;
 			}
 
 			return typeSymbol;
