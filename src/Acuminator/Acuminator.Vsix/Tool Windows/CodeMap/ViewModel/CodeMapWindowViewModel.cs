@@ -31,6 +31,18 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			internal set;
 		}
 
+		public IRootCandidateSymbolsRetriever RootSymbolsRetriever
+		{
+			get;
+			internal set;
+		}
+
+		public ISemanticModelFactory SemanticModelFactory
+		{
+			get;
+			internal set;
+		}
+
 		public DocumentModel DocumentModel
 		{
 			get;
@@ -93,6 +105,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private CodeMapWindowViewModel(IWpfTextView wpfTextView, Document document)
 		{
 			DocumentModel = new DocumentModel(wpfTextView, document);
+
+			RootSymbolsRetriever = new RootCandidateSymbolsRetrieverDefault();
+			SemanticModelFactory = new SemanticModelFactoryDefault();
 			TreeBuilder = new DefaultCodeMapTreeBuilder();
 			Tree = TreeBuilder.CreateEmptyCodeMapTree(this);
 
@@ -345,13 +360,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					IsCalculating = true;
 					await TaskScheduler.Default;
 
-					await DocumentModel.LoadCodeFileDataAsync(cancellationToken)
-										.ConfigureAwait(false);
+					bool isSuccess = await DocumentModel.LoadCodeFileDataAsync(RootSymbolsRetriever, SemanticModelFactory, cancellationToken)
+														.ConfigureAwait(false);
 
-					if (cancellationToken.IsCancellationRequested || !DocumentModel.IsCodeFileDataLoaded)
+					if (!isSuccess || cancellationToken.IsCancellationRequested || !DocumentModel.IsCodeFileDataLoaded)
 						return;
 
-					TreeViewModel newTreeVM = TreeBuilder.BuildCodeMapTree(this, expandRoots: true, expandChildren: false, cancellationToken);
+					TreeViewModel newTreeVM = TreeBuilder?.BuildCodeMapTree(this, expandRoots: true, expandChildren: false, cancellationToken);
 
 					if (newTreeVM == null)
 						return;
