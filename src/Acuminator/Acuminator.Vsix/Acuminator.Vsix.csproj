@@ -87,15 +87,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="PX.BulkInsert">
-      <HintPath>..\..\..\lib\PX.BulkInsert.dll</HintPath>
-    </Reference>
-    <Reference Include="PX.Data">
-      <HintPath>..\..\..\lib\PX.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="PX.DbServices">
-      <HintPath>..\..\..\lib\PX.DbServices.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
@@ -180,9 +171,6 @@
     <Resource Include="Resources\CodeMap\DacIdentityProperty.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Resources\CodeMap\DacKeyIdentityProperty.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="Resources\CodeMap\DacKeyProperty.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -192,6 +180,9 @@
     <Resource Include="Resources\CodeMap\DacPropertiesCategory.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <EmbeddedResource Include="Resources\CodeMap\DacKeyIdentityProperty.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="Resources\DacExplorer.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
