@@ -14,8 +14,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		DacProperty,	
 		DacKeyProperty,
-		DacIdentityProperty,
-		DacKeyIdentityProperty,
 
 		DacPropertiesCategory,
 		DacKeysCategory,

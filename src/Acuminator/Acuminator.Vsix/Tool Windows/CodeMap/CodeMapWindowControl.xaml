@@ -63,13 +63,13 @@
         </WrapPanel>-->
 
         <WrapPanel Grid.Row="0" Margin="5,2" Orientation="Horizontal">
-            <Button  VerticalAlignment="Center" ToolTip="Refresh Code Map" Padding="0,1"
+			<Button  VerticalAlignment="Center" ToolTip="Refresh Code Map" Padding="0,1"
                      Command="{Binding Path=RefreshCodeMapCommand}" MaxHeight="20" MinHeight="20" MaxWidth="20" MinWidth="20"
                      IsEnabled="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolInverter}}">
-                <Image Source="{StaticResource RefreshImage}" Style="{StaticResource vsImageStyle}"/>
-            </Button>
+				<Image Source="{StaticResource RefreshImage}" Style="{StaticResource vsImageStyle}"/>
+			</Button>
 
-            <ProgressBar IsIndeterminate="True"  MaxHeight="16" MinHeight="16" Margin="2,0,0,0"
+			<ProgressBar IsIndeterminate="True"  MaxHeight="16" MinHeight="16" Margin="2,0,0,0"
                      HorizontalAlignment="Left" VerticalAlignment="Center" MaxWidth="150" MinWidth="150"
                      Visibility="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
                                           Converter={StaticResource boolToVisibilityConverter}}"/>
@@ -103,7 +103,16 @@
                             </Image.Style>
                         </Image>
 
-                        <TextBlock VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,3,0"
+						<!--<ContentControl ContentTemplateSelector="">
+							<ContentControl.ContentTemplate>
+								<DataTemplate>
+									<TextBlock Text="ID" VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,3,0"
+												Foreground="Green" FontWeight="Bold" FontFamily="Arial Black" FontSize="10"/>
+								</DataTemplate>
+							</ContentControl.ContentTemplate>
+						</ContentControl>-->
+
+						<TextBlock VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,3,0"
                                    Text="{Binding Path=Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                    Tag="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
                                                  Converter={StaticResource treeNodeToTooltipConverter}}">
