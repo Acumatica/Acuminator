@@ -102,16 +102,7 @@
                                 </Style>
                             </Image.Style>
                         </Image>
-
-						<!--<ContentControl ContentTemplateSelector="">
-							<ContentControl.ContentTemplate>
-								<DataTemplate>
-									<TextBlock Text="ID" VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,3,0"
-												Foreground="Green" FontWeight="Bold" FontFamily="Arial Black" FontSize="10"/>
-								</DataTemplate>
-							</ContentControl.ContentTemplate>
-						</ContentControl>-->
-
+				
 						<TextBlock VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,3,0"
                                    Text="{Binding Path=Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                    Tag="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged,

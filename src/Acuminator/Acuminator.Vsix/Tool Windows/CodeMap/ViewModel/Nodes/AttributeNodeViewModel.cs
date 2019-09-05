@@ -29,9 +29,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override bool DisplayNodeWithoutChildren => true;
 
-		public AttributeNodeViewModel(GraphMemberNodeViewModel graphMemberVM, AttributeData attribute, 
-									  bool isExpanded = false) :
-								 base(graphMemberVM?.Tree, isExpanded)
+		public AttributeNodeViewModel(TreeNodeViewModel nodeVM, AttributeData attribute, bool isExpanded = false) :
+								 base(nodeVM?.Tree, isExpanded)
 		{
 			attribute.ThrowOnNull(nameof(attribute));
 

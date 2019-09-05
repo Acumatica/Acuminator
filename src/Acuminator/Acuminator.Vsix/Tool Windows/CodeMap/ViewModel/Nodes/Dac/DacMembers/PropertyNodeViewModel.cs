@@ -15,6 +15,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			? Icon.DacKeyProperty
 			: Icon.DacProperty;
 
+		public override string Tooltip
+		{
+			get
+			{
+				var attributeStrings = Children.OfType<AttributeNodeViewModel>().Select(attribute => attribute.Tooltip);
+				return string.Join(Environment.NewLine, attributeStrings);
+			}
+		}
+
 		public DacPropertyInfo PropertyInfo => MemberInfo as DacPropertyInfo;
 
 		public bool IsDacProperty => PropertyInfo.IsDacProperty;

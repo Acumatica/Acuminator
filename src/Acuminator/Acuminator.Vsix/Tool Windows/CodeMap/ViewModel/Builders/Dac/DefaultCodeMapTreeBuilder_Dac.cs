@@ -76,8 +76,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 																								CancellationToken cancellation)
 		where TInfo : SymbolItem
 		{
-			var categorySymbols = dacMemberCategory.GetCategoryDacNodeSymbols();
-
+			var categorySymbols = dacMemberCategory.GetCategoryDacNodeSymbols()
+												   .OrderBy(symbol => symbol.DeclarationOrder);
 			if (categorySymbols == null)
 			{
 				yield break;
@@ -93,6 +93,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					yield return childNode;
 				}
 			}
+		}
+
+		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(PropertyNodeViewModel property, bool expandChildren,
+																				 CancellationToken cancellation)
+		{
+			property.ThrowOnNull(nameof(property));
+			return property.PropertyInfo.Attributes.Select(a => new AttributeNodeViewModel(property, a.AttributeData, expandChildren));
 		}
 	}
 }
