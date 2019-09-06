@@ -225,12 +225,13 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			SyntaxNode root = diagnostic.Location.SourceTree?.GetRoot();
 			SyntaxNode node = root?.FindNode(diagnostic.Location.SourceSpan);
 			bool containsComment = false;
+			string shortName = diagnostic.Descriptor.CustomTags.FirstOrDefault();
 
 			// Climb to the hill. Looking for comment on parents nodes.
 
 			while (node != null && node != root)
 			{
-				containsComment = CheckSuppressionCommentOnNode(diagnostic, diagnostic.Descriptor.CustomTags.FirstOrDefault(), node, cancellation);
+				containsComment = CheckSuppressionCommentOnNode(diagnostic, shortName, node, cancellation);
 				
 				if (node is StatementSyntax || node is MemberDeclarationSyntax || containsComment)
 					break;
