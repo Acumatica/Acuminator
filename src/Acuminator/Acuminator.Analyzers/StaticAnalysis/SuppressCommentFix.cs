@@ -43,23 +43,24 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 		public override Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			return Task.Run(() =>
+			context.CancellationToken.ThrowIfCancellationRequested();
+
+			ParallelOptions parallelOptions = new ParallelOptions
 			{
-				ParallelOptions parallelOptions = new ParallelOptions
-				{
-					CancellationToken = context.CancellationToken
-				};
+				CancellationToken = context.CancellationToken
+			};
 
-				Parallel.ForEach(context.Diagnostics, parallelOptions, (diagnostic) => {
-					parallelOptions.CancellationToken.ThrowIfCancellationRequested();
+			Parallel.ForEach(context.Diagnostics, parallelOptions, (diagnostic) => {
+				parallelOptions.CancellationToken.ThrowIfCancellationRequested();
 
-					string codeActionName = string.Format(_diagnosticName, diagnostic.Id);
-					CodeAction codeAction = CodeAction.Create(codeActionName,
-						cToken => AddSuppressionComment(context, diagnostic, cToken),
-						codeActionName);
-					context.RegisterCodeFix(codeAction, diagnostic);
-				});
-			}, context.CancellationToken);
+				string codeActionName = string.Format(_diagnosticName, diagnostic.Id);
+				CodeAction codeAction = CodeAction.Create(codeActionName,
+					cToken => AddSuppressionComment(context, diagnostic, cToken),
+					codeActionName);
+				context.RegisterCodeFix(codeAction, diagnostic);
+			});
+
+			return Task.CompletedTask;
 		}
 
 		private async Task<Document> AddSuppressionComment(CodeFixContext context, Diagnostic diagnostic, CancellationToken cancellationToken)
