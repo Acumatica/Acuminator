@@ -23,11 +23,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.ConstructorInDac
         [EmbeddedFileData("DacWithConstructor.cs")]
         public virtual void TestDacWithConstructor(string source) =>
             VerifyCSharpDiagnostic(source,
-                Descriptors.PX1028_ConstructorInDacDeclaration.CreateFor(line: 13, column: 16),
-	            Descriptors.PX1028_ConstructorInDacDeclaration.CreateFor(line: 17, column: 16),
-	            Descriptors.PX1028_ConstructorInDacDeclaration.CreateFor(line: 74, column: 16),
-	            Descriptors.PX1028_ConstructorInDacDeclaration.CreateFor(line: 88, column: 16),
-	            Descriptors.PX1028_ConstructorInDacDeclaration.CreateFor(line: 92, column: 16));
+                Descriptors.PX1028_ConstructorInDacDeclaration.CreateFor(line: 13, column: 10),
+	            Descriptors.PX1028_ConstructorInDacDeclaration.CreateFor(line: 17, column: 10),
+	            Descriptors.PX1028_ConstructorInDacDeclaration.CreateFor(line: 74, column: 10),
+	            Descriptors.PX1028_ConstructorInDacDeclaration.CreateFor(line: 88, column: 10),
+	            Descriptors.PX1028_ConstructorInDacDeclaration.CreateFor(line: 92, column: 10));
 
         [Theory]
         [EmbeddedFileData("DacWithConstructor.cs",

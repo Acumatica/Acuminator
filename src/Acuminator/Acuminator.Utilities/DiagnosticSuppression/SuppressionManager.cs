@@ -1,13 +1,15 @@
 ﻿using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Text.RegularExpressions;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
 {
@@ -17,6 +19,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		private readonly ISuppressionFileSystemService _fileSystemService;
 
 		private static SuppressionManager Instance { get; set; }
+
+		private static readonly Regex _suppressPattern = new Regex(@"Acuminator\s+disable\s+once\s+(\w+)\s+(\w+)", RegexOptions.Compiled);
 
 		private SuppressionManager(ISuppressionFileSystemService fileSystemService, IEnumerable<SuppressionManagerInitInfo> suppressionFiles)
 		{
@@ -209,12 +213,49 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			if (settings.SuppressionMechanismEnabled && Instance?.IsSuppressed(semanticModel, diagnostic, cancellation) == true)
+			if (settings.SuppressionMechanismEnabled && 
+			    (Instance?.IsSuppressed(semanticModel, diagnostic, cancellation) == true ||
+			    CheckSuppressedComment(diagnostic, cancellation)))
 			{
 				return;
 			}
 
 			reportDiagnostic(diagnostic);
+		}
+
+		private static bool CheckSuppressedComment(Diagnostic diagnostic, CancellationToken cancellation)
+		{
+			cancellation.ThrowIfCancellationRequested();
+
+			SyntaxNode root = diagnostic.Location.SourceTree?.GetRoot();
+			SyntaxNode node = root?.FindNode(diagnostic.Location.SourceSpan);
+			bool containsComment = false;
+			string shortName = diagnostic.Descriptor.CustomTags.FirstOrDefault();
+
+			// Climb to the hill. Looking for comment on parents nodes.
+
+			while (node != null && node != root)
+			{
+				containsComment = CheckSuppressionCommentOnNode(diagnostic, shortName, node, cancellation);
+				
+				if (node is StatementSyntax || node is MemberDeclarationSyntax || containsComment)
+					break;
+
+				node = node.Parent;
+			}
+
+			return containsComment;
+		}
+
+		private static bool CheckSuppressionCommentOnNode(Diagnostic diagnostic, string diagnosticShortName, SyntaxNode node, CancellationToken cancellation)
+		{
+			cancellation.ThrowIfCancellationRequested();
+			var successfulMatch = node?.GetLeadingTrivia()
+				.Where(x => x.RawKind == (int)SyntaxKind.SingleLineCommentTrivia)
+				.Select(trivia => _suppressPattern.Match(trivia.ToString()))
+				.FirstOrDefault(match => match.Success &&
+					diagnostic.Id == match.Groups[1].Value && diagnosticShortName == match.Groups[2].Value);
+			return successfulMatch != null;
 		}
 
 		private bool IsSuppressed(SemanticModel semanticModel, Diagnostic diagnostic, CancellationToken cancellation)

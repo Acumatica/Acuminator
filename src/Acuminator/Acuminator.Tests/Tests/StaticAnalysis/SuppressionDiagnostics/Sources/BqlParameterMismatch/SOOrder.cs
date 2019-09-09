@@ -9,14 +9,6 @@ namespace PX.Objects.HackathonDemo
 {
 	public class SOOrder : IBqlTable
 	{
-		#region Cons
-		
-		#endregion
-
-		#region ConsParams
-		
-		#endregion
-
 		#region OrderType
 		public abstract class orderType : IBqlField { }
 		[PXDBString(IsKey = true, InputMask = "")]
@@ -64,28 +56,16 @@ namespace PX.Objects.HackathonDemo
 
 	public class SOOrderWithTotal : PXCacheExtension<SOOrder>
 	{
-		#region Cons
-		
-		#endregion
-
 		#region Total
 		public abstract class total : IBqlField { }
 		[PXDBDecimal]
 		[PXUIField(DisplayName = "Total")]
-		public decimal? Total { get; set; }
+		public decimal Total { get; set; }
 		#endregion
 	}
 
 	public class SOOrderWithHold : SOOrderWithTotal
 	{
-		#region Cons
-		
-		#endregion
-
-		#region Cons
-		
-		#endregion
-
 		#region Hold
 		public abstract class hold : IBqlField { }
 		[PXDBBool]

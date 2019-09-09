@@ -109,6 +109,13 @@
     <Compile Include="Graph\Graph constructor call, typo in view delegate and invalid action handler signature\SOOrderEntry.cs" />
     <Compile Include="Graph\View Order\SOOrderProcessing.cs" />
     <Compile Include="DAC\SOSetup.cs" />
+    <Compile Include="Suppression\Comment\APInvoiceEntry.cs" />
+    <Compile Include="Suppression\Comment\BQL Parameters Count Mismatch Test\PXUpdateBQL\ReportTaxProcess.cs" />
+    <Compile Include="Suppression\Comment\BQL Parameters Count Mismatch Test\SOOrderByTypeAndStatusSelect.cs" />
+    <Compile Include="Suppression\Comment\BQL Parameters Count Mismatch Test\SOOrdersInq.cs" />
+    <Compile Include="Suppression\Comment\POOrderExtraFields.cs" />
+    <Compile Include="Suppression\Comment\POOrder.cs" />
+    <Compile Include="Suppression\Comment\SOOrderProcessing.cs" />
     <Compile Include="Suppression\SOOrderBalanced.cs" />
   </ItemGroup>
   <ItemGroup />

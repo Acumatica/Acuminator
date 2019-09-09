@@ -10,7 +10,9 @@ namespace PX.Objects.HackathonDemo
 	public partial class SOOrder : IBqlTable
 	{
 		#region CompanyID
+		// Acuminator disable once PX1027 ForbiddenFieldsInDacDeclaration [Justification]
 		public abstract class companyId : IBqlField { }
+		// Acuminator disable once PX1027 ForbiddenFieldsInDacDeclaration [Justification]
 		[PXDBString(IsKey = true, InputMask = "")]
 		[PXDefault]
 		[PXUIField(DisplayName = "Company ID")]
@@ -24,7 +26,9 @@ namespace PX.Objects.HackathonDemo
 		public int? OrderNbr { get; set; }
 		#endregion
 		#region  DeletedDatabaseRecord
+		// Acuminator disable once PX1027 ForbiddenFieldsInDacDeclaration [Justification]
 		public abstract class deletedDatabaseRecord { }
+		// Acuminator disable once PX1027 ForbiddenFieldsInDacDeclaration [Justification]
 		[PXDefault]
 		[PXUIField(DisplayName = "Deleted Flag")]
 		public string DeletedDatabaseRecord { get; set; }
@@ -36,7 +40,9 @@ namespace PX.Objects.HackathonDemo
 		public int? OrderCD { get; set; }
 		#endregion
 		#region CompanyMask
+		// Acuminator disable once PX1027 ForbiddenFieldsInDacDeclaration [Justification]
 		public abstract class companyMask : IBqlField { }
+		// Acuminator disable once PX1027 ForbiddenFieldsInDacDeclaration [Justification]
 		[PXDefault]
 		[PXUIField(DisplayName = "Company Mask")]
 		public string CompanyMask { get; set; }
