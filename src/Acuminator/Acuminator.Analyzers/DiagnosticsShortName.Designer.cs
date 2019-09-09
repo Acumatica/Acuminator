@@ -125,6 +125,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to NoXmlCommentForPublicClass.
+        /// </summary>
+        internal static string PX1007 {
+            get {
+                return ResourceManager.GetString("PX1007", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to LongOperationDelegateSynchronousExecution.
         /// </summary>
         internal static string PX1008 {
