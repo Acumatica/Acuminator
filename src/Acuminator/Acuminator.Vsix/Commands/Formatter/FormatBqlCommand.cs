@@ -111,16 +111,17 @@ namespace Acuminator.Vsix.Formatter
 				if (spanWalker.NodesWithinSpan.Count == 0)
 					return;
 
-				formattedRoot = syntaxRoot.ReplaceNodes(spanWalker.NodesWithinSpan, (o, r) => formatter.Format(o, semanticModel));
+				formattedRoot = syntaxRoot.ReplaceNodes(spanWalker.NodesWithinSpan, 
+														(oldNode, replacementNode) => formatter.Format(oldNode, semanticModel) ?? replacementNode);
 			}
 			else
 			{
-				formattedRoot = formatter.Format(syntaxRoot, semanticModel);
+				formattedRoot = formatter.Format(syntaxRoot, semanticModel) ?? syntaxRoot;
 			}
 
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(); // Return to UI thread
 
-			if (!textView.TextBuffer.EditInProgress)
+			if (!textView.TextBuffer.EditInProgress && formattedRoot != syntaxRoot)
 			{
 				var formattedDocument = document.WithSyntaxRoot(formattedRoot);
 				ApplyChanges(document, formattedDocument);

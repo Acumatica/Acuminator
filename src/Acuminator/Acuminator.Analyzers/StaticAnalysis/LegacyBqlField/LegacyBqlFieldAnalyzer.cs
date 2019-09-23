@@ -61,7 +61,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 					return arrType.ElementType.Name + "[]";
 
 				case INamedTypeSymbol namedType when namedType.IsNullable(pxContext):
-					return namedType.GetUnderlyingTypeFromNullable(pxContext).Name;
+					return namedType.GetUnderlyingTypeFromNullable(pxContext)?.Name;
 
 				case INamedTypeSymbol namedType:
 					return namedType.Name;

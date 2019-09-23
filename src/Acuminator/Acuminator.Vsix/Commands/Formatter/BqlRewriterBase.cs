@@ -60,8 +60,17 @@ namespace Acuminator.Vsix.Formatter
 		/// </summary>
 		protected SyntaxNode RewriteGenericNode(GenericNameSyntax node, BqlRewriterBase rewriter)
 		{
-			var newNode = OnNewLineAndIndented(node);
-			return newNode.WithTypeArgumentList((TypeArgumentListSyntax)rewriter.Visit(newNode.TypeArgumentList));
+			GenericNameSyntax newNode = OnNewLineAndIndented(node);
+
+			if (newNode?.TypeArgumentList == null)
+				return node;
+
+			TypeArgumentListSyntax newTypeArgsListNode = rewriter.Visit(newNode.TypeArgumentList) as TypeArgumentListSyntax;
+
+			if (newTypeArgsListNode == null)
+				return newNode;
+
+			return newNode.WithTypeArgumentList(newTypeArgsListNode);
 		}
 
 		protected SyntaxToken OnNewLineAndIndented(SyntaxToken token)
