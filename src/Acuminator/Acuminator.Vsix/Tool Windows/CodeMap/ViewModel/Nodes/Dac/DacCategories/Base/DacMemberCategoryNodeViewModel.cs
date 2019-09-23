@@ -1,28 +1,24 @@
 ﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Vsix.Utilities;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using System.Threading.Tasks;
-using System.Threading;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public abstract class GraphMemberCategoryNodeViewModel : TreeNodeViewModel, IGroupNodeWithCyclingNavigation
+	public abstract class DacMemberCategoryNodeViewModel : TreeNodeViewModel, IGroupNodeWithCyclingNavigation
 	{
-		public GraphNodeViewModel GraphViewModel { get; }
+		public DacNodeViewModel DacViewModel { get; }
 
-		public PXGraphEventSemanticModel GraphSemanticModel => GraphViewModel.GraphSemanticModel;
-
-		public GraphSemanticModelForCodeMap CodeMapGraphModel => GraphViewModel.CodeMapGraphModel;
+		public DacSemanticModel DacModel => DacViewModel.DacModel;
 
 		public override bool DisplayNodeWithoutChildren => false;
 
-		public GraphMemberType CategoryType { get; }
+		public DacMemberCategory CategoryType { get; }
 
 		protected string CategoryDescription { get; }
 
@@ -31,6 +27,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			get => $"{CategoryDescription}({Children.Count})";
 			protected set { }
 		}
+
+		public override Icon NodeIcon => Icon.GroupNode;
 
 		protected abstract bool AllowNavigation { get; }
 
@@ -44,15 +42,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
 
-		protected GraphMemberCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType, bool isExpanded) : 
-										      base(graphViewModel?.Tree, isExpanded)
+		protected DacMemberCategoryNodeViewModel(DacNodeViewModel dacViewModel, DacMemberCategory dacCategoryType, bool isExpanded) : 
+										    base(dacViewModel?.Tree, isExpanded)
 		{
-			GraphViewModel = graphViewModel;
-			CategoryType = graphMemberType;
+			DacViewModel = dacViewModel;
+			CategoryType = dacCategoryType;
 			CategoryDescription = CategoryType.Description();
 		}
 
-		public abstract IEnumerable<SymbolItem> GetCategoryGraphNodeSymbols();
+		public abstract IEnumerable<SymbolItem> GetCategoryDacNodeSymbols();
 
 		public async override Task NavigateToItemAsync()
 		{
@@ -66,9 +64,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		bool IGroupNodeWithCyclingNavigation.CanNavigateToChild(TreeNodeViewModel child) =>
-			CanNavigateToChild(child);
+		bool IGroupNodeWithCyclingNavigation.CanNavigateToChild(TreeNodeViewModel child) => CanNavigateToChild(child);
 
-		protected virtual bool CanNavigateToChild(TreeNodeViewModel child) => child is GraphMemberNodeViewModel;
+		protected virtual bool CanNavigateToChild(TreeNodeViewModel child) => true;
 	}
 }

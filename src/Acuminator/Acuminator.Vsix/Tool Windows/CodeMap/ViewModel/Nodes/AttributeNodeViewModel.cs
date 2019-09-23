@@ -25,13 +25,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set;
 		}
 
-		public string Tooltip { get; }
+		public override string Tooltip => GetAttributeTooltip();
 
 		public override bool DisplayNodeWithoutChildren => true;
 
-		public AttributeNodeViewModel(GraphMemberNodeViewModel graphMemberVM, AttributeData attribute, 
-									  bool isExpanded = false) :
-								 base(graphMemberVM?.Tree, isExpanded)
+		public AttributeNodeViewModel(TreeNodeViewModel nodeVM, AttributeData attribute, bool isExpanded = false) :
+								 base(nodeVM?.Tree, isExpanded)
 		{
 			attribute.ThrowOnNull(nameof(attribute));
 
@@ -50,7 +49,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			Name = $"[{attributeName}]";
-			Tooltip = GetAttributeTooltip();
 		}
 
 		public async override Task NavigateToItemAsync()

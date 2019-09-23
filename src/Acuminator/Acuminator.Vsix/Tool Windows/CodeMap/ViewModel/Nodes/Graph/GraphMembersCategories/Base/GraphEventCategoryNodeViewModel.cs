@@ -23,6 +23,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
+		public override Icon NodeIcon => Icon.Event;
+
 		protected override bool AllowNavigation => false;
 
 		protected GraphEventCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType, bool isExpanded) :

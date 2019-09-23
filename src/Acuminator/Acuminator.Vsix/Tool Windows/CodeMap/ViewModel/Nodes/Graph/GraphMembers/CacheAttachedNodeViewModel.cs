@@ -14,11 +14,22 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public DacGroupingNodeBaseViewModel DacVM { get; }
 
+		public override string Tooltip
+		{
+			get
+			{
+				var attributeStrings = Children.OfType<AttributeNodeViewModel>().Select(attribute => attribute.Tooltip);
+				return string.Join(Environment.NewLine, attributeStrings);
+			}
+		}
+
 		public override string Name
 		{
 			get;
 			protected set;
 		}
+
+		public override Icon NodeIcon => Icon.CacheAttached;
 
 		public CacheAttachedNodeViewModel(DacGroupingNodeBaseViewModel dacVM, GraphFieldEventInfo eventInfo, bool isExpanded = false) :
 									 base(dacVM?.GraphEventsCategoryVM, eventInfo, isExpanded)

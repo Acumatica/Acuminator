@@ -87,15 +87,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="PX.BulkInsert">
-      <HintPath>..\..\..\lib\PX.BulkInsert.dll</HintPath>
-    </Reference>
-    <Reference Include="PX.Data">
-      <HintPath>..\..\..\lib\PX.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="PX.DbServices">
-      <HintPath>..\..\..\lib\PX.DbServices.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
@@ -177,6 +168,15 @@
     <Resource Include="Resources\CodeMap\PXOverride.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\CodeMap\DacKeyProperty.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\CodeMap\DacKeysCategory.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\CodeMap\DacPropertiesCategory.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Content Include="Resources\DacExplorer.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -233,16 +233,31 @@
       <DependentUpon>VSIXResource.resx</DependentUpon>
     </Compile>
     <Compile Include="Settings\CodeAnalysisSettingsFromOptionsPage.cs" />
-    <Compile Include="Tool Windows\CodeMap\Convertes\TreeNodeToImageSourceConverter.cs" />
-    <Compile Include="Tool Windows\CodeMap\Convertes\TreeNodeToTooltipConverter.cs" />
+    <Compile Include="Tool Windows\CodeMap\Icons\Icon.cs" />
+    <Compile Include="Tool Windows\CodeMap\Icons\TreeNodeToImageSourceConverter.cs" />
+    <Compile Include="Tool Windows\CodeMap\Tooltips\TreeNodeToTooltipConverter.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\DacMemberCategory.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphSemanticModelForCodeMap.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphMemberInfoType.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphMemberType.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\PXOverrideInfoForCodeMap.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\Base\IRootCandidateSymbolsRetriever.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\Base\ISemanticModelFactory.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\RootCandidateSymbolsRetrieverDefault.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\SemanticModelFactoryDefault.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\IGroupNodeWithCyclingNavigation.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Base\TreeBuilderBase_DacVisitMethods.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Base\TreeBuilderBase_GraphVisitMethods.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Base\TreeBuilderBase.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Dac\DefaultCodeMapTreeBuilder_Dac.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\DefaultCodeMapTreeBuilder.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Graph\DefaultCodeMapTreeBuilder_Graph.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacCategories\DacKeysCategoryNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacCategories\DacPropertiesCategoryNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacCategories\Base\DacMemberCategoryNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacMembers\PropertyNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacMembers\Base\DacMemberNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\DacField\DacFieldGroupingNodeForFieldEventViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\Dac\DacGroupingNodeBaseViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\Dac\DacGroupingNodeForFieldEventViewModel.cs" />
@@ -251,7 +266,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphEventsGrouping\DacField\DacFieldGroupingNodeBaseViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\PXOverridesCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\PXOverrideNodeViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\Base\GraphEventCategoryNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\Base\GraphEventCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\CodeMapWindowViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\CodeMapWindow.cs" />
     <Compile Include="Tool Windows\CodeMap\CodeMapWindowControl.xaml.cs">
@@ -259,7 +274,7 @@
     </Compile>
     <Compile Include="Tool Windows\CodeMap\OpenCodeMapWindowCommand.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\DocumentModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\Base\GraphMemberCategoryNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\Base\GraphMemberCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\AttributeNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\FieldEventCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\ActionCategoryNodeViewModel.cs" />
@@ -355,11 +370,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Tool Windows\Themes\BitmapImages.xaml">
+    <Page Include="Resources\CodeMap\Themes\BitmapImages.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Tool Windows\Themes\Styles.xaml">
+    <Page Include="Resources\CodeMap\Themes\Styles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -467,6 +482,7 @@
       <Version>1.1.2</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup>

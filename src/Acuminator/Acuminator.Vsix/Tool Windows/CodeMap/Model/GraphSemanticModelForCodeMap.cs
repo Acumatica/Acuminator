@@ -15,11 +15,13 @@ using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class GraphSemanticModelForCodeMap
+	public class GraphSemanticModelForCodeMap : ISemanticModel
 	{
 		public PXGraphEventSemanticModel GraphModel { get; }
 
 		public ImmutableArray<PXOverrideInfoForCodeMap> PXOverrides { get; }
+
+		public INamedTypeSymbol Symbol => GraphModel.Symbol;
 
 		public GraphSemanticModelForCodeMap(PXGraphEventSemanticModel graphEventSemanticModel, PXContext context)
 		{

@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 {
-	public class PXGraphSemanticModel
+	public class PXGraphSemanticModel : ISemanticModel
 	{
 		private readonly CancellationToken _cancellation;
 		private readonly PXContext _pxContext;

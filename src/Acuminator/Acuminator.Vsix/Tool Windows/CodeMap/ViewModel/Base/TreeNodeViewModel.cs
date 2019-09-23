@@ -20,6 +20,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// </summary>
 		public abstract bool DisplayNodeWithoutChildren { get; }
 
+		/// <summary>
+		/// The tooltip displayed for node.
+		/// </summary>
+		public virtual string Tooltip => null;
+
+		/// <summary>
+		/// The icon for a node.
+		/// </summary>
+		public virtual Icon NodeIcon => Icon.None;
+
 		public ExtendedObservableCollection<TreeNodeViewModel> Children { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
 
 		private bool _isExpanded;

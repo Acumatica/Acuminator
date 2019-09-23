@@ -16,27 +16,24 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public DataViewInfo ViewInfo => MemberInfo as DataViewInfo;
 
-		public string Tooltip
-		{
-			get;
-			protected set;
-		}
+		public override string Tooltip => GetTooltip();
+
+		public override Icon NodeIcon => Icon.View;
 
 		public ViewNodeViewModel(ViewCategoryNodeViewModel viewCategoryVM, DataViewInfo viewInfo, bool isExpanded = false) :
 							base(viewCategoryVM, viewInfo, isExpanded)
 		{
-			Tooltip = GetTooltip(viewInfo);
 		}	
 
-		protected string GetTooltip(DataViewInfo viewInfo)
+		private string GetTooltip()
 		{
-			if (viewInfo.Symbol?.Locations.Length != 1 || viewInfo.Symbol.Locations[0].IsInMetadata || Tree.CodeMapViewModel.Workspace == null)
+			if (ViewInfo.Symbol?.Locations.Length != 1 || ViewInfo.Symbol.Locations[0].IsInMetadata || Tree.CodeMapViewModel.Workspace == null)
 			{
-				return viewInfo.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
+				return ViewInfo.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
 			}
 
 			int tabSize = Tree.CodeMapViewModel.Workspace.GetWorkspaceIndentationSize();
-			SyntaxNode viewSyntaxNode = viewInfo.Symbol.GetSyntax(Tree.CodeMapViewModel.CancellationToken ?? default);
+			SyntaxNode viewSyntaxNode = ViewInfo.Symbol.GetSyntax(Tree.CodeMapViewModel.CancellationToken ?? default);
 
 			switch (viewSyntaxNode)
 			{
@@ -57,7 +54,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 						return variableDeclaration.Type.GetSyntaxNodeStringWithRemovedIndent(tabSize, prependLength);
 					}
 				default:
-					return viewInfo.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
+					return ViewInfo.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
 			}
 		}
 

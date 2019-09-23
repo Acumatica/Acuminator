@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -41,7 +42,25 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return codeMapTree;
 		}
 
-		protected abstract IEnumerable<TreeNodeViewModel> CreateRoots(TreeViewModel tree, bool expandRoots, CancellationToken cancellation);
+		protected virtual IEnumerable<TreeNodeViewModel> CreateRoots(TreeViewModel tree, bool expandRoots, CancellationToken cancellation)
+		{
+			if (tree.CodeMapViewModel.DocumentModel == null)
+				yield break;
+
+			foreach (ISemanticModel rootSemanticModel in tree.CodeMapViewModel.DocumentModel.CodeMapSemanticModels)
+			{
+				cancellation.ThrowIfCancellationRequested();
+				TreeNodeViewModel rootVM = CreateRoot(rootSemanticModel, tree, expandRoots, cancellation);
+
+				if (rootVM != null)
+				{
+					yield return rootVM;
+				}
+			}
+		}
+
+		protected abstract TreeNodeViewModel CreateRoot(ISemanticModel rootSemanticModel, TreeViewModel tree, bool expandRoots, 
+														CancellationToken cancellation);
 
 		public virtual IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(AttributeNodeViewModel attributeNode, bool expandChildren,
 																				CancellationToken cancellation) =>

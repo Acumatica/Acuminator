@@ -9,7 +9,7 @@ using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
-	public class DacSemanticModel
+	public class DacSemanticModel : ISemanticModel
 	{
 		private readonly CancellationToken _cancellation;
 		private readonly PXContext _pxContext;

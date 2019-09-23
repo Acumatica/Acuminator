@@ -26,6 +26,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set { }
 		}
 
+		public override Icon NodeIcon => Icon.GroupingDacField;
+
 		public override bool DisplayNodeWithoutChildren => false;
 
 		bool IGroupNodeWithCyclingNavigation.AllowNavigation => true;
