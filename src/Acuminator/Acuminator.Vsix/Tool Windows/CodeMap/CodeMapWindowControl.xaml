@@ -62,19 +62,28 @@
             </ComboBox>
         </WrapPanel>-->
 
-        <WrapPanel Grid.Row="0" Margin="5,2" Orientation="Horizontal">
-			<Button  VerticalAlignment="Center" ToolTip="Refresh Code Map" Padding="0,1"
-                     Command="{Binding Path=RefreshCodeMapCommand}" MaxHeight="20" MinHeight="20" MaxWidth="20" MinWidth="20"
-                     IsEnabled="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolInverter}}">
-				<Image Source="{StaticResource RefreshImage}" Style="{StaticResource vsImageStyle}"/>
-			</Button>
+		<Grid Grid.Row="0" Margin="5,2">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+			
+			<WrapPanel Grid.Column="0" Orientation="Horizontal"
+					   Visibility="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, 
+											Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=!}">
+				<Button  VerticalAlignment="Center" ToolTip="Refresh Code Map" Padding="0,1" Command="{Binding Path=RefreshCodeMapCommand}"
+						 MaxHeight="20" MinHeight="20" MaxWidth="20" MinWidth="20"
+						 IsEnabled="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolInverter}}">
+					<Image Source="{StaticResource RefreshImage}" Style="{StaticResource vsImageStyle}"/>
+				</Button>
+			</WrapPanel>
 
-			<ProgressBar IsIndeterminate="True"  MaxHeight="16" MinHeight="16" Margin="2,0,0,0"
-                     HorizontalAlignment="Left" VerticalAlignment="Center" MaxWidth="150" MinWidth="150"
-                     Visibility="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
-                                          Converter={StaticResource boolToVisibilityConverter}}"/>
-        </WrapPanel>
-       
+			<ProgressBar Grid.Column="1" IsIndeterminate="True"  MaxHeight="16" MinHeight="16"
+						 HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,0"
+						 Visibility="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
+											  Converter={StaticResource boolToVisibilityConverter}}"/>
+		</Grid>
+          
         <TreeView Grid.Row="1" DataContext="{Binding Path=Tree, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
                   ItemsSource="{Binding Path=RootItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                   Style="{StaticResource vsTreeViewStyle}" Margin="0,2">
