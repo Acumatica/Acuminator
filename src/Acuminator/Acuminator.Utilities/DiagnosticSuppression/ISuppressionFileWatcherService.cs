@@ -2,7 +2,7 @@
 
 namespace Acuminator.Utilities.DiagnosticSuppression
 {
-	public interface ISuppressionFileWatcherService
+	public interface ISuppressionFileWatcherService : IDisposable
 	{
 		event Action<object, SuppressionFileEventArgs> Changed;
 	}
