@@ -9,8 +9,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
-using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.DiagnosticSuppression.CodeActions;
 
 namespace Acuminator.Analyzers.StaticAnalysis
 {
@@ -90,12 +91,18 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			string groupCodeActionNameFormat = nameof(Resources.SuppressDiagnosticGroupCodeActionTitle).GetLocalized().ToString();
 			string groupCodeActionName = string.Format(groupCodeActionNameFormat, diagnostic.Id);
 
+			const string commentCodeActionName = "with a comment";
+			CodeAction suppressWithCommentCodeAction = CodeAction.Create(commentCodeActionName, 
+																		 cToken => AddSuppressionComment(context, diagnostic, cToken),
+																		 equivalenceKey: commentCodeActionName);
 
-
-			CodeAction codeAction = CodeAction.Create(groupCodeActionName,
-				cToken => AddSuppressionComment(context, diagnostic, cToken),
-				groupCodeActionName);
-			context.RegisterCodeFix(codeAction, diagnostic);
+			var suppressionCodeActions = ImmutableArray.Create(suppressWithCommentCodeAction);
+			CodeAction groupCodeAction = CodeActionWithNestedActionsFabric.CreateCodeActionWithNestedActions(groupCodeActionName, suppressionCodeActions,
+																											 isInlinable: false);
+			if (groupCodeAction != null)
+			{
+				context.RegisterCodeFix(groupCodeAction, diagnostic);
+			}	
 		}
 
 		private async Task<Document> AddSuppressionComment(CodeFixContext context, Diagnostic diagnostic, CancellationToken cancellationToken)
