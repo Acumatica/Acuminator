@@ -250,7 +250,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Code Map (Experimental).
+        ///   Looks up a localized string similar to Code Map.
         /// </summary>
         public static string CodeMapWindowTitle {
             get {
