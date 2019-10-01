@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Common
 {
@@ -138,30 +139,29 @@ namespace Acuminator.Utilities.Common
 		}
 
 		/// <summary>
-		/// Where method for structure list. This is an optimization method which allows to avoid boxing for collections implemented as structs.
+		/// Where method for <see cref="SyntaxList{TNode}"/>. This is an optimization method which allows to avoid boxing.
 		/// </summary>
-		/// <typeparam name="TItem">Type of the item.</typeparam>
-		/// <typeparam name="TStructList">Type of the structure list.</typeparam>
+		/// <typeparam name="TNode">Type of the syntax node.</typeparam>
 		/// <param name="source">The source to act on.</param>
-		/// <param name="structList">List implemented as structure.</param>
+		/// <param name="predicate">The predicate.</param>
 		/// <returns/>
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IEnumerable<TItem> WhereForStructList<TItem, TStructList>(this TStructList source, Func<TItem, bool> predicate)
-		where TStructList : struct, IReadOnlyList<TItem>
+		public static IEnumerable<TNode> Where<TNode>(this SyntaxList<TNode> source, Func<TNode, bool> predicate)
+		where TNode : SyntaxNode
 		{
 			predicate.ThrowOnNull(nameof(predicate));
 			return WhereForStructListImplementation();
 
 
-			IEnumerable<TItem> WhereForStructListImplementation()
+			IEnumerable<TNode> WhereForStructListImplementation()
 			{
 				if (source.Count == 0)
 					yield break;
 
 				for (int i = 0; i < source.Count; i++)
 				{
-					TItem item = source[i];
+					TNode item = source[i];
 
 					if (predicate(item))
 					{
