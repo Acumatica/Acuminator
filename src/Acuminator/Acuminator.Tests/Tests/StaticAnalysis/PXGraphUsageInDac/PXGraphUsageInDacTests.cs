@@ -1,7 +1,9 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
+using Acuminator.Utilities;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
@@ -10,7 +12,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphUsageInDac
 {
     public class PXGraphUsageInDacTests : DiagnosticVerifier
     {
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new PXGraphUsageInDacAnalyzer();
+        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
+			new DacAnalyzersAggregator(
+				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
+											.WithSuppressionMechanismDisabled(),
+				new PXGraphUsageInDacAnalyzer());
 
         [Theory]
         [EmbeddedFileData("DacWithGraphUsage.cs")]
