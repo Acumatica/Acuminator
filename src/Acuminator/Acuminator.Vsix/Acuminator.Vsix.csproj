@@ -144,7 +144,7 @@
     <Resource Include="Resources\CodeMap\ViewDelegate.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Resources\CodeMap\GroupNode.ico">
+    <Resource Include="Resources\CodeMap\Category.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\CodeMap\FieldEvent.ico">
@@ -153,7 +153,7 @@
     <Resource Include="Resources\CodeMap\CacheAttached.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Resources\CodeMap\Event.ico">
+    <Resource Include="Resources\CodeMap\GraphEventCategory.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\CodeMap\RowEvent.ico">
