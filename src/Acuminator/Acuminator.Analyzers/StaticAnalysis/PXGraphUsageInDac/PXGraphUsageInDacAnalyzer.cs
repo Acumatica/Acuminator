@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading;
 using System.Collections.Immutable;
 using System.Collections.Generic;
 
@@ -33,10 +34,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac
 				return;
 
 			GraphUsageInDacWalker walker = new GraphUsageInDacWalker(context, pxContext, semanticModel);
-			var membersToVisit = dac.Node.Members.WhereForStructList(s => s.Kind == )
 
+			// Analyze only DAC members, avoid nested types analysis. For possible nested DACs this analyser will be executed separately. 
+			// We do not want to analyse possible internal helper classes or analyze DAC's attributes, ID, lis of base classes and so on.
+			var membersToVisit = dac.Node.Members.Where(member => !member.IsKind(SyntaxKind.ClassDeclaration) && 
+																  !member.IsKind(SyntaxKind.StructDeclaration) &&
+																  !member.IsKind(SyntaxKind.InterfaceDeclaration));
 
-			walker.Visit(dac.Node);
+			foreach (MemberDeclarationSyntax memberNode in membersToVisit)
+			{
+				walker.Visit(memberNode);
+			}
 		}
 
         private class GraphUsageInDacWalker : CSharpSyntaxWalker
@@ -44,7 +52,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac
             private readonly SymbolAnalysisContext _context;
             private readonly PXContext _pxContext;
 			private readonly SemanticModel _semanticModel;
-            private bool _inDac;
 
             public GraphUsageInDacWalker(SymbolAnalysisContext context, PXContext pxContext, SemanticModel semanticModel)
             {
@@ -53,28 +60,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac
 				_semanticModel = semanticModel;
 			}
 
-	        public override void VisitClassDeclaration(ClassDeclarationSyntax node)
-	        {
-		        ThrowIfCancellationRequested();
-
-		        INamedTypeSymbol symbol = _semanticModel.GetDeclaredSymbol(node, _context.CancellationToken);
-
-				if (symbol == null)
-				{
-					base.Visit
-				}
-
-		        if (symbol != null && symbol.IsDacOrExtension(_pxContext) && !_inDac)
-		        {
-                    _inDac = true;
-
-                    base.VisitClassDeclaration(node);
-
-                    _inDac = false;
-				}
-	        }
-
-	        public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
+			public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
             {
                 ThrowIfCancellationRequested();
 
@@ -96,24 +82,32 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac
                 base.VisitInvocationExpression(node);
             }
 
-            public override void VisitAttributeList(AttributeListSyntax node)
-            {
-            }
-
-            public override void VisitIdentifierName(IdentifierNameSyntax node)
-            {
+			public override void VisitIdentifierName(IdentifierNameSyntax node)
+			{
 				ThrowIfCancellationRequested();
 
 				TypeInfo typeInfo = _semanticModel.GetTypeInfo(node, _context.CancellationToken);
 
-                if (typeInfo.Type == null || !typeInfo.Type.IsPXGraphOrExtension(_pxContext))
-                    return;
+				if (typeInfo.Type == null || !typeInfo.Type.IsPXGraphOrExtension(_pxContext))
+					return;
 
-                _context.ReportDiagnosticWithSuppressionCheck(
+				_context.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(Descriptors.PX1029_PXGraphUsageInDac, node.GetLocation()),
 					_pxContext.CodeAnalysisSettings);
 
-                base.VisitIdentifierName(node);
+				base.VisitIdentifierName(node);
+			}
+
+			public override void VisitBaseList(BaseListSyntax node)
+			{
+			}
+
+			public override void VisitClassDeclaration(ClassDeclarationSyntax node)
+			{
+			}
+
+			public override void VisitAttributeList(AttributeListSyntax node)
+            {
             }
 
 	        private void ThrowIfCancellationRequested()
