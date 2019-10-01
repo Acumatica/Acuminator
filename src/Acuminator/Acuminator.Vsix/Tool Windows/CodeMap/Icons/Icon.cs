@@ -9,7 +9,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		None,
 		Graph,
-		Event,
+		GraphEventCategory,
 		Dac,
 
 		DacProperty,	
@@ -18,7 +18,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		DacPropertiesCategory,
 		DacKeysCategory,
 
-		GroupNode,
+		Category,
 		GroupingDac,
 		GroupingDacField,
 
