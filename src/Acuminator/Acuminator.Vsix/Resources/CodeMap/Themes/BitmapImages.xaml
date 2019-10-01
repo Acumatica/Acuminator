@@ -20,8 +20,8 @@
     <BitmapImage x:Key="PXOverride" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/PXOverride.ico"/>
 
-    <BitmapImage x:Key="Event" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
-                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Event.ico"/>
+	<BitmapImage x:Key="GraphEventCategory" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/GraphEventCategory.ico"/>
 
     <BitmapImage x:Key="RowEvent" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/RowEvent.ico"/>
@@ -51,8 +51,8 @@
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DacKeysCategory.ico"/>
 
 	<BitmapImage x:Key="DacPropertiesCategory" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
-                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DacPropertiesCategory.ico"/> 
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DacPropertiesCategory.ico"/>
 
-	<BitmapImage x:Key="GroupNode" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
-                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/GroupNode.ico"/>
+	<BitmapImage x:Key="Category" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Category.ico"/>
 </ResourceDictionary>
