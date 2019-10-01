@@ -158,9 +158,6 @@ namespace Acuminator.Vsix
 			await SubscribeOnSolutionEventsAsync();
 			cancellationToken.ThrowIfCancellationRequested();
 
-			await InitializeSuppressionManagerWithProgressAsync(progress);
-			cancellationToken.ThrowIfCancellationRequested();
-
 			InitializeCodeAnalysisSettings(progress);
 			cancellationToken.ThrowIfCancellationRequested();
 
@@ -233,7 +230,7 @@ namespace Acuminator.Vsix
         private void SolutionEvents_Opened()
         {
 #pragma warning disable VSTHRD102 // Implement internal logic asynchronously
-            JoinableTaskFactory.Run(InitializeSuppressionManagerAsync);
+            JoinableTaskFactory.Run(SetupSuppressionManagerAsync);
 #pragma warning restore VSTHRD102 // Implement internal logic asynchronously
         }
 
@@ -254,25 +251,15 @@ namespace Acuminator.Vsix
 			}
 		}
 
-		private System.Threading.Tasks.Task InitializeSuppressionManagerWithProgressAsync(IProgress<ServiceProgressData> progress)
-		{
-			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitSuppressionManager,
-													   currentStep: 3, TotalLoadSteps);
-			progress?.Report(progressData);
-
-            return InitializeSuppressionManagerAsync();
-        }
-
-        private async System.Threading.Tasks.Task InitializeSuppressionManagerAsync()
+        private async System.Threading.Tasks.Task SetupSuppressionManagerAsync()
         {
             var workspace = await this.GetVSWorkspaceAsync();
             var additionalFiles = workspace.CurrentSolution.Projects
                 .SelectMany(p => p.AdditionalDocuments)
                 .Select(d => new SuppressionManagerInitInfo(d.FilePath, generateSuppressionBase: false));
 
-            SuppressionManager.Init(new SuppressionFileSystemService(), additionalFiles);
+            SuppressionManager.InitOrReset(additionalFiles, () => new SuppressionFileSystemService());
         }
-
 
         private void InitializeCodeAnalysisSettings(IProgress<ServiceProgressData> progress)
 		{
