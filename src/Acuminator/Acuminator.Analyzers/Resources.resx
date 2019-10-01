@@ -480,4 +480,7 @@
   <data name="PX1007FixAddDescription" xml:space="preserve">
     <value>Add a description</value>
   </data>
+  <data name="SuppressDiagnosticGroupCodeActionTitle" xml:space="preserve">
+    <value>Suppress diagnostic {0}</value>
+  </data>
 </root>

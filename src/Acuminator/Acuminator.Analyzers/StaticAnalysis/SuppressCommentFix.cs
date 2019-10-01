@@ -18,8 +18,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
 	public class SuppressCommentFix : CodeFixProvider
 	{
+		private const int ParallelDiagnosticsRegisterThreshold = 16;
 		private const string _comment = @"// Acuminator disable once {0} {1} [Justification]";
-		private const string _diagnosticName = @"Suppress diagnostic {0}";
 
 		private static readonly ImmutableArray<string> _fixableDiagnosticIds;
 
@@ -45,22 +45,57 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
+			if (context.Diagnostics.Length > ParallelDiagnosticsRegisterThreshold)
+			{
+				RegisterCodeActionsInParallel(context);
+			}
+			else
+			{
+				context.Diagnostics.ForEach(diagnostic => RegisterCodeActionForDiagnostic(diagnostic, context));
+			}
+	
+			return Task.CompletedTask;
+		}
+
+		private void RegisterCodeActionsInParallel(CodeFixContext context)
+		{
 			ParallelOptions parallelOptions = new ParallelOptions
 			{
 				CancellationToken = context.CancellationToken
 			};
 
-			Parallel.ForEach(context.Diagnostics, parallelOptions, (diagnostic) => {
-				parallelOptions.CancellationToken.ThrowIfCancellationRequested();
+			try
+			{
+				Parallel.ForEach(context.Diagnostics, parallelOptions, diagnostic => RegisterCodeActionForDiagnostic(diagnostic, context));
+			}
+			catch (AggregateException e)
+			{
+				var operationCanceledException = e.Flatten().InnerExceptions
+												  .OfType<OperationCanceledException>()
+												  .FirstOrDefault();
 
-				string codeActionName = string.Format(_diagnosticName, diagnostic.Id);
-				CodeAction codeAction = CodeAction.Create(codeActionName,
-					cToken => AddSuppressionComment(context, diagnostic, cToken),
-					codeActionName);
-				context.RegisterCodeFix(codeAction, diagnostic);
-			});
+				if (operationCanceledException != null)
+				{
+					throw operationCanceledException;
+				}
 
-			return Task.CompletedTask;
+				throw;
+			}
+		}
+
+		private void RegisterCodeActionForDiagnostic(Diagnostic diagnostic, CodeFixContext context)
+		{
+			context.CancellationToken.ThrowIfCancellationRequested();
+
+			string groupCodeActionNameFormat = nameof(Resources.SuppressDiagnosticGroupCodeActionTitle).GetLocalized().ToString();
+			string groupCodeActionName = string.Format(groupCodeActionNameFormat, diagnostic.Id);
+
+
+
+			CodeAction codeAction = CodeAction.Create(groupCodeActionName,
+				cToken => AddSuppressionComment(context, diagnostic, cToken),
+				groupCodeActionName);
+			context.RegisterCodeFix(codeAction, diagnostic);
 		}
 
 		private async Task<Document> AddSuppressionComment(CodeFixContext context, Diagnostic diagnostic, CancellationToken cancellationToken)
