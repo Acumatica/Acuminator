@@ -138,6 +138,40 @@ namespace Acuminator.Utilities.Common
 		}
 
 		/// <summary>
+		/// Where method for structure list. This is an optimization method which allows to avoid boxing for collections implemented as structs.
+		/// </summary>
+		/// <typeparam name="TItem">Type of the item.</typeparam>
+		/// <typeparam name="TStructList">Type of the structure list.</typeparam>
+		/// <param name="source">The source to act on.</param>
+		/// <param name="structList">List implemented as structure.</param>
+		/// <returns/>
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<TItem> WhereForStructList<TItem, TStructList>(this TStructList source, Func<TItem, bool> predicate)
+		where TStructList : struct, IReadOnlyList<TItem>
+		{
+			predicate.ThrowOnNull(nameof(predicate));
+			return WhereForStructListImplementation();
+
+
+			IEnumerable<TItem> WhereForStructListImplementation()
+			{
+				if (source.Count == 0)
+					yield break;
+
+				for (int i = 0; i < source.Count; i++)
+				{
+					TItem item = source[i];
+
+					if (predicate(item))
+					{
+						yield return item;
+					}
+				}
+			}
+		}
+
+		/// <summary>
 		/// Select many implementation for <see cref="ImmutableArray{T}"/> without boxing.
 		/// </summary>
 		/// <typeparam name="TCollectionHolder">Type of the item with collection.</typeparam>
