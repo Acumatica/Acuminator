@@ -1,16 +1,12 @@
 ﻿using System;
-using Acuminator.Utilities.Common;
 using System.Reflection;
 
-
-
-
-namespace Acuminator.Vsix.Utilities
+namespace Acuminator.Utilities.Common.Reflection
 {
 	/// <summary>
-	/// A reflection utilities used by the <see cref="Acuminator.Vsix.DiagnosticSuppression.DiagnosticData"/>.
+	/// A reflection utilities.
 	/// </summary>
-	internal static class ReflectionUtils
+	public static class ReflectionUtils
 	{
 		public static T GetValue<T>(this FieldInfo fieldInfo, object instance) => (T)fieldInfo.GetValue(instance);
 

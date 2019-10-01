@@ -9,8 +9,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
-using Acuminator.Vsix.Utilities;
+using Acuminator.Utilities.Common.Reflection;
 
 namespace Acuminator.Vsix.DiagnosticSuppression
 {

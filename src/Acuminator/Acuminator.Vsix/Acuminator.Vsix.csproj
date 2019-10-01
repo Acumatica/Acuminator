@@ -309,7 +309,6 @@
     <Compile Include="Utils\Logger\AcuminatorLogger.cs" />
     <Compile Include="Utils\ChangesClassification\DocumentChangesClassifier.cs" />
     <Compile Include="Utils\Constants\LegacyLanguageNames.cs" />
-    <Compile Include="Utils\DiagnosticSuppression\ReflectionUtils.cs" />
     <Compile Include="Utils\EditorExtensions.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheAsync.cs" />
     <Compile Include="Coloriser\Formats\ClassificationTypeDefinitions.cs" />
