@@ -142,6 +142,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_All_Suppressed.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_All.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_One_Suppressed.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PXGraphUsageInDac\Sources\DacExtensionForDacNestedInGraph.cs" />
     <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\MultipleSuppressionCodeFixTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_One.cs" />
     <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\SuppressionOnDacCodeFixTests.cs" />
