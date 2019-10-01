@@ -35,8 +35,8 @@
                     <Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}"/>
 
                     <!-- Button Style-->
-                    <Style TargetType="Button" BasedOn="{StaticResource vsButtonStyle}"/>
-                </ResourceDictionary>
+					<Style TargetType="Button" BasedOn="{StaticResource vsButtonStyle}"/>
+				</ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -79,7 +79,7 @@
 			</WrapPanel>
 
 			<ProgressBar Grid.Column="1" IsIndeterminate="True"  MaxHeight="16" MinHeight="16"
-						 HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,0"
+						 HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,0,0,0"
 						 Visibility="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
 											  Converter={StaticResource boolToVisibilityConverter}}"/>
 		</Grid>
@@ -87,12 +87,14 @@
         <TreeView Grid.Row="1" DataContext="{Binding Path=Tree, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
                   ItemsSource="{Binding Path=RootItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                   Style="{StaticResource vsTreeViewStyle}" Margin="0,2">
+		
             <TreeView.ItemContainerStyle>
                 <Style TargetType="TreeViewItem" BasedOn="{StaticResource vsTreeViewItemStyle}">
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
                     <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 </Style>
             </TreeView.ItemContainerStyle>
+			
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type codeMap:TreeNodeViewModel}"
                                           ItemsSource="{Binding Path=Children, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
