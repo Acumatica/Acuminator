@@ -1,10 +1,13 @@
-﻿using System.Collections.Immutable;
+﻿using System.Linq;
+using System.Collections.Immutable;
+using System.Collections.Generic;
 
 using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Syntax;
+using Acuminator.Utilities.Common;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -30,6 +33,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac
 				return;
 
 			GraphUsageInDacWalker walker = new GraphUsageInDacWalker(context, pxContext, semanticModel);
+			var membersToVisit = dac.Node.Members.WhereForStructList(s => s.Kind == )
+
+
 			walker.Visit(dac.Node);
 		}
 
@@ -52,6 +58,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac
 		        ThrowIfCancellationRequested();
 
 		        INamedTypeSymbol symbol = _semanticModel.GetDeclaredSymbol(node, _context.CancellationToken);
+
+				if (symbol == null)
+				{
+					base.Visit
+				}
+
 		        if (symbol != null && symbol.IsDacOrExtension(_pxContext) && !_inDac)
 		        {
                     _inDac = true;
