@@ -1,4 +1,6 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
+﻿using System.Threading.Tasks;
+
+using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
 using Acuminator.Analyzers.StaticAnalysis.ConstructorInDac;
 using Acuminator.Analyzers.StaticAnalysis.DacExtensionDefaultAttribute;
 using Acuminator.Analyzers.StaticAnalysis.DacKeyFieldDeclaration;
@@ -11,13 +13,14 @@ using Acuminator.Analyzers.StaticAnalysis.LegacyBqlField;
 using Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac;
 using Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute;
 using Acuminator.Analyzers.StaticAnalysis.NonNullableTypeForBqlField;
+using Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac;
 using Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.Dac
 {
@@ -39,7 +42,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 			new KeyFieldDeclarationAnalyzer(),
 			new DacExtensionDefaultAttributeAnalyzer(),
 			new NonNullableTypeForBqlFieldAnalyzer(),
-			new MissingTypeListAttributeAnalyzer())
+			new MissingTypeListAttributeAnalyzer(),
+			new PXGraphUsageInDacAnalyzer())
 		{
         }
 

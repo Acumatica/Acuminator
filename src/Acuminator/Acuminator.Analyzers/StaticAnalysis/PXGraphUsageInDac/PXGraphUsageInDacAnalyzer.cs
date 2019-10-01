@@ -1,17 +1,19 @@
-﻿using Acuminator.Utilities.DiagnosticSuppression;
+﻿using System.Collections.Immutable;
+
+using Acuminator.Analyzers.StaticAnalysis.Dac;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Syntax;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac
 {
-	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class PXGraphUsageInDacAnalyzer : PXDiagnosticAnalyzer
+    public class PXGraphUsageInDacAnalyzer : DacAggregatedAnalyzerBase
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create
@@ -19,41 +21,37 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac
                 Descriptors.PX1029_PXGraphUsageInDac
             );
 
-        internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
-        {
-            compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzeGraphUsageInDac(syntaxContext, pxContext), SyntaxKind.ClassDeclaration);
-        }
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac)
+		{
+			context.CancellationToken.ThrowIfCancellationRequested();
+			SemanticModel semanticModel = context.Compilation.GetSemanticModel(dac.Node.SyntaxTree);
 
-        private void AnalyzeGraphUsageInDac(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
-        {
-            if (!(syntaxContext.Node is ClassDeclarationSyntax classDeclaration) || syntaxContext.CancellationToken.IsCancellationRequested)
-                return;
+			if (semanticModel == null)
+				return;
 
-            INamedTypeSymbol classType = syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration, syntaxContext.CancellationToken);
-            if (classType == null || !classType.IsDacOrExtension(pxContext))
-                return;
-
-            GraphUsageInDacWalker walker = new GraphUsageInDacWalker(syntaxContext, pxContext);
-            walker.Visit(classDeclaration);
-        }
+			GraphUsageInDacWalker walker = new GraphUsageInDacWalker(context, pxContext, semanticModel);
+			walker.Visit(dac.Node);
+		}
 
         private class GraphUsageInDacWalker : CSharpSyntaxWalker
         {
-            private readonly SyntaxNodeAnalysisContext _syntaxContext;
+            private readonly SymbolAnalysisContext _context;
             private readonly PXContext _pxContext;
+			private readonly SemanticModel _semanticModel;
             private bool _inDac;
 
-            public GraphUsageInDacWalker(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+            public GraphUsageInDacWalker(SymbolAnalysisContext context, PXContext pxContext, SemanticModel semanticModel)
             {
-                _syntaxContext = syntaxContext;
+                _context = context;
                 _pxContext = pxContext;
-            }
+				_semanticModel = semanticModel;
+			}
 
 	        public override void VisitClassDeclaration(ClassDeclarationSyntax node)
 	        {
 		        ThrowIfCancellationRequested();
 
-		        INamedTypeSymbol symbol = _syntaxContext.SemanticModel.GetDeclaredSymbol(node, _syntaxContext.CancellationToken);
+		        INamedTypeSymbol symbol = _semanticModel.GetDeclaredSymbol(node, _context.CancellationToken);
 		        if (symbol != null && symbol.IsDacOrExtension(_pxContext) && !_inDac)
 		        {
                     _inDac = true;
@@ -78,7 +76,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac
             {
 				ThrowIfCancellationRequested();
 
-				SymbolInfo symbolInfo = _syntaxContext.SemanticModel.GetSymbolInfo(node, _syntaxContext.CancellationToken);
+				SymbolInfo symbolInfo = _semanticModel.GetSymbolInfo(node, _context.CancellationToken);
 
                 if (symbolInfo.Symbol == null || (symbolInfo.Symbol.Kind == SymbolKind.Method && symbolInfo.Symbol.IsStatic))
                     return;
@@ -94,12 +92,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac
             {
 				ThrowIfCancellationRequested();
 
-				TypeInfo typeInfo = _syntaxContext.SemanticModel.GetTypeInfo(node, _syntaxContext.CancellationToken);
+				TypeInfo typeInfo = _semanticModel.GetTypeInfo(node, _context.CancellationToken);
 
                 if (typeInfo.Type == null || !typeInfo.Type.IsPXGraphOrExtension(_pxContext))
                     return;
 
-                _syntaxContext.ReportDiagnosticWithSuppressionCheck(
+                _context.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(Descriptors.PX1029_PXGraphUsageInDac, node.GetLocation()),
 					_pxContext.CodeAnalysisSettings);
 
@@ -108,7 +106,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac
 
 	        private void ThrowIfCancellationRequested()
 	        {
-				_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+				_context.CancellationToken.ThrowIfCancellationRequested();
 			}
         }
     }
