@@ -19,7 +19,6 @@ namespace Acuminator.Analyzers.StaticAnalysis
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
 	public class SuppressCommentFix : CodeFixProvider
 	{
-		private const int ParallelDiagnosticsRegisterThreshold = 16;
 		private const string _comment = @"// Acuminator disable once {0} {1} [Justification]";
 
 		private static readonly ImmutableArray<string> _fixableDiagnosticIds;
@@ -42,46 +41,18 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			_fixableDiagnosticIds;
 
+		public override FixAllProvider GetFixAllProvider() => null;		//explicitly disable fix all support
+
 		public override Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (context.Diagnostics.Length > ParallelDiagnosticsRegisterThreshold)
+			foreach (var diagnostic in context.Diagnostics)
 			{
-				RegisterCodeActionsInParallel(context);
+				RegisterCodeActionForDiagnostic(diagnostic, context);
 			}
-			else
-			{
-				context.Diagnostics.ForEach(diagnostic => RegisterCodeActionForDiagnostic(diagnostic, context));
-			}
-	
+				
 			return Task.CompletedTask;
-		}
-
-		private void RegisterCodeActionsInParallel(CodeFixContext context)
-		{
-			ParallelOptions parallelOptions = new ParallelOptions
-			{
-				CancellationToken = context.CancellationToken
-			};
-
-			try
-			{
-				Parallel.ForEach(context.Diagnostics, parallelOptions, diagnostic => RegisterCodeActionForDiagnostic(diagnostic, context));
-			}
-			catch (AggregateException e)
-			{
-				var operationCanceledException = e.Flatten().InnerExceptions
-												  .OfType<OperationCanceledException>()
-												  .FirstOrDefault();
-
-				if (operationCanceledException != null)
-				{
-					throw operationCanceledException;
-				}
-
-				throw;
-			}
 		}
 
 		private void RegisterCodeActionForDiagnostic(Diagnostic diagnostic, CodeFixContext context)
