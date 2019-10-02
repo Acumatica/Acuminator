@@ -12,7 +12,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.DiagnosticSuppression.CodeActions;
+using Acuminator.Analyzers.CodeActions;
 using Acuminator.Utilities.DiagnosticSuppression;
 
 namespace Acuminator.Analyzers.StaticAnalysis

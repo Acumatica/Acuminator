@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
+namespace Acuminator.Analyzers.CodeActions
 {
 	/// <summary>
 	/// A code action with nested actions fabric. Obtains internal CodeAction with nested actions. 
