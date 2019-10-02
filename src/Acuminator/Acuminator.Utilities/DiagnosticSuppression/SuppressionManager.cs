@@ -15,6 +15,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 {
 	public class SuppressionManager
 	{
+		private static object _initializationLocker = new object();
+
 		private readonly ConcurrentDictionary<string, SuppressionFile> _fileByAssembly = new ConcurrentDictionary<string, SuppressionFile>();
 		private readonly ISuppressionFileSystemService _fileSystemService;
 
@@ -22,55 +24,19 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		private static readonly Regex _suppressPattern = new Regex(@"Acuminator\s+disable\s+once\s+(\w+)\s+(\w+)", RegexOptions.Compiled);
 
+		private SuppressionManager(ISuppressionFileSystemService fileSystemService)
+		{
+			_fileSystemService = fileSystemService.CheckIfNull(nameof(fileSystemService));
+		}
+
+		[Obsolete("This constructor should not be used. It is left for the compatibility with Acuminator regression test runner")]
 		private SuppressionManager(ISuppressionFileSystemService fileSystemService, IEnumerable<SuppressionManagerInitInfo> suppressionFiles)
 		{
-			fileSystemService.ThrowOnNull(nameof(fileSystemService));
+			_fileSystemService = fileSystemService.CheckIfNull(nameof(fileSystemService));
+			LoadSuppressionFiles(suppressionFiles);
+		}	
 
-			_fileSystemService = fileSystemService;
-
-			foreach (var fileInfo in suppressionFiles)
-			{
-				if (!SuppressionFile.IsSuppressionFile(fileInfo.Path))
-				{
-					throw new ArgumentException($"File {fileInfo.Path} is not a suppression file");
-				}
-
-				var (file, assembly) = LoadFileAndTrackItsChanges(fileInfo.Path, fileInfo.GenerateSuppressionBase);
-
-				if (!_fileByAssembly.TryAdd(assembly, file))
-				{
-					throw new InvalidOperationException($"Suppression information for assembly {assembly} has been already loaded");
-				}
-			}
-		}
-
-		public void ReloadFile(object sender, SuppressionFileEventArgs e)
-		{	
-			var (newFile, assembly) = LoadFileAndTrackItsChanges(suppressionFilePath: e.FullPath, generateSuppressionBase: false);
-			var oldFile = _fileByAssembly.GetOrAdd(assembly, (SuppressionFile)null);
-
-			// We need to unsubscribe from the old file's event because it can be fired until the link to the file will be collected by GC
-			if (oldFile != null)
-			{
-				oldFile.Changed -= ReloadFile;
-			}
-
-			_fileByAssembly[assembly] = newFile;
-		}
-
-		private (SuppressionFile File, string Assembly) LoadFileAndTrackItsChanges(string suppressionFilePath, bool generateSuppressionBase)
-		{
-			lock (_fileSystemService)
-			{
-				SuppressionFile suppressionFile = SuppressionFile.Load(_fileSystemService, suppressionFilePath, generateSuppressionBase);
-				var assemblyName = suppressionFile.AssemblyName;
-
-				suppressionFile.Changed += ReloadFile;
-
-				return (suppressionFile, assemblyName);
-			}		
-		}
-
+		[Obsolete("This method should not be used. It is left for the compatibility with Acuminator regression test runner")]
 		public static void Init(ISuppressionFileSystemService fileSystemService, IEnumerable<SuppressionManagerInitInfo> additionalFiles)
 		{
 			additionalFiles.ThrowOnNull(nameof(additionalFiles));
@@ -90,7 +56,85 @@ namespace Acuminator.Utilities.DiagnosticSuppression
             }
         }
 
-        public static void SaveSuppressionBase()
+		public static void InitOrReset(IEnumerable<SuppressionManagerInitInfo> additionalFiles, Func<ISuppressionFileSystemService> fileSystemServiceFabric)
+		{
+			additionalFiles.ThrowOnNull(nameof(additionalFiles));
+			fileSystemServiceFabric.ThrowOnNull(nameof(fileSystemServiceFabric));
+
+			var suppressionFiles = additionalFiles.Where(f => SuppressionFile.IsSuppressionFile(f.Path));
+
+			lock (_initializationLocker)
+			{
+				if (Instance == null)
+				{
+					ISuppressionFileSystemService fileSystemService = fileSystemServiceFabric();
+					Instance = new SuppressionManager(fileSystemService);
+				}
+				else
+				{
+					Instance.Clear();
+				}
+
+				Instance.LoadSuppressionFiles(suppressionFiles);
+			}
+		}
+
+		private void Clear()
+		{
+			foreach (SuppressionFile oldFile in _fileByAssembly.Values.Where(file => file != null))
+			{
+				oldFile.Changed -= ReloadFile;
+				oldFile.Dispose();
+			}
+
+			_fileByAssembly.Clear();
+		}
+
+		private void LoadSuppressionFiles(IEnumerable<SuppressionManagerInitInfo> suppressionFiles)
+		{
+			foreach (SuppressionManagerInitInfo fileInfo in suppressionFiles)
+			{
+				if (!SuppressionFile.IsSuppressionFile(fileInfo.Path))
+				{
+					throw new ArgumentException($"File {fileInfo.Path} is not a suppression file");
+				}
+
+				var file = LoadFileAndTrackItsChanges(fileInfo.Path, fileInfo.GenerateSuppressionBase);
+
+				if (!_fileByAssembly.TryAdd(file.AssemblyName, file))
+				{
+					throw new InvalidOperationException($"Suppression information for assembly {file.AssemblyName} has been already loaded");
+				}
+			}
+		}
+
+		private SuppressionFile LoadFileAndTrackItsChanges(string suppressionFilePath, bool generateSuppressionBase)
+		{
+			lock (_fileSystemService)
+			{
+				SuppressionFile suppressionFile = SuppressionFile.Load(_fileSystemService, suppressionFilePath, generateSuppressionBase);
+				suppressionFile.Changed += ReloadFile;
+				return suppressionFile;
+			}
+		}
+
+		public void ReloadFile(object sender, SuppressionFileEventArgs e)
+		{
+			string assembly = _fileSystemService.GetFileName(e.FullPath);	
+			var oldFile = _fileByAssembly.GetOrAdd(assembly, (SuppressionFile)null);
+
+			// We need to unsubscribe from the old file's event because it can be fired until the link to the file will be collected by GC
+			if (oldFile != null)
+			{
+				oldFile.Changed -= ReloadFile;
+				oldFile.Dispose();
+			}
+
+			var newFile = LoadFileAndTrackItsChanges(suppressionFilePath: e.FullPath, generateSuppressionBase: false);
+			_fileByAssembly[assembly] = newFile;
+		}
+
+		public static void SaveSuppressionBase()
 		{
 			CheckIfInstanceIsInitialized();
 			
@@ -139,8 +183,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				if (!project.Solution.Workspace.TryApplyChanges(roslynSuppressionFile.Project.Solution))
 					return null;
 
-				var (suppressionFile, assembly) = Instance.LoadFileAndTrackItsChanges(suppressionFilePath, generateSuppressionBase: false);
-				Instance._fileByAssembly[assembly] = suppressionFile;
+				SuppressionFile suppressionFile = Instance.LoadFileAndTrackItsChanges(suppressionFilePath, generateSuppressionBase: false);
+				Instance._fileByAssembly[suppressionFile.AssemblyName] = suppressionFile;
 				return suppressionFile;
 			}
 		}

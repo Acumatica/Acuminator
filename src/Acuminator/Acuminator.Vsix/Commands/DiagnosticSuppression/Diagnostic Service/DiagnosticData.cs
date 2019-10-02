@@ -53,8 +53,6 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 		public bool IsSuppressed { get; }
 
-		public Workspace Workspace { get; }
-
 		public ProjectId ProjectId { get; }
 
 		public DocumentId DocumentId { get; }
@@ -99,7 +97,6 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 			Properties = DtoFields[nameof(Properties)].GetValue<ImmutableDictionary<string, string>>(roslynDiagnosticDTO);
 			IsSuppressed = DtoFields[nameof(IsSuppressed)].GetValue<bool>(roslynDiagnosticDTO);
-			Workspace = DtoFields[nameof(Workspace)].GetValue<Workspace>(roslynDiagnosticDTO);
 			ProjectId = DtoFields[nameof(ProjectId)].GetValue<ProjectId>(roslynDiagnosticDTO);
 			DocumentId = DtoProperties[nameof(DocumentId)].GetValue<DocumentId>(roslynDiagnosticDTO);
 

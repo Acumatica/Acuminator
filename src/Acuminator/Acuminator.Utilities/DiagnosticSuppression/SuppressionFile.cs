@@ -7,7 +7,7 @@ using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
 {
-	public class SuppressionFile
+	public class SuppressionFile : IDisposable
 	{
         private const string RootEmelent = "suppressions";
 		private const string SuppressMessageElement = "suppressMessage";
@@ -19,6 +19,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		internal string AssemblyName { get; }
 
 		internal string Path { get; }
+
+		private readonly ISuppressionFileWatcherService _fileWatcher;
 
 		/// <summary>
 		/// Indicates whether to generate errors suppression base to suppression file or not
@@ -32,16 +34,17 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		public event Action<object, SuppressionFileEventArgs> Changed;
 
 		private SuppressionFile(string assemblyName, string path, bool generateSuppressionBase,
-			HashSet<SuppressMessage> messages, ISuppressionFileWatcherService watcher)
+								HashSet<SuppressMessage> messages, ISuppressionFileWatcherService watcher)
 		{
 			AssemblyName = assemblyName;
 			Path = path;
 			GenerateSuppressionBase = generateSuppressionBase;
 			Messages = messages;
+			_fileWatcher = watcher;
 
-			if (watcher != null)
+			if (_fileWatcher != null)
 			{
-				watcher.Changed += OnChanged;
+				_fileWatcher.Changed += OnChanged;
 			}
 		}
 
@@ -84,6 +87,15 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			}
 			
 			return new SuppressionFile(assemblyName, suppressionFilePath, generateSuppressionBase, messages, fileWatcher);
+		}
+
+		public void Dispose()
+		{
+			if (_fileWatcher != null)
+			{
+				_fileWatcher.Changed -= OnChanged;
+				_fileWatcher.Dispose();
+			}
 		}
 
 		internal void AddMessage(SuppressMessage message) => Messages.Add(message);
@@ -152,6 +164,6 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			var syntaxNode = element.Element(SyntaxNodeElement).Value;
 
 			return new SuppressMessage(id, target, syntaxNode);
-		}		
+		}
 	}
 }
