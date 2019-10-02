@@ -1,8 +1,9 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis;
+using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
-using Microsoft.CodeAnalysis;
+using Acuminator.Utilities;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
 
@@ -10,11 +11,15 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphUsageInDac
 {
     public class PXGraphUsageInDacTests : DiagnosticVerifier
     {
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new PXGraphUsageInDacAnalyzer();
+        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
+			new DacAnalyzersAggregator(
+				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
+											.WithSuppressionMechanismDisabled(),
+				new PXGraphUsageInDacAnalyzer());
 
         [Theory]
         [EmbeddedFileData("DacWithGraphUsage.cs")]
-        public void TestDiagnostic_Dac(string source)
+        public void Dac(string source)
         {
             VerifyCSharpDiagnostic(source,
                 Descriptors.PX1029_PXGraphUsageInDac.CreateFor(15, 17),
@@ -26,7 +31,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphUsageInDac
 
         [Theory]
         [EmbeddedFileData("DacExtensionWithGraphUsage.cs")]
-        public void TestDiagnostic_CacheExtension(string source)
+        public void DacExtension(string source)
         {
             VerifyCSharpDiagnostic(source,
                 Descriptors.PX1029_PXGraphUsageInDac.CreateFor(15, 17),
@@ -38,7 +43,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphUsageInDac
 
 		[Theory]
 		[EmbeddedFileData("DacWithNestedTypes.cs")]
-	    public void TestDiagnostic_DacWithNestedTypes(string source)
+	    public void DacWithNestedTypes(string source)
 	    {
 		    VerifyCSharpDiagnostic(source,
 				Descriptors.PX1029_PXGraphUsageInDac.CreateFor(23, 6),
@@ -47,9 +52,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphUsageInDac
 
         [Theory]
         [EmbeddedFileData(@"DacWithGraphUsageInAttribute.cs")]
-        public void TestDiagnostic_DacWithGraphUsageInAttributeIsIgnored(string source)
-        {
-            VerifyCSharpDiagnostic(source);
-        }
-    }
+        public void DacWithGraphUsageInAttribute_NoDiagnostic(string source) => VerifyCSharpDiagnostic(source);
+
+		[Theory]
+		[EmbeddedFileData(@"DacExtensionForDacNestedInGraph.cs")]
+		public void DacExtensionForDacNestedInGraph_NoDiagnostic(string source) => VerifyCSharpDiagnostic(source);
+	}
 }

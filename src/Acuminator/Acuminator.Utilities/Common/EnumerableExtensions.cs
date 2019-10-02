@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Utilities.Common
 {
@@ -133,6 +134,39 @@ namespace Acuminator.Utilities.Common
 				foreach (TItem item in structList)
 				{
 					yield return item;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Where method for <see cref="SyntaxList{TNode}"/>. This is an optimization method which allows to avoid boxing.
+		/// </summary>
+		/// <typeparam name="TNode">Type of the syntax node.</typeparam>
+		/// <param name="source">The source to act on.</param>
+		/// <param name="predicate">The predicate.</param>
+		/// <returns/>
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<TNode> Where<TNode>(this SyntaxList<TNode> source, Func<TNode, bool> predicate)
+		where TNode : SyntaxNode
+		{
+			predicate.ThrowOnNull(nameof(predicate));
+			return WhereForStructListImplementation();
+
+
+			IEnumerable<TNode> WhereForStructListImplementation()
+			{
+				if (source.Count == 0)
+					yield break;
+
+				for (int i = 0; i < source.Count; i++)
+				{
+					TNode item = source[i];
+
+					if (predicate(item))
+					{
+						yield return item;
+					}
 				}
 			}
 		}
