@@ -1151,11 +1151,29 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Suppress diagnostic {0}.
+        ///   Looks up a localized string similar to Suppress diagnostic {0} by Acuminator.
         /// </summary>
         public static string SuppressDiagnosticGroupCodeActionTitle {
             get {
                 return ResourceManager.GetString("SuppressDiagnosticGroupCodeActionTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to in Acuminator Suppression File.
+        /// </summary>
+        public static string SuppressDiagnosticInSuppressionFileCodeActionTitle {
+            get {
+                return ResourceManager.GetString("SuppressDiagnosticInSuppressionFileCodeActionTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to with a comment.
+        /// </summary>
+        public static string SuppressDiagnosticWithCommentCodeActionTitle {
+            get {
+                return ResourceManager.GetString("SuppressDiagnosticWithCommentCodeActionTitle", resourceCulture);
             }
         }
     }

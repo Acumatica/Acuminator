@@ -62,12 +62,17 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			string groupCodeActionNameFormat = nameof(Resources.SuppressDiagnosticGroupCodeActionTitle).GetLocalized().ToString();
 			string groupCodeActionName = string.Format(groupCodeActionNameFormat, diagnostic.Id);
 
-			const string commentCodeActionName = "with a comment";
+			string commentCodeActionName = nameof(Resources.SuppressDiagnosticWithCommentCodeActionTitle).GetLocalized().ToString();
 			CodeAction suppressWithCommentCodeAction = CodeAction.Create(commentCodeActionName, 
 																		 cToken => AddSuppressionComment(context, diagnostic, cToken),
 																		 equivalenceKey: commentCodeActionName);
 
-			var suppressionCodeActions = ImmutableArray.Create(suppressWithCommentCodeAction);
+			string suppressionFileCodeActionName = nameof(Resources.SuppressDiagnosticInSuppressionFileCodeActionTitle).GetLocalized().ToString();
+			CodeAction suppressionFileCodeAction = CodeAction.Create(suppressionFileCodeActionName,
+																	 cToken => SuppressInSuppressionFile(context, diagnostic, cToken),
+																	 equivalenceKey: suppressionFileCodeActionName);
+
+			var suppressionCodeActions = ImmutableArray.Create(suppressWithCommentCodeAction, suppressionFileCodeAction);
 			CodeAction groupCodeAction = CodeActionWithNestedActionsFabric.CreateCodeActionWithNestedActions(groupCodeActionName, suppressionCodeActions,
 																											 isInlinable: false);
 			if (groupCodeAction != null)
@@ -106,6 +111,11 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			}
 
 			return document;
+		}
+
+		private async Task<Document> SuppressInSuppressionFile(CodeFixContext context, Diagnostic diagnostic, CancellationToken cancellationToken)
+		{
+			return context.Document;
 		}
 	}
 }

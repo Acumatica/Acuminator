@@ -481,6 +481,12 @@
     <value>Add a description</value>
   </data>
   <data name="SuppressDiagnosticGroupCodeActionTitle" xml:space="preserve">
-    <value>Suppress diagnostic {0}</value>
+    <value>Suppress diagnostic {0} by Acuminator</value>
+  </data>
+  <data name="SuppressDiagnosticWithCommentCodeActionTitle" xml:space="preserve">
+    <value>with a comment</value>
+  </data>
+  <data name="SuppressDiagnosticInSuppressionFileCodeActionTitle" xml:space="preserve">
+    <value>in Acuminator Suppression File</value>
   </data>
 </root>
