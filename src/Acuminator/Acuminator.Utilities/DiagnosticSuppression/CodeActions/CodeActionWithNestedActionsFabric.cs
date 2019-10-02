@@ -19,9 +19,13 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 	public static class CodeActionWithNestedActionsFabric
 	{
 		private const string CodeActionWithNestedActionsTypeName = "CodeActionWithNestedActions";
+		private const string CodeActionPriorityTypeFullName = "Microsoft.CodeAnalysis.CodeActions.CodeActionPriority";
+
 		private static object _locker = new object();
 
-		private static Type _codeActionWithNestedActionsDataType;
+		private static Type _codeActionWithNestedActionsType;
+		private static object _lowCodeActionPriorityInstance;
+		private static bool? _roslynOldApiUsed;
 
 		/// <summary>
 		/// Creates a <see cref="CodeAction"/> representing a group of code actions. 
@@ -42,12 +46,22 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 
 			InitializeSharedStaticData();
 
-			if (_codeActionWithNestedActionsDataType == null)
+			if (_codeActionWithNestedActionsType == null || _roslynOldApiUsed == null)
 				return null;
 
 			try
 			{
-				return Activator.CreateInstance(_codeActionWithNestedActionsDataType, groupActionTitle, nestedCodeActions, isInlinable) as CodeAction;
+				if (_roslynOldApiUsed.Value)
+				{
+					return Activator.CreateInstance(_codeActionWithNestedActionsType, groupActionTitle, nestedCodeActions, isInlinable) as CodeAction;
+				}
+				else if (_lowCodeActionPriorityInstance != null)
+				{
+					return Activator.CreateInstance(_codeActionWithNestedActionsType, groupActionTitle, nestedCodeActions,
+													isInlinable, _lowCodeActionPriorityInstance) as CodeAction;
+				}
+				else
+					return null;
 			}
 			catch (Exception e) when (e is MissingMemberException || e is KeyNotFoundException || e is InvalidCastException)
 			{
@@ -57,17 +71,74 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 
 		private static void InitializeSharedStaticData()
 		{
-			if (_codeActionWithNestedActionsDataType == null)
+			if (_codeActionWithNestedActionsType == null)
 			{
 				lock (_locker)
 				{
-					if (_codeActionWithNestedActionsDataType == null)
+					if (_codeActionWithNestedActionsType == null)
 					{
-						_codeActionWithNestedActionsDataType = typeof(CodeAction).GetTypeInfo()
-																				 .GetDeclaredNestedType(CodeActionWithNestedActionsTypeName)
-																				?.AsType();
+						InitializeCodeActionWithNestedActionsDataTypeThreadUnsafe();
 					}
 				}
+			}
+		}
+
+		private static void InitializeCodeActionWithNestedActionsDataTypeThreadUnsafe()
+		{
+			System.Reflection.TypeInfo codeActionTypeInfo = typeof(CodeAction).GetTypeInfo();
+			var _codeActionWithNestedActionsDataTypeInfo = codeActionTypeInfo.GetDeclaredNestedType(CodeActionWithNestedActionsTypeName);
+			_codeActionWithNestedActionsType = _codeActionWithNestedActionsDataTypeInfo?.AsType();
+
+			if (_codeActionWithNestedActionsType == null)
+				return;
+
+			var codeActionWithNestedActionsConstructor = _codeActionWithNestedActionsDataTypeInfo.DeclaredConstructors.FirstOrDefault();
+
+			if (codeActionWithNestedActionsConstructor == null)
+			{
+				_codeActionWithNestedActionsType = null;
+				return;
+			}
+
+			var parameters = codeActionWithNestedActionsConstructor.GetParameters();
+
+			switch (parameters?.Length)
+			{
+				case 3:
+					_roslynOldApiUsed = true;
+					return;
+				case 4:
+					_roslynOldApiUsed = false;
+					InitializeCodeActionPriorityInstance(codeActionTypeInfo);
+					return;
+				default:
+					_codeActionWithNestedActionsType = null;
+					return;
+			}
+		}
+
+		private static void InitializeCodeActionPriorityInstance(System.Reflection.TypeInfo codeActionTypeInfo)
+		{
+			Type codeActionPriorityType = codeActionTypeInfo.Assembly.GetType(CodeActionPriorityTypeFullName);
+
+			if (codeActionPriorityType == null)
+			{
+				_codeActionWithNestedActionsType = null;
+				_roslynOldApiUsed = null;
+				return;
+			}
+
+			const int lowCodeActionPriorityValue = 1;
+
+			try
+			{
+				_lowCodeActionPriorityInstance = Enum.ToObject(codeActionPriorityType, lowCodeActionPriorityValue);
+			}
+			catch (Exception e) when (e is MissingMemberException || e is KeyNotFoundException || e is InvalidCastException)
+			{
+				_codeActionWithNestedActionsType = null;
+				_lowCodeActionPriorityInstance = null;
+				_roslynOldApiUsed = null;
 			}
 		}
 	}
