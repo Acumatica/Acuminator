@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Composition;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression.CodeActions;
+using Acuminator.Utilities.DiagnosticSuppression;
 
 namespace Acuminator.Analyzers.StaticAnalysis
 {
@@ -19,6 +21,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
 	public class SuppressCommentFix : CodeFixProvider
 	{
+		private const string AcuminatorPackageName = "ACUMINATOR";
 		private const string _comment = @"// Acuminator disable once {0} {1} [Justification]";
 
 		private static readonly ImmutableArray<string> _fixableDiagnosticIds;
@@ -64,12 +67,12 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 			string commentCodeActionName = nameof(Resources.SuppressDiagnosticWithCommentCodeActionTitle).GetLocalized().ToString();
 			CodeAction suppressWithCommentCodeAction = CodeAction.Create(commentCodeActionName, 
-																		 cToken => AddSuppressionComment(context, diagnostic, cToken),
+																		 cToken => AddSuppressionCommentAsync(context, diagnostic, cToken),
 																		 equivalenceKey: commentCodeActionName);
 
 			string suppressionFileCodeActionName = nameof(Resources.SuppressDiagnosticInSuppressionFileCodeActionTitle).GetLocalized().ToString();
 			CodeAction suppressionFileCodeAction = CodeAction.Create(suppressionFileCodeActionName,
-																	 cToken => SuppressInSuppressionFile(context, diagnostic, cToken),
+																	 cToken => SuppressInSuppressionFileAsync(context, diagnostic, cToken),
 																	 equivalenceKey: suppressionFileCodeActionName);
 
 			var suppressionCodeActions = ImmutableArray.Create(suppressWithCommentCodeAction, suppressionFileCodeAction);
@@ -81,7 +84,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			}	
 		}
 
-		private async Task<Document> AddSuppressionComment(CodeFixContext context, Diagnostic diagnostic, CancellationToken cancellationToken)
+		private async Task<Document> AddSuppressionCommentAsync(CodeFixContext context, Diagnostic diagnostic, CancellationToken cancellationToken)
 		{
 			var document = context.Document;
 			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
@@ -113,9 +116,47 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			return document;
 		}
 
-		private async Task<Document> SuppressInSuppressionFile(CodeFixContext context, Diagnostic diagnostic, CancellationToken cancellationToken)
+		private async Task<Document> SuppressInSuppressionFileAsync(CodeFixContext context, Diagnostic diagnostic, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
+			Project project = context.Document.Project;
+			SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(cancellationToken);
+
+			if (project == null || semanticModel == null)
+			{
+				return context.Document;
+			}
+
+			string suppressionFileName = project.Name + SuppressionFile.SuppressionFileExtension;
+			TextDocument projectSuppressionFile = project.AdditionalDocuments.FirstOrDefault(d => string.Equals(suppressionFileName, d.Name,
+																								  StringComparison.OrdinalIgnoreCase));
+			bool suppressionFileExists = projectSuppressionFile != null;
+
+			if (!suppressionFileExists)
+			{
+				SuppressionFile suppressionFile = SuppressionManager.CreateSuppressionFileForProject(project);
+				suppressionFileExists = suppressionFile != null;
+			}
+
+			cancellationToken.ThrowIfCancellationRequested();
+
+			if (!suppressionFileExists || 
+				!SuppressionManager.SuppressDiagnostic(semanticModel, diagnostic.Id, diagnostic.Location.SourceSpan, 
+													   diagnostic.DefaultSeverity, cancellationToken))
+			{
+				ShowErrorMessage(projectSuppressionFile, project);
+			}
+
 			return context.Document;
+		}
+
+		private void ShowErrorMessage(TextDocument suppressionFile, Project project)
+		{		 
+			string errorMessage = suppressionFile?.FilePath != null
+				? $"The diagnostic cannot be added to the suppression file. Check if the {suppressionFile.FilePath} file is accessible."
+				: $"The suppression file for the {project.Name} project cannot be found.";
+
+			Debug.WriteLine($"{AcuminatorPackageName}: {errorMessage.ToString()}");
 		}
 	}
 }
