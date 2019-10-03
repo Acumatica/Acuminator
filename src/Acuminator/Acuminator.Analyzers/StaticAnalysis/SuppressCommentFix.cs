@@ -71,13 +71,14 @@ namespace Acuminator.Analyzers.StaticAnalysis
 																		 equivalenceKey: commentCodeActionName);
 
 			string suppressionFileCodeActionName = nameof(Resources.SuppressDiagnosticInSuppressionFileCodeActionTitle).GetLocalized().ToString();
-			CodeAction suppressionFileCodeAction = CodeAction.Create(suppressionFileCodeActionName,
-																	 cToken => SuppressInSuppressionFileAsync(context, diagnostic, cToken),
-																	 equivalenceKey: suppressionFileCodeActionName);
+			CodeAction suppressionFileCodeAction = new SolutionChangeActionWithOptionalPreview(suppressionFileCodeActionName,
+																							   cToken => SuppressInSuppressionFileAsync(context, diagnostic, cToken),
+																							   displayPreview: false,
+																							   equivalenceKey: suppressionFileCodeActionName);
 
 			var suppressionCodeActions = ImmutableArray.Create(suppressWithCommentCodeAction, suppressionFileCodeAction);
-			CodeAction groupCodeAction = CodeActionWithNestedActionsFabric.CreateCodeActionWithNestedActions(groupCodeActionName, suppressionCodeActions,
-																											 isInlinable: false);
+			CodeAction groupCodeAction = CodeActionWithNestedActionsFabric.CreateCodeActionWithNestedActions(groupCodeActionName, suppressionCodeActions);
+
 			if (groupCodeAction != null)
 			{
 				context.RegisterCodeFix(groupCodeAction, diagnostic);
@@ -116,7 +117,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			return document;
 		}
 
-		private async Task<Document> SuppressInSuppressionFileAsync(CodeFixContext context, Diagnostic diagnostic, CancellationToken cancellationToken)
+		private async Task<Solution> SuppressInSuppressionFileAsync(CodeFixContext context, Diagnostic diagnostic, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			Project project = context.Document.Project;
@@ -124,7 +125,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 			if (project == null || semanticModel == null)
 			{
-				return context.Document;
+				return null;
 			}
 
 			string suppressionFileName = project.Name + SuppressionFile.SuppressionFileExtension;
@@ -145,9 +146,10 @@ namespace Acuminator.Analyzers.StaticAnalysis
 													   diagnostic.DefaultSeverity, cancellationToken))
 			{
 				ShowErrorMessage(projectSuppressionFile, project);
+				return null;
 			}
 
-			return context.Document;
+			return projectSuppressionFile.Project.Solution;
 		}
 
 		private void ShowErrorMessage(TextDocument suppressionFile, Project project)
