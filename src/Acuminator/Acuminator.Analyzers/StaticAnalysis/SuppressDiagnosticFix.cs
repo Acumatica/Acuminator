@@ -19,14 +19,14 @@ namespace Acuminator.Analyzers.StaticAnalysis
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
-	public class SuppressCommentFix : CodeFixProvider
+	public class SuppressDiagnosticFix : CodeFixProvider
 	{
 		private const string AcuminatorPackageName = "ACUMINATOR";
 		private const string _comment = @"// Acuminator disable once {0} {1} [Justification]";
 
 		private static readonly ImmutableArray<string> _fixableDiagnosticIds;
 
-		static SuppressCommentFix()
+		static SuppressDiagnosticFix()
 		{
 			Type diagnosticsType = typeof(Descriptors);
 			var propertiesInfo = diagnosticsType.GetRuntimeProperties();
