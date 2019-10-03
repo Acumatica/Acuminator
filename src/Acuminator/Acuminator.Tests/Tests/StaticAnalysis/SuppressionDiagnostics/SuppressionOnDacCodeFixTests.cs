@@ -16,11 +16,14 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.SuppressionDiagnostics
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new DacAnalyzersAggregator(
 				CodeAnalysisSettings.Default
-				.WithIsvSpecificAnalyzersEnabled(),
+									.WithIsvSpecificAnalyzersEnabled()
+									.WithStaticAnalysisEnabled()
+									.WithSuppressionMechanismEnabled(),
+
 				new ForbiddenFieldsInDacAnalyzer(),
 				new ConstructorInDacAnalyzer());
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider() => new SuppressDiagnosticFix();
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new SuppressDiagnosticTestCodeFix();
 
 		[Theory]
 		[EmbeddedFileData(@"Dac\ForbiddenFields_Suppressed.cs")]

@@ -15,7 +15,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.SuppressionDiagnostics
 		  new BqlParameterMismatchAnalyzer(
 			  CodeAnalysisSettings.Default.WithStaticAnalysisEnabled());
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider() => new SuppressDiagnosticFix();
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new SuppressDiagnosticTestCodeFix();
 
 		[Theory]
 		[EmbeddedFileData(@"BqlParameterMismatch\StaticCall_Suppressed.cs")]
