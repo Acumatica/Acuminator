@@ -7,7 +7,7 @@ You can suppress Acuminator diagnostics by using one of the following ways (whic
  - By adding a code fragment to the Acuminator suppression file
 
 ## Diagnostic Suppression by a Code Comment
-You can suppress any diagnostic by adding a specific comment directly in code. To add a suppression comment, you select **Suppress diagnostic PX00YY** (where PX00YY is the code of the diagnostic) as a code fix for the diagnostic, as shown in the following screenshot.
+You can suppress any diagnostic by adding a specific comment directly in code. To add a suppression comment, you select **Suppress diagnostic PX10YY** (where PX00YY is the code of the diagnostic) as a code fix for the diagnostic, as shown in the following screenshot.
 
 ![Suppression in Comment](../images/SuppressDiagnosticInComment.png)
 

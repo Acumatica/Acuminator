@@ -12,7 +12,7 @@ In this version, the diagnostic and code fixes have been added for the following
 | [PX1007](diagnostics/PX1007.md) | A public class should have a description in the `summary` XML tag. | Warning (Level 3: Informational)	 | Available | Available   |
 
 ### Ability to Suppress a Diagnostic by a Code Comment
-In Acuminator 2.1, you can suppress any diagnostic by adding a specific comment directly in code. To add a suppression comment, you select **Suppress diagnostic PX00YY** (where PX00YY is the code of the diagnostic) as a code fix for the diagnostic, as shown in the following screenshot.
+In Acuminator 2.1, you can suppress any diagnostic by adding a specific comment directly in code. To add a suppression comment, you select **Suppress diagnostic PX10YY** (where PX00YY is the code of the diagnostic) as a code fix for the diagnostic, as shown in the following screenshot.
 
 ![Suppression in Comment](images/SuppressDiagnosticInComment.png)
 
