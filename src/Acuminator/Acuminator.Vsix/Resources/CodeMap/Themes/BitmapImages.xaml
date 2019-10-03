@@ -2,57 +2,57 @@
 					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 
-    <BitmapImage x:Key="Graph" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+    <BitmapImage x:Key="Graph" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Graph.ico"/>
 
-    <BitmapImage x:Key="View" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+    <BitmapImage x:Key="View" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/View.ico"/>
 
-    <BitmapImage x:Key="ViewDelegate" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+    <BitmapImage x:Key="ViewDelegate" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/ViewDelegate.ico"/>
 
-    <BitmapImage x:Key="Action" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+    <BitmapImage x:Key="Action" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Action.ico"/>
 
-    <BitmapImage x:Key="ActionHandler" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+    <BitmapImage x:Key="ActionHandler" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/ActionHandler.ico"/>
 
-    <BitmapImage x:Key="PXOverride" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+    <BitmapImage x:Key="PXOverride" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/PXOverride.ico"/>
 
-	<BitmapImage x:Key="GraphEventCategory" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+	<BitmapImage x:Key="GraphEventCategory" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/GraphEventCategory.ico"/>
 
-    <BitmapImage x:Key="RowEvent" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+    <BitmapImage x:Key="RowEvent" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/RowEvent.ico"/>
 
-    <BitmapImage x:Key="FieldEvent" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+    <BitmapImage x:Key="FieldEvent" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad" 
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/FieldEvent.ico"/>
 
-    <BitmapImage x:Key="CacheAttached" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+    <BitmapImage x:Key="CacheAttached" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/CacheAttached.ico"/>
 
-	<BitmapImage x:Key="GroupingDac" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+	<BitmapImage x:Key="GroupingDac" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/GroupingDAC.ico"/>
 
-	<BitmapImage x:Key="GroupingDacField" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+	<BitmapImage x:Key="GroupingDacField" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DacField.ico"/>
 
-	<BitmapImage x:Key="Dac" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+	<BitmapImage x:Key="Dac" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DAC.ico"/>
 
-	<BitmapImage x:Key="DacProperty" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+	<BitmapImage x:Key="DacProperty" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DacField.ico"/>
 
-	<BitmapImage x:Key="DacKeyProperty" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+	<BitmapImage x:Key="DacKeyProperty" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DacKeyProperty.ico"/>
 
-	<BitmapImage x:Key="DacKeysCategory" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+	<BitmapImage x:Key="DacKeysCategory" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DacKeysCategory.ico"/>
 
-	<BitmapImage x:Key="DacPropertiesCategory" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+	<BitmapImage x:Key="DacPropertiesCategory" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DacPropertiesCategory.ico"/>
 
-	<BitmapImage x:Key="Category" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
+	<BitmapImage x:Key="Category" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Category.ico"/>
 </ResourceDictionary>

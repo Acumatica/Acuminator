@@ -100,7 +100,7 @@
                                           ItemsSource="{Binding Path=Children, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
                     <StackPanel Orientation="Horizontal" PreviewMouseLeftButtonDown="TreeViewItem_PreviewMouseLeftButtonDown"
                                 HorizontalAlignment="Stretch">
-                        <Image Margin="0,1.5,5,1.5" MaxWidth="14" MaxHeight="14"
+                        <Image Margin="0,1.5,5,1.5" UseLayoutRounding="True"
                                    Source="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, 
                                                     Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource treeNodeToIconConverter}}">
                             <Image.Style>
