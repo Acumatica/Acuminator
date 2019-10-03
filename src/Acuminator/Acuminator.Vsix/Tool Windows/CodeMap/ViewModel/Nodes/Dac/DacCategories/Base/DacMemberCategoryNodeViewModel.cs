@@ -28,7 +28,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set { }
 		}
 
-		public override Icon NodeIcon => Icon.GroupNode;
+		public override Icon NodeIcon => Icon.Category;
 
 		protected abstract bool AllowNavigation { get; }
 

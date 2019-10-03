@@ -35,8 +35,8 @@
                     <Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}"/>
 
                     <!-- Button Style-->
-                    <Style TargetType="Button" BasedOn="{StaticResource vsButtonStyle}"/>
-                </ResourceDictionary>
+					<Style TargetType="Button" BasedOn="{StaticResource vsButtonStyle}"/>
+				</ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -62,34 +62,45 @@
             </ComboBox>
         </WrapPanel>-->
 
-        <WrapPanel Grid.Row="0" Margin="5,2" Orientation="Horizontal">
-			<Button  VerticalAlignment="Center" ToolTip="Refresh Code Map" Padding="0,1"
-                     Command="{Binding Path=RefreshCodeMapCommand}" MaxHeight="20" MinHeight="20" MaxWidth="20" MinWidth="20"
-                     IsEnabled="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolInverter}}">
-				<Image Source="{StaticResource RefreshImage}" Style="{StaticResource vsImageStyle}"/>
-			</Button>
+		<Grid Grid.Row="0" Margin="5,2">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+			
+			<WrapPanel Grid.Column="0" Orientation="Horizontal"
+					   Visibility="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, 
+											Converter={StaticResource boolToVisibilityConverter}, ConverterParameter=!}">
+				<Button  VerticalAlignment="Center" ToolTip="Refresh Code Map" Padding="0,1" Command="{Binding Path=RefreshCodeMapCommand}"
+						 MaxHeight="20" MinHeight="20" MaxWidth="20" MinWidth="20"
+						 IsEnabled="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolInverter}}">
+					<Image Source="{StaticResource RefreshImage}" Style="{StaticResource vsImageStyle}"/>
+				</Button>
+			</WrapPanel>
 
-			<ProgressBar IsIndeterminate="True"  MaxHeight="16" MinHeight="16" Margin="2,0,0,0"
-                     HorizontalAlignment="Left" VerticalAlignment="Center" MaxWidth="150" MinWidth="150"
-                     Visibility="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
-                                          Converter={StaticResource boolToVisibilityConverter}}"/>
-        </WrapPanel>
-       
+			<ProgressBar Grid.Column="1" IsIndeterminate="True"  MaxHeight="16" MinHeight="16"
+						 HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,0,0,0"
+						 Visibility="{Binding Path=IsCalculating, Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
+											  Converter={StaticResource boolToVisibilityConverter}}"/>
+		</Grid>
+          
         <TreeView Grid.Row="1" DataContext="{Binding Path=Tree, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
                   ItemsSource="{Binding Path=RootItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                   Style="{StaticResource vsTreeViewStyle}" Margin="0,2">
+		
             <TreeView.ItemContainerStyle>
                 <Style TargetType="TreeViewItem" BasedOn="{StaticResource vsTreeViewItemStyle}">
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
                     <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 </Style>
             </TreeView.ItemContainerStyle>
+			
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type codeMap:TreeNodeViewModel}"
                                           ItemsSource="{Binding Path=Children, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
                     <StackPanel Orientation="Horizontal" PreviewMouseLeftButtonDown="TreeViewItem_PreviewMouseLeftButtonDown"
                                 HorizontalAlignment="Stretch">
-                        <Image Margin="0,1.5,5,1.5" MaxWidth="14" MaxHeight="14"
+                        <Image Margin="0,1.5,5,1.5" UseLayoutRounding="True"
                                    Source="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, 
                                                     Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource treeNodeToIconConverter}}">
                             <Image.Style>

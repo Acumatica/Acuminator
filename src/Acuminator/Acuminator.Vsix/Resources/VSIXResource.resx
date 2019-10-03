@@ -262,7 +262,7 @@
     <value>Suppress selected diagnostics</value>
   </data>
   <data name="CodeMapWindowTitle" xml:space="preserve">
-    <value>Code Map (Experimental)</value>
+    <value>Code Map</value>
   </data>
   <data name="DiagnosticSuppression_NoDiagnosticFound" xml:space="preserve">
     <value>There are no Acuminator diagnostics in this code snippet.</value>
