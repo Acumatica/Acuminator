@@ -38,7 +38,8 @@ namespace Acuminator.Analyzers.CodeActions
 		/// <returns>
 		/// The new code action with nested actions.
 		/// </returns>
-		public static CodeAction CreateCodeActionWithNestedActions(string groupActionTitle, ImmutableArray<CodeAction> nestedCodeActions, bool isInlinable)
+		public static CodeAction CreateCodeActionWithNestedActions(string groupActionTitle, ImmutableArray<CodeAction> nestedCodeActions,
+																   bool isInlinable = false)
 		{
 			groupActionTitle.ThrowOnNullOrWhiteSpace(nameof(groupActionTitle));
 
