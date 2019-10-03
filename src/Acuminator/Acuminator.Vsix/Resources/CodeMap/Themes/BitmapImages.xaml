@@ -33,7 +33,7 @@
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/CacheAttached.ico"/>
 
 	<BitmapImage x:Key="GroupingDac" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
-                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DAC.ico"/>
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/GroupingDAC.ico"/>
 
 	<BitmapImage x:Key="GroupingDacField" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DacField.ico"/>

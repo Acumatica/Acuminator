@@ -159,7 +159,7 @@
     <Resource Include="Resources\CodeMap\RowEvent.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Resources\CodeMap\DAC.ico">
+    <Resource Include="Resources\CodeMap\GroupingDAC.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\CodeMap\DacField.ico">
@@ -177,7 +177,7 @@
     <Resource Include="Resources\CodeMap\DacPropertiesCategory.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Resources\CodeMap\DacDeclaration.ico">
+    <Resource Include="Resources\CodeMap\DAC.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Content Include="Resources\DacExplorer.ico">
