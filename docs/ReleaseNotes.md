@@ -4,7 +4,7 @@ This document provides information about fixes, enhancements, and key features t
 ## Acuminator 2.1
 Acuminator 2.1 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
-### New Diagnostics and Code Fixes
+### New Diagnostic and Code Fixes
 In this version, the diagnostic and a code fix have been added for the following issue.
 
 | Code                            | Issue Description                                                | Type    | Diagnostics | Code Fix    | 
@@ -32,10 +32,6 @@ public class ARReleaseProcess_Extension : PXGraphExtension<ARReleaseProcess>
 
 You can also suppress an Acuminator diagnostic in the Acuminator suppression file. For details about the diagnostic suppression, see [Diagnostic Suppression](diagnostics/DiagnosticSuppression.md).
 
-### Enhancements
-
- - The [PX1002](diagnostics/PX1002.md) diagnostic now supports DAC extensions. 
-
 ### Enhancements and Bug Fixes in the Code Map
 Acuminator 2.1 includes the following enhancements in the code map:
 
@@ -48,9 +44,10 @@ Acuminator 2.1 includes the following enhancements in the code map:
  - The code map could not display generic event handlers if they had custom names.
  - The code map did not support `CacheAttached` generic event handlers.
 
-### Other Fixed Bugs
-In this version of Acuminator, the following bugs have been fixed:
+### Other Enhancements and Fixed Bugs
+In this version of Acuminator, the following enhancements and bug fixes are available:
 
+ - The [PX1002](diagnostics/PX1002.md) diagnostic now supports DAC extensions. 
  - Null reference issues have been fixed in BQL formatter and the diagnostics related to fluent BQL.
  - The [PX1004](diagnostics/PX1004.md) and [PX1006](diagnostics/PX1006.md) diagnostics were displayed for the code based on Acumatica Framework 2018 R2 or later.
  - The [PX1029](diagnostics/PX1029.md) diagnostic was incorrectly displayed for DAC extensions that extended the DACs declared as nested types inside graphs.
