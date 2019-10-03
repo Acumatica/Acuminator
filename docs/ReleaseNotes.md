@@ -2,10 +2,10 @@
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
 ## Acuminator 2.1
-Acuminator 2.1 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
+Acuminator 2.1 includes the diagnostics, code fixes, enhancements, and bug fixes described in this section, as well as the features that have been implemented in previous versions.
 
 ### New Diagnostic and Code Fixes
-In this version, the diagnostic and a code fix have been added for the following issue.
+In this version, the diagnostic and code fixes have been added for the following issue.
 
 | Code                            | Issue Description                                                | Type    | Diagnostics | Code Fix    | 
 | ------------------------------- | ---------------------------------------------------------------- | ------- | ----------- | ----------- |
@@ -49,7 +49,7 @@ In this version of Acuminator, the following enhancements and bug fixes are avai
 
  - The [PX1002](diagnostics/PX1002.md) diagnostic now supports DAC extensions. 
  - Null reference issues have been fixed in BQL formatter and the diagnostics related to fluent BQL.
- - The [PX1004](diagnostics/PX1004.md) and [PX1006](diagnostics/PX1006.md) diagnostics were displayed for the code based on Acumatica Framework 2018 R2 or later.
+ - The [PX1004](diagnostics/PX1004.md) and [PX1006](diagnostics/PX1006.md) diagnostics were incorrectly displayed for the code based on Acumatica Framework 2018 R2 or later.
  - The [PX1029](diagnostics/PX1029.md) diagnostic was incorrectly displayed for DAC extensions that extended the DACs declared as nested types inside graphs.
  - The [PX1024](diagnostics/PX1024.md) diagnostic did not work for `new` abstract class fields of derived DACs.
  - The [PX1030](diagnostics/PX1030.md) diagnostic was incorrectly displayed for the DACs that contain only unbound fields.
