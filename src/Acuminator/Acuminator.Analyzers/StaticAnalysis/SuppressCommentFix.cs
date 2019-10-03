@@ -61,28 +61,51 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		private void RegisterCodeActionForDiagnostic(Diagnostic diagnostic, CodeFixContext context)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
-
-			string groupCodeActionNameFormat = nameof(Resources.SuppressDiagnosticGroupCodeActionTitle).GetLocalized().ToString();
-			string groupCodeActionName = string.Format(groupCodeActionNameFormat, diagnostic.Id);
-
-			string commentCodeActionName = nameof(Resources.SuppressDiagnosticWithCommentCodeActionTitle).GetLocalized().ToString();
-			CodeAction suppressWithCommentCodeAction = CodeAction.Create(commentCodeActionName, 
-																		 cToken => AddSuppressionCommentAsync(context, diagnostic, cToken),
-																		 equivalenceKey: commentCodeActionName);
-
-			string suppressionFileCodeActionName = nameof(Resources.SuppressDiagnosticInSuppressionFileCodeActionTitle).GetLocalized().ToString();
-			CodeAction suppressionFileCodeAction = new SolutionChangeActionWithOptionalPreview(suppressionFileCodeActionName,
-																							   cToken => SuppressInSuppressionFileAsync(context, diagnostic, cToken),
-																							   displayPreview: false,
-																							   equivalenceKey: suppressionFileCodeActionName);
-
-			var suppressionCodeActions = ImmutableArray.Create(suppressWithCommentCodeAction, suppressionFileCodeAction);
-			CodeAction groupCodeAction = CodeActionWithNestedActionsFabric.CreateCodeActionWithNestedActions(groupCodeActionName, suppressionCodeActions);
+			CodeAction groupCodeAction = GetCodeActionToRegister(diagnostic, context);
 
 			if (groupCodeAction != null)
 			{
 				context.RegisterCodeFix(groupCodeAction, diagnostic);
 			}	
+		}
+
+		protected virtual CodeAction GetCodeActionToRegister(Diagnostic diagnostic, CodeFixContext context)
+		{
+			string groupCodeActionNameFormat = nameof(Resources.SuppressDiagnosticGroupCodeActionTitle).GetLocalized().ToString();
+			string groupCodeActionName = string.Format(groupCodeActionNameFormat, diagnostic.Id);
+
+			CodeAction suppressWithCommentCodeAction = GetSuppressWithCommentCodeAction(diagnostic, context);
+			CodeAction suppressWithSuppressionFileCodeAction = GetSuppressWithSuppressionFileCodeAction(diagnostic, context);
+			var suppressionCodeActions = ImmutableArray.CreateBuilder<CodeAction>(initialCapacity: 2);
+
+			if (suppressWithCommentCodeAction != null)
+			{
+				suppressionCodeActions.Add(suppressWithCommentCodeAction);
+			}
+
+			if (suppressWithSuppressionFileCodeAction != null)
+			{
+				suppressionCodeActions.Add(suppressWithSuppressionFileCodeAction);
+			}
+
+			return CodeActionWithNestedActionsFabric.CreateCodeActionWithNestedActions(groupCodeActionName, suppressionCodeActions.ToImmutable());
+		}
+
+		protected virtual CodeAction GetSuppressWithCommentCodeAction(Diagnostic diagnostic, CodeFixContext context)
+		{
+			string commentCodeActionName = nameof(Resources.SuppressDiagnosticWithCommentCodeActionTitle).GetLocalized().ToString();
+			return CodeAction.Create(commentCodeActionName,
+									 cToken => AddSuppressionCommentAsync(context, diagnostic, cToken),
+									 equivalenceKey: commentCodeActionName);
+		}
+
+		protected virtual CodeAction GetSuppressWithSuppressionFileCodeAction(Diagnostic diagnostic, CodeFixContext context)
+		{
+			string suppressionFileCodeActionName = nameof(Resources.SuppressDiagnosticInSuppressionFileCodeActionTitle).GetLocalized().ToString();
+			return new SolutionChangeActionWithOptionalPreview(suppressionFileCodeActionName,
+															   cToken => SuppressInSuppressionFileAsync(context, diagnostic, cToken),
+															   displayPreview: false,
+															   equivalenceKey: suppressionFileCodeActionName);
 		}
 
 		private async Task<Document> AddSuppressionCommentAsync(CodeFixContext context, Diagnostic diagnostic, CancellationToken cancellationToken)
@@ -100,7 +123,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			{
 				SyntaxTriviaList commentNode = SyntaxFactory.TriviaList(
 					SyntaxFactory.SyntaxTrivia(SyntaxKind.SingleLineCommentTrivia,
-						string.Format(_comment, diagnostic.Id, diagnosticShortName)),
+											   string.Format(_comment, diagnostic.Id, diagnosticShortName)),
 					SyntaxFactory.ElasticEndOfLine(""));
 
 				while (!(node == null || node is StatementSyntax || node is MemberDeclarationSyntax))
