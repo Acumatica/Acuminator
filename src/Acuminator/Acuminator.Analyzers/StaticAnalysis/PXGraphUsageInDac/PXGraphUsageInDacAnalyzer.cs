@@ -1,17 +1,23 @@
-﻿using Acuminator.Utilities.DiagnosticSuppression;
+﻿using System.Linq;
+using System.Threading;
+using System.Collections.Immutable;
+using System.Collections.Generic;
+
+using Acuminator.Analyzers.StaticAnalysis.Dac;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Syntax;
+using Acuminator.Utilities.Common;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac
 {
-	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class PXGraphUsageInDacAnalyzer : PXDiagnosticAnalyzer
+    public class PXGraphUsageInDacAnalyzer : DacAggregatedAnalyzerBase
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create
@@ -19,52 +25,42 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac
                 Descriptors.PX1029_PXGraphUsageInDac
             );
 
-        internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
-        {
-            compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzeGraphUsageInDac(syntaxContext, pxContext), SyntaxKind.ClassDeclaration);
-        }
+		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac)
+		{
+			context.CancellationToken.ThrowIfCancellationRequested();
+			SemanticModel semanticModel = context.Compilation.GetSemanticModel(dac.Node.SyntaxTree);
 
-        private void AnalyzeGraphUsageInDac(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
-        {
-            if (!(syntaxContext.Node is ClassDeclarationSyntax classDeclaration) || syntaxContext.CancellationToken.IsCancellationRequested)
-                return;
+			if (semanticModel == null)
+				return;
 
-            INamedTypeSymbol classType = syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration, syntaxContext.CancellationToken);
-            if (classType == null || !classType.IsDacOrExtension(pxContext))
-                return;
+			GraphUsageInDacWalker walker = new GraphUsageInDacWalker(context, pxContext, semanticModel);
 
-            GraphUsageInDacWalker walker = new GraphUsageInDacWalker(syntaxContext, pxContext);
-            walker.Visit(classDeclaration);
-        }
+			// Analyze only DAC members, avoid nested types analysis. For possible nested DACs this analyser will be executed separately. 
+			// We do not want to analyse possible internal helper classes or analyze DAC's attributes, ID, lis of base classes and so on.
+			var membersToVisit = dac.Node.Members.Where(member => !member.IsKind(SyntaxKind.ClassDeclaration) && 
+																  !member.IsKind(SyntaxKind.StructDeclaration) &&
+																  !member.IsKind(SyntaxKind.InterfaceDeclaration));
+
+			foreach (MemberDeclarationSyntax memberNode in membersToVisit)
+			{
+				walker.Visit(memberNode);
+			}
+		}
 
         private class GraphUsageInDacWalker : CSharpSyntaxWalker
         {
-            private readonly SyntaxNodeAnalysisContext _syntaxContext;
+            private readonly SymbolAnalysisContext _context;
             private readonly PXContext _pxContext;
-            private bool _inDac;
+			private readonly SemanticModel _semanticModel;
 
-            public GraphUsageInDacWalker(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
+            public GraphUsageInDacWalker(SymbolAnalysisContext context, PXContext pxContext, SemanticModel semanticModel)
             {
-                _syntaxContext = syntaxContext;
+                _context = context;
                 _pxContext = pxContext;
-            }
+				_semanticModel = semanticModel;
+			}
 
-	        public override void VisitClassDeclaration(ClassDeclarationSyntax node)
-	        {
-		        ThrowIfCancellationRequested();
-
-		        INamedTypeSymbol symbol = _syntaxContext.SemanticModel.GetDeclaredSymbol(node, _syntaxContext.CancellationToken);
-		        if (symbol != null && symbol.IsDacOrExtension(_pxContext) && !_inDac)
-		        {
-                    _inDac = true;
-
-                    base.VisitClassDeclaration(node);
-
-                    _inDac = false;
-				}
-	        }
-
-	        public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
+			public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
             {
                 ThrowIfCancellationRequested();
 
@@ -78,7 +74,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac
             {
 				ThrowIfCancellationRequested();
 
-				SymbolInfo symbolInfo = _syntaxContext.SemanticModel.GetSymbolInfo(node, _syntaxContext.CancellationToken);
+				SymbolInfo symbolInfo = _semanticModel.GetSymbolInfo(node, _context.CancellationToken);
 
                 if (symbolInfo.Symbol == null || (symbolInfo.Symbol.Kind == SymbolKind.Method && symbolInfo.Symbol.IsStatic))
                     return;
@@ -86,29 +82,37 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac
                 base.VisitInvocationExpression(node);
             }
 
-            public override void VisitAttributeList(AttributeListSyntax node)
-            {
-            }
-
-            public override void VisitIdentifierName(IdentifierNameSyntax node)
-            {
+			public override void VisitIdentifierName(IdentifierNameSyntax node)
+			{
 				ThrowIfCancellationRequested();
 
-				TypeInfo typeInfo = _syntaxContext.SemanticModel.GetTypeInfo(node, _syntaxContext.CancellationToken);
+				TypeInfo typeInfo = _semanticModel.GetTypeInfo(node, _context.CancellationToken);
 
-                if (typeInfo.Type == null || !typeInfo.Type.IsPXGraphOrExtension(_pxContext))
-                    return;
+				if (typeInfo.Type == null || !typeInfo.Type.IsPXGraphOrExtension(_pxContext))
+					return;
 
-                _syntaxContext.ReportDiagnosticWithSuppressionCheck(
+				_context.ReportDiagnosticWithSuppressionCheck(
 					Diagnostic.Create(Descriptors.PX1029_PXGraphUsageInDac, node.GetLocation()),
 					_pxContext.CodeAnalysisSettings);
 
-                base.VisitIdentifierName(node);
+				base.VisitIdentifierName(node);
+			}
+
+			public override void VisitBaseList(BaseListSyntax node)
+			{
+			}
+
+			public override void VisitClassDeclaration(ClassDeclarationSyntax node)
+			{
+			}
+
+			public override void VisitAttributeList(AttributeListSyntax node)
+            {
             }
 
 	        private void ThrowIfCancellationRequested()
 	        {
-				_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+				_context.CancellationToken.ThrowIfCancellationRequested();
 			}
         }
     }

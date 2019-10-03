@@ -23,7 +23,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public override Icon NodeIcon => Icon.Event;
+		public override Icon NodeIcon => Icon.GraphEventCategory;
 
 		protected override bool AllowNavigation => false;
 
