@@ -481,12 +481,12 @@
     <value>Add a description</value>
   </data>
   <data name="SuppressDiagnosticGroupCodeActionTitle" xml:space="preserve">
-    <value>Suppress diagnostic {0} by Acuminator</value>
+    <value>Suppress diagnostic {0} with Acuminator</value>
   </data>
   <data name="SuppressDiagnosticWithCommentCodeActionTitle" xml:space="preserve">
-    <value>with a comment</value>
+    <value>in a comment</value>
   </data>
   <data name="SuppressDiagnosticInSuppressionFileCodeActionTitle" xml:space="preserve">
-    <value>in Acuminator Suppression File</value>
+    <value>in the Acuminator suppression file</value>
   </data>
 </root>
