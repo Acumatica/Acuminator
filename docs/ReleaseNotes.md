@@ -54,7 +54,7 @@ In this version of Acuminator, the following enhancements and bug fixes are avai
  - The [PX1024](diagnostics/PX1024.md) diagnostic did not work for `new` abstract class fields of derived DACs.
  - The [PX1030](diagnostics/PX1030.md) diagnostic was incorrectly displayed for the DACs that contain only unbound fields.
  - The [PX1055](diagnostics/PX1055.md) diagnostic worked incorrectly if the key fields were defined both in the base DAC and derived DAC.
- - The BQL outlining worked incorrectly for unary BQL functions, sush as `RTrim`.
+ - The BQL outlining worked incorrectly for unary BQL functions, such as `RTrim`.
  - The suppression mechanism did not reload the suppression file on solution change.
  - In some cases, it was not possible to suppress an Acuminator diagnostic in the Acuminator suppression file for a code fragment. The _There are no Acuminator diagnostics in this code snippet_ error was displayed.
 
