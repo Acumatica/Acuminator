@@ -15,6 +15,8 @@ using Acuminator.Utilities.Common;
 using Acuminator.Analyzers.CodeActions;
 using Acuminator.Utilities.DiagnosticSuppression;
 
+using UtilityResources = Acuminator.Utilities.Resources;
+
 namespace Acuminator.Analyzers.StaticAnalysis
 {
 	[Shared]
@@ -176,10 +178,19 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		}
 
 		private void ShowErrorMessage(TextDocument suppressionFile, Project project)
-		{		 
-			string errorMessage = suppressionFile?.FilePath != null
-				? $"The diagnostic cannot be added to the suppression file. Check if the {suppressionFile.FilePath} file is accessible."
-				: $"The suppression file for the {project.Name} project cannot be found.";
+		{
+			LocalizableResourceString errorMessage;
+
+			if (suppressionFile?.FilePath != null)
+			{
+				errorMessage = new LocalizableResourceString(nameof(UtilityResources.DiagnosticSuppression_FailedToAddToSuppressionFile),
+															 UtilityResources.ResourceManager, typeof(UtilityResources), suppressionFile.FilePath);
+			}
+			else
+			{
+				errorMessage = new LocalizableResourceString(nameof(UtilityResources.DiagnosticSuppression_FailedToFindSuppressionFile),
+															 UtilityResources.ResourceManager, typeof(UtilityResources), project.Name);
+			}
 
 			Debug.WriteLine($"{AcuminatorPackageName}: {errorMessage.ToString()}");
 		}
