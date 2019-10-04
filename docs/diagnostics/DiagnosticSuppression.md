@@ -7,9 +7,9 @@ You can suppress Acuminator diagnostics in one of the following ways (which are 
  - By adding a code fragment to the Acuminator suppression file
 
 ## Diagnostic Suppression by Adding a Code Comment
-You can suppress any diagnostic by adding a specific comment directly in code. To add a suppression comment, you select **Suppress diagnostic PX10YY** (where PX00YY is the code of the diagnostic) as a code fix for the diagnostic, as shown in the following screenshot.
+You can suppress any diagnostic by adding a specific comment directly in code. To add a suppression comment, you select **Suppress the PX10YY diagnostic with Acuminator > in a comment** (where PX00YY is the code of the diagnostic) as a code fix for the diagnostic, as shown in the following screenshot.
 
-![Suppression in Comment](../images/SuppressDiagnosticInComment.png)
+![Suppression in a Comment](../images/SuppressDiagnosticInComment.png)
 
 The code below shows an example of a suppression comment that has been added by the code fix. A suppression comment includes the following parts:
 
@@ -28,10 +28,9 @@ public class ARReleaseProcess_Extension : PXGraphExtension<ARReleaseProcess>
 To stop the suppression of the diagnostic in the code fragment, you remove the comment from the code.
 
 ## Diagnostic Suppression in the Acuminator Suppression File
-You can suppress a particular diagnostic in a specific place in your project as follows:
+You can suppress a particular diagnostic in a specific place in your project. To suppress a diagnostic in the Acuminator suppression file, you select **Suppress the PX10YY diagnostic with Acuminator > in the Acuminator suppression file** (where PX00YY is the code of the diagnostic) as a code fix for the diagnostic, as shown in the following screenshot.
 
- 1. Click the code that is highlighted by the Acuminator diagnostic, so that the editor cursor is in the highlighted element.
- 2. In the context menu or on the **Acuminator** main menu of Visual Studio, click **Suppress Acuminator Diagnostic > in Acuminator Suppression File**.
+![Suppression in the Acuminator Suppression File](../images/SuppressDiagnosticInSuppressionFile.png)
 
 The suppressed diagnostic is saved in the Acuminator suppression file, which is located in the folder of your Visual Studio project. This file has the same name as the project file and the `acuminator` extension. If there is no Acuminator suppression file in the project folder, the file is created automatically.
 

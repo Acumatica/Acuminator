@@ -12,7 +12,7 @@ In this version, the diagnostic and code fixes have been added for the following
 | [PX1007](diagnostics/PX1007.md) | A public class should have a description in the `summary` XML tag. | Warning (Level 3: Informational)	 | Available | Available   |
 
 ### Ability to Suppress a Diagnostic by Adding a Code Comment
-In Acuminator 2.1, you can suppress any diagnostic by adding a specific comment directly in code. To add a suppression comment, you select **Suppress diagnostic PX10YY** (where PX00YY is the code of the diagnostic) as a code fix for the diagnostic, as shown in the following screenshot.
+In Acuminator 2.1, you can suppress any diagnostic by adding a specific comment directly in code. To add a suppression comment, you select **Suppress the PX10YY diagnostic with Acuminator > in a comment** (where PX00YY is the code of the diagnostic) as a code fix for the diagnostic, as shown in the following screenshot.
 
 ![Suppression in Comment](images/SuppressDiagnosticInComment.png)
 
@@ -30,12 +30,15 @@ public class ARReleaseProcess_Extension : PXGraphExtension<ARReleaseProcess>
 }
 ```
 
-You can also suppress an Acuminator diagnostic in the Acuminator suppression file. For details about the diagnostic suppression, see [Diagnostic Suppression](diagnostics/DiagnosticSuppression.md).
+You can also suppress an Acuminator diagnostic in the Acuminator suppression file. This option is now available as a code fix and has been removed from the menu commands. For details about the diagnostic suppression, see [Diagnostic Suppression](diagnostics/DiagnosticSuppression.md).
 
 ### Enhancements and Bug Fixes in the Code Map
 Acuminator 2.1 includes the following enhancements in the code map:
 
- - The code map now can be used for DACs and DAC extensions. For each DAC, the list of key fields and the full list of DAC fields is displayed. For each DAC field, the code map shows the list of attributes.
+ - The code map now can be used for DACs and DAC extensions. For each DAC, the list of key fields and the full list of DAC fields is displayed. For each DAC field, the code map shows the list of attributes. The code map for a file that contains two DACs is shown in the following screenshot.
+
+ ![Code Map](images/CodeMapForDacs.png)
+
  - The code map now supports cycling navigation between partial definitions.
 
  The following bugs have been fixed:
