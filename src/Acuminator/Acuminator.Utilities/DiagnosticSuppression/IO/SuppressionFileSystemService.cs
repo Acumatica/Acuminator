@@ -4,15 +4,22 @@ using System.Runtime.CompilerServices;
 using System.Security;
 using System.Xml;
 using System.Xml.Linq;
-using System.Windows;
 using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.DiagnosticSuppression.IO
 {
-	internal class SuppressionFileSystemService
+	internal class SuppressionFileSystemService : ISuppressionFileSystemService
 	{
-		public event EventHandler<IOErrorEventArgs> OnLoadError;
-		public event EventHandler<IOErrorEventArgs> OnSaveError;
+		public I_IOErrorProcessor ErrorProcessor { get; }
+
+		public SuppressionFileSystemService() : this(null)
+		{
+		}
+
+		public SuppressionFileSystemService(I_IOErrorProcessor errorProcessor)
+		{
+			ErrorProcessor = errorProcessor ?? new DefaultIOErrorProcessor();
+		}
 
 		public XDocument Load(string path)
 		{
@@ -24,7 +31,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 			}
 			catch (Exception exception) when (FilterException(exception))
 			{
-				ProcessError(exception);
+				ErrorProcessor.ProcessError(exception);
 			}
 
 			return null;
@@ -41,7 +48,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 			}
 			catch (Exception exception) when (FilterException(exception))
 			{
-				ProcessError(exception);
+				ErrorProcessor.ProcessError(exception);
 				return false;
 			}
 
@@ -61,7 +68,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 			return Path.GetDirectoryName(path);
 		}
 
-		public FileSystemWatcher CreateWatcher(string path)
+		public ISuppressionFileWatcherService CreateWatcher(string path)
 		{
 			var directory = Path.GetDirectoryName(path);
 			var file = Path.GetFileName(path);
@@ -85,15 +92,6 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 				default:
 					return false;
 			}
-		}
-
-		private void ProcessError(Exception exception, [CallerMemberName]string reportedFrom = null)
-		{
-			string errorMsg = VSIXResource.FailedToLoadTheSuppressionFile + Environment.NewLine + Environment.NewLine +
-							  string.Format(VSIXResource.FailedToLoadTheSuppressionFileDetails, Environment.NewLine + exception.Message);
-			MessageBox.Show(errorMsg, AcuminatorVSPackage.PackageName, MessageBoxButton.OK, MessageBoxImage.Error);
-			AcuminatorVSPackage.Instance.AcuminatorLogger?.LogException(exception, logOnlyFromAcuminatorAssemblies: false,
-																		Logger.LogMode.Warning, reportedFrom);
 		}
 	}
 }

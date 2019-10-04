@@ -23,7 +23,6 @@ namespace Acuminator.Analyzers.StaticAnalysis
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
 	public class SuppressDiagnosticFix : CodeFixProvider
 	{
-		private const string AcuminatorPackageName = "ACUMINATOR";
 		private const string _comment = @"// Acuminator disable once {0} {1} [Justification]";
 
 		private static readonly ImmutableArray<string> _fixableDiagnosticIds;
@@ -192,7 +191,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 															 UtilityResources.ResourceManager, typeof(UtilityResources), project.Name);
 			}
 
-			Debug.WriteLine($"{AcuminatorPackageName}: {errorMessage.ToString()}");
+			Debug.WriteLine($"{SharedConstants.PackageName.ToUpperInvariant()}: {errorMessage.ToString()}");
 		}
 	}
 }
