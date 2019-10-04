@@ -6,12 +6,14 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Windows;
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.DiagnosticSuppression;
 
-namespace Acuminator.Vsix.Utilities
+namespace Acuminator.Utilities.DiagnosticSuppression.IO
 {
-	internal class SuppressionFileSystemService : ISuppressionFileSystemService
+	internal class SuppressionFileSystemService
 	{
+		public event EventHandler<IOErrorEventArgs> OnLoadError;
+		public event EventHandler<IOErrorEventArgs> OnSaveError;
+
 		public XDocument Load(string path)
 		{
 			path.ThrowOnNullOrWhiteSpace(nameof(path));
@@ -32,7 +34,7 @@ namespace Acuminator.Vsix.Utilities
 		{
 			document.ThrowOnNull(nameof(document));
 			path.ThrowOnNullOrWhiteSpace(nameof(path));
-
+			
 			try
 			{
 				document.Save(path);
@@ -59,7 +61,7 @@ namespace Acuminator.Vsix.Utilities
 			return Path.GetDirectoryName(path);
 		}
 
-		public ISuppressionFileWatcherService CreateWatcher(string path)
+		public FileSystemWatcher CreateWatcher(string path)
 		{
 			var directory = Path.GetDirectoryName(path);
 			var file = Path.GetFileName(path);
