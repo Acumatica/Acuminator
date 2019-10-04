@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Security;
 using System.Xml;
 using System.Xml.Linq;
@@ -44,7 +43,10 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 			
 			try
 			{
-				document.Save(path);
+				using (FileStream fs = File.OpenWrite(path))
+				{
+					document.Save(fs);
+				}
 			}
 			catch (Exception exception) when (FilterException(exception))
 			{
