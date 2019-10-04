@@ -13,6 +13,7 @@ using Acuminator.Utilities.DiagnosticSuppression;
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 using Document = Microsoft.CodeAnalysis.Document;
 using Shell = Microsoft.VisualStudio.Shell;
+using Resources = Acuminator.Utilities.Resources;
 
 namespace Acuminator.Vsix.DiagnosticSuppression
 {
@@ -106,13 +107,13 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 			if (suppressionFile?.FilePath != null)
 			{
-				errorMessage = new LocalizableResourceString(nameof(VSIXResource.DiagnosticSuppression_FailedToAddToSuppressionFile),
-															 VSIXResource.ResourceManager, typeof(VSIXResource), suppressionFile.FilePath);
+				errorMessage = new LocalizableResourceString(nameof(Resources.DiagnosticSuppression_FailedToAddToSuppressionFile),
+															 Resources.ResourceManager, typeof(Resources), suppressionFile.FilePath);
 			}
 			else
 			{
-				errorMessage = new LocalizableResourceString(nameof(VSIXResource.DiagnosticSuppression_FailedToFindSuppressionFile),
-															 VSIXResource.ResourceManager, typeof(VSIXResource), project.Name);
+				errorMessage = new LocalizableResourceString(nameof(Resources.DiagnosticSuppression_FailedToFindSuppressionFile),
+															 Resources.ResourceManager, typeof(Resources), project.Name);
 			}
 
 			MessageBox.Show(errorMessage.ToString(), AcuminatorVSPackage.PackageName);
