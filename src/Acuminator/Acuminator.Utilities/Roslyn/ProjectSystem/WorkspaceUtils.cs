@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis.Formatting;
 using Acuminator.Utilities.Common;
 
 
-namespace Acuminator.Vsix.Utilities
+namespace Acuminator.Utilities.Roslyn.ProjectSystem
 {
     /// <summary>
     /// A helper class with utility methods related to the Workspace.
