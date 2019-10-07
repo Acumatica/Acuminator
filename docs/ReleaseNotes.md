@@ -12,7 +12,7 @@ In this version, the diagnostic and code fixes have been added for the following
 | [PX1007](diagnostics/PX1007.md) | A public class should have a description in the `summary` XML tag. | Warning (Level 3: Informational)	 | Available | Available   |
 
 ### Ability to Suppress a Diagnostic by Adding a Code Comment
-In Acuminator 2.1, you can suppress any diagnostic by adding a specific comment directly in code. To add a suppression comment, you select **Suppress the PX10YY diagnostic with Acuminator > in a comment** (where PX00YY is the code of the diagnostic) as a code fix for the diagnostic, as shown in the following screenshot.
+In Acuminator 2.1, you can suppress any diagnostic by adding a specific comment directly in code. To add a suppression comment, you select **Suppress the PXYYYY diagnostic with Acuminator > in a comment** (where PXYYYY is the code of the diagnostic) as a code fix for the diagnostic, as shown in the following screenshot.
 
 ![Suppression in Comment](images/SuppressDiagnosticInComment.png)
 
@@ -39,7 +39,7 @@ Acuminator 2.1 includes the following enhancements in the code map:
 
  ![Code Map](images/CodeMapForDacs.png)
 
- - The code map now supports cycling navigation between partial definitions.
+ - The code map now supports cycling navigation between partial definitions of graphs.
 
  The following bugs have been fixed:
 
@@ -50,6 +50,7 @@ Acuminator 2.1 includes the following enhancements in the code map:
 ### Other Enhancements and Fixed Bugs
 In this version of Acuminator, the following enhancements and bug fixes are available:
 
+ - All diagnostics related to DACs now work faster because these diagnostics share the collected semantic information.
  - The [PX1002](diagnostics/PX1002.md) diagnostic now supports DAC extensions. 
  - Null reference issues have been fixed in the BQL formatter and the diagnostics related to fluent BQL.
  - The [PX1004](diagnostics/PX1004.md) and [PX1006](diagnostics/PX1006.md) diagnostics were incorrectly displayed for code based on Acumatica Framework 2018 R2 or later.
