@@ -19,7 +19,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private static readonly Dictionary<DacMemberCategory, string> _descriptions = new Dictionary<DacMemberCategory, string>
 		{
 			{ DacMemberCategory.Keys, "Keys" },
-			{ DacMemberCategory.Property, "Properties" },
+			{ DacMemberCategory.Property, "DAC Fields" },
 			{ DacMemberCategory.FieldsWithoutProperty, "Fields without property" },
 		};
 
