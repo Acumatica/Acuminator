@@ -2,9 +2,8 @@
 using System.IO;
 using System.Threading;
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.DiagnosticSuppression;
 
-namespace Acuminator.Vsix.Utilities
+namespace Acuminator.Utilities.DiagnosticSuppression.IO
 {
 	internal class SuppressionFileWatcherService : ISuppressionFileWatcherService
 	{
@@ -14,24 +13,27 @@ namespace Acuminator.Vsix.Utilities
 
 		private readonly FileSystemWatcher _fileSystemWatcher;
 
-		public event Action<object, SuppressionFileEventArgs> Changed;
+		public event FileSystemEventHandler Changed
+		{
+			add 
+			{
+				_fileSystemWatcher.Changed += value;
+			}
+			remove
+			{
+				_fileSystemWatcher.Changed -= value;
+			}
+		}
 
 		public SuppressionFileWatcherService(FileSystemWatcher watcher)
 		{
 			_fileSystemWatcher = watcher.CheckIfNull(nameof(watcher));
-			_fileSystemWatcher.Changed += OnChanged;
-		}
-
-		private void OnChanged(object sender, FileSystemEventArgs e)
-		{
-			Changed?.Invoke(sender, new SuppressionFileEventArgs(e.FullPath, e.Name));
 		}
 
 		public void Dispose()
 		{
 			if (Interlocked.Exchange(ref _instanceDisposed, INSTANCE_DISPOSED) == INSTANCE_UNDISPOSED)
 			{			
-				_fileSystemWatcher.Changed -= OnChanged;
 				_fileSystemWatcher.Dispose();		
 			}
 		}	

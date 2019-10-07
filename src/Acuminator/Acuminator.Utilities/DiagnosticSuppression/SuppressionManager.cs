@@ -1,4 +1,6 @@
 ﻿using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.ProjectSystem;
+using Acuminator.Utilities.DiagnosticSuppression.IO;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using System;
@@ -13,61 +15,70 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
 {
-	public class SuppressionManager
+	public sealed class SuppressionManager
 	{
+		private static readonly Regex _suppressPattern = new Regex(@"Acuminator\s+disable\s+once\s+(\w+)\s+(\w+)", RegexOptions.Compiled);
 		private static object _initializationLocker = new object();
+
+		private static SuppressionManager Instance
+		{
+			get;
+			set;
+		}
 
 		private readonly ConcurrentDictionary<string, SuppressionFile> _fileByAssembly = new ConcurrentDictionary<string, SuppressionFile>();
 		private readonly ISuppressionFileSystemService _fileSystemService;
 
-		private static SuppressionManager Instance { get; set; }
 
-		private static readonly Regex _suppressPattern = new Regex(@"Acuminator\s+disable\s+once\s+(\w+)\s+(\w+)", RegexOptions.Compiled);
+
+
 
 		private SuppressionManager(ISuppressionFileSystemService fileSystemService)
 		{
 			_fileSystemService = fileSystemService.CheckIfNull(nameof(fileSystemService));
 		}
 
-		[Obsolete("This constructor should not be used. It is left for the compatibility with Acuminator regression test runner")]
-		private SuppressionManager(ISuppressionFileSystemService fileSystemService, IEnumerable<SuppressionManagerInitInfo> suppressionFiles)
+		public static void InitOrReset(Workspace workspace, IEnumerable<SuppressionManagerInitInfo> additionalFiles,
+									   Func<ISuppressionFileSystemService> fileSystemServiceFabric = null) =>
+			InitOrReset(workspace, additionalFiles, fileSystemServiceFabric, null);
+
+		public static void InitOrReset(Workspace workspace, IEnumerable<SuppressionManagerInitInfo> additionalFiles,
+									   Func<IIOErrorProcessor> errorProcessorFabric = null) =>
+			InitOrReset(workspace, additionalFiles, null, errorProcessorFabric);
+
+		public static void InitOrReset(Workspace workspace, bool generateSuppressionBase, 
+									   Func<ISuppressionFileSystemService> fileSystemServiceFabric = null) =>
+			InitOrReset(workspace, workspace?.CurrentSolution?.GetSuppressionInfoFromSolution(generateSuppressionBase),
+						fileSystemServiceFabric, null);
+
+		public static void InitOrReset(Workspace workspace, bool generateSuppressionBase, 
+									   Func<IIOErrorProcessor> errorProcessorFabric = null) =>
+			InitOrReset(workspace, workspace?.CurrentSolution?.GetSuppressionInfoFromSolution(generateSuppressionBase),
+						null, errorProcessorFabric);
+
+		private static void InitOrReset(Workspace workspace, IEnumerable<SuppressionManagerInitInfo> suppressionFileInfos,
+										Func<ISuppressionFileSystemService> fileSystemServiceFabric = null,
+										Func<IIOErrorProcessor> errorProcessorFabric = null)
 		{
-			_fileSystemService = fileSystemService.CheckIfNull(nameof(fileSystemService));
-			LoadSuppressionFiles(suppressionFiles);
-		}	
-
-		[Obsolete("This method should not be used. It is left for the compatibility with Acuminator regression test runner")]
-		public static void Init(ISuppressionFileSystemService fileSystemService, IEnumerable<SuppressionManagerInitInfo> additionalFiles)
-		{
-			additionalFiles.ThrowOnNull(nameof(additionalFiles));
-
-			var suppressionFiles = additionalFiles.Where(f => SuppressionFile.IsSuppressionFile(f.Path));
-
-            if (Instance?._fileSystemService != null)
-            {
-                lock (Instance._fileSystemService)
-                {
-                    Instance = new SuppressionManager(fileSystemService, suppressionFiles);
-                }
-            }
-            else
-            {
-                Instance = new SuppressionManager(fileSystemService, suppressionFiles);
-            }
-        }
-
-		public static void InitOrReset(IEnumerable<SuppressionManagerInitInfo> additionalFiles, Func<ISuppressionFileSystemService> fileSystemServiceFabric)
-		{
-			additionalFiles.ThrowOnNull(nameof(additionalFiles));
-			fileSystemServiceFabric.ThrowOnNull(nameof(fileSystemServiceFabric));
-
-			var suppressionFiles = additionalFiles.Where(f => SuppressionFile.IsSuppressionFile(f.Path));
+			workspace.ThrowOnNull(nameof(workspace));
+			suppressionFileInfos = suppressionFileInfos ?? Enumerable.Empty<SuppressionManagerInitInfo>();
 
 			lock (_initializationLocker)
 			{
 				if (Instance == null)
 				{
-					ISuppressionFileSystemService fileSystemService = fileSystemServiceFabric();
+					ISuppressionFileSystemService fileSystemService;
+
+					if (fileSystemServiceFabric == null)
+					{
+						IIOErrorProcessor errorProcessor = errorProcessorFabric?.Invoke();
+						fileSystemService = new SuppressionFileSystemService(errorProcessor);
+					}
+					else
+					{
+						fileSystemService = fileSystemServiceFabric();
+					}
+
 					Instance = new SuppressionManager(fileSystemService);
 				}
 				else
@@ -75,7 +86,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 					Instance.Clear();
 				}
 
-				Instance.LoadSuppressionFiles(suppressionFiles);
+				Instance.LoadSuppressionFiles(suppressionFileInfos);
 			}
 		}
 
@@ -118,9 +129,9 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			}
 		}
 
-		public void ReloadFile(object sender, SuppressionFileEventArgs e)
+		public void ReloadFile(object sender, FileSystemEventArgs e)
 		{
-			string assembly = _fileSystemService.GetFileName(e.FullPath);	
+			string assembly = _fileSystemService.GetFileName(e.FullPath);
 			var oldFile = _fileByAssembly.GetOrAdd(assembly, (SuppressionFile)null);
 
 			// We need to unsubscribe from the old file's event because it can be fired until the link to the file will be collected by GC
@@ -137,7 +148,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		public static void SaveSuppressionBase()
 		{
 			CheckIfInstanceIsInitialized();
-			
+
 			lock (Instance._fileSystemService)
 			{
 				//Create local copy in order to avoid concurency problem when the collection is changed during the iteration
@@ -197,7 +208,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			if (!IsSuppressableSeverity(defaultDiagnosticSeverity))
 				return false;
 
-			var (fileAssemblyName, suppressMessage) = SuppressMessage.GetSuppressionInfo(semanticModel, diagnosticID, 
+			var (fileAssemblyName, suppressMessage) = SuppressMessage.GetSuppressionInfo(semanticModel, diagnosticID,
 																						 diagnosticSpan, cancellation);
 			if (fileAssemblyName.IsNullOrWhiteSpace() || !suppressMessage.IsValid)
 				return false;
@@ -210,8 +221,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				file.AddMessage(suppressMessage);
 				Instance._fileSystemService.Save(file.MessagesToDocument(), file.Path);
 			}
-		
-			return true;			
+
+			return true;
 		}
 
 		public static IEnumerable<SuppressionDiffResult> ValidateSuppressionBaseDiff()
@@ -257,9 +268,9 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			if (settings.SuppressionMechanismEnabled && 
-			    (Instance?.IsSuppressed(semanticModel, diagnostic, cancellation) == true ||
-			    CheckSuppressedComment(diagnostic, cancellation)))
+			if (settings.SuppressionMechanismEnabled &&
+				(Instance?.IsSuppressed(semanticModel, diagnostic, cancellation) == true ||
+				CheckSuppressedComment(diagnostic, cancellation)))
 			{
 				return;
 			}
@@ -281,7 +292,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			while (node != null && node != root)
 			{
 				containsComment = CheckSuppressionCommentOnNode(diagnostic, shortName, node, cancellation);
-				
+
 				if (node is StatementSyntax || node is MemberDeclarationSyntax || containsComment)
 					break;
 
@@ -295,10 +306,12 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		{
 			cancellation.ThrowIfCancellationRequested();
 			var successfulMatch = node?.GetLeadingTrivia()
-				.Where(x => x.RawKind == (int)SyntaxKind.SingleLineCommentTrivia)
-				.Select(trivia => _suppressPattern.Match(trivia.ToString()))
-				.FirstOrDefault(match => match.Success &&
-					diagnostic.Id == match.Groups[1].Value && diagnosticShortName == match.Groups[2].Value);
+									   .Where(x => x.IsKind(SyntaxKind.SingleLineCommentTrivia))
+									   .Select(trivia => _suppressPattern.Match(trivia.ToString()))
+									   .FirstOrDefault(match => match.Success &&
+																diagnostic.Id == match.Groups[1].Value &&
+																diagnosticShortName == match.Groups[2].Value);
+
 			return successfulMatch != null;
 		}
 

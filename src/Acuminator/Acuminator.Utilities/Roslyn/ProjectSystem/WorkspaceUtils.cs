@@ -3,24 +3,37 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Text;
+using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Formatting;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.DiagnosticSuppression;
 
 
-namespace Acuminator.Vsix.Utilities
+namespace Acuminator.Utilities.Roslyn.ProjectSystem
 {
     /// <summary>
     /// A helper class with utility methods related to the Workspace.
     /// </summary>
     public static class WorkspaceUtils
-	{       
+	{
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<SuppressionManagerInitInfo> GetSuppressionInfoFromSolution(this Solution solution, bool generateSuppressionBase) =>
+			from additionalDoc in solution.GetAllAdditionalDocumentsFromSolution()
+			where SuppressionFile.IsSuppressionFile(additionalDoc.FilePath)
+			select new SuppressionManagerInitInfo(additionalDoc.FilePath, generateSuppressionBase);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<TextDocument> GetAllAdditionalDocumentsFromSolution(this Solution solution) =>
+			solution.CheckIfNull(nameof(solution)).Projects.SelectMany(p => p.AdditionalDocuments) ??
+			Enumerable.Empty<TextDocument>();
+
 		/// <summary>
 		/// Get workspace indentation size.
 		/// </summary>
 		/// <param name="workspace">The workspace to act on.</param>
 		/// <returns/>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int GetWorkspaceIndentationSize(this Workspace workspace)
 		{
 			workspace.ThrowOnNull(nameof(workspace));
@@ -47,7 +60,8 @@ namespace Acuminator.Vsix.Utilities
 			}
 		}
 
-        public static bool IsActiveDocumentChanged(this WorkspaceChangeEventArgs changeEventArgs, Document oldDocument)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsActiveDocumentChanged(this WorkspaceChangeEventArgs changeEventArgs, Document oldDocument)
 		{
 			changeEventArgs.ThrowOnNull(nameof(changeEventArgs));
 
@@ -57,6 +71,7 @@ namespace Acuminator.Vsix.Utilities
 			return HaveDocumentIdOrProjectIdChanged(changeEventArgs, oldDocument);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsDocumentTextChanged(this WorkspaceChangeEventArgs changeEventArgs, Document oldDocument)
 		{
 			changeEventArgs.ThrowOnNull(nameof(changeEventArgs));

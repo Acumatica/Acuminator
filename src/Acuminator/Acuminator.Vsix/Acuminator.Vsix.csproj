@@ -225,6 +225,7 @@
     <Compile Include="Commands\DiagnosticSuppression\Diagnostic Service\DiagnosticData.cs" />
     <Compile Include="Commands\DiagnosticSuppression\Base\SuppressDiagnosticCommandBase.cs" />
     <Compile Include="Commands\DiagnosticSuppression\Diagnostic Service\RoslynDTOWrapperBase.cs" />
+    <Compile Include="Commands\DiagnosticSuppression\VsixIOErrorProcessor.cs" />
     <Compile Include="Commands\DiagnosticSuppression\Suppression File\SuppressDiagnosticInSuppressionFileCommand.cs" />
     <Compile Include="Commands\DiagnosticSuppression\Diagnostic Service\RoslynDiagnosticService.cs" />
     <Compile Include="Commands\GoToDeclarationOrHandler\GoToDeclarationOrHandlerCommand.cs" />
@@ -312,7 +313,6 @@
     <Compile Include="Utils\Logger\AcuminatorLogger.cs" />
     <Compile Include="Utils\ChangesClassification\DocumentChangesClassifier.cs" />
     <Compile Include="Utils\Constants\LegacyLanguageNames.cs" />
-    <Compile Include="Utils\DiagnosticSuppression\ReflectionUtils.cs" />
     <Compile Include="Utils\EditorExtensions.cs" />
     <Compile Include="Coloriser\AsyncTagging\TagsCacheAsync.cs" />
     <Compile Include="Coloriser\Formats\ClassificationTypeDefinitions.cs" />
@@ -336,9 +336,6 @@
     <Compile Include="Settings\UI\GeneralOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Utils\DiagnosticSuppression\SuppressionFileSystemService.cs" />
-    <Compile Include="Utils\DiagnosticSuppression\SuppressionFileWatcherService.cs" />
-    <Compile Include="Utils\WorkspaceUtils.cs" />
     <Compile Include="Utils\WPF\Collection\ExtendedObservableCollection.cs" />
     <Compile Include="Utils\Navigation\VSDocumentNavigation.cs" />
     <Compile Include="Utils\VSServicesExtensions.cs" />

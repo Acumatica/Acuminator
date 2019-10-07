@@ -1,9 +1,11 @@
 ﻿using System.Xml.Linq;
 
-namespace Acuminator.Utilities.DiagnosticSuppression
+namespace Acuminator.Utilities.DiagnosticSuppression.IO
 {
 	public interface ISuppressionFileSystemService
 	{
+		IIOErrorProcessor ErrorProcessor { get; }
+
 		XDocument Load(string path);
 
 		bool Save(XDocument document, string path);

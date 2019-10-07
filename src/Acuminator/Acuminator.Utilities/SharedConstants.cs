@@ -12,7 +12,12 @@ namespace Acuminator
 	public static class SharedConstants
 	{
 		/// <summary>
-		/// The acuminator diagnostic common prefix.
+		/// The Acuminator package name.
+		/// </summary>
+		public const string PackageName = "Acuminator";
+
+		/// <summary>
+		/// The Acuminator diagnostic common prefix.
 		/// </summary>
 		public const string AcuminatorDiagnosticPrefix = "PX";
 	}

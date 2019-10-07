@@ -1,17 +1,25 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Security;
 using System.Xml;
 using System.Xml.Linq;
-using System.Windows;
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.DiagnosticSuppression;
 
-namespace Acuminator.Vsix.Utilities
+namespace Acuminator.Utilities.DiagnosticSuppression.IO
 {
 	internal class SuppressionFileSystemService : ISuppressionFileSystemService
 	{
+		public IIOErrorProcessor ErrorProcessor { get; }
+
+		public SuppressionFileSystemService() : this(null)
+		{
+		}
+
+		public SuppressionFileSystemService(IIOErrorProcessor errorProcessor)
+		{
+			ErrorProcessor = errorProcessor ?? new DefaultIOErrorProcessor();
+		}
+
 		public XDocument Load(string path)
 		{
 			path.ThrowOnNullOrWhiteSpace(nameof(path));
@@ -22,7 +30,7 @@ namespace Acuminator.Vsix.Utilities
 			}
 			catch (Exception exception) when (FilterException(exception))
 			{
-				ProcessError(exception);
+				ErrorProcessor.ProcessError(exception);
 			}
 
 			return null;
@@ -32,14 +40,17 @@ namespace Acuminator.Vsix.Utilities
 		{
 			document.ThrowOnNull(nameof(document));
 			path.ThrowOnNullOrWhiteSpace(nameof(path));
-
+			
 			try
 			{
-				document.Save(path);
+				using (FileStream fs = File.OpenWrite(path))
+				{
+					document.Save(fs);
+				}
 			}
 			catch (Exception exception) when (FilterException(exception))
 			{
-				ProcessError(exception);
+				ErrorProcessor.ProcessError(exception);
 				return false;
 			}
 
@@ -83,15 +94,6 @@ namespace Acuminator.Vsix.Utilities
 				default:
 					return false;
 			}
-		}
-
-		private void ProcessError(Exception exception, [CallerMemberName]string reportedFrom = null)
-		{
-			string errorMsg = VSIXResource.FailedToLoadTheSuppressionFile + Environment.NewLine + Environment.NewLine +
-							  string.Format(VSIXResource.FailedToLoadTheSuppressionFileDetails, Environment.NewLine + exception.Message);
-			MessageBox.Show(errorMsg, AcuminatorVSPackage.PackageName, MessageBoxButton.OK, MessageBoxImage.Error);
-			AcuminatorVSPackage.Instance.AcuminatorLogger?.LogException(exception, logOnlyFromAcuminatorAssemblies: false,
-																		Logger.LogMode.Warning, reportedFrom);
 		}
 	}
 }

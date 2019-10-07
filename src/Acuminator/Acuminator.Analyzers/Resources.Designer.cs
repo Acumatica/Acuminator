@@ -20,7 +20,7 @@ namespace Acuminator.Analyzers {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -195,29 +195,27 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1006Title", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Create a Add description.
+        ///   Looks up a localized string similar to Add a description.
         /// </summary>
-        public static string PX1007FixAddDescription
-        {
+        public static string PX1007FixAddDescription {
             get {
                 return ResourceManager.GetString("PX1007FixAddDescription", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Exclude class from API Reference.
+        ///   Looks up a localized string similar to Exclude the class from the API Reference.
         /// </summary>
-        public static string PX1007FixExcludeClass
-        {
+        public static string PX1007FixExcludeClass {
             get {
                 return ResourceManager.GetString("PX1007FixExcludeClass", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to A public class should have description in the summary tag of the XML annotation.
+        ///   Looks up a localized string similar to A public class should have a description in the summary XML tag.
         /// </summary>
         public static string PX1007Title {
             get {
@@ -1149,6 +1147,33 @@ namespace Acuminator.Analyzers {
         public static string PX1095Title {
             get {
                 return ResourceManager.GetString("PX1095Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Suppress diagnostic {0} with Acuminator.
+        /// </summary>
+        public static string SuppressDiagnosticGroupCodeActionTitle {
+            get {
+                return ResourceManager.GetString("SuppressDiagnosticGroupCodeActionTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to in the Acuminator suppression file.
+        /// </summary>
+        public static string SuppressDiagnosticInSuppressionFileCodeActionTitle {
+            get {
+                return ResourceManager.GetString("SuppressDiagnosticInSuppressionFileCodeActionTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to in a comment.
+        /// </summary>
+        public static string SuppressDiagnosticWithCommentCodeActionTitle {
+            get {
+                return ResourceManager.GetString("SuppressDiagnosticWithCommentCodeActionTitle", resourceCulture);
             }
         }
     }

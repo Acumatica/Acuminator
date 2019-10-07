@@ -8,8 +8,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Threading;
-using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.ProjectSystem;
 using Acuminator.Vsix.Utilities;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;

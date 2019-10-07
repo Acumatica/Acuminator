@@ -286,24 +286,6 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The diagnostic cannot be added to the suppression file. Check if the {0} file is accessible..
-        /// </summary>
-        public static string DiagnosticSuppression_FailedToAddToSuppressionFile {
-            get {
-                return ResourceManager.GetString("DiagnosticSuppression_FailedToAddToSuppressionFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The suppression file for the {0} project cannot be found..
-        /// </summary>
-        public static string DiagnosticSuppression_FailedToFindSuppressionFile {
-            get {
-                return ResourceManager.GetString("DiagnosticSuppression_FailedToFindSuppressionFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to There are multiple Acuminator diagnostics in this code snippet. Acuminator can suppress only one diagnostic at a time..
         /// </summary>
         public static string DiagnosticSuppression_MultipleDiagnosticFound {
@@ -318,24 +300,6 @@ namespace Acuminator.Vsix {
         public static string DiagnosticSuppression_NoDiagnosticFound {
             get {
                 return ResourceManager.GetString("DiagnosticSuppression_NoDiagnosticFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Acuminator cannot load the suppression file. The suppression mechanism will be turned off. If you fix the error, the suppression mechanism will be turned on automatically..
-        /// </summary>
-        public static string FailedToLoadTheSuppressionFile {
-            get {
-                return ResourceManager.GetString("FailedToLoadTheSuppressionFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Error details:{0}..
-        /// </summary>
-        public static string FailedToLoadTheSuppressionFileDetails {
-            get {
-                return ResourceManager.GetString("FailedToLoadTheSuppressionFileDetails", resourceCulture);
             }
         }
         

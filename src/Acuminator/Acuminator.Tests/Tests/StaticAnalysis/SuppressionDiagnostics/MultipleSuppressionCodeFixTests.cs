@@ -21,7 +21,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.SuppressionDiagnostics
 				new ForbiddenFieldsInDacAnalyzer(),
 				new DacExtensionDefaultAttributeAnalyzer());
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider() => new SuppressCommentFix();
+		protected override CodeFixProvider GetCSharpCodeFixProvider() => new SuppressDiagnosticTestCodeFix();
 
 		[Theory]
 		[EmbeddedFileData(@"Dac\SuppressMuiltipleDiagnostics_All.cs",

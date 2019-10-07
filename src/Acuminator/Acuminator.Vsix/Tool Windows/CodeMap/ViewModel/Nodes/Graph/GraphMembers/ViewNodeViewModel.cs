@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Syntax;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Vsix.Utilities;
+using Acuminator.Utilities.Roslyn.ProjectSystem;
 using System.Threading;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
