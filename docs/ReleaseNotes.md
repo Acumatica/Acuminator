@@ -33,13 +33,14 @@ public class ARReleaseProcess_Extension : PXGraphExtension<ARReleaseProcess>
 You can also suppress an Acuminator diagnostic in the Acuminator suppression file. This option is now available as a code fix and has been removed from the menu commands. For details about the diagnostic suppression, see [Diagnostic Suppression](diagnostics/DiagnosticSuppression.md).
 
 ### Enhancements and Bug Fixes in the Code Map
-Acuminator 2.1 includes the following enhancements in the code map:
+In Acuminator 2.1, the code map is no longer an experimental feature and includes the following enhancements:
 
  - The code map now can be used for DACs and DAC extensions. For each DAC, the list of key fields and the full list of DAC fields is displayed. For each DAC field, the code map shows the list of attributes. The code map for a file that contains two DACs is shown in the following screenshot.
 
  ![Code Map](images/CodeMapForDacs.png)
 
  - The code map now supports cycling navigation between partial definitions of graphs.
+ - The code map UI has been updated with the new icon set.
 
  The following bugs have been fixed:
 
