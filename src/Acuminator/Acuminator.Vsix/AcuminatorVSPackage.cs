@@ -205,7 +205,6 @@ namespace Acuminator.Vsix
 			FormatBqlCommand.Initialize(this, oleCommandService);
 			GoToDeclarationOrHandlerCommand.Initialize(this, oleCommandService);
 			BqlFixer.FixBqlCommand.Initialize(this, oleCommandService);
-			SuppressDiagnosticInSuppressionFileCommand.Initialize(this, oleCommandService);
 
 			OpenCodeMapWindowCommand.Initialize(this, oleCommandService);
 		}

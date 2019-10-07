@@ -12,19 +12,12 @@
       <Group guid="guidAcuminatorCmdSet" id="AcuminatorContextMenuGroup" />
       <Group guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" />
       <Group guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCodeMap" />
-      <Group guid="guidAcuminatorCmdSet" id="AcuminatorGroupForDiagnosticSuppression" />
     </Groups>
 
     <Menus>
       <Menu guid="guidAcuminatorCmdSet" id="AcuminatorTopMenu" type="Menu">
         <Strings>
           <ButtonText>Acuminator</ButtonText>
-        </Strings>
-      </Menu>
-
-      <Menu guid="guidAcuminatorCmdSet" id="AcuminatorSuppressionMenu" type="Menu">
-        <Strings>
-          <ButtonText>Suppress Acuminator Diagnostic</ButtonText>
         </Strings>
       </Menu>
     </Menus>
@@ -67,16 +60,6 @@
           <ButtonText>Fix BQL Braces</ButtonText>
         </Strings>
       </Button>-->
-
-      <Button guid="guidAcuminatorCmdSet" id="SuppressDiagnosticCommandId" type="Button">
-        <Icon guid="guidAcumaticaIcon" id="acumaticaIcon" />
-        <CommandFlag>DefaultInvisible</CommandFlag>
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <Strings>
-          <CommandName>cmdidSuppressDiagnosticCommand</CommandName>
-          <ButtonText>in Acuminator Suppression File</ButtonText>
-        </Strings>
-      </Button>
 
       <!--Tool Windows Commands-->
       <Button guid="guidAcuminatorCmdSet" id="OpenCodeMapWindowCommand" type="Button">
@@ -154,32 +137,12 @@
     <CommandPlacement guid="guidAcuminatorCmdSet" id="FixBqlCommandId" priority="0x0003">
       <Parent guid="guidAcuminatorCmdSet" id="AcuminatorContextMenuGroup" />
     </CommandPlacement>
-
-    <!--Suppression placement in context menu:-->
-    <!--AcuminatorTopMenu > AcuminatorGroupForCommands > AcuminatorSuppressionMenu > AcuminatorGroupForDiagnosticSuppression > Suppression Commands-->
-    <CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorSuppressionMenu" priority="0x0004">
-      <Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForCommands" />
-    </CommandPlacement>
-    
-    <!--Context Menu > AcuminatorContextMenuGroup > AcuminatorSuppressionMenu > AcuminatorGroupForDiagnosticSuppression > Suppression Commands--> 
-    <CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorSuppressionMenu" priority="0x0004">
-      <Parent guid="guidAcuminatorCmdSet" id="AcuminatorContextMenuGroup" />
-    </CommandPlacement>
-
-    <CommandPlacement guid="guidAcuminatorCmdSet" id="AcuminatorGroupForDiagnosticSuppression" priority="0x0001">
-      <Parent guid="guidAcuminatorCmdSet" id="AcuminatorSuppressionMenu" />
-    </CommandPlacement>
-
-    <CommandPlacement guid="guidAcuminatorCmdSet" id="SuppressDiagnosticCommandId" priority="0x0001">
-      <Parent guid="guidAcuminatorCmdSet" id="AcuminatorGroupForDiagnosticSuppression" />
-    </CommandPlacement>
   </CommandPlacements>
 
   <!--The commands visibility is specified here-->
   <VisibilityConstraints>
     <VisibilityItem guid="guidAcuminatorCmdSet" id="FormatBqlCommandId" context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging"/>   
     <VisibilityItem guid="guidAcuminatorCmdSet" id="FixBqlCommandId" context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging"/>
-    <VisibilityItem guid="guidAcuminatorCmdSet" id="SuppressDiagnosticCommandId" context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging"/>
     
     <VisibilityItem guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" context="solutionExistsAndFullyLoadedUIContextGuid"/>
     <VisibilityItem guid="guidAcuminatorCmdSet" id="GoToDeclarationOrHandlerCommandId" context="UICONTEXT_Debugging"/>
@@ -214,13 +177,6 @@
 
       <!--Tool Windows commands-->
       <IDSymbol  name="OpenCodeMapWindowCommand" value="0x0104"/>
-
-      <!--Suppression menu and commands-->
-      <IDSymbol name="AcuminatorSuppressionMenu" value="0x0200" />
-      <IDSymbol name="AcuminatorGroupForDiagnosticSuppression" value="0x1024" />
-     
-      
-      <IDSymbol name="SuppressDiagnosticCommandId" value="0x0201" />
     </GuidSymbol>
 
     <GuidSymbol name="guidAcumaticaIcon" value="{D87E7D18-43E1-4C9E-9550-EBF39A85F071}">
