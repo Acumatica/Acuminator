@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.Text;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
+using Acuminator.Utilities.Roslyn.ProjectSystem;
 using System.Threading.Tasks;
 using System.Threading;
 
