@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Threading;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.DiagnosticSuppression.IO;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
 {
@@ -31,7 +32,23 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		public HashSet<SuppressMessage> CopyMessages() => new HashSet<SuppressMessage>(Messages);
 
-		public event Action<object, SuppressionFileEventArgs> Changed;
+		public event FileSystemEventHandler Changed
+		{
+			add 
+			{
+				if (_fileWatcher != null)
+				{
+					_fileWatcher.Changed += value;
+				}
+			}
+			remove
+			{
+				if (_fileWatcher != null)
+				{
+					_fileWatcher.Changed -= value;
+				}
+			}
+		}
 
 		private SuppressionFile(string assemblyName, string path, bool generateSuppressionBase,
 								HashSet<SuppressMessage> messages, ISuppressionFileWatcherService watcher)
@@ -41,16 +58,6 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			GenerateSuppressionBase = generateSuppressionBase;
 			Messages = messages;
 			_fileWatcher = watcher;
-
-			if (_fileWatcher != null)
-			{
-				_fileWatcher.Changed += OnChanged;
-			}
-		}
-
-		private void OnChanged(object sender, SuppressionFileEventArgs e)
-		{		
-			Changed?.Invoke(sender, e);		
 		}
 
 		internal bool ContainsMessage(SuppressMessage message) => Messages.Contains(message);
@@ -89,15 +96,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			return new SuppressionFile(assemblyName, suppressionFilePath, generateSuppressionBase, messages, fileWatcher);
 		}
 
-		public void Dispose()
-		{
-			if (_fileWatcher != null)
-			{
-				_fileWatcher.Changed -= OnChanged;
-				_fileWatcher.Dispose();
-			}
-		}
-
+		public void Dispose() => _fileWatcher?.Dispose();
+		
 		internal void AddMessage(SuppressMessage message) => Messages.Add(message);
 
 		private static void AddMessagesToDocument(XDocument document, IEnumerable<SuppressMessage> messages)
