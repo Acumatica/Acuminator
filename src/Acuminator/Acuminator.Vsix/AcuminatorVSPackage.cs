@@ -57,9 +57,9 @@ namespace Acuminator.Vsix
 	public sealed class AcuminatorVSPackage : AsyncPackage
 	{
 		private const int TotalLoadSteps = 5;
-		private const string SettingsCategoryName = "Acuminator";
+		private const string SettingsCategoryName = SharedConstants.PackageName;
 
-		public const string PackageName = "Acuminator";
+		public const string PackageName = SharedConstants.PackageName;
 
 		/// <summary>
 		/// AcuminatorVSPackage GUID string.
@@ -221,7 +221,6 @@ namespace Acuminator.Vsix
 			if (dte != null)
 			{
 				_dteSolutionEvents = dte.Events.SolutionEvents;						//Save DTE events object to prevent it from being GCed
-				_dteSolutionEvents.AfterClosing += SolutionEvents_AfterClosing;
                 _dteSolutionEvents.Opened += SolutionEvents_Opened;
 			}
 #pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
@@ -233,12 +232,7 @@ namespace Acuminator.Vsix
             JoinableTaskFactory.Run(SetupSuppressionManagerAsync);
 #pragma warning restore VSTHRD102 // Implement internal logic asynchronously
         }
-
-        private void SolutionEvents_AfterClosing()
-		{
-			//TODO place suppression manager registry clearing  here
-		}
-		
+	
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
@@ -246,7 +240,6 @@ namespace Acuminator.Vsix
 
 			if (ThreadHelper.CheckAccess() && _dteSolutionEvents != null)
 			{		
-				_dteSolutionEvents.AfterClosing -= SolutionEvents_AfterClosing;
                 _dteSolutionEvents.Opened -= SolutionEvents_Opened;
 			}
 		}
@@ -254,11 +247,7 @@ namespace Acuminator.Vsix
         private async System.Threading.Tasks.Task SetupSuppressionManagerAsync()
         {
             var workspace = await this.GetVSWorkspaceAsync();
-            var additionalFiles = workspace.CurrentSolution.Projects
-                .SelectMany(p => p.AdditionalDocuments)
-                .Select(d => new SuppressionManagerInitInfo(d.FilePath, generateSuppressionBase: false));
-
-            SuppressionManager.InitOrReset(additionalFiles, () => new SuppressionFileSystemService());
+            SuppressionManager.InitOrReset(workspace, generateSuppressionBase: false, () => new VsixIOErrorProcessor());
         }
 
         private void InitializeCodeAnalysisSettings(IProgress<ServiceProgressData> progress)
