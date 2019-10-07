@@ -28,7 +28,7 @@ public class ARReleaseProcess_Extension : PXGraphExtension<ARReleaseProcess>
 To stop the suppression of the diagnostic in the code fragment, you remove the comment from the code.
 
 ## Diagnostic Suppression in the Acuminator Suppression File
-You can suppress a particular diagnostic in a specific place in your project. To suppress a diagnostic in the Acuminator suppression file, you select **Suppress the PX10YY diagnostic with Acuminator > in the Acuminator suppression file** (where PX00YY is the code of the diagnostic) as a code fix for the diagnostic, as shown in the following screenshot.
+You can suppress a particular diagnostic in a specific place in your project in the Acuminator suppression file. To suppress a diagnostic in the Acuminator suppression file, you select **Suppress the PX10YY diagnostic with Acuminator > in the Acuminator suppression file** (where PX00YY is the code of the diagnostic) as a code fix for the diagnostic, as shown in the following screenshot.
 
 ![Suppression in the Acuminator Suppression File](../images/SuppressDiagnosticInSuppressionFile.png)
 
