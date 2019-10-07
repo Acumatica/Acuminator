@@ -38,35 +38,64 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			var sb = new System.Text.StringBuilder(string.Empty, capacity: syntaxNodeString.Length);
 			int counter = 0;
+			bool isInsideString = false;
+			char prevChar = default;
 
 			foreach (char c in syntaxNodeString)
 			{
-				switch (c)
-				{
-					case '\n':
-						counter = 0;
-						sb.Append(c);
-						continue;
+				ProcessCurrentCharacter(c, prevChar);
 
-					case ' ' when counter < indentLength:
-						counter++;
-						continue;
-
-					case '\t' when counter < indentLength:
-						counter += tabSize;
-						continue;
-
-					case ' ' when counter >= indentLength:
-					case '\t' when counter >= indentLength:
-					default:
-						sb.Append(c);
-						continue;
-				}
+				prevChar = c;
 			}
 
 			return sb.ToString();
+
+			//-----------------------------------------------Local Function-------------------------------------
+			void ProcessCurrentCharacter(char c, char prevCharacter)
+			{
+				switch (c)
+				{
+					case '"':
+						ProcessQuotationCharacter(prevCharacter);
+						sb.Append(c);
+						return;
+
+					case '\n':
+						counter = 0;
+						sb.Append(c);
+						return;
+
+					case ' ' when counter < indentLength && !isInsideString:
+						counter++;
+						return;
+
+					case '\t' when counter < indentLength && !isInsideString:
+						counter += tabSize;
+						return;
+
+					case ' ' when counter >= indentLength || isInsideString:
+					case '\t' when counter >= indentLength || isInsideString:
+					default:
+						sb.Append(c);
+						return;
+				}
+			}
+
+			void ProcessQuotationCharacter(char prevCharacter)
+			{
+				switch (prevCharacter)
+				{
+					case '\\':
+						return;
+
+					default:
+						isInsideString = !isInsideString;
+						return;
+				}
+			}
 		}
 
+	
 		public static string RemoveCommonAcumaticaNamespacePrefixes(this string codeFragment) =>
 			codeFragment?.Replace(PxDataNamespacePrefix, string.Empty)
 						?.Replace(PxObjectsNamespacePrefix, string.Empty);
