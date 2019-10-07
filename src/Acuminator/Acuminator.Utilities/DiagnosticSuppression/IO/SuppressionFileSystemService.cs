@@ -9,13 +9,13 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 {
 	internal class SuppressionFileSystemService : ISuppressionFileSystemService
 	{
-		public I_IOErrorProcessor ErrorProcessor { get; }
+		public IIOErrorProcessor ErrorProcessor { get; }
 
 		public SuppressionFileSystemService() : this(null)
 		{
 		}
 
-		public SuppressionFileSystemService(I_IOErrorProcessor errorProcessor)
+		public SuppressionFileSystemService(IIOErrorProcessor errorProcessor)
 		{
 			ErrorProcessor = errorProcessor ?? new DefaultIOErrorProcessor();
 		}

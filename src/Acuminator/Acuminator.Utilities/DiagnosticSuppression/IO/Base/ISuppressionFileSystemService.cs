@@ -4,7 +4,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 {
 	public interface ISuppressionFileSystemService
 	{
-		I_IOErrorProcessor ErrorProcessor { get; }
+		IIOErrorProcessor ErrorProcessor { get; }
 
 		XDocument Load(string path);
 

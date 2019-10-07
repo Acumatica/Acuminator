@@ -43,7 +43,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			InitOrReset(workspace, additionalFiles, fileSystemServiceFabric, null);
 
 		public static void InitOrReset(Workspace workspace, IEnumerable<SuppressionManagerInitInfo> additionalFiles,
-									   Func<I_IOErrorProcessor> errorProcessorFabric = null) =>
+									   Func<IIOErrorProcessor> errorProcessorFabric = null) =>
 			InitOrReset(workspace, additionalFiles, null, errorProcessorFabric);
 
 		public static void InitOrReset(Workspace workspace, bool generateSuppressionBase, 
@@ -52,13 +52,13 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 						fileSystemServiceFabric, null);
 
 		public static void InitOrReset(Workspace workspace, bool generateSuppressionBase, 
-									   Func<I_IOErrorProcessor> errorProcessorFabric = null) =>
+									   Func<IIOErrorProcessor> errorProcessorFabric = null) =>
 			InitOrReset(workspace, workspace?.CurrentSolution?.GetSuppressionInfoFromSolution(generateSuppressionBase),
 						null, errorProcessorFabric);
 
 		private static void InitOrReset(Workspace workspace, IEnumerable<SuppressionManagerInitInfo> suppressionFileInfos,
 										Func<ISuppressionFileSystemService> fileSystemServiceFabric = null,
-										Func<I_IOErrorProcessor> errorProcessorFabric = null)
+										Func<IIOErrorProcessor> errorProcessorFabric = null)
 		{
 			workspace.ThrowOnNull(nameof(workspace));
 			suppressionFileInfos = suppressionFileInfos ?? Enumerable.Empty<SuppressionManagerInitInfo>();
@@ -71,7 +71,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 					if (fileSystemServiceFabric == null)
 					{
-						I_IOErrorProcessor errorProcessor = errorProcessorFabric?.Invoke();
+						IIOErrorProcessor errorProcessor = errorProcessorFabric?.Invoke();
 						fileSystemService = new SuppressionFileSystemService(errorProcessor);
 					}
 					else

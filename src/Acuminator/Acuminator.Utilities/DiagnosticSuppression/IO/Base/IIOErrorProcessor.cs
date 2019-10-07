@@ -6,7 +6,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 	/// <summary>
 	/// Interface for i/o error processing.
 	/// </summary>
-	public interface I_IOErrorProcessor
+	public interface IIOErrorProcessor
 	{
 		void ProcessError(Exception exception, [CallerMemberName]string reportedFrom = null);
 	}

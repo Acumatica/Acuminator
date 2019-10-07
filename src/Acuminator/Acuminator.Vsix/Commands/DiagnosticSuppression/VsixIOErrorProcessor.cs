@@ -11,7 +11,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 	/// <summary>
 	/// A VSIX I/O error processing for suppression command.
 	/// </summary>
-	public class VsixIOErrorProcessor : I_IOErrorProcessor
+	public class VsixIOErrorProcessor : IIOErrorProcessor
 	{
 		public void ProcessError(Exception exception, [CallerMemberName]string reportedFrom = null)
 		{

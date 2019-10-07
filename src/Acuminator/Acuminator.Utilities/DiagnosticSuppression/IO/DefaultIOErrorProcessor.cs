@@ -8,7 +8,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 	/// <summary>
 	/// Default implementation for Diagnostic Suppression IO error processor.
 	/// </summary>
-	public class DefaultIOErrorProcessor : I_IOErrorProcessor
+	public class DefaultIOErrorProcessor : IIOErrorProcessor
 	{
 		public void ProcessError(Exception exception, [CallerMemberName]string reportedFrom = null)
 		{
