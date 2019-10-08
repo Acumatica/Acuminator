@@ -1,6 +1,68 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
+## Acuminator 2.1
+Acuminator 2.1 includes the diagnostics, code fixes, enhancements, and bug fixes described in this section, as well as the features that have been implemented in previous versions.
+
+### New Diagnostic and Code Fixes
+In this version, the diagnostic and code fixes have been added for the following issue.
+
+| Code                            | Issue Description                                                | Type    | Diagnostics | Code Fix    | 
+| ------------------------------- | ---------------------------------------------------------------- | ------- | ----------- | ----------- |
+| [PX1007](diagnostics/PX1007.md) | A public class should have a description in the `summary` XML tag. | Warning (ISV Level 3: Informational)	 | Available | Available   |
+
+### Ability to Suppress a Diagnostic by Adding a Code Comment
+In Acuminator 2.1, you can suppress any diagnostic by adding a specific comment directly in code. To add a suppression comment, you select **Suppress the PXYYYY diagnostic with Acuminator > in a comment** (where PXYYYY is the code of the diagnostic) as a code fix for the diagnostic, as shown in the following screenshot.
+
+![Suppression in Comment](images/SuppressDiagnosticInComment.png)
+
+The code below shows an example of a suppression comment that has been added by the code fix. A suppression comment includes the following parts:
+
+ - The code of the diagnostic (`PX1007` in the code example below).
+ - The name of the diagnostic (`NoXmlCommentForPublicClass` in the following code example), which can give a code reviewer an idea of what the suppressed diagnostic is about.
+ - The justification of the suppression, which explains why this diagnostic is suppressed for this code fragment. You type the explanation instead of `[Justification]`.
+
+```C#
+// Acuminator disable once PX1007 NoXmlCommentForPublicClass [Justification]
+public class ARReleaseProcess_Extension : PXGraphExtension<ARReleaseProcess>
+{
+    ...
+}
+```
+
+You can also suppress an Acuminator diagnostic in the Acuminator suppression file. This option is now available as a code fix and has been removed from the menu commands. For details about the diagnostic suppression, see [Diagnostic Suppression](diagnostics/DiagnosticSuppression.md).
+
+### Enhancements and Bug Fixes in the Code Map
+In Acuminator 2.1, the code map is no longer an experimental feature and includes the following enhancements:
+
+ - The code map now can be used for DACs and DAC extensions. For each DAC, the list of key fields and the full list of DAC fields is displayed. For each DAC field, the code map shows the list of attributes. The code map for a file that contains two DACs is shown in the following screenshot.
+
+ ![Code Map](images/CodeMapForDacs.png)
+
+ - The code map now supports cycling navigation between partial definitions of graphs.
+ - The code map UI has been updated with the new icon set.
+
+ The following bugs have been fixed:
+
+ - The code map could freeze for a graph that included a method with a signature similar to that of an event handler.
+ - The code map could not display generic event handlers if they had custom names.
+ - The code map did not support `CacheAttached` generic event handlers.
+
+### Other Enhancements and Fixed Bugs
+In this version of Acuminator, the following enhancements and bug fixes are available:
+
+ - All diagnostics related to DACs now work faster because these diagnostics share the collected semantic information.
+ - The [PX1002](diagnostics/PX1002.md) diagnostic now supports DAC extensions. 
+ - Null reference issues have been fixed in the BQL formatter and the diagnostics related to fluent BQL.
+ - The [PX1004](diagnostics/PX1004.md) and [PX1006](diagnostics/PX1006.md) diagnostics were incorrectly displayed for code based on Acumatica Framework 2018 R2 or later.
+ - The [PX1029](diagnostics/PX1029.md) diagnostic was incorrectly displayed for DAC extensions that extended the DACs declared as nested types inside graphs.
+ - The [PX1024](diagnostics/PX1024.md) diagnostic did not work for `new` abstract class fields of derived DACs.
+ - The [PX1030](diagnostics/PX1030.md) diagnostic was incorrectly displayed for the DACs that contain only unbound fields.
+ - The [PX1055](diagnostics/PX1055.md) diagnostic worked incorrectly if the key fields were defined both in the base DAC and in the derived DAC.
+ - The BQL outlining worked incorrectly for unary BQL functions, such as `RTrim`.
+ - The suppression mechanism did not reload the suppression file when you change the solution in Visual Studio.
+ - In some cases, it was not possible to suppress an Acuminator diagnostic in the Acuminator suppression file for a code fragment. The following error was displayed: _There are no Acuminator diagnostics in this code snippet_.
+
 ## Acuminator 2.0
 Acuminator 2.0 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
