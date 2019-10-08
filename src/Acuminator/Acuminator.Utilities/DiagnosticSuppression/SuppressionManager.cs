@@ -29,10 +29,6 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		private readonly ConcurrentDictionary<string, SuppressionFile> _fileByAssembly = new ConcurrentDictionary<string, SuppressionFile>();
 		private readonly ISuppressionFileSystemService _fileSystemService;
 
-
-
-
-
 		private SuppressionManager(ISuppressionFileSystemService fileSystemService)
 		{
 			_fileSystemService = fileSystemService.CheckIfNull(nameof(fileSystemService));
@@ -147,7 +143,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		public static void SaveSuppressionBase()
 		{
-			CheckIfInstanceIsInitialized();
+			CheckIfInstanceIsInitialized(throwOnNotInitialized: true);
 
 			lock (Instance._fileSystemService)
 			{
@@ -164,7 +160,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		public static SuppressionFile CreateSuppressionFileForProject(Project project)
 		{
 			project.ThrowOnNull(nameof(project));
-			CheckIfInstanceIsInitialized();
+			CheckIfInstanceIsInitialized(throwOnNotInitialized: true);
 
 			//First check if file already exists to dismiss threads withou acquiring the lock
 			if (Instance._fileByAssembly.TryGetValue(project.Name, out var existingSuppressionFile) && existingSuppressionFile != null)
@@ -186,7 +182,11 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 				//Create new xml document and get its text
 				var newXDocument = SuppressionFile.NewDocumentFromMessages(Enumerable.Empty<SuppressMessage>());
-				string docText = GetXDocumentStringWithDeclaration(newXDocument);
+
+				if (newXDocument == null)
+					return null;
+
+				string docText = newXDocument.GetXDocumentStringWithDeclaration();
 
 				//Add file to project and hard drive
 				var roslynSuppressionFile = project.AddAdditionalDocument(suppressionFileName, docText, filePath: suppressionFilePath);
@@ -203,7 +203,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		public static bool SuppressDiagnostic(SemanticModel semanticModel, string diagnosticID, TextSpan diagnosticSpan,
 											  DiagnosticSeverity defaultDiagnosticSeverity, CancellationToken cancellation = default)
 		{
-			CheckIfInstanceIsInitialized();
+			CheckIfInstanceIsInitialized(throwOnNotInitialized: true);
 
 			if (!IsSuppressableSeverity(defaultDiagnosticSeverity))
 				return false;
@@ -220,6 +220,24 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 				file.AddMessage(suppressMessage);
 				Instance._fileSystemService.Save(file.MessagesToDocument(), file.Path);
+			}
+
+			return true;
+		}
+
+		public static bool CheckIfInstanceIsInitialized(bool throwOnNotInitialized)
+		{
+			if (Instance == null)
+			{
+				lock (_initializationLocker)
+				{
+					if (Instance == null)
+					{
+						return throwOnNotInitialized
+							? throw new InvalidOperationException($"{nameof(SuppressionManager)} instance was not initialized")
+							: false;
+					}
+				}
 			}
 
 			return true;
@@ -288,7 +306,6 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			string shortName = diagnostic.Descriptor.CustomTags.FirstOrDefault();
 
 			// Climb to the hill. Looking for comment on parents nodes.
-
 			while (node != null && node != root)
 			{
 				containsComment = CheckSuppressionCommentOnNode(diagnostic, shortName, node, cancellation);
@@ -353,25 +370,5 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		private static bool IsSuppressableSeverity(DiagnosticSeverity? diagnosticSeverity) =>
 			diagnosticSeverity == DiagnosticSeverity.Error || diagnosticSeverity == DiagnosticSeverity.Warning;
-
-		private static void CheckIfInstanceIsInitialized()
-		{
-			if (Instance == null)
-			{
-				throw new InvalidOperationException($"{nameof(SuppressionManager)} instance was not initialized");
-			}
-		}
-
-		private static string GetXDocumentStringWithDeclaration(System.Xml.Linq.XDocument xDocument)
-		{
-			var builder = new System.Text.StringBuilder(capacity: 65);
-
-			using (TextWriter writer = new Utf8StringWriter(builder))
-			{
-				xDocument.Save(writer);
-			}
-
-			return builder.ToString();
-		}
 	}
 }
