@@ -27,7 +27,7 @@ public class ARReleaseProcess_Extension : PXGraphExtension<ARReleaseProcess>
 
 If Acuminator displays multiple diagnostics for one line, you can add multiple suppression comments for this line (one comment under another).
 
-To stop the suppression of the diagnostic in the code fragment, you remove the comment from the code.
+To stop the suppression of a diagnostic in the code fragment, you remove the comment that corresponds to the diagnostic from the code.
 
 ## Diagnostic Suppression in the Acuminator Suppression File
 You can suppress a particular diagnostic in a specific place in your project in the Acuminator suppression file. To suppress a diagnostic in the Acuminator suppression file, you select **Suppress the PXYYYY diagnostic with Acuminator > in the Acuminator suppression file** (where PXYYYY is the code of the diagnostic) as a code fix for the diagnostic, as shown in the following screenshot.
