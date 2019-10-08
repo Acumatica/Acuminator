@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
 {
-	public static class ContextExtensions
+	public static class SuppressionExtensions
 	{
 		public static void ReportDiagnosticWithSuppressionCheck(this SymbolAnalysisContext context, Diagnostic diagnostic,
 																CodeAnalysisSettings settings)
