@@ -20,6 +20,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.SuppressionDiagnostics
 		/// The code action to register.
 		/// </returns>
 		protected override CodeAction GetCodeActionToRegister(Diagnostic diagnostic, CodeFixContext context) =>
-			GetSuppressWithCommentCodeAction(diagnostic, context);
+			GetSuppressWithCommentCodeAction(diagnostic, context, isNested: false);
 	}
 }

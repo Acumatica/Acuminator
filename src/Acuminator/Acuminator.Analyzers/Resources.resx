@@ -483,10 +483,13 @@
   <data name="SuppressDiagnosticGroupCodeActionTitle" xml:space="preserve">
     <value>Suppress diagnostic {0} with Acuminator</value>
   </data>
-  <data name="SuppressDiagnosticWithCommentCodeActionTitle" xml:space="preserve">
+  <data name="SuppressDiagnosticWithCommentNestedCodeActionTitle" xml:space="preserve">
     <value>in a comment</value>
   </data>
   <data name="SuppressDiagnosticInSuppressionFileCodeActionTitle" xml:space="preserve">
     <value>in the Acuminator suppression file</value>
+  </data>
+  <data name="SuppressDiagnosticWithCommentNonNestedCodeActionTitle" xml:space="preserve">
+    <value>Suppress diagnostic {0} with Acuminator in a comment</value>
   </data>
 </root>

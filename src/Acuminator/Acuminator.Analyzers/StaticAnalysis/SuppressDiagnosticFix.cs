@@ -72,18 +72,16 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 		protected virtual CodeAction GetCodeActionToRegister(Diagnostic diagnostic, CodeFixContext context)
 		{
-			CodeAction suppressWithCommentCodeAction = GetSuppressWithCommentCodeAction(diagnostic, context);
-
-			if (SuppressionManager.CheckIfInstanceIsInitialized(throwOnNotInitialized: false))
+			if (!SuppressionManager.CheckIfInstanceIsInitialized(throwOnNotInitialized: false))
 			{
-				return suppressWithCommentCodeAction;
+				return GetSuppressWithCommentCodeAction(diagnostic, context, isNested: false);
 			}
 
 			string groupCodeActionNameFormat = nameof(Resources.SuppressDiagnosticGroupCodeActionTitle).GetLocalized().ToString();
 			string groupCodeActionName = string.Format(groupCodeActionNameFormat, diagnostic.Id);
 
-			
-			CodeAction suppressWithSuppressionFileCodeAction = GetSuppressWithSuppressionFileCodeAction(diagnostic, context);
+			CodeAction suppressWithCommentCodeAction = GetSuppressWithCommentCodeAction(diagnostic, context, isNested: true);
+			CodeAction suppressWithSuppressionFileCodeAction = GetSuppressWithSuppressionFileCodeAction(diagnostic, context, isNested: true);
 			var suppressionCodeActions = ImmutableArray.CreateBuilder<CodeAction>(initialCapacity: 2);
 
 			if (suppressWithCommentCodeAction != null)
@@ -99,15 +97,26 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			return CodeActionWithNestedActionsFabric.CreateCodeActionWithNestedActions(groupCodeActionName, suppressionCodeActions.ToImmutable());
 		}
 
-		protected virtual CodeAction GetSuppressWithCommentCodeAction(Diagnostic diagnostic, CodeFixContext context)
+		protected virtual CodeAction GetSuppressWithCommentCodeAction(Diagnostic diagnostic, CodeFixContext context, bool isNested)
 		{
-			string commentCodeActionName = nameof(Resources.SuppressDiagnosticWithCommentCodeActionTitle).GetLocalized().ToString();
+			string commentCodeActionName;
+
+			if (isNested)
+			{
+				commentCodeActionName = nameof(Resources.SuppressDiagnosticWithCommentNestedCodeActionTitle).GetLocalized().ToString();
+			}
+			else
+			{
+				string commentCodeActionFormat = nameof(Resources.SuppressDiagnosticWithCommentNonNestedCodeActionTitle).GetLocalized().ToString();
+				commentCodeActionName = string.Format(commentCodeActionFormat, diagnostic.Id);
+			}
+
 			return CodeAction.Create(commentCodeActionName,
 									 cToken => AddSuppressionCommentAsync(context, diagnostic, cToken),
 									 equivalenceKey: commentCodeActionName);
 		}
 
-		protected virtual CodeAction GetSuppressWithSuppressionFileCodeAction(Diagnostic diagnostic, CodeFixContext context)
+		protected virtual CodeAction GetSuppressWithSuppressionFileCodeAction(Diagnostic diagnostic, CodeFixContext context, bool isNested)
 		{
 			string suppressionFileCodeActionName = nameof(Resources.SuppressDiagnosticInSuppressionFileCodeActionTitle).GetLocalized().ToString();
 			return new SolutionChangeActionWithOptionalPreview(suppressionFileCodeActionName,
