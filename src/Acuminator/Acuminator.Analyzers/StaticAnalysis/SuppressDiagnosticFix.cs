@@ -72,10 +72,17 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 		protected virtual CodeAction GetCodeActionToRegister(Diagnostic diagnostic, CodeFixContext context)
 		{
+			CodeAction suppressWithCommentCodeAction = GetSuppressWithCommentCodeAction(diagnostic, context);
+
+			if (SuppressionManager.CheckIfInstanceIsInitialized(throwOnNotInitialized: false))
+			{
+				return suppressWithCommentCodeAction;
+			}
+
 			string groupCodeActionNameFormat = nameof(Resources.SuppressDiagnosticGroupCodeActionTitle).GetLocalized().ToString();
 			string groupCodeActionName = string.Format(groupCodeActionNameFormat, diagnostic.Id);
 
-			CodeAction suppressWithCommentCodeAction = GetSuppressWithCommentCodeAction(diagnostic, context);
+			
 			CodeAction suppressWithSuppressionFileCodeAction = GetSuppressWithSuppressionFileCodeAction(diagnostic, context);
 			var suppressionCodeActions = ImmutableArray.CreateBuilder<CodeAction>(initialCapacity: 2);
 
