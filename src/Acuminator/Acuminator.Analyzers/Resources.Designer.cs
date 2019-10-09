@@ -1178,7 +1178,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Suppress diagnostic {0} with Acuminator in a comment.
+        ///   Looks up a localized string similar to Suppress the {0} diagnostic with Acuminator in a comment.
         /// </summary>
         public static string SuppressDiagnosticWithCommentNonNestedCodeActionTitle {
             get {
