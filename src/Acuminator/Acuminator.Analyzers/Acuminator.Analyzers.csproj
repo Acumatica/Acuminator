@@ -1,9 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Title>Acumatica.Analyzers</Title>
     <AssemblyTitle>Acumatica.Analyzers</AssemblyTitle>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <Version>2.0.0</Version>
+    <Version>2.0.9</Version>
     <PackageProjectUrl>https://github.com/Acumatica/Acuminator</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Acumatica/Acuminator</RepositoryUrl>
     <Copyright>Copyright © 2017-2019 Acumatica Ltd.</Copyright>
