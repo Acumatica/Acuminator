@@ -21,13 +21,13 @@ namespace Acuminator.Analyzers.CodeActions
 
 		public bool DisplayPreview { get; }
 
-		public SimpleCodeActionWithOptionalPreview(string title, string equivalenceKey, bool dispayPreview)
+		public SimpleCodeActionWithOptionalPreview(string title, string equivalenceKey, bool displayPreview)
 		{
 			title.ThrowOnNullOrWhiteSpace();
 
 			Title = title;
 			EquivalenceKey = equivalenceKey;
-			DisplayPreview = dispayPreview;
+			DisplayPreview = displayPreview;
 		}
 
 		protected override Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken) =>
