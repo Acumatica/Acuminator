@@ -15,7 +15,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
 {
-	public sealed class SuppressionManager
+	public sealed partial class SuppressionManager
 	{
 		private static readonly Regex _suppressPattern = new Regex(@"Acuminator\s+disable\s+once\s+(\w+)\s+(\w+)", RegexOptions.Compiled);
 		private static object _initializationLocker = new object();
@@ -28,10 +28,12 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		private readonly ConcurrentDictionary<string, SuppressionFile> _fileByAssembly = new ConcurrentDictionary<string, SuppressionFile>();
 		private readonly ISuppressionFileSystemService _fileSystemService;
+		private readonly SuppressionFileCreator _suppressionFileCreator;
 
 		private SuppressionManager(ISuppressionFileSystemService fileSystemService)
 		{
 			_fileSystemService = fileSystemService.CheckIfNull(nameof(fileSystemService));
+			_suppressionFileCreator = new SuppressionFileCreator(this);
 		}
 
 		public static void InitOrReset(Workspace workspace, IEnumerable<SuppressionManagerInitInfo> additionalFiles,
@@ -157,47 +159,20 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			}
 		}
 
-		public static SuppressionFile CreateSuppressionFileForProject(Project project)
+		public static SuppressionFile CreateSuppressionFileForProjectFromCommand(Project project)
 		{
-			project.ThrowOnNull(nameof(project));
+			CheckIfInstanceIsInitialized(throwOnNotInitialized: true);
+			return Instance._suppressionFileCreator.CreateSuppressionFileForProjectFromCommand(project);
+		}
+
+
+
+		public static SuppressionFile CreateSuppressionFileForProjectFromCodeFix(Project project)
+		{
 			CheckIfInstanceIsInitialized(throwOnNotInitialized: true);
 
-			//First check if file already exists to dismiss threads withou acquiring the lock
-			if (Instance._fileByAssembly.TryGetValue(project.Name, out var existingSuppressionFile) && existingSuppressionFile != null)
-				return existingSuppressionFile;
-
-			lock (Instance._fileSystemService)
-			{
-				//Second check inside the lock if file already exists 
-				Instance._fileByAssembly.TryGetValue(project.Name, out existingSuppressionFile);
-				return existingSuppressionFile ?? AddNewSuppressionFileImpl();
-			}
-
-			//---------------------------------------------Local Function--------------------------------------------------
-			SuppressionFile AddNewSuppressionFileImpl()
-			{
-				string suppressionFileName = project.Name + SuppressionFile.SuppressionFileExtension;
-				string projectDir = Instance._fileSystemService.GetFileDirectory(project.FilePath);
-				string suppressionFilePath = Path.Combine(projectDir, suppressionFileName);
-
-				//Create new xml document and get its text
-				var newXDocument = SuppressionFile.NewDocumentFromMessages(Enumerable.Empty<SuppressMessage>());
-
-				if (newXDocument == null)
-					return null;
-
-				string docText = newXDocument.GetXDocumentStringWithDeclaration();
-
-				//Add file to project and hard drive
-				var roslynSuppressionFile = project.AddAdditionalDocument(suppressionFileName, docText, filePath: suppressionFilePath);
-
-				if (!project.Solution.Workspace.TryApplyChanges(roslynSuppressionFile.Project.Solution))
-					return null;
-
-				SuppressionFile suppressionFile = Instance.LoadFileAndTrackItsChanges(suppressionFilePath, generateSuppressionBase: false);
-				Instance._fileByAssembly[suppressionFile.AssemblyName] = suppressionFile;
-				return suppressionFile;
-			}
+			
+			
 		}
 
 		public static bool SuppressDiagnostic(SemanticModel semanticModel, string diagnosticID, TextSpan diagnosticSpan,

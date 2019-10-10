@@ -74,7 +74,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 				if (project == null)
 					return;
 
-				SuppressionFile suppressionFile = SuppressionManager.CreateSuppressionFileForProject(project);
+				SuppressionFile suppressionFile = SuppressionManager.CreateSuppressionFileForProjectFromCommand(project);
 				suppressionFileExists = suppressionFile != null;
 			}
 
