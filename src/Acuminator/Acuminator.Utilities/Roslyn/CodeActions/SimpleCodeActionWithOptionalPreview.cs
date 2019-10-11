@@ -8,7 +8,7 @@ using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 
-namespace Acuminator.Analyzers.CodeActions
+namespace Acuminator.Utilities.Roslyn.CodeActions
 {
 	/// <summary>
 	/// A base class for code actions with posibility to disable diplay of preview. 
