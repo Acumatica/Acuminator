@@ -23,8 +23,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 				return;
 
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
+			context.EnableConcurrentExecution();
 
-			//context.EnableConcurrentExecution();
 			context.RegisterCompilationStartAction(compilationStartContext =>
 			{
 				var pxContext = new PXContext(compilationStartContext.Compilation, CodeAnalysisSettings);
