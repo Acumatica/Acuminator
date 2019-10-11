@@ -11,8 +11,9 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Acuminator.Utilities.Common;
-using Acuminator.Analyzers.CodeActions;
 using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.DiagnosticSuppression.CodeActions;
+using Acuminator.Utilities.Roslyn.CodeActions;
 
 namespace Acuminator.Analyzers.StaticAnalysis
 {
