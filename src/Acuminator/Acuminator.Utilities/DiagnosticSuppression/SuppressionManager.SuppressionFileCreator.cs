@@ -23,7 +23,9 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				project.ThrowOnNull(nameof(project));
 
 				//First check if file already exists to dismiss threads withou acquiring the lock
-				if (_suppressionManager._fileByAssembly.TryGetValue(project.Name, out var existingSuppressionFile) && existingSuppressionFile != null)
+				var existingSuppressionFile =  _suppressionManager.GetSuppressionFile(project.Name);
+
+				if (existingSuppressionFile != null)
 					return existingSuppressionFile;
 
 				lock (_suppressionManager._fileSystemService)
@@ -41,9 +43,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				if (roslynSuppressionFile == null || !project.Solution.Workspace.TryApplyChanges(roslynSuppressionFile.Project.Solution))
 					return null;
 
-				SuppressionFile suppressionFile = Instance.LoadFileAndTrackItsChanges(roslynSuppressionFile.FilePath, generateSuppressionBase: false);
-				Instance._fileByAssembly[suppressionFile.AssemblyName] = suppressionFile;
-				return suppressionFile;
+				return Instance.LoadSuppressionFileFrom(roslynSuppressionFile.FilePath);
 			}
 
 			public TextDocument AddAdditionalSuppressionDocumentToProject(Project project)

@@ -20,10 +20,10 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		private static readonly Regex _suppressPattern = new Regex(@"Acuminator\s+disable\s+once\s+(\w+)\s+(\w+)", RegexOptions.Compiled);
 		private static object _initializationLocker = new object();
 
-		private static SuppressionManager Instance
+		internal static SuppressionManager Instance
 		{
 			get;
-			set;
+			private set;
 		}
 
 		private readonly ConcurrentDictionary<string, SuppressionFile> _fileByAssembly = new ConcurrentDictionary<string, SuppressionFile>();
@@ -159,21 +159,28 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			}
 		}
 
+		internal SuppressionFile LoadSuppressionFileFrom(string filePath)
+		{
+			SuppressionFile suppressionFile = LoadFileAndTrackItsChanges(filePath, generateSuppressionBase: false);
+			_fileByAssembly[suppressionFile.AssemblyName] = suppressionFile;
+			return suppressionFile;
+		}
+
+		public SuppressionFile GetSuppressionFile(string projectName) =>
+			_fileByAssembly.TryGetValue(projectName.CheckIfNullOrWhiteSpace(nameof(projectName)), out var existingSuppressionFile)
+				? existingSuppressionFile
+				: null;
+
 		public static SuppressionFile CreateSuppressionFileForProjectFromCommand(Project project)
 		{
 			CheckIfInstanceIsInitialized(throwOnNotInitialized: true);
 			return Instance._suppressionFileCreator.CreateSuppressionFileForProjectFromCommand(project);
 		}
 
-
-
-		public static SuppressionFile CreateSuppressionFileForProjectFromCodeFix(Project project)
-		{
-			CheckIfInstanceIsInitialized(throwOnNotInitialized: true);
-
-			
-			
-		}
+		public static TextDocument CreateRoslynAdditionalFile(Project project) =>
+			CheckIfInstanceIsInitialized(throwOnNotInitialized: false)
+				? Instance._suppressionFileCreator.AddAdditionalSuppressionDocumentToProject(project)
+				: null;
 
 		public static bool SuppressDiagnostic(SemanticModel semanticModel, string diagnosticID, TextSpan diagnosticSpan,
 											  DiagnosticSeverity defaultDiagnosticSeverity, CancellationToken cancellation = default)
