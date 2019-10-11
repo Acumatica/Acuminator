@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.CodeActions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp;
 
 namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 {
@@ -29,7 +25,6 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 												base(title, equivalenceKey, displayPreview: false)
 		{
 			Context = context;
-
 			Diagnostic = diagnostic.CheckIfNull(nameof(diagnostic));
 		}
 
@@ -46,7 +41,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 			if (semanticModel == null)
 				return null;
 
-			
+			var operations = new List<CodeActionOperation>(3);
 			SuppressionFile suppressionFile = SuppressionManager.Instance.GetSuppressionFile(project.Name);
 
 			if (suppressionFile == null)
@@ -59,14 +54,11 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 				operations.AddRange(operationsToCreateSuppresionFile);
 			}
 
-			var operations = new List<CodeActionOperation>(2);
-
-
-
+			operations.Add(new SuppressInSuppressionFileOperation(Diagnostic, project.Name, semanticModel));
 			return operations;
 		}
 
-		private IEnumerable<CodeActionOperation> GetOperationsToCreateSuppressionFileAndSuppressDiagnostic(Project project)
+		private IEnumerable<CodeActionOperation> GetOperationsToCreateSuppressionFile(Project project)
 		{
 			string suppressionFileName = project.Name + SuppressionFile.SuppressionFileExtension;
 			TextDocument projectSuppressionFile =
@@ -77,58 +69,11 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 				return null;
 
 			Solution changedSolution = projectSuppressionFile.Project.Solution;
-			var operationsToCreateSuppresionFile = new List<CodeActionOperation>(2);
-			operationsToCreateSuppresionFile.Add(new ApplyChangesOperation(changedSolution));
-
-			return operationsToCreateSuppresionFile;
-		}
-
-
-
-
-
-		private async Task<Solution> SuppressInSuppressionFileAsync(, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			Project project = context.Document.Project;
-			
-
-			
-
-			
-			
-
-			
-
-			cancellationToken.ThrowIfCancellationRequested();
-
-			if (!suppressionFileExists ||
-				!SuppressionManager.SuppressDiagnostic(semanticModel, diagnostic.Id, diagnostic.Location.SourceSpan,
-													   diagnostic.DefaultSeverity, cancellationToken))
+			return new CodeActionOperation[]
 			{
-				ShowErrorMessage(projectSuppressionFile, project);
-				return null;
-			}
-
-			return projectSuppressionFile.Project.Solution;
-		}
-
-		private void ShowErrorMessage(TextDocument suppressionFile, Project project)
-		{
-			LocalizableResourceString errorMessage;
-
-			if (suppressionFile?.FilePath != null)
-			{
-				errorMessage = new LocalizableResourceString(nameof(UtilityResources.DiagnosticSuppression_FailedToAddToSuppressionFile),
-															 UtilityResources.ResourceManager, typeof(UtilityResources), suppressionFile.FilePath);
-			}
-			else
-			{
-				errorMessage = new LocalizableResourceString(nameof(UtilityResources.DiagnosticSuppression_FailedToFindSuppressionFile),
-															 UtilityResources.ResourceManager, typeof(UtilityResources), project.Name);
-			}
-
-			Debug.WriteLine($"{SharedConstants.PackageName.ToUpperInvariant()}: {errorMessage.ToString()}");
+				new ApplyChangesOperation(changedSolution),
+				new LoadNewSuppressionFileOperation(projectSuppressionFile.FilePath, project.Name),
+			};
 		}
 	}
 }
