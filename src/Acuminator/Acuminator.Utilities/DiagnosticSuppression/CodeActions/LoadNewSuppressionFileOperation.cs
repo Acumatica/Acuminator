@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -15,19 +14,14 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 	internal class LoadNewSuppressionFileOperation : CodeActionOperation
 	{
 		private readonly string _filePath;
-		private readonly Project _project;
-		private readonly Diagnostic _diagnosticToSuppress;
-		private readonly SemanticModel _semanticModel;
+		private readonly string _projectName;
 
-		public override string Title => "Load new suppression file and suppress diagnostic code action operation";
+		public override string Title => "Load new suppression file code action operation";
 
-		public LoadNewSuppressionFileOperation(string filePath, Diagnostic diagnosticToSuppress,
-																			  Project project, SemanticModel semanticModel)
+		public LoadNewSuppressionFileOperation(string filePath, string projectName)
 		{
 			_filePath = filePath;
-			_project = project.CheckIfNull(nameof(project));
-			_diagnosticToSuppress = diagnosticToSuppress.CheckIfNull(nameof(diagnosticToSuppress));
-			_semanticModel = semanticModel.CheckIfNull(nameof(semanticModel));
+			_projectName = projectName.CheckIfNullOrWhiteSpace(nameof(projectName));
 		}
 
 		public override void Apply(Workspace workspace, CancellationToken cancellationToken)
@@ -42,27 +36,13 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 			if (suppressionFile == null)
 			{
 				ShowErrorForFileNotFoundMessage();
-				return;
-			}
-
-			if (!SuppressionManager.SuppressDiagnostic(_semanticModel, _diagnosticToSuppress.Id, _diagnosticToSuppress.Location.SourceSpan,
-														_diagnosticToSuppress.DefaultSeverity, cancellationToken))
-			{
-				ShowErrorForSuppressionNotAddedMessage();
 			}
 		}
 
 		private void ShowErrorForFileNotFoundMessage()
 		{
 			var errorMessage = new LocalizableResourceString(nameof(Resources.DiagnosticSuppression_FailedToFindSuppressionFile),
-																    Resources.ResourceManager, typeof(Resources), _project.Name);
-			Debug.WriteLine($"{SharedConstants.PackageName.ToUpperInvariant()}: {errorMessage.ToString()}");
-		}
-
-		private void ShowErrorForSuppressionNotAddedMessage()
-		{
-			var errorMessage = new LocalizableResourceString(nameof(Resources.DiagnosticSuppression_FailedToAddToSuppressionFile),
-															 Resources.ResourceManager, typeof(Resources), _filePath);
+																    Resources.ResourceManager, typeof(Resources), _projectName);
 			Debug.WriteLine($"{SharedConstants.PackageName.ToUpperInvariant()}: {errorMessage.ToString()}");
 		}
 	}
