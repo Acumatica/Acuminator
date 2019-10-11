@@ -18,9 +18,14 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 	{
 		private const string AdditionalFilesBuildAction = "AdditionalFiles";
 
-		public async Task<bool> SetBuildActionAsync(string roslynSuppressionFilePath)
+		public async Task<bool> SetBuildActionAsync(string roslynSuppressionFilePath, string buildActionToSet = null)
 		{
 			roslynSuppressionFilePath.ThrowOnNullOrWhiteSpace(nameof(roslynSuppressionFilePath));
+			
+			if (buildActionToSet.IsNullOrWhiteSpace())
+			{
+				buildActionToSet = AdditionalFilesBuildAction;
+			}
 
 			var oldScheduler = TaskScheduler.Current;
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -34,7 +39,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 
 			EnvDTE.ProjectItem suppressionFileDteItem = dte.Solution.FindProjectItem(roslynSuppressionFilePath);
 
-			if (!TrySetBuildActionWithProjectItem(suppressionFileDteItem))
+			if (!TrySetBuildActionWithProjectItem(suppressionFileDteItem, buildActionToSet))
 				return false;
 
 			await oldScheduler;  //Return to the old scheduler
@@ -42,7 +47,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 		}
 
 		#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
-		private bool TrySetBuildActionWithProjectItem(EnvDTE.ProjectItem suppressionFileDteItem)
+		private bool TrySetBuildActionWithProjectItem(EnvDTE.ProjectItem suppressionFileDteItem, string buildActionToSet)
 		{
 			if (suppressionFileDteItem == null)
 				return false;
@@ -54,7 +59,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 				if (buildActionProperty == null)
 					return false;
 
-				buildActionProperty.Value = AdditionalFilesBuildAction;
+				buildActionProperty.Value = buildActionToSet;
 				return true;
 			}
 			catch (Exception)
