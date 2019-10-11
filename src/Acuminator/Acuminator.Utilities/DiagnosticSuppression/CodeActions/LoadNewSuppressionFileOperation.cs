@@ -10,9 +10,9 @@ using Microsoft.CodeAnalysis.CodeActions;
 namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 {
 	/// <summary>
-	/// A code action operation to load new suppression file by suppression manager after it was added to workspace and suppress the specified diagnostic.
+	/// A code action operation to load new suppression file by suppression manager after it was added to workspace.
 	/// </summary>
-	internal class LoadNewSuppressionFileAndSuppressDiagnosticCodeActionOperation : CodeActionOperation
+	internal class LoadNewSuppressionFileOperation : CodeActionOperation
 	{
 		private readonly string _filePath;
 		private readonly Project _project;
@@ -21,7 +21,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 
 		public override string Title => "Load new suppression file and suppress diagnostic code action operation";
 
-		public LoadNewSuppressionFileAndSuppressDiagnosticCodeActionOperation(string filePath, Diagnostic diagnosticToSuppress,
+		public LoadNewSuppressionFileOperation(string filePath, Diagnostic diagnosticToSuppress,
 																			  Project project, SemanticModel semanticModel)
 		{
 			_filePath = filePath;
