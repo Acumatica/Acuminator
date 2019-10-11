@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace Acuminator.Analyzers.CodeActions
+namespace Acuminator.Utilities.Roslyn.CodeActions
 {
 	/// <summary>
 	/// A code action with nested actions fabric. Obtains internal CodeAction with nested actions. 

@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.CSharp;
 
-namespace Acuminator.Analyzers.CodeActions
+namespace Acuminator.Utilities.Roslyn.CodeActions
 {
 	/// <summary>
 	/// A document change simple action. Copied from Roslyn, should be removed in the future.

@@ -8,7 +8,7 @@ using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 
-namespace Acuminator.Analyzers.CodeActions
+namespace Acuminator.Utilities.Roslyn.CodeActions
 {
 	/// <summary>
 	/// A base class for code actions with posibility to disable diplay of preview. 
@@ -21,13 +21,13 @@ namespace Acuminator.Analyzers.CodeActions
 
 		public bool DisplayPreview { get; }
 
-		public SimpleCodeActionWithOptionalPreview(string title, string equivalenceKey, bool dispayPreview)
+		public SimpleCodeActionWithOptionalPreview(string title, string equivalenceKey, bool displayPreview)
 		{
 			title.ThrowOnNullOrWhiteSpace();
 
 			Title = title;
 			EquivalenceKey = equivalenceKey;
-			DisplayPreview = dispayPreview;
+			DisplayPreview = displayPreview;
 		}
 
 		protected override Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken) =>
