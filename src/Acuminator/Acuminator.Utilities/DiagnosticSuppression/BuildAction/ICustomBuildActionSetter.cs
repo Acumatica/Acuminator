@@ -9,6 +9,6 @@ namespace Acuminator.Utilities.DiagnosticSuppression.BuildAction
 	/// </summary>
 	public interface ICustomBuildActionSetter
 	{
-		Task<bool> SetBuildActionAsync(string roslynSuppressionFilePath, string buildActionToSet = null);
+		bool SetBuildAction(string roslynSuppressionFilePath, string buildActionToSet);
 	}
 }

@@ -16,17 +16,27 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 	/// </summary>
 	public class VsixBuildActionSetter : ICustomBuildActionSetter
 	{
-		private const string AdditionalFilesBuildAction = "AdditionalFiles";
-
-		public async Task<bool> SetBuildActionAsync(string roslynSuppressionFilePath, string buildActionToSet = null)
+		public bool SetBuildAction(string roslynSuppressionFilePath, string buildActionToSet)
 		{
 			roslynSuppressionFilePath.ThrowOnNullOrWhiteSpace(nameof(roslynSuppressionFilePath));
-			
-			if (buildActionToSet.IsNullOrWhiteSpace())
-			{
-				buildActionToSet = AdditionalFilesBuildAction;
-			}
+			buildActionToSet.ThrowOnNullOrWhiteSpace(nameof(buildActionToSet));
 
+			try
+			{
+				#pragma warning disable VSTHRD104 // Offer async methods 
+				// Justification: need to use sync API since consumer is code action operation which require synchronous execution
+				// and located in the Utilities, so it can't use ThreadHelper.JoinableTaskFactory itself
+				return ThreadHelper.JoinableTaskFactory.Run(() => SetBuildActionAsync(roslynSuppressionFilePath, buildActionToSet));
+				#pragma warning restore VSTHRD104 
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		private async Task<bool> SetBuildActionAsync(string roslynSuppressionFilePath, string buildActionToSet)
+		{
 			var oldScheduler = TaskScheduler.Current;
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
