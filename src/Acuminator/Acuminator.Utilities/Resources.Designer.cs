@@ -62,7 +62,7 @@ namespace Acuminator.Utilities {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The diagnostic cannot be added to the suppression file. Check if the {0} file is accessible..
+        ///   Looks up a localized string similar to The diagnostic cannot be added to the suppression file. Check if file {0} is accessible..
         /// </summary>
         public static string DiagnosticSuppression_FailedToAddToSuppressionFile {
             get {
@@ -71,11 +71,29 @@ namespace Acuminator.Utilities {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The suppression file for the {0} project cannot be found..
+        ///   Looks up a localized string similar to The suppression file for the project {0} cannot be found..
         /// </summary>
         public static string DiagnosticSuppression_FailedToFindSuppressionFile {
             get {
                 return ResourceManager.GetString("DiagnosticSuppression_FailedToFindSuppressionFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t set buld action. The suppression file for the project {0} cannot be found..
+        /// </summary>
+        public static string DiagnosticSuppression_FailedToFindSuppressionFileToSetBuildAction {
+            get {
+                return ResourceManager.GetString("DiagnosticSuppression_FailedToFindSuppressionFileToSetBuildAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to set build action for the suppression file {0}..
+        /// </summary>
+        public static string DiagnosticSuppression_FailedToSetBuildAction {
+            get {
+                return ResourceManager.GetString("DiagnosticSuppression_FailedToSetBuildAction", resourceCulture);
             }
         }
         
