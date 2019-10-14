@@ -70,6 +70,8 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 					return false;
 
 				buildActionProperty.Value = buildActionToSet;
+				suppressionFileDteItem.Save();
+				suppressionFileDteItem.ContainingProject?.Save();
 				return true;
 			}
 			catch (Exception)
