@@ -121,10 +121,10 @@
     <value>The diagnostic cannot be added to the suppression file. Check if file {0} is accessible.</value>
   </data>
   <data name="DiagnosticSuppression_FailedToFindSuppressionFile" xml:space="preserve">
-    <value>The suppression file for the project {0} cannot be found.</value>
+    <value>The suppression file for the assembly {0} cannot be found.</value>
   </data>
   <data name="DiagnosticSuppression_FailedToFindSuppressionFileToSetBuildAction" xml:space="preserve">
-    <value>Can't set buld action. The suppression file for the project {0} cannot be found.</value>
+    <value>Can't set buld action. The suppression file for the assembly {0} cannot be found.</value>
   </data>
   <data name="DiagnosticSuppression_FailedToSetBuildAction" xml:space="preserve">
     <value>Failed to set build action for the suppression file {0}.</value>
