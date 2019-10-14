@@ -332,16 +332,12 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			var (assembly, message) = SuppressMessage.GetSuppressionInfo(semanticModel, diagnostic, cancellation);
 
 			if (assembly == null)
-			{
 				return false;
-			}
 
-			 
+			SuppressionFile file = GetSuppressionFile(assembly);
 
-			if (!_fileByAssembly.TryGetValue(assembly, out SuppressionFile file) || file == null)
-			{
+			if (file == null)
 				return false;
-			}
 
 			if (file.GenerateSuppressionBase)
 			{
@@ -353,12 +349,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				return true;
 			}
 
-			if (!file.ContainsMessage(message))
-			{
-				return false;
-			}
-
-			return true;
+			return file.ContainsMessage(message);
 		}
 
 		private static bool IsSuppressableSeverity(DiagnosticSeverity? diagnosticSeverity) =>
