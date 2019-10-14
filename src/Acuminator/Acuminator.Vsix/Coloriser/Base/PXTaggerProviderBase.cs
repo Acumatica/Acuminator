@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel.Composition;
-using Acuminator.Vsix;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
@@ -11,10 +10,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Acuminator.Vsix.Utilities;
 
-
 using Path = System.IO.Path;
-
-
 
 namespace Acuminator.Vsix.Coloriser
 {
@@ -44,7 +40,7 @@ namespace Acuminator.Vsix.Coloriser
         }
 
         protected virtual void InitializePackage()
-        {	
+        {
 			if (Package != null)
                 return;
 
@@ -76,8 +72,9 @@ namespace Acuminator.Vsix.Coloriser
             if (Workspace?.CurrentSolution == null)
                 return false;
 
-            bool hasAcumaticaProjectsInSolution = Workspace.CurrentSolution.Projects.Any(project => IsAcumaticaAssemblyName(project.Name));
-
+            bool hasAcumaticaProjectsInSolution = 
+				Workspace.CurrentSolution.Projects.Any(project => IsAcumaticaAssemblyName(project.Name) || 
+																  IsAcumaticaAssemblyName(project.AssemblyName));
             if (hasAcumaticaProjectsInSolution)
                 return true;
           

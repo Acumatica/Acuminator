@@ -17,7 +17,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 
 		public override string Title => "Change build action for the new suppression file code action operation";
 
-		public ChangesBuildActionOperation(string projectName, string buildActionToSet = null) : base(projectName)
+		public ChangesBuildActionOperation(string assemblyName, string buildActionToSet = null) : base(assemblyName)
 		{
 			_buildActionToSet = buildActionToSet.IsNullOrWhiteSpace()
 				? AdditionalFilesBuildAction
@@ -31,11 +31,11 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 			if (SuppressionManager.Instance?.BuildActionSetter == null)
 				return;
 
-			SuppressionFile suppressionFile = SuppressionManager.Instance?.GetSuppressionFile(ProjectName);
+			SuppressionFile suppressionFile = SuppressionManager.Instance?.GetSuppressionFile(AssemblyName);
 
 			if (suppressionFile == null)
 			{
-				ShowLocalizedError(nameof(Resources.DiagnosticSuppression_FailedToFindSuppressionFileToSetBuildAction), ProjectName);
+				ShowLocalizedError(nameof(Resources.DiagnosticSuppression_FailedToFindSuppressionFileToSetBuildAction), AssemblyName);
 				return;
 			}
 
