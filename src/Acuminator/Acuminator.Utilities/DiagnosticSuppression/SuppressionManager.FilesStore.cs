@@ -43,8 +43,6 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			public bool TryAdd(string assemblyName, SuppressionFile file) => _fileByAssembly.TryAdd(assemblyName, file);
 
 			public bool TryGetValue(string assemblyName, out SuppressionFile file) => _fileByAssembly.TryGetValue(assemblyName, out file);
-
-			public SuppressionFile GetOrAdd(string assemblyName, SuppressionFile file) => _fileByAssembly.GetOrAdd(assemblyName, file);
 		}
 	}
 }
