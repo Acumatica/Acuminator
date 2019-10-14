@@ -27,9 +27,11 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			private set;
 		}
 
+		private readonly FilesStore _fileByAssembly = new FilesStore();
+
 		internal ICustomBuildActionSetter BuildActionSetter { get; }
 
-		private readonly ConcurrentDictionary<string, SuppressionFile> _fileByAssembly = new ConcurrentDictionary<string, SuppressionFile>();
+		
 		private readonly ISuppressionFileSystemService _fileSystemService;
 		private readonly SuppressionFileCreator _suppressionFileCreator;
 
@@ -100,7 +102,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		private void Clear()
 		{
-			foreach (SuppressionFile oldFile in _fileByAssembly.Values.Where(file => file != null))
+			foreach (SuppressionFile oldFile in _fileByAssembly.Files.Where(file => file != null))
 			{
 				oldFile.Changed -= ReloadFile;
 				oldFile.Dispose();
@@ -160,7 +162,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			lock (Instance._fileSystemService)
 			{
 				//Create local copy in order to avoid concurency problem when the collection is changed during the iteration
-				var filesWithGeneratedSuppression = Instance._fileByAssembly.Values.Where(f => f.GenerateSuppressionBase).ToList();
+				var filesWithGeneratedSuppression = Instance._fileByAssembly.Files.Where(f => f.GenerateSuppressionBase).ToList();
 
 				foreach (var file in filesWithGeneratedSuppression)
 				{
@@ -246,9 +248,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			lock (Instance._fileSystemService)
 			{
-				foreach (var entry in Instance._fileByAssembly)
+				foreach (SuppressionFile currentFile in Instance._fileByAssembly.Files)
 				{
-					var currentFile = entry.Value;
 					var oldFile = SuppressionFile.Load(Instance._fileSystemService, suppressionFilePath: currentFile.Path,
 													   generateSuppressionBase: false);
 
