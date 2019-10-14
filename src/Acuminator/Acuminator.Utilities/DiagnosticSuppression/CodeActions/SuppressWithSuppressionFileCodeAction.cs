@@ -69,11 +69,24 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 				return null;
 
 			Solution changedSolution = projectSuppressionFile.Project.Solution;
-			return new CodeActionOperation[]
+
+			if (SuppressionManager.Instance?.BuildActionSetter != null)
 			{
-				new ApplyChangesOperation(changedSolution),
-				new LoadNewSuppressionFileOperation(projectSuppressionFile.FilePath, project.Name),
-			};
+				return new CodeActionOperation[]
+				{
+					new ApplyChangesOperation(changedSolution),
+					new LoadNewSuppressionFileOperation(projectSuppressionFile.FilePath, project.Name),
+					new ChangesBuildActionOperation(project.Name)
+				};
+			}
+			else
+			{
+				return new CodeActionOperation[]
+				{
+					new ApplyChangesOperation(changedSolution),
+					new LoadNewSuppressionFileOperation(projectSuppressionFile.FilePath, project.Name)
+				};
+			}		
 		}
 	}
 }
