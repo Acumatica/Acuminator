@@ -178,8 +178,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			return suppressionFile;
 		}
 
-		public SuppressionFile GetSuppressionFile(string projectName) =>
-			_fileByAssembly.TryGetValue(projectName.CheckIfNullOrWhiteSpace(nameof(projectName)), out var existingSuppressionFile)
+		public SuppressionFile GetSuppressionFile(string assemblyName) =>
+			_fileByAssembly.TryGetValue(assemblyName.CheckIfNullOrWhiteSpace(nameof(assemblyName)), out var existingSuppressionFile)
 				? existingSuppressionFile
 				: null;
 
@@ -336,9 +336,9 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				return false;
 			}
 
-			var file = _fileByAssembly.GetOrAdd(assembly, (SuppressionFile)null);
+			 
 
-			if (file == null)
+			if (!_fileByAssembly.TryGetValue(assembly, out SuppressionFile file) || file == null)
 			{
 				return false;
 			}

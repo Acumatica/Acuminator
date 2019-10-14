@@ -24,15 +24,15 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			public int Count => _fileByAssembly.Count;
 
-			public SuppressionFile this[string projectName]
+			public SuppressionFile this[string assemblyName]
 			{
 				get 
 				{
-					return _fileByAssembly[projectName];
+					return _fileByAssembly[assemblyName];
 				}
 				set 
 				{
-					_fileByAssembly[projectName] = value;
+					_fileByAssembly[assemblyName] = value;
 				}
 			}
 
@@ -40,11 +40,11 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			public void Clear() => _fileByAssembly.Clear();
 
-			public bool TryAdd(string projectName, SuppressionFile file) => _fileByAssembly.TryAdd(projectName, file);
+			public bool TryAdd(string assemblyName, SuppressionFile file) => _fileByAssembly.TryAdd(assemblyName, file);
 
-			public bool TryGetValue(string projectName, out SuppressionFile file) => _fileByAssembly.TryGetValue(projectName, out file);
+			public bool TryGetValue(string assemblyName, out SuppressionFile file) => _fileByAssembly.TryGetValue(assemblyName, out file);
 
-			public SuppressionFile GetOrAdd(string projectName, SuppressionFile file) => _fileByAssembly.GetOrAdd(projectName, file);
+			public SuppressionFile GetOrAdd(string assemblyName, SuppressionFile file) => _fileByAssembly.GetOrAdd(assemblyName, file);
 		}
 	}
 }
