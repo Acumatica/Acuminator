@@ -154,7 +154,13 @@ namespace Acuminator.Vsix
 			await JoinableTaskFactory.SwitchToMainThreadAsync();
 
 			InitializeLogger(progress);
-			await InitializeCommandsAsync(progress);		
+			await InitializeCommandsAsync(progress);
+
+			// Extra suppression manager initilization - in theory it should be enough to do this on solution opening but sometimes the reace condition occurs
+			// The solution is opened before the project loads and subscribes on its opening. So we add one extra call to initialize suppression manager 
+			// which is a little overhead but ensures that if we have an opened solution with loaded Acuminator then the suppression manager is initialized
+			await SetupSuppressionManagerAsync();	
+			
 			await SubscribeOnSolutionEventsAsync();
 			cancellationToken.ThrowIfCancellationRequested();
 
