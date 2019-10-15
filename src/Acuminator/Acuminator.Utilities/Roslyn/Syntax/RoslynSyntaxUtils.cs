@@ -167,6 +167,10 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 					return nestedClassDeclaration.Identifier.ToEnumerable();
 				case EnumDeclarationSyntax enumDeclaration:
 					return enumDeclaration.Identifier.ToEnumerable();
+				case StructDeclarationSyntax structDeclaration:
+					return structDeclaration.Identifier.ToEnumerable();
+				case InterfaceDeclarationSyntax interfaceDeclaration:
+					return interfaceDeclaration.Identifier.ToEnumerable();
 				case ConstructorDeclarationSyntax constructorDeclaration:
 					return constructorDeclaration.Identifier.ToEnumerable();
 				default:

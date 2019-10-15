@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using Acuminator.Utilities.Roslyn.Syntax;
+using Acuminator.Utilities.Common;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
@@ -73,35 +75,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			var rootNode = await document
-				.GetSyntaxRootAsync(cancellation)
-				.ConfigureAwait(false);
-			if (!(rootNode?.FindNode(span) is ClassDeclarationSyntax classDeclarationSyntax))
+			var rootNode = await document.GetSyntaxRootAsync(cancellation).ConfigureAwait(false);
+			if (!(rootNode?.FindNode(span) is MemberDeclarationSyntax memberDeclaration))
 			{
 				return document;
 			}
 
-			var semanticModel = await document
-				.GetSemanticModelAsync(cancellation)
-				.ConfigureAwait(false);
-			if (semanticModel == null)
-			{
+			string memberName = memberDeclaration.GetIdentifiers().FirstOrDefault().ToString();
+			if (memberName.IsNullOrWhiteSpace())
 				return document;
-			}
 
-			var classTypeSymbol = semanticModel.GetDeclaredSymbol(classDeclarationSyntax, cancellation);
-			if (string.IsNullOrEmpty(classTypeSymbol?.Name))
-			{
-				return document;
-			}
-
-			var newRootNode = GetRootNodeSyntaxWithDescription(rootNode, classDeclarationSyntax, classTypeSymbol.Name, option, cancellation);
+			var newRootNode = GetRootNodeSyntaxWithDescription(rootNode, memberDeclaration, memberName, option, cancellation);
 			var newDocument = document.WithSyntaxRoot(newRootNode);
 
 			return newDocument;
 		}
 
-		private SyntaxNode GetRootNodeSyntaxWithDescription(SyntaxNode rootNode, ClassDeclarationSyntax classDeclarationSyntax,
+		private SyntaxNode GetRootNodeSyntaxWithDescription(SyntaxNode rootNode, MemberDeclarationSyntax memberDeclaration,
 			string className, FixOption option, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
@@ -112,20 +102,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			{
 				case FixOption.NoXmlComment:
 				case FixOption.NoSummaryTag:
-					return AddXmlCommentDescription(rootNode, classDeclarationSyntax, description, cancellation);
+					return AddXmlCommentDescription(rootNode, memberDeclaration, description, cancellation);
 				case FixOption.EmptySummaryTag:
-					return AddDescription(rootNode, classDeclarationSyntax, description, cancellation);
+					return AddDescription(rootNode, memberDeclaration, description, cancellation);
 				default:
-					return classDeclarationSyntax;
+					return memberDeclaration;
 			}
 		}
 
-		private SyntaxNode AddDescription(SyntaxNode rootNode, ClassDeclarationSyntax classDeclarationSyntax,
-			string description, CancellationToken cancellation)
+		private SyntaxNode AddDescription(SyntaxNode rootNode, MemberDeclarationSyntax memberDeclaration,
+										  string description, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			var summaryTag = classDeclarationSyntax
+			var summaryTag = memberDeclaration
 				.GetLeadingTrivia()
 				.Select(t => t.GetStructure())
 				.OfType<DocumentationCommentTriviaSyntax>()
@@ -151,8 +141,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			return rootNode.ReplaceNode(summaryTag, newSummaryTag);
 		}
 
-		private SyntaxNode AddXmlCommentDescription(SyntaxNode rootNode, ClassDeclarationSyntax classDeclarationSyntax,
-			string description, CancellationToken cancellation)
+		private SyntaxNode AddXmlCommentDescription(SyntaxNode rootNode, MemberDeclarationSyntax memberDeclaration,
+													string description, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
 
@@ -171,17 +161,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				.WithAdditionalAnnotations(Formatter.Annotation)
 			);
 
-			return AddDocumentationTrivia(rootNode, classDeclarationSyntax, xmlDescriptionTrivia, cancellation);
+			return AddDocumentationTrivia(rootNode, memberDeclaration, xmlDescriptionTrivia, cancellation);
 		}
 
 		private async Task<Document> ExcludeClassAsync(Document document, TextSpan span, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			var rootNode = await document
-				.GetSyntaxRootAsync(cancellation)
-				.ConfigureAwait(false);
-			if (!(rootNode?.FindNode(span) is ClassDeclarationSyntax classDeclarationSyntax))
+			var rootNode = await document.GetSyntaxRootAsync(cancellation).ConfigureAwait(false);
+			if (!(rootNode?.FindNode(span) is MemberDeclarationSyntax memberDeclaration))
 			{
 				return document;
 			}
@@ -192,21 +180,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 					XmlText(_xmlTextNewLine)
 				)
 			);
-			var newRootNode = AddDocumentationTrivia(rootNode, classDeclarationSyntax, xmlExcludeTrivia, cancellation);
+			var newRootNode = AddDocumentationTrivia(rootNode, memberDeclaration, xmlExcludeTrivia, cancellation);
 			var newDocument = document.WithSyntaxRoot(newRootNode);
 
 			return newDocument;
 		}
 
-		private SyntaxNode AddDocumentationTrivia(SyntaxNode rootNode, ClassDeclarationSyntax classDeclarationSyntax,
-			SyntaxTrivia documentationTrivia, CancellationToken cancellation)
+		private SyntaxNode AddDocumentationTrivia(SyntaxNode rootNode, MemberDeclarationSyntax memberDeclaration,
+												  SyntaxTrivia documentationTrivia, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
 
-			var newTrivia = classDeclarationSyntax.GetLeadingTrivia().Add(documentationTrivia);
-			var newClassDeclarationSyntax = classDeclarationSyntax.WithLeadingTrivia(newTrivia);
+			var newTrivia = memberDeclaration.GetLeadingTrivia().Add(documentationTrivia);
+			var newClassDeclarationSyntax = memberDeclaration.WithLeadingTrivia(newTrivia);
 
-			return rootNode.ReplaceNode(classDeclarationSyntax, newClassDeclarationSyntax);
+			return rootNode.ReplaceNode(memberDeclaration, newClassDeclarationSyntax);
 		}
 
 		private string GenerateDescriptionFromCamelCase(string name)
