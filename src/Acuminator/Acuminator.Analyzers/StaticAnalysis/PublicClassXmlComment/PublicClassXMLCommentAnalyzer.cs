@@ -30,7 +30,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 		public PublicClassXmlCommentAnalyzer(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings)
 		{
-
 		}
 
 		public PublicClassXmlCommentAnalyzer() : this(null)
@@ -74,9 +73,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				}
 
 				try
-				{		
-					_isInsideAcumaticaNamespace = string.Equals(NamespaceNames.AcumaticaRootNamespaceWithDot, 
-																namespaceDeclaration.Name.ToString(), StringComparison.Ordinal);
+				{
+					string namespaceName = namespaceDeclaration.Name?.ToString();
+					bool startWith = namespaceName?.StartsWith(NamespaceNames.AcumaticaRootNamespaceWithDot, StringComparison.Ordinal) ?? false;
+					_isInsideAcumaticaNamespace = startWith || NamespaceNames.AcumaticaRootNamespace == namespaceName;
+
 					if (_isInsideAcumaticaNamespace)
 					{
 						base.VisitNamespaceDeclaration(namespaceDeclaration);
