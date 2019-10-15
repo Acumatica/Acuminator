@@ -32,7 +32,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		public async Task PublicClass_WithoutSummary_ReportsDiagnistic(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(10, 15));
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(10, 15),
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(15, 23),
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(18, 16),
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(21, 19),
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(24, 14));
 
 		[Theory]
 		[EmbeddedFileData("WithEmptySummary.cs")]
@@ -59,31 +63,31 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		[Theory]
 		[EmbeddedFileData("WithoutDescription.cs", "WithoutDescription_AddDescription.cs")]
 		public async Task NoXmlComment_AddDescription_Works(string actual, string expected) =>
-			await VerifyCSharpFixAsync(actual, expected, 0);
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
 
 		[Theory]
 		[EmbeddedFileData("WithoutSummary.cs", "WithoutSummary_AddDescription.cs")]
 		public async Task NoSummaryTag_AddDescription_Works(string actual, string expected) =>
-			await VerifyCSharpFixAsync(actual, expected, 0);
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
 
 		[Theory]
 		[EmbeddedFileData("WithEmptySummary.cs", "WithEmptySummary_AddDescription.cs")]
 		public async Task EmptySummaryTag_AddDescription_Works(string actual, string expected) =>
-			await VerifyCSharpFixAsync(actual, expected, 0);
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
 
 		[Theory]
 		[EmbeddedFileData("WithoutDescription.cs", "WithoutDescription_Exclude.cs")]
 		public async Task NoXmlComment_Exclude_Works(string actual, string expected) =>
-			await VerifyCSharpFixAsync(actual, expected, 1);
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 1);
 
 		[Theory]
 		[EmbeddedFileData("WithoutSummary.cs", "WithoutSummary_Exclude.cs")]
 		public async Task NoSummaryTag_Exclude_Works(string actual, string expected) =>
-			await VerifyCSharpFixAsync(actual, expected, 1);
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 1);
 
 		[Theory]
 		[EmbeddedFileData("WithEmptySummary.cs", "WithEmptySummary_Exclude.cs")]
 		public async Task EmptySummaryTag_Exclude_Works(string actual, string expected) =>
-			await VerifyCSharpFixAsync(actual, expected, 1);
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 1);
 	}
 }
