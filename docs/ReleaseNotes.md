@@ -24,13 +24,15 @@ The code below shows an example of a suppression comment that has been added by 
 
 ```C#
 // Acuminator disable once PX1007 NoXmlCommentForPublicClass [Justification]
-public class ARReleaseProcess_Extension : PXGraphExtension<ARReleaseProcess>
+public abstract class PXBaseRedirectException : PXException
 {
     ...
 }
 ```
 
-You can also suppress an Acuminator diagnostic in the Acuminator suppression file. This option is now available as a code fix and has been removed from the menu commands. For details about the diagnostic suppression, see [Diagnostic Suppression](diagnostics/DiagnosticSuppression.md).
+You can also suppress an Acuminator diagnostic in the Acuminator suppression file. This option is now available as a code fix and has been removed from the menu commands. The suppression of a diagnostic in the Acuminator suppression file is available only if Acuminator is installed from the VSIX package.
+
+For details about the diagnostic suppression, see [Diagnostic Suppression](diagnostics/DiagnosticSuppression.md).
 
 ### Enhancements and Bug Fixes in the Code Map
 In Acuminator 2.1, the code map is no longer an experimental feature and includes the following enhancements:
@@ -62,6 +64,8 @@ In this version of Acuminator, the following enhancements and bug fixes are avai
  - The BQL outlining worked incorrectly for unary BQL functions, such as `RTrim`.
  - The suppression mechanism did not reload the suppression file when you change the solution in Visual Studio.
  - In some cases, it was not possible to suppress an Acuminator diagnostic in the Acuminator suppression file for a code fragment. The following error was displayed: _There are no Acuminator diagnostics in this code snippet_.
+ - The new suppression file was added to the project with the _None_ build action (instead of the _AdditionalFiles_ build action).
+ - There was inconsistency in code of the suppression manager related to the use of the project name and the assembly name.
 
 ## Acuminator 2.0
 Acuminator 2.0 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.

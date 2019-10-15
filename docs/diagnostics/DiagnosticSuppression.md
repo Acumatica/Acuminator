@@ -3,8 +3,8 @@ If a diagnostic is not relevant to a specific code fragment and you have an expl
 
 You can suppress Acuminator diagnostics in one of the following ways (which are described in greater detail below):
 
- - By adding a specific comment directly in code
- - By adding a code fragment to the Acuminator suppression file
+ - By adding a specific comment directly in code. This way is available for Acuminator installed either from the VSIX package or from the NuGet package.
+ - By adding a code fragment to the Acuminator suppression file. This way is available only for Acuminator installed from the VSIX package.
 
 ## Diagnostic Suppression by Adding a Code Comment
 You can suppress any diagnostic by adding a specific comment directly in code. To add a suppression comment, you select **Suppress the PXYYYY diagnostic with Acuminator > in a comment** (where PXYYYY is the code of the diagnostic) as a code fix for the diagnostic, as shown in the following screenshot.
@@ -19,7 +19,7 @@ The code below shows an example of a suppression comment that has been added by 
 
 ```C#
 // Acuminator disable once PX1007 NoXmlCommentForPublicClass [Justification]
-public class ARReleaseProcess_Extension : PXGraphExtension<ARReleaseProcess>
+public abstract class PXBaseRedirectException : PXException
 {
     ...
 }
