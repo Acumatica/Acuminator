@@ -51,15 +51,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			var commentsWalker = new XmlCommentsWalker(syntaxContext, CodeAnalysisSettings);
 			compilationUnitSyntax.Accept(commentsWalker);
-
-			
-			var isPublicClass = classDeclarationSymbol
-				.GetContainingTypesAndThis()
-				.All(t => t.DeclaredAccessibility == Accessibility.Public);
-			if (!isPublicClass)
-			{
-				return;
-			}
 		}		
 
 		private class XmlCommentsWalker : CSharpSyntaxWalker
