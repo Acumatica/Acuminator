@@ -13,4 +13,30 @@ namespace PX.Objects
 	public class WithEmptySummary
 	{
 	}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <exclude/>
+	public delegate void ActionWithoutDescription();
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <exclude/>
+	public struct StructWithoutDescription { }
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <exclude/>
+	public interface InterfaceWithoutDescription { }
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <exclude/>
+	public enum EnumWithoutDescription
+	{
+	}
 }
