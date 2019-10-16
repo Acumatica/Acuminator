@@ -13,13 +13,15 @@ namespace Acuminator.Utilities
 		public const bool DefaultISVSpecificAnalyzersEnabled = false;
 		public const bool DefaultSuppressionMechanismEnabled = true;
 		public const bool DefaultStaticAnalysisEnabled = true;
+		public const bool DefaultPX1007DocumentationDiagnosticEnabled = false;
 
 		public static CodeAnalysisSettings Default => 
 			new CodeAnalysisSettings(
 				DefaultRecursiveAnalysisEnabled,
 				DefaultISVSpecificAnalyzersEnabled,
 				DefaultStaticAnalysisEnabled,
-				DefaultSuppressionMechanismEnabled);
+				DefaultSuppressionMechanismEnabled,
+				DefaultPX1007DocumentationDiagnosticEnabled);
 
 		public virtual bool RecursiveAnalysisEnabled { get; }
 
@@ -29,17 +31,20 @@ namespace Acuminator.Utilities
 
 		public virtual bool SuppressionMechanismEnabled { get; }
 
+		public virtual bool PX1007DocumentationDiagnosticEnabled { get; }
+
 		protected CodeAnalysisSettings()
 		{
 		}
 
 		private CodeAnalysisSettings(bool recursiveAnalysisEnabled, bool isvSpecificAnalyzersEnabled, bool staticAnalysisEnabled, 
-									 bool suppressionMechanismEnabled)
+									 bool suppressionMechanismEnabled, bool px1007DocumentationDiagnosticEnabled)
 		{
 			RecursiveAnalysisEnabled = recursiveAnalysisEnabled;
 			IsvSpecificAnalyzersEnabled = isvSpecificAnalyzersEnabled;
 			StaticAnalysisEnabled = staticAnalysisEnabled;
 			SuppressionMechanismEnabled = suppressionMechanismEnabled;
+			PX1007DocumentationDiagnosticEnabled = px1007DocumentationDiagnosticEnabled;
 		}	
 
 		public CodeAnalysisSettings WithRecursiveAnalysisEnabled()
@@ -53,9 +58,8 @@ namespace Acuminator.Utilities
 		}
 
 		protected virtual CodeAnalysisSettings WithRecursiveAnalysisEnabledValue(bool value) =>
-			new CodeAnalysisSettings(value, IsvSpecificAnalyzersEnabled, StaticAnalysisEnabled, SuppressionMechanismEnabled);
-
-
+			new CodeAnalysisSettings(value, IsvSpecificAnalyzersEnabled, StaticAnalysisEnabled, SuppressionMechanismEnabled, 
+									 PX1007DocumentationDiagnosticEnabled);
 
 		public CodeAnalysisSettings WithIsvSpecificAnalyzersEnabled()
 		{
@@ -68,9 +72,8 @@ namespace Acuminator.Utilities
 		}
 
 		protected virtual CodeAnalysisSettings WithIsvSpecificAnalyzersEnabledValue(bool value) =>
-			new CodeAnalysisSettings(RecursiveAnalysisEnabled, value, StaticAnalysisEnabled, SuppressionMechanismEnabled);
-
-
+			new CodeAnalysisSettings(RecursiveAnalysisEnabled, value, StaticAnalysisEnabled, SuppressionMechanismEnabled, 
+									 PX1007DocumentationDiagnosticEnabled);
 
 		public CodeAnalysisSettings WithStaticAnalysisEnabled()
 		{
@@ -83,7 +86,8 @@ namespace Acuminator.Utilities
 		}
 
 		protected virtual CodeAnalysisSettings WithStaticAnalysisEnabledValue(bool value) =>
-			new CodeAnalysisSettings(RecursiveAnalysisEnabled, IsvSpecificAnalyzersEnabled, value, SuppressionMechanismEnabled);
+			new CodeAnalysisSettings(RecursiveAnalysisEnabled, IsvSpecificAnalyzersEnabled, value, SuppressionMechanismEnabled, 
+									 PX1007DocumentationDiagnosticEnabled);
 
 
 
@@ -98,6 +102,22 @@ namespace Acuminator.Utilities
 		}
 
 		protected virtual CodeAnalysisSettings WithSuppressionMechanismEnabledValue(bool value) =>
-			new CodeAnalysisSettings(RecursiveAnalysisEnabled, IsvSpecificAnalyzersEnabled, StaticAnalysisEnabled, value);	
+			new CodeAnalysisSettings(RecursiveAnalysisEnabled, IsvSpecificAnalyzersEnabled, StaticAnalysisEnabled, value, 
+									 PX1007DocumentationDiagnosticEnabled);
+
+
+		public CodeAnalysisSettings WithPX1007DocumentationDiagnosticEnabled()
+		{
+			return WithPX1007DocumentationDiagnosticEnabledValue(true);
+		}
+
+		public CodeAnalysisSettings WithPX1007DocumentationDiagnosticDisabled()
+		{
+			return WithPX1007DocumentationDiagnosticEnabledValue(false);
+		}
+
+		protected virtual CodeAnalysisSettings WithPX1007DocumentationDiagnosticEnabledValue(bool value) =>
+			new CodeAnalysisSettings(RecursiveAnalysisEnabled, IsvSpecificAnalyzersEnabled, StaticAnalysisEnabled, SuppressionMechanismEnabled,
+									 value);
 	}
 }
