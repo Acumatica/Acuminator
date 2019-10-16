@@ -27,9 +27,11 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			private set;
 		}
 
+		private readonly FilesStore _fileByAssembly = new FilesStore();
+
 		internal ICustomBuildActionSetter BuildActionSetter { get; }
 
-		private readonly ConcurrentDictionary<string, SuppressionFile> _fileByAssembly = new ConcurrentDictionary<string, SuppressionFile>();
+		
 		private readonly ISuppressionFileSystemService _fileSystemService;
 		private readonly SuppressionFileCreator _suppressionFileCreator;
 
@@ -100,7 +102,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		private void Clear()
 		{
-			foreach (SuppressionFile oldFile in _fileByAssembly.Values.Where(file => file != null))
+			foreach (SuppressionFile oldFile in _fileByAssembly.Files.Where(file => file != null))
 			{
 				oldFile.Changed -= ReloadFile;
 				oldFile.Dispose();
@@ -140,7 +142,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		public void ReloadFile(object sender, FileSystemEventArgs e)
 		{
 			string assembly = _fileSystemService.GetFileName(e.FullPath);
-			var oldFile = _fileByAssembly.GetOrAdd(assembly, (SuppressionFile)null);
+			var oldFile = GetSuppressionFile(assembly);
 
 			// We need to unsubscribe from the old file's event because it can be fired until the link to the file will be collected by GC
 			if (oldFile != null)
@@ -160,7 +162,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			lock (Instance._fileSystemService)
 			{
 				//Create local copy in order to avoid concurency problem when the collection is changed during the iteration
-				var filesWithGeneratedSuppression = Instance._fileByAssembly.Values.Where(f => f.GenerateSuppressionBase).ToList();
+				var filesWithGeneratedSuppression = Instance._fileByAssembly.Files.Where(f => f.GenerateSuppressionBase).ToList();
 
 				foreach (var file in filesWithGeneratedSuppression)
 				{
@@ -176,8 +178,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			return suppressionFile;
 		}
 
-		public SuppressionFile GetSuppressionFile(string projectName) =>
-			_fileByAssembly.TryGetValue(projectName.CheckIfNullOrWhiteSpace(nameof(projectName)), out var existingSuppressionFile)
+		public SuppressionFile GetSuppressionFile(string assemblyName) =>
+			_fileByAssembly.TryGetValue(assemblyName.CheckIfNullOrWhiteSpace(nameof(assemblyName)), out var existingSuppressionFile)
 				? existingSuppressionFile
 				: null;
 
@@ -246,9 +248,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			lock (Instance._fileSystemService)
 			{
-				foreach (var entry in Instance._fileByAssembly)
+				foreach (SuppressionFile currentFile in Instance._fileByAssembly.Files)
 				{
-					var currentFile = entry.Value;
 					var oldFile = SuppressionFile.Load(Instance._fileSystemService, suppressionFilePath: currentFile.Path,
 													   generateSuppressionBase: false);
 
@@ -331,16 +332,12 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			var (assembly, message) = SuppressMessage.GetSuppressionInfo(semanticModel, diagnostic, cancellation);
 
 			if (assembly == null)
-			{
 				return false;
-			}
 
-			var file = _fileByAssembly.GetOrAdd(assembly, (SuppressionFile)null);
+			SuppressionFile file = GetSuppressionFile(assembly);
 
 			if (file == null)
-			{
 				return false;
-			}
 
 			if (file.GenerateSuppressionBase)
 			{
@@ -352,12 +349,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				return true;
 			}
 
-			if (!file.ContainsMessage(message))
-			{
-				return false;
-			}
-
-			return true;
+			return file.ContainsMessage(message);
 		}
 
 		private static bool IsSuppressableSeverity(DiagnosticSeverity? diagnosticSeverity) =>

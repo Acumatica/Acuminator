@@ -26,6 +26,9 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 
 			try
 			{
+				if (!File.Exists(path))
+					return null;
+
 				return XDocument.Load(path);
 			}
 			catch (Exception exception) when (FilterException(exception))

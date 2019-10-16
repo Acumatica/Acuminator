@@ -42,7 +42,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 			if (semanticModel == null)
 				return null;
 
-			SuppressionFile suppressionFile = SuppressionManager.Instance.GetSuppressionFile(project.Name);
+			SuppressionFile suppressionFile = SuppressionManager.Instance.GetSuppressionFile(project.AssemblyName);
 
 			if (suppressionFile == null)
 			{
@@ -53,7 +53,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 
 				var operationsWithSuppressionFileCreation = new List<CodeActionOperation>(4);
 				operationsWithSuppressionFileCreation.AddRange(operationsToCreateSuppresionFile);
-				operationsWithSuppressionFileCreation.Add(new SuppressInSuppressionFileOperation(Diagnostic, project.Name, semanticModel));
+				operationsWithSuppressionFileCreation.Add(new SuppressInSuppressionFileOperation(Diagnostic, project.AssemblyName, semanticModel));
 				return operationsWithSuppressionFileCreation;
 			}
 			else
@@ -77,7 +77,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 
 		private IEnumerable<CodeActionOperation> GetOperationsToCreateSuppressionFile(Project project)
 		{
-			string suppressionFileName = project.Name + SuppressionFile.SuppressionFileExtension;
+			string suppressionFileName = project.AssemblyName + SuppressionFile.SuppressionFileExtension;
 			TextDocument projectSuppressionFile =
 				project.AdditionalDocuments.FirstOrDefault(d => string.Equals(suppressionFileName, d.Name, StringComparison.OrdinalIgnoreCase)) ??
 				SuppressionManager.CreateRoslynAdditionalFile(project);
@@ -92,8 +92,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 				return new CodeActionOperation[]
 				{
 					new ApplyChangesOperation(changedSolution),
-					new LoadNewSuppressionFileOperation(projectSuppressionFile.FilePath, project.Name),
-					new ChangesBuildActionOperation(project.Name)
+					new LoadNewSuppressionFileOperation(projectSuppressionFile.FilePath, project.AssemblyName),
+					new ChangesBuildActionOperation(project.AssemblyName)
 				};
 			}
 			else
@@ -101,7 +101,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 				return new CodeActionOperation[]
 				{
 					new ApplyChangesOperation(changedSolution),
-					new LoadNewSuppressionFileOperation(projectSuppressionFile.FilePath, project.Name)
+					new LoadNewSuppressionFileOperation(projectSuppressionFile.FilePath, project.AssemblyName)
 				};
 			}		
 		}

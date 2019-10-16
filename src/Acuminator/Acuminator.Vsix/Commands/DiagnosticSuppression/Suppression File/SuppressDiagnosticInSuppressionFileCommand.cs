@@ -92,10 +92,10 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			var workspace = await Package.GetVSWorkspaceAsync();
 			Project project = workspace?.CurrentSolution?.GetProject(projectId);
 
-			if (project?.Name == null)
+			if (project?.AssemblyName == null)
 				return default;
 
-			string suppressionFileName = project.Name + SuppressionFile.SuppressionFileExtension;
+			string suppressionFileName = project.AssemblyName + SuppressionFile.SuppressionFileExtension;
 			TextDocument suppressionFile = project.AdditionalDocuments.FirstOrDefault(d => string.Equals(suppressionFileName, d.Name,
 																						   StringComparison.OrdinalIgnoreCase));
 			return (suppressionFile, project);
@@ -113,7 +113,7 @@ namespace Acuminator.Vsix.DiagnosticSuppression
 			else
 			{
 				errorMessage = new LocalizableResourceString(nameof(Resources.DiagnosticSuppression_FailedToFindSuppressionFile),
-															 Resources.ResourceManager, typeof(Resources), project.Name);
+															 Resources.ResourceManager, typeof(Resources), project.AssemblyName);
 			}
 
 			MessageBox.Show(errorMessage.ToString(), AcuminatorVSPackage.PackageName);

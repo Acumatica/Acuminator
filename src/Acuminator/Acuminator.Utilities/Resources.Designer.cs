@@ -71,7 +71,7 @@ namespace Acuminator.Utilities {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The suppression file for the project {0} cannot be found..
+        ///   Looks up a localized string similar to The suppression file for the assembly {0} cannot be found..
         /// </summary>
         public static string DiagnosticSuppression_FailedToFindSuppressionFile {
             get {
@@ -80,7 +80,7 @@ namespace Acuminator.Utilities {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Can&apos;t set buld action. The suppression file for the project {0} cannot be found..
+        ///   Looks up a localized string similar to Can&apos;t set buld action. The suppression file for the assembly {0} cannot be found..
         /// </summary>
         public static string DiagnosticSuppression_FailedToFindSuppressionFileToSetBuildAction {
             get {

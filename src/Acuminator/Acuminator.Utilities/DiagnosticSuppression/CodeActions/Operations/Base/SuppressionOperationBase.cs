@@ -13,11 +13,11 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 	/// </summary>
 	internal abstract class SuppressionOperationBase : CodeActionOperation
 	{
-		protected string ProjectName { get; }
+		protected string AssemblyName { get; }
 
-		protected SuppressionOperationBase(string projectName)
+		protected SuppressionOperationBase(string assemblyName)
 		{
-			ProjectName = projectName.CheckIfNullOrWhiteSpace(nameof(projectName));
+			AssemblyName = assemblyName.CheckIfNullOrWhiteSpace(nameof(assemblyName));
 		}
 
 		protected void ShowLocalizedError(string resourceName, params string[] formatArgs)

@@ -15,7 +15,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 
 		public override string Title => "Load new suppression file code action operation";
 
-		public LoadNewSuppressionFileOperation(string filePath, string projectName) : base(projectName)
+		public LoadNewSuppressionFileOperation(string filePath, string assemblyName) : base(assemblyName)
 		{
 			_filePath = filePath;
 		}
@@ -29,7 +29,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 
 			if (suppressionFile == null)
 			{
-				ShowLocalizedError(nameof(Resources.DiagnosticSuppression_FailedToFindSuppressionFile), ProjectName);
+				ShowLocalizedError(nameof(Resources.DiagnosticSuppression_FailedToFindSuppressionFile), AssemblyName);
 			}
 		}				
 	}

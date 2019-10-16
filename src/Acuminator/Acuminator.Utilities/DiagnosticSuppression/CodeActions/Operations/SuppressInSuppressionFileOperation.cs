@@ -17,8 +17,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 
 		public override string Title => "Suppress diagnostic code action in the suppression file operation";
 
-		public SuppressInSuppressionFileOperation(Diagnostic diagnosticToSuppress, string projectName, SemanticModel semanticModel) :
-											 base(projectName)
+		public SuppressInSuppressionFileOperation(Diagnostic diagnosticToSuppress, string assemblyName, SemanticModel semanticModel) :
+											 base(assemblyName)
 		{		
 			_diagnosticToSuppress = diagnosticToSuppress.CheckIfNull(nameof(diagnosticToSuppress));
 			_semanticModel = semanticModel.CheckIfNull(nameof(semanticModel));
@@ -27,11 +27,11 @@ namespace Acuminator.Utilities.DiagnosticSuppression.CodeActions
 		public override void Apply(Workspace workspace, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			SuppressionFile suppressionFile = SuppressionManager.Instance.GetSuppressionFile(ProjectName);
+			SuppressionFile suppressionFile = SuppressionManager.Instance.GetSuppressionFile(AssemblyName);
 
 			if (suppressionFile == null)
 			{
-				ShowLocalizedError(nameof(Resources.DiagnosticSuppression_FailedToFindSuppressionFile), ProjectName);
+				ShowLocalizedError(nameof(Resources.DiagnosticSuppression_FailedToFindSuppressionFile), AssemblyName);
 				return;
 			}
 

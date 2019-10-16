@@ -23,7 +23,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				project.ThrowOnNull(nameof(project));
 
 				//First check if file already exists to dismiss threads withou acquiring the lock
-				var existingSuppressionFile =  _suppressionManager.GetSuppressionFile(project.Name);
+				var existingSuppressionFile =  _suppressionManager.GetSuppressionFile(project.AssemblyName);
 
 				if (existingSuppressionFile != null)
 					return existingSuppressionFile;
@@ -31,7 +31,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				lock (_suppressionManager._fileSystemService)
 				{
 					//Second check inside the lock if file already exists 
-					_suppressionManager._fileByAssembly.TryGetValue(project.Name, out existingSuppressionFile);
+					_suppressionManager._fileByAssembly.TryGetValue(project.AssemblyName, out existingSuppressionFile);
 					return existingSuppressionFile ?? AddNewSuppressionFileAndApplyChangesToWorkspace(project);
 				}
 			}
@@ -50,7 +50,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			{
 				project.ThrowOnNull(nameof(project));
 
-				string suppressionFileName = project.Name + SuppressionFile.SuppressionFileExtension;
+				string suppressionFileName = project.AssemblyName + SuppressionFile.SuppressionFileExtension;
 				string projectDir = Instance._fileSystemService.GetFileDirectory(project.FilePath);
 				string suppressionFilePath = Path.Combine(projectDir, suppressionFileName);
 
