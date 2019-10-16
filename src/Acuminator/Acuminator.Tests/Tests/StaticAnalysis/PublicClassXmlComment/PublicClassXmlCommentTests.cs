@@ -19,7 +19,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 			new PublicClassXmlCommentAnalyzer(
 				CodeAnalysisSettings.Default
 				.WithStaticAnalysisEnabled()
-				.WithSuppressionMechanismDisabled());
+				.WithSuppressionMechanismDisabled()
+				.WithPX1007DocumentationDiagnosticEnabled());
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new PublicClassXmlCommentFix();
 
