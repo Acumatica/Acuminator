@@ -58,14 +58,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			var addDescriptionAction = CodeAction.Create(
 				addDescriptionTitle,
 				cancellation => AddDescriptionAsync(context.Document, context.Span, option, cancellation),
-				nameof(AddDescriptionAsync));
+				equivalenceKey: addDescriptionTitle);
 			context.RegisterCodeFix(addDescriptionAction, context.Diagnostics);
 
 			var excludeClassTitle = nameof(Resources.PX1007FixExcludeClass).GetLocalized().ToString();
 			var excludeClassAction = CodeAction.Create(
 				excludeClassTitle,
 				cancellation => ExcludeClassAsync(context.Document, context.Span, cancellation),
-				nameof(ExcludeClassAsync));
+				equivalenceKey: excludeClassTitle);
 			context.RegisterCodeFix(excludeClassAction, context.Diagnostics);
 
 			return Task.CompletedTask;
