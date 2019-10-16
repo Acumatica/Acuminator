@@ -288,4 +288,10 @@
   <data name="PackageLoad_WaitMessage" xml:space="preserve">
     <value>Loading the Acuminator package</value>
   </data>
+  <data name="Setting_CodeAnalysis_PX1007DiagnosticEnabled_Description" xml:space="preserve">
+    <value>Display the PX1007 diagnostic, which is shown for the public classes, interfaces, structs, enumerations, delegates, and DAC properties that do not have XML comments.</value>
+  </data>
+  <data name="Setting_CodeAnalysis_PX1007DiagnosticEnabled_Title" xml:space="preserve">
+    <value>Enable PX1007 diagnostic</value>
+  </data>
 </root>

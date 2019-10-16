@@ -394,6 +394,24 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Display the PX1007 diagnostic, which is shown for the public classes, interfaces, structs, enumerations, delegates, and DAC properties that do not have XML comments..
+        /// </summary>
+        public static string Setting_CodeAnalysis_PX1007DiagnosticEnabled_Description {
+            get {
+                return ResourceManager.GetString("Setting_CodeAnalysis_PX1007DiagnosticEnabled_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable PX1007 diagnostic.
+        /// </summary>
+        public static string Setting_CodeAnalysis_PX1007DiagnosticEnabled_Title {
+            get {
+                return ResourceManager.GetString("Setting_CodeAnalysis_PX1007DiagnosticEnabled_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Analyse the whole invocation tree in a recursive manner..
         /// </summary>
         public static string Setting_CodeAnalysis_RecursiveAnalysisEnabled_Description {
