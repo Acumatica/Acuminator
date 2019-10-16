@@ -1,6 +1,7 @@
 ﻿using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.ProjectSystem;
 using Acuminator.Utilities.DiagnosticSuppression.IO;
+using Acuminator.Utilities.DiagnosticSuppression.BuildAction;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using System;
@@ -26,37 +27,45 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			private set;
 		}
 
+		internal ICustomBuildActionSetter BuildActionSetter { get; }
+
 		private readonly ConcurrentDictionary<string, SuppressionFile> _fileByAssembly = new ConcurrentDictionary<string, SuppressionFile>();
 		private readonly ISuppressionFileSystemService _fileSystemService;
 		private readonly SuppressionFileCreator _suppressionFileCreator;
 
-		private SuppressionManager(ISuppressionFileSystemService fileSystemService)
+		private SuppressionManager(ISuppressionFileSystemService fileSystemService, ICustomBuildActionSetter buildActionSetter)
 		{
 			_fileSystemService = fileSystemService.CheckIfNull(nameof(fileSystemService));
 			_suppressionFileCreator = new SuppressionFileCreator(this);
+			BuildActionSetter = buildActionSetter;
 		}
 
 		public static void InitOrReset(Workspace workspace, IEnumerable<SuppressionManagerInitInfo> additionalFiles,
-									   Func<ISuppressionFileSystemService> fileSystemServiceFabric = null) =>
-			InitOrReset(workspace, additionalFiles, fileSystemServiceFabric, null);
+									   Func<ISuppressionFileSystemService> fileSystemServiceFabric = null,
+									   Func<ICustomBuildActionSetter> buildActionSetterFabric = null) =>
+			InitOrReset(workspace, additionalFiles, fileSystemServiceFabric, null, buildActionSetterFabric);
 
 		public static void InitOrReset(Workspace workspace, IEnumerable<SuppressionManagerInitInfo> additionalFiles,
-									   Func<IIOErrorProcessor> errorProcessorFabric = null) =>
-			InitOrReset(workspace, additionalFiles, null, errorProcessorFabric);
+									   Func<IIOErrorProcessor> errorProcessorFabric = null,
+									   Func<ICustomBuildActionSetter> buildActionSetterFabric = null) =>
+			InitOrReset(workspace, additionalFiles, null, errorProcessorFabric, buildActionSetterFabric);
 
 		public static void InitOrReset(Workspace workspace, bool generateSuppressionBase, 
-									   Func<ISuppressionFileSystemService> fileSystemServiceFabric = null) =>
+									   Func<ISuppressionFileSystemService> fileSystemServiceFabric = null,
+									   Func<ICustomBuildActionSetter> buildActionSetterFabric = null) =>
 			InitOrReset(workspace, workspace?.CurrentSolution?.GetSuppressionInfoFromSolution(generateSuppressionBase),
-						fileSystemServiceFabric, null);
+						fileSystemServiceFabric, null, buildActionSetterFabric);
 
 		public static void InitOrReset(Workspace workspace, bool generateSuppressionBase, 
-									   Func<IIOErrorProcessor> errorProcessorFabric = null) =>
+									   Func<IIOErrorProcessor> errorProcessorFabric = null,
+									   Func<ICustomBuildActionSetter> buildActionSetterFabric = null) =>
 			InitOrReset(workspace, workspace?.CurrentSolution?.GetSuppressionInfoFromSolution(generateSuppressionBase),
-						null, errorProcessorFabric);
+						null, errorProcessorFabric, buildActionSetterFabric);
 
 		private static void InitOrReset(Workspace workspace, IEnumerable<SuppressionManagerInitInfo> suppressionFileInfos,
-										Func<ISuppressionFileSystemService> fileSystemServiceFabric = null,
-										Func<IIOErrorProcessor> errorProcessorFabric = null)
+										Func<ISuppressionFileSystemService> fileSystemServiceFabric,
+										Func<IIOErrorProcessor> errorProcessorFabric,
+										Func<ICustomBuildActionSetter> buildActionSetterFabric)
 		{
 			workspace.ThrowOnNull(nameof(workspace));
 			suppressionFileInfos = suppressionFileInfos ?? Enumerable.Empty<SuppressionManagerInitInfo>();
@@ -77,7 +86,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 						fileSystemService = fileSystemServiceFabric();
 					}
 
-					Instance = new SuppressionManager(fileSystemService);
+					ICustomBuildActionSetter customBuildActionSetter = buildActionSetterFabric?.Invoke();
+					Instance = new SuppressionManager(fileSystemService, customBuildActionSetter);
 				}
 				else
 				{

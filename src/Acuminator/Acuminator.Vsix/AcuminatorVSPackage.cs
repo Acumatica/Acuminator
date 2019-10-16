@@ -246,7 +246,9 @@ namespace Acuminator.Vsix
         private async System.Threading.Tasks.Task SetupSuppressionManagerAsync()
         {
             var workspace = await this.GetVSWorkspaceAsync();
-            SuppressionManager.InitOrReset(workspace, generateSuppressionBase: false, () => new VsixIOErrorProcessor());
+            SuppressionManager.InitOrReset(workspace, generateSuppressionBase: false, 
+										   errorProcessorFabric: () => new VsixIOErrorProcessor(),
+										   buildActionSetterFabric: () => new VsixBuildActionSetter());
         }
 
         private void InitializeCodeAnalysisSettings(IProgress<ServiceProgressData> progress)

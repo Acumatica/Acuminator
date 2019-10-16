@@ -118,10 +118,16 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DiagnosticSuppression_FailedToAddToSuppressionFile" xml:space="preserve">
-    <value>The diagnostic cannot be added to the suppression file. Check if the {0} file is accessible.</value>
+    <value>The diagnostic cannot be added to the suppression file. Check if file {0} is accessible.</value>
   </data>
   <data name="DiagnosticSuppression_FailedToFindSuppressionFile" xml:space="preserve">
-    <value>The suppression file for the {0} project cannot be found.</value>
+    <value>The suppression file for the project {0} cannot be found.</value>
+  </data>
+  <data name="DiagnosticSuppression_FailedToFindSuppressionFileToSetBuildAction" xml:space="preserve">
+    <value>Can't set buld action. The suppression file for the project {0} cannot be found.</value>
+  </data>
+  <data name="DiagnosticSuppression_FailedToSetBuildAction" xml:space="preserve">
+    <value>Failed to set build action for the suppression file {0}.</value>
   </data>
   <data name="FailedToLoadTheSuppressionFile" xml:space="preserve">
     <value>Acuminator cannot load the suppression file. The suppression mechanism will be turned off. If you fix the error, the suppression mechanism will be turned on automatically.</value>
