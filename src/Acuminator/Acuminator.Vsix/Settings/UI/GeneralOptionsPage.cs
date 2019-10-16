@@ -220,6 +220,24 @@ namespace Acuminator.Vsix
 			}
 		}
 
+		private bool _px1007DocumentationDiagnosticEnabled = CodeAnalysisSettings.DefaultPX1007DocumentationDiagnosticEnabled;
+
+		[CategoryFromResources(nameof(VSIXResource.Category_CodeAnalysis), CodeAnalysisCategoryName)]
+		[DisplayNameFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_PX1007DiagnosticEnabled_Title))]
+		[DescriptionFromResources(resourceKey: nameof(VSIXResource.Setting_CodeAnalysis_PX1007DiagnosticEnabled_Description))]
+		public bool PX1007DocumentationDiagnosticEnabled
+		{
+			get => _px1007DocumentationDiagnosticEnabled;
+			set
+			{
+				if (_px1007DocumentationDiagnosticEnabled != value)
+				{
+					_px1007DocumentationDiagnosticEnabled = value;
+					_codeAnalysisSettingsChanged = true;
+				}
+			}
+		}
+
 		public override void ResetSettings()
 		{
 			_coloringEnabled = true;
@@ -234,6 +252,7 @@ namespace Acuminator.Vsix
 			_suppressionMechanismEnabled = CodeAnalysisSettings.DefaultSuppressionMechanismEnabled;
 			_recursiveAnalysisEnabled = CodeAnalysisSettings.DefaultRecursiveAnalysisEnabled;
 			_isvSpecificAnalyzersEnabled = CodeAnalysisSettings.DefaultISVSpecificAnalyzersEnabled;
+			_px1007DocumentationDiagnosticEnabled = CodeAnalysisSettings.DefaultPX1007DocumentationDiagnosticEnabled;
 			
 			_colorSettingsChanged = false;
 			_codeAnalysisSettingsChanged = false;
