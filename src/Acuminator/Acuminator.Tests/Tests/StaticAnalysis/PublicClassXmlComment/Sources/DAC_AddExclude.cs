@@ -14,8 +14,10 @@ namespace PX.Objects
 	public class DAC : IBqlTable
 	{
 		#region OrderType
+		/// <exclude/>
 		public abstract class orderType : IBqlField { }
 
+		/// <exclude/>
 		[PXDBString(IsKey = true, InputMask = "")]
 		[PXDefault]
 		[PXUIField(DisplayName = "Order Type")]
@@ -23,9 +25,11 @@ namespace PX.Objects
 		#endregion
 
 		#region OrderNbr
+		/// <exclude/>
 		public abstract class orderNbr : IBqlField { }
 
 		///
+		/// <exclude/>
 		[PXDBString(IsKey = true, InputMask = "")]
 		[PXDefault]
 		[PXUIField(DisplayName = "Order Nbr.")]
@@ -33,11 +37,13 @@ namespace PX.Objects
 		#endregion
 
 		#region Status
+		/// <exclude/>
 		public abstract class status : IBqlField { }
 
 		/// <summary>
 		///
 		/// </summary>
+		/// <exclude/>
 		[PXString]
 		[PXUIField(DisplayName = "Status")]
 		public string Status { get; set; }

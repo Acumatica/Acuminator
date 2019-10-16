@@ -54,21 +54,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 				Descriptors.PX1007_PublicClassXmlComment.CreateFor(34, 14));
 
 		[Theory]
-		[EmbeddedFileData("DAC.cs")]
-		public async Task PublicDac_WithoutDescription(string source) =>
-			await VerifyCSharpDiagnosticAsync(
-				source,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(11, 15),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(14, 25),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(19, 17),
-
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(23, 25),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(28, 17),
-
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(32, 25),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(36, 17));
-
-		[Theory]
 		[EmbeddedFileData("NonPublic.cs")]
 		public async Task Non_PublicClass_WithoutDescription_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
@@ -122,6 +107,40 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		[Theory]
 		[EmbeddedFileData("WithEmptySummary.cs", "WithEmptySummary_Exclude.cs")]
 		public async Task EmptySummaryTag_Exclude_Works(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 1);
+
+		[Theory]
+		[EmbeddedFileData("DAC.cs")]
+		public async Task PublicDac_WithoutDescription(string source) =>
+			await VerifyCSharpDiagnosticAsync(
+				source,
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(17, 25),
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(22, 17),
+
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(26, 25),
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(32, 17),
+
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(36, 25),
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(43, 17));
+
+		[Theory]
+		[EmbeddedFileData("DAC_AddDescription.cs")]
+		public async Task PublicDac_WithDescription_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("DAC_AddExclude.cs")]
+		public async Task PublicDac_WithExclude_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("DAC.cs", "DAC_AddDescription.cs")]
+		public async Task Dac_AddDescription_Works(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 0);
+
+		[Theory]
+		[EmbeddedFileData("DAC.cs", "DAC_AddExclude.cs")]
+		public async Task Dac_AddExclude_Works(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 1);
 	}
 }
