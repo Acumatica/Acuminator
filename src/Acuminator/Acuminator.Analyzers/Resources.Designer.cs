@@ -233,7 +233,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to enum.
+        ///   Looks up a localized string similar to enumeration.
         /// </summary>
         public static string PX1007Enum {
             get {

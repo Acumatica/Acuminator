@@ -499,7 +499,7 @@
     <value>delegate</value>
   </data>
   <data name="PX1007Enum" xml:space="preserve">
-    <value>enum</value>
+    <value>enumeration</value>
   </data>
   <data name="PX1007Interface" xml:space="preserve">
     <value>interface</value>
