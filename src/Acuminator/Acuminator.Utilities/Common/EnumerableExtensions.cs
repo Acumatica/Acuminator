@@ -153,12 +153,8 @@ namespace Acuminator.Utilities.Common
 			predicate.ThrowOnNull(nameof(predicate));
 			return WhereForStructListImplementation();
 
-
 			IEnumerable<TNode> WhereForStructListImplementation()
 			{
-				if (source.Count == 0)
-					yield break;
-
 				for (int i = 0; i < source.Count; i++)
 				{
 					TNode item = source[i];
@@ -167,6 +163,29 @@ namespace Acuminator.Utilities.Common
 					{
 						yield return item;
 					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Select method for <see cref="SyntaxTriviaList"/>. This is an optimization method which allows to avoid boxing.
+		/// </summary>
+		/// <typeparam name="TResult">Type of the result.</typeparam>
+		/// <param name="triviaList">The triviaList to act on.</param>
+		/// <param name="selector">The selector.</param>
+		/// <returns/>
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<TResult> Select<TResult>(this SyntaxTriviaList triviaList, Func<SyntaxTrivia, TResult> selector)
+		{
+			selector.ThrowOnNull(nameof(selector));
+			return SelectForStructListImplementation();
+
+			IEnumerable<TResult> SelectForStructListImplementation()
+			{
+				for (int i = 0; i < triviaList.Count; i++)
+				{
+					yield return selector(triviaList[i]);
 				}
 			}
 		}

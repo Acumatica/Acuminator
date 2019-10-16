@@ -10,4 +10,22 @@ namespace PX.Objects
 	public class Excluded
 	{
 	}
+
+	/// <exclude/>
+	public interface IExcluded
+	{
+	}
+
+	/// <exclude/>
+	public struct ExcludedStruct
+	{
+	}
+
+	/// <exclude/>
+	public delegate void ExcludedAtion();
+
+	/// <exclude/>
+	public enum ExcludedEnum
+	{
+	}
 }

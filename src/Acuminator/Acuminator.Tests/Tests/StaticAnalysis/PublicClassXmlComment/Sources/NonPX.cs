@@ -9,4 +9,18 @@ namespace FS.Objects
 	public class NonPX
 	{
 	}
+
+	public interface INonPX
+	{
+	}
+
+	public struct NonPXStruct
+	{
+	}
+
+	public delegate void NonPXAtion();
+
+	public enum NonPXEnum
+	{
+	}
 }

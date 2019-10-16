@@ -10,4 +10,18 @@ namespace PX.Objects
 	public class WithoutDescription
 	{
 	}
+
+	/// <exclude/>
+	public delegate void ActionWithoutDescription();
+
+	/// <exclude/>
+	public struct StructWithoutDescription { }
+
+	/// <exclude/>
+	public interface InterfaceWithoutDescription { }
+
+	/// <exclude/>
+	public enum EnumWithoutDescription
+	{
+	}
 }
