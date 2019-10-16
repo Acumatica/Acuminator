@@ -9,4 +9,18 @@ namespace PX.Objects
 	internal class NonPublic
 	{
 	}
+
+	internal interface INonPublic
+	{
+	}
+
+	internal struct NonPublicStruct
+	{
+	}
+
+	internal delegate void NonPublicAtion();
+
+	internal enum NonPublicEnum
+	{
+	}
 }
