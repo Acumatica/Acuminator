@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis;
 
 namespace Acuminator.Analyzers
 {
-	internal static class ResourcesHelper
+	public static class ResourcesHelper
 	{
 		public static LocalizableString GetLocalized(this string resourceName)
 		{
