@@ -12,17 +12,19 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		/// Constructor.
 		/// </summary>
 		/// <param name="codeAnalysisSettings">(Optional) The code analysis settings for unit tests.</param>
-		public PXDiagnosticAnalyzer(CodeAnalysisSettings codeAnalysisSettings = null)
+		protected PXDiagnosticAnalyzer(CodeAnalysisSettings codeAnalysisSettings = null)
 		{
 			CodeAnalysisSettings = codeAnalysisSettings ?? GlobalCodeAnalysisSettings.Instance;
 		}
-
+		
 		public override void Initialize(AnalysisContext context)
 		{
 			if (!CodeAnalysisSettings.StaticAnalysisEnabled)
 				return;
 
-			//context.EnableConcurrentExecution();
+			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
+			context.EnableConcurrentExecution();
+
 			context.RegisterCompilationStartAction(compilationStartContext =>
 			{
 				var pxContext = new PXContext(compilationStartContext.Compilation, CodeAnalysisSettings);
