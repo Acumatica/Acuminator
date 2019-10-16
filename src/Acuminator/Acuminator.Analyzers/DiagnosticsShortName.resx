@@ -322,6 +322,6 @@
     <value>NoUnboundTypeAttributeWithPXDBCalced</value>
   </data>
   <data name="PX1007" xml:space="preserve">
-    <value>NoXmlCommentForPublicClass</value>
+    <value>NoXmlCommentForPublicEntityOrDacProperty</value>
   </data>
 </root>

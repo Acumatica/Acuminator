@@ -125,7 +125,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NoXmlCommentForPublicClass.
+        ///   Looks up a localized string similar to NoXmlCommentForPublicEntityOrDacProperty.
         /// </summary>
         internal static string PX1007 {
             get {
