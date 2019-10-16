@@ -183,7 +183,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 				if (!memberDeclaration.HasStructuredTrivia)
 				{
-					ReportDiagnostic(_syntaxContext, identifier.GetLocation(), FixOption.NoXmlComment);
+					ReportDiagnostic(_syntaxContext, memberDeclaration, identifier.GetLocation(), FixOption.NoXmlComment);
 					return true;
 				}
 
@@ -229,15 +229,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 				if (!hasXmlComment)
 				{
-					ReportDiagnostic(_syntaxContext, identifier.GetLocation(), FixOption.NoXmlComment);		
+					ReportDiagnostic(_syntaxContext, memberDeclaration, identifier.GetLocation(), FixOption.NoXmlComment);		
 				}
 				else if (!hasSummaryTag)
 				{
-					ReportDiagnostic(_syntaxContext, identifier.GetLocation(), FixOption.NoSummaryTag);
+					ReportDiagnostic(_syntaxContext, memberDeclaration, identifier.GetLocation(), FixOption.NoSummaryTag);
 				}
 				else if (!nonEmptySummaryTag)
 				{
-					ReportDiagnostic(_syntaxContext, identifier.GetLocation(), FixOption.EmptySummaryTag);
+					ReportDiagnostic(_syntaxContext, memberDeclaration, identifier.GetLocation(), FixOption.EmptySummaryTag);
 				}
 
 				return true;
@@ -264,14 +264,38 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				!content.IsNullOrEmpty() && 
 				 content.Any(c => char.IsLetterOrDigit(c));
 
-			private void ReportDiagnostic(SyntaxNodeAnalysisContext syntaxContext, Location location, FixOption fixOption)
+			private void ReportDiagnostic(SyntaxNodeAnalysisContext syntaxContext, MemberDeclarationSyntax memberDeclaration,
+										  Location location, FixOption fixOption)
 			{
 				syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+				var memberCategory = GetMemberCategory(memberDeclaration);
 				var properties = ImmutableDictionary<string, string>.Empty
 																	.Add(FixOptionKey, fixOption.ToString());
-				var noXmlCommentDiagnostic = Diagnostic.Create(Descriptors.PX1007_PublicClassXmlComment, location, properties);
+				var noXmlCommentDiagnostic = Diagnostic.Create(Descriptors.PX1007_PublicClassXmlComment, location, properties, memberCategory);
 
 				syntaxContext.ReportDiagnosticWithSuppressionCheck(noXmlCommentDiagnostic, _codeAnalysisSettings);
+			}
+
+			private LocalizableString GetMemberCategory(MemberDeclarationSyntax memberDeclaration)
+			{
+				
+				switch (memberDeclaration)
+				{
+					case ClassDeclarationSyntax _:
+						return nameof(Resources.PX1007Class).GetLocalized();
+					case PropertyDeclarationSyntax _:
+						return nameof(Resources.PX1007DacProperty).GetLocalized();
+					case StructDeclarationSyntax _:
+						return nameof(Resources.PX1007Struct).GetLocalized();
+					case InterfaceDeclarationSyntax _:
+						return nameof(Resources.PX1007Interface).GetLocalized();
+					case EnumDeclarationSyntax _:
+						return nameof(Resources.PX1007Enum).GetLocalized();
+					case DelegateDeclarationSyntax _:
+						return nameof(Resources.PX1007Delegate).GetLocalized();
+					default:
+						return nameof(Resources.PX1007DefaultEntity).GetLocalized();
+				}
 			}
 		}
 	}
