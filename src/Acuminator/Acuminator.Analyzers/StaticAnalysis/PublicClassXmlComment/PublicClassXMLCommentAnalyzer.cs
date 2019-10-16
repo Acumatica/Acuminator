@@ -30,11 +30,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1007_PublicClassXmlComment);
 
-		public PublicClassXmlCommentAnalyzer(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings)
+		public PublicClassXmlCommentAnalyzer(CodeAnalysisSettings codeAnalysisSettings) :
+										base(codeAnalysisSettings)
 		{
 		}
 
-		public PublicClassXmlCommentAnalyzer() : this(null)
+		public PublicClassXmlCommentAnalyzer() : 
+										this(null)
 		{
 		}
 
@@ -60,7 +62,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			private readonly PXContext _pxContext;
 			private readonly SyntaxNodeAnalysisContext _syntaxContext;
 			private CodeAnalysisSettings _codeAnalysisSettings;
-			private bool _isInsideAcumaticaNamespace;
 			private Stack<bool> _isInsideDacContextStack = new Stack<bool>(2);
 
 			public XmlCommentsWalker(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext, 
@@ -69,32 +70,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				_syntaxContext = syntaxContext;
 				_pxContext = pxContext;
 				_codeAnalysisSettings = codeAnalysisSettings;
-			}
-
-			public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax namespaceDeclaration)
-			{
-				if (_isInsideAcumaticaNamespace)    //for nested namespace declarations
-				{
-					base.VisitNamespaceDeclaration(namespaceDeclaration);
-					return;
-				}
-
-				try
-				{
-					string namespaceName = namespaceDeclaration.Name?.ToString();
-					bool startWith = namespaceName?.StartsWith(NamespaceNames.AcumaticaRootNamespaceWithDot, StringComparison.Ordinal) ?? false;
-					_isInsideAcumaticaNamespace = startWith || NamespaceNames.AcumaticaRootNamespace == namespaceName;
-
-					if (_isInsideAcumaticaNamespace)
-					{
-						base.VisitNamespaceDeclaration(namespaceDeclaration);
-					}
-				}
-				finally
-				{
-
-					_isInsideAcumaticaNamespace = false;
-				}
 			}
 
 			public override void VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
@@ -178,7 +153,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
 				//extra check for _isInsideAcumaticaNamespace for classes declared in a global namespace
-				if (!_isInsideAcumaticaNamespace || !modifiers.Any(SyntaxKind.PublicKeyword))
+				if (!modifiers.Any(SyntaxKind.PublicKeyword))
 					return false;
 
 				if (!memberDeclaration.HasStructuredTrivia)
@@ -277,8 +252,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			}
 
 			private LocalizableString GetMemberCategory(MemberDeclarationSyntax memberDeclaration)
-			{
-				
+			{		
 				switch (memberDeclaration)
 				{
 					case ClassDeclarationSyntax _:
