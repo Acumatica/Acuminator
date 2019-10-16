@@ -163,7 +163,7 @@
     <value>Exclude the class from the API Reference</value>
   </data>
   <data name="PX1007Title" xml:space="preserve">
-    <value>A public class should have a description in the summary XML tag</value>
+    <value>A public {0} should have a description in the summary XML tag</value>
   </data>
   <data name="PX1008Title" xml:space="preserve">
     <value>Reference of @this graph in this delegate will cause synchronous delegate execution</value>
@@ -491,5 +491,26 @@
   </data>
   <data name="SuppressDiagnosticWithCommentNonNestedCodeActionTitle" xml:space="preserve">
     <value>Suppress the {0} diagnostic with Acuminator in a comment</value>
+  </data>
+  <data name="PX1007Class" xml:space="preserve">
+    <value>class</value>
+  </data>
+  <data name="PX1007Delegate" xml:space="preserve">
+    <value>delegate</value>
+  </data>
+  <data name="PX1007Enum" xml:space="preserve">
+    <value>enum</value>
+  </data>
+  <data name="PX1007Interface" xml:space="preserve">
+    <value>interface</value>
+  </data>
+  <data name="PX1007Struct" xml:space="preserve">
+    <value>struct</value>
+  </data>
+  <data name="PX1007DefaultEntity" xml:space="preserve">
+    <value>entity</value>
+  </data>
+  <data name="PX1007DacProperty" xml:space="preserve">
+    <value>DAC property</value>
   </data>
 </root>
