@@ -40,6 +40,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		{
 		}
 
+		protected override bool ShouldAnalyze(PXContext pxContext) =>
+			base.ShouldAnalyze(pxContext) && 
+			pxContext.CodeAnalysisSettings.PX1007DocumentationDiagnosticEnabled;
+
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
 			compilationStartContext.RegisterSyntaxNodeAction(context => AnalyzeCompilationUnit(context, pxContext),
