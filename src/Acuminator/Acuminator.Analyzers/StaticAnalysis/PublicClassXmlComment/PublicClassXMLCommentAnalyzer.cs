@@ -179,7 +179,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 							continue;
 
 						var contentHasText = contentString.Split(_xmlCommentSummarySeparators, StringSplitOptions.RemoveEmptyEntries)
-														  .Any(s => !s.IsNullOrWhiteSpace());
+														  .Any(CommentContentIsNotEmpty);
 						if (contentHasText)
 						{
 							nonEmptySummaryTag = true;
@@ -220,6 +220,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 						  .OfType<XmlElementSyntax>()
 						  .Where(n => XmlCommentSummaryTag.Equals(n?.StartTag?.Name?.ToString(), StringComparison.Ordinal))
 						  .FirstOrDefault();
+
+			private bool CommentContentIsNotEmpty(string content) =>
+				!content.IsNullOrEmpty() && 
+				 content.Any(c => char.IsLetterOrDigit(c));
 
 			private void ReportDiagnostic(SyntaxNodeAnalysisContext syntaxContext, Location location, FixOption fixOption)
 			{
