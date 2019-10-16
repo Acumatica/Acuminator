@@ -25,7 +25,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		public async Task PublicClass_WithoutDescription_ReportsDiagnistic(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(9, 15));
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(9, 15),
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(13, 23),
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(15, 16),
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(17, 19),
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(19, 14));
 
 		[Theory]
 		[EmbeddedFileData("WithoutSummary.cs")]
