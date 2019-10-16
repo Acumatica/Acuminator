@@ -219,7 +219,6 @@
     <Compile Include="Tests\StaticAnalysis\PublicClassXmlComment\PublicClassXmlCommentTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Excluded.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\NonPublic.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\NonPX.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\WithEmptySummary.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\WithoutDescription.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\WithoutSummary.cs" />

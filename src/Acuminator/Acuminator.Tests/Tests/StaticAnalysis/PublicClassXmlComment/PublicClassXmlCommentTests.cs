@@ -62,11 +62,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
-		[EmbeddedFileData("NonPX.cs")]
-		public async Task NonPX_PublicClass_WithoutDescription_DoesntReportDiagnostic(string source) =>
-			await VerifyCSharpDiagnosticAsync(source);
-
-		[Theory]
 		[EmbeddedFileData("Excluded.cs")]
 		public async Task Excluded_PublicClass_WithoutDescription_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
