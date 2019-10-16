@@ -22,7 +22,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 
 		[Theory]
 		[EmbeddedFileData("WithoutDescription.cs")]
-		public async Task PublicClass_WithoutDescription_ReportsDiagnistic(string source) =>
+		public async Task PublicClass_WithoutDescription(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
 				Descriptors.PX1007_PublicClassXmlComment.CreateFor(9, 15),
@@ -33,7 +33,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 
 		[Theory]
 		[EmbeddedFileData("WithoutSummary.cs")]
-		public async Task PublicClass_WithoutSummary_ReportsDiagnistic(string source) =>
+		public async Task PublicClass_WithoutSummary(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
 				Descriptors.PX1007_PublicClassXmlComment.CreateFor(10, 15),
@@ -44,7 +44,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 
 		[Theory]
 		[EmbeddedFileData("WithEmptySummary.cs")]
-		public async Task PublicClass_WithEmptySummary_ReportsDiagnistic(string source) =>
+		public async Task PublicClass_WithEmptySummary(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
 				Descriptors.PX1007_PublicClassXmlComment.CreateFor(12, 15),
@@ -54,23 +54,38 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 				Descriptors.PX1007_PublicClassXmlComment.CreateFor(34, 14));
 
 		[Theory]
+		[EmbeddedFileData("DAC.cs")]
+		public async Task PublicDac_WithoutDescription(string source) =>
+			await VerifyCSharpDiagnosticAsync(
+				source,
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(11, 15),
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(14, 25),
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(19, 17),
+
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(23, 25),
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(28, 17),
+
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(32, 25),
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(36, 17));
+
+		[Theory]
 		[EmbeddedFileData("NonPublic.cs")]
-		public async Task Non_PublicClass_WithoutDescription_DoesntReportDiagnistic(string source) =>
+		public async Task Non_PublicClass_WithoutDescription_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
 		[EmbeddedFileData("NonPX.cs")]
-		public async Task NonPX_PublicClass_WithoutDescription_DoesntReportDiagnistic(string source) =>
+		public async Task NonPX_PublicClass_WithoutDescription_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
 		[EmbeddedFileData("Excluded.cs")]
-		public async Task Excluded_PublicClass_WithoutDescription_DoesntReportDiagnistic(string source) =>
+		public async Task Excluded_PublicClass_WithoutDescription_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
 		[EmbeddedFileData("ExcludedWithNested.cs")]
-		public async Task ExcludedWithNested_PublicClasses_WithoutDescription_DoesntReportDiagnistic(string source) =>
+		public async Task ExcludedWithNested_PublicClasses_WithoutDescription_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1007_PublicClassXmlComment.CreateFor(27, 15),
 				Descriptors.PX1007_PublicClassXmlComment.CreateFor(35, 16),
