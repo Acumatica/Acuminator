@@ -46,11 +46,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
             }
 
             var codeActionName = nameof(Resources.PX1092Fix).GetLocalized().ToString();
-            var codeAction = CodeAction.Create(
-                codeActionName,
-                cancellation => FixActionHandlerAttributes(context.Document, context.Span, option, cancellation));
+			var codeAction = CodeAction.Create(
+				codeActionName,
+				cancellation => FixActionHandlerAttributes(context.Document, context.Span, option, cancellation),
+				equivalenceKey: codeActionName);
 
-            context.RegisterCodeFix(codeAction, context.Diagnostics);
+			context.RegisterCodeFix(codeAction, context.Diagnostics);
 			return Task.CompletedTask;
 		}
 

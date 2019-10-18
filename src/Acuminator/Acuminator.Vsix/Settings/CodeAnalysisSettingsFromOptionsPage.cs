@@ -9,7 +9,7 @@ using Acuminator.Utilities.Common;
 
 namespace Acuminator.Vsix.Settings
 {
-	[Export(typeof (CodeAnalysisSettings))]
+	[Export(typeof(CodeAnalysisSettings))]
 	class CodeAnalysisSettingsFromOptionsPage : CodeAnalysisSettings
 	{
 		private readonly GeneralOptionsPage _optionsPage;
@@ -29,5 +29,7 @@ namespace Acuminator.Vsix.Settings
 		public override bool StaticAnalysisEnabled => _optionsPage.StaticAnalysisEnabled;
 
 		public override bool SuppressionMechanismEnabled => _optionsPage.SuppressionMechanismEnabled;
+
+		public override bool PX1007DocumentationDiagnosticEnabled => _optionsPage.PX1007DocumentationDiagnosticEnabled;
 	}
 }

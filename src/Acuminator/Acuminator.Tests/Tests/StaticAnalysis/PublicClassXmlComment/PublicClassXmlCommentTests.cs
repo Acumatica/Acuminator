@@ -19,7 +19,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 			new PublicClassXmlCommentAnalyzer(
 				CodeAnalysisSettings.Default
 				.WithStaticAnalysisEnabled()
-				.WithSuppressionMechanismDisabled());
+				.WithSuppressionMechanismDisabled()
+				.WithPX1007DocumentationDiagnosticEnabled());
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new PublicClassXmlCommentFix();
 
@@ -59,11 +60,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		[Theory]
 		[EmbeddedFileData("NonPublic.cs")]
 		public async Task Non_PublicClass_WithoutDescription_DoesntReportDiagnostic(string source) =>
-			await VerifyCSharpDiagnosticAsync(source);
-
-		[Theory]
-		[EmbeddedFileData("NonPX.cs")]
-		public async Task NonPX_PublicClass_WithoutDescription_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
