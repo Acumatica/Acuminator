@@ -11,6 +11,8 @@ In this version, the diagnostic and code fixes have been added for the following
 | ------------------------------- | ---------------------------------------------------------------- | ------- | ----------- | ----------- |
 | [PX1007](diagnostics/PX1007.md) | A public entity or DAC property should have a description in the `summary` XML tag. | Warning (ISV Level 3: Informational)	 | Available | Available   |
 
+The new diagnostic is available only if the value of **Tools > Options > Acuminator > Code Analysis > Enable PX1007 diagnostic** is set to _True_. By default, the value of this option is _False_.
+
 ### Ability to Suppress a Diagnostic by Adding a Code Comment
 In Acuminator 2.1, you can suppress any diagnostic by adding a specific comment directly in code. To add a suppression comment, you select **Suppress the PXYYYY diagnostic with Acuminator > in a comment** (where PXYYYY is the code of the diagnostic) as a code fix for the diagnostic, as shown in the following screenshot.
 
