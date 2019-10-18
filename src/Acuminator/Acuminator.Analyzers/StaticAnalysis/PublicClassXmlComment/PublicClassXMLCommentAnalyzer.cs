@@ -9,6 +9,7 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -39,30 +40,35 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
-			compilationStartContext.RegisterSyntaxNodeAction(AnalyzeCompilationUnit, SyntaxKind.CompilationUnit);
+			compilationStartContext.RegisterSyntaxNodeAction(context => AnalyzeCompilationUnit(context, pxContext),
+															 SyntaxKind.CompilationUnit);
 		}
 
-		private void AnalyzeCompilationUnit(SyntaxNodeAnalysisContext syntaxContext)
+		private void AnalyzeCompilationUnit(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext)
 		{
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
 			if (!(syntaxContext.Node is CompilationUnitSyntax compilationUnitSyntax))
 				return;
 
-			var commentsWalker = new XmlCommentsWalker(syntaxContext, CodeAnalysisSettings);
+			var commentsWalker = new XmlCommentsWalker(syntaxContext, pxContext, CodeAnalysisSettings);
 			compilationUnitSyntax.Accept(commentsWalker);
 		}
 
 		private class XmlCommentsWalker : CSharpSyntaxWalker
 		{
+			private readonly PXContext _pxContext;
 			private readonly SyntaxNodeAnalysisContext _syntaxContext;
 			private CodeAnalysisSettings _codeAnalysisSettings;
 			private bool _isInsideAcumaticaNamespace;
+			private Stack<bool> _isInsideDacContextStack = new Stack<bool>(2);
 
-			public XmlCommentsWalker(SyntaxNodeAnalysisContext syntaxContext, CodeAnalysisSettings codeAnalysisSettings)
+			public XmlCommentsWalker(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext, 
+									 CodeAnalysisSettings codeAnalysisSettings)
 			{
 				_syntaxContext = syntaxContext;
-				_codeAnalysisSettings = codeAnalysisSettings.CheckIfNull(nameof(codeAnalysisSettings));
+				_pxContext = pxContext;
+				_codeAnalysisSettings = codeAnalysisSettings;
 			}
 
 			public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax namespaceDeclaration)
@@ -91,12 +97,45 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				}
 			}
 
+			public override void VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
+			{
+				// stop visitor for going into methods to improve performance
+			}
+
+			public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
+			{
+				// stop visitor for going into methods to improve performance
+			}
+
 			public override void VisitClassDeclaration(ClassDeclarationSyntax classDeclaration)
 			{
-				if (CheckXmlCommentAndTheNeedToGoToChildrenNodes(classDeclaration, classDeclaration.Modifiers, classDeclaration.Identifier))
+				if (!CheckXmlCommentAndTheNeedToGoToChildrenNodes(classDeclaration, classDeclaration.Modifiers, classDeclaration.Identifier))
+					return;
+
+				INamedTypeSymbol typeSymbol = _syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration, _syntaxContext.CancellationToken);
+
+				try
 				{
+					bool isInsideDacOrDacExt = typeSymbol?.IsDacOrExtension(_pxContext) ?? false;
+					_isInsideDacContextStack.Push(isInsideDacOrDacExt);
 					base.VisitClassDeclaration(classDeclaration);
 				}
+				finally
+				{
+					_isInsideDacContextStack.Pop();
+				}				
+			}
+
+			public override void VisitPropertyDeclaration(PropertyDeclarationSyntax propertyDeclaration)
+			{
+				bool isInsideDacOrDacExt = _isInsideDacContextStack.Count > 0
+					? _isInsideDacContextStack.Peek()
+					: false;
+
+				if (!isInsideDacOrDacExt)
+					return;
+
+				CheckXmlCommentAndTheNeedToGoToChildrenNodes(propertyDeclaration, propertyDeclaration.Modifiers, propertyDeclaration.Identifier);
 			}
 
 			public override void VisitStructDeclaration(StructDeclarationSyntax structDeclaration)
