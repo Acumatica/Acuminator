@@ -1,4 +1,5 @@
-﻿using Acuminator.Utilities.Roslyn.Semantic;
+﻿using Acuminator.Utilities;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Symbols;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -12,7 +13,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class LocalizationInvocationAnalyzer : PXDiagnosticAnalyzer
     {
-        private SyntaxNodeAnalysisContext _syntaxContext;
+		private SyntaxNodeAnalysisContext _syntaxContext;
         private PXContext _pxContext;
         private InvocationExpressionSyntax _invocationNode;
         private bool _isFormatMethod;
@@ -31,7 +32,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
                 Descriptors.PX1053_ConcatenationPriorLocalization
             );
 
-        internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		public LocalizationInvocationAnalyzer() : base() { }
+
+		/// <summary>
+		/// Constructor accepting code analysis settings for tests.
+		/// </summary>
+		/// <param name="codeAnalysisSettings">The code analysis settings.</param>
+		public LocalizationInvocationAnalyzer(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings)
+		{
+		}
+
+		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
         {
             compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzeLocalizationMethodInvocation(syntaxContext, pxContext), SyntaxKind.InvocationExpression);
         }
