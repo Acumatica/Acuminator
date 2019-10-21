@@ -401,7 +401,6 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlers\EventHandlers.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlers\EventHandlersWithExternalMethod.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ChangesInPXCache\Sources\EventHandlers\ValidEventHandlers.cs" />
-    <Compile Include="Tests\StaticAnalysis\Localization\LocalizationPXExceptionCorrectTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\Lambda.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DatabaseQueries\Sources\RowSelecting\LambdaWithBody.cs" />
     <Compile Include="Tests\StaticAnalysis\GraphCreation\PXGraphCreationInGraphSemanticModelTests.cs" />
@@ -527,11 +526,9 @@
     <Compile Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\DefaultAttributeDacTests.cs" />
     <Compile Include="Tests\StaticAnalysis\InheritanceFromPXCacheExtension\InheritanceFromPXCacheExtensionTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Localization\LocalizationInvocationCorrectTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\Localization\LocalizationHardcodeInExceptionTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\Localization\LocalizationExceptionTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Localization\LocalizationHardcodeInMethodTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\Localization\LocalizationNonLocalizableStringInExceptionTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Localization\LocalizationNonLocalizableStringInMethodTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\Localization\LocalizationWithConcatenationInExceptionTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Localization\LocalizationWithIncorrectStringToFormatInMethodTests.cs" />
     <Compile Include="Tests\StaticAnalysis\Localization\LocalizationWithConcatenationInMethodTests.cs" />
     <Compile Include="Tests\StaticAnalysis\LongOperationDelegateClosures\LongOperationDelegateClosuresTests.cs" />
