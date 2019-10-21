@@ -19,7 +19,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
         [Theory]
         [EmbeddedFileData("LocalizationMethodsWithHardcodedStrings.cs",
                           "Messages.cs")]
-        public void Test_Localization_Methods_With_Hardcoded_Message_Argument(string source, string messages)
+        public void Methods_WithHardcodedMessageArgument(string source, string messages)
         {
             VerifyCSharpDiagnostic(sources: new[] { source, messages },
                 Descriptors.PX1050_HardcodedStringInLocalizationMethod.CreateFor(11, 51),
@@ -38,7 +38,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
 		[Theory]
 		[EmbeddedFileData("LocalizationWithIncorrectStringToFormatInMethods.cs",
 						  "Messages.cs")]
-		public void Test_Localization_Methods_With_Incorrect_Strings_To_Format(string source, string messages)
+		public void Methods_WithIncorrectStrings_ToFormat(string source, string messages)
 		{
 			VerifyCSharpDiagnostic(sources: new[] { source, messages },
 				Descriptors.PX1052_IncorrectStringToFormat.CreateFor(12, 58),
@@ -51,7 +51,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
 		[Theory]
 		[EmbeddedFileData("LocalizationWithNonLocalizableStringInMethods.cs",
 						  "Messages.cs")]
-		public void Test_Localization_Methods_With_Non_Localizable_Message_Argument(string source, string messages)
+		public void Methods_WithNonLocalizableMessageArgument(string source, string messages)
 		{
 			VerifyCSharpDiagnostic(sources: new[] { source, messages },
 				Descriptors.PX1051_NonLocalizableString.CreateFor(11, 51),
@@ -70,7 +70,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
 		[Theory]
 		[EmbeddedFileData("LocalizationWithConcatenationInMethods.cs",
 						  "Messages.cs")]
-		public void Test_Localization_Methods_With_String_Concatenations(string source, string messages)
+		public void Methods_WithStringConcatenations(string source, string messages)
 		{
 			VerifyCSharpDiagnostic(sources: new[] { source, messages },
 				Descriptors.PX1053_ConcatenationPriorLocalization.CreateFor(13, 52),
@@ -88,7 +88,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.Localization
 		[Theory]
 		[EmbeddedFileData("LocalizationCorrect.cs",
 						  "Messages.cs")]
-		public void Test_Correct_Localization_Usage(string source, string messages) =>
+		public void CorrectLocalizationUsage_NoDiagnostic(string source, string messages) =>
 			VerifyCSharpDiagnostic(sources: new[] { source, messages });	
 	}
 }
