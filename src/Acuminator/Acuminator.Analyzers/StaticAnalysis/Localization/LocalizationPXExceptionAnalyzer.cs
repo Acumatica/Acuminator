@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
@@ -25,7 +25,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.Localization
                 Descriptors.PX1053_ConcatenationPriorLocalization
             );
 
-        internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
+		public LocalizationPXExceptionAnalyzer() : base()
+		{
+		}
+
+		/// <summary>
+		/// Constructor for tests.
+		/// </summary>
+		/// <param name="codeAnalysisSettings">The code analysis settings.</param>
+		public LocalizationPXExceptionAnalyzer(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings)
+		{
+		}
+
+		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
         {
             compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzePXExceptionCtorInvocation(syntaxContext, pxContext), SyntaxKind.ObjectCreationExpression);
             compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzePXExceptionCtorInitializer(syntaxContext, pxContext), SyntaxKind.ClassDeclaration);
