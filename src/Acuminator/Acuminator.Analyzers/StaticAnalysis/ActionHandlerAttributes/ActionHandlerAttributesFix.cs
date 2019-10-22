@@ -25,8 +25,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
     [ExportCodeFixProvider(LanguageNames.CSharp), Shared]
     public class ActionHandlerAttributesFix : CodeFixProvider
     {
-        internal const string FixOptionKey = nameof(FixOptionKey);
-
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(Descriptors.PX1092_MissingAttributesOnActionHandler.Id);
 
@@ -39,7 +37,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
             var diagnostic = context.Diagnostics
                 .FirstOrDefault(d => d.Id.Equals(Descriptors.PX1092_MissingAttributesOnActionHandler.Id));
 
-            if (diagnostic?.Properties == null || !diagnostic.Properties.TryGetValue(FixOptionKey, out string value) ||
+            if (diagnostic?.Properties == null || !diagnostic.Properties.TryGetValue(
+	                ActionHandlerAttributesAnalyzer.FixOptionKey, out string value) ||
 				!Enum.TryParse(value, out FixOption option))
             {
                 return Task.CompletedTask;

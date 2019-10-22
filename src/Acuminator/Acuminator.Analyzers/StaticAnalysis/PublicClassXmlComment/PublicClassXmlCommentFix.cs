@@ -3,7 +3,6 @@ using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Text;
@@ -15,6 +14,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using static Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.PublicClassXmlCommentAnalyzer;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 {
@@ -22,18 +22,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
 	public class PublicClassXmlCommentFix : CodeFixProvider
 	{
-		internal enum FixOption
-		{
-			NoXmlComment,
-			NoSummaryTag,
-			EmptySummaryTag
-		}
-
 		private const string _xmlTextNewLine = "\n";
 		private const char _descriptionWordsSeparator = ' ';
-
-		public const string FixOptionKey = nameof(FixOption);
-		public const string XmlCommentExcludeTag = "exclude";
 
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } =
 			ImmutableArray.Create(Descriptors.PX1007_PublicClassXmlComment.Id);
@@ -45,8 +35,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			var diagnostic = context.Diagnostics
-				.Where(d => d.Id.Equals(Descriptors.PX1007_PublicClassXmlComment.Id))
-				.FirstOrDefault();
+				.FirstOrDefault(d => d.Id.Equals(Descriptors.PX1007_PublicClassXmlComment.Id));
 
 			if (diagnostic?.Properties == null || !diagnostic.Properties.TryGetValue(FixOptionKey, out string value) ||
 				!Enum.TryParse(value, out FixOption option))
@@ -121,8 +110,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				.OfType<DocumentationCommentTriviaSyntax>()
 				.SelectMany(d => d.ChildNodes())
 				.OfType<XmlElementSyntax>()
-				.Where(n => PublicClassXmlCommentAnalyzer.XmlCommentSummaryTag.Equals(n?.StartTag?.Name?.ToString(), StringComparison.Ordinal))
-				.First();
+				.First(n => XmlCommentSummaryTag.Equals(n.StartTag?.Name?.ToString(), StringComparison.Ordinal));
 
 			var xmlDescription = new[]
 			{

@@ -215,7 +215,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 						if (controlFlow?.Succeeded == true && !controlFlow.EndPointIsReachable)
 							return true;
 					}
-					catch (Exception e)
+					catch
 					{
 						return false;
 					}

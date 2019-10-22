@@ -1,14 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Title>Acumatica.Analyzers</Title>
     <AssemblyTitle>Acumatica.Analyzers</AssemblyTitle>
     <TargetFramework>netstandard1.6</TargetFramework>
     <Version>2.0.9</Version>
-    <PackageProjectUrl>https://github.com/Acumatica/Acuminator</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Acumatica/Acuminator</RepositoryUrl>
     <Copyright>Copyright © 2017-2019 Acumatica Ltd.</Copyright>
-    <PackageLicenseUrl>https://github.com/Acumatica/Acuminator/blob/dev/LICENSE</PackageLicenseUrl>
-    <PackageReleaseNotes>https://github.com/Acumatica/Acuminator/blob/dev/docs/ReleaseNotes.md</PackageReleaseNotes>
     <LangVersion>latest</LangVersion>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
@@ -23,7 +20,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.9.2" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.10.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.10.0" PrivateAssets="all" />
-    <PackageReference Include="NuGet.CommandLine" Version="5.0.2">
+    <PackageReference Include="NuGet.CommandLine" Version="5.3.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
@@ -32,20 +29,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Acuminator.Utilities\Acuminator.Utilities.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="PX.Common">
-      <HintPath>..\..\..\lib\PX.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="PX.Data">
-      <HintPath>..\..\..\lib\PX.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="PX.Data.BQL.Fluent">
-      <HintPath>..\..\..\lib\PX.Data.BQL.Fluent.dll</HintPath>
-    </Reference>
-    <Reference Include="PX.DbServices">
-      <HintPath>..\..\..\lib\PX.DbServices.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Update="DiagnosticsShortName.Designer.cs">
@@ -70,7 +53,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Update="Diagnostic.nuspec">
+    <None Update="Acuminator.Analyzers.nuspec">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="packageIcon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="tools\install.ps1">
@@ -84,7 +70,7 @@
     <GetAssemblyIdentity AssemblyFiles="$(OutDir)\$(AssemblyName).dll">
       <Output TaskParameter="Assemblies" ItemName="AnalyzerAssemblyInfo" />
     </GetAssemblyIdentity>
-    <Exec Command="&quot;$(SolutionDir)packages\NuGet.CommandLine\5.0.2\tools\NuGet.exe&quot; pack Diagnostic.nuspec -NoPackageAnalysis -Version %(AnalyzerAssemblyInfo.Version) -OutputDirectory ." WorkingDirectory="$(OutDir)" LogStandardErrorAsError="true" ConsoleToMSBuild="true">
+    <Exec Command="&quot;$(SolutionDir)packages\NuGet.CommandLine\5.3.0\tools\NuGet.exe&quot; pack Acuminator.Analyzers.nuspec -NoPackageAnalysis -Version %(AnalyzerAssemblyInfo.Version) -OutputDirectory ." WorkingDirectory="$(OutDir)" LogStandardErrorAsError="true" ConsoleToMSBuild="true">
       <Output TaskParameter="ConsoleOutput" PropertyName="OutputOfExec" />
     </Exec>
   </Target>

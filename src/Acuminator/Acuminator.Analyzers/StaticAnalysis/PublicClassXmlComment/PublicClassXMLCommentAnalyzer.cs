@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Threading;
 
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
@@ -16,16 +14,23 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-using static Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.PublicClassXmlCommentFix;
-
 namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class PublicClassXmlCommentAnalyzer : PXDiagnosticAnalyzer
 	{
-		private static readonly string[] _xmlCommentSummarySeparators = { SyntaxFactory.DocumentationComment().ToFullString() };
+		internal enum FixOption
+		{
+			NoXmlComment,
+			NoSummaryTag,
+			EmptySummaryTag
+		}
 
+		public const string XmlCommentExcludeTag = "exclude";
 		public static readonly string XmlCommentSummaryTag = SyntaxFactory.XmlSummaryElement().StartTag.Name.ToFullString();
+		internal const string FixOptionKey = nameof(FixOption);
+
+		private static readonly string[] _xmlCommentSummarySeparators = { SyntaxFactory.DocumentationComment().ToFullString() };
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1007_PublicClassXmlComment);
@@ -65,8 +70,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		{
 			private readonly PXContext _pxContext;
 			private readonly SyntaxNodeAnalysisContext _syntaxContext;
-			private CodeAnalysisSettings _codeAnalysisSettings;
-			private Stack<bool> _isInsideDacContextStack = new Stack<bool>(2);
+			private readonly CodeAnalysisSettings _codeAnalysisSettings;
+			private readonly Stack<bool> _isInsideDacContextStack = new Stack<bool>(2);
 
 			public XmlCommentsWalker(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext, 
 									 CodeAnalysisSettings codeAnalysisSettings)
@@ -228,20 +233,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 					  .OfType<DocumentationCommentTriviaSyntax>();
 			
 			private XmlEmptyElementSyntax GetXmlExcludeTag(DocumentationCommentTriviaSyntax xmlComment) =>
-				xmlComment.ChildNodes()
+				xmlComment
+						  .ChildNodes()
 						  .OfType<XmlEmptyElementSyntax>()
-						  .Where(s => XmlCommentExcludeTag.Equals(s?.Name?.ToString(), StringComparison.Ordinal))
-						  .FirstOrDefault();
+						  .FirstOrDefault(s => XmlCommentExcludeTag.Equals(s.Name?.ToString(), StringComparison.Ordinal));
 
 			private XmlElementSyntax GetSummaryTag(DocumentationCommentTriviaSyntax xmlComment) =>
-				xmlComment.ChildNodes()
+				xmlComment
+						  .ChildNodes()
 						  .OfType<XmlElementSyntax>()
-						  .Where(n => XmlCommentSummaryTag.Equals(n?.StartTag?.Name?.ToString(), StringComparison.Ordinal))
-						  .FirstOrDefault();
+						  .FirstOrDefault(n => XmlCommentSummaryTag.Equals(n.StartTag?.Name?.ToString(), StringComparison.Ordinal));
 
 			private bool CommentContentIsNotEmpty(string content) =>
 				!content.IsNullOrEmpty() && 
-				 content.Any(c => char.IsLetterOrDigit(c));
+				 content.Any(char.IsLetterOrDigit);
 
 			private void ReportDiagnostic(SyntaxNodeAnalysisContext syntaxContext, MemberDeclarationSyntax memberDeclaration,
 										  Location location, FixOption fixOption)

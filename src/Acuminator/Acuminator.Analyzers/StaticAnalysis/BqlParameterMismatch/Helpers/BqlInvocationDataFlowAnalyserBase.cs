@@ -60,14 +60,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				{
 					flowAnalysisWithAssignment = SemanticModel.AnalyzeDataFlow(scopedAssignment, scopedInvocation);
 				}
-				catch (Exception e)
+				catch
 				{
 					return (false, false);
 				}
 
 				if (flowAnalysisWithAssignment == null || !flowAnalysisWithAssignment.Succeeded)
 					return (false, false);
-				else if (flowAnalysisWithAssignment.AlwaysAssigned.All(var => var.Name != VariableName))
+				if (flowAnalysisWithAssignment.AlwaysAssigned.All(var => var.Name != VariableName))
 					return (true, false);
 
 				return (true, true);
@@ -81,15 +81,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				{
 					controlFlow = SemanticModel.AnalyzeControlFlow(statement);
 				}
-				catch (Exception e)
+				catch
 				{
 					//If there was some kind of error during analysis we should assume the worst case - that assignment is reacheable
 					return true;
 				}
 
-				return controlFlow?.Succeeded == true
-					? controlFlow.EndPointIsReachable
-					: true;
+				return controlFlow?.Succeeded != true || controlFlow.EndPointIsReachable;
 			}
 		}
 	}

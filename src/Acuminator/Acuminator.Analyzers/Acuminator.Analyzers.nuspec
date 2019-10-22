@@ -1,0 +1,28 @@
+﻿<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Acuminator.Analyzers</id>
+    <version>1.0.0.0</version>
+    <title>Acuminator.Analyzers</title>
+    <summary>Code Analyzers for Acumatica Framework</summary>
+    <authors>Acumatica</authors>
+    <owners>Acumatica</owners>
+    <licenseUrl>https://github.com/Acumatica/Acuminator/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/Acumatica/Acuminator</projectUrl>
+    <repository url="https://github.com/Acumatica/Acuminator" />
+    <icon>packageIcon.png</icon>
+    <iconUrl>https://raw.githubusercontent.com/Acumatica/Acuminator/master/src/Acuminator/Acuminator.Analyzers/packageIcon.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Code analyzers that help to find and fix common developer issues related to Acumatica Framework</description>
+    <releaseNotes>https://github.com/Acumatica/Acuminator/blob/master/docs/ReleaseNotes.md</releaseNotes>
+    <copyright>Copyright © 2017-2019 Acumatica, Inc.</copyright>
+    <tags>Acumatica, Acuminator, roslyn</tags>
+    <developmentDependency>true</developmentDependency>
+  </metadata>
+  <!-- The convention for analyzers is to put language agnostic dlls in analyzers\dotnet and language specific analyzers in either analyzers\dotnet\cs or analyzers\dotnet\vb -->
+  <files>
+    <file src="*.dll" target="analyzers\dotnet\cs" exclude="**\Microsoft.CodeAnalysis.*;**\System.Collections.Immutable.*;**\System.Reflection.Metadata.*;**\System.Composition.*" />
+    <file src="tools\*.ps1" target="tools\" />
+    <file src="packageIcon.png" target="" />
+  </files>
+</package>

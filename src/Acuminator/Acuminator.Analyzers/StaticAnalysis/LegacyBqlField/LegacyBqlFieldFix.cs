@@ -55,10 +55,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 
 		private SimpleBaseTypeSyntax CreateBaseType(string typeName, string dacFieldName)
 		{
-			if (!PropertyTypeToFieldType.ContainsKey(typeName))
+			if (!LegacyBqlFieldAnalyzer.PropertyTypeToFieldType.ContainsKey(typeName))
 				return null;
 
-			string bqlTypeName = $"Bql{ PropertyTypeToFieldType[typeName]}";
+			string bqlTypeName = $"Bql{ LegacyBqlFieldAnalyzer.PropertyTypeToFieldType[typeName]}";
 			GenericNameSyntax fieldTypeNode =
 				GenericName(Identifier("Field"))
 					.WithTypeArgumentList(
@@ -89,21 +89,5 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 			var newRoot = root.ReplaceNode(classNode, newClassNode);
 			return oldDocument.WithSyntaxRoot(newRoot);
 		}
-
-		public static readonly IReadOnlyDictionary<string, string> PropertyTypeToFieldType = new Dictionary<string, string>
-		{
-			["String"] = "String",
-			["Guid"] = "Guid",
-			["DateTime"] = "DateTime",
-			["Boolean"] = "Bool",
-			["Byte"] = "Byte",
-			["Int16"] = "Short",
-			["Int32"] = "Int",
-			["Int64"] = "Long",
-			["Single"] = "Float",
-			["Double"] = "Double",
-			["Decimal"] = "Decimal",
-			["Byte[]"] = "ByteArray",
-		};
 	}
 }

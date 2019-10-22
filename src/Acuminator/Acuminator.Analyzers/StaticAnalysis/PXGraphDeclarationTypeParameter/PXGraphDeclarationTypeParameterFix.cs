@@ -26,7 +26,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 			var codeActionName = nameof(Resources.PX1093Fix).GetLocalized().ToString();
 			var codeAction = CodeAction.Create(
 				codeActionName,
-				cancellation => FixGraphDeclarationTypeParameter(context.Document, context.Span, cancellation));
+				cancellation => FixGraphDeclarationTypeParameter(context.Document, context.Span, cancellation),
+				codeActionName);
 
 			context.RegisterCodeFix(codeAction, context.Diagnostics);
 			return Task.CompletedTask;
