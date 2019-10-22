@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Threading;
 
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
@@ -65,8 +63,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		{
 			private readonly PXContext _pxContext;
 			private readonly SyntaxNodeAnalysisContext _syntaxContext;
-			private CodeAnalysisSettings _codeAnalysisSettings;
-			private Stack<bool> _isInsideDacContextStack = new Stack<bool>(2);
+			private readonly CodeAnalysisSettings _codeAnalysisSettings;
+			private readonly Stack<bool> _isInsideDacContextStack = new Stack<bool>(2);
 
 			public XmlCommentsWalker(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext, 
 									 CodeAnalysisSettings codeAnalysisSettings)
@@ -228,20 +226,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 					  .OfType<DocumentationCommentTriviaSyntax>();
 			
 			private XmlEmptyElementSyntax GetXmlExcludeTag(DocumentationCommentTriviaSyntax xmlComment) =>
-				xmlComment.ChildNodes()
+				xmlComment
+						  .ChildNodes()
 						  .OfType<XmlEmptyElementSyntax>()
-						  .Where(s => XmlCommentExcludeTag.Equals(s?.Name?.ToString(), StringComparison.Ordinal))
-						  .FirstOrDefault();
+						  .FirstOrDefault(s => XmlCommentExcludeTag.Equals(s.Name?.ToString(), StringComparison.Ordinal));
 
 			private XmlElementSyntax GetSummaryTag(DocumentationCommentTriviaSyntax xmlComment) =>
-				xmlComment.ChildNodes()
+				xmlComment
+						  .ChildNodes()
 						  .OfType<XmlElementSyntax>()
-						  .Where(n => XmlCommentSummaryTag.Equals(n?.StartTag?.Name?.ToString(), StringComparison.Ordinal))
-						  .FirstOrDefault();
+						  .FirstOrDefault(n => XmlCommentSummaryTag.Equals(n.StartTag?.Name?.ToString(), StringComparison.Ordinal));
 
 			private bool CommentContentIsNotEmpty(string content) =>
 				!content.IsNullOrEmpty() && 
-				 content.Any(c => char.IsLetterOrDigit(c));
+				 content.Any(char.IsLetterOrDigit);
 
 			private void ReportDiagnostic(SyntaxNodeAnalysisContext syntaxContext, MemberDeclarationSyntax memberDeclaration,
 										  Location location, FixOption fixOption)
