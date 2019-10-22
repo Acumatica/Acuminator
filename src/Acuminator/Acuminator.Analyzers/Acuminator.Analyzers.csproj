@@ -34,20 +34,6 @@
     <ProjectReference Include="..\Acuminator.Utilities\Acuminator.Utilities.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="PX.Common">
-      <HintPath>..\..\..\lib\PX.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="PX.Data">
-      <HintPath>..\..\..\lib\PX.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="PX.Data.BQL.Fluent">
-      <HintPath>..\..\..\lib\PX.Data.BQL.Fluent.dll</HintPath>
-    </Reference>
-    <Reference Include="PX.DbServices">
-      <HintPath>..\..\..\lib\PX.DbServices.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Update="DiagnosticsShortName.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
