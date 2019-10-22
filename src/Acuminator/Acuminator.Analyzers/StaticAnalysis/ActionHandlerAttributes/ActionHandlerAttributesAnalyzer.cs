@@ -1,5 +1,4 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis.PXGraph;
-using Acuminator.Utilities;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
@@ -12,6 +11,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 {
 	public class ActionHandlerAttributesAnalyzer : PXGraphAggregatedAnalyzerBase
 	{
+		internal const string FixOptionKey = nameof(FixOptionKey);
+
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1092_MissingAttributesOnActionHandler);
 
@@ -82,7 +83,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes
 				!hasPXUIFieldAttribute ? FixOption.AddPXUIFieldAttribute :
 				FixOption.AddPXButtonAttribute;
 			var properties = ImmutableDictionary<string, string>.Empty
-				.Add(ActionHandlerAttributesFix.FixOptionKey, fixOption.ToString());
+				.Add(FixOptionKey, fixOption.ToString());
 			var diagnostic = Diagnostic.Create(
 				Descriptors.PX1092_MissingAttributesOnActionHandler,
 				node.Identifier.GetLocation(),
