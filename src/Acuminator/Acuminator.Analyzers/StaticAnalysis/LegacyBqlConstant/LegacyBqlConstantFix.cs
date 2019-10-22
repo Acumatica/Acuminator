@@ -54,10 +54,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 
 		private SimpleBaseTypeSyntax CreateBaseType(string typeName, string constantName)
 		{
-			if (!LegacyBqlFieldFix.PropertyTypeToFieldType.ContainsKey(typeName))
+			if (!LegacyBqlFieldAnalyzer.PropertyTypeToFieldType.ContainsKey(typeName))
 				return null;
 
-			string bqlTypeName = $"Bql{LegacyBqlFieldFix.PropertyTypeToFieldType[typeName]}";
+			string bqlTypeName = $"Bql{LegacyBqlFieldAnalyzer.PropertyTypeToFieldType[typeName]}";
 			GenericNameSyntax constantTypeNode =
 				GenericName(Identifier("Constant"))
 					.WithTypeArgumentList(
