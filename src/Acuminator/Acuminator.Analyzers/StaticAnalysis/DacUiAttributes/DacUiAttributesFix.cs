@@ -34,14 +34,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 			var addPXHiddenTitle = nameof(Resources.PX1094FixPXHiddenAttribute).GetLocalized().ToString();
 			var addPXHiddenAction = CodeAction.Create(
 				addPXHiddenTitle,
-				cancellation => AddAttributeToDac(context.Document, context.Span, FixOption.AddPXHiddenAttribute, cancellation));
+				cancellation => AddAttributeToDac(context.Document, context.Span, FixOption.AddPXHiddenAttribute, cancellation),
+				equivalenceKey: addPXHiddenTitle);
 
 			context.RegisterCodeFix(addPXHiddenAction, context.Diagnostics);
 
 			var addPXCacheNameTitle = nameof(Resources.PX1094FixPXCacheNameAttribute).GetLocalized().ToString();
 			var addPXCacheNameAction = CodeAction.Create(
 				addPXCacheNameTitle,
-				cancellation => AddAttributeToDac(context.Document, context.Span, FixOption.AddPXCacheNameAttribute, cancellation));
+				cancellation => AddAttributeToDac(context.Document, context.Span, FixOption.AddPXCacheNameAttribute, cancellation),
+				equivalenceKey: addPXCacheNameTitle);
 
 			context.RegisterCodeFix(addPXCacheNameAction, context.Diagnostics);
 
