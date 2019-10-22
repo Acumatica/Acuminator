@@ -27,7 +27,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		public override Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -44,6 +44,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 				cancellation => AddAttributeToDac(context.Document, context.Span, FixOption.AddPXCacheNameAttribute, cancellation));
 
 			context.RegisterCodeFix(addPXCacheNameAction, context.Diagnostics);
+
+			return Task.CompletedTask;
 		}
 
 		private async Task<Document> AddAttributeToDac(Document document, TextSpan span, FixOption option, CancellationToken cancellation)
