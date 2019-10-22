@@ -14,16 +14,23 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-using static Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.PublicClassXmlCommentFix;
-
 namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class PublicClassXmlCommentAnalyzer : PXDiagnosticAnalyzer
 	{
-		private static readonly string[] _xmlCommentSummarySeparators = { SyntaxFactory.DocumentationComment().ToFullString() };
+		internal enum FixOption
+		{
+			NoXmlComment,
+			NoSummaryTag,
+			EmptySummaryTag
+		}
 
+		public const string XmlCommentExcludeTag = "exclude";
 		public static readonly string XmlCommentSummaryTag = SyntaxFactory.XmlSummaryElement().StartTag.Name.ToFullString();
+		internal const string FixOptionKey = nameof(FixOption);
+
+		private static readonly string[] _xmlCommentSummarySeparators = { SyntaxFactory.DocumentationComment().ToFullString() };
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1007_PublicClassXmlComment);
