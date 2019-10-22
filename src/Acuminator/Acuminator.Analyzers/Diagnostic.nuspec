@@ -10,6 +10,7 @@
     <licenseUrl>https://github.com/Acumatica/Acuminator/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/Acumatica/Acuminator</projectUrl>
     <icon>packageIcon.png</icon>
+	<iconUrl>https://raw.githubusercontent.com/Acumatica/Acuminator/master/src/Acuminator/Acuminator.Analyzers/packageIcon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Code analyzers that help to find and fix common developer issues related to Acumatica Framework</description>
     <releaseNotes>https://github.com/Acumatica/Acuminator/blob/master/docs/ReleaseNotes.md</releaseNotes>
