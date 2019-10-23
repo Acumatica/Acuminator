@@ -65,6 +65,7 @@ In this version of Acuminator, the following enhancements and bug fixes are avai
  - The [PX1055](diagnostics/PX1055.md) diagnostic worked incorrectly if the key fields were defined both in the base DAC and in the derived DAC.
  - The BQL outlining worked incorrectly for unary BQL functions, such as `RTrim`.
  - The diagnostics related to localization failed with the `OperationCanceledException` exception when concurrent execution is turned on.
+ - Acuminator installed from the NuGet package generated warnings about `Microsoft.CodeAnalysis.Workspaces`.
  - The suppression mechanism did not reload the suppression file when you change the solution in Visual Studio.
  - In some cases, it was not possible to suppress an Acuminator diagnostic in the Acuminator suppression file for a code fragment. The following error was displayed: _There are no Acuminator diagnostics in this code snippet_.
  - The new suppression file was added to the project with the _None_ build action (instead of the _AdditionalFiles_ build action).

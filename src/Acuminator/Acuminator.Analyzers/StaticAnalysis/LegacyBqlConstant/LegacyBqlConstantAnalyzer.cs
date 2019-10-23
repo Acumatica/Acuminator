@@ -62,7 +62,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 			if (constantUnderlyingType == null)
 				return false;
 
-			if (LegacyBqlFieldFix.PropertyTypeToFieldType.ContainsKey(constantUnderlyingType.Name))
+			if (LegacyBqlFieldAnalyzer.PropertyTypeToFieldType.ContainsKey(constantUnderlyingType.Name))
 			{
 				constantType = constantUnderlyingType.Name;
 				return true;

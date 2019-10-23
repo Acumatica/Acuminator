@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -15,6 +15,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 		public const string CorrespondingPropertyType = "CorrespondingPropertyType";
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(Descriptors.PX1060_LegacyBqlField);
+
+		public static readonly ImmutableDictionary<string, string> PropertyTypeToFieldType = new Dictionary<string, string>
+		{
+			["String"] = "String",
+			["Guid"] = "Guid",
+			["DateTime"] = "DateTime",
+			["Boolean"] = "Bool",
+			["Byte"] = "Byte",
+			["Int16"] = "Short",
+			["Int32"] = "Int",
+			["Int64"] = "Long",
+			["Single"] = "Float",
+			["Double"] = "Double",
+			["Decimal"] = "Decimal",
+			["Byte[]"] = "ByteArray",
+		}.ToImmutableDictionary();
 
 		public override bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) =>
 			pxContext.IsAcumatica2019R1 && 
@@ -35,7 +51,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 				{
 					string propertyTypeName = GetPropertyTypeName(property.Symbol, pxContext);
 
-					if (propertyTypeName == null || !LegacyBqlFieldFix.PropertyTypeToFieldType.ContainsKey(propertyTypeName))
+					if (propertyTypeName == null || !PropertyTypeToFieldType.ContainsKey(propertyTypeName))
 						continue;
 
 					var args = ImmutableDictionary.CreateBuilder<string, string>();
