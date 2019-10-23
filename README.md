@@ -32,9 +32,9 @@ To build the solution, do the following:
 * [Refactoring Descriptions](docs/Summary.md#refactorings)
 
 ## Developer Documentation
-* [Coding Guidelines](docs/CodingGuidelines/CodingGuidelines.md)
-* [Recursive Code Analysis](docs/RecursiveCodeAnalysis/RecursiveCodeAnalysis.md)
-* [Documentation Guidelines](docs/DocumentationGuidelines/DiagnosticDescription.md)
+* [Coding Guidelines](docs/dev/CodingGuidelines/CodingGuidelines.md)
+* [Recursive Code Analysis](docs/dev/RecursiveCodeAnalysis/RecursiveCodeAnalysis.md)
+* [Documentation Guidelines](docs/dev/DocumentationGuidelines/DiagnosticDescription.md)
 
 ## Release Notes
 [Release Notes](docs/ReleaseNotes.md)
