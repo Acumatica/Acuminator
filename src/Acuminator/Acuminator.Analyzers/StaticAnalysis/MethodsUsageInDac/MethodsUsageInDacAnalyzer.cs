@@ -87,7 +87,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.MethodsUsageInDac
 				{
 					ISymbol symbol = semanticModel.GetSymbolInfo(invocation, context.CancellationToken).Symbol;
 
-                    if (symbol == null || !(symbol is IMethodSymbol method) || method.IsStatic)
+                    if (symbol == null || !(symbol is IMethodSymbol method) || method.IsStatic || method.IsExtensionMethod)
                         continue;
 
 					bool inWhitelist = whiteList.Contains(method.ContainingType) ||
