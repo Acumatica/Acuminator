@@ -17,6 +17,10 @@ namespace Acuminator.Utilities.DiagnosticSuppression
     {
 		private static HashSet<SyntaxKind> _targetKinds = new HashSet<SyntaxKind>(new[] {
 			SyntaxKind.ClassDeclaration,
+			SyntaxKind.StructDeclaration,
+			SyntaxKind.EnumDeclaration,
+			SyntaxKind.InterfaceDeclaration,
+			SyntaxKind.DelegateDeclaration,
 			SyntaxKind.MethodDeclaration,
 			SyntaxKind.ConstructorDeclaration,
 			SyntaxKind.PropertyDeclaration,
@@ -67,69 +71,22 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			_hashCode = hash;
 		}
 
-		public override int GetHashCode()
-		{
-			return _hashCode;
-		}
+		public override int GetHashCode() => _hashCode;
 
-		public bool Equals(SuppressMessage other)
-		{
-			if (!other.Id.Equals(Id, StringComparison.Ordinal))
-			{
-				return false;
-			}
+		public override bool Equals(object obj) => obj is SuppressMessage message && Equals(message);
 
-			if (!other.Target.Equals(Target, StringComparison.Ordinal))
-			{
-				return false;
-			}
+		public bool Equals(SuppressMessage other) =>
+			other.Id.Equals(Id, StringComparison.Ordinal) &&
+			other.Target.Equals(Target, StringComparison.Ordinal) &&
+			other.SyntaxNode.Equals(SyntaxNode, StringComparison.Ordinal);
 
-			if (!other.SyntaxNode.Equals(SyntaxNode, StringComparison.Ordinal))
-			{
-				return false;
-			}
-
-			return true;
-		}
-
-		public override bool Equals(object obj)
-		{
-			if (!(obj is SuppressMessage message))
-			{
-				return false;
-			}
-
-			return Equals(message);
-		}
-
-        public int CompareTo(SuppressMessage other)
-        {
-            if (Equals(other))
-            {
-                return 0;
-            }
-
-            var idComparison = string.CompareOrdinal(Id, other.Id);
-            if (idComparison != 0)
-            {
-                return idComparison;
-            }
-
-            var targetComparison = string.CompareOrdinal(Target, other.Target);
-            if (targetComparison != 0)
-            {
-                return targetComparison;
-            }
-
-            var syntaxNodeComparison = string.CompareOrdinal(SyntaxNode, other.SyntaxNode);
-            if (syntaxNodeComparison != 0)
-            {
-                return syntaxNodeComparison;
-            }
-
-            return 0;
-        }
-
+		public int CompareTo(SuppressMessage other) =>
+			string.CompareOrdinal(Id, other.Id) is var idComparison && idComparison != 0
+				? idComparison
+				: string.CompareOrdinal(Target, other.Target) is var targetComparison && targetComparison != 0
+					? targetComparison
+					: string.CompareOrdinal(SyntaxNode, other.SyntaxNode);
+					
 		public static (string Assembly, SuppressMessage Message) GetSuppressionInfo(SemanticModel semanticModel, Diagnostic diagnostic,
 																					 CancellationToken cancellation = default)
 		{
@@ -175,13 +132,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		private static SyntaxNode FindTargetNode(SyntaxNode node)
 		{
-			if (node == null)
-				return null;
-
-			var targetNode = node
-				.AncestorsAndSelf()
-				.Where(a => _targetKinds.Contains(a.Kind()))
-				.FirstOrDefault();
+			var targetNode = node?.AncestorsAndSelf().FirstOrDefault(a => _targetKinds.Contains(a.Kind()));
 
 			if (!(targetNode is FieldDeclarationSyntax fieldDeclaration))
 				return targetNode;
