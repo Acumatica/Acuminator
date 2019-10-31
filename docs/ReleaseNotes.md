@@ -6,7 +6,7 @@ Acuminator 2.1.2 includes the bug fixes described in this section, as well as th
 
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
-- Diagnostic suppression was not supported for interfaces, structs, enumerations, and delegates.
+- Suppression of diagnostics in the Acuminator suppression file was not supported for interfaces, structs, enumerations, and delegates.
 - The [PX1005](diagnostics/PX1005.md) diagnostic could be incorrectly displayed for data view delegates that have corresponding data views.
 - The [PX1032](diagnostics/PX1032.md) diagnostic was incorrectly displayed for extension methods in DACs.
 
