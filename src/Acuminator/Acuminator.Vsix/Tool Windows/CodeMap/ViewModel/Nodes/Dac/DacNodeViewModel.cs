@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
 using Microsoft.CodeAnalysis;
 
@@ -20,7 +21,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set { }
 		}
 
-		public override Icon NodeIcon => Icon.Dac;
+		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; } =
+			new ExtendedObservableCollection<ExtraInfoViewModel>(
+				new IconViewModel(Icon.Dac)); 
 
 		public override bool DisplayNodeWithoutChildren => true;
 

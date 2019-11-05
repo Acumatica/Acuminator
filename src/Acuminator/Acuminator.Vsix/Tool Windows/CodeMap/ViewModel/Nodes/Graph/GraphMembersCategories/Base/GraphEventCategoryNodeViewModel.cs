@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -23,7 +23,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public override Icon NodeIcon => Icon.GraphEventCategory;
+		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; } =
+			new ExtendedObservableCollection<ExtraInfoViewModel>(
+				new IconViewModel(Icon.GraphEventCategory));
 
 		protected override bool AllowNavigation => false;
 

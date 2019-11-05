@@ -14,7 +14,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class DacPropertiesCategoryNodeViewModel : DacMemberCategoryNodeViewModel
 	{
-		public override Icon NodeIcon => Icon.DacPropertiesCategory;
+		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; } =
+			new ExtendedObservableCollection<ExtraInfoViewModel>(
+				new IconViewModel(Icon.DacPropertiesCategory));
 
 		protected override bool AllowNavigation => true;
 

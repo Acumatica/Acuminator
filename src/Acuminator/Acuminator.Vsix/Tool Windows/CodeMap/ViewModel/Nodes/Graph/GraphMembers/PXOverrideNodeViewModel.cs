@@ -12,7 +12,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class PXOverrideNodeViewModel : GraphMemberNodeViewModel
 	{
-		public override Icon NodeIcon => Icon.PXOverride;
+		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; } =
+			new ExtendedObservableCollection<ExtraInfoViewModel>(
+				new IconViewModel(Icon.PXOverride));
 
 		public PXOverrideInfoForCodeMap PXOverrideInfo => MemberInfo as PXOverrideInfoForCodeMap;
 

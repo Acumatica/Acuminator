@@ -6,14 +6,13 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using System.Threading;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
+using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class PropertyNodeViewModel : DacMemberNodeViewModel
 	{
-		public override Icon NodeIcon => IsKey
-			? Icon.DacKeyProperty
-			: Icon.DacProperty;
+		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
 
 		public override string Tooltip
 		{
@@ -37,6 +36,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public PropertyNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, DacPropertyInfo propertyInfo, bool isExpanded = false) :
 								base(dacMemberCategoryVM, propertyInfo, isExpanded)
 		{
+			Icon icon = IsKey
+				? Icon.DacKeyProperty
+				: Icon.DacProperty;
+			ExtraInfos = new ExtendedObservableCollection<ExtraInfoViewModel>(new IconViewModel(icon));
 		}	
 
 		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren,

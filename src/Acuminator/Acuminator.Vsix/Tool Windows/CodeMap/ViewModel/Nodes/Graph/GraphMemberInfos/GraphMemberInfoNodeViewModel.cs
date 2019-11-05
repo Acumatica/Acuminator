@@ -28,21 +28,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set { }
 		}
 
-		public override Icon NodeIcon
-		{
-			get
-			{
-				switch (GraphMemberInfoType)
-				{
-					case GraphMemberInfoType.ViewDelegate:
-						return Icon.ViewDelegate;
-					case GraphMemberInfoType.ActionHandler:
-						return Icon.ActionHandler;
-					default:
-						return base.NodeIcon;
-				}
-			}
-		}
+		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
 
 		public override bool DisplayNodeWithoutChildren => true;
 
@@ -55,11 +41,24 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			GraphMemberInfoData = memberInfoData;
 			GraphMember = graphMemberVM;
 			GraphMemberInfoType = graphMemberInfoType;
+
+			Icon icon = GetIconType(GraphMemberInfoType);
+			ExtraInfos = icon != Icon.None
+				? new ExtendedObservableCollection<ExtraInfoViewModel>(new IconViewModel(icon))
+				: new ExtendedObservableCollection<ExtraInfoViewModel>();
 		}
 
 		public override Task NavigateToItemAsync() => GraphMemberInfoSymbol.NavigateToAsync();
 
 		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation) =>
 			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
+
+		private static Icon GetIconType(GraphMemberInfoType graphMemberInfoType) =>
+			graphMemberInfoType switch
+			{
+				GraphMemberInfoType.ViewDelegate => Icon.ViewDelegate,
+				GraphMemberInfoType.ActionHandler => Icon.ActionHandler,
+				_ => Icon.None,
+			};
 	}
 }
