@@ -30,6 +30,16 @@ namespace Acuminator.Vsix.Utilities
 		}
 
 		/// <summary>
+		/// Special constructor for collections with only one element (most frequent case for code map) - used to avoid the allocation of array.
+		/// </summary>
+		/// <param name="item">The item.</param>
+		public ExtendedObservableCollection(T item) : base()
+		{
+			item.ThrowOnNull(nameof(item));
+			Items.Add(item);
+		}
+
+		/// <summary>
 		/// Adds the range of items.
 		/// </summary>
 		/// <param name="range">The range.</param>
