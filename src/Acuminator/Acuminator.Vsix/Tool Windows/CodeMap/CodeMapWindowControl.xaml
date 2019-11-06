@@ -100,20 +100,43 @@
                                           ItemsSource="{Binding Path=Children, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
                     <StackPanel Orientation="Horizontal" PreviewMouseLeftButtonDown="TreeViewItem_PreviewMouseLeftButtonDown"
                                 HorizontalAlignment="Stretch">
-                        <Image Margin="0,1.5,5,1.5" UseLayoutRounding="True"
-                                   Source="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, 
-                                                    Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource treeNodeToIconConverter}}">
-                            <Image.Style>
-                                <Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}">
-                                    <Style.Triggers>
-                                        <Trigger Property="Source" Value="{x:Null}">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Image.Style>
-                        </Image>
-				
+
+						<ItemsControl x:Name="extraInfosPanel"
+									  ItemsSource="{Binding Path=ExtraInfos, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+							<ItemsControl.ItemsPanel>
+								<ItemsPanelTemplate>
+									<StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch"/>
+								</ItemsPanelTemplate>
+							</ItemsControl.ItemsPanel>
+							<ItemsControl.Style>
+								<Style TargetType="ItemsControl">
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Path=ExtraInfos.Count, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="0">
+											<Setter Property="Visibility" Value="Collapsed"/>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</ItemsControl.Style>
+							
+							<ItemsControl.ItemTemplate>
+								<DataTemplate DataType="{x:Type codeMap:IconViewModel}">
+									<Image Margin="0,1.5,5,1.5" UseLayoutRounding="True"
+										   Source="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, 
+															Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource treeNodeToIconConverter}}">
+										<Image.Style>
+											<Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}">
+												<Style.Triggers>
+													<Trigger Property="Source" Value="{x:Null}">
+														<Setter Property="Visibility" Value="Collapsed"/>
+													</Trigger>
+												</Style.Triggers>
+											</Style>
+										</Image.Style>
+									</Image>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+		
 						<TextBlock VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,3,0"
                                    Text="{Binding Path=Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                    Tag="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
