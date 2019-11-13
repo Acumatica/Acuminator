@@ -91,7 +91,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 																					 CancellationToken cancellation = default)
 		{
 			return diagnostic?.Location != null
-				? GetSuppressionInfo(semanticModel, diagnostic?.Id, diagnostic.Location.SourceSpan, cancellation)
+				? GetSuppressionInfo(semanticModel, diagnostic.Id, diagnostic.Location.SourceSpan, cancellation)
 				: (null, default);
 		}
 
