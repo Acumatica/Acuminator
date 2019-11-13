@@ -25,8 +25,7 @@ namespace Acuminator.Utilities.Roslyn.ProjectSystem
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IEnumerable<TextDocument> GetAllAdditionalDocumentsFromSolution(this Solution solution) =>
-			solution.CheckIfNull(nameof(solution)).Projects.SelectMany(p => p.AdditionalDocuments) ??
-			Enumerable.Empty<TextDocument>();
+			solution.CheckIfNull(nameof(solution)).Projects.SelectMany(p => p.AdditionalDocuments);
 
 		/// <summary>
 		/// Get workspace indentation size.
