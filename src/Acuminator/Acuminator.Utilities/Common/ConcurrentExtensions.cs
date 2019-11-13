@@ -56,19 +56,19 @@ namespace Acuminator.Utilities.Common
 		/// <typeparam name="TResult">Type of the result.</typeparam>
 		/// <param name="task">The task to act on.</param>
 		/// <returns/>      
-		public async static Task<KeyValuePair<bool, TResult>> TryAwait<TResult>(this Task<TResult> task)
+		public async static Task<(bool IsSuccess, TResult Result)> TryAwait<TResult>(this Task<TResult> task)
 		{
 			if (task == null || task.IsCanceled || task.IsFaulted)
-				return new KeyValuePair<bool, TResult>(false, default);
+				return (false, default);
 
 			try
 			{
 				TResult result = await task.ConfigureAwait(false);
-				return new KeyValuePair<bool, TResult>(true, result);
+				return (true, result);
 			}
 			catch (OperationCanceledException)
 			{
-				return new KeyValuePair<bool, TResult>(false, default);
+				return (false, default);
 			}
 		}
 	}
