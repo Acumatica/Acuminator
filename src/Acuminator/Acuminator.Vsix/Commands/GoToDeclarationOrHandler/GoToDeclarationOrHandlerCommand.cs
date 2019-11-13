@@ -120,7 +120,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 
 			ISymbol memberSymbol = GetMemberSymbol(memberNode, semanticModel, caretPosition);
 
-			if (!CheckMemberSymbol(memberSymbol, context))
+			if (memberSymbol == null || !CheckMemberSymbol(memberSymbol, context))
 				return;
 
 			await NavigateToHandlerOrDeclarationAsync(document, textView, memberSymbol, memberNode, semanticModel, context);
@@ -144,7 +144,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 
 		private bool CheckMemberSymbol(ISymbol memberSymbol, PXContext context)
 		{
-			if (memberSymbol?.ContainingType == null || !memberSymbol.ContainingType.IsPXGraphOrExtension(context))
+			if (memberSymbol.ContainingType == null || !memberSymbol.ContainingType.IsPXGraphOrExtension(context))
 				return false;
 
 			switch (memberSymbol.Kind)
