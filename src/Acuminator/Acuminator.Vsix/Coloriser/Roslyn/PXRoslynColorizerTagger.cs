@@ -131,12 +131,12 @@ namespace Acuminator.Vsix.Coloriser
                 return ClassificationTagsCache.ProcessedTags;
 
             var documentTaskResult = await getDocumentTask.TryAwait();
-            bool isSuccess = documentTaskResult.Key;
+            bool isSuccess = documentTaskResult.IsSuccess;
 
             if (!isSuccess)
                 return ClassificationTagsCache.ProcessedTags;
 
-            ParsedDocument document = documentTaskResult.Value;            
+            ParsedDocument document = documentTaskResult.Result;            
             
             if (document == null || cToken.IsCancellationRequested)
                 return ClassificationTagsCache.ProcessedTags;

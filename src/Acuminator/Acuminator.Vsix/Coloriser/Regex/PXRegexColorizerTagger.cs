@@ -43,12 +43,10 @@ namespace Acuminator.Vsix.Coloriser
             var taggingInfo = await Task.Run(() => GetTagsSynchronousImplementation(snapshot))
                                         .TryAwait();
 
-            bool parsingSuccess = taggingInfo.Key;
-
-            if (!parsingSuccess)
+            if (!taggingInfo.IsSuccess)
                 return Enumerable.Empty<ITagSpan<IClassificationTag>>();
 
-            return taggingInfo.Value;
+            return taggingInfo.Result;
         }
 
         protected internal override IEnumerable<ITagSpan<IClassificationTag>> GetTagsSynchronousImplementation(ITextSnapshot snapshot)
