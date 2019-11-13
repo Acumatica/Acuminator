@@ -94,7 +94,7 @@ namespace Acuminator.Tests.Verification
 
 			var projectId = ProjectId.CreateNewId(debugName: TestProjectName);
 
-			var workspace = new AdhocWorkspace();
+			var workspace = new AdhocWorkspace(); //-V3114
 			workspace.Options = workspace.Options.WithChangedOption(FormattingOptions.UseTabs, LanguageNames.CSharp, true)
 												 .WithChangedOption(FormattingOptions.SmartIndent, LanguageNames.CSharp, FormattingOptions.IndentStyle.Smart)
 												 .WithChangedOption(FormattingOptions.TabSize, LanguageNames.CSharp, 4)

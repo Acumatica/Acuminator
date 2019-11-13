@@ -77,7 +77,7 @@ namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 
 		[Theory]
 		[EmbeddedFileData("PropertyGetter.cs")]
-		public async Task PropertyGetter(string text)
+		public async Task PropertyGetter(string text) //-V3013
 		{
 			Document document = CreateDocument(text);
 			Compilation compilation = await document.Project.GetCompilationAsync();

@@ -18,7 +18,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature
 			ImmutableArray.Create(Descriptors.PX1000_InvalidPXActionHandlerSignature);
 
 		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) =>
-			base.ShouldAnalyze(pxContext, graph) && graph.Type != GraphType.None;
+			base.ShouldAnalyze(pxContext, graph) && graph.Type != GraphType.None; //-V3063
 
 		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphSemanticModel pxGraph)
 		{

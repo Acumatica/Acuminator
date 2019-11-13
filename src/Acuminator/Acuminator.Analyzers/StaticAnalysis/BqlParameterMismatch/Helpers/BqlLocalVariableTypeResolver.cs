@@ -172,7 +172,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 						curExpression = curAssignment.Right;
 					}
 
-					if (candidateAssignment == null || IsCancelationRequested)
+					if (candidateAssignment == null || IsCancelationRequested) //-V3063
 						return;
 
 					var assignmentStatement = candidateAssignment.GetStatementNode();
