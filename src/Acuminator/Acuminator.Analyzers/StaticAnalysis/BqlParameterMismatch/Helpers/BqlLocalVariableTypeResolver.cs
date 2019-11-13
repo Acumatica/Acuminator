@@ -64,18 +64,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			private TypeSyntax GetTypeFromCandidates()
 			{
-				while (_methodBodyWalker.Candidates.Count > 0)
-				{
-					var (potentialAssignmentStatement, assignedType) = _methodBodyWalker.Candidates.Pop();
-					var (analysisSucceded, varAlwaysAssigned) = CheckCandidate(potentialAssignmentStatement);
+				if (_methodBodyWalker.Candidates.Count == 0)
+					return null;
 
-					if (!analysisSucceded || !varAlwaysAssigned || assignedType == null)
-						return null;    //analysis failed or reacheable assignment with not always assigned variable or valid candidate with unresolvable type
+				var (latestPotentialAssignmentStatement, assignedType) = _methodBodyWalker.Candidates.Pop();
+				var (analysisSucceded, varAlwaysAssigned) = CheckCandidate(latestPotentialAssignmentStatement);
 
-					return assignedType;
-				}
+				if (!analysisSucceded || !varAlwaysAssigned || assignedType == null)
+					return null;    //analysis failed or reacheable assignment with not always assigned variable or valid candidate with unresolvable type
 
-				return null;
+				return assignedType;
 			}
 
 
