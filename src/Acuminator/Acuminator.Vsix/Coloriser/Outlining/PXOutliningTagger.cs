@@ -43,7 +43,7 @@ namespace Acuminator.Vsix.Coloriser
 
             switch (ColorizerTagger?.TaggerType)
             {
-                case TaggerType.General when Provider.Package.UseRegexColoring == true:
+                case TaggerType.General when Provider.Package.UseRegexColoring == true: //-V3063
                 case TaggerType.RegEx:
                 case null:
                     return Enumerable.Empty<ITagSpan<IOutliningRegionTag>>();
