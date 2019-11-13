@@ -49,18 +49,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			private int? GetElementsCountFromCandidates()
 			{
-				while (_methodBodyWalker.Candidates.Count > 0)
-				{
-					var (potentialAssignmentStatement, count) = _methodBodyWalker.Candidates.Pop();
-					var (analysisSucceded, varAlwaysAssigned) = CheckCandidate(potentialAssignmentStatement);
+				if (_methodBodyWalker.Candidates.Count == 0)
+					return null;
 
-					if (!analysisSucceded || !varAlwaysAssigned || count == null)
-						return null;    //analysis failed or reacheable assignment with not always assigned variable or valid candidate with unresolvable count
+				var (lastPotentialAssignmentStatement, count) = _methodBodyWalker.Candidates.Pop();
+				var (analysisSucceded, varAlwaysAssigned) = CheckCandidate(lastPotentialAssignmentStatement);
 
-					return count;
-				}
+				if (!analysisSucceded || !varAlwaysAssigned || count == null)
+					return null;    //analysis failed or reacheable assignment with not always assigned variable or valid candidate with unresolvable count
 
-				return null;
+				return count;
 			}
 
 
@@ -151,7 +149,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 						curExpression = curAssignment.Right;
 					}
 
-					if (candidateAssignment == null || IsCancelationRequested)
+					if (candidateAssignment == null || IsCancelationRequested) //-V3063
 						return;
 
 					var assignmentStatement = candidateAssignment.GetStatementNode();
