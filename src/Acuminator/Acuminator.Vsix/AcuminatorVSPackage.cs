@@ -87,7 +87,6 @@ namespace Acuminator.Vsix
 
         public static AcuminatorVSPackage Instance { get; private set; }
 
-        private object locker = new object();
 		private SolutionEvents _dteSolutionEvents;
 
 		private Lazy<GeneralOptionsPage> _generalOptionsPage = 
