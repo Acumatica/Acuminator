@@ -217,7 +217,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 						? TypesContainingIsDBField[typeFromRegister]
 						: (bool?)null;
 
-					if (isDbPropertyAttributeArgs.Count == 0 && isDbFieldFromBase.HasValue)
+					if (isDbFieldFromBase.HasValue)
 					{
 						return isDbFieldFromBase.Value
 							? BoundType.DbBound// "IsDBField = true" property defined in base Acumatica class 

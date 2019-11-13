@@ -141,7 +141,7 @@ namespace Acuminator.Vsix.Coloriser
             if (document == null || cToken.IsCancellationRequested)
                 return ClassificationTagsCache.ProcessedTags;
 
-            isSuccess = await WalkDocumentSyntaxTreeForTagsAsync(document, cToken).TryAwait();
+            await WalkDocumentSyntaxTreeForTagsAsync(document, cToken).TryAwait();
             return ClassificationTagsCache.ProcessedTags;
         }    
 
