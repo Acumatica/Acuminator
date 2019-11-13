@@ -8,6 +8,7 @@ using System.Collections;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 
+using Shell = Microsoft.VisualStudio.Shell;
 
 namespace Acuminator.Vsix.Coloriser
 {
@@ -33,14 +34,11 @@ namespace Acuminator.Vsix.Coloriser
             tagger.ThrowOnNull(nameof(tagger));
 
             BackgroundTagging backgroundTagging = new BackgroundTagging();
-            backgroundTagging.TaggingTask = tagger.GetTagsAsyncImplementationAsync(tagger.Snapshot, backgroundTagging.CancellationToken);
-            backgroundTagging.TaggingTask?.ConfigureAwait(false);
-            backgroundTagging.TaggingTask.ContinueWith(task => tagger.RaiseTagsChanged(), 
-                                                       backgroundTagging.CancellationToken, 
-                                                       TaskContinuationOptions.OnlyOnRanToCompletion, 
-                                                       TaskScheduler.Default)
-                                         .ConfigureAwait(false);
-            
+			backgroundTagging.TaggingTask = tagger.GetTagsAsyncImplementationAsync(tagger.Snapshot, backgroundTagging.CancellationToken)
+												 ?.ContinueWith(task => Shell.ThreadHelper.JoinableTaskFactory.Run(tagger.RaiseTagsChangedAsync),
+																		backgroundTagging.CancellationToken,
+																		TaskContinuationOptions.OnlyOnRanToCompletion,
+																		TaskScheduler.FromCurrentSynchronizationContext());
             return backgroundTagging;
         }
 

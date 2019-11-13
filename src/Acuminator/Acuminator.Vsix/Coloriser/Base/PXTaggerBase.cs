@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.VisualStudio.Text.Tagging;
-using Acuminator.Utilities;
+using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Tagging;
+
+using Shell = Microsoft.VisualStudio.Shell;
 
 namespace Acuminator.Vsix.Coloriser
 {
@@ -79,16 +80,24 @@ namespace Acuminator.Vsix.Coloriser
             }
         }
 
-        protected virtual void ColoringSettingChangedHandler(object sender, Vsix.SettingChangedEventArgs e)
+        protected virtual void ColoringSettingChangedHandler(object sender, SettingChangedEventArgs e)
         {
             ColoringSettingsChanged = true;
-            RaiseTagsChanged();
+			Shell.ThreadHelper.JoinableTaskFactory.Run(RaiseTagsChangedAsync);
         }
 
-        internal virtual void RaiseTagsChanged() => TagsChanged?.Invoke(this,
-            new SnapshotSpanEventArgs(
-                new SnapshotSpan(Buffer.CurrentSnapshot,
-                    new Span(0, Buffer.CurrentSnapshot.Length))));
+		internal async virtual Task RaiseTagsChangedAsync()
+		{
+			if (!Shell.ThreadHelper.CheckAccess())
+			{
+				await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+			}
+
+			TagsChanged?.Invoke(this,
+			  new SnapshotSpanEventArgs(
+				  new SnapshotSpan(Buffer.CurrentSnapshot,
+					  new Span(0, Buffer.CurrentSnapshot.Length))));
+		}
 
         protected internal virtual void ResetCacheAndFlags(ITextSnapshot newCache)
         {

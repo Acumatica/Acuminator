@@ -18,6 +18,8 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 
+using Shell = Microsoft.VisualStudio.Shell;
+
 namespace Acuminator.Vsix.Coloriser
 {
 	public partial class PXRoslynColorizerTagger : PXColorizerTaggerBase
@@ -492,8 +494,8 @@ namespace Acuminator.Vsix.Coloriser
                 if (_visitedNodesCounter <= ColoringConstants.ChunkSize || _cancellationToken.IsCancellationRequested)
                     return;
 
-                _visitedNodesCounter = 0;               
-                _tagger.RaiseTagsChanged();
+                _visitedNodesCounter = 0;
+				Shell.ThreadHelper.JoinableTaskFactory.Run(_tagger.RaiseTagsChangedAsync);
             }
 
             /// <summary>

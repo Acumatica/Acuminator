@@ -5,7 +5,8 @@ using System.Threading;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
-using Acuminator.Utilities;
+
+using Shell = Microsoft.VisualStudio.Shell;
 
 namespace Acuminator.Vsix.Coloriser
 {
@@ -70,7 +71,7 @@ namespace Acuminator.Vsix.Coloriser
 
         private void OnColorizingTaggerTagsChanged(object sender, SnapshotSpanEventArgs e)
         {
-            RaiseTagsChanged();
+			Shell.ThreadHelper.JoinableTaskFactory.Run(RaiseTagsChangedAsync);
         }
 
         public override void Dispose()
