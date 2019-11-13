@@ -271,10 +271,10 @@ namespace Acuminator.Vsix.GoToDeclaration
 			switch (declarationNode)
 			{
 				case VariableDeclaratorSyntax variableDeclarator:
-					textSpan = variableDeclarator?.Identifier.Span ?? syntaxReferences[0].Span;
+					textSpan = variableDeclarator.Identifier.Span;
 					break;
 				case PropertyDeclarationSyntax propertyDeclaration:
-					textSpan = propertyDeclaration?.Identifier.Span ?? syntaxReferences[0].Span;
+					textSpan = propertyDeclaration.Identifier.Span;
 					break;
 				default:
 					return;
