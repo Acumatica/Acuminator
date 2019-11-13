@@ -53,6 +53,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			{
 				yield return currentDelegate;
 				currentDelegate = currentDelegate.Base;
+				counter++;
 			}
 		}
 	}
