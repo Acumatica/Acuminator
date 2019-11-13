@@ -87,13 +87,12 @@ namespace Acuminator.Vsix
 
         public static AcuminatorVSPackage Instance { get; private set; }
 
-        private object locker = new object();
+        private volatile object locker = new object();
 		private SolutionEvents _dteSolutionEvents;
 
+		private GeneralOptionsPage _generalOptionsPage = null;
 
-		private GeneralOptionsPage _generalOptionsPage = null;     
-      
-        public GeneralOptionsPage GeneralOptionsPage
+		public GeneralOptionsPage GeneralOptionsPage
         {
             get
             {
