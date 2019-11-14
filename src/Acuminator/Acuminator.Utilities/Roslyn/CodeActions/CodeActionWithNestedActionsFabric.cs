@@ -22,7 +22,7 @@ namespace Acuminator.Utilities.Roslyn.CodeActions
 
 		private static object _locker = new object();
 
-		private static Type _codeActionWithNestedActionsType;
+		private static volatile Type _codeActionWithNestedActionsType;
 		private static object _lowCodeActionPriorityInstance;
 		private static bool? _roslynOldApiUsed;
 

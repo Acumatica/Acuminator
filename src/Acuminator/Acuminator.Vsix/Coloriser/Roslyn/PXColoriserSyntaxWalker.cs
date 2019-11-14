@@ -18,6 +18,8 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 
+using Shell = Microsoft.VisualStudio.Shell;
+
 namespace Acuminator.Vsix.Coloriser
 {
 	public partial class PXRoslynColorizerTagger : PXColorizerTaggerBase
@@ -133,7 +135,7 @@ namespace Acuminator.Vsix.Coloriser
                     return;
                 }
 
-                if (coloredCodeType.Value == PXCodeType.BqlCommand)           
+                if (coloredCodeType.Value == PXCodeType.BqlCommand)            //-V3080
                     ColorAndOutlineBqlCommandBeginning(genericNode, classificationType);
                 else
                     ColorAndOutlineBqlPartsAndPXActions(genericNode, typeSymbol, classificationType, coloredCodeType.Value);
@@ -419,7 +421,7 @@ namespace Acuminator.Vsix.Coloriser
 					: null;
 
 				if (classificationType == null || 
-				   (coloredCodeType.Value == PXCodeType.PXGraph && !_tagger.Provider.Package.PXGraphColoringEnabled) ||
+				   (coloredCodeType.Value == PXCodeType.PXGraph && !_tagger.Provider.Package.PXGraphColoringEnabled) || //-V3080
 				   (coloredCodeType.Value == PXCodeType.PXAction && !_tagger.Provider.Package.PXActionColoringEnabled))
 					return;
 
@@ -450,8 +452,7 @@ namespace Acuminator.Vsix.Coloriser
                                                              .OfType<AttributeSyntax>()
                                                              .FirstOrDefault();
 
-                if (attribute?.ArgumentList?.Arguments == null || attribute.ArgumentList.Arguments.Count == 0 || 
-                    _cancellationToken.IsCancellationRequested)
+                if (attribute?.ArgumentList == null || attribute.ArgumentList.Arguments.Count == 0 || _cancellationToken.IsCancellationRequested)
                 {
                     return;
                 }
@@ -492,8 +493,8 @@ namespace Acuminator.Vsix.Coloriser
                 if (_visitedNodesCounter <= ColoringConstants.ChunkSize || _cancellationToken.IsCancellationRequested)
                     return;
 
-                _visitedNodesCounter = 0;               
-                _tagger.RaiseTagsChanged();
+                _visitedNodesCounter = 0;
+				Shell.ThreadHelper.JoinableTaskFactory.Run(_tagger.RaiseTagsChangedAsync);
             }
 
             /// <summary>

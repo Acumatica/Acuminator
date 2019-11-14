@@ -65,11 +65,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 						sb.Append(c);
 						return;
 
-					case ' ' when counter < indentLength && !isInsideString:
+					case ' ' when counter < indentLength && !isInsideString: //-V3063
 						counter++;
 						return;
 
-					case '\t' when counter < indentLength && !isInsideString:
+					case '\t' when counter < indentLength && !isInsideString: //-V3063
 						counter += tabSize;
 						return;
 

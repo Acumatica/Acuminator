@@ -29,7 +29,7 @@ namespace Acuminator.Vsix.Coloriser
         public ITextSnapshot Snapshot { get; }
 
 
-        public ParsedDocument(Workspace workspace, Document document, SemanticModel semanticModel, SyntaxNode syntaxRoot,
+        public ParsedDocument(Workspace workspace, Document document, SyntaxNode syntaxRoot,
                                ITextSnapshot snapshot)
         {
             Workspace = workspace;
@@ -58,37 +58,21 @@ namespace Acuminator.Vsix.Coloriser
                 return null;        // Razor cshtml returns a null document for some reason.
             }
 
-            if (document.TryGetSemanticModel(out SemanticModel semanticModel) && 
-                document.TryGetSyntaxRoot(out SyntaxNode syntaxRoot))
+            if (document.TryGetSyntaxRoot(out SyntaxNode syntaxRoot))
             {         
-                return new ParsedDocument(workspace, document, semanticModel, syntaxRoot, snapshot);
+                return new ParsedDocument(workspace, document, syntaxRoot, snapshot);
             }
 
             if (cancellationToken.IsCancellationRequested)
                 return null;
 
-            Task<SemanticModel> semanticModelTask = document.GetSemanticModelAsync(cancellationToken);
-            Task<SyntaxNode> syntaxRootTask = document.GetSyntaxRootAsync(cancellationToken);
-            bool success = await Task.WhenAll(semanticModelTask, syntaxRootTask)
-                                     .TryAwait()
-									 .ConfigureAwait(false);
-            if (!success)
+			bool success;
+			(success, syntaxRoot) = await document.GetSyntaxRootAsync(cancellationToken).TryAwait().ConfigureAwait(false);
+
+			if (!success || syntaxRoot == null || cancellationToken.IsCancellationRequested)
                 return null;
 
-            if (!semanticModelTask.IsCompleted || !syntaxRootTask.IsCompleted || cancellationToken.IsCancellationRequested)
-            {
-                return null;
-            }
-
-			#pragma warning disable VSTHRD103 // Call async methods when in an async method - task already finished
-			syntaxRoot = syntaxRootTask.Result;
-			semanticModel = semanticModelTask.Result;
-			#pragma warning restore VSTHRD103 
-
-			if (cancellationToken.IsCancellationRequested)
-                return null;
-
-            return new ParsedDocument(workspace, document, semanticModel, syntaxRoot, snapshot);
+            return new ParsedDocument(workspace, document, syntaxRoot, snapshot);
         }
 
         private static bool IsSupportedFileType(Document document) => allowedExtensions.Contains(Path.GetExtension(document.FilePath));       

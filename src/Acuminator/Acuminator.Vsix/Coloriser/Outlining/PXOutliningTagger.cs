@@ -5,7 +5,8 @@ using System.Threading;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
-using Acuminator.Utilities;
+
+using Shell = Microsoft.VisualStudio.Shell;
 
 namespace Acuminator.Vsix.Coloriser
 {
@@ -42,7 +43,7 @@ namespace Acuminator.Vsix.Coloriser
 
             switch (ColorizerTagger?.TaggerType)
             {
-                case TaggerType.General when Provider.Package?.UseRegexColoring == true:
+                case TaggerType.General when Provider.Package.UseRegexColoring == true: //-V3063
                 case TaggerType.RegEx:
                 case null:
                     return Enumerable.Empty<ITagSpan<IOutliningRegionTag>>();
@@ -70,7 +71,7 @@ namespace Acuminator.Vsix.Coloriser
 
         private void OnColorizingTaggerTagsChanged(object sender, SnapshotSpanEventArgs e)
         {
-            RaiseTagsChanged();
+			Shell.ThreadHelper.JoinableTaskFactory.Run(RaiseTagsChangedAsync);
         }
 
         public override void Dispose()

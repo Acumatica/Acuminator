@@ -31,12 +31,13 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			var propertiesInfo = diagnosticsType.GetRuntimeProperties();
 
 			_fixableDiagnosticIds = propertiesInfo
-				.Where(x => x.PropertyType == typeof(DiagnosticDescriptor))
-				.Select(x =>
+				.Where(property => property.PropertyType == typeof(DiagnosticDescriptor))
+				.Select(property =>
 				{
-					var descriptor = (DiagnosticDescriptor)x.GetValue(x);
-					return descriptor.Id;
+					var descriptor = property.GetValue(null) as DiagnosticDescriptor;
+					return descriptor?.Id;
 				})
+				.Where(id => id != null)
 				.ToImmutableArray();
 		}
 
