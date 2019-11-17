@@ -101,7 +101,7 @@
                     <StackPanel Orientation="Horizontal" PreviewMouseLeftButtonDown="TreeViewItem_PreviewMouseLeftButtonDown"
                                 HorizontalAlignment="Stretch">
 
-						<ItemsControl x:Name="extraInfosPanel"
+						<ItemsControl x:Name="extraInfosPanel" Margin="0,0,5,0"
 									  ItemsSource="{Binding Path=ExtraInfos, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
 							<ItemsControl.ItemsPanel>
 								<ItemsPanelTemplate>
@@ -118,9 +118,9 @@
 								</Style>
 							</ItemsControl.Style>
 							
-							<ItemsControl.ItemTemplate>
+							<ItemsControl.Resources>
 								<DataTemplate DataType="{x:Type codeMap:IconViewModel}">
-									<Image Margin="0,1.5,5,1.5" UseLayoutRounding="True"
+									<Image Margin="0,1.5,1,1.5" UseLayoutRounding="True"
 										   Source="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, 
 															Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource treeNodeToIconConverter}}">
 										<Image.Style>
@@ -134,7 +134,13 @@
 										</Image.Style>
 									</Image>
 								</DataTemplate>
-							</ItemsControl.ItemTemplate>
+								
+								<DataTemplate DataType="{x:Type codeMap:TextViewModel}">
+									<TextBlock VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,1,0"
+											   Foreground="{Binding Path=Foreground, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+											   Text="{Binding Path=Text, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+								</DataTemplate>
+							</ItemsControl.Resources>
 						</ItemsControl>
 		
 						<TextBlock VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,3,0"

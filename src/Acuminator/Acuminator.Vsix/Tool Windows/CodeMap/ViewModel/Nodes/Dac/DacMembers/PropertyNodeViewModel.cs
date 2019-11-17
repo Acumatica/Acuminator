@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Media;
 using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
@@ -36,14 +37,36 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public PropertyNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, DacPropertyInfo propertyInfo, bool isExpanded = false) :
 								base(dacMemberCategoryVM, propertyInfo, isExpanded)
 		{
-			Icon icon = IsKey
-				? Icon.DacKeyProperty
-				: Icon.DacProperty;
-			ExtraInfos = new ExtendedObservableCollection<ExtraInfoViewModel>(new IconViewModel(icon));
+			var extraInfos = GetExtraInfos();
+			ExtraInfos = new ExtendedObservableCollection<ExtraInfoViewModel>(extraInfos);
 		}	
 
 		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren,
 																	     CancellationToken cancellation) =>
 			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
+
+		private IEnumerable<ExtraInfoViewModel> GetExtraInfos()
+		{
+			Icon icon = IsKey
+				? Icon.DacKeyProperty
+				: Icon.DacProperty;
+
+			yield return new IconViewModel(icon);
+
+			if (IsIdentity)
+			{
+				yield return new TextViewModel("ID", Brushes.LightGreen);
+			}
+
+			switch (BoundType)
+			{		
+				case BoundType.Unbound:
+					yield return new TextViewModel("Unbound", Brushes.SaddleBrown);
+					break;
+				case BoundType.DbBound:
+					yield return new TextViewModel("Bound", Brushes.SaddleBrown);
+					break;
+			}
+		}
 	}
 }
