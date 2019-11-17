@@ -57,7 +57,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				//Create new xml document and get its text
 				var newXDocument = SuppressionFile.NewDocumentFromMessages(Enumerable.Empty<SuppressMessage>());
 
-				if (newXDocument == null)
+				if (newXDocument == null) //-V3022
 					return null;
 
 				string docText = newXDocument.GetXDocumentStringWithDeclaration();

@@ -120,7 +120,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 
 			ISymbol memberSymbol = GetMemberSymbol(memberNode, semanticModel, caretPosition);
 
-			if (!CheckMemberSymbol(memberSymbol, context))
+			if (memberSymbol == null || !CheckMemberSymbol(memberSymbol, context))
 				return;
 
 			await NavigateToHandlerOrDeclarationAsync(document, textView, memberSymbol, memberNode, semanticModel, context);
@@ -144,7 +144,7 @@ namespace Acuminator.Vsix.GoToDeclaration
 
 		private bool CheckMemberSymbol(ISymbol memberSymbol, PXContext context)
 		{
-			if (memberSymbol?.ContainingType == null || !memberSymbol.ContainingType.IsPXGraphOrExtension(context))
+			if (memberSymbol.ContainingType == null || !memberSymbol.ContainingType.IsPXGraphOrExtension(context))
 				return false;
 
 			switch (memberSymbol.Kind)
@@ -271,10 +271,10 @@ namespace Acuminator.Vsix.GoToDeclaration
 			switch (declarationNode)
 			{
 				case VariableDeclaratorSyntax variableDeclarator:
-					textSpan = variableDeclarator?.Identifier.Span ?? syntaxReferences[0].Span;
+					textSpan = variableDeclarator.Identifier.Span;
 					break;
 				case PropertyDeclarationSyntax propertyDeclaration:
-					textSpan = propertyDeclaration?.Identifier.Span ?? syntaxReferences[0].Span;
+					textSpan = propertyDeclaration.Identifier.Span;
 					break;
 				default:
 					return;

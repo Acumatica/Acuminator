@@ -13,9 +13,7 @@ namespace Acuminator.Vsix.Coloriser
 {
     public class TagsCacheAsync<TTag> : ITagsCache<TTag>
     where TTag : ITag
-    {
-        private const int DefaultCapacity = 64;
-        
+    {        
         protected CancellationToken CancellationToken { get; set;  }
 
         public bool IsCompleted { get; private set; }
@@ -26,7 +24,7 @@ namespace Acuminator.Vsix.Coloriser
         
         public int Count => ProcessedTags.Count;
 
-        public TagsCacheAsync(int? capacity = null)
+        public TagsCacheAsync()
         {
             CancellationToken = CancellationToken.None;
         }

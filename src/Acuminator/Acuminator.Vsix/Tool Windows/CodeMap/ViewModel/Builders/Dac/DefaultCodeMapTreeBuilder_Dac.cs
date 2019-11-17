@@ -76,8 +76,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 																								CancellationToken cancellation)
 		where TInfo : SymbolItem
 		{
-			var categorySymbols = dacMemberCategory.GetCategoryDacNodeSymbols()
-												   .OrderBy(symbol => symbol.DeclarationOrder);
+			var categorySymbols = dacMemberCategory?.GetCategoryDacNodeSymbols()
+												   ?.OrderBy(symbol => symbol.DeclarationOrder);
 			if (categorySymbols == null)
 			{
 				yield break;

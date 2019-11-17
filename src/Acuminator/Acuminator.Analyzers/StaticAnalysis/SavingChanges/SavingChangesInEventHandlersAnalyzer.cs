@@ -49,18 +49,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.SavingChanges
 
 				leftExpression = SyntaxFactory.MemberAccessExpression(
 					SyntaxKind.SimpleMemberAccessExpression,
-					SyntaxFactory.IdentifierName("PXTranStatus"),
-					SyntaxFactory.IdentifierName("Open"));
-
-				rightExpression = SyntaxFactory.MemberAccessExpression(
-					SyntaxKind.SimpleMemberAccessExpression,
 					SyntaxFactory.IdentifierName("e"),
 					SyntaxFactory.IdentifierName("TranStatus"));
 
-				tranStatus = SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, 
-					rightExpression, 
-					SyntaxFactory.Token(SyntaxKind.EqualsEqualsToken), 
-					leftExpression);
+				rightExpression = SyntaxFactory.MemberAccessExpression(
+					SyntaxKind.SimpleMemberAccessExpression,
+					SyntaxFactory.IdentifierName("PXTranStatus"),
+					SyntaxFactory.IdentifierName("Open"));
+
+				tranStatus = SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression,
+					leftExpression, 
+					SyntaxFactory.Token(SyntaxKind.EqualsEqualsToken),
+					rightExpression);
 			}
 
 			public override void VisitIfStatement(IfStatementSyntax node)

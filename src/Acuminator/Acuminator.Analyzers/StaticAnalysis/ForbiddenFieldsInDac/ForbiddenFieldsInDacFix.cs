@@ -72,7 +72,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.ForbiddenFieldsInDac
 				return document;
 
 			ClassDeclarationSyntax modifiedDac = RemoveRegions(dacDeclaration, regionsVisitor.RegionNodesToRemove);
-			var propertiesToRemove = modifiedDac.Members.OfType<PropertyDeclarationSyntax>()
+			var propertiesToRemove = modifiedDac.Members.OfType<PropertyDeclarationSyntax>() //-V3080
 														.Where(p => identifierToRemove.Equals(p.Identifier.Text, 
 																							  StringComparison.OrdinalIgnoreCase));
 			modifiedDac = modifiedDac.RemoveNodes(propertiesToRemove, SyntaxRemoveOptions.KeepExteriorTrivia);

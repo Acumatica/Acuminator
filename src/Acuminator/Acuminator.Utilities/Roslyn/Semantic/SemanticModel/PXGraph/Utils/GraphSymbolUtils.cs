@@ -105,7 +105,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			var baseGraphType = graph.GetBaseTypesAndThis()
 									 .OfType<INamedTypeSymbol>()
-									 .FirstOrDefault(type => IsGraphWithPrimaryDacBaseGenericType(type)) as INamedTypeSymbol;
+									 .FirstOrDefault(type => IsGraphWithPrimaryDacBaseGenericType(type));
 
 			if (baseGraphType == null || baseGraphType.TypeArguments.Length < 2)
 				return null;

@@ -87,30 +87,12 @@ namespace Acuminator.Vsix
 
         public static AcuminatorVSPackage Instance { get; private set; }
 
-        private object locker = new object();
 		private SolutionEvents _dteSolutionEvents;
 
+		private Lazy<GeneralOptionsPage> _generalOptionsPage = 
+			new Lazy<GeneralOptionsPage>(() => Instance.GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage, isThreadSafe: true);
 
-		private GeneralOptionsPage _generalOptionsPage = null;     
-      
-        public GeneralOptionsPage GeneralOptionsPage
-        {
-            get
-            {
-                if (_generalOptionsPage == null)
-                {
-                    lock (locker)
-                    {
-                        if (_generalOptionsPage == null)
-                        {
-                            _generalOptionsPage = GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage;
-                        }
-                    }
-                }
-
-                return _generalOptionsPage;
-            }
-        }
+		public GeneralOptionsPage GeneralOptionsPage => _generalOptionsPage.Value;
 
 		internal AcuminatorLogger AcuminatorLogger
 		{

@@ -211,7 +211,7 @@ namespace Acuminator.Vsix.ChangesClassification
 				return changeLocation;
 
 			//Now check trivia
-			changeLocation = GetChangeLocationFromNodeTrivia(propertyNodeBase, textChange) ?? ChangeLocation.Class;
+			changeLocation = GetChangeLocationFromNodeTrivia(propertyNodeBase, textChange);
 
 			if (changeLocation.HasValue)
 				return changeLocation;

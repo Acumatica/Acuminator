@@ -103,7 +103,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 		private static bool IsPXUpdateMethod(IMethodSymbol methodSymbol) =>
 			methodSymbol.IsStatic && methodSymbol.ReturnType.SpecialType == SpecialType.System_Int32 &&
 			methodSymbol.ContainingType?.IsStatic == true &&
-			TypeNames.PXUpdateBqlTypes.Contains(methodSymbol.ContainingType?.Name);
+			TypeNames.PXUpdateBqlTypes.Contains(methodSymbol.ContainingType.Name);
 
 		private static void AnalyzeStaticInvocation(IMethodSymbol methodSymbol, PXContext pxContext, SyntaxNodeAnalysisContext syntaxContext,
 													InvocationExpressionSyntax invocation)

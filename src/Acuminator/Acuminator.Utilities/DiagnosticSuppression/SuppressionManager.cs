@@ -225,7 +225,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			{
 				lock (_initializationLocker)
 				{
-					if (Instance == null)
+					if (Instance == null) //-V3054 Justification: on the current CLR the memory model it should work, fix while bringing little value will make the logic much more complex 
 					{
 						return throwOnNotInitialized
 							? throw new InvalidOperationException($"{nameof(SuppressionManager)} instance was not initialized")
