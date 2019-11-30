@@ -102,7 +102,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		private static void AddMessagesToDocument(XDocument document, IEnumerable<SuppressMessage> messages)
         {
-            var sortedMessages = messages.Order();
+            var sortedMessages = messages.Where(m => m.IsValid).Order();
 
             foreach (var message in sortedMessages)
             {
@@ -152,16 +152,34 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				return new HashSet<SuppressMessage>();
 			}
 
-			return document.Root.Elements(SuppressMessageElement)
-								.Select(e => MessageFromElement(e))
-								.ToHashSet();
+			HashSet<SuppressMessage> suppressionMessages = new HashSet<SuppressMessage>();
+
+			foreach (XElement suppressionMessageXml in document.Root.Elements(SuppressMessageElement))
+			{
+				SuppressMessage? suppressMessage = MessageFromElement(suppressionMessageXml);
+
+				if (suppressMessage != null)
+				{
+					suppressionMessages.Add(suppressMessage.Value);
+				}
+			}
+
+			return suppressionMessages;
 		}
 
-		private static SuppressMessage MessageFromElement(XElement element)
+		private static SuppressMessage? MessageFromElement(XElement element)
 		{
-			var id = element.Attribute(IdAttribute).Value;
-			var target = element.Element(TargetElement).Value;
-			var syntaxNode = element.Element(SyntaxNodeElement).Value;
+			string id = element.Attribute(IdAttribute)?.Value;
+			if (id.IsNullOrWhiteSpace())
+				return null;
+
+			string target = element.Element(TargetElement)?.Value;
+			if (target.IsNullOrWhiteSpace())
+				return null;
+
+			string syntaxNode = element.Element(SyntaxNodeElement)?.Value;
+			if (syntaxNode.IsNullOrWhiteSpace())
+				return null;
 
 			return new SuppressMessage(id, target, syntaxNode);
 		}
