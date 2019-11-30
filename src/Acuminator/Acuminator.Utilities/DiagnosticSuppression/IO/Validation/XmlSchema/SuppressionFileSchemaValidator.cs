@@ -54,10 +54,19 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 			return new SuppressionFileSchemaValidator(schema);
 		}
 
+		/// <summary>
+		/// Validates the suppression file.
+		/// </summary>
+		/// <param name="document">The suppression file xml.</param>
+		/// <param name="validationLog">The validation log.</param>
+		/// <returns/>
 		public bool ValidateSuppressionFile(XDocument document, ValidationLog validationLog)
 		{
 			document.ThrowOnNull(nameof(document));
 			validationLog.ThrowOnNull(nameof(validationLog));
+
+			if (validationLog.ErrorsCount == int.MaxValue)
+				return false;
 
 			int oldErrorCount = validationLog.ErrorsCount;
 

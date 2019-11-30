@@ -7,7 +7,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 {
 	public class ValidationLog
 	{
-		private const string LogSeparator = "*******************************************************************"
+		private const string LogSeparator = "*******************************************************************";
 
 		public int ErrorsCount
 		{
@@ -38,7 +38,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 			}
 			finally
 			{
-				if (ErrorsCount < Int32.MaxValue)
+				if (ErrorsCount < int.MaxValue)
 					ErrorsCount++;
 			}
 		}
