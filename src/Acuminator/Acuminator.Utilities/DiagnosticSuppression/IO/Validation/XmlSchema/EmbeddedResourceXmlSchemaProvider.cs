@@ -21,7 +21,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 		{
 			try
 			{
-				Assembly utilsAssembly = typeof(SuppressionFileSchemaValidator).GetTypeInfo().Assembly;
+				Assembly utilsAssembly = typeof(SuppressionFileSchemaValidator).Assembly;
 				string schemaResourceFullName = GetSchemaResourceFullName(utilsAssembly);
 
 				if (schemaResourceFullName.IsNullOrWhiteSpace())
