@@ -6,6 +6,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 	{
 		IIOErrorProcessor ErrorProcessor { get; }
 
+		SuppressionFileValidation FileValidation { get; }
+
 		XDocument Load(string path);
 
 		bool Save(XDocument document, string path);

@@ -7,17 +7,24 @@ using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.DiagnosticSuppression.IO
 {
-	internal class SuppressionFileSystemService : ISuppressionFileSystemService
+	public class SuppressionFileSystemService : ISuppressionFileSystemService
 	{
 		public IIOErrorProcessor ErrorProcessor { get; }
 
-		public SuppressionFileSystemService() : this(null)
+		public SuppressionFileValidation FileValidation { get; }
+
+		public SuppressionFileSystemService() : this(null, null)
 		{
 		}
 
-		public SuppressionFileSystemService(IIOErrorProcessor errorProcessor)
+		public SuppressionFileSystemService(IIOErrorProcessor errorProcessor) : this(errorProcessor, null)
+		{
+		}
+
+		public SuppressionFileSystemService(IIOErrorProcessor errorProcessor, SuppressionFileValidation customValidation)
 		{
 			ErrorProcessor = errorProcessor ?? new DefaultIOErrorProcessor();
+			FileValidation = customValidation ?? new SuppressionFileValidation(ErrorProcessor);
 		}
 
 		public XDocument Load(string path)
@@ -29,7 +36,14 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 				if (!File.Exists(path))
 					return null;
 
-				return XDocument.Load(path);
+				var document = XDocument.Load(path);
+
+				if (document == null)
+					return null;	
+				else if (FileValidation != null && !FileValidation.ValidateSuppressionFile(document))
+					return null;
+
+				return document;
 			}
 			catch (Exception exception) when (FilterException(exception))
 			{
@@ -46,10 +60,10 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 			
 			try
 			{
-				using (FileStream fs = File.OpenWrite(path))
-				{
-					document.Save(fs);
-				}
+				if (FileValidation != null && !FileValidation.ValidateSuppressionFile(document))
+					return false;
+
+				document.Save(path);
 			}
 			catch (Exception exception) when (FilterException(exception))
 			{
