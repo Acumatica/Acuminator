@@ -20,5 +20,11 @@ namespace Acuminator
 		/// The Acuminator diagnostic common prefix.
 		/// </summary>
 		public const string AcuminatorDiagnosticPrefix = "PX";
+
+
+		/// <summary>
+		/// Filename of the suppression file XML schema.
+		/// </summary>
+		public const string SuppressionFileXmlSchemaFileName = "SuppressionFileSchema.xsd";
 	}
 }
