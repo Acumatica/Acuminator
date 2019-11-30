@@ -13,6 +13,6 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 		/// <param name="document">The suppression file xml.</param>
 		/// <param name="validationLog">The validation log.</param>
 		/// <returns/>
-		bool ValidateSuppressionFile(XDocument document, ValidationLog validationLog);
+		void ValidateSuppressionFile(XDocument document, ValidationLog validationLog);
 	}
 }

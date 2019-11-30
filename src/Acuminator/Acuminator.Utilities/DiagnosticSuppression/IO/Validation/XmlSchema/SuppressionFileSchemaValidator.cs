@@ -60,15 +60,10 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 		/// <param name="document">The suppression file xml.</param>
 		/// <param name="validationLog">The validation log.</param>
 		/// <returns/>
-		public bool ValidateSuppressionFile(XDocument document, ValidationLog validationLog)
+		public void ValidateSuppressionFile(XDocument document, ValidationLog validationLog)
 		{
 			document.ThrowOnNull(nameof(document));
 			validationLog.ThrowOnNull(nameof(validationLog));
-
-			if (validationLog.ErrorsCount == int.MaxValue)
-				return false;
-
-			int oldErrorCount = validationLog.ErrorsCount;
 
 			try
 			{
@@ -77,10 +72,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 			catch (XmlSchemaValidationException schemaValidationException)
 			{
 				validationLog.LogError(schemaValidationException.Message);
-				return false;
 			}
-
-			return validationLog.ErrorsCount == oldErrorCount;
 		}
 
 		protected virtual void OnSchemaError(ValidationLog validationLog, object sender, ValidationEventArgs e)
