@@ -19,24 +19,17 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 		/// </summary>
 		public XmlSchema Schema { get; }
 
-		/// <summary>
-		/// The error processor. Can be null.
-		/// </summary>
-		public IIOErrorProcessor ErrorProcessor { get; }
-
 		private readonly XmlSchemaSet _xmlSchemaSet;
 
-
-		protected SuppressionFileSchemaValidator(XmlSchema schema, IIOErrorProcessor errorProcessor)
+		protected SuppressionFileSchemaValidator(XmlSchema schema)
 		{
 			Schema = schema.CheckIfNull(nameof(schema));
 			_xmlSchemaSet = new XmlSchemaSet();
 			_xmlSchemaSet.Add(Schema);
-
-			ErrorProcessor = errorProcessor;
 		}
 
-		public static SuppressionFileSchemaValidator Create(IIOErrorProcessor errorProcessor, IXmlSchemaProvider customXmlSchemaProvider = null)
+		public static SuppressionFileSchemaValidator Create(IXmlSchemaProvider customXmlSchemaProvider = null, 
+															IIOErrorProcessor errorProcessor = null)
 		{
 			IXmlSchemaProvider xmlSchemaProvider = customXmlSchemaProvider ?? new EmbeddedResourceXmlSchemaProvider();
 			XmlSchema schema;
@@ -58,35 +51,35 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 				return null;
 			}
 
-			return new SuppressionFileSchemaValidator(schema, errorProcessor);
+			return new SuppressionFileSchemaValidator(schema);
 		}
 
-		public bool ValidateSuppressionFile(XDocument document)
+		public bool ValidateSuppressionFile(XDocument document, ValidationLog validationLog)
 		{
 			document.ThrowOnNull(nameof(document));
-			int errorCounter = 0;
-			StringBuilder logBuilder = new StringBuilder();
+			validationLog.ThrowOnNull(nameof(validationLog));
+
+			int oldErrorCount = validationLog.ErrorsCount;
 
 			try
 			{
-				document.Validate(_xmlSchemaSet, (sender, e) => OnSchemaError(logBuilder, errorCounter, sender, e));
+				document.Validate(_xmlSchemaSet, (sender, e) => OnSchemaError(validationLog, sender, e));
 			}
 			catch (XmlSchemaValidationException schemaValidationException)
 			{
-				ErrorProcessor?.ProcessError(schemaValidationException);
+				validationLog.LogError(schemaValidationException.Message);
 				return false;
 			}
 
-
+			return validationLog.ErrorsCount == oldErrorCount;
 		}
 
-		private void OnSchemaError(StringBuilder logBuilder, int errorCounter, object sender, ValidationEventArgs e)
+		protected virtual void OnSchemaError(ValidationLog validationLog, object sender, ValidationEventArgs e)
 		{
+			string errorMsg = $"Validation event: {e.Message} | Severity: {e.Severity} | Line Number: {e.Exception.LineNumber}" + 
+							  $" | Line Position: {e.Exception.LinePosition} | Error Message: { e.Exception.Message}";
 
-		}	
-
-
-
-		
+			validationLog.LogError(errorMsg);
+		}		
 	}
 }

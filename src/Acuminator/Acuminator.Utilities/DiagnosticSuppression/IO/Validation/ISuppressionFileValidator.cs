@@ -8,15 +8,11 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 	public interface ISuppressionFileValidator
 	{
 		/// <summary>
-		/// The error processor.
-		/// </summary>
-		IIOErrorProcessor ErrorProcessor { get; }
-
-		/// <summary>
 		/// Validates the suppression file.
 		/// </summary>
 		/// <param name="document">The suppression file xml.</param>
+		/// <param name="validationLog">The validation log.</param>
 		/// <returns/>
-		bool ValidateSuppressionFile(XDocument document);
+		bool ValidateSuppressionFile(XDocument document, ValidationLog validationLog);
 	}
 }
