@@ -77,10 +77,40 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 
 		protected virtual void OnSchemaError(ValidationLog validationLog, object sender, ValidationEventArgs e)
 		{
-			string errorMsg = $"Validation event: {e.Message} | Severity: {e.Severity} | Line Number: {e.Exception.LineNumber}" + 
-							  $" | Line Position: {e.Exception.LinePosition} | Error Message: { e.Exception.Message}";
+			string errorMsg = $"Validation event: {e.Message} | Severity: {e.Severity}";
+			string location = GetLocationDescription(sender);
+
+			if (location != null)
+			{
+				errorMsg += " | " + location;
+			}
 
 			validationLog.LogError(errorMsg);
 		}		
+
+		protected virtual string GetLocationDescription(object sender)
+		{
+			XElement suppressionMesage = sender switch
+			{
+				XAttribute attribute => GetSuppressionMessageElement(attribute.Parent),
+				XElement element => GetSuppressionMessageElement(element),
+				_ => null
+			};
+
+			if (suppressionMesage == null)
+				return null;
+
+			return $"Node: {suppressionMesage.ToString()} | " +
+				   $"Prev Node: {suppressionMesage.PreviousNode?.ToString()} | " +
+				   $"Next Node: {suppressionMesage.NextNode?.ToString()}";
+		}
+
+		private XElement GetSuppressionMessageElement(XElement element)
+		{
+			while (element != null && element.Name != SuppressionFile.SuppressMessageElement)
+				element = element.Parent;
+
+			return element;
+		}
 	}
 }

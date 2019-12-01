@@ -11,7 +11,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 	public class SuppressionFile : IDisposable
 	{
         private const string RootEmelent = "suppressions";
-		private const string SuppressMessageElement = "suppressMessage";
+		public const string SuppressMessageElement = "suppressMessage";
 		private const string IdAttribute = "id";
 		private const string TargetElement = "target";
 		private const string SyntaxNodeElement = "syntaxNode";
