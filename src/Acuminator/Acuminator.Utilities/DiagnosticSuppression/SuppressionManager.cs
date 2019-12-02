@@ -278,13 +278,15 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 																Diagnostic diagnostic, CodeAnalysisSettings settings, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
+			reportDiagnostic.ThrowOnNull(nameof(reportDiagnostic));
 
-			if (settings.SuppressionMechanismEnabled &&
-				(Instance?.IsSuppressed(semanticModel, diagnostic, cancellation) == true ||
-				CheckSuppressedComment(diagnostic, cancellation)))
-			{
+			// Always check suppression with a comment first. The suppression by comment doesn't depend on the SuppressionMechanismEnabled setting
+			// Also we need to avoid modification of the suppression file when Requirement Validation tool runs the Acuminator in a special mode, 
+			// in which every found diagnostic is recorded in the suppression file.
+			if (CheckSuppressedComment(diagnostic, cancellation))
 				return;
-			}
+			else if (settings.SuppressionMechanismEnabled && Instance?.IsSuppressedInSuppressionFile(semanticModel, diagnostic, cancellation) == true)
+				return;
 
 			reportDiagnostic(diagnostic);
 		}
@@ -325,7 +327,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			return successfulMatch != null;
 		}
 
-		private bool IsSuppressed(SemanticModel semanticModel, Diagnostic diagnostic, CancellationToken cancellation)
+		private bool IsSuppressedInSuppressionFile(SemanticModel semanticModel, Diagnostic diagnostic, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
 
