@@ -39,6 +39,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		{
 			_fileSystemService = fileSystemService.CheckIfNull(nameof(fileSystemService));
 			_suppressionFileCreator = new SuppressionFileCreator(this);
+
 			BuildActionSetter = buildActionSetter;
 		}
 
