@@ -7,27 +7,22 @@ using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.DiagnosticSuppression.IO
 {
-	public class SuppressionFileSystemService : ISuppressionFileSystemService
+	/// <summary>
+	/// A suppression file system service base class.
+	/// </summary>
+	public abstract class SuppressionFileSystemServiceBase : ISuppressionFileSystemService
 	{
 		public IIOErrorProcessor ErrorProcessor { get; }
 
 		public SuppressionFileValidation FileValidation { get; }
 
-		public SuppressionFileSystemService() : this(null, null)
-		{
-		}
-
-		public SuppressionFileSystemService(IIOErrorProcessor errorProcessor) : this(errorProcessor, null)
-		{
-		}
-
-		public SuppressionFileSystemService(IIOErrorProcessor errorProcessor, SuppressionFileValidation customValidation)
+		protected SuppressionFileSystemServiceBase(IIOErrorProcessor errorProcessor, SuppressionFileValidation customValidation)
 		{
 			ErrorProcessor = errorProcessor ?? new DefaultIOErrorProcessor();
 			FileValidation = customValidation ?? new SuppressionFileValidation(ErrorProcessor);
 		}
 
-		public XDocument Load(string path)
+		public virtual XDocument Load(string path)
 		{
 			path.ThrowOnNullOrWhiteSpace(nameof(path));
 
@@ -53,7 +48,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 			return null;
 		}
 
-		public bool Save(XDocument document, string path)
+		public virtual bool Save(XDocument document, string path)
 		{
 			document.ThrowOnNull(nameof(document));
 			path.ThrowOnNullOrWhiteSpace(nameof(path));
@@ -74,31 +69,20 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 			return true;
 		}
 
-		public string GetFileName(string path)
+		public virtual string GetFileName(string path)
 		{
 			path.ThrowOnNullOrWhiteSpace(nameof(path));
 
 			return Path.GetFileNameWithoutExtension(path);
 		}
 
-		public string GetFileDirectory(string path)
+		public virtual string GetFileDirectory(string path)
 		{
 			path.ThrowOnNullOrWhiteSpace(nameof(path));
 			return Path.GetDirectoryName(path);
 		}
 
-		public ISuppressionFileWatcherService CreateWatcher(string path)
-		{
-			var directory = Path.GetDirectoryName(path);
-			var file = Path.GetFileName(path);
-			var watcher = new FileSystemWatcher(directory, file)
-			{
-				NotifyFilter = NotifyFilters.Size | NotifyFilters.LastWrite | NotifyFilters.CreationTime,
-				EnableRaisingEvents = true
-			};
-
-			return new SuppressionFileWatcherService(watcher);
-		}
+		public abstract ISuppressionFileWatcherService CreateWatcher(string path);
 
 		private bool FilterException(Exception exception)
 		{

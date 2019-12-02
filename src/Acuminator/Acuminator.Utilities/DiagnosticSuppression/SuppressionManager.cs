@@ -43,34 +43,33 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			BuildActionSetter = buildActionSetter;
 		}
 
-		public static void InitOrReset(Workspace workspace, IEnumerable<SuppressionManagerInitInfo> additionalFiles,
+		public static void InitOrReset(IEnumerable<SuppressionManagerInitInfo> additionalFiles,
 									   Func<ISuppressionFileSystemService> fileSystemServiceFabric = null,
 									   Func<ICustomBuildActionSetter> buildActionSetterFabric = null) =>
-			InitOrReset(workspace, additionalFiles, fileSystemServiceFabric, null, buildActionSetterFabric);
+			InitOrReset(additionalFiles, fileSystemServiceFabric, null, buildActionSetterFabric);
 
-		public static void InitOrReset(Workspace workspace, IEnumerable<SuppressionManagerInitInfo> additionalFiles,
+		public static void InitOrReset(IEnumerable<SuppressionManagerInitInfo> additionalFiles,
 									   Func<IIOErrorProcessor> errorProcessorFabric = null,
 									   Func<ICustomBuildActionSetter> buildActionSetterFabric = null) =>
-			InitOrReset(workspace, additionalFiles, null, errorProcessorFabric, buildActionSetterFabric);
+			InitOrReset(additionalFiles, null, errorProcessorFabric, buildActionSetterFabric);
 
 		public static void InitOrReset(Workspace workspace, bool generateSuppressionBase, 
 									   Func<ISuppressionFileSystemService> fileSystemServiceFabric = null,
 									   Func<ICustomBuildActionSetter> buildActionSetterFabric = null) =>
-			InitOrReset(workspace, workspace?.CurrentSolution?.GetSuppressionInfoFromSolution(generateSuppressionBase),
+			InitOrReset(workspace?.CurrentSolution?.GetSuppressionInfoFromSolution(generateSuppressionBase),
 						fileSystemServiceFabric, null, buildActionSetterFabric);
 
 		public static void InitOrReset(Workspace workspace, bool generateSuppressionBase, 
 									   Func<IIOErrorProcessor> errorProcessorFabric = null,
 									   Func<ICustomBuildActionSetter> buildActionSetterFabric = null) =>
-			InitOrReset(workspace, workspace?.CurrentSolution?.GetSuppressionInfoFromSolution(generateSuppressionBase),
+			InitOrReset(workspace?.CurrentSolution?.GetSuppressionInfoFromSolution(generateSuppressionBase),
 						null, errorProcessorFabric, buildActionSetterFabric);
 
-		private static void InitOrReset(Workspace workspace, IEnumerable<SuppressionManagerInitInfo> suppressionFileInfos,
+		private static void InitOrReset(IEnumerable<SuppressionManagerInitInfo> suppressionFileInfos,
 										Func<ISuppressionFileSystemService> fileSystemServiceFabric,
 										Func<IIOErrorProcessor> errorProcessorFabric,
 										Func<ICustomBuildActionSetter> buildActionSetterFabric)
 		{
-			workspace.ThrowOnNull(nameof(workspace));
 			suppressionFileInfos = suppressionFileInfos ?? Enumerable.Empty<SuppressionManagerInitInfo>();
 
 			lock (_initializationLocker)
@@ -82,7 +81,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 					if (fileSystemServiceFabric == null)
 					{
 						IIOErrorProcessor errorProcessor = errorProcessorFabric?.Invoke();
-						fileSystemService = new SuppressionFileSystemService(errorProcessor);
+						fileSystemService = new SuppressionFileWithChangesTrackingSystemService(errorProcessor);
 					}
 					else
 					{
@@ -279,13 +278,15 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 																Diagnostic diagnostic, CodeAnalysisSettings settings, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
+			reportDiagnostic.ThrowOnNull(nameof(reportDiagnostic));
 
-			if (settings.SuppressionMechanismEnabled &&
-				(Instance?.IsSuppressed(semanticModel, diagnostic, cancellation) == true ||
-				CheckSuppressedComment(diagnostic, cancellation)))
-			{
+			// Always check suppression with a comment first. The suppression by comment doesn't depend on the SuppressionMechanismEnabled setting
+			// Also we need to avoid modification of the suppression file when Requirement Validation tool runs the Acuminator in a special mode, 
+			// in which every found diagnostic is recorded in the suppression file.
+			if (CheckSuppressedComment(diagnostic, cancellation))
 				return;
-			}
+			else if (settings.SuppressionMechanismEnabled && Instance?.IsSuppressedInSuppressionFile(semanticModel, diagnostic, cancellation) == true)
+				return;
 
 			reportDiagnostic(diagnostic);
 		}
@@ -326,7 +327,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			return successfulMatch != null;
 		}
 
-		private bool IsSuppressed(SemanticModel semanticModel, Diagnostic diagnostic, CancellationToken cancellation)
+		private bool IsSuppressedInSuppressionFile(SemanticModel semanticModel, Diagnostic diagnostic, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
 
