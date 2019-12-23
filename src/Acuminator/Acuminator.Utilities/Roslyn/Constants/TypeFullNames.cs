@@ -7,6 +7,9 @@
 		/// </summary>
 		internal static readonly string PXDBPackedIntegerArrayAttributeFullName_Acumatica2018R2 = "PX.Data.PXDBPackedIntegerArrayAttribute";
 
+		internal static readonly string ObsoleteAttribute = "System.ObsoleteAttribute";
+		internal static readonly string PXInternalUseOnlyAttribute = "PX.Common.PXInternalUseOnlyAttribute";
+
 		internal static readonly string PeriodIDAttribute = "PX.Objects.GL.PeriodIDAttribute";
 		internal static readonly string AcctSubAttribute = "PX.Objects.GL.AcctSubAttribute";
 		internal static readonly string PXDBCalcedAttribute = "PX.Data.PXDBCalcedAttribute";
