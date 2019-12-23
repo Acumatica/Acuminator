@@ -123,6 +123,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
+		[EmbeddedFileData("DAC_Hidden_Obsolete_InternalUse.cs")]
+		public async Task PublicDACs_With_Hidden_Obsolete_PXInternalUseOnly_Attributes_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
 		[EmbeddedFileData("DAC_AddExclude.cs")]
 		public async Task PublicDac_WithExclude_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);

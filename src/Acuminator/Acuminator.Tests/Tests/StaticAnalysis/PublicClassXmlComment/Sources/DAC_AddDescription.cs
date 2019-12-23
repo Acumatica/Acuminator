@@ -10,7 +10,7 @@ namespace PX.Objects
 	/// <summary>
 	/// Some description here to avoid displaying diagnostic on the DAC itself in order to test how exclude code fix application to DAC properties.
 	/// </summary>
-	[PXHidden]
+	[PXCacheName("DAC")]
 	public class DAC : IBqlTable
 	{
 		#region OrderType
