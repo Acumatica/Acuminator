@@ -14,7 +14,6 @@ namespace PX.Objects
 	public class DAC : IBqlTable
 	{
 		#region OrderType
-		/// <exclude/>
 		public abstract class orderType : IBqlField { }
 
 		/// <exclude/>
@@ -25,7 +24,6 @@ namespace PX.Objects
 		#endregion
 
 		#region OrderNbr
-		/// <exclude/>
 		public abstract class orderNbr : IBqlField { }
 
 		///
@@ -37,7 +35,6 @@ namespace PX.Objects
 		#endregion
 
 		#region Status
-		/// <exclude/>
 		public abstract class status : IBqlField { }
 
 		/// <summary>

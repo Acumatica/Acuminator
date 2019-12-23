@@ -113,13 +113,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		public async Task PublicDac_WithoutDescription(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(17, 25, messageArgs: nameof(Resources.PX1007Class).GetLocalized()),
 				Descriptors.PX1007_PublicClassXmlComment.CreateFor(22, 17, messageArgs: nameof(Resources.PX1007DacProperty).GetLocalized()),
-
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(26, 25, messageArgs: nameof(Resources.PX1007Class).GetLocalized()),
 				Descriptors.PX1007_PublicClassXmlComment.CreateFor(32, 17, messageArgs: nameof(Resources.PX1007DacProperty).GetLocalized()),
-
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(36, 25, messageArgs: nameof(Resources.PX1007Class).GetLocalized()),
 				Descriptors.PX1007_PublicClassXmlComment.CreateFor(43, 17, messageArgs: nameof(Resources.PX1007DacProperty).GetLocalized()));
 
 		[Theory]

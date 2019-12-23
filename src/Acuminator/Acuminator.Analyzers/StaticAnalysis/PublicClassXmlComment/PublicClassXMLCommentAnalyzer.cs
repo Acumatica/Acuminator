@@ -73,6 +73,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			private readonly CodeAnalysisSettings _codeAnalysisSettings;
 			private readonly Stack<bool> _isInsideDacContextStack = new Stack<bool>(2);
 
+			private bool _skipDiagnosticReporting;
+
 			public XmlCommentsWalker(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext, 
 									 CodeAnalysisSettings codeAnalysisSettings)
 			{
@@ -93,11 +95,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			public override void VisitClassDeclaration(ClassDeclarationSyntax classDeclaration)
 			{
-				if (!CheckXmlCommentAndTheNeedToGoToChildrenNodes(classDeclaration, classDeclaration.Modifiers, classDeclaration.Identifier))
-					return;
-
 				INamedTypeSymbol typeSymbol = _syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration, _syntaxContext.CancellationToken);
+				
+				try
+				{
+					_skipDiagnosticReporting = typeSymbol?.IsDacField(_pxContext) ?? false;
 
+					if (!CheckXmlCommentAndTheNeedToGoToChildrenNodes(classDeclaration, classDeclaration.Modifiers, classDeclaration.Identifier))
+						return;
+				}
+				finally
+				{
+					_skipDiagnosticReporting = false;
+				}
+				
 				try
 				{
 					bool isInsideDacOrDacExt = typeSymbol?.IsDacOrExtension(_pxContext) ?? false;
@@ -252,6 +263,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 										  Location location, FixOption fixOption)
 			{
 				syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+
+				if (_skipDiagnosticReporting)
+					return;
+
 				var memberCategory = GetMemberCategory(memberDeclaration);
 				var properties = ImmutableDictionary<string, string>.Empty
 																	.Add(FixOptionKey, fixOption.ToString());
