@@ -8,6 +8,7 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -96,7 +97,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			public override void VisitClassDeclaration(ClassDeclarationSyntax classDeclaration)
 			{
 				INamedTypeSymbol typeSymbol = _syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration, _syntaxContext.CancellationToken);
-				
+
 				try
 				{
 					_skipDiagnosticReporting = typeSymbol?.IsDacField(_pxContext) ?? false;
@@ -108,7 +109,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				{
 					_skipDiagnosticReporting = false;
 				}
-				
+
 				try
 				{
 					bool isInsideDacOrDacExt = typeSymbol?.IsDacOrExtension(_pxContext) ?? false;
@@ -172,8 +173,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			{
 				_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-				//extra check for _isInsideAcumaticaNamespace for classes declared in a global namespace
-				if (!modifiers.Any(SyntaxKind.PublicKeyword))
+				if (!modifiers.Any(SyntaxKind.PublicKeyword) || CheckIfMemberAttributesDisableDiagnostic(memberDeclaration))
 					return false;
 
 				if (!memberDeclaration.HasStructuredTrivia)
@@ -236,6 +236,40 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				}
 
 				return true;
+			}
+
+			private bool CheckIfMemberAttributesDisableDiagnostic(MemberDeclarationSyntax member)
+			{
+				const string ObsoleteAttributeShortName = "Obsolete";
+				const string PXHiddenAttributeShortName = "PXHidden";
+				const string PXInternalUseOnlyAttributeShortName = "PXInternalUseOnly";
+				const string AttributeSuffix = "Attribute";
+
+				return member.GetAttributes()
+							 .Select(attr => GetAttributeShortName(attr))
+							 .Any(attrName => attrName == ObsoleteAttributeShortName ||
+											  attrName == PXHiddenAttributeShortName ||
+											  attrName == PXInternalUseOnlyAttributeShortName);
+
+				//-------------------------Local Function-------------------------------------------
+				string GetAttributeShortName(AttributeSyntax attribute)
+				{
+					string attributeShortName = attribute.Name is QualifiedNameSyntax qualifiedName
+						? qualifiedName.Right.ToString()
+						: attribute.Name.ToString();
+
+					const int minLengthWithSuffix = 17;
+
+					// perfomance optimization to avoid checking the suffix of attribute names 
+					// which are definitely shorter than any of the attributes we search with "Attribute" suffix
+					if (attributeShortName.Length >= minLengthWithSuffix && attributeShortName.EndsWith(AttributeSuffix))
+					{
+						const int suffixLength = 9;
+						attributeShortName = attributeShortName.Substring(0, attributeShortName.Length - suffixLength);
+					}
+
+					return attributeShortName;
+				}
 			}
 
 			private IEnumerable<DocumentationCommentTriviaSyntax> GetXmlComments(MemberDeclarationSyntax member) =>
