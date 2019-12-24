@@ -16,11 +16,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 	public class PublicClassXmlCommentTests : CodeFixVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-			new PublicClassXmlCommentAnalyzer(
-				CodeAnalysisSettings.Default
-				.WithStaticAnalysisEnabled()
-				.WithSuppressionMechanismDisabled()
-				.WithPX1007DocumentationDiagnosticEnabled());
+			new PublicClassXmlCommentAnalyzerForTests(
+					CodeAnalysisSettings.Default
+										.WithStaticAnalysisEnabled()
+										.WithSuppressionMechanismDisabled()
+										.WithPX1007DocumentationDiagnosticEnabled());
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new PublicClassXmlCommentFix();
 
