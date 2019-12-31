@@ -9,7 +9,7 @@ namespace Acuminator.Utilities.Roslyn.Constants
 	/// <summary>
 	/// A system DAC fields' names.
 	/// </summary>
-	internal static class SystemDacFieldsNames
+	public static class SystemDacFieldsNames
 	{
 		public const string NoteID = "NoteID";
 		public const string CreatedByID = "CreatedByID";

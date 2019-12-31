@@ -6,6 +6,7 @@ using System.Linq;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Syntax;
@@ -141,7 +142,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 					? _isInsideDacContextStack.Peek()
 					: false;
 
-				if (!isInsideDacOrDacExt)
+				if (!isInsideDacOrDacExt || SystemDacFieldsNames.All.Contains(propertyDeclaration.Identifier.Text))
 					return;
 
 				CheckXmlCommentAndTheNeedToGoToChildrenNodes(propertyDeclaration, propertyDeclaration.Modifiers, propertyDeclaration.Identifier);
