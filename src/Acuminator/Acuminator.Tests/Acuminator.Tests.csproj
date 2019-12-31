@@ -149,6 +149,8 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DAC_AddExclude.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DAC_Hidden_Obsolete_InternalUse.cs" />
     <Compile Include="Tests\StaticAnalysis\PublicClassXmlComment\PublicClassXmlCommentAnalyzerForTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DacExtension_System_Fields.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DAC_System_Fields.cs" />
     <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\MultipleSuppressionCodeFixTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_One.cs" />
     <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\SuppressDiagnosticTestCodeFix.cs" />

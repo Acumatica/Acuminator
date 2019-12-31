@@ -128,6 +128,16 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
+		[EmbeddedFileData("DAC_System_Fields.cs")]
+		public async Task PublicDac_WithSystemFields_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("DacExtension_System_Fields.cs")]
+		public async Task PublicDacExtension_WithSystemFields_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
 		[EmbeddedFileData("DAC_AddExclude.cs")]
 		public async Task PublicDac_WithExclude_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
