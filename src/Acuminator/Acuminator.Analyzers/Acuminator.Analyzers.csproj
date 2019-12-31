@@ -36,6 +36,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>DiagnosticsDefaultJustification.resx</DependentUpon>
     </Compile>
+		<Compile Update="DiagnosticsShortName.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>DiagnosticsShortName.resx</DependentUpon>
+		</Compile>
     <Compile Update="Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
