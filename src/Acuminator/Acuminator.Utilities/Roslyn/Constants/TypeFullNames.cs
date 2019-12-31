@@ -1,6 +1,6 @@
 ﻿namespace Acuminator.Utilities.Roslyn.Constants
 {
-	public class TypeFullNames
+	public static class TypeFullNames
 	{
 		/// <summary>
 		/// The PXDBPackedIntegerArrayAttribute type full name in Acumatica 2018R2. Doesn't exist in previous versions.
