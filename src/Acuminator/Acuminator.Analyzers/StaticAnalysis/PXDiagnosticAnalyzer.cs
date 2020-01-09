@@ -1,7 +1,8 @@
-﻿using System;
+﻿using System.Linq;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -59,8 +60,21 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		/// </summary>
 		/// <param name="compilation">The compilation.</param>
 		/// <returns/>
-		protected virtual bool IsUnitTestAssembly(Compilation compilation) => 
-			UnitTestAssemblyMarkers.Contains(compilation?.AssemblyName?.ToUpperInvariant());
+		protected virtual bool IsUnitTestAssembly(Compilation compilation)
+		{
+			string assemblyName = compilation?.AssemblyName?.ToUpperInvariant();
+
+			if (assemblyName.IsNullOrEmpty())
+				return false;
+
+			for (int i = 0; i < UnitTestAssemblyMarkers.Length; i++)
+			{
+				if (assemblyName.Contains(UnitTestAssemblyMarkers[i]))
+					return true;
+			}
+
+			return false;
+		}
 
 		internal abstract void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext);	
 	}
