@@ -28,12 +28,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			EmptySummaryTag
 		}
 
-		protected static string[] UnitTestAssemblyMarkers { get; } = 
-		{ 
-			"TEST",
-			"BENCHMARK"
-		};
-
 		public const string XmlCommentExcludeTag = "exclude";
 		public static readonly string XmlCommentSummaryTag = SyntaxFactory.XmlSummaryElement().StartTag.Name.ToFullString();
 		internal const string FixOptionKey = nameof(FixOption);
@@ -54,20 +48,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		}
 
 		protected override bool ShouldAnalyze(PXContext pxContext) =>
-			base.ShouldAnalyze(pxContext) &&
 			pxContext.CodeAnalysisSettings.PX1007DocumentationDiagnosticEnabled &&
-			!IsUnitTestAssembly(pxContext.Compilation);
-
-		/// <summary>
-		/// Check that compillation is a unit test assembly. The check is implemented by searching for <c>Test</c> word in the assembly name. 
-		/// It is a common pattern which on one hand is used almost everywhere and on the other hand allows us to distance from the concrete unit test frameworks
-		/// and support not only xUnit but also others like NUnit.
-		/// </summary>
-		/// <param name="compilation">The compilation.</param>
-		/// <returns/>
-		protected virtual bool IsUnitTestAssembly(Compilation compilation) => 
-			UnitTestAssemblyMarkers.Contains(compilation?.AssemblyName?.ToUpperInvariant());
-
+			base.ShouldAnalyze(pxContext);
+			
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
 			compilationStartContext.RegisterSyntaxNodeAction(context => AnalyzeCompilationUnit(context, pxContext),
