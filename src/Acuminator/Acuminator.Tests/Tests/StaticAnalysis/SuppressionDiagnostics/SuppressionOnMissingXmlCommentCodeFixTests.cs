@@ -1,7 +1,4 @@
-﻿using Acuminator.Analyzers.StaticAnalysis;
-using Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment;
-using Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment;
-using Acuminator.Analyzers.StaticAnalysis.Dac;
+﻿using Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
@@ -14,7 +11,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.SuppressionDiagnostics
 	public class SuppressionOnMissingXmlCommentCodeFixTests : CodeFixVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-			new PublicClassXmlCommentAnalyzerForTests(
+			new PublicClassXmlCommentAnalyzer(
 				CodeAnalysisSettings.Default
 									.WithIsvSpecificAnalyzersEnabled()
 									.WithStaticAnalysisEnabled()
