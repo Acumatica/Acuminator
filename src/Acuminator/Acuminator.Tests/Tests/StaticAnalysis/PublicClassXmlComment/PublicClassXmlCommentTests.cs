@@ -16,11 +16,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 	public class PublicClassXmlCommentTests : CodeFixVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-			new PublicClassXmlCommentAnalyzer(
-				CodeAnalysisSettings.Default
-				.WithStaticAnalysisEnabled()
-				.WithSuppressionMechanismDisabled()
-				.WithPX1007DocumentationDiagnosticEnabled());
+			new PublicClassXmlCommentAnalyzerForTests(
+					CodeAnalysisSettings.Default
+										.WithStaticAnalysisEnabled()
+										.WithSuppressionMechanismDisabled()
+										.WithPX1007DocumentationDiagnosticEnabled());
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new PublicClassXmlCommentFix();
 
@@ -120,6 +120,21 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		[Theory]
 		[EmbeddedFileData("DAC_AddDescription.cs")]
 		public async Task PublicDac_WithDescription_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("DAC_Hidden_Obsolete_InternalUse.cs")]
+		public async Task PublicDACs_With_Hidden_Obsolete_PXInternalUseOnly_Attributes_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("DAC_System_Fields.cs")]
+		public async Task PublicDac_WithSystemFields_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("DacExtension_System_Fields.cs")]
+		public async Task PublicDacExtension_WithSystemFields_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]

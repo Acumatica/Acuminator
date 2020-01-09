@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 
 namespace Acuminator.Utilities.Roslyn.Constants
 {
-	public class TypeNames
+	public static class TypeNames
 	{
 		public static readonly string PXView = "PXView";
 

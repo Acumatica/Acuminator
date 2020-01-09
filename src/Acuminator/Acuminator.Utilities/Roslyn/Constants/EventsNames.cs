@@ -1,6 +1,6 @@
 ﻿namespace Acuminator.Utilities.Roslyn.Constants
 {
-	public class EventsNames
+	public static class EventsNames
 	{
 		public static readonly string CacheAttached = "PX.Data.Events+CacheAttached`1";
 		public static readonly string RowSelecting = "PX.Data.Events+RowSelecting`1";

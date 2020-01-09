@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Acuminator.Utilities.Roslyn.Constants
 {
-	public class DelegateNames
+	public static class DelegateNames
 	{
 		public static readonly string IsKey = "IsKey";
 

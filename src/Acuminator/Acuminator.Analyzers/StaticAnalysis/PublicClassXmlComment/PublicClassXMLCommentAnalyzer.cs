@@ -6,8 +6,10 @@ using System.Linq;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -26,6 +28,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			EmptySummaryTag
 		}
 
+		private const string UnitTestAssemblyMarker = "TEST";
 		public const string XmlCommentExcludeTag = "exclude";
 		public static readonly string XmlCommentSummaryTag = SyntaxFactory.XmlSummaryElement().StartTag.Name.ToFullString();
 		internal const string FixOptionKey = nameof(FixOption);
@@ -46,8 +49,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		}
 
 		protected override bool ShouldAnalyze(PXContext pxContext) =>
-			base.ShouldAnalyze(pxContext) && 
-			pxContext.CodeAnalysisSettings.PX1007DocumentationDiagnosticEnabled;
+			base.ShouldAnalyze(pxContext) &&
+			pxContext.CodeAnalysisSettings.PX1007DocumentationDiagnosticEnabled &&
+			!IsUnitTestAssembly(pxContext.Compilation);
+
+		/// <summary>
+		/// Check that compillation is a unit test assembly. The check is implemented by searching for <c>Test</c> word in the assembly name. 
+		/// It is a common pattern which on one hand is used almost everywhere and on the other hand allows us to distance from the concrete unit test frameworks
+		/// and support not only xUnit but also others like NUnit.
+		/// </summary>
+		/// <param name="compilation">The compilation.</param>
+		/// <returns/>
+		protected virtual bool IsUnitTestAssembly(Compilation compilation) =>
+			compilation?.AssemblyName != null && 
+			compilation.AssemblyName.ToUpperInvariant().Contains(UnitTestAssemblyMarker);
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
@@ -96,7 +111,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			public override void VisitClassDeclaration(ClassDeclarationSyntax classDeclaration)
 			{
 				INamedTypeSymbol typeSymbol = _syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration, _syntaxContext.CancellationToken);
-				
+
 				try
 				{
 					_skipDiagnosticReporting = typeSymbol?.IsDacField(_pxContext) ?? false;
@@ -108,7 +123,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				{
 					_skipDiagnosticReporting = false;
 				}
-				
+
 				try
 				{
 					bool isInsideDacOrDacExt = typeSymbol?.IsDacOrExtension(_pxContext) ?? false;
@@ -127,7 +142,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 					? _isInsideDacContextStack.Peek()
 					: false;
 
-				if (!isInsideDacOrDacExt)
+				if (!isInsideDacOrDacExt || SystemDacFieldsNames.All.Contains(propertyDeclaration.Identifier.Text))
 					return;
 
 				CheckXmlCommentAndTheNeedToGoToChildrenNodes(propertyDeclaration, propertyDeclaration.Modifiers, propertyDeclaration.Identifier);
@@ -172,8 +187,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			{
 				_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-				//extra check for _isInsideAcumaticaNamespace for classes declared in a global namespace
-				if (!modifiers.Any(SyntaxKind.PublicKeyword))
+				if (!modifiers.Any(SyntaxKind.PublicKeyword) || CheckIfMemberAttributesDisableDiagnostic(memberDeclaration))
 					return false;
 
 				if (!memberDeclaration.HasStructuredTrivia)
@@ -236,6 +250,40 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				}
 
 				return true;
+			}
+
+			private bool CheckIfMemberAttributesDisableDiagnostic(MemberDeclarationSyntax member)
+			{
+				const string ObsoleteAttributeShortName = "Obsolete";
+				const string PXHiddenAttributeShortName = "PXHidden";
+				const string PXInternalUseOnlyAttributeShortName = "PXInternalUseOnly";
+				const string AttributeSuffix = "Attribute";
+
+				return member.GetAttributes()
+							 .Select(attr => GetAttributeShortName(attr))
+							 .Any(attrName => attrName == ObsoleteAttributeShortName ||
+											  attrName == PXHiddenAttributeShortName ||
+											  attrName == PXInternalUseOnlyAttributeShortName);
+
+				//-------------------------Local Function-------------------------------------------
+				string GetAttributeShortName(AttributeSyntax attribute)
+				{
+					string attributeShortName = attribute.Name is QualifiedNameSyntax qualifiedName
+						? qualifiedName.Right.ToString()
+						: attribute.Name.ToString();
+
+					const int minLengthWithSuffix = 17;
+
+					// perfomance optimization to avoid checking the suffix of attribute names 
+					// which are definitely shorter than any of the attributes we search with "Attribute" suffix
+					if (attributeShortName.Length >= minLengthWithSuffix && attributeShortName.EndsWith(AttributeSuffix))
+					{
+						const int suffixLength = 9;
+						attributeShortName = attributeShortName.Substring(0, attributeShortName.Length - suffixLength);
+					}
+
+					return attributeShortName;
+				}
 			}
 
 			private IEnumerable<DocumentationCommentTriviaSyntax> GetXmlComments(MemberDeclarationSyntax member) =>

@@ -14,6 +14,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 			_pxIntListAttribute = new Lazy<PXIntListAttributeSymbols>(() => new PXIntListAttributeSymbols(compilation));
 		}
 
+		public INamedTypeSymbol ObsoleteAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.ObsoleteAttribute);
+
+		public INamedTypeSymbol PXInternalUseOnlyAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXInternalUseOnlyAttribute);
+
 		public INamedTypeSymbol PXImportAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXImportAttribute);
 		public INamedTypeSymbol PXHiddenAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXHiddenAttribute);
 		public INamedTypeSymbol PXCacheNameAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXCacheNameAttribute);
