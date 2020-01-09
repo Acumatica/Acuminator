@@ -28,7 +28,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			EmptySummaryTag
 		}
 
-		private const string UnitTestAssemblyMarker = "TEST";
+		protected static string[] UnitTestAssemblyMarkers { get; } = 
+		{ 
+			"TEST",
+			"BENCHMARK"
+		};
+
 		public const string XmlCommentExcludeTag = "exclude";
 		public static readonly string XmlCommentSummaryTag = SyntaxFactory.XmlSummaryElement().StartTag.Name.ToFullString();
 		internal const string FixOptionKey = nameof(FixOption);
@@ -60,9 +65,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		/// </summary>
 		/// <param name="compilation">The compilation.</param>
 		/// <returns/>
-		protected virtual bool IsUnitTestAssembly(Compilation compilation) =>
-			compilation?.AssemblyName != null && 
-			compilation.AssemblyName.ToUpperInvariant().Contains(UnitTestAssemblyMarker);
+		protected virtual bool IsUnitTestAssembly(Compilation compilation) => 
+			UnitTestAssemblyMarkers.Contains(compilation?.AssemblyName?.ToUpperInvariant());
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
