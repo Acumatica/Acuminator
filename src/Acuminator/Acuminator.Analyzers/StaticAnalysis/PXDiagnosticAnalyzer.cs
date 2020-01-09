@@ -11,6 +11,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 {
 	public abstract class PXDiagnosticAnalyzer : DiagnosticAnalyzer
 	{
+		private const string AcuminatorTestsName = "Acuminator.Tests";
+
 		protected CodeAnalysisSettings CodeAnalysisSettings { get; }
 
 		protected static ImmutableArray<string> UnitTestAssemblyMarkers { get; } = 
@@ -62,14 +64,16 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		/// <returns/>
 		protected virtual bool IsUnitTestAssembly(Compilation compilation)
 		{
-			string assemblyName = compilation?.AssemblyName?.ToUpperInvariant();
+			string assemblyName = compilation?.AssemblyName;
 
-			if (assemblyName.IsNullOrEmpty())
+			if (assemblyName.IsNullOrEmpty() || assemblyName == AcuminatorTestsName)
 				return false;
+
+			string assemblyNameUpperCase = assemblyName.ToUpperInvariant();
 
 			for (int i = 0; i < UnitTestAssemblyMarkers.Length; i++)
 			{
-				if (assemblyName.Contains(UnitTestAssemblyMarkers[i]))
+				if (assemblyNameUpperCase.Contains(UnitTestAssemblyMarkers[i]))
 					return true;
 			}
 
