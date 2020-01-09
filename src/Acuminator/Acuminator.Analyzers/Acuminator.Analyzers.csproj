@@ -31,11 +31,16 @@
     <ProjectReference Include="..\Acuminator.Utilities\Acuminator.Utilities.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="DiagnosticsShortName.Designer.cs">
+    <Compile Update="DiagnosticsDefaultJustification.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>DiagnosticsShortName.resx</DependentUpon>
+      <DependentUpon>DiagnosticsDefaultJustification.resx</DependentUpon>
     </Compile>
+		<Compile Update="DiagnosticsShortName.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>DiagnosticsShortName.resx</DependentUpon>
+		</Compile>
     <Compile Update="Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -43,9 +48,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Update="DiagnosticsDefaultJustification.resx">
+      <LastGenOutput>DiagnosticsDefaultJustification.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="DiagnosticsShortName.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>DiagnosticsShortName.Designer.cs</LastGenOutput>
+      <LastGenOutput>DiagnosticsDefaultJustification.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

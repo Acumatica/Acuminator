@@ -21,7 +21,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
 	public class SuppressDiagnosticFix : CodeFixProvider
 	{
-		private const string _comment = @"// Acuminator disable once {0} {1} [Justification]";
+		private const string _comment = @"// Acuminator disable once {0} {1} {2}";
 
 		private static readonly ImmutableArray<string> _fixableDiagnosticIds;
 
@@ -131,13 +131,13 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			if (diagnostic == null || node == null || cancellationToken.IsCancellationRequested)
 				return document;
 
-			var diagnosticShortName = diagnostic.Descriptor.CustomTags.FirstOrDefault();
+			var (diagnosticShortName, diagnosticJustification) = GetDiagnosticShortNameAndJustification(diagnostic);
 
 			if (!string.IsNullOrWhiteSpace(diagnosticShortName))
 			{
 				SyntaxTriviaList commentNode = SyntaxFactory.TriviaList(
 					SyntaxFactory.SyntaxTrivia(SyntaxKind.SingleLineCommentTrivia,
-											   string.Format(_comment, diagnostic.Id, diagnosticShortName)),
+											   string.Format(_comment, diagnostic.Id, diagnosticShortName, diagnosticJustification)),
 					SyntaxFactory.ElasticEndOfLine(""));
 
 				while (!(node == null || node is StatementSyntax || node is MemberDeclarationSyntax))
@@ -152,6 +152,21 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			}
 
 			return document;
+		}
+
+		private (string DiagnosticShortName, string DiagnosticJustification) GetDiagnosticShortNameAndJustification(Diagnostic diagnostic)
+		{
+			string[] customTags = diagnostic.Descriptor.CustomTags?.ToArray();
+
+			if (customTags.IsNullOrEmpty())
+				return default;
+
+			string diagnosticShortName = customTags[0];
+			string diagnosticJustification = customTags.Length > 1
+				? customTags[1]
+				: DiagnosticsDefaultJustification.Default;
+
+			return (diagnosticShortName, diagnosticJustification);
 		}
 	}
 }
