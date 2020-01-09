@@ -66,7 +66,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		{
 			string assemblyName = compilation?.AssemblyName;
 
-			if (assemblyName.IsNullOrEmpty() || assemblyName == AcuminatorTestsName)
+			if (assemblyName.IsNullOrEmpty())
 				return false;
 
 			string assemblyNameUpperCase = assemblyName.ToUpperInvariant();
@@ -74,7 +74,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			for (int i = 0; i < UnitTestAssemblyMarkers.Length; i++)
 			{
 				if (assemblyNameUpperCase.Contains(UnitTestAssemblyMarkers[i]))
-					return true;
+					return assemblyName != AcuminatorTestsName;
 			}
 
 			return false;
