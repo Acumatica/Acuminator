@@ -100,16 +100,6 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		
 		internal void AddMessage(SuppressMessage message) => Messages.Add(message);
 
-		private static void AddMessagesToDocument(XDocument document, IEnumerable<SuppressMessage> messages)
-        {
-            var sortedMessages = messages.Where(m => m.IsValid).Order();
-
-            foreach (var message in sortedMessages)
-            {
-                document.Root.Add(ElementFromMessage(message));
-            }
-        }
-
         public static XDocument NewDocumentFromMessages(IEnumerable<SuppressMessage> messages)
         {
             var root = new XElement(RootEmelent);
@@ -120,14 +110,33 @@ namespace Acuminator.Utilities.DiagnosticSuppression
             return document;
         }
 
-		internal XDocument MessagesToDocument()
+		internal XDocument MessagesToDocument(ISuppressionFileSystemService fileSystemService)
 		{
-			var document = XDocument.Load(Path);
+			fileSystemService.ThrowOnNull(nameof(fileSystemService));
+			XDocument document;
+
+			lock (fileSystemService)
+			{
+				document = fileSystemService.Load(Path);
+			}
+
+			if (document == null)
+				throw new InvalidOperationException("Failed to open suppression file for edit");
 
 			document.Root.RemoveNodes();
 			AddMessagesToDocument(document, Messages);
 
 			return document;
+		}
+
+		private static void AddMessagesToDocument(XDocument document, IEnumerable<SuppressMessage> messages)
+		{
+			var sortedMessages = messages.Where(m => m.IsValid).Order();
+
+			foreach (var message in sortedMessages)
+			{
+				document.Root.Add(ElementFromMessage(message));
+			}
 		}
 
 		private static XElement ElementFromMessage(SuppressMessage message)

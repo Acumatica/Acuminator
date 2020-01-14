@@ -13,6 +13,7 @@ using System.Threading;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Xml.Linq;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
 {
@@ -166,7 +167,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 				foreach (var file in filesWithGeneratedSuppression)
 				{
-					Instance._fileSystemService.Save(file.MessagesToDocument(), file.Path);
+					XDocument newSuppressionXmlFile = file.MessagesToDocument(Instance._fileSystemService);
+					Instance._fileSystemService.Save(newSuppressionXmlFile, file.Path);
 				}
 			}
 		}
@@ -213,7 +215,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 					return false;
 
 				file.AddMessage(suppressMessage);
-				Instance._fileSystemService.Save(file.MessagesToDocument(), file.Path);
+				XDocument newSuppressionXmlFile = file.MessagesToDocument(Instance._fileSystemService);
+				Instance._fileSystemService.Save(newSuppressionXmlFile, file.Path);
 			}
 
 			return true;
