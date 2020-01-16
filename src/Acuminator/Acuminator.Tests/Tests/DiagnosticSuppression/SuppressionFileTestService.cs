@@ -1,7 +1,7 @@
 ﻿using System;
 using Acuminator.Utilities.DiagnosticSuppression.IO;
 
-namespace Acuminator.Tests.Tests.DiagnosticSuppression.SuppressionFileOrdering
+namespace Acuminator.Tests.Tests.DiagnosticSuppression
 {
 	/// <summary>
 	/// A test implementation of suppression file service.
