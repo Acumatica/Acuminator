@@ -13,7 +13,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 	/// <summary>
 	/// The class holds information about suppression of reported Acuminator's diagnostic 
 	/// </summary>
-	public readonly struct SuppressMessage : IEquatable<SuppressMessage>, IComparable<SuppressMessage>
+	public readonly struct SuppressMessage : IEquatable<SuppressMessage>
     {
 		private static HashSet<SyntaxKind> _targetKinds = new HashSet<SyntaxKind>(new[] {
 			SyntaxKind.ClassDeclaration,
@@ -79,14 +79,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			other.Id.Equals(Id, StringComparison.Ordinal) &&
 			other.Target.Equals(Target, StringComparison.Ordinal) &&
 			other.SyntaxNode.Equals(SyntaxNode, StringComparison.Ordinal);
-
-		public int CompareTo(SuppressMessage other) =>
-			string.CompareOrdinal(Id, other.Id) is var idComparison && idComparison != 0
-				? idComparison
-				: string.CompareOrdinal(Target, other.Target) is var targetComparison && targetComparison != 0
-					? targetComparison
-					: string.CompareOrdinal(SyntaxNode, other.SyntaxNode);
-					
+		
 		public static (string Assembly, SuppressMessage Message) GetSuppressionInfo(SemanticModel semanticModel, Diagnostic diagnostic,
 																					 CancellationToken cancellation = default)
 		{
