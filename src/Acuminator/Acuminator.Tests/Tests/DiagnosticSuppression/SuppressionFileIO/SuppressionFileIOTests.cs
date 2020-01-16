@@ -55,7 +55,6 @@ namespace Acuminator.Tests.Tests.DiagnosticSuppression.SuppressionFileIO
 
 			var messagesToCheck = GetSuppressionMessagesToCheck();
 			string suppressionFilePath = GetFileFullPath(fileName);
-			File.Exists(suppressionFilePath).Should().BeTrue();
 
 			HashSet<SuppressMessage> messages = SuppressionFile.LoadMessages(_fileService, suppressionFilePath);
 
@@ -64,31 +63,19 @@ namespace Acuminator.Tests.Tests.DiagnosticSuppression.SuppressionFileIO
 			messages.Should().ContainInOrder(messagesToCheck);
 		}
 
-//		[Theory]
-//		[InlineData(@"PX.Objects.acuminator")]
-//		public void CheckThatOrderDidNotChange(string fileName)
-//		{
-//			string examplesDirectory = GetFileFullPath(fileName);
-//			string suppressionFileName = Path.Combine(examplesDirectory, fileName);
+		[Theory]
+		[InlineData(@"PX.Objects.acuminator")]
+		public void CheckThatXmlFileDidNotChangeAfterSort(string fileName)
+		{
+			string suppressionFilePath = GetFileFullPath(fileName);
+			string oldContent = File.ReadAllText(suppressionFilePath);
 
-//			File.Exists(suppressionFileName).Should().BeTrue();
-//			string oldContent = File.ReadAllText(suppressionFileName);
+			HashSet<SuppressMessage> messages = SuppressionFile.LoadMessages(_fileService, suppressionFilePath);
+			var xDocument = SuppressionFile.NewDocumentFromMessages(messages);
+			var newContent = xDocument.GetXDocumentStringWithDeclaration();
 
-//			suppressionFileService
-
-//var xmlDocument = XDocument.Load(suppressionFileName);
-//			xmlDocument.
-
-//			var merger = new SuppressionFilesMerger();
-
-//			//Merge file with itself and rewrite its content. This makes sorting of its content.
-//			merger.Merge(suppressionFileName, suppressionFileName, suppressionFileName);
-
-//			File.Exists(suppressionFileName).Should().BeTrue();
-
-//			string newContent = File.ReadAllText(suppressionFileName);
-//			newContent.Should().Equals(oldContent);
-//		}
+			newContent.Should().Equals(oldContent);
+		}
 
 		private string GetFileFullPath(string shortFileName)
 		{
