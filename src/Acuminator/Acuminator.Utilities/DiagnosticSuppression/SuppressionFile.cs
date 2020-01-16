@@ -133,7 +133,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			foreach (var message in sortedMessages)
 			{
-				var xmlMessage = message.ElementFromMessage();
+				var xmlMessage = message.ToXml();
 
 				if (xmlMessage != null)
 					document.Root.Add(xmlMessage);

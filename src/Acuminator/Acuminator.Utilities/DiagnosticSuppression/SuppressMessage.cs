@@ -93,7 +93,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			return new SuppressMessage(id, target, syntaxNode);
 		}
 
-		public XElement ElementFromMessage()
+		public XElement ToXml()
 		{
 			if (!IsValid)
 				return null;
