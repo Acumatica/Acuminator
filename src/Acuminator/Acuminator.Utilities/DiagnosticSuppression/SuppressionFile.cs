@@ -131,7 +131,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		private static void AddMessagesToDocument(XDocument document, IEnumerable<SuppressMessage> messages)
 		{
-			var sortedMessages = messages.Where(m => m.IsValid).Order();
+			var sortedMessages = messages.Where(m => m.IsValid)
+										 .OrderBy(m => m);
 
 			foreach (var message in sortedMessages)
 			{
