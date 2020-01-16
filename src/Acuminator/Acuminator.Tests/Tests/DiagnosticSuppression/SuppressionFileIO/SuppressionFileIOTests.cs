@@ -15,6 +15,7 @@ namespace Acuminator.Tests.Tests.DiagnosticSuppression.SuppressionFileIO
 	/// </summary>
 	public class SuppressionFileIOTests
 	{
+		private const string RelativeTestPath = @"Tests\DiagnosticSuppression\SuppressionFileIO\Examples";
 		private SuppressionFileTestService _fileService = new SuppressionFileTestService();
 
 		[Fact]
@@ -46,57 +47,59 @@ namespace Acuminator.Tests.Tests.DiagnosticSuppression.SuppressionFileIO
 			xElement.Should().Be(expectedXElement);	
 		}
 
-		//[Theory]
-		//[InlineData(@"PX.Objects.acuminator")]
-		//public void CheckLoadOfSuppressionFile(string fileName)
-		//{
-		//	string suppressionFilePath = GetFileFullPath(fileName);
-		//	File.Exists(suppressionFilePath).Should().BeTrue();
+		[Theory]
+		[InlineData(@"PX.Objects.acuminator")]
+		public void CheckLoadOfSuppressionFile(string fileName)
+		{
+			const int expectedCount = 3629;
 
-		//	IEnumerable<SuppressMessage> messagesToCheck =;
+			var messagesToCheck = GetSuppressionMessagesToCheck();
+			string suppressionFilePath = GetFileFullPath(fileName);
+			File.Exists(suppressionFilePath).Should().BeTrue();
 
-		//	HashSet<SuppressMessage> messages = SuppressionFile.LoadMessages(_fileService, suppressionFilePath);
+			HashSet<SuppressMessage> messages = SuppressionFile.LoadMessages(_fileService, suppressionFilePath);
 
-		//	messages.Should().NotBeNull();
-		//	messages.Should().HaveCount(3633);
-		//}
+			messages.Should().NotBeNull();
+			messages.Should().HaveCount(expectedCount);
+			messages.Should().ContainInOrder(messagesToCheck);
+		}
 
-		//[Theory]
-		//[InlineData(@"PX.Objects.acuminator")]
-		//public void CheckThatOrderDidNotChange(string fileName)
-		//{
-		//	string examplesDirectory = GetFileFullPath(fileName);
-		//	string suppressionFileName = Path.Combine(examplesDirectory, fileName);
+//		[Theory]
+//		[InlineData(@"PX.Objects.acuminator")]
+//		public void CheckThatOrderDidNotChange(string fileName)
+//		{
+//			string examplesDirectory = GetFileFullPath(fileName);
+//			string suppressionFileName = Path.Combine(examplesDirectory, fileName);
 
-		//	File.Exists(suppressionFileName).Should().BeTrue();
-		//	string oldContent = File.ReadAllText(suppressionFileName);
+//			File.Exists(suppressionFileName).Should().BeTrue();
+//			string oldContent = File.ReadAllText(suppressionFileName);
 
-		//						suppressionFileService
+//			suppressionFileService
 
-		//	var xmlDocument = XDocument.Load(suppressionFileName);
-		//	xmlDocument.
+//var xmlDocument = XDocument.Load(suppressionFileName);
+//			xmlDocument.
 
-		//	var merger = new SuppressionFilesMerger();
+//			var merger = new SuppressionFilesMerger();
 
-		//	//Merge file with itself and rewrite its content. This makes sorting of its content.
-		//	merger.Merge(suppressionFileName, suppressionFileName, suppressionFileName);
+//			//Merge file with itself and rewrite its content. This makes sorting of its content.
+//			merger.Merge(suppressionFileName, suppressionFileName, suppressionFileName);
 
-		//	File.Exists(suppressionFileName).Should().BeTrue();
+//			File.Exists(suppressionFileName).Should().BeTrue();
 
-		//	string newContent = File.ReadAllText(suppressionFileName);
-		//	newContent.Should().Equals(oldContent);
-		//}
+//			string newContent = File.ReadAllText(suppressionFileName);
+//			newContent.Should().Equals(oldContent);
+//		}
 
 		private string GetFileFullPath(string shortFileName)
 		{
 			DirectoryInfo debugOrReleaseDir = new DirectoryInfo(Environment.CurrentDirectory);
 			string solutionDir = debugOrReleaseDir.Parent.Parent.FullName;
-			return Path.Combine(solutionDir, "Sort Tests", "Examples", shortFileName);
+			return Path.Combine(solutionDir, RelativeTestPath, shortFileName);
 		}
 
-		private IEnumerable<SuppressMessage?> GetSuppressionMessagesToCheck() =>
+		private IEnumerable<SuppressMessage> GetSuppressionMessagesToCheck() =>
 			GetXElementsToCheck()
-				.Select(element => SuppressMessage.MessageFromElement(element));
+				.Select(element => SuppressMessage.MessageFromElement(element).Value);
 
 		private IEnumerable<XElement> GetXElementsToCheck() => GetXmlStrings().Select(s => XElement.Parse(s));
 
