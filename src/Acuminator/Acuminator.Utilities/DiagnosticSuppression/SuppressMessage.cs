@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Acuminator.Utilities.Common;
+using System.Xml.Linq;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
 {
@@ -15,6 +16,10 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 	/// </summary>
 	public readonly struct SuppressMessage : IEquatable<SuppressMessage>
     {
+		private const string IdAttribute = "id";
+		private const string TargetElement = "target";
+		private const string SyntaxNodeElement = "syntaxNode";
+
 		private static HashSet<SyntaxKind> _targetKinds = new HashSet<SyntaxKind>(new[] {
 			SyntaxKind.ClassDeclaration,
 			SyntaxKind.StructDeclaration,
@@ -69,6 +74,34 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			}
 
 			_hashCode = hash;
+		}
+
+		public static SuppressMessage? MessageFromElement(XElement element)
+		{
+			string id = element?.Attribute(IdAttribute)?.Value;
+			if (id.IsNullOrWhiteSpace())
+				return null;
+
+			string target = element.Element(TargetElement)?.Value;
+			if (target.IsNullOrWhiteSpace())
+				return null;
+
+			string syntaxNode = element.Element(SyntaxNodeElement)?.Value;
+			if (syntaxNode.IsNullOrWhiteSpace())
+				return null;
+
+			return new SuppressMessage(id, target, syntaxNode);
+		}
+
+		public XElement ElementFromMessage()
+		{
+			if (!IsValid)
+				return null;
+
+			return new XElement(SuppressionFile.SuppressMessageElement,
+				new XAttribute(IdAttribute, Id),
+				new XElement(TargetElement, Target),
+				new XElement(SyntaxNodeElement, SyntaxNode));
 		}
 
 		public override int GetHashCode() => _hashCode;

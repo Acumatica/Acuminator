@@ -12,9 +12,6 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 	{
         private const string RootEmelent = "suppressions";
 		public const string SuppressMessageElement = "suppressMessage";
-		private const string IdAttribute = "id";
-		private const string TargetElement = "target";
-		private const string SyntaxNodeElement = "syntaxNode";
 		public const string SuppressionFileExtension = ".acuminator";
 
 		internal string AssemblyName { get; }
@@ -132,21 +129,15 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		private static void AddMessagesToDocument(XDocument document, IEnumerable<SuppressMessage> messages)
 		{
 			var comparer = new SuppressionMessageComparer();
-			var sortedMessages = messages.Where(m => m.IsValid)
-										 .OrderBy(m => m, comparer);
+			var sortedMessages = messages.OrderBy(m => m, comparer);
 
 			foreach (var message in sortedMessages)
 			{
-				document.Root.Add(ElementFromMessage(message));
-			}
-		}
+				var xmlMessage = message.ElementFromMessage();
 
-		private static XElement ElementFromMessage(SuppressMessage message)
-		{
-			return new XElement(SuppressMessageElement,
-				new XAttribute(IdAttribute, message.Id),
-				new XElement(TargetElement, message.Target),
-				new XElement(SyntaxNodeElement, message.SyntaxNode));
+				if (xmlMessage != null)
+					document.Root.Add(xmlMessage);
+			}
 		}
 
 		public static HashSet<SuppressMessage> LoadMessages(ISuppressionFileSystemService fileSystemService, string path)
@@ -167,7 +158,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			foreach (XElement suppressionMessageXml in document.Root.Elements(SuppressMessageElement))
 			{
-				SuppressMessage? suppressMessage = MessageFromElement(suppressionMessageXml);
+				SuppressMessage? suppressMessage = SuppressMessage.MessageFromElement(suppressionMessageXml);
 
 				if (suppressMessage != null)
 				{
@@ -176,23 +167,6 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			}
 
 			return suppressionMessages;
-		}
-
-		private static SuppressMessage? MessageFromElement(XElement element)
-		{
-			string id = element.Attribute(IdAttribute)?.Value;
-			if (id.IsNullOrWhiteSpace())
-				return null;
-
-			string target = element.Element(TargetElement)?.Value;
-			if (target.IsNullOrWhiteSpace())
-				return null;
-
-			string syntaxNode = element.Element(SyntaxNodeElement)?.Value;
-			if (syntaxNode.IsNullOrWhiteSpace())
-				return null;
-
-			return new SuppressMessage(id, target, syntaxNode);
 		}
 	}
 }
