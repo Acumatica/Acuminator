@@ -256,5 +256,43 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 					return null;
 			}
 		}
+
+		public static IEnumerable<AttributeSyntax> GetAttributes(this MemberDeclarationSyntax member)
+		{
+			member.ThrowOnNull(nameof(member));
+			return GetAttributesImpl();
+
+			IEnumerable<AttributeSyntax> GetAttributesImpl()
+			{
+				var attributeLists = member.GetAttributeLists();
+
+				for (int i = 0; i < attributeLists.Count; i++)
+				{
+					var attributeList = attributeLists[i].Attributes;
+
+					for (int j = 0; j < attributeList.Count; j++)
+					{
+						yield return attributeList[j];
+					}
+				}
+			}
+		}
+
+		public static SyntaxList<AttributeListSyntax> GetAttributeLists(this MemberDeclarationSyntax member) =>
+			member switch
+			{
+				PropertyDeclarationSyntax propertyDeclaration       => propertyDeclaration.AttributeLists,
+				FieldDeclarationSyntax fieldDeclaration             => fieldDeclaration.AttributeLists,
+				MethodDeclarationSyntax methodDeclaration           => methodDeclaration.AttributeLists,
+				EventDeclarationSyntax eventDeclaration             => eventDeclaration.AttributeLists,
+				EventFieldDeclarationSyntax eventFieldDeclaration   => eventFieldDeclaration.AttributeLists,
+				DelegateDeclarationSyntax delegateDeclaration       => delegateDeclaration.AttributeLists,
+				ClassDeclarationSyntax nestedClassDeclaration       => nestedClassDeclaration.AttributeLists,
+				EnumDeclarationSyntax enumDeclaration               => enumDeclaration.AttributeLists,
+				StructDeclarationSyntax structDeclaration           => structDeclaration.AttributeLists,
+				InterfaceDeclarationSyntax interfaceDeclaration     => interfaceDeclaration.AttributeLists,
+				ConstructorDeclarationSyntax constructorDeclaration => constructorDeclaration.AttributeLists,
+				_                                                   => new SyntaxList<AttributeListSyntax>()
+			};
 	}
 }

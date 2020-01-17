@@ -17,10 +17,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new PublicClassXmlCommentAnalyzer(
-				CodeAnalysisSettings.Default
-				.WithStaticAnalysisEnabled()
-				.WithSuppressionMechanismDisabled()
-				.WithPX1007DocumentationDiagnosticEnabled());
+					CodeAnalysisSettings.Default
+										.WithStaticAnalysisEnabled()
+										.WithSuppressionMechanismDisabled()
+										.WithPX1007DocumentationDiagnosticEnabled());
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new PublicClassXmlCommentFix();
 
@@ -113,18 +113,28 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		public async Task PublicDac_WithoutDescription(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(17, 25, messageArgs: nameof(Resources.PX1007Class).GetLocalized()),
 				Descriptors.PX1007_PublicClassXmlComment.CreateFor(22, 17, messageArgs: nameof(Resources.PX1007DacProperty).GetLocalized()),
-
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(26, 25, messageArgs: nameof(Resources.PX1007Class).GetLocalized()),
 				Descriptors.PX1007_PublicClassXmlComment.CreateFor(32, 17, messageArgs: nameof(Resources.PX1007DacProperty).GetLocalized()),
-
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(36, 25, messageArgs: nameof(Resources.PX1007Class).GetLocalized()),
 				Descriptors.PX1007_PublicClassXmlComment.CreateFor(43, 17, messageArgs: nameof(Resources.PX1007DacProperty).GetLocalized()));
 
 		[Theory]
 		[EmbeddedFileData("DAC_AddDescription.cs")]
 		public async Task PublicDac_WithDescription_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("DAC_Hidden_Obsolete_InternalUse.cs")]
+		public async Task PublicDACs_With_Hidden_Obsolete_PXInternalUseOnly_Attributes_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("DAC_System_Fields.cs")]
+		public async Task PublicDac_WithSystemFields_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
+		[EmbeddedFileData("DacExtension_System_Fields.cs")]
+		public async Task PublicDacExtension_WithSystemFields_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]

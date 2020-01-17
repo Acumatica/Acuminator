@@ -1,9 +1,5 @@
 ﻿using System;
 using PX.Data;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PX.Objects
 {
@@ -16,9 +12,6 @@ namespace PX.Objects
 		#region OrderType
 		public abstract class orderType : IBqlField { }
 
-		/// <summary>
-		/// Order type
-		/// </summary>
 		[PXDBString(IsKey = true, InputMask = "")]
 		[PXDefault]
 		[PXUIField(DisplayName = "Order Type")]
@@ -29,9 +22,6 @@ namespace PX.Objects
 		public abstract class orderNbr : IBqlField { }
 
 		///
-		/// <summary>
-		/// Order nbr
-		/// </summary>
 		[PXDBString(IsKey = true, InputMask = "")]
 		[PXDefault]
 		[PXUIField(DisplayName = "Order Nbr.")]
@@ -42,7 +32,7 @@ namespace PX.Objects
 		public abstract class status : IBqlField { }
 
 		/// <summary>
-		/// Status
+		///
 		/// </summary>
 		[PXString]
 		[PXUIField(DisplayName = "Status")]

@@ -1,11 +1,14 @@
 ﻿namespace Acuminator.Utilities.Roslyn.Constants
 {
-	public class TypeFullNames
+	public static class TypeFullNames
 	{
 		/// <summary>
 		/// The PXDBPackedIntegerArrayAttribute type full name in Acumatica 2018R2. Doesn't exist in previous versions.
 		/// </summary>
 		internal static readonly string PXDBPackedIntegerArrayAttributeFullName_Acumatica2018R2 = "PX.Data.PXDBPackedIntegerArrayAttribute";
+
+		internal static readonly string ObsoleteAttribute = "System.ObsoleteAttribute";
+		internal static readonly string PXInternalUseOnlyAttribute = "PX.Common.PXInternalUseOnlyAttribute";
 
 		internal static readonly string PeriodIDAttribute = "PX.Objects.GL.PeriodIDAttribute";
 		internal static readonly string AcctSubAttribute = "PX.Objects.GL.AcctSubAttribute";

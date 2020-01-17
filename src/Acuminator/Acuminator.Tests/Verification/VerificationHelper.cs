@@ -31,11 +31,11 @@ namespace Acuminator.Tests.Verification
 		private static readonly MetadataReference PXObjectsReference =
 			MetadataReference.CreateFromFile(typeof(PX.Objects.GL.PeriodIDAttribute).Assembly.Location);
 
-		internal static string DefaultFilePathPrefix = "Test";
-		internal static string CSharpDefaultFileExt = "cs";
-		internal static string VisualBasicDefaultExt = "vb";
-		internal static string TestProjectName = "TestProject";
-		internal static string BuildFailMessage = "External assembly build failure";
+		private const string GeneratedFileNameSeed = "Test";
+		private const string CSharpDefaultFileExt = "cs";
+		private const string VisualBasicDefaultExt = "vb";
+		private const string GeneratedProjectName = "GenProject";
+		private const string BuildFailMessage = "External assembly build failure";
 
 
 		/// <summary>
@@ -89,10 +89,10 @@ namespace Acuminator.Tests.Verification
 		/// <returns>A Project created out of the Documents created from the source strings</returns>
 		private static Project CreateProject(string[] sources, string language = LanguageNames.CSharp, string[] externalCode = null)
 		{
-			string fileNamePrefix = DefaultFilePathPrefix;
+			string fileNamePrefix = GeneratedFileNameSeed;
 			string fileExt = language == LanguageNames.CSharp ? CSharpDefaultFileExt : VisualBasicDefaultExt;
 
-			var projectId = ProjectId.CreateNewId(debugName: TestProjectName);
+			var projectId = ProjectId.CreateNewId(debugName: GeneratedProjectName);
 
 			var workspace = new AdhocWorkspace(); //-V3114
 			workspace.Options = workspace.Options.WithChangedOption(FormattingOptions.UseTabs, LanguageNames.CSharp, true)
@@ -101,7 +101,7 @@ namespace Acuminator.Tests.Verification
 												 .WithChangedOption(FormattingOptions.IndentationSize, LanguageNames.CSharp, 4);
 
 			var solution = workspace.CurrentSolution
-									.AddProject(projectId, TestProjectName, TestProjectName, language)
+									.AddProject(projectId, GeneratedProjectName, GeneratedProjectName, language)
 									.AddMetadataReference(projectId, CorlibReference)
 									.AddMetadataReference(projectId, SystemCoreReference)
 									.AddMetadataReference(projectId, CSharpSymbolsReference)

@@ -13,7 +13,7 @@
     <RootNamespace>Acuminator.Tests</RootNamespace>
     <AssemblyName>Acuminator.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-	<LangVersion>latest</LangVersion>
+    <LangVersion>latest</LangVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
@@ -73,6 +73,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Tests\DiagnosticSuppression\SuppressionFileTestService.cs" />
+    <Compile Include="Tests\DiagnosticSuppression\SuppressionFileIO\SuppressionFileIOTests.cs" />
     <Compile Include="Tests\Fixer\AngleBracesBqlRewriterTests.cs" />
     <Compile Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\ChangeEventHandlerSignatureToGenericTests.cs" />
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\CacheAttached.cs" />
@@ -147,9 +149,15 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DAC.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DAC_AddDescription.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DAC_AddExclude.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DAC_Hidden_Obsolete_InternalUse.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DacExtension_System_Fields.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DAC_System_Fields.cs" />
     <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\MultipleSuppressionCodeFixTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_One.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\DAC_Without_XML_Description.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\DAC_Without_XML_Description_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\SuppressDiagnosticTestCodeFix.cs" />
+    <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\SuppressionOnMissingXmlCommentCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\SuppressionOnDacCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacPropertyAttributes\DacFieldWithDBCalcedAttributeTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacUiAttributes\DacUiAttributesTests.cs" />
@@ -598,6 +606,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="FormatterTests.playlist" />
+    <Content Include="Tests\DiagnosticSuppression\SuppressionFileIO\Examples\PX.Objects.acuminator" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

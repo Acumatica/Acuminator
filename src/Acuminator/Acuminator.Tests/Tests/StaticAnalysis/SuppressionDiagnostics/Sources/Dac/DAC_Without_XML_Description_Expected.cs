@@ -1,9 +1,5 @@
 ﻿using System;
 using PX.Data;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PX.Objects
 {
@@ -16,9 +12,7 @@ namespace PX.Objects
 		#region OrderType
 		public abstract class orderType : IBqlField { }
 
-		/// <summary>
-		/// Order type
-		/// </summary>
+		// Acuminator disable once PX1007 NoXmlCommentForPublicEntityOrDacProperty to be documented later
 		[PXDBString(IsKey = true, InputMask = "")]
 		[PXDefault]
 		[PXUIField(DisplayName = "Order Type")]
@@ -29,9 +23,7 @@ namespace PX.Objects
 		public abstract class orderNbr : IBqlField { }
 
 		///
-		/// <summary>
-		/// Order nbr
-		/// </summary>
+		// Acuminator disable once PX1007 NoXmlCommentForPublicEntityOrDacProperty to be documented later
 		[PXDBString(IsKey = true, InputMask = "")]
 		[PXDefault]
 		[PXUIField(DisplayName = "Order Nbr.")]
@@ -42,8 +34,9 @@ namespace PX.Objects
 		public abstract class status : IBqlField { }
 
 		/// <summary>
-		/// Status
+		///
 		/// </summary>
+		// Acuminator disable once PX1007 NoXmlCommentForPublicEntityOrDacProperty to be documented later
 		[PXString]
 		[PXUIField(DisplayName = "Status")]
 		public string Status { get; set; }

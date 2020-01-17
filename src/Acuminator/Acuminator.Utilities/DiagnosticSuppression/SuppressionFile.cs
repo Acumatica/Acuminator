@@ -11,10 +11,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 	public class SuppressionFile : IDisposable
 	{
         private const string RootEmelent = "suppressions";
-		private const string SuppressMessageElement = "suppressMessage";
-		private const string IdAttribute = "id";
-		private const string TargetElement = "target";
-		private const string SyntaxNodeElement = "syntaxNode";
+		public const string SuppressMessageElement = "suppressMessage";
 		public const string SuppressionFileExtension = ".acuminator";
 
 		internal string AssemblyName { get; }
@@ -100,16 +97,6 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		
 		internal void AddMessage(SuppressMessage message) => Messages.Add(message);
 
-		private static void AddMessagesToDocument(XDocument document, IEnumerable<SuppressMessage> messages)
-        {
-            var sortedMessages = messages.Order();
-
-            foreach (var message in sortedMessages)
-            {
-                document.Root.Add(ElementFromMessage(message));
-            }
-        }
-
         public static XDocument NewDocumentFromMessages(IEnumerable<SuppressMessage> messages)
         {
             var root = new XElement(RootEmelent);
@@ -120,9 +107,18 @@ namespace Acuminator.Utilities.DiagnosticSuppression
             return document;
         }
 
-		internal XDocument MessagesToDocument()
+		internal XDocument MessagesToDocument(ISuppressionFileSystemService fileSystemService)
 		{
-			var document = XDocument.Load(Path);
+			fileSystemService.ThrowOnNull(nameof(fileSystemService));
+			XDocument document;
+
+			lock (fileSystemService)
+			{
+				document = fileSystemService.Load(Path);
+			}
+
+			if (document == null)
+				throw new InvalidOperationException("Failed to open suppression file for edit");
 
 			document.Root.RemoveNodes();
 			AddMessagesToDocument(document, Messages);
@@ -130,12 +126,18 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			return document;
 		}
 
-		private static XElement ElementFromMessage(SuppressMessage message)
+		private static void AddMessagesToDocument(XDocument document, IEnumerable<SuppressMessage> messages)
 		{
-			return new XElement(SuppressMessageElement,
-				new XAttribute(IdAttribute, message.Id),
-				new XElement(TargetElement, message.Target),
-				new XElement(SyntaxNodeElement, message.SyntaxNode));
+			var comparer = new SuppressionMessageComparer();
+			var sortedMessages = messages.OrderBy(m => m, comparer);
+
+			foreach (var message in sortedMessages)
+			{
+				var xmlMessage = message.ToXml();
+
+				if (xmlMessage != null)
+					document.Root.Add(xmlMessage);
+			}
 		}
 
 		public static HashSet<SuppressMessage> LoadMessages(ISuppressionFileSystemService fileSystemService, string path)
@@ -152,18 +154,19 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				return new HashSet<SuppressMessage>();
 			}
 
-			return document.Root.Elements(SuppressMessageElement)
-								.Select(e => MessageFromElement(e))
-								.ToHashSet();
-		}
+			HashSet<SuppressMessage> suppressionMessages = new HashSet<SuppressMessage>();
 
-		private static SuppressMessage MessageFromElement(XElement element)
-		{
-			var id = element.Attribute(IdAttribute).Value;
-			var target = element.Element(TargetElement).Value;
-			var syntaxNode = element.Element(SyntaxNodeElement).Value;
+			foreach (XElement suppressionMessageXml in document.Root.Elements(SuppressMessageElement))
+			{
+				SuppressMessage? suppressMessage = SuppressMessage.MessageFromElement(suppressionMessageXml);
 
-			return new SuppressMessage(id, target, syntaxNode);
+				if (suppressMessage != null)
+				{
+					suppressionMessages.Add(suppressMessage.Value);
+				}
+			}
+
+			return suppressionMessages;
 		}
 	}
 }

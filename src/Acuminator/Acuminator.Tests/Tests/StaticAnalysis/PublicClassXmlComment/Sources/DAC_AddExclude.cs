@@ -10,11 +10,10 @@ namespace PX.Objects
 	/// <summary>
 	/// Some description here to avoid displaying diagnostic on the DAC itself in order to test how exclude code fix application to DAC properties.
 	/// </summary>
-	[PXHidden]
+	[PXCacheName("DAC")]
 	public class DAC : IBqlTable
 	{
 		#region OrderType
-		/// <exclude/>
 		public abstract class orderType : IBqlField { }
 
 		/// <exclude/>
@@ -25,7 +24,6 @@ namespace PX.Objects
 		#endregion
 
 		#region OrderNbr
-		/// <exclude/>
 		public abstract class orderNbr : IBqlField { }
 
 		///
@@ -37,7 +35,6 @@ namespace PX.Objects
 		#endregion
 
 		#region Status
-		/// <exclude/>
 		public abstract class status : IBqlField { }
 
 		/// <summary>

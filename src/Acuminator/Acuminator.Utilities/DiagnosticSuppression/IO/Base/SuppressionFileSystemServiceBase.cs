@@ -7,20 +7,22 @@ using Acuminator.Utilities.Common;
 
 namespace Acuminator.Utilities.DiagnosticSuppression.IO
 {
-	internal class SuppressionFileSystemService : ISuppressionFileSystemService
+	/// <summary>
+	/// A suppression file system service base class.
+	/// </summary>
+	public abstract class SuppressionFileSystemServiceBase : ISuppressionFileSystemService
 	{
 		public IIOErrorProcessor ErrorProcessor { get; }
 
-		public SuppressionFileSystemService() : this(null)
-		{
-		}
+		public SuppressionFileValidation FileValidation { get; }
 
-		public SuppressionFileSystemService(IIOErrorProcessor errorProcessor)
+		protected SuppressionFileSystemServiceBase(IIOErrorProcessor errorProcessor, SuppressionFileValidation customValidation)
 		{
 			ErrorProcessor = errorProcessor ?? new DefaultIOErrorProcessor();
+			FileValidation = customValidation ?? new SuppressionFileValidation(ErrorProcessor);
 		}
 
-		public XDocument Load(string path)
+		public virtual XDocument Load(string path)
 		{
 			path.ThrowOnNullOrWhiteSpace(nameof(path));
 
@@ -29,7 +31,14 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 				if (!File.Exists(path))
 					return null;
 
-				return XDocument.Load(path);
+				var document = XDocument.Load(path);
+
+				if (document == null)
+					return null;	
+				else if (FileValidation != null && !FileValidation.ValidateSuppressionFile(document))
+					return null;
+
+				return document;
 			}
 			catch (Exception exception) when (FilterException(exception))
 			{
@@ -39,17 +48,17 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 			return null;
 		}
 
-		public bool Save(XDocument document, string path)
+		public virtual bool Save(XDocument document, string path)
 		{
 			document.ThrowOnNull(nameof(document));
 			path.ThrowOnNullOrWhiteSpace(nameof(path));
 			
 			try
 			{
-				using (FileStream fs = File.OpenWrite(path))
-				{
-					document.Save(fs);
-				}
+				if (FileValidation != null && !FileValidation.ValidateSuppressionFile(document))
+					return false;
+
+				document.Save(path);
 			}
 			catch (Exception exception) when (FilterException(exception))
 			{
@@ -60,31 +69,20 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 			return true;
 		}
 
-		public string GetFileName(string path)
+		public virtual string GetFileName(string path)
 		{
 			path.ThrowOnNullOrWhiteSpace(nameof(path));
 
 			return Path.GetFileNameWithoutExtension(path);
 		}
 
-		public string GetFileDirectory(string path)
+		public virtual string GetFileDirectory(string path)
 		{
 			path.ThrowOnNullOrWhiteSpace(nameof(path));
 			return Path.GetDirectoryName(path);
 		}
 
-		public ISuppressionFileWatcherService CreateWatcher(string path)
-		{
-			var directory = Path.GetDirectoryName(path);
-			var file = Path.GetFileName(path);
-			var watcher = new FileSystemWatcher(directory, file)
-			{
-				NotifyFilter = NotifyFilters.Size | NotifyFilters.LastWrite | NotifyFilters.CreationTime,
-				EnableRaisingEvents = true
-			};
-
-			return new SuppressionFileWatcherService(watcher);
-		}
+		public abstract ISuppressionFileWatcherService CreateWatcher(string path);
 
 		private bool FilterException(Exception exception)
 		{

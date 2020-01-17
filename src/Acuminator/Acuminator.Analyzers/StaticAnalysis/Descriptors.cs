@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using Microsoft.CodeAnalysis;
+using Acuminator.Utilities.Common;
 
 namespace Acuminator.Analyzers.StaticAnalysis
 {
@@ -15,14 +16,19 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 		private static readonly ConcurrentDictionary<Category, string> _categoryMapping = new ConcurrentDictionary<Category, string>();
 
-        private static DiagnosticDescriptor Rule(string id, LocalizableString title, Category category, DiagnosticSeverity defaultSeverity, string name,
-										 LocalizableString messageFormat = null, LocalizableString description = null)
+        private static DiagnosticDescriptor Rule(string id, LocalizableString title, Category category, DiagnosticSeverity defaultSeverity, 
+												 string diagnosticShortName, LocalizableString messageFormat = null, LocalizableString description = null,
+												 string diagnosticDefaultJustification = null)
 		{
 			bool isEnabledByDefault = true;
 			messageFormat = messageFormat ?? title;
-			string diagnosticLink = $"{DocumentationLinkPrefix}/{id}.{DocumentatonFileExtension}"; 
+			string diagnosticLink = $"{DocumentationLinkPrefix}/{id}.{DocumentatonFileExtension}";
+			string[] customTags = diagnosticDefaultJustification.IsNullOrWhiteSpace()
+				? new[] { diagnosticShortName }
+				: new[] { diagnosticShortName, diagnosticDefaultJustification };
+
 			return new DiagnosticDescriptor(id, title, messageFormat, _categoryMapping.GetOrAdd(category, c => c.ToString()), defaultSeverity,
-											isEnabledByDefault, description, diagnosticLink, customTags: name);
+											isEnabledByDefault, description, diagnosticLink, customTags);
 		}
 
 		public static DiagnosticDescriptor PX1000_InvalidPXActionHandlerSignature { get; } = 
@@ -55,7 +61,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
         public static DiagnosticDescriptor PX1007_PublicClassXmlComment { get; } =
             Rule("PX1007", nameof(Resources.PX1007Title).GetLocalized(), Category.Default, 
-				DiagnosticSeverity.Warning, DiagnosticsShortName.PX1007);
+				DiagnosticSeverity.Warning, DiagnosticsShortName.PX1007, diagnosticDefaultJustification: DiagnosticsDefaultJustification.PX1007);
 
         public static DiagnosticDescriptor PX1008_LongOperationDelegateClosures { get; } = 
             Rule("PX1008", nameof(Resources.PX1008Title).GetLocalized(), Category.Default, 
