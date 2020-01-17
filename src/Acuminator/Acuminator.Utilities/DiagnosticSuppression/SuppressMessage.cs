@@ -7,14 +7,19 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Acuminator.Utilities.Common;
+using System.Xml.Linq;
 
 namespace Acuminator.Utilities.DiagnosticSuppression
 {
 	/// <summary>
 	/// The class holds information about suppression of reported Acuminator's diagnostic 
 	/// </summary>
-	public readonly struct SuppressMessage : IEquatable<SuppressMessage>, IComparable<SuppressMessage>
+	public readonly struct SuppressMessage : IEquatable<SuppressMessage>
     {
+		private const string IdAttribute = "id";
+		private const string TargetElement = "target";
+		private const string SyntaxNodeElement = "syntaxNode";
+
 		private static HashSet<SyntaxKind> _targetKinds = new HashSet<SyntaxKind>(new[] {
 			SyntaxKind.ClassDeclaration,
 			SyntaxKind.StructDeclaration,
@@ -71,6 +76,34 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			_hashCode = hash;
 		}
 
+		public static SuppressMessage? MessageFromElement(XElement element)
+		{
+			string id = element?.Attribute(IdAttribute)?.Value;
+			if (id.IsNullOrWhiteSpace())
+				return null;
+
+			string target = element.Element(TargetElement)?.Value;
+			if (target.IsNullOrWhiteSpace())
+				return null;
+
+			string syntaxNode = element.Element(SyntaxNodeElement)?.Value;
+			if (syntaxNode.IsNullOrWhiteSpace())
+				return null;
+
+			return new SuppressMessage(id, target, syntaxNode);
+		}
+
+		public XElement ToXml()
+		{
+			if (!IsValid)
+				return null;
+
+			return new XElement(SuppressionFile.SuppressMessageElement,
+				new XAttribute(IdAttribute, Id),
+				new XElement(TargetElement, Target),
+				new XElement(SyntaxNodeElement, SyntaxNode));
+		}
+
 		public override int GetHashCode() => _hashCode;
 
 		public override bool Equals(object obj) => obj is SuppressMessage message && Equals(message);
@@ -79,14 +112,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			other.Id.Equals(Id, StringComparison.Ordinal) &&
 			other.Target.Equals(Target, StringComparison.Ordinal) &&
 			other.SyntaxNode.Equals(SyntaxNode, StringComparison.Ordinal);
-
-		public int CompareTo(SuppressMessage other) =>
-			string.CompareOrdinal(Id, other.Id) is var idComparison && idComparison != 0
-				? idComparison
-				: string.CompareOrdinal(Target, other.Target) is var targetComparison && targetComparison != 0
-					? targetComparison
-					: string.CompareOrdinal(SyntaxNode, other.SyntaxNode);
-					
+		
 		public static (string Assembly, SuppressMessage Message) GetSuppressionInfo(SemanticModel semanticModel, Diagnostic diagnostic,
 																					 CancellationToken cancellation = default)
 		{

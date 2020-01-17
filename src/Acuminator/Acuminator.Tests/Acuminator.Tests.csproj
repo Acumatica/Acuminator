@@ -73,6 +73,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Tests\DiagnosticSuppression\SuppressionFileTestService.cs" />
+    <Compile Include="Tests\DiagnosticSuppression\SuppressionFileIO\SuppressionFileIOTests.cs" />
     <Compile Include="Tests\Fixer\AngleBracesBqlRewriterTests.cs" />
     <Compile Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\ChangeEventHandlerSignatureToGenericTests.cs" />
     <EmbeddedResource Include="Tests\Refactorings\ChangeEventHandlerSignatureToGeneric\Sources\CacheAttached.cs" />
@@ -604,6 +606,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="FormatterTests.playlist" />
+    <Content Include="Tests\DiagnosticSuppression\SuppressionFileIO\Examples\PX.Objects.acuminator" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
