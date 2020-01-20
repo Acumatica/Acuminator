@@ -6,13 +6,14 @@ using Acuminator.Tests.Verification;
 using Acuminator.Vsix.Formatter;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 using Xunit;
 using static Acuminator.Tests.Verification.VerificationHelper;
 
 namespace Acuminator.Tests.Tests.Formatter
 {
-	public class BqlFormatterTests : DiagnosticVerifier
+	public class BqlFormatterTests
 	{
 		protected const string EndOfLine = "\r\n";
 
@@ -120,6 +121,8 @@ namespace Acuminator.Tests.Tests.Formatter
 				.Select(line => line.TrimEnd())); 
 		}
 	}
+
+
 
 	public class BqlFormatterTestsUsingSpaces : BqlFormatterTests
 	{
