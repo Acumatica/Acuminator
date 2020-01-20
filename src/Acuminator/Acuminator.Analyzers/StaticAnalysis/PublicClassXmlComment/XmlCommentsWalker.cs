@@ -74,7 +74,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (!isInsideDacOrDacExt || SystemDacFieldsNames.All.Contains(propertyDeclaration.Identifier.Text))
 				return;
 
-			CheckXmlCommentAndTheNeedToGoToChildrenNodes(propertyDeclaration, propertyDeclaration.Modifiers, propertyDeclaration.Identifier);
+			CheckXmlCommentAndTheNeedToGoToChildrenNodes(propertyDeclaration, propertyDeclaration.Modifiers, 
+														 propertyDeclaration.Identifier, skipDiagnosticReporting: false);
 		}
 
 		public override void VisitStructDeclaration(StructDeclarationSyntax structDeclaration)
@@ -96,7 +97,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		public override void VisitDelegateDeclaration(DelegateDeclarationSyntax delegateDeclaration)
 		{
 			if (CheckXmlCommentAndTheNeedToGoToChildrenNodes(delegateDeclaration, delegateDeclaration.Modifiers,
-															 delegateDeclaration.Identifier))
+															 delegateDeclaration.Identifier, skipDiagnosticReporting: false))
 			{
 				base.VisitDelegateDeclaration(delegateDeclaration);
 			}
@@ -104,7 +105,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 		public override void VisitEnumDeclaration(EnumDeclarationSyntax enumDeclaration)
 		{
-			if (CheckXmlCommentAndTheNeedToGoToChildrenNodes(enumDeclaration, enumDeclaration.Modifiers, enumDeclaration.Identifier))
+			if (CheckXmlCommentAndTheNeedToGoToChildrenNodes(enumDeclaration, enumDeclaration.Modifiers, 
+															 enumDeclaration.Identifier, skipDiagnosticReporting: false))
 			{
 				base.VisitEnumDeclaration(enumDeclaration);
 			}
@@ -117,14 +119,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			if (!typeDeclaration.IsPartial())
 			{
-				return CheckXmlCommentAndTheNeedToGoToChildrenNodes(typeDeclaration, typeDeclaration.Modifiers, typeDeclaration.Identifier);
+				return CheckXmlCommentAndTheNeedToGoToChildrenNodes(typeDeclaration, typeDeclaration.Modifiers, 
+																	typeDeclaration.Identifier, skipDiagnosticReporting);
 			}
 
 			typeSymbol = typeSymbol ?? _syntaxContext.SemanticModel.GetDeclaredSymbol(typeDeclaration, _syntaxContext.CancellationToken);
 
 			if (typeSymbol == null || typeSymbol.DeclaringSyntaxReferences.Length < 2)      //Case when type marked as partial but has only one declaration
 			{
-				return CheckXmlCommentAndTheNeedToGoToChildrenNodes(typeDeclaration, typeDeclaration.Modifiers, typeDeclaration.Identifier);
+				return CheckXmlCommentAndTheNeedToGoToChildrenNodes(typeDeclaration, typeDeclaration.Modifiers, 
+																	typeDeclaration.Identifier, skipDiagnosticReporting);
 			}
 			else if (typeSymbol.DeclaredAccessibility != Accessibility.Public || CheckIfTypeAttributesDisableDiagnostic(typeSymbol))
 				return false;
@@ -165,70 +169,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		}
 
 		private bool CheckXmlCommentAndTheNeedToGoToChildrenNodes(MemberDeclarationSyntax memberDeclaration, SyntaxTokenList modifiers,
-																  SyntaxToken identifier)
+																  SyntaxToken identifier, bool skipDiagnosticReporting)
 		{
 			_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
 			if (!modifiers.Any(SyntaxKind.PublicKeyword) || CheckIfMemberAttributesDisableDiagnostic(memberDeclaration))
 				return false;
 
-			if (!memberDeclaration.HasStructuredTrivia)
+			XmlCommentParseResult thisDeclarationParseResult = AnalyzeDeclarationXmlComments(memberDeclaration);
+
+			if (thisDeclarationParseResult.ShouldNotDisplayDiagnostic())
+				return false;
+
+			if (!skipDiagnosticReporting)
 			{
-				ReportDiagnostic(_syntaxContext, memberDeclaration, identifier.GetLocation(), XmlCommentParseResult.NoXmlComment);
-				return true;
-			}
-
-			IEnumerable<DocumentationCommentTriviaSyntax> xmlComments = GetXmlComments(memberDeclaration);
-			bool hasXmlComment = false, hasSummaryTag = false, nonEmptySummaryTag = false;
-
-			foreach (DocumentationCommentTriviaSyntax xmlComment in xmlComments)
-			{
-				hasXmlComment = true;
-				var excludeTag = GetXmlExcludeTag(xmlComment);
-
-				if (excludeTag != null)
-					return false;
-				else if (hasSummaryTag)
-					continue;
-
-				var summaryTag = GetSummaryTag(xmlComment);
-				hasSummaryTag = summaryTag != null;
-
-				if (!hasSummaryTag)
-					continue;
-
-				var summaryContent = summaryTag.Content;
-
-				if (summaryContent.Count == 0)
-					continue;
-
-				foreach (XmlNodeSyntax contentNode in summaryContent)
-				{
-					var contentString = contentNode.ToFullString();
-					if (contentString.IsNullOrWhiteSpace())
-						continue;
-
-					var contentHasText = contentString.Split(_xmlCommentSummarySeparators, StringSplitOptions.RemoveEmptyEntries)
-													  .Any(CommentContentIsNotEmpty);
-					if (contentHasText)
-					{
-						nonEmptySummaryTag = true;
-						break;
-					}
-				}
-			}
-
-			if (!hasXmlComment)
-			{
-				ReportDiagnostic(_syntaxContext, memberDeclaration, identifier.GetLocation(), XmlCommentParseResult.NoXmlComment);
-			}
-			else if (!hasSummaryTag)
-			{
-				ReportDiagnostic(_syntaxContext, memberDeclaration, identifier.GetLocation(), XmlCommentParseResult.NoSummaryTag);
-			}
-			else if (!nonEmptySummaryTag)
-			{
-				ReportDiagnostic(_syntaxContext, memberDeclaration, identifier.GetLocation(), XmlCommentParseResult.EmptySummaryTag);
+				ReportDiagnostic(_syntaxContext, memberDeclaration, identifier.GetLocation(), thisDeclarationParseResult);
 			}
 
 			return true;
