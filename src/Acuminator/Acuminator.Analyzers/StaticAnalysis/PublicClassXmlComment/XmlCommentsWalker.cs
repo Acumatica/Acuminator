@@ -27,8 +27,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		private readonly CodeAnalysisSettings _codeAnalysisSettings;
 		private readonly Stack<bool> _isInsideDacContextStack = new Stack<bool>(2);
 
-		private bool _skipDiagnosticReporting;
-
 		public XmlCommentsWalker(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext,
 								 CodeAnalysisSettings codeAnalysisSettings)
 		{
@@ -50,19 +48,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		public override void VisitClassDeclaration(ClassDeclarationSyntax classDeclaration)
 		{
 			INamedTypeSymbol typeSymbol = _syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration, _syntaxContext.CancellationToken);
+			bool isDacField = typeSymbol?.IsDacField(_pxContext) ?? false;
 
-			try
-			{
-				_skipDiagnosticReporting = typeSymbol?.IsDacField(_pxContext) ?? false;
-
-				if (!CheckXmlCommentAndTheNeedToGoToChildrenNodesForType(classDeclaration, typeSymbol))
-					return;
-			}
-			finally
-			{
-				_skipDiagnosticReporting = false;
-			}
-
+			if (!CheckXmlCommentAndTheNeedToGoToChildrenNodesForType(classDeclaration, skipDiagnosticReporting: isDacField, typeSymbol))
+				return;
+			
 			try
 			{
 				bool isInsideDacOrDacExt = typeSymbol?.IsDacOrExtension(_pxContext) ?? false;
@@ -89,7 +79,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 		public override void VisitStructDeclaration(StructDeclarationSyntax structDeclaration)
 		{
-			if (CheckXmlCommentAndTheNeedToGoToChildrenNodesForType(structDeclaration))
+			if (CheckXmlCommentAndTheNeedToGoToChildrenNodesForType(structDeclaration, skipDiagnosticReporting: false))
 			{
 				base.VisitStructDeclaration(structDeclaration);
 			}
@@ -97,7 +87,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 		public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax interfaceDeclaration)
 		{
-			if (CheckXmlCommentAndTheNeedToGoToChildrenNodesForType(interfaceDeclaration))
+			if (CheckXmlCommentAndTheNeedToGoToChildrenNodesForType(interfaceDeclaration, skipDiagnosticReporting: false))
 			{
 				base.VisitInterfaceDeclaration(interfaceDeclaration);
 			}
@@ -120,7 +110,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			}
 		}
 
-		private bool CheckXmlCommentAndTheNeedToGoToChildrenNodesForType(TypeDeclarationSyntax typeDeclaration, INamedTypeSymbol typeSymbol = null)
+		private bool CheckXmlCommentAndTheNeedToGoToChildrenNodesForType(TypeDeclarationSyntax typeDeclaration, bool skipDiagnosticReporting,
+																		 INamedTypeSymbol typeSymbol = null)
 		{
 			_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
@@ -157,7 +148,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 					return false;
 			}
 
-			ReportDiagnostic(_syntaxContext, typeDeclaration, typeDeclaration.Identifier.GetLocation(), thisDeclarationParseResult);
+			if (!skipDiagnosticReporting)
+			{
+				ReportDiagnostic(_syntaxContext, typeDeclaration, typeDeclaration.Identifier.GetLocation(), thisDeclarationParseResult);
+			}
+
 			return true;
 		}
 
@@ -330,9 +325,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 									  Location location, XmlCommentParseResult parseResult)
 		{
 			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
-
-			if (_skipDiagnosticReporting)
-				return;
 
 			var memberCategory = GetMemberCategory(memberDeclaration);
 			var properties = ImmutableDictionary<string, string>.Empty
