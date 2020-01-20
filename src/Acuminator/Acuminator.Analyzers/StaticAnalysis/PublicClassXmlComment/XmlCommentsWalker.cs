@@ -20,6 +20,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 {
 	internal class XmlCommentsWalker : CSharpSyntaxWalker
 	{
+		private static readonly string[] _xmlCommentSummarySeparators = { SyntaxFactory.DocumentationComment().ToFullString() };
+
 		private readonly PXContext _pxContext;
 		private readonly SyntaxNodeAnalysisContext _syntaxContext;
 		private readonly CodeAnalysisSettings _codeAnalysisSettings;

@@ -14,7 +14,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using static Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.PublicClassXmlCommentAnalyzer;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 {
@@ -37,7 +36,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			var diagnostic = context.Diagnostics
 				.FirstOrDefault(d => d.Id.Equals(Descriptors.PX1007_PublicClassXmlComment.Id));
 
-			if (diagnostic?.Properties == null || !diagnostic.Properties.TryGetValue(FixOptionKey, out string value) ||
+			if (diagnostic?.Properties == null || !diagnostic.Properties.TryGetValue(XmlAnalyzerConstants.FixOptionKey, out string value) ||
 				!Enum.TryParse(value, out FixOption option))
 			{
 				return Task.CompletedTask;
@@ -110,7 +109,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				.OfType<DocumentationCommentTriviaSyntax>()
 				.SelectMany(d => d.ChildNodes())
 				.OfType<XmlElementSyntax>()
-				.First(n => XmlCommentSummaryTag.Equals(n.StartTag?.Name?.ToString(), StringComparison.Ordinal));
+				.First(n => XmlAnalyzerConstants.XmlCommentSummaryTag.Equals(n.StartTag?.Name?.ToString(), StringComparison.Ordinal));
 
 			var xmlDescription = new[]
 			{
@@ -164,7 +163,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			var xmlExcludeTrivia = Trivia(
 				DocumentationComment(
-					XmlEmptyElement(XmlCommentExcludeTag),
+					XmlEmptyElement(XmlAnalyzerConstants.XmlCommentExcludeTag),
 					XmlText(_xmlTextNewLine)
 				)
 			);

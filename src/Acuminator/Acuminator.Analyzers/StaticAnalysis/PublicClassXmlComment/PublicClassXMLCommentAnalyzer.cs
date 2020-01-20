@@ -4,12 +4,8 @@ using System.Collections.Immutable;
 using System.Linq;
 
 using Acuminator.Utilities;
-using Acuminator.Utilities.Common;
-using Acuminator.Utilities.DiagnosticSuppression;
-using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
-using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -21,19 +17,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class PublicClassXmlCommentAnalyzer : PXDiagnosticAnalyzer
 	{
-		internal enum FixOption
-		{
-			NoXmlComment,
-			NoSummaryTag,
-			EmptySummaryTag
-		}
-
-		public const string XmlCommentExcludeTag = "exclude";
-		public static readonly string XmlCommentSummaryTag = SyntaxFactory.XmlSummaryElement().StartTag.Name.ToFullString();
-		internal const string FixOptionKey = nameof(FixOption);
-
-		private static readonly string[] _xmlCommentSummarySeparators = { SyntaxFactory.DocumentationComment().ToFullString() };
-
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1007_PublicClassXmlComment);
 
