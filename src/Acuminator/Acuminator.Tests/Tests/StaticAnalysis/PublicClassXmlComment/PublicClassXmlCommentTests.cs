@@ -182,6 +182,18 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		public async Task PublicPartialHelper_WithCommenAndExcludeOnOtherDeclarations_DoesntReportDiagnostic(string checkedSource, 
 																											 string sourceWithComment, string sourceWithExclude) =>
 			await VerifyCSharpDiagnosticAsync(checkedSource, sourceWithComment, sourceWithExclude);
+
+		[Theory]
+		[EmbeddedFileData(@"Partial\WithoutComment.cs", @"Partial\WithBadComment.cs", @"Partial\WithExcludeComment.cs")]
+		public async Task PublicPartialHelper_WithBadComment_ExcludeOnAnotherDeclaration_DoesntReportDiagnostic(string checkedSource, 
+																												string badCommentSource, string sourceWithExclude) =>
+			await VerifyCSharpDiagnosticAsync(checkedSource, badCommentSource, sourceWithExclude);
+
+		[Theory]
+		[EmbeddedFileData(@"Partial\WithoutComment.cs", @"Partial\WithBadComment.cs", @"Partial\WithExcludeComment.cs")]
+		public async Task PublicPartialHelper_WithBadComment_CommantOnAnotherDeclaration_DoesntReportDiagnostic(string checkedSource,
+																												string badCommentSource, string sourceWithComment) =>
+			await VerifyCSharpDiagnosticAsync(checkedSource, badCommentSource, sourceWithComment);
 		#endregion
 	}
 }
