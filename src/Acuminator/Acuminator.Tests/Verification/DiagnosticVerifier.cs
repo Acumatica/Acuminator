@@ -394,8 +394,9 @@ namespace Acuminator.Tests.Verification
 						for (int i = 0; i < documentsToCheckCount; i++)
 						{
 							var document = documents[i];
-							var tree = await document.GetSyntaxTreeAsync().ConfigureAwait(false);
-							if (tree == diag.Location.SourceTree)
+							string documentPath = document.FilePath ?? document.Name;
+
+							if (documentPath == diag.Location.SourceTree.FilePath)
 							{
 								diagnostics.Add(diag);
 							}
