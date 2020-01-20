@@ -14,7 +14,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using static Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment.PublicClassXmlCommentAnalyzer;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 {
@@ -37,8 +36,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			var diagnostic = context.Diagnostics
 				.FirstOrDefault(d => d.Id.Equals(Descriptors.PX1007_PublicClassXmlComment.Id));
 
-			if (diagnostic?.Properties == null || !diagnostic.Properties.TryGetValue(FixOptionKey, out string value) ||
-				!Enum.TryParse(value, out FixOption option))
+			if (diagnostic?.Properties == null || 
+				!diagnostic.Properties.TryGetValue(XmlAnalyzerConstants.XmlCommentParseResultKey, out string value) ||
+				!Enum.TryParse(value, out XmlCommentParseResult parseResult) ||
+				parseResult == XmlCommentParseResult.HasExcludeTag || parseResult == XmlCommentParseResult.HasNonEmptySummaryTag)
 			{
 				return Task.CompletedTask;
 			}
@@ -46,7 +47,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			var addDescriptionTitle = nameof(Resources.PX1007FixAddDescription).GetLocalized().ToString();
 			var addDescriptionAction = CodeAction.Create(
 				addDescriptionTitle,
-				cancellation => AddDescriptionAsync(context.Document, context.Span, option, cancellation),
+				cancellation => AddDescriptionAsync(context.Document, context.Span, parseResult, cancellation),
 				equivalenceKey: addDescriptionTitle);
 			context.RegisterCodeFix(addDescriptionAction, context.Diagnostics);
 
@@ -60,7 +61,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			return Task.CompletedTask;
 		}
 
-		private async Task<Document> AddDescriptionAsync(Document document, TextSpan span, FixOption option, CancellationToken cancellation)
+		private async Task<Document> AddDescriptionAsync(Document document, TextSpan span, XmlCommentParseResult parseResult, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
 
@@ -74,25 +75,25 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (memberName.IsNullOrWhiteSpace())
 				return document;
 
-			var newRootNode = GetRootNodeSyntaxWithDescription(rootNode, memberDeclaration, memberName, option, cancellation);
+			var newRootNode = GetRootNodeSyntaxWithDescription(rootNode, memberDeclaration, memberName, parseResult, cancellation);
 			var newDocument = document.WithSyntaxRoot(newRootNode);
 
 			return newDocument;
 		}
 
 		private SyntaxNode GetRootNodeSyntaxWithDescription(SyntaxNode rootNode, MemberDeclarationSyntax memberDeclaration,
-			string className, FixOption option, CancellationToken cancellation)
+			string className, XmlCommentParseResult parseResult, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
 
 			var description = GenerateDescriptionFromCamelCase(className);
 
-			switch (option)
+			switch (parseResult)
 			{
-				case FixOption.NoXmlComment:
-				case FixOption.NoSummaryTag:
+				case XmlCommentParseResult.NoXmlComment:
+				case XmlCommentParseResult.NoSummaryTag:
 					return AddXmlCommentDescription(rootNode, memberDeclaration, description, cancellation);
-				case FixOption.EmptySummaryTag:
+				case XmlCommentParseResult.EmptySummaryTag:
 					return AddDescription(rootNode, memberDeclaration, description, cancellation);
 				default:
 					return memberDeclaration;
@@ -110,7 +111,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				.OfType<DocumentationCommentTriviaSyntax>()
 				.SelectMany(d => d.ChildNodes())
 				.OfType<XmlElementSyntax>()
-				.First(n => XmlCommentSummaryTag.Equals(n.StartTag?.Name?.ToString(), StringComparison.Ordinal));
+				.First(n => XmlAnalyzerConstants.XmlCommentSummaryTag.Equals(n.StartTag?.Name?.ToString(), StringComparison.Ordinal));
 
 			var xmlDescription = new[]
 			{
@@ -164,7 +165,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			var xmlExcludeTrivia = Trivia(
 				DocumentationComment(
-					XmlEmptyElement(XmlCommentExcludeTag),
+					XmlEmptyElement(XmlAnalyzerConstants.XmlCommentExcludeTag),
 					XmlText(_xmlTextNewLine)
 				)
 			);

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
@@ -19,32 +20,27 @@ namespace Acuminator.Tests.Verification
 		/// <summary>
 		/// Get the CSharp analyzer being tested - to be implemented in non-abstract class
 		/// </summary>
-		protected virtual DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-		{
-			return null;
-		}
-
-		/// <summary>
-		/// Get the Visual Basic analyzer being tested (C#) - to be implemented in non-abstract class
-		/// </summary>
-		protected virtual DiagnosticAnalyzer GetBasicDiagnosticAnalyzer()
-		{
-			return null;
-		}
+		protected abstract DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer();
 		#endregion
 
 		#region Verifier wrappers
-
 		/// <summary>
 		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source
 		/// Note: input a DiagnosticResult for each Diagnostic expected
 		/// </summary>
 		/// <param name="source">A class in the form of a string to run the analyzer on</param>
 		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
-		protected Task VerifyCSharpDiagnosticAsync(string source, params DiagnosticResult[] expected)
-		{
-			return VerifyDiagnosticsAsync(new[] { source }, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected);
-		}
+		protected Task VerifyCSharpDiagnosticAsync(string source, params DiagnosticResult[] expected) => 
+			VerifyDiagnosticsAsync(new[] { source }, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected, checkOnlyFirstDocument: true);
+
+		/// <summary>
+		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source Note: input a DiagnosticResult for each Diagnostic expected.
+		/// </summary>
+		/// <param name="source">A class in the form of a string to run the analyzer on.</param>
+		/// <param name="checkOnlyFirstDocument">True to check only first document.</param>
+		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the source.</param>
+		protected Task VerifyCSharpDiagnosticAsync(string source, bool checkOnlyFirstDocument, params DiagnosticResult[] expected) =>
+			VerifyDiagnosticsAsync(new[] { source }, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected, checkOnlyFirstDocument);
 
 		/// <summary>
 		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source
@@ -53,10 +49,20 @@ namespace Acuminator.Tests.Verification
 		/// <param name="source">A class in the form of a string to run the analyzer on</param>
 		/// <param name="additionalSource">Additional source document to run the analyzer on</param>
 		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
-		protected Task VerifyCSharpDiagnosticAsync(string source, string additionalSource, params DiagnosticResult[] expected)
-		{
-			return VerifyDiagnosticsAsync(new[] { source, additionalSource }, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected);
-		}
+		protected Task VerifyCSharpDiagnosticAsync(string source, string additionalSource, params DiagnosticResult[] expected) =>
+			VerifyDiagnosticsAsync(new[] { source, additionalSource }, 
+				LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected, checkOnlyFirstDocument: true);
+
+		/// <summary>
+		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source Note: input a DiagnosticResult for each Diagnostic expected.
+		/// </summary>
+		/// <param name="source">A class in the form of a string to run the analyzer on.</param>
+		/// <param name="additionalSource">Additional source document to run the analyzer on.</param>
+		/// <param name="checkOnlyFirstDocument">True to check only first document.</param>
+		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the source.</param>
+		protected Task VerifyCSharpDiagnosticAsync(string source, string additionalSource, bool checkOnlyFirstDocument, params DiagnosticResult[] expected) =>
+			VerifyDiagnosticsAsync(new[] { source, additionalSource },
+				LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected, checkOnlyFirstDocument);
 
 		/// <summary>
 		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source
@@ -66,101 +72,92 @@ namespace Acuminator.Tests.Verification
 		/// <param name="additionalSource1">Additional source document to run the analyzer on</param>
 		/// <param name="additionalSource2">Additional source document to run the analyzer on</param>
 		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
-		protected Task VerifyCSharpDiagnosticAsync(string source, string additionalSource1, string additionalSource2,
-			params DiagnosticResult[] expected)
-		{
-			return VerifyDiagnosticsAsync(new[] { source, additionalSource1, additionalSource2 }, LanguageNames.CSharp, 
-				GetCSharpDiagnosticAnalyzer(), expected);
-		}
+		protected Task VerifyCSharpDiagnosticAsync(string source, string additionalSource1, string additionalSource2, params DiagnosticResult[] expected) =>
+			VerifyDiagnosticsAsync(new[] { source, additionalSource1, additionalSource2 }, 
+								  LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected, checkOnlyFirstDocument: true);
 
 		/// <summary>
-		/// Called to test a VB DiagnosticAnalyzer when applied on the single inputted string as a source
-		/// Note: input a DiagnosticResult for each Diagnostic expected
+		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source Note: input a DiagnosticResult for each Diagnostic expected.
 		/// </summary>
-		/// <param name="source">A class in the form of a string to run the analyzer on</param>
-		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the source</param>
-		protected Task VerifyBasicDiagnosticAsync(string source, params DiagnosticResult[] expected)
-		{
-			return VerifyDiagnosticsAsync(new[] { source }, LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), expected);
-		}
+		/// <param name="source">A class in the form of a string to run the analyzer on.</param>
+		/// <param name="additionalSource1">Additional source document to run the analyzer on.</param>
+		/// <param name="additionalSource2">Additional source document to run the analyzer on.</param>
+		/// <param name="checkOnlyFirstDocument">True to check only first document.</param>
+		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the source.</param>
+		protected Task VerifyCSharpDiagnosticAsync(string source, string additionalSource1, string additionalSource2, 
+														bool checkOnlyFirstDocument, params DiagnosticResult[] expected) =>
+			VerifyDiagnosticsAsync(new[] { source, additionalSource1, additionalSource2 },
+								  LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected, checkOnlyFirstDocument);
 
 		/// <summary>
-		/// Called to test a C# DiagnosticAnalyzer when applied on the inputted strings as a source
-		/// Note: input a DiagnosticResult for each Diagnostic expected
+		/// Called to test a C# DiagnosticAnalyzer when applied on the inputted strings as a source.  
+		/// Note: input a DiagnosticResult for each Diagnostic expected.
 		/// </summary>
-		/// <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
-		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
-		protected Task VerifyCSharpDiagnosticAsync(string[] sources, params DiagnosticResult[] expected)
-		{
-			return VerifyDiagnosticsAsync(sources, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected);
-		}
+		/// <param name="sources">An array of strings to create source documents from to run the analyzers on.</param>
+		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources.</param>
+		protected Task VerifyCSharpDiagnosticAsync(string[] sources, params DiagnosticResult[] expected) =>
+			VerifyDiagnosticsAsync(sources, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected, checkOnlyFirstDocument: true);
 
 		/// <summary>
-		/// Called to test a VB DiagnosticAnalyzer when applied on the inputted strings as a source
-		/// Note: input a DiagnosticResult for each Diagnostic expected
+		/// Called to test a C# DiagnosticAnalyzer when applied on the inputted strings as a source.  
+		/// Note: input a DiagnosticResult for each Diagnostic expected.
 		/// </summary>
-		/// <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
-		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
-		protected Task VerifyBasicDiagnosticAsync(string[] sources, params DiagnosticResult[] expected)
-		{
-			return VerifyDiagnosticsAsync(sources, LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), expected);
-		}
+		/// <param name="sources">An array of strings to create source documents from to run the analyzers on.</param>
+		/// <param name="checkOnlyFirstDocument">True to check only first document.</param>
+		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources.</param>
+		protected Task VerifyCSharpDiagnosticAsync(string[] sources, bool checkOnlyFirstDocument, params DiagnosticResult[] expected) =>
+			VerifyDiagnosticsAsync(sources, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected, checkOnlyFirstDocument);
 
 		/// <summary>
-		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source
-		/// Note: input a DiagnosticResult for each Diagnostic expected
+		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source Note: input a DiagnosticResult for each Diagnostic expected.
 		/// </summary>
-		/// <param name="source">A class in the form of a string to run the analyzer on</param>
-		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
-		protected void VerifyCSharpDiagnostic(string source, params DiagnosticResult[] expected)
-		{
-			VerifyDiagnosticsAsync(new[] { source }, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected).Wait();
-		}
+		/// <param name="source">A class in the form of a string to run the analyzer on.</param>
+		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the source.</param>
+		protected void VerifyCSharpDiagnostic(string source, params DiagnosticResult[] expected) =>
+			VerifyDiagnosticsAsync(new[] { source }, LanguageNames.CSharp, 
+									GetCSharpDiagnosticAnalyzer(), expected, checkOnlyFirstDocument: true).Wait();
 
 		/// <summary>
-		/// Called to test a VB DiagnosticAnalyzer when applied on the single inputted string as a source
-		/// Note: input a DiagnosticResult for each Diagnostic expected
+		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source Note: input a DiagnosticResult for each Diagnostic expected.
 		/// </summary>
-		/// <param name="source">A class in the form of a string to run the analyzer on</param>
-		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the source</param>
-		protected void VerifyBasicDiagnostic(string source, params DiagnosticResult[] expected)
-		{
-			VerifyDiagnosticsAsync(new[] { source }, LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), expected).Wait();
-		}
+		/// <param name="source">A class in the form of a string to run the analyzer on.</param>
+		/// <param name="checkOnlyFirstDocument">True to check only first document.</param>
+		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the source.</param>
+		protected void VerifyCSharpDiagnostic(string source, bool checkOnlyFirstDocument, params DiagnosticResult[] expected) =>
+			VerifyDiagnosticsAsync(new[] { source }, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected, checkOnlyFirstDocument).Wait();
 
 		/// <summary>
-		/// Called to test a C# DiagnosticAnalyzer when applied on the inputted strings as a source
-		/// Note: input a DiagnosticResult for each Diagnostic expected
+		/// Called to test a C# DiagnosticAnalyzer when applied on the inputted strings as a source Note: input a DiagnosticResult for each Diagnostic expected.
 		/// </summary>
-		/// <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
-		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
-		protected void VerifyCSharpDiagnostic(string[] sources, params DiagnosticResult[] expected)
-		{
-			VerifyDiagnosticsAsync(sources, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected).Wait();
-		}
+		/// <param name="sources">An array of strings to create source documents from to run the analyzers on.</param>
+		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources.</param>
+		protected void VerifyCSharpDiagnostic(string[] sources, params DiagnosticResult[] expected) =>
+			VerifyDiagnosticsAsync(sources, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected, checkOnlyFirstDocument: true).Wait();
 
 		/// <summary>
-		/// Called to test a VB DiagnosticAnalyzer when applied on the inputted strings as a source
-		/// Note: input a DiagnosticResult for each Diagnostic expected
+		/// Called to test a C# DiagnosticAnalyzer when applied on the inputted strings as a source Note: input a DiagnosticResult for each Diagnostic expected.
 		/// </summary>
-		/// <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
-		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
-		protected void VerifyBasicDiagnostic(string[] sources, params DiagnosticResult[] expected)
-		{
-			VerifyDiagnosticsAsync(sources, LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), expected).Wait();
-		}
+		/// <param name="sources">An array of strings to create source documents from to run the analyzers on.</param>
+		/// <param name="checkOnlyFirstDocument">True to check only first document.</param>
+		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources.</param>
+		protected void VerifyCSharpDiagnostic(string[] sources, bool checkOnlyFirstDocument, params DiagnosticResult[] expected) => 
+			VerifyDiagnosticsAsync(sources, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected, checkOnlyFirstDocument).Wait();
 
 		/// <summary>
-		/// General method that gets a collection of actual diagnostics found in the source after the analyzer is run, 
-		/// then verifies each of them.
+		/// General method that gets a collection of actual diagnostics found in the source after the analyzer is run, then verifies each of them.
 		/// </summary>
-		/// <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
-		/// <param name="language">The language of the classes represented by the source strings</param>
-		/// <param name="analyzer">The analyzer to be run on the source code</param>
-		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
-		private async Task VerifyDiagnosticsAsync(string[] sources, string language, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expected)
+		/// <param name="sources">An array of strings to create source documents from to run the analyzers on.</param>
+		/// <param name="language">The language of the classes represented by the source strings.</param>
+		/// <param name="analyzer">The analyzer to be run on the source code.</param>
+		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources.</param>
+		/// <param name="checkOnlyFirstDocument">True to check only first document.</param>
+		/// <returns>
+		/// An asynchronous result.
+		/// </returns>
+		private async Task VerifyDiagnosticsAsync(string[] sources, string language, DiagnosticAnalyzer analyzer, 
+												  DiagnosticResult[] expected, bool checkOnlyFirstDocument)
 		{
-			var diagnostics = await GetSortedDiagnosticsAsync(sources, language, analyzer).ConfigureAwait(false);
+			var diagnostics = await GetSortedDiagnosticsAsync(sources, language, analyzer, checkOnlyFirstDocument).ConfigureAwait(false);
 			VerifyDiagnosticResults(diagnostics, analyzer, expected);
 		}
 
@@ -344,14 +341,17 @@ namespace Acuminator.Tests.Verification
 		/// <summary>
 		/// Given classes in the form of strings, their language, and an IDiagnosticAnlayzer to apply to it, return the diagnostics found in the string after converting it to a document.
 		/// </summary>
-		/// <param name="sources">Classes in the form of strings</param>
-		/// <param name="language">The language the source classes are in</param>
-		/// <param name="analyzer">The analyzer to be run on the sources</param>
-		/// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
+		/// <param name="sources">Classes in the form of strings.</param>
+		/// <param name="language">The language the source classes are in.</param>
+		/// <param name="analyzer">The analyzer to be run on the sources.</param>
+		/// <param name="checkOnlyFirstDocument">True to check only first document.</param>
+		/// <returns>
+		/// An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location.
+		/// </returns>
 		private static Task<Diagnostic[]> GetSortedDiagnosticsAsync(string[] sources, string language, 
-			DiagnosticAnalyzer analyzer)
+																	DiagnosticAnalyzer analyzer, bool checkOnlyFirstDocument)
 		{
-			return GetSortedDiagnosticsFromDocumentsAsync(analyzer, VerificationHelper.GetDocuments(sources, language));
+			return GetSortedDiagnosticsFromDocumentsAsync(analyzer, VerificationHelper.GetDocuments(sources, language), checkOnlyFirstDocument);
 		}
 
 		/// <summary>
@@ -361,20 +361,24 @@ namespace Acuminator.Tests.Verification
 		/// <param name="analyzer">The analyzer to run on the documents</param>
 		/// <param name="documents">The Documents that the analyzer will be run on</param>
 		/// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
-		protected static async Task<Diagnostic[]> GetSortedDiagnosticsFromDocumentsAsync(DiagnosticAnalyzer analyzer, Document[] documents)
+		protected static async Task<Diagnostic[]> GetSortedDiagnosticsFromDocumentsAsync(DiagnosticAnalyzer analyzer, Document[] documents, 
+																						 bool checkOnlyFirstDocument)
 		{
 			var projects = new HashSet<Project>();
+
 			foreach (var document in documents)
 			{
 				projects.Add(document.Project);
 			}
 
 			var diagnostics = new List<Diagnostic>();
+
 			foreach (var project in projects)
 			{
 				var compilation = await project.GetCompilationAsync().ConfigureAwait(false);
 				var compilationWithAnalyzers = compilation.WithAnalyzers(ImmutableArray.Create(analyzer));
 				var diags = await compilationWithAnalyzers.GetAnalyzerDiagnosticsAsync().ConfigureAwait(false);
+
 				foreach (var diag in diags)
 				{
 					if (diag.Location == Location.None || diag.Location.IsInMetadata)
@@ -383,11 +387,16 @@ namespace Acuminator.Tests.Verification
 					}
 					else
 					{
-						for (int i = 0; i < documents.Length; i++)
+						int documentsToCheckCount = checkOnlyFirstDocument
+							? Math.Min(1, documents.Length)
+							: documents.Length;
+
+						for (int i = 0; i < documentsToCheckCount; i++)
 						{
 							var document = documents[i];
-							var tree = await document.GetSyntaxTreeAsync().ConfigureAwait(false);
-							if (tree == diag.Location.SourceTree)
+							string documentPath = document.FilePath ?? document.Name;
+
+							if (documentPath == diag.Location.SourceTree.FilePath)
 							{
 								diagnostics.Add(diag);
 							}

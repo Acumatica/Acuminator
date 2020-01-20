@@ -1,4 +1,5 @@
-﻿using Acuminator.Utilities;
+﻿using System;
+using Acuminator.Utilities;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Microsoft.CodeAnalysis;
@@ -10,10 +11,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using static Acuminator.Tests.Verification.VerificationHelper;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Tests.Tests.Utilities.NestedInvocationWalker
 {
-	public class NestedInvocationWalkerTests : DiagnosticVerifier
+	public class NestedInvocationWalkerTests
 	{
 		private class ExceptionWalker : Acuminator.Utilities.Roslyn.NestedInvocationWalker
 		{

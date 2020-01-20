@@ -151,5 +151,49 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		[EmbeddedFileData("DAC.cs", "DAC_AddExclude.cs")]
 		public async Task Dac_AddExclude_Works(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected, codeFixIndex: 1);
+
+		#region Partial class tests		
+		[Theory]
+		[EmbeddedFileData(@"Partial\WithoutComment.cs")]
+		public async Task PublicPartialHelper_SingleWithoutDescription(string source) =>
+			await VerifyCSharpDiagnosticAsync(
+				source,
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(10, 23, messageArgs: nameof(Resources.PX1007Class).GetLocalized()));
+
+		[Theory]
+		[EmbeddedFileData(@"Partial\WithoutComment.cs", @"Partial\WithBadComment.cs")]
+		public async Task PublicPartialHelper_BadCommentOnOtherDeclaration(string source, string badCommentSource) =>
+			await VerifyCSharpDiagnosticAsync(
+				source, badCommentSource,
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(10, 23, messageArgs: nameof(Resources.PX1007Class).GetLocalized()));
+
+		[Theory]
+		[EmbeddedFileData(@"Partial\WithoutComment.cs", @"Partial\WithComment.cs")]
+		public async Task PublicPartialHelper_CommentOnOtherDeclaration_DoesntReportDiagnostic(string checkedSource, string partialDeclaration) =>
+			await VerifyCSharpDiagnosticAsync(checkedSource, partialDeclaration);
+
+		[Theory]
+		[EmbeddedFileData(@"Partial\WithoutComment.cs", @"Partial\WithExcludeComment.cs")]
+		public async Task PublicPartialHelper_ExcludeOnOtherDeclaration_DoesntReportDiagnostic(string checkedSource, string partialDeclaration) =>
+			await VerifyCSharpDiagnosticAsync(checkedSource, partialDeclaration);
+
+		[Theory]
+		[EmbeddedFileData(@"Partial\WithoutComment.cs", @"Partial\WithComment.cs", @"Partial\WithExcludeComment.cs")]
+		public async Task PublicPartialHelper_WithCommenAndExcludeOnOtherDeclarations_DoesntReportDiagnostic(string checkedSource, 
+																											 string sourceWithComment, string sourceWithExclude) =>
+			await VerifyCSharpDiagnosticAsync(checkedSource, sourceWithComment, sourceWithExclude);
+
+		[Theory]
+		[EmbeddedFileData(@"Partial\WithoutComment.cs", @"Partial\WithBadComment.cs", @"Partial\WithExcludeComment.cs")]
+		public async Task PublicPartialHelper_WithBadComment_ExcludeOnAnotherDeclaration_DoesntReportDiagnostic(string checkedSource, 
+																												string badCommentSource, string sourceWithExclude) =>
+			await VerifyCSharpDiagnosticAsync(checkedSource, badCommentSource, sourceWithExclude);
+
+		[Theory]
+		[EmbeddedFileData(@"Partial\WithoutComment.cs", @"Partial\WithBadComment.cs", @"Partial\WithExcludeComment.cs")]
+		public async Task PublicPartialHelper_WithBadComment_CommantOnAnotherDeclaration_DoesntReportDiagnostic(string checkedSource,
+																												string badCommentSource, string sourceWithComment) =>
+			await VerifyCSharpDiagnosticAsync(checkedSource, badCommentSource, sourceWithComment);
+		#endregion
 	}
 }
