@@ -207,6 +207,11 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			return modifiers.Any(SyntaxKind.PublicKeyword);
 		}
 
+		public static bool IsPartial(this TypeDeclarationSyntax typeDeclaration) =>
+			typeDeclaration.CheckIfNull(nameof(typeDeclaration))
+						   .Modifiers
+						   .Any(SyntaxKind.PartialKeyword);
+		
 		public static bool IsInternal(this MemberDeclarationSyntax member)
 		{
 			SyntaxTokenList modifiers = member.GetModifiers();
