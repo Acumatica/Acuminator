@@ -18,17 +18,19 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 {
-	internal enum FixOption
+	internal enum XmlCommentParseResult
 	{
 		NoXmlComment,
 		NoSummaryTag,
-		EmptySummaryTag
+		EmptySummaryTag,
+		HasExcludeTag,
+		HasSummaryTag
 	}
 
 	public static class XmlAnalyzerConstants
 	{
 		public const string XmlCommentExcludeTag = "exclude";
 		public static readonly string XmlCommentSummaryTag = SyntaxFactory.XmlSummaryElement().StartTag.Name.ToFullString();
-		internal const string FixOptionKey = nameof(FixOption);
+		internal const string XmlCommentParseResultKey = nameof(XmlCommentParseResult);
 	}
 }
