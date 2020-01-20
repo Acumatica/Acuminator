@@ -123,85 +123,50 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		private bool CheckXmlCommentAndTheNeedToGoToChildrenNodesForType(TypeDeclarationSyntax typeDeclaration, INamedTypeSymbol typeSymbol = null)
 		{
 			_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
-			bool isPartial = typeDeclaration.IsPartial();
 
-			if (!CheckIfTypeIsPublic(typeDeclaration, ref typeSymbol, isPartial) || CheckIfMemberAttributesDisableDiagnostic(typeDeclaration))
+			if (!typeDeclaration.IsPartial())
+			{
+				return CheckXmlCommentAndTheNeedToGoToChildrenNodes(typeDeclaration, typeDeclaration.Modifiers, typeDeclaration.Identifier);
+			}
+
+			typeSymbol = typeSymbol ?? _syntaxContext.SemanticModel.GetDeclaredSymbol(typeDeclaration, _syntaxContext.CancellationToken);
+
+			if (typeSymbol == null || typeSymbol.DeclaringSyntaxReferences.Length < 2)      //Case when type marked as partial but has only one declaration
+			{
+				return CheckXmlCommentAndTheNeedToGoToChildrenNodes(typeDeclaration, typeDeclaration.Modifiers, typeDeclaration.Identifier);
+			}
+			else if (typeSymbol.DeclaredAccessibility != Accessibility.Public || CheckIfTypeAttributesDisableDiagnostic(typeSymbol))
 				return false;
 
-			if (!typeDeclaration.HasStructuredTrivia)
+			XmlCommentParseResult thisDeclarationParseResult = AnalyzeDeclarationXmlComments(typeDeclaration);
+
+			if (thisDeclarationParseResult.ShouldNotDisplayDiagnostic())
+				return false;
+
+			foreach (SyntaxReference reference in typeSymbol.DeclaringSyntaxReferences)
 			{
-				ReportDiagnostic(_syntaxContext, typeDeclaration, typeDeclaration.Identifier.GetLocation(), FixOption.NoXmlComment);
-				return true;
-			}
-
-			IEnumerable<DocumentationCommentTriviaSyntax> xmlComments = GetXmlComments(typeDeclaration);
-			bool hasXmlComment = false, hasSummaryTag = false, nonEmptySummaryTag = false;
-
-			foreach (DocumentationCommentTriviaSyntax xmlComment in xmlComments)
-			{
-				hasXmlComment = true;
-				var excludeTag = GetXmlExcludeTag(xmlComment);
-
-				if (excludeTag != null)
-					return false;
-				else if (hasSummaryTag)
-					continue;
-
-				var summaryTag = GetSummaryTag(xmlComment);
-				hasSummaryTag = summaryTag != null;
-
-				if (!hasSummaryTag)
-					continue;
-
-				var summaryContent = summaryTag.Content;
-
-				if (summaryContent.Count == 0)
-					continue;
-
-				foreach (XmlNodeSyntax contentNode in summaryContent)
+				if (reference.SyntaxTree == typeDeclaration.SyntaxTree ||
+					!(reference.GetSyntax(_syntaxContext.CancellationToken) is TypeDeclarationSyntax partialTypeDeclaration))
 				{
-					var contentString = contentNode.ToFullString();
-					if (contentString.IsNullOrWhiteSpace())
-						continue;
-
-					var contentHasText = contentString.Split(_xmlCommentSummarySeparators, StringSplitOptions.RemoveEmptyEntries)
-													  .Any(CommentContentIsNotEmpty);
-					if (contentHasText)
-					{
-						nonEmptySummaryTag = true;
-						break;
-					}
+					continue;
 				}
+
+				XmlCommentParseResult parseResult = AnalyzeDeclarationXmlComments(partialTypeDeclaration);
+
+				if (parseResult.ShouldNotDisplayDiagnostic())
+					return false;
 			}
 
-			if (!hasXmlComment)
-			{
-				ReportDiagnostic(_syntaxContext, typeDeclaration, typeDeclaration.Identifier.GetLocation(), FixOption.NoXmlComment);
-			}
-			else if (!hasSummaryTag)
-			{
-				ReportDiagnostic(_syntaxContext, typeDeclaration, typeDeclaration.Identifier.GetLocation(), FixOption.NoSummaryTag);
-			}
-			else if (!nonEmptySummaryTag)
-			{
-				ReportDiagnostic(_syntaxContext, typeDeclaration, typeDeclaration.Identifier.GetLocation(), FixOption.EmptySummaryTag);
-			}
-
+			ReportDiagnostic(_syntaxContext, typeDeclaration, typeDeclaration.Identifier.GetLocation(), thisDeclarationParseResult);
 			return true;
 		}
 
-		private bool CheckIfTypeIsPublic(TypeDeclarationSyntax typeDeclaration, ref INamedTypeSymbol typeSymbol, bool isPartial)
+		private bool CheckIfTypeAttributesDisableDiagnostic(INamedTypeSymbol typeSymbol)
 		{
-			if (typeDeclaration.Modifiers.Any(SyntaxKind.PublicKeyword))
-				return true;
+			var shortAttributeNames = typeSymbol.GetAttributes()
+												.Select(attr => GetAttributeShortName(attr.AttributeClass.Name));
 
-			if (isPartial)
-			{
-				typeSymbol = typeSymbol ?? _syntaxContext.SemanticModel.GetDeclaredSymbol(typeDeclaration, _syntaxContext.CancellationToken);
-				return typeSymbol?.DeclaredAccessibility == Accessibility.Public;
-			}
-			else
-				return false;
+			return CheckAttributeNames(shortAttributeNames);
 		}
 
 		private bool CheckXmlCommentAndTheNeedToGoToChildrenNodes(MemberDeclarationSyntax memberDeclaration, SyntaxTokenList modifiers,
@@ -214,7 +179,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			if (!memberDeclaration.HasStructuredTrivia)
 			{
-				ReportDiagnostic(_syntaxContext, memberDeclaration, identifier.GetLocation(), FixOption.NoXmlComment);
+				ReportDiagnostic(_syntaxContext, memberDeclaration, identifier.GetLocation(), XmlCommentParseResult.NoXmlComment);
 				return true;
 			}
 
@@ -260,24 +225,143 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			if (!hasXmlComment)
 			{
-				ReportDiagnostic(_syntaxContext, memberDeclaration, identifier.GetLocation(), FixOption.NoXmlComment);
+				ReportDiagnostic(_syntaxContext, memberDeclaration, identifier.GetLocation(), XmlCommentParseResult.NoXmlComment);
 			}
 			else if (!hasSummaryTag)
 			{
-				ReportDiagnostic(_syntaxContext, memberDeclaration, identifier.GetLocation(), FixOption.NoSummaryTag);
+				ReportDiagnostic(_syntaxContext, memberDeclaration, identifier.GetLocation(), XmlCommentParseResult.NoSummaryTag);
 			}
 			else if (!nonEmptySummaryTag)
 			{
-				ReportDiagnostic(_syntaxContext, memberDeclaration, identifier.GetLocation(), FixOption.EmptySummaryTag);
+				ReportDiagnostic(_syntaxContext, memberDeclaration, identifier.GetLocation(), XmlCommentParseResult.EmptySummaryTag);
 			}
 
 			return true;
 		}
 
-		private bool CheckIfMemberAttributesDisableDiagnostic(MemberDeclarationSyntax member) =>
-				   member.GetAttributes()
-						 .Select(attr => GetAttributeShortName(attr))
-						;
+		private XmlCommentParseResult AnalyzeDeclarationXmlComments(MemberDeclarationSyntax memberDeclaration)
+		{
+			if (!memberDeclaration.HasStructuredTrivia)
+				return XmlCommentParseResult.NoXmlComment;
+
+			IEnumerable<DocumentationCommentTriviaSyntax> xmlComments = GetXmlComments(memberDeclaration);
+			bool hasXmlComment = false, hasSummaryTag = false, nonEmptySummaryTag = false;
+
+			foreach (DocumentationCommentTriviaSyntax xmlComment in xmlComments)
+			{
+				hasXmlComment = true;
+				var excludeTag = GetXmlExcludeTag(xmlComment);
+
+				if (excludeTag != null)
+					return XmlCommentParseResult.HasExcludeTag;
+				else if (hasSummaryTag)
+					continue;
+
+				XmlElementSyntax summaryTag = GetSummaryTag(xmlComment);
+
+				if (summaryTag == null)
+					continue;
+
+				hasSummaryTag = true;
+				nonEmptySummaryTag = IsNonEmptySummaryTag(summaryTag);
+			}
+
+			if (!hasXmlComment)
+				return XmlCommentParseResult.NoXmlComment;
+			else if (!hasSummaryTag)
+				return XmlCommentParseResult.NoSummaryTag;
+			else if (!nonEmptySummaryTag)
+				return XmlCommentParseResult.EmptySummaryTag;
+			else
+				return XmlCommentParseResult.HasNonEmptySummaryTag;
+
+			//-------------------------------------------------Local function--------------------------------------------------------
+			bool IsNonEmptySummaryTag(XmlElementSyntax summaryTag)
+			{
+				var summaryContent = summaryTag.Content;
+
+				if (summaryContent.Count == 0)
+					return false;
+
+				foreach (XmlNodeSyntax contentNode in summaryContent)
+				{
+					var contentString = contentNode.ToFullString();
+					if (contentString.IsNullOrWhiteSpace())
+						continue;
+
+					var contentHasText = contentString.Split(_xmlCommentSummarySeparators, StringSplitOptions.RemoveEmptyEntries)
+													  .Any(CommentContentIsNotEmpty);
+					if (contentHasText)
+						return true;
+				}
+
+				return false;
+			}
+		}
+
+		private bool CheckIfMemberAttributesDisableDiagnostic(MemberDeclarationSyntax member)
+		{
+			var shortAttributeNames = member.GetAttributes()
+											.Select(attr => GetAttributeShortName(attr));
+
+			return CheckAttributeNames(shortAttributeNames);
+		}
+
+		private IEnumerable<DocumentationCommentTriviaSyntax> GetXmlComments(MemberDeclarationSyntax member) =>
+			member.GetLeadingTrivia()
+				  .Select(t => t.GetStructure())
+				  .OfType<DocumentationCommentTriviaSyntax>();
+
+		private XmlEmptyElementSyntax GetXmlExcludeTag(DocumentationCommentTriviaSyntax xmlComment) =>
+			xmlComment.ChildNodes()
+					  .OfType<XmlEmptyElementSyntax>()
+					  .FirstOrDefault(s => XmlAnalyzerConstants.XmlCommentExcludeTag.Equals(s.Name?.ToString(), StringComparison.Ordinal));
+
+		private XmlElementSyntax GetSummaryTag(DocumentationCommentTriviaSyntax xmlComment) =>
+			xmlComment.ChildNodes()
+					  .OfType<XmlElementSyntax>()
+					  .FirstOrDefault(n => XmlAnalyzerConstants.XmlCommentSummaryTag.Equals(n.StartTag?.Name?.ToString(), StringComparison.Ordinal));
+
+		private bool CommentContentIsNotEmpty(string content) =>
+			!content.IsNullOrEmpty() &&
+			 content.Any(char.IsLetterOrDigit);
+
+		private void ReportDiagnostic(SyntaxNodeAnalysisContext syntaxContext, MemberDeclarationSyntax memberDeclaration,
+									  Location location, XmlCommentParseResult parseResult)
+		{
+			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+
+			if (_skipDiagnosticReporting)
+				return;
+
+			var memberCategory = GetMemberCategory(memberDeclaration);
+			var properties = ImmutableDictionary<string, string>.Empty
+																.Add(XmlAnalyzerConstants.XmlCommentParseResultKey, parseResult.ToString());
+			var noXmlCommentDiagnostic = Diagnostic.Create(Descriptors.PX1007_PublicClassXmlComment, location, properties, memberCategory);
+
+			syntaxContext.ReportDiagnosticWithSuppressionCheck(noXmlCommentDiagnostic, _codeAnalysisSettings);
+		}
+
+		private LocalizableString GetMemberCategory(MemberDeclarationSyntax memberDeclaration)
+		{
+			switch (memberDeclaration)
+			{
+				case ClassDeclarationSyntax _:
+					return nameof(Resources.PX1007Class).GetLocalized();
+				case PropertyDeclarationSyntax _:
+					return nameof(Resources.PX1007DacProperty).GetLocalized();
+				case StructDeclarationSyntax _:
+					return nameof(Resources.PX1007Struct).GetLocalized();
+				case InterfaceDeclarationSyntax _:
+					return nameof(Resources.PX1007Interface).GetLocalized();
+				case EnumDeclarationSyntax _:
+					return nameof(Resources.PX1007Enum).GetLocalized();
+				case DelegateDeclarationSyntax _:
+					return nameof(Resources.PX1007Delegate).GetLocalized();
+				default:
+					return nameof(Resources.PX1007DefaultEntity).GetLocalized();
+			}
+		}
 
 		private bool CheckAttributeNames(IEnumerable<string> attributeNames)
 		{
@@ -313,64 +397,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			}
 
 			return attributeName;
-		}
-
-		private IEnumerable<DocumentationCommentTriviaSyntax> GetXmlComments(MemberDeclarationSyntax member) =>
-			member.GetLeadingTrivia()
-				  .Select(t => t.GetStructure())
-				  .OfType<DocumentationCommentTriviaSyntax>();
-
-		private XmlEmptyElementSyntax GetXmlExcludeTag(DocumentationCommentTriviaSyntax xmlComment) =>
-			xmlComment
-					  .ChildNodes()
-					  .OfType<XmlEmptyElementSyntax>()
-					  .FirstOrDefault(s => XmlCommentExcludeTag.Equals(s.Name?.ToString(), StringComparison.Ordinal));
-
-		private XmlElementSyntax GetSummaryTag(DocumentationCommentTriviaSyntax xmlComment) =>
-			xmlComment
-					  .ChildNodes()
-					  .OfType<XmlElementSyntax>()
-					  .FirstOrDefault(n => XmlCommentSummaryTag.Equals(n.StartTag?.Name?.ToString(), StringComparison.Ordinal));
-
-		private bool CommentContentIsNotEmpty(string content) =>
-			!content.IsNullOrEmpty() &&
-			 content.Any(char.IsLetterOrDigit);
-
-		private void ReportDiagnostic(SyntaxNodeAnalysisContext syntaxContext, MemberDeclarationSyntax memberDeclaration,
-									  Location location, FixOption fixOption)
-		{
-			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
-
-			if (_skipDiagnosticReporting)
-				return;
-
-			var memberCategory = GetMemberCategory(memberDeclaration);
-			var properties = ImmutableDictionary<string, string>.Empty
-																.Add(FixOptionKey, fixOption.ToString());
-			var noXmlCommentDiagnostic = Diagnostic.Create(Descriptors.PX1007_PublicClassXmlComment, location, properties, memberCategory);
-
-			syntaxContext.ReportDiagnosticWithSuppressionCheck(noXmlCommentDiagnostic, _codeAnalysisSettings);
-		}
-
-		private LocalizableString GetMemberCategory(MemberDeclarationSyntax memberDeclaration)
-		{
-			switch (memberDeclaration)
-			{
-				case ClassDeclarationSyntax _:
-					return nameof(Resources.PX1007Class).GetLocalized();
-				case PropertyDeclarationSyntax _:
-					return nameof(Resources.PX1007DacProperty).GetLocalized();
-				case StructDeclarationSyntax _:
-					return nameof(Resources.PX1007Struct).GetLocalized();
-				case InterfaceDeclarationSyntax _:
-					return nameof(Resources.PX1007Interface).GetLocalized();
-				case EnumDeclarationSyntax _:
-					return nameof(Resources.PX1007Enum).GetLocalized();
-				case DelegateDeclarationSyntax _:
-					return nameof(Resources.PX1007Delegate).GetLocalized();
-				default:
-					return nameof(Resources.PX1007DefaultEntity).GetLocalized();
-			}
 		}
 	}
 }
