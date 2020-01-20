@@ -39,7 +39,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (diagnostic?.Properties == null || 
 				!diagnostic.Properties.TryGetValue(XmlAnalyzerConstants.XmlCommentParseResultKey, out string value) ||
 				!Enum.TryParse(value, out XmlCommentParseResult parseResult) ||
-				parseResult == XmlCommentParseResult.HasExcludeTag || parseResult == XmlCommentParseResult.HasSummaryTag)
+				parseResult == XmlCommentParseResult.HasExcludeTag || parseResult == XmlCommentParseResult.HasNonEmptySummaryTag)
 			{
 				return Task.CompletedTask;
 			}
