@@ -135,9 +135,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			XmlCommentParseResult thisDeclarationParseResult = AnalyzeDeclarationXmlComments(typeDeclaration);
 
-			if (thisDeclarationParseResult.ShouldNotDisplayDiagnostic())
+			if (thisDeclarationParseResult == XmlCommentParseResult.HasExcludeTag)
 				return false;
-
+			else if (thisDeclarationParseResult == XmlCommentParseResult.HasNonEmptySummaryTag)
+				return true;
+			
 			foreach (SyntaxReference reference in typeSymbol.DeclaringSyntaxReferences)
 			{
 				if (reference.SyntaxTree == typeDeclaration.SyntaxTree ||
@@ -148,8 +150,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 				XmlCommentParseResult parseResult = AnalyzeDeclarationXmlComments(partialTypeDeclaration);
 
-				if (parseResult.ShouldNotDisplayDiagnostic())
+				if (parseResult == XmlCommentParseResult.HasExcludeTag)
 					return false;
+				else if (parseResult == XmlCommentParseResult.HasNonEmptySummaryTag)
+					return true;
 			}
 
 			if (!skipDiagnosticReporting)
@@ -178,8 +182,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			XmlCommentParseResult thisDeclarationParseResult = AnalyzeDeclarationXmlComments(memberDeclaration);
 
-			if (thisDeclarationParseResult.ShouldNotDisplayDiagnostic())
+			if (thisDeclarationParseResult == XmlCommentParseResult.HasExcludeTag)
 				return false;
+			else if (thisDeclarationParseResult == XmlCommentParseResult.HasNonEmptySummaryTag)
+				return true;
 
 			if (!skipDiagnosticReporting)
 			{
