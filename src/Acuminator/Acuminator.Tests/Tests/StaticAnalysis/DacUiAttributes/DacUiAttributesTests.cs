@@ -38,6 +38,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacUiAttributes
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
+		[EmbeddedFileData("PXMappedCacheExtension.cs")]
+		public async Task PXMappedCacheExtension_DoesntReportDiagnostic(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
 		[EmbeddedFileData(
 			"Dac_Bad.cs",
 			"Dac_Good_Hidden.cs")]
