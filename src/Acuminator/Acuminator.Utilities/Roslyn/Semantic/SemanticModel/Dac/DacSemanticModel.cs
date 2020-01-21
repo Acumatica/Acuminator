@@ -25,6 +25,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// </summary>
 		public ITypeSymbol DacSymbol { get; }
 
+		/// <summary>
+		/// True if the DAC is a mapping DAC derived from PXMappedCacheExtension class.
+		/// </summary>
+		public bool IsMappedCacheExtension { get; }
+
 		public ImmutableDictionary<string, DacPropertyInfo> PropertiesByNames { get; }
 		public IEnumerable<DacPropertyInfo> Properties => PropertiesByNames.Values;
 
@@ -52,6 +57,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			DacSymbol = DacType == DacType.Dac
 				? Symbol
 				: Symbol.GetDacFromDacExtension(_pxContext);
+			IsMappedCacheExtension = Symbol.InheritsFromOrEquals(_pxContext.PXMappedCacheExtensionType);
 
 			FieldsByNames = GetDacFields();
 			PropertiesByNames = GetDacProperties();		
