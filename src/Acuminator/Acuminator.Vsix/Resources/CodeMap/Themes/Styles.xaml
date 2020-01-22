@@ -226,7 +226,21 @@
         <Setter Property="ItemContainerStyle" Value="{StaticResource vsListBoxItemStyle}"/>
     </Style>
 	<!--#endregion-->
-	
+	<!--#region VS ContextMenu Style-->
+
+    <!--#endregion-->
+	<!--#regionVS MenuItem Style-->
+	<Style x:Key="vsMenuItemStyle" TargetType="MenuItem">
+		<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuBackgroundGradientBeginBrushKey}}"/>
+		<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarTextActiveBrushKey}}"/>
+		<Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuBorderBrushKey}}"/>
+		<Setter Property="Effect">
+			<Setter.Value>
+				<DropShadowEffect Color="{DynamicResource {x:Static platformUI:EnvironmentColors.DropShadowBackgroundColorKey}}"/>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	<!--#endregion-->
 </ResourceDictionary>
 
  
