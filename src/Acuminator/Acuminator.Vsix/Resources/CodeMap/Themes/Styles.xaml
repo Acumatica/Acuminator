@@ -3,7 +3,7 @@
                     xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
                     xmlns:platformUI="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0">
 
-    <!--VS Image Style-->
+	<!--#region VS Image Style-->
     <Style x:Key="vsImageStyle" TargetType="{x:Type Image}">
         <Setter Property="MaxHeight" Value="16"/>
         <Setter Property="MaxWidth" Value="16"/>
@@ -16,8 +16,8 @@
             </Trigger>
         </Style.Triggers>
     </Style>
-
-    <!--VS Read Only Data Grid Style-->
+	<!--#endregion-->
+	<!--#region VS Read Only Data Grid Style-->
     <!--#region DataGrid Row-->
     <Style x:Key="dataGridRowStyle" TargetType="DataGridRow">
         <Setter Property="BorderThickness" Value="0"/>
@@ -117,8 +117,8 @@
         <Setter Property="CanUserDeleteRows" Value="False"/>
         <Setter Property="IsReadOnly" Value="True"/>
     </Style>
-    
-    <!--VS Button Style-->
+	<!--#endregion-->
+	<!--#region VS Button Style-->
     <Style x:Key="vsButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Static vsshell:VsResourceKeys.ButtonStyleKey}}">
         <Style.Resources>
             <Style TargetType="{x:Type Border}">
@@ -147,8 +147,8 @@
             </Trigger>
         </Style.Triggers>
     </Style>
-
-    <!-- TreeViewItem Style-->
+	<!--#endregion-->
+	<!--#region TreeViewItem Style-->
     <Style x:Key="vsTreeViewItemStyle" TargetType="TreeViewItem">
         <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundBrushKey}}"/>
         <Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundTextBrushKey}}"/>
@@ -180,13 +180,13 @@
             </MultiTrigger>
         </Style.Triggers>
     </Style>
-
-    <!-- TreeView Style-->
+	<!--#endregion-->
+	<!--#region TreeView Style-->
     <Style x:Key="vsTreeViewStyle" TargetType="TreeView">
         <Setter Property="Background" Value="Transparent"/>
     </Style>
-
-    <!--VS ListBox Style-->
+	<!--#endregion-->
+	<!--#region VS ListBox Style-->
     <Style x:Key="vsListBoxItemStyle" TargetType="ListBoxItem">
         <Setter Property="Background" Value="Transparent"/>
 
@@ -225,6 +225,8 @@
 
         <Setter Property="ItemContainerStyle" Value="{StaticResource vsListBoxItemStyle}"/>
     </Style>
+	<!--#endregion-->
+	
 </ResourceDictionary>
 
  
