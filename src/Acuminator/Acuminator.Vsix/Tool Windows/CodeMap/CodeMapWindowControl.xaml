@@ -100,6 +100,24 @@
                                           ItemsSource="{Binding Path=Children, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
                     <StackPanel Orientation="Horizontal" PreviewMouseLeftButtonDown="TreeViewItem_PreviewMouseLeftButtonDown"
                                 HorizontalAlignment="Stretch">
+						<StackPanel.ContextMenu>
+							<ContextMenu DataContext="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource Self}, 
+								                               UpdateSourceTrigger=PropertyChanged, Mode=OneWay}">
+								<MenuItem Command="{Binding Path=ExpandOrCollapseAllCommand}">
+									<MenuItem.Style>
+										<Style TargetType="MenuItem" BasedOn="{StaticResource vsMenuItemStyle}">
+											<Setter Property="Header" Value="Expand All"/>
+
+											<Style.Triggers>
+												<DataTrigger  Binding="{Binding Path=IsExpanded, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+													<Setter Property="Header" Value="Collapse All"/>
+												</DataTrigger>
+											</Style.Triggers>
+										</Style>
+									</MenuItem.Style>
+								</MenuItem>
+							</ContextMenu>
+						</StackPanel.ContextMenu>
                         <Image Margin="0,1.5,5,1.5" UseLayoutRounding="True"
                                    Source="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, 
                                                     Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource treeNodeToIconConverter}}">
