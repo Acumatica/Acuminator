@@ -226,20 +226,45 @@
         <Setter Property="ItemContainerStyle" Value="{StaticResource vsListBoxItemStyle}"/>
     </Style>
 	<!--#endregion-->
+	
+	<!--#region Menu Styles-->
 	<!--#region VS ContextMenu Style-->
-
-    <!--#endregion-->
-	<!--#regionVS MenuItem Style-->
-	<Style x:Key="vsMenuItemStyle" TargetType="MenuItem">
+	<Style x:Key="vsContextMenuStyle" TargetType="ContextMenu">
+		<Setter Property="StaysOpen" Value="True"/>
 		<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuBackgroundGradientBeginBrushKey}}"/>
-		<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarTextActiveBrushKey}}"/>
 		<Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuBorderBrushKey}}"/>
-		<Setter Property="Effect">
+		<!--<Setter Property="Effect">
 			<Setter.Value>
 				<DropShadowEffect Color="{DynamicResource {x:Static platformUI:EnvironmentColors.DropShadowBackgroundColorKey}}"/>
 			</Setter.Value>
-		</Setter>
+		</Setter>-->
 	</Style>
+    <!--#endregion-->
+	
+	<!--#regionVS MenuItem Style-->
+	<Style x:Key="vsMenuItemStyle" TargetType="MenuItem">
+		<!--<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuBackgroundGradientBeginBrushKey}}"/>-->
+		<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuItemMouseOverBrushKey}}"/>
+		<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarTextActiveBrushKey}}"/>
+		<Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuBorderBrushKey}}"/>
+
+		<!--<Style.Triggers>
+			<Trigger Property="IsEnabled" Value="False">
+				<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarTextInactiveBrushKey}}"/>
+			</Trigger>
+
+			<MultiTrigger>
+				<MultiTrigger.Conditions>
+					<Condition Property="IsMouseOver" Value="True"/>
+					<Condition Property="IsEnabled" Value="True"/>
+				</MultiTrigger.Conditions>
+
+				<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuItemMouseOverBrushKey}}"/>
+				<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuItemMouseOverTextBrushKey}}"/>
+			</MultiTrigger>
+		</Style.Triggers>-->
+	</Style>
+	<!--#endregion-->
 	<!--#endregion-->
 </ResourceDictionary>
 
