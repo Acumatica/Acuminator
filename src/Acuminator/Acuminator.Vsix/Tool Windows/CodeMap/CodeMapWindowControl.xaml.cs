@@ -1,8 +1,10 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.VisualStudio.Shell;
 
+using Acuminator.Vsix.Utilities;
 
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
