@@ -232,6 +232,7 @@
     <Compile Include="Commands\GoToDeclarationOrHandler\GoToDeclarationOrHandlerCommand.cs" />
     <Compile Include="Commands\VSCommandBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\Themes\Styles.xaml.cs" />
     <Compile Include="Resources\VSIXResource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -344,6 +345,7 @@
     <Compile Include="Utils\UIAttributes\CategoryFromResourcesAttribute.cs" />
     <Compile Include="Utils\UIAttributes\DescriptionFromResourcesAttribute.cs" />
     <Compile Include="Utils\UIAttributes\DisplayNameFromResourcesAttribute.cs" />
+    <Compile Include="Utils\WPF\VisualTreeUtils.cs" />
     <Compile Include="Utils\WPF\ResourceDictionaryExtensions.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\ARDocumentRelease.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\PMAllocationProcess.cs" />

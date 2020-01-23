@@ -18,7 +18,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	[ValueConversion(sourceType: typeof(TreeNodeViewModel), targetType: typeof(BitmapImage))]
 	public class TreeNodeToImageSourceConverter : IValueConverter
 	{
-		private const string BitmapsCollectionURI = @"pack://application:,,,/Acuminator;component/Resources/Themes/BitmapImages.xaml";
+		private const string BitmapsCollectionURI = @"pack://application:,,,/Acuminator;component/Resources/CodeMap/Bitmap/BitmapImages.xaml";
 
 		private ResourceDictionary _resourceDictionary = new ResourceDictionary()
 		{

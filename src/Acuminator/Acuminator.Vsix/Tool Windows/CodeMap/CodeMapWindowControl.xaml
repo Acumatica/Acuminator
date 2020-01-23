@@ -18,7 +18,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="../../Resources/CodeMap/Themes/Styles.xaml"/>
+				<ResourceDictionary Source="../../Resources/Themes/Styles.xaml"/>
 
                 <ResourceDictionary>
                     <!--Converters-->                  
@@ -101,8 +101,8 @@
                     <StackPanel Orientation="Horizontal" PreviewMouseLeftButtonDown="TreeViewItem_PreviewMouseLeftButtonDown"
                                 HorizontalAlignment="Stretch">
 						<StackPanel.ContextMenu>
-							<ContextMenu DataContext="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource Self}, 
-								                               UpdateSourceTrigger=PropertyChanged, Mode=OneWay}">
+							<!--We need to declare Background directly on context menu - otherwise it is overriden by default style-->
+							<ContextMenu Style="{StaticResource vsContextMenuStyle}">
 								<MenuItem Command="{Binding Path=ExpandOrCollapseAllCommand}">
 									<MenuItem.Style>
 										<Style TargetType="MenuItem" BasedOn="{StaticResource vsMenuItemStyle}">

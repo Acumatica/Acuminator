@@ -73,7 +73,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			Tree = tree;
 			_isExpanded = isExpanded;
-			ExpandOrCollapseAllCommand = new Command(p => ExpandOrCollapseAll());
+			ExpandOrCollapseAllCommand = new Command(p => ExpandOrCollapseAll(expand: !IsExpanded));
 		}
 
 		public virtual Task NavigateToItemAsync() => Microsoft.VisualStudio.Threading.TplExtensions.CompletedTask;
@@ -98,10 +98,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected abstract IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren,
 																	     CancellationToken cancellation);
 
-		protected virtual void ExpandOrCollapseAll()
+		protected virtual void ExpandOrCollapseAll(bool expand)
 		{
-			IsExpanded = !IsExpanded;
-			Children.ForEach(childNode => childNode.ExpandOrCollapseAll());
+			IsExpanded = expand;
+			Children.ForEach(childNode => childNode.ExpandOrCollapseAll(expand));
 		}
 	}
 }
