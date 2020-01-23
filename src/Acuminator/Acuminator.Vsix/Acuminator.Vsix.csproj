@@ -180,10 +180,10 @@
     <Resource Include="Resources\CodeMap\DAC.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Resources\CodeMap\CollapseAll.png">
+    <Resource Include="Resources\CollapseAll.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Resources\CodeMap\ExpandAll.png">
+    <Resource Include="Resources\ExpandAll.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Content Include="Resources\DacExplorer.ico">
