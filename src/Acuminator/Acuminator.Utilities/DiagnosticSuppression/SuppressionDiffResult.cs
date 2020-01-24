@@ -1,4 +1,6 @@
-﻿using Acuminator.Utilities.Common;
+﻿using System;
+using System.Linq;
+using Acuminator.Utilities.Common;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
@@ -16,15 +18,16 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		public SuppressionDiffResult(string path, string assembly, HashSet<SuppressMessage> addedMessages, HashSet<SuppressMessage> deletedMessages)
 		{
-			path.ThrowOnNull(nameof(path));
-			assembly.ThrowOnNull(nameof(assembly));
-			addedMessages.ThrowOnNull(nameof(addedMessages));
-			deletedMessages.ThrowOnNull(nameof(deletedMessages));
+			Path = path.CheckIfNull(nameof(path));
+			Assembly = assembly.CheckIfNull(nameof(assembly));
 
-			Path = path;
-			Assembly = assembly;
-			AddedMessages = addedMessages.ToImmutableArray();
-			DeletedMessages = deletedMessages.ToImmutableArray();
+			AddedMessages = addedMessages.CheckIfNull(nameof(addedMessages))
+										 .Where(m => m.IsValid)
+										 .ToImmutableArray();
+
+			DeletedMessages = deletedMessages.CheckIfNull(nameof(deletedMessages))
+											 .Where(m => m.IsValid)
+											 .ToImmutableArray();
 		}
 	}
 }
