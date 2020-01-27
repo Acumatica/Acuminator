@@ -32,52 +32,50 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public async Task<CodeMapRefreshMode> ShouldRefreshCodeMapAsync(Document oldDocument, SyntaxNode newRoot, Document newDocument,
 																		CancellationToken cancellationToken = default)
 		{
-			ChangeInfluenceScope changeLocation = await GetChangesLocationAsync(oldDocument, newRoot, newDocument, cancellationToken);
+			ChangeInfluenceScope changeScope = await GetChangesScopeAsync(oldDocument, newRoot, newDocument, cancellationToken);
 
-			if (changeLocation.ContainsLocation(ChangeInfluenceScope.Namespace))
+			if (changeScope.ContainsLocation(ChangeInfluenceScope.Namespace))
 			{
 				return newRoot.ContainsDiagnostics
 					? CodeMapRefreshMode.Clear
 					: CodeMapRefreshMode.Recalculate;
 			}
-			else if (changeLocation.ContainsLocation(ChangeInfluenceScope.Class))
+			else if (changeScope.ContainsLocation(ChangeInfluenceScope.Class))
 			{
 				return CodeMapRefreshMode.Recalculate;
 			}
 
-
-			
 			return CodeMapRefreshMode.NoRefresh;
 		}
 
-		protected override ChangeInfluenceScope GetChangesLocationImpl(Document oldDocument, SyntaxNode newRoot, Document newDocument,
-																 IEnumerable<TextChange> textChanges, CancellationToken cancellationToken = default)
+		protected override ChangeInfluenceScope GetChangesScopeImpl(Document oldDocument, SyntaxNode newRoot, Document newDocument,
+																	IEnumerable<TextChange> textChanges, CancellationToken cancellationToken = default)
 		{
-			ChangeInfluenceScope accumulatedChangeLocation = ChangeInfluenceScope.None;
+			ChangeInfluenceScope accumulatedChangeScope = ChangeInfluenceScope.None;
 
 			foreach (TextChange change in textChanges)
 			{
-				ChangeInfluenceScope changeLocation = GetTextChangeLocation(change, newRoot);
+				ChangeInfluenceScope changeScope = GetTextChangeInfluenceScope(change, newRoot);
 
 				//Early exit if we found a change which require the refresh of code map 
-				if (changeLocation.ContainsLocation(ChangeInfluenceScope.Class) || changeLocation.ContainsLocation(ChangeInfluenceScope.Namespace))
-					return changeLocation;
+				if (changeScope.ContainsLocation(ChangeInfluenceScope.Class) || changeScope.ContainsLocation(ChangeInfluenceScope.Namespace))
+					return changeScope;
 
-				accumulatedChangeLocation = accumulatedChangeLocation | changeLocation;
+				accumulatedChangeScope = accumulatedChangeScope | changeScope;
 				cancellationToken.ThrowIfCancellationRequested();
 			}
 
-			return accumulatedChangeLocation;
+			return accumulatedChangeScope;
 		}
 
-		protected override ChangeInfluenceScope? GetChangeLocationFromMethodBaseSyntaxNode(BaseMethodDeclarationSyntax methodNodeBase, in TextChange textChange, 
-																					 ContainmentModeChange containingModeChange)
+		protected override ChangeInfluenceScope? GetChangeScopeFromMethodBaseSyntaxNode(BaseMethodDeclarationSyntax methodNodeBase, in TextChange textChange, 
+																						ContainmentModeChange containingModeChange)
 		{
-			var changeLocation = base.GetChangeLocationFromMethodBaseSyntaxNode(methodNodeBase, textChange, containingModeChange);
+			var changeScope = base.GetChangeScopeFromMethodBaseSyntaxNode(methodNodeBase, textChange, containingModeChange);
 
-			if (changeLocation != ChangeInfluenceScope.Attributes || !(methodNodeBase is MethodDeclarationSyntax methodDeclaration))
+			if (changeScope != ChangeInfluenceScope.Attributes || !(methodNodeBase is MethodDeclarationSyntax))
 			{
-				return changeLocation;
+				return changeScope;
 			}
 
 			// In Acumatica one of the most frequent attributes placed on method is the PXOverride attribute. 
@@ -100,13 +98,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// <returns>
 		/// The change location from property base syntax node.
 		/// </returns>
-		protected override ChangeInfluenceScope? GetChangeLocationFromPropertyBaseSyntaxNode(BasePropertyDeclarationSyntax propertyNodeBase, 
+		protected override ChangeInfluenceScope? GetChangeScopeFromPropertyBaseSyntaxNode(BasePropertyDeclarationSyntax propertyNodeBase, 
 																					   in TextChange textChange, ContainmentModeChange containingModeChange)
 		{
-			var changeLocation = base.GetChangeLocationFromPropertyBaseSyntaxNode(propertyNodeBase, textChange, containingModeChange);
+			var changeScope = base.GetChangeScopeFromPropertyBaseSyntaxNode(propertyNodeBase, textChange, containingModeChange);
 
-			if (changeLocation != ChangeInfluenceScope.Attributes || !(propertyNodeBase is PropertyDeclarationSyntax property))
-				return changeLocation;
+			if (changeScope != ChangeInfluenceScope.Attributes || !(propertyNodeBase is PropertyDeclarationSyntax property))
+				return changeScope;
 
 
 		}

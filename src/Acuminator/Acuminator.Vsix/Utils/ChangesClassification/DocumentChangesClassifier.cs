@@ -30,7 +30,7 @@ namespace Acuminator.Vsix.ChangesClassification
 			NotContaining,		
 		} 
 
-		public async Task<ChangeInfluenceScope> GetChangesLocationAsync(Document oldDocument, SyntaxNode newRoot, Document newDocument, 
+		public async Task<ChangeInfluenceScope> GetChangesScopeAsync(Document oldDocument, SyntaxNode newRoot, Document newDocument, 
 																  CancellationToken cancellationToken = default)
 		{
 			oldDocument.ThrowOnNull(nameof(oldDocument));
@@ -42,27 +42,27 @@ namespace Acuminator.Vsix.ChangesClassification
 			if (textChanges.IsNullOrEmpty())
 				return ChangeInfluenceScope.None;
 
-			return GetChangesLocationImpl(oldDocument, newRoot, newDocument, textChanges, cancellationToken);
+			return GetChangesScopeImpl(oldDocument, newRoot, newDocument, textChanges, cancellationToken);
 		}
 
-		protected virtual ChangeInfluenceScope GetChangesLocationImpl(Document oldDocument, SyntaxNode newRoot, Document newDocument,
+		protected virtual ChangeInfluenceScope GetChangesScopeImpl(Document oldDocument, SyntaxNode newRoot, Document newDocument,
 																IEnumerable<TextChange> textChanges, 
 																CancellationToken cancellationToken = default)
 		{
-			ChangeInfluenceScope accumulatedChangeLocation = ChangeInfluenceScope.None;
+			ChangeInfluenceScope accumulatedChangeScope = ChangeInfluenceScope.None;
 
 			foreach (TextChange change in textChanges)
 			{
-				ChangeInfluenceScope changeLocation = GetTextChangeLocation(change, newRoot);
-				accumulatedChangeLocation = accumulatedChangeLocation | changeLocation;
+				ChangeInfluenceScope changeScope = GetTextChangeInfluenceScope(change, newRoot);
+				accumulatedChangeScope = accumulatedChangeScope | changeScope;
 
 				cancellationToken.ThrowIfCancellationRequested();
 			}
 
-			return accumulatedChangeLocation;
+			return accumulatedChangeScope;
 		}
 
-		protected virtual ChangeInfluenceScope GetTextChangeLocation(in TextChange textChange, SyntaxNode newRoot)
+		protected virtual ChangeInfluenceScope GetTextChangeInfluenceScope(in TextChange textChange, SyntaxNode newRoot)
 		{
 			// Performing the same check as FindNode to prevent ArgumentOutOfRange exception. 
 			// If check fails then we can't classify changes and assume that they have max possible scope and influence on the code
@@ -79,26 +79,29 @@ namespace Acuminator.Vsix.ChangesClassification
 			while (!containingNode.IsKind(SyntaxKind.CompilationUnit))
 			{
 				ContainmentModeChange containingModeChange = GetContainingSpanNewContainmentModeForTextChange(textChange, containingNode.Span);
-				ChangeInfluenceScope? changesLocation = null;
+				ChangeInfluenceScope? changesScope = null;
 
 				switch (containingNode)
 				{
-					case BlockSyntax blockNode:
-						changesLocation = GetChangeLocationFromBlockNode(blockNode, textChange, containingModeChange);
-						break;			
+					case MemberDeclarationSyntax memberDeclaration:
+						changesScope = GetChangeScopeFromTypeMemberNode(memberDeclaration, textChange, containingModeChange);
+						break;
 
-					//TODO need to add check for local function declaration node here after Roslyn upgrade
+					case BlockSyntax blockNode:
+						changesScope = GetChangeScopeFromBlockNode(blockNode, textChange, containingModeChange);
+						break;
+
+					case LocalFunctionStatementSyntax localFunctionDeclaration:
+						changesScope = GetChangeScopeFromLocalFunctionDeclaration(localFunctionDeclaration, textChange, containingModeChange);
+						break;
 					
 					case StatementSyntax statementNode:
-						changesLocation = GetChangeLocationFromStatementNode(statementNode, textChange, containingModeChange);
-						break;				
-					case MemberDeclarationSyntax memberDeclaration:
-						changesLocation = GetChangeLocationFromTypeMemberNode(memberDeclaration, textChange, containingModeChange);
-						break;			
+						changesScope = GetChangeScopeFromStatementNode(statementNode, textChange, containingModeChange);
+						break;							
 				}
 				
-				if (changesLocation.HasValue)
-					return changesLocation.Value;
+				if (changesScope.HasValue)
+					return changesScope.Value;
 
 				containingNode = containingNode.Parent;
 			}
@@ -106,8 +109,8 @@ namespace Acuminator.Vsix.ChangesClassification
 			return ChangeInfluenceScope.Namespace;
 		}
 
-		protected virtual ChangeInfluenceScope? GetChangeLocationFromBlockNode(BlockSyntax blockNode, in TextChange textChange,
-																		 ContainmentModeChange containingModeChange)
+		protected virtual ChangeInfluenceScope? GetChangeScopeFromBlockNode(BlockSyntax blockNode, in TextChange textChange,
+																			ContainmentModeChange containingModeChange)
 		{
 			if (!(blockNode.Parent is MemberDeclarationSyntax))
 				return ChangeInfluenceScope.StatementsBlock;
@@ -125,30 +128,38 @@ namespace Acuminator.Vsix.ChangesClassification
 				return ChangeInfluenceScope.StatementsBlock;
 		}
 
-		protected virtual ChangeInfluenceScope? GetChangeLocationFromStatementNode(StatementSyntax statementNode, in TextChange textChange,
-																			 ContainmentModeChange containingModeChange) =>
+		protected virtual ChangeInfluenceScope? GetChangeScopeFromLocalFunctionDeclaration(LocalFunctionStatementSyntax localFunction, in TextChange textChange,
+																						  ContainmentModeChange containingModeChange)
+		{
+			return containingModeChange == ContainmentModeChange.StillContaining
+				? ChangeInfluenceScope.StatementsBlock
+				: (ChangeInfluenceScope?) null;
+		}
+
+		protected virtual ChangeInfluenceScope? GetChangeScopeFromStatementNode(StatementSyntax statementNode, in TextChange textChange,
+																			    ContainmentModeChange containingModeChange) =>
 			containingModeChange == ContainmentModeChange.StillContaining
 				? ChangeInfluenceScope.StatementsBlock
 				: (ChangeInfluenceScope?)null;
 
-		protected virtual ChangeInfluenceScope? GetChangeLocationFromTypeMemberNode(MemberDeclarationSyntax memberDeclaration,
-																			  in TextChange textChange, ContainmentModeChange containingModeChange)
+		protected virtual ChangeInfluenceScope? GetChangeScopeFromTypeMemberNode(MemberDeclarationSyntax memberDeclaration,
+																				 in TextChange textChange, ContainmentModeChange containingModeChange)
 		{
 			switch (memberDeclaration)
 			{
 				case BaseMethodDeclarationSyntax baseMethodNode:
-					return GetChangeLocationFromMethodBaseSyntaxNode(baseMethodNode, textChange, containingModeChange);
+					return GetChangeScopeFromMethodBaseSyntaxNode(baseMethodNode, textChange, containingModeChange);
 
 				case BasePropertyDeclarationSyntax basePropertyNode:
-					return GetChangeLocationFromPropertyBaseSyntaxNode(basePropertyNode, textChange, containingModeChange);
+					return GetChangeScopeFromPropertyBaseSyntaxNode(basePropertyNode, textChange, containingModeChange);
 
 				default:
-					return GetChangeLocationFromNodeTrivia(memberDeclaration, textChange) ?? ChangeInfluenceScope.Class;
+					return GetChangeScopeFromNodeTrivia(memberDeclaration, textChange) ?? ChangeInfluenceScope.Class;
 			}
 		}
 
-		protected virtual ChangeInfluenceScope? GetChangeLocationFromMethodBaseSyntaxNode(BaseMethodDeclarationSyntax methodNodeBase,
-																					in TextChange textChange, ContainmentModeChange containingModeChange)
+		protected virtual ChangeInfluenceScope? GetChangeScopeFromMethodBaseSyntaxNode(BaseMethodDeclarationSyntax methodNodeBase,
+																					   in TextChange textChange, ContainmentModeChange containingModeChange)
 		{
 			TextSpan spanToCheck = new TextSpan(textChange.Span.Start, textChange.NewText.Length);	
 			TextSpan? methodBodySpan = methodNodeBase.Body?.Span;       //First check body of the property because it is most common place for changes
@@ -158,20 +169,20 @@ namespace Acuminator.Vsix.ChangesClassification
 				methodBodySpan = methodNode.ExpressionBody?.Span;
 			}
 
-			ChangeInfluenceScope? changeLocation = methodBodySpan == null
+			ChangeInfluenceScope? changeScope = methodBodySpan == null
 					? ChangeInfluenceScope.Class
 					: methodBodySpan.Value.Contains(spanToCheck)
 						? ChangeInfluenceScope.StatementsBlock
 						: (ChangeInfluenceScope?) null;
 
-			if (changeLocation.HasValue)
-				return changeLocation;
+			if (changeScope.HasValue)
+				return changeScope;
 
 			//Now check trivia
-			changeLocation = GetChangeLocationFromNodeTrivia(methodNodeBase, textChange);
+			changeScope = GetChangeScopeFromNodeTrivia(methodNodeBase, textChange);
 
-			if (changeLocation.HasValue)
-				return changeLocation;
+			if (changeScope.HasValue)
+				return changeScope;
 
 			//Now check attributes because it is the least frequent case
 			if (methodNodeBase.AttributeLists.Span.Contains(spanToCheck))
@@ -181,9 +192,9 @@ namespace Acuminator.Vsix.ChangesClassification
 
 			return ChangeInfluenceScope.Class;
 		}
-
-		protected virtual ChangeInfluenceScope? GetChangeLocationFromPropertyBaseSyntaxNode(BasePropertyDeclarationSyntax propertyNodeBase, 
-																					  in TextChange textChange, ContainmentModeChange containingModeChange)
+		
+		protected virtual ChangeInfluenceScope? GetChangeScopeFromPropertyBaseSyntaxNode(BasePropertyDeclarationSyntax propertyNodeBase, 
+																						 in TextChange textChange, ContainmentModeChange containingModeChange)
 		{	
 			TextSpan spanToCheck = new TextSpan(textChange.Span.Start, textChange.NewText.Length);		
 			TextSpan? bodySpan = propertyNodeBase.AccessorList?.Span;       //First check body of the property because it is most common place for changes
@@ -201,20 +212,20 @@ namespace Acuminator.Vsix.ChangesClassification
 				}
 			}
 
-			ChangeInfluenceScope? changeLocation = bodySpan == null
+			ChangeInfluenceScope? changeScope = bodySpan == null
 				? ChangeInfluenceScope.Class
 				: bodySpan.Value.Contains(spanToCheck)
 					? ChangeInfluenceScope.StatementsBlock
 					: (ChangeInfluenceScope?) null;
 
-			if (changeLocation.HasValue)
-				return changeLocation;
+			if (changeScope.HasValue)
+				return changeScope;
 
 			//Now check trivia
-			changeLocation = GetChangeLocationFromNodeTrivia(propertyNodeBase, textChange);
+			changeScope = GetChangeScopeFromNodeTrivia(propertyNodeBase, textChange);
 
-			if (changeLocation.HasValue)
-				return changeLocation;
+			if (changeScope.HasValue)
+				return changeScope;
 
 			if (propertyNodeBase.AttributeLists.Span.Contains(spanToCheck))
 			{
@@ -235,24 +246,24 @@ namespace Acuminator.Vsix.ChangesClassification
 						: ContainmentModeChange.StillContaining;
 		}	
 
-		protected virtual ChangeInfluenceScope? GetChangeLocationFromNodeTrivia(SyntaxNode syntaxNode, in TextChange textChange)
+		protected virtual ChangeInfluenceScope? GetChangeScopeFromNodeTrivia(SyntaxNode syntaxNode, in TextChange textChange)
 		{
 			if (!IsNewLineOrWhitespaceChange(textChange))
 				return null;
 
-			ChangeInfluenceScope? changeLocation = GetNewLineOrWhitespaceChangeLocationFromTriviaList(syntaxNode.GetLeadingTrivia(), textChange);
+			ChangeInfluenceScope? changeScope = GetNewLineOrWhitespaceChangeScopeFromTriviaList(syntaxNode.GetLeadingTrivia(), textChange);
 
-			if (changeLocation.HasValue)
-				return changeLocation;
+			if (changeScope.HasValue)
+				return changeScope;
 
-			return GetNewLineOrWhitespaceChangeLocationFromTriviaList(syntaxNode.GetTrailingTrivia(), textChange);
+			return GetNewLineOrWhitespaceChangeScopeFromTriviaList(syntaxNode.GetTrailingTrivia(), textChange);
 		}
 
 		protected static bool IsNewLineOrWhitespaceChange(in TextChange textChange) =>
 			textChange.Span.IsEmpty && (textChange.NewText == Environment.NewLine || textChange.NewText.IsNullOrWhiteSpace());
 
-		protected static ChangeInfluenceScope? GetNewLineOrWhitespaceChangeLocationFromTriviaList(in SyntaxTriviaList triviaList, 
-																							in TextChange newLineOrWhitespaceChange) =>
+		protected static ChangeInfluenceScope? GetNewLineOrWhitespaceChangeScopeFromTriviaList(in SyntaxTriviaList triviaList, 
+																							   in TextChange newLineOrWhitespaceChange) =>
 			triviaList.Span.Contains(newLineOrWhitespaceChange.Span.Start)
 				? ChangeInfluenceScope.Trivia
 				: (ChangeInfluenceScope?)null;
