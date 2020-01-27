@@ -108,8 +108,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			RootSymbolsRetriever = new RootCandidateSymbolsRetrieverDefault();
 			SemanticModelFactory = new SemanticModelFactoryDefault();
 			TreeBuilder = new DefaultCodeMapTreeBuilder();
+			IsVisible = true;
 			Tree = TreeBuilder.CreateEmptyCodeMapTree(this);
-
+			
 			RefreshCodeMapCommand = new Command(p => RefreshCodeMapAsync().Forget());
 
 			Workspace = DocumentModel.Document.Project.Solution.Workspace;
