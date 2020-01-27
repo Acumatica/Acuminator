@@ -22,36 +22,45 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// </summary>
 	internal class CodeMapDocChangesClassifier : DocumentChangesClassifier
 	{
+		private readonly CodeMapWindowViewModel _codeMapViewModel;
+
+		public CodeMapDocChangesClassifier(CodeMapWindowViewModel codeMapWindowViewModel)
+		{
+			_codeMapViewModel = codeMapWindowViewModel.CheckIfNull(nameof(codeMapWindowViewModel));
+		}
+
 		public async Task<CodeMapRefreshMode> ShouldRefreshCodeMapAsync(Document oldDocument, SyntaxNode newRoot, Document newDocument,
 																		CancellationToken cancellationToken = default)
 		{
-			ChangeLocation changeLocation = await GetChangesLocationAsync(oldDocument, newRoot, newDocument, cancellationToken);
+			ChangeLocationType changeLocation = await GetChangesLocationAsync(oldDocument, newRoot, newDocument, cancellationToken);
 
-			if (changeLocation.ContainsLocation(ChangeLocation.Namespace))
+			if (changeLocation.ContainsLocation(ChangeLocationType.Namespace))
 			{
 				return newRoot.ContainsDiagnostics
 					? CodeMapRefreshMode.Clear
 					: CodeMapRefreshMode.Recalculate;
 			}
-			else if (changeLocation.ContainsLocation(ChangeLocation.Class))
+			else if (changeLocation.ContainsLocation(ChangeLocationType.Class))
 			{
 				return CodeMapRefreshMode.Recalculate;
 			}
+
+
 			
 			return CodeMapRefreshMode.NoRefresh;
 		}
 
-		protected override ChangeLocation GetChangesLocationImpl(Document oldDocument, SyntaxNode newRoot, Document newDocument,
+		protected override ChangeLocationType GetChangesLocationImpl(Document oldDocument, SyntaxNode newRoot, Document newDocument,
 																 IEnumerable<TextChange> textChanges, CancellationToken cancellationToken = default)
 		{
-			ChangeLocation accumulatedChangeLocation = ChangeLocation.None;
+			ChangeLocationType accumulatedChangeLocation = ChangeLocationType.None;
 
 			foreach (TextChange change in textChanges)
 			{
-				ChangeLocation changeLocation = GetTextChangeLocation(change, newRoot);
+				ChangeLocationType changeLocation = GetTextChangeLocation(change, newRoot);
 
 				//Early exit if we found a change which require the refresh of code map 
-				if (changeLocation.ContainsLocation(ChangeLocation.Class) || changeLocation.ContainsLocation(ChangeLocation.Namespace))
+				if (changeLocation.ContainsLocation(ChangeLocationType.Class) || changeLocation.ContainsLocation(ChangeLocationType.Namespace))
 					return changeLocation;
 
 				accumulatedChangeLocation = accumulatedChangeLocation | changeLocation;
@@ -61,12 +70,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return accumulatedChangeLocation;
 		}
 
-		protected override ChangeLocation? GetChangeLocationFromMethodBaseSyntaxNode(BaseMethodDeclarationSyntax methodNodeBase, in TextChange textChange, 
+		protected override ChangeLocationType? GetChangeLocationFromMethodBaseSyntaxNode(BaseMethodDeclarationSyntax methodNodeBase, in TextChange textChange, 
 																					 ContainmentModeChange containingModeChange)
 		{
 			var changeLocation = base.GetChangeLocationFromMethodBaseSyntaxNode(methodNodeBase, textChange, containingModeChange);
 
-			if (changeLocation != ChangeLocation.Attributes || !(methodNodeBase is MethodDeclarationSyntax methodDeclaration))
+			if (changeLocation != ChangeLocationType.Attributes || !(methodNodeBase is MethodDeclarationSyntax methodDeclaration))
 			{
 				return changeLocation;
 			}
@@ -79,7 +88,27 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			// On the other hand the amount of work for such analysis is quite significant. 
 			// The simple solution is to just refresh code map whenever method attributes are changed, we do not expect that such changes happen frequently.
 			
-			return ChangeLocation.Class;	//Increase change location class
+			return ChangeLocationType.Class;	//Increase change location class
+		}
+
+		/// <summary>
+		/// Override change location detrction .
+		/// </summary>
+		/// <param name="propertyNodeBase">The property node base.</param>
+		/// <param name="textChange">The text change.</param>
+		/// <param name="containingModeChange">The containing mode change.</param>
+		/// <returns>
+		/// The change location from property base syntax node.
+		/// </returns>
+		protected override ChangeLocationType? GetChangeLocationFromPropertyBaseSyntaxNode(BasePropertyDeclarationSyntax propertyNodeBase, 
+																					   in TextChange textChange, ContainmentModeChange containingModeChange)
+		{
+			var changeLocation = base.GetChangeLocationFromPropertyBaseSyntaxNode(propertyNodeBase, textChange, containingModeChange);
+
+			if (changeLocation != ChangeLocationType.Attributes || !(propertyNodeBase is PropertyDeclarationSyntax property))
+				return changeLocation;
+
+
 		}
 	}
 }

@@ -56,7 +56,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public Document Document => DocumentModel?.Document;
 
-		private CodeMapDocChangesClassifier DocChangesClassifier { get; } = new CodeMapDocChangesClassifier();
+		private CodeMapDocChangesClassifier DocChangesClassifier { get; }
 
 		/// <summary>
 		/// Internal visibility flag for code map control. Serves as a workaround to hacky VS SDK which displays "Visible" in all other visibility properties for a hidden window.
@@ -108,6 +108,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			RootSymbolsRetriever = new RootCandidateSymbolsRetrieverDefault();
 			SemanticModelFactory = new SemanticModelFactoryDefault();
 			TreeBuilder = new DefaultCodeMapTreeBuilder();
+			DocChangesClassifier = new CodeMapDocChangesClassifier(this);
 			IsVisible = true;
 			Tree = TreeBuilder.CreateEmptyCodeMapTree(this);
 			

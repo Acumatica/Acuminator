@@ -30,7 +30,7 @@ namespace Acuminator.Vsix.ChangesClassification
 			NotContaining,		
 		} 
 
-		public async Task<ChangeLocation> GetChangesLocationAsync(Document oldDocument, SyntaxNode newRoot, Document newDocument, 
+		public async Task<ChangeLocationType> GetChangesLocationAsync(Document oldDocument, SyntaxNode newRoot, Document newDocument, 
 																  CancellationToken cancellationToken = default)
 		{
 			oldDocument.ThrowOnNull(nameof(oldDocument));
@@ -40,20 +40,20 @@ namespace Acuminator.Vsix.ChangesClassification
 			IEnumerable<TextChange> textChanges = await newDocument.GetTextChangesAsync(oldDocument, cancellationToken)
 																   .ConfigureAwait(false);
 			if (textChanges.IsNullOrEmpty())
-				return ChangeLocation.None;
+				return ChangeLocationType.None;
 
 			return GetChangesLocationImpl(oldDocument, newRoot, newDocument, textChanges, cancellationToken);
 		}
 
-		protected virtual ChangeLocation GetChangesLocationImpl(Document oldDocument, SyntaxNode newRoot, Document newDocument,
+		protected virtual ChangeLocationType GetChangesLocationImpl(Document oldDocument, SyntaxNode newRoot, Document newDocument,
 																IEnumerable<TextChange> textChanges, 
 																CancellationToken cancellationToken = default)
 		{
-			ChangeLocation accumulatedChangeLocation = ChangeLocation.None;
+			ChangeLocationType accumulatedChangeLocation = ChangeLocationType.None;
 
 			foreach (TextChange change in textChanges)
 			{
-				ChangeLocation changeLocation = GetTextChangeLocation(change, newRoot);
+				ChangeLocationType changeLocation = GetTextChangeLocation(change, newRoot);
 				accumulatedChangeLocation = accumulatedChangeLocation | changeLocation;
 
 				cancellationToken.ThrowIfCancellationRequested();
@@ -62,24 +62,24 @@ namespace Acuminator.Vsix.ChangesClassification
 			return accumulatedChangeLocation;
 		}
 
-		protected virtual ChangeLocation GetTextChangeLocation(in TextChange textChange, SyntaxNode newRoot)
+		protected virtual ChangeLocationType GetTextChangeLocation(in TextChange textChange, SyntaxNode newRoot)
 		{
 			// Performing the same check as FindNode to prevent ArgumentOutOfRange exception. 
 			// If check fails then we can't classify changes and assume that they have max possible scope and influence on the code
 			if (!newRoot.FullSpan.Contains(textChange.Span)) 
 			{
-				return ChangeLocation.Namespace;
+				return ChangeLocationType.Namespace;
 			}
 
 			var containingNode = newRoot.FindNode(textChange.Span);
 
 			if (containingNode == null)
-				return ChangeLocation.None;
+				return ChangeLocationType.None;
 
 			while (!containingNode.IsKind(SyntaxKind.CompilationUnit))
 			{
 				ContainmentModeChange containingModeChange = GetContainingSpanNewContainmentModeForTextChange(textChange, containingNode.Span);
-				ChangeLocation? changesLocation = null;
+				ChangeLocationType? changesLocation = null;
 
 				switch (containingNode)
 				{
@@ -103,14 +103,14 @@ namespace Acuminator.Vsix.ChangesClassification
 				containingNode = containingNode.Parent;
 			}
 
-			return ChangeLocation.Namespace;
+			return ChangeLocationType.Namespace;
 		}
 
-		protected virtual ChangeLocation? GetChangeLocationFromBlockNode(BlockSyntax blockNode, in TextChange textChange,
+		protected virtual ChangeLocationType? GetChangeLocationFromBlockNode(BlockSyntax blockNode, in TextChange textChange,
 																		 ContainmentModeChange containingModeChange)
 		{
 			if (!(blockNode.Parent is MemberDeclarationSyntax))
-				return ChangeLocation.StatementsBlock;
+				return ChangeLocationType.StatementsBlock;
 
 			bool changeContainedOpenBrace = textChange.Span.Contains(blockNode.OpenBraceToken.Span);
 			bool changeContainedCloseBrace = textChange.Span.Contains(blockNode.CloseBraceToken.Span);
@@ -118,20 +118,20 @@ namespace Acuminator.Vsix.ChangesClassification
 			int closeBracesNewCount = textChange.NewText.Count(c => c == '}');
 
 			if (changeContainedOpenBrace && openBracesNewCount != 1)
-				return ChangeLocation.Class;
+				return ChangeLocationType.Class;
 			else if (changeContainedCloseBrace && closeBracesNewCount != 1)
-				return ChangeLocation.Class;
+				return ChangeLocationType.Class;
 			else
-				return ChangeLocation.StatementsBlock;
+				return ChangeLocationType.StatementsBlock;
 		}
 
-		protected virtual ChangeLocation? GetChangeLocationFromStatementNode(StatementSyntax statementNode, in TextChange textChange,
+		protected virtual ChangeLocationType? GetChangeLocationFromStatementNode(StatementSyntax statementNode, in TextChange textChange,
 																			 ContainmentModeChange containingModeChange) =>
 			containingModeChange == ContainmentModeChange.StillContaining
-				? ChangeLocation.StatementsBlock
-				: (ChangeLocation?)null;
+				? ChangeLocationType.StatementsBlock
+				: (ChangeLocationType?)null;
 
-		protected virtual ChangeLocation? GetChangeLocationFromTypeMemberNode(MemberDeclarationSyntax memberDeclaration,
+		protected virtual ChangeLocationType? GetChangeLocationFromTypeMemberNode(MemberDeclarationSyntax memberDeclaration,
 																			  in TextChange textChange, ContainmentModeChange containingModeChange)
 		{
 			switch (memberDeclaration)
@@ -143,11 +143,11 @@ namespace Acuminator.Vsix.ChangesClassification
 					return GetChangeLocationFromPropertyBaseSyntaxNode(basePropertyNode, textChange, containingModeChange);
 
 				default:
-					return GetChangeLocationFromNodeTrivia(memberDeclaration, textChange) ?? ChangeLocation.Class;
+					return GetChangeLocationFromNodeTrivia(memberDeclaration, textChange) ?? ChangeLocationType.Class;
 			}
 		}
 
-		protected virtual ChangeLocation? GetChangeLocationFromMethodBaseSyntaxNode(BaseMethodDeclarationSyntax methodNodeBase,
+		protected virtual ChangeLocationType? GetChangeLocationFromMethodBaseSyntaxNode(BaseMethodDeclarationSyntax methodNodeBase,
 																					in TextChange textChange, ContainmentModeChange containingModeChange)
 		{
 			TextSpan spanToCheck = new TextSpan(textChange.Span.Start, textChange.NewText.Length);	
@@ -158,11 +158,11 @@ namespace Acuminator.Vsix.ChangesClassification
 				methodBodySpan = methodNode.ExpressionBody?.Span;
 			}
 
-			ChangeLocation? changeLocation = methodBodySpan == null
-					? ChangeLocation.Class
+			ChangeLocationType? changeLocation = methodBodySpan == null
+					? ChangeLocationType.Class
 					: methodBodySpan.Value.Contains(spanToCheck)
-						? ChangeLocation.StatementsBlock
-						: (ChangeLocation?) null;
+						? ChangeLocationType.StatementsBlock
+						: (ChangeLocationType?) null;
 
 			if (changeLocation.HasValue)
 				return changeLocation;
@@ -176,13 +176,13 @@ namespace Acuminator.Vsix.ChangesClassification
 			//Now check attributes because it is the least frequent case
 			if (methodNodeBase.AttributeLists.Span.Contains(spanToCheck))
 			{
-				return ChangeLocation.Attributes;
+				return ChangeLocationType.Attributes;
 			}
 
-			return ChangeLocation.Class;
+			return ChangeLocationType.Class;
 		}
 
-		protected virtual ChangeLocation? GetChangeLocationFromPropertyBaseSyntaxNode(BasePropertyDeclarationSyntax propertyNodeBase, 
+		protected virtual ChangeLocationType? GetChangeLocationFromPropertyBaseSyntaxNode(BasePropertyDeclarationSyntax propertyNodeBase, 
 																					  in TextChange textChange, ContainmentModeChange containingModeChange)
 		{	
 			TextSpan spanToCheck = new TextSpan(textChange.Span.Start, textChange.NewText.Length);		
@@ -201,11 +201,11 @@ namespace Acuminator.Vsix.ChangesClassification
 				}
 			}
 
-			ChangeLocation? changeLocation = bodySpan == null
-				? ChangeLocation.Class
+			ChangeLocationType? changeLocation = bodySpan == null
+				? ChangeLocationType.Class
 				: bodySpan.Value.Contains(spanToCheck)
-					? ChangeLocation.StatementsBlock
-					: (ChangeLocation?) null;
+					? ChangeLocationType.StatementsBlock
+					: (ChangeLocationType?) null;
 
 			if (changeLocation.HasValue)
 				return changeLocation;
@@ -218,10 +218,10 @@ namespace Acuminator.Vsix.ChangesClassification
 
 			if (propertyNodeBase.AttributeLists.Span.Contains(spanToCheck))
 			{
-				return ChangeLocation.Attributes;
+				return ChangeLocationType.Attributes;
 			}
 
-			return ChangeLocation.Class;
+			return ChangeLocationType.Class;
 		}
 
 		protected ContainmentModeChange GetContainingSpanNewContainmentModeForTextChange(in TextChange textChange, in TextSpan existingContainingSpan)
@@ -235,12 +235,12 @@ namespace Acuminator.Vsix.ChangesClassification
 						: ContainmentModeChange.StillContaining;
 		}	
 
-		protected virtual ChangeLocation? GetChangeLocationFromNodeTrivia(SyntaxNode syntaxNode, in TextChange textChange)
+		protected virtual ChangeLocationType? GetChangeLocationFromNodeTrivia(SyntaxNode syntaxNode, in TextChange textChange)
 		{
 			if (!IsNewLineOrWhitespaceChange(textChange))
 				return null;
 
-			ChangeLocation? changeLocation = GetNewLineOrWhitespaceChangeLocationFromTriviaList(syntaxNode.GetLeadingTrivia(), textChange);
+			ChangeLocationType? changeLocation = GetNewLineOrWhitespaceChangeLocationFromTriviaList(syntaxNode.GetLeadingTrivia(), textChange);
 
 			if (changeLocation.HasValue)
 				return changeLocation;
@@ -251,10 +251,10 @@ namespace Acuminator.Vsix.ChangesClassification
 		protected static bool IsNewLineOrWhitespaceChange(in TextChange textChange) =>
 			textChange.Span.IsEmpty && (textChange.NewText == Environment.NewLine || textChange.NewText.IsNullOrWhiteSpace());
 
-		protected static ChangeLocation? GetNewLineOrWhitespaceChangeLocationFromTriviaList(in SyntaxTriviaList triviaList, 
+		protected static ChangeLocationType? GetNewLineOrWhitespaceChangeLocationFromTriviaList(in SyntaxTriviaList triviaList, 
 																							in TextChange newLineOrWhitespaceChange) =>
 			triviaList.Span.Contains(newLineOrWhitespaceChange.Span.Start)
-				? ChangeLocation.Trivia
-				: (ChangeLocation?)null;
+				? ChangeLocationType.Trivia
+				: (ChangeLocationType?)null;
 	}
 }
