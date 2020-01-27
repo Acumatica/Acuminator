@@ -11,7 +11,7 @@ namespace Acuminator.Vsix.ChangesClassification
 	/// Values that represent the location of changes in the document.
 	/// </summary>
 	[Flags]
-	public enum ChangeLocationType
+	public enum ChangeLocationScope
 	{
 		None = 0b0000_0000,
 		/// <summary>
@@ -25,10 +25,10 @@ namespace Acuminator.Vsix.ChangesClassification
 	}
 
 
-	public static class ChangeLocationTypeUtils
+	public static class ChangeLocationScopeUtils
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool ContainsLocation(this ChangeLocationType location, ChangeLocationType locationToCheck) =>
+		public static bool ContainsLocation(this ChangeLocationScope location, ChangeLocationScope locationToCheck) =>
 			(location & locationToCheck) == locationToCheck;
 	}
 }
