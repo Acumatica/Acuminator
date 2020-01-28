@@ -12,8 +12,7 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Syntax;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.ChangesClassification;
-
-
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -90,23 +89,49 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		/// <summary>
-		/// Override change location detrction .
+		/// Get change scope from property-like declaration. For Dac Properties contains more complex logic.
 		/// </summary>
 		/// <param name="propertyNodeBase">The property node base.</param>
 		/// <param name="textChange">The text change.</param>
 		/// <param name="containingModeChange">The containing mode change.</param>
-		/// <returns>
-		/// The change location from property base syntax node.
-		/// </returns>
+		/// <returns/>
 		protected override ChangeInfluenceScope? GetChangeScopeFromPropertyBaseSyntaxNode(BasePropertyDeclarationSyntax propertyNodeBase, 
-																					   in TextChange textChange, ContainmentModeChange containingModeChange)
+																					      in TextChange textChange, ContainmentModeChange containingModeChange)
 		{
 			var changeScope = base.GetChangeScopeFromPropertyBaseSyntaxNode(propertyNodeBase, textChange, containingModeChange);
 
-			if (changeScope != ChangeInfluenceScope.Attributes || !(propertyNodeBase is PropertyDeclarationSyntax property))
+			//We look for changes in DAC property attributes
+			if (changeScope != ChangeInfluenceScope.Attributes || !(propertyNodeBase is PropertyDeclarationSyntax changedProperty) ||
+				_codeMapViewModel.DocumentModel?.CodeMapSemanticModels == null)
+			{
 				return changeScope;
+			}
 
+			for (int i = 0; i < _codeMapViewModel.DocumentModel.CodeMapSemanticModels.Count; i++)
+			{
+				if (!(_codeMapViewModel.DocumentModel.CodeMapSemanticModels[i] is DacSemanticModel dacSemanticModel))
+					continue;
+				else if (IsPropertyFromDAC(changedProperty, dacSemanticModel))
+					return ChangeInfluenceScope.Class;
+			}
 
+			return changeScope;
+		}
+
+		private bool IsPropertyFromDAC(PropertyDeclarationSyntax changedProperty, DacSemanticModel dacCandidate)
+		{
+			//basic fast check for bounds and file
+			if (!dacCandidate.Node.Span.Contains(changedProperty.Span) || dacCandidate.Node.SyntaxTree.FilePath != changedProperty.SyntaxTree.FilePath)
+				return false;
+
+			//Check that declaring type is the same
+			if (!(changedProperty.Parent is ClassDeclarationSyntax changedDac) || changedDac.Identifier.Text != dacCandidate.Node.Identifier.Text)
+				return false;
+
+			if (!dacCandidate.PropertiesByNames.TryGetValue(changedProperty.Identifier.Text, out var dacPropertyInfoCandidate))
+				return false;
+
+			return dacPropertyInfoCandidate.Node.ExplicitInterfaceSpecifier == changedProperty.ExplicitInterfaceSpecifier;
 		}
 	}
 }
