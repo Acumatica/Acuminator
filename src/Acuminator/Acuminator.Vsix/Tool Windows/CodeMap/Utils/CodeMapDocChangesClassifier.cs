@@ -12,8 +12,7 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Syntax;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.ChangesClassification;
-
-
+using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -22,53 +21,60 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// </summary>
 	internal class CodeMapDocChangesClassifier : DocumentChangesClassifier
 	{
+		private readonly CodeMapWindowViewModel _codeMapViewModel;
+
+		public CodeMapDocChangesClassifier(CodeMapWindowViewModel codeMapWindowViewModel)
+		{
+			_codeMapViewModel = codeMapWindowViewModel.CheckIfNull(nameof(codeMapWindowViewModel));
+		}
+
 		public async Task<CodeMapRefreshMode> ShouldRefreshCodeMapAsync(Document oldDocument, SyntaxNode newRoot, Document newDocument,
 																		CancellationToken cancellationToken = default)
 		{
-			ChangeLocation changeLocation = await GetChangesLocationAsync(oldDocument, newRoot, newDocument, cancellationToken);
+			ChangeInfluenceScope changeScope = await GetChangesScopeAsync(oldDocument, newRoot, newDocument, cancellationToken);
 
-			if (changeLocation.ContainsLocation(ChangeLocation.Namespace))
+			if (changeScope.ContainsLocation(ChangeInfluenceScope.Namespace))
 			{
 				return newRoot.ContainsDiagnostics
 					? CodeMapRefreshMode.Clear
 					: CodeMapRefreshMode.Recalculate;
 			}
-			else if (changeLocation.ContainsLocation(ChangeLocation.Class))
+			else if (changeScope.ContainsLocation(ChangeInfluenceScope.Class))
 			{
 				return CodeMapRefreshMode.Recalculate;
 			}
-			
+
 			return CodeMapRefreshMode.NoRefresh;
 		}
 
-		protected override ChangeLocation GetChangesLocationImpl(Document oldDocument, SyntaxNode newRoot, Document newDocument,
-																 IEnumerable<TextChange> textChanges, CancellationToken cancellationToken = default)
+		protected override ChangeInfluenceScope GetChangesScopeImpl(Document oldDocument, SyntaxNode newRoot, Document newDocument,
+																	IEnumerable<TextChange> textChanges, CancellationToken cancellationToken = default)
 		{
-			ChangeLocation accumulatedChangeLocation = ChangeLocation.None;
+			ChangeInfluenceScope accumulatedChangeScope = ChangeInfluenceScope.None;
 
 			foreach (TextChange change in textChanges)
 			{
-				ChangeLocation changeLocation = GetTextChangeLocation(change, newRoot);
+				ChangeInfluenceScope changeScope = GetTextChangeInfluenceScope(change, newRoot);
 
 				//Early exit if we found a change which require the refresh of code map 
-				if (changeLocation.ContainsLocation(ChangeLocation.Class) || changeLocation.ContainsLocation(ChangeLocation.Namespace))
-					return changeLocation;
+				if (changeScope.ContainsLocation(ChangeInfluenceScope.Class) || changeScope.ContainsLocation(ChangeInfluenceScope.Namespace))
+					return changeScope;
 
-				accumulatedChangeLocation = accumulatedChangeLocation | changeLocation;
+				accumulatedChangeScope = accumulatedChangeScope | changeScope;
 				cancellationToken.ThrowIfCancellationRequested();
 			}
 
-			return accumulatedChangeLocation;
+			return accumulatedChangeScope;
 		}
 
-		protected override ChangeLocation? GetChangeLocationFromMethodBaseSyntaxNode(BaseMethodDeclarationSyntax methodNodeBase, in TextChange textChange, 
-																					 ContainmentModeChange containingModeChange)
+		protected override ChangeInfluenceScope? GetChangeScopeFromMethodBaseSyntaxNode(BaseMethodDeclarationSyntax methodNodeBase, in TextChange textChange, 
+																						ContainmentModeChange containingModeChange)
 		{
-			var changeLocation = base.GetChangeLocationFromMethodBaseSyntaxNode(methodNodeBase, textChange, containingModeChange);
+			var changeScope = base.GetChangeScopeFromMethodBaseSyntaxNode(methodNodeBase, textChange, containingModeChange);
 
-			if (changeLocation != ChangeLocation.Attributes || !(methodNodeBase is MethodDeclarationSyntax methodDeclaration))
+			if (changeScope != ChangeInfluenceScope.Attributes || !(methodNodeBase is MethodDeclarationSyntax))
 			{
-				return changeLocation;
+				return changeScope;
 			}
 
 			// In Acumatica one of the most frequent attributes placed on method is the PXOverride attribute. 
@@ -79,7 +85,53 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			// On the other hand the amount of work for such analysis is quite significant. 
 			// The simple solution is to just refresh code map whenever method attributes are changed, we do not expect that such changes happen frequently.
 			
-			return ChangeLocation.Class;	//Increase change location class
+			return ChangeInfluenceScope.Class;	//Increase change location class
+		}
+
+		/// <summary>
+		/// Get change scope from property-like declaration. For Dac Properties contains more complex logic.
+		/// </summary>
+		/// <param name="propertyNodeBase">The property node base.</param>
+		/// <param name="textChange">The text change.</param>
+		/// <param name="containingModeChange">The containing mode change.</param>
+		/// <returns/>
+		protected override ChangeInfluenceScope? GetChangeScopeFromPropertyBaseSyntaxNode(BasePropertyDeclarationSyntax propertyNodeBase, 
+																					      in TextChange textChange, ContainmentModeChange containingModeChange)
+		{
+			var changeScope = base.GetChangeScopeFromPropertyBaseSyntaxNode(propertyNodeBase, textChange, containingModeChange);
+
+			//We look for changes in DAC property attributes
+			if (changeScope != ChangeInfluenceScope.Attributes || !(propertyNodeBase is PropertyDeclarationSyntax changedProperty) ||
+				_codeMapViewModel.DocumentModel?.CodeMapSemanticModels == null)
+			{
+				return changeScope;
+			}
+
+			for (int i = 0; i < _codeMapViewModel.DocumentModel.CodeMapSemanticModels.Count; i++)
+			{
+				if (!(_codeMapViewModel.DocumentModel.CodeMapSemanticModels[i] is DacSemanticModel dacSemanticModel))
+					continue;
+				else if (IsPropertyFromDAC(changedProperty, dacSemanticModel))
+					return ChangeInfluenceScope.Class;
+			}
+
+			return changeScope;
+		}
+
+		private bool IsPropertyFromDAC(PropertyDeclarationSyntax changedProperty, DacSemanticModel dacCandidate)
+		{
+			//basic fast check for bounds and file
+			if (!dacCandidate.Node.Span.Contains(changedProperty.Span) || dacCandidate.Node.SyntaxTree.FilePath != changedProperty.SyntaxTree.FilePath)
+				return false;
+
+			//Check that declaring type is the same
+			if (!(changedProperty.Parent is ClassDeclarationSyntax changedDac) || changedDac.Identifier.Text != dacCandidate.Node.Identifier.Text)
+				return false;
+
+			if (!dacCandidate.PropertiesByNames.TryGetValue(changedProperty.Identifier.Text, out var dacPropertyInfoCandidate))
+				return false;
+
+			return dacPropertyInfoCandidate.Node.ExplicitInterfaceSpecifier == changedProperty.ExplicitInterfaceSpecifier;
 		}
 	}
 }

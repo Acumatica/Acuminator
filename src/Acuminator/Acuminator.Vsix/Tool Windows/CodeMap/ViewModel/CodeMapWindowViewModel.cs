@@ -56,7 +56,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public Document Document => DocumentModel?.Document;
 
-		private CodeMapDocChangesClassifier DocChangesClassifier { get; } = new CodeMapDocChangesClassifier();
+		private CodeMapDocChangesClassifier DocChangesClassifier { get; }
 
 		/// <summary>
 		/// Internal visibility flag for code map control. Serves as a workaround to hacky VS SDK which displays "Visible" in all other visibility properties for a hidden window.
@@ -108,8 +108,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			RootSymbolsRetriever = new RootCandidateSymbolsRetrieverDefault();
 			SemanticModelFactory = new SemanticModelFactoryDefault();
 			TreeBuilder = new DefaultCodeMapTreeBuilder();
+			DocChangesClassifier = new CodeMapDocChangesClassifier(this);
+			IsVisible = true;
 			Tree = TreeBuilder.CreateEmptyCodeMapTree(this);
-
+			
 			RefreshCodeMapCommand = new Command(p => RefreshCodeMapAsync().Forget());
 
 			Workspace = DocumentModel.Document.Project.Solution.Workspace;
@@ -213,14 +215,18 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			BuildCodeMapAsync().Forget();
 		}
 
-		private void VisibilityEvents_WindowHiding(EnvDTE.Window window)
-		{
-			IsVisible = false;
-		}
+		private void VisibilityEvents_WindowHiding(EnvDTE.Window window) => SetVisibilityForCodeMapWindow(window, isVisible: false);
 
-		private void VisibilityEvents_WindowShowing(EnvDTE.Window window)
+		private void VisibilityEvents_WindowShowing(EnvDTE.Window window) => SetVisibilityForCodeMapWindow(window, isVisible: true);
+
+		private void SetVisibilityForCodeMapWindow(EnvDTE.Window window, bool isVisible)
 		{
-			IsVisible = true;
+			ThreadHelper.ThrowIfNotOnUIThread();
+
+			if (Guid.TryParse(window?.ObjectKind, out Guid windowId) && windowId == CodeMapWindow.CodeMapWindowGuid)
+			{
+				IsVisible = isVisible;
+			}
 		}
 
 		/// <summary>

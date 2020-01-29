@@ -20,6 +20,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	public class CodeMapWindow : ToolWindowPane
 	{
 		public const string CodeMapWindowGuidString = "b2a9bcca-0128-481f-9194-2a9087ea76e6";
+		public static readonly Guid CodeMapWindowGuid = new Guid(CodeMapWindowGuidString);
 
 		public CodeMapWindowControl CodeMapWPFControl { get; }
 
