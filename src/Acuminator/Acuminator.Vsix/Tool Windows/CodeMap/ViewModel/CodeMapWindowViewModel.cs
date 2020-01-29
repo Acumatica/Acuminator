@@ -215,14 +215,18 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			BuildCodeMapAsync().Forget();
 		}
 
-		private void VisibilityEvents_WindowHiding(EnvDTE.Window window)
-		{
-			IsVisible = false;
-		}
+		private void VisibilityEvents_WindowHiding(EnvDTE.Window window) => SetVisibilityForCodeMapWindow(window, isVisible: false);
 
-		private void VisibilityEvents_WindowShowing(EnvDTE.Window window)
+		private void VisibilityEvents_WindowShowing(EnvDTE.Window window) => SetVisibilityForCodeMapWindow(window, isVisible: true);
+
+		private void SetVisibilityForCodeMapWindow(EnvDTE.Window window, bool isVisible)
 		{
-			IsVisible = true;
+			ThreadHelper.ThrowIfNotOnUIThread();
+
+			if (Guid.TryParse(window?.ObjectKind, out Guid windowId) && windowId == CodeMapWindow.CodeMapWindowGuid)
+			{
+				IsVisible = isVisible;
+			}
 		}
 
 		/// <summary>
