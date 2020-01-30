@@ -229,7 +229,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			}
 
-			if (Equals(gotFocus, lostFocus) || gotFocus.Document == null)
+			if (!IsVisible || Equals(gotFocus, lostFocus) || gotFocus.Document == null)
 				return;
 			else if (gotFocus.Document.Language != LegacyLanguageNames.CSharp)
 			{
