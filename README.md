@@ -10,7 +10,7 @@ In the code based on Acumatica Framework, Acuminator finds common mistakes and t
 * `PXStringList` declarations without `PXDBString`
 * C#-style inheritance from `PXCacheExtension`
 
-For the errors it finds, Acuminator suggests code fixes. For the full list of supported diagnostics and code fixes, see Acuminator Release Notes. 
+For the errors it finds, Acuminator suggests code fixes. For the full list of supported diagnostics and code fixes, see [Diagnostics](docs/Summary.md#diagnostics). 
 
 ## Code Coloring, Formatting, and Outlining
 Acuminator colorizes and formats BQL statements, which improves the readability of long BQL queries. You can adjust the colors in the Visual Studio settings.
@@ -27,8 +27,8 @@ To build the solution, do the following:
 4. Build _Acuminator.sln_.
 
 ## Documentation
-* [Diagnostic Descriptions](docs/Summary.md#diagnostics)
-* [Refactoring Descriptions](docs/Summary.md#refactorings)
+* [Diagnostics](docs/Summary.md#diagnostics)
+* [Code Refactoring](docs/Summary.md#refactorings)
 
 ## Developer Documentation
 * [Coding Guidelines](docs/dev/CodingGuidelines/CodingGuidelines.md)

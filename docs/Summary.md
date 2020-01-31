@@ -1,4 +1,11 @@
-# Diagnostics
+# Diagnostics and Code Refactoring
+In this document, you can find the list of diagnostics and code refactorings supported by Acuminator.
+
+## Diagnostics
+
+Acuminator diagnostics are displayed if the value of **Tools > Options > Acuminator > Code Analysis > Enable code analysis** is _True_ (which is the default setting).
+
+Acuminator does not perform static analysis of projects whose names contain `Test` or `Benchmark`. Generally, these projects contain tests of an application and do not include any application logic; therefore there is no need to analyze them with Acuminator.
 
 **Note:** In the following table, the types of the diagnostics are specified for the ISV solution certification&#8212;that is, if the **Enable additional diagnostics for ISV Solution Certification** option (in **Tools > Options > Acuminator > Code Analysis**) is set to `True`. The type of the diagnostic can be different if this option is set to `False`. For details about the type of the diagnostic, see the description of the diagnostic.
 
@@ -74,8 +81,7 @@
 | [PX1094](diagnostics/PX1094.md) | Every DAC should be decorated with the `PXHidden` or `PXCacheName` attribute. | Warning (ISV Level 3: Informational) | Available |
 | [PX1095](diagnostics/PX1095.md) | A field with the `PXDBCalced` attribute must have an unbound type attribute, such as `PXDate` or `PXDecimal`. | Error | Unavailable |
 
-## Refactorings
-| Short Description |
-| ----------------- |
-| [Replacement of the Standard Event Handler Signature with the Generic Signature](refactoring/GenericEventHandlerSignature.md) |
+## Code Refactoring
+Acuminator suggest the following code refactoring:
+ - [Replacement of the Standard Event Handler Signature with the Generic Signature](refactoring/GenericEventHandlerSignature.md) |
 
