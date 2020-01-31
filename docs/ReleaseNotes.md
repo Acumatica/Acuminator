@@ -5,12 +5,12 @@ This document provides information about fixes, enhancements, and key features t
 Acuminator 2.1.3 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
 ### Enhancements
-In Acuminator 2.1.3, the following enhancements have been done:
- - Acuminator now does not perform static analysis of the projects whose names contain `Test` or `Benchmark`. Generally, such projects contain tests of an application and do not include any application logic, therefore there is no need to analyze them with Acuminator.
- - Memory usage, performance, and stability of the code map have been improved.
- - Synchronization of the code map with changes in DACs has been improved.
+In Acuminator 2.1.3, the following enhancements have been implemented:
+ - Acuminator now does not perform static analysis of projects whose names contain `Test` or `Benchmark`. Generally, these projects contain tests of an application and do not include any application logic; therefore there is no need to analyze them with Acuminator.
+ - The memory usage, performance, and stability of the code map have been improved.
+ - The synchronization of the code map with the changes in the DACs has been improved.
  - Now a developer can collapse or expand the selected node in the code map if the developer clicks **Collapse All** or **Expand Add** (respectively) in the context menu for the selected node.
- - Multiple changes have been made to the [PX1007](diagnostics/PX1007.md) diagnostic, which eliminates the number of warnings displayed by the diagnostic. For more information about the situations when the diagnostic is not displayed now, see the description of the diagnostic in [PX1007](diagnostics/PX1007.md).
+ - Multiple changes have been made to the [PX1007](diagnostics/PX1007.md) diagnostic to reduce the number of warnings displayed by the diagnostic. For more information about the situations when the diagnostic is not displayed, see the description of the diagnostic in [PX1007](diagnostics/PX1007.md).
  - If a developer suppresses the [PX1007](diagnostics/PX1007.md) diagnostic with a comment, the default comment message is now the following: _Acuminator disable once PX1007 NoXmlCommentForPublicEntityOrDacProperty to be documented later_.
 
 ### Fixed Bugs
@@ -18,7 +18,7 @@ In this version of Acuminator, the following bugs have been fixed:
  - The [PX1007](diagnostics/PX1007.md) diagnostic was displayed for partial classes with XML comments on one of the declarations.
  - The [PX1007](diagnostics/PX1007.md) diagnostic was displayed for class fields of DACs.
  - The [PX1094](diagnostics/PX1094.md) diagnostic was displayed for classes derived from `PXMappedCacheExtension`.
- - Acuminator failed on the Acuminator suppression file with an incorrect XML structure.
+ - Acuminator failed on the Acuminator suppression file if the file had an incorrect XML structure.
 
 ## Acuminator 2.1.2
 Acuminator 2.1.2 includes the bug fixes described in this section, as well as the features that have been implemented in previous versions.
