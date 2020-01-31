@@ -16,7 +16,6 @@ In Acuminator 2.1.3, the following enhancements have been implemented:
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
  - The [PX1007](diagnostics/PX1007.md) diagnostic was displayed for partial classes with XML comments on one of the declarations.
- - The [PX1007](diagnostics/PX1007.md) diagnostic was displayed for class fields of DACs.
  - The [PX1094](diagnostics/PX1094.md) diagnostic was displayed for classes derived from `PXMappedCacheExtension`.
  - Acuminator failed on the Acuminator suppression file if the file had an incorrect XML structure. Now Acumatinator validates the XML structure of the suppression file.
 
