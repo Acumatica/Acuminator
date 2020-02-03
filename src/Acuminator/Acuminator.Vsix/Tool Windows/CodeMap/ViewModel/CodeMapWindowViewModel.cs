@@ -155,11 +155,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return codeMapViewModel;
 		}
 
-		public void CancelCodeMapBuilding()
-		{
-			_cancellationTokenSource?.Cancel();
-		}
-
 		public override void FreeResources()
 		{
 			base.FreeResources();
@@ -188,31 +183,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		private async Task RefreshCodeMapAsync()
+		internal async Task RefreshCodeMapOnWindowOpeningAsync(IWpfTextView activeWpfTextView = null, Document activeDocument = null)
 		{
-			if (IsCalculating)
-				return;
-
 			if (!ThreadHelper.CheckAccess())
 			{
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			}
 
-			ClearCodeMap();
-			var currentWorkspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
-
-			if (currentWorkspace == null)
-				return;
-
-			Workspace = currentWorkspace;
-			IWpfTextView activeWpfTextView = await AcuminatorVSPackage.Instance.GetWpfTextViewAsync();
-			Document activeDocument = activeWpfTextView?.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
-
-			if (activeDocument == null)
-				return;
-
-			DocumentModel = new DocumentModel(activeWpfTextView, activeDocument);
-			BuildCodeMapAsync().Forget();
+			IsCalculating = false;
+			await RefreshCodeMapAsync(activeWpfTextView, activeDocument);
 		}
 
 		private void VisibilityEvents_WindowHiding(EnvDTE.Window window) => SetVisibilityForCodeMapWindow(window, isVisible: false);
@@ -250,7 +229,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			}
 
-			if (Equals(gotFocus, lostFocus) || gotFocus.Document == null)
+			if (!IsVisible || Equals(gotFocus, lostFocus) || gotFocus.Document == null)
 				return;
 			else if (gotFocus.Document.Language != LegacyLanguageNames.CSharp)
 			{
@@ -280,6 +259,32 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			await BuildCodeMapAsync();
 		}
 
+		private async Task RefreshCodeMapAsync(IWpfTextView activeWpfTextView = null, Document activeDocument = null)
+		{
+			if (IsCalculating)
+				return;
+
+			if (!ThreadHelper.CheckAccess())
+			{
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+			}
+
+			ClearCodeMap();
+			var currentWorkspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
+
+			if (currentWorkspace == null)
+				return;
+
+			Workspace = currentWorkspace;
+			activeWpfTextView = activeWpfTextView ?? await AcuminatorVSPackage.Instance.GetWpfTextViewAsync();
+			activeDocument = activeDocument ?? activeWpfTextView?.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
+
+			if (activeDocument == null)
+				return;
+
+			DocumentModel = new DocumentModel(activeWpfTextView, activeDocument);
+			await BuildCodeMapAsync();
+		}
 
 		private async void OnWorkspaceChanged(object sender, WorkspaceChangeEventArgs e)
 		{
@@ -381,7 +386,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					Tree = newTreeVM;			
 				}
 			}
-			catch (OperationCanceledException e)
+			catch (OperationCanceledException)
 			{
 
 			}
