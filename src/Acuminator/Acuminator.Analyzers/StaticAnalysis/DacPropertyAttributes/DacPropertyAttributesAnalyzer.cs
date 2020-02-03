@@ -32,13 +32,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dacOrDacExt)
 		{
 			FieldTypeAttributesRegister fieldAttributesRegister = new FieldTypeAttributesRegister(pxContext);
-			ParallelOptions parallelOptions = new ParallelOptions
+			
+			foreach (DacPropertyInfo property in dacOrDacExt.AllDeclaredProperties)
 			{
-				CancellationToken = context.CancellationToken
-			};
-
-			Parallel.ForEach(dacOrDacExt.AllDeclaredProperties, parallelOptions,
-							 property => CheckDacProperty(property, context, pxContext, fieldAttributesRegister));
+				CheckDacProperty(property, context, pxContext, fieldAttributesRegister);
+			}
 		}
 
 		private static void CheckDacProperty(DacPropertyInfo property, SymbolAnalysisContext symbolContext, PXContext pxContext,
