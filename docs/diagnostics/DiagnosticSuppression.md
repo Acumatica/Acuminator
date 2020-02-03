@@ -13,16 +13,22 @@ You can suppress any diagnostic by adding a specific comment directly in code. T
 
 The code below shows an example of a suppression comment that has been added by the code fix. A suppression comment includes the following parts:
 
- - The code of the diagnostic (`PX1007` in the code example below).
- - The name of the diagnostic (`NoXmlCommentForPublicClass` in the following code example), which can give a code reviewer an idea of what the suppressed diagnostic is about.
+ - The code of the diagnostic (`PX1053` in the code example below).
+ - The name of the diagnostic (`ConcatenationPriorLocalization` in the following code example), which can give a code reviewer an idea of what the suppressed diagnostic is about.
  - The justification of the suppression, which explains why this diagnostic is suppressed for this code fragment. You type the explanation instead of `[Justification]`.
 
 ```C#
-// Acuminator disable once PX1007 NoXmlCommentForPublicClass [Justification]
-public abstract class PXBaseRedirectException : PXException
+...
+else
 {
-    ...
+    if (!Attribute.IsDefined(method, typeof(PXSuppressEventValidationAttribute)))
+        // Acuminator disable once PX1053 ConcatenationPriorLocalization [Justification]
+        throw new PXException(string.Format(MsgNotLocalizable.InvalidArgumentTypeInEventHandler, 
+            method.DeclaringType.FullName, method.Name));
+    else
+        return null;
 }
+...
 ```
 
 If Acuminator displays multiple diagnostics for one line, you can add multiple suppression comments for this line (one comment under another).
