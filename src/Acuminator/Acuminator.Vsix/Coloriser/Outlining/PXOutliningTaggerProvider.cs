@@ -31,7 +31,7 @@ namespace Acuminator.Vsix.Coloriser
 
             Initialize(buffer);
 
-            if (!IsInitialized || !HasReferenceToAcumaticaPlatform)
+            if (!HasReferenceToAcumaticaPlatform)
                 return null;
 
             PXOutliningTagger outliningTagger = buffer.Properties.GetOrCreateSingletonProperty(() =>

@@ -11,8 +11,6 @@ using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.Roslyn;
 
@@ -72,7 +70,7 @@ namespace Acuminator.Vsix.Coloriser
         {
             Initialize(textBuffer);
 
-            if (textView.TextBuffer != textBuffer || !IsInitialized || !HasReferenceToAcumaticaPlatform)
+            if (textView.TextBuffer != textBuffer || !HasReferenceToAcumaticaPlatform)
                 return null;
 
             var tagger = textBuffer.Properties.GetOrCreateSingletonProperty(typeof(PXColorizerTaggerBase), () =>
