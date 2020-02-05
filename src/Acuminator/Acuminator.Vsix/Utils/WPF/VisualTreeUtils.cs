@@ -23,15 +23,15 @@ namespace Acuminator.Vsix.Utilities
 		{
 			uiElement.ThrowOnNull(nameof(uiElement));
 
-			int childrenCount = VisualTreeHelper.GetChildrenCount(uiElement);
+			int elementChildrenCount = VisualTreeHelper.GetChildrenCount(uiElement);
 
-			if (childrenCount == 0)
+			if (elementChildrenCount == 0)
 				return Enumerable.Empty<FrameworkElement>();
 
-			return GetVisualDescendantsImpl(uiElement, childrenCount);
+			return GetVisualDescendantsImpl(uiElement, elementChildrenCount);
 
 			//-------------------------------------------Local function-----------------------------------
-			static IEnumerable<FrameworkElement> GetVisualDescendantsImpl(FrameworkElement parent, int childrenCount)
+			IEnumerable<FrameworkElement> GetVisualDescendantsImpl(FrameworkElement parent, int childrenCount)
 			{
 				for (int i = 0; i < childrenCount; i++)
 				{
