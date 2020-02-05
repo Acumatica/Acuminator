@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Xml.Linq;
 using Acuminator.Utilities.Common;
@@ -25,9 +26,9 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		/// </summary>
 		internal bool GenerateSuppressionBase { get; }
 
-		private HashSet<SuppressMessage> Messages { get; }
+		private ConcurrentDictionary<SuppressMessage, object> Messages { get; } = new ConcurrentDictionary<SuppressMessage, object>();
 
-		public HashSet<SuppressMessage> CopyMessages() => new HashSet<SuppressMessage>(Messages);
+		public HashSet<SuppressMessage> CopyMessages() => Messages.Keys.ToHashSet();
 
 		public event FileSystemEventHandler Changed
 		{
@@ -53,11 +54,16 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			AssemblyName = assemblyName;
 			Path = path;
 			GenerateSuppressionBase = generateSuppressionBase;
-			Messages = messages;
+
+			foreach (SuppressMessage message in messages)
+			{
+				Messages.TryAdd(message, null);
+			}
+
 			_fileWatcher = watcher;
 		}
 
-		internal bool ContainsMessage(SuppressMessage message) => Messages.Contains(message);
+		internal bool ContainsMessage(SuppressMessage message) => Messages.ContainsKey(message);
 
 		internal static bool IsSuppressionFile(string path)
 		{
@@ -95,7 +101,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		public void Dispose() => _fileWatcher?.Dispose();
 		
-		internal void AddMessage(SuppressMessage message) => Messages.Add(message);
+		internal void AddMessage(SuppressMessage message) => Messages.TryAdd(message, null);
 
         public static XDocument NewDocumentFromMessages(IEnumerable<SuppressMessage> messages)
         {
@@ -121,7 +127,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				throw new InvalidOperationException("Failed to open suppression file for edit");
 
 			document.Root.RemoveNodes();
-			AddMessagesToDocument(document, Messages);
+			AddMessagesToDocument(document, Messages.Keys);
 
 			return document;
 		}
