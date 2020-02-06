@@ -13,7 +13,7 @@
     <PackageReleaseNotes>https://github.com/Acumatica/Acuminator/blob/dev/docs/ReleaseNotes.md</PackageReleaseNotes>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\key.snk</AssemblyOriginatorKeyFile>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>7.3</LangVersion>
     <RestorePackagesPath>../../packages</RestorePackagesPath>
   </PropertyGroup>
   <ItemGroup>
