@@ -18,10 +18,12 @@ namespace Acuminator.Utilities.Roslyn.ProjectSystem
     public static class WorkspaceUtils
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IEnumerable<SuppressionManagerInitInfo> GetSuppressionInfoFromSolution(this Solution solution, bool generateSuppressionBase) =>
-			from additionalDoc in solution.GetAllAdditionalDocumentsFromSolution()
-			where SuppressionFile.IsSuppressionFile(additionalDoc.FilePath)
-			select new SuppressionManagerInitInfo(additionalDoc.FilePath, generateSuppressionBase);
+		public static IEnumerable<SuppressionManagerInitInfo> GetSuppressionInfoFromSolution(this Solution solution, bool generateSuppressionBase)
+		{
+			var suppressionFiles = solution.GetAllAdditionalDocumentsFromSolution()
+										   .Where(additionalDoc => SuppressionFile.IsSuppressionFile(additionalDoc.FilePath));
+			return suppressionFiles.Select(file => new SuppressionManagerInitInfo(file.FilePath, generateSuppressionBase));
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static IEnumerable<TextDocument> GetAllAdditionalDocumentsFromSolution(this Solution solution) =>

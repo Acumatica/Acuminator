@@ -30,7 +30,7 @@ namespace Acuminator.Vsix.Coloriser
 
         public IEnumerable<ITagSpan<IOutliningRegionTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
-            if (spans == null || spans.Count == 0 || !Provider.Package.UseBqlOutlining)
+            if (spans == null || spans.Count == 0 || AcuminatorVSPackage.Instance?.UseBqlOutlining != true)
                 return Enumerable.Empty<ITagSpan<IOutliningRegionTag>>();
 
             if (ColorizerTagger == null)
@@ -43,7 +43,7 @@ namespace Acuminator.Vsix.Coloriser
 
             switch (ColorizerTagger?.TaggerType)
             {
-                case TaggerType.General when Provider.Package.UseRegexColoring == true: //-V3063
+                case TaggerType.General when AcuminatorVSPackage.Instance?.UseRegexColoring == true:
                 case TaggerType.RegEx:
                 case null:
                     return Enumerable.Empty<ITagSpan<IOutliningRegionTag>>();
