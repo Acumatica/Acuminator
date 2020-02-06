@@ -12,15 +12,15 @@ In Acuminator 2.1.3, the following enhancements have been implemented:
  - Now a developer can collapse or expand the selected node (with all its descendant nodes) in the code map if the developer clicks **Collapse All** or **Expand Add** (respectively) in the context menu for the selected node.
  - Multiple changes have been made to the [PX1007](diagnostics/PX1007.md) diagnostic to reduce the number of warnings displayed by the diagnostic. For more information about the situations when the diagnostic is not displayed, see the description of the diagnostic in [PX1007](diagnostics/PX1007.md).
  - If a developer suppresses the [PX1007](diagnostics/PX1007.md) diagnostic with a comment, the default comment message is now the following: _Acuminator disable once PX1007 NoXmlCommentForPublicEntityOrDacProperty to be documented later_.
- - Improved slightly performance of the [PX1021](diagnostics/PX1021.md)/[PX1023](diagnostics/PX1023.md)/[PX1095](diagnostics/PX1095.md) diagnostics
+ - The performance of the PX1021, PX1023, and PX1095 diagnostics has been improved.
 
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
  - The [PX1007](diagnostics/PX1007.md) diagnostic was displayed for partial classes with XML comments on one of the declarations.
  - The [PX1094](diagnostics/PX1094.md) diagnostic was displayed for classes derived from `PXMappedCacheExtension`.
  - Acuminator failed on the Acuminator suppression file if the file had an incorrect XML structure. Now Acumatinator validates the XML structure of the suppression file.
- - The suppression file was not loaded correctly due to premature load of the Acuminator VSIX package by Visual Studio.
- - Fixed concurrency issues caused by concurrent access by different analyzers to the same suppression file. 
+ - The Acuminator suppression file was not loaded correctly because Visual Studio prematurely loaded the Acuminator VSIX package.
+ - The issues that were caused by the concurrent access of different analyzers to the same Acuminator suppression file have been fixed.
 
 ## Acuminator 2.1.2
 Acuminator 2.1.2 includes the bug fixes described in this section, as well as the features that have been implemented in previous versions.
