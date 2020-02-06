@@ -90,12 +90,11 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 
 		protected virtual string GetLocationDescription(object sender)
 		{
-			XElement suppressionMesage = sender switch
-			{
-				XAttribute attribute => GetSuppressionMessageElement(attribute.Parent),
-				XElement element => GetSuppressionMessageElement(element),
-				_ => null
-			};
+			XElement suppressionMesage = sender is XAttribute attribute
+				? GetSuppressionMessageElement(attribute.Parent)
+				: sender is XElement element
+					? GetSuppressionMessageElement(element)
+					: null;
 
 			if (suppressionMesage == null)
 				return null;
