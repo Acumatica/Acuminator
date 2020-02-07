@@ -9,7 +9,7 @@ In Acuminator 2.1.3, the following enhancements have been implemented:
  - Acuminator now does not perform static analysis of projects whose names contain `Test` or `Benchmark`. Generally, these projects contain tests of an application and do not include any application logic; therefore there is no need to analyze them with Acuminator.
  - The memory usage, performance, and stability of the code map have been improved.
  - The synchronization of the code map with the changes in the DACs has been improved.
- - Now a developer can collapse or expand the selected node (with all its descendant nodes) in the code map if the developer clicks **Collapse All** or **Expand Add** (respectively) in the context menu for the selected node.
+ - Now a developer can collapse or expand the selected node (with all its descendant nodes) in the code map if the developer clicks **Collapse All** or **Expand All** (respectively) in the context menu for the selected node.
  - Multiple changes have been made to the [PX1007](diagnostics/PX1007.md) diagnostic to reduce the number of warnings displayed by the diagnostic. For more information about the situations when the diagnostic is not displayed, see the description of the diagnostic in [PX1007](diagnostics/PX1007.md).
  - If a developer suppresses the [PX1007](diagnostics/PX1007.md) diagnostic with a comment, the default comment message is now the following: _Acuminator disable once PX1007 NoXmlCommentForPublicEntityOrDacProperty to be documented later_.
  - The performance of the [PX1021](diagnostics/PX1021.md), [PX1023](diagnostics/PX1023.md), and [PX1095](diagnostics/PX1095.md) diagnostics has been improved.
