@@ -249,6 +249,8 @@
     <Compile Include="Settings\CodeAnalysisSettingsFromOptionsPage.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\Icon.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\TreeNodeToImageSourceConverter.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\TreeSorterBase.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\SortOrder.cs" />
     <Compile Include="Tool Windows\CodeMap\Tooltips\TreeNodeToTooltipConverter.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\DacMemberCategory.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphSemanticModelForCodeMap.cs" />

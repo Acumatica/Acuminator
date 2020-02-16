@@ -30,6 +30,21 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// </summary>
 		public virtual Icon NodeIcon => Icon.None;
 
+		/// <summary>
+		/// The sort order of nodes children.
+		/// </summary>
+		public SortOrder ChildrenOrder
+		{
+			get;
+			set;
+		}
+
+		public SortDirection ChildrenSortDirection
+		{
+			get;
+			set;
+		}
+
 		public ExtendedObservableCollection<TreeNodeViewModel> Children { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
 
 		private bool _isExpanded;
