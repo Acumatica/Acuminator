@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Values that represent the colection sort directions.
 	/// </summary>
-	public enum SortDirection
+	public enum SortDirection : byte
 	{
 		/// <summary>
 		/// The ascending direction of the sort.
