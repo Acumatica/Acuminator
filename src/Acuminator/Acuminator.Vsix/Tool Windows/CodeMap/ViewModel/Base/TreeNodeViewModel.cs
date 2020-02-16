@@ -30,20 +30,47 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// </summary>
 		public virtual Icon NodeIcon => Icon.None;
 
+		private SortOrder _childrenSortOrder;
+
 		/// <summary>
 		/// The sort order of nodes children.
 		/// </summary>
-		public SortOrder ChildrenOrder
+		public SortOrder ChildrenSortOrder
 		{
-			get;
-			set;
+			get => _childrenSortOrder;
+			set
+			{
+				if (_childrenSortOrder != value)
+				{
+					_childrenSortOrder = value;
+					NotifyPropertyChanged();
+				}
+			}
 		}
 
+		private SortDirection _childrenSortDirection;
+
+		/// <summary>
+		/// The children sort direction.
+		/// </summary>
 		public SortDirection ChildrenSortDirection
 		{
-			get;
-			set;
+			get => _childrenSortDirection;
+			set
+			{
+				if (_childrenSortDirection != value)
+				{
+					_childrenSortDirection = value;
+					NotifyPropertyChanged();
+				}
+			}
 		}
+
+		/// <summary>
+		/// This flag tells if the node can be sorted and reordered by sorting of code map nodes. 
+		/// Not sortable nodes will always be placed first.
+		/// </summary>
+		public virtual bool IsSortable => true;
 
 		public ExtendedObservableCollection<TreeNodeViewModel> Children { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
 
@@ -117,6 +144,19 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			IsExpanded = expand;
 			Children.ForEach(childNode => childNode.ExpandOrCollapseAll(expand));
+		}
+
+		public virtual void AcceptSorter(TreeSorter sorter, bool sortDescendants)
+		{
+			sorter.CheckIfNull(nameof(sorter)).SortChildren(this);
+
+			if (sortDescendants && Children.Count > 0)
+			{
+				foreach (var childNode in Children)
+				{
+					childNode.AcceptSorter(sorter, sortDescendants);
+				}
+			}
 		}
 	}
 }
