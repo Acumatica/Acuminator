@@ -11,23 +11,69 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class TreeSorter
 	{
-		private readonly IComparer<TreeNodeViewModel> _comparer;
+		private readonly SortDirection _sortDirection;
 
-		public TreeSorter(IComparer<TreeNodeViewModel> comparer)
+		public TreeSorter(SortDirection sortDirection)
 		{
-			_comparer = comparer.CheckIfNull(nameof(comparer));
+			_sortDirection = sortDirection;
 		}
 
-		public virtual void SortChildren(TreeNodeViewModel treeNode)
+		public static TreeSorter FromNode(TreeNodeViewModel node)
 		{
-			switch (treeNode)
-			{
+			node.ThrowOnNull(nameof(node));
 
-				case null:
-					return;
+			
+		}
+
+		public virtual IEnumerable<TreeNodeViewModel> SortNodes(IReadOnlyCollection<TreeNodeViewModel> nodes, SortType sortType,
+																SortDirection sortDirection)
+		{
+			if (nodes.IsNullOrEmpty())
+				yield break;
+
+			int sortableCount = nodes.Count;
+
+			foreach (TreeNodeViewModel node in nodes)
+			{
+				if (!node.IsSortable)
+				{
+					sortableCount--;
+					yield return node;
+				}
+			}
+
+			if (sortableCount == 0)
+				yield break;
+
+			var sortedNodes = nodes.Where(child => !child.IsSortable);
+			sortedNodes = SortNodesBySortTypeAndDirection(sortedNodes, sortType, sortDirection);
+
+			foreach (TreeNodeViewModel node in sortedNodes)
+			{
+				yield return node;
+			}		
+		}
+
+		protected virtual IEnumerable<TreeNodeViewModel> SortNodesBySortTypeAndDirection(IEnumerable<TreeNodeViewModel> nodesToSort, SortType sortType,
+																						 SortDirection sortDirection)
+		{
+			switch (sortType)
+			{
+				case SortType.Declaration:
+					return sortDirection == SortDirection.Ascending
+						? nodesToSort.OrderBy(node => node.)
+						:
+
+				case SortType.Alphabet:
+					return sortDirection == SortDirection.Ascending
+						? nodesToSort.OrderBy(node => node.Name)
+						: nodesToSort.OrderByDescending(node => node.Name);
+
 				default:
-					return;
+					return nodesToSort;
 			}
 		}
+
+		protected vi
 	}
 }

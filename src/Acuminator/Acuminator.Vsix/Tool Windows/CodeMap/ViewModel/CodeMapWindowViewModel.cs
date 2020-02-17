@@ -101,6 +101,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public Command RefreshCodeMapCommand { get; }
 
+		public Command SortNodeDescendantsCommand { get; }
+
 		private CodeMapWindowViewModel(IWpfTextView wpfTextView, Document document)
 		{
 			DocumentModel = new DocumentModel(wpfTextView, document);
@@ -113,6 +115,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Tree = TreeBuilder.CreateEmptyCodeMapTree(this);
 			
 			RefreshCodeMapCommand = new Command(p => RefreshCodeMapAsync().Forget());
+			SortNodeDescendantsCommand = new Command(p => );
 
 			Workspace = DocumentModel.Document.Project.Solution.Workspace;
 			Workspace.WorkspaceChanged += OnWorkspaceChanged;
@@ -395,6 +398,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				IsCalculating = false;
 				_cancellationTokenSource = null;
 			}
+		}
+
+		public void SortNodeDescendants(TreeNodeViewModel node)
+		{
+			if (node == null)
+				return;
+
+			
 		}
 	}
 }

@@ -26,6 +26,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set;
 		}
 
+		public override bool IsSortable => false;
+
 		public override string Tooltip => GetAttributeTooltip();
 
 		public override bool DisplayNodeWithoutChildren => true;

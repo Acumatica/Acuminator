@@ -30,19 +30,19 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// </summary>
 		public virtual Icon NodeIcon => Icon.None;
 
-		private SortOrder _childrenSortOrder;
+		private SortType _childrenSortType;
 
 		/// <summary>
-		/// The sort order of nodes children.
+		/// The sort type of nodes children.
 		/// </summary>
-		public SortOrder ChildrenSortOrder
+		public SortType ChildrenSortType
 		{
-			get => _childrenSortOrder;
+			get => _childrenSortType;
 			set
 			{
-				if (_childrenSortOrder != value)
+				if (_childrenSortType != value)
 				{
-					_childrenSortOrder = value;
+					_childrenSortType = value;
 					NotifyPropertyChanged();
 				}
 			}
