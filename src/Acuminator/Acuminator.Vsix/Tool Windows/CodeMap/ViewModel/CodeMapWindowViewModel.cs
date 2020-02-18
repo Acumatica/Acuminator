@@ -433,6 +433,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			node.AcceptSorter(TreeSorter, sortType, sortDirection, sortDescendants);
+
+			if (sortDescendants)
+				node.ExpandOrCollapseAll(expand: true);
+			else
+				node.IsExpanded = true;
 		}
 	}
 }
