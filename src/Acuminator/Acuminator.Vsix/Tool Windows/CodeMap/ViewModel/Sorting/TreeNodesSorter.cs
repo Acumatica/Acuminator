@@ -31,8 +31,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (sortableCount == 0)
 				yield break;
 
-			var sortedNodes = nodes.Where(child => !child.IsSortable);
-			sortedNodes = SortNodesBySortTypeAndDirection(sortedNodes, sortType, sortDirection);
+			var sortableNodes = nodes.Where(child => child.IsSortable);
+			var sortedNodes = SortNodesBySortTypeAndDirection(sortableNodes, sortType, sortDirection);
 
 			foreach (TreeNodeViewModel node in sortedNodes)
 			{
