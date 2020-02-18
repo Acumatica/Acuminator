@@ -63,5 +63,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation) =>
 			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
+
+		public override bool IsSortTypeSupported(SortType sortType) => sortType == SortType.Alphabet || sortType == SortType.Declaration;
 	}
 }

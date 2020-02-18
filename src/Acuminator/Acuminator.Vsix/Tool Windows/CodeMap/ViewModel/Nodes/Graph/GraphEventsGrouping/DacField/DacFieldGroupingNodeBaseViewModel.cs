@@ -38,8 +38,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public ImmutableArray<GraphFieldEventInfo> FieldEvents { get; }
 
-		public override bool IsSortable => false;
-
 		protected DacFieldGroupingNodeBaseViewModel(DacGroupingNodeBaseViewModel dacVM, string dacFieldName, IEnumerable<GraphFieldEventInfo> dacFieldEvents,
 													bool isExpanded) :
 											  base(dacVM?.Tree, isExpanded)
@@ -50,6 +48,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			DacFieldName = dacFieldName;
 			FieldEvents = dacFieldEvents?.ToImmutableArray() ?? ImmutableArray.Create<GraphFieldEventInfo>();
 		}
+
+		public override bool IsSortTypeSupported(SortType sortType) => sortType == SortType.Alphabet;
 
 		public async override Task NavigateToItemAsync()
 		{

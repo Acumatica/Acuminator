@@ -33,8 +33,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override bool DisplayNodeWithoutChildren => false;
 
-		public override bool IsSortable => false;
-
 		protected virtual bool AllowNavigation => true;
 
 		bool IGroupNodeWithCyclingNavigation.AllowNavigation => AllowNavigation;
@@ -74,6 +72,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				: Children.Count; ;
 		}
 
+		public override bool IsSortTypeSupported(SortType sortType) => sortType == SortType.Alphabet;
+
 		public async override Task NavigateToItemAsync()
 		{
 			TreeNodeViewModel childToNavigateTo = null;
@@ -86,7 +86,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					break;
 				case FieldEventCategoryNodeViewModel fieldEventCategory:
 					childToNavigateTo = GetChildToNavigateToFromFieldEvents();
-					  
+
 					if (!(childToNavigateTo is FieldEventNodeViewModel fieldEventNode))
 						return;
 
@@ -96,12 +96,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 
 			if (childToNavigateTo != null)
-			{				
+			{
 				await childToNavigateTo.NavigateToItemAsync();
 				IsExpanded = true;
 				Tree.SelectedItem = childToNavigateTo;
 			}
-	}
+		}
 
 		bool IGroupNodeWithCyclingNavigation.CanNavigateToChild(TreeNodeViewModel child) => CanNavigateToChild(child);
 
@@ -114,7 +114,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			if (AllowNavigation != true || Children.Count == 0)
 				return null;
-	
+
 			List<TreeNodeViewModel> dacFieldEvents = Children.SelectMany(dacFieldEvent => dacFieldEvent.Children).ToList();
 
 			if (dacFieldEvents.Count == 0)
@@ -136,6 +136,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			return null;
-		}	
+		}
 	}
 }
