@@ -143,6 +143,13 @@
 													</Style>
 												</MenuItem.Style>
 											</MenuItem>
+											<MenuItem Header="Sort Descendants" Style="{StaticResource vsMenuItemStyle}">
+												<MenuItem Header="By Name" ToolTip="Sort all descendants of this node by name"
+														  Style="{StaticResource vsMenuItemStyle}"
+													      Command="{Binding Path=Tree.CodeMapViewModel.SortNodeDescendantsCommand}"
+													      CommandParameter="{Binding }">
+												</MenuItem>
+											</MenuItem>
 										</ContextMenu>
 									</Setter.Value>
 								</Setter>

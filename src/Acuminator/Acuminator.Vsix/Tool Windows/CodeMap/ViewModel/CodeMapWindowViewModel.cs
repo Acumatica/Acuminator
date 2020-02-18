@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Threading;
 using Acuminator.Utilities.Roslyn.ProjectSystem;
 using Acuminator.Vsix.Utilities;
+using Acuminator.Utilities.Common;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
@@ -29,6 +30,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			get;
 			internal set;
 		}
+
+		public TreeNodesSorter TreeSorter { get; } = new TreeNodesSorter();
 
 		public IRootCandidateSymbolsRetriever RootSymbolsRetriever
 		{
@@ -115,7 +118,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Tree = TreeBuilder.CreateEmptyCodeMapTree(this);
 			
 			RefreshCodeMapCommand = new Command(p => RefreshCodeMapAsync().Forget());
-			SortNodeDescendantsCommand = new Command(p => );
+			SortNodeDescendantsCommand = new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, sortDescendants: true));
 
 			Workspace = DocumentModel.Document.Project.Solution.Workspace;
 			Workspace.WorkspaceChanged += OnWorkspaceChanged;
@@ -400,12 +403,25 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public void SortNodeDescendants(TreeNodeViewModel node)
+		public void SortNodes(TreeNodeViewModel node, SortType sortType, bool sortDescendants)
 		{
 			if (node == null)
 				return;
 
-			
+			SortDirection sortDirection;
+
+			if (node.ChildrenSortType == sortType)
+			{
+				sortDirection = node.ChildrenSortDirection == SortDirection.Ascending
+					? SortDirection.Descending
+					: SortDirection.Ascending;
+			}
+			else
+			{
+				sortDirection = SortDirection.Ascending;
+			}
+
+			node.AcceptSorter(TreeSorter, sortType, sortDirection, sortDescendants);
 		}
 	}
 }
