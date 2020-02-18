@@ -144,11 +144,28 @@
 													</Style>
 												</MenuItem.Style>
 											</MenuItem>
+											<MenuItem Header="Sort Children" Style="{StaticResource vsMenuItemStyle}">
+												<MenuItem Header="By Name" ToolTip="Sort all children of this node by name"
+													      Command="{Binding Path=Tree.CodeMapViewModel.SortNodeChildrenByNameCommand}"
+													      CommandParameter="{Binding }"
+														  Style="{StaticResource vsSubmenuItemStyle}">
+												</MenuItem>
+												<MenuItem Header="By Declaration Order" ToolTip="Sort all children of this node by declaration order"
+													      Command="{Binding Path=Tree.CodeMapViewModel.SortNodeChildrenByDeclarationOrderCommand}"
+													      CommandParameter="{Binding }"
+														  Style="{StaticResource vsSubmenuItemStyle}">
+												</MenuItem>
+											</MenuItem>
 											<MenuItem Header="Sort Descendants" Style="{StaticResource vsMenuItemStyle}">
 												<MenuItem Header="By Name" ToolTip="Sort all descendants of this node by name"
-														  Style="{StaticResource vsMenuItemStyle}"
-													      Command="{Binding Path=Tree.CodeMapViewModel.SortNodeDescendantsCommand}"
-													      CommandParameter="{Binding }">
+													      Command="{Binding Path=Tree.CodeMapViewModel.SortNodeDescendantsByNameCommand}"
+													      CommandParameter="{Binding }"
+														  Style="{StaticResource vsSubmenuItemStyle}">
+												</MenuItem>
+												<MenuItem Header="By Declaration Order" ToolTip="Sort all descendants of this node by declaration order"
+													      Command="{Binding Path=Tree.CodeMapViewModel.SortNodeDescendantsByDeclarationOrderCommand}"
+													      CommandParameter="{Binding }"
+														  Style="{StaticResource vsSubmenuItemStyle}">
 												</MenuItem>
 											</MenuItem>
 										</ContextMenu>

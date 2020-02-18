@@ -106,7 +106,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public Command ExpandOrCollapseAllCommand { get; }
 
-		public Command SortNodeDescendantsCommand { get; }
+		public Command SortNodeChildrenByNameCommand { get; }
+
+		public Command SortNodeChildrenByDeclarationOrderCommand { get; }
+
+		public Command SortNodeDescendantsByNameCommand { get; }
+
+		public Command SortNodeDescendantsByDeclarationOrderCommand { get; }
 
 		private CodeMapWindowViewModel(IWpfTextView wpfTextView, Document document)
 		{
@@ -121,7 +127,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			
 			RefreshCodeMapCommand = new Command(p => RefreshCodeMapAsync().Forget());
 			ExpandOrCollapseAllCommand = new Command(p => ExpandOrCollapseNodeDescendants(p as TreeNodeViewModel));
-			SortNodeDescendantsCommand = new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, sortDescendants: true));
+
+			SortNodeChildrenByNameCommand = new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, sortDescendants: false));
+			SortNodeChildrenByDeclarationOrderCommand = new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, sortDescendants: false));
+			SortNodeDescendantsByNameCommand = new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, sortDescendants: true));
+			SortNodeDescendantsByDeclarationOrderCommand = new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, sortDescendants: true));
 
 			Workspace = DocumentModel.Document.Project.Solution.Workspace;
 			Workspace.WorkspaceChanged += OnWorkspaceChanged;
