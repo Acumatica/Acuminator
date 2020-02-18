@@ -7,13 +7,13 @@ using Acuminator.Utilities.Roslyn.Semantic;
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	/// <summary>
-	/// Interface for code map node with symbol item.
+	/// Interface for code map node with symbol.
 	/// </summary>
 	public interface INodeWithSymbolItem
 	{
 		/// <summary>
 		/// The symbol item reperesented by node.
 		/// </summary>
-		SymbolItem SymbolItem { get; }
+		SymbolItem Symbol { get; }
 	}
 }
