@@ -66,12 +66,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		/// <summary>
-		/// This flag tells if the node can be sorted and reordered by sorting of code map nodes. 
-		/// Not sortable nodes will always be placed first.
-		/// </summary>
-		public virtual bool IsSortable => true;
-
 		public ExtendedObservableCollection<TreeNodeViewModel> Children { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
 
 		private bool _isExpanded;
@@ -142,6 +136,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			IsExpanded = expand;
 			Children.ForEach(childNode => childNode.ExpandOrCollapseAll(expand));
 		}
+
+		/// <summary>
+		/// This method checks if the node can be sorted with the specified <paramref name="sortType"/> and reordered by sorting of code map nodes. 
+		/// Not sortable nodes will always be placed first.
+		/// </summary>
+		public virtual bool IsSortTypeSupported(SortType sortType) => false;
 
 		public virtual void AcceptSorter(TreeNodesSorter sorter, SortType sortType, SortDirection sortDirection, bool sortDescendants)
 		{

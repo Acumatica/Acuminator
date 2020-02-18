@@ -21,7 +21,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			foreach (TreeNodeViewModel node in nodes)
 			{
-				if (!node.IsSortable)
+				if (!node.IsSortTypeSupported(sortType))
 				{
 					sortableCount--;
 					yield return node;
@@ -31,7 +31,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (sortableCount == 0)
 				yield break;
 
-			var sortableNodes = nodes.Where(child => child.IsSortable);
+			var sortableNodes = nodes.Where(child => child.IsSortTypeSupported(sortType));
 			var sortedNodes = SortNodesBySortTypeAndDirection(sortableNodes, sortType, sortDirection);
 
 			foreach (TreeNodeViewModel node in sortedNodes)
