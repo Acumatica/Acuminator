@@ -30,6 +30,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override Icon NodeIcon => Icon.Category;
 
+		public override bool IsSortable => false;
+
 		protected abstract bool AllowNavigation { get; }
 
 		bool IGroupNodeWithCyclingNavigation.AllowNavigation => AllowNavigation;

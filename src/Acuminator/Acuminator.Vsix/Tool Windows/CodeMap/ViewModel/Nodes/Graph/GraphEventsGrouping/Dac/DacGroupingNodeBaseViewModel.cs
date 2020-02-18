@@ -33,6 +33,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override bool DisplayNodeWithoutChildren => false;
 
+		public override bool IsSortable => false;
+
 		protected virtual bool AllowNavigation => true;
 
 		bool IGroupNodeWithCyclingNavigation.AllowNavigation => AllowNavigation;

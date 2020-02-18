@@ -46,6 +46,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
 
+		public sealed override bool IsSortable => false;
+
 		protected GraphMemberCategoryNodeViewModel(GraphNodeViewModel graphViewModel, GraphMemberType graphMemberType, bool isExpanded) : 
 										      base(graphViewModel?.Tree, isExpanded)
 		{

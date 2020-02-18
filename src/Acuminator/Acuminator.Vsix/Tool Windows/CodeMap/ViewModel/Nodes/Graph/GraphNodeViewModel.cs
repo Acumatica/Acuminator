@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.Utilities.Navigation;
 using Microsoft.CodeAnalysis;
@@ -27,6 +28,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override Icon NodeIcon => Icon.Graph;
 
 		public override bool DisplayNodeWithoutChildren => true;
+
+		public sealed override bool IsSortable => false;
 
 		public GraphNodeViewModel(GraphSemanticModelForCodeMap codeMapGraphModel, TreeViewModel tree, bool isExpanded) : 
 							 base(tree, isExpanded)
