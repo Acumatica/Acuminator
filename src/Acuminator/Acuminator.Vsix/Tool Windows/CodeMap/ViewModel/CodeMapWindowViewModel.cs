@@ -143,25 +143,29 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				//Store reference to DTE SolutionEvents and WindowEvents to prevent them from being GCed
 				_solutionEvents = dte?.Events?.SolutionEvents;
 				_windowEvents = dte?.Events?.WindowEvents;
-
-				if (_solutionEvents != null)
-				{
-					_solutionEvents.AfterClosing += SolutionEvents_AfterClosing;
-				}
-
-				if (_windowEvents != null)
-				{
-					_windowEvents.WindowActivated += WindowEvents_WindowActivated;
-				}
-
 				_visibilityEvents = (dte?.Events as EnvDTE80.Events2)?.WindowVisibilityEvents;
 
-				if (_visibilityEvents != null)
-				{
-					_visibilityEvents.WindowShowing += VisibilityEvents_WindowShowing;
-					_visibilityEvents.WindowHiding += VisibilityEvents_WindowHiding;
-				}
+				SubscribeOnVisualStudioEvents();
 			}		
+		}
+
+		private void SubscribeOnVisualStudioEvents()
+		{
+			if (_solutionEvents != null)
+			{
+				_solutionEvents.AfterClosing += SolutionEvents_AfterClosing;
+			}
+
+			if (_windowEvents != null)
+			{
+				_windowEvents.WindowActivated += WindowEvents_WindowActivated;
+			}
+
+			if (_visibilityEvents != null)
+			{
+				_visibilityEvents.WindowShowing += VisibilityEvents_WindowShowing;
+				_visibilityEvents.WindowHiding += VisibilityEvents_WindowHiding;
+			}
 		}
 
 		public static CodeMapWindowViewModel InitCodeMap(IWpfTextView wpfTextView, Document document)
