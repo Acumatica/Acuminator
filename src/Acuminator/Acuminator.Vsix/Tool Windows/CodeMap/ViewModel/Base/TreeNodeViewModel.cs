@@ -38,7 +38,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public SortType ChildrenSortType
 		{
 			get => _childrenSortType;
-			set
+			protected set
 			{
 				if (_childrenSortType != value)
 				{
@@ -56,7 +56,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public SortDirection ChildrenSortDirection
 		{
 			get => _childrenSortDirection;
-			set
+			protected set
 			{
 				if (_childrenSortDirection != value)
 				{
@@ -146,15 +146,21 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Children.ForEach(childNode => childNode.ExpandOrCollapseAll(expand));
 		}
 
-		public virtual void AcceptSorter(TreeSorter sorter, bool sortDescendants)
+		public virtual void AcceptSorter(TreeNodesSorter sorter, SortType sortType, SortDirection sortDirection, bool sortDescendants)
 		{
-			sorter.CheckIfNull(nameof(sorter)).SortChildren(this);
+			sorter.ThrowOnNull(nameof(sorter));
+
+			ChildrenSortType = sortType;
+			ChildrenSortDirection = sortDirection;
+			var sorted = sorter.SortNodes(Children, sortType, sortDirection).ToList(capacity: Children.Count) ?? Enumerable.Empty<TreeNodeViewModel>();
+
+			Children.Reset(sorted);
 
 			if (sortDescendants && Children.Count > 0)
 			{
 				foreach (var childNode in Children)
 				{
-					childNode.AcceptSorter(sorter, sortDescendants);
+					childNode.AcceptSorter(sorter, sortType, sortDirection, sortDescendants);
 				}
 			}
 		}
