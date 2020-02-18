@@ -9,22 +9,11 @@ using Acuminator.Utilities.Common;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class TreeSorter
+	/// <summary>
+	/// A Code Map tree nodes sorter.
+	/// </summary>
+	public class TreeNodesSorter
 	{
-		private readonly SortDirection _sortDirection;
-
-		public TreeSorter(SortDirection sortDirection)
-		{
-			_sortDirection = sortDirection;
-		}
-
-		public static TreeSorter FromNode(TreeNodeViewModel node)
-		{
-			node.ThrowOnNull(nameof(node));
-
-			
-		}
-
 		public virtual IEnumerable<TreeNodeViewModel> SortNodes(IReadOnlyCollection<TreeNodeViewModel> nodes, SortType sortType,
 																SortDirection sortDirection)
 		{
@@ -61,8 +50,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				case SortType.Declaration:
 					return sortDirection == SortDirection.Ascending
-						? nodesToSort.OrderBy(node => node.)
-						:
+						? nodesToSort.OrderBy(NodeDeclarationOrderComparer.Instance)
+						: nodesToSort.OrderByDescending(NodeDeclarationOrderComparer.Instance);
 
 				case SortType.Alphabet:
 					return sortDirection == SortDirection.Ascending
@@ -72,8 +61,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				default:
 					return nodesToSort;
 			}
-		}
-
-		protected vi
+		}	
 	}
 }
