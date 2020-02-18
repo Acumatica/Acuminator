@@ -104,6 +104,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public Command RefreshCodeMapCommand { get; }
 
+		public Command ExpandOrCollapseAllCommand { get; }
+
 		public Command SortNodeDescendantsCommand { get; }
 
 		private CodeMapWindowViewModel(IWpfTextView wpfTextView, Document document)
@@ -118,6 +120,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Tree = TreeBuilder.CreateEmptyCodeMapTree(this);
 			
 			RefreshCodeMapCommand = new Command(p => RefreshCodeMapAsync().Forget());
+			ExpandOrCollapseAllCommand = new Command(p => ExpandOrCollapseNodeDescendants(p as TreeNodeViewModel));
 			SortNodeDescendantsCommand = new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, sortDescendants: true));
 
 			Workspace = DocumentModel.Document.Project.Solution.Workspace;
@@ -400,6 +403,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				IsCalculating = false;
 				_cancellationTokenSource = null;
+			}
+		}
+
+		private void ExpandOrCollapseNodeDescendants(TreeNodeViewModel node)
+		{
+			if (node != null)
+			{
+				node.ExpandOrCollapseAll(expand: !node.IsExpanded);
 			}
 		}
 

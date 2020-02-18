@@ -111,7 +111,8 @@
 								<Setter Property="ContextMenu">
 									<Setter.Value>
 										<ContextMenu Style="{StaticResource vsContextMenuStyle}">
-											<MenuItem Command="{Binding Path=ExpandOrCollapseAllCommand}">
+											<MenuItem Command="{Binding Path=Tree.CodeMapViewModel.ExpandOrCollapseAllCommand}"
+													  CommandParameter="{Binding}">
 												<MenuItem.Style>
 													<Style TargetType="MenuItem" BasedOn="{StaticResource vsMenuItemStyle}">
 														<Setter Property="Header" Value="Expand All"/>
