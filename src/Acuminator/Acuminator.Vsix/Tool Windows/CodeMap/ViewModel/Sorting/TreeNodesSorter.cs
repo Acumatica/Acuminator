@@ -11,8 +11,28 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// </summary>
 	public class TreeNodesSorter
 	{
-		public virtual IEnumerable<TreeNodeViewModel> SortNodes(IReadOnlyCollection<TreeNodeViewModel> nodes, SortType sortType,
-																SortDirection sortDirection)
+		public List<TreeNodeViewModel> SortNodes(IEnumerable<TreeNodeViewModel> nodes, SortType sortType, SortDirection sortDirection)
+		{
+			if (nodes.IsNullOrEmpty())
+				return new List<TreeNodeViewModel>();
+
+			var sortedNodes = new List<TreeNodeViewModel>(capacity: 8);
+			var sortableNodes = new List<TreeNodeViewModel>(capacity: 8);
+
+			foreach (TreeNodeViewModel node in nodes)
+			{
+				if (!node.IsSortTypeSupported(sortType))
+					sortedNodes.Add(node);
+				else
+					sortableNodes.Add(node);
+			}
+
+			var sortResult = SortNodesBySortTypeAndDirection(sortableNodes, sortType, sortDirection);
+			sortedNodes.AddRange(sortResult);
+			return sortedNodes;
+		}
+
+		public IEnumerable<TreeNodeViewModel> SortNodes(IReadOnlyCollection<TreeNodeViewModel> nodes, SortType sortType, SortDirection sortDirection)
 		{
 			if (nodes.IsNullOrEmpty())
 				yield break;
