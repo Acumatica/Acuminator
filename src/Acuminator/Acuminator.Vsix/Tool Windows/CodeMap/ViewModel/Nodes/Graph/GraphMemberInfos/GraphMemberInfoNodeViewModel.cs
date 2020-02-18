@@ -12,11 +12,13 @@ using System.Threading;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class GraphMemberInfoNodeViewModel : TreeNodeViewModel
+	public class GraphMemberInfoNodeViewModel : TreeNodeViewModel, INodeWithSymbolItem
 	{
 		public GraphMemberNodeViewModel GraphMember { get; }
 
 		public SymbolItem GraphMemberInfoData { get; }
+
+		SymbolItem INodeWithSymbolItem.Symbol => GraphMemberInfoData;
 
 		public ISymbol GraphMemberInfoSymbol => GraphMemberInfoData.SymbolBase;
 
