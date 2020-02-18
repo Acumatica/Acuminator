@@ -249,7 +249,8 @@
     <Compile Include="Settings\CodeAnalysisSettingsFromOptionsPage.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\Icon.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\TreeNodeToImageSourceConverter.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Base\INodeWithSymbolInfo.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Base\INodeWithSymbolItem.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\NodeDeclarationOrderComparer.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\TreeSorter.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\SortType.cs" />
     <Compile Include="Tool Windows\CodeMap\Tooltips\TreeNodeToTooltipConverter.cs" />
