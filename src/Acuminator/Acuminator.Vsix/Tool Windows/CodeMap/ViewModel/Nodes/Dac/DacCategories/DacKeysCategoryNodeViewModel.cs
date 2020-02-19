@@ -25,7 +25,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override IEnumerable<SymbolItem> GetCategoryDacNodeSymbols() => DacModel.DeclaredDacProperties.Where(p => p.IsKey);
 
-		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) =>
-			treeVisitor.VisitNode(this, cancellationToken);
+		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) => treeVisitor.VisitNode(this);
 	}
 }

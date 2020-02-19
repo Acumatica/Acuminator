@@ -39,7 +39,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 		}
 
-		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) =>
-			treeVisitor.VisitNode(this, cancellationToken);
+		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) => treeVisitor.VisitNode(this);
 	}
 }

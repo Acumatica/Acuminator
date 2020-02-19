@@ -20,7 +20,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			ChildrenSortType = SortType.Alphabet;
 		}
 
-		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) =>
-			treeVisitor.VisitNode(this, cancellationToken);
+		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) => treeVisitor.VisitNode(this);
 	}
 }

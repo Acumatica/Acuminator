@@ -61,8 +61,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override Task NavigateToItemAsync() => GraphMemberInfoSymbol.NavigateToAsync();
 
-		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) =>
-			treeVisitor.VisitNode(this, cancellationToken);
+		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) => treeVisitor.VisitNode(this);
 
 		public override bool IsSortTypeSupported(SortType sortType) => sortType == SortType.Alphabet || sortType == SortType.Declaration;
 	}
