@@ -112,26 +112,28 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual Task NavigateToItemAsync() => Microsoft.VisualStudio.Threading.TplExtensions.CompletedTask;
 
-		public virtual void AcceptBuilder(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation)
-		{
-			treeBuilder.ThrowOnNull(nameof(treeBuilder));
-			var children = CreateChildren(treeBuilder, expandChildren, cancellation)?.ToList();
+		public abstract void AcceptVisitor(CodeMapTreeVisitor treeVisitor, CancellationToken cancellationToken);
 
-			if (children.IsNullOrEmpty())
-				return;
+		//public virtual void AcceptBuilder(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation)
+		//{
+		//	treeBuilder.ThrowOnNull(nameof(treeBuilder));
+		//	var children = CreateChildren(treeBuilder, expandChildren, cancellation)?.ToList();
 
-			foreach (var child in children)
-			{
-				child?.AcceptBuilder(treeBuilder, expandChildren, cancellation);
-			}
+		//	if (children.IsNullOrEmpty())
+		//		return;
 
-			var childrenToAdd = children.Where(c => c != null && (c.Children.Count > 0 || c.DisplayNodeWithoutChildren));
+		//	foreach (var child in children)
+		//	{
+		//		child?.AcceptBuilder(treeBuilder, expandChildren, cancellation);
+		//	}
 
-			Children.Reset(childrenToAdd);
-		}
+		//	var childrenToAdd = children.Where(c => c != null && (c.Children.Count > 0 || c.DisplayNodeWithoutChildren));
 
-		protected abstract IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren,
-																	     CancellationToken cancellation);
+		//	Children.Reset(childrenToAdd);
+		//}
+
+		//protected abstract IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren,
+		//															     CancellationToken cancellation);
 
 		public virtual void ExpandOrCollapseAll(bool expand)
 		{
@@ -145,23 +147,23 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// </summary>
 		public virtual bool IsSortTypeSupported(SortType sortType) => false;
 
-		public virtual void AcceptSorter(TreeNodesSorter sorter, SortType sortType, SortDirection sortDirection, bool sortDescendants)
-		{
-			sorter.ThrowOnNull(nameof(sorter));
+		//public virtual void AcceptSorter(TreeNodesSorter sorter, SortType sortType, SortDirection sortDirection, bool sortDescendants)
+		//{
+		//	sorter.ThrowOnNull(nameof(sorter));
 
-			ChildrenSortType = sortType;
-			ChildrenSortDirection = sortDirection;
-			var sorted = sorter.SortNodes(Children, sortType, sortDirection).ToList(capacity: Children.Count) ?? Enumerable.Empty<TreeNodeViewModel>();
+		//	ChildrenSortType = sortType;
+		//	ChildrenSortDirection = sortDirection;
+		//	var sorted = sorter.SortNodes(Children, sortType, sortDirection).ToList(capacity: Children.Count) ?? Enumerable.Empty<TreeNodeViewModel>();
 
-			Children.Reset(sorted);
+		//	Children.Reset(sorted);
 
-			if (sortDescendants && Children.Count > 0)
-			{
-				foreach (var childNode in Children)
-				{
-					childNode.AcceptSorter(sorter, sortType, sortDirection, sortDescendants);
-				}
-			}
-		}
+		//	if (sortDescendants && Children.Count > 0)
+		//	{
+		//		foreach (var childNode in Children)
+		//		{
+		//			childNode.AcceptSorter(sorter, sortType, sortDirection, sortDescendants);
+		//		}
+		//	}
+		//}
 	}
 }

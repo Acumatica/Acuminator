@@ -31,18 +31,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 										     base(graphViewModel, graphMemberType, isExpanded)
 		{
 			_name = CategoryDescription;
-			SortType = SortType.Alphabet;
 		}
 
-		public override void AcceptBuilder(TreeBuilderBase treeBuilder, bool expandRoots, CancellationToken cancellation)
-		{
-			base.AcceptBuilder(treeBuilder, expandRoots, cancellation);
-			int eventsCount = Children.OfType<DacGroupingNodeBaseViewModel>()
-									  .Sum(dacVM => dacVM.EventsCount);
-			if (Children.Count <= 0)
-				return;
+		//public override void AcceptBuilder(TreeBuilderBase treeBuilder, bool expandRoots, CancellationToken cancellation)
+		//{
+		//	base.AcceptBuilder(treeBuilder, expandRoots, cancellation);
+		//	int eventsCount = Children.OfType<DacGroupingNodeBaseViewModel>()
+		//							  .Sum(dacVM => dacVM.EventsCount);
+		//	if (Children.Count <= 0)
+		//		return;
 
-			Name = $"{CategoryDescription}({eventsCount})";
-		}
+		//	Name = $"{CategoryDescription}({eventsCount})";
+		//}
 	}
 }
