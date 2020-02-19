@@ -114,27 +114,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public abstract TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor, CancellationToken cancellationToken);
 
-		//public virtual void AcceptBuilder(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation)
-		//{
-		//	treeBuilder.ThrowOnNull(nameof(treeBuilder));
-		//	var children = CreateChildren(treeBuilder, expandChildren, cancellation)?.ToList();
-
-		//	if (children.IsNullOrEmpty())
-		//		return;
-
-		//	foreach (var child in children)
-		//	{
-		//		child?.AcceptBuilder(treeBuilder, expandChildren, cancellation);
-		//	}
-
-		//	var childrenToAdd = children.Where(c => c != null && (c.Children.Count > 0 || c.DisplayNodeWithoutChildren));
-
-		//	Children.Reset(childrenToAdd);
-		//}
-
-		//protected abstract IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren,
-		//															     CancellationToken cancellation);
-
 		public virtual void ExpandOrCollapseAll(bool expand)
 		{
 			IsExpanded = expand;

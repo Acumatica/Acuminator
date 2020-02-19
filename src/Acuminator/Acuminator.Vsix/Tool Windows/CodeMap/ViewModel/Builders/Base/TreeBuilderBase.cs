@@ -58,7 +58,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 				foreach (TreeNodeViewModel root in roots)
 				{
-					root.AcceptVisitor(this, cancellation);
+					BuildSubTree(root, cancellation);
 				}
 			}
 			finally
@@ -90,5 +90,22 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		protected abstract TreeNodeViewModel CreateRoot(ISemanticModel rootSemanticModel, TreeViewModel tree, CancellationToken cancellation);
+
+		protected virtual void BuildSubTree(TreeNodeViewModel subtreeRoot, CancellationToken cancellation)
+		{
+			var children = subtreeRoot.AcceptVisitor(this, cancellation)?.ToList();
+
+			if (children.IsNullOrEmpty())
+				return;
+
+			foreach (var child in children)
+			{
+				BuildSubTree(child, cancellation);
+			}
+
+			var childrenToAdd = children.Where(c => c != null && (c.Children.Count > 0 || c.DisplayNodeWithoutChildren));
+
+			subtreeRoot.Children.Reset(childrenToAdd);
+		}
 	}
 }
