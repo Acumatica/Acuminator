@@ -18,6 +18,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			set;
 		}
 
+		protected CancellationToken Cancellation 
+		{ 
+			get;
+			private set;
+		} = CancellationToken.None;
+
 		protected TreeBuilderBase() : base(Enumerable.Empty<TreeNodeViewModel>())
 		{
 		}
@@ -27,20 +33,34 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public TreeViewModel BuildCodeMapTree(CodeMapWindowViewModel windowViewModel, bool expandRoots, bool expandChildren, CancellationToken cancellation)
 		{
 			windowViewModel.ThrowOnNull(nameof(windowViewModel));
-			cancellation.ThrowIfCancellationRequested();
+
+			try
+			{
+				Cancellation = cancellation;
+				return BuildCodeMapTree(windowViewModel, expandRoots, expandChildren);
+			}
+			finally
+			{
+				Cancellation = CancellationToken.None;
+			}		
+		}
+
+		protected TreeViewModel BuildCodeMapTree(CodeMapWindowViewModel windowViewModel, bool expandRoots, bool expandChildren)
+		{
+			Cancellation.ThrowIfCancellationRequested();
 
 			TreeViewModel codeMapTree = CreateEmptyCodeMapTree(windowViewModel);
 
 			if (codeMapTree == null)
 				return null;
 
-			cancellation.ThrowIfCancellationRequested();
+			Cancellation.ThrowIfCancellationRequested();
 			List<TreeNodeViewModel> roots;
 
 			try
 			{
 				ExpandCreatedNodes = expandRoots;
-				roots = CreateRoots(codeMapTree, cancellation)?.Where(root => root != null).ToList();
+				roots = CreateRoots(codeMapTree)?.Where(root => root != null).ToList();
 			}
 			finally
 			{
@@ -49,8 +69,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (roots.IsNullOrEmpty())
 				return codeMapTree;
-	
-			cancellation.ThrowIfCancellationRequested();
+
+			Cancellation.ThrowIfCancellationRequested();
 
 			try
 			{
@@ -58,7 +78,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 				foreach (TreeNodeViewModel root in roots)
 				{
-					BuildSubTree(root, cancellation);
+					BuildSubTree(root);
 				}
 			}
 			finally
@@ -72,15 +92,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return codeMapTree;
 		}
 
-		protected virtual IEnumerable<TreeNodeViewModel> CreateRoots(TreeViewModel tree, CancellationToken cancellation)
+		protected virtual IEnumerable<TreeNodeViewModel> CreateRoots(TreeViewModel tree)
 		{
 			if (tree.CodeMapViewModel.DocumentModel == null)
 				yield break;
 
 			foreach (ISemanticModel rootSemanticModel in tree.CodeMapViewModel.DocumentModel.CodeMapSemanticModels)
 			{
-				cancellation.ThrowIfCancellationRequested();
-				TreeNodeViewModel rootVM = CreateRoot(rootSemanticModel, tree, cancellation);
+				Cancellation.ThrowIfCancellationRequested();
+				TreeNodeViewModel rootVM = CreateRoot(rootSemanticModel, tree);
 
 				if (rootVM != null)
 				{
@@ -89,9 +109,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		protected abstract TreeNodeViewModel CreateRoot(ISemanticModel rootSemanticModel, TreeViewModel tree, CancellationToken cancellation);
+		protected abstract TreeNodeViewModel CreateRoot(ISemanticModel rootSemanticModel, TreeViewModel tree);
 
-		protected virtual void BuildSubTree(TreeNodeViewModel subtreeRoot, CancellationToken cancellation)
+		protected virtual void BuildSubTree(TreeNodeViewModel subtreeRoot)
 		{
 			var children = subtreeRoot.AcceptVisitor(this)?.ToList();
 
@@ -100,7 +120,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			foreach (var child in children)
 			{
-				BuildSubTree(child, cancellation);
+				BuildSubTree(child);
 			}
 
 			var childrenToAdd = children.Where(c => c != null && (c.Children.Count > 0 || c.DisplayNodeWithoutChildren));
