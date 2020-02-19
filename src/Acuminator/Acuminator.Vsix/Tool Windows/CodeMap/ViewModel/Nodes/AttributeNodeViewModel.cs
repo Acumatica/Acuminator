@@ -12,7 +12,6 @@ using Acuminator.Vsix.Utilities.Navigation;
 using Acuminator.Utilities.Roslyn.ProjectSystem;
 using System.Threading.Tasks;
 using System.Threading;
-using Acuminator.Vsix.ToolWindows.CodeMap.Visitor;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
