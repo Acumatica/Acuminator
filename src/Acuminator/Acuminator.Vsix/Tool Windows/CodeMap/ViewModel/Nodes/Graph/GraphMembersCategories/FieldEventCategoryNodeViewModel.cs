@@ -23,7 +23,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 							  .Concat(GraphSemanticModel.ExceptionHandlingEvents)
 							  .Concat(GraphSemanticModel.CommandPreparingEvents);
 
-		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor, CancellationToken cancellationToken) =>
+		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) =>
 			treeVisitor.VisitNode(this, cancellationToken);
 	}
 }

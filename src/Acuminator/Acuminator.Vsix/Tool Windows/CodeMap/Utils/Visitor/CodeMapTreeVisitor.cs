@@ -26,6 +26,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual TResult DefaultVisit(TreeNodeViewModel nodeViewModel) => DefaultValue;
 
-		public virtual TResult VisitNode(AttributeNodeViewModel attributeNode) => DefaultVisit(attributeNode, cancellation);	
+		public virtual TResult VisitNode(AttributeNodeViewModel attributeNode) => DefaultVisit(attributeNode);	
 	}
 }

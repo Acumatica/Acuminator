@@ -107,42 +107,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			Tree = tree;
 			_isExpanded = isExpanded;
-			_childrenSortType = SortType.Declaration;
 		}
 
 		public virtual Task NavigateToItemAsync() => Microsoft.VisualStudio.Threading.TplExtensions.CompletedTask;
 
-		public abstract TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor, CancellationToken cancellationToken);
+		public abstract TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor);
 
 		public virtual void ExpandOrCollapseAll(bool expand)
 		{
 			IsExpanded = expand;
 			Children.ForEach(childNode => childNode.ExpandOrCollapseAll(expand));
 		}
-
-		/// <summary>
-		/// This method checks if the node can be sorted with the specified <paramref name="sortType"/> and reordered by sorting of code map nodes. 
-		/// Not sortable nodes will always be placed first.
-		/// </summary>
-		public virtual bool IsSortTypeSupported(SortType sortType) => false;
-
-		//public virtual void AcceptSorter(TreeNodesSorter sorter, SortType sortType, SortDirection sortDirection, bool sortDescendants)
-		//{
-		//	sorter.ThrowOnNull(nameof(sorter));
-
-		//	ChildrenSortType = sortType;
-		//	ChildrenSortDirection = sortDirection;
-		//	var sorted = sorter.SortNodes(Children, sortType, sortDirection).ToList(capacity: Children.Count) ?? Enumerable.Empty<TreeNodeViewModel>();
-
-		//	Children.Reset(sorted);
-
-		//	if (sortDescendants && Children.Count > 0)
-		//	{
-		//		foreach (var childNode in Children)
-		//		{
-		//			childNode.AcceptSorter(sorter, sortType, sortDirection, sortDescendants);
-		//		}
-		//	}
-		//}
 	}
 }

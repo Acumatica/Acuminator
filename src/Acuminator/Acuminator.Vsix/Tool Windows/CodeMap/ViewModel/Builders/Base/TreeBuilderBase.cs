@@ -93,7 +93,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected virtual void BuildSubTree(TreeNodeViewModel subtreeRoot, CancellationToken cancellation)
 		{
-			var children = subtreeRoot.AcceptVisitor(this, cancellation)?.ToList();
+			var children = subtreeRoot.AcceptVisitor(this)?.ToList();
 
 			if (children.IsNullOrEmpty())
 				return;
