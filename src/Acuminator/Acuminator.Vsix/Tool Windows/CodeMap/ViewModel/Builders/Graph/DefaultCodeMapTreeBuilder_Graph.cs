@@ -13,22 +13,21 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public partial class DefaultCodeMapTreeBuilder : TreeBuilderBase
 	{
-		protected delegate DacGroupingNodeBaseViewModel DacVmConstructor<TEventInfo>(GraphEventCategoryNodeViewModel graphEventCategory, 
-																				     string dacName, IEnumerable<TEventInfo> eventInfos,
-																				     bool expandChildren)
+		protected delegate DacGroupingNodeBaseViewModel DacVmConstructor<TEventInfo>(GraphEventCategoryNodeViewModel graphEventCategory,
+																					 string dacName, IEnumerable<TEventInfo> eventInfos)
 		where TEventInfo : GraphEventInfoBase<TEventInfo>;
 
-		protected delegate DacFieldGroupingNodeBaseViewModel DacFieldVmConstructor(DacGroupingNodeBaseViewModel dacNodeVm, string dacName, 
-																				   IEnumerable<GraphFieldEventInfo> fieldEvents, bool expandChildren);
-		protected virtual GraphNodeViewModel CreateGraphNode(GraphSemanticModelForCodeMap graph, TreeViewModel tree, bool expand) =>
-			new GraphNodeViewModel(graph, tree, expand);
+		protected delegate DacFieldGroupingNodeBaseViewModel DacFieldVmConstructor(DacGroupingNodeBaseViewModel dacNodeVm, string dacName,
+																				   IEnumerable<GraphFieldEventInfo> fieldEvents);
+		protected virtual GraphNodeViewModel CreateGraphNode(GraphSemanticModelForCodeMap graph, TreeViewModel tree) =>
+			new GraphNodeViewModel(graph, tree, ExpandCreatedNodes);
 
-		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(GraphNodeViewModel graph, bool expandChildren, CancellationToken cancellation)
+		public override IEnumerable<TreeNodeViewModel> VisitNode(GraphNodeViewModel graph, CancellationToken cancellation)
 		{
 			foreach (GraphMemberType graphMemberType in GetGraphMemberTypesInOrder())
 			{
 				cancellation.ThrowIfCancellationRequested();
-				GraphMemberCategoryNodeViewModel graphMemberCategory = CreateCategory(graph, graphMemberType, expandChildren);
+				GraphMemberCategoryNodeViewModel graphMemberCategory = CreateCategory(graph, graphMemberType);
 
 				if (graphMemberCategory != null)
 					yield return graphMemberCategory;
@@ -47,22 +46,22 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			yield return GraphMemberType.NestedGraph;
 		}
 
-		protected virtual GraphMemberCategoryNodeViewModel CreateCategory(GraphNodeViewModel graph, GraphMemberType graphMemberType, bool isExpanded)
+		protected virtual GraphMemberCategoryNodeViewModel CreateCategory(GraphNodeViewModel graph, GraphMemberType graphMemberType)
 		{
 			switch (graphMemberType)
 			{
 				case GraphMemberType.View:
-					return new ViewCategoryNodeViewModel(graph, isExpanded);
+					return new ViewCategoryNodeViewModel(graph, ExpandCreatedNodes);
 				case GraphMemberType.Action:
-					return new ActionCategoryNodeViewModel(graph, isExpanded);
+					return new ActionCategoryNodeViewModel(graph, ExpandCreatedNodes);
 				case GraphMemberType.CacheAttached:
-					return new CacheAttachedCategoryNodeViewModel(graph, isExpanded);
+					return new CacheAttachedCategoryNodeViewModel(graph, ExpandCreatedNodes);
 				case GraphMemberType.RowEvent:
-					return new RowEventCategoryNodeViewModel(graph, isExpanded);
+					return new RowEventCategoryNodeViewModel(graph, ExpandCreatedNodes);
 				case GraphMemberType.FieldEvent:
-					return new FieldEventCategoryNodeViewModel(graph, isExpanded);
+					return new FieldEventCategoryNodeViewModel(graph, ExpandCreatedNodes);
 				case GraphMemberType.PXOverride:
-					return new PXOverridesCategoryNodeViewModel(graph, isExpanded);
+					return new PXOverridesCategoryNodeViewModel(graph, ExpandCreatedNodes);
 				case GraphMemberType.NestedDAC:
 				case GraphMemberType.NestedGraph:
 				default:
@@ -70,37 +69,34 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-
-		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(ActionCategoryNodeViewModel actionCategory, bool expandChildren, 
-																				 CancellationToken cancellation)
+		public override IEnumerable<TreeNodeViewModel> VisitNode(ActionCategoryNodeViewModel actionCategory, CancellationToken cancellation)
 		{
-			return CreateGraphCategoryChildren<ActionInfo>(actionCategory, expandChildren, constructor: actionInfo => new ActionNodeViewModel(actionCategory, actionInfo), 
+			return CreateGraphCategoryChildren<ActionInfo>(actionCategory, constructor: actionInfo => new ActionNodeViewModel(actionCategory, actionInfo, ExpandCreatedNodes),
 														   cancellation);
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(ViewCategoryNodeViewModel viewCategory, bool expandChildren, CancellationToken cancellation)
+		public override IEnumerable<TreeNodeViewModel> VisitNode(ViewCategoryNodeViewModel viewCategory, CancellationToken cancellation)
 		{
-			return CreateGraphCategoryChildren<DataViewInfo>(viewCategory, expandChildren, constructor: viewInfo => new ViewNodeViewModel(viewCategory, viewInfo),
-														     cancellation);
+			return CreateGraphCategoryChildren<DataViewInfo>(viewCategory, constructor: viewInfo => new ViewNodeViewModel(viewCategory, viewInfo, ExpandCreatedNodes),
+															 cancellation);
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(PXOverridesCategoryNodeViewModel pxOverridesCategory,
-																				 bool expandChildren, CancellationToken cancellation)
+		public override IEnumerable<TreeNodeViewModel> VisitNode(PXOverridesCategoryNodeViewModel pxOverridesCategory, CancellationToken cancellation)
 		{
-			return CreateGraphCategoryChildren<PXOverrideInfoForCodeMap>(pxOverridesCategory, expandChildren, 
-																		 constructor: pxOverrideInfo => new PXOverrideNodeViewModel(pxOverridesCategory, pxOverrideInfo),
+			return CreateGraphCategoryChildren<PXOverrideInfoForCodeMap>(pxOverridesCategory,
+																		 constructor: pxOverrideInfo => new PXOverrideNodeViewModel(pxOverridesCategory, pxOverrideInfo, ExpandCreatedNodes),
 																		 cancellation);
 		}
 
 		protected virtual IEnumerable<TreeNodeViewModel> CreateGraphCategoryChildren<TSymbolInfo>(GraphMemberCategoryNodeViewModel graphMemberCategory,
-																								  bool isExpanded, Func<TSymbolInfo, TreeNodeViewModel> constructor,
+																								  Func<TSymbolInfo, TreeNodeViewModel> constructor,
 																								  CancellationToken cancellation)
 		where TSymbolInfo : SymbolItem
 		{
 			IEnumerable<SymbolItem> categoryTreeNodes = graphMemberCategory.CheckIfNull(nameof(graphMemberCategory))
 																		   .GetCategoryGraphNodeSymbols();
 			if (categoryTreeNodes.IsNullOrEmpty())
-				return Enumerable.Empty<TreeNodeViewModel>();
+				return DefaultValue;
 
 			cancellation.ThrowIfCancellationRequested();
 			var graphSemanticModel = graphMemberCategory.GraphSemanticModel;
@@ -114,33 +110,30 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return graphMemberViewModels;
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(RowEventCategoryNodeViewModel rowEventCategory, bool expandChildren,
-																				 CancellationToken cancellation)
+		public override IEnumerable<TreeNodeViewModel> VisitNode(RowEventCategoryNodeViewModel rowEventCategory, CancellationToken cancellation)
 		{
-			return CreateEventsCategoryChildren<GraphRowEventInfo>(rowEventCategory, 
-							(eventCategory, dacName, rowEvents, isExpanded) => new DacGroupingNodeForRowEventViewModel(eventCategory, dacName, rowEvents, isExpanded),
-							expandChildren, cancellation);
+			return CreateEventsCategoryChildren<GraphRowEventInfo>(rowEventCategory,
+							(eventCategory, dacName, rowEvents) => new DacGroupingNodeForRowEventViewModel(eventCategory, dacName, rowEvents, ExpandCreatedNodes),
+							cancellation);
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(CacheAttachedCategoryNodeViewModel cacheAttachedCategory,
-																				 bool expandChildren, CancellationToken cancellation)
+		public override IEnumerable<TreeNodeViewModel> VisitNode(CacheAttachedCategoryNodeViewModel cacheAttachedCategory, CancellationToken cancellation)
 		{
 			return CreateEventsCategoryChildren<GraphFieldEventInfo>(cacheAttachedCategory,
-							(eventCategory, dacName, fieldEvents, isExpanded) => new DacGroupingNodeForCacheAttachedEventViewModel(eventCategory, dacName, fieldEvents, isExpanded),
-							expandChildren, cancellation);
+							(eventCategory, dacName, fieldEvents) => new DacGroupingNodeForCacheAttachedEventViewModel(eventCategory, dacName, fieldEvents, ExpandCreatedNodes),
+							cancellation);
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(FieldEventCategoryNodeViewModel fieldEventCategory,
-																				 bool expandChildren, CancellationToken cancellation)
+		public override IEnumerable<TreeNodeViewModel> VisitNode(FieldEventCategoryNodeViewModel fieldEventCategory, CancellationToken cancellation)
 		{
 			return CreateEventsCategoryChildren<GraphFieldEventInfo>(fieldEventCategory,
-							(eventCategory, dacName, fieldEvents, isExpanded) => new DacGroupingNodeForFieldEventViewModel(eventCategory, dacName, fieldEvents, isExpanded),
-							expandChildren, cancellation);
+							(eventCategory, dacName, fieldEvents) => new DacGroupingNodeForFieldEventViewModel(eventCategory, dacName, fieldEvents, ExpandCreatedNodes),
+							cancellation);
 		}
 
 		protected virtual IEnumerable<TreeNodeViewModel> CreateEventsCategoryChildren<TGraphEventInfo>(GraphEventCategoryNodeViewModel graphEventCategory,
 																									   DacVmConstructor<TGraphEventInfo> constructor,
-																									   bool expandChildren, CancellationToken cancellation)
+																									   CancellationToken cancellation)
 		where TGraphEventInfo : GraphEventInfoBase<TGraphEventInfo>
 		{
 			graphEventCategory.ThrowOnNull(nameof(graphEventCategory));
@@ -151,12 +144,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 														.Where(eventInfo => eventInfo.SignatureType != EventHandlerSignatureType.None);
 			if (graphCategoryEvents.IsNullOrEmpty())
 				return Enumerable.Empty<TreeNodeViewModel>();
-	
+
+			cancellation.ThrowIfCancellationRequested();
 			var dacGroupingNodesViewModels = from eventInfo in graphCategoryEvents
 											 where eventInfo.Symbol.ContainingType == graphSemanticModel.Symbol ||
 												   eventInfo.Symbol.ContainingType.OriginalDefinition == graphSemanticModel.Symbol.OriginalDefinition
 											 group eventInfo by eventInfo.DacName into graphEventsForDAC
-											 select constructor(graphEventCategory, graphEventsForDAC.Key, graphEventsForDAC, expandChildren) into dacNodeVM
+											 select constructor(graphEventCategory, graphEventsForDAC.Key, graphEventsForDAC) into dacNodeVM
 											 where dacNodeVM != null
 											 select dacNodeVM;
 
@@ -165,78 +159,70 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return sortedDacGroupingNodesViewModels;
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacGroupingNodeForRowEventViewModel dacGroupingNode, bool expandChildren,
-																				 CancellationToken cancellation)
+		public override IEnumerable<TreeNodeViewModel> VisitNode(DacGroupingNodeForRowEventViewModel dacGroupingNode, CancellationToken cancellation)
 		{
-			return dacGroupingNode.RowEvents.Select(rowEventInfo => new RowEventNodeViewModel(dacGroupingNode, rowEventInfo, expandChildren))
+			return dacGroupingNode.RowEvents.Select(rowEventInfo => new RowEventNodeViewModel(dacGroupingNode, rowEventInfo, ExpandCreatedNodes))
 											.Where(graphMemberVM => !graphMemberVM.Name.IsNullOrEmpty())
 											.OrderBy(graphMemberVM => graphMemberVM.Name);
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacGroupingNodeForCacheAttachedEventViewModel dacGroupingNode,
-																				 bool expandChildren, CancellationToken cancellation)
+		public override IEnumerable<TreeNodeViewModel> VisitNode(DacGroupingNodeForCacheAttachedEventViewModel dacGroupingNode, CancellationToken cancellation)
 		{
-			return dacGroupingNode?.AllFieldEvents.Select(fieldEvent => new CacheAttachedNodeViewModel(dacGroupingNode, fieldEvent, expandChildren))
+			return dacGroupingNode?.AllFieldEvents.Select(fieldEvent => new CacheAttachedNodeViewModel(dacGroupingNode, fieldEvent, ExpandCreatedNodes))
 												  .Where(graphMemberVM => !graphMemberVM.Name.IsNullOrEmpty())
 												  .OrderBy(graphMemberVM => graphMemberVM.Name);
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacGroupingNodeForFieldEventViewModel dacGroupingNode,
-																				 bool expandChildren, CancellationToken cancellation)
+		public override IEnumerable<TreeNodeViewModel> VisitNode(DacGroupingNodeForFieldEventViewModel dacGroupingNode, CancellationToken cancellation)
 		{
 			return CreateDacChildrenForFieldEvents(dacGroupingNode,
-						constructor: (dacVm, dacFieldName, dacFieldEvents, isExpanded) =>
-														new DacFieldGroupingNodeForFieldEventViewModel(dacVm, dacFieldName, dacFieldEvents, isExpanded),
-						expandChildren, cancellation);
+						constructor: (dacVm, dacFieldName, dacFieldEvents) => new DacFieldGroupingNodeForFieldEventViewModel(dacVm, dacFieldName, dacFieldEvents, ExpandCreatedNodes),
+						cancellation);
 		}
 
 		protected virtual IEnumerable<TreeNodeViewModel> CreateDacChildrenForFieldEvents(DacGroupingNodeForFieldEventViewModel dacEventsGroupingNode,
-																						 DacFieldVmConstructor constructor, bool expandChildren, 
-																						 CancellationToken cancellation)
+																						 DacFieldVmConstructor constructor, CancellationToken cancellation)
 		{
 			return from eventInfo in dacEventsGroupingNode.AllFieldEvents
 				   group eventInfo by eventInfo.DacFieldName
 						into dacFieldEvents
-				   select constructor(dacEventsGroupingNode, dacFieldEvents.Key, dacFieldEvents, expandChildren)
+				   select constructor(dacEventsGroupingNode, dacFieldEvents.Key, dacFieldEvents)
 						into dacFieldNodeVM
 				   where !dacFieldNodeVM.DacFieldName.IsNullOrEmpty()
 				   orderby dacFieldNodeVM.DacFieldName ascending
 				   select dacFieldNodeVM;
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacFieldGroupingNodeForFieldEventViewModel dacFieldGroupingNode, 
-																				 bool expandChildren, CancellationToken cancellation)
+		public override IEnumerable<TreeNodeViewModel> VisitNode(DacFieldGroupingNodeForFieldEventViewModel dacFieldGroupingNode, CancellationToken cancellation)
 		{
-			return dacFieldGroupingNode?.FieldEvents.Select(fieldEvent => new FieldEventNodeViewModel(dacFieldGroupingNode, fieldEvent, expandChildren))
+			return dacFieldGroupingNode?.FieldEvents.Select(fieldEvent => new FieldEventNodeViewModel(dacFieldGroupingNode, fieldEvent, ExpandCreatedNodes))
 													.Where(graphMemberVM => !graphMemberVM.Name.IsNullOrEmpty())
 													.OrderBy(graphMemberVM => graphMemberVM.Name);
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(ViewNodeViewModel viewNode, bool expandChildren, 
-																				 CancellationToken cancellation)
+		public override IEnumerable<TreeNodeViewModel> VisitNode(ViewNodeViewModel viewNode, CancellationToken cancellation)
 		{
 			var hasViewDelegate = viewNode.MemberCategory.GraphSemanticModel.ViewDelegatesByNames.TryGetValue(viewNode.MemberSymbol.Name,
 																											  out DataViewDelegateInfo viewDelegate);
 			return hasViewDelegate
 				? new GraphMemberInfoNodeViewModel(viewNode, viewDelegate, GraphMemberInfoType.ViewDelegate).ToEnumerable()
-				: base.VisitNodeAndBuildChildren(viewNode, expandChildren, cancellation);
+				: base.VisitNode(viewNode, cancellation);
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(ActionNodeViewModel actionNode, bool expandChildren,
-																				 CancellationToken cancellation)
+		public override IEnumerable<TreeNodeViewModel> VisitNode(ActionNodeViewModel actionNode, CancellationToken cancellation)
 		{
-			var hasActionHandler = actionNode.MemberCategory.GraphSemanticModel.ActionHandlersByNames.TryGetValue(actionNode.MemberSymbol.Name,
-																												  out ActionHandlerInfo actionHandler);
+			var hasActionHandler =
+				actionNode.MemberCategory.GraphSemanticModel.ActionHandlersByNames.TryGetValue(actionNode.MemberSymbol.Name,
+																							   out ActionHandlerInfo actionHandler);
 			return hasActionHandler
 				? new GraphMemberInfoNodeViewModel(actionNode, actionHandler, GraphMemberInfoType.ActionHandler).ToEnumerable()
-				: base.VisitNodeAndBuildChildren(actionNode, expandChildren, cancellation);
+				: base.VisitNode(actionNode, cancellation);
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(CacheAttachedNodeViewModel cacheAttachedNode, bool expandChildren,
-																				 CancellationToken cancellation)
+		public override IEnumerable<TreeNodeViewModel> VisitNode(CacheAttachedNodeViewModel cacheAttachedNode, CancellationToken cancellation)
 		{
 			return cacheAttachedNode?.MemberSymbol.GetAttributes()
-												  .Select(a => new AttributeNodeViewModel(cacheAttachedNode, a));			
+												  .Select(a => new AttributeNodeViewModel(cacheAttachedNode, a));
 		}
 	}
 }

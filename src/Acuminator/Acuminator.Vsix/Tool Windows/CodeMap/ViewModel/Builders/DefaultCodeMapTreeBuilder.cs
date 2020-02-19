@@ -11,16 +11,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public partial class DefaultCodeMapTreeBuilder : TreeBuilderBase
 	{
-		protected override TreeNodeViewModel CreateRoot(ISemanticModel rootSemanticModel, TreeViewModel tree, bool expandRoots,
-														CancellationToken cancellation)
+		protected override TreeNodeViewModel CreateRoot(ISemanticModel rootSemanticModel, TreeViewModel tree, CancellationToken cancellation)
 		{
 			switch (rootSemanticModel)
 			{
 				case GraphSemanticModelForCodeMap graphSemanticModel:
-					return CreateGraphNode(graphSemanticModel, tree, expandRoots);
+					return CreateGraphNode(graphSemanticModel, tree);
 
 				case DacSemanticModel dacSemanticModel:
-					return CreateDacNode(dacSemanticModel, tree, expandRoots);
+					return CreateDacNode(dacSemanticModel, tree);
 
 				default:
 					return null;
