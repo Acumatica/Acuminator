@@ -38,9 +38,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			var rootsToAdd = roots.Where(root => root.Children.Count > 0 || root.DisplayNodeWithoutChildren);
-			var sortedRoots = windowViewModel.TreeSorter.SortNodes(rootsToAdd, SortType.Declaration, SortDirection.Ascending);
 
-			codeMapTree.RootItems.AddRange(sortedRoots);
+			codeMapTree.RootItems.AddRange(rootsToAdd);
 			return codeMapTree;
 		}
 

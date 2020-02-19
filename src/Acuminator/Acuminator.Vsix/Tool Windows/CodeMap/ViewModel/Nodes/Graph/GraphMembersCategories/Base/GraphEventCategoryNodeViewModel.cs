@@ -31,6 +31,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 										     base(graphViewModel, graphMemberType, isExpanded)
 		{
 			_name = CategoryDescription;
+			SortType = SortType.Alphabet;
 		}
 
 		public override void AcceptBuilder(TreeBuilderBase treeBuilder, bool expandRoots, CancellationToken cancellation)

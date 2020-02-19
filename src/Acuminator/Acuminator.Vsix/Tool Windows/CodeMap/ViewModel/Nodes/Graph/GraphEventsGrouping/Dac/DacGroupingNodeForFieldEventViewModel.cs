@@ -16,7 +16,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 														IEnumerable<GraphFieldEventInfo> fieldEvents, bool isExpanded) :
 												   base(graphEventsCategoryVM, dacName, isExpanded)
 		{
-			AllFieldEvents = fieldEvents?.ToImmutableArray() ?? ImmutableArray.Create<GraphFieldEventInfo>(); 
+			AllFieldEvents = fieldEvents?.ToImmutableArray() ?? ImmutableArray.Create<GraphFieldEventInfo>();
+			ChildrenSortType = SortType.Alphabet;
 		}
 
 		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation) =>

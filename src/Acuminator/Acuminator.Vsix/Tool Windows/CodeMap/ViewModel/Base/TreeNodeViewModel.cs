@@ -48,7 +48,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		private SortDirection _childrenSortDirection;
+		private SortDirection _childrenSortDirection = SortDirection.Ascending;
 
 		/// <summary>
 		/// The children sort direction.
@@ -107,6 +107,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			Tree = tree;
 			_isExpanded = isExpanded;
+			_childrenSortType = SortType.Declaration;
 		}
 
 		public virtual Task NavigateToItemAsync() => Microsoft.VisualStudio.Threading.TplExtensions.CompletedTask;
@@ -124,8 +125,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				child?.AcceptBuilder(treeBuilder, expandChildren, cancellation);
 			}
 
-			var childrenToSet = children.Where(c => c != null && (c.Children.Count > 0 || c.DisplayNodeWithoutChildren));
-			Children.Reset(childrenToSet);
+			var childrenToAdd = children.Where(c => c != null && (c.Children.Count > 0 || c.DisplayNodeWithoutChildren));
+
+			Children.Reset(childrenToAdd);
 		}
 
 		protected abstract IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren,

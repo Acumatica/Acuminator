@@ -14,6 +14,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 																IEnumerable<GraphFieldEventInfo> cacheAttachedEvents, bool isExpanded) :
 														   base(graphEventsCategoryVM, dacName, cacheAttachedEvents, isExpanded)
 		{
+			ChildrenSortType = SortType.Declaration;
 		}
 
 		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation) =>

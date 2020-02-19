@@ -107,8 +107,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			var graphMemberViewModels = from graphMemberInfo in categoryTreeNodes.OfType<TSymbolInfo>()
 										where graphMemberInfo.SymbolBase.ContainingType == graphSemanticModel.Symbol ||
 											  graphMemberInfo.SymbolBase.ContainingType.OriginalDefinition == graphSemanticModel.Symbol.OriginalDefinition
-										orderby graphMemberInfo.SymbolBase.Name
 										select constructor(graphMemberInfo);
+
+			var sorter = graphMemberCategory.Tree.CodeMapViewModel.TreeSorter;
+			var sortedGraphMemberViewModels = sorter.SortNodes(graphMemberViewModels, SortType.Declaration, SortDirection.Ascending);
 			return graphMemberViewModels;
 		}
 
@@ -149,17 +151,18 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 														.Where(eventInfo => eventInfo.SignatureType != EventHandlerSignatureType.None);
 			if (graphCategoryEvents.IsNullOrEmpty())
 				return Enumerable.Empty<TreeNodeViewModel>();
-
+	
 			var dacGroupingNodesViewModels = from eventInfo in graphCategoryEvents
 											 where eventInfo.Symbol.ContainingType == graphSemanticModel.Symbol ||
 												   eventInfo.Symbol.ContainingType.OriginalDefinition == graphSemanticModel.Symbol.OriginalDefinition
 											 group eventInfo by eventInfo.DacName into graphEventsForDAC
 											 select constructor(graphEventCategory, graphEventsForDAC.Key, graphEventsForDAC, expandChildren) into dacNodeVM
 											 where dacNodeVM != null
-											 orderby dacNodeVM.DacName ascending
 											 select dacNodeVM;
 
-			return dacGroupingNodesViewModels;
+			var sorter = graphEventCategory.Tree.CodeMapViewModel.TreeSorter;
+			var sortedDacGroupingNodesViewModels = sorter.SortNodes(dacGroupingNodesViewModels, SortType.Alphabet, SortDirection.Ascending);
+			return sortedDacGroupingNodesViewModels;
 		}
 
 		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacGroupingNodeForRowEventViewModel dacGroupingNode, bool expandChildren,
