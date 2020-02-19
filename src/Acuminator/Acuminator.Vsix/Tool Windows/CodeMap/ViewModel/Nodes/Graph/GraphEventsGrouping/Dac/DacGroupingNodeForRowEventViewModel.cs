@@ -19,7 +19,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			RowEvents = rowEvents?.ToImmutableArray() ?? ImmutableArray.Create<GraphRowEventInfo>(); 
 		}
 
-		public override void AcceptVisitor(CodeMapTreeVisitor treeVisitor, CancellationToken cancellationToken) =>
+		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor, CancellationToken cancellationToken) =>
 			treeVisitor.VisitNode(this, cancellationToken);
 	}
 }

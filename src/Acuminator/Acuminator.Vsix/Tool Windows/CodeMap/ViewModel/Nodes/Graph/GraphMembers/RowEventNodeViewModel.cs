@@ -30,7 +30,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Name = eventInfo.EventType.ToString();
 		}
 
-		public override void AcceptVisitor(CodeMapTreeVisitor treeVisitor, CancellationToken cancellationToken) =>
+		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor, CancellationToken cancellationToken) =>
 			treeVisitor.VisitNode(this, cancellationToken);
 	}
 }

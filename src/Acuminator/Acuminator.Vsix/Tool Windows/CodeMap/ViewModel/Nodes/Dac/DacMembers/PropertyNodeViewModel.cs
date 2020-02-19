@@ -39,11 +39,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 		}
 
-		public override void AcceptVisitor(CodeMapTreeVisitor treeVisitor, CancellationToken cancellationToken) =>
+		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor, CancellationToken cancellationToken) =>
 			treeVisitor.VisitNode(this, cancellationToken);
-
-		//protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren,
-		//															     CancellationToken cancellation) =>
-		//	treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
 	}
 }

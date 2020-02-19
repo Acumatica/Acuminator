@@ -112,7 +112,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual Task NavigateToItemAsync() => Microsoft.VisualStudio.Threading.TplExtensions.CompletedTask;
 
-		public abstract void AcceptVisitor(CodeMapTreeVisitor treeVisitor, CancellationToken cancellationToken);
+		public abstract TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor, CancellationToken cancellationToken);
 
 		//public virtual void AcceptBuilder(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation)
 		//{

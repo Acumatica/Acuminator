@@ -9,20 +9,20 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// <summary>
 	/// Base class for code map tree visitor.
 	/// </summary>
-	public abstract partial class CodeMapTreeVisitor
+	public abstract partial class CodeMapTreeVisitor<TResult>
 	{
 		#region Roots
-		public virtual IEnumerable<TreeNodeViewModel> VisitNode(DacNodeViewModel dac, CancellationToken cancellation) => Enumerable.Empty<TreeNodeViewModel>();
+		public virtual TResult VisitNode(DacNodeViewModel dac, CancellationToken cancellation) => default;
 		#endregion
 
 		#region Categories
-		public virtual IEnumerable<TreeNodeViewModel> VisitNode(DacPropertiesCategoryNodeViewModel dacPropertiesCategory, CancellationToken cancellation) => Enumerable.Empty<TreeNodeViewModel>();
+		public virtual TResult VisitNode(DacPropertiesCategoryNodeViewModel dacPropertiesCategory, CancellationToken cancellation) => default;
 
-		public virtual IEnumerable<TreeNodeViewModel> VisitNode(DacKeysCategoryNodeViewModel dacKeysCategory, CancellationToken cancellation) => Enumerable.Empty<TreeNodeViewModel>();
+		public virtual TResult VisitNode(DacKeysCategoryNodeViewModel dacKeysCategory, CancellationToken cancellation) => default;
 		#endregion
 
 		#region Leaf Nodes
-		public virtual IEnumerable<TreeNodeViewModel> VisitNode(PropertyNodeViewModel property, CancellationToken cancellation) => Enumerable.Empty<TreeNodeViewModel>();
+		public virtual TResult VisitNode(PropertyNodeViewModel property, CancellationToken cancellation) => default;
 		#endregion
 	}
 }

@@ -9,68 +9,50 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// <summary>
 	/// Base class for code map tree visitor.
 	/// </summary>
-	public abstract partial class CodeMapTreeVisitor
+	public abstract partial class CodeMapTreeVisitor<TResult>
 	{
 		#region Roots
-		public virtual IEnumerable<TreeNodeViewModel> VisitNode(GraphNodeViewModel graph, CancellationToken cancellation) =>
-			Enumerable.Empty<TreeNodeViewModel>();
+		public virtual TResult VisitNode(GraphNodeViewModel graph, CancellationToken cancellation) => default;
 		#endregion
 
 		#region Categories
-		public virtual IEnumerable<TreeNodeViewModel> VisitNode(ActionCategoryNodeViewModel actionCategory, CancellationToken cancellation) =>
-			Enumerable.Empty<TreeNodeViewModel>();
+		public virtual TResult VisitNode(ActionCategoryNodeViewModel actionCategory, CancellationToken cancellation) => default;
 
-		public virtual IEnumerable<TreeNodeViewModel> VisitNode(ViewCategoryNodeViewModel viewCategory, CancellationToken cancellation) =>
-			Enumerable.Empty<TreeNodeViewModel>();
+		public virtual TResult VisitNode(ViewCategoryNodeViewModel viewCategory, CancellationToken cancellation) => default;
 
-		public virtual IEnumerable<TreeNodeViewModel> VisitNode(CacheAttachedCategoryNodeViewModel cacheAttachedCategory, CancellationToken cancellation) =>
-			Enumerable.Empty<TreeNodeViewModel>();
+		public virtual TResult VisitNode(CacheAttachedCategoryNodeViewModel cacheAttachedCategory, CancellationToken cancellation) => default;
 
-		public virtual IEnumerable<TreeNodeViewModel> VisitNode(RowEventCategoryNodeViewModel rowEventCategory, CancellationToken cancellation) =>
-			Enumerable.Empty<TreeNodeViewModel>();
+		public virtual TResult VisitNode(RowEventCategoryNodeViewModel rowEventCategory, CancellationToken cancellation) => default;
 
-		public virtual IEnumerable<TreeNodeViewModel> VisitNode(FieldEventCategoryNodeViewModel rowEventCategory, CancellationToken cancellation) =>
-			Enumerable.Empty<TreeNodeViewModel>();
+		public virtual TResult VisitNode(FieldEventCategoryNodeViewModel rowEventCategory, CancellationToken cancellation) => default;
 
-		public virtual IEnumerable<TreeNodeViewModel> VisitNode(PXOverridesCategoryNodeViewModel pxOverridesCategory, CancellationToken cancellation) =>
-			Enumerable.Empty<TreeNodeViewModel>();
+		public virtual TResult VisitNode(PXOverridesCategoryNodeViewModel pxOverridesCategory, CancellationToken cancellation) => default;
 		#endregion
 
 		#region DAC Grouping
-		public virtual IEnumerable<TreeNodeViewModel> VisitNode(DacGroupingNodeForRowEventViewModel dacGroupingNode, CancellationToken cancellation) =>
-			Enumerable.Empty<TreeNodeViewModel>();
+		public virtual TResult VisitNode(DacGroupingNodeForRowEventViewModel dacGroupingNode, CancellationToken cancellation) => default;
 
-		public virtual IEnumerable<TreeNodeViewModel> VisitNode(DacGroupingNodeForCacheAttachedEventViewModel dacGroupingNode, CancellationToken cancellation) =>
-			Enumerable.Empty<TreeNodeViewModel>();
+		public virtual TResult VisitNode(DacGroupingNodeForCacheAttachedEventViewModel dacGroupingNode, CancellationToken cancellation) => default;
 
-		public virtual IEnumerable<TreeNodeViewModel> VisitNode(DacGroupingNodeForFieldEventViewModel dacGroupingNode, CancellationToken cancellation) =>
-			Enumerable.Empty<TreeNodeViewModel>();
+		public virtual TResult VisitNode(DacGroupingNodeForFieldEventViewModel dacGroupingNode, CancellationToken cancellation) => default;
 
-		public virtual IEnumerable<TreeNodeViewModel> VisitNode(DacFieldGroupingNodeForFieldEventViewModel dacFieldGroupingNode, CancellationToken cancellation) =>
-			Enumerable.Empty<TreeNodeViewModel>();
+		public virtual TResult VisitNode(DacFieldGroupingNodeForFieldEventViewModel dacFieldGroupingNode, CancellationToken cancellation) => default;
 		#endregion
 
 		#region Leaf Nodes
-		public virtual IEnumerable<TreeNodeViewModel> VisitNode(PXOverrideNodeViewModel pxOverrideNode, CancellationToken cancellation) =>
-			Enumerable.Empty<TreeNodeViewModel>();
+		public virtual TResult VisitNode(PXOverrideNodeViewModel pxOverrideNode, CancellationToken cancellation) => default;
 
-		public virtual IEnumerable<TreeNodeViewModel> VisitNode(ActionNodeViewModel actionNode, CancellationToken cancellation) =>
-			Enumerable.Empty<TreeNodeViewModel>();
+		public virtual TResult VisitNode(ActionNodeViewModel actionNode, CancellationToken cancellation) => default;
 
-		public virtual IEnumerable<TreeNodeViewModel> VisitNode(ViewNodeViewModel viewNode, CancellationToken cancellation) =>
-			Enumerable.Empty<TreeNodeViewModel>();
+		public virtual TResult VisitNode(ViewNodeViewModel viewNode, CancellationToken cancellation) => default;
 
-		public virtual IEnumerable<TreeNodeViewModel> VisitNode(CacheAttachedNodeViewModel cacheAttachedNode, CancellationToken cancellation) =>
-			Enumerable.Empty<TreeNodeViewModel>();
+		public virtual TResult VisitNode(CacheAttachedNodeViewModel cacheAttachedNode, CancellationToken cancellation) => default;
 
-		public virtual IEnumerable<TreeNodeViewModel> VisitNode(RowEventNodeViewModel rowEventNode, CancellationToken cancellation) =>
-			Enumerable.Empty<TreeNodeViewModel>();
+		public virtual TResult VisitNode(RowEventNodeViewModel rowEventNode, CancellationToken cancellation) => default;
 
-		public virtual IEnumerable<TreeNodeViewModel> VisitNode(FieldEventNodeViewModel fieldEventNode, CancellationToken cancellation) =>
-			Enumerable.Empty<TreeNodeViewModel>();
+		public virtual TResult VisitNode(FieldEventNodeViewModel fieldEventNode, CancellationToken cancellation) => default;
 
-		public virtual IEnumerable<TreeNodeViewModel> VisitNode(GraphMemberInfoNodeViewModel graphMemberInfo, CancellationToken cancellation) =>
-			Enumerable.Empty<TreeNodeViewModel>();
+		public virtual TResult VisitNode(GraphMemberInfoNodeViewModel graphMemberInfo, CancellationToken cancellation) => default;
 		#endregion
 	}
 }
