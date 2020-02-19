@@ -16,12 +16,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected virtual DacNodeViewModel CreateDacNode(DacSemanticModel dacSemanticModel, TreeViewModel tree) =>
 			new DacNodeViewModel(dacSemanticModel, tree, ExpandCreatedNodes);
 
-		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacNodeViewModel dac, bool expandChildren, CancellationToken cancellation)
+		public override IEnumerable<TreeNodeViewModel> VisitNode(DacNodeViewModel dac, CancellationToken cancellation)
 		{
 			foreach (DacMemberCategory dacMemberCategory in GetDacMemberCategoriesInOrder())
 			{
 				cancellation.ThrowIfCancellationRequested();
-				var dacCategory = CreateCategory(dac, dacMemberCategory, expandChildren);
+				var dacCategory = CreateCategory(dac, dacMemberCategory);
 
 				if (dacCategory != null)
 				{
@@ -37,15 +37,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			yield return DacMemberCategory.FieldsWithoutProperty;
 		}
 
-		protected virtual DacMemberCategoryNodeViewModel CreateCategory(DacNodeViewModel dac, DacMemberCategory dacMemberCategory, bool isExpanded)
+		protected virtual DacMemberCategoryNodeViewModel CreateCategory(DacNodeViewModel dac, DacMemberCategory dacMemberCategory)
 		{
 			switch (dacMemberCategory)
 			{
 				case DacMemberCategory.Keys:
-					return new DacKeysCategoryNodeViewModel(dac, isExpanded);
+					return new DacKeysCategoryNodeViewModel(dac, ExpandCreatedNodes);
 
 				case DacMemberCategory.Property:
-					return new DacPropertiesCategoryNodeViewModel(dac, isExpanded);
+					return new DacPropertiesCategoryNodeViewModel(dac, ExpandCreatedNodes);
 
 				case DacMemberCategory.FieldsWithoutProperty:
 				default:
@@ -53,21 +53,19 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacKeysCategoryNodeViewModel dacKeysCategory,
-																				 bool expandChildren, CancellationToken cancellation)
+		public override IEnumerable<TreeNodeViewModel> VisitNode(DacKeysCategoryNodeViewModel dacKeysCategory, CancellationToken cancellation)
 		{
 			dacKeysCategory.ThrowOnNull(nameof(dacKeysCategory));
 			return CreateDacMemberCategoryChildren<DacPropertyInfo>(dacKeysCategory,
-																	propertyInfo => new PropertyNodeViewModel(dacKeysCategory, propertyInfo, expandChildren),
+																	propertyInfo => new PropertyNodeViewModel(dacKeysCategory, propertyInfo, ExpandCreatedNodes),
 																	cancellation);
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(DacPropertiesCategoryNodeViewModel dacPropertiesCategory,
-																				 bool expandChildren, CancellationToken cancellation)
+		public override IEnumerable<TreeNodeViewModel> VisitNode(DacPropertiesCategoryNodeViewModel dacPropertiesCategory, CancellationToken cancellation)
 		{
 			dacPropertiesCategory.ThrowOnNull(nameof(dacPropertiesCategory));
 			return CreateDacMemberCategoryChildren<DacPropertyInfo>(dacPropertiesCategory, 
-																	propertyInfo => new PropertyNodeViewModel(dacPropertiesCategory, propertyInfo, expandChildren),
+																	propertyInfo => new PropertyNodeViewModel(dacPropertiesCategory, propertyInfo, ExpandCreatedNodes),
 																	cancellation);
 		}
 
@@ -95,11 +93,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(PropertyNodeViewModel property, bool expandChildren,
-																				 CancellationToken cancellation)
+		public override IEnumerable<TreeNodeViewModel> VisitNode(PropertyNodeViewModel property, CancellationToken cancellation)
 		{
 			property.ThrowOnNull(nameof(property));
-			return property.PropertyInfo.Attributes.Select(a => new AttributeNodeViewModel(property, a.AttributeData, expandChildren));
+			return property.PropertyInfo.Attributes.Select(a => new AttributeNodeViewModel(property, a.AttributeData, ExpandCreatedNodes));
 		}
 	}
 }
