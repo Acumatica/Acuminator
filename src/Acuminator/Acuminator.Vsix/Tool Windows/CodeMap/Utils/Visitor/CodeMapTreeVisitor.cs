@@ -12,6 +12,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// </summary>
 	public abstract partial class CodeMapTreeVisitor<TResult>
 	{
-		public virtual TResult VisitNode(AttributeNodeViewModel attributeNode, CancellationToken cancellation) => default;
+		protected TResult DefaultValue { get; }
+
+		protected CodeMapTreeVisitor(TResult defaultValue)
+		{
+			DefaultValue = defaultValue;
+		}
+
+		public virtual TResult VisitNode(AttributeNodeViewModel attributeNode, CancellationToken cancellation) => DefaultValue;
 	}
 }
