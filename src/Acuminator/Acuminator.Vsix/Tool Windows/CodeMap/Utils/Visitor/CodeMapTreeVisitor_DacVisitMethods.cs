@@ -12,17 +12,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	public abstract partial class CodeMapTreeVisitor<TResult>
 	{
 		#region Roots
-		public virtual TResult VisitNode(DacNodeViewModel dac, CancellationToken cancellation) => DefaultValue;
+		public virtual TResult VisitNode(DacNodeViewModel dac) => DefaultVisit(dac);
 		#endregion
 
 		#region Categories
-		public virtual TResult VisitNode(DacPropertiesCategoryNodeViewModel dacPropertiesCategory, CancellationToken cancellation) => DefaultValue;
+		public virtual TResult VisitNode(DacPropertiesCategoryNodeViewModel dacPropertiesCategory) => DefaultVisit(dacPropertiesCategory);
 
-		public virtual TResult VisitNode(DacKeysCategoryNodeViewModel dacKeysCategory, CancellationToken cancellation) => DefaultValue;
+		public virtual TResult VisitNode(DacKeysCategoryNodeViewModel dacKeysCategory) => DefaultVisit(dacKeysCategory);
 		#endregion
 
 		#region Leaf Nodes
-		public virtual TResult VisitNode(PropertyNodeViewModel property, CancellationToken cancellation) => DefaultValue;
+		public virtual TResult VisitNode(PropertyNodeViewModel property) => DefaultVisit(property);
 		#endregion
 	}
 }

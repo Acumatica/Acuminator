@@ -19,16 +19,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			DefaultValue = defaultValue;
 		}
 
-		public virtual TResult Visit(TreeNodeViewModel nodeViewModel, CancellationToken cancellation)
-		{
-			if (nodeViewModel != null)
-			{
-				return nodeViewModel.AcceptVisitor(this, cancellation);
-			}
+		public virtual TResult Visit(TreeNodeViewModel nodeViewModel) =>
+			nodeViewModel != null
+				? nodeViewModel.AcceptVisitor(this)
+				: DefaultVisit(nodeViewModel);
 
-			return DefaultValue;
-		}
+		public virtual TResult DefaultVisit(TreeNodeViewModel nodeViewModel) => DefaultValue;
 
-		public virtual TResult VisitNode(AttributeNodeViewModel attributeNode, CancellationToken cancellation) => DefaultValue;	
+		public virtual TResult VisitNode(AttributeNodeViewModel attributeNode) => DefaultVisit(attributeNode, cancellation);	
 	}
 }
