@@ -267,8 +267,6 @@
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\RootCandidateSymbolsRetrieverDefault.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\SemanticModelFactoryDefault.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\IGroupNodeWithCyclingNavigation.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Base\TreeBuilderBase_DacVisitMethods.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Base\TreeBuilderBase_GraphVisitMethods.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Base\TreeBuilderBase.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Dac\DefaultCodeMapTreeBuilder_Dac.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\DefaultCodeMapTreeBuilder.cs" />
