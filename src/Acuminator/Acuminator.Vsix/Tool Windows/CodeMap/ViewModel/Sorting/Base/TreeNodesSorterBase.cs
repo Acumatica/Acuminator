@@ -7,9 +7,9 @@ using Acuminator.Utilities.Common;
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	/// <summary>
-	/// A Code Map tree nodes sorter.
+	/// A Code Map tree nodes sorter base class.
 	/// </summary>
-	public class TreeNodesSorter
+	public abstract class TreeNodesSorterBase
 	{
 		public List<TreeNodeViewModel> SortNodes(IEnumerable<TreeNodeViewModel> nodes, SortType sortType, SortDirection sortDirection)
 		{
