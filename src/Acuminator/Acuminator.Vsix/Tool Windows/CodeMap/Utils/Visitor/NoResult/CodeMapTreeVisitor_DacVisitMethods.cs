@@ -9,20 +9,20 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// <summary>
 	/// Base class for code map tree visitor which doesn't produce result.
 	/// </summary>
-	public abstract partial class CodeMapTreeVisitor<TResult>
+	public abstract partial class CodeMapTreeVisitor
 	{
 		#region Roots
-		public virtual TResult VisitNode(DacNodeViewModel dac) => DefaultVisit(dac);
+		public virtual void VisitNode(DacNodeViewModel dac) => DefaultVisit(dac);
 		#endregion
 
 		#region Categories
-		public virtual TResult VisitNode(DacPropertiesCategoryNodeViewModel dacPropertiesCategory) => DefaultVisit(dacPropertiesCategory);
+		public virtual void VisitNode(DacPropertiesCategoryNodeViewModel dacPropertiesCategory) => DefaultVisit(dacPropertiesCategory);
 
-		public virtual TResult VisitNode(DacKeysCategoryNodeViewModel dacKeysCategory) => DefaultVisit(dacKeysCategory);
+		public virtual void VisitNode(DacKeysCategoryNodeViewModel dacKeysCategory) => DefaultVisit(dacKeysCategory);
 		#endregion
 
 		#region Leaf Nodes
-		public virtual TResult VisitNode(PropertyNodeViewModel property) => DefaultVisit(property);
+		public virtual void VisitNode(PropertyNodeViewModel property) => DefaultVisit(property);
 		#endregion
 	}
 }

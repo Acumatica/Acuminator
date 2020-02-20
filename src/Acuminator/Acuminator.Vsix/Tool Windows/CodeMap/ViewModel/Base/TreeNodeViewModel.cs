@@ -38,7 +38,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public SortType ChildrenSortType
 		{
 			get => _childrenSortType;
-			protected set
+			set
 			{
 				if (_childrenSortType != value)
 				{
@@ -56,7 +56,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public SortDirection ChildrenSortDirection
 		{
 			get => _childrenSortDirection;
-			protected set
+			set
 			{
 				if (_childrenSortDirection != value)
 				{
@@ -112,6 +112,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public virtual Task NavigateToItemAsync() => Microsoft.VisualStudio.Threading.TplExtensions.CompletedTask;
 
 		public abstract TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor);
+
+		public abstract void AcceptVisitor(CodeMapTreeVisitor treeVisitor);
 
 		public virtual void ExpandOrCollapseAll(bool expand)
 		{

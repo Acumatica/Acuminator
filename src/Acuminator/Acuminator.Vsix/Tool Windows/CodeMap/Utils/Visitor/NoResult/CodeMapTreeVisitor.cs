@@ -15,17 +15,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected const int MaxUncheckedRecursionDepth = 20;
 		private int _recursionDepth;
 
-		public virtual TResult Visit(TreeNodeViewModel node)
+		public virtual void Visit(TreeNodeViewModel node)
 		{
 			if (node == null)
-				return DefaultValue;
+				return;
 
 			_recursionDepth++;
 
 			try
 			{
 				StackGuard.EnsureSufficientExecutionStack(_recursionDepth);
-				return node.AcceptVisitor(this);
+				node.AcceptVisitor(this);
 			}
 			finally
 			{
@@ -33,8 +33,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}	
 		}
 
-		public virtual TResult DefaultVisit(TreeNodeViewModel nodeViewModel) => DefaultValue;
+		public virtual void DefaultVisit(TreeNodeViewModel nodeViewModel) { }
 
-		public virtual TResult VisitNode(AttributeNodeViewModel attributeNode) => DefaultVisit(attributeNode);
+		public virtual void VisitNode(AttributeNodeViewModel attributeNode) => DefaultVisit(attributeNode);
 	}
 }
