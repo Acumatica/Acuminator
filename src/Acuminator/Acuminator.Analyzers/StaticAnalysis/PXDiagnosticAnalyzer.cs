@@ -110,6 +110,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 				{
 					if (!_vsixPackageLoadWasDone)
 					{
+						_vsixPackageLoadWasDone = true;
 						SearchForVsixAndEnsureItIsLoadedPackageLoaded();
 					}
 				}
@@ -121,8 +122,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		/// Calls special method <see cref="ForceLoadPackageAsync"/> to load package provided by AcuminatorVSPackage type.
 		/// </summary>
 		private static void SearchForVsixAndEnsureItIsLoadedPackageLoaded()
-		{
-			_vsixPackageLoadWasDone = true;
+		{	
 			var vsixAssembly = AppDomain.CurrentDomain.GetAssemblies()
 													  .FirstOrDefault(a => a.GetName().Name == SharedConstants.PackageName);
 			if (vsixAssembly == null)
