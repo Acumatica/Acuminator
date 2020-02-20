@@ -8,9 +8,10 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Events;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Classification;
 using EnvDTE80;
-using EnvDTE;
 using System.ComponentModel.Design;
 using Acuminator.Vsix.GoToDeclaration;
 using Acuminator.Vsix.Settings;
@@ -44,8 +45,8 @@ namespace Acuminator.Vsix
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
+	[ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
 	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.BackgroundLoad)]
-	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionOpening_string, PackageAutoLoadFlags.BackgroundLoad)]
 	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasSingleProject_string, PackageAutoLoadFlags.BackgroundLoad)]
 	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasMultipleProjects_string, PackageAutoLoadFlags.BackgroundLoad)]
 	[ProvideAutoLoad(VSConstants.UICONTEXT.Debugging_string, PackageAutoLoadFlags.BackgroundLoad)]
@@ -89,8 +90,6 @@ namespace Acuminator.Vsix
         private static int _instanceInitialized;
 
         public static AcuminatorVSPackage Instance { get; private set; }
-
-		private SolutionEvents _dteSolutionEvents;
 
 		private Lazy<GeneralOptionsPage> _generalOptionsPage = 
 			new Lazy<GeneralOptionsPage>(() => Instance.GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage, isThreadSafe: true);
@@ -141,12 +140,15 @@ namespace Acuminator.Vsix
 			InitializeLogger(progress);
 			await InitializeCommandsAsync(progress);
 
-			// Extra suppression manager initilization - in theory it should be enough to do this on solution opening but sometimes the reace condition occurs
-			// The solution is opened before the project loads and subscribes on its opening. So we add one extra call to initialize suppression manager 
-			// which is a little overhead but ensures that if we have an opened solution with loaded Acuminator then the suppression manager is initialized
-			await SetupSuppressionManagerAsync();	
+			SolutionEvents.OnAfterBackgroundSolutionLoadComplete += SolutionEvents_OnAfterBackgroundSolutionLoadComplete;
 			
-			await SubscribeOnSolutionEventsAsync();
+			bool isSolutionOpen = await IsSolutionLoadedAsync();
+
+			if (isSolutionOpen)
+			{
+				await SetupSuppressionManagerAsync();
+			}
+
 			cancellationToken.ThrowIfCancellationRequested();
 
 			InitializeCodeAnalysisSettings(progress);
@@ -200,41 +202,36 @@ namespace Acuminator.Vsix
 			OpenCodeMapWindowCommand.Initialize(this, oleCommandService);
 		}
 
-		private async System.Threading.Tasks.Task SubscribeOnSolutionEventsAsync()
+		private async System.Threading.Tasks.Task<bool> IsSolutionLoadedAsync()
 		{
-			if (!ThreadHelper.CheckAccess())
-				return;
+			await JoinableTaskFactory.SwitchToMainThreadAsync();
+			var solutionService = await this.GetServiceAsync<SVsSolution, IVsSolution>();
 
-#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
-			DTE dte = await this.GetServiceAsync<DTE>();
+			if (solutionService == null)
+				return false;
 
-			if (dte != null)
-			{
-				_dteSolutionEvents = dte.Events.SolutionEvents;						//Save DTE events object to prevent it from being GCed
-                _dteSolutionEvents.Opened += SolutionEvents_Opened;
-			}
-#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
+			int errorCode = solutionService.GetProperty((int)__VSPROPID.VSPROPID_IsSolutionOpen, out object isOpenProperty);
+			ErrorHandler.ThrowOnFailure(errorCode);
+
+			return isOpenProperty is bool isSolutionOpen && isSolutionOpen;
 		}
 
-        private void SolutionEvents_Opened()
-        {
-#pragma warning disable VSTHRD102 // Implement internal logic asynchronously
-            JoinableTaskFactory.Run(SetupSuppressionManagerAsync);
-#pragma warning restore VSTHRD102 // Implement internal logic asynchronously
-        }
-	
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
 			AcuminatorLogger?.Dispose();
 
-			if (ThreadHelper.CheckAccess() && _dteSolutionEvents != null)
-			{		
-                _dteSolutionEvents.Opened -= SolutionEvents_Opened;
-			}
+			SolutionEvents.OnAfterBackgroundSolutionLoadComplete -= SolutionEvents_OnAfterBackgroundSolutionLoadComplete;
 		}
 
-        private async System.Threading.Tasks.Task SetupSuppressionManagerAsync()
+		private void SolutionEvents_OnAfterBackgroundSolutionLoadComplete(object sender, EventArgs e)
+		{
+			#pragma warning disable VSTHRD102 // Implement internal logic asynchronously
+			JoinableTaskFactory.Run(SetupSuppressionManagerAsync);
+			#pragma warning restore VSTHRD102 // Implement internal logic asynchronously
+		}
+
+		private async System.Threading.Tasks.Task SetupSuppressionManagerAsync()
         {
             var workspace = await this.GetVSWorkspaceAsync();
             SuppressionManager.InitOrReset(workspace, generateSuppressionBase: false, 
