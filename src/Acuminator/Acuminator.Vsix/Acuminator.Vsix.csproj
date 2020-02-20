@@ -249,9 +249,12 @@
     <Compile Include="Settings\CodeAnalysisSettingsFromOptionsPage.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\Icon.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\TreeNodeToImageSourceConverter.cs" />
-    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\CodeMapTreeVisitor.cs" />
-    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\CodeMapTreeVisitor_DacVisitMethods.cs" />
-    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\CodeMapTreeVisitor_GraphVisitMethods.cs" />
+    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeVisitor.cs" />
+    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeVisitor_DacVisitMethods.cs" />
+    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeVisitor_GraphVisitMethods.cs" />
+    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\CodeMapTreeVisitor.cs" />
+    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\CodeMapTreeVisitor_DacVisitMethods.cs" />
+    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\CodeMapTreeVisitor_GraphVisitMethods.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\INodeWithSymbolItem.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\NodeDeclarationOrderComparer.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\Base\TreeNodesSorterBase.cs" />
