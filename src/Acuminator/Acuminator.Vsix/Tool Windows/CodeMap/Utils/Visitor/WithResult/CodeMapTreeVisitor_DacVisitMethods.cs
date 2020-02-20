@@ -7,7 +7,7 @@ using Acuminator.Utilities.Common;
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	/// <summary>
-	/// Base class for code map tree visitor.
+	/// Base class for code map tree visitor which produces a result.
 	/// </summary>
 	public abstract partial class CodeMapTreeVisitor<TResult>
 	{
