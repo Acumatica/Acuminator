@@ -6,11 +6,21 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Reflection;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis
 {
 	public abstract class PXDiagnosticAnalyzer : DiagnosticAnalyzer
 	{
+		private const string VsixPackageType = "AcuminatorVSPackage";
+		private const string ForceLoadPackageAsync = "ForceLoadPackageAsync";
+
+		private static volatile bool _vsixPackageLoadWasDone;
+		private static object _acuminatorVsixPackageLoaderLock = new object();
+
 		private const string AcuminatorTestsName = "Acuminator.Tests";
 
 		protected CodeAnalysisSettings CodeAnalysisSettings { get; }
@@ -34,6 +44,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		
 		public override void Initialize(AnalysisContext context)
 		{
+			EnsurePackageLoaded();
+
 			if (!CodeAnalysisSettings.StaticAnalysisEnabled)
 				return;
 
@@ -80,6 +92,47 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			return false;
 		}
 
-		internal abstract void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext);	
+		internal abstract void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext);
+
+		private static void EnsurePackageLoaded()
+		{
+			if (!_vsixPackageLoadWasDone)
+			{
+				lock (_acuminatorVsixPackageLoaderLock)
+				{
+					if (!_vsixPackageLoadWasDone)
+					{
+						SearchForVsixAndEnsureItIsLoadedPackageLoaded();
+					}
+				}
+			}
+		}
+
+		private static void SearchForVsixAndEnsureItIsLoadedPackageLoaded()
+		{
+			_vsixPackageLoadWasDone = true;
+			var vsixAssembly = AppDomain.CurrentDomain.GetAssemblies()
+													  .FirstOrDefault(a => a.GetName().Name == SharedConstants.PackageName);
+			if (vsixAssembly == null)
+				return;
+
+			var acuminatorPackageType = vsixAssembly.GetExportedTypes().FirstOrDefault(t => t.Name == VsixPackageType);
+
+			if (acuminatorPackageType == null)
+				return;
+
+			var dummyServiceCaller = acuminatorPackageType.GetMethod(ForceLoadPackageAsync, BindingFlags.Static | BindingFlags.Public);
+
+			if (dummyServiceCaller == null)
+				return;
+
+			var dummyService = dummyServiceCaller.Invoke(null, Array.Empty<object>());
+
+			if (dummyService is Task task)
+			{
+				const int defaultTimeoutSeconds = 20;
+				task.Wait(TimeSpan.FromSeconds(defaultTimeoutSeconds));
+			}
+		}
 	}
 }

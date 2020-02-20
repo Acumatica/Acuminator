@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Events;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Threading;
 using EnvDTE80;
 using System.ComponentModel.Design;
 using Acuminator.Vsix.GoToDeclaration;
@@ -24,7 +25,6 @@ using Acuminator.Vsix.Formatter;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.Roslyn.ProjectSystem;
 using Acuminator.Utilities.DiagnosticSuppression;
-using Microsoft.VisualStudio.Threading;
 using Acuminator.Utilities;
 
 namespace Acuminator.Vsix
@@ -47,10 +47,8 @@ namespace Acuminator.Vsix
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-    [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
+	[InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
 	[ProvideAutoLoad(VSConstants.UICONTEXT. ShellInitialized_string, PackageAutoLoadFlags.BackgroundLoad)]
-	[ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
-	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.BackgroundLoad)]
 	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasSingleProject_string, PackageAutoLoadFlags.BackgroundLoad)]
 	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasMultipleProjects_string, PackageAutoLoadFlags.BackgroundLoad)]
 	[ProvideAutoLoad(VSConstants.UICONTEXT.Debugging_string, PackageAutoLoadFlags.BackgroundLoad)]
@@ -121,7 +119,19 @@ namespace Acuminator.Vsix
             SetupSingleton(this);
 			InitializeCodeAnalysisSettings();  //Try to setup code analysis settings as soon as possible. 
 		}
-          
+        
+		public static async System.Threading.Tasks.Task ForceLoadPackageAsync()
+		{
+			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+			if (!(ServiceProvider.GlobalProvider?.GetService(typeof(SVsShell)) is IVsShell shell))
+				return;
+
+			var packageToBeLoadedGuid = new Guid(PackageGuidString);
+			shell.LoadPackage(ref packageToBeLoadedGuid, out var _);
+			await System.Threading.Tasks.TaskScheduler.Default;
+		}
+
         private static void SetupSingleton(AcuminatorVSPackage package)
         {
             if (package == null)
@@ -134,7 +144,7 @@ namespace Acuminator.Vsix
         }
 
 		protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
-		{
+		{			
 			// When initialized asynchronously, the current thread may be a background thread at this point.
 			// Do any initialization that requires the UI thread after switching to the UI thread
 			await base.InitializeAsync(cancellationToken, progress);
@@ -284,8 +294,6 @@ namespace Acuminator.Vsix
 				case WorkspaceChangeKind.ProjectRemoved:
 				case WorkspaceChangeKind.ProjectChanged:
 				case WorkspaceChangeKind.ProjectReloaded:
-				case WorkspaceChangeKind.AdditionalDocumentAdded:
-				case WorkspaceChangeKind.AdditionalDocumentRemoved:
 					break;
 
 				default:
@@ -296,6 +304,8 @@ namespace Acuminator.Vsix
 			HashSet<DocumentId> newSuppressionFileIds = GetSuppressionFileIDs(e.NewSolution?.GetProject(e.ProjectId));
 
 			if (oldSuppressionFileIds.Count != newSuppressionFileIds.Count)
+				return true;
+			else if (oldSuppressionFileIds.Count == 0)
 				return false;
 
 			bool missingOldDocument = oldSuppressionFileIds.Any(oldDocId => !newSuppressionFileIds.Contains(oldDocId));
