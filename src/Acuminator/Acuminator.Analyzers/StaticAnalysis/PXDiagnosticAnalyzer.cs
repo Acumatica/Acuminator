@@ -94,6 +94,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 		internal abstract void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext);
 
+		/// <summary>
+		/// Ensures that package loaded. A hack - the only known way to force the package load due to completely random default loading of packages by Visual Studio 
+		/// </summary>
 		private static void EnsurePackageLoaded()
 		{
 			if (!_vsixPackageLoadWasDone)
@@ -108,6 +111,10 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			}
 		}
 
+		/// <summary>
+		/// Searches for the Visual Studio vsix package and if found (case when working via VSIX in Visual Studio IDE) ensures that package is loaded.
+		/// Calls special method <see cref="ForceLoadPackageAsync"/> to load package provided by AcuminatorVSPackage type.
+		/// </summary>
 		private static void SearchForVsixAndEnsureItIsLoadedPackageLoaded()
 		{
 			_vsixPackageLoadWasDone = true;
