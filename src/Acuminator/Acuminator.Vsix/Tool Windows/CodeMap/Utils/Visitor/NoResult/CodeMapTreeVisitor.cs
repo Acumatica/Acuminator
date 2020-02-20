@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Acuminator.Utilities.Common;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
@@ -15,7 +14,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected const int MaxUncheckedRecursionDepth = 20;
 		private int _recursionDepth;
 
-		public virtual void Visit(TreeNodeViewModel node)
+		public virtual void VisitNode(TreeNodeViewModel node)
 		{
 			if (node == null)
 				return;
