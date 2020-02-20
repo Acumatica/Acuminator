@@ -11,25 +11,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// </summary>
 	public abstract partial class CodeMapTreeVisitor
 	{
-		protected const int MaxUncheckedRecursionDepth = 20;
-		private int _recursionDepth;
-
 		public virtual void VisitNode(TreeNodeViewModel node)
 		{
-			if (node == null)
-				return;
-
-			_recursionDepth++;
-
-			try
+			if (node != null)
 			{
-				StackGuard.EnsureSufficientExecutionStack(_recursionDepth);
 				node.AcceptVisitor(this);
 			}
-			finally
-			{
-				_recursionDepth--;
-			}	
 		}
 
 		public virtual void DefaultVisit(TreeNodeViewModel nodeViewModel) { }
