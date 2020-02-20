@@ -64,7 +64,7 @@ namespace Acuminator.Vsix
 					   Style = VsDockStyle.Linked)]
 	public sealed class AcuminatorVSPackage : AsyncPackage
 	{
-		private const int TotalLoadSteps = 5;
+		private const int TotalLoadSteps = 3;
 		private const string SettingsCategoryName = SharedConstants.PackageName;
 
 		public const string PackageName = SharedConstants.PackageName;
@@ -119,7 +119,7 @@ namespace Acuminator.Vsix
             // initialization is the Initialize method.
         
             SetupSingleton(this);
-			InitializeCodeAnalysisSettings();
+			InitializeCodeAnalysisSettings();  //Try to setup code analysis settings as soon as possible. 
 		}
           
         private static void SetupSingleton(AcuminatorVSPackage package)
