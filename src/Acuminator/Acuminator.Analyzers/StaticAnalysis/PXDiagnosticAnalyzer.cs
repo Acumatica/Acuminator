@@ -23,7 +23,11 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 		private const string AcuminatorTestsName = "Acuminator.Tests";
 
-		protected CodeAnalysisSettings CodeAnalysisSettings { get; }
+		protected CodeAnalysisSettings CodeAnalysisSettings 
+		{ 
+			get;
+			private set;
+		}
 
 		protected static ImmutableArray<string> UnitTestAssemblyMarkers { get; } = 
 			new[] 
@@ -39,12 +43,13 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		/// <param name="codeAnalysisSettings">(Optional) The code analysis settings for unit tests.</param>
 		protected PXDiagnosticAnalyzer(CodeAnalysisSettings codeAnalysisSettings = null)
 		{
-			CodeAnalysisSettings = codeAnalysisSettings ?? GlobalCodeAnalysisSettings.Instance;
+			CodeAnalysisSettings = codeAnalysisSettings;
 		}
 		
 		public override void Initialize(AnalysisContext context)
 		{
 			EnsurePackageLoaded();
+			CodeAnalysisSettings = CodeAnalysisSettings ?? GlobalCodeAnalysisSettings.Instance;  //Initialize settings form global values after potential package load
 
 			if (!CodeAnalysisSettings.StaticAnalysisEnabled)
 				return;
