@@ -31,6 +31,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}	
 		}
 
-		public override void DefaultVisit(TreeNodeViewModel nodeViewModel) { }
+		public override void DefaultVisit(TreeNodeViewModel node) 
+		{
+			if (node == null || node.Children.Count == 0)
+				return;
+
+			foreach (TreeNodeViewModel child in node.Children)
+			{
+				VisitNode(child);
+			}
+		}
 	}
 }
