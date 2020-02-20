@@ -259,7 +259,7 @@
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\CodeMapTreeVisitor_GraphVisitMethods.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\INodeWithSymbolItem.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\NodeDeclarationOrderComparer.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\Base\TreeNodesSorterBase.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\Base\CodeMapTreeSorterBase.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\CodeMapSortContext.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\SortType.cs" />
     <Compile Include="Tool Windows\CodeMap\Tooltips\TreeNodeToTooltipConverter.cs" />

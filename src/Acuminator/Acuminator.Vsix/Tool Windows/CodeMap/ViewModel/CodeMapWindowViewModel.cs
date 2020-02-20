@@ -31,7 +31,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			internal set;
 		}
 
-		public TreeNodesSorterBase TreeSorter { get; } = new TreeNodesSorterBase();
+		public CodeMapTreeSorterBase TreeSorter { get; } = new CodeMapTreeSorterBase();
 
 		public IRootCandidateSymbolsRetriever RootSymbolsRetriever
 		{
