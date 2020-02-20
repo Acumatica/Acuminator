@@ -75,6 +75,8 @@ namespace Acuminator.Vsix
 		/// </summary>
 		public const string AcuminatorDefaultCommandSetGuidString = "3cd59430-1e8d-40af-b48d-9007624b3d77";
 
+		private Microsoft.VisualStudio.LanguageServices.VisualStudioWorkspace _vsWorkspace;
+
 		[Import]
         internal IClassificationFormatMapService _classificationFormatMapService = null;  //Set via MEF
 
@@ -113,7 +115,10 @@ namespace Acuminator.Vsix
             // initialization is the Initialize method.
         
             SetupSingleton(this);
-        }
+
+			var codeAnalysisSettings = new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage);
+			GlobalCodeAnalysisSettings.InitializeGlobalSettingsOnce(codeAnalysisSettings);
+		}
           
         private static void SetupSingleton(AcuminatorVSPackage package)
         {
@@ -139,9 +144,8 @@ namespace Acuminator.Vsix
 
 			InitializeLogger(progress);
 			await InitializeCommandsAsync(progress);
+			await SubscribeOnEventsAsync();
 
-			SolutionEvents.OnAfterBackgroundSolutionLoadComplete += SolutionEvents_OnAfterBackgroundSolutionLoadComplete;
-			
 			bool isSolutionOpen = await IsSolutionLoadedAsync();
 
 			if (isSolutionOpen)
@@ -151,12 +155,24 @@ namespace Acuminator.Vsix
 
 			cancellationToken.ThrowIfCancellationRequested();
 
-			InitializeCodeAnalysisSettings(progress);
+			//InitializeCodeAnalysisSettings(progress);
 			cancellationToken.ThrowIfCancellationRequested();
 
 			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_Done,
 													   currentStep: 5, TotalLoadSteps);
 			progress?.Report(progressData);
+		}
+
+		private async System.Threading.Tasks.Task SubscribeOnEventsAsync()
+		{
+			//_vsWorkspace = await this.GetVSWorkspaceAsync();
+
+			//if (_vsWorkspace != null)
+			//{
+			//	_vsWorkspace.WorkspaceChanged += Workspace_WorkspaceChanged;
+			//}
+
+			SolutionEvents.OnAfterBackgroundSolutionLoadComplete += SolutionEvents_OnAfterBackgroundSolutionLoadComplete;
 		}
 
 		private void InitializeLogger(IProgress<ServiceProgressData> progress)
@@ -222,12 +238,24 @@ namespace Acuminator.Vsix
 			AcuminatorLogger?.Dispose();
 
 			SolutionEvents.OnAfterBackgroundSolutionLoadComplete -= SolutionEvents_OnAfterBackgroundSolutionLoadComplete;
+
+			if (_vsWorkspace != null)
+			{
+				_vsWorkspace.WorkspaceChanged -= Workspace_WorkspaceChanged;
+			}
 		}
 
 		private void SolutionEvents_OnAfterBackgroundSolutionLoadComplete(object sender, EventArgs e)
 		{
 			#pragma warning disable VSTHRD102 // Implement internal logic asynchronously
 			JoinableTaskFactory.Run(SetupSuppressionManagerAsync);
+			#pragma warning restore VSTHRD102 // Implement internal logic asynchronously
+		}
+
+		private void Workspace_WorkspaceChanged(object sender, Microsoft.CodeAnalysis.WorkspaceChangeEventArgs e)
+		{
+			#pragma warning disable VSTHRD102 // Implement internal logic asynchronously
+			//JoinableTaskFactory.Run(SetupSuppressionManagerAsync);
 			#pragma warning restore VSTHRD102 // Implement internal logic asynchronously
 		}
 
@@ -244,8 +272,7 @@ namespace Acuminator.Vsix
 			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCodeAnalysisSettings,
 													   currentStep: 4, TotalLoadSteps);
 			progress?.Report(progressData);
-			var codeAnalysisSettings = new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage);
-			GlobalCodeAnalysisSettings.InitializeGlobalSettingsOnce(codeAnalysisSettings);
+			
 		}
 
 		#region Package Settings         
