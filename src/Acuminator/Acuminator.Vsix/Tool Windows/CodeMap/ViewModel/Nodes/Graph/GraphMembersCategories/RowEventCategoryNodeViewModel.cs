@@ -32,5 +32,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 							  .Concat(GraphSemanticModel.RowPersistedEvents);
 
 		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) => treeVisitor.VisitNode(this);
+
+		public override void AcceptVisitor(CodeMapTreeVisitor treeVisitor) => treeVisitor.VisitNode(this);
 	}
 }

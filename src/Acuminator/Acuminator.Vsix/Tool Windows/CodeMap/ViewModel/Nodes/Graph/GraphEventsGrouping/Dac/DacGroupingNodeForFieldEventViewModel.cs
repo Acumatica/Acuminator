@@ -21,5 +21,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) => treeVisitor.VisitNode(this);
+
+		public override void AcceptVisitor(CodeMapTreeVisitor treeVisitor) => treeVisitor.VisitNode(this);
 	}
 }
