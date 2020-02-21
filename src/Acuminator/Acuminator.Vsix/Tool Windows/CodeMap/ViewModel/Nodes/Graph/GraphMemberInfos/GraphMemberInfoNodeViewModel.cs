@@ -64,7 +64,5 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) => treeVisitor.VisitNode(this);
 
 		public override void AcceptVisitor(CodeMapTreeVisitor treeVisitor) => treeVisitor.VisitNode(this);
-
-		public override bool IsSortTypeSupported(SortType sortType) => sortType == SortType.Alphabet || sortType == SortType.Declaration;
 	}
 }

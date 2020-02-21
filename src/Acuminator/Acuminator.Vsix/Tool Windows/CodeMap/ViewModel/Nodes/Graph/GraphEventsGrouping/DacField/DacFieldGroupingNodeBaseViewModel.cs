@@ -49,8 +49,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			FieldEvents = dacFieldEvents?.ToImmutableArray() ?? ImmutableArray.Create<GraphFieldEventInfo>();
 		}
 
-		public override bool IsSortTypeSupported(SortType sortType) => sortType == SortType.Alphabet;
-
 		public async override Task NavigateToItemAsync()
 		{
 			var childToNavigateTo = this.GetChildToNavigateTo();

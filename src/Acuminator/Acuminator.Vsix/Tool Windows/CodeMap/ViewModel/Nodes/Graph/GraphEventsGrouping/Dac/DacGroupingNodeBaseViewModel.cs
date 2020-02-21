@@ -72,8 +72,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				: Children.Count; ;
 		}
 
-		public override bool IsSortTypeSupported(SortType sortType) => sortType == SortType.Alphabet;
-
 		public async override Task NavigateToItemAsync()
 		{
 			TreeNodeViewModel childToNavigateTo = null;

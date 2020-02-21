@@ -17,7 +17,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 												   base(graphEventsCategoryVM, dacName, isExpanded)
 		{
 			AllFieldEvents = fieldEvents?.ToImmutableArray() ?? ImmutableArray.Create<GraphFieldEventInfo>();
-			ChildrenSortType = SortType.Alphabet;
 		}
 
 		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) => treeVisitor.VisitNode(this);

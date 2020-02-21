@@ -41,7 +41,5 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public override Task NavigateToItemAsync() => MemberSymbol.NavigateToAsync();
-
-		public override bool IsSortTypeSupported(SortType sortType) => sortType == SortType.Alphabet || sortType == SortType.Declaration;
 	}
 }
