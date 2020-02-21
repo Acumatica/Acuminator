@@ -56,46 +56,66 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return DefaultValue;  //Optimization for attributes
 		}
 
-		public override List<TreeNodeViewModel> VisitNode(DacGroupingNodeForRowEventViewModel dacGroupingNode, 
-														  IEnumerable<TreeNodeViewModel> generatedChildren) =>
-			VisitNodeWithCustomSortType(dacGroupingNode, generatedChildren, SortType.Alphabet);
-
-		public override List<TreeNodeViewModel> VisitNode(DacGroupingNodeForFieldEventViewModel dacGroupingNode,
-														  IEnumerable<TreeNodeViewModel> generatedChildren) =>
-			VisitNodeWithCustomSortType(dacGroupingNode, generatedChildren, SortType.Alphabet);
-
-		public override List<TreeNodeViewModel> VisitNode(DacGroupingNodeForCacheAttachedEventViewModel dacGroupingNode,
-														  IEnumerable<TreeNodeViewModel> generatedChildren) =>
-			VisitNodeWithCustomSortType(dacGroupingNode, generatedChildren, SortType.Alphabet);
-
-		public override List<TreeNodeViewModel> VisitNode(DacFieldGroupingNodeForFieldEventViewModel dacFieldGroupingNode,
-														  IEnumerable<TreeNodeViewModel> generatedChildren) =>
-			VisitNodeWithCustomSortType(dacFieldGroupingNode, generatedChildren, SortType.Alphabet);
-
-
-		protected List<TreeNodeViewModel> VisitNodeWithCustomSortType(TreeNodeViewModel node, IEnumerable<TreeNodeViewModel> generatedChildren,
-																	  SortType customSortType) =>
-			VisitNodeWithCustomSortTypeAndDirection(node, generatedChildren, customSortType, SortDirection);
-
-		protected List<TreeNodeViewModel> VisitNodeWithCustomSortDirection(TreeNodeViewModel node, IEnumerable<TreeNodeViewModel> generatedChildren,
-																		   SortDirection customSortDirection) =>
-			VisitNodeWithCustomSortTypeAndDirection(node, generatedChildren, SortType, customSortDirection);
-
-		protected List<TreeNodeViewModel> VisitNodeWithCustomSortTypeAndDirection(TreeNodeViewModel node, IEnumerable<TreeNodeViewModel> generatedChildren,
-																				  SortType customSortType, SortDirection customSortDirection)
+		public override List<TreeNodeViewModel> VisitNode(DacGroupingNodeForRowEventViewModel dacGroupingNode,
+														  IEnumerable<TreeNodeViewModel> generatedChildren)
 		{
-			SortDirection oldSortDirection = SortDirection;
 			SortType oldSortType = SortType;
 
 			try
 			{
-				SortDirection = customSortDirection;
-				SortType = customSortType;
-				return node.AcceptVisitor(this, generatedChildren);
+				SortType = SortType.Alphabet;
+				return base.VisitNode(dacGroupingNode, generatedChildren);
 			}
 			finally
 			{
-				SortDirection = oldSortDirection;
+				SortType = oldSortType;
+			}
+		}
+
+		public override List<TreeNodeViewModel> VisitNode(DacGroupingNodeForFieldEventViewModel dacGroupingNode,
+														  IEnumerable<TreeNodeViewModel> generatedChildren)
+		{
+			SortType oldSortType = SortType;
+
+			try
+			{
+				SortType = SortType.Alphabet;
+				return base.VisitNode(dacGroupingNode, generatedChildren);
+			}
+			finally
+			{
+				SortType = oldSortType;
+			}
+		}
+
+		public override List<TreeNodeViewModel> VisitNode(DacGroupingNodeForCacheAttachedEventViewModel dacGroupingNode,
+														  IEnumerable<TreeNodeViewModel> generatedChildren)
+		{
+			SortType oldSortType = SortType;
+
+			try
+			{
+				SortType = SortType.Alphabet;
+				return base.VisitNode(dacGroupingNode, generatedChildren);
+			}
+			finally
+			{
+				SortType = oldSortType;
+			}
+		}
+
+		public override List<TreeNodeViewModel> VisitNode(DacFieldGroupingNodeForFieldEventViewModel dacFieldGroupingNode,
+														  IEnumerable<TreeNodeViewModel> generatedChildren)
+		{
+			SortType oldSortType = SortType;
+
+			try
+			{
+				SortType = SortType.Alphabet;
+				return base.VisitNode(dacFieldGroupingNode, generatedChildren);
+			}
+			finally
+			{
 				SortType = oldSortType;
 			}
 		}
