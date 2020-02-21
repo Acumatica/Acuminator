@@ -31,7 +31,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			internal set;
 		}
 
-		public CodeMapTreeSorterBase TreeSorter { get; } = new CodeMapTreeSorterBase();
+		public CodeMapTreeSorterBase TreeSorter { get; } = new CodeMapTreeSorterDefault();
 
 		public IRootCandidateSymbolsRetriever RootSymbolsRetriever
 		{
@@ -446,12 +446,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				sortDirection = SortDirection.Ascending;
 			}
 
-			node.AcceptSorter(TreeSorter, sortType, sortDirection, sortDescendants);
-
 			if (sortDescendants)
+			{
+				TreeSorter.SortSubtree(node, sortType, sortDirection);
 				node.ExpandOrCollapseAll(expand: true);
+			}
 			else
+			{
+				TreeSorter.SortChildren(node, sortType, sortDirection);
 				node.IsExpanded = true;
+			}
 		}
 	}
 }
