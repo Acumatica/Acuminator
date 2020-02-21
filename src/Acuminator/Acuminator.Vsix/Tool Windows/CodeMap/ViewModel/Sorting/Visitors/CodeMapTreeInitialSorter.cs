@@ -53,7 +53,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override List<TreeNodeViewModel> VisitNode(AttributeNodeViewModel attributeNode, IEnumerable<TreeNodeViewModel> generatedChildren)
 		{
-			return DefaultValue;  //Optimization for attributes
+			//Optimization for attributes - don't put more on execution stack by visiting them
+			attributeNode.ChildrenSortType = SortType;
+			attributeNode.ChildrenSortDirection = SortDirection;
+			return DefaultValue;
 		}
 
 		public override List<TreeNodeViewModel> VisitNode(DacGroupingNodeForRowEventViewModel dacGroupingNode,

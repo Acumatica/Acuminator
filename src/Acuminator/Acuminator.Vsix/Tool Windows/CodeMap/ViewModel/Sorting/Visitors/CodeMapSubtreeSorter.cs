@@ -57,17 +57,26 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (node.Children.Count == 0)
 				return;
+			else if (node.Children.Count > 1)  //Optimization for single element collections - do not sort and reset them
+			{
+				var sorted = NodesSorter.SortNodes(node.Children, SortContext.SortType, SortContext.SortDirection)
+								?.ToList(capacity: node.Children.Count)
+								?? Enumerable.Empty<TreeNodeViewModel>();
 
-			var sorted = NodesSorter.SortNodes(node.Children, SortContext.SortType, SortContext.SortDirection)
-							?.ToList(capacity: node.Children.Count) 
-							?? Enumerable.Empty<TreeNodeViewModel>();
-
-			node.Children.Reset(sorted);
+				node.Children.Reset(sorted);
+			}
 
 			if (SortContext.SortDescendants)
 			{
 				base.DefaultVisit(node);
 			}
+		}
+
+		public override void VisitNode(AttributeNodeViewModel attributeNode)
+		{
+			//Optimization for attributes - don't put more on execution stack by visiting them
+			attributeNode.ChildrenSortType = SortContext.SortType;
+			attributeNode.ChildrenSortDirection = SortContext.SortDirection;
 		}
 	}
 }
