@@ -23,7 +23,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				? node.AcceptVisitor(this)
 				: DefaultValue;
 
-		public virtual TResult DefaultVisit(TreeNodeViewModel nodeViewModel) => DefaultValue;
+		public virtual TResult DefaultVisit(TreeNodeViewModel node) => DefaultValue;
 
 		public virtual TResult VisitNode(AttributeNodeViewModel attributeNode) => DefaultVisit(attributeNode);
 	}

@@ -12,7 +12,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// </summary>
 	public class CodeMapSubtreeSorter : CodeMapTreeWalker
 	{
-		private readonly NodesSorter _nodesSorter;
+		protected NodesSorter NodesSorter { get; }
 
 		protected CodeMapSortContext SortContext
 		{
@@ -22,7 +22,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public CodeMapSubtreeSorter(NodesSorter nodesSorter = null)
 		{
-			_nodesSorter = nodesSorter ?? new NodesSorter();
+			NodesSorter = nodesSorter ?? new NodesSorter();
 		}
 
 		public void SortChildren(TreeNodeViewModel node, SortType sortType, SortDirection sortDirection) =>
@@ -58,7 +58,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (node.Children.Count == 0)
 				return;
 
-			var sorted = _nodesSorter.SortNodes(node.Children, SortContext.SortType, SortContext.SortDirection)
+			var sorted = NodesSorter.SortNodes(node.Children, SortContext.SortType, SortContext.SortDirection)
 							?.ToList(capacity: node.Children.Count) 
 							?? Enumerable.Empty<TreeNodeViewModel>();
 
@@ -68,11 +68,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				base.DefaultVisit(node);
 			}
-		}
-
-		public override void VisitNode(AttributeNodeViewModel attributeNode)
-		{
-			//Stop visit for better performance
 		}
 	}
 }
