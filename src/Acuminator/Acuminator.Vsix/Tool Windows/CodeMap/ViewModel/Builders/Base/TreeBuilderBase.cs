@@ -113,7 +113,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected virtual void BuildSubTree(TreeNodeViewModel subtreeRoot)
 		{
-			var children = VisitNode(subtreeRoot)?.ToList();
+			var generatedChildrenSeq = VisitNode(subtreeRoot);
+			var children = (generatedChildrenSeq as List<TreeNodeViewModel>) ?? generatedChildrenSeq?.ToList();
 
 			if (children.IsNullOrEmpty())
 				return;
