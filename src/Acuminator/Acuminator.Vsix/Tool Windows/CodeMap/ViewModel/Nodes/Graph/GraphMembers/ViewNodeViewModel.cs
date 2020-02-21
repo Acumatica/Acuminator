@@ -62,6 +62,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			? modifiers.Value.FullSpan.End - modifiers.Value.Span.Start
 			: 0;
 
+		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);
+
 		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) => treeVisitor.VisitNode(this);
 
 		public override void AcceptVisitor(CodeMapTreeVisitor treeVisitor) => treeVisitor.VisitNode(this);
