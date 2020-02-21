@@ -9,7 +9,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// <summary>
 	/// Base class for code map tree visitor which accepts an input and produces a result.
 	/// </summary>
-	public abstract partial class CodeMapVisitor<TInput, TResult>
+	public abstract partial class CodeMapTreeVisitor<TInput, TResult>
 	{
 		#region Roots
 		public virtual TResult VisitNode(DacNodeViewModel dac, TInput input) => DefaultVisit(dac, input);

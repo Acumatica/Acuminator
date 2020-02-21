@@ -9,7 +9,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// <summary>
 	/// Base class for code map tree visitor which accepts an input and produces a result.
 	/// </summary>
-	public abstract partial class CodeMapVisitor<TInput, TResult>
+	public abstract partial class CodeMapTreeVisitor<TInput, TResult>
 	{
 		protected TResult DefaultValue { get; }
 
