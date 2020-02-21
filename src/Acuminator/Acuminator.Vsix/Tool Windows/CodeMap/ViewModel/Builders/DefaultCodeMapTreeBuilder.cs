@@ -13,7 +13,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		protected CodeMapTreeInitialSorter TreeInitialSorter { get; }
 
-		public DefaultCodeMapTreeBuilder(CodeMapTreeInitialSorter customSorter)
+		public DefaultCodeMapTreeBuilder(CodeMapTreeInitialSorter customSorter = null)
 		{
 			TreeInitialSorter = customSorter ?? 
 								new CodeMapTreeInitialSorter(defaultSortType: SortType.Declaration, defaultSortDirection: SortDirection.Ascending);
