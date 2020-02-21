@@ -62,10 +62,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// <summary>
 		/// This method checks if the node can be sorted with the specified <paramref name="sortType"/> and reordered by sorting of code map nodes.
 		/// </summary>
-		/// <param name="nodeViewModel">The node view model.</param>
+		/// <param name="node">The node view model.</param>
 		/// <param name="sortType">Type of the sort.</param>
 		/// <returns/>
-		protected abstract bool IsSortTypeSupported(TreeNodeViewModel nodeViewModel, SortType sortType);	
+		protected virtual bool IsSortTypeSupported(TreeNodeViewModel node, SortType sortType) => 
+			sortType == SortType.Alphabet || sortType == SortType.Declaration;
 
 		protected List<TreeNodeViewModel> SortNodes(IEnumerable<TreeNodeViewModel> nodes, SortType sortType, SortDirection sortDirection)
 		{
