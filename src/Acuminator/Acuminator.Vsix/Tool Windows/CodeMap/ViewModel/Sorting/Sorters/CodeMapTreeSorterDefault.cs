@@ -8,21 +8,29 @@ using Acuminator.Utilities.Common;
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	/// <summary>
-	/// A Code Map tree nodes default sorter implementation.
+	/// A Code Map tree nodes initial sorter after the tree is built.
 	/// </summary>
-	public class CodeMapTreeSorterDefault : CodeMapTreeSorterBase
+	public class CodeMapTreeInitialSorter : CodeMapTreeSorterBase
 	{
-		protected override bool IsSortTypeSupported(TreeNodeViewModel node, SortType sortType)
+		public void SortChildren(TreeNodeViewModel node, SortType sortType, SortDirection sortDirection) =>
+			SortSubtree(node, sortType, sortDirection, sortDescendants: false);
+
+		public void SortSubtree(TreeNodeViewModel subTreeRoot, SortType sortType, SortDirection sortDirection) =>
+			SortSubtree(subTreeRoot, sortType, sortDirection, sortDescendants: true);
+
+		protected void SortSubtree(TreeNodeViewModel subTreeRoot, SortType sortType, SortDirection sortDirection, bool sortDescendants)
 		{
-			switch (node)
+			if (subTreeRoot == null)
+				return;
+
+			try
 			{
-				case DacGroupingNodeBaseViewModel _:
-				case DacFieldGroupingNodeBaseViewModel _:
-					return sortType == SortType.Alphabet;
-				case DacMemberNodeViewModel _:
-					return sortType == SortType.Alphabet || sortType == SortType.Declaration;
-				default:
-					return base.IsSortTypeSupported(node, sortType);
+				SortContext = new CodeMapSortContext(sortType, sortDirection, sortDescendants);
+				VisitNode(subTreeRoot);
+			}
+			finally
+			{
+				SortContext = null;
 			}
 		}
 

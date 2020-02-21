@@ -18,28 +18,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			set;
 		}
 
-		public void SortChildren(TreeNodeViewModel node, SortType sortType, SortDirection sortDirection) =>
-			SortSubtree(node, sortType, sortDirection, sortDescendants: false);
-
-		public void SortSubtree(TreeNodeViewModel subTreeRoot, SortType sortType, SortDirection sortDirection) =>
-			SortSubtree(subTreeRoot, sortType, sortDirection, sortDescendants: true);
-
-		protected void SortSubtree(TreeNodeViewModel subTreeRoot, SortType sortType, SortDirection sortDirection, bool sortDescendants)
-		{
-			if (subTreeRoot == null)
-				return;
-
-			try
-			{
-				SortContext = new CodeMapSortContext(sortType, sortDirection, sortDescendants);
-				VisitNode(subTreeRoot);
-			}
-			finally
-			{
-				SortContext = null;
-			}		
-		}
-
 		public override void DefaultVisit(TreeNodeViewModel node)
 		{
 			if (node == null || SortContext == null)
@@ -56,7 +34,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 							?? Enumerable.Empty<TreeNodeViewModel>();
 
 			node.Children.Reset(sorted);
-			base.DefaultVisit(node);
+
+			if (SortContext.SortDescendants)
+			{
+				base.DefaultVisit(node);
+			}
 		}
 
 		/// <summary>
@@ -65,8 +47,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// <param name="node">The node view model.</param>
 		/// <param name="sortType">Type of the sort.</param>
 		/// <returns/>
-		protected virtual bool IsSortTypeSupported(TreeNodeViewModel node, SortType sortType) => 
-			sortType == SortType.Alphabet || sortType == SortType.Declaration;
+		protected virtual bool IsSortTypeSupported(TreeNodeViewModel node, SortType sortType)
+		{
+			switch (node)
+			{
+				case DacGroupingNodeBaseViewModel _:
+				case DacFieldGroupingNodeBaseViewModel _:
+					return sortType == SortType.Alphabet;
+				default:
+					return sortType == SortType.Alphabet || sortType == SortType.Declaration;
+			}
+		}
 
 		protected List<TreeNodeViewModel> SortNodes(IEnumerable<TreeNodeViewModel> nodes, SortType sortType, SortDirection sortDirection)
 		{
