@@ -12,7 +12,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// </summary>
 	public abstract class CodeMapTreeSorterBase : CodeMapTreeWalker
 	{
-		protected CodeMapSortContext? SortContext
+		protected CodeMapSortContext SortContext
 		{
 			get;
 			set;
@@ -42,16 +42,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override void DefaultVisit(TreeNodeViewModel node)
 		{
-			if (node == null || !SortContext.HasValue)
+			if (node == null || SortContext == null)
 				return;
 
-			node.ChildrenSortType = SortContext.Value.SortType;
-			node.ChildrenSortDirection = SortContext.Value.SortDirection;
+			node.ChildrenSortType = SortContext.SortType;
+			node.ChildrenSortDirection = SortContext.SortDirection;
 
 			if (node.Children.Count == 0)
 				return;
 
-			var sorted = SortNodes(node.Children, SortContext.Value.SortType, SortContext.Value.SortDirection)
+			var sorted = SortNodes(node.Children, SortContext.SortType, SortContext.SortDirection)
 							?.ToList(capacity: node.Children.Count) 
 							?? Enumerable.Empty<TreeNodeViewModel>();
 
