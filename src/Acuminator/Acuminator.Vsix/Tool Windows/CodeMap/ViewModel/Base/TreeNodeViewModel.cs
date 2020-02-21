@@ -30,12 +30,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// </summary>
 		public virtual Icon NodeIcon => Icon.None;
 
-		private SortType _childrenSortType;
+		private SortType? _childrenSortType;
 
 		/// <summary>
 		/// The sort type of nodes children.
 		/// </summary>
-		public SortType ChildrenSortType
+		public SortType? ChildrenSortType
 		{
 			get => _childrenSortType;
 			set
