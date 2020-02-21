@@ -10,7 +10,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// <summary>
 	/// A Code Map tree nodes initial sorter after the tree is built.
 	/// </summary>
-	public class CodeMapTreeInitialSorter : CodeMapTreeSorterBase
+	public class CodeMapTreeSorterDefault : CodeMapTreeSorterBase
 	{
 		public void SortChildren(TreeNodeViewModel node, SortType sortType, SortDirection sortDirection) =>
 			SortSubtree(node, sortType, sortDirection, sortDescendants: false);
