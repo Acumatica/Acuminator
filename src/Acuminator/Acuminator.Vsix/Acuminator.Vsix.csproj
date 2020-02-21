@@ -261,6 +261,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\NodeDeclarationOrderComparer.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\Sorters\Base\CodeMapTreeSorterBase.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\CodeMapSortContext.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\Sorters\CodeMapTreeInitialSorter.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\Sorters\CodeMapTreeSorterDefault.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\SortType.cs" />
     <Compile Include="Tool Windows\CodeMap\Tooltips\TreeNodeToTooltipConverter.cs" />
