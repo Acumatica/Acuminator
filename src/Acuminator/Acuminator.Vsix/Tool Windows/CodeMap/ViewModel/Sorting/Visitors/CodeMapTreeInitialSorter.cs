@@ -8,9 +8,9 @@ using Acuminator.Utilities.Common;
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	/// <summary>
-	/// A Code Map tree nodes special sorter implementation used to sort tree during tree construction.
+	/// A Code Map tree nodes special sorter implementation used to sort tree during tree construction to reduce a number of node.Children.Reset calls.
 	/// </summary>
-	public class CodeMapTreeInitialSorter : CodeMapTreeVisitor<IEnumerable<TreeNodeViewModel>>
+	public class CodeMapTreeInitialSorter : CodeMapTreeVisitor<IEnumerable<TreeNodeViewModel>, List<TreeNodeViewModel>>
 	{
 		protected NodesSorter NodesSorter { get; }
 
@@ -27,7 +27,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public CodeMapTreeInitialSorter(SortType defaultSortType, SortDirection defaultSortDirection, NodesSorter nodesSorter = null) :
-								   base(defaultValue: Enumerable.Empty<TreeNodeViewModel>())
+								   base(defaultValue: new List<TreeNodeViewModel>())
 		{
 			NodesSorter = nodesSorter ?? new NodesSorter();
 
@@ -35,40 +35,49 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			SortDirection = defaultSortDirection;
 		}
 
-		public override IEnumerable<TreeNodeViewModel> DefaultVisit(TreeNodeViewModel node)
+		public List<TreeNodeViewModel> SortGeneratedChildren(TreeNodeViewModel parentNode, IEnumerable<TreeNodeViewModel> generatedChildren) =>
+			VisitNode(parentNode, generatedChildren);
+
+		public override List<TreeNodeViewModel> DefaultVisit(TreeNodeViewModel node, IEnumerable<TreeNodeViewModel> generatedChildren)
 		{
 			if (node == null)
-				return base.DefaultVisit(node);
+				return base.DefaultVisit(node, generatedChildren);
 
 			node.ChildrenSortType = SortType;
 			node.ChildrenSortDirection = SortDirection;
 
-			return node.Children.Count > 0
-				? NodesSorter.SortNodes(node.Children, SortType, SortDirection)
-				: base.DefaultVisit(node);
+			return !generatedChildren.IsNullOrEmpty()
+				? NodesSorter.SortNodes(generatedChildren, SortType, SortDirection)
+				: base.DefaultVisit(node, generatedChildren);
 		}
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(DacGroupingNodeForRowEventViewModel dacGroupingNode) =>
-			VisitNodeWithCustomSortType(dacGroupingNode, SortType.Alphabet);
+		public override List<TreeNodeViewModel> VisitNode(DacGroupingNodeForRowEventViewModel dacGroupingNode, 
+														  IEnumerable<TreeNodeViewModel> generatedChildren) =>
+			VisitNodeWithCustomSortType(dacGroupingNode, generatedChildren, SortType.Alphabet);
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(DacGroupingNodeForFieldEventViewModel dacGroupingNode) =>
-			VisitNodeWithCustomSortType(dacGroupingNode, SortType.Alphabet);
+		public override List<TreeNodeViewModel> VisitNode(DacGroupingNodeForFieldEventViewModel dacGroupingNode,
+														  IEnumerable<TreeNodeViewModel> generatedChildren) =>
+			VisitNodeWithCustomSortType(dacGroupingNode, generatedChildren, SortType.Alphabet);
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(DacGroupingNodeForCacheAttachedEventViewModel dacGroupingNode) =>
-			VisitNodeWithCustomSortType(dacGroupingNode, SortType.Alphabet);
+		public override List<TreeNodeViewModel> VisitNode(DacGroupingNodeForCacheAttachedEventViewModel dacGroupingNode,
+														  IEnumerable<TreeNodeViewModel> generatedChildren) =>
+			VisitNodeWithCustomSortType(dacGroupingNode, generatedChildren, SortType.Alphabet);
 
-		public override IEnumerable<TreeNodeViewModel> VisitNode(DacFieldGroupingNodeForFieldEventViewModel dacFieldGroupingNode) =>
-			VisitNodeWithCustomSortType(dacFieldGroupingNode, SortType.Alphabet);
+		public override List<TreeNodeViewModel> VisitNode(DacFieldGroupingNodeForFieldEventViewModel dacFieldGroupingNode,
+														  IEnumerable<TreeNodeViewModel> generatedChildren) =>
+			VisitNodeWithCustomSortType(dacFieldGroupingNode, generatedChildren, SortType.Alphabet);
 
 
-		protected IEnumerable<TreeNodeViewModel> VisitNodeWithCustomSortType(TreeNodeViewModel node, SortType customSortType) =>
-			VisitNodeWithCustomSortTypeAndDirection(node, customSortType, SortDirection);
+		protected List<TreeNodeViewModel> VisitNodeWithCustomSortType(TreeNodeViewModel node, IEnumerable<TreeNodeViewModel> generatedChildren,
+																	  SortType customSortType) =>
+			VisitNodeWithCustomSortTypeAndDirection(node, generatedChildren, customSortType, SortDirection);
 
-		protected IEnumerable<TreeNodeViewModel> VisitNodeWithCustomSortDirection(TreeNodeViewModel node, SortDirection customSortDirection) =>
-			VisitNodeWithCustomSortTypeAndDirection(node, SortType, customSortDirection);
+		protected List<TreeNodeViewModel> VisitNodeWithCustomSortDirection(TreeNodeViewModel node, IEnumerable<TreeNodeViewModel> generatedChildren,
+																		   SortDirection customSortDirection) =>
+			VisitNodeWithCustomSortTypeAndDirection(node, generatedChildren, SortType, customSortDirection);
 
-		protected IEnumerable<TreeNodeViewModel> VisitNodeWithCustomSortTypeAndDirection(TreeNodeViewModel node, SortType customSortType,
-																						 SortDirection customSortDirection)
+		protected List<TreeNodeViewModel> VisitNodeWithCustomSortTypeAndDirection(TreeNodeViewModel node, IEnumerable<TreeNodeViewModel> generatedChildren,
+																				  SortType customSortType, SortDirection customSortDirection)
 		{
 			SortDirection oldSortDirection = SortDirection;
 			SortType oldSortType = SortType;
@@ -77,7 +86,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				SortDirection = customSortDirection;
 				SortType = customSortType;
-				return node.AcceptVisitor(this);
+				return node.AcceptVisitor(this, generatedChildren);
 			}
 			finally
 			{

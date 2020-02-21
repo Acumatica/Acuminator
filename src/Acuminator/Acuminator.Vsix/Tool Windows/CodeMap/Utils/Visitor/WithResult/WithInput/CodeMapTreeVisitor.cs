@@ -13,7 +13,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		protected TResult DefaultValue { get; }
 
-		protected CodeMapVisitor(TResult defaultValue)
+		protected CodeMapTreeVisitor(TResult defaultValue)
 		{
 			DefaultValue = defaultValue;
 		}
