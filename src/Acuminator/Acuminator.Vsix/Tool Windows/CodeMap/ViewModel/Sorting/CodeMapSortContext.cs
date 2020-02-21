@@ -6,13 +6,25 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// <summary>
 	/// Information for sort of code map tree
 	/// </summary>
-	public struct CodeMapSortContext
+	public class CodeMapSortContext
 	{
-		public SortType SortType { get; }
+		public SortType SortType 
+		{ 
+			get;
+			set;
+		}
 
-		public SortDirection SortDirection { get; }
+		public SortDirection SortDirection 
+		{ 
+			get;
+			set;
+		}
 
-		public bool SortDescendants { get; }
+		public bool SortDescendants 
+		{ 
+			get;
+			set;
+		}
 
 		public CodeMapSortContext(SortType sortType, SortDirection sortDirection, bool sortDescendants)
 		{
