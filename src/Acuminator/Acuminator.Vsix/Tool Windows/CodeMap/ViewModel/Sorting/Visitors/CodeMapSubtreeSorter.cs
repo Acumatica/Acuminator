@@ -10,7 +10,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// <summary>
 	/// A Code Map tree nodes sorter default implementation for sorting whole subtree.
 	/// </summary>
-	public class CodeMapTreeSorterDefault : CodeMapTreeWalker
+	public class CodeMapSubtreeSorter : CodeMapTreeWalker
 	{
 		private readonly NodesSorter _nodesSorter;
 
@@ -20,7 +20,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			set;
 		}
 
-		public CodeMapTreeSorterDefault(NodesSorter nodesSorter = null)
+		public CodeMapSubtreeSorter(NodesSorter nodesSorter = null)
 		{
 			_nodesSorter = nodesSorter ?? new NodesSorter();
 		}
