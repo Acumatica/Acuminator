@@ -71,6 +71,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			switch (node)
 			{
+				case DacMemberCategoryNodeViewModel _:
+				case GraphMemberCategoryNodeViewModel _:
+					return false;
 				case DacGroupingNodeBaseViewModel _:
 				case DacFieldGroupingNodeBaseViewModel _:
 					return sortType == SortType.Alphabet;
