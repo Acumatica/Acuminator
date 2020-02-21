@@ -28,36 +28,54 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					sortableNodes.Add(node);
 			}
 
-			var sortResult = SortNodesBySortTypeAndDirection(sortableNodes, sortType, sortDirection);
-			sortedNodes.AddRange(sortResult);
-			return sortedNodes;
+			//Optimization - do not sort for empty or single element collections
+			switch (sortableNodes.Count)
+			{
+				case 0:
+					return sortedNodes;
+
+				case 1:
+					sortedNodes.Add(sortableNodes[0]);
+					return sortedNodes;
+
+				default:
+					var sortResult = SortNodesBySortTypeAndDirection(sortableNodes, sortType, sortDirection);
+					sortedNodes.AddRange(sortResult);
+					return sortedNodes;
+			}
 		}
 
 		public IEnumerable<TreeNodeViewModel> SortNodes(IReadOnlyCollection<TreeNodeViewModel> nodes, SortType sortType, SortDirection sortDirection)
 		{
-			if (nodes.IsNullOrEmpty())
-				yield break;
+			if (nodes.IsNullOrEmpty() || nodes.Count == 1)  //optimization - do not sort empty and single element collections and do not create iterator for them
+				return nodes;
 
-			int sortableCount = nodes.Count;
+			return SortNodesImpl();
 
-			foreach (TreeNodeViewModel node in nodes)
+			//------------------------------------------Local function-------------------------------------------------------------
+			IEnumerable<TreeNodeViewModel> SortNodesImpl()
 			{
-				if (!IsSortTypeSupported(node, sortType))
+				int sortableCount = nodes.Count;
+
+				foreach (TreeNodeViewModel node in nodes)
 				{
-					sortableCount--;
+					if (!IsSortTypeSupported(node, sortType))
+					{
+						sortableCount--;
+						yield return node;
+					}
+				}
+
+				if (sortableCount == 0)
+					yield break;
+
+				var sortableNodes = nodes.Where(child => IsSortTypeSupported(child, sortType));
+				var sortedNodes = SortNodesBySortTypeAndDirection(sortableNodes, sortType, sortDirection);
+
+				foreach (TreeNodeViewModel node in sortedNodes)
+				{
 					yield return node;
 				}
-			}
-
-			if (sortableCount == 0)
-				yield break;
-
-			var sortableNodes = nodes.Where(child => IsSortTypeSupported(child, sortType));
-			var sortedNodes = SortNodesBySortTypeAndDirection(sortableNodes, sortType, sortDirection);
-
-			foreach (TreeNodeViewModel node in sortedNodes)
-			{
-				yield return node;
 			}
 		}
 
