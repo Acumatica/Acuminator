@@ -42,7 +42,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			foreach (TreeNodeViewModel node in nodes)
 			{
-				if (IsSortTypeSupported(node, sortType))
+				if (!IsSortTypeSupported(node, sortType))
 				{
 					sortableCount--;
 					yield return node;
