@@ -103,8 +103,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 											  graphMemberInfo.SymbolBase.ContainingType.OriginalDefinition == graphSemanticModel.Symbol.OriginalDefinition
 										select constructor(graphMemberInfo);
 
-			var sorter = graphMemberCategory.Tree.CodeMapViewModel.TreeSorter;
-			var sortedGraphMemberViewModels = sorter.SortNodes(graphMemberViewModels, SortType.Declaration, SortDirection.Ascending);
 			return graphMemberViewModels;
 		}
 
@@ -148,23 +146,19 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 											 where dacNodeVM != null
 											 select dacNodeVM;
 
-			var sorter = graphEventCategory.Tree.CodeMapViewModel.TreeSorter;
-			var sortedDacGroupingNodesViewModels = sorter.SortNodes(dacGroupingNodesViewModels, SortType.Alphabet, SortDirection.Ascending);
-			return sortedDacGroupingNodesViewModels;
+			return dacGroupingNodesViewModels;
 		}
 
 		public override IEnumerable<TreeNodeViewModel> VisitNode(DacGroupingNodeForRowEventViewModel dacGroupingNode)
 		{
 			return dacGroupingNode.RowEvents.Select(rowEventInfo => new RowEventNodeViewModel(dacGroupingNode, rowEventInfo, ExpandCreatedNodes))
-											.Where(graphMemberVM => !graphMemberVM.Name.IsNullOrEmpty())
-											.OrderBy(graphMemberVM => graphMemberVM.Name);
+											.Where(graphMemberVM => !graphMemberVM.Name.IsNullOrEmpty());
 		}
 
 		public override IEnumerable<TreeNodeViewModel> VisitNode(DacGroupingNodeForCacheAttachedEventViewModel dacGroupingNode)
 		{
 			return dacGroupingNode?.AllFieldEvents.Select(fieldEvent => new CacheAttachedNodeViewModel(dacGroupingNode, fieldEvent, ExpandCreatedNodes))
-												  .Where(graphMemberVM => !graphMemberVM.Name.IsNullOrEmpty())
-												  .OrderBy(graphMemberVM => graphMemberVM.Name);
+												  .Where(graphMemberVM => !graphMemberVM.Name.IsNullOrEmpty());
 		}
 
 		public override IEnumerable<TreeNodeViewModel> VisitNode(DacGroupingNodeForFieldEventViewModel dacGroupingNode)
@@ -182,15 +176,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				   select constructor(dacEventsGroupingNode, dacFieldEvents.Key, dacFieldEvents)
 						into dacFieldNodeVM
 				   where !dacFieldNodeVM.DacFieldName.IsNullOrEmpty()
-				   orderby dacFieldNodeVM.DacFieldName ascending
 				   select dacFieldNodeVM;
 		}
 
 		public override IEnumerable<TreeNodeViewModel> VisitNode(DacFieldGroupingNodeForFieldEventViewModel dacFieldGroupingNode)
 		{
 			return dacFieldGroupingNode?.FieldEvents.Select(fieldEvent => new FieldEventNodeViewModel(dacFieldGroupingNode, fieldEvent, ExpandCreatedNodes))
-													.Where(graphMemberVM => !graphMemberVM.Name.IsNullOrEmpty())
-													.OrderBy(graphMemberVM => graphMemberVM.Name);
+													.Where(graphMemberVM => !graphMemberVM.Name.IsNullOrEmpty());
 		}
 
 		public override IEnumerable<TreeNodeViewModel> VisitNode(ViewNodeViewModel viewNode)

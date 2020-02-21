@@ -71,8 +71,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 																								Func<TInfo, TreeNodeViewModel> constructor)
 		where TInfo : SymbolItem
 		{
-			var categorySymbols = dacMemberCategory?.GetCategoryDacNodeSymbols()
-												   ?.OrderBy(symbol => symbol.DeclarationOrder);
+			var categorySymbols = dacMemberCategory?.GetCategoryDacNodeSymbols();
+
 			if (categorySymbols == null)
 			{
 				yield break;
