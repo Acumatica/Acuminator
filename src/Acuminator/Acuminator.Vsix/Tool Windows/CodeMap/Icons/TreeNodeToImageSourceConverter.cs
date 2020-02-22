@@ -27,10 +27,22 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			if (!(value is IconViewModel iconViewModel) || iconViewModel.IconType == Icon.None)
+			string iconKey = null;
+
+			switch (value)
+			{
+				case IconViewModel iconViewModel when iconViewModel.IconType != Icon.None:
+					iconKey = iconViewModel.IconType.ToString();
+					break;
+
+				case TreeNodeViewModel nodeViewModel when nodeViewModel.NodeIcon != Icon.None:
+					iconKey = nodeViewModel.NodeIcon.ToString();
+					break;
+			}
+
+			if (iconKey == null)
 				return null;
 
-			string iconKey = iconViewModel.IconType.ToString();
 			return _resourceDictionary.TryGetValue(iconKey, out BitmapImage icon)
 				? icon
 				: null;

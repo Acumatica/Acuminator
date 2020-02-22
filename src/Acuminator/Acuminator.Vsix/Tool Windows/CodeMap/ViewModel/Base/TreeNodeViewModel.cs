@@ -25,6 +25,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// </summary>
 		public virtual string Tooltip => null;
 
+		/// <summary>
+		/// The main icon for a node.
+		/// </summary>
+		public virtual Icon NodeIcon => Icon.None;
+
 		public abstract ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
 
 		private SortType? _childrenSortType;
