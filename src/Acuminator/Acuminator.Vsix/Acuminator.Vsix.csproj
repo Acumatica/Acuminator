@@ -302,7 +302,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\Base\GraphEventCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\CodeMapWindowViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\CodeMapWindow.cs" />
-    <Compile Include="Tool Windows\CodeMap\CodeMapWindowControl.xaml.cs">
+    <Compile Include="Tool Windows\CodeMap\UI\CodeMapWindowControl.xaml.cs">
       <DependentUpon>CodeMapWindowControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Tool Windows\CodeMap\OpenCodeMapWindowCommand.cs" />
@@ -396,7 +396,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Tool Windows\CodeMap\CodeMapWindowControl.xaml">
+    <Page Include="Tool Windows\CodeMap\UI\CodeMapWindowControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
