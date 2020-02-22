@@ -52,16 +52,19 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override Task NavigateToItemAsync() => GraphMemberInfoSymbol.NavigateToAsync();
 
-		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation) =>
-			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
-
-		private static Icon GetIconType(GraphMemberInfoType graphMemberInfoType) =>
-			graphMemberInfoType switch
+		private static Icon GetIconType(GraphMemberInfoType graphMemberInfoType)
+		{
+			switch (graphMemberInfoType)
 			{
-				GraphMemberInfoType.ViewDelegate => Icon.ViewDelegate,
-				GraphMemberInfoType.ActionHandler => Icon.ActionHandler,
-				_ => Icon.None,
-			};
+				case GraphMemberInfoType.ViewDelegate:
+					return Icon.ViewDelegate;
+				case GraphMemberInfoType.ActionHandler:
+					return Icon.ActionHandler;
+				default:
+					return Icon.None;
+			}
+		}
+
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);
 
 		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) => treeVisitor.VisitNode(this);

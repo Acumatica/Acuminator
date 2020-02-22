@@ -41,10 +41,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			ExtraInfos = new ExtendedObservableCollection<ExtraInfoViewModel>(extraInfos);
 		}	
 
-		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren,
-																	     CancellationToken cancellation) =>
-			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
-
 		private IEnumerable<ExtraInfoViewModel> GetExtraInfos()
 		{
 			Icon icon = IsKey
