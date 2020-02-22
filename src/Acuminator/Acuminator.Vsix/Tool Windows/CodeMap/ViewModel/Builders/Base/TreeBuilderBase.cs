@@ -10,47 +10,97 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// <summary>
 	/// Base class for code map tree builder.
 	/// </summary>
-	public abstract partial class TreeBuilderBase
+	public abstract partial class TreeBuilderBase : CodeMapTreeVisitor<IEnumerable<TreeNodeViewModel>>
 	{
+		protected bool ExpandCreatedNodes 
+		{ 
+			get;
+			set;
+		}
+
+		protected CancellationToken Cancellation 
+		{ 
+			get;
+			private set;
+		} = CancellationToken.None;
+
+		protected TreeBuilderBase() : base(Enumerable.Empty<TreeNodeViewModel>())
+		{
+		}
+
 		public virtual TreeViewModel CreateEmptyCodeMapTree(CodeMapWindowViewModel windowViewModel) => new TreeViewModel(windowViewModel);
 
 		public TreeViewModel BuildCodeMapTree(CodeMapWindowViewModel windowViewModel, bool expandRoots, bool expandChildren, CancellationToken cancellation)
 		{
 			windowViewModel.ThrowOnNull(nameof(windowViewModel));
-			cancellation.ThrowIfCancellationRequested();
+
+			try
+			{
+				Cancellation = cancellation;
+				return BuildCodeMapTree(windowViewModel, expandRoots, expandChildren);
+			}
+			finally
+			{
+				Cancellation = CancellationToken.None;
+			}		
+		}
+
+		protected TreeViewModel BuildCodeMapTree(CodeMapWindowViewModel windowViewModel, bool expandRoots, bool expandChildren)
+		{
+			Cancellation.ThrowIfCancellationRequested();
 
 			TreeViewModel codeMapTree = CreateEmptyCodeMapTree(windowViewModel);
 
 			if (codeMapTree == null)
 				return null;
 
-			cancellation.ThrowIfCancellationRequested();
-			var roots = CreateRoots(codeMapTree, expandRoots, cancellation)?.Where(root => root != null).ToList();
+			Cancellation.ThrowIfCancellationRequested();
+			List<TreeNodeViewModel> roots;
+
+			try
+			{
+				ExpandCreatedNodes = expandRoots;
+				roots = CreateRoots(codeMapTree)?.Where(root => root != null).ToList();
+			}
+			finally
+			{
+				ExpandCreatedNodes = false;
+			}
 
 			if (roots.IsNullOrEmpty())
 				return codeMapTree;
-	
-			cancellation.ThrowIfCancellationRequested();
 
-			foreach (TreeNodeViewModel root in roots)
+			Cancellation.ThrowIfCancellationRequested();
+
+			try
 			{
-				root.AcceptBuilder(this, expandChildren, cancellation);
+				ExpandCreatedNodes = expandChildren;
+
+				foreach (TreeNodeViewModel root in roots)
+				{
+					BuildSubTree(root);
+				}
+			}
+			finally
+			{
+				ExpandCreatedNodes = false;
 			}
 
 			var rootsToAdd = roots.Where(root => root.Children.Count > 0 || root.DisplayNodeWithoutChildren);
+
 			codeMapTree.RootItems.AddRange(rootsToAdd);
 			return codeMapTree;
 		}
 
-		protected virtual IEnumerable<TreeNodeViewModel> CreateRoots(TreeViewModel tree, bool expandRoots, CancellationToken cancellation)
+		protected virtual IEnumerable<TreeNodeViewModel> CreateRoots(TreeViewModel tree)
 		{
 			if (tree.CodeMapViewModel.DocumentModel == null)
 				yield break;
 
 			foreach (ISemanticModel rootSemanticModel in tree.CodeMapViewModel.DocumentModel.CodeMapSemanticModels)
 			{
-				cancellation.ThrowIfCancellationRequested();
-				TreeNodeViewModel rootVM = CreateRoot(rootSemanticModel, tree, expandRoots, cancellation);
+				Cancellation.ThrowIfCancellationRequested();
+				TreeNodeViewModel rootVM = CreateRoot(rootSemanticModel, tree);
 
 				if (rootVM != null)
 				{
@@ -59,11 +109,24 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		protected abstract TreeNodeViewModel CreateRoot(ISemanticModel rootSemanticModel, TreeViewModel tree, bool expandRoots, 
-														CancellationToken cancellation);
+		protected abstract TreeNodeViewModel CreateRoot(ISemanticModel rootSemanticModel, TreeViewModel tree);
 
-		public virtual IEnumerable<TreeNodeViewModel> VisitNodeAndBuildChildren(AttributeNodeViewModel attributeNode, bool expandChildren,
-																				CancellationToken cancellation) =>
-			Enumerable.Empty<TreeNodeViewModel>();
+		protected virtual void BuildSubTree(TreeNodeViewModel subtreeRoot)
+		{
+			var generatedChildrenSeq = VisitNode(subtreeRoot);
+			var children = (generatedChildrenSeq as List<TreeNodeViewModel>) ?? generatedChildrenSeq?.ToList();
+
+			if (children.IsNullOrEmpty())
+				return;
+
+			foreach (var child in children)
+			{
+				BuildSubTree(child);
+			}
+
+			var childrenToAdd = children.Where(c => c != null && (c.Children.Count > 0 || c.DisplayNodeWithoutChildren));
+
+			subtreeRoot.Children.Reset(childrenToAdd);
+		}
 	}
 }

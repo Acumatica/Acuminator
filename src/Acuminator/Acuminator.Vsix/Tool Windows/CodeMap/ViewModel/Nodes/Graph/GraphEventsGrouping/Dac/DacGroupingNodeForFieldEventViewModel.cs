@@ -16,10 +16,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 														IEnumerable<GraphFieldEventInfo> fieldEvents, bool isExpanded) :
 												   base(graphEventsCategoryVM, dacName, isExpanded)
 		{
-			AllFieldEvents = fieldEvents?.ToImmutableArray() ?? ImmutableArray.Create<GraphFieldEventInfo>(); 
+			AllFieldEvents = fieldEvents?.ToImmutableArray() ?? ImmutableArray.Create<GraphFieldEventInfo>();
 		}
 
-		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation) =>
-			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
+		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);
+
+		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) => treeVisitor.VisitNode(this);
+
+		public override void AcceptVisitor(CodeMapTreeVisitor treeVisitor) => treeVisitor.VisitNode(this);
 	}
 }

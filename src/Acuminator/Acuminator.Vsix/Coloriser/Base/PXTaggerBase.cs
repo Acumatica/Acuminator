@@ -71,7 +71,7 @@ namespace Acuminator.Vsix.Coloriser
 
             if (SubscribedToSettingsChanges)
             {
-                var genOptionsPage = ProviderBase.Package?.GeneralOptionsPage;
+                var genOptionsPage = AcuminatorVSPackage.Instance?.GeneralOptionsPage;
 
                 if (genOptionsPage != null)
                 {
@@ -113,7 +113,7 @@ namespace Acuminator.Vsix.Coloriser
             if (!SubscribedToSettingsChanges)
                 return;
 
-            var genOptionsPage = ProviderBase.Package?.GeneralOptionsPage;
+            var genOptionsPage = AcuminatorVSPackage.Instance?.GeneralOptionsPage;
 
             if (genOptionsPage != null)
             {

@@ -18,7 +18,7 @@ using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 namespace Acuminator.Tests.Tests.Utilities.AttributeInformation
 {
 
-	public class AttributeInformationTests : Verification.DiagnosticVerifier
+	public class AttributeInformationTests 
 	{
 		/* 
 		 *  Tests attribute derived 

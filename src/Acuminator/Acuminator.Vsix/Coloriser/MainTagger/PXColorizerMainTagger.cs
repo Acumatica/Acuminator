@@ -114,7 +114,7 @@ namespace Acuminator.Vsix.Coloriser
 
         protected TaggerType GetCurrentTaggerTypeFromSettings()
         {
-            return Provider.Package?.UseRegexColoring == true
+            return AcuminatorVSPackage.Instance?.UseRegexColoring == true
                 ? TaggerType.RegEx
                 : TaggerType.Roslyn;
         }       

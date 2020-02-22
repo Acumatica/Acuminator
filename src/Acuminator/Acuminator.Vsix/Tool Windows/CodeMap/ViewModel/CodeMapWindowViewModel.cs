@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Threading;
 using Acuminator.Utilities.Roslyn.ProjectSystem;
 using Acuminator.Vsix.Utilities;
+using Acuminator.Utilities.Common;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
@@ -29,6 +30,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			get;
 			internal set;
 		}
+
+		private CodeMapSubtreeSorter TreeSorter { get; } = new CodeMapSubtreeSorter();
 
 		public IRootCandidateSymbolsRetriever RootSymbolsRetriever
 		{
@@ -56,7 +59,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public Document Document => DocumentModel?.Document;
 
-		private CodeMapDocChangesClassifier DocChangesClassifier { get; } = new CodeMapDocChangesClassifier();
+		private CodeMapDocChangesClassifier DocChangesClassifier { get; }
 
 		/// <summary>
 		/// Internal visibility flag for code map control. Serves as a workaround to hacky VS SDK which displays "Visible" in all other visibility properties for a hidden window.
@@ -101,6 +104,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public Command RefreshCodeMapCommand { get; }
 
+		public Command ExpandOrCollapseAllCommand { get; }
+
+		public Command SortNodeChildrenByNameCommand { get; }
+
+		public Command SortNodeChildrenByDeclarationOrderCommand { get; }
+
+		public Command SortNodeDescendantsByNameCommand { get; }
+
+		public Command SortNodeDescendantsByDeclarationOrderCommand { get; }
+
 		private CodeMapWindowViewModel(IWpfTextView wpfTextView, Document document)
 		{
 			DocumentModel = new DocumentModel(wpfTextView, document);
@@ -108,9 +121,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			RootSymbolsRetriever = new RootCandidateSymbolsRetrieverDefault();
 			SemanticModelFactory = new SemanticModelFactoryDefault();
 			TreeBuilder = new DefaultCodeMapTreeBuilder();
+			DocChangesClassifier = new CodeMapDocChangesClassifier(this);
+			IsVisible = true;
 			Tree = TreeBuilder.CreateEmptyCodeMapTree(this);
-
+			
 			RefreshCodeMapCommand = new Command(p => RefreshCodeMapAsync().Forget());
+			ExpandOrCollapseAllCommand = new Command(p => ExpandOrCollapseNodeDescendants(p as TreeNodeViewModel));
+
+			SortNodeChildrenByNameCommand = new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, sortDescendants: false));
+			SortNodeChildrenByDeclarationOrderCommand = new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, sortDescendants: false));
+			SortNodeDescendantsByNameCommand = new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, sortDescendants: true));
+			SortNodeDescendantsByDeclarationOrderCommand = new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, sortDescendants: true));
 
 			Workspace = DocumentModel.Document.Project.Solution.Workspace;
 			Workspace.WorkspaceChanged += OnWorkspaceChanged;
@@ -122,25 +143,29 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				//Store reference to DTE SolutionEvents and WindowEvents to prevent them from being GCed
 				_solutionEvents = dte?.Events?.SolutionEvents;
 				_windowEvents = dte?.Events?.WindowEvents;
-
-				if (_solutionEvents != null)
-				{
-					_solutionEvents.AfterClosing += SolutionEvents_AfterClosing;
-				}
-
-				if (_windowEvents != null)
-				{
-					_windowEvents.WindowActivated += WindowEvents_WindowActivated;
-				}
-
 				_visibilityEvents = (dte?.Events as EnvDTE80.Events2)?.WindowVisibilityEvents;
 
-				if (_visibilityEvents != null)
-				{
-					_visibilityEvents.WindowShowing += VisibilityEvents_WindowShowing;
-					_visibilityEvents.WindowHiding += VisibilityEvents_WindowHiding;
-				}
+				SubscribeOnVisualStudioEvents();
 			}		
+		}
+
+		private void SubscribeOnVisualStudioEvents()
+		{
+			if (_solutionEvents != null)
+			{
+				_solutionEvents.AfterClosing += SolutionEvents_AfterClosing;
+			}
+
+			if (_windowEvents != null)
+			{
+				_windowEvents.WindowActivated += WindowEvents_WindowActivated;
+			}
+
+			if (_visibilityEvents != null)
+			{
+				_visibilityEvents.WindowShowing += VisibilityEvents_WindowShowing;
+				_visibilityEvents.WindowHiding += VisibilityEvents_WindowHiding;
+			}
 		}
 
 		public static CodeMapWindowViewModel InitCodeMap(IWpfTextView wpfTextView, Document document)
@@ -151,11 +176,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			var codeMapViewModel = new CodeMapWindowViewModel(wpfTextView, document);
 			codeMapViewModel.BuildCodeMapAsync().Forget();
 			return codeMapViewModel;
-		}
-
-		public void CancelCodeMapBuilding()
-		{
-			_cancellationTokenSource?.Cancel();
 		}
 
 		public override void FreeResources()
@@ -186,41 +206,29 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		private async Task RefreshCodeMapAsync()
+		internal async Task RefreshCodeMapOnWindowOpeningAsync(IWpfTextView activeWpfTextView = null, Document activeDocument = null)
 		{
-			if (IsCalculating)
-				return;
-
 			if (!ThreadHelper.CheckAccess())
 			{
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			}
 
-			ClearCodeMap();
-			var currentWorkspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
-
-			if (currentWorkspace == null)
-				return;
-
-			Workspace = currentWorkspace;
-			IWpfTextView activeWpfTextView = await AcuminatorVSPackage.Instance.GetWpfTextViewAsync();
-			Document activeDocument = activeWpfTextView?.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
-
-			if (activeDocument == null)
-				return;
-
-			DocumentModel = new DocumentModel(activeWpfTextView, activeDocument);
-			BuildCodeMapAsync().Forget();
+			IsCalculating = false;
+			await RefreshCodeMapAsync(activeWpfTextView, activeDocument);
 		}
 
-		private void VisibilityEvents_WindowHiding(EnvDTE.Window window)
-		{
-			IsVisible = false;
-		}
+		private void VisibilityEvents_WindowHiding(EnvDTE.Window window) => SetVisibilityForCodeMapWindow(window, isVisible: false);
 
-		private void VisibilityEvents_WindowShowing(EnvDTE.Window window)
+		private void VisibilityEvents_WindowShowing(EnvDTE.Window window) => SetVisibilityForCodeMapWindow(window, isVisible: true);
+
+		private void SetVisibilityForCodeMapWindow(EnvDTE.Window window, bool isVisible)
 		{
-			IsVisible = true;
+			ThreadHelper.ThrowIfNotOnUIThread();
+
+			if (Guid.TryParse(window?.ObjectKind, out Guid windowId) && windowId == CodeMapWindow.CodeMapWindowGuid)
+			{
+				IsVisible = isVisible;
+			}
 		}
 
 		/// <summary>
@@ -244,7 +252,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			}
 
-			if (Equals(gotFocus, lostFocus) || gotFocus.Document == null)
+			if (!IsVisible || Equals(gotFocus, lostFocus) || gotFocus.Document == null)
 				return;
 			else if (gotFocus.Document.Language != LegacyLanguageNames.CSharp)
 			{
@@ -274,6 +282,32 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			await BuildCodeMapAsync();
 		}
 
+		private async Task RefreshCodeMapAsync(IWpfTextView activeWpfTextView = null, Document activeDocument = null)
+		{
+			if (IsCalculating)
+				return;
+
+			if (!ThreadHelper.CheckAccess())
+			{
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+			}
+
+			ClearCodeMap();
+			var currentWorkspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
+
+			if (currentWorkspace == null)
+				return;
+
+			Workspace = currentWorkspace;
+			activeWpfTextView = activeWpfTextView ?? await AcuminatorVSPackage.Instance.GetWpfTextViewAsync();
+			activeDocument = activeDocument ?? activeWpfTextView?.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
+
+			if (activeDocument == null)
+				return;
+
+			DocumentModel = new DocumentModel(activeWpfTextView, activeDocument);
+			await BuildCodeMapAsync();
+		}
 
 		private async void OnWorkspaceChanged(object sender, WorkspaceChangeEventArgs e)
 		{
@@ -375,7 +409,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					Tree = newTreeVM;			
 				}
 			}
-			catch (OperationCanceledException e)
+			catch (OperationCanceledException)
 			{
 
 			}
@@ -383,6 +417,44 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				IsCalculating = false;
 				_cancellationTokenSource = null;
+			}
+		}
+
+		private void ExpandOrCollapseNodeDescendants(TreeNodeViewModel node)
+		{
+			if (node != null)
+			{
+				node.ExpandOrCollapseAll(expand: !node.IsExpanded);
+			}
+		}
+
+		public void SortNodes(TreeNodeViewModel node, SortType sortType, bool sortDescendants)
+		{
+			if (node == null)
+				return;
+
+			SortDirection sortDirection;
+
+			if (node.ChildrenSortType == sortType)
+			{
+				sortDirection = node.ChildrenSortDirection == SortDirection.Ascending
+					? SortDirection.Descending
+					: SortDirection.Ascending;
+			}
+			else
+			{
+				sortDirection = SortDirection.Ascending;
+			}
+
+			if (sortDescendants)
+			{
+				TreeSorter.SortSubtree(node, sortType, sortDirection);
+				node.ExpandOrCollapseAll(expand: true);
+			}
+			else
+			{
+				TreeSorter.SortChildren(node, sortType, sortDirection);
+				node.IsExpanded = true;
 			}
 		}
 	}

@@ -207,6 +207,11 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			return modifiers.Any(SyntaxKind.PublicKeyword);
 		}
 
+		public static bool IsPartial(this TypeDeclarationSyntax typeDeclaration) =>
+			typeDeclaration.CheckIfNull(nameof(typeDeclaration))
+						   .Modifiers
+						   .Any(SyntaxKind.PartialKeyword);
+		
 		public static bool IsInternal(this MemberDeclarationSyntax member)
 		{
 			SyntaxTokenList modifiers = member.GetModifiers();
@@ -278,21 +283,46 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			}
 		}
 
-		public static SyntaxList<AttributeListSyntax> GetAttributeLists(this MemberDeclarationSyntax member) =>
-			member switch
+		public static SyntaxList<AttributeListSyntax> GetAttributeLists(this MemberDeclarationSyntax member)
+		{
+			switch (member)
 			{
-				PropertyDeclarationSyntax propertyDeclaration       => propertyDeclaration.AttributeLists,
-				FieldDeclarationSyntax fieldDeclaration             => fieldDeclaration.AttributeLists,
-				MethodDeclarationSyntax methodDeclaration           => methodDeclaration.AttributeLists,
-				EventDeclarationSyntax eventDeclaration             => eventDeclaration.AttributeLists,
-				EventFieldDeclarationSyntax eventFieldDeclaration   => eventFieldDeclaration.AttributeLists,
-				DelegateDeclarationSyntax delegateDeclaration       => delegateDeclaration.AttributeLists,
-				ClassDeclarationSyntax nestedClassDeclaration       => nestedClassDeclaration.AttributeLists,
-				EnumDeclarationSyntax enumDeclaration               => enumDeclaration.AttributeLists,
-				StructDeclarationSyntax structDeclaration           => structDeclaration.AttributeLists,
-				InterfaceDeclarationSyntax interfaceDeclaration     => interfaceDeclaration.AttributeLists,
-				ConstructorDeclarationSyntax constructorDeclaration => constructorDeclaration.AttributeLists,
-				_                                                   => new SyntaxList<AttributeListSyntax>()
-			};
+				case PropertyDeclarationSyntax propertyDeclaration:
+					return propertyDeclaration.AttributeLists;
+
+				case FieldDeclarationSyntax fieldDeclaration:
+					return fieldDeclaration.AttributeLists;
+
+				case MethodDeclarationSyntax methodDeclaration:          
+					return methodDeclaration.AttributeLists;
+
+				case EventDeclarationSyntax eventDeclaration:             
+					return eventDeclaration.AttributeLists;
+
+				case EventFieldDeclarationSyntax eventFieldDeclaration:   
+					return eventFieldDeclaration.AttributeLists;
+
+				case DelegateDeclarationSyntax delegateDeclaration:       
+					return delegateDeclaration.AttributeLists;
+
+				case ClassDeclarationSyntax nestedClassDeclaration:       
+					return nestedClassDeclaration.AttributeLists;
+
+				case EnumDeclarationSyntax enumDeclaration:               
+					return enumDeclaration.AttributeLists;
+
+				case StructDeclarationSyntax structDeclaration:           
+					return structDeclaration.AttributeLists;
+
+				case InterfaceDeclarationSyntax interfaceDeclaration:     
+					return interfaceDeclaration.AttributeLists;
+
+				case ConstructorDeclarationSyntax constructorDeclaration: 
+					return constructorDeclaration.AttributeLists;
+
+				default:
+					return new SyntaxList<AttributeListSyntax>();
+			}
+		}
 	}
 }

@@ -34,11 +34,15 @@ namespace Acuminator.Vsix.Coloriser
             tagger.ThrowOnNull(nameof(tagger));
 
             BackgroundTagging backgroundTagging = new BackgroundTagging();
-			backgroundTagging.TaggingTask = tagger.GetTagsAsyncImplementationAsync(tagger.Snapshot, backgroundTagging.CancellationToken)
-												 ?.ContinueWith(task => Shell.ThreadHelper.JoinableTaskFactory.Run(tagger.RaiseTagsChangedAsync),
-																		backgroundTagging.CancellationToken,
-																		TaskContinuationOptions.OnlyOnRanToCompletion,
-																		TaskScheduler.FromCurrentSynchronizationContext());
+            var taggingTask = tagger.GetTagsAsyncImplementationAsync(tagger.Snapshot, backgroundTagging.CancellationToken);
+
+            if (taggingTask == null)
+                return backgroundTagging;
+
+            backgroundTagging.TaggingTask = taggingTask.ContinueWith(task => AfterTaggingActionAsync(task, tagger),
+                                                                     backgroundTagging.CancellationToken,
+                                                                     TaskContinuationOptions.OnlyOnRanToCompletion,
+                                                                     TaskScheduler.Default);
             return backgroundTagging;
         }
 
@@ -61,6 +65,12 @@ namespace Acuminator.Vsix.Coloriser
             _isDisposed = true;
             CancelTagging();
             _cancellationTokenSource.Dispose();
+        }
+
+        private static async Task AfterTaggingActionAsync(Task taggingTask, PXColorizerTaggerBase tagger)
+        {
+            await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            Shell.ThreadHelper.JoinableTaskFactory.Run(tagger.RaiseTagsChangedAsync);
         }
     }
 }

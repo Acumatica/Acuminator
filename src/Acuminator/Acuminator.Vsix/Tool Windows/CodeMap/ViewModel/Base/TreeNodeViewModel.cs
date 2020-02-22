@@ -27,6 +27,42 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public abstract ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
 
+		private SortType? _childrenSortType;
+
+		/// <summary>
+		/// The sort type of nodes children.
+		/// </summary>
+		public SortType? ChildrenSortType
+		{
+			get => _childrenSortType;
+			set
+			{
+				if (_childrenSortType != value)
+				{
+					_childrenSortType = value;
+					NotifyPropertyChanged();
+				}
+			}
+		}
+
+		private SortDirection _childrenSortDirection = SortDirection.Ascending;
+
+		/// <summary>
+		/// The children sort direction.
+		/// </summary>
+		public SortDirection ChildrenSortDirection
+		{
+			get => _childrenSortDirection;
+			set
+			{
+				if (_childrenSortDirection != value)
+				{
+					_childrenSortDirection = value;
+					NotifyPropertyChanged();
+				}
+			}
+		}
+
 		public ExtendedObservableCollection<TreeNodeViewModel> Children { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
 
 		private bool _isExpanded;
@@ -72,24 +108,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual Task NavigateToItemAsync() => Microsoft.VisualStudio.Threading.TplExtensions.CompletedTask;
 
-		public virtual void AcceptBuilder(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation)
+		public abstract TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input);
+
+		public abstract TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor);
+
+		public abstract void AcceptVisitor(CodeMapTreeVisitor treeVisitor);
+
+		public virtual void ExpandOrCollapseAll(bool expand)
 		{
-			treeBuilder.ThrowOnNull(nameof(treeBuilder));
-			var children = CreateChildren(treeBuilder, expandChildren, cancellation)?.ToList();
-
-			if (children.IsNullOrEmpty())
-				return;
-
-			foreach (var child in children)
-			{
-				child?.AcceptBuilder(treeBuilder, expandChildren, cancellation);
-			}
-
-			var childrenToSet = children.Where(c => c != null && (c.Children.Count > 0 || c.DisplayNodeWithoutChildren));
-			Children.Reset(childrenToSet);
+			IsExpanded = expand;
+			Children.ForEach(childNode => childNode.ExpandOrCollapseAll(expand));
 		}
-
-		protected abstract IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren,
-																	     CancellationToken cancellation);
 	}
 }

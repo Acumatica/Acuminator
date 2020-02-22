@@ -59,35 +59,30 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (codeMapWindow?.CodeMapWPFControl == null)
 				return codeMapWindow;
 
-			CodeMapWindowViewModel codeMapViewModel = codeMapWindow.CodeMapWPFControl.DataContext as CodeMapWindowViewModel;
 			IWpfTextView textView = await ServiceProvider.GetWpfTextViewAsync();
 			Document document = textView?.TextSnapshot?.GetOpenDocumentInCurrentContextWithChanges();
+			CodeMapWindowViewModel codeMapViewModel = codeMapWindow.CodeMapWPFControl.DataContext as CodeMapWindowViewModel;
 
 			if (document == null)
 			{
+				if (codeMapViewModel != null)
+				{
+					await codeMapViewModel.RefreshCodeMapOnWindowOpeningAsync(textView, document);
+				}
+				
 				return codeMapWindow;
 			}
-			else if (CheckIfSameDocumentWasReOpened(codeMapViewModel, document))   //Return window in case of re-openning of the same doc
+
+			if (codeMapViewModel != null)
+			{
+				await codeMapViewModel.RefreshCodeMapOnWindowOpeningAsync(textView, document);
+			}
+			else
 			{
 				codeMapWindow.CodeMapWPFControl.DataContext = CodeMapWindowViewModel.InitCodeMap(textView, document);
-				return codeMapWindow;
 			}
-			else if (codeMapViewModel != null)                  //Cancel operations in case of another doc and dispose of the old view model
-			{
-				codeMapViewModel.CancelCodeMapBuilding();
-				codeMapViewModel.Dispose();
-			}
-
-			codeMapWindow.CodeMapWPFControl.DataContext = CodeMapWindowViewModel.InitCodeMap(textView, document);
+	
 			return codeMapWindow;
-		}
-
-		private bool CheckIfSameDocumentWasReOpened(CodeMapWindowViewModel codeMapViewModel, Document openedDocument)
-		{
-			if (codeMapViewModel == null)
-				return false;
-
-			return codeMapViewModel.Document.FilePath == openedDocument.FilePath;
 		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Acuminator.Analyzers;
 using Acuminator.Analyzers.StaticAnalysis;
@@ -86,7 +87,7 @@ namespace Acuminator.Vsix.Logger
 				return;
 			}
 
-			IWpfTextView activeTextView = ThreadHelper.JoinableTaskFactory.Run(() => _package.GetWpfTextViewAsync());
+			IWpfTextView activeTextView = GetActiveTextViewWithTimeout(timeoutSeconds: 20);
 
 			if (activeTextView == null)
 				return;
@@ -109,6 +110,23 @@ namespace Acuminator.Vsix.Logger
 				case LogMode.Error:
 					ActivityLog.TryLogError(AcuminatorVSPackage.PackageName, logMessage);
 					break;
+			}		
+		}
+
+		private IWpfTextView GetActiveTextViewWithTimeout(double timeoutSeconds)
+		{
+			try
+			{
+				using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(timeoutSeconds)))
+				{
+					var joinableTask = ThreadHelper.JoinableTaskFactory.RunAsync(() => _package.GetWpfTextViewAsync());
+					var activeTextView = joinableTask.Join(cts.Token);
+					return activeTextView;
+				}
+			}
+			catch 
+			{
+				return null;			
 			}		
 		}
 

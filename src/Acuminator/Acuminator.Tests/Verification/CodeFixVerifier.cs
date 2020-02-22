@@ -28,16 +28,6 @@ namespace Acuminator.Tests.Verification
 		}
 
 		/// <summary>
-		/// Returns the codefix being tested (VB) - to be implemented in non-abstract class
-		/// </summary>
-		/// <returns>The CodeFixProvider to be used for VisualBasic code</returns>
-		protected virtual CodeFixProvider GetBasicCodeFixProvider()
-		{
-			return null;
-		}
-
-
-		/// <summary>
 		/// Called to test a C# codefix when applied on the inputted string as a source
 		/// </summary>
 		/// <param name="oldSource">A class in the form of a string before the CodeFix was applied to it</param>
@@ -46,19 +36,8 @@ namespace Acuminator.Tests.Verification
 		/// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
 		protected Task VerifyCSharpFixAsync(string oldSource, string newSource, int codeFixIndex = 0, bool allowNewCompilerDiagnostics = false)
 		{
-			return VerifyFixAsync(LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), GetCSharpCodeFixProvider(), oldSource, newSource, allowNewCompilerDiagnostics, codeFixIndex);
-		}
-
-		/// <summary>
-		/// Called to test a VB codefix when applied on the inputted string as a source
-		/// </summary>
-		/// <param name="oldSource">A class in the form of a string before the CodeFix was applied to it</param>
-		/// <param name="newSource">A class in the form of a string after the CodeFix was applied to it</param>
-		/// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
-		/// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
-		protected Task VerifyBasicFixAsync(string oldSource, string newSource, int codeFixIndex = 0, bool allowNewCompilerDiagnostics = false)
-		{
-			return VerifyFixAsync(LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), GetBasicCodeFixProvider(), oldSource, newSource, allowNewCompilerDiagnostics, codeFixIndex);
+			return VerifyFixAsync(LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), GetCSharpCodeFixProvider(), oldSource, newSource,
+									allowNewCompilerDiagnostics, codeFixIndex);
 		}
 
 		/// <summary>
@@ -70,19 +49,8 @@ namespace Acuminator.Tests.Verification
 		/// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
 		protected void VerifyCSharpFix(string oldSource, string newSource, int codeFixIndex = 0, bool allowNewCompilerDiagnostics = false)
 		{
-			VerifyFixAsync(LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), GetCSharpCodeFixProvider(), oldSource, newSource, allowNewCompilerDiagnostics, codeFixIndex).Wait();
-		}
-
-		/// <summary>
-		/// Called to test a VB codefix when applied on the inputted string as a source
-		/// </summary>
-		/// <param name="oldSource">A class in the form of a string before the CodeFix was applied to it</param>
-		/// <param name="newSource">A class in the form of a string after the CodeFix was applied to it</param>
-		/// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
-		/// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
-		protected void VerifyBasicFix(string oldSource, string newSource, int codeFixIndex = 0, bool allowNewCompilerDiagnostics = false)
-		{
-			VerifyFixAsync(LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), GetBasicCodeFixProvider(), oldSource, newSource, allowNewCompilerDiagnostics, codeFixIndex).Wait();
+			VerifyFixAsync(LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), GetCSharpCodeFixProvider(), oldSource, newSource,
+							allowNewCompilerDiagnostics, codeFixIndex).Wait();
 		}
 
 		/// <summary>
@@ -98,10 +66,11 @@ namespace Acuminator.Tests.Verification
 		/// <param name="newSource">A class in the form of a string after the CodeFix was applied to it</param>
 		/// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
 		/// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
-		private async Task VerifyFixAsync(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string newSource, bool allowNewCompilerDiagnostics, int codeFixIndex = 0)
+		private async Task VerifyFixAsync(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, 
+										  string oldSource, string newSource, bool allowNewCompilerDiagnostics, int codeFixIndex = 0)
 		{
 			var document = CreateDocument(oldSource, language);
-			var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document }).ConfigureAwait(false);
+			var analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document }, checkOnlyFirstDocument: true).ConfigureAwait(false);
 			var compilerDiagnostics = await GetCompilerDiagnosticsAsync(document).ConfigureAwait(false);
 			var attempts = analyzerDiagnostics.Length;
 
@@ -118,7 +87,7 @@ namespace Acuminator.Tests.Verification
 
 				document = await ApplyCodeActionAsync(document, actions.ElementAt(codeFixIndex)).ConfigureAwait(false);
 				
-				analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document }).ConfigureAwait(false);
+				analyzerDiagnostics = await GetSortedDiagnosticsFromDocumentsAsync(analyzer, new[] { document }, checkOnlyFirstDocument: true).ConfigureAwait(false);
 
 				var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, await GetCompilerDiagnosticsAsync(document).ConfigureAwait(false));
 

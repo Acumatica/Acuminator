@@ -19,7 +19,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacUiAttributes
 
 		public override bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) =>
 			base.ShouldAnalyze(pxContext, dac) && 
-			dac.DacType == DacType.Dac;
+			dac.DacType == DacType.Dac && !dac.IsMappedCacheExtension;
 
 		public override void Analyze(SymbolAnalysisContext context, PXContext pxContext, DacSemanticModel dac)
 		{

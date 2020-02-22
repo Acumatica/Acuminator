@@ -13,7 +13,7 @@
     <RootNamespace>Acuminator.Tests</RootNamespace>
     <AssemblyName>Acuminator.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>7.3</LangVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
@@ -125,6 +125,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\FullyUnboundDac.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacExtensionDefaultAttribute\Sources\FullyUnboundDacExtension.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\BaseAndDerivedDac.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacUiAttributes\Sources\PXMappedCacheExtension.cs" />
     <Compile Include="Tests\StaticAnalysis\ForbiddenFieldsInDac\DacForbiddenFieldsNonISVTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacNonAbstractFieldType\DacFieldNotAbstractTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\ForbiddenFieldsSuppressComment_Expected.cs" />
@@ -152,6 +153,10 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DAC_Hidden_Obsolete_InternalUse.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DacExtension_System_Fields.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\DAC_System_Fields.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Partial\WithoutComment.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Partial\WithComment.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Partial\WithExcludeComment.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Partial\WithBadComment.cs" />
     <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\MultipleSuppressionCodeFixTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_One.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\DAC_Without_XML_Description.cs" />

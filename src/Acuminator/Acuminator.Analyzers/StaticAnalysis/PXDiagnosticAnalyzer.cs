@@ -6,14 +6,28 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Reflection;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis
 {
 	public abstract class PXDiagnosticAnalyzer : DiagnosticAnalyzer
 	{
+		private const string VsixPackageType = "AcuminatorVSPackage";
+		private const string ForceLoadPackageAsync = "ForceLoadPackageAsync";
+
+		private static volatile bool _vsixPackageLoadWasDone;
+		private static object _acuminatorVsixPackageLoaderLock = new object();
+
 		private const string AcuminatorTestsName = "Acuminator.Tests";
 
-		protected CodeAnalysisSettings CodeAnalysisSettings { get; }
+		protected CodeAnalysisSettings CodeAnalysisSettings 
+		{ 
+			get;
+			private set;
+		}
 
 		protected static ImmutableArray<string> UnitTestAssemblyMarkers { get; } = 
 			new[] 
@@ -29,11 +43,14 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		/// <param name="codeAnalysisSettings">(Optional) The code analysis settings for unit tests.</param>
 		protected PXDiagnosticAnalyzer(CodeAnalysisSettings codeAnalysisSettings = null)
 		{
-			CodeAnalysisSettings = codeAnalysisSettings ?? GlobalCodeAnalysisSettings.Instance;
+			CodeAnalysisSettings = codeAnalysisSettings;
 		}
 		
 		public override void Initialize(AnalysisContext context)
 		{
+			EnsurePackageLoaded();
+			CodeAnalysisSettings = CodeAnalysisSettings ?? GlobalCodeAnalysisSettings.Instance;  //Initialize settings form global values after potential package load
+
 			if (!CodeAnalysisSettings.StaticAnalysisEnabled)
 				return;
 
@@ -80,6 +97,54 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			return false;
 		}
 
-		internal abstract void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext);	
+		internal abstract void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext);
+
+		/// <summary>
+		/// Ensures that package loaded. A hack - the only known way to force the package load due to completely random default loading of packages by Visual Studio 
+		/// </summary>
+		private static void EnsurePackageLoaded()
+		{
+			if (!_vsixPackageLoadWasDone)
+			{
+				lock (_acuminatorVsixPackageLoaderLock)
+				{
+					if (!_vsixPackageLoadWasDone)
+					{
+						_vsixPackageLoadWasDone = true;
+						SearchForVsixAndEnsureItIsLoadedPackageLoaded();
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Searches for the Visual Studio vsix package and if found (case when working via VSIX in Visual Studio IDE) ensures that package is loaded.
+		/// Calls special method <see cref="ForceLoadPackageAsync"/> to load package provided by AcuminatorVSPackage type.
+		/// </summary>
+		private static void SearchForVsixAndEnsureItIsLoadedPackageLoaded()
+		{	
+			var vsixAssembly = AppDomain.CurrentDomain.GetAssemblies()
+													  .FirstOrDefault(a => a.GetName().Name == SharedConstants.PackageName);
+			if (vsixAssembly == null)
+				return;
+
+			var acuminatorPackageType = vsixAssembly.GetExportedTypes().FirstOrDefault(t => t.Name == VsixPackageType);
+
+			if (acuminatorPackageType == null)
+				return;
+
+			var dummyServiceCaller = acuminatorPackageType.GetMethod(ForceLoadPackageAsync, BindingFlags.Static | BindingFlags.Public);
+
+			if (dummyServiceCaller == null)
+				return;
+
+			var dummyService = dummyServiceCaller.Invoke(null, Array.Empty<object>());
+
+			if (dummyService is Task task)
+			{
+				const int defaultTimeoutSeconds = 20;
+				task.Wait(TimeSpan.FromSeconds(defaultTimeoutSeconds));
+			}
+		}
 	}
 }

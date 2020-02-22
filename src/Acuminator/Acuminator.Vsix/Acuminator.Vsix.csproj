@@ -50,7 +50,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <DebugType>pdbonly</DebugType>
@@ -59,7 +59,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>7.3</LangVersion>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DeployExtension>False</DeployExtension>
   </PropertyGroup>
@@ -180,6 +180,12 @@
     <Resource Include="Resources\CodeMap\DAC.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\CollapseAll.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\ExpandAll.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Content Include="Resources\DacExplorer.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -232,6 +238,9 @@
     <Compile Include="Commands\GoToDeclarationOrHandler\GoToDeclarationOrHandlerCommand.cs" />
     <Compile Include="Commands\VSCommandBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\Themes\Styles.xaml.cs">
+      <DependentUpon>Styles.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Resources\VSIXResource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -240,6 +249,24 @@
     <Compile Include="Settings\CodeAnalysisSettingsFromOptionsPage.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\Icon.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\TreeNodeToImageSourceConverter.cs" />
+    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeWalker.cs" />
+    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\StackGuard.cs" />
+    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeVisitor.cs" />
+    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeVisitor_DacVisitMethods.cs" />
+    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeVisitor_GraphVisitMethods.cs" />
+    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\CodeMapTreeVisitor.cs" />
+    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\CodeMapTreeVisitor_DacVisitMethods.cs" />
+    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\CodeMapTreeVisitor_GraphVisitMethods.cs" />
+    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\WithInput\CodeMapTreeVisitor.cs" />
+    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\WithInput\CodeMapTreeVisitor_DacVisitMethods.cs" />
+    <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\WithInput\CodeMapTreeVisitor_GraphVisitMethods.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Base\INodeWithSymbolItem.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\NodeDeclarationOrderComparer.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\Sorters\NodesSorter.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\Visitors\CodeMapSubtreeSorter.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\CodeMapSortContext.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\Visitors\CodeMapTreeInitialSorter.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\SortType.cs" />
     <Compile Include="Tool Windows\CodeMap\Tooltips\TreeNodeToTooltipConverter.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\DacMemberCategory.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphSemanticModelForCodeMap.cs" />
@@ -254,8 +281,6 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\ExtraInfo\ExtraInfoViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\ExtraInfo\TextViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\ExtraInfo\IconViewModel.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Base\TreeBuilderBase_DacVisitMethods.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Base\TreeBuilderBase_GraphVisitMethods.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Base\TreeBuilderBase.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Dac\DefaultCodeMapTreeBuilder_Dac.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\DefaultCodeMapTreeBuilder.cs" />
@@ -302,7 +327,7 @@
     <Compile Include="Tool Windows\CodeMap\Utils\CodeMapRefreshMode.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\IndentUtils.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\CodeMapDocChangesClassifier.cs" />
-    <Compile Include="Utils\ChangesClassification\ChangeLocation.cs" />
+    <Compile Include="Utils\ChangesClassification\ChangeInfluenceScope.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\CyclingNavigationUtils.cs" />
     <Compile Include="Tool Windows\Converters\BoolInversionConverter.cs" />
     <Compile Include="Tool Windows\Converters\ObjectToItsTypeConverter.cs" />
@@ -347,6 +372,7 @@
     <Compile Include="Utils\UIAttributes\CategoryFromResourcesAttribute.cs" />
     <Compile Include="Utils\UIAttributes\DescriptionFromResourcesAttribute.cs" />
     <Compile Include="Utils\UIAttributes\DisplayNameFromResourcesAttribute.cs" />
+    <Compile Include="Utils\WPF\VisualTreeUtils.cs" />
     <Compile Include="Utils\WPF\ResourceDictionaryExtensions.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\ARDocumentRelease.cs" />
     <EmbeddedResource Include="Coloriser\Regex\Test\PMAllocationProcess.cs" />
@@ -374,11 +400,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Resources\CodeMap\Themes\BitmapImages.xaml">
+    <Page Include="Resources\CodeMap\Bitmap\BitmapImages.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Resources\CodeMap\Themes\Styles.xaml">
+    <Page Include="Resources\Themes\Styles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

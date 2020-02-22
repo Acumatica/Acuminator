@@ -57,14 +57,16 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 		public static void InitOrReset(Workspace workspace, bool generateSuppressionBase, 
 									   Func<ISuppressionFileSystemService> fileSystemServiceFabric = null,
 									   Func<ICustomBuildActionSetter> buildActionSetterFabric = null) =>
-			InitOrReset(workspace?.CurrentSolution?.GetSuppressionInfoFromSolution(generateSuppressionBase),
+			InitOrReset(workspace?.CurrentSolution?.GetSuppressionInfo(generateSuppressionBase),
 						fileSystemServiceFabric, null, buildActionSetterFabric);
 
-		public static void InitOrReset(Workspace workspace, bool generateSuppressionBase, 
+		public static void InitOrReset(Workspace workspace, bool generateSuppressionBase,
 									   Func<IIOErrorProcessor> errorProcessorFabric = null,
-									   Func<ICustomBuildActionSetter> buildActionSetterFabric = null) =>
-			InitOrReset(workspace?.CurrentSolution?.GetSuppressionInfoFromSolution(generateSuppressionBase),
-						null, errorProcessorFabric, buildActionSetterFabric);
+									   Func<ICustomBuildActionSetter> buildActionSetterFabric = null)
+		{
+			var suppressionFileInfos = workspace?.CurrentSolution?.GetSuppressionInfo(generateSuppressionBase);
+			InitOrReset(suppressionFileInfos, null, errorProcessorFabric, buildActionSetterFabric);
+		}
 
 		private static void InitOrReset(IEnumerable<SuppressionManagerInitInfo> suppressionFileInfos,
 										Func<ISuppressionFileSystemService> fileSystemServiceFabric,
