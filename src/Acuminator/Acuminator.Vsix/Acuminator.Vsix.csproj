@@ -278,7 +278,7 @@
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\RootCandidateSymbolsRetrieverDefault.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\SemanticModelFactoryDefault.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\IGroupNodeWithCyclingNavigation.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\ExtraInfo\ExtraInfoViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\ExtraInfo\Base\ExtraInfoViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\ExtraInfo\TextViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\ExtraInfo\IconViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Base\TreeBuilderBase.cs" />
