@@ -16,9 +16,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		protected override bool AllowNavigation => true;
 
-		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; } =
-			new ExtendedObservableCollection<ExtraInfoViewModel>(
-				new IconViewModel(Icon.DacKeysCategory));
+		public override Icon NodeIcon => Icon.DacKeysCategory;
 
 		public DacKeysCategoryNodeViewModel(DacNodeViewModel dacViewModel, bool isExpanded) : 
 									   base(dacViewModel, DacMemberCategory.Keys, isExpanded)

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Vsix.Utilities;
 
@@ -9,6 +8,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class FieldEventNodeViewModel : GraphMemberNodeViewModel
 	{
+		public override Icon NodeIcon => Icon.FieldEvent;
+
 		public DacFieldGroupingNodeBaseViewModel DacFieldVM { get; }
 
 		public override string Name
@@ -16,10 +17,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			get;
 			protected set;
 		}
-
-		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; } =
-			new ExtendedObservableCollection<ExtraInfoViewModel>(
-				new IconViewModel(Icon.FieldEvent));
 
 		public FieldEventNodeViewModel(DacFieldGroupingNodeBaseViewModel dacFieldVM, GraphFieldEventInfo eventInfo, bool isExpanded = false) :
 								  base(dacFieldVM?.GraphEventsCategoryVM, eventInfo, isExpanded)

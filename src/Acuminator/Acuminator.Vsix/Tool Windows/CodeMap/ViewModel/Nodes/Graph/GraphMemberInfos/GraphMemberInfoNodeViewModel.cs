@@ -24,13 +24,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public GraphMemberInfoType GraphMemberInfoType { get; }
 
+		public override Icon NodeIcon => GetIconType(GraphMemberInfoType);
+
 		public override string Name
 		{
 			get => GraphMemberInfoSymbol.Name;
 			protected set { }
 		}
-
-		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
 
 		public override bool DisplayNodeWithoutChildren => true;
 
@@ -43,11 +43,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			GraphMemberInfoData = memberInfoData;
 			GraphMember = graphMemberVM;
 			GraphMemberInfoType = graphMemberInfoType;
-
-			Icon icon = GetIconType(GraphMemberInfoType);
-			ExtraInfos = icon != Icon.None
-				? new ExtendedObservableCollection<ExtraInfoViewModel>(new IconViewModel(icon))
-				: new ExtendedObservableCollection<ExtraInfoViewModel>();
 		}
 
 		public override Task NavigateToItemAsync() => GraphMemberInfoSymbol.NavigateToAsync();

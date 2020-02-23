@@ -13,6 +13,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class PropertyNodeViewModel : DacMemberNodeViewModel
 	{
+		public override Icon NodeIcon => IsKey
+				? Icon.DacKeyProperty
+				: Icon.DacProperty;
+
 		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
 
 		public override string Tooltip
@@ -43,12 +47,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private IEnumerable<ExtraInfoViewModel> GetExtraInfos()
 		{
-			Icon icon = IsKey
-				? Icon.DacKeyProperty
-				: Icon.DacProperty;
-
-			yield return new IconViewModel(icon);
-
 			if (IsIdentity)
 			{
 				yield return new TextViewModel("ID", Brushes.LightGreen);

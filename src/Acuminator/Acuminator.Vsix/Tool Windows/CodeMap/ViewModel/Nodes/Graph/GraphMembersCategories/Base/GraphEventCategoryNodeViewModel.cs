@@ -25,9 +25,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; } =
-			new ExtendedObservableCollection<ExtraInfoViewModel>(
-				new IconViewModel(Icon.GraphEventCategory));
+		public override Icon NodeIcon => Icon.GraphEventCategory;
 
 		protected override bool AllowNavigation => false;
 

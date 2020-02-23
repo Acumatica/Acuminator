@@ -11,13 +11,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class ActionNodeViewModel : GraphMemberNodeViewModel
 	{
+		public override Icon NodeIcon => Icon.Action;
+
 		public ActionInfo ActionInfo => MemberInfo as ActionInfo;
 
 		public override string Tooltip => ActionInfo.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
-
-		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; } =
-			new ExtendedObservableCollection<ExtraInfoViewModel>(
-				new IconViewModel(Icon.Action));
 
 		public ActionNodeViewModel(ActionCategoryNodeViewModel actionCategoryVM, ActionInfo actionInfo, bool isExpanded = false) :
 							  base(actionCategoryVM, actionInfo, isExpanded)

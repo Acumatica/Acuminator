@@ -21,9 +21,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set;
 		}
 
-		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; } =
-			new ExtendedObservableCollection<ExtraInfoViewModel>(
-				new IconViewModel(Icon.RowEvent));
+		public override Icon NodeIcon => Icon.RowEvent;
 
 		public RowEventNodeViewModel(DacGroupingNodeBaseViewModel dacViewModel, GraphRowEventInfo eventInfo, bool isExpanded = false) :
 								base(dacViewModel?.GraphEventsCategoryVM, eventInfo, isExpanded)

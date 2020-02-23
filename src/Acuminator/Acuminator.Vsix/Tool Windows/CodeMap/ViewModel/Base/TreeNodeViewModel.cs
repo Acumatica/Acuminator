@@ -28,9 +28,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// <summary>
 		/// The main icon for a node.
 		/// </summary>
-		public virtual Icon NodeIcon => Icon.None;
+		public abstract Icon NodeIcon { get; }
 
-		public abstract ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
+		public virtual ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos => null;
 
 		private SortType? _childrenSortType;
 

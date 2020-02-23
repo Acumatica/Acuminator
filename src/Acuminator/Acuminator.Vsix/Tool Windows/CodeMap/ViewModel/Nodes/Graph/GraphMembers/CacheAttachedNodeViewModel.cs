@@ -13,6 +13,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class CacheAttachedNodeViewModel : GraphMemberNodeViewModel
 	{
+		public override Icon NodeIcon => Icon.CacheAttached;
+
 		public DacGroupingNodeBaseViewModel DacVM { get; }
 
 		public override string Tooltip
@@ -29,10 +31,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			get;
 			protected set;
 		}
-
-		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; } =
-			new ExtendedObservableCollection<ExtraInfoViewModel>(
-				new IconViewModel(Icon.CacheAttached));
 
 		public CacheAttachedNodeViewModel(DacGroupingNodeBaseViewModel dacVM, GraphFieldEventInfo eventInfo, bool isExpanded = false) :
 									 base(dacVM?.GraphEventsCategoryVM, eventInfo, isExpanded)
