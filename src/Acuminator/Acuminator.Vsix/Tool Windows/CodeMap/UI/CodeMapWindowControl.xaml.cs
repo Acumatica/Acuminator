@@ -20,20 +20,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public CodeMapWindowControl()
 		{
 			this.InitializeComponent();
-		}
-
-		private void TreeViewItem_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-		{
-			if (e.Handled || e.ChangedButton != System.Windows.Input.MouseButton.Left || e.ClickCount != 2)
-				return;
-
-			e.Handled = true;
-
-			if (!(sender is StackPanel treeViewItemPanel) || !(treeViewItemPanel.DataContext is TreeNodeViewModel treeNodeVM))
-				return;
-
-			treeNodeVM.NavigateToItemAsync()
-					  .FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(TreeViewItem_PreviewMouseLeftButtonDown)}");	
-		}
+		}	
 	}
 }
