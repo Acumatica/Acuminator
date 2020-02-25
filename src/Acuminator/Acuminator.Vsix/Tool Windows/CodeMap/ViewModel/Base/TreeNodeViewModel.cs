@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
 
@@ -68,6 +69,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
+		public TreeNodeViewModel Parent { get; }
+
+		public bool IsRoot => Parent == null;
+
 		public ExtendedObservableCollection<TreeNodeViewModel> Children { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
 
 		private bool _isExpanded;
@@ -81,6 +86,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				{
 					_isExpanded = value;
 					NotifyPropertyChanged();
+
+					Children.ForEach(child => child.NotifyPropertyChanged(nameof(AreDetailsVisible)));
 				}
 			}
 		}
@@ -103,11 +110,23 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		protected TreeNodeViewModel(TreeViewModel tree, bool isExpanded = true)
+		public virtual Visibility AreDetailsVisible
+		{
+			get 
+			{
+				if (IsRoot || Parent.IsExpanded)
+					return Visibility.Visible;
+				else
+					return Visibility.Collapsed;
+			}
+		}
+
+		protected TreeNodeViewModel(TreeViewModel tree, TreeNodeViewModel parent, bool isExpanded = true)
 		{
 			tree.ThrowOnNull(nameof(tree));
 
 			Tree = tree;
+			Parent = parent;
 			_isExpanded = isExpanded;
 		}
 

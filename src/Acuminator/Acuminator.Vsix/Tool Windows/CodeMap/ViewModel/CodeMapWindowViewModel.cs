@@ -373,7 +373,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private void ClearCodeMap()
 		{
 			_cancellationTokenSource?.Cancel();
-			Tree?.RootItems.Clear();
+			Tree?.Clear();
 			Tree = null;
 		}
 

@@ -154,32 +154,32 @@
         <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundBrushKey}}"/>
         <Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundTextBrushKey}}"/>
 
-        <Style.Triggers>
-            <MultiTrigger>
+		<Style.Triggers>
+			<MultiTrigger>
+				<MultiTrigger.Conditions>
+					<Condition Property="IsSelected" Value="True"/>
+					<Condition Property="IsFocused" Value="True"/>
+				</MultiTrigger.Conditions>
+
+				<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemActiveBrushKey}}"/>
+				<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemActiveTextBrushKey}}"/>
+			</MultiTrigger>
+
+			<MultiTrigger>
                 <MultiTrigger.Conditions>
                     <Condition Property="IsSelected" Value="True"/>
-                    <Condition Property="IsSelectionActive" Value="True"/>
-                </MultiTrigger.Conditions>
-
-                <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemActiveBrushKey}}"/>
-                <Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemActiveTextBrushKey}}"/>
-            </MultiTrigger>
-
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:HeaderColors.MouseOverBrushKey}}"/>
-                <Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:HeaderColors.MouseOverTextBrushKey}}"/>
-            </Trigger>
-
-            <MultiTrigger>
-                <MultiTrigger.Conditions>
-                    <Condition Property="IsSelected" Value="True"/>
-                    <Condition Property="IsSelectionActive" Value="False"/>
+					<Condition Property="IsFocused" Value="False"/>
                 </MultiTrigger.Conditions>
 
                 <Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemInactiveBrushKey}}"/>
                 <Setter Property="Foreground" Value="Black"/>
             </MultiTrigger>
-        </Style.Triggers>
+
+			<Trigger Property="IsMouseOver" Value="True">
+				<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:HeaderColors.MouseOverBrushKey}}"/>
+				<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:HeaderColors.MouseOverTextBrushKey}}"/>
+			</Trigger>
+		</Style.Triggers>
     </Style>
 	<!--#endregion-->
 	<!--#region TreeView Style-->
@@ -187,11 +187,12 @@
         <Setter Property="Background" Value="Transparent"/>
     </Style>
 	<!--#endregion-->
+	
 	<!--#region VS ListBox Style-->
     <Style x:Key="vsListBoxItemStyle" TargetType="ListBoxItem">
         <Setter Property="Background" Value="Transparent"/>
 
-        <Style.Triggers>
+		<Style.Triggers>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
                     <Condition Property="IsSelected" Value="True"/>
