@@ -7,6 +7,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Acuminator.Vsix.Utilities;
+using System.Windows.Controls.Primitives;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -32,6 +34,35 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			treeNodeVM.NavigateToItemAsync()
 					  .FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(TreeViewItem_PreviewMouseLeftButtonDown)}");
+		}
+
+		private void TreeNode_MouseEnter(object sender, MouseEventArgs e)
+		{
+			if (!(GetTreeNodeViewModelFromControl(sender) is TreeNodeViewModel treeNode))
+				return;
+
+			treeNode.IsMouseOver = true;
+		}
+
+		private void TreeNode_MouseLeave(object sender, MouseEventArgs e)
+		{
+			if (!(GetTreeNodeViewModelFromControl(sender) is TreeNodeViewModel treeNode))
+				return;
+
+			treeNode.IsMouseOver = false;
+		}
+
+		private TreeNodeViewModel GetTreeNodeViewModelFromControl(object control)
+		{
+			switch (control)
+			{
+				case TreeViewItem treeViewItem:
+					return treeViewItem.DataContext as TreeNodeViewModel;
+				case ListBoxItem listBoxItem:
+					return listBoxItem.DataContext as TreeNodeViewModel;
+				default:
+					return null; ;
+			}
 		}
 	}
 }

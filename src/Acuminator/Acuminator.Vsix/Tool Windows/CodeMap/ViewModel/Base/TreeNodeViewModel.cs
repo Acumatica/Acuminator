@@ -110,16 +110,22 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public virtual Visibility AreDetailsVisible
+		private bool _isMouseOver;
+
+		public bool IsMouseOver
 		{
-			get 
+			get => _isMouseOver;
+			set
 			{
-				if (IsRoot || Parent.IsExpanded)
-					return Visibility.Visible;
-				else
-					return Visibility.Collapsed;
+				if (_isMouseOver != value)
+				{
+					_isMouseOver = value;
+					NotifyPropertyChanged();
+				}
 			}
 		}
+
+		public virtual bool AreDetailsVisible => IsRoot || Parent.IsExpanded;
 
 		protected TreeNodeViewModel(TreeViewModel tree, TreeNodeViewModel parent, bool isExpanded = true)
 		{
