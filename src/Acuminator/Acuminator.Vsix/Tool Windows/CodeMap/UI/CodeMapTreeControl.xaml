@@ -110,8 +110,8 @@
 		</ResourceDictionary>
 	</UserControl.Resources>
 
-	<TreeView Style="{StaticResource vsTreeViewStyle}"
-              ItemsSource="{Binding Path=RootItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+	<TreeView Grid.Row="0" Style="{StaticResource vsTreeViewStyle}"
+				  ItemsSource="{Binding Path=RootItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
 		<TreeView.ItemContainerStyle>
 			<Style TargetType="TreeViewItem" BasedOn="{StaticResource vsTreeViewItemStyle}">
 				<Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
