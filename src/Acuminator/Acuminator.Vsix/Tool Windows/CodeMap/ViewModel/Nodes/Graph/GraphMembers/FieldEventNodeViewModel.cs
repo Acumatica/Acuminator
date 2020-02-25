@@ -19,7 +19,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public FieldEventNodeViewModel(DacFieldGroupingNodeBaseViewModel dacFieldVM, GraphFieldEventInfo eventInfo, bool isExpanded = false) :
-								  base(dacFieldVM?.GraphEventsCategoryVM, eventInfo, isExpanded)
+								  base(dacFieldVM?.GraphEventsCategoryVM, dacFieldVM, eventInfo, isExpanded)
 		{
 			DacFieldVM = dacFieldVM;
 			Name = eventInfo.EventType.ToString();

@@ -36,7 +36,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public GraphMemberInfoNodeViewModel(GraphMemberNodeViewModel graphMemberVM, SymbolItem memberInfoData, 
 											GraphMemberInfoType graphMemberInfoType, bool isExpanded = false) :
-									  base(graphMemberVM?.Tree, isExpanded)
+									  base(graphMemberVM?.Tree, graphMemberVM, isExpanded)
 		{
 			memberInfoData.ThrowOnNull(nameof(memberInfoData));
 

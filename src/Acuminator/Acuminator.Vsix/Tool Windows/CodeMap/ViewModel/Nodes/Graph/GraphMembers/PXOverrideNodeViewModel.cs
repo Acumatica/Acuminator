@@ -13,7 +13,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public PXOverrideNodeViewModel(PXOverridesCategoryNodeViewModel pxOverridesCategoryVM, 
 									   PXOverrideInfoForCodeMap pxOverrideInfo, bool isExpanded = false) :
-								  base(pxOverridesCategoryVM, pxOverrideInfo, isExpanded)
+								  base(pxOverridesCategoryVM, pxOverridesCategoryVM, pxOverrideInfo, isExpanded)
 		{		
 		}
 

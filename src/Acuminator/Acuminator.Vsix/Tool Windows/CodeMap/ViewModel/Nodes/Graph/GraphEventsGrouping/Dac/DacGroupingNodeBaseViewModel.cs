@@ -52,7 +52,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
 
 		protected DacGroupingNodeBaseViewModel(GraphEventCategoryNodeViewModel graphEventsCategoryVM, string dacName, bool isExpanded) :
-												base(graphEventsCategoryVM?.Tree, isExpanded)
+												base(graphEventsCategoryVM?.Tree, graphEventsCategoryVM, isExpanded)
 		{
 			dacName.ThrowOnNullOrWhiteSpace(nameof(dacName));
 

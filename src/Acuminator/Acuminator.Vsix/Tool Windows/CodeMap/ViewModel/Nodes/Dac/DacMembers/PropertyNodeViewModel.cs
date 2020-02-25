@@ -39,7 +39,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public BoundType BoundType => PropertyInfo.BoundType;
 
 		public PropertyNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, DacPropertyInfo propertyInfo, bool isExpanded = false) :
-								base(dacMemberCategoryVM, propertyInfo, isExpanded)
+								base(dacMemberCategoryVM, dacMemberCategoryVM, propertyInfo, isExpanded)
 		{
 			var extraInfos = GetExtraInfos();
 			ExtraInfos = new ExtendedObservableCollection<ExtraInfoViewModel>(extraInfos);

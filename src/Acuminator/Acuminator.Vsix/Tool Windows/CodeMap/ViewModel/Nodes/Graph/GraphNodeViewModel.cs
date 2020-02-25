@@ -31,7 +31,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override bool DisplayNodeWithoutChildren => true;
 
 		public GraphNodeViewModel(GraphSemanticModelForCodeMap codeMapGraphModel, TreeViewModel tree, bool isExpanded) : 
-							 base(tree, isExpanded)
+							 base(tree, parent: null, isExpanded)
 		{
 			CodeMapGraphModel = codeMapGraphModel;
 		}

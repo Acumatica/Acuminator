@@ -25,7 +25,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override bool DisplayNodeWithoutChildren => true;
 
-		public DacNodeViewModel(DacSemanticModel dacModel, TreeViewModel tree, bool isExpanded) : base(tree, isExpanded)
+		public DacNodeViewModel(DacSemanticModel dacModel, TreeViewModel tree, bool isExpanded) : 
+						   base(tree, parent: null, isExpanded)
 		{
 			dacModel.ThrowOnNull(nameof(dacModel));
 			DacModel = dacModel;
