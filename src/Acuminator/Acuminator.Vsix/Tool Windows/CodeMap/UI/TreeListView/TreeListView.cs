@@ -7,28 +7,30 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap.TreeListViewControl
 {
-	public class TreeListView : TreeView
+	public class TreeList : ListView
 	{
-		private GridViewColumnCollection _columns;
+        /// 
+        /// Internal collection of rows representing visible nodes, actually displayed
+        /// in the ListView
+        /// 
+        internal ExtendedObservableCollection<TreeNode> Rows
+        {
+            get;
+            private set;
+        }
 
-		public GridViewColumnCollection Columns
-		{
-			get
-			{
-				if (_columns == null)
-				{
-					_columns = new GridViewColumnCollection();
-				}
+        protected override DependencyObject GetContainerForItemOverride()
+        {
+            return new TreeListItem();
+        }
 
-				return _columns;
-			}
-		}
-
-		protected override DependencyObject GetContainerForItemOverride() => new TreeListViewItem();
-
-		protected override bool IsItemItsOwnContainerOverride(object item) => item is TreeListViewItem;
-	}
+        protected override bool IsItemItsOwnContainerOverride(object item)
+        {
+            return item is TreeListItem;
+        }
+    }
 }
