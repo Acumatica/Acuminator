@@ -47,6 +47,7 @@ namespace Acuminator.Vsix.Utilities
 		public void AddRange(IEnumerable<T> range)
 		{
 			range.ThrowOnNull(nameof(range));
+			CheckReentrancy();
 
 			foreach (T item in range)
 			{
@@ -73,6 +74,8 @@ namespace Acuminator.Vsix.Utilities
 			if (index < 0 || index >= Count)
 				throw new ArgumentOutOfRangeException(nameof(index));
 
+			CheckReentrancy();
+
 			foreach (var item in range)
 			{
 				Items.Insert(index, item);
@@ -93,6 +96,7 @@ namespace Acuminator.Vsix.Utilities
 		public void RemoveRange(IEnumerable<T> range)
 		{
 			range.ThrowOnNull(nameof(range));
+			CheckReentrancy();
 
 			foreach (T item in range)
 			{
@@ -115,22 +119,6 @@ namespace Acuminator.Vsix.Utilities
 			Items.Clear();
 
 			AddRange(range);
-		}
-
-		public void Sort<TValue>(Func<T, TValue> selector, SortDirection direction = SortDirection.Ascending)
-		{
-			selector.ThrowOnNull(nameof(selector));
-
-			if (Count == 0)
-				return;
-
-			var orderedCopy =
-				(direction == SortDirection.Ascending
-					? Items.OrderBy(selector)
-					: Items.OrderByDescending(selector))
-				.ToList(Count);                        //Need a copy of the collection because we can't reset collection with IEnumerable which is based on the collection
-
-			Reset(orderedCopy);
 		}
 	}
 }
