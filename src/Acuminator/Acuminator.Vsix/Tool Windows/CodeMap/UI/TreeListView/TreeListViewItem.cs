@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace Acuminator.Vsix.ToolWindows.CodeMap
+namespace Acuminator.Vsix.ToolWindows.CodeMap.TreeListViewControl
 {
 	public class TreeListViewItem : TreeViewItem
 	{

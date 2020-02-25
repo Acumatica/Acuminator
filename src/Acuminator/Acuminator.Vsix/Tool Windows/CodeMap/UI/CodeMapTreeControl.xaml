@@ -6,9 +6,10 @@
              xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
              xmlns:platformUI="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
              xmlns:codeMap="clr-namespace:Acuminator.Vsix.ToolWindows.CodeMap"
+			 xmlns:treeListView="clr-namespace:Acuminator.Vsix.ToolWindows.CodeMap.TreeListViewControl"
              xmlns:converters="clr-namespace:Acuminator.Vsix.ToolWindows.Converters"
              mc:Ignorable="d" 
-             d:DesignHeight="150" d:DesignWidth="400"
+             d:DesignHeight="150" d:DesignWidth="200"
 			 d:DataContext="{d:DesignInstance Type={x:Type codeMap:TreeViewModel}, IsDesignTimeCreatable=True}">
 	<UserControl.Resources>
 		<ResourceDictionary>
@@ -19,6 +20,7 @@
 					<!--Converters-->
 					<codeMap:TreeNodeToTooltipConverter x:Key="treeNodeToTooltipConverter"/>
 					<codeMap:TreeNodeToImageSourceConverter x:Key="treeNodeToIconConverter"/>
+					<treeListView:LevelToIndentConverter x:Key="levelToIndentConverter"/>
 
 					<!-- Bitmap Images -->
 					<BitmapImage x:Key="ExpandAllImage" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
@@ -34,21 +36,84 @@
 					<DataTemplate x:Key="CellTemplate_Name">
 						<DockPanel>
 							<ToggleButton x:Name="Expander" ClickMode="Press" 
-										  Margin="{Binding Path=Level, RelativeSource={RelativeSource AncestorType={x:Type codeMap:TreeListViewItem}},
-														   Converter={StaticResource LevelToIndentConverter}}"
-										  IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type codeMap:TreeListViewItem}},
+										  Margin="{Binding Path=Level, RelativeSource={RelativeSource AncestorType={x:Type treeListView:TreeListViewItem}},
+														   Converter={StaticResource levelToIndentConverter}}"
+										  IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type treeListView:TreeListViewItem}},
 															  Path=IsExpanded}"/>
 
 							<TextBlock Text="{Binding Name}"/>
 						</DockPanel>
 						<DataTemplate.Triggers>
-							<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type codeMap:TreeListViewItem}},
+							<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type treeListView:TreeListViewItem}},
 														   Path=HasItems}"
 										 Value="False">
 								<Setter TargetName="Expander" Property="Visibility" Value="Hidden"/>
 							</DataTrigger>
 						</DataTemplate.Triggers>
 					</DataTemplate>
+
+					<!--TreeListViewItem ControlTemplate -->
+					<Style TargetType="{x:Type treeListView:TreeListViewItem}">
+						<Setter Property="Template">
+							<Setter.Value>
+								<ControlTemplate TargetType="{x:Type treeListView:TreeListViewItem}">
+									<StackPanel>
+										<Border Name="Bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+												BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+
+											<!--Use GridViewRowPresenter to show content in columns instead of row presenter-->
+											<GridViewRowPresenter x:Name="PART_Header" Content="{TemplateBinding Header}" 
+																  Columns="{Binding RelativeSource={RelativeSource AncestorType={x:Type treeListView:TreeListView}},
+																			Path=Columns}" />
+										</Border>
+										<ItemsPresenter x:Name="ItemsHost" />
+									</StackPanel>
+									<ControlTemplate.Triggers>
+										<Trigger Property="IsExpanded" Value="false">
+											<Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
+										</Trigger>
+										
+										<MultiTrigger>
+											<MultiTrigger.Conditions>
+												<Condition Property="HasHeader" Value="false"/>
+												<Condition Property="Width" Value="Auto"/>
+											</MultiTrigger.Conditions>
+											
+											<Setter TargetName="PART_Header" Property="MinWidth" Value="75"/>
+										</MultiTrigger>
+										
+										<MultiTrigger>
+											<MultiTrigger.Conditions>
+												<Condition Property="HasHeader" Value="false"/>
+												<Condition Property="Height" Value="Auto"/>
+											</MultiTrigger.Conditions>
+											
+											<Setter TargetName="PART_Header" Property="MinHeight" Value="19"/>
+										</MultiTrigger>
+										
+										<Trigger Property="IsSelected" Value="true">
+											<Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+											<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
+										</Trigger>
+										
+										<MultiTrigger>
+											<MultiTrigger.Conditions>
+												<Condition Property="IsSelected" Value="true"/>
+												<Condition Property="IsSelectionActive"  Value="false"/>
+											</MultiTrigger.Conditions>
+											
+											<Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+											<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+										</MultiTrigger>
+										
+										<Trigger Property="IsEnabled" Value="false">
+											<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+										</Trigger>
+									</ControlTemplate.Triggers>
+								</ControlTemplate>
+							</Setter.Value>
+						</Setter>
+					</Style>
 
 					<!-- tree node styles-->
 					<Style x:Key="treeNodeStackPanelWithContextMenuStyle" TargetType="StackPanel">
@@ -127,8 +192,7 @@
 		</ResourceDictionary>
 	</UserControl.Resources>
 
-	<TreeView Grid.Row="0" Style="{StaticResource vsTreeViewStyle}"
-				  ItemsSource="{Binding Path=RootItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+	<TreeView Style="{StaticResource vsTreeViewStyle}" ItemsSource="{Binding Path=RootItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
 		<TreeView.ItemContainerStyle>
 			<Style TargetType="TreeViewItem" BasedOn="{StaticResource vsTreeViewItemStyle}">
 				<Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
