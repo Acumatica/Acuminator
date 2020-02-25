@@ -30,8 +30,25 @@
 					<!-- Image Style-->
 					<Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}"/>
 
-					<!-- Button Style-->
-					<Style TargetType="Button" BasedOn="{StaticResource vsButtonStyle}"/>
+					<!-- TreeListView First Cell Template -->
+					<DataTemplate x:Key="CellTemplate_Name">
+						<DockPanel>
+							<ToggleButton x:Name="Expander" ClickMode="Press" 
+										  Margin="{Binding Path=Level, RelativeSource={RelativeSource AncestorType={x:Type codeMap:TreeListViewItem}},
+														   Converter={StaticResource LevelToIndentConverter}}"
+										  IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type codeMap:TreeListViewItem}},
+															  Path=IsExpanded}"/>
+
+							<TextBlock Text="{Binding Name}"/>
+						</DockPanel>
+						<DataTemplate.Triggers>
+							<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type codeMap:TreeListViewItem}},
+														   Path=HasItems}"
+										 Value="False">
+								<Setter TargetName="Expander" Property="Visibility" Value="Hidden"/>
+							</DataTrigger>
+						</DataTemplate.Triggers>
+					</DataTemplate>
 
 					<!-- tree node styles-->
 					<Style x:Key="treeNodeStackPanelWithContextMenuStyle" TargetType="StackPanel">

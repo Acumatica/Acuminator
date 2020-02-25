@@ -12,6 +12,24 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class TreeListViewItem : TreeViewItem
 	{
+		private int? _level = null;
+
+		public int Level
+		{
+			get
+			{
+				if (_level == null)
+				{
+					TreeListViewItem parent = ItemsControl.ItemsControlFromItemContainer(this) as TreeListViewItem;
+					_level = parent != null 
+						? (parent.Level + 1)
+						: 0;
+				}
+
+				return _level.Value;
+			}
+		}
+
 		protected override DependencyObject GetContainerForItemOverride() => new TreeListViewItem();
 		
 		protected override bool IsItemItsOwnContainerOverride(object item) => item is TreeListViewItem;
