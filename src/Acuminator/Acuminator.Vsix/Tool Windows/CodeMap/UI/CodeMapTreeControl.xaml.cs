@@ -44,20 +44,5 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			treeNode.IsMouseOver = frameworkElement.IsMouseOver;
 			e.Handled = true;	
 		}
-
-		private void ListBox_Loaded(object sender, RoutedEventArgs e)
-		{
-			if (!(sender is ListBox listBox))
-				return;
-
-			Border border = listBox.GetVisualDescendants()
-								   .OfType<Border>()
-								   .FirstOrDefault();
-
-			if (border != null)
-			{
-				border.Padding = new Thickness();
-			}
-		}
 	}
 }
