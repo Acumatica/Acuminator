@@ -52,7 +52,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				? Brushes.LightBlue
 				: Brushes.Blue;
 
-			yield return new TextViewModel(PropertyInfo.EffectivePropertyType.ToString(), brush);
+			yield return new TextViewModel(PropertyInfo.EffectivePropertyType.GetSimplifiedName(), brush);
 
 			if (IsIdentity)
 			{

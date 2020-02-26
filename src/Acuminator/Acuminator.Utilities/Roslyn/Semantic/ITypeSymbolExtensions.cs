@@ -503,57 +503,37 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 
 		/// <summary>
-		/// An ITypeSymbol extension method that gets a simple name for primitive type.
+		/// An ITypeSymbol extension method that gets a simplified name for type if it is a primitive type.
 		/// </summary>
 		/// <param name="type">The type to act on.</param>
-		/// <returns>
-		/// The simple name for primitive type.
-		/// </returns>
-		public static string GetSimpleNameForPrimitiveType(this ITypeSymbol type)
+		/// <returns/>
+		public static string GetSimplifiedName(this ITypeSymbol type)
 		{
 			type.ThrowOnNull(nameof(type));
 
 			switch (type.SpecialType)
 			{
 				case SpecialType.System_Object:
-					return "object";
 				case SpecialType.System_Void:
-					return "void";
 				case SpecialType.System_Boolean:
-					return "bool";
 				case SpecialType.System_Char:
-					return "char";
 				case SpecialType.System_SByte:
-					return "sbyte";
 				case SpecialType.System_Byte:
-					return "byte";
 				case SpecialType.System_Int16:
-					return "short";
 				case SpecialType.System_UInt16:
-					return "ushort";
 				case SpecialType.System_Int32:
-					return "int";
 				case SpecialType.System_UInt32:
-					return "uint";
 				case SpecialType.System_Int64:
-					return "long";
 				case SpecialType.System_UInt64:
-					return "ulong";
 				case SpecialType.System_Decimal:
-					return "decimal";
 				case SpecialType.System_Single:
-					return "float";
 				case SpecialType.System_Double:
-					return "double";
 				case SpecialType.System_String:
-					return "string";				
+				case SpecialType.System_Array:
 				case SpecialType.System_Nullable_T:
-					if (!(type is INamedTypeSymbol namedType) || namedType.TypeArguments.IsDefaultOrEmpty)
-						return type.ToString();
-
-					return $"{namedType.TypeArguments[0].GetSimpleNameForPrimitiveType()}?";
+					return type.ToString();				
 				default:
-					return type.ToString();
+					return type.Name;
 			}
 		}
 	}
