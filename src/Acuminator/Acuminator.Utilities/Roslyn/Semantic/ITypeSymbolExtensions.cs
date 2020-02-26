@@ -334,19 +334,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ITypeSymbol GetUnderlyingTypeFromNullable(this INamedTypeSymbol typeSymbol, PXContext pxContext)
+		public static ITypeSymbol GetUnderlyingTypeFromNullable(this ITypeSymbol typeSymbol, PXContext pxContext)
 		{
-			if (!typeSymbol.IsNullable(pxContext))
+			if (!typeSymbol.IsNullable(pxContext) || !(typeSymbol is INamedTypeSymbol namedTypeSymbol))
 				return null;
 
-			ImmutableArray<ITypeSymbol> typeArgs = typeSymbol.TypeArguments;
+			ImmutableArray<ITypeSymbol> typeArgs = namedTypeSymbol.TypeArguments;
 			return typeArgs.Length == 1
 				? typeArgs[0]
 				: null;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsNullable(this INamedTypeSymbol typeSymbol, PXContext pxContext)
+		public static bool IsNullable(this ITypeSymbol typeSymbol, PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 			return typeSymbol?.OriginalDefinition?.Equals(pxContext.SystemTypes.Nullable) ?? false;
