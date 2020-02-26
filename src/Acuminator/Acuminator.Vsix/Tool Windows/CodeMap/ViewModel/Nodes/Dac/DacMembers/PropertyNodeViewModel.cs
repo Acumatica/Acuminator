@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Media;
 using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using System.Threading;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
@@ -36,7 +37,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public bool IsIdentity => PropertyInfo.IsIdentity;
 
-		public BoundType BoundType => PropertyInfo.BoundType;
+		public BoundType EffectiveBoundType => PropertyInfo.EffectiveBoundType;
 
 		public PropertyNodeViewModel(DacMemberCategoryNodeViewModel dacMemberCategoryVM, DacPropertyInfo propertyInfo, bool isExpanded = false) :
 								base(dacMemberCategoryVM, dacMemberCategoryVM, propertyInfo, isExpanded)
@@ -47,12 +48,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private IEnumerable<ExtraInfoViewModel> GetExtraInfos()
 		{
+			yield return new TextViewModel(PropertyInfo.EffectivePropertyType.Name);
+
 			if (IsIdentity)
 			{
 				yield return new TextViewModel("ID", Brushes.LightGreen);
 			}
 
-			switch (BoundType)
+			switch (EffectiveBoundType)
 			{		
 				case BoundType.Unbound:
 					yield return new TextViewModel("Unbound", Brushes.SaddleBrown);

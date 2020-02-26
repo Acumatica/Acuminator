@@ -378,7 +378,7 @@
 
 								<ItemsControl.Resources>
 									<DataTemplate DataType="{x:Type codeMap:IconViewModel}">
-										<Image Margin="0,0,1,0" UseLayoutRounding="True"
+										<Image Margin="0,0,5,0" UseLayoutRounding="True"
 										   Source="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, 
 															Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource treeNodeToIconConverter}}">
 											<Image.Style>
@@ -394,9 +394,20 @@
 									</DataTemplate>
 
 									<DataTemplate DataType="{x:Type codeMap:TextViewModel}">
-										<TextBlock VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,1,0"
-											   Foreground="{Binding Path=Foreground, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-											   Text="{Binding Path=Text, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+										<TextBlock VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,5,0"										  
+												   Text="{Binding Path=Text, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+											<TextBlock.Style>
+												<Style TargetType="TextBlock">
+													<Setter Property="Foreground" Value="{Binding Path=Foreground, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+													<Style.Triggers>
+														<DataTrigger Binding="{Binding Path=Foreground, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  Value="{x:Null}">
+															<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundTextBrushKey}}"/>
+														</DataTrigger>
+													</Style.Triggers>
+												</Style>
+											</TextBlock.Style>
+										</TextBlock>
 									</DataTemplate>
 								</ItemsControl.Resources>
 							</ItemsControl>
