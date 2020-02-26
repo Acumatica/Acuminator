@@ -330,6 +330,7 @@
     <Compile Include="Tool Windows\CodeMap\Utils\CodeMapRefreshMode.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\IndentUtils.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\CodeMapDocChangesClassifier.cs" />
+    <Compile Include="Tool Windows\CodeMap\UI\Converters\TreeViewLineConverter .cs" />
     <Compile Include="Utils\ChangesClassification\ChangeInfluenceScope.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\CyclingNavigationUtils.cs" />
     <Compile Include="Tool Windows\Converters\BoolInversionConverter.cs" />
