@@ -149,5 +149,22 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			IsExpanded = expand;
 			Children.ForEach(childNode => childNode.ExpandOrCollapseAll(expand));
 		}
+
+		public IEnumerable<TreeNodeViewModel> Descendants()
+		{
+			if (Children.Count == 0)
+				yield break;
+
+			foreach (TreeNodeViewModel child in Children)
+			{
+				yield return child;
+				var descendants = child.Descendants();
+
+				foreach (var descendant in descendants)
+				{
+					yield return descendant;
+				}
+			}
+		}
 	}
 }

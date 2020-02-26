@@ -90,7 +90,7 @@
 							</ToggleButton>
 							<Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
 									Background="{TemplateBinding Background}" Grid.Column="1" Padding="{TemplateBinding Padding}" 
-									SnapsToDevicePixels="True">
+									SnapsToDevicePixels="True" MouseEnter="TreeNode_MouseEnterOrLeave" MouseLeave="TreeNode_MouseEnterOrLeave">
 								<ContentPresenter x:Name="PART_Header" ContentTemplate="{TemplateBinding HeaderTemplate}" 
 												  Content="{TemplateBinding Header}" ContentStringFormat="{TemplateBinding HeaderStringFormat}" 
 												  ContentSource="Header" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
@@ -207,7 +207,7 @@
 				<ColumnDefinition Width="Auto"/>
 			</Grid.ColumnDefinitions>
 
-			<TreeView Grid.Column="0" Style="{StaticResource vsTreeViewStyle}" BorderThickness="0"
+			<TreeView Grid.Column="0" Style="{StaticResource vsTreeViewStyle}" BorderThickness="0" Padding="1,1,0,1"
 					  ItemsSource="{Binding Path=RootItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
 				<TreeView.ItemContainerStyle>
 					<Style TargetType="TreeViewItem" BasedOn="{StaticResource vsTreeViewItemStyle}">
@@ -217,25 +217,26 @@
 						<Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 						<Setter Property="HorizontalAlignment" Value="Stretch"/>
 						<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding Path=IsMouseOver, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+								<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:HeaderColors.MouseOverBrushKey}}"/>
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:HeaderColors.MouseOverTextBrushKey}}"/>
+							</DataTrigger>
+						</Style.Triggers>
 					</Style>
 				</TreeView.ItemContainerStyle>
 				<TreeView.ItemTemplate>
 					<HierarchicalDataTemplate DataType="{x:Type codeMap:TreeNodeViewModel}"
 											  ItemsSource="{Binding Path=Children, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
 						<StackPanel Orientation="Horizontal" PreviewMouseLeftButtonDown="TreeViewItem_PreviewMouseLeftButtonDown"
-									MouseEnter="TreeNode_MouseEnter" MouseLeave="TreeNode_MouseLeave"
 									HorizontalAlignment="Stretch" MinHeight="19" MaxHeight="19">
 							<StackPanel.Style>
 								<Style TargetType="StackPanel" BasedOn="{StaticResource treeNodeStackPanelWithContextMenuStyle}">
-									<Style.Triggers>
-										<Trigger Property="IsMouseOver" Value="True">
-											<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:HeaderColors.MouseOverBrushKey}}"/>
-										</Trigger>
-									</Style.Triggers>
+									
 								</Style>
 							</StackPanel.Style>
-							
-							
+
 							<Image Margin="0,0,5,0" UseLayoutRounding="True" 
 								Source="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, 
 												 Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource treeNodeToIconConverter}}">
@@ -295,21 +296,28 @@
 
 			<ListBox Grid.Column="1" Style="{StaticResource vsListBoxStyle}" BorderThickness="0"
 					 ItemsSource="{Binding Path=AllItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-					 SelectedItem="{Binding Path=SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+					 SelectedItem="{Binding Path=SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+					 Loaded="ListBox_Loaded">
 				<ListBox.ItemContainerStyle>
 					<Style TargetType="ListBoxItem" BasedOn="{StaticResource vsListBoxItemStyle}">
-						<EventSetter Event="MouseEnter" Handler="TreeNode_MouseEnter"/>
-						<EventSetter Event="MouseLeave" Handler="TreeNode_MouseLeave"/>
+						<EventSetter Event="MouseEnter" Handler="TreeNode_MouseEnterOrLeave"/>
+						<EventSetter Event="MouseLeave" Handler="TreeNode_MouseEnterOrLeave"/>
 
 						<Setter Property="Visibility" 
 								Value="{Binding Path=AreDetailsVisible, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolToVisibilityConverter}}"/>
 						<Setter Property="MinHeight" Value="19"/>
 						<Setter Property="MaxHeight" Value="19"/>
+						<Setter Property="Padding" Value="0"/>
 
 						<Style.Triggers>
 							<Trigger Property="IsSelected" Value="True">
 								<Setter Property="BorderThickness" Value="0,1,1,1"/>
 							</Trigger>
+							<DataTrigger Binding="{Binding Path=IsMouseOver, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+								<Setter Property="BorderThickness" Value="0,1,1,1"/>
+								<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:HeaderColors.MouseOverBrushKey}}"/>
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:HeaderColors.MouseOverTextBrushKey}}"/>
+							</DataTrigger>
 						</Style.Triggers>
 					</Style>
 				</ListBox.ItemContainerStyle>

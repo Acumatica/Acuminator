@@ -36,32 +36,27 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					  .FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(TreeViewItem_PreviewMouseLeftButtonDown)}");
 		}
 
-		private void TreeNode_MouseEnter(object sender, MouseEventArgs e)
+		private void TreeNode_MouseEnterOrLeave(object sender, MouseEventArgs e)
 		{
-			if (!(GetTreeNodeViewModelFromControl(sender) is TreeNodeViewModel treeNode))
+			if (!(sender is FrameworkElement frameworkElement) || !(frameworkElement.DataContext is TreeNodeViewModel treeNode))
 				return;
-
-			treeNode.IsMouseOver = true;
+			
+			treeNode.IsMouseOver = frameworkElement.IsMouseOver;
+			e.Handled = true;	
 		}
 
-		private void TreeNode_MouseLeave(object sender, MouseEventArgs e)
+		private void ListBox_Loaded(object sender, RoutedEventArgs e)
 		{
-			if (!(GetTreeNodeViewModelFromControl(sender) is TreeNodeViewModel treeNode))
+			if (!(sender is ListBox listBox))
 				return;
 
-			treeNode.IsMouseOver = false;
-		}
+			Border border = listBox.GetVisualDescendants()
+								   .OfType<Border>()
+								   .FirstOrDefault();
 
-		private TreeNodeViewModel GetTreeNodeViewModelFromControl(object control)
-		{
-			switch (control)
+			if (border != null)
 			{
-				case TreeViewItem treeViewItem:
-					return treeViewItem.DataContext as TreeNodeViewModel;
-				case ListBoxItem listBoxItem:
-					return listBoxItem.DataContext as TreeNodeViewModel;
-				default:
-					return null; ;
+				border.Padding = new Thickness();
 			}
 		}
 	}
