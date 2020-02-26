@@ -225,7 +225,20 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			ThreadHelper.ThrowIfNotOnUIThread();
 
-			if (Guid.TryParse(window?.ObjectKind, out Guid windowId) && windowId == CodeMapWindow.CodeMapWindowGuid)
+			string objectKind = null;
+
+			try
+			{
+				objectKind = window?.ObjectKind;    //Sometimes COM interop exceptions popup from getter, so we need to obtain ObjectKind safely
+			}
+			catch (Exception)
+			{
+			}
+
+			if (objectKind == null)
+				return;
+
+			if (Guid.TryParse(objectKind, out Guid windowId) && windowId == CodeMapWindow.CodeMapWindowGuid)
 			{
 				IsVisible = isVisible;
 			}
