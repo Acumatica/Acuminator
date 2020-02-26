@@ -73,6 +73,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			AllItems.Reset(flattenedTree);
 		}
 
+		public void RefreshFlattenedNodesList()
+		{
+			var flattenedTree = RootItems.SelectMany(root => GetNodeWithDescendants(root));
+			AllItems.Reset(flattenedTree);
+		}
+
 		private IEnumerable<TreeNodeViewModel> GetNodeWithDescendants(TreeNodeViewModel node)
 		{
 			yield return node;

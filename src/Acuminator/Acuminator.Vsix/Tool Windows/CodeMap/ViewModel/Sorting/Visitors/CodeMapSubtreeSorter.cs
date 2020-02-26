@@ -40,6 +40,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				SortContext = new CodeMapSortContext(sortType, sortDirection, sortDescendants);
 				VisitNode(subTreeRoot);
+				subTreeRoot.Tree.RefreshFlattenedNodesList();
 			}
 			finally
 			{
