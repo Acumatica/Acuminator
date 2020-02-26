@@ -48,7 +48,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private IEnumerable<ExtraInfoViewModel> GetExtraInfos()
 		{
-			yield return new TextViewModel(PropertyInfo.EffectivePropertyType.Name);
+			var brush = Tree.CodeMapViewModel.IsDarkTheme
+				? Brushes.LightBlue
+				: Brushes.Blue;
+
+			yield return new TextViewModel(PropertyInfo.EffectivePropertyType.ToString(), brush);
 
 			if (IsIdentity)
 			{
@@ -65,6 +69,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					break;
 			}
 		}
+
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);
 
 		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) => treeVisitor.VisitNode(this);
