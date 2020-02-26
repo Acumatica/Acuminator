@@ -513,6 +513,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 			switch (type.SpecialType)
 			{
+				case SpecialType.None when type.TypeKind == TypeKind.Array:
 				case SpecialType.System_Object:
 				case SpecialType.System_Void:
 				case SpecialType.System_Boolean:
