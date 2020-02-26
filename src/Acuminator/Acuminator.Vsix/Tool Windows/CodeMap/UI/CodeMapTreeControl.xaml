@@ -265,7 +265,7 @@
 					<TreeView.ItemTemplate>
 						<HierarchicalDataTemplate DataType="{x:Type codeMap:TreeNodeViewModel}"
 											  ItemsSource="{Binding Path=Children, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
-							<StackPanel Orientation="Horizontal" PreviewMouseLeftButtonDown="TreeViewItem_PreviewMouseLeftButtonDown"
+							<StackPanel Orientation="Horizontal" PreviewMouseLeftButtonDown="TreeNode_PreviewMouseLeftButtonDown"
 									HorizontalAlignment="Stretch" MinHeight="19" MaxHeight="19">
 								<StackPanel.Style>
 									<Style TargetType="StackPanel" BasedOn="{StaticResource treeNodeStackPanelWithContextMenuStyle}">
@@ -359,8 +359,8 @@
 					</ListBox.ItemContainerStyle>
 					<ListBox.ItemTemplate>
 						<DataTemplate>
-							<ItemsControl x:Name="extraInfosPanel" Margin="0,0,5,0"
-									  ItemsSource="{Binding Path=ExtraInfos, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+							<ItemsControl x:Name="extraInfosPanel" Margin="0,0,5,0" PreviewMouseLeftButtonDown="TreeNode_PreviewMouseLeftButtonDown"
+										  ItemsSource="{Binding Path=ExtraInfos, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
 								<ItemsControl.ItemsPanel>
 									<ItemsPanelTemplate>
 										<StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch"/>
