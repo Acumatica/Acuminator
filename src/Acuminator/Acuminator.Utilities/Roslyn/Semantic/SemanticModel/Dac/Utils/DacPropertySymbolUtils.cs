@@ -54,7 +54,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			var attributeInformation = new AttributeInformation(pxContext);
 
 			propertiesByName.AddRangeWithDeclarationOrder(dacProperties, startingOrder: 0, 
-												(rawData, order) => DacPropertyInfo.Create(rawData.Node, rawData.Symbol, order, attributeInformation, dacFields));
+												(rawData, order) => DacPropertyInfo.Create(pxContext, rawData.Node, rawData.Symbol, order, attributeInformation, dacFields));
 			return propertiesByName;
 		}
 
@@ -110,14 +110,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			{
 				var rawDacProperties = dac.GetRawPropertiesFromDacImpl(pxContext, includeFromInheritanceChain: true, cancellation);
 				return propertiesCollection.AddRangeWithDeclarationOrder(rawDacProperties, startingOrder,
-													(dacProperty, order) => DacPropertyInfo.Create(dacProperty.Node, dacProperty.Symbol, order, attributeInformation, dacFields));
+													(dacProperty, order) => DacPropertyInfo.Create(pxContext, dacProperty.Node, dacProperty.Symbol, order, attributeInformation, dacFields));
 			}
 
 			int AddPropertiesFromDacExtension(OverridableItemsCollection<DacPropertyInfo> propertiesCollection, ITypeSymbol dacExt, int startingOrder)
 			{
 				var rawDacExtensionProperties = GetRawPropertiesFromDacOrDacExtensionImpl(dacExt, pxContext, cancellation);
 				return propertiesCollection.AddRangeWithDeclarationOrder(rawDacExtensionProperties, startingOrder,
-													(dacProperty, order) => DacPropertyInfo.Create(dacProperty.Node, dacProperty.Symbol, order, attributeInformation, dacFields));
+													(dacProperty, order) => DacPropertyInfo.Create(pxContext, dacProperty.Node, dacProperty.Symbol, order, attributeInformation, dacFields));
 			}
 		}
 

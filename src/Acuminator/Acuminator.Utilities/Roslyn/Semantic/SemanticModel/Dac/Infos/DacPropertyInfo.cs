@@ -47,6 +47,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// </value>
 		public ITypeSymbol PropertyType => Symbol.Type;
 
+		/// <value>
+		/// The effective type of the property.
+		/// </value>
+		public ITypeSymbol EffectivePropertyType { get; }
+
 		/// <summary>
 		/// The bound type declared on this property.
 		/// </summary>
@@ -65,9 +70,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		public bool IsKey { get; }
 
-		protected DacPropertyInfo(PropertyDeclarationSyntax node, IPropertySymbol symbol, int declarationOrder, bool isDacProperty,
-								  IEnumerable<AttributeInfo> attributeInfos, DacPropertyInfo baseInfo) :
-							 this(node, symbol, declarationOrder, isDacProperty, attributeInfos)
+		protected DacPropertyInfo(PropertyDeclarationSyntax node, IPropertySymbol symbol, ITypeSymbol effectivePropertyType,
+								  int declarationOrder, bool isDacProperty, IEnumerable<AttributeInfo> attributeInfos, DacPropertyInfo baseInfo) :
+							 this(node, symbol, effectivePropertyType, declarationOrder, isDacProperty, attributeInfos)
 		{
 			baseInfo.ThrowOnNull(nameof(baseInfo));
 			Base = baseInfo;
@@ -78,8 +83,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			}		
 		}
 
-		protected DacPropertyInfo(PropertyDeclarationSyntax node, IPropertySymbol symbol, int declarationOrder,
-								  bool isDacProperty, IEnumerable<AttributeInfo> attributeInfos) :
+		protected DacPropertyInfo(PropertyDeclarationSyntax node, IPropertySymbol symbol, ITypeSymbol effectivePropertyType,
+								  int declarationOrder, bool isDacProperty, IEnumerable<AttributeInfo> attributeInfos) :
 							 base(node, symbol, declarationOrder)
 		{
 			Attributes = attributeInfos.ToImmutableArray();
@@ -98,24 +103,27 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 			BoundType = boundType;
 			EffectiveBoundType = BoundType;
+			EffectivePropertyType = effectivePropertyType;
 			IsIdentity = isIdentity;
 			IsKey = isPrimaryKey;
 		}
 
-		public static DacPropertyInfo Create(PropertyDeclarationSyntax node, IPropertySymbol property, int declarationOrder,
+		public static DacPropertyInfo Create(PXContext context, PropertyDeclarationSyntax node, IPropertySymbol property, int declarationOrder,
 											 AttributeInformation attributesInformation, IDictionary<string, DacFieldInfo> dacFields,
 											 DacPropertyInfo baseInfo = null)
 		{
+			context.ThrowOnNull(nameof(context));
 			property.ThrowOnNull(nameof(property));
 			attributesInformation.ThrowOnNull(nameof(attributesInformation));
 			dacFields.ThrowOnNull(nameof(dacFields));
 
 			bool isDacProperty = dacFields.ContainsKey(property.Name);
 			var attributeInfos = GetAttributeInfos(property, attributesInformation);
+			var effectivePropertyType = property.Type.GetUnderlyingTypeFromNullable(context) ?? property.Type;
 
 			return baseInfo != null
-				? new DacPropertyInfo(node, property, declarationOrder, isDacProperty, attributeInfos, baseInfo)
-				: new DacPropertyInfo(node, property, declarationOrder, isDacProperty, attributeInfos);
+				? new DacPropertyInfo(node, property, effectivePropertyType, declarationOrder, isDacProperty, attributeInfos, baseInfo)
+				: new DacPropertyInfo(node, property, effectivePropertyType, declarationOrder, isDacProperty, attributeInfos);
 		}
 
 		private static IEnumerable<AttributeInfo> GetAttributeInfos(IPropertySymbol property, AttributeInformation attributeInformation)
@@ -128,6 +136,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 				relativeDeclarationOrder++;
 			}
-		}	
+		}			
 	}
 }
