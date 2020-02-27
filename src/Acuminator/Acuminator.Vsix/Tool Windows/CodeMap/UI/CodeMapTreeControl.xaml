@@ -198,7 +198,8 @@
 									Background="{TemplateBinding Background}" Grid.Column="1" Padding="{TemplateBinding Padding}" 
 									SnapsToDevicePixels="True" Style="{StaticResource treeNodeContextMenuStyle}" 
 									MouseEnter="TreeNode_MouseEnterOrLeave" MouseLeave="TreeNode_MouseEnterOrLeave"
-									PreviewMouseLeftButtonDown="TreeNode_PreviewMouseLeftButtonDown">
+									PreviewMouseLeftButtonDown="TreeNode_PreviewMouseLeftButtonDown"
+									PreviewMouseRightButtonDown="TreeViewItem_PreviewMouseRightButtonDown">
 								<ContentPresenter x:Name="PART_Header" ContentTemplate="{TemplateBinding HeaderTemplate}" 
 												  Content="{TemplateBinding Header}" ContentStringFormat="{TemplateBinding HeaderStringFormat}" 
 												  ContentSource="Header" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 

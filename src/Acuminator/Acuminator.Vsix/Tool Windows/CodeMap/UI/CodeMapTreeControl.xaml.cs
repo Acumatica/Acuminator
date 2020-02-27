@@ -44,5 +44,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			treeNode.IsMouseOver = frameworkElement.IsMouseOver;
 			e.Handled = true;	
 		}
+
+		private void TreeViewItem_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			if (e.Handled || e.ChangedButton != MouseButton.Right || e.ClickCount > 1 ||
+				!(sender is FrameworkElement treeNodeContainer) || !(treeNodeContainer.DataContext is TreeNodeViewModel treeNodeViewModel))
+			{
+				return;
+			}
+
+			treeNodeViewModel.IsSelected = true;
+		}
 	}
 }
