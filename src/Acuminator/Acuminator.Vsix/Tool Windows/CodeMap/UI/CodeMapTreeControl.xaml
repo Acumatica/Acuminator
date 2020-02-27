@@ -196,8 +196,9 @@
 							</ToggleButton>
 							<Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
 									Background="{TemplateBinding Background}" Grid.Column="1" Padding="{TemplateBinding Padding}" 
-									SnapsToDevicePixels="True" MouseEnter="TreeNode_MouseEnterOrLeave" MouseLeave="TreeNode_MouseEnterOrLeave"
-									Style="{StaticResource treeNodeContextMenuStyle}">
+									SnapsToDevicePixels="True" Style="{StaticResource treeNodeContextMenuStyle}" 
+									MouseEnter="TreeNode_MouseEnterOrLeave" MouseLeave="TreeNode_MouseEnterOrLeave"
+									PreviewMouseLeftButtonDown="TreeNode_PreviewMouseLeftButtonDown">
 								<ContentPresenter x:Name="PART_Header" ContentTemplate="{TemplateBinding HeaderTemplate}" 
 												  Content="{TemplateBinding Header}" ContentStringFormat="{TemplateBinding HeaderStringFormat}" 
 												  ContentSource="Header" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
@@ -276,6 +277,7 @@
 					<Style x:Key="codeMapListBoxItemStyle" TargetType="ListBoxItem" BasedOn="{StaticResource treeNodeContextMenuStyle}">
 						<EventSetter Event="MouseEnter" Handler="TreeNode_MouseEnterOrLeave"/>
 						<EventSetter Event="MouseLeave" Handler="TreeNode_MouseEnterOrLeave"/>
+						<EventSetter Event="PreviewMouseLeftButtonDown" Handler="TreeNode_PreviewMouseLeftButtonDown"/>
 
 						<Setter Property="Template" Value="{StaticResource ListBoxItemControlTemplate}"/>
 						<Setter Property="SnapsToDevicePixels" Value="True"/>
@@ -343,8 +345,7 @@
 					<TreeView.ItemTemplate>
 						<HierarchicalDataTemplate DataType="{x:Type codeMap:TreeNodeViewModel}"
 												  ItemsSource="{Binding Path=Children, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
-							<StackPanel Orientation="Horizontal" PreviewMouseLeftButtonDown="TreeNode_PreviewMouseLeftButtonDown"
-										HorizontalAlignment="Stretch" MinHeight="19" MaxHeight="19">
+							<StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" MinHeight="19" MaxHeight="19">
 								<Image Margin="0,0,5,0" UseLayoutRounding="True" 
 									   Source="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, 
 														Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource treeNodeToIconConverter}}">
@@ -409,7 +410,7 @@
 											  Converter={StaticResource boolToVisibilityConverter}}">
 					<ListBox.ItemTemplate>
 						<DataTemplate>
-							<ItemsControl x:Name="extraInfosPanel" Margin="0,0,5,0" PreviewMouseLeftButtonDown="TreeNode_PreviewMouseLeftButtonDown"
+							<ItemsControl x:Name="extraInfosPanel" Margin="0,0,5,0"
 										  ItemsSource="{Binding Path=ExtraInfos, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
 								<ItemsControl.ItemsPanel>
 									<ItemsPanelTemplate>
