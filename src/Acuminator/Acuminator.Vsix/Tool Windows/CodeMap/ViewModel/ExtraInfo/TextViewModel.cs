@@ -14,13 +14,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public string Text { get; }
 
-		public Brush Foreground { get; }
+		public Color? Foreground { get; }
 
-		public TextViewModel(string text, Brush foreground = null) : 
-						base()
+		public TextViewModel(string text, Color foreground) : this(text)
+		{
+			Foreground = foreground;
+		}
+
+		public TextViewModel(string text) : base()
 		{
 			Text = text.CheckIfNull(nameof(text));
-			Foreground = foreground;
 		}
 	}
 }

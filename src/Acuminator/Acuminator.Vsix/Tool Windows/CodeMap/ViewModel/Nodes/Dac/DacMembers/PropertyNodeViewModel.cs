@@ -48,24 +48,28 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private IEnumerable<ExtraInfoViewModel> GetExtraInfos()
 		{
-			var brush = Tree.CodeMapViewModel.IsDarkTheme
-				? Brushes.LightBlue
-				: Brushes.Blue;
+			var typeColor = Tree.CodeMapViewModel.IsDarkTheme
+					? Color.FromRgb(86, 156, 214)
+					: Color.FromRgb(160, 240, 120);
 
-			yield return new TextViewModel(PropertyInfo.EffectivePropertyType.GetSimplifiedName(), brush);
+			yield return new TextViewModel(PropertyInfo.EffectivePropertyType.GetSimplifiedName(), foreground: typeColor);
 
 			if (IsIdentity)
 			{
-				yield return new TextViewModel("ID", Brushes.LightGreen);
+				var idColor = Tree.CodeMapViewModel.IsDarkTheme
+					? Coloriser.VSColors.DacFieldFormatColorDark
+					: Coloriser.VSColors.DacFieldFormatColorLight;
+
+				yield return new TextViewModel("ID", foreground: idColor);
 			}
 
 			switch (EffectiveBoundType)
 			{		
 				case BoundType.Unbound:
-					yield return new TextViewModel("Unbound", Brushes.SaddleBrown);
+					yield return new TextViewModel("Unbound");
 					break;
 				case BoundType.DbBound:
-					yield return new TextViewModel("Bound", Brushes.SaddleBrown);
+					yield return new TextViewModel("Bound");
 					break;
 			}
 		}
