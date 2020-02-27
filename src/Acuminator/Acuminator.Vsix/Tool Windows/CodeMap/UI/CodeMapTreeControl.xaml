@@ -33,6 +33,72 @@
 					<!-- Image Style-->
 					<Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}"/>
 
+					<!-- tree node Context Menu-->
+					<ContextMenu x:Key="codeMapContextMenu" Style="{StaticResource vsContextMenuStyle}">
+						<MenuItem Command="{Binding Path=Tree.CodeMapViewModel.ExpandOrCollapseAllCommand}" CommandParameter="{Binding}">
+							<MenuItem.Style>
+								<Style TargetType="MenuItem" BasedOn="{StaticResource vsMenuItemStyle}">
+									<Setter Property="Header" Value="Expand All"/>
+									<Setter Property="ToolTip" Value="Expand all nodes in Code Map tree"/>
+									<Setter Property="Icon">
+										<Setter.Value>
+											<Image>
+												<Image.Style>
+													<Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}">
+														<Setter Property="Source" Value="{StaticResource ExpandAllImage}"/>
+
+														<Style.Triggers>
+															<DataTrigger Binding="{Binding Path=IsExpanded, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+																<Setter Property="Source" Value="{StaticResource CollapseAllImage}"/>
+															</DataTrigger>
+														</Style.Triggers>
+													</Style>
+												</Image.Style>
+											</Image>
+										</Setter.Value>
+									</Setter>
+
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Path=IsExpanded, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+											<Setter Property="Header" Value="Collapse All"/>
+											<Setter Property="ToolTip" Value="Collapse all nodes in Code Map tree"/>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</MenuItem.Style>
+						</MenuItem>
+						<MenuItem Header="Sort Children" Style="{StaticResource vsMenuItemStyle}">
+							<MenuItem Header="By Name" ToolTip="Sort all children of this node by name"
+									  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeChildrenByNameCommand}" CommandParameter="{Binding }"
+									  Style="{StaticResource vsSubmenuItemStyle}">
+							</MenuItem>
+							<MenuItem Header="By Declaration Order" ToolTip="Sort all children of this node by declaration order"
+									  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeChildrenByDeclarationOrderCommand}"
+									  CommandParameter="{Binding }" Style="{StaticResource vsSubmenuItemStyle}">
+							</MenuItem>
+						</MenuItem>
+						<MenuItem Header="Sort Descendants" Style="{StaticResource vsMenuItemStyle}">
+							<MenuItem Header="By Name" ToolTip="Sort all descendants of this node by name"
+									  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeDescendantsByNameCommand}" CommandParameter="{Binding }"
+									  Style="{StaticResource vsSubmenuItemStyle}">
+							</MenuItem>
+							<MenuItem Header="By Declaration Order" ToolTip="Sort all descendants of this node by declaration order"
+									  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeDescendantsByDeclarationOrderCommand}" CommandParameter="{Binding }"
+									  Style="{StaticResource vsSubmenuItemStyle}">
+							</MenuItem>
+						</MenuItem>
+					</ContextMenu>
+
+					<Style x:Key="treeNodeContextMenuStyle" TargetType="FrameworkElement" >
+						<Setter Property="ContextMenu" Value="{StaticResource codeMapContextMenu}"/>
+
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding Path=Children.Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Value="0">
+								<Setter Property="ContextMenu" Value="{x:Null}"/>
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+					
 					<!-- Tree View control template without scroll viewver-->
 					<ControlTemplate x:Key="TreeViewWithoutInnerScrollViewerControlTemplate" TargetType="{x:Type TreeView}">
 						<Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True"
@@ -130,7 +196,8 @@
 							</ToggleButton>
 							<Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
 									Background="{TemplateBinding Background}" Grid.Column="1" Padding="{TemplateBinding Padding}" 
-									SnapsToDevicePixels="True" MouseEnter="TreeNode_MouseEnterOrLeave" MouseLeave="TreeNode_MouseEnterOrLeave">
+									SnapsToDevicePixels="True" MouseEnter="TreeNode_MouseEnterOrLeave" MouseLeave="TreeNode_MouseEnterOrLeave"
+									Style="{StaticResource treeNodeContextMenuStyle}">
 								<ContentPresenter x:Name="PART_Header" ContentTemplate="{TemplateBinding HeaderTemplate}" 
 												  Content="{TemplateBinding Header}" ContentStringFormat="{TemplateBinding HeaderStringFormat}" 
 												  ContentSource="Header" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
@@ -206,7 +273,7 @@
 					</Style>
 
 					<!--#region Code Map ListBox and ListBoxItem Style-->									
-					<Style x:Key="codeMapListBoxItemStyle" TargetType="ListBoxItem">
+					<Style x:Key="codeMapListBoxItemStyle" TargetType="ListBoxItem" BasedOn="{StaticResource treeNodeContextMenuStyle}">
 						<EventSetter Event="MouseEnter" Handler="TreeNode_MouseEnterOrLeave"/>
 						<EventSetter Event="MouseLeave" Handler="TreeNode_MouseEnterOrLeave"/>
 
@@ -246,76 +313,7 @@
 
 						<Setter Property="ItemContainerStyle" Value="{StaticResource codeMapListBoxItemStyle}"/>
 					</Style>
-					<!--#endregion-->
-					<!-- tree node styles-->
-					<Style x:Key="treeNodeStackPanelWithContextMenuStyle" TargetType="StackPanel" >
-						<Setter Property="ContextMenu">
-							<Setter.Value>
-								<ContextMenu Style="{StaticResource vsContextMenuStyle}">
-									<MenuItem Command="{Binding Path=Tree.CodeMapViewModel.ExpandOrCollapseAllCommand}"
-													  CommandParameter="{Binding}">
-										<MenuItem.Style>
-											<Style TargetType="MenuItem" BasedOn="{StaticResource vsMenuItemStyle}">
-												<Setter Property="Header" Value="Expand All"/>
-												<Setter Property="ToolTip" Value="Expand all nodes in Code Map tree"/>
-												<Setter Property="Icon">
-													<Setter.Value>
-														<Image>
-															<Image.Style>
-																<Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}">
-																	<Setter Property="Source" Value="{StaticResource ExpandAllImage}"/>
-
-																	<Style.Triggers>
-																		<DataTrigger Binding="{Binding Path=IsExpanded, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
-																			<Setter Property="Source" Value="{StaticResource CollapseAllImage}"/>
-																		</DataTrigger>
-																	</Style.Triggers>
-																</Style>
-															</Image.Style>
-														</Image>
-													</Setter.Value>
-												</Setter>
-
-												<Style.Triggers>
-													<DataTrigger Binding="{Binding Path=IsExpanded, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
-														<Setter Property="Header" Value="Collapse All"/>
-														<Setter Property="ToolTip" Value="Collapse all nodes in Code Map tree"/>
-													</DataTrigger>
-												</Style.Triggers>
-											</Style>
-										</MenuItem.Style>
-									</MenuItem>
-									<MenuItem Header="Sort Children" Style="{StaticResource vsMenuItemStyle}">
-										<MenuItem Header="By Name" ToolTip="Sort all children of this node by name"
-												  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeChildrenByNameCommand}" CommandParameter="{Binding }"
-												  Style="{StaticResource vsSubmenuItemStyle}">
-										</MenuItem>
-										<MenuItem Header="By Declaration Order" ToolTip="Sort all children of this node by declaration order"
-												  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeChildrenByDeclarationOrderCommand}"
-												  CommandParameter="{Binding }" Style="{StaticResource vsSubmenuItemStyle}">
-										</MenuItem>
-									</MenuItem>
-									<MenuItem Header="Sort Descendants" Style="{StaticResource vsMenuItemStyle}">
-										<MenuItem Header="By Name" ToolTip="Sort all descendants of this node by name"
-												  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeDescendantsByNameCommand}" CommandParameter="{Binding }"
-												  Style="{StaticResource vsSubmenuItemStyle}">
-										</MenuItem>
-										<MenuItem Header="By Declaration Order" ToolTip="Sort all descendants of this node by declaration order"
-													      Command="{Binding Path=Tree.CodeMapViewModel.SortNodeDescendantsByDeclarationOrderCommand}"
-													      CommandParameter="{Binding }"
-														  Style="{StaticResource vsSubmenuItemStyle}">
-										</MenuItem>
-									</MenuItem>
-								</ContextMenu>
-							</Setter.Value>
-						</Setter>
-
-						<Style.Triggers>
-							<DataTrigger Binding="{Binding Path=Children.Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Value="0">
-								<Setter Property="ContextMenu" Value="{x:Null}"/>
-							</DataTrigger>
-						</Style.Triggers>
-					</Style>
+					<!--#endregion-->							
 				</ResourceDictionary>
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
@@ -346,8 +344,7 @@
 						<HierarchicalDataTemplate DataType="{x:Type codeMap:TreeNodeViewModel}"
 												  ItemsSource="{Binding Path=Children, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
 							<StackPanel Orientation="Horizontal" PreviewMouseLeftButtonDown="TreeNode_PreviewMouseLeftButtonDown"
-										HorizontalAlignment="Stretch" MinHeight="19" MaxHeight="19"
-										Style="{StaticResource treeNodeStackPanelWithContextMenuStyle}">
+										HorizontalAlignment="Stretch" MinHeight="19" MaxHeight="19">
 								<Image Margin="0,0,5,0" UseLayoutRounding="True" 
 									   Source="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, 
 														Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource treeNodeToIconConverter}}">
