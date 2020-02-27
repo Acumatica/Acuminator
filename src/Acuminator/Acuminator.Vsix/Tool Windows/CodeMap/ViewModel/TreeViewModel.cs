@@ -36,6 +36,21 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
+		private bool _isExtraInfoVisible = true;
+
+		public bool IsExtraInfoVisible
+		{
+			get => _isExtraInfoVisible;
+			set
+			{
+				if (_isExtraInfoVisible != value)
+				{
+					_isExtraInfoVisible = value;
+					NotifyPropertyChanged();
+				}
+			}
+		}
+
 		/// <summary>
 		/// A workaround to avoid endless loop of TreeNodeViewModel IsSelected and TreeViewModel SelectedItem setting each other.
 		/// </summary>

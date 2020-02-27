@@ -404,7 +404,9 @@
 				<ListBox x:FieldModifier="private" Name="detailsListBox" Grid.Column="1" Style="{StaticResource codeMapListBoxStyle}" 
 					     ItemsSource="{Binding Path=AllItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
 						 SelectedItem="{Binding Path=SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-						 Template="{StaticResource ListBoxWithoutInnerScrollViewerControlTemplate}">
+						 Template="{StaticResource ListBoxWithoutInnerScrollViewerControlTemplate}"
+						 Visibility="{Binding Path=IsExtraInfoVisible, Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
+											  Converter={StaticResource boolToVisibilityConverter}}">
 					<ListBox.ItemTemplate>
 						<DataTemplate>
 							<ItemsControl x:Name="extraInfosPanel" Margin="0,0,5,0" PreviewMouseLeftButtonDown="TreeNode_PreviewMouseLeftButtonDown"
@@ -446,7 +448,11 @@
 												   Text="{Binding Path=Text, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
 											<TextBlock.Style>
 												<Style TargetType="TextBlock">
-													<Setter Property="Foreground" Value="{Binding Path=Foreground, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+													<Setter Property="Foreground">
+														<Setter.Value>
+															<SolidColorBrush Color="{Binding Path=Foreground, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+														</Setter.Value>
+													</Setter>
 
 													<Style.Triggers>
 														<DataTrigger Binding="{Binding Path=Foreground, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  Value="{x:Null}">
