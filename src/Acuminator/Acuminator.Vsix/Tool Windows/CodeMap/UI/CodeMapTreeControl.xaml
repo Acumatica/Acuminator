@@ -62,23 +62,11 @@
 
 					<!-- TreeViewItem Control template-->
 					<SolidColorBrush x:Key="RectangeStrockNormalBrush" Color="#8888"/>
-					<SolidColorBrush x:Key="RectangeStrockOnMouseHoverBrush" Color="#FF27C7F7"/>
-					<SolidColorBrush x:Key="RectangeFillOnMouseHoverBrush" Color="#FF27C7F7"/>
-
+					
 					<Style x:Key="linesStyle" TargetType="Rectangle">
 						<Setter Property="SnapsToDevicePixels" Value="True"/>
+						<Setter Property="Focusable" Value="False"/>
 						<Setter Property="Stroke" Value="{StaticResource RectangeStrockNormalBrush}"/>
-
-						<Style.Triggers>
-							<Trigger Property="IsMouseOver" Value="True">
-								<Setter Property="Stroke" Value="{StaticResource RectangeStrockOnMouseHoverBrush}"/>
-								<Setter Property="Fill" Value="{StaticResource RectangeFillOnMouseHoverBrush}"/>
-							</Trigger>
-							<DataTrigger Binding="{Binding ElementName=Expander, Path=IsMouseOver, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
-								<Setter Property="Stroke" Value="{StaticResource RectangeStrockOnMouseHoverBrush}"/>
-								<Setter Property="Fill" Value="{StaticResource RectangeFillOnMouseHoverBrush}"/>
-							</DataTrigger>
-						</Style.Triggers>
 					</Style>
 
 
@@ -95,31 +83,9 @@
 							</Grid.RowDefinitions>
 
 							<!-- Connecting Lines -->
-							<Rectangle x:Name="HorLn" Height="1" Margin="10,0,0,0" >
-								<Rectangle.Style>
-									<Style TargetType="Rectangle" BasedOn="{StaticResource linesStyle}">
-										<Style.Triggers>
-											<DataTrigger Binding="{Binding ElementName=VerLn, Path=IsMouseOver, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
-												<Setter Property="Stroke" Value="{StaticResource RectangeStrockOnMouseHoverBrush}"/>
-												<Setter Property="Fill" Value="{StaticResource RectangeFillOnMouseHoverBrush}"/>
-											</DataTrigger>
-										</Style.Triggers>
-									</Style>
-								</Rectangle.Style>
-							</Rectangle>
-							<Rectangle x:Name="VerLn" Width="1"  Grid.RowSpan="2">
-								<Rectangle.Style>
-									<Style TargetType="Rectangle" BasedOn="{StaticResource linesStyle}">
-										<Style.Triggers>
-											<DataTrigger Binding="{Binding ElementName=HorLn, Path=IsMouseOver, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
-												<Setter Property="Stroke" Value="{StaticResource RectangeStrockOnMouseHoverBrush}"/>
-												<Setter Property="Fill" Value="{StaticResource RectangeFillOnMouseHoverBrush}"/>
-											</DataTrigger>
-										</Style.Triggers>
-									</Style>
-								</Rectangle.Style>
-							</Rectangle>
-
+							<Rectangle x:Name="HorLn" Height="1" Margin="10,0,0,0" Style="{StaticResource linesStyle}"/>
+							<Rectangle x:Name="VerLn" Width="1"  Grid.RowSpan="2" Style="{StaticResource linesStyle}"/>
+							
 							<ToggleButton x:Name="Expander" ClickMode="Press" IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}">
 								<ToggleButton.Style>
 									<Style TargetType="{x:Type ToggleButton}">
@@ -143,8 +109,6 @@
 																	<RotateTransform Angle="180" CenterY="3" CenterX="3"/>
 																</Setter.Value>
 															</Setter>
-															<!--<Setter Property="Fill" TargetName="ExpandPath" Value="#FF595959"/>
-															<Setter Property="Stroke" TargetName="ExpandPath" Value="#FF262626"/>-->
 														</Trigger>
 														<Trigger Property="IsMouseOver" Value="True">
 															<Setter Property="Stroke" TargetName="ExpandPath" Value="#FF27C7F7"/>
@@ -178,7 +142,7 @@
 						<ControlTemplate.Triggers>
 							<!-- This trigger changes the connecting lines if the item is the last in the list -->
 							<DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource lineConverter}}" Value="true">
-								<Setter TargetName="VerLn" Property="Height" Value="6"/>
+								<Setter TargetName="VerLn" Property="Height" Value="10"/>
 								<Setter TargetName="VerLn" Property="VerticalAlignment" Value="Top"/>
 							</DataTrigger>
 
