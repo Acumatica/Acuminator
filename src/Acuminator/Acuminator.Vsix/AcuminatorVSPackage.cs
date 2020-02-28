@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Events;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Threading;
 using EnvDTE80;
-using EnvDTE;
 using System.ComponentModel.Design;
 using Acuminator.Vsix.GoToDeclaration;
 using Acuminator.Vsix.Settings;
@@ -19,9 +23,9 @@ using Acuminator.Vsix.ToolWindows.CodeMap;
 using Acuminator.Vsix.DiagnosticSuppression;
 using Acuminator.Vsix.Formatter;
 using Acuminator.Vsix.Utilities;
-using Acuminator.Utilities;
+using Acuminator.Utilities.Roslyn.ProjectSystem;
 using Acuminator.Utilities.DiagnosticSuppression;
-using Microsoft.VisualStudio.Threading;
+using Acuminator.Utilities;
 
 namespace Acuminator.Vsix
 {
@@ -43,9 +47,9 @@ namespace Acuminator.Vsix
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-    [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
+	[InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
+	[ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
 	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.BackgroundLoad)]
-	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionOpening_string, PackageAutoLoadFlags.BackgroundLoad)]
 	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasSingleProject_string, PackageAutoLoadFlags.BackgroundLoad)]
 	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasMultipleProjects_string, PackageAutoLoadFlags.BackgroundLoad)]
 	[ProvideAutoLoad(VSConstants.UICONTEXT.Debugging_string, PackageAutoLoadFlags.BackgroundLoad)]
@@ -59,7 +63,7 @@ namespace Acuminator.Vsix
 					   Style = VsDockStyle.Linked)]
 	public sealed class AcuminatorVSPackage : AsyncPackage
 	{
-		private const int TotalLoadSteps = 5;
+		private const int TotalLoadSteps = 3;
 		private const string SettingsCategoryName = SharedConstants.PackageName;
 
 		public const string PackageName = SharedConstants.PackageName;
@@ -73,6 +77,8 @@ namespace Acuminator.Vsix
 		/// The acuminator default command set GUID string.
 		/// </summary>
 		public const string AcuminatorDefaultCommandSetGuidString = "3cd59430-1e8d-40af-b48d-9007624b3d77";
+
+		private Microsoft.VisualStudio.LanguageServices.VisualStudioWorkspace _vsWorkspace;
 
 		[Import]
         internal IClassificationFormatMapService _classificationFormatMapService = null;  //Set via MEF
@@ -89,8 +95,6 @@ namespace Acuminator.Vsix
         private static int _instanceInitialized;
 
         public static AcuminatorVSPackage Instance { get; private set; }
-
-		private SolutionEvents _dteSolutionEvents;
 
 		private Lazy<GeneralOptionsPage> _generalOptionsPage = 
 			new Lazy<GeneralOptionsPage>(() => Instance.GetDialogPage(typeof(GeneralOptionsPage)) as GeneralOptionsPage, isThreadSafe: true);
@@ -114,8 +118,26 @@ namespace Acuminator.Vsix
             // initialization is the Initialize method.
         
             SetupSingleton(this);
-        }
-          
+			InitializeCodeAnalysisSettings();  //Try to setup code analysis settings as soon as possible. 
+		}
+        
+		/// <summary>
+		/// Force load package. 
+		/// A hack method which is called from analyzers to ensure that the package is loaded before diagnostics are executed.
+		/// </summary>
+		/// <returns/>
+		public static async System.Threading.Tasks.Task ForceLoadPackageAsync()
+		{
+			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+			if (!(ServiceProvider.GlobalProvider?.GetService(typeof(SVsShell)) is IVsShell shell))
+				return;
+
+			var packageToBeLoadedGuid = new Guid(PackageGuidString);
+			shell.LoadPackage(ref packageToBeLoadedGuid, out var _);
+			await System.Threading.Tasks.TaskScheduler.Default;
+		}
+
         private static void SetupSingleton(AcuminatorVSPackage package)
         {
             if (package == null)
@@ -128,7 +150,7 @@ namespace Acuminator.Vsix
         }
 
 		protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
-		{
+		{			
 			// When initialized asynchronously, the current thread may be a background thread at this point.
 			// Do any initialization that requires the UI thread after switching to the UI thread
 			await base.InitializeAsync(cancellationToken, progress);
@@ -137,32 +159,53 @@ namespace Acuminator.Vsix
 				return;
 
 			await JoinableTaskFactory.SwitchToMainThreadAsync();
-
-			InitializeLogger(progress);
-			await InitializeCommandsAsync(progress);
-
-			// Extra suppression manager initilization - in theory it should be enough to do this on solution opening but sometimes the reace condition occurs
-			// The solution is opened before the project loads and subscribes on its opening. So we add one extra call to initialize suppression manager 
-			// which is a little overhead but ensures that if we have an opened solution with loaded Acuminator then the suppression manager is initialized
-			await SetupSuppressionManagerAsync();	
 			
-			await SubscribeOnSolutionEventsAsync();
-			cancellationToken.ThrowIfCancellationRequested();
-
-			InitializeCodeAnalysisSettings(progress);
-			cancellationToken.ThrowIfCancellationRequested();
-
-			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_Done,
-													   currentStep: 5, TotalLoadSteps);
-			progress?.Report(progressData);
-		}
-
-		private void InitializeLogger(IProgress<ServiceProgressData> progress)
-		{
 			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitLogger,
 													   currentStep: 1, TotalLoadSteps);
 			progress?.Report(progressData);
+			InitializeLogger();
 
+			cancellationToken.ThrowIfCancellationRequested();
+
+			await InitializeCommandsAsync();
+
+			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCommands,
+												   currentStep: 2, TotalLoadSteps);
+			progress?.Report(progressData);
+
+			await SubscribeOnEventsAsync();
+
+			cancellationToken.ThrowIfCancellationRequested();
+
+			bool isSolutionOpen = await IsSolutionLoadedAsync();
+
+			if (isSolutionOpen)
+			{
+				SetupSuppressionManager();
+			}
+		
+			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_Done, currentStep: 3, TotalLoadSteps);
+			progress?.Report(progressData);
+		}
+
+		private async System.Threading.Tasks.Task SubscribeOnEventsAsync()
+		{
+			await SubscribeOnWorkspaceEventsAsync();
+			SolutionEvents.OnAfterBackgroundSolutionLoadComplete += SolutionEvents_OnAfterBackgroundSolutionLoadComplete;
+		}
+
+		private async System.Threading.Tasks.Task SubscribeOnWorkspaceEventsAsync()
+		{
+			_vsWorkspace = await this.GetVSWorkspaceAsync();
+
+			if (_vsWorkspace != null)
+			{
+				_vsWorkspace.WorkspaceChanged += Workspace_WorkspaceChanged;
+			}
+		}
+
+		private void InitializeLogger()
+		{
 			try
 			{
 				AcuminatorLogger = new AcuminatorLogger(this, swallowUnobservedTaskExceptions: false);
@@ -174,15 +217,11 @@ namespace Acuminator.Vsix
 			}
 		}
 
-		private async System.Threading.Tasks.Task InitializeCommandsAsync(IProgress<ServiceProgressData> progress)
+		private async System.Threading.Tasks.Task InitializeCommandsAsync()
 		{
 			// if the package is zombied, we don't want to add commands
 			if (Zombied)
 				return;
-
-			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCommands,
-													   currentStep: 2, TotalLoadSteps);
-			progress?.Report(progressData);
 
 			OleMenuCommandService oleCommandService = await this.GetServiceAsync<IMenuCommandService, OleMenuCommandService>();
 
@@ -200,53 +239,102 @@ namespace Acuminator.Vsix
 			OpenCodeMapWindowCommand.Initialize(this, oleCommandService);
 		}
 
-		private async System.Threading.Tasks.Task SubscribeOnSolutionEventsAsync()
+		private async System.Threading.Tasks.Task<bool> IsSolutionLoadedAsync()
 		{
-			if (!ThreadHelper.CheckAccess())
-				return;
+			await JoinableTaskFactory.SwitchToMainThreadAsync();
+			var solutionService = await this.GetServiceAsync<SVsSolution, IVsSolution>();
 
-#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
-			DTE dte = await this.GetServiceAsync<DTE>();
+			if (solutionService == null)
+				return false;
 
-			if (dte != null)
-			{
-				_dteSolutionEvents = dte.Events.SolutionEvents;						//Save DTE events object to prevent it from being GCed
-                _dteSolutionEvents.Opened += SolutionEvents_Opened;
-			}
-#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
+			int errorCode = solutionService.GetProperty((int)__VSPROPID.VSPROPID_IsSolutionOpen, out object isOpenProperty);
+			ErrorHandler.ThrowOnFailure(errorCode);
+
+			return isOpenProperty is bool isSolutionOpen && isSolutionOpen;
 		}
 
-        private void SolutionEvents_Opened()
-        {
-#pragma warning disable VSTHRD102 // Implement internal logic asynchronously
-            JoinableTaskFactory.Run(SetupSuppressionManagerAsync);
-#pragma warning restore VSTHRD102 // Implement internal logic asynchronously
-        }
-	
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
 			AcuminatorLogger?.Dispose();
 
-			if (ThreadHelper.CheckAccess() && _dteSolutionEvents != null)
-			{		
-                _dteSolutionEvents.Opened -= SolutionEvents_Opened;
+			SolutionEvents.OnAfterBackgroundSolutionLoadComplete -= SolutionEvents_OnAfterBackgroundSolutionLoadComplete;
+
+			if (_vsWorkspace != null)
+			{
+				_vsWorkspace.WorkspaceChanged -= Workspace_WorkspaceChanged;
+				_vsWorkspace = null;
 			}
 		}
 
-        private async System.Threading.Tasks.Task SetupSuppressionManagerAsync()
+		private void SolutionEvents_OnAfterBackgroundSolutionLoadComplete(object sender, EventArgs e)
+		{
+			SetupSuppressionManager();
+
+			if (_vsWorkspace == null)
+			{
+				JoinableTaskFactory.Run(async () =>
+				{
+					await JoinableTaskFactory.SwitchToMainThreadAsync();
+					await SubscribeOnWorkspaceEventsAsync();
+				});
+			}
+		}
+
+		private void Workspace_WorkspaceChanged(object sender, WorkspaceChangeEventArgs e)
+		{
+			if (ShouldReloadSuppressionInfo(e))
+			{
+				SetupSuppressionManager();
+			}
+		}
+
+		private bool ShouldReloadSuppressionInfo(WorkspaceChangeEventArgs e)
+		{
+			if (e.ProjectId == null)
+				return false;
+
+			switch (e.Kind)
+			{
+				case WorkspaceChangeKind.ProjectAdded:
+				case WorkspaceChangeKind.ProjectRemoved:
+				case WorkspaceChangeKind.ProjectChanged:
+				case WorkspaceChangeKind.ProjectReloaded:
+					break;
+
+				default:
+					return false;
+			}
+
+			HashSet<DocumentId> oldSuppressionFileIds = GetSuppressionFileIDs(e.OldSolution?.GetProject(e.ProjectId));
+			HashSet<DocumentId> newSuppressionFileIds = GetSuppressionFileIDs(e.NewSolution?.GetProject(e.ProjectId));
+
+			if (oldSuppressionFileIds.Count != newSuppressionFileIds.Count)
+				return true;
+			else if (oldSuppressionFileIds.Count == 0)
+				return false;
+
+			bool missingOldDocument = oldSuppressionFileIds.Any(oldDocId => !newSuppressionFileIds.Contains(oldDocId));
+			bool addedNewDocument = newSuppressionFileIds.Any(newDocId => !newSuppressionFileIds.Contains(newDocId));
+
+			return missingOldDocument || addedNewDocument;
+
+			//---------------------------------Local function--------------------------------------------------------
+			HashSet<DocumentId> GetSuppressionFileIDs(Project project) =>
+				project?.GetSuppressionFiles()
+						.Select(file => file.Id)
+						.ToHashSet() ?? new HashSet<DocumentId>();
+		}
+
+		private void SetupSuppressionManager()
         {
-            var workspace = await this.GetVSWorkspaceAsync();
-            SuppressionManager.InitOrReset(workspace, generateSuppressionBase: false, 
+            SuppressionManager.InitOrReset(_vsWorkspace, generateSuppressionBase: false, 
 										   errorProcessorFabric: () => new VsixIOErrorProcessor(),
 										   buildActionSetterFabric: () => new VsixBuildActionSetter());
         }
 
-        private void InitializeCodeAnalysisSettings(IProgress<ServiceProgressData> progress)
+        private void InitializeCodeAnalysisSettings()
 		{
-			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCodeAnalysisSettings,
-													   currentStep: 4, TotalLoadSteps);
-			progress?.Report(progressData);
 			var codeAnalysisSettings = new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage);
 			GlobalCodeAnalysisSettings.InitializeGlobalSettingsOnce(codeAnalysisSettings);
 		}
