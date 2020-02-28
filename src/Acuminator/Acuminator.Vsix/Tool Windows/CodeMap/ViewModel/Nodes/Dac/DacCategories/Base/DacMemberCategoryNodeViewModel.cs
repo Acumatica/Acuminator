@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using System.Threading.Tasks;
+using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -43,7 +44,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		IList<TreeNodeViewModel> IGroupNodeWithCyclingNavigation.Children => Children;
 
 		protected DacMemberCategoryNodeViewModel(DacNodeViewModel dacViewModel, DacMemberCategory dacCategoryType, bool isExpanded) : 
-										    base(dacViewModel?.Tree, isExpanded)
+										    base(dacViewModel?.Tree, dacViewModel, isExpanded)
 		{
 			DacViewModel = dacViewModel;
 			CategoryType = dacCategoryType;

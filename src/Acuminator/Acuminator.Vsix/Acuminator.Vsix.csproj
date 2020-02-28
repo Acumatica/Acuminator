@@ -249,6 +249,9 @@
     <Compile Include="Settings\CodeAnalysisSettingsFromOptionsPage.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\Icon.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\TreeNodeToImageSourceConverter.cs" />
+    <Compile Include="Tool Windows\CodeMap\UI\CodeMapTreeControl.xaml.cs">
+      <DependentUpon>CodeMapTreeControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeWalker.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\StackGuard.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeVisitor.cs" />
@@ -278,6 +281,9 @@
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\RootCandidateSymbolsRetrieverDefault.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\SemanticModelFactoryDefault.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\IGroupNodeWithCyclingNavigation.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\ExtraInfo\Base\ExtraInfoViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\ExtraInfo\TextViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\ExtraInfo\IconViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Base\TreeBuilderBase.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\Dac\DefaultCodeMapTreeBuilder_Dac.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Builders\DefaultCodeMapTreeBuilder.cs" />
@@ -299,7 +305,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\Base\GraphEventCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\CodeMapWindowViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\CodeMapWindow.cs" />
-    <Compile Include="Tool Windows\CodeMap\CodeMapWindowControl.xaml.cs">
+    <Compile Include="Tool Windows\CodeMap\UI\CodeMapWindowControl.xaml.cs">
       <DependentUpon>CodeMapWindowControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Tool Windows\CodeMap\OpenCodeMapWindowCommand.cs" />
@@ -324,6 +330,7 @@
     <Compile Include="Tool Windows\CodeMap\Utils\CodeMapRefreshMode.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\IndentUtils.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\CodeMapDocChangesClassifier.cs" />
+    <Compile Include="Tool Windows\CodeMap\UI\Converters\TreeViewLineConverter .cs" />
     <Compile Include="Utils\ChangesClassification\ChangeInfluenceScope.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\CyclingNavigationUtils.cs" />
     <Compile Include="Tool Windows\Converters\BoolInversionConverter.cs" />
@@ -393,7 +400,11 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Tool Windows\CodeMap\CodeMapWindowControl.xaml">
+    <Page Include="Tool Windows\CodeMap\UI\CodeMapTreeControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Tool Windows\CodeMap\UI\CodeMapWindowControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

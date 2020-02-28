@@ -7,11 +7,14 @@ using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using System.Threading;
+using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class CacheAttachedNodeViewModel : GraphMemberNodeViewModel
 	{
+		public override Icon NodeIcon => Icon.CacheAttached;
+
 		public DacGroupingNodeBaseViewModel DacVM { get; }
 
 		public override string Tooltip
@@ -29,10 +32,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			protected set;
 		}
 
-		public override Icon NodeIcon => Icon.CacheAttached;
-
 		public CacheAttachedNodeViewModel(DacGroupingNodeBaseViewModel dacVM, GraphFieldEventInfo eventInfo, bool isExpanded = false) :
-									 base(dacVM?.GraphEventsCategoryVM, eventInfo, isExpanded)
+									 base(dacVM?.GraphEventsCategoryVM, dacVM, eventInfo, isExpanded)
 		{
 			DacVM = dacVM;
 			Name = eventInfo.DacFieldName;			

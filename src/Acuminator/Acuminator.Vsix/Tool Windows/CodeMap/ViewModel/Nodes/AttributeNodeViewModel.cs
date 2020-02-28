@@ -30,8 +30,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override bool DisplayNodeWithoutChildren => true;
 
+		public override Icon NodeIcon => Icon.None;
+
 		public AttributeNodeViewModel(TreeNodeViewModel nodeVM, AttributeData attribute, bool isExpanded = false) :
-								 base(nodeVM?.Tree, isExpanded)
+								 base(nodeVM?.Tree, nodeVM, isExpanded)
 		{
 			attribute.ThrowOnNull(nameof(attribute));
 

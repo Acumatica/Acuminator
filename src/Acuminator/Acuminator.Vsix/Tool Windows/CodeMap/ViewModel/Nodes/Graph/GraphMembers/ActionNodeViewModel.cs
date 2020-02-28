@@ -5,19 +5,20 @@ using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using System.Threading;
+using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class ActionNodeViewModel : GraphMemberNodeViewModel
 	{
+		public override Icon NodeIcon => Icon.Action;
+
 		public ActionInfo ActionInfo => MemberInfo as ActionInfo;
 
 		public override string Tooltip => ActionInfo.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
 
-		public override Icon NodeIcon => Icon.Action;
-
 		public ActionNodeViewModel(ActionCategoryNodeViewModel actionCategoryVM, ActionInfo actionInfo, bool isExpanded = false) :
-							  base(actionCategoryVM, actionInfo, isExpanded)
+							  base(actionCategoryVM, actionCategoryVM, actionInfo, isExpanded)
 		{
 		}
 

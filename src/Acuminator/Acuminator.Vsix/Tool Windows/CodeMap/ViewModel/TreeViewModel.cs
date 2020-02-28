@@ -14,6 +14,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public ExtendedObservableCollection<TreeNodeViewModel> RootItems { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
 
+		public ExtendedObservableCollection<TreeNodeViewModel> AllItems { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
+
 		private TreeNodeViewModel _selectedItem;
 
 		public TreeNodeViewModel SelectedItem
@@ -34,6 +36,21 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
+		private bool _isExtraInfoVisible = true;
+
+		public bool IsExtraInfoVisible
+		{
+			get => _isExtraInfoVisible;
+			set
+			{
+				if (_isExtraInfoVisible != value)
+				{
+					_isExtraInfoVisible = value;
+					NotifyPropertyChanged();
+				}
+			}
+		}
+
 		/// <summary>
 		/// A workaround to avoid endless loop of TreeNodeViewModel IsSelected and TreeViewModel SelectedItem setting each other.
 		/// </summary>
@@ -49,6 +66,47 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			windowViewModel.ThrowOnNull(nameof(windowViewModel));
 
 			CodeMapViewModel = windowViewModel;
+		}
+
+		public void Clear()
+		{
+			RootItems.Clear();
+			AllItems.Clear();
+		}
+
+		public void FillCodeMapTree(IEnumerable<TreeNodeViewModel> roots)
+		{
+			if (roots.IsNullOrEmpty())
+			{
+				Clear();
+				return;
+			}
+
+			RootItems.Reset(roots);
+
+			var flattenedTree = RootItems.SelectMany(root => GetNodeWithDescendants(root));
+			AllItems.Reset(flattenedTree);
+		}
+
+		public void RefreshFlattenedNodesList()
+		{
+			var flattenedTree = RootItems.SelectMany(root => GetNodeWithDescendants(root));
+			AllItems.Reset(flattenedTree);
+		}
+
+		private IEnumerable<TreeNodeViewModel> GetNodeWithDescendants(TreeNodeViewModel node)
+		{
+			yield return node;
+
+			if (node.Children.Count == 0)
+				yield break;
+
+			var descendants = node.Children.SelectMany(child => GetNodeWithDescendants(child));
+
+			foreach (var descendant in descendants)
+			{
+				yield return descendant;
+			}
 		}
 	}
 }

@@ -24,7 +24,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override Icon NodeIcon => Icon.RowEvent;
 
 		public RowEventNodeViewModel(DacGroupingNodeBaseViewModel dacViewModel, GraphRowEventInfo eventInfo, bool isExpanded = false) :
-								base(dacViewModel?.GraphEventsCategoryVM, eventInfo, isExpanded)
+								base(dacViewModel?.GraphEventsCategoryVM, dacViewModel, eventInfo, isExpanded)
 		{
 			DacViewModel = dacViewModel;
 			Name = eventInfo.EventType.ToString();

@@ -13,6 +13,7 @@ namespace Acuminator.Vsix.ToolWindows.Converters
 	/// <summary>
 	/// Converter which inverts <see cref="Visibility"/> values from <see cref="Visibility.Visible"/> to <see cref="Visibility.Collapsed"/>.
 	/// </summary>
+	[ValueConversion(sourceType: typeof(Visibility), targetType: typeof(Visibility))]
 	public class VisibilityInverter
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => Invert(value);

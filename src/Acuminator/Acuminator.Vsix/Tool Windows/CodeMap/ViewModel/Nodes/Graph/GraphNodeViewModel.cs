@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
 using Microsoft.CodeAnalysis;
 
@@ -30,7 +31,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override bool DisplayNodeWithoutChildren => true;
 
 		public GraphNodeViewModel(GraphSemanticModelForCodeMap codeMapGraphModel, TreeViewModel tree, bool isExpanded) : 
-							 base(tree, isExpanded)
+							 base(tree, parent: null, isExpanded)
 		{
 			CodeMapGraphModel = codeMapGraphModel;
 		}

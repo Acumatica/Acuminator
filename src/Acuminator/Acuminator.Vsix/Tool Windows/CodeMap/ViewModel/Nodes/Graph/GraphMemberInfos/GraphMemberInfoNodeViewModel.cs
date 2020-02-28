@@ -24,33 +24,19 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public GraphMemberInfoType GraphMemberInfoType { get; }
 
+		public override Icon NodeIcon => GetIconType(GraphMemberInfoType);
+
 		public override string Name
 		{
 			get => GraphMemberInfoSymbol.Name;
 			protected set { }
 		}
 
-		public override Icon NodeIcon
-		{
-			get
-			{
-				switch (GraphMemberInfoType)
-				{
-					case GraphMemberInfoType.ViewDelegate:
-						return Icon.ViewDelegate;
-					case GraphMemberInfoType.ActionHandler:
-						return Icon.ActionHandler;
-					default:
-						return base.NodeIcon;
-				}
-			}
-		}
-
 		public override bool DisplayNodeWithoutChildren => true;
 
 		public GraphMemberInfoNodeViewModel(GraphMemberNodeViewModel graphMemberVM, SymbolItem memberInfoData, 
 											GraphMemberInfoType graphMemberInfoType, bool isExpanded = false) :
-									  base(graphMemberVM?.Tree, isExpanded)
+									  base(graphMemberVM?.Tree, graphMemberVM, isExpanded)
 		{
 			memberInfoData.ThrowOnNull(nameof(memberInfoData));
 
@@ -60,6 +46,19 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public override Task NavigateToItemAsync() => GraphMemberInfoSymbol.NavigateToAsync();
+
+		private static Icon GetIconType(GraphMemberInfoType graphMemberInfoType)
+		{
+			switch (graphMemberInfoType)
+			{
+				case GraphMemberInfoType.ViewDelegate:
+					return Icon.ViewDelegate;
+				case GraphMemberInfoType.ActionHandler:
+					return Icon.ActionHandler;
+				default:
+					return Icon.None;
+			}
+		}
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);
 

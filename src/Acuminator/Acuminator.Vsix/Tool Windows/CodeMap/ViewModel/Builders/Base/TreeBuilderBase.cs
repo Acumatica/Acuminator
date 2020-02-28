@@ -88,7 +88,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			var rootsToAdd = roots.Where(root => root.Children.Count > 0 || root.DisplayNodeWithoutChildren);
 
-			codeMapTree.RootItems.AddRange(rootsToAdd);
+			codeMapTree.FillCodeMapTree(rootsToAdd);
 			return codeMapTree;
 		}
 

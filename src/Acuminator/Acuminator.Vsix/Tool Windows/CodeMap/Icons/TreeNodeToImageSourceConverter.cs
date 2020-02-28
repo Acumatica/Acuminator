@@ -13,9 +13,9 @@ using Acuminator.Vsix.Utilities;
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	/// <summary>
-	/// Converter which converts <see cref="TreeNodeViewModel"/> node to the <see cref="BitmapImage"/> icon.
+	/// Converter which converts <see cref="IconViewModel"/> to the <see cref="BitmapImage"/> icon.
 	/// </summary>
-	[ValueConversion(sourceType: typeof(TreeNodeViewModel), targetType: typeof(BitmapImage))]
+	[ValueConversion(sourceType: typeof(IconViewModel), targetType: typeof(BitmapImage))]
 	public class TreeNodeToImageSourceConverter : IValueConverter
 	{
 		private const string BitmapsCollectionURI = @"pack://application:,,,/Acuminator;component/Resources/CodeMap/Bitmap/BitmapImages.xaml";
@@ -27,10 +27,22 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			if (!(value is TreeNodeViewModel treeNodeViewModel) || treeNodeViewModel.NodeIcon == Icon.None)
+			string iconKey = null;
+
+			switch (value)
+			{
+				case IconViewModel iconViewModel when iconViewModel.IconType != Icon.None:
+					iconKey = iconViewModel.IconType.ToString();
+					break;
+
+				case TreeNodeViewModel nodeViewModel when nodeViewModel.NodeIcon != Icon.None:
+					iconKey = nodeViewModel.NodeIcon.ToString();
+					break;
+			}
+
+			if (iconKey == null)
 				return null;
 
-			string iconKey = treeNodeViewModel.NodeIcon.ToString();
 			return _resourceDictionary.TryGetValue(iconKey, out BitmapImage icon)
 				? icon
 				: null;

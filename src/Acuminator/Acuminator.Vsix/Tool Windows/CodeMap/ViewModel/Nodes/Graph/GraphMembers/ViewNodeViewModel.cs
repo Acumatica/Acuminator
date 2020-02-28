@@ -9,6 +9,7 @@ using Acuminator.Utilities.Roslyn.Syntax;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
 using Acuminator.Utilities.Roslyn.ProjectSystem;
 using System.Threading;
+using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -21,7 +22,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override Icon NodeIcon => Icon.View;
 
 		public ViewNodeViewModel(ViewCategoryNodeViewModel viewCategoryVM, DataViewInfo viewInfo, bool isExpanded = false) :
-							base(viewCategoryVM, viewInfo, isExpanded)
+							base(viewCategoryVM, viewCategoryVM, viewInfo, isExpanded)
 		{
 		}	
 

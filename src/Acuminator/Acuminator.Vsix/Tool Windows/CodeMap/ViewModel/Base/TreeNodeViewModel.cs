@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
 
@@ -26,9 +27,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public virtual string Tooltip => null;
 
 		/// <summary>
-		/// The icon for a node.
+		/// The main icon for a node.
 		/// </summary>
-		public virtual Icon NodeIcon => Icon.None;
+		public abstract Icon NodeIcon { get; }
+
+		public virtual ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos => null;
 
 		private SortType? _childrenSortType;
 
@@ -66,6 +69,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
+		public TreeNodeViewModel Parent { get; }
+
+		public bool IsRoot => Parent == null;
+
 		public ExtendedObservableCollection<TreeNodeViewModel> Children { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
 
 		private bool _isExpanded;
@@ -79,6 +86,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				{
 					_isExpanded = value;
 					NotifyPropertyChanged();
+
+					Children.ForEach(child => child.NotifyPropertyChanged(nameof(AreDetailsVisible)));
 				}
 			}
 		}
@@ -101,11 +110,29 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		protected TreeNodeViewModel(TreeViewModel tree, bool isExpanded = true)
+		private bool _isMouseOver;
+
+		public bool IsMouseOver
+		{
+			get => _isMouseOver;
+			set
+			{
+				if (_isMouseOver != value)
+				{
+					_isMouseOver = value;
+					NotifyPropertyChanged();
+				}
+			}
+		}
+
+		public virtual bool AreDetailsVisible => IsRoot || Parent.IsExpanded;
+
+		protected TreeNodeViewModel(TreeViewModel tree, TreeNodeViewModel parent, bool isExpanded = true)
 		{
 			tree.ThrowOnNull(nameof(tree));
 
 			Tree = tree;
+			Parent = parent;
 			_isExpanded = isExpanded;
 		}
 
@@ -121,6 +148,23 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			IsExpanded = expand;
 			Children.ForEach(childNode => childNode.ExpandOrCollapseAll(expand));
+		}
+
+		public IEnumerable<TreeNodeViewModel> Descendants()
+		{
+			if (Children.Count == 0)
+				yield break;
+
+			foreach (TreeNodeViewModel child in Children)
+			{
+				yield return child;
+				var descendants = child.Descendants();
+
+				foreach (var descendant in descendants)
+				{
+					yield return descendant;
+				}
+			}
 		}
 	}
 }

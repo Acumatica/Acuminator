@@ -334,19 +334,19 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ITypeSymbol GetUnderlyingTypeFromNullable(this INamedTypeSymbol typeSymbol, PXContext pxContext)
+		public static ITypeSymbol GetUnderlyingTypeFromNullable(this ITypeSymbol typeSymbol, PXContext pxContext)
 		{
-			if (!typeSymbol.IsNullable(pxContext))
+			if (!typeSymbol.IsNullable(pxContext) || !(typeSymbol is INamedTypeSymbol namedTypeSymbol))
 				return null;
 
-			ImmutableArray<ITypeSymbol> typeArgs = typeSymbol.TypeArguments;
+			ImmutableArray<ITypeSymbol> typeArgs = namedTypeSymbol.TypeArguments;
 			return typeArgs.Length == 1
 				? typeArgs[0]
 				: null;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsNullable(this INamedTypeSymbol typeSymbol, PXContext pxContext)
+		public static bool IsNullable(this ITypeSymbol typeSymbol, PXContext pxContext)
 		{
 			pxContext.ThrowOnNull(nameof(pxContext));
 			return typeSymbol?.OriginalDefinition?.Equals(pxContext.SystemTypes.Nullable) ?? false;
@@ -499,6 +499,43 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				.Last();
 
 			return NamespaceNames.AcumaticaRootNamespace.Equals(typeRootNamespace.Name, StringComparison.Ordinal);
+		}
+
+
+		/// <summary>
+		/// An ITypeSymbol extension method that gets a simplified name for type if it is a primitive type.
+		/// </summary>
+		/// <param name="type">The type to act on.</param>
+		/// <returns/>
+		public static string GetSimplifiedName(this ITypeSymbol type)
+		{
+			type.ThrowOnNull(nameof(type));
+
+			switch (type.SpecialType)
+			{
+				case SpecialType.None when type.TypeKind == TypeKind.Array:
+				case SpecialType.System_Object:
+				case SpecialType.System_Void:
+				case SpecialType.System_Boolean:
+				case SpecialType.System_Char:
+				case SpecialType.System_SByte:
+				case SpecialType.System_Byte:
+				case SpecialType.System_Int16:
+				case SpecialType.System_UInt16:
+				case SpecialType.System_Int32:
+				case SpecialType.System_UInt32:
+				case SpecialType.System_Int64:
+				case SpecialType.System_UInt64:
+				case SpecialType.System_Decimal:
+				case SpecialType.System_Single:
+				case SpecialType.System_Double:
+				case SpecialType.System_String:
+				case SpecialType.System_Array:
+				case SpecialType.System_Nullable_T:
+					return type.ToString();				
+				default:
+					return type.Name;
+			}
 		}
 	}
 }

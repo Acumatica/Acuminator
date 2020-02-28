@@ -1,0 +1,476 @@
+﻿<UserControl x:Class="Acuminator.Vsix.ToolWindows.CodeMap.CodeMapTreeControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
+             xmlns:platformUI="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
+             xmlns:codeMap="clr-namespace:Acuminator.Vsix.ToolWindows.CodeMap"
+             xmlns:converters="clr-namespace:Acuminator.Vsix.ToolWindows.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="150" d:DesignWidth="200"
+			 d:DataContext="{d:DesignInstance Type={x:Type codeMap:TreeViewModel}, IsDesignTimeCreatable=True}">
+	<UserControl.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="../../../Resources/Themes/Styles.xaml"/>
+
+				<ResourceDictionary>
+					<!--Converters-->
+					<converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+
+					<codeMap:TreeViewLineConverter x:Key="lineConverter"/>
+					<codeMap:TreeNodeToTooltipConverter x:Key="treeNodeToTooltipConverter"/>
+					<codeMap:TreeNodeToImageSourceConverter x:Key="treeNodeToIconConverter"/>
+
+					<!-- Bitmap Images -->
+					<BitmapImage x:Key="ExpandAllImage" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+                                 UriSource="pack://application:,,,/Acuminator;component/Resources/ExpandAll.png"/>
+
+					<BitmapImage x:Key="CollapseAllImage" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+                                 UriSource="pack://application:,,,/Acuminator;component/Resources/CollapseAll.png"/>
+
+					<!-- Image Style-->
+					<Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}"/>
+
+					<!-- tree node Context Menu-->
+					<ContextMenu x:Key="codeMapContextMenu" Style="{StaticResource vsContextMenuStyle}">
+						<MenuItem Command="{Binding Path=Tree.CodeMapViewModel.ExpandOrCollapseAllCommand}" CommandParameter="{Binding}">
+							<MenuItem.Style>
+								<Style TargetType="MenuItem" BasedOn="{StaticResource vsMenuItemStyle}">
+									<Setter Property="Header" Value="Expand All"/>
+									<Setter Property="ToolTip" Value="Expand all nodes in Code Map tree"/>
+									<Setter Property="Icon">
+										<Setter.Value>
+											<Image>
+												<Image.Style>
+													<Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}">
+														<Setter Property="Source" Value="{StaticResource ExpandAllImage}"/>
+
+														<Style.Triggers>
+															<DataTrigger Binding="{Binding Path=IsExpanded, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+																<Setter Property="Source" Value="{StaticResource CollapseAllImage}"/>
+															</DataTrigger>
+														</Style.Triggers>
+													</Style>
+												</Image.Style>
+											</Image>
+										</Setter.Value>
+									</Setter>
+
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Path=IsExpanded, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+											<Setter Property="Header" Value="Collapse All"/>
+											<Setter Property="ToolTip" Value="Collapse all nodes in Code Map tree"/>
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</MenuItem.Style>
+						</MenuItem>
+						<MenuItem Header="Sort Children" Style="{StaticResource vsMenuItemStyle}">
+							<MenuItem Header="By Name" ToolTip="Sort all children of this node by name"
+									  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeChildrenByNameCommand}" CommandParameter="{Binding }"
+									  Style="{StaticResource vsSubmenuItemStyle}">
+							</MenuItem>
+							<MenuItem Header="By Declaration Order" ToolTip="Sort all children of this node by declaration order"
+									  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeChildrenByDeclarationOrderCommand}"
+									  CommandParameter="{Binding }" Style="{StaticResource vsSubmenuItemStyle}">
+							</MenuItem>
+						</MenuItem>
+						<MenuItem Header="Sort Descendants" Style="{StaticResource vsMenuItemStyle}">
+							<MenuItem Header="By Name" ToolTip="Sort all descendants of this node by name"
+									  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeDescendantsByNameCommand}" CommandParameter="{Binding }"
+									  Style="{StaticResource vsSubmenuItemStyle}">
+							</MenuItem>
+							<MenuItem Header="By Declaration Order" ToolTip="Sort all descendants of this node by declaration order"
+									  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeDescendantsByDeclarationOrderCommand}" CommandParameter="{Binding }"
+									  Style="{StaticResource vsSubmenuItemStyle}">
+							</MenuItem>
+						</MenuItem>
+					</ContextMenu>
+
+					<Style x:Key="treeNodeContextMenuStyle" TargetType="FrameworkElement" >
+						<Setter Property="ContextMenu" Value="{StaticResource codeMapContextMenu}"/>
+
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding Path=Children.Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" Value="0">
+								<Setter Property="ContextMenu" Value="{x:Null}"/>
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+					
+					<!-- Tree View control template without scroll viewver-->
+					<ControlTemplate x:Key="TreeViewWithoutInnerScrollViewerControlTemplate" TargetType="{x:Type TreeView}">
+						<Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True"
+								Padding="0">
+							<ItemsPresenter/>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsEnabled" Value="False">
+								<Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+
+					<!-- ListBox control template without scroll viewer-->
+					<ControlTemplate x:Key="ListBoxWithoutInnerScrollViewerControlTemplate" TargetType="{x:Type ListBox}">
+						<Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
+								Background="{TemplateBinding Background}" Padding="0" SnapsToDevicePixels="True">
+							<ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsEnabled" Value="False">
+								<Setter Property="Background" TargetName="Bd" Value="White"/>
+								<Setter Property="BorderBrush" TargetName="Bd" Value="#FFD9D9D9"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+
+					<!-- TreeViewItem Control template-->
+					<SolidColorBrush x:Key="RectangeStrockNormalBrush" Color="#8888"/>
+
+					<Style x:Key="linesStyle" TargetType="Rectangle">
+						<Setter Property="SnapsToDevicePixels" Value="True"/>
+						<Setter Property="Focusable" Value="False"/>
+						<Setter Property="Stroke" Value="{StaticResource RectangeStrockNormalBrush}"/>
+					</Style>
+
+					<ControlTemplate x:Key="TreeViewItemControlTemplate" TargetType="{x:Type TreeViewItem}">
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition MinWidth="19" Width="Auto"/>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="Auto"/>
+							</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition/>
+							</Grid.RowDefinitions>
+
+							<!-- Connecting Lines -->
+							<Rectangle x:Name="HorLn" Height="1" Margin="10,0,0,0" Style="{StaticResource linesStyle}"/>
+							<Rectangle x:Name="VerLn" Width="1"  Grid.RowSpan="2" Style="{StaticResource linesStyle}"/>
+
+							<ToggleButton x:Name="Expander" ClickMode="Press" IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}">
+								<ToggleButton.Style>
+									<Style TargetType="{x:Type ToggleButton}">
+										<Setter Property="Focusable" Value="False"/>
+										<Setter Property="Width" Value="16"/>
+										<Setter Property="Height" Value="16"/>
+										<Setter Property="Template">
+											<Setter.Value>
+												<ControlTemplate TargetType="{x:Type ToggleButton}">
+													<Border Background="Transparent" Height="16" Padding="5" Width="16">
+														<Path x:Name="ExpandPath" Data="M0,0 L0,6 L6,0 z" Fill="White" Stroke="#FF818181">
+															<Path.RenderTransform>
+																<RotateTransform Angle="135" CenterY="3" CenterX="3"/>
+															</Path.RenderTransform>
+														</Path>
+													</Border>
+													<ControlTemplate.Triggers>
+														<Trigger Property="IsChecked" Value="True">
+															<Setter Property="RenderTransform" TargetName="ExpandPath">
+																<Setter.Value>
+																	<RotateTransform Angle="180" CenterY="3" CenterX="3"/>
+																</Setter.Value>
+															</Setter>
+														</Trigger>
+														<Trigger Property="IsMouseOver" Value="True">
+															<Setter Property="Stroke" TargetName="ExpandPath" Value="#FF27C7F7"/>
+															<Setter Property="Fill" TargetName="ExpandPath" Value="#FFCCEEFB"/>
+														</Trigger>
+														<MultiTrigger>
+															<MultiTrigger.Conditions>
+																<Condition Property="IsMouseOver" Value="True"/>
+																<Condition Property="IsChecked" Value="True"/>
+															</MultiTrigger.Conditions>
+															<Setter Property="Stroke" TargetName="ExpandPath" Value="#FF1CC4F7"/>
+															<Setter Property="Fill" TargetName="ExpandPath" Value="#FF82DFFB"/>
+														</MultiTrigger>
+													</ControlTemplate.Triggers>
+												</ControlTemplate>
+											</Setter.Value>
+										</Setter>
+									</Style>
+								</ToggleButton.Style>
+							</ToggleButton>
+							<Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
+									Background="{TemplateBinding Background}" Grid.Column="1" Padding="{TemplateBinding Padding}" 
+									SnapsToDevicePixels="True" Style="{StaticResource treeNodeContextMenuStyle}" 
+									MouseEnter="TreeNode_MouseEnterOrLeave" MouseLeave="TreeNode_MouseEnterOrLeave"
+									PreviewMouseLeftButtonDown="TreeNode_PreviewMouseLeftButtonDown"
+									PreviewMouseRightButtonDown="TreeViewItem_PreviewMouseRightButtonDown">
+								<ContentPresenter x:Name="PART_Header" ContentTemplate="{TemplateBinding HeaderTemplate}" 
+												  Content="{TemplateBinding Header}" ContentStringFormat="{TemplateBinding HeaderStringFormat}" 
+												  ContentSource="Header" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+												  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+							</Border>
+							<ItemsPresenter x:Name="ItemsHost" Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="1"/>
+						</Grid>
+						<ControlTemplate.Triggers>
+							<!-- This trigger changes the connecting lines if the item is the last in the list -->
+							<DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource lineConverter}}" Value="true">
+								<Setter TargetName="VerLn" Property="Height" Value="10"/>
+								<Setter TargetName="VerLn" Property="VerticalAlignment" Value="Top"/>
+							</DataTrigger>
+
+							<Trigger Property="IsExpanded" Value="False">
+								<Setter Property="Visibility" TargetName="ItemsHost" Value="Collapsed"/>
+							</Trigger>
+							<Trigger Property="HasItems" Value="False">
+								<Setter Property="Visibility" TargetName="Expander" Value="Hidden"/>
+							</Trigger>
+							<Trigger Property="IsEnabled" Value="False">
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+
+					<!-- ListBoxItem Control Template-->				
+					<ControlTemplate x:Key="ListBoxItemControlTemplate" TargetType="{x:Type ListBoxItem}">
+						<Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
+								Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+							<ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+											  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+											  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsEnabled" Value="False">
+								<Setter Property="TextElement.Foreground" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+
+					<!-- Code Map TreeView and TreeView Item Styles-->
+					<Style x:Key="codeMapTreeViewItemStyle" TargetType="TreeViewItem">
+						<Setter Property="Template" Value="{StaticResource TreeViewItemControlTemplate}"/>
+
+						<Setter Property="HorizontalAlignment" Value="Stretch"/>
+						<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+
+						<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundBrushKey}}"/>
+						<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundTextBrushKey}}"/>
+
+						<Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+						<Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding Path=IsMouseOver, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+								<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:HeaderColors.MouseOverBrushKey}}"/>
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:HeaderColors.MouseOverTextBrushKey}}"/>
+							</DataTrigger>
+							<Trigger Property="IsSelected" Value="True">
+								<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemActiveBrushKey}}"/>
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemActiveTextBrushKey}}"/>
+							</Trigger>
+							
+						</Style.Triggers>
+					</Style>
+
+					<Style x:Key="codeMapTreeViewStyle" TargetType="TreeView">
+						<Setter Property="Background" Value="Transparent"/>
+						<Setter Property="BorderThickness" Value="0"/>
+						<Setter Property="Padding" Value="0"/>
+						<Setter Property="ItemContainerStyle" Value="{StaticResource codeMapTreeViewItemStyle}"/>
+					</Style>
+
+					<!--#region Code Map ListBox and ListBoxItem Style-->									
+					<Style x:Key="codeMapListBoxItemStyle" TargetType="ListBoxItem" BasedOn="{StaticResource treeNodeContextMenuStyle}">
+						<EventSetter Event="MouseEnter" Handler="TreeNode_MouseEnterOrLeave"/>
+						<EventSetter Event="MouseLeave" Handler="TreeNode_MouseEnterOrLeave"/>
+						<EventSetter Event="PreviewMouseLeftButtonDown" Handler="TreeNode_PreviewMouseLeftButtonDown"/>
+
+						<Setter Property="Template" Value="{StaticResource ListBoxItemControlTemplate}"/>
+						<Setter Property="SnapsToDevicePixels" Value="True"/>
+						<Setter Property="Padding" Value="0"/>
+						<Setter Property="MinHeight" Value="19"/>
+						<Setter Property="MaxHeight" Value="19"/>
+						
+						<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundBrushKey}}"/>
+						<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundTextBrushKey}}"/>
+						<Setter Property="BorderThickness" Value="0"/>
+						<Setter Property="BorderBrush" Value="Transparent"/>
+						
+						<Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+						<Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+
+						<Setter Property="Visibility"  Value="{Binding Path=AreDetailsVisible, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolToVisibilityConverter}}"/>
+
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding Path=IsMouseOver, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+								<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:HeaderColors.MouseOverBrushKey}}"/>
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:HeaderColors.MouseOverTextBrushKey}}"/>
+							</DataTrigger>
+							<Trigger Property="IsSelected" Value="True">
+								<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemActiveBrushKey}}"/>
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.SelectedItemActiveTextBrushKey}}"/>
+							</Trigger>
+						</Style.Triggers>
+					</Style>
+
+					<Style x:Key="codeMapListBoxStyle" TargetType="ListBox">
+						<Setter Property="Background" Value="Transparent"/>
+						<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarTextActiveBrushKey}}"/>
+						<Setter Property="BorderThickness" Value="0"/>
+						<Setter Property="SelectionMode" Value="Single"/>
+
+						<Setter Property="ItemContainerStyle" Value="{StaticResource codeMapListBoxItemStyle}"/>
+					</Style>
+					<!--#endregion-->							
+				</ResourceDictionary>
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</UserControl.Resources>
+
+	<Border BorderThickness="1">
+		<ScrollViewer Focusable="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+			<ScrollViewer.Style>
+				<Style TargetType="ScrollViewer">
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding ElementName=codeMapTreeView, Path=VirtualizingPanel.IsVirtualizing, Mode=OneWay}"  Value="True">
+							<Setter Property="CanContentScroll" Value="True"/>
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</ScrollViewer.Style>
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+
+				<TreeView x:FieldModifier="private" Name="codeMapTreeView" Grid.Column="0" 
+						  Style="{StaticResource codeMapTreeViewStyle}"
+						  ItemsSource="{Binding Path=RootItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+						  Template="{StaticResource TreeViewWithoutInnerScrollViewerControlTemplate}">
+					<TreeView.ItemTemplate>
+						<HierarchicalDataTemplate DataType="{x:Type codeMap:TreeNodeViewModel}"
+												  ItemsSource="{Binding Path=Children, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+							<StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" MinHeight="19" MaxHeight="19">
+								<Image Margin="0,0,5,0" UseLayoutRounding="True" 
+									   Source="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, 
+														Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource treeNodeToIconConverter}}">
+									<Image.Style>
+										<Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}">
+											<Style.Triggers>
+												<Trigger Property="Source" Value="{x:Null}">
+													<Setter Property="Visibility" Value="Collapsed"/>
+												</Trigger>
+											</Style.Triggers>
+										</Style>
+									</Image.Style>
+								</Image>
+
+								<TextBlock VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,3,0"
+											Text="{Binding Path=Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+											Tag="{Binding Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource treeNodeToTooltipConverter}}">
+									<TextBlock.Style>
+										<Style TargetType="TextBlock">
+											<Setter Property="ToolTip" >
+												<Setter.Value>
+													<ToolTip DataContext="{Binding RelativeSource={RelativeSource Mode=Self}, Path=PlacementTarget.DataContext,
+																					Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+														<ToolTip.Style>
+															<Style TargetType="ToolTip">
+																<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundBrushKey}}"/>
+																<Setter Property="Foreground" Value="#F1F1F1"/>
+
+																<Style.Triggers>
+																	<DataTrigger Binding="{Binding Path=Tree.CodeMapViewModel.IsDarkTheme, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+																				 Value="False">
+																		<Setter Property="Foreground" Value="Black"/>
+																	</DataTrigger>
+																</Style.Triggers>
+															</Style>
+														</ToolTip.Style>
+
+														<TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ToolTip}, 
+																				  Path=PlacementTarget.Tag, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+																   TextAlignment="Left" TextWrapping="Wrap" MaxWidth="700"/>
+													</ToolTip>
+												</Setter.Value>
+											</Setter>
+
+											<Style.Triggers>
+												<Trigger Property="Tag" Value="{x:Null}">
+													<Setter Property="ToolTip" Value="{x:Null}"/>
+												</Trigger>
+											</Style.Triggers>
+										</Style>
+									</TextBlock.Style>
+								</TextBlock>
+							</StackPanel>
+						</HierarchicalDataTemplate>
+					</TreeView.ItemTemplate>
+				</TreeView>
+				<ListBox x:FieldModifier="private" Name="detailsListBox" Grid.Column="1" Style="{StaticResource codeMapListBoxStyle}" 
+					     ItemsSource="{Binding Path=AllItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+						 SelectedItem="{Binding Path=SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+						 Template="{StaticResource ListBoxWithoutInnerScrollViewerControlTemplate}"
+						 Visibility="{Binding Path=IsExtraInfoVisible, Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
+											  Converter={StaticResource boolToVisibilityConverter}}">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<ItemsControl x:Name="extraInfosPanel" Margin="0,0,5,0"
+										  ItemsSource="{Binding Path=ExtraInfos, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch"/>
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
+								<ItemsControl.Style>
+									<Style TargetType="ItemsControl">
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding Path=ExtraInfos, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="{x:Null}">
+												<Setter Property="Visibility" Value="Collapsed"/>
+											</DataTrigger>
+										</Style.Triggers>
+									</Style>
+								</ItemsControl.Style>
+
+								<ItemsControl.Resources>
+									<DataTemplate DataType="{x:Type codeMap:IconViewModel}">
+										<Image Margin="0,0,5,0" UseLayoutRounding="True"
+										   Source="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, 
+															Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource treeNodeToIconConverter}}">
+											<Image.Style>
+												<Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}">
+													<Style.Triggers>
+														<Trigger Property="Source" Value="{x:Null}">
+															<Setter Property="Visibility" Value="Collapsed"/>
+														</Trigger>
+													</Style.Triggers>
+												</Style>
+											</Image.Style>
+										</Image>
+									</DataTemplate>
+
+									<DataTemplate DataType="{x:Type codeMap:TextViewModel}">
+										<TextBlock VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,5,0"										  
+												   Text="{Binding Path=Text, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+											<TextBlock.Style>
+												<Style TargetType="TextBlock">
+													<Setter Property="Foreground">
+														<Setter.Value>
+															<SolidColorBrush Color="{Binding Path=Foreground, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+														</Setter.Value>
+													</Setter>
+
+													<Style.Triggers>
+														<DataTrigger Binding="{Binding Path=Foreground, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  Value="{x:Null}">
+															<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundTextBrushKey}}"/>
+														</DataTrigger>
+													</Style.Triggers>
+												</Style>
+											</TextBlock.Style>
+										</TextBlock>
+									</DataTemplate>
+								</ItemsControl.Resources>
+							</ItemsControl>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</Grid>
+		</ScrollViewer>
+	</Border>
+</UserControl>

@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Vsix.Utilities;
 using Acuminator.Vsix.Utilities.Navigation;
 using Microsoft.CodeAnalysis;
 
@@ -24,7 +25,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override bool DisplayNodeWithoutChildren => true;
 
-		public DacNodeViewModel(DacSemanticModel dacModel, TreeViewModel tree, bool isExpanded) : base(tree, isExpanded)
+		public DacNodeViewModel(DacSemanticModel dacModel, TreeViewModel tree, bool isExpanded) : 
+						   base(tree, parent: null, isExpanded)
 		{
 			dacModel.ThrowOnNull(nameof(dacModel));
 			DacModel = dacModel;
