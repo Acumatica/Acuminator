@@ -111,7 +111,8 @@
 								<Setter Property="ContextMenu">
 									<Setter.Value>
 										<ContextMenu Style="{StaticResource vsContextMenuStyle}">
-											<MenuItem Command="{Binding Path=ExpandOrCollapseAllCommand}">
+											<MenuItem Command="{Binding Path=Tree.CodeMapViewModel.ExpandOrCollapseAllCommand}"
+													  CommandParameter="{Binding}">
 												<MenuItem.Style>
 													<Style TargetType="MenuItem" BasedOn="{StaticResource vsMenuItemStyle}">
 														<Setter Property="Header" Value="Expand All"/>
@@ -142,6 +143,30 @@
 														</Style.Triggers>
 													</Style>
 												</MenuItem.Style>
+											</MenuItem>
+											<MenuItem Header="Sort Children" Style="{StaticResource vsMenuItemStyle}">
+												<MenuItem Header="By Name" ToolTip="Sort all children of this node by name"
+													      Command="{Binding Path=Tree.CodeMapViewModel.SortNodeChildrenByNameCommand}"
+													      CommandParameter="{Binding }"
+														  Style="{StaticResource vsSubmenuItemStyle}">
+												</MenuItem>
+												<MenuItem Header="By Declaration Order" ToolTip="Sort all children of this node by declaration order"
+													      Command="{Binding Path=Tree.CodeMapViewModel.SortNodeChildrenByDeclarationOrderCommand}"
+													      CommandParameter="{Binding }"
+														  Style="{StaticResource vsSubmenuItemStyle}">
+												</MenuItem>
+											</MenuItem>
+											<MenuItem Header="Sort Descendants" Style="{StaticResource vsMenuItemStyle}">
+												<MenuItem Header="By Name" ToolTip="Sort all descendants of this node by name"
+													      Command="{Binding Path=Tree.CodeMapViewModel.SortNodeDescendantsByNameCommand}"
+													      CommandParameter="{Binding }"
+														  Style="{StaticResource vsSubmenuItemStyle}">
+												</MenuItem>
+												<MenuItem Header="By Declaration Order" ToolTip="Sort all descendants of this node by declaration order"
+													      Command="{Binding Path=Tree.CodeMapViewModel.SortNodeDescendantsByDeclarationOrderCommand}"
+													      CommandParameter="{Binding }"
+														  Style="{StaticResource vsSubmenuItemStyle}">
+												</MenuItem>
 											</MenuItem>
 										</ContextMenu>
 									</Setter.Value>

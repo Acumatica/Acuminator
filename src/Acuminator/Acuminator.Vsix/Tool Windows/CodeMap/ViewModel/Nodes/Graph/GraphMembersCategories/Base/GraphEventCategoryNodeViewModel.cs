@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+
+using NotifyCollectionChangedAction = System.Collections.Specialized.NotifyCollectionChangedAction;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -31,17 +31,21 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 										     base(graphViewModel, graphMemberType, isExpanded)
 		{
 			_name = CategoryDescription;
+			Children.CollectionChanged += Children_CollectionChanged;
 		}
 
-		public override void AcceptBuilder(TreeBuilderBase treeBuilder, bool expandRoots, CancellationToken cancellation)
+		private void Children_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 		{
-			base.AcceptBuilder(treeBuilder, expandRoots, cancellation);
-			int eventsCount = Children.OfType<DacGroupingNodeBaseViewModel>()
-									  .Sum(dacVM => dacVM.EventsCount);
-			if (Children.Count <= 0)
-				return;
+			if (e.Action == NotifyCollectionChangedAction.Add || e.Action == NotifyCollectionChangedAction.Remove || 
+				e.Action == NotifyCollectionChangedAction.Reset)
+			{
+				int eventsCount = Children.OfType<DacGroupingNodeBaseViewModel>().Sum(dacVM => dacVM.EventsCount);
 
-			Name = $"{CategoryDescription}({eventsCount})";
+				if (Children.Count <= 0)
+					return;
+
+				Name = $"{CategoryDescription}({eventsCount})";
+			}
 		}
 	}
 }

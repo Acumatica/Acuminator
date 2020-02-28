@@ -112,7 +112,9 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			other.Id.Equals(Id, StringComparison.Ordinal) &&
 			other.Target.Equals(Target, StringComparison.Ordinal) &&
 			other.SyntaxNode.Equals(SyntaxNode, StringComparison.Ordinal);
-		
+
+		public override string ToString() => $"ID={Id}, Target={Target}";
+
 		public static (string Assembly, SuppressMessage Message) GetSuppressionInfo(SemanticModel semanticModel, Diagnostic diagnostic,
 																					 CancellationToken cancellation = default)
 		{

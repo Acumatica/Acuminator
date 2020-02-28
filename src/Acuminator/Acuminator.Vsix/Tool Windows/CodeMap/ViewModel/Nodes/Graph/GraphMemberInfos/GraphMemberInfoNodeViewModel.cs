@@ -12,11 +12,13 @@ using System.Threading;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class GraphMemberInfoNodeViewModel : TreeNodeViewModel
+	public class GraphMemberInfoNodeViewModel : TreeNodeViewModel, INodeWithSymbolItem
 	{
 		public GraphMemberNodeViewModel GraphMember { get; }
 
 		public SymbolItem GraphMemberInfoData { get; }
+
+		SymbolItem INodeWithSymbolItem.Symbol => GraphMemberInfoData;
 
 		public ISymbol GraphMemberInfoSymbol => GraphMemberInfoData.SymbolBase;
 
@@ -59,7 +61,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override Task NavigateToItemAsync() => GraphMemberInfoSymbol.NavigateToAsync();
 
-		protected override IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation) =>
-			treeBuilder.VisitNodeAndBuildChildren(this, expandChildren, cancellation);
+		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);
+
+		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) => treeVisitor.VisitNode(this);
+
+		public override void AcceptVisitor(CodeMapTreeVisitor treeVisitor) => treeVisitor.VisitNode(this);
 	}
 }

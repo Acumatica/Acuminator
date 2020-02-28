@@ -15,6 +15,31 @@ namespace Acuminator.Vsix.Utilities
 	internal static class VisualTreeUtils
 	{
 		/// <summary>
+		/// Gets the visual ancestors of the <paramref name="uiElement"/> from the visual tree.
+		/// </summary>
+		/// <param name="uiElement">The UI element to act on.</param>
+		/// <returns/>
+		public static IEnumerable<FrameworkElement> GetVisualAncestors(this FrameworkElement uiElement)
+		{
+			uiElement.ThrowOnNull(nameof(uiElement));
+
+			return GetVisualAncestorsImpl();
+
+			//-------------------------------------------Local function-----------------------------------
+			IEnumerable<FrameworkElement> GetVisualAncestorsImpl()
+			{
+				FrameworkElement currentAncestor = VisualTreeHelper.GetParent(uiElement) as FrameworkElement;
+
+				while (currentAncestor != null)
+				{
+					yield return currentAncestor;
+					currentAncestor = VisualTreeHelper.GetParent(currentAncestor) as FrameworkElement;
+				}		
+			}
+		}
+
+
+		/// <summary>
 		/// Gets the visual descendants of the <paramref name="uiElement"/> from the visual tree.
 		/// </summary>
 		/// <param name="uiElement">The UI element to act on.</param>

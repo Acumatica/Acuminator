@@ -81,11 +81,11 @@ namespace Acuminator.Utilities.Common
 			return true;
 		}
 
-		public static IOrderedEnumerable<T> OrderBy<T>(this IEnumerable<T> source, IComparer<T> comparer)
-		{
-			source.ThrowOnNull(nameof(source));
-			return source.OrderBy(Functions<T>.Identity, comparer);
-		}
+		public static IOrderedEnumerable<T> OrderBy<T>(this IEnumerable<T> source, IComparer<T> comparer) =>
+			 source.CheckIfNull(nameof(source)).OrderBy(Functions<T>.Identity, comparer);
+
+		public static IOrderedEnumerable<T> OrderByDescending<T>(this IEnumerable<T> source, IComparer<T> comparer) =>
+			source.CheckIfNull(nameof(source)).OrderByDescending(Functions<T>.Identity, comparer);
 
 		public static IOrderedEnumerable<T> OrderBy<T>(this IEnumerable<T> source, Comparison<T> compare)
 		{

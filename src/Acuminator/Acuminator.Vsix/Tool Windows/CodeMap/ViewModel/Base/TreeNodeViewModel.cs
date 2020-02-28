@@ -30,6 +30,42 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// </summary>
 		public virtual Icon NodeIcon => Icon.None;
 
+		private SortType? _childrenSortType;
+
+		/// <summary>
+		/// The sort type of nodes children.
+		/// </summary>
+		public SortType? ChildrenSortType
+		{
+			get => _childrenSortType;
+			set
+			{
+				if (_childrenSortType != value)
+				{
+					_childrenSortType = value;
+					NotifyPropertyChanged();
+				}
+			}
+		}
+
+		private SortDirection _childrenSortDirection = SortDirection.Ascending;
+
+		/// <summary>
+		/// The children sort direction.
+		/// </summary>
+		public SortDirection ChildrenSortDirection
+		{
+			get => _childrenSortDirection;
+			set
+			{
+				if (_childrenSortDirection != value)
+				{
+					_childrenSortDirection = value;
+					NotifyPropertyChanged();
+				}
+			}
+		}
+
 		public ExtendedObservableCollection<TreeNodeViewModel> Children { get; } = new ExtendedObservableCollection<TreeNodeViewModel>();
 
 		private bool _isExpanded;
@@ -65,40 +101,23 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public Command ExpandOrCollapseAllCommand { get; }
-
 		protected TreeNodeViewModel(TreeViewModel tree, bool isExpanded = true)
 		{
 			tree.ThrowOnNull(nameof(tree));
 
 			Tree = tree;
 			_isExpanded = isExpanded;
-			ExpandOrCollapseAllCommand = new Command(p => ExpandOrCollapseAll(expand: !IsExpanded));
 		}
 
 		public virtual Task NavigateToItemAsync() => Microsoft.VisualStudio.Threading.TplExtensions.CompletedTask;
 
-		public virtual void AcceptBuilder(TreeBuilderBase treeBuilder, bool expandChildren, CancellationToken cancellation)
-		{
-			treeBuilder.ThrowOnNull(nameof(treeBuilder));
-			var children = CreateChildren(treeBuilder, expandChildren, cancellation)?.ToList();
+		public abstract TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input);
 
-			if (children.IsNullOrEmpty())
-				return;
+		public abstract TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor);
 
-			foreach (var child in children)
-			{
-				child?.AcceptBuilder(treeBuilder, expandChildren, cancellation);
-			}
+		public abstract void AcceptVisitor(CodeMapTreeVisitor treeVisitor);
 
-			var childrenToSet = children.Where(c => c != null && (c.Children.Count > 0 || c.DisplayNodeWithoutChildren));
-			Children.Reset(childrenToSet);
-		}
-
-		protected abstract IEnumerable<TreeNodeViewModel> CreateChildren(TreeBuilderBase treeBuilder, bool expandChildren,
-																	     CancellationToken cancellation);
-
-		protected virtual void ExpandOrCollapseAll(bool expand)
+		public virtual void ExpandOrCollapseAll(bool expand)
 		{
 			IsExpanded = expand;
 			Children.ForEach(childNode => childNode.ExpandOrCollapseAll(expand));

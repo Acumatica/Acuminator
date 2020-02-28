@@ -11,11 +11,13 @@ using System.Threading.Tasks;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public abstract class DacMemberNodeViewModel : TreeNodeViewModel
+	public abstract class DacMemberNodeViewModel : TreeNodeViewModel, INodeWithSymbolItem
 	{
 		public DacMemberCategoryNodeViewModel MemberCategory { get; }
 
 		public SymbolItem MemberInfo { get; }
+
+		SymbolItem INodeWithSymbolItem.Symbol => MemberInfo;
 
 		public ISymbol MemberSymbol => MemberInfo.SymbolBase;
 

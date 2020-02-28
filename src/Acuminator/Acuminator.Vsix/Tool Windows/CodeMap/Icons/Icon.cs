@@ -5,7 +5,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// <summary>
 	/// Values that represent icons for tree nodes in code map tree.
 	/// </summary>
-	public enum Icon
+	public enum Icon : byte
 	{
 		None,
 		Graph,

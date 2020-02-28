@@ -12,11 +12,13 @@ using System.Threading;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public abstract class GraphMemberNodeViewModel : TreeNodeViewModel
+	public abstract class GraphMemberNodeViewModel : TreeNodeViewModel, INodeWithSymbolItem
 	{
 		public GraphMemberCategoryNodeViewModel MemberCategory { get; }
 
 		public SymbolItem MemberInfo { get; }
+
+		SymbolItem INodeWithSymbolItem.Symbol => MemberInfo;
 
 		public ISymbol MemberSymbol => MemberInfo.SymbolBase;
 
@@ -29,6 +31,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		public override bool DisplayNodeWithoutChildren => true;
+
+		
 
 		public GraphMemberNodeViewModel(GraphMemberCategoryNodeViewModel graphMemberCategoryVM, SymbolItem memberInfo, 
 										bool isExpanded = false) :

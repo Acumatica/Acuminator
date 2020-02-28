@@ -243,7 +243,7 @@
 	</Style>
     <!--#endregion-->
 	
-	<!--#regionVS MenuItem Style-->
+	<!--#region VS MenuItem Style-->
 	<Style x:Key="vsMenuItemStyle" TargetType="MenuItem">
 		<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuBackgroundGradientBeginBrushKey}}"/>
 		<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarTextActiveBrushKey}}"/>
@@ -263,6 +263,10 @@
 				<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuItemMouseOverTextBrushKey}}"/>
 			</MultiTrigger>
 		</Style.Triggers>
+	</Style>
+
+	<Style x:Key="vsSubmenuItemStyle" TargetType="MenuItem" BasedOn="{StaticResource vsMenuItemStyle}">
+		<EventSetter Event="Loaded" Handler="OnSubmenuItemLoaded"/>
 	</Style>
 	<!--#endregion-->
 	<!--#endregion-->

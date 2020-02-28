@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Threading;
 using Acuminator.Utilities.Roslyn.ProjectSystem;
 using Acuminator.Vsix.Utilities;
+using Acuminator.Utilities.Common;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
@@ -29,6 +30,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			get;
 			internal set;
 		}
+
+		private CodeMapSubtreeSorter TreeSorter { get; } = new CodeMapSubtreeSorter();
 
 		public IRootCandidateSymbolsRetriever RootSymbolsRetriever
 		{
@@ -101,6 +104,16 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public Command RefreshCodeMapCommand { get; }
 
+		public Command ExpandOrCollapseAllCommand { get; }
+
+		public Command SortNodeChildrenByNameCommand { get; }
+
+		public Command SortNodeChildrenByDeclarationOrderCommand { get; }
+
+		public Command SortNodeDescendantsByNameCommand { get; }
+
+		public Command SortNodeDescendantsByDeclarationOrderCommand { get; }
+
 		private CodeMapWindowViewModel(IWpfTextView wpfTextView, Document document)
 		{
 			DocumentModel = new DocumentModel(wpfTextView, document);
@@ -113,6 +126,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Tree = TreeBuilder.CreateEmptyCodeMapTree(this);
 			
 			RefreshCodeMapCommand = new Command(p => RefreshCodeMapAsync().Forget());
+			ExpandOrCollapseAllCommand = new Command(p => ExpandOrCollapseNodeDescendants(p as TreeNodeViewModel));
+
+			SortNodeChildrenByNameCommand = new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, sortDescendants: false));
+			SortNodeChildrenByDeclarationOrderCommand = new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, sortDescendants: false));
+			SortNodeDescendantsByNameCommand = new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, sortDescendants: true));
+			SortNodeDescendantsByDeclarationOrderCommand = new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, sortDescendants: true));
 
 			Workspace = DocumentModel.Document.Project.Solution.Workspace;
 			Workspace.WorkspaceChanged += OnWorkspaceChanged;
@@ -124,25 +143,29 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				//Store reference to DTE SolutionEvents and WindowEvents to prevent them from being GCed
 				_solutionEvents = dte?.Events?.SolutionEvents;
 				_windowEvents = dte?.Events?.WindowEvents;
-
-				if (_solutionEvents != null)
-				{
-					_solutionEvents.AfterClosing += SolutionEvents_AfterClosing;
-				}
-
-				if (_windowEvents != null)
-				{
-					_windowEvents.WindowActivated += WindowEvents_WindowActivated;
-				}
-
 				_visibilityEvents = (dte?.Events as EnvDTE80.Events2)?.WindowVisibilityEvents;
 
-				if (_visibilityEvents != null)
-				{
-					_visibilityEvents.WindowShowing += VisibilityEvents_WindowShowing;
-					_visibilityEvents.WindowHiding += VisibilityEvents_WindowHiding;
-				}
+				SubscribeOnVisualStudioEvents();
 			}		
+		}
+
+		private void SubscribeOnVisualStudioEvents()
+		{
+			if (_solutionEvents != null)
+			{
+				_solutionEvents.AfterClosing += SolutionEvents_AfterClosing;
+			}
+
+			if (_windowEvents != null)
+			{
+				_windowEvents.WindowActivated += WindowEvents_WindowActivated;
+			}
+
+			if (_visibilityEvents != null)
+			{
+				_visibilityEvents.WindowShowing += VisibilityEvents_WindowShowing;
+				_visibilityEvents.WindowHiding += VisibilityEvents_WindowHiding;
+			}
 		}
 
 		public static CodeMapWindowViewModel InitCodeMap(IWpfTextView wpfTextView, Document document)
@@ -394,6 +417,44 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				IsCalculating = false;
 				_cancellationTokenSource = null;
+			}
+		}
+
+		private void ExpandOrCollapseNodeDescendants(TreeNodeViewModel node)
+		{
+			if (node != null)
+			{
+				node.ExpandOrCollapseAll(expand: !node.IsExpanded);
+			}
+		}
+
+		public void SortNodes(TreeNodeViewModel node, SortType sortType, bool sortDescendants)
+		{
+			if (node == null)
+				return;
+
+			SortDirection sortDirection;
+
+			if (node.ChildrenSortType == sortType)
+			{
+				sortDirection = node.ChildrenSortDirection == SortDirection.Ascending
+					? SortDirection.Descending
+					: SortDirection.Ascending;
+			}
+			else
+			{
+				sortDirection = SortDirection.Ascending;
+			}
+
+			if (sortDescendants)
+			{
+				TreeSorter.SortSubtree(node, sortType, sortDirection);
+				node.ExpandOrCollapseAll(expand: true);
+			}
+			else
+			{
+				TreeSorter.SortChildren(node, sortType, sortDirection);
+				node.IsExpanded = true;
 			}
 		}
 	}
