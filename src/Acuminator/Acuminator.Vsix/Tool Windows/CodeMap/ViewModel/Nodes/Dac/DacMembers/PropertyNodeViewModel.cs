@@ -50,7 +50,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			var typeColor = Tree.CodeMapViewModel.IsDarkTheme
 					? Color.FromRgb(86, 156, 214)
-					: Color.FromRgb(160, 240, 120);
+					: Color.FromRgb(0, 0, 255);
 
 			yield return new TextViewModel(PropertyInfo.EffectivePropertyType.GetSimplifiedName(), foreground: typeColor);
 
