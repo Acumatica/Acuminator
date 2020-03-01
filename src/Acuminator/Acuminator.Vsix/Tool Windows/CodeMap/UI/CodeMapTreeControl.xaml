@@ -21,6 +21,7 @@
 
 					<codeMap:TreeViewLineConverter x:Key="lineConverter"/>
 					<codeMap:TreeNodeToTooltipConverter x:Key="treeNodeToTooltipConverter"/>
+					<codeMap:TreeIconTooltipConverter x:Key="iconTooltipConverter"/>
 					<codeMap:TreeNodeToImageSourceConverter x:Key="treeNodeToIconConverter"/>
 
 					<!-- Bitmap Images -->
@@ -348,8 +349,8 @@
 												  ItemsSource="{Binding Path=Children, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
 							<StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" MinHeight="19" MaxHeight="19">
 								<Image Margin="0,0,5,0" UseLayoutRounding="True" 
-									   Source="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, 
-														Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource treeNodeToIconConverter}}">
+									   Source="{Binding Mode=OneWay, Converter={StaticResource treeNodeToIconConverter}}"
+									   ToolTip="{Binding Mode=OneWay, Converter={StaticResource iconTooltipConverter}}">
 									<Image.Style>
 										<Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}">
 											<Style.Triggers>
