@@ -18,6 +18,7 @@
 				<ResourceDictionary>
 					<!--Converters-->
 					<converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+					<converters:ColorToBrushConverter x:Key="colorToBrushConverter"/>
 
 					<codeMap:TreeViewLineConverter x:Key="lineConverter"/>
 					<codeMap:TreeNodeToTooltipConverter x:Key="treeNodeToTooltipConverter"/>
@@ -448,19 +449,40 @@
 
 									<DataTemplate DataType="{x:Type codeMap:TextViewModel}">
 										<TextBlock VerticalAlignment="Center" TextAlignment="Center" Margin="0,0,5,0"										  
-												   Text="{Binding Path=Text, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+												   Text="{Binding Path=Text, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+												   ToolTip="{Binding Path=Tooltip, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
 											<TextBlock.Style>
 												<Style TargetType="TextBlock">
-													<Setter Property="Foreground">
-														<Setter.Value>
-															<SolidColorBrush Color="{Binding Path=Foreground, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-														</Setter.Value>
-													</Setter>
-
+													<Setter Property="Foreground" 
+															Value="{Binding Path=LightThemeForeground, Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
+																			Converter={StaticResource colorToBrushConverter}}"/>
 													<Style.Triggers>
-														<DataTrigger Binding="{Binding Path=Foreground, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  Value="{x:Null}">
-															<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundTextBrushKey}}"/>
+														<DataTrigger Binding="{Binding Path=Node.Tree.CodeMapViewModel.IsDarkTheme, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  
+																	 Value="True">
+															<Setter Property="Foreground" 
+																	Value="{Binding Path=DarkThemeForeground, Mode=OneWay, UpdateSourceTrigger=PropertyChanged,
+																			Converter={StaticResource colorToBrushConverter}}"/>
 														</DataTrigger>
+														
+														<MultiDataTrigger>
+															<MultiDataTrigger.Conditions>
+																<Condition Binding="{Binding Path=Node.Tree.CodeMapViewModel.IsDarkTheme, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  
+																		   Value="True"/>
+																<Condition Binding="{Binding Path=DarkThemeForeground, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="{x:Null}"/>
+															</MultiDataTrigger.Conditions>
+															
+															<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundTextBrushKey}}"/>
+														</MultiDataTrigger>
+														
+														<MultiDataTrigger>
+															<MultiDataTrigger.Conditions>
+																<Condition Binding="{Binding Path=Node.Tree.CodeMapViewModel.IsDarkTheme, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  
+																		   Value="False"/>
+																<Condition Binding="{Binding Path=LightThemeForeground, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="{x:Null}"/>
+															</MultiDataTrigger.Conditions>
+
+															<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:TreeViewColors.BackgroundTextBrushKey}}"/>
+														</MultiDataTrigger>
 													</Style.Triggers>
 												</Style>
 											</TextBlock.Style>

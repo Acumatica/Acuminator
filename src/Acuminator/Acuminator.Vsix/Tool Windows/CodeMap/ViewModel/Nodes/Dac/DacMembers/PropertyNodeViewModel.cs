@@ -48,28 +48,27 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private IEnumerable<ExtraInfoViewModel> GetExtraInfos()
 		{
-			var typeColor = Tree.CodeMapViewModel.IsDarkTheme
-					? Color.FromRgb(86, 156, 214)
-					: Color.FromRgb(0, 0, 255);
-
-			yield return new TextViewModel(PropertyInfo.EffectivePropertyType.GetSimplifiedName(), foreground: typeColor);
+			yield return new TextViewModel(this, PropertyInfo.EffectivePropertyType.GetSimplifiedName(), 
+											darkThemeForeground: Color.FromRgb(86, 156, 214),
+											lightThemeForeground: Color.FromRgb(0, 0, 255));
 
 			if (IsIdentity)
 			{
-				var idColor = Tree.CodeMapViewModel.IsDarkTheme
-					? Coloriser.VSColors.DacFieldFormatColorDark
-					: Coloriser.VSColors.DacFieldFormatColorLight;
-
-				yield return new TextViewModel("ID", foreground: idColor);
+				yield return new TextViewModel(this, "ID",
+											   darkThemeForeground: Coloriser.VSColors.DacFieldFormatColorDark,
+											   lightThemeForeground: Coloriser.VSColors.DacFieldFormatColorLight)
+											  {
+												  Tooltip = "Has PXDBIdentity attribute"
+											  };
 			}
 
 			switch (EffectiveBoundType)
 			{		
 				case BoundType.Unbound:
-					yield return new TextViewModel("Unbound");
+					yield return new TextViewModel(this, "Unbound");
 					break;
 				case BoundType.DbBound:
-					yield return new TextViewModel("Bound");
+					yield return new TextViewModel(this, "Bound");
 					break;
 			}
 		}
