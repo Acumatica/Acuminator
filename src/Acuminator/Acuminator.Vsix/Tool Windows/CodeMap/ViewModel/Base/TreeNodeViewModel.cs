@@ -87,7 +87,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					_isExpanded = value;
 					NotifyPropertyChanged();
 
-					Children.ForEach(child => child.NotifyPropertyChanged(nameof(AreDetailsVisible)));
+					Descendants().ForEach(node => node.NotifyPropertyChanged(nameof(AreDetailsVisible)));
 				}
 			}
 		}
@@ -125,7 +125,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public virtual bool AreDetailsVisible => IsRoot || Parent.IsExpanded;
+		public virtual bool AreDetailsVisible => ShouldShowDetails();
 
 		protected TreeNodeViewModel(TreeViewModel tree, TreeNodeViewModel parent, bool isExpanded = true)
 		{
@@ -165,6 +165,24 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					yield return descendant;
 				}
 			}
+		}
+
+		protected bool ShouldShowDetails()
+		{
+			if (IsRoot)
+				return true;
+
+			TreeNodeViewModel curAncestor = Parent;
+
+			while (curAncestor != null)
+			{
+				if (!curAncestor.IsExpanded)
+					return false;
+
+				curAncestor = curAncestor.Parent;
+			}
+
+			return true;
 		}
 	}
 }
