@@ -14,16 +14,31 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public string Text { get; }
 
-		public Color? Foreground { get; }
+		public Color? DarkThemeForeground { get; }
 
-		public TextViewModel(string text, Color foreground) : this(text)
+		public Color? LightThemeForeground { get; }
+
+		private string _tooltip;
+
+		public string Tooltip
 		{
-			Foreground = foreground;
+			get => _tooltip;
+			set
+			{
+				if (_tooltip != value)
+				{
+					_tooltip = value;
+					NotifyPropertyChanged();
+				}
+			}
 		}
 
-		public TextViewModel(string text) : base()
+		public TextViewModel(TreeNodeViewModel node, string text, Color? darkThemeForeground = null, Color? lightThemeForeground = null) :
+						base(node)
 		{
 			Text = text.CheckIfNull(nameof(text));
+			DarkThemeForeground = darkThemeForeground;
+			LightThemeForeground = lightThemeForeground;
 		}
 	}
 }

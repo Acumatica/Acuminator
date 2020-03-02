@@ -11,7 +11,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public Icon IconType { get; }
 
-		public IconViewModel(Icon icon) : base()
+		public IconViewModel(TreeNodeViewModel node, Icon icon) : base(node)
 		{
 			IconType = icon;
 		}

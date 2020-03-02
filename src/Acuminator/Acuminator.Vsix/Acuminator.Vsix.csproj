@@ -249,6 +249,7 @@
     <Compile Include="Settings\CodeAnalysisSettingsFromOptionsPage.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\Icon.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\TreeNodeToImageSourceConverter.cs" />
+    <Compile Include="Tool Windows\CodeMap\Tooltips\TreeIconTooltipConverter.cs" />
     <Compile Include="Tool Windows\CodeMap\UI\CodeMapTreeControl.xaml.cs">
       <DependentUpon>CodeMapTreeControl.xaml</DependentUpon>
     </Compile>
@@ -331,6 +332,7 @@
     <Compile Include="Tool Windows\CodeMap\Utils\IndentUtils.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\CodeMapDocChangesClassifier.cs" />
     <Compile Include="Tool Windows\CodeMap\UI\Converters\TreeViewLineConverter .cs" />
+    <Compile Include="Tool Windows\Converters\ColorToBrushConverter.cs" />
     <Compile Include="Utils\ChangesClassification\ChangeInfluenceScope.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\CyclingNavigationUtils.cs" />
     <Compile Include="Tool Windows\Converters\BoolInversionConverter.cs" />

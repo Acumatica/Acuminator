@@ -11,5 +11,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public abstract class ExtraInfoViewModel : ViewModelBase
 	{
+		public TreeNodeViewModel Node { get; }
+
+		protected ExtraInfoViewModel(TreeNodeViewModel node)
+		{
+			Node = node.CheckIfNull(nameof(node));
+		}
 	}
 }
