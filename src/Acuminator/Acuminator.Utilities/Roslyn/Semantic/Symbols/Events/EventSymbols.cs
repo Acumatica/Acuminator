@@ -1,26 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Acuminator.Utilities.Common;
 using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
+	[StructLayout(LayoutKind.Auto)]
+	public readonly struct EventInfo
+	{
+		public EventType Type { get; }
+
+		public EventHandlerSignatureType SignatureType { get; }
+
+		public EventInfo(EventType type, EventHandlerSignatureType signatureType)
+		{
+			Type = type;
+			SignatureType = signatureType;
+		}
+	}
+
+
 	public class EventSymbols : SymbolsSetBase
 	{
 		internal EventSymbols(Compilation compilation) : base(compilation)
 		{
 			_eventTypeMap = new Lazy<IReadOnlyDictionary<ITypeSymbol, EventType>>(
 				() => CreateEventTypeMap(this));
-			_eventHandlerSignatureTypeMap = new Lazy<IReadOnlyDictionary<(EventType, EventHandlerSignatureType), INamedTypeSymbol>>(
+			_eventHandlerSignatureTypeMap = new Lazy<IReadOnlyDictionary<EventInfo, INamedTypeSymbol>>(
 				() => CreateEventHandlerSignatureTypeMap(this));
 		}
 
 		private readonly Lazy<IReadOnlyDictionary<ITypeSymbol, EventType>> _eventTypeMap;
 		public IReadOnlyDictionary<ITypeSymbol, EventType> EventTypeMap => _eventTypeMap.Value;
 
-		private readonly Lazy<IReadOnlyDictionary<(EventType, EventHandlerSignatureType), INamedTypeSymbol>> _eventHandlerSignatureTypeMap;
-		public IReadOnlyDictionary<(EventType, EventHandlerSignatureType), INamedTypeSymbol> EventHandlerSignatureTypeMap => _eventHandlerSignatureTypeMap.Value;
+		private readonly Lazy<IReadOnlyDictionary<EventInfo, INamedTypeSymbol>> _eventHandlerSignatureTypeMap;
+		public IReadOnlyDictionary<EventInfo, INamedTypeSymbol> EventHandlerSignatureTypeMap => _eventHandlerSignatureTypeMap.Value;
 
 		public INamedTypeSymbol PXRowSelectingEventArgs => _compilation.GetTypeByMetadataName(EventArgsNames.PXRowSelectingEventArgs);
 		public INamedTypeSymbol PXRowSelectedEventArgs => _compilation.GetTypeByMetadataName(EventArgsNames.PXRowSelectedEventArgs);
@@ -121,12 +137,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 			return map;
 		}
 
-		private static IReadOnlyDictionary<(EventType, EventHandlerSignatureType), INamedTypeSymbol>
+		private static IReadOnlyDictionary<EventInfo, INamedTypeSymbol>
 			CreateEventHandlerSignatureTypeMap(EventSymbols eventSymbols)
 		{
-			return new Dictionary<(EventType, EventHandlerSignatureType), INamedTypeSymbol>()
+			return new Dictionary<EventInfo, INamedTypeSymbol>()
 				{
-					{ (EventType.RowSelecting, EventHandlerSignatureType.Default), eventSymbols.PXRowSelectingEventArgs },
+					{ new EventInfo(EventType.RowSelecting, EventHandlerSignatureType.Default), eventSymbols.PXRowSelectingEventArgs },
 					{ (EventType.RowSelected, EventHandlerSignatureType.Default), eventSymbols.PXRowSelectedEventArgs },
 					{ (EventType.RowInserting, EventHandlerSignatureType.Default), eventSymbols.PXRowInsertingEventArgs },
 					{ (EventType.RowInserted, EventHandlerSignatureType.Default), eventSymbols.PXRowInsertedEventArgs },
