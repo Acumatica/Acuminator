@@ -20,6 +20,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 			SignatureType = signatureType;
 		}
 
+		public static EventInfo None() => new EventInfo(EventType.None, EventHandlerSignatureType.None);
+
 		public override bool Equals(object obj)
 		{
 			if (obj == null)

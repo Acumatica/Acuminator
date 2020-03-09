@@ -404,7 +404,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			return typeNameWithoutGeneric + DefaultGenericArgsCountSeparator + typeArgs.Length;
 		}
 
-		public static IEnumerable<(ConstructorDeclarationSyntax Node, IMethodSymbol Symbol)> GetDeclaredInstanceConstructors(
+		internal static IEnumerable<(ConstructorDeclarationSyntax Node, IMethodSymbol Symbol)> GetDeclaredInstanceConstructors(
 			this INamedTypeSymbol typeSymbol, CancellationToken cancellation = default)
 		{
 			typeSymbol.ThrowOnNull(nameof(typeSymbol));

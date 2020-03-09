@@ -169,23 +169,23 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			{
 				_cancellation.ThrowIfCancellationRequested();
 
-				var (eventType, eventSignatureType) = method.GetEventHandlerInfo(_pxContext);
+				var eventInfo = method.GetEventHandlerInfo(_pxContext);
 
-				if (eventSignatureType == EventHandlerSignatureType.None || eventType == EventType.None)
+				if (eventInfo.SignatureType == EventHandlerSignatureType.None || eventInfo.Type == EventType.None)
 					continue;
 
-				GraphEventCategory eventCategory = GetEventCategoryByEventType(eventType);
+				GraphEventCategory eventCategory = GetEventCategoryByEventType(eventInfo.Type);
 
-				if (!IsValidGraphEvent(method, eventSignatureType, eventCategory))
+				if (!IsValidGraphEvent(method, eventInfo.SignatureType, eventCategory))
 					continue;
 
 				if (eventCategory == GraphEventCategory.Row)
 				{
-					eventsCollector.AddEvent(eventSignatureType, eventType, method, declarationOrder, _cancellation);
+					eventsCollector.AddEvent(eventInfo.SignatureType, eventInfo.Type, method, declarationOrder, _cancellation);
 				}
 				else if (eventCategory == GraphEventCategory.Field)
 				{
-					eventsCollector.AddFieldEvent(eventSignatureType, eventType, method, declarationOrder, _cancellation);
+					eventsCollector.AddFieldEvent(eventInfo.SignatureType, eventInfo.Type, method, declarationOrder, _cancellation);
 				}
 				
 				declarationOrder++;
