@@ -66,10 +66,12 @@ namespace Acuminator.Vsix.Coloriser
             if (cancellationToken.IsCancellationRequested)
                 return null;
 
-			bool success;
-			(success, syntaxRoot) = await document.GetSyntaxRootAsync(cancellationToken).TryAwait().ConfigureAwait(false);
+			TaskResult<SyntaxNode> taskResult = await document.GetSyntaxRootAsync(cancellationToken)
+															  .TryAwait()
+															  .ConfigureAwait(false);
+			syntaxRoot = taskResult.Result;
 
-			if (!success || syntaxRoot == null || cancellationToken.IsCancellationRequested)
+			if (!taskResult.IsSuccess || syntaxRoot == null || cancellationToken.IsCancellationRequested)
                 return null;
 
             return new ParsedDocument(workspace, document, syntaxRoot, snapshot);
