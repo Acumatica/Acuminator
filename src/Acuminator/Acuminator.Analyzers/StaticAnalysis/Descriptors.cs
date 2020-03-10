@@ -105,6 +105,14 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			Rule("PX1018", nameof(Resources.PX1018Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, 
 				 DiagnosticsShortName.PX1018);
 
+		public static DiagnosticDescriptor PX1019_AutoNumberOnDacPropertyWithNonStringType { get; } =
+			Rule("PX1019", nameof(Resources.PX1018Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error,
+				 DiagnosticsShortName.PX1019);
+
+		public static DiagnosticDescriptor PX1018_NoPrimaryViewForPrimaryDac { get; } =
+			Rule("PX1018", nameof(Resources.PX1018Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error,
+				 DiagnosticsShortName.PX1020);
+
 		public static DiagnosticDescriptor PX1021_PXDBFieldAttributeNotMatchingDacProperty { get; } =
             Rule("PX1021", nameof(Resources.PX1021Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, 
 	             DiagnosticsShortName.PX1021);
