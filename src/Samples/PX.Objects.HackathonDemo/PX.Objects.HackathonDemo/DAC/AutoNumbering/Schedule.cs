@@ -15,12 +15,26 @@ namespace PX.Objects.HackathonDemo
 		#region ScheduleID
 		public abstract class scheduleID : PX.Data.BQL.BqlString.Field<scheduleID> { }
 
-		[PXDBString(10, IsUnicode = true, IsKey = true, InputMask = ">CCCCCCCCCCCCCCC")]
+		[PXDBString(10, IsUnicode = true, IsKey = true, InputMask = ">CCCCCCCCCCCCCCC")]        //Display error for AutoNumber length
 		[PXUIField(DisplayName = "Schedule ID", Visibility = PXUIVisibility.SelectorVisible)]
 		[AutoNumber(typeof(GLSetup.scheduleNumberingID), typeof(AccessInfo.businessDate))]
 		[PXSelector(typeof(Search<Schedule.scheduleID, Where<Schedule.module, Equal<Current<Schedule.module>>>>))]
 		[PXDefault]
 		public virtual string ScheduleID
+		{
+			get;
+			set;
+		}
+		#endregion
+
+		#region OtherScheduleID
+		public abstract class otherScheduleID : PX.Data.BQL.BqlString.Field<otherScheduleID> { }
+
+		[PXDBInt]
+		[PXUIField(DisplayName = "Schedule ID", Visibility = PXUIVisibility.SelectorVisible)]
+		[AutoNumber(typeof(GLSetup.scheduleNumberingID), typeof(AccessInfo.businessDate))]        //Display error for AutoNumber non on string DAC property
+		[PXDefault]
+		public virtual int? OtherScheduleID
 		{
 			get;
 			set;
