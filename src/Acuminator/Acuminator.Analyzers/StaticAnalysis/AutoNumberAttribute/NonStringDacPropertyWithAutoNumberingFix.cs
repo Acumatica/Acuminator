@@ -20,7 +20,7 @@ using Microsoft.CodeAnalysis.Editing;
 namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class NonStringDacPropertyWithAutoNumbering : CodeFixProvider
+	public class NonStringDacPropertyWithAutoNumberingFix : CodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } = 
 			ImmutableArray.Create(Descriptors.PX1019_AutoNumberOnDacPropertyWithNonStringType.Id);
