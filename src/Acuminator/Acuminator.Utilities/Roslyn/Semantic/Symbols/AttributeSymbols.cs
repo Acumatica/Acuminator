@@ -6,14 +6,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
 	public class AttributeSymbols : SymbolsSetBase
 	{
-		internal AttributeSymbols(Compilation compilation) : base(compilation)
-		{
-			_pxUiFieldAttribute = new Lazy<PXUIFieldAttributeSymbols>(() => new PXUIFieldAttributeSymbols(compilation));
-			_pxSelectorAttribute = new Lazy<PXSelectorAttributeSymbols>(() => new PXSelectorAttributeSymbols(compilation));
-			_pxStringListAttribute = new Lazy<PXStringListAttributeSymbols>(() => new PXStringListAttributeSymbols(compilation));
-			_pxIntListAttribute = new Lazy<PXIntListAttributeSymbols>(() => new PXIntListAttributeSymbols(compilation));
-		}
-
 		public INamedTypeSymbol ObsoleteAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.ObsoleteAttribute);
 
 		public INamedTypeSymbol PXInternalUseOnlyAttribute => _compilation.GetTypeByMetadataName(TypeFullNames.PXInternalUseOnlyAttribute);
@@ -43,5 +35,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		private readonly Lazy<PXIntListAttributeSymbols> _pxIntListAttribute;
 		public PXIntListAttributeSymbols PXIntListAttribute => _pxIntListAttribute.Value;
+
+		internal AttributeSymbols(Compilation compilation) : base(compilation)
+		{
+			_pxUiFieldAttribute = new Lazy<PXUIFieldAttributeSymbols>(() => new PXUIFieldAttributeSymbols(compilation));
+			_pxSelectorAttribute = new Lazy<PXSelectorAttributeSymbols>(() => new PXSelectorAttributeSymbols(compilation));
+			_pxStringListAttribute = new Lazy<PXStringListAttributeSymbols>(() => new PXStringListAttributeSymbols(compilation));
+			_pxIntListAttribute = new Lazy<PXIntListAttributeSymbols>(() => new PXIntListAttributeSymbols(compilation));
+		}
 	}
 }
