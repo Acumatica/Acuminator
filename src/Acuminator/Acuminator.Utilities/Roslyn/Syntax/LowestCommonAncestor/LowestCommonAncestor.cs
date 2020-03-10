@@ -10,7 +10,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 {
 	public static class LowestCommonAncestor
 	{
-		internal static (StatementSyntax Ancestor, StatementSyntax ScopedX, StatementSyntax ScopedY) GetCommonAncestorForSyntaxStatements(StatementSyntax x, StatementSyntax y)
+		public static LCAResultForTwoStatements GetCommonAncestorForSyntaxStatements(StatementSyntax x, StatementSyntax y)
 		{
 			x.ThrowOnNull(nameof(x));
 			y.ThrowOnNull(nameof(y));
@@ -47,7 +47,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 				currentY = currentY.Parent<StatementSyntax>();
 			}
 
-			return (currentX, prevX, prevY);
+			return new LCAResultForTwoStatements(currentX, prevX, prevY);
 		}
 	}
 }
