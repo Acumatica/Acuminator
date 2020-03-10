@@ -21,6 +21,7 @@
     * [Parametrized Diagnostic Messages](#parametrized-diagnostic-messages)
     * [Test Methods](#test-methods)
     * [Async Anonymous Delegates](#async-anonymous-delegates)
+	* [Value Tuples](#value-tuples)
 
 ## Code Style
 
@@ -332,3 +333,16 @@ but this depends on the configuration of the user runtime. For more details, see
 https://docs.microsoft.com/ru-ru/dotnet/framework/configure-apps/file-schema/runtime/throwunobservedtaskexceptions-element.
 
 Overall, the passing of asynchronous methods to `analyzer.RegisterXXX `is an unwanted scenario that should be avoided at all costs.
+
+### Value Tuples
+
+There is an issue with value tuples in Visual Studio 2017. There is a dependency conflict between some packages depending on different versions of `System.ValueTuple` which proved to be impossible to fix.
+The issue appear as a `MissingMethod` exception being thrown on attempt to call public API method with signature containing value tuples if the caller and callee are declared in different assemblies.
+For example, consider a method `TryAwait` (see code below) declared in Acuminator.Utilities:
+
+```C#
+public Task<(bool IsSuccess, TResult Result)> TryAwait<TResult>(this Task<TResult> task);
+```
+
+If you call it from Acuminator.Vsix then in Visual Studio 2017 the `MissingMethod` exception will be thrown. However, everything will be ok in Visual Studio 2019.
+Therefore, until we drop the support for Visual Studio 2017, do not declare public API containing value tuples. Either declare it as internal API or create custom structs for it.
