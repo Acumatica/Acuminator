@@ -36,12 +36,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		private readonly Lazy<PXIntListAttributeSymbols> _pxIntListAttribute;
 		public PXIntListAttributeSymbols PXIntListAttribute => _pxIntListAttribute.Value;
 
+		private readonly Lazy<AutoNumberAttributeSymbols> _autoNumberAttribute;
+		public AutoNumberAttributeSymbols AutoNumberAttribute => _autoNumberAttribute.Value;
+
 		internal AttributeSymbols(Compilation compilation) : base(compilation)
 		{
 			_pxUiFieldAttribute = new Lazy<PXUIFieldAttributeSymbols>(() => new PXUIFieldAttributeSymbols(compilation));
 			_pxSelectorAttribute = new Lazy<PXSelectorAttributeSymbols>(() => new PXSelectorAttributeSymbols(compilation));
 			_pxStringListAttribute = new Lazy<PXStringListAttributeSymbols>(() => new PXStringListAttributeSymbols(compilation));
 			_pxIntListAttribute = new Lazy<PXIntListAttributeSymbols>(() => new PXIntListAttributeSymbols(compilation));
+			_autoNumberAttribute = new Lazy<AutoNumberAttributeSymbols>(() => new AutoNumberAttributeSymbols(compilation));
 		}
 	}
 }
