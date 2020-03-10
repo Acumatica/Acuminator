@@ -56,14 +56,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 			var autoNumberingAttribute = dacProperty.Attributes.FirstOrDefault(a => a.IsAutoNumberAttribute);
 			var propertyTypeLocation = dacProperty.Node.Type.GetLocation();
 
-			if (propertyTypeLocation == null)
-				return;
+			if (propertyTypeLocation != null)
+			{
+				var diagnostic = Diagnostic.Create(Descriptors.PX1019_AutoNumberOnDacPropertyWithNonStringType, propertyTypeLocation);
+
+				context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
+			}
 
 			var attributeLocation = autoNumberingAttribute?.AttributeData.GetLocation(context.CancellationToken);
-			var additionalLocations = attributeLocation?.ToEnumerable() ?? Enumerable.Empty<Location>();
-			var diagnostic = Diagnostic.Create(Descriptors.PX1019_AutoNumberOnDacPropertyWithNonStringType, propertyTypeLocation, additionalLocations);
+			
+			if (attributeLocation != null)
+			{
+				var diagnostic = Diagnostic.Create(Descriptors.PX1019_AutoNumberOnDacPropertyWithNonStringType, attributeLocation);
 
-			context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
+				context.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
+			}
 		}
 
 		private void CheckIfStringLengthIsSufficientForAutoNumbering(SymbolAnalysisContext context, AttributeInformation attributeInformation,
