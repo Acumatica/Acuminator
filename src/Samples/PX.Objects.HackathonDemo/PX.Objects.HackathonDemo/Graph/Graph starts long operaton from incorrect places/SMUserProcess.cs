@@ -6,9 +6,9 @@ namespace PX.Objects.HackathonDemo
 {
     public class SMUserProcess : PXGraph
     {
-        public PXSelect<SM.Users> Users;
+        public PXSelect<PX.SM.Users> Users;
 
-        public PXAction<SM.Users> SyncMyUsers;
+        public PXAction<PX.SM.Users> SyncMyUsers;
 
         [PXButton]
         [PXUIField]
