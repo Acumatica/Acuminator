@@ -12,19 +12,6 @@ namespace PX.Objects.HackathonDemo
 	[PXCacheName("Schedule")]
 	public partial class Schedule : IBqlTable
 	{
-		#region Selected
-		public abstract class selected : PX.Data.BQL.BqlBool.Field<selected> { }
-
-		[PXBool]
-		[PXDefault(false, PersistingCheck = PXPersistingCheck.Nothing)]
-		[PXUIField(DisplayName = "Selected")]
-		public bool? Selected
-		{
-			get;
-			set;
-		}
-		#endregion
-
 		#region ScheduleID
 		public abstract class scheduleID : PX.Data.BQL.BqlString.Field<scheduleID> { }
 
