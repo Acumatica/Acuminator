@@ -21,7 +21,7 @@
     * [Parametrized Diagnostic Messages](#parametrized-diagnostic-messages)
     * [Test Methods](#test-methods)
     * [Async Anonymous Delegates](#async-anonymous-delegates)
-	* [Value Tuples](#value-tuples)
+    * [Value Tuples](#value-tuples)
 
 ## Code Style
 
