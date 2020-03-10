@@ -519,4 +519,7 @@
   <data name="PX1020Title" xml:space="preserve">
     <value>The length of a string must be greater than {0} for a DAC property with an AutoNumber attribute</value>
   </data>
+  <data name="PX1019Fix" xml:space="preserve">
+    <value>Change DAC property type to string</value>
+  </data>
 </root>

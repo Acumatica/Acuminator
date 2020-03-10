@@ -439,6 +439,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change DAC property type to string.
+        /// </summary>
+        public static string PX1019Fix {
+            get {
+                return ResourceManager.GetString("PX1019Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The AutoNumber attribute can be placed only on DAC property with string type.
         /// </summary>
         public static string PX1019Title {
