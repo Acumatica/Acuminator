@@ -5,6 +5,7 @@ using System.Composition;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
 
@@ -26,60 +27,55 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		public override Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			Diagnostic diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1019_AutoNumberOnDacPropertyWithNonStringType.Id);
-
-			if (diagnostic == null || context.CancellationToken.IsCancellationRequested)
-				return;
-
-			string format = nameof(Resources.PX1019Fix).GetLocalized().ToString();
-			string codeActionName = string.Format(format, mainDacName);
-			CodeAction codeAction =
-				CodeAction.Create(codeActionName,
-								  cToken => ChangePXActionDeclarationAsync(context.Document, context.Span, cToken, mainDacType),
-								  equivalenceKey: codeActionName);
+			string codeActionName = nameof(Resources.PX1019Fix).GetLocalized().ToString();
+			CodeAction codeAction = CodeAction.Create(codeActionName,
+													  cToken => ChangePropertyTypeToStringAsync(context.Document, context.Span, cToken),
+													  equivalenceKey: codeActionName);
 
 			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			return Task.CompletedTask;
 		}
 
-		private async Task<Document> ChangePXActionDeclarationAsync(Document document, TextSpan span, CancellationToken cancellationToken,
-																	INamedTypeSymbol mainDacType)
+		private async Task<Document> ChangePropertyTypeToStringAsync(Document document, TextSpan diagnosticSpan, CancellationToken cancellationToken)
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-			GenericNameSyntax pxActionTypeDeclaration = root?.FindNode(span) as GenericNameSyntax;
+			var propertyNode = GetPropertyNodeWithDiagnostic(root, diagnosticSpan);
 
-			if (pxActionTypeDeclaration == null || cancellationToken.IsCancellationRequested)
+			if (propertyNode == null)
 				return document;
 
-			SyntaxGenerator generator = SyntaxGenerator.GetGenerator(document);
-			TypeSyntax mainDacTypeNode = generator.TypeExpression(mainDacType) as TypeSyntax;
-
-			if (mainDacType == null || cancellationToken.IsCancellationRequested)
+			PredefinedTypeSyntax stringType = SyntaxFactory.PredefinedType(
+														SyntaxFactory.Token(SyntaxKind.StringKeyword));
+			if (stringType == null)
 				return document;
 
-			var modifiedTypeArgsSyntax = pxActionTypeDeclaration.TypeArgumentList
-																.WithArguments(SyntaxFactory.SingletonSeparatedList(mainDacTypeNode));
-			GenericNameSyntax modifiedDeclaration = pxActionTypeDeclaration.WithTypeArgumentList(modifiedTypeArgsSyntax);
-			SyntaxNode originalNode = null, modifiedNode = null;
+			var modifiedPropertyNode = propertyNode.WithType(stringType);
 
-			switch (pxActionTypeDeclaration.Parent)
-			{
-				case VariableDeclarationSyntax variableDeclaration:
-					originalNode = variableDeclaration;
-					modifiedNode = variableDeclaration.WithType(modifiedDeclaration);
-					break;
-				case PropertyDeclarationSyntax propertyDeclaration:
-					originalNode = propertyDeclaration;
-					modifiedNode = propertyDeclaration.WithType(modifiedDeclaration);
-					break;
-			}
-
-			if (originalNode == null || modifiedNode == null || cancellationToken.IsCancellationRequested)
+			if (modifiedPropertyNode == null || cancellationToken.IsCancellationRequested)
 				return document;
 
-			var modifiedRoot = root.ReplaceNode(originalNode, modifiedNode);
+			var modifiedRoot = root.ReplaceNode(propertyNode, modifiedPropertyNode);
 			return document.WithSyntaxRoot(modifiedRoot);
+		}
+
+		private PropertyDeclarationSyntax GetPropertyNodeWithDiagnostic(SyntaxNode root, TextSpan diagnosticSpan)
+		{
+			SyntaxNode node = root?.FindNode(diagnosticSpan);
+
+			switch (node)
+			{
+				case PropertyDeclarationSyntax propertyDeclaration:
+					return propertyDeclaration;
+
+				case IdentifierNameSyntax propertyTypeDeclaration
+				when propertyTypeDeclaration.Parent is PropertyDeclarationSyntax propertyDeclaration:
+					return propertyDeclaration;
+
+				default:
+					return null;
+			}
 		}
 	}
 }
