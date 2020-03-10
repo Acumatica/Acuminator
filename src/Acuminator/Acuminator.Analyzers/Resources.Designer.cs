@@ -10,7 +10,6 @@
 
 namespace Acuminator.Analyzers {
     using System;
-    using System.Reflection;
     
     
     /// <summary>
@@ -40,7 +39,7 @@ namespace Acuminator.Analyzers {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Acuminator.Analyzers.Resources", typeof(Resources).GetTypeInfo().Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Acuminator.Analyzers.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -436,6 +435,24 @@ namespace Acuminator.Analyzers {
         public static string PX1018Title {
             get {
                 return ResourceManager.GetString("PX1018Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The AutoNumber attribute can be placed only on DAC property with string type.
+        /// </summary>
+        public static string PX1019Title {
+            get {
+                return ResourceManager.GetString("PX1019Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The length of a string must be greater than {0} for a DAC property with an AutoNumber attribute.
+        /// </summary>
+        public static string PX1020Title {
+            get {
+                return ResourceManager.GetString("PX1020Title", resourceCulture);
             }
         }
         

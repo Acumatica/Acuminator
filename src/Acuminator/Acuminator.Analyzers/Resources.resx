@@ -513,4 +513,10 @@
   <data name="PX1007DacProperty" xml:space="preserve">
     <value>DAC property</value>
   </data>
+  <data name="PX1019Title" xml:space="preserve">
+    <value>The AutoNumber attribute can be placed only on DAC property with string type</value>
+  </data>
+  <data name="PX1020Title" xml:space="preserve">
+    <value>The length of a string must be greater than {0} for a DAC property with an AutoNumber attribute</value>
+  </data>
 </root>
