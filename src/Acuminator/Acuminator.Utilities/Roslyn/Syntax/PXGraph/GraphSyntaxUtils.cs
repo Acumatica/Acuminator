@@ -51,7 +51,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax.PXGraph
 			return GraphInstantiationType.None;
 		}
 
-		public static IEnumerable<(ITypeSymbol GraphSymbol, SyntaxNode GraphNode)> GetDeclaredGraphsAndExtensions(
+		internal static IEnumerable<(ITypeSymbol GraphSymbol, SyntaxNode GraphNode)> GetDeclaredGraphsAndExtensions(
 																						this SyntaxNode root, SemanticModel semanticModel,
 																						PXContext context, CancellationToken cancellationToken = default)
 		{

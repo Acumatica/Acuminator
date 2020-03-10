@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Represents an event type in Acumatica Event Model.
 	/// </summary>
-	public enum EventType
+	public enum EventType : byte
 	{
 		None,
 

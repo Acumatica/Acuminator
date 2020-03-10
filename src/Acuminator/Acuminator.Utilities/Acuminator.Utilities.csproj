@@ -23,7 +23,6 @@
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.9.2" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.10.0" PrivateAssets="all" />
     <PackageReference Include="System.IO.FileSystem.Watcher" Version="4.3.0" />
-    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
     <Compile Update="Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

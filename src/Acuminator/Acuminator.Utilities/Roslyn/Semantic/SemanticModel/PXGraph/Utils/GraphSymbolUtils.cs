@@ -118,7 +118,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		private static bool IsGraphWithPrimaryDacBaseGenericType(INamedTypeSymbol type) =>
 			type.TypeArguments.Length >= 2 && type.Name == TypeNames.PXGraph;
 
-		public static (MethodDeclarationSyntax Node, IMethodSymbol Symbol) GetGraphExtensionInitialization
+		internal static (MethodDeclarationSyntax Node, IMethodSymbol Symbol) GetGraphExtensionInitialization
 			(this INamedTypeSymbol typeSymbol, PXContext pxContext, CancellationToken cancellation = default)
 		{
 			typeSymbol.ThrowOnNull(nameof(typeSymbol));

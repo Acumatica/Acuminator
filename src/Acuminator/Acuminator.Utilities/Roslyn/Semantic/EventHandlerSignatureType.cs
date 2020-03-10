@@ -1,6 +1,6 @@
 ﻿namespace Acuminator.Utilities.Roslyn.Semantic
 {
-	public enum EventHandlerSignatureType
+	public enum EventHandlerSignatureType : byte
 	{
 		/// <summary>
 		/// Method is not an event handler

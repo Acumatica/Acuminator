@@ -63,7 +63,7 @@ namespace Acuminator.Vsix
 					   Style = VsDockStyle.Linked)]
 	public sealed class AcuminatorVSPackage : AsyncPackage
 	{
-		private const int TotalLoadSteps = 3;
+		private const int TotalLoadSteps = 4;
 		private const string SettingsCategoryName = SharedConstants.PackageName;
 
 		public const string PackageName = SharedConstants.PackageName;
@@ -118,7 +118,6 @@ namespace Acuminator.Vsix
             // initialization is the Initialize method.
         
             SetupSingleton(this);
-			InitializeCodeAnalysisSettings();  //Try to setup code analysis settings as soon as possible. 
 		}
         
 		/// <summary>
@@ -159,9 +158,15 @@ namespace Acuminator.Vsix
 				return;
 
 			await JoinableTaskFactory.SwitchToMainThreadAsync();
-			
-			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitLogger,
+
+			var progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCodeAnalysisSettings,
 													   currentStep: 1, TotalLoadSteps);
+			progress?.Report(progressData);
+
+			InitializeCodeAnalysisSettings();
+
+			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitLogger,
+												   currentStep: 2, TotalLoadSteps);
 			progress?.Report(progressData);
 			InitializeLogger();
 
@@ -170,7 +175,7 @@ namespace Acuminator.Vsix
 			await InitializeCommandsAsync();
 
 			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitCommands,
-												   currentStep: 2, TotalLoadSteps);
+												   currentStep: 3, TotalLoadSteps);
 			progress?.Report(progressData);
 
 			await SubscribeOnEventsAsync();
@@ -184,7 +189,8 @@ namespace Acuminator.Vsix
 				SetupSuppressionManager();
 			}
 		
-			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_Done, currentStep: 3, TotalLoadSteps);
+			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_Done, 
+												   currentStep: 4, TotalLoadSteps);
 			progress?.Report(progressData);
 		}
 

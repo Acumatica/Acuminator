@@ -18,7 +18,7 @@ using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-
+using Acuminator.Utilities.Roslyn.Semantic.Symbols;
 
 namespace Acuminator.Analyzers.Refactorings.ChangeEventHandlerSignatureToGeneric
 {
@@ -50,17 +50,17 @@ namespace Acuminator.Analyzers.Refactorings.ChangeEventHandlerSignatureToGeneric
 				{
 					var eventHandlerInfo = methodSymbol.GetEventHandlerInfo(pxContext);
 
-					if (eventHandlerInfo.EventSignatureType == EventHandlerSignatureType.Default
-					    && methodSymbol.Name.EndsWith("_" + eventHandlerInfo.EventType, StringComparison.Ordinal)
+					if (eventHandlerInfo.SignatureType == EventHandlerSignatureType.Default
+					    && methodSymbol.Name.EndsWith("_" + eventHandlerInfo.Type, StringComparison.Ordinal)
 						&& pxContext.Events.EventHandlerSignatureTypeMap.TryGetValue( // check that there is a corresponding generic event args symbol
-							(eventHandlerInfo.EventType, EventHandlerSignatureType.Generic), out var genericArgsSymbol))
+							new EventInfo(eventHandlerInfo.Type, EventHandlerSignatureType.Generic), out var genericArgsSymbol))
 					{
-						(string dacName, string fieldName) = ParseMethodName(methodSymbol.Name, eventHandlerInfo.EventType);
+						(string dacName, string fieldName) = ParseMethodName(methodSymbol.Name, eventHandlerInfo.Type);
 
 						string title = nameof (Resources.EventHandlerSignatureCodeActionTitle).GetLocalized().ToString();
 						context.RegisterRefactoring(CodeAction.Create(title,
 							ct => ChangeSignatureAsync(context.Document, root, semanticModel, methodNode, methodSymbol,
-								eventHandlerInfo.EventType, genericArgsSymbol, dacName, fieldName, ct), title));
+								eventHandlerInfo.Type, genericArgsSymbol, dacName, fieldName, ct), title));
 					}
 				}
 			}

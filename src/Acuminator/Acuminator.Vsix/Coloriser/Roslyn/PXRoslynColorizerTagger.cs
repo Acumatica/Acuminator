@@ -131,9 +131,8 @@ namespace Acuminator.Vsix.Coloriser
                 return ClassificationTagsCache.ProcessedTags;
 
             var documentTaskResult = await getDocumentTask.TryAwait();
-            bool isSuccess = documentTaskResult.IsSuccess;
 
-            if (!isSuccess)
+            if (!documentTaskResult.IsSuccess)
                 return ClassificationTagsCache.ProcessedTags;
 
             ParsedDocument document = documentTaskResult.Result;            

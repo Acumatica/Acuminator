@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.Semantic.Symbols;
 
 namespace Acuminator.Utilities.Roslyn.Semantic
 {
@@ -450,7 +451,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// <returns>Event Type (e.g. RowSelecting). If method is not an event handler, returns <code>EventType.None</code>.</returns>
 		public static EventType GetEventHandlerType(this IMethodSymbol symbol, PXContext pxContext)
 		{
-			return symbol.GetEventHandlerInfo(pxContext).EventType;
+			return symbol.GetEventHandlerInfo(pxContext).Type;
 		}
 
 		/// <summary>
@@ -460,8 +461,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// <param name="pxContext">PXContext instance</param>
 		/// <returns>Event Type (e.g. RowSelecting) and Event Signature Type (default or generic).
 		/// If method is not an event handler, returns <code>(EventType.None, EventHandlerSignatureType.None)</code>.</returns>
-		public static (EventType EventType, EventHandlerSignatureType EventSignatureType) GetEventHandlerInfo(
-			this IMethodSymbol symbol, PXContext pxContext)
+		public static EventInfo GetEventHandlerInfo(this IMethodSymbol symbol, PXContext pxContext)
 		{
 			if (symbol.ReturnsVoid && symbol.TypeParameters.IsEmpty && !symbol.Parameters.IsEmpty)
 			{
@@ -472,22 +472,22 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				if (symbol.Parameters[0].Type.OriginalDefinition.InheritsFromOrEquals(pxContext.PXCache.Type))
 				{
 					if (symbol.Name.EndsWith("CacheAttached", StringComparison.Ordinal))
-						return (EventType.CacheAttached, EventHandlerSignatureType.Default);
+						return new EventInfo(EventType.CacheAttached, EventHandlerSignatureType.Default);
 
 					if (symbol.Parameters.Length >= 2 && pxContext.Events.EventTypeMap.TryGetValue(
 						    symbol.Parameters[1].Type.OriginalDefinition, out EventType eventType))
 					{
-						return (eventType, EventHandlerSignatureType.Default);
+						return new EventInfo(eventType, EventHandlerSignatureType.Default);
 					}
 				}
 				else if (pxContext.Events.EventTypeMap.TryGetValue(
 					symbol.Parameters[0].Type.OriginalDefinition, out EventType eventType)) // New generic event handler syntax
 				{
-					return (eventType, EventHandlerSignatureType.Generic);
+					return new EventInfo(eventType, EventHandlerSignatureType.Generic);
 				}
 			}
 
-			return (EventType.None, EventHandlerSignatureType.None);
+			return EventInfo.None();
 		}
 	}
 }

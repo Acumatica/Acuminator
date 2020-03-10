@@ -115,7 +115,7 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 		public override string ToString() => $"ID={Id}, Target={Target}";
 
-		public static (string Assembly, SuppressMessage Message) GetSuppressionInfo(SemanticModel semanticModel, Diagnostic diagnostic,
+		internal static (string Assembly, SuppressMessage Message) GetSuppressionInfo(SemanticModel semanticModel, Diagnostic diagnostic,
 																					 CancellationToken cancellation = default)
 		{
 			return diagnostic?.Location != null
@@ -123,8 +123,8 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 				: (null, default);
 		}
 
-		public static (string Assembly, SuppressMessage Message) GetSuppressionInfo(SemanticModel semanticModel, string diagnosticID, 
-																					TextSpan diagnosticSpan, CancellationToken cancellation = default)
+		internal static (string Assembly, SuppressMessage Message) GetSuppressionInfo(SemanticModel semanticModel, string diagnosticID, 
+																					  TextSpan diagnosticSpan, CancellationToken cancellation = default)
 		{
 			cancellation.ThrowIfCancellationRequested();
 
