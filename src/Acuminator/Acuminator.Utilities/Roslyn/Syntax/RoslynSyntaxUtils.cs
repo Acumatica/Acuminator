@@ -147,6 +147,11 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			return declarations[0].GetSyntax(cancellationToken);
 		}
 
+		public static Location GetLocation(this AttributeData attribute, CancellationToken cancellationToken = default) =>
+			attribute?.ApplicationSyntaxReference
+					 ?.GetSyntax(cancellationToken)
+					 ?.GetLocation();
+
 		public static IEnumerable<SyntaxToken> GetIdentifiers(this MemberDeclarationSyntax member)
 		{
 			switch (member)

@@ -277,7 +277,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			var diagnosticProperties = ImmutableDictionary.Create<string, string>()
 														  .Add(DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString());
 			Location propertyTypeLocation = GetPropertyTypeLocation(property, symbolContext.CancellationToken);
-			Location attributeLocation = GetAttributeLocation(fieldAttribute, symbolContext.CancellationToken);
+			Location attributeLocation = fieldAttribute.GetLocation(symbolContext.CancellationToken);
 
 			if (propertyTypeLocation != null)
 			{
@@ -299,10 +299,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 		private static void RegisterDiagnosticForAttributes(SymbolAnalysisContext symbolContext, PXContext pxContext,
 															IEnumerable<AttributeData> attributesToReport, DiagnosticDescriptor diagnosticDescriptor)
 		{
-			Location[] attributeLocations = attributesToReport.Select(a => GetAttributeLocation(a, symbolContext.CancellationToken))
+			Location[] attributeLocations = attributesToReport.Select(a => a.GetLocation(symbolContext.CancellationToken))
 															  .Where(location => location != null)
 															  .ToArray();
-
 			foreach (Location location in attributeLocations)
 			{
 				symbolContext.ReportDiagnosticWithSuppressionCheck(
@@ -310,9 +309,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 					pxContext.CodeAnalysisSettings);
 			}
 		}
-
-		private static Location GetAttributeLocation(AttributeData attribute, CancellationToken cancellationToken) =>
-			attribute.ApplicationSyntaxReference.GetSyntax(cancellationToken)?.GetLocation();
 
 		private static Location GetPropertyTypeLocation(IPropertySymbol property, CancellationToken cancellationToken)
 		{
