@@ -106,11 +106,11 @@ namespace Acuminator.Analyzers.StaticAnalysis
 				 DiagnosticsShortName.PX1018);
 
 		public static DiagnosticDescriptor PX1019_AutoNumberOnDacPropertyWithNonStringType { get; } =
-			Rule("PX1019", nameof(Resources.PX1018Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error,
+			Rule("PX1019", nameof(Resources.PX1019Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error,
 				 DiagnosticsShortName.PX1019);
 
-		public static DiagnosticDescriptor PX1018_NoPrimaryViewForPrimaryDac { get; } =
-			Rule("PX1018", nameof(Resources.PX1018Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error,
+		public static DiagnosticDescriptor PX1020_InsufficientStringLengthForDacPropertyWithAutoNumbering { get; } =
+			Rule("PX1020", nameof(Resources.PX1020Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error,
 				 DiagnosticsShortName.PX1020);
 
 		public static DiagnosticDescriptor PX1021_PXDBFieldAttributeNotMatchingDacProperty { get; } =

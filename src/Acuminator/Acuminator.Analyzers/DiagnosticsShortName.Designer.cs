@@ -10,7 +10,6 @@
 
 namespace Acuminator.Analyzers {
     using System;
-    using System.Reflection;
     
     
     /// <summary>
@@ -23,7 +22,7 @@ namespace Acuminator.Analyzers {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class DiagnosticsShortName {
+    public class DiagnosticsShortName {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -37,10 +36,10 @@ namespace Acuminator.Analyzers {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Acuminator.Analyzers.DiagnosticsShortName", typeof(DiagnosticsShortName).GetTypeInfo().Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Acuminator.Analyzers.DiagnosticsShortName", typeof(DiagnosticsShortName).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -52,7 +51,7 @@ namespace Acuminator.Analyzers {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -64,7 +63,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to InvalidPXActionHandlerSignature.
         /// </summary>
-        internal static string PX1000 {
+        public static string PX1000 {
             get {
                 return ResourceManager.GetString("PX1000", resourceCulture);
             }
@@ -73,7 +72,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to PXGraphCreateInstance.
         /// </summary>
-        internal static string PX1001 {
+        public static string PX1001 {
             get {
                 return ResourceManager.GetString("PX1001", resourceCulture);
             }
@@ -82,7 +81,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to IncorrectTypeAttributeForListAttribute.
         /// </summary>
-        internal static string PX1002 {
+        public static string PX1002 {
             get {
                 return ResourceManager.GetString("PX1002", resourceCulture);
             }
@@ -91,7 +90,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to NonSpecificPXGraphCreateInstance.
         /// </summary>
-        internal static string PX1003 {
+        public static string PX1003 {
             get {
                 return ResourceManager.GetString("PX1003", resourceCulture);
             }
@@ -100,7 +99,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to ViewDeclarationOrderTwoCacheInstances.
         /// </summary>
-        internal static string PX1004 {
+        public static string PX1004 {
             get {
                 return ResourceManager.GetString("PX1004", resourceCulture);
             }
@@ -109,7 +108,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to TypoInViewDelegateName.
         /// </summary>
-        internal static string PX1005 {
+        public static string PX1005 {
             get {
                 return ResourceManager.GetString("PX1005", resourceCulture);
             }
@@ -118,7 +117,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to ViewDeclarationOrderOneCacheInstance.
         /// </summary>
-        internal static string PX1006 {
+        public static string PX1006 {
             get {
                 return ResourceManager.GetString("PX1006", resourceCulture);
             }
@@ -127,7 +126,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to NoXmlCommentForPublicEntityOrDacProperty.
         /// </summary>
-        internal static string PX1007 {
+        public static string PX1007 {
             get {
                 return ResourceManager.GetString("PX1007", resourceCulture);
             }
@@ -136,7 +135,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to LongOperationDelegateSynchronousExecution.
         /// </summary>
-        internal static string PX1008 {
+        public static string PX1008 {
             get {
                 return ResourceManager.GetString("PX1008", resourceCulture);
             }
@@ -145,7 +144,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to InheritanceFromPXCacheExtension.
         /// </summary>
-        internal static string PX1009 {
+        public static string PX1009 {
             get {
                 return ResourceManager.GetString("PX1009", resourceCulture);
             }
@@ -154,7 +153,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to StartRowResetForPaging.
         /// </summary>
-        internal static string PX1010 {
+        public static string PX1010 {
             get {
                 return ResourceManager.GetString("PX1010", resourceCulture);
             }
@@ -163,7 +162,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to InheritanceFromPXCacheExtension.
         /// </summary>
-        internal static string PX1011 {
+        public static string PX1011 {
             get {
                 return ResourceManager.GetString("PX1011", resourceCulture);
             }
@@ -172,7 +171,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to PXActionOnNonPrimaryView.
         /// </summary>
-        internal static string PX1012 {
+        public static string PX1012 {
             get {
                 return ResourceManager.GetString("PX1012", resourceCulture);
             }
@@ -181,7 +180,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to PXActionHandlerInvalidReturnType.
         /// </summary>
-        internal static string PX1013 {
+        public static string PX1013 {
             get {
                 return ResourceManager.GetString("PX1013", resourceCulture);
             }
@@ -190,7 +189,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to NonNullableTypeForBqlField.
         /// </summary>
-        internal static string PX1014 {
+        public static string PX1014 {
             get {
                 return ResourceManager.GetString("PX1014", resourceCulture);
             }
@@ -199,7 +198,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to IncorrectNumberOfSelectParameters.
         /// </summary>
-        internal static string PX1015 {
+        public static string PX1015 {
             get {
                 return ResourceManager.GetString("PX1015", resourceCulture);
             }
@@ -208,16 +207,34 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to NoPrimaryViewForPrimaryDac.
         /// </summary>
-        internal static string PX1018 {
+        public static string PX1018 {
             get {
                 return ResourceManager.GetString("PX1018", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to NonStringPropertyTypeWithAutoNumberingAttribute.
+        /// </summary>
+        public static string PX1019 {
+            get {
+                return ResourceManager.GetString("PX1019", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to InsufficientStringLengthForAutoNumberingAttribute.
+        /// </summary>
+        public static string PX1020 {
+            get {
+                return ResourceManager.GetString("PX1020", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to FieldTypeAttributeAndPropertyTypeMismatch.
         /// </summary>
-        internal static string PX1021 {
+        public static string PX1021 {
             get {
                 return ResourceManager.GetString("PX1021", resourceCulture);
             }
@@ -226,7 +243,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to MultipleTypeAttributesOnProperty.
         /// </summary>
-        internal static string PX1023 {
+        public static string PX1023 {
             get {
                 return ResourceManager.GetString("PX1023", resourceCulture);
             }
@@ -235,7 +252,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to DacNonAbstractFieldType.
         /// </summary>
-        internal static string PX1024 {
+        public static string PX1024 {
             get {
                 return ResourceManager.GetString("PX1024", resourceCulture);
             }
@@ -244,7 +261,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to UnderscoresInDacDeclaration.
         /// </summary>
-        internal static string PX1026 {
+        public static string PX1026 {
             get {
                 return ResourceManager.GetString("PX1026", resourceCulture);
             }
@@ -253,7 +270,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to ForbiddenFieldsInDacDeclaration.
         /// </summary>
-        internal static string PX1027 {
+        public static string PX1027 {
             get {
                 return ResourceManager.GetString("PX1027", resourceCulture);
             }
@@ -262,7 +279,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to ConstructorInDacDeclaration.
         /// </summary>
-        internal static string PX1028 {
+        public static string PX1028 {
             get {
                 return ResourceManager.GetString("PX1028", resourceCulture);
             }
@@ -271,7 +288,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to PXGraphUsageInDac.
         /// </summary>
-        internal static string PX1029 {
+        public static string PX1029 {
             get {
                 return ResourceManager.GetString("PX1029", resourceCulture);
             }
@@ -280,7 +297,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to PXDefaultIncorrectUse.
         /// </summary>
-        internal static string PX1030 {
+        public static string PX1030 {
             get {
                 return ResourceManager.GetString("PX1030", resourceCulture);
             }
@@ -289,7 +306,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to InstanceMethodInDac.
         /// </summary>
-        internal static string PX1031 {
+        public static string PX1031 {
             get {
                 return ResourceManager.GetString("PX1031", resourceCulture);
             }
@@ -298,7 +315,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to MethodInvocationInDac.
         /// </summary>
-        internal static string PX1032 {
+        public static string PX1032 {
             get {
                 return ResourceManager.GetString("PX1032", resourceCulture);
             }
@@ -307,7 +324,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to ConstructorInGraphExtension.
         /// </summary>
-        internal static string PX1040 {
+        public static string PX1040 {
             get {
                 return ResourceManager.GetString("PX1040", resourceCulture);
             }
@@ -316,7 +333,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to DatabaseQueriesInRowSelecting.
         /// </summary>
-        internal static string PX1042 {
+        public static string PX1042 {
             get {
                 return ResourceManager.GetString("PX1042", resourceCulture);
             }
@@ -325,7 +342,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to SavingChangesInEventHandlers.
         /// </summary>
-        internal static string PX1043 {
+        public static string PX1043 {
             get {
                 return ResourceManager.GetString("PX1043", resourceCulture);
             }
@@ -334,7 +351,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to ChangesInPXCacheInEventHandlers.
         /// </summary>
-        internal static string PX1044 {
+        public static string PX1044 {
             get {
                 return ResourceManager.GetString("PX1044", resourceCulture);
             }
@@ -343,7 +360,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to PXGraphCreateInstanceInEventHandlers.
         /// </summary>
-        internal static string PX1045 {
+        public static string PX1045 {
             get {
                 return ResourceManager.GetString("PX1045", resourceCulture);
             }
@@ -352,7 +369,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to LongOperationInEventHandlers.
         /// </summary>
-        internal static string PX1046 {
+        public static string PX1046 {
             get {
                 return ResourceManager.GetString("PX1046", resourceCulture);
             }
@@ -361,7 +378,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to RowChangesInEventHandlersForbiddenForArgs.
         /// </summary>
-        internal static string PX1047 {
+        public static string PX1047 {
             get {
                 return ResourceManager.GetString("PX1047", resourceCulture);
             }
@@ -370,7 +387,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to RowChangesInEventHandlersAllowedForArgsOnly.
         /// </summary>
-        internal static string PX1048 {
+        public static string PX1048 {
             get {
                 return ResourceManager.GetString("PX1048", resourceCulture);
             }
@@ -379,7 +396,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to DatabaseQueriesInRowSelected.
         /// </summary>
-        internal static string PX1049 {
+        public static string PX1049 {
             get {
                 return ResourceManager.GetString("PX1049", resourceCulture);
             }
@@ -388,7 +405,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to HardcodedStringInLocalizationMethod.
         /// </summary>
-        internal static string PX1050 {
+        public static string PX1050 {
             get {
                 return ResourceManager.GetString("PX1050", resourceCulture);
             }
@@ -397,7 +414,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to NonLocalizableString.
         /// </summary>
-        internal static string PX1051 {
+        public static string PX1051 {
             get {
                 return ResourceManager.GetString("PX1051", resourceCulture);
             }
@@ -406,7 +423,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to IncorrectStringToFormat.
         /// </summary>
-        internal static string PX1052 {
+        public static string PX1052 {
             get {
                 return ResourceManager.GetString("PX1052", resourceCulture);
             }
@@ -415,7 +432,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to ConcatenationPriorLocalization.
         /// </summary>
-        internal static string PX1053 {
+        public static string PX1053 {
             get {
                 return ResourceManager.GetString("PX1053", resourceCulture);
             }
@@ -424,7 +441,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to PXGraphLongRunOperationDuringInitialization.
         /// </summary>
-        internal static string PX1054 {
+        public static string PX1054 {
             get {
                 return ResourceManager.GetString("PX1054", resourceCulture);
             }
@@ -433,7 +450,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to DacKeyFieldsWithIdentityKeyField.
         /// </summary>
-        internal static string PX1055 {
+        public static string PX1055 {
             get {
                 return ResourceManager.GetString("PX1055", resourceCulture);
             }
@@ -442,7 +459,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to PXGraphCreationDuringInitialization.
         /// </summary>
-        internal static string PX1057 {
+        public static string PX1057 {
             get {
                 return ResourceManager.GetString("PX1057", resourceCulture);
             }
@@ -451,7 +468,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to PXGraphSavingChangesDuringInitialization.
         /// </summary>
-        internal static string PX1058 {
+        public static string PX1058 {
             get {
                 return ResourceManager.GetString("PX1058", resourceCulture);
             }
@@ -460,7 +477,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to ChangesInPXCacheDuringPXGraphInitialization.
         /// </summary>
-        internal static string PX1059 {
+        public static string PX1059 {
             get {
                 return ResourceManager.GetString("PX1059", resourceCulture);
             }
@@ -469,7 +486,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to LegacyBqlField.
         /// </summary>
-        internal static string PX1060 {
+        public static string PX1060 {
             get {
                 return ResourceManager.GetString("PX1060", resourceCulture);
             }
@@ -478,7 +495,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to LegacyBqlConstant.
         /// </summary>
-        internal static string PX1061 {
+        public static string PX1061 {
             get {
                 return ResourceManager.GetString("PX1061", resourceCulture);
             }
@@ -487,7 +504,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to UiPresentationLogicInEventHandlers.
         /// </summary>
-        internal static string PX1070 {
+        public static string PX1070 {
             get {
                 return ResourceManager.GetString("PX1070", resourceCulture);
             }
@@ -496,7 +513,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to PXActionExecutionInEventHandlers.
         /// </summary>
-        internal static string PX1071 {
+        public static string PX1071 {
             get {
                 return ResourceManager.GetString("PX1071", resourceCulture);
             }
@@ -505,7 +522,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to PXGraphCreationForBqlQueries.
         /// </summary>
-        internal static string PX1072 {
+        public static string PX1072 {
             get {
                 return ResourceManager.GetString("PX1072", resourceCulture);
             }
@@ -514,7 +531,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to ExceptionsInRowPersisted.
         /// </summary>
-        internal static string PX1073 {
+        public static string PX1073 {
             get {
                 return ResourceManager.GetString("PX1073", resourceCulture);
             }
@@ -523,7 +540,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to SetupNotEnteredExceptionInEventHandlers.
         /// </summary>
-        internal static string PX1074 {
+        public static string PX1074 {
             get {
                 return ResourceManager.GetString("PX1074", resourceCulture);
             }
@@ -532,7 +549,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to RaiseExceptionHandlingInEventHandlers.
         /// </summary>
-        internal static string PX1075 {
+        public static string PX1075 {
             get {
                 return ResourceManager.GetString("PX1075", resourceCulture);
             }
@@ -541,7 +558,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to LongRunOperationInDataViewDelegate.
         /// </summary>
-        internal static string PX1080 {
+        public static string PX1080 {
             get {
                 return ResourceManager.GetString("PX1080", resourceCulture);
             }
@@ -550,7 +567,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to ActionExecutionDuringPXGraphInitialization.
         /// </summary>
-        internal static string PX1081 {
+        public static string PX1081 {
             get {
                 return ResourceManager.GetString("PX1081", resourceCulture);
             }
@@ -559,7 +576,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to ActionExecutionInDataViewDelegate.
         /// </summary>
-        internal static string PX1082 {
+        public static string PX1082 {
             get {
                 return ResourceManager.GetString("PX1082", resourceCulture);
             }
@@ -568,7 +585,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to SavingChangesInDataViewDelegate.
         /// </summary>
-        internal static string PX1083 {
+        public static string PX1083 {
             get {
                 return ResourceManager.GetString("PX1083", resourceCulture);
             }
@@ -577,7 +594,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to GraphCreationInDataViewDelegate.
         /// </summary>
-        internal static string PX1084 {
+        public static string PX1084 {
             get {
                 return ResourceManager.GetString("PX1084", resourceCulture);
             }
@@ -586,7 +603,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to DatabaseQueriesInPXGraphInitialization.
         /// </summary>
-        internal static string PX1085 {
+        public static string PX1085 {
             get {
                 return ResourceManager.GetString("PX1085", resourceCulture);
             }
@@ -595,7 +612,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to SetupNotEnteredExceptionInLongRunOperation.
         /// </summary>
-        internal static string PX1086 {
+        public static string PX1086 {
             get {
                 return ResourceManager.GetString("PX1086", resourceCulture);
             }
@@ -604,7 +621,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to StackOverflowExceptionInBaseViewDelegateInvocation.
         /// </summary>
-        internal static string PX1087 {
+        public static string PX1087 {
             get {
                 return ResourceManager.GetString("PX1087", resourceCulture);
             }
@@ -613,7 +630,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to InvalidViewUsageInProcessingDelegate.
         /// </summary>
-        internal static string PX1088 {
+        public static string PX1088 {
             get {
                 return ResourceManager.GetString("PX1088", resourceCulture);
             }
@@ -622,7 +639,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to UiPresentationLogicInActionDelegates.
         /// </summary>
-        internal static string PX1089 {
+        public static string PX1089 {
             get {
                 return ResourceManager.GetString("PX1089", resourceCulture);
             }
@@ -631,7 +648,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to SetupNotEnteredExceptionInActionHandlers.
         /// </summary>
-        internal static string PX1090 {
+        public static string PX1090 {
             get {
                 return ResourceManager.GetString("PX1090", resourceCulture);
             }
@@ -640,7 +657,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to StackOverflowExceptionInBaseActionHandlerInvocation.
         /// </summary>
-        internal static string PX1091 {
+        public static string PX1091 {
             get {
                 return ResourceManager.GetString("PX1091", resourceCulture);
             }
@@ -649,7 +666,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to IncorrectAttributesOnActionHandler.
         /// </summary>
-        internal static string PX1092 {
+        public static string PX1092 {
             get {
                 return ResourceManager.GetString("PX1092", resourceCulture);
             }
@@ -658,7 +675,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to GraphDeclarationViolation.
         /// </summary>
-        internal static string PX1093 {
+        public static string PX1093 {
             get {
                 return ResourceManager.GetString("PX1093", resourceCulture);
             }
@@ -667,7 +684,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to NoPXHiddenOrPXCacheNameOnDac.
         /// </summary>
-        internal static string PX1094 {
+        public static string PX1094 {
             get {
                 return ResourceManager.GetString("PX1094", resourceCulture);
             }
@@ -676,7 +693,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to NoUnboundTypeAttributeWithPXDBCalced.
         /// </summary>
-        internal static string PX1095 {
+        public static string PX1095 {
             get {
                 return ResourceManager.GetString("PX1095", resourceCulture);
             }
