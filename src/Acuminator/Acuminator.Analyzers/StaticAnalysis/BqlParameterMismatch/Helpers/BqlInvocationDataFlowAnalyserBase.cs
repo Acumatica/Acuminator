@@ -41,8 +41,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			protected (bool AnalysisSucceded, bool VarAlwaysAssigned) CheckCandidate(StatementSyntax assignmentStatement)
 			{
-				var (_, scopedAssignment, scopedInvocation) =
-					MethodDeclarationUtils.LowestCommonAncestorSyntaxStatement(assignmentStatement, InvocationStatement);
+				var lcaResult = LowestCommonAncestor.GetCommonAncestorForSyntaxStatements(assignmentStatement, InvocationStatement);
+				var scopedAssignment = lcaResult.ScopedX;
+				var scopedInvocation = lcaResult.ScopedY;
 
 				if (scopedAssignment == null || scopedInvocation == null)
 					return (false, false);       //If there was some kind of error during analysis we should assume the worst case - that the candidat is valid but not always assigns variable 

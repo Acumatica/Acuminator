@@ -22,17 +22,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		public static EventInfo None() => new EventInfo(EventType.None, EventHandlerSignatureType.None);
 
-		public override bool Equals(object obj)
-		{
-			if (obj == null)
-				return false;
-			else if (ReferenceEquals(this, obj))
-				return true;
-
-			return obj is EventInfo other
+		public override bool Equals(object obj) =>
+			obj is EventInfo other
 				? Equals(other)
 				: false;
-		}
 
 		public bool Equals(EventInfo other) => Type == other.Type && SignatureType == other.SignatureType;
 
