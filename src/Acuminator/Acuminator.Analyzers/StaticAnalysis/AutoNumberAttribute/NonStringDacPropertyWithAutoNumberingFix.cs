@@ -73,6 +73,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 				when propertyTypeDeclaration.Parent is PropertyDeclarationSyntax propertyDeclaration:
 					return propertyDeclaration;
 
+				case TypeSyntax propertyTypeDeclaration:
+					return propertyTypeDeclaration.Parent<PropertyDeclarationSyntax>();
+
+				case AttributeListSyntax attributeListNode
+				when attributeListNode.Parent is PropertyDeclarationSyntax propertyDeclaration:
+					return propertyDeclaration;
+
+				case AttributeSyntax attributeNode:
+					return attributeNode.Parent<PropertyDeclarationSyntax>();
+
 				default:
 					return null;
 			}
