@@ -15,8 +15,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
         private const string NumberingSequenceStartNbrFieldName = "StartNbr";
 
         private static object _locker = new object();
-        private static bool _isMinAutoNumberLengthInitialized;
-        private static volatile int _minAutoNumberLength;
+        private static volatile bool _isMinAutoNumberLengthInitialized;
+
+        private static int _minAutoNumberLength;
 
         public int MinAutoNumberLength => _minAutoNumberLength;
 
