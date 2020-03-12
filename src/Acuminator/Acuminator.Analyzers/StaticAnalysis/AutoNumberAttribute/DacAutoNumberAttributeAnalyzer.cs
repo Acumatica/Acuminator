@@ -151,6 +151,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 					case IdentifierNameSyntax namedConstant:
 						return namedConstant.GetLocation();
 
+					case MemberAccessExpressionSyntax memberAccess:
+						return memberAccess.GetLocation();
+
 					default:
 						continue;
 				}

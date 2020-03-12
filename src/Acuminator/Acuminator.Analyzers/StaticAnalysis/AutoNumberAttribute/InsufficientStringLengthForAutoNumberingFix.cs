@@ -72,12 +72,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 
 			switch (node)
 			{
-				case IdentifierNameSyntax namedConstant:
-					return namedConstant.Parent<AttributeArgumentSyntax>();
-
 				case LiteralExpressionSyntax literal 
 				when literal.Kind() == SyntaxKind.NumericLiteralExpression && literal.Token.Value is int:
 					return literal.Parent<AttributeArgumentSyntax>();
+
+				case IdentifierNameSyntax namedConstant:
+					return namedConstant.Parent<AttributeArgumentSyntax>();
+
+				case MemberAccessExpressionSyntax memberAccess:
+					return memberAccess.Parent<AttributeArgumentSyntax>();
 
 				case AttributeArgumentSyntax attributeArgument:
 					return attributeArgument;
@@ -105,6 +108,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 				switch (attributeArgument.Expression)
 				{
 					case IdentifierNameSyntax _:
+					case MemberAccessExpressionSyntax _:
 					case LiteralExpressionSyntax literal 
 					when literal.Kind() == SyntaxKind.NumericLiteralExpression && literal.Token.Value is int:
 						candidateAttributes.Add(attributeArgument);
