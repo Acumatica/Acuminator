@@ -99,6 +99,10 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\ActionHandlerReturnType\Sources\Handlers_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\ActionHandlerReturnType\Sources\Handlers_Good.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\BqlParameterMismatch\Sources\PXSelectExtensionCall.cs" />
+    <Compile Include="Tests\StaticAnalysis\AutoNumberAttribute\NonStringDacPropertyWithAutoNumberingTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\AutoNumberAttribute\Sources\NonStringAutoNumberingDac_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\AutoNumberAttribute\Sources\NonStringAutoNumberingDac.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\AutoNumberAttribute\Sources\Schedule.cs" />
     <Compile Include="Tests\StaticAnalysis\CallingBaseActionHandler\CallingBaseActionHandlerFromOverrideHandlerTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionHandlerInvocation_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionHandlerInvocation_Good.cs" />
