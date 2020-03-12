@@ -522,4 +522,7 @@
   <data name="PX1019Fix" xml:space="preserve">
     <value>Change DAC property type to string</value>
   </data>
+  <data name="PX1020Fix" xml:space="preserve">
+    <value>Make string length sufficient for autonumbering</value>
+  </data>
 </root>

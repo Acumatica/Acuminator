@@ -457,6 +457,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Make string length sufficient for autonumbering.
+        /// </summary>
+        public static string PX1020Fix {
+            get {
+                return ResourceManager.GetString("PX1020Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The length of a string must be greater than {0} for a DAC property with an AutoNumber attribute.
         /// </summary>
         public static string PX1020Title {
