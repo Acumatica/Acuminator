@@ -27,7 +27,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.AutoNumberAttribute
         [EmbeddedFileData("InsufficientStringLengthDac.cs")]
         public async Task NonStringDAC_WithAutoNumbering(string source) =>
              await VerifyCSharpDiagnosticAsync(source,
-                Descriptors.PX1020_InsufficientStringLengthForDacPropertyWithAutoNumbering.CreateFor(18, 15, NumberingSequenceStartNbrStringLength));
+                Descriptors.PX1020_InsufficientStringLengthForDacPropertyWithAutoNumbering.CreateFor(18, 15, NumberingSequenceStartNbrStringLength),
+                Descriptors.PX1020_InsufficientStringLengthForDacPropertyWithAutoNumbering.CreateFor(39, 15, NumberingSequenceStartNbrStringLength));
 
         [Theory]
         [EmbeddedFileData("InsufficientStringLengthDac.cs", "InsufficientStringLengthDac_Expected.cs")]
