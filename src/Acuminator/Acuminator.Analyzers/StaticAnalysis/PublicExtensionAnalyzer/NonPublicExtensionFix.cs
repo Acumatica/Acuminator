@@ -31,10 +31,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicExtensionAnalyzer
 		{
 			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == DiagnosticID);
 
-			if (diagnostic == null)
+			if (diagnostic == null || !diagnostic.Properties.TryGetValue(nameof(ExtensionType), out string extensionType))
 				return Task.CompletedTask;
 			
-			string codeFixResourceToUse = diagnostic.Descriptor == Descriptors.PX1022_NonPublicDacExtension
+			string codeFixResourceToUse = extensionType == ExtensionType.DAC
 				? nameof(Resources.PX1022DacFix)
 				: nameof(Resources.PX1022GraphFix);
 

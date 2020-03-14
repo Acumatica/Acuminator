@@ -45,15 +45,30 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicExtensionAnalyzer
 			if (IsExtensionPublic(extension.Symbol))
 				return;
 
-			var descriptor = extension is DacSemanticModel
-				? Descriptors.PX1022_NonPublicDacExtension
-				: Descriptors.PX1022_NonPublicGraphExtension;
-
+			string extensionType;
+			DiagnosticDescriptor descriptor; 
+			
+			if (extension is DacSemanticModel)
+			{
+				extensionType = ExtensionType.DAC;
+				descriptor = Descriptors.PX1022_NonPublicDacExtension;
+			}
+			else
+			{
+				extensionType = ExtensionType.Graph;
+				descriptor = Descriptors.PX1022_NonPublicGraphExtension;
+			}
+			
 			var locations = GetDiagnosticLocations(extension.Symbol, context.CancellationToken);
+			var diagnosticProperties = new Dictionary<string, string>
+			{
+				{ nameof(ExtensionType),  extensionType}
+			}
+			.ToImmutableDictionary();
 
 			foreach (Location location in locations)
 			{
-				context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(descriptor, location),
+				context.ReportDiagnosticWithSuppressionCheck(Diagnostic.Create(descriptor, location, diagnosticProperties),
 															 pxContext.CodeAnalysisSettings);
 			}		
 		}
