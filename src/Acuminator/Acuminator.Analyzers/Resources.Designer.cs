@@ -493,20 +493,38 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Make the {0} extension public.
+        ///   Looks up a localized string similar to Make the DAC extension public.
         /// </summary>
-        public static string PX1022Fix {
+        public static string PX1022DacFix {
             get {
-                return ResourceManager.GetString("PX1022Fix", resourceCulture);
+                return ResourceManager.GetString("PX1022DacFix", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The non-public {0} extensions are not supported.
+        ///   Looks up a localized string similar to The non-public DAC extensions are not supported.
         /// </summary>
-        public static string PX1022Title {
+        public static string PX1022DacTitle {
             get {
-                return ResourceManager.GetString("PX1022Title", resourceCulture);
+                return ResourceManager.GetString("PX1022DacTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Make the graph extension public.
+        /// </summary>
+        public static string PX1022GraphFix {
+            get {
+                return ResourceManager.GetString("PX1022GraphFix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The non-public graph extensions are not supported.
+        /// </summary>
+        public static string PX1022GraphTitle {
+            get {
+                return ResourceManager.GetString("PX1022GraphTitle", resourceCulture);
             }
         }
         

@@ -241,11 +241,20 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NonPublicExtension.
+        ///   Looks up a localized string similar to NonPublicDacExtension.
         /// </summary>
-        public static string PX1022 {
+        public static string PX1022Dac {
             get {
-                return ResourceManager.GetString("PX1022", resourceCulture);
+                return ResourceManager.GetString("PX1022Dac", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NonPublicGraphExtension.
+        /// </summary>
+        public static string PX1022Graph {
+            get {
+                return ResourceManager.GetString("PX1022Graph", resourceCulture);
             }
         }
         
