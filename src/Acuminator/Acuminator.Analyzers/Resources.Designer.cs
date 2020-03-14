@@ -493,6 +493,24 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Make the {0} extension public.
+        /// </summary>
+        public static string PX1022Fix {
+            get {
+                return ResourceManager.GetString("PX1022Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The non-public {0} extensions are not supported.
+        /// </summary>
+        public static string PX1022Title {
+            get {
+                return ResourceManager.GetString("PX1022Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The attribute aggregates multiple PXDBScalar or PXDBCalced attributes.
         /// </summary>
         public static string PX1023MultipleSpecialTypeAttributesOnAggregatorsTitle {

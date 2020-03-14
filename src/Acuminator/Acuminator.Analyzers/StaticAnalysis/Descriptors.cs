@@ -117,6 +117,10 @@ namespace Acuminator.Analyzers.StaticAnalysis
             Rule("PX1021", nameof(Resources.PX1021Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, 
 	             DiagnosticsShortName.PX1021);
 
+		public static DiagnosticDescriptor PX1022_NonPublicExtension { get; } =
+			Rule("PX1022", nameof(Resources.PX1022Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error,
+				 DiagnosticsShortName.PX1022);
+
 		public static DiagnosticDescriptor PX1023_MultipleTypeAttributesOnProperty { get; } =
 			Rule("PX1023", nameof(Resources.PX1023MultipleTypeAttributesOnPropertyTitle).GetLocalized(), Category.Default, 
 				DiagnosticSeverity.Error,  DiagnosticsShortName.PX1023);

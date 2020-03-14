@@ -525,4 +525,10 @@
   <data name="PX1020Fix" xml:space="preserve">
     <value>Make string length sufficient for autonumbering</value>
   </data>
+  <data name="PX1022Fix" xml:space="preserve">
+    <value>Make the {0} extension public</value>
+  </data>
+  <data name="PX1022Title" xml:space="preserve">
+    <value>The non-public {0} extensions are not supported</value>
+  </data>
 </root>

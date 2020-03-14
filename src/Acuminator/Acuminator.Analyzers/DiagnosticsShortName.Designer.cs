@@ -241,6 +241,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to NonPublicExtension.
+        /// </summary>
+        public static string PX1022 {
+            get {
+                return ResourceManager.GetString("PX1022", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to MultipleTypeAttributesOnProperty.
         /// </summary>
         public static string PX1023 {

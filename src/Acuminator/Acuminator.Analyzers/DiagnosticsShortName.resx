@@ -330,4 +330,7 @@
   <data name="PX1020" xml:space="preserve">
     <value>InsufficientStringLengthForAutoNumberingAttribute</value>
   </data>
+  <data name="PX1022" xml:space="preserve">
+    <value>NonPublicExtension</value>
+  </data>
 </root>
