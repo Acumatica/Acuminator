@@ -42,7 +42,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicExtensionAnalyzer
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			if (extension.Symbol.DeclaredAccessibility == Accessibility.Public)
+			if (IsExtensionPublic(extension.Symbol))
 				return;
 
 			var descriptor = extension is DacSemanticModel
@@ -57,6 +57,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicExtensionAnalyzer
 															 pxContext.CodeAnalysisSettings);
 			}		
 		}
+
+		private bool IsExtensionPublic(INamedTypeSymbol extensionSymbol) =>
+			extensionSymbol.GetContainingTypesAndThis()
+						   .All(type => type.DeclaredAccessibility == Accessibility.Public);
 
 		private IEnumerable<Location> GetDiagnosticLocations(INamedTypeSymbol extensionSymbol, CancellationToken cancellationToken) =>
 			extensionSymbol.DeclaringSyntaxReferences
