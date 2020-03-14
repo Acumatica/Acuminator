@@ -9,10 +9,11 @@ using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PublicExtensionAnalyzer
 {
@@ -59,8 +60,50 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicExtensionAnalyzer
 
 		private IEnumerable<Location> GetDiagnosticLocations(INamedTypeSymbol extensionSymbol, CancellationToken cancellationToken) =>
 			extensionSymbol.DeclaringSyntaxReferences
-											.Select(reference => reference.GetSyntax(cancellationToken))
-											.OfType<ClassDeclarationSyntax>()
-											.Where(location => location != null);
+						   .Select(reference => reference.GetSyntax(cancellationToken))
+						   .OfType<ClassDeclarationSyntax>()
+						   .Select(classNode => GetLocationFromClassNode(classNode));
+		
+		private Location GetLocationFromClassNode(ClassDeclarationSyntax classNode)
+		{
+			if (classNode.Modifiers.Count == 0)
+				return classNode.Identifier.GetLocation();
+
+			int lastModifierIndex = classNode.Modifiers.Count - 1;
+
+			for (int i = 0; i < classNode.Modifiers.Count; i++)
+			{
+				SyntaxToken modifier = classNode.Modifiers[i];
+
+				switch (modifier.Kind())
+				{
+					case SyntaxKind.PublicKeyword:
+						return classNode.Identifier.GetLocation();	//Case when nested public class is declared inside non-public type
+
+					case SyntaxKind.PrivateKeyword:
+						return GetLocationForComplexAccessModifier(modifier, i, secondPartKind: SyntaxKind.ProtectedKeyword);
+
+					case SyntaxKind.ProtectedKeyword:
+						return GetLocationForComplexAccessModifier(modifier, i, secondPartKind: SyntaxKind.InternalKeyword);
+
+					case SyntaxKind.InternalKeyword:
+						return modifier.GetLocation();
+				}
+			}
+
+			return classNode.Identifier.GetLocation();
+
+			//------------------------------------------------Local Function------------------------------------------------------------
+			Location GetLocationForComplexAccessModifier(in SyntaxToken modifier, int modifierIndex, SyntaxKind secondPartKind)
+			{
+				if (modifierIndex == lastModifierIndex)
+					return modifier.GetLocation();
+
+				SyntaxToken nextModifier = classNode.Modifiers[modifierIndex + 1];
+				return nextModifier.IsKind(secondPartKind)
+					? Location.Create(modifier.SyntaxTree, TextSpan.FromBounds(modifier.SpanStart, nextModifier.Span.End))
+					: modifier.GetLocation();
+			}
+		}
 	}
 }
