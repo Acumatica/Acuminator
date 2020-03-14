@@ -139,6 +139,33 @@ namespace Acuminator.Utilities.Common
 		}
 
 		/// <summary>
+		/// Where method for <see cref="SyntaxTokenList"/>. This is an optimization method which allows to avoid boxing.
+		/// </summary>
+		/// <param name="source">The <see cref="SyntaxTokenList"/> to act on.</param>
+		/// <param name="predicate">The predicate.</param>
+		/// <returns/>
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static IEnumerable<SyntaxToken> Where(this SyntaxTokenList source, Func<SyntaxToken, bool> predicate)
+		{
+			predicate.ThrowOnNull(nameof(predicate));
+			return WhereForSyntaxTokenListImplementation();
+
+			IEnumerable<SyntaxToken> WhereForSyntaxTokenListImplementation()
+			{
+				for (int i = 0; i < source.Count; i++)
+				{
+					SyntaxToken token = source[i];
+
+					if (predicate(token))
+					{
+						yield return token;
+					}
+				}
+			}
+		}
+
+		/// <summary>
 		/// Where method for <see cref="SyntaxList{TNode}"/>. This is an optimization method which allows to avoid boxing.
 		/// </summary>
 		/// <typeparam name="TNode">Type of the syntax node.</typeparam>
