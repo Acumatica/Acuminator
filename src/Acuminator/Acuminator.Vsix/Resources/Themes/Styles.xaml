@@ -227,18 +227,8 @@
 	</ControlTemplate>
 	<!--#endregion-->
 
-	<!--#region VS ContextMenu Style-->
-	<Style x:Key="vsCodeMapContextMenuStyle" TargetType="ContextMenu">
-		<!--<EventSetter Event="Loaded" Handler="OnContextMenuLoaded"/>-->
-		<Setter Property="Template" Value="{DynamicResource CodeMapContextMenuControlTemplate}"/>
-		<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuBackgroundGradientBeginBrushKey}}"/>
-		<Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuBorderBrushKey}}"/>
-		<Setter Property="HasDropShadow" Value="True" />
-	</Style>
-	<!--#endregion-->
-
-	<!--#region Menu control template-->
-	<ControlTemplate x:Key="CodeMapMenuItemControlTemplate" TargetType="{x:Type MenuItem}">
+	<!--#region Menu control templates and styles-->
+	<ControlTemplate x:Key="CodeMapMenuItemWithItemsControlTemplate" TargetType="{x:Type MenuItem}">
 		<Border x:Name="templateRoot" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
 				Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
 			<Grid Margin="-1">
@@ -257,7 +247,7 @@
 				<Border x:Name="GlyphPanel" Height="22" Width="22" Margin="-1,0,0,0" Visibility="Hidden" VerticalAlignment="Center" BorderThickness="1"
 						BorderBrush="#FF26A0DA"  
 						Background="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuIconBackgroundBrushKey}}">
-					
+
 					<Path x:Name="Glyph" Data="F1M10,1.2L4.7,9.1 4.5,9.1 0,5.2 1.3,3.5 4.3,6.1 8.3,0 10,1.2z" 
 						  Fill="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarCheckBoxBrushKey}}"
 						  FlowDirection="LeftToRight" Height="11" Width="9"/>
@@ -276,7 +266,7 @@
 				<Popup x:Name="PART_Popup" AllowsTransparency="True" Focusable="False" Placement="Right" HorizontalOffset="-2" VerticalOffset="-3"
 					   IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" 
 					   PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}">
-					
+
 					<Border x:Name="SubMenuBorder" BorderThickness="1" Padding="2"
 							BorderBrush="{Binding ElementName=templateRoot, Path=BorderBrush}"
 							Background="{Binding ElementName=templateRoot, Path=Background}">
@@ -289,7 +279,7 @@
 											   Width="{Binding ActualWidth, ElementName=SubMenuBorder}"/>
 								</Canvas>
 								<Rectangle Fill="{Binding Background, ElementName=SubMenuBorder}" HorizontalAlignment="Left" Margin="29,2,0,2" Width="1"/>
-								
+
 								<ItemsPresenter x:Name="ItemsPresenter" Grid.IsSharedSizeScope="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"  
 												KeyboardNavigation.DirectionalNavigation="Cycle"  KeyboardNavigation.TabNavigation="Cycle"/>
 							</Grid>
@@ -305,6 +295,7 @@
 			<Trigger Property="Icon" Value="{x:Null}">
 				<Setter Property="Visibility" TargetName="Icon" Value="Collapsed"/>
 			</Trigger>
+
 			<Trigger Property="IsChecked" Value="True">
 				<Setter Property="Visibility" TargetName="GlyphPanel" Value="Visible"/>
 				<Setter Property="Background" TargetName="GlyphPanel" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarSelectedIconBrushKey}}"/>
@@ -315,7 +306,8 @@
 
 			<Trigger Property="IsHighlighted" Value="True">
 				<Setter Property="Background" TargetName="templateRoot" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuItemMouseOverBrushKey}}"/>
-				<Setter Property="BorderBrush" TargetName="templateRoot" Value="#FF26A0DA"/>
+				<Setter Property="BorderBrush" TargetName="templateRoot" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuItemMouseOverBorderBrushKey}}"/>
+				<Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuItemMouseOverTextBrushKey}}"/>
 
 				<Setter Property="Background" TargetName="GlyphPanel" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarHoverOverSelectedIconBrushKey}}"/>
 				<Setter Property="Fill" TargetName="Glyph" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarCheckBoxMouseOverBrushKey}}"/>
@@ -324,43 +316,132 @@
 
 			<Trigger Property="IsEnabled" Value="False">
 				<Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarTextInactiveBrushKey}}"/>
-				
+
 				<Setter Property="Fill" TargetName="Glyph" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarCheckBoxDisabledBrushKey}}"/>
 				<Setter Property="Background" TargetName="GlyphPanel" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarSelectedIconDisabledBrushKey}}"/>
 				<Setter Property="BorderBrush" TargetName="GlyphPanel" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarSelectedIconDisabledBorderBrushKey}}"/>
 
 				<Setter Property="Fill" TargetName="RightArrow" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarCheckBoxDisabledBrushKey}}"/>
 			</Trigger>
-			
+
 			<Trigger Property="CanContentScroll" SourceName="SubMenuScrollViewer" Value="False">
 				<Setter Property="Canvas.Top" TargetName="OpaqueRect" Value="{Binding VerticalOffset, ElementName=SubMenuScrollViewer}"/>
 				<Setter Property="Canvas.Left" TargetName="OpaqueRect" Value="{Binding HorizontalOffset, ElementName=SubMenuScrollViewer}"/>
 			</Trigger>
 		</ControlTemplate.Triggers>
 	</ControlTemplate>
-	<!--#endregion-->
-	
-	<!--#region VS MenuItem Styles-->
-	<Style x:Key="vsCodeMapMenuItemStyle" TargetType="MenuItem">
+
+	<ControlTemplate x:Key="MenuItemWithoutItemsControlTemplate" TargetType="{x:Type MenuItem}">
+		<Border x:Name="templateRoot" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+				Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+			
+			<Grid Margin="-1">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition MinWidth="22" SharedSizeGroup="MenuItemIconColumnGroup" Width="Auto"/>
+					<ColumnDefinition Width="13"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="30"/>
+					<ColumnDefinition SharedSizeGroup="MenuItemIGTColumnGroup" Width="Auto"/>
+					<ColumnDefinition Width="20"/>
+				</Grid.ColumnDefinitions>
+
+				<ContentPresenter x:Name="Icon" Content="{TemplateBinding Icon}" ContentSource="Icon" Margin="3" Height="16"  Width="16"
+								  HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+
+				<Border x:Name="GlyphPanel" Margin="-1,0,0,0" ClipToBounds="False" HorizontalAlignment="Center" VerticalAlignment="Center" 
+						Width="22" Height="22" BorderThickness="1" Visibility="Hidden" BorderBrush="#FF26A0DA" 
+						Background="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuIconBackgroundBrushKey}}">
+
+					<Path x:Name="Glyph" FlowDirection="LeftToRight" Height="11" Width="10"
+						  Data="F1M10,1.2L4.7,9.1 4.5,9.1 0,5.2 1.3,3.5 4.3,6.1 8.3,0 10,1.2z"
+						  Fill="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarCheckBoxBrushKey}}" />
+				</Border>
+
+				<ContentPresenter x:Name="menuHeaderContainer" Grid.Column="2" Margin="{TemplateBinding Padding}" VerticalAlignment="Center" HorizontalAlignment="Left"
+								  ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}"
+								  ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentSource="Header"  
+								  RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+				
+				<TextBlock x:Name="menuGestureText" Grid.Column="4" Margin="{TemplateBinding Padding}" Opacity="0.7" Text="{TemplateBinding InputGestureText}" VerticalAlignment="Center"/>
+			</Grid>
+		</Border>
+		
+		<ControlTemplate.Triggers>
+			<Trigger Property="Icon" Value="{x:Null}">
+				<Setter Property="Visibility" TargetName="Icon" Value="Collapsed"/>
+			</Trigger>
+			
+			<Trigger Property="IsChecked" Value="True">
+				<Setter Property="Visibility" TargetName="GlyphPanel" Value="Visible"/>
+				<Setter Property="Background" TargetName="GlyphPanel" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarSelectedIconBrushKey}}"/>
+				<Setter Property="BorderBrush" TargetName="GlyphPanel" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarSelectedIconBorderBrushKey}}"/>
+
+				<Setter Property="Visibility" TargetName="Icon" Value="Collapsed"/>
+			</Trigger>
+			
+			<Trigger Property="IsHighlighted" Value="True">
+				<Setter Property="Background" TargetName="templateRoot" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuItemMouseOverBrushKey}}"/>
+				<Setter Property="BorderBrush" TargetName="templateRoot" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuItemMouseOverBorderBrushKey}}"/>
+				<Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuItemMouseOverTextBrushKey}}"/>
+				
+				<Setter Property="Background" TargetName="GlyphPanel" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarHoverOverSelectedIconBrushKey}}"/>
+				<Setter Property="Fill" TargetName="Glyph" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarCheckBoxMouseOverBrushKey}}"/>
+			</Trigger>
+			
+			<Trigger Property="IsEnabled" Value="False">
+				<Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarTextInactiveBrushKey}}"/>
+
+				<Setter Property="Fill" TargetName="Glyph" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarCheckBoxDisabledBrushKey}}"/>
+				<Setter Property="Background" TargetName="GlyphPanel" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarSelectedIconDisabledBrushKey}}"/>
+				<Setter Property="BorderBrush" TargetName="GlyphPanel" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarSelectedIconDisabledBorderBrushKey}}"/>
+			</Trigger>
+			
+			<MultiTrigger>
+				<MultiTrigger.Conditions>
+					<Condition Property="IsHighlighted" Value="True"/>
+					<Condition Property="IsEnabled" Value="False"/>
+				</MultiTrigger.Conditions>
+				
+				<Setter Property="Background" TargetName="templateRoot" Value="#0A000000"/>
+				<Setter Property="BorderBrush" TargetName="templateRoot" Value="#21000000"/>
+			</MultiTrigger>
+		</ControlTemplate.Triggers>
+	</ControlTemplate>
+
+	<Style x:Key="vsCodeMapContextMenuStyle" TargetType="ContextMenu">
+		<Setter Property="Template" Value="{DynamicResource CodeMapContextMenuControlTemplate}"/>
+
 		<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuBackgroundGradientBeginBrushKey}}"/>
 		<Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuBorderBrushKey}}"/>
+		<Setter Property="HasDropShadow" Value="True" />
+	</Style>
+
+	<Style x:Key="vsCodeMapMenuItemStyle" TargetType="MenuItem">
+		<Setter Property="ScrollViewer.PanningMode" Value="Both"/>
+		<Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+
+		<Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+		<Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+
 		<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarTextActiveBrushKey}}"/>
+		<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuBackgroundGradientBeginBrushKey}}"/>
+		<Setter Property="BorderBrush" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuBorderBrushKey}}"/>
+		<Setter Property="BorderThickness" Value="0"/>
+
+		<Setter Property="Template" Value="{DynamicResource MenuItemWithoutItemsControlTemplate}"/>
 
 		<Style.Triggers>
-			<Trigger Property="IsHighlighted" Value="True">
-				<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuItemMouseOverBrushKey}}"/>
-				<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuItemMouseOverTextBrushKey}}"/>
+			<Trigger Property="Role" Value="TopLevelHeader">
+				<Setter Property="Template" Value="{DynamicResource CodeMapMenuItemWithItemsControlTemplate}"/>
 			</Trigger>
-
-			<Trigger Property="IsEnabled" Value="False">
-				<Setter Property="Foreground" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarTextInactiveBrushKey}}"/>
+			<Trigger Property="Role" Value="TopLevelItem">
+				<Setter Property="Template" Value="{DynamicResource MenuItemWithoutItemsControlTemplate}"/>
+			</Trigger>
+			<Trigger Property="Role" Value="SubmenuHeader">
+				<Setter Property="Template" Value="{DynamicResource CodeMapMenuItemWithItemsControlTemplate}"/>
 			</Trigger>
 		</Style.Triggers>
 	</Style>
-
-	<!--<Style x:Key="vsSubmenuItemStyle" TargetType="MenuItem" BasedOn="{StaticResource vsMenuItemStyle}">
-		--><!--<EventSetter Event="Loaded" Handler="OnSubmenuItemLoaded"/>--><!--
-	</Style>-->
 	<!--#endregion-->
 	<!--#endregion-->
 </ResourceDictionary>

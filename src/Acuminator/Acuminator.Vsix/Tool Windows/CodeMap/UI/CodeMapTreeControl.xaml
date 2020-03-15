@@ -325,12 +325,6 @@
 	</UserControl.Resources>
 
 	<Border BorderThickness="1">
-		<Border.ContextMenu>
-			<ContextMenu Template="{DynamicResource ContextMenuControlTemplate1}">
-				
-			</ContextMenu>
-		</Border.ContextMenu>
-		
 		<ScrollViewer Focusable="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
 			<ScrollViewer.Style>
 				<Style TargetType="ScrollViewer">
