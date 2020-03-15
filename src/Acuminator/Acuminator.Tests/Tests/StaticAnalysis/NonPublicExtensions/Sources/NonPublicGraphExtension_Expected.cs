@@ -7,7 +7,7 @@ using PX.Data;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions.Sources
 {
-	internal class SOOrderExt1 : PXGraphExtension<SOOrderEntry>  //Non public graph extensions are not supported
+	public class SOOrderExt1 : PXGraphExtension<SOOrderEntry>  //Non public graph extensions are not supported
 	{ 
 		public virtual void _(Events.RowUpdating<SOOrder> e)
 		{
@@ -15,7 +15,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions.Sources
 		}
 	}
 
-	class SOOrderExt2 : PXGraphExtension<SOOrderEntry>          //Non public graph extensions are not supported
+	public class SOOrderExt2 : PXGraphExtension<SOOrderEntry>          //Non public graph extensions are not supported
 	{
 		public virtual void _(Events.RowUpdated<SOOrder> e)
 		{
@@ -24,9 +24,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions.Sources
 	}
 
 
-	static class PurchaseGlobalState
+	public static class PurchaseGlobalState
 	{
-		private class PurchaseEngine
+		public class PurchaseEngine
 		{
 			public sealed class SOOrderEntryExtPurchase : PXGraphExtension<SOOrderEntry>    //Non public graph extensions are not supported
 			{
@@ -36,7 +36,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions.Sources
 				}
 			}
 
-			protected internal sealed class SOOrderEntryExtPurchase2 : PXGraphExtension<SOOrderEntry>    //Non public graph extensions are not supported
+			public sealed class SOOrderEntryExtPurchase2 : PXGraphExtension<SOOrderEntry>    //Non public graph extensions are not supported
 			{
 				public virtual void _(Events.RowSelected<SOOrder> e)
 				{

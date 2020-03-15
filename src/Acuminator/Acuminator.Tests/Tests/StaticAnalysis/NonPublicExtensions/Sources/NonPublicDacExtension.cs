@@ -32,7 +32,19 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions.Sources
 	{
 		private class SalesInfo
 		{
-			public sealed class SOOrderExtSales : PXCacheExtension<SOOrder>    //Non public DAC extensions are not supported
+			public sealed class SOOrderExtSales1 : PXCacheExtension<SOOrder>    //Non public DAC extensions are not supported
+			{
+				#region TotalSales
+				public abstract class totalSales : IBqlField { }
+
+				[PXDBDecimal]
+				[PXUIField(DisplayName = "Total Sales")]
+
+				public decimal? TotalSales { get; set; }
+				#endregion
+			}
+
+			protected internal sealed class SOOrderExtSales2 : PXCacheExtension<SOOrder>    //Non public DAC extensions are not supported
 			{
 				#region TotalSales
 				public abstract class totalSales : IBqlField { }
