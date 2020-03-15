@@ -15,7 +15,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Acuminator.Analyzers.StaticAnalysis.PublicExtensionAnalyzer
+namespace Acuminator.Analyzers.StaticAnalysis.NonPublicExtensions
 {
 	[Shared]
 	[ExportCodeFixProvider(LanguageNames.CSharp)]

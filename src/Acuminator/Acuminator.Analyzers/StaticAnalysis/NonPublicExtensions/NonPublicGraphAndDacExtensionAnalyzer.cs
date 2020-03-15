@@ -15,12 +15,12 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Acuminator.Analyzers.StaticAnalysis.PublicExtensionAnalyzer
+namespace Acuminator.Analyzers.StaticAnalysis.NonPublicExtensions
 {
 	/// <summary>
 	/// An analyzer that checks that DAC and graph extensions are public.
 	/// </summary>
-	public class PublicGraphAndDacExtensionAnalyzer : IDacAnalyzer, IPXGraphAnalyzer
+	public class NonPublicGraphAndDacExtensionAnalyzer : IDacAnalyzer, IPXGraphAnalyzer
 	{
 		public ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1022_NonPublicDacExtension,
