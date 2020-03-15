@@ -70,14 +70,21 @@
 							</MenuItem.Style>
 						</MenuItem>
 						<MenuItem Header="Sort Children" Style="{StaticResource vsCodeMapMenuItemStyle}">
-							<MenuItem Header="By Name" ToolTip="Sort all children of this node by name"
-									  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeChildrenByNameCommand}" CommandParameter="{Binding }"
-									  Style="{StaticResource vsCodeMapMenuItemStyle}">
-							</MenuItem>
-							<MenuItem Header="By Declaration Order" ToolTip="Sort all children of this node by declaration order"
-									  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeChildrenByDeclarationOrderCommand}"
-									  CommandParameter="{Binding }" Style="{StaticResource vsCodeMapMenuItemStyle}">
-							</MenuItem>
+							<MenuItem Header="By Name Ascending" ToolTip="Sort all children of this node by name in ascending order"
+									  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeChildrenByNameAscendingCommand}" CommandParameter="{Binding }"
+									  Style="{StaticResource vsCodeMapMenuItemStyle}"/>
+							<MenuItem Header="By Name Descending" ToolTip="Sort all children of this node by name in descending order"
+									  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeChildrenByNameDescendingCommand}" CommandParameter="{Binding }"
+									  Style="{StaticResource vsCodeMapMenuItemStyle}"/>
+
+							<Separator Style="{StaticResource vsMenuItemSeparatorStyle}"/>
+
+							<MenuItem Header="By Declaration Order Ascending" ToolTip="Sort all children of this node by declaration order in ascending order"
+									  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeChildrenByDeclarationOrderAscendingCommand}"
+									  CommandParameter="{Binding }" Style="{StaticResource vsCodeMapMenuItemStyle}"/>
+							<MenuItem Header="By Declaration Order Descending" ToolTip="Sort all children of this node by declaration order in descending order"
+									  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeChildrenByDeclarationOrderDescendingCommand}"
+									  CommandParameter="{Binding }" Style="{StaticResource vsCodeMapMenuItemStyle}"/>
 						</MenuItem>
 						<MenuItem Header="Sort Descendants" Style="{StaticResource vsCodeMapMenuItemStyle}">
 							<MenuItem Header="By Name" ToolTip="Sort all descendants of this node by name"
