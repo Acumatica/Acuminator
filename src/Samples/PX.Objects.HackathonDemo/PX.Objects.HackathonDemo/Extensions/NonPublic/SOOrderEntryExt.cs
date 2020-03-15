@@ -30,14 +30,10 @@ namespace PX.Objects.HackathonDemo.Extensions.NonPublic
 		{
 			public sealed class SOOrderEntryExtPurchase : PXGraphExtension<SOOrderEntry>    //Non public graph extensions are not supported
 			{
-				#region TotalSales
-				public abstract class totalSales : IBqlField { }
+				public virtual void _(Events.RowSelected<SOOrder> e)
+				{
 
-				[PXDBDecimal]
-				[PXUIField(DisplayName = "Total Sales")]
-
-				public decimal? TotalSales { get; set; }
-				#endregion
+				}
 			}
 		}
 	}
