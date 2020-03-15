@@ -23,22 +23,22 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions
 
 		[Theory]
 		[EmbeddedFileData("NonPublicGraphExtension.cs")]
-		public async Task NonPublicDacExtensions(string actual) =>
+		public async Task NonPublicGraphExtensions(string actual) =>
 			 await VerifyCSharpDiagnosticAsync(actual,
 				 Descriptors.PX1022_NonPublicGraphExtension.CreateFor(10, 2),
 				 Descriptors.PX1022_NonPublicGraphExtension.CreateFor(18, 8),
-				 Descriptors.PX1022_NonPublicGraphExtension.CreateFor(31, 24),
-				 Descriptors.PX1022_NonPublicGraphExtension.CreateFor(39, 4));
+				 Descriptors.PX1022_NonPublicGraphExtension.CreateFor(30, 24),
+				 Descriptors.PX1022_NonPublicGraphExtension.CreateFor(38, 4));
 
 		[Theory]
         [EmbeddedFileData("NonPublicGraphExtension_Expected.cs")]
-        public async Task NonPublicDacExtensions_ShouldNotShowDiagnostic(string actual) =>
+        public async Task NonPublicGraphExtensions_ShouldNotShowDiagnostic(string actual) =>
 			await VerifyCSharpDiagnosticAsync(actual);
 
 		[Theory]
 	    [EmbeddedFileData("NonPublicGraphExtension.cs",
 						  "NonPublicGraphExtension_Expected.cs")]
-	    public async Task NonPublicDacExtensions_CodeFix(string actual, string expected) =>
+	    public async Task NonPublicGraphExtensions_CodeFix(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected);
 	}
 }

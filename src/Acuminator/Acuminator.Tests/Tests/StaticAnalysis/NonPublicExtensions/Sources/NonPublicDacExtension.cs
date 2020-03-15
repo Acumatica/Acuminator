@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 using PX.Data;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions.Sources
-{ 
-	internal sealed class SOOrderExt : PXCacheExtension<SOOrder>	//Non public DAC extensions are not supported
+{
+	internal sealed class SOOrderExt : PXCacheExtension<SOOrder>
 	{
-        #region Total
-        public abstract class total : IBqlField { }
+		#region Total
+		public abstract class total : IBqlField { }
 		[PXDBDecimal]
 		[PXUIField(DisplayName = "Total")]
 		public decimal? Total { get; set; }
 		#endregion
 	}
 
-	sealed class SOOrderExtDiscount : PXCacheExtension<SOOrder>    //Non public DAC extensions are not supported
+	sealed class SOOrderExtDiscount : PXCacheExtension<SOOrder>
 	{
 		#region TotalDiscount
 		public abstract class totalDiscount : IBqlField { }
@@ -32,7 +32,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions.Sources
 	{
 		private class SalesInfo
 		{
-			public sealed class SOOrderExtSales1 : PXCacheExtension<SOOrder>    //Non public DAC extensions are not supported
+			public sealed class SOOrderExtSales1 : PXCacheExtension<SOOrder>
 			{
 				#region TotalSales
 				public abstract class totalSales : IBqlField { }
@@ -44,7 +44,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions.Sources
 				#endregion
 			}
 
-			protected internal sealed class SOOrderExtSales2 : PXCacheExtension<SOOrder>    //Non public DAC extensions are not supported
+			protected internal sealed class SOOrderExtSales2 : PXCacheExtension<SOOrder>
 			{
 				#region TotalSales
 				public abstract class totalSales : IBqlField { }
