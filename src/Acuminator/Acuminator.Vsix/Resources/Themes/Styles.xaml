@@ -442,6 +442,11 @@
 			</Trigger>
 		</Style.Triggers>
 	</Style>
+
+	<Style x:Key="vsMenuItemSeparatorStyle" TargetType="Separator">
+		<Setter Property="Background" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuSeparatorBrushKey}}"/>
+		<Setter Property="Margin" Value="0,0.25"/>
+	</Style>
 	<!--#endregion-->
 	<!--#endregion-->
 </ResourceDictionary>
