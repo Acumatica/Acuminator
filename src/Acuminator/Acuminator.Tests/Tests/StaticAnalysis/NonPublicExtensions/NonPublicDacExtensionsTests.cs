@@ -1,4 +1,5 @@
-﻿using Acuminator.Analyzers.StaticAnalysis;
+﻿using System.Threading.Tasks;
+using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Analyzers.StaticAnalysis.NonPublicExtensions;
 using Acuminator.Tests.Helpers;
@@ -21,32 +22,20 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions
 				new NonPublicGraphAndDacExtensionAnalyzer());
 
 		[Theory]
-	    [EmbeddedFileData("NonNullableTypeForBqlField.cs")] 
-		public void TestDiagnostic(string actual)
-	    {
-		    VerifyCSharpDiagnostic(actual, Descriptors.PX1014_NonNullableTypeForBqlField.CreateFor(16, 14));
-	    }
+	    [EmbeddedFileData("NonPublicDacExtension.cs")] 
+		public async Task NonPublicDacExtensions(string actual) =>
+			 await VerifyCSharpDiagnosticAsync(actual, 
+				 Descriptors.PX1022_NonPublicDacExtension.CreateFor(16, 14));
 
 		[Theory]
-        [EmbeddedFileData("NonNullableTypeForBqlField_Expected.cs")]
-        public void TestDiagnostic_ShouldNotShowDiagnostic(string actual)
-        {
-            VerifyCSharpDiagnostic(actual);
-        }
-
-	    [Theory]
-	    [EmbeddedFileData("NonNullableTypeForBqlField_Valid.cs")]
-	    public void TestDiagnostic_ShouldNotShowDiagnostic2(string actual)
-	    {
-		    VerifyCSharpDiagnostic(actual);
-	    }
+        [EmbeddedFileData("NonPublicDacExtension_Expected.cs")]
+        public async Task NonPublicDacExtensions_ShouldNotShowDiagnostic(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
 
 		[Theory]
-	    [EmbeddedFileData("NonNullableTypeForBqlField.cs",
-						  "NonNullableTypeForBqlField_Expected.cs")]
-	    public void TestCodeFix(string actual, string expected)
-	    {
-		    VerifyCSharpFix(actual, expected);
-	    }   
-    }
+	    [EmbeddedFileData("NonPublicDacExtension.cs",
+						  "NonPublicDacExtension_Expected.cs")]
+	    public async Task NonPublicDacExtensions_CodeFix(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected);
+	}
 }
