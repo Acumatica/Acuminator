@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PX.Data;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.DacUiAttributes.Sources
+namespace Acuminator.Tests.Tests.StaticAnalysis.MissingTypeListAttribute.Sources
 {
     public class InheritedListDac : IBqlTable
     {
