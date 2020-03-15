@@ -260,7 +260,7 @@
 				<TextBlock Grid.Column="4" Margin="{TemplateBinding Padding}" Opacity="0.7" Text="{TemplateBinding InputGestureText}" VerticalAlignment="Center"/>
 
 				<Path x:Name="RightArrow" Grid.Column="5" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"
-					  Data="M0,0L4,3.5 0,7z" Fill="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarCheckBoxBrushKey}}"/>
+					  Data="M0,0L4,3.5 0,7z" Fill="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuSubmenuGlyphBrushKey}}"/>
 
 				<Popup x:Name="PART_Popup" AllowsTransparency="True" Focusable="False" Placement="Right" HorizontalOffset="-2" VerticalOffset="-3"
 					   IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" 
@@ -306,14 +306,17 @@
 				<Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuItemMouseOverTextBrushKey}}"/>
 
 				<Setter Property="Fill" TargetName="Glyph" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarCheckBoxMouseOverBrushKey}}"/>
-				<Setter Property="Fill" TargetName="RightArrow" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarCheckBoxMouseOverBrushKey}}"/>
+				<Setter Property="Fill" TargetName="RightArrow" 
+						Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuMouseOverSubmenuGlyphBrushKey}}"/>
 			</Trigger>
 
 			<Trigger Property="IsEnabled" Value="False">
 				<Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarTextInactiveBrushKey}}"/>
 
-				<Setter Property="Fill" TargetName="Glyph" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarCheckBoxDisabledBrushKey}}"/>
-				<Setter Property="Fill" TargetName="RightArrow" Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarCheckBoxDisabledBrushKey}}"/>
+				<Setter Property="Fill" TargetName="Glyph" 
+						Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarCheckBoxDisabledBrushKey}}"/>
+				<Setter Property="Fill" TargetName="RightArrow" 
+						Value="{DynamicResource {x:Static platformUI:EnvironmentColors.CommandBarMenuSubmenuGlyphBrushKey}}"/>
 			</Trigger>
 
 			<Trigger Property="CanContentScroll" SourceName="SubMenuScrollViewer" Value="False">
