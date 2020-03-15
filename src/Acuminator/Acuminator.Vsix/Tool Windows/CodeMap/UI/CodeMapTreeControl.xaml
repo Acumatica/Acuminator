@@ -179,23 +179,109 @@
 						</MenuItem>
 						<MenuItem Header="Sort Descendants" Style="{StaticResource vsCodeMapMenuItemStyle}">
 							<MenuItem Header="By Name Ascending" ToolTip="Sort all descendants of this node by name in ascending order"
-									  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeDescendantsByNameAscendingCommand}" CommandParameter="{Binding}"
-									  Style="{StaticResource vsCodeMapMenuItemStyle}">
+									  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeDescendantsByNameAscendingCommand}" CommandParameter="{Binding}">
+								<MenuItem.Style>
+									<Style TargetType="MenuItem" BasedOn="{StaticResource vsCodeMapMenuItemStyle}">
+										<Style.Triggers>
+											<MultiDataTrigger>
+												<MultiDataTrigger.Conditions>
+													<Condition Binding="{Binding Path=ChildrenSortType, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+														<Condition.Value>
+															<codeMap:SortType>Alphabet</codeMap:SortType>
+														</Condition.Value>
+													</Condition>
+													<Condition Binding="{Binding Path=ChildrenSortDirection, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+														<Condition.Value>
+															<utils:SortDirection>Ascending</utils:SortDirection>
+														</Condition.Value>
+													</Condition>
+												</MultiDataTrigger.Conditions>
+
+												<Setter Property="IsChecked" Value="True"/>
+											</MultiDataTrigger>
+										</Style.Triggers>
+									</Style>
+								</MenuItem.Style>
 							</MenuItem>
 							<MenuItem Header="By Name Descending" ToolTip="Sort all descendants of this node by name in descending order"
-									  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeDescendantsByNameDescendingCommand}" CommandParameter="{Binding}"
-									  Style="{StaticResource vsCodeMapMenuItemStyle}">
+									  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeDescendantsByNameDescendingCommand}" CommandParameter="{Binding}">
+								<MenuItem.Style>
+									<Style TargetType="MenuItem" BasedOn="{StaticResource vsCodeMapMenuItemStyle}">
+										<Style.Triggers>
+											<MultiDataTrigger>
+												<MultiDataTrigger.Conditions>
+													<Condition Binding="{Binding Path=ChildrenSortType, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+														<Condition.Value>
+															<codeMap:SortType>Alphabet</codeMap:SortType>
+														</Condition.Value>
+													</Condition>
+													<Condition Binding="{Binding Path=ChildrenSortDirection, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+														<Condition.Value>
+															<utils:SortDirection>Descending</utils:SortDirection>
+														</Condition.Value>
+													</Condition>
+												</MultiDataTrigger.Conditions>
+
+												<Setter Property="IsChecked" Value="True"/>
+											</MultiDataTrigger>
+										</Style.Triggers>
+									</Style>
+								</MenuItem.Style>
 							</MenuItem>
 
 							<Separator Style="{StaticResource vsMenuItemSeparatorStyle}"/>
 
 							<MenuItem Header="By Declaration Order Ascending" ToolTip="Sort all descendants of this node by declaration order in ascending order"
 									  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeDescendantsByDeclarationOrderAscendingCommand}" 
-									  CommandParameter="{Binding}" Style="{StaticResource vsCodeMapMenuItemStyle}">
+									  CommandParameter="{Binding}">
+								<MenuItem.Style>
+									<Style TargetType="MenuItem" BasedOn="{StaticResource vsCodeMapMenuItemStyle}">
+										<Style.Triggers>
+											<MultiDataTrigger>
+												<MultiDataTrigger.Conditions>
+													<Condition Binding="{Binding Path=ChildrenSortType, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+														<Condition.Value>
+															<codeMap:SortType>Declaration</codeMap:SortType>
+														</Condition.Value>
+													</Condition>
+													<Condition Binding="{Binding Path=ChildrenSortDirection, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+														<Condition.Value>
+															<utils:SortDirection>Ascending</utils:SortDirection>
+														</Condition.Value>
+													</Condition>
+												</MultiDataTrigger.Conditions>
+
+												<Setter Property="IsChecked" Value="True"/>
+											</MultiDataTrigger>
+										</Style.Triggers>
+									</Style>
+								</MenuItem.Style>
 							</MenuItem>
 							<MenuItem Header="By Declaration Order Descending" ToolTip="Sort all descendants of this node by declaration order in descending order"
 									  Command="{Binding Path=Tree.CodeMapViewModel.SortNodeDescendantsByDeclarationOrderDescendingCommand}" 
-									  CommandParameter="{Binding}" Style="{StaticResource vsCodeMapMenuItemStyle}">
+									  CommandParameter="{Binding}">
+								<MenuItem.Style>
+									<Style TargetType="MenuItem" BasedOn="{StaticResource vsCodeMapMenuItemStyle}">
+										<Style.Triggers>
+											<MultiDataTrigger>
+												<MultiDataTrigger.Conditions>
+													<Condition Binding="{Binding Path=ChildrenSortType, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+														<Condition.Value>
+															<codeMap:SortType>Declaration</codeMap:SortType>
+														</Condition.Value>
+													</Condition>
+													<Condition Binding="{Binding Path=ChildrenSortDirection, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+														<Condition.Value>
+															<utils:SortDirection>Descending</utils:SortDirection>
+														</Condition.Value>
+													</Condition>
+												</MultiDataTrigger.Conditions>
+
+												<Setter Property="IsChecked" Value="True"/>
+											</MultiDataTrigger>
+										</Style.Triggers>
+									</Style>
+								</MenuItem.Style>
 							</MenuItem>
 						</MenuItem>
 					</ContextMenu>
