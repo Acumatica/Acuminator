@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PX.Data;
 
-namespace PX.Objects.HackathonDemo.Extensions.NonPublic
+namespace Acuminator.Tests.Tests.StaticAnalysis.DacUiAttributes.Sources
 {
 	internal class SOOrderExt1 : PXGraphExtension<SOOrderEntry>  //Non public graph extensions are not supported
 	{ 

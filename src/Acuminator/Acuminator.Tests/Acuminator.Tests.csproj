@@ -164,7 +164,6 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Partial\WithExcludeComment.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Partial\WithBadComment.cs" />
     <Compile Include="Tests\StaticAnalysis\NonPublicExtensions\NonPublicDacExtensionsTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\NonPublicExtensions\Sources\SOOrder.cs" />
     <Compile Include="Tests\StaticAnalysis\NonPublicExtensions\Sources\NonPublicGraphExtension.cs" />
     <Compile Include="Tests\StaticAnalysis\NonPublicExtensions\Sources\NonPublicDacExtension.cs" />
     <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\MultipleSuppressionCodeFixTests.cs" />
