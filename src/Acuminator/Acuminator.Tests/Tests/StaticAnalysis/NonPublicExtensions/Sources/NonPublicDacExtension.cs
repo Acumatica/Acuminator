@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PX.Data;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.DacUiAttributes.Sources
+namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions.Sources
 { 
 	internal sealed class SOOrderExt : PXCacheExtension<SOOrder>	//Non public DAC extensions are not supported
 	{
