@@ -106,13 +106,25 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public Command ExpandOrCollapseAllCommand { get; }
 
-		public Command SortNodeChildrenByNameCommand { get; }
+		#region Sort Node Children Commands
+		public Command SortNodeChildrenByNameAscendingCommand { get; }
 
-		public Command SortNodeChildrenByDeclarationOrderCommand { get; }
+		public Command SortNodeChildrenByNameDescendingCommand { get; }
 
-		public Command SortNodeDescendantsByNameCommand { get; }
+		public Command SortNodeChildrenByDeclarationOrderAscendingCommand { get; }
 
-		public Command SortNodeDescendantsByDeclarationOrderCommand { get; }
+		public Command SortNodeChildrenByDeclarationOrderDescendingCommand { get; }
+		#endregion
+
+		#region Sort Node Descendants Commands
+		public Command SortNodeDescendantsByNameAscendingCommand { get; }
+
+		public Command SortNodeDescendantsByNameDescendingCommand { get; }
+
+		public Command SortNodeDescendantsByDeclarationOrderAscendingCommand { get; }
+
+		public Command SortNodeDescendantsByDeclarationOrderDescendingCommand { get; }
+		#endregion
 
 		private CodeMapWindowViewModel(IWpfTextView wpfTextView, Document document)
 		{
@@ -128,10 +140,23 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			RefreshCodeMapCommand = new Command(p => RefreshCodeMapAsync().Forget());
 			ExpandOrCollapseAllCommand = new Command(p => ExpandOrCollapseNodeDescendants(p as TreeNodeViewModel));
 
-			SortNodeChildrenByNameCommand = new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, sortDescendants: false));
-			SortNodeChildrenByDeclarationOrderCommand = new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, sortDescendants: false));
-			SortNodeDescendantsByNameCommand = new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, sortDescendants: true));
-			SortNodeDescendantsByDeclarationOrderCommand = new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, sortDescendants: true));
+			SortNodeChildrenByNameAscendingCommand = 
+				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, SortDirection.Ascending, sortDescendants: false));
+			SortNodeChildrenByNameDescendingCommand =
+				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, SortDirection.Descending, sortDescendants: false));
+			SortNodeChildrenByDeclarationOrderAscendingCommand = 
+				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, SortDirection.Ascending, sortDescendants: false));
+			SortNodeChildrenByDeclarationOrderDescendingCommand =
+				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, SortDirection.Descending, sortDescendants: false));
+
+			SortNodeDescendantsByNameAscendingCommand = 
+				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, SortDirection.Ascending, sortDescendants: true));
+			SortNodeDescendantsByNameDescendingCommand =
+				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, SortDirection.Descending, sortDescendants: true));
+			SortNodeDescendantsByDeclarationOrderAscendingCommand = 
+				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, SortDirection.Ascending, sortDescendants: true));
+			SortNodeDescendantsByDeclarationOrderDescendingCommand =
+				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, SortDirection.Descending, sortDescendants: true));
 
 			Workspace = DocumentModel.Document.Project.Solution.Workspace;
 			Workspace.WorkspaceChanged += OnWorkspaceChanged;
@@ -441,23 +466,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public void SortNodes(TreeNodeViewModel node, SortType sortType, bool sortDescendants)
+		public void SortNodes(TreeNodeViewModel node, SortType sortType, SortDirection sortDirection, bool sortDescendants)
 		{
 			if (node == null)
 				return;
-
-			SortDirection sortDirection;
-
-			if (node.ChildrenSortType == sortType)
-			{
-				sortDirection = node.ChildrenSortDirection == SortDirection.Ascending
-					? SortDirection.Descending
-					: SortDirection.Ascending;
-			}
-			else
-			{
-				sortDirection = SortDirection.Ascending;
-			}
 
 			if (sortDescendants)
 			{
