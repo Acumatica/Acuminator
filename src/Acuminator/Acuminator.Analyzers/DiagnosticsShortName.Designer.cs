@@ -214,7 +214,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NonStringPropertyTypeWithAutoNumberingAttribute.
+        ///   Looks up a localized string similar to NonStringPropertyTypeWithAutoNumberAttribute.
         /// </summary>
         public static string PX1019 {
             get {
@@ -223,7 +223,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to InsufficientStringLengthForAutoNumberingAttribute.
+        ///   Looks up a localized string similar to InsufficientStringLengthForAutoNumberAttribute.
         /// </summary>
         public static string PX1020 {
             get {

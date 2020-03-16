@@ -325,10 +325,10 @@
     <value>NoXmlCommentForPublicEntityOrDacProperty</value>
   </data>
   <data name="PX1019" xml:space="preserve">
-    <value>NonStringPropertyTypeWithAutoNumberingAttribute</value>
+    <value>NonStringPropertyTypeWithAutoNumberAttribute</value>
   </data>
   <data name="PX1020" xml:space="preserve">
-    <value>InsufficientStringLengthForAutoNumberingAttribute</value>
+    <value>InsufficientStringLengthForAutoNumberAttribute</value>
   </data>
   <data name="PX1022Dac" xml:space="preserve">
     <value>NonPublicDacExtension</value>

@@ -439,7 +439,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change DAC property type to string.
+        ///   Looks up a localized string similar to Change the type to string.
         /// </summary>
         public static string PX1019Fix {
             get {
@@ -448,7 +448,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The AutoNumber attribute can be placed only on DAC property with string type.
+        ///   Looks up a localized string similar to A DAC property field with the AutoNumber attribute must have the string type.
         /// </summary>
         public static string PX1019Title {
             get {
@@ -457,7 +457,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Make string length sufficient for autonumbering.
+        ///   Looks up a localized string similar to Make the string length sufficient for the auto-numbering.
         /// </summary>
         public static string PX1020Fix {
             get {
@@ -466,7 +466,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The length of a string must be greater than {0} for a DAC property with an AutoNumber attribute.
+        ///   Looks up a localized string similar to For a DAC property field with the AutoNumber attribute, the string length must be greater than {0}.
         /// </summary>
         public static string PX1020Title {
             get {
