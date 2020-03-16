@@ -502,7 +502,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The non-public DAC extensions are not supported.
+        ///   Looks up a localized string similar to Non-public DAC extensions are not supported.
         /// </summary>
         public static string PX1022DacTitle {
             get {
@@ -520,7 +520,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The non-public graph extensions are not supported.
+        ///   Looks up a localized string similar to Non-public graph extensions are not supported.
         /// </summary>
         public static string PX1022GraphTitle {
             get {
