@@ -529,12 +529,12 @@
     <value>Make the DAC extension public</value>
   </data>
   <data name="PX1022DacTitle" xml:space="preserve">
-    <value>The non-public DAC extensions are not supported</value>
+    <value>Non-public DAC extensions are not supported</value>
   </data>
   <data name="PX1022GraphFix" xml:space="preserve">
     <value>Make the graph extension public</value>
   </data>
   <data name="PX1022GraphTitle" xml:space="preserve">
-    <value>The non-public graph extensions are not supported</value>
+    <value>Non-public graph extensions are not supported</value>
   </data>
 </root>
