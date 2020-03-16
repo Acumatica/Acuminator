@@ -138,9 +138,18 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			if (dummyServiceCaller == null)
 				return;
 
-			var dummyService = dummyServiceCaller.Invoke(null, Array.Empty<object>());
+			object loadTask = null;
 
-			if (dummyService is Task task)
+			try
+			{
+				loadTask = dummyServiceCaller.Invoke(null, Array.Empty<object>());
+			}
+			catch
+			{
+				return;
+			}
+			
+			if (loadTask is Task task)
 			{
 				const int defaultTimeoutSeconds = 20;
 				task.Wait(TimeSpan.FromSeconds(defaultTimeoutSeconds));

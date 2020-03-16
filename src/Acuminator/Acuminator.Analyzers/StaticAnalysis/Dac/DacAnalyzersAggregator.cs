@@ -15,6 +15,7 @@ using Acuminator.Analyzers.StaticAnalysis.MissingTypeListAttribute;
 using Acuminator.Analyzers.StaticAnalysis.NonNullableTypeForBqlField;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphUsageInDac;
 using Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac;
+using Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
@@ -31,6 +32,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 
         public DacAnalyzersAggregator() : this(null,
 			new DacPropertyAttributesAnalyzer(),
+			new DacAutoNumberAttributeAnalyzer(),
 			new DacNonAbstractFieldTypeAnalyzer(),
 			new ConstructorInDacAnalyzer(),
 			new UnderscoresInDacAnalyzer(),

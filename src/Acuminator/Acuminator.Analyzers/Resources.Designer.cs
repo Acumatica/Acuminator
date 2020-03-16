@@ -10,7 +10,6 @@
 
 namespace Acuminator.Analyzers {
     using System;
-    using System.Reflection;
     
     
     /// <summary>
@@ -40,7 +39,7 @@ namespace Acuminator.Analyzers {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Acuminator.Analyzers.Resources", typeof(Resources).GetTypeInfo().Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Acuminator.Analyzers.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -436,6 +435,42 @@ namespace Acuminator.Analyzers {
         public static string PX1018Title {
             get {
                 return ResourceManager.GetString("PX1018Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change the type to string.
+        /// </summary>
+        public static string PX1019Fix {
+            get {
+                return ResourceManager.GetString("PX1019Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A DAC property field with the AutoNumber attribute must have the string type.
+        /// </summary>
+        public static string PX1019Title {
+            get {
+                return ResourceManager.GetString("PX1019Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Make the string length sufficient for the auto-numbering.
+        /// </summary>
+        public static string PX1020Fix {
+            get {
+                return ResourceManager.GetString("PX1020Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For a DAC property field with the AutoNumber attribute, the string length must be greater than {0}.
+        /// </summary>
+        public static string PX1020Title {
+            get {
+                return ResourceManager.GetString("PX1020Title", resourceCulture);
             }
         }
         

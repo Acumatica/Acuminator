@@ -324,4 +324,10 @@
   <data name="PX1007" xml:space="preserve">
     <value>NoXmlCommentForPublicEntityOrDacProperty</value>
   </data>
+  <data name="PX1019" xml:space="preserve">
+    <value>NonStringPropertyTypeWithAutoNumberAttribute</value>
+  </data>
+  <data name="PX1020" xml:space="preserve">
+    <value>InsufficientStringLengthForAutoNumberAttribute</value>
+  </data>
 </root>

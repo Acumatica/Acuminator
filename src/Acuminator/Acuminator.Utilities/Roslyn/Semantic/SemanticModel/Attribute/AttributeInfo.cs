@@ -36,11 +36,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 
 		public bool IsDefaultAttribute { get; }
 
+		public bool IsAutoNumberAttribute { get; }
+
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		protected virtual string DebuggerDisplay => $"{Name}";
 
-		public AttributeInfo(AttributeData attributeData, BoundType boundType, int declarationOrder, bool isKey, bool isIdentity, 
-							 bool isDefaultAttribute)
+		protected AttributeInfo(AttributeData attributeData, BoundType boundType, int declarationOrder, bool isKey, bool isIdentity, 
+								bool isDefaultAttribute, bool isAutoNumberAttribute)
 		{
 			attributeData.ThrowOnNull(nameof(attributeData));
 			AttributeData = attributeData;
@@ -49,6 +51,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 			IsKey = isKey;
 			IsIdentity = isIdentity;
 			IsDefaultAttribute = isDefaultAttribute;
+			IsAutoNumberAttribute = isAutoNumberAttribute;
 		}
 
 		public static AttributeInfo Create(AttributeData attribute, AttributeInformation attributeInformation, int declarationOrder)
@@ -59,10 +62,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 			BoundType boundType = attributeInformation.GetBoundAttributeType(attribute);
 			bool isPXDefaultAttribute = IsPXDefaultAttribute(attribute, attributeInformation);
 			bool isIdentityAttribute = IsDerivedFromIdentityTypes(attribute, attributeInformation);
+			bool isAutoNumberAttribute = CheckForAutoNumberAttribute(attribute, attributeInformation);
 			bool isAttributeWithPrimaryKey = attribute.NamedArguments.Any(arg => arg.Key.Contains(DelegateNames.IsKey) &&
 																				 arg.Value.Value is bool isKeyValue && isKeyValue == true);
 
-			return new AttributeInfo(attribute, boundType, declarationOrder, isAttributeWithPrimaryKey, isIdentityAttribute, isPXDefaultAttribute);
+			return new AttributeInfo(attribute, boundType, declarationOrder, isAttributeWithPrimaryKey, isIdentityAttribute,
+									 isPXDefaultAttribute, isAutoNumberAttribute);
 		}
 
 		private static bool IsDerivedFromIdentityTypes(AttributeData attribute, AttributeInformation attributeInformation) =>
@@ -76,6 +81,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Attribute
 
 			return attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, pxDefaultAttribute) &&
 				   !attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, pxUnboundDefaultAttribute);
+		}
+
+		private static bool CheckForAutoNumberAttribute(AttributeData attribute, AttributeInformation attributeInformation)
+		{
+			var autoNumberAttribute = attributeInformation.Context.AttributeTypes.AutoNumberAttribute.Type;
+
+			if (autoNumberAttribute == null)
+				return false;
+
+			return attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeClass, autoNumberAttribute);
 		}
 	}
 }

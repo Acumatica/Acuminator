@@ -70,6 +70,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		public bool IsKey { get; }
 
+		public bool IsAutoNumbering { get; }
+
 		protected DacPropertyInfo(PropertyDeclarationSyntax node, IPropertySymbol symbol, ITypeSymbol effectivePropertyType,
 								  int declarationOrder, bool isDacProperty, IEnumerable<AttributeInfo> attributeInfos, DacPropertyInfo baseInfo) :
 							 this(node, symbol, effectivePropertyType, declarationOrder, isDacProperty, attributeInfos)
@@ -80,7 +82,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			if (BoundType == BoundType.NotDefined)
 			{
 				EffectiveBoundType = baseInfo.EffectiveBoundType;
-			}		
+			}
 		}
 
 		protected DacPropertyInfo(PropertyDeclarationSyntax node, IPropertySymbol symbol, ITypeSymbol effectivePropertyType,
@@ -93,12 +95,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			BoundType boundType = BoundType.NotDefined;
 			bool isIdentity = false;
 			bool isPrimaryKey = false;
+			bool isAutoNumbering = false;
 
 			foreach (AttributeInfo attributeInfo in Attributes)
 			{
 				boundType = boundType.Combine(attributeInfo.BoundType);
 				isIdentity = isIdentity || attributeInfo.IsIdentity;
 				isPrimaryKey = isPrimaryKey || attributeInfo.IsKey;
+				isAutoNumbering = isAutoNumbering || attributeInfo.IsAutoNumberAttribute;
 			}
 
 			BoundType = boundType;
@@ -106,6 +110,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			EffectivePropertyType = effectivePropertyType;
 			IsIdentity = isIdentity;
 			IsKey = isPrimaryKey;
+			IsAutoNumbering = isAutoNumbering;
 		}
 
 		public static DacPropertyInfo Create(PXContext context, PropertyDeclarationSyntax node, IPropertySymbol property, int declarationOrder,
