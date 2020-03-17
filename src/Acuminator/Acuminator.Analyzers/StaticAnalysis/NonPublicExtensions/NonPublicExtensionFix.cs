@@ -21,15 +21,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.NonPublicExtensions
 	[ExportCodeFixProvider(LanguageNames.CSharp)]
 	public class NonPublicExtensionFix : CodeFixProvider
 	{
-		private const string DiagnosticID = "PX1022";
-
-		public override ImmutableArray<string> FixableDiagnosticIds { get; } = ImmutableArray.Create(DiagnosticID);
+		public override ImmutableArray<string> FixableDiagnosticIds { get; } = 
+			new HashSet<string>
+			{
+				Descriptors.PX1022_NonPublicDacExtension.Id,
+				Descriptors.PX1022_NonPublicGraphExtension.Id
+			}
+			.ToImmutableArray();
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
 		public override Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == DiagnosticID);
+			var diagnostic = context.Diagnostics.FirstOrDefault(d => FixableDiagnosticIds.Contains(d.Id));
 
 			if (diagnostic == null || !diagnostic.Properties.TryGetValue(nameof(ExtensionType), out string extensionType))
 				return Task.CompletedTask;
