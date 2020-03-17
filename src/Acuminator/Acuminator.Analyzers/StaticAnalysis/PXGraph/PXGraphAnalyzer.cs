@@ -16,6 +16,7 @@ using Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions;
 using Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName;
 using Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic;
 using Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder;
+using Acuminator.Analyzers.StaticAnalysis.NonPublicExtensions;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
@@ -48,6 +49,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 			new NoPrimaryViewForPrimaryDacAnalyzer(),
 			new ActionHandlerAttributesAnalyzer(),
             new ActionHandlerReturnTypeAnalyzer(),
+			new NonPublicGraphAndDacExtensionAnalyzer(),
             new InvalidPXActionSignatureAnalyzer(),
 			new TypoInViewDelegateNameAnalyzer())
         {

@@ -1,4 +1,5 @@
-﻿using Acuminator.Analyzers.StaticAnalysis;
+﻿using System.Threading.Tasks;
+using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Analyzers.StaticAnalysis.NonNullableTypeForBqlField;
 using Acuminator.Tests.Helpers;
@@ -14,43 +15,33 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NonNullableTypeForBqlField
     {
 	    [Theory]
 	    [EmbeddedFileData("NonNullableTypeForBqlField.cs")] 
-		public void TestDiagnostic(string actual)
-	    {
-		    VerifyCSharpDiagnostic(actual, Descriptors.PX1014_NonNullableTypeForBqlField.CreateFor(16, 14));
-	    }
+		public async Task TestDiagnostic(string actual) =>
+			 await VerifyCSharpDiagnosticAsync(actual, 
+											   Descriptors.PX1014_NonNullableTypeForBqlField.CreateFor(16, 14));
 
 		[Theory]
         [EmbeddedFileData("NonNullableTypeForBqlField_Expected.cs")]
-        public void TestDiagnostic_ShouldNotShowDiagnostic(string actual)
-        {
-            VerifyCSharpDiagnostic(actual);
-        }
+        public async Task TestDiagnostic_ShouldNotShowDiagnostic(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
 
-	    [Theory]
-	    [EmbeddedFileData("NonNullableTypeForBqlField_Valid.cs")]
-	    public void TestDiagnostic_ShouldNotShowDiagnostic2(string actual)
-	    {
-		    VerifyCSharpDiagnostic(actual);
-	    }
+		[Theory] 
+		[EmbeddedFileData("NonNullableTypeForBqlField_Valid.cs")] 
+		public async Task TestDiagnostic_ShouldNotShowDiagnostic2(string actual) => 
+			await VerifyCSharpDiagnosticAsync(actual);
 
 		[Theory]
 	    [EmbeddedFileData("NonNullableTypeForBqlField.cs",
 						  "NonNullableTypeForBqlField_Expected.cs")]
-	    public void TestCodeFix(string actual, string expected)
-	    {
-		    VerifyCSharpFix(actual, expected);
-	    }
+	    public async Task TestCodeFix(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected);
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
-		{
-			return new NonNullableTypeForBqlFieldFix();
-		}
+		protected override CodeFixProvider GetCSharpCodeFixProvider() =>
+			new NonNullableTypeForBqlFieldFix();
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new DacAnalyzersAggregator(
 				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
 											.WithSuppressionMechanismDisabled(),
-				new NonNullableTypeForBqlFieldAnalyzer());
-        
+				new NonNullableTypeForBqlFieldAnalyzer());     
     }
 }

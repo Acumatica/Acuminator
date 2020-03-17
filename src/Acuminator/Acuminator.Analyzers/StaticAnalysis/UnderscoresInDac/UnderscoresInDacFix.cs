@@ -23,20 +23,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 
 		public override Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			return Task.Run(() =>
-			{
-				var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1026_UnderscoresInDacDeclaration.Id);
+			var diagnostic = context.Diagnostics.FirstOrDefault(d => d.Id == Descriptors.PX1026_UnderscoresInDacDeclaration.Id);
 
-				if (diagnostic == null || !diagnostic.IsRegisteredForCodeFix())
-					return;
+			if (diagnostic == null || !diagnostic.IsRegisteredForCodeFix())
+				return Task.CompletedTask;
 
-				string codeActionName = nameof(Resources.PX1026Fix).GetLocalized().ToString();
-				CodeAction codeAction = CodeAction.Create(codeActionName,
-														  cToken => ChangeUnderscoredNamesAsync(context.Document, context.Span, cToken),
-														  equivalenceKey: codeActionName);
+			string codeActionName = nameof(Resources.PX1026Fix).GetLocalized().ToString();
+			CodeAction codeAction = CodeAction.Create(codeActionName,
+													  cToken => ChangeUnderscoredNamesAsync(context.Document, context.Span, cToken),
+													  equivalenceKey: codeActionName);
 
-				context.RegisterCodeFix(codeAction, context.Diagnostics);
-			}, context.CancellationToken);
+			context.RegisterCodeFix(codeAction, context.Diagnostics);
+			return Task.CompletedTask;
 		}
 
 		private async Task<Document> ChangeUnderscoredNamesAsync(Document document, TextSpan span, CancellationToken cancellationToken)

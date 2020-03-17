@@ -525,4 +525,16 @@
   <data name="PX1020Fix" xml:space="preserve">
     <value>Make the string length sufficient for the auto-numbering</value>
   </data>
+  <data name="PX1022DacFix" xml:space="preserve">
+    <value>Make the DAC extension public</value>
+  </data>
+  <data name="PX1022DacTitle" xml:space="preserve">
+    <value>Non-public DAC extensions are not supported</value>
+  </data>
+  <data name="PX1022GraphFix" xml:space="preserve">
+    <value>Make the graph extension public</value>
+  </data>
+  <data name="PX1022GraphTitle" xml:space="preserve">
+    <value>Non-public graph extensions are not supported</value>
+  </data>
 </root>

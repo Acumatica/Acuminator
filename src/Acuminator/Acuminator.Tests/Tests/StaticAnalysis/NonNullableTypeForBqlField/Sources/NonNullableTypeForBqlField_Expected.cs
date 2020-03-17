@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PX.Data;
 
-namespace PX.Analyzers.Test.Sources
+namespace Acuminator.Tests.Tests.StaticAnalysis.NonNullableTypeForBqlField.Sources
 {
 	public class SomeDocument : IBqlTable
 	{
