@@ -6,17 +6,17 @@ Acuminator 2.2 includes the bug fixes and enhancements described in this section
 
 ### Enhancements
 In Acuminator 2.2, the following enhancements have been implemented:
- - The [PX1019](diagnostics/PX1019.md) diagnostic has been added to check for DAC fields of non-strings types with the `AutoNumberAttribute` attribute.
+ - The [PX1019](diagnostics/PX1019.md) diagnostic has been added to check for DAC fields of a non-string type with the `AutoNumberAttribute` attribute.
  - The [PX1020](diagnostics/PX1020.md) diagnostic has been added to check if the length of a string DAC field with the `AutoNumberAttribute` attribute is sufficient.
- - The [PX1022](diagnostics/PX1022.md) diagnostic has been added to check if a DAC or graph extension is declared as a public class.
- - The context menu of Acuminator has been updated: Sort commands have been divided in the context menu, active sort indicator has been added, and menu control templates have been redesigned to integrate the Visual Studio theme.
- - The following complementary information about DAC fields is displayed in a separate column: the field type, an indicator of whether the field is an identity field, and an indicator of whether the field is bound or unbound.
- - It is now possible to sort the code map. The context menu now includes the following new commands: sort node's children by declaration, sort node's children by name, sort all node descendants by declaration, sort all node descendants by name.
+ - The [PX1022](diagnostics/PX1022.md) diagnostic has been added to check if a DAC extension or a graph extension is declared as a public class.
+ - It is now possible to sort the code map. The context menu of the Acuminator Code Map now includes the following new commands: sort node's children by declaration, sort node's children by name, sort all node descendants by declaration, sort all node descendants by name. The context menu of Acuminator has been updated to include the sorting feature: The menu layout has been redesigned to better integrate with the Visual Studio style. Sort commands have been divided in the context menu, active sort indicator has been added, and menu control templates have been redesigned to integrate the Visual Studio theme.
+ - The following complementary information about DAC fields is displayed in the Code Map in a separate column: the field type, an indicator of whether the field is an identity field, and an indicator of whether the field is bound or unbound.
+
 
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
  - Acuminator failed on Microsoft Visual Studio 2017.
- - The Acuminator package was loaded in Visual Studio at a random time, including loading after the analysis was already executed.
+ - The suppression file and Acuminator settings sometimes were loaded incorrectly due to package being loaded by Visual Studio at a random time.
 
 ## Acuminator 2.1.3
 Acuminator 2.1.3 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
