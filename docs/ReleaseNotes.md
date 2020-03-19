@@ -9,7 +9,10 @@ In Acuminator 2.2, the following enhancements have been implemented:
  - The [PX1019](diagnostics/PX1019.md) diagnostic has been added to check for DAC fields of a non-string type with the `AutoNumberAttribute` attribute.
  - The [PX1020](diagnostics/PX1020.md) diagnostic has been added to check if the length of a string DAC field with the `AutoNumberAttribute` attribute is sufficient.
  - The [PX1022](diagnostics/PX1022.md) diagnostic has been added to check if a DAC extension or a graph extension is declared as a public class.
- - It is now possible to sort the code map. The context menu of the Acuminator Code Map now includes the following new commands: sort node's children by declaration, sort node's children by name, sort all node descendants by declaration, sort all node descendants by name. The context menu of Acuminator has been updated to include the sorting feature: The menu layout has been redesigned to better integrate with the Visual Studio style. Sort commands have been divided in the context menu, active sort indicator has been added, and menu control templates have been redesigned to integrate the Visual Studio theme.
+ - It is now possible to sort the code map. The context menu of the Acuminator Code Map now includes an active sort indicator and the following new commands: 
+   - Sort node's children by declaration order or by name
+   - Sort all node descendants by declaration order or by name
+   Also, the context menu has been redesigned to better integrate with the Visual Studio style.
  - The following complementary information about DAC fields is displayed in the Code Map in a separate column: the field type, an indicator of whether the field is an identity field, and an indicator of whether the field is bound or unbound.
 
 
