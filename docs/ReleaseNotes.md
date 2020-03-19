@@ -12,7 +12,7 @@ In Acuminator 2.2, the following enhancements have been implemented:
  - It is now possible to sort the code map. The context menu of the Acuminator Code Map now includes an active sort indicator and the following new commands: 
    - Sort node's children by declaration order or by name
    - Sort all node descendants by declaration order or by name
-   Also, the context menu has been redesigned to better integrate with the Visual Studio style.
+   <p>Also, the context menu has been redesigned to better integrate with the Visual Studio style.</p>
  - The following complementary information about DAC fields is displayed in the Code Map in a separate column: the field type, an indicator of whether the field is an identity field, and an indicator of whether the field is bound or unbound.
 
 
