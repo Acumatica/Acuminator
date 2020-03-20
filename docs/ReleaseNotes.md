@@ -1,6 +1,26 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
+## Acuminator 2.2
+Acuminator 2.2 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
+
+### Enhancements
+In Acuminator 2.2, the following enhancements have been implemented:
+ - The [PX1019](diagnostics/PX1019.md) diagnostic has been added to check for DAC fields of a non-string type with the `AutoNumberAttribute` attribute.
+ - The [PX1020](diagnostics/PX1020.md) diagnostic has been added to check if the length of a string DAC field with the `AutoNumberAttribute` attribute is sufficient.
+ - The [PX1022](diagnostics/PX1022.md) diagnostic has been added to check if a DAC extension or a graph extension is declared as a public class.
+ - It is now possible to sort the code map. The context menu of the Acuminator Code Map now includes an active sort indicator and the following new commands: 
+   - Sort node's children by declaration order or by name
+   - Sort all node descendants by declaration order or by name
+   <p>Also, the context menu has been redesigned to better integrate with the Visual Studio style.</p>
+ - The following complementary information about DAC fields is displayed in the Code Map in a separate column: the field type, an indicator of whether the field is an identity field, and an indicator of whether the field is bound or unbound.
+
+
+### Fixed Bugs
+In this version of Acuminator, the following bugs have been fixed:
+ - Acuminator failed on Microsoft Visual Studio 2017.
+ - The suppression file and Acuminator settings sometimes were loaded incorrectly due to package being loaded by Visual Studio at a random time.
+
 ## Acuminator 2.1.3
 Acuminator 2.1.3 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
