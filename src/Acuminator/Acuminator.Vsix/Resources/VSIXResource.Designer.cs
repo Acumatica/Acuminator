@@ -304,6 +304,15 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Has PXDBIdentity attribute.
+        /// </summary>
+        public static string HasPXDBIdentityAttributeExtraInfoTooltip {
+            get {
+                return ResourceManager.GetString("HasPXDBIdentityAttributeExtraInfoTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Acuminator package loaded.
         /// </summary>
         public static string PackageLoad_Done {
@@ -354,6 +363,15 @@ namespace Acuminator.Vsix {
         public static string PackageLoad_WaitMessage {
             get {
                 return ResourceManager.GetString("PackageLoad_WaitMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Property has auto-numbering.
+        /// </summary>
+        public static string PropertyHasAutoNumberingExtraInfoTooltip {
+            get {
+                return ResourceManager.GetString("PropertyHasAutoNumberingExtraInfoTooltip", resourceCulture);
             }
         }
         

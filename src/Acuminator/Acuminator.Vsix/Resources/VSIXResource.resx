@@ -294,4 +294,10 @@
   <data name="Setting_CodeAnalysis_PX1007DiagnosticEnabled_Title" xml:space="preserve">
     <value>Enable PX1007 diagnostic</value>
   </data>
+  <data name="HasPXDBIdentityAttributeExtraInfoTooltip" xml:space="preserve">
+    <value>Has PXDBIdentity attribute</value>
+  </data>
+  <data name="PropertyHasAutoNumberingExtraInfoTooltip" xml:space="preserve">
+    <value>Property has auto-numbering</value>
+  </data>
 </root>
