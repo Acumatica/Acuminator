@@ -304,7 +304,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Has PXDBIdentity attribute.
+        ///   Looks up a localized string similar to The PXDBIdentity attribute is specified for this field..
         /// </summary>
         public static string HasPXDBIdentityAttributeExtraInfoTooltip {
             get {
@@ -367,7 +367,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Property has auto-numbering.
+        ///   Looks up a localized string similar to Auto-numbering is enabled for this field..
         /// </summary>
         public static string PropertyHasAutoNumberingExtraInfoTooltip {
             get {

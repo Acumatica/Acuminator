@@ -295,9 +295,9 @@
     <value>Enable PX1007 diagnostic</value>
   </data>
   <data name="HasPXDBIdentityAttributeExtraInfoTooltip" xml:space="preserve">
-    <value>Has PXDBIdentity attribute</value>
+    <value>The PXDBIdentity attribute is specified for this field.</value>
   </data>
   <data name="PropertyHasAutoNumberingExtraInfoTooltip" xml:space="preserve">
-    <value>Property has auto-numbering</value>
+    <value>Auto-numbering is enabled for this field.</value>
   </data>
 </root>
