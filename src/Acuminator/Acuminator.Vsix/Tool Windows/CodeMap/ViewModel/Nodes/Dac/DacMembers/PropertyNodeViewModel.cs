@@ -51,14 +51,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			yield return new TextViewModel(this, PropertyInfo.EffectivePropertyType.GetSimplifiedName(), 
 											darkThemeForeground: Color.FromRgb(86, 156, 214),
 											lightThemeForeground: Color.FromRgb(0, 0, 255));
-
 			if (IsIdentity)
 			{
 				yield return new TextViewModel(this, "ID",
 											   darkThemeForeground: Coloriser.VSColors.DacFieldFormatColorDark,
 											   lightThemeForeground: Coloriser.VSColors.DacFieldFormatColorLight)
 											  {
-												  Tooltip = "Has PXDBIdentity attribute"
+												  Tooltip = VSIXResource.HasPXDBIdentityAttributeExtraInfoTooltip
 											  };
 			}
 
@@ -70,6 +69,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				case BoundType.DbBound:
 					yield return new TextViewModel(this, "Bound");
 					break;
+			}
+
+			if (PropertyInfo.IsAutoNumbering)
+			{
+				yield return new TextViewModel(this, "Auto")
+				{
+					Tooltip = VSIXResource.PropertyHasAutoNumberingExtraInfoTooltip
+				};
 			}
 		}
 
