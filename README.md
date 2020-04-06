@@ -1,6 +1,13 @@
 # Acuminator
 
-Acuminator is a static code analysis and colorizer tool for Visual Studio that simplifies development with Acumatica Framework. 
+Acuminator is a Visual Studio extension that simplifies development with Acumatica Framework. 
+It provides following functionality in order to boost developer productivity:
+* Static code analysis diagnostics, code fixes and refactorings
+* Syntax highlighting of Acumatica-specific code elements
+* BQL formatting and outlining
+* Navigation between related code elements
+* Code Map tool window which display the structure of graphs, DACs and their extensions
+
 Acuminator provides diagnostics and code fixes for common developer challenges related to Acumatica Framework. Also, Acuminator can colorize and format BQL statements, and can collapse attributes and parts of BQL queries.
 
 ## Diagnostics and Code Fixes
