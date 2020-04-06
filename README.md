@@ -8,8 +8,6 @@ It provides following functionality in order to boost developer productivity:
 * Navigation between related code elements
 * Code Map tool window which displays the structure of graphs, DACs and their extensions
 
- Also, Acuminator can colorize and format BQL statements, and can collapse attributes and parts of BQL queries.
-
 ## Diagnostics and Code Fixes
 Acuminator provides diagnostics and code fixes for common developer challenges related to Acumatica Framework.
 It finds common mistakes and typos that are usually not so easy to find, such as the following:
@@ -26,10 +24,21 @@ Acuminator supports two approaches for suppression of unwanted diagnostic alerts
 * Suppress diagnostic with a special comment placed a line above the code
 * Suppress diagnostic with a specific suppression file. With this mechanism a specific one per project file will store a list of  diagnostics suppressed in the project. This approach is supported only if Acuminator is installed as a VSIX plugin. 
 
-## Code Coloring, Formatting, and Outlining
-Acuminator colorizes and formats BQL statements, which improves the readability of long BQL queries. You can adjust the colors in the Visual Studio settings.
+## Code Coloring,
+Acuminator adds code coloring to Acumatica-specific code elements:
+* graphs and graph extensions
+* DACs and DAC extensions
+* DAC fields
+* BQL queries - operators and angle braces
+* BQL constants
+* actions
 
-Acuminator can collapse parts of BQL queries and the code inside attributes to small tags, which makes it easier for you to focus on the parts of code related to the current task.
+You can adjust the colors in the Visual Studio settings in the "Fonts and Colors" section.
+ 
+## BQL Formatting, and Outlining
+Acuminator allows you to format BQL statements, which improves the readability of long BQL queries. The command is located in the context menu of the Visual Studio code editor.
+
+Also Acuminator provides an outlining functionality. It can collapse parts of BQL queries and the code inside attributes to small tags, which makes it easier for you to focus on the parts of code related to the current task.
 
 ## The Process of Building the Solution
 To build the solution, do the following:
