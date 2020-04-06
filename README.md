@@ -6,18 +6,25 @@ It provides following functionality in order to boost developer productivity:
 * Syntax highlighting of Acumatica-specific code elements
 * BQL formatting and outlining
 * Navigation between related code elements
-* Code Map tool window which display the structure of graphs, DACs and their extensions
+* Code Map tool window which displays the structure of graphs, DACs and their extensions
 
-Acuminator provides diagnostics and code fixes for common developer challenges related to Acumatica Framework. Also, Acuminator can colorize and format BQL statements, and can collapse attributes and parts of BQL queries.
+ Also, Acuminator can colorize and format BQL statements, and can collapse attributes and parts of BQL queries.
 
 ## Diagnostics and Code Fixes
-In the code based on Acumatica Framework, Acuminator finds common mistakes and typos that are usually not so easy to find, such as the following:
-* Incorrect signatures of `PXAction` handlers
+Acuminator provides diagnostics and code fixes for common developer challenges related to Acumatica Framework.
+It finds common mistakes and typos that are usually not so easy to find, such as the following:
+* Incorrect signatures of `PXAction` delegates
 * Typos in the names of view delegates
 * `PXStringList` declarations without `PXDBString`
 * C#-style inheritance from `PXCacheExtension`
+* Incompatible types of DAC property and DB field attribute declared on it
+* Localization diagnostics
 
 For the errors it finds, Acuminator suggests code fixes. For the full list of supported diagnostics and code fixes, see [Diagnostics](docs/Summary.md#diagnostics). 
+
+Acuminator supports two approaches for suppression of unwanted diagnostic alerts:
+* Suppress diagnostic with a special comment placed a line above the code
+* Suppress diagnostic with a specific suppression file. With this mechanism a specific one per project file will store a list of  diagnostics suppressed in the project. This approach is supported only if Acuminator is installed as a VSIX plugin. 
 
 ## Code Coloring, Formatting, and Outlining
 Acuminator colorizes and formats BQL statements, which improves the readability of long BQL queries. You can adjust the colors in the Visual Studio settings.
