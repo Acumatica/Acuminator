@@ -20,7 +20,7 @@ It finds common mistakes and typos that are usually not so easy to find, such as
 
 For the errors it finds, Acuminator suggests code fixes. For the full list of supported diagnostics and code fixes, see [Diagnostics](docs/Summary.md#diagnostics). 
 
-Acuminator supports two approaches for suppression of unwanted diagnostic alerts:
+Acuminator supports two approaches for the suppression of unwanted diagnostic alerts:
 * Suppress diagnostic with a special comment placed a line above the code
 * Suppress diagnostic with a specific suppression file. With this mechanism a specific one per project file will store a list of  diagnostics suppressed in the project. This approach is supported only if Acuminator is installed as a VSIX plugin. 
 
@@ -57,7 +57,8 @@ Acuminator provides a "Code Map" tool window which display to the user a structu
 * DAC and DAC extensions. For these elements Code Map displays:
    - Key DAC fields with attributes declared on them
    - All DAC fields with attributes declared on them
- For each DAC field Code Map displays some extra information:
+   
+   For each DAC field Code Map displays some extra information:
    - Data type
    - Is field bound/unbound
    - Indicator if field has identity functionality
