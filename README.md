@@ -24,7 +24,7 @@ Acuminator supports two approaches for suppression of unwanted diagnostic alerts
 * Suppress diagnostic with a special comment placed a line above the code
 * Suppress diagnostic with a specific suppression file. With this mechanism a specific one per project file will store a list of  diagnostics suppressed in the project. This approach is supported only if Acuminator is installed as a VSIX plugin. 
 
-## Code Coloring,
+## Code Coloring
 Acuminator adds code coloring to Acumatica-specific code elements:
 * graphs and graph extensions
 * DACs and DAC extensions
@@ -39,6 +39,33 @@ You can adjust the colors in the Visual Studio settings in the "Fonts and Colors
 Acuminator allows you to format BQL statements, which improves the readability of long BQL queries. The command is located in the context menu of the Visual Studio code editor.
 
 Also Acuminator provides an outlining functionality. It can collapse parts of BQL queries and the code inside attributes to small tags, which makes it easier for you to focus on the parts of code related to the current task.
+
+## Navigation
+Acuminator adds a command to code editor's context menu which allows you to quickly navigate between:
+* graph view and its view delegate
+* action and its action delegate
+
+## Code Map
+Acuminator provides a "Code Map" tool window which display to the user a structure of Acumatica-specific code elements:
+* graph and graph extensions. For these elements Code Map displays:
+   - views and their corresponding view delegates
+   - actions and their corresponding action delegates
+   - cache attached events with attributes declared on them. The events are grouped by DAC type and DAC field
+   - row events grouped by DAC type
+   - field events grouped by DAC type and DAC field
+   - `PXOverride`s
+* DAC and DAC extensions. For these elements Code Map displays:
+   - Key DAC fields with attributes declared on them
+   - All DAC fields with attributes declared on them
+ For each DAC field Code Map displays some extra information:
+   - Data type
+   - Is field bound/unbound
+   - Indicator if field has identity functionality
+   - Indicator if field has auto-numbering functionality
+   
+Code Map shows the elements in a tree view. It allows to collapse a tree node hiding all its descendants. Code Map also provides an ability to sort nodes children and descendants alphabetically or by declaration order.
+
+You can navigate to every code element displayed in Code Map by double clicking on the corresponding tree node. Some category nodes support cycling navigation. You can double click them sequentially and navigate through the list of its children code elements.
 
 ## The Process of Building the Solution
 To build the solution, do the following:
