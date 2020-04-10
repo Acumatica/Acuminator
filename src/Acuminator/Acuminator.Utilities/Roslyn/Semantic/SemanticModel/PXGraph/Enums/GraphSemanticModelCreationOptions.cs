@@ -28,11 +28,4 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// </summary>
 		CollectAll = CollectGeneralGraphInfo | CollectProcessingDelegates | InferImplicitModels
 	}
-
-
-	public static class GraphSemanticModelCreationOptionsUtils
-	{
-		public static bool HasOption(this GraphSemanticModelCreationOptions creationOptions, GraphSemanticModelCreationOptions flagToCheck) =>
-			(creationOptions & flagToCheck) == flagToCheck;
-	}
 }
