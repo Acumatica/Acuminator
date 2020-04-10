@@ -31,7 +31,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.GraphRule
 				if (dacFinder.CancellationToken.IsCancellationRequested)
 					return Enumerable.Empty<ITypeSymbol>();
 
-				if (viewWithType.Type.IsReadOnlyBqlCommand(dacFinder.PxContext))
+				if (viewWithType.Type.IsPXNonUpdateableBqlCommand(dacFinder.PxContext))
 					readOnlyViews.Add(viewWithType.Type);
 				else
 					editableViews.Add(viewWithType.Type);

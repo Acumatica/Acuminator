@@ -55,12 +55,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		internal BQLSymbols(Compilation compilation) : base(compilation)
 		{
 			PXSetupTypes = ImmutableArray.Create
-							(
-								PXSetup,
-								PXSetupWhere,
-								PXSetupJoin,
-								PXSetupSelect
-							);
+			(
+				PXSetup,
+				PXSetupWhere,
+				PXSetupJoin,
+				PXSetupSelect
+			);
 		}
 	}
 }
