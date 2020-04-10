@@ -13,6 +13,26 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public bool IsProcessing { get; }
 
 		/// <summary>
+		/// Indicates whether the data view is PXSetup data view
+		/// </summary>
+		public bool IsSetup { get; }
+
+		/// <summary>
+		/// Indicates whether the data view is PXFilter data view
+		/// </summary>
+		public bool IsFilter { get; }
+
+		/// <summary>
+		/// Indicates whether the data view is a custom PXSelect-derived data view
+		/// </summary>
+		public bool IsCustomView { get; }
+
+		/// <summary>
+		/// Indicates whether the data view is derived from PXSelectReadOnly
+		/// </summary>
+		public bool IsPXSelectReadOnly { get; }
+
+		/// <summary>
 		/// The type of the data view symbol
 		/// </summary>
 		public INamedTypeSymbol Type { get; }
@@ -61,7 +81,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			pxContext.ThrowOnNull(nameof(pxContext));
 
 			Type = type;
+
 			IsProcessing = type.IsProcessingView(pxContext);
+			IsSetup = type.IsPXSetupBqlCommand(pxContext);
+			IsFilter = type.InheritsFromOrEqualsGeneric(pxContext.BQL.PXFilter);
+			IsCustomView = type.IsCustomBqlCommand(pxContext);
+			IsPXSelectReadOnly = type.IsPXSelectReadOnlyCommand();
+
 			DAC = Type.GetDacFromView(pxContext);
 		}
 
