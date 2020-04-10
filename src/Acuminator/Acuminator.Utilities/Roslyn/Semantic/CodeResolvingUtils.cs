@@ -335,7 +335,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			bqlTypeSymbol.ThrowOnNull(nameof(bqlTypeSymbol));
 			context.ThrowOnNull(nameof(context));
 
-			ImmutableArray<INamedTypeSymbol> setupTypes = context.BQL.GetPXSetupTypes();
+			ImmutableArray<INamedTypeSymbol> setupTypes = context.BQL.PXSetupTypes;
 			return bqlTypeSymbol.GetBaseTypesAndThis()
 								.Any(type => setupTypes.Contains(type));
 		}
