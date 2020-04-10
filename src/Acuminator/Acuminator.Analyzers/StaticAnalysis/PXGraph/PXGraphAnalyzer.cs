@@ -76,7 +76,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 				CancellationToken = context.CancellationToken
 			};
 
-			var inferredGraphs = PXGraphSemanticModel.InferModels(pxContext, type, context.CancellationToken);
+			var inferredGraphs = PXGraphSemanticModel.InferModels(pxContext, type, GraphSemanticModelCreationOptions.CollectAll, context.CancellationToken);
 			
 			foreach (var graph in inferredGraphs)
 			{

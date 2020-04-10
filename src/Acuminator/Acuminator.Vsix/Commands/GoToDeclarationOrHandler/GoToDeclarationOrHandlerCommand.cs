@@ -162,7 +162,9 @@ namespace Acuminator.Vsix.GoToDeclaration
 															   MemberDeclarationSyntax memberNode, SemanticModel semanticModel, PXContext context)
 		{
 			INamedTypeSymbol graphOrExtensionType = memberSymbol.ContainingType;
-			PXGraphSemanticModel graphSemanticModel = PXGraphSemanticModel.InferModels(context, graphOrExtensionType)
+			var modelCreationOptions = GraphSemanticModelCreationOptions.CollectGeneralGraphInfo |
+									   GraphSemanticModelCreationOptions.CollectProcessingDelegates;
+			PXGraphSemanticModel graphSemanticModel = PXGraphSemanticModel.InferModels(context, graphOrExtensionType, modelCreationOptions)
 																		 ?.FirstOrDefault();
 
 			if (graphSemanticModel == null || graphSemanticModel.Type == GraphType.None)

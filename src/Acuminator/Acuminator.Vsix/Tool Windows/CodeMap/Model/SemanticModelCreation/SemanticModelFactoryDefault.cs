@@ -37,7 +37,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (rootSymbol.IsPXGraphOrExtension(context))
 			{
-				return TryToInferGraphOrGraphExtensionSemanticModel(rootSymbol, context, out semanticModel, cancellationToken);
+				return TryToInferGraphOrGraphExtensionSemanticModel(rootSymbol, context, GraphSemanticModelCreationOptions.CollectGeneralGraphInfo,
+																	out semanticModel, cancellationToken);
 			}
 			else if (rootSymbol.IsDacOrExtension(context))
 			{
@@ -49,10 +50,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		}
 
 		protected virtual bool TryToInferGraphOrGraphExtensionSemanticModel(INamedTypeSymbol graphSymbol, PXContext context, 
-																		    out ISemanticModel graphSemanticModel,
+																			GraphSemanticModelCreationOptions modelCreationOptions,
+																			out ISemanticModel graphSemanticModel,
 																			CancellationToken cancellationToken = default)
 		{
-			var graphSimpleModel = PXGraphEventSemanticModel.InferModels(context, graphSymbol, cancellationToken).FirstOrDefault();
+			var graphSimpleModel = PXGraphEventSemanticModel.InferModels(context, graphSymbol, modelCreationOptions, cancellationToken)
+															.FirstOrDefault();
 
 			if (graphSimpleModel == null || graphSimpleModel.Type == GraphType.None)
 			{
