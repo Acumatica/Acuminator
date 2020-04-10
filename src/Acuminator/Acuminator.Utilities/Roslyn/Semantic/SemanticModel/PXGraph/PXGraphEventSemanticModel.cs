@@ -26,6 +26,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public PXGraphSemanticModel BaseGraphModel { get; }
 
 		#region Base Model
+		public GraphSemanticModelCreationOptions ModelCreationOptions => BaseGraphModel.ModelCreationOptions;
+
 		public bool IsProcessing => BaseGraphModel.IsProcessing;
 
 		public GraphType Type => BaseGraphModel.Type;
@@ -148,10 +150,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 		}
 
-		public static IEnumerable<PXGraphEventSemanticModel> InferModels(PXContext pxContext, INamedTypeSymbol typeSymbol,
+		public static IEnumerable<PXGraphEventSemanticModel> InferModels(PXContext pxContext, INamedTypeSymbol typeSymbol, 
+																		 GraphSemanticModelCreationOptions modelCreationOptions,
 																		 CancellationToken cancellation = default)
 		{	
-			var baseGraphModels = PXGraphSemanticModel.InferModels(pxContext, typeSymbol, cancellation);
+			var baseGraphModels = PXGraphSemanticModel.InferModels(pxContext, typeSymbol, modelCreationOptions, cancellation);
 			var eventsGraphModels = baseGraphModels.Select(graph => new PXGraphEventSemanticModel(pxContext, graph, cancellation))
 												   .ToList();
 			return eventsGraphModels;

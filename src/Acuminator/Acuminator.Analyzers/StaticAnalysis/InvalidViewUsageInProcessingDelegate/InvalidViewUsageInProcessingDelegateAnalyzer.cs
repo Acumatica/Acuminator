@@ -114,7 +114,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.InvalidViewUsageInProcessingDelega
 					return isProcessing;
 				}
 
-				var graph = PXGraphSemanticModel.InferExplicitModel(_pxContext, containingGraph, CancellationToken);
+				var graph = PXGraphSemanticModel.InferExplicitModel(_pxContext, containingGraph, GraphSemanticModelCreationOptions.CollectGeneralGraphInfo,
+                                                                    CancellationToken);
 				isProcessing = graph?.IsProcessing ?? false;
 
 				_graphProcessingDictionary.Add(containingGraph, isProcessing);
