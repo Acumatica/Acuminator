@@ -96,7 +96,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		private void InitProcessingDelegatesInfo()
 		{
-			if (!ModelCreationOptions.HasOption(GraphSemanticModelCreationOptions.CollectProcessingDelegates))
+			if (!ModelCreationOptions.HasFlag(GraphSemanticModelCreationOptions.CollectProcessingDelegates))
 			{
 				IsProcessing = Views.Any(v => v.IsProcessing);
 				return;
@@ -214,7 +214,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				models.Add(explicitModel);
 			}
 
-			if (modelCreationOptions.HasOption(GraphSemanticModelCreationOptions.InferImplicitModels))
+			if (modelCreationOptions.HasFlag(GraphSemanticModelCreationOptions.InferImplicitModels))
 			{
 				InferImplicitModels(pxContext, typeSymbol, modelCreationOptions, models, cancellation);
 			}
