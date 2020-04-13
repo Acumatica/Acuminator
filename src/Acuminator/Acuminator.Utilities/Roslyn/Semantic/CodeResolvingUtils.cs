@@ -317,7 +317,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			foreach (ITypeSymbol type in bqlTypeSymbol.GetBaseTypesAndThis())
 			{
 				int indexOfGenericArgsSeparator = type.Name.LastIndexOf('`');
-				string typeName = indexOfGenericArgsSeparator >= 0
+				string typeName = indexOfGenericArgsSeparator > 0
 					? type.Name.Substring(0, indexOfGenericArgsSeparator)
 					: type.Name;
 

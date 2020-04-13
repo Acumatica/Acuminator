@@ -13,9 +13,9 @@ using Acuminator.Vsix.Utilities;
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	/// <summary>
-	/// Converter which converts <see cref="IconViewModel"/> to the <see cref="BitmapImage"/> icon.
+	/// Converter which converts <see cref="ViewModelBase"/> to the <see cref="BitmapImage"/> icon.
 	/// </summary>
-	[ValueConversion(sourceType: typeof(IconViewModel), targetType: typeof(BitmapImage))]
+	[ValueConversion(sourceType: typeof(ViewModelBase), targetType: typeof(BitmapImage))]
 	public class TreeNodeToImageSourceConverter : IValueConverter
 	{
 		private const string BitmapsCollectionURI = @"pack://application:,,,/Acuminator;component/Resources/CodeMap/Bitmap/BitmapImages.xaml";

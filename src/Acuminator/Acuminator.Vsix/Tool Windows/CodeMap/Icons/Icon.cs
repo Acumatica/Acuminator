@@ -32,6 +32,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		RowEvent,
 		FieldEvent,
-		CacheAttached	
+		CacheAttached,
+
+		Settings,
+		Filter,
+		Processing
 	}
 }

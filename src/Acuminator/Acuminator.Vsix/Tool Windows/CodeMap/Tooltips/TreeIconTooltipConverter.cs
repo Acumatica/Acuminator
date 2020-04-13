@@ -15,16 +15,37 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	[ValueConversion(sourceType: typeof(TreeNodeViewModel), targetType: typeof(string))]
 	public class TreeIconTooltipConverter : IValueConverter
 	{
-		private const string IsKeyTooltip = "Is part of a primary key";
-
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			switch (value)
+			Icon icon = GetIcon(value);
+
+			switch (icon)
 			{
-				case PropertyNodeViewModel propertyNode when propertyNode.IsKey:
-					return IsKeyTooltip;
+				case Icon.DacKeyProperty:
+					return VSIXResource.DacKeyIconTooltip;
+				case Icon.Settings:
+					return VSIXResource.PXSetupViewIconTooltip;
+				case Icon.Filter:
+					return VSIXResource.PXFilterViewIconTooltip;
+				case Icon.Processing:
+					return VSIXResource.ProcessingViewIconTooltip;
 				default:
 					return Binding.DoNothing;
+			}
+		}
+
+		private Icon GetIcon(object viewModel)
+		{
+			switch (viewModel)
+			{
+				case TreeNodeViewModel treeNode:
+					return treeNode.NodeIcon;
+
+				case IconViewModel iconViewModel:
+					return iconViewModel.IconType;
+
+				default:
+					return Icon.None;
 			}
 		}
 
