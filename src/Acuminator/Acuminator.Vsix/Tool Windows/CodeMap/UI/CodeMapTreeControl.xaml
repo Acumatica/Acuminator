@@ -628,8 +628,9 @@
 								<ItemsControl.Resources>
 									<DataTemplate DataType="{x:Type codeMap:IconViewModel}">
 										<Image Margin="0,0,5,0" UseLayoutRounding="True"
-										   Source="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, 
-															Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource treeNodeToIconConverter}}">
+											   Source="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, Mode=OneWay, 
+																UpdateSourceTrigger=PropertyChanged, Converter={StaticResource treeNodeToIconConverter}}"
+											   ToolTip="{Binding Mode=OneWay, Converter={StaticResource iconTooltipConverter}}">
 											<Image.Style>
 												<Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}">
 													<Style.Triggers>
