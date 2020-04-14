@@ -612,7 +612,7 @@
 										  ItemsSource="{Binding Path=ExtraInfos, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
 								<ItemsControl.ItemsPanel>
 									<ItemsPanelTemplate>
-										<StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch"/>
+										<StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,2"/>
 									</ItemsPanelTemplate>
 								</ItemsControl.ItemsPanel>
 								<ItemsControl.Style>
