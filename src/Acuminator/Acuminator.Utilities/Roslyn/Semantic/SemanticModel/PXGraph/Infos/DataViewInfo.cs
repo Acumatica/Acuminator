@@ -90,7 +90,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			IsProcessing = type.IsProcessingView(pxContext);
 			IsSetup = type.IsPXSetupBqlCommand(pxContext);
 			IsFilter = type.InheritsFromOrEqualsGeneric(pxContext.BQL.PXFilter);
-			IsFBQL = type.IsFbqlCommand();
+			IsFBQL = type.IsFbqlView(pxContext);
 			IsCustomView = !IsProcessing && !IsSetup && !IsFilter && !IsFBQL && type.IsCustomBqlCommand(pxContext);
 			IsPXSelectReadOnly = type.IsPXSelectReadOnlyCommand();
 
