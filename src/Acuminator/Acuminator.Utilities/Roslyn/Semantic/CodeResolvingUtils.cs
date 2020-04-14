@@ -346,7 +346,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 
 			ImmutableArray<INamedTypeSymbol> setupTypes = context.BQL.PXSetupTypes;
 			return bqlTypeSymbol.GetBaseTypesAndThis()
-								.Any(type => setupTypes.Contains(type));
+								.Any(type => setupTypes.Contains(type.OriginalDefinition));
 		}
 
 		public static TextSpan? GetBqlOperatorOutliningTextSpan(this ITypeSymbol typeSymbol, GenericNameSyntax bqlOperatorNode)
