@@ -33,6 +33,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		public bool IsPXSelectReadOnly { get; }
 
 		/// <summary>
+		/// Indicates whether the data view is FBQL
+		/// </summary>
+		public bool IsFBQL { get; }
+
+		/// <summary>
 		/// The type of the data view symbol
 		/// </summary>
 		public INamedTypeSymbol Type { get; }
@@ -85,7 +90,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			IsProcessing = type.IsProcessingView(pxContext);
 			IsSetup = type.IsPXSetupBqlCommand(pxContext);
 			IsFilter = type.InheritsFromOrEqualsGeneric(pxContext.BQL.PXFilter);
-			IsCustomView = type.IsCustomBqlCommand(pxContext);
+			IsFBQL = type.IsFbqlCommand();
+			IsCustomView = !IsProcessing && !IsSetup && !IsFilter && !IsFBQL && type.IsCustomBqlCommand(pxContext);
 			IsPXSelectReadOnly = type.IsPXSelectReadOnlyCommand();
 
 			DAC = Type.GetDacFromView(pxContext);
