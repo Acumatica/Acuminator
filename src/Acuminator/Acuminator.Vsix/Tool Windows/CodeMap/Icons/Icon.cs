@@ -36,6 +36,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		Settings,
 		Filter,
-		Processing
+		Processing,
 	}
 }
