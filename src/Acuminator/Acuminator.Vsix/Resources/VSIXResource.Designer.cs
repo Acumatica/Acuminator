@@ -403,7 +403,7 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Auto-numbering is enabled for this field..
+        ///   Looks up a localized string similar to Autonumbering is enabled for this field..
         /// </summary>
         public static string PropertyHasAutoNumberingExtraInfoTooltip {
             get {

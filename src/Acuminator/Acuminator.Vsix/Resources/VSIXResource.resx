@@ -298,7 +298,7 @@
     <value>The PXDBIdentity attribute is specified for this field.</value>
   </data>
   <data name="PropertyHasAutoNumberingExtraInfoTooltip" xml:space="preserve">
-    <value>Auto-numbering is enabled for this field.</value>
+    <value>Autonumbering is enabled for this field.</value>
   </data>
   <data name="DacKeyIconTooltip" xml:space="preserve">
     <value>Is part of a primary key</value>
