@@ -314,12 +314,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			if (!bqlTypeSymbol.IsBqlCommand())
 				return false;
 
-			return bqlTypeSymbol.GetBaseTypesAndThis()
-								.Select(type => type.Name.Split('`').FirstOrDefault())
-								.Any(typeName => TypeNames.ReadOnlySelects.Contains(typeName));
+			foreach (ITypeSymbol type in bqlTypeSymbol.GetBaseTypesAndThis())
+			{
+				int indexOfGenericArgsSeparator = type.Name.LastIndexOf('`');
+				string typeName = indexOfGenericArgsSeparator > 0
+					? type.Name.Substring(0, indexOfGenericArgsSeparator)
+					: type.Name;
+
+				if (TypeNames.ReadOnlySelects.Contains(typeName))
+					return true;
+			}
+
+			return false;
 		}
 
-		public static bool IsReadOnlyBqlCommand(this ITypeSymbol bqlTypeSymbol, PXContext context)
+		public static bool IsPXNonUpdateableBqlCommand(this ITypeSymbol bqlTypeSymbol, PXContext context)
 		{
 			bqlTypeSymbol.ThrowOnNull(nameof(bqlTypeSymbol));
 			context.ThrowOnNull(nameof(context));
@@ -335,9 +344,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			bqlTypeSymbol.ThrowOnNull(nameof(bqlTypeSymbol));
 			context.ThrowOnNull(nameof(context));
 
-			ImmutableArray<INamedTypeSymbol> setupTypes = context.BQL.GetPXSetupTypes();
+			ImmutableArray<INamedTypeSymbol> setupTypes = context.BQL.PXSetupTypes;
 			return bqlTypeSymbol.GetBaseTypesAndThis()
-								.Any(type => setupTypes.Contains(type));
+								.Any(type => setupTypes.Contains(type.OriginalDefinition));
 		}
 
 		public static TextSpan? GetBqlOperatorOutliningTextSpan(this ITypeSymbol typeSymbol, GenericNameSyntax bqlOperatorNode)

@@ -9,8 +9,17 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 	/// </summary>
 	public class BQLSymbols : SymbolsSetBase
 	{
-		internal BQLSymbols(Compilation compilation) : base(compilation)
-		{ }
+		#region PXSetup
+		public ImmutableArray<INamedTypeSymbol> PXSetupTypes { get; }
+
+		public INamedTypeSymbol PXSetup => _compilation.GetTypeByMetadataName(TypeFullNames.PXSetup1);
+
+		public INamedTypeSymbol PXSetupWhere => _compilation.GetTypeByMetadataName(TypeFullNames.PXSetup2);
+
+		public INamedTypeSymbol PXSetupJoin => _compilation.GetTypeByMetadataName(TypeFullNames.PXSetup3);
+
+		public INamedTypeSymbol PXSetupSelect => _compilation.GetTypeByMetadataName(TypeFullNames.PXSetupSelect);
+		#endregion
 
 		#region CustomDelegates
 		public INamedTypeSymbol CustomPredicate => _compilation.GetTypeByMetadataName(TypeFullNames.CustomPredicate);
@@ -37,29 +46,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		public INamedTypeSymbol IPXNonUpdateable => _compilation.GetTypeByMetadataName(TypeFullNames.IPXNonUpdateable);
 
-		#region PXSetup
-		public INamedTypeSymbol PXSetup => _compilation.GetTypeByMetadataName(TypeFullNames.PXSetup1);
-
-		public INamedTypeSymbol PXSetupWhere => _compilation.GetTypeByMetadataName(TypeFullNames.PXSetup2);
-
-		public INamedTypeSymbol PXSetupJoin => _compilation.GetTypeByMetadataName(TypeFullNames.PXSetup3);
-
-		public INamedTypeSymbol PXSetupSelect => _compilation.GetTypeByMetadataName(TypeFullNames.PXSetupSelect);
-
 		public INamedTypeSymbol FbqlCommand => _compilation.GetTypeByMetadataName(TypeFullNames.FbqlCommand);
 
 		public INamedTypeSymbol PXViewOf => _compilation.GetTypeByMetadataName(TypeFullNames.PXViewOf);
 
 		public INamedTypeSymbol PXViewOf_BasedOn => _compilation.GetTypeByMetadataName(TypeFullNames.PXViewOfBasedOn);
 
-		public ImmutableArray<INamedTypeSymbol> GetPXSetupTypes() =>
-			ImmutableArray.Create
+		internal BQLSymbols(Compilation compilation) : base(compilation)
+		{
+			PXSetupTypes = ImmutableArray.Create
 			(
 				PXSetup,
 				PXSetupWhere,
 				PXSetupJoin,
 				PXSetupSelect
 			);
-		#endregion
+		}
 	}
 }
