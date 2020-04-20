@@ -49,17 +49,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private IEnumerable<ExtraInfoViewModel> GetExtraInfos()
 		{
-			if (ViewInfo.IsFilter)
+			if (ViewInfo.IsFilter && NodeIcon != Icon.Filter)
 			{
 				yield return new IconViewModel(this, Icon.Filter);
 			}
 
-			if (ViewInfo.IsSetup)
+			if (ViewInfo.IsSetup && NodeIcon != Icon.Settings)
 			{
 				yield return new IconViewModel(this, Icon.Settings);
 			}
 
-			if (ViewInfo.IsProcessing)
+			if (ViewInfo.IsProcessing && NodeIcon != Icon.Processing)
 			{
 				yield return new IconViewModel(this, Icon.Processing);
 			}
