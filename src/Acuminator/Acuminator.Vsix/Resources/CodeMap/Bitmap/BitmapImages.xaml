@@ -63,7 +63,7 @@
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Filter.png"/>
 
 	<BitmapImage x:Key="Processing" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
-                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Process.png"/>
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Process.ico"/>
 
 	<BitmapImage x:Key="SettingsSmall" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Settings.ico"/>
@@ -72,5 +72,5 @@
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Filter.png"/>
 
 	<BitmapImage x:Key="ProcessingSmall" DecodePixelHeight="14" DecodePixelWidth="14" CacheOption="OnLoad"
-                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Process.png"/>
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/ProcessSmall.ico"/>
 </ResourceDictionary>
