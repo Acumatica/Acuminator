@@ -268,7 +268,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				bool wasVisible = IsVisible;
 				IsVisible = isVisible;
 
-
+				if (!wasVisible && IsVisible)   //Handle the case when WindowShowing event happens after WindowActivated event
+				{
+					RefreshCodeMapAsync()
+						.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}");
+				}
 			}
 		}
 
