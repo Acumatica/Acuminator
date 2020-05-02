@@ -265,7 +265,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (Guid.TryParse(objectKind, out Guid windowId) && windowId == CodeMapWindow.CodeMapWindowGuid)
 			{
+				bool wasVisible = IsVisible;
 				IsVisible = isVisible;
+
+
 			}
 		}
 
@@ -303,21 +306,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 			}
 
-			ClearCodeMap();
-			var currentWorkspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
-
-			if (currentWorkspace == null)
-				return;
-
-			Workspace = currentWorkspace;
-			IWpfTextView activeWpfTextView = await AcuminatorVSPackage.Instance.GetWpfTextViewByFilePathAsync(gotFocus.Document.FullName);
-			Document activeDocument = activeWpfTextView?.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
-
-			if (activeDocument == null)
-				return;
-
-			DocumentModel = new DocumentModel(activeWpfTextView, activeDocument);
-			await BuildCodeMapAsync();
+			var activeWpfTextViewTask = AcuminatorVSPackage.Instance.GetWpfTextViewByFilePathAsync(gotFocus.Document.FullName);
+			await RefreshCodeMapInternalAsync(activeWpfTextViewTask, activeDocument: null);
 		}
 
 		private async Task RefreshCodeMapAsync(IWpfTextView activeWpfTextView = null, Document activeDocument = null)
@@ -330,6 +320,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			}
 
+			var activeWpfTextViewTask = activeWpfTextView != null 
+				? Task.FromResult(activeWpfTextView)
+				: AcuminatorVSPackage.Instance.GetWpfTextViewAsync();
+
+			await RefreshCodeMapInternalAsync(activeWpfTextViewTask, activeDocument);
+		}
+
+		private async Task RefreshCodeMapInternalAsync(Task<IWpfTextView> activeWpfTextViewTask, Document activeDocument = null)
+		{
 			ClearCodeMap();
 			var currentWorkspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
 
@@ -337,7 +336,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 
 			Workspace = currentWorkspace;
-			activeWpfTextView = activeWpfTextView ?? await AcuminatorVSPackage.Instance.GetWpfTextViewAsync();
+			IWpfTextView activeWpfTextView = activeWpfTextViewTask != null
+				? await activeWpfTextViewTask
+				: null;
 			activeDocument = activeDocument ?? activeWpfTextView?.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
 
 			if (activeDocument == null)
