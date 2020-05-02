@@ -13,17 +13,22 @@ using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.Common;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
+using SuppressMessageAttribute = System.Diagnostics.CodeAnalysis.SuppressMessageAttribute;
 using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class CodeMapWindowViewModel : ToolWindowViewModelBase
 	{
+		private EnvDTE.DTE _dte;
+
 		private readonly EnvDTE.SolutionEvents _solutionEvents;
 		private readonly EnvDTE.WindowEvents _windowEvents;
 		private readonly EnvDTE80.WindowVisibilityEvents _visibilityEvents;
 
 		private CancellationTokenSource _cancellationTokenSource;
+
+		private bool IsActiveDocumentVisibilityChanging { get; set; }
 
 		public TreeBuilderBase TreeBuilder
 		{
@@ -163,12 +168,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (ThreadHelper.CheckAccess())
 			{
-				EnvDTE.DTE dte = AcuminatorVSPackage.Instance.GetService<EnvDTE.DTE>();
+				_dte = AcuminatorVSPackage.Instance.GetService<EnvDTE.DTE>();
 
 				//Store reference to DTE SolutionEvents and WindowEvents to prevent them from being GCed
-				_solutionEvents = dte?.Events?.SolutionEvents;
-				_windowEvents = dte?.Events?.WindowEvents;
-				_visibilityEvents = (dte?.Events as EnvDTE80.Events2)?.WindowVisibilityEvents;
+				_solutionEvents = _dte?.Events?.SolutionEvents;
+				_windowEvents = _dte?.Events?.WindowEvents;
+				_visibilityEvents = (_dte?.Events as EnvDTE80.Events2)?.WindowVisibilityEvents;
 
 				SubscribeOnVisualStudioEvents();
 			}		
@@ -182,7 +187,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			if (_windowEvents != null)
-			{
+			{				
 				_windowEvents.WindowActivated += WindowEvents_WindowActivated;
 			}
 
@@ -201,6 +206,23 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			var codeMapViewModel = new CodeMapWindowViewModel(wpfTextView, document);
 			codeMapViewModel.BuildCodeMapAsync().Forget();
 			return codeMapViewModel;
+		}
+
+		public void SortNodes(TreeNodeViewModel node, SortType sortType, SortDirection sortDirection, bool sortDescendants)
+		{
+			if (node == null)
+				return;
+
+			if (sortDescendants)
+			{
+				TreeSorter.SortSubtree(node, sortType, sortDirection);
+				node.ExpandOrCollapseAll(expand: true);
+			}
+			else
+			{
+				TreeSorter.SortChildren(node, sortType, sortDirection);
+				node.IsExpanded = true;
+			}
 		}
 
 		public override void FreeResources()
@@ -242,38 +264,122 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			await RefreshCodeMapAsync(activeWpfTextView, activeDocument);
 		}
 
-		private void VisibilityEvents_WindowHiding(EnvDTE.Window window) => SetVisibilityForCodeMapWindow(window, isVisible: false);
+		private void VisibilityEvents_WindowHiding(EnvDTE.Window window) => SetVisibilityForCodeMapWindow(window, windowIsVisible: false);
 
-		private void VisibilityEvents_WindowShowing(EnvDTE.Window window) => SetVisibilityForCodeMapWindow(window, isVisible: true);
+		private void VisibilityEvents_WindowShowing(EnvDTE.Window window) => SetVisibilityForCodeMapWindow(window, windowIsVisible: true);
 
-		private void SetVisibilityForCodeMapWindow(EnvDTE.Window window, bool isVisible)
+		[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Already checked")]
+		private void SetVisibilityForCodeMapWindow(EnvDTE.Window window, bool windowIsVisible)
 		{
-			ThreadHelper.ThrowIfNotOnUIThread();
-
-			string objectKind = null;
-
-			try
-			{
-				objectKind = window?.ObjectKind;    //Sometimes COM interop exceptions popup from getter, so we need to obtain ObjectKind safely
-			}
-			catch (Exception)
-			{
-			}
-
-			if (objectKind == null)
+			if (!ThreadHelper.CheckAccess())
 				return;
 
-			if (Guid.TryParse(objectKind, out Guid windowId) && windowId == CodeMapWindow.CodeMapWindowGuid)
+			var (windowId, windowDocumentPath) = GetWindowIdAndFilePathFromComWindow(window);
+			if (windowId == null)
+				return;	
+
+			if (windowId == CodeMapWindow.CodeMapWindowGuid)  //Case when Code Map is displayed
 			{
+				IsActiveDocumentVisibilityChanging = false;
 				bool wasVisible = IsVisible;
-				IsVisible = isVisible;
+				IsVisible = windowIsVisible;
 
 				if (!wasVisible && IsVisible)   //Handle the case when WindowShowing event happens after WindowActivated event
 				{
 					RefreshCodeMapAsync()
 						.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}");
 				}
+
+				return;
 			}
+
+			const string emptyObjectKind = "{00000000-0000-0000-0000-000000000000}";
+			bool isClosingWindow = window.Document == null && window.ObjectKind == emptyObjectKind;
+			bool isDocumentWindow = window.Kind == "Document";
+			bool isActiveDocumentClosed = !windowIsVisible && IsVisible && isDocumentWindow && isClosingWindow && 
+										  !windowDocumentPath.IsNullOrWhiteSpace() && !IsActiveDocumentVisibilityChanging &&
+										   string.Equals(Document?.FilePath, windowDocumentPath, StringComparison.OrdinalIgnoreCase);
+			
+			bool isNewDocumentShowing = windowIsVisible && IsVisible && DocumentModel == null &&
+										isDocumentWindow && IsActiveDocumentVisibilityChanging && 
+										!windowDocumentPath.IsNullOrWhiteSpace();
+
+			// Handle the case when active document is closed while Code Map tool window is opened and not pinned.
+			// In this case due to VS not firing WindowActivated event we have to use simple state machine with IsActiveDocumentVisibilityChanging flag
+			// to mark for the next document WindowShowing event that Code Map should be rebuild
+			if (isActiveDocumentClosed)		
+			{			
+				IsActiveDocumentVisibilityChanging = true;
+
+				try
+				{
+					ClearCodeMap();
+					DocumentModel = null;
+					NotifyPropertyChanged(nameof(Document));
+				}
+				catch
+				{
+					IsActiveDocumentVisibilityChanging = false;
+					throw;
+				}	
+			}
+			else if (isNewDocumentShowing)
+			{
+				IsActiveDocumentVisibilityChanging = false;
+				RefreshCodeMapAsync()
+					.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}");		
+			}
+			else
+			{
+				IsActiveDocumentVisibilityChanging = false;
+			}			
+		}
+
+		private (Guid? WindowID, string DocumentPath) GetWindowIdAndFilePathFromComWindow(EnvDTE.Window window)
+		{
+			string objectKind = null;
+			string windowDocumentPath = null;
+			
+			try
+			{
+				//Sometimes COM interop exceptions popup from getter, so we need to obtain ObjectKind safely
+				objectKind = window?.ObjectKind;
+
+				#pragma warning disable VSTHRD010 
+				windowDocumentPath = GetFilePathFromCOM(window);
+				#pragma warning restore VSTHRD010 
+			}
+			catch (Exception)
+			{
+			}
+
+			return objectKind != null && Guid.TryParse(objectKind, out Guid windowId)
+				? (windowId, windowDocumentPath)
+				: (default(Guid?), windowDocumentPath);
+		}
+
+		private string GetFilePathFromCOM(EnvDTE.Window window)
+		{
+			string windowFilePath = window?.Document?.FullName;
+
+			if (windowFilePath != null)
+				return windowFilePath;
+
+			// If window was just closed its properties are already reset to null
+			// In this case we try to query VS COM model for file name
+			ThreadHelper.ThrowIfNotOnUIThread();
+			_dte = _dte ?? AcuminatorVSPackage.Instance.GetService<EnvDTE.DTE>();
+
+			if (_dte?.SelectedItems == null || _dte.SelectedItems.Count == 0)
+				return null;
+
+			EnvDTE.SelectedItem selectedItem = _dte.SelectedItems.Item(1);
+			EnvDTE.ProjectItem projectItem = selectedItem?.ProjectItem;
+
+			if (projectItem == null || projectItem.FileCount != 1)
+				return null;
+
+			return projectItem.FileNames[1];
 		}
 
 		/// <summary>
@@ -468,23 +574,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (node != null)
 			{
 				node.ExpandOrCollapseAll(expand: !node.IsExpanded);
-			}
-		}
-
-		public void SortNodes(TreeNodeViewModel node, SortType sortType, SortDirection sortDirection, bool sortDescendants)
-		{
-			if (node == null)
-				return;
-
-			if (sortDescendants)
-			{
-				TreeSorter.SortSubtree(node, sortType, sortDirection);
-				node.ExpandOrCollapseAll(expand: true);
-			}
-			else
-			{
-				TreeSorter.SortChildren(node, sortType, sortDirection);
-				node.IsExpanded = true;
 			}
 		}
 	}
