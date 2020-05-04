@@ -18,17 +18,10 @@ using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class CodeMapWindowViewModel : ToolWindowViewModelBase
+	public partial class CodeMapWindowViewModel : ToolWindowViewModelBase
 	{
-		private EnvDTE.DTE _dte;
-
-		private readonly EnvDTE.SolutionEvents _solutionEvents;
-		private readonly EnvDTE.WindowEvents _windowEvents;
-		private readonly EnvDTE80.WindowVisibilityEvents _visibilityEvents;
-
+		private readonly CodeMapDteEventsObserver _dteEventsObserver;
 		private CancellationTokenSource _cancellationTokenSource;
-
-		private bool IsActiveDocumentVisibilityChanging { get; set; }
 
 		public TreeBuilderBase TreeBuilder
 		{
@@ -50,19 +43,29 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			internal set;
 		}
 
+		private DocumentModel _documentModel;
+
 		public DocumentModel DocumentModel
 		{
-			get;
-			private set;
+			get => _documentModel;
+			private set
+			{
+				if (!ReferenceEquals(_documentModel, value))
+				{
+					_documentModel = value;
+					NotifyPropertyChanged();
+					NotifyPropertyChanged(nameof(Document));
+				}
+			}
 		}
+
+		public Document Document => DocumentModel?.Document;
 
 		public Workspace Workspace
 		{
 			get;
 			private set;
 		}
-
-		public Document Document => DocumentModel?.Document;
 
 		private CodeMapDocChangesClassifier DocChangesClassifier { get; }
 
@@ -166,36 +169,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Workspace = DocumentModel.Document.Project.Solution.Workspace;
 			Workspace.WorkspaceChanged += OnWorkspaceChanged;
 
-			if (ThreadHelper.CheckAccess())
-			{
-				_dte = AcuminatorVSPackage.Instance.GetService<EnvDTE.DTE>();
-
-				//Store reference to DTE SolutionEvents and WindowEvents to prevent them from being GCed
-				_solutionEvents = _dte?.Events?.SolutionEvents;
-				_windowEvents = _dte?.Events?.WindowEvents;
-				_visibilityEvents = (_dte?.Events as EnvDTE80.Events2)?.WindowVisibilityEvents;
-
-				SubscribeOnVisualStudioEvents();
-			}		
-		}
-
-		private void SubscribeOnVisualStudioEvents()
-		{
-			if (_solutionEvents != null)
-			{
-				_solutionEvents.AfterClosing += SolutionEvents_AfterClosing;
-			}
-
-			if (_windowEvents != null)
-			{				
-				_windowEvents.WindowActivated += WindowEvents_WindowActivated;
-			}
-
-			if (_visibilityEvents != null)
-			{
-				_visibilityEvents.WindowShowing += VisibilityEvents_WindowShowing;
-				_visibilityEvents.WindowHiding += VisibilityEvents_WindowHiding;
-			}
+			_dteEventsObserver = new CodeMapDteEventsObserver(this);
 		}
 
 		public static CodeMapWindowViewModel InitCodeMap(IWpfTextView wpfTextView, Document document)
@@ -228,7 +202,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override void FreeResources()
 		{
 			base.FreeResources();
-
 			_cancellationTokenSource?.Dispose();
 
 			if (Workspace != null)
@@ -236,21 +209,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				Workspace.WorkspaceChanged -= OnWorkspaceChanged;
 			}
 
-			if (_solutionEvents != null)
-			{
-				_solutionEvents.AfterClosing -= SolutionEvents_AfterClosing;
-			}
-
-			if (_windowEvents != null)
-			{
-				_windowEvents.WindowActivated -= WindowEvents_WindowActivated;
-			}
-
-			if (_visibilityEvents != null)
-			{
-				_visibilityEvents.WindowHiding -= VisibilityEvents_WindowHiding;
-				_visibilityEvents.WindowShowing -= VisibilityEvents_WindowShowing;
-			}
+			_dteEventsObserver.UnsubscribeEvents();
 		}
 
 		internal async Task RefreshCodeMapOnWindowOpeningAsync(IWpfTextView activeWpfTextView = null, Document activeDocument = null)
@@ -262,162 +221,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			IsCalculating = false;
 			await RefreshCodeMapAsync(activeWpfTextView, activeDocument);
-		}
-
-		private void VisibilityEvents_WindowHiding(EnvDTE.Window window) => SetVisibilityForCodeMapWindow(window, windowIsVisible: false);
-
-		private void VisibilityEvents_WindowShowing(EnvDTE.Window window) => SetVisibilityForCodeMapWindow(window, windowIsVisible: true);
-
-		[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Already checked")]
-		private void SetVisibilityForCodeMapWindow(EnvDTE.Window window, bool windowIsVisible)
-		{
-			if (!ThreadHelper.CheckAccess())
-				return;
-
-			var (windowId, windowDocumentPath) = GetWindowIdAndFilePathFromComWindow(window);
-			if (windowId == null)
-				return;	
-
-			if (windowId == CodeMapWindow.CodeMapWindowGuid)  //Case when Code Map is displayed
-			{
-				IsActiveDocumentVisibilityChanging = false;
-				bool wasVisible = IsVisible;
-				IsVisible = windowIsVisible;
-
-				if (!wasVisible && IsVisible)   //Handle the case when WindowShowing event happens after WindowActivated event
-				{
-					RefreshCodeMapAsync()
-						.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}");
-				}
-
-				return;
-			}
-
-			const string emptyObjectKind = "{00000000-0000-0000-0000-000000000000}";
-			bool isClosingWindow = window.Document == null && window.ObjectKind == emptyObjectKind;
-			bool isDocumentWindow = window.Kind == "Document";
-			bool isActiveDocumentClosed = !windowIsVisible && IsVisible && isDocumentWindow && isClosingWindow && 
-										  !windowDocumentPath.IsNullOrWhiteSpace() && !IsActiveDocumentVisibilityChanging &&
-										   string.Equals(Document?.FilePath, windowDocumentPath, StringComparison.OrdinalIgnoreCase);
-			
-			bool isNewDocumentShowing = windowIsVisible && IsVisible && DocumentModel == null &&
-										isDocumentWindow && IsActiveDocumentVisibilityChanging && 
-										!windowDocumentPath.IsNullOrWhiteSpace();
-
-			// Handle the case when active document is closed while Code Map tool window is opened and not pinned.
-			// In this case due to VS not firing WindowActivated event we have to use simple state machine with IsActiveDocumentVisibilityChanging flag
-			// to mark for the next document WindowShowing event that Code Map should be rebuild
-			if (isActiveDocumentClosed)		
-			{			
-				IsActiveDocumentVisibilityChanging = true;
-
-				try
-				{
-					ClearCodeMap();
-					DocumentModel = null;
-					NotifyPropertyChanged(nameof(Document));
-				}
-				catch
-				{
-					IsActiveDocumentVisibilityChanging = false;
-					throw;
-				}	
-			}
-			else if (isNewDocumentShowing)
-			{
-				IsActiveDocumentVisibilityChanging = false;
-				RefreshCodeMapAsync()
-					.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}");		
-			}
-			else
-			{
-				IsActiveDocumentVisibilityChanging = false;
-			}			
-		}
-
-		private (Guid? WindowID, string DocumentPath) GetWindowIdAndFilePathFromComWindow(EnvDTE.Window window)
-		{
-			string objectKind = null;
-			string windowDocumentPath = null;
-			
-			try
-			{
-				//Sometimes COM interop exceptions popup from getter, so we need to obtain ObjectKind safely
-				objectKind = window?.ObjectKind;
-
-				#pragma warning disable VSTHRD010 
-				windowDocumentPath = GetFilePathFromCOM(window);
-				#pragma warning restore VSTHRD010 
-			}
-			catch (Exception)
-			{
-			}
-
-			return objectKind != null && Guid.TryParse(objectKind, out Guid windowId)
-				? (windowId, windowDocumentPath)
-				: (default(Guid?), windowDocumentPath);
-		}
-
-		private string GetFilePathFromCOM(EnvDTE.Window window)
-		{
-			string windowFilePath = window?.Document?.FullName;
-
-			if (windowFilePath != null)
-				return windowFilePath;
-
-			// If window was just closed its properties are already reset to null
-			// In this case we try to query VS COM model for file name
-			ThreadHelper.ThrowIfNotOnUIThread();
-			_dte = _dte ?? AcuminatorVSPackage.Instance.GetService<EnvDTE.DTE>();
-
-			if (_dte?.SelectedItems == null || _dte.SelectedItems.Count == 0)
-				return null;
-
-			EnvDTE.SelectedItem selectedItem = _dte.SelectedItems.Item(1);
-			EnvDTE.ProjectItem projectItem = selectedItem?.ProjectItem;
-
-			if (projectItem == null || projectItem.FileCount != 1)
-				return null;
-
-			return projectItem.FileNames[1];
-		}
-
-		/// <summary>
-		/// Solution events after closing. Clear up the document data.
-		/// </summary>
-		private void SolutionEvents_AfterClosing()
-		{
-			ClearCodeMap();
-			DocumentModel = null;
-			NotifyPropertyChanged(nameof(Document));
-		}
-
-		private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus) =>
-			WindowEventsWindowActivatedAsync(gotFocus, lostFocus)
-				.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(WindowEvents_WindowActivated)}");
-
-		private async Task WindowEventsWindowActivatedAsync(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
-		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-			}
-
-			if (!IsVisible || Equals(gotFocus, lostFocus) || gotFocus.Document == null)
-				return;
-			else if (gotFocus.Document.Language != LegacyLanguageNames.CSharp)
-			{
-				ClearCodeMap();
-				return;
-			}
-			else if (gotFocus.Document.FullName == lostFocus?.Document?.FullName ||
-					(lostFocus?.Document == null && Document != null && gotFocus.Document.FullName == Document.FilePath))
-			{
-				return;
-			}
-
-			var activeWpfTextViewTask = AcuminatorVSPackage.Instance.GetWpfTextViewByFilePathAsync(gotFocus.Document.FullName);
-			await RefreshCodeMapInternalAsync(activeWpfTextViewTask, activeDocument: null);
 		}
 
 		private async Task RefreshCodeMapAsync(IWpfTextView activeWpfTextView = null, Document activeDocument = null)
