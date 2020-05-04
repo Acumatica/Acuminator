@@ -6,9 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio.Threading;
-using Acuminator.Utilities.Roslyn.ProjectSystem;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.Common;
 
@@ -29,8 +26,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			private readonly CodeMapWindowViewModel _codeMapViewModel;
 
-			private bool IsActiveDocumentVisibilityChanging { get; set; }
-
 			public CodeMapDteEventsObserver(CodeMapWindowViewModel codeMapViewModel)
 			{
 				_codeMapViewModel = codeMapViewModel;
@@ -39,15 +34,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				{
 					EnvDTE.DTE dte = AcuminatorVSPackage.Instance.GetService<EnvDTE.DTE>();
 
-					//Store reference to DTE SolutionEvents and WindowEvents to prevent them from being GCed
+					//Store reference to DTE SolutionEvents and WindowEvents to prevent them from being GC-ed
 					if (dte?.Events != null)
 					{
-#pragma warning disable VSTHRD010 // ThreadHelper.CheckAccess() is called
+						#pragma warning disable VSTHRD010			// ThreadHelper.CheckAccess() was called already
 						_solutionEvents = dte.Events.SolutionEvents;
 						_windowEvents = dte.Events.WindowEvents;
 						_documentEvents = dte.Events.DocumentEvents;
 						_visibilityEvents = (dte.Events as EnvDTE80.Events2)?.WindowVisibilityEvents;
-#pragma warning restore VSTHRD010
+						#pragma warning restore VSTHRD010
 					}
 
 					SubscribeOnVisualStudioEvents();
@@ -69,7 +64,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				if (_documentEvents != null)
 				{
 					_documentEvents.DocumentClosing += DocumentEvents_DocumentClosing;
-					_documentEvents.DocumentOpened += _documentEvents_DocumentOpened;
 				}
 
 				if (_visibilityEvents != null)
@@ -103,36 +97,70 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				}
 			}
 
-			private void _documentEvents_DocumentOpened(EnvDTE.Document Document)
-			{
-
-			}
-
+			[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Already checked with CheckAccess()")]
 			private void DocumentEvents_DocumentClosing(EnvDTE.Document document)
 			{
-				if (!ThreadHelper.CheckAccess() || document == null)
+				if (!ThreadHelper.CheckAccess() || document == null || _codeMapViewModel.Document == null)
 					return;
 
+				string documentPath, documentKind, documentLanguage;
 
+				try
+				{
+					//Sometimes COM interop exceptions popup from getter, so we need to query properties safely
+					documentPath = document.FullName;
+					documentKind = document.Kind;
+					documentLanguage = document.Language;
+				}
+				catch
+				{
+					return;
+				}
+
+				const string emptyObjectKind = "{00000000-0000-0000-0000-000000000000}";
+
+				if (documentKind == null || documentKind == emptyObjectKind || documentLanguage != LegacyLanguageNames.CSharp ||
+					!string.Equals(documentPath, _codeMapViewModel.Document.FilePath, StringComparison.OrdinalIgnoreCase))
+				{
+					return;
+				}
+
+				// Handle the case when active document is closed while Code Map tool window is opened and not pinned.
+				// In this case VS is not firing WindowActivated event. Therefore we clear Code Map in DocumentClosing DTE event
+				_codeMapViewModel.ClearCodeMap();
+				_codeMapViewModel.DocumentModel = null;
 			}
 
 			private void VisibilityEvents_WindowHiding(EnvDTE.Window window) => SetVisibilityForCodeMapWindow(window, windowIsVisible: false);
 
 			private void VisibilityEvents_WindowShowing(EnvDTE.Window window) => SetVisibilityForCodeMapWindow(window, windowIsVisible: true);
 
-			[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Already checked")]
+			[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Already checked with CheckAccess()")]
 			private void SetVisibilityForCodeMapWindow(EnvDTE.Window window, bool windowIsVisible)
 			{
 				if (!ThreadHelper.CheckAccess())
 					return;
 
-				var (windowId, windowDocumentPath) = GetWindowIdAndFilePathFromComWindow(window);
-				if (windowId == null)
+				string windowObjectKind, windowKind, windowDocumentPath, documentLanguage;
+
+				try
+				{
+					//Sometimes COM interop exceptions popup from getter, so we need to query properties safely
+					windowObjectKind = window.ObjectKind;	
+					windowDocumentPath = window.Document?.FullName;
+					documentLanguage = window.Document?.Language;
+					windowKind = window.Kind;
+				}
+				catch
+				{
+					return;
+				}
+
+				if (windowObjectKind == null || !Guid.TryParse(windowObjectKind, out Guid windowId))
 					return;
 
 				if (windowId == CodeMapWindow.CodeMapWindowGuid)  //Case when Code Map is displayed
 				{
-					IsActiveDocumentVisibilityChanging = false;
 					bool wasVisible = _codeMapViewModel.IsVisible;
 					_codeMapViewModel.IsVisible = windowIsVisible;
 
@@ -141,72 +169,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 						RefreshCodeMapAsync()
 							.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}");
 					}
-
-					return;
 				}
+				else if (IsSwitchingToAnotherDocumentWhileCodeMapIsEmpty())
+				{				
+					RefreshCodeMapAsync()
+						.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}");			
+				}	
 
-				bool isClosingWindow = window.ObjectKind == "{00000000-0000-0000-0000-000000000000}";
-				bool isDocumentWindow = window.Kind == "Document";
-				bool isActiveDocumentClosed = !windowIsVisible && _codeMapViewModel.IsVisible && isDocumentWindow && isClosingWindow &&
-											  !windowDocumentPath.IsNullOrWhiteSpace() && !IsActiveDocumentVisibilityChanging &&
-											   string.Equals(_codeMapViewModel.Document?.FilePath, windowDocumentPath, StringComparison.OrdinalIgnoreCase);
-
-				bool isNewDocumentShowing = windowIsVisible && _codeMapViewModel.IsVisible && _codeMapViewModel.DocumentModel == null &&
-											!isClosingWindow && isDocumentWindow && IsActiveDocumentVisibilityChanging &&
-											!windowDocumentPath.IsNullOrWhiteSpace();
-
-				// Handle the case when active document is closed while Code Map tool window is opened and not pinned.
-				// In this case due to VS not firing WindowActivated event we have to use simple state machine with IsActiveDocumentVisibilityChanging flag
-				// to mark for the next document WindowShowing event that Code Map should be rebuild
-				if (isActiveDocumentClosed)
-				{
-					IsActiveDocumentVisibilityChanging = true;
-
-					try
-					{
-						_codeMapViewModel.ClearCodeMap();
-						_codeMapViewModel.DocumentModel = null;
-					}
-					catch
-					{
-						IsActiveDocumentVisibilityChanging = false;
-						throw;
-					}
-				}
-				else
-				{
-					if (!isClosingWindow)
-						IsActiveDocumentVisibilityChanging = false;
-
-					if (isNewDocumentShowing)
-					{
-						RefreshCodeMapAsync()
-							.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(SetVisibilityForCodeMapWindow)}");
-					}
-				}
-			}
-
-			private (Guid? WindowID, string DocumentPath) GetWindowIdAndFilePathFromComWindow(EnvDTE.Window window)
-			{
-				string objectKind = null;
-				string windowDocumentPath = null;
-
-				try
-				{
-					//Sometimes COM interop exceptions popup from getter, so we need to obtain ObjectKind safely
-					objectKind = window?.ObjectKind;
-
-#pragma warning disable VSTHRD010
-					windowDocumentPath = GetFilePathFromCOM(window);
-#pragma warning restore VSTHRD010
-				}
-				catch (Exception)
-				{
-				}
-
-				return objectKind != null && Guid.TryParse(objectKind, out Guid windowId)
-					? (windowId, windowDocumentPath)
-					: (default(Guid?), windowDocumentPath);
+				//-------------------------------------------Local Function----------------------------------------------------------------------------------------
+				bool IsSwitchingToAnotherDocumentWhileCodeMapIsEmpty() =>
+					_codeMapViewModel.IsVisible && _codeMapViewModel.Document == null && windowIsVisible && windowKind == "Document" && windowId != default &&
+					documentLanguage == LegacyLanguageNames.CSharp && !windowDocumentPath.IsNullOrWhiteSpace();
 			}
 
 			/// <summary>

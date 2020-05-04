@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +12,6 @@ using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.Common;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
-using SuppressMessageAttribute = System.Diagnostics.CodeAnalysis.SuppressMessageAttribute;
 using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
