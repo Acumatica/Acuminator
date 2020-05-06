@@ -394,6 +394,15 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This is a processing graph.
+        /// </summary>
+        public static string ProcessingGraphIconTooltip {
+            get {
+                return ResourceManager.GetString("ProcessingGraphIconTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This is a procesing view.
         /// </summary>
         public static string ProcessingViewIconTooltip {

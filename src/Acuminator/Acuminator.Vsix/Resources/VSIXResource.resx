@@ -324,4 +324,7 @@
   <data name="PXSelectReadOnlyViewInfoTooltip" xml:space="preserve">
     <value>The view type is PXSelectReadOnly or is derived from it. The data selected by this view from database will not be merged with cache.</value>
   </data>
+  <data name="ProcessingGraphIconTooltip" xml:space="preserve">
+    <value>This is a processing graph</value>
+  </data>
 </root>

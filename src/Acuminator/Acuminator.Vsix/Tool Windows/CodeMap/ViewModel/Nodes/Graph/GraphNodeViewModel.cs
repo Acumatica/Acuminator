@@ -36,18 +36,22 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 							 base(tree, parent: null, isExpanded)
 		{
 			CodeMapGraphModel = codeMapGraphModel;
-			ExtraInfos = GetGraphExtraInfos();
+			ExtraInfos = new ExtendedObservableCollection<ExtraInfoViewModel>(GetGraphExtraInfos());
 		}
 
-		private ExtendedObservableCollection<ExtraInfoViewModel> GetGraphExtraInfos()
+		private IEnumerable<ExtraInfoViewModel> GetGraphExtraInfos()
 		{
+			if (GraphSemanticModel.IsProcessing)
+			{
+				yield return new IconViewModel(this, Icon.Processing);
+			}
+
 			if (GraphSemanticModel.Type == GraphType.None)
-				return null;
+				yield break;
 
 			Color color = Color.FromRgb(38, 155, 199);
 			string graphType = GraphSemanticModel.Type.ToString();
-			TextViewModel graphTypeInfoVM = new TextViewModel(this, graphType, darkThemeForeground: color, lightThemeForeground: color);
-			return new ExtendedObservableCollection<ExtraInfoViewModel>(graphTypeInfoVM);
+			yield return new TextViewModel(this, graphType, darkThemeForeground: color, lightThemeForeground: color);
 		}
 
 		public override Task NavigateToItemAsync()
