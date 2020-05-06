@@ -277,6 +277,7 @@
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\WithInput\CodeMapTreeVisitor_DacVisitMethods.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\WithInput\CodeMapTreeVisitor_GraphVisitMethods.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\INodeWithSymbolItem.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\CodeMapWindowViewModel.CodeMapDteEventsObserver.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\NodeDeclarationOrderComparer.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\Sorters\NodesSorter.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\Visitors\CodeMapSubtreeSorter.cs" />

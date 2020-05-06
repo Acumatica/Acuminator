@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,12 +16,9 @@ using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class CodeMapWindowViewModel : ToolWindowViewModelBase
+	public partial class CodeMapWindowViewModel : ToolWindowViewModelBase
 	{
-		private readonly EnvDTE.SolutionEvents _solutionEvents;
-		private readonly EnvDTE.WindowEvents _windowEvents;
-		private readonly EnvDTE80.WindowVisibilityEvents _visibilityEvents;
-
+		private readonly CodeMapDteEventsObserver _dteEventsObserver;
 		private CancellationTokenSource _cancellationTokenSource;
 
 		public TreeBuilderBase TreeBuilder
@@ -45,19 +41,29 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			internal set;
 		}
 
+		private DocumentModel _documentModel;
+
 		public DocumentModel DocumentModel
 		{
-			get;
-			private set;
+			get => _documentModel;
+			private set
+			{
+				if (!ReferenceEquals(_documentModel, value))
+				{
+					_documentModel = value;
+					NotifyPropertyChanged();
+					NotifyPropertyChanged(nameof(Document));
+				}
+			}
 		}
+
+		public Document Document => DocumentModel?.Document;
 
 		public Workspace Workspace
 		{
 			get;
 			private set;
 		}
-
-		public Document Document => DocumentModel?.Document;
 
 		private CodeMapDocChangesClassifier DocChangesClassifier { get; }
 
@@ -161,36 +167,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Workspace = DocumentModel.Document.Project.Solution.Workspace;
 			Workspace.WorkspaceChanged += OnWorkspaceChanged;
 
-			if (ThreadHelper.CheckAccess())
-			{
-				EnvDTE.DTE dte = AcuminatorVSPackage.Instance.GetService<EnvDTE.DTE>();
-
-				//Store reference to DTE SolutionEvents and WindowEvents to prevent them from being GCed
-				_solutionEvents = dte?.Events?.SolutionEvents;
-				_windowEvents = dte?.Events?.WindowEvents;
-				_visibilityEvents = (dte?.Events as EnvDTE80.Events2)?.WindowVisibilityEvents;
-
-				SubscribeOnVisualStudioEvents();
-			}		
-		}
-
-		private void SubscribeOnVisualStudioEvents()
-		{
-			if (_solutionEvents != null)
-			{
-				_solutionEvents.AfterClosing += SolutionEvents_AfterClosing;
-			}
-
-			if (_windowEvents != null)
-			{
-				_windowEvents.WindowActivated += WindowEvents_WindowActivated;
-			}
-
-			if (_visibilityEvents != null)
-			{
-				_visibilityEvents.WindowShowing += VisibilityEvents_WindowShowing;
-				_visibilityEvents.WindowHiding += VisibilityEvents_WindowHiding;
-			}
+			_dteEventsObserver = new CodeMapDteEventsObserver(this);
 		}
 
 		public static CodeMapWindowViewModel InitCodeMap(IWpfTextView wpfTextView, Document document)
@@ -203,10 +180,26 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return codeMapViewModel;
 		}
 
+		public void SortNodes(TreeNodeViewModel node, SortType sortType, SortDirection sortDirection, bool sortDescendants)
+		{
+			if (node == null)
+				return;
+
+			if (sortDescendants)
+			{
+				TreeSorter.SortSubtree(node, sortType, sortDirection);
+				node.ExpandOrCollapseAll(expand: true);
+			}
+			else
+			{
+				TreeSorter.SortChildren(node, sortType, sortDirection);
+				node.IsExpanded = true;
+			}
+		}
+
 		public override void FreeResources()
 		{
 			base.FreeResources();
-
 			_cancellationTokenSource?.Dispose();
 
 			if (Workspace != null)
@@ -214,21 +207,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				Workspace.WorkspaceChanged -= OnWorkspaceChanged;
 			}
 
-			if (_solutionEvents != null)
-			{
-				_solutionEvents.AfterClosing -= SolutionEvents_AfterClosing;
-			}
-
-			if (_windowEvents != null)
-			{
-				_windowEvents.WindowActivated -= WindowEvents_WindowActivated;
-			}
-
-			if (_visibilityEvents != null)
-			{
-				_visibilityEvents.WindowHiding -= VisibilityEvents_WindowHiding;
-				_visibilityEvents.WindowShowing -= VisibilityEvents_WindowShowing;
-			}
+			_dteEventsObserver.UnsubscribeEvents();
 		}
 
 		internal async Task RefreshCodeMapOnWindowOpeningAsync(IWpfTextView activeWpfTextView = null, Document activeDocument = null)
@@ -242,84 +221,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			await RefreshCodeMapAsync(activeWpfTextView, activeDocument);
 		}
 
-		private void VisibilityEvents_WindowHiding(EnvDTE.Window window) => SetVisibilityForCodeMapWindow(window, isVisible: false);
-
-		private void VisibilityEvents_WindowShowing(EnvDTE.Window window) => SetVisibilityForCodeMapWindow(window, isVisible: true);
-
-		private void SetVisibilityForCodeMapWindow(EnvDTE.Window window, bool isVisible)
-		{
-			ThreadHelper.ThrowIfNotOnUIThread();
-
-			string objectKind = null;
-
-			try
-			{
-				objectKind = window?.ObjectKind;    //Sometimes COM interop exceptions popup from getter, so we need to obtain ObjectKind safely
-			}
-			catch (Exception)
-			{
-			}
-
-			if (objectKind == null)
-				return;
-
-			if (Guid.TryParse(objectKind, out Guid windowId) && windowId == CodeMapWindow.CodeMapWindowGuid)
-			{
-				IsVisible = isVisible;
-			}
-		}
-
-		/// <summary>
-		/// Solution events after closing. Clear up the document data.
-		/// </summary>
-		private void SolutionEvents_AfterClosing()
-		{
-			ClearCodeMap();
-			DocumentModel = null;
-			NotifyPropertyChanged(nameof(Document));
-		}
-
-		private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus) =>
-			WindowEventsWindowActivatedAsync(gotFocus, lostFocus)
-				.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(WindowEvents_WindowActivated)}");
-
-		private async Task WindowEventsWindowActivatedAsync(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
-		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-			}
-
-			if (!IsVisible || Equals(gotFocus, lostFocus) || gotFocus.Document == null)
-				return;
-			else if (gotFocus.Document.Language != LegacyLanguageNames.CSharp)
-			{
-				ClearCodeMap();
-				return;
-			}
-			else if (gotFocus.Document.FullName == lostFocus?.Document?.FullName ||
-					(lostFocus?.Document == null && Document != null && gotFocus.Document.FullName == Document.FilePath))
-			{
-				return;
-			}
-
-			ClearCodeMap();
-			var currentWorkspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
-
-			if (currentWorkspace == null)
-				return;
-
-			Workspace = currentWorkspace;
-			IWpfTextView activeWpfTextView = await AcuminatorVSPackage.Instance.GetWpfTextViewByFilePathAsync(gotFocus.Document.FullName);
-			Document activeDocument = activeWpfTextView?.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
-
-			if (activeDocument == null)
-				return;
-
-			DocumentModel = new DocumentModel(activeWpfTextView, activeDocument);
-			await BuildCodeMapAsync();
-		}
-
 		private async Task RefreshCodeMapAsync(IWpfTextView activeWpfTextView = null, Document activeDocument = null)
 		{
 			if (IsCalculating)
@@ -330,6 +231,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 			}
 
+			var activeWpfTextViewTask = activeWpfTextView != null 
+				? Task.FromResult(activeWpfTextView)
+				: AcuminatorVSPackage.Instance.GetWpfTextViewAsync();
+
+			await RefreshCodeMapInternalAsync(activeWpfTextViewTask, activeDocument);
+		}
+
+		private async Task RefreshCodeMapInternalAsync(Task<IWpfTextView> activeWpfTextViewTask, Document activeDocument = null)
+		{
 			ClearCodeMap();
 			var currentWorkspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
 
@@ -337,7 +247,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 
 			Workspace = currentWorkspace;
-			activeWpfTextView = activeWpfTextView ?? await AcuminatorVSPackage.Instance.GetWpfTextViewAsync();
+			IWpfTextView activeWpfTextView = activeWpfTextViewTask != null
+				? await activeWpfTextViewTask
+				: null;
 			activeDocument = activeDocument ?? activeWpfTextView?.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
 
 			if (activeDocument == null)
@@ -463,23 +375,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (node != null)
 			{
 				node.ExpandOrCollapseAll(expand: !node.IsExpanded);
-			}
-		}
-
-		public void SortNodes(TreeNodeViewModel node, SortType sortType, SortDirection sortDirection, bool sortDescendants)
-		{
-			if (node == null)
-				return;
-
-			if (sortDescendants)
-			{
-				TreeSorter.SortSubtree(node, sortType, sortDirection);
-				node.ExpandOrCollapseAll(expand: true);
-			}
-			else
-			{
-				TreeSorter.SortChildren(node, sortType, sortDirection);
-				node.IsExpanded = true;
 			}
 		}
 	}
