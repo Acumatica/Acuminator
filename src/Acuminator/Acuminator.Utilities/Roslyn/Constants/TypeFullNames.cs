@@ -110,6 +110,7 @@
 		internal const string Optional2 = "PX.Data.Optional2`1";
 		internal const string BqlCommand = "PX.Data.BqlCommand";
 		internal const string IBqlParameter = "PX.Data.IBqlParameter";
+		internal const string BqlParameter = "PX.Data.BQL.BqlParameter`2";
 		internal const string PXFilter1 = "PX.Data.PXFilter`1";
 		internal const string IPXNonUpdateable = "PX.Data.IPXNonUpdateable";
 		internal const string PXSetup1 = "PX.Data.PXSetup`1";
