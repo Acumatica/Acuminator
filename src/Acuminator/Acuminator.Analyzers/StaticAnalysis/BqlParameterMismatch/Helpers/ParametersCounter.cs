@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -102,11 +103,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 						return IsCountingValid;
 
 					case PXCodeType.BqlParameter:
-						if (!UpdateParametersCount(typeSymbol) && !cancellationToken.IsCancellationRequested)
-						{
-							UpdateParametersCount(typeSymbol.OriginalDefinition);
-						}
 
+						if (!cancellationToken.IsCancellationRequested)
+							UpdateParametersCount(typeSymbol);
+						
 						return true;
 
 					default:
@@ -128,6 +128,34 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			private bool UpdateParametersCount(ITypeSymbol typeSymbol)
 			{
+				if (UpdateParametersCountForNonFbqlParameter(typeSymbol))
+					return true;
+
+				var bqlParameterType = _pxContext.BQL.BqlParameter;
+
+				if (bqlParameterType == null)	//In case of Acumatica version without FBQL 
+					return false;
+
+				var fbqlStyleParameter = typeSymbol.GetBaseTypesAndThis()
+												   .FirstOrDefault(t => t.Equals(bqlParameterType) || 
+																		t.OriginalDefinition.Equals(bqlParameterType)) as INamedTypeSymbol;
+
+				if (fbqlStyleParameter == null || fbqlStyleParameter.TypeArguments.IsDefaultOrEmpty)
+					return false;
+
+				var wrappedParameterType = fbqlStyleParameter.TypeArguments[0];
+				return UpdateParametersCountForNonFbqlParameter(wrappedParameterType);
+			}
+
+			/// <summary>
+			/// Updates the parameters count for <paramref name="typeSymbol"/> if it is old non-FBQL parameter.
+			/// </summary>
+			/// <param name="typeSymbol">The type symbol representing parameter.</param>
+			/// <returns/>
+			private bool UpdateParametersCountForNonFbqlParameter(ITypeSymbol typeSymbol)
+			{
+				typeSymbol = typeSymbol.OriginalDefinition ?? typeSymbol;
+
 				if (typeSymbol.InheritsFromOrEquals(_pxContext.BQL.Required) || typeSymbol.InheritsFromOrEquals(_pxContext.BQL.Argument))
 				{
 					RequiredParametersCount += _currentParameterWeight;

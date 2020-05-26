@@ -44,7 +44,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			foreach (InvocationExpressionSyntax invocationNode in invocationNodes)
 			{
-				var symbolInfo = syntaxContext.SemanticModel.GetSymbolInfo(invocationNode);
+				var symbolInfo = syntaxContext.SemanticModel.GetSymbolInfo(invocationNode, syntaxContext.CancellationToken);
 
 				if (!(symbolInfo.Symbol is IMethodSymbol methodSymbol) || !IsValidMethodGeneralCheck(methodSymbol, pxContext))
 					continue;
