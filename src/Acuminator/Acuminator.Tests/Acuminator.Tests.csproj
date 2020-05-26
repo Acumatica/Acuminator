@@ -105,6 +105,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\AutoNumberAttribute\Sources\NonStringAutoNumberingDac.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\AutoNumberAttribute\Sources\InsufficientStringLengthDac.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\AutoNumberAttribute\Sources\InsufficientStringLengthDac_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\BqlParameterMismatch\Sources\FbqlCalls.cs" />
     <Compile Include="Tests\StaticAnalysis\CallingBaseActionHandler\CallingBaseActionHandlerFromOverrideHandlerTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionHandlerInvocation_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseActionHandler\Sources\BaseActionHandlerInvocation_Good.cs" />
