@@ -52,24 +52,46 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			}
 
 			/// <summary>
-			/// Count parameters in type symbol. Return <c>false</c> if the diagnostic should be stopped
+			/// Count parameters in type symbol retrieved for <see cref="Microsoft.CodeAnalysis.CSharp.Syntax.GenericNameSyntax"/> syntax node. 
+			/// Return <c>false</c> if the diagnostic should be stopped
 			/// </summary>
 			/// <param name="typeSymbol">The type symbol.</param>
 			/// <param name="cancellationToken">(Optional) The cancellation token.</param>
 			/// <returns/>
-			public bool CountParametersInTypeSymbol(ITypeSymbol typeSymbol, CancellationToken cancellationToken = default)
+			public bool CountParametersInTypeSymbolForGenericNode(ITypeSymbol typeSymbol, CancellationToken cancellationToken = default)
 			{
 				if (!IsCountingValid || typeSymbol == null || IsCancelled(cancellationToken))
 					return false;
 				
 				PXCodeType? codeType = typeSymbol.GetCodeTypeFromGenericName();
+				return CountParametersInTypeSymbolBasedOnCodeType(typeSymbol, codeType, cancellationToken);
+			}
 
+			/// <summary>
+			/// Count parameters in type symbol retrieved for <see cref="Microsoft.CodeAnalysis.CSharp.Syntax.IdentifierNameSyntax"/> syntax node. 
+			/// Return <c>false</c> if the diagnostic should be stopped
+			/// </summary>
+			/// <param name="typeSymbol">The type symbol.</param>
+			/// <param name="cancellationToken">(Optional) The cancellation token.</param>
+			/// <returns/>
+			public bool CountParametersInTypeSymbolForIdentifierNode(ITypeSymbol typeSymbol, CancellationToken cancellationToken = default)
+			{
+				if (!IsCountingValid || typeSymbol == null || IsCancelled(cancellationToken))
+					return false;
+
+				PXCodeType? codeType = typeSymbol.GetColoringTypeFromIdentifier();
+				return CountParametersInTypeSymbolBasedOnCodeType(typeSymbol, codeType, cancellationToken);
+			}
+
+			private bool CountParametersInTypeSymbolBasedOnCodeType(ITypeSymbol typeSymbol, PXCodeType? codeType, CancellationToken cancellationToken)
+			{
 				switch (codeType)
 				{
 					case PXCodeType.BqlCommand:
 						_currentParameterWeight = DefaultWeight;
 						IsCountingValid = !typeSymbol.IsCustomBqlCommand(_pxContext); //diagnostic for types inherited from standard views disabled. TODO: make analysis for them
 						return IsCountingValid;
+
 					case PXCodeType.BqlOperator when typeSymbol.InheritsFrom(_pxContext.BQL.CustomPredicate):  //Custom predicate
 						{
 							IsCountingValid = ProcessCustomPredicate(typeSymbol);
@@ -78,6 +100,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 					case PXCodeType.BqlOperator:
 						_currentParameterWeight = DefaultWeight;
 						return IsCountingValid;
+
 					case PXCodeType.BqlParameter:
 						if (!UpdateParametersCount(typeSymbol) && !cancellationToken.IsCancellationRequested)
 						{
@@ -85,9 +108,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 						}
 
 						return true;
-				}
 
-				return true;
+					default:
+						return true;
+				}
 			}
 
 			private bool ProcessCustomPredicate(ITypeSymbol typeSymbol)

@@ -56,7 +56,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 					typeSymbol = typeSymbol.OriginalDefinition;
 				}
 
-				if (!ParametersCounter.CountParametersInTypeSymbol(typeSymbol, _cancellationToken))
+				if (!ParametersCounter.CountParametersInTypeSymbolForGenericNode(typeSymbol, _cancellationToken))
 					return;
 
 				if (_isAcumatica2018R2 && !_cancellationToken.IsCancellationRequested && typeSymbol.ContainingType != null &&

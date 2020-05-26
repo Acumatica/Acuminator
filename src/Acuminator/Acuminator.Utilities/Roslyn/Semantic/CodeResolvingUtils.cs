@@ -25,7 +25,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// </returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static PXCodeType? GetColoringTypeFromIdentifier(this ITypeSymbol identifierType, bool skipValidation = false,
-																	 bool checkItself = false)
+																bool checkItself = false)
 		{
 			if (!skipValidation && !identifierType.IsValidForColoring())
 				return null;

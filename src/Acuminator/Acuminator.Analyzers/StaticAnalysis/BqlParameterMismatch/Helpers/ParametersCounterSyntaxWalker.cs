@@ -54,11 +54,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				if (genericNode.IsUnboundGenericName)
 					typeSymbol = typeSymbol.OriginalDefinition;
 
-				if (!ParametersCounter.CountParametersInTypeSymbol(typeSymbol, _cancellationToken))
+				if (!ParametersCounter.CountParametersInTypeSymbolForGenericNode(typeSymbol, _cancellationToken))
 					return;
 
 				if (!_cancellationToken.IsCancellationRequested)
 					base.VisitGenericName(genericNode);
+			}
+
+			public override void VisitIdentifierName(IdentifierNameSyntax identifierNode)
+			{
+				if (_cancellationToken.IsCancellationRequested)
+					return;
+
+				SymbolInfo symbolInfo = _syntaxContext.SemanticModel.GetSymbolInfo(identifierNode, _cancellationToken);
+
+				if (_cancellationToken.IsCancellationRequested || !(symbolInfo.Symbol is ITypeSymbol typeSymbol))
+					return;
+
+				ParametersCounter.CountParametersInTypeSymbolForIdentifierNode(typeSymbol, _cancellationToken);
 			}
 		}
 	}
