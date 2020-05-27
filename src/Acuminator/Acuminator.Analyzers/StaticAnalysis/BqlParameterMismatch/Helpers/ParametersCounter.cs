@@ -80,7 +80,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				if (!IsCountingValid || typeSymbol == null || IsCancelled(cancellationToken))
 					return false;
 
-				PXCodeType? codeType = typeSymbol.GetColoringTypeFromIdentifier();
+				PXCodeType? codeType = typeSymbol.GetCodeTypeFromIdentifier();
 				return CountParametersInTypeSymbolBasedOnCodeType(typeSymbol, codeType, cancellationToken);
 			}
 
