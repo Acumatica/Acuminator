@@ -15,6 +15,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 		protected class ParametersCounter
 		{
 			private readonly PXContext _pxContext;
+			private readonly INamedTypeSymbol _bqlParameterType;
 			private readonly Dictionary<ITypeSymbol, int> _customPredicatesWithWeights;
 
 			private const int DefaultWeight = 1;
@@ -45,6 +46,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			{
 				_pxContext = pxContext;
 				IsCountingValid = true;
+				_bqlParameterType = _pxContext.BQL.BqlParameter;
+
 				_customPredicatesWithWeights = new Dictionary<ITypeSymbol, int>
 				{
 					{ _pxContext.BQL.AreDistinct, AreDistinctWeight },
@@ -131,14 +134,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				if (UpdateParametersCountForNonFbqlParameter(typeSymbol))
 					return true;
 
-				var bqlParameterType = _pxContext.BQL.BqlParameter;
-
-				if (bqlParameterType == null)	//In case of Acumatica version without FBQL 
+				if (_bqlParameterType == null)		//In case of Acumatica version without FBQL 
 					return false;
 
 				var fbqlStyleParameter = typeSymbol.GetBaseTypesAndThis()
-												   .FirstOrDefault(t => t.Equals(bqlParameterType) || 
-																		t.OriginalDefinition.Equals(bqlParameterType)) as INamedTypeSymbol;
+												   .FirstOrDefault(t => t.Equals(_bqlParameterType) || 
+																		t.OriginalDefinition.Equals(_bqlParameterType)) as INamedTypeSymbol;
 
 				if (fbqlStyleParameter == null || fbqlStyleParameter.TypeArguments.IsDefaultOrEmpty)
 					return false;
