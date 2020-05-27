@@ -62,9 +62,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			/// <param name="typeSymbol">The type symbol.</param>
 			/// <param name="cancellationToken">(Optional) The cancellation token.</param>
 			/// <returns/>
-			public bool CountParametersInTypeSymbolForGenericNode(ITypeSymbol typeSymbol, CancellationToken cancellationToken = default)
+			public bool CountParametersInTypeSymbolForGenericNode(ITypeSymbol typeSymbol, CancellationToken cancellationToken)
 			{
-				if (!IsCountingValid || typeSymbol == null || IsCancelled(cancellationToken))
+				cancellationToken.ThrowIfCancellationRequested();
+
+				if (!IsCountingValid || typeSymbol == null)
 					return false;
 				
 				PXCodeType? codeType = typeSymbol.GetCodeTypeFromGenericName();
@@ -78,9 +80,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			/// <param name="typeSymbol">The type symbol.</param>
 			/// <param name="cancellationToken">(Optional) The cancellation token.</param>
 			/// <returns/>
-			public bool CountParametersInTypeSymbolForIdentifierNode(ITypeSymbol typeSymbol, CancellationToken cancellationToken = default)
+			public bool CountParametersInTypeSymbolForIdentifierNode(ITypeSymbol typeSymbol, CancellationToken cancellationToken)
 			{
-				if (!IsCountingValid || typeSymbol == null || IsCancelled(cancellationToken))
+				cancellationToken.ThrowIfCancellationRequested();
+
+				if (!IsCountingValid || typeSymbol == null)
 					return false;
 
 				PXCodeType? codeType = typeSymbol.GetCodeTypeFromIdentifier();
@@ -169,16 +173,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				}
 
 				return false;
-			}
-
-			private bool IsCancelled(CancellationToken cancellationToken)
-			{
-				if (cancellationToken.IsCancellationRequested)
-				{
-					IsCountingValid = false;
-				}
-
-				return cancellationToken.IsCancellationRequested;
 			}
 		}
 	}

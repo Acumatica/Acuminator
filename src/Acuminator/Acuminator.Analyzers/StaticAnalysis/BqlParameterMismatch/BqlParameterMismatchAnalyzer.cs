@@ -140,19 +140,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 		private static void AnalyzeDerivedBqlStaticCall(IMethodSymbol methodSymbol, InvocationExpressionSyntax invocation, PXContext pxContext,
 														SyntaxNodeAnalysisContext syntaxContext)
 		{
-			INamedTypeSymbol containingType = methodSymbol.ContainingType;
+			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
-			if (containingType.IsUnboundGenericType || !containingType.IsBqlCommand() || containingType.IsCustomBqlCommand(pxContext) ||
-				syntaxContext.CancellationToken.IsCancellationRequested)
-			{
+			INamedTypeSymbol containingType = methodSymbol.ContainingType;	
+
+			if (containingType.IsUnboundGenericType || !containingType.IsBqlCommand() || containingType.IsCustomBqlCommand(pxContext))
 				return;
-			}
 
 			int? argsCount = GetBqlArgumentsCount(methodSymbol, pxContext, syntaxContext, invocation);
 
-			if (argsCount == null || syntaxContext.CancellationToken.IsCancellationRequested)
+			if (argsCount == null)
 				return;
 
+			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 			ParametersCounterSymbolWalker walker = new ParametersCounterSymbolWalker(syntaxContext, pxContext);
 
 			if (!walker.CountParametersInTypeSymbol(containingType))
@@ -166,13 +166,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 		{
 			ExpressionSyntax accessExpression = invocation.GetAccessNodeFromInvocationNode();
 
-			if (accessExpression == null || syntaxContext.CancellationToken.IsCancellationRequested)
+			if (accessExpression == null)
 				return;
+
+			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
 			int? argsCount = GetBqlArgumentsCount(methodSymbol, pxContext, syntaxContext, invocation);
 
-			if (argsCount == null || syntaxContext.CancellationToken.IsCancellationRequested)
+			if (argsCount == null)
 				return;
+
+			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
 			ITypeSymbol containingType = GetContainingTypeForInstanceCall(pxContext, syntaxContext, invocation, accessExpression);
 
@@ -247,8 +251,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 																		 SyntaxNodeAnalysisContext syntaxContext,
 																		 PXContext pxContext)
 		{
-			if (syntaxContext.CancellationToken.IsCancellationRequested)
-				return null;
+			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
 			TypeInfo typeInfo = syntaxContext.SemanticModel.GetTypeInfo(argumentWhichCanBeArray.Expression, syntaxContext.CancellationToken);
 			ITypeSymbol typeSymbol = typeInfo.Type;
@@ -277,9 +280,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			if (containingType == null || !containingType.IsBqlCommand(pxContext) || containingType.IsCustomBqlCommand(pxContext))
 				return null;
 
-			if (!(accessExpression is IdentifierNameSyntax identifierNode) || syntaxContext.CancellationToken.IsCancellationRequested)
-				return null;
+			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
+			if (!(accessExpression is IdentifierNameSyntax identifierNode))
+				return null;
+	
 			var resolver = new BqlLocalVariableTypeResolver(syntaxContext, pxContext, invocation, identifierNode);
 
 			return containingType.IsAbstract 
@@ -292,7 +297,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 		private static void VerifyBqlArgumentsCount(int argsCount, ParametersCounter parametersCounter, SyntaxNodeAnalysisContext syntaxContext,
 													InvocationExpressionSyntax invocation, IMethodSymbol methodSymbol, PXContext pxContext)
 		{
-			if (syntaxContext.CancellationToken.IsCancellationRequested || !parametersCounter.IsCountingValid)
+			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
+
+			if (!parametersCounter.IsCountingValid)
 				return;
 
 			int searchMethodParametersCount = 0;
