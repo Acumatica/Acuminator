@@ -9,7 +9,7 @@ namespace PX.Objects.HackathonDemo
 {
 	public class SOOrderTestEntry : PXGraph<SOOrderTestEntry>
 	{
-		public object Test_Missing_Args_Passed_As_Array()
+		public object MissingArgs_PassedAsArray()
 		{
 			var args = new int[] { 2 };
 
@@ -22,7 +22,7 @@ namespace PX.Objects.HackathonDemo
             return this;
 		}
 
-		public object Test_Extra_Args_Passed_As_Array()
+		public object ExtraArgs_PassedAsArray()
 		{
 			var args = new int[] { 2, 3, 4 };
 
@@ -36,7 +36,7 @@ namespace PX.Objects.HackathonDemo
 			return this;
 		}
 
-		public object Test_Extra_Args_Passed_As_Params()
+		public object ExtraArgs_PassedAsParams()
 		{
 			object[] currents = null;
 
@@ -51,7 +51,7 @@ namespace PX.Objects.HackathonDemo
 			return this;
 		}
 
-		public object Test_OptionalArgs()
+		public object OptionalArgs()
 		{
 			object[] currents = null;
 

@@ -21,11 +21,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// <param name="skipValidation">(Optional) True to skip validation.</param>
 		/// <param name="checkItself">(Optional) True to check the type itself.</param>
 		/// <returns>
-		/// The coloring type from identifier.
+		/// The code type from identifier.
 		/// </returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static PXCodeType? GetColoringTypeFromIdentifier(this ITypeSymbol identifierType, bool skipValidation = false,
-																	 bool checkItself = false)
+		public static PXCodeType? GetCodeTypeFromIdentifier(this ITypeSymbol identifierType, bool skipValidation = false,
+															bool checkItself = false)
 		{
 			if (!skipValidation && !identifierType.IsValidForColoring())
 				return null;

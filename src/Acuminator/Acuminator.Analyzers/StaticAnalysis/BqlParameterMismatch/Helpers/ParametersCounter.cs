@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Acuminator.Utilities.Roslyn;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -14,6 +15,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 		protected class ParametersCounter
 		{
 			private readonly PXContext _pxContext;
+			private readonly INamedTypeSymbol _bqlParameterType;
 			private readonly Dictionary<ITypeSymbol, int> _customPredicatesWithWeights;
 
 			private const int DefaultWeight = 1;
@@ -44,6 +46,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			{
 				_pxContext = pxContext;
 				IsCountingValid = true;
+				_bqlParameterType = _pxContext.BQL.BqlParameter;
+
 				_customPredicatesWithWeights = new Dictionary<ITypeSymbol, int>
 				{
 					{ _pxContext.BQL.AreDistinct, AreDistinctWeight },
@@ -52,24 +56,50 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			}
 
 			/// <summary>
-			/// Count parameters in type symbol. Return <c>false</c> if the diagnostic should be stopped
+			/// Count parameters in type symbol retrieved for <see cref="Microsoft.CodeAnalysis.CSharp.Syntax.GenericNameSyntax"/> syntax node. 
+			/// Return <c>false</c> if the diagnostic should be stopped
 			/// </summary>
 			/// <param name="typeSymbol">The type symbol.</param>
 			/// <param name="cancellationToken">(Optional) The cancellation token.</param>
 			/// <returns/>
-			public bool CountParametersInTypeSymbol(ITypeSymbol typeSymbol, CancellationToken cancellationToken = default)
+			public bool CountParametersInTypeSymbolForGenericNode(ITypeSymbol typeSymbol, CancellationToken cancellationToken)
 			{
-				if (!IsCountingValid || typeSymbol == null || IsCancelled(cancellationToken))
+				cancellationToken.ThrowIfCancellationRequested();
+
+				if (!IsCountingValid || typeSymbol == null)
 					return false;
 				
 				PXCodeType? codeType = typeSymbol.GetCodeTypeFromGenericName();
+				return CountParametersInTypeSymbolBasedOnCodeType(typeSymbol, codeType, cancellationToken);
+			}
 
+			/// <summary>
+			/// Count parameters in type symbol retrieved for <see cref="Microsoft.CodeAnalysis.CSharp.Syntax.IdentifierNameSyntax"/> syntax node. 
+			/// Return <c>false</c> if the diagnostic should be stopped
+			/// </summary>
+			/// <param name="typeSymbol">The type symbol.</param>
+			/// <param name="cancellationToken">(Optional) The cancellation token.</param>
+			/// <returns/>
+			public bool CountParametersInTypeSymbolForIdentifierNode(ITypeSymbol typeSymbol, CancellationToken cancellationToken)
+			{
+				cancellationToken.ThrowIfCancellationRequested();
+
+				if (!IsCountingValid || typeSymbol == null)
+					return false;
+
+				PXCodeType? codeType = typeSymbol.GetCodeTypeFromIdentifier();
+				return CountParametersInTypeSymbolBasedOnCodeType(typeSymbol, codeType, cancellationToken);
+			}
+
+			private bool CountParametersInTypeSymbolBasedOnCodeType(ITypeSymbol typeSymbol, PXCodeType? codeType, CancellationToken cancellationToken)
+			{
 				switch (codeType)
 				{
 					case PXCodeType.BqlCommand:
 						_currentParameterWeight = DefaultWeight;
 						IsCountingValid = !typeSymbol.IsCustomBqlCommand(_pxContext); //diagnostic for types inherited from standard views disabled. TODO: make analysis for them
 						return IsCountingValid;
+
 					case PXCodeType.BqlOperator when typeSymbol.InheritsFrom(_pxContext.BQL.CustomPredicate):  //Custom predicate
 						{
 							IsCountingValid = ProcessCustomPredicate(typeSymbol);
@@ -78,16 +108,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 					case PXCodeType.BqlOperator:
 						_currentParameterWeight = DefaultWeight;
 						return IsCountingValid;
-					case PXCodeType.BqlParameter:
-						if (!UpdateParametersCount(typeSymbol) && !cancellationToken.IsCancellationRequested)
-						{
-							UpdateParametersCount(typeSymbol.OriginalDefinition);
-						}
 
+					case PXCodeType.BqlParameter:
+
+						if (!cancellationToken.IsCancellationRequested)
+							UpdateParametersCount(typeSymbol);
+						
+						return true;
+
+					default:
 						return true;
 				}
-
-				return true;
 			}
 
 			private bool ProcessCustomPredicate(ITypeSymbol typeSymbol)
@@ -104,6 +135,32 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			private bool UpdateParametersCount(ITypeSymbol typeSymbol)
 			{
+				if (UpdateParametersCountForNonFbqlParameter(typeSymbol))
+					return true;
+
+				if (_bqlParameterType == null)		//In case of Acumatica version without FBQL 
+					return false;
+
+				var fbqlStyleParameter = typeSymbol.GetBaseTypesAndThis()
+												   .FirstOrDefault(t => t.Equals(_bqlParameterType) || 
+																		t.OriginalDefinition.Equals(_bqlParameterType)) as INamedTypeSymbol;
+
+				if (fbqlStyleParameter == null || fbqlStyleParameter.TypeArguments.IsDefaultOrEmpty)
+					return false;
+
+				var wrappedParameterType = fbqlStyleParameter.TypeArguments[0];
+				return UpdateParametersCountForNonFbqlParameter(wrappedParameterType);
+			}
+
+			/// <summary>
+			/// Updates the parameters count for <paramref name="typeSymbol"/> if it is old non-FBQL parameter.
+			/// </summary>
+			/// <param name="typeSymbol">The type symbol representing parameter.</param>
+			/// <returns/>
+			private bool UpdateParametersCountForNonFbqlParameter(ITypeSymbol typeSymbol)
+			{
+				typeSymbol = typeSymbol.OriginalDefinition ?? typeSymbol;
+
 				if (typeSymbol.InheritsFromOrEquals(_pxContext.BQL.Required) || typeSymbol.InheritsFromOrEquals(_pxContext.BQL.Argument))
 				{
 					RequiredParametersCount += _currentParameterWeight;
@@ -116,16 +173,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				}
 
 				return false;
-			}
-
-			private bool IsCancelled(CancellationToken cancellationToken)
-			{
-				if (cancellationToken.IsCancellationRequested)
-				{
-					IsCountingValid = false;
-				}
-
-				return cancellationToken.IsCancellationRequested;
 			}
 		}
 	}

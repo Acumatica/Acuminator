@@ -39,8 +39,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			public bool CountParametersInTypeSymbol(ITypeSymbol typeSymbol)
 			{
-				if (_cancellationToken.IsCancellationRequested)
-					return false;
+				_cancellationToken.ThrowIfCancellationRequested();
 
 				Visit(typeSymbol);
 				return ParametersCounter.IsCountingValid && !_cancellationToken.IsCancellationRequested;
@@ -48,7 +47,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			public override void VisitNamedType(INamedTypeSymbol typeSymbol)
 			{
-				if (typeSymbol == null || _cancellationToken.IsCancellationRequested)
+				_cancellationToken.ThrowIfCancellationRequested();
+
+				if (typeSymbol == null)
 					return;
 
 				if (typeSymbol.IsUnboundGenericType)
@@ -56,12 +57,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 					typeSymbol = typeSymbol.OriginalDefinition;
 				}
 
-				if (!ParametersCounter.CountParametersInTypeSymbol(typeSymbol, _cancellationToken))
+				if (!ParametersCounter.CountParametersInTypeSymbolForGenericNode(typeSymbol, _cancellationToken))
 					return;
 
-				if (_isAcumatica2018R2 && !_cancellationToken.IsCancellationRequested && typeSymbol.ContainingType != null &&
-					ImplementsIViewConfig(typeSymbol))
+				if (_isAcumatica2018R2 && typeSymbol.ContainingType != null && ImplementsIViewConfig(typeSymbol))
 				{
+					_cancellationToken.ThrowIfCancellationRequested();
 					Visit(typeSymbol.ContainingType);
 				}
 
@@ -71,32 +72,28 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 				{
 					foreach (ITypeSymbol typeArg in typeArguments)
 					{
-						if (_cancellationToken.IsCancellationRequested)
-							return;
-
+						_cancellationToken.ThrowIfCancellationRequested();
 						Visit(typeArg);
 					}
 				}
 
-				if (!_cancellationToken.IsCancellationRequested)
-					base.VisitNamedType(typeSymbol);
+				_cancellationToken.ThrowIfCancellationRequested();
+				base.VisitNamedType(typeSymbol);
 			}
 
 			public override void VisitTypeParameter(ITypeParameterSymbol typeParameterSymbol)
 			{
-				if (typeParameterSymbol == null || _cancellationToken.IsCancellationRequested)
+				if (typeParameterSymbol == null)
 					return;
 
 				foreach (ITypeSymbol constraintType in typeParameterSymbol.ConstraintTypes)
 				{
-					if (_cancellationToken.IsCancellationRequested)
-						return;
-
+					_cancellationToken.ThrowIfCancellationRequested();
 					Visit(constraintType);
 				}
 
-				if (!_cancellationToken.IsCancellationRequested)
-					base.VisitTypeParameter(typeParameterSymbol);
+				_cancellationToken.ThrowIfCancellationRequested();
+				base.VisitTypeParameter(typeParameterSymbol);
 			}
 
 			private bool ImplementsIViewConfig(ITypeSymbol type)

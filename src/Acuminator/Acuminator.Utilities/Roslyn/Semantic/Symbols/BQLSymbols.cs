@@ -40,6 +40,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
 		public INamedTypeSymbol IBqlParameter => _compilation.GetTypeByMetadataName(TypeFullNames.IBqlParameter);
 
+		public INamedTypeSymbol BqlParameter => _compilation.GetTypeByMetadataName(TypeFullNames.BqlParameter);
+
 		public INamedTypeSymbol PXSelectBaseGenericType => _compilation.GetTypeByMetadataName(TypeFullNames.PXSelectBase1);
 
 		public INamedTypeSymbol PXFilter => _compilation.GetTypeByMetadataName(TypeFullNames.PXFilter1);

@@ -29,8 +29,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			public bool CountParametersInNode(SyntaxNode node)
 			{
-				if (_cancellationToken.IsCancellationRequested)
-					return false;
+				_cancellationToken.ThrowIfCancellationRequested();
 
 				Visit(node);
 				return ParametersCounter.IsCountingValid && !_cancellationToken.IsCancellationRequested;
@@ -38,27 +37,36 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			public override void VisitGenericName(GenericNameSyntax genericNode)
 			{
-				if (_cancellationToken.IsCancellationRequested)
-					return;
+				_cancellationToken.ThrowIfCancellationRequested();
 
 				SymbolInfo symbolInfo = _syntaxContext.SemanticModel.GetSymbolInfo(genericNode, _cancellationToken);
 
-				if (_cancellationToken.IsCancellationRequested || !(symbolInfo.Symbol is ITypeSymbol typeSymbol))
+				if (!(symbolInfo.Symbol is ITypeSymbol typeSymbol))
 				{
-					if (!_cancellationToken.IsCancellationRequested)
-						base.VisitGenericName(genericNode);
-
+					_cancellationToken.ThrowIfCancellationRequested();
+					base.VisitGenericName(genericNode);
 					return;
 				}
 
 				if (genericNode.IsUnboundGenericName)
 					typeSymbol = typeSymbol.OriginalDefinition;
 
-				if (!ParametersCounter.CountParametersInTypeSymbol(typeSymbol, _cancellationToken))
+				if (!ParametersCounter.CountParametersInTypeSymbolForGenericNode(typeSymbol, _cancellationToken))
 					return;
 
-				if (!_cancellationToken.IsCancellationRequested)
-					base.VisitGenericName(genericNode);
+				_cancellationToken.ThrowIfCancellationRequested();
+				base.VisitGenericName(genericNode);
+			}
+
+			public override void VisitIdentifierName(IdentifierNameSyntax identifierNode)
+			{
+				_cancellationToken.ThrowIfCancellationRequested();
+				SymbolInfo symbolInfo = _syntaxContext.SemanticModel.GetSymbolInfo(identifierNode, _cancellationToken);
+
+				if (!(symbolInfo.Symbol is ITypeSymbol typeSymbol))
+					return;
+
+				ParametersCounter.CountParametersInTypeSymbolForIdentifierNode(typeSymbol, _cancellationToken);
 			}
 		}
 	}
