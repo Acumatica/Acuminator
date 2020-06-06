@@ -430,42 +430,6 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Generate simple IsActive method for DAC extension .
-        /// </summary>
-        public static string PX1016DacExtensionFix {
-            get {
-                return ResourceManager.GetString("PX1016DacExtensionFix", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The DAC extension must declare IsActive method..
-        /// </summary>
-        public static string PX1016DacExtensionTitle {
-            get {
-                return ResourceManager.GetString("PX1016DacExtensionTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Generate simple IsActive method for graph extension.
-        /// </summary>
-        public static string PX1016GraphExtensionFix {
-            get {
-                return ResourceManager.GetString("PX1016GraphExtensionFix", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The graph extension must declare IsActive method..
-        /// </summary>
-        public static string PX1016GraphExtensionTitle {
-            get {
-                return ResourceManager.GetString("PX1016GraphExtensionTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The graph with the specified primary DAC type does not contain a view of this type.
         /// </summary>
         public static string PX1018Title {

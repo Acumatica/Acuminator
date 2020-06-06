@@ -537,16 +537,4 @@
   <data name="PX1022GraphTitle" xml:space="preserve">
     <value>Non-public graph extensions are not supported</value>
   </data>
-  <data name="PX1016DacExtensionFix" xml:space="preserve">
-    <value>Generate simple IsActive method for DAC extension </value>
-  </data>
-  <data name="PX1016DacExtensionTitle" xml:space="preserve">
-    <value>The DAC extension must declare IsActive method.</value>
-  </data>
-  <data name="PX1016GraphExtensionFix" xml:space="preserve">
-    <value>Generate simple IsActive method for graph extension</value>
-  </data>
-  <data name="PX1016GraphExtensionTitle" xml:space="preserve">
-    <value>The graph extension must declare IsActive method.</value>
-  </data>
 </root>
