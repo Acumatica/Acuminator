@@ -21,17 +21,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected override TreeNodeViewModel CreateRoot(ISemanticModel rootSemanticModel, TreeViewModel tree)
 		{
-			switch (rootSemanticModel)
+			return rootSemanticModel switch
 			{
-				case GraphSemanticModelForCodeMap graphSemanticModel:
-					return CreateGraphNode(graphSemanticModel, tree);
-
-				case DacSemanticModel dacSemanticModel:
-					return CreateDacNode(dacSemanticModel, tree);
-
-				default:
-					return null;
-			}
+				GraphSemanticModelForCodeMap graphSemanticModel => CreateGraphNode(graphSemanticModel, tree),
+				DacSemanticModel dacSemanticModel               => CreateDacNode(dacSemanticModel, tree),
+				_                                               => null,
+			};
 		}
 
 		public override IEnumerable<TreeNodeViewModel> VisitNode(TreeNodeViewModel node)
