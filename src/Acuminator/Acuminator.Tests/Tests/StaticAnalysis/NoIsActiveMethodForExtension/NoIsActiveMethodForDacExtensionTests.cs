@@ -21,7 +21,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoIsActiveMethodForExtension
 
 		[Theory]
 		[EmbeddedFileData("DacExtension_WithoutIsActive.cs")]
-		public async Task NonPublicDacExtensions(string actual) =>
+		public async Task DacExtensions_WithoutIsActive(string actual) =>
 			 await VerifyCSharpDiagnosticAsync(actual,
 				 Descriptors.PX1016_NoIsActiveMethodForDacExtension.CreateFor(10, 22),
 				 Descriptors.PX1016_NoIsActiveMethodForDacExtension.CreateFor(14, 22),
