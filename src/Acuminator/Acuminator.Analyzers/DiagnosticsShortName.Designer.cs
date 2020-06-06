@@ -205,6 +205,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ExtensionDoesNotDeclareIsActiveMethod.
+        /// </summary>
+        public static string PX1016 {
+            get {
+                return ResourceManager.GetString("PX1016", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to NoPrimaryViewForPrimaryDac.
         /// </summary>
         public static string PX1018 {
