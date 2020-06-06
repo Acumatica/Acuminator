@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Acuminator.Utilities.Roslyn.Constants
 {
 	public static class DelegateNames
 	{
 		public static readonly string IsKey = "IsKey";
+		public static readonly string IsActive = "IsActive";
 
 		public static readonly string SetVisible = "SetVisible";
 		public static readonly string SetVisibility = "SetVisibility";
