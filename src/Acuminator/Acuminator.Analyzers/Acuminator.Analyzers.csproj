@@ -49,7 +49,7 @@
   <ItemGroup>
     <EmbeddedResource Update="DiagnosticsDefaultJustification.resx">
       <LastGenOutput>DiagnosticsDefaultJustification.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="DiagnosticsShortName.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

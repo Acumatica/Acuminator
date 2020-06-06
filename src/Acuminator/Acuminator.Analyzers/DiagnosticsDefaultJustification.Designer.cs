@@ -22,7 +22,7 @@ namespace Acuminator.Analyzers {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class DiagnosticsDefaultJustification {
+    public class DiagnosticsDefaultJustification {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Acuminator.Analyzers {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Acuminator.Analyzers.DiagnosticsDefaultJustification", typeof(DiagnosticsDefaultJustification).Assembly);
@@ -51,7 +51,7 @@ namespace Acuminator.Analyzers {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to [Justification].
         /// </summary>
-        internal static string Default {
+        public static string Default {
             get {
                 return ResourceManager.GetString("Default", resourceCulture);
             }
@@ -72,16 +72,16 @@ namespace Acuminator.Analyzers {
         /// <summary>
         ///   Looks up a localized string similar to to be documented later.
         /// </summary>
-        internal static string PX1007 {
+        public static string PX1007 {
             get {
                 return ResourceManager.GetString("PX1007", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to diagnostic should be always available.
+        ///   Looks up a localized string similar to extension should be always available.
         /// </summary>
-        internal static string PX1016 {
+        public static string PX1016 {
             get {
                 return ResourceManager.GetString("PX1016", resourceCulture);
             }
