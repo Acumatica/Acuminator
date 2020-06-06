@@ -123,4 +123,7 @@
   <data name="PX1007" xml:space="preserve">
     <value>to be documented later</value>
   </data>
+  <data name="PX1016" xml:space="preserve">
+    <value>diagnostic should be always available</value>
+  </data>
 </root>

@@ -77,5 +77,14 @@ namespace Acuminator.Analyzers {
                 return ResourceManager.GetString("PX1007", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to diagnostic should be always available.
+        /// </summary>
+        internal static string PX1016 {
+            get {
+                return ResourceManager.GetString("PX1016", resourceCulture);
+            }
+        }
     }
 }
