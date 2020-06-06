@@ -164,6 +164,9 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Partial\WithComment.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Partial\WithExcludeComment.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Partial\WithBadComment.cs" />
+    <Compile Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\NoIsActiveMethodForDacExtensionTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DacExtension_WithIsActive.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DacExtension_WithoutIsActive.cs" />
     <Compile Include="Tests\StaticAnalysis\NonPublicExtensions\NonPublicGraphExtensionsTests.cs" />
     <Compile Include="Tests\StaticAnalysis\NonPublicExtensions\NonPublicDacExtensionsTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NonPublicExtensions\Sources\NonPublicDacExtension_Expected.cs" />
