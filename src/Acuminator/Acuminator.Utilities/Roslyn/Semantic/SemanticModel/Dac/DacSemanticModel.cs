@@ -144,6 +144,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			if (DacType != DacType.DacExtension)
 				return null;
 
+			_cancellation.ThrowIfCancellationRequested();
 			ImmutableArray<ISymbol> isActiveCandidates = Symbol.GetMembers(DelegateNames.IsActive);
 
 			if (isActiveCandidates.IsDefaultOrEmpty)
