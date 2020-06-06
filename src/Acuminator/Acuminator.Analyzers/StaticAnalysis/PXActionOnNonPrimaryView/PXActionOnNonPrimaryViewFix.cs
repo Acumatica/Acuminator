@@ -70,20 +70,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 			var modifiedTypeArgsSyntax = pxActionTypeDeclaration.TypeArgumentList
 																.WithArguments(SyntaxFactory.SingletonSeparatedList(mainDacTypeNode));
 			GenericNameSyntax modifiedDeclaration = pxActionTypeDeclaration.WithTypeArgumentList(modifiedTypeArgsSyntax);
-			SyntaxNode originalNode = null, modifiedNode = null;
 
-			switch (pxActionTypeDeclaration.Parent)
+			(SyntaxNode originalNode, SyntaxNode modifiedNode) = pxActionTypeDeclaration.Parent switch
 			{
-				case VariableDeclarationSyntax variableDeclaration:
-					originalNode = variableDeclaration;
-					modifiedNode = variableDeclaration.WithType(modifiedDeclaration);
-					break;
-				case PropertyDeclarationSyntax propertyDeclaration:
-					originalNode = propertyDeclaration;
-					modifiedNode = propertyDeclaration.WithType(modifiedDeclaration);
-					break;
-			}
-
+				VariableDeclarationSyntax variableDeclaration => (variableDeclaration, variableDeclaration.WithType(modifiedDeclaration)),
+				PropertyDeclarationSyntax propertyDeclaration => (propertyDeclaration, propertyDeclaration.WithType(modifiedDeclaration)),
+				_ => default((SyntaxNode, SyntaxNode))
+			};
+			
 			if (originalNode == null || modifiedNode == null || cancellationToken.IsCancellationRequested)
 				return document;
 

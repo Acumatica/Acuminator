@@ -85,39 +85,27 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// <param name="node">The node view model.</param>
 		/// <param name="sortType">Type of the sort.</param>
 		/// <returns/>
-		protected virtual bool IsSortTypeSupported(TreeNodeViewModel node, SortType sortType)
-		{
-			switch (node)
+		protected virtual bool IsSortTypeSupported(TreeNodeViewModel node, SortType sortType) =>
+			node switch
 			{
-				case DacMemberCategoryNodeViewModel _:
-				case GraphMemberCategoryNodeViewModel _:
-					return false;
-				case DacGroupingNodeBaseViewModel _:
-				case DacFieldGroupingNodeBaseViewModel _:
-					return sortType == SortType.Alphabet;
-				default:
-					return sortType == SortType.Alphabet || sortType == SortType.Declaration;
-			}
-		}
+				var n when n is DacMemberCategoryNodeViewModel ||
+						   n is GraphMemberCategoryNodeViewModel _ => false,
+
+				var n when n is DacGroupingNodeBaseViewModel ||
+						   n is DacFieldGroupingNodeBaseViewModel => sortType == SortType.Alphabet,
+
+				_ => sortType == SortType.Alphabet || sortType == SortType.Declaration
+			};
 
 		protected virtual IEnumerable<TreeNodeViewModel> SortNodesBySortTypeAndDirection(IEnumerable<TreeNodeViewModel> nodesToSort,
-																						 SortType sortType, SortDirection sortDirection)
-		{
-			switch (sortType)
+																						 SortType sortType, SortDirection sortDirection) =>
+			(sortType, sortDirection) switch
 			{
-				case SortType.Declaration:
-					return sortDirection == SortDirection.Ascending
-						? nodesToSort.OrderBy(NodeDeclarationOrderComparer.Instance)
-						: nodesToSort.OrderByDescending(NodeDeclarationOrderComparer.Instance);
-
-				case SortType.Alphabet:
-					return sortDirection == SortDirection.Ascending
-						? nodesToSort.OrderBy(node => node.Name)
-						: nodesToSort.OrderByDescending(node => node.Name);
-
-				default:
-					return nodesToSort;
-			}
-		}	
+				(SortType.Declaration, SortDirection.Ascending)  => nodesToSort.OrderBy(NodeDeclarationOrderComparer.Instance),
+				(SortType.Declaration, SortDirection.Descending) => nodesToSort.OrderByDescending(NodeDeclarationOrderComparer.Instance),
+				(SortType.Alphabet, SortDirection.Ascending)     => nodesToSort.OrderBy(node => node.Name),
+				(SortType.Alphabet, SortDirection.Descending)    => nodesToSort.OrderByDescending(node => node.Name),
+				_ => nodesToSort
+			};
 	}
 }

@@ -70,27 +70,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 		{
 			SyntaxNode node = root?.FindNode(diagnosticSpan);
 
-			switch (node)
+			return node switch
 			{
-				case LiteralExpressionSyntax literal 
-				when literal.Kind() == SyntaxKind.NumericLiteralExpression && literal.Token.Value is int:
-					return literal.Parent<AttributeArgumentSyntax>();
-
-				case IdentifierNameSyntax namedConstant:
-					return namedConstant.Parent<AttributeArgumentSyntax>();
-
-				case MemberAccessExpressionSyntax memberAccess:
-					return memberAccess.Parent<AttributeArgumentSyntax>();
-
-				case AttributeArgumentSyntax attributeArgument:
-					return attributeArgument;
-
-				case AttributeSyntax attribute:
-					return SearchForAttributeArgumentToBeReplaced(attribute);
-
-				default:
-					return null;
-			}
+				LiteralExpressionSyntax literal 
+				when literal.Kind() == SyntaxKind.NumericLiteralExpression && 
+					 literal.Token.Value is int									=> literal.Parent<AttributeArgumentSyntax>(),
+				IdentifierNameSyntax namedConstant                              => namedConstant.Parent<AttributeArgumentSyntax>(),
+				MemberAccessExpressionSyntax memberAccess                       => memberAccess.Parent<AttributeArgumentSyntax>(),
+				AttributeArgumentSyntax attributeArgument                       => attributeArgument,
+				AttributeSyntax attribute                                       => SearchForAttributeArgumentToBeReplaced(attribute),
+				_                                                               => null,
+			};
 		}
 
 		private AttributeArgumentSyntax SearchForAttributeArgumentToBeReplaced(AttributeSyntax attribute)

@@ -270,24 +270,15 @@ namespace Acuminator.Utilities.Common
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsEmpty<T>(this IEnumerable<T> source)
-		{
-			source.ThrowOnNull(nameof(source));
-
-			switch (source)
+		public static bool IsEmpty<T>(this IEnumerable<T> source) =>
+			source.CheckIfNull(nameof(source)) switch
 			{
-				case IReadOnlyCollection<T> readOnlyCollection:
-					return readOnlyCollection.Count == 0;
-				case ICollection<T> genericCollection:
-					return genericCollection.Count == 0;
-				case ICollection collection:
-					return collection.Count == 0;
-				case string str:
-					return str.Length == 0;
-				default:
-					return !source.Any();
-			}
-		}
+				IReadOnlyCollection<T> readOnlyCollection => readOnlyCollection.Count == 0,
+				ICollection<T> genericCollection => genericCollection.Count == 0,
+				ICollection collection => collection.Count == 0,
+				string str => str.Length == 0,
+				_ => !source.Any(),
+			};
 
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

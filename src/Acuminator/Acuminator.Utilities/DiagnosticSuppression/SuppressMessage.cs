@@ -169,15 +169,12 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 
 			SeparatedSyntaxList<VariableDeclaratorSyntax> declaredVariables = fieldDeclaration.Declaration.Variables;
 
-			switch (declaredVariables.Count)
+			return declaredVariables.Count switch
 			{
-				case 0:
-					return null;
-				case 1:
-					return declaredVariables[0];
-				default:
-					return declaredVariables.FirstOrDefault(variableDeclarator => variableDeclarator.Contains(node));
-			}
+				0 => null,
+				1 => declaredVariables[0],
+				_ => declaredVariables.FirstOrDefault(variableDeclarator => variableDeclarator.Contains(node))
+			};
 		}
 
 		private static string GetSyntaxNodeStringForSuppressionMessage(SyntaxNode diagnosticNode, int diagnosticPosition)

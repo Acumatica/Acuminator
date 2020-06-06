@@ -20,39 +20,26 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Icon icon = GetIcon(value);
 			var node = GetNode(value);
 
-			switch (icon)
+			return icon switch
 			{
-				case Icon.DacKeyProperty:
-					return VSIXResource.DacKeyIconTooltip;
-				case Icon.Settings:
-					return VSIXResource.PXSetupViewIconTooltip;
-				case Icon.Filter:
-					return VSIXResource.PXFilterViewIconTooltip;
-				case Icon.Processing when node is ViewNodeViewModel:
-					return VSIXResource.ProcessingViewIconTooltip;
-				case Icon.Processing when node is GraphNodeViewModel:
-					return VSIXResource.ProcessingGraphIconTooltip;
-				default:
-					return Binding.DoNothing;
-			}
+				Icon.DacKeyProperty                             => VSIXResource.DacKeyIconTooltip,
+				Icon.Settings                                   => VSIXResource.PXSetupViewIconTooltip,
+				Icon.Filter                                     => VSIXResource.PXFilterViewIconTooltip,
+				Icon.Processing when node is ViewNodeViewModel  => VSIXResource.ProcessingViewIconTooltip,
+				Icon.Processing when node is GraphNodeViewModel => VSIXResource.ProcessingGraphIconTooltip,
+				_                                               => Binding.DoNothing
+			};
 		}
 
 		public object ConvertBack(object value, Type targetTypes, object parameter, CultureInfo culture) => throw new NotSupportedException();
 
-		private Icon GetIcon(object viewModel)
-		{
-			switch (viewModel)
+		private Icon GetIcon(object viewModel) =>
+			viewModel switch
 			{
-				case TreeNodeViewModel treeNode:
-					return treeNode.NodeIcon;
-
-				case IconViewModel iconViewModel:
-					return iconViewModel.IconType;
-
-				default:
-					return Icon.None;
-			}
-		}
+				TreeNodeViewModel treeNode => treeNode.NodeIcon,
+				IconViewModel iconViewModel => iconViewModel.IconType,
+				_ => Icon.None,
+			};
 
 		private TreeNodeViewModel GetNode(object viewModel) =>
 			viewModel is IconViewModel iconViewModel

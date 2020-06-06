@@ -64,28 +64,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.AutoNumberAttribute
 		{
 			SyntaxNode node = root?.FindNode(diagnosticSpan);
 
-			switch (node)
+			return node switch
 			{
-				case PropertyDeclarationSyntax propertyDeclaration:
-					return propertyDeclaration;
+				PropertyDeclarationSyntax propertyDeclaration => propertyDeclaration,
+				IdentifierNameSyntax propertyTypeDeclaration
+					when propertyTypeDeclaration.Parent is PropertyDeclarationSyntax propertyDeclaration => propertyDeclaration,
 
-				case IdentifierNameSyntax propertyTypeDeclaration
-				when propertyTypeDeclaration.Parent is PropertyDeclarationSyntax propertyDeclaration:
-					return propertyDeclaration;
+				TypeSyntax propertyTypeDeclaration => propertyTypeDeclaration.Parent<PropertyDeclarationSyntax>(),
+				AttributeListSyntax attributeListNode
+					when attributeListNode.Parent is PropertyDeclarationSyntax propertyDeclaration => propertyDeclaration,
 
-				case TypeSyntax propertyTypeDeclaration:
-					return propertyTypeDeclaration.Parent<PropertyDeclarationSyntax>();
-
-				case AttributeListSyntax attributeListNode
-				when attributeListNode.Parent is PropertyDeclarationSyntax propertyDeclaration:
-					return propertyDeclaration;
-
-				case AttributeSyntax attributeNode:
-					return attributeNode.Parent<PropertyDeclarationSyntax>();
-
-				default:
-					return null;
-			}
+				AttributeSyntax attributeNode => attributeNode.Parent<PropertyDeclarationSyntax>(),
+				_ => null,
+			};
 		}
 	}
 }
