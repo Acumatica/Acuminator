@@ -49,7 +49,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 			new NonNullableTypeForBqlFieldAnalyzer(),
 			new MissingTypeListAttributeAnalyzer(),
 			new PXGraphUsageInDacAnalyzer(),
-			new NoIsActiveMethodForDacExtensionAnalyzer())
+			new NoIsActiveMethodForExtensionAnalyzer())
 		{
         }
 
