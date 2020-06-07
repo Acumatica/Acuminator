@@ -538,9 +538,9 @@
     <value>Non-public graph extensions are not supported</value>
   </data>
   <data name="PX1016DacExtensionTitle" xml:space="preserve">
-    <value>The DAC extension must declare IsActive method.</value>
+    <value>The DAC extension must declare public static IsActive method with bool return type.  Always-on extensions reduce performance.</value>
   </data>
   <data name="PX1016GraphExtensionTitle" xml:space="preserve">
-    <value>The graph extension must declare IsActive method.</value>
+    <value>The graph extension must declare public static IsActive method with bool return type.  Always-on extensions reduce performance.</value>
   </data>
 </root>
