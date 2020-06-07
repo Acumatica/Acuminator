@@ -24,15 +24,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension
                 Descriptors.PX1016_NoIsActiveMethodForDacExtension
             );
 
-		public override bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dac) =>
-			base.ShouldAnalyze(pxContext, dac) && dac.DacType == DacType.DacExtension && dac.IsActiveMethod == null;
+		public override bool ShouldAnalyze(PXContext pxContext, DacSemanticModel dacExtension) =>
+			base.ShouldAnalyze(pxContext, dacExtension) &&
+			dacExtension.DacType == DacType.DacExtension && dacExtension.IsActiveMethod == null &&
+			!dacExtension.IsMappedCacheExtension && !dacExtension.Symbol.IsAbstract && !dacExtension.Symbol.IsStatic;
 
-		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dacOrExtension)
+		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, DacSemanticModel dacExtension)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			//Should analyze already filtered everything and left only DAC extensions without IsActive
-			Location location = dacOrExtension.Node.Identifier.GetLocation();
+			//ShouldAnalyze already filtered everything and left only DAC extensions without IsActive
+			Location location = dacExtension.Node.Identifier.GetLocation();
 
 			if (location == null)
 				return;
