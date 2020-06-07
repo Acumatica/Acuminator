@@ -1,4 +1,6 @@
 ﻿using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Constants;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
@@ -58,6 +60,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			Enumerable.Empty<ActionHandlerInfo>() :
 			ActionHandlers.Where(h => h?.Symbol?.ContainingType?.Equals(Symbol) ?? false);
 
+		/// <summary>
+		/// Gets the IsActive method symbol for graph extension. Can be <c>null</c>. Always <c>null</c> for graphs.
+		/// </summary>
+		/// <value>
+		/// The is active method symbol.
+		/// </value>
+		public IMethodSymbol IsActiveMethod { get; }
+
 
 		private PXGraphSemanticModel(PXContext pxContext, GraphType type, INamedTypeSymbol symbol, GraphSemanticModelCreationOptions modelCreationOptions,
 									 CancellationToken cancellation = default)
@@ -85,6 +95,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			ActionHandlersByNames = GetActionHandlers();
 			InitProcessingDelegatesInfo();
 			Initializers = GetDeclaredInitializers().ToImmutableArray();
+			IsActiveMethod = GetIsActiveMethod();
 		}
 
 		private void InitProcessingDelegatesInfo()
@@ -105,6 +116,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				return;
 			}
 
+			_cancellation.ThrowIfCancellationRequested();
 			var declaringNodes = Symbol.DeclaringSyntaxReferences
 									   .Select(r => r.GetSyntax(_cancellation));
 			var walker = new ProcessingDelegatesWalker(_pxContext, processingViewSymbols, _cancellation);
@@ -119,10 +131,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				ViewsByNames[viewName].ParametersDelegates = paramsDelegateInfo.ToImmutableArray();
 			}
 
+			_cancellation.ThrowIfCancellationRequested();
+
 			foreach (var (viewName, processDelegateInfo) in walker.ProcessDelegateListByView)
 			{
 				ViewsByNames[viewName].ProcessDelegates = processDelegateInfo.ToImmutableArray();
 			}
+
+			_cancellation.ThrowIfCancellationRequested();
 
 			foreach (var (viewName, finalProcessDelegateInfo) in walker.FinallyProcessDelegateListByView)
 			{
@@ -287,6 +303,23 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			}
 
 			return walker.GraphInitDelegates;
+		}
+
+		private IMethodSymbol GetIsActiveMethod()
+		{
+			if (Type != GraphType.PXGraphExtension)
+				return null;
+
+			_cancellation.ThrowIfCancellationRequested();
+			ImmutableArray<ISymbol> isActiveCandidates = Symbol.GetMembers(DelegateNames.IsActive);
+
+			if (isActiveCandidates.IsDefaultOrEmpty)
+				return null;
+
+			return isActiveCandidates.OfType<IMethodSymbol>()
+									 .FirstOrDefault(method => method.IsStatic && method.DeclaredAccessibility == Accessibility.Public &&
+															   method.Parameters.IsDefaultOrEmpty && !method.IsGenericMethod &&
+															   method.ReturnType.SpecialType == SpecialType.System_Boolean);
 		}
 	}
 }

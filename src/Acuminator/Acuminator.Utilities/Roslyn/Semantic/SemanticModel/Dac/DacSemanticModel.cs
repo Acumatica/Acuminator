@@ -46,8 +46,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public IEnumerable<DacFieldInfo> DeclaredFields => Fields.Where(f => f.Symbol.ContainingType == Symbol);
 
 		/// <summary>
-		/// Gets the is active method symbol. Can be <c>null</c>.
-		/// </summary>
+		/// Gets the IsActive method symbol for DAC extension. Can be <c>null</c>. Always <c>null</c> for DACs.
 		/// <value>
 		/// The is active method symbol.
 		/// </value>
