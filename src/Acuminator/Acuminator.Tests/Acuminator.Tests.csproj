@@ -170,6 +170,7 @@
     <Compile Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\NoIsActiveMethodForGraphExtensionTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\GraphExtension_WithIsActive.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\GraphExtension_WithoutIsActive.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DAC_MappedCacheExtension.cs" />
     <Compile Include="Tests\StaticAnalysis\NonPublicExtensions\NonPublicGraphExtensionsTests.cs" />
     <Compile Include="Tests\StaticAnalysis\NonPublicExtensions\NonPublicDacExtensionsTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NonPublicExtensions\Sources\NonPublicDacExtension_Expected.cs" />

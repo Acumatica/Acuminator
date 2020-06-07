@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PX.Data;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.NonPublicExtensions.Sources
+namespace Acuminator.Tests.Tests.StaticAnalysis.NoIsActiveMethodForExtension.Sources
 {
 	public sealed class SOOrderEntryExt : PXGraphExtension<SOOrderEntry>
 	{

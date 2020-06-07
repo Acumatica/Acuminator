@@ -5,7 +5,6 @@ using Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
-using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
 
@@ -28,6 +27,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoIsActiveMethodForExtension
 				 Descriptors.PX1016_NoIsActiveMethodForDacExtension.CreateFor(21, 22),
 				 Descriptors.PX1016_NoIsActiveMethodForDacExtension.CreateFor(26, 22),
 				 Descriptors.PX1016_NoIsActiveMethodForDacExtension.CreateFor(33, 22));
+
+		[Theory]
+		[EmbeddedFileData("DAC_MappedCacheExtension.cs")]
+		public async Task MappedCacheExtension_WithoutIsActive_ShouldNotShowDiagnostic(string actual) =>
+			await VerifyCSharpDiagnosticAsync(actual);
 
 		[Theory]
         [EmbeddedFileData("DacExtension_WithIsActive.cs")]
