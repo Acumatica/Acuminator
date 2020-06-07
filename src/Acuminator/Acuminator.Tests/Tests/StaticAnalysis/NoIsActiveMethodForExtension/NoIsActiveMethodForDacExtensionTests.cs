@@ -16,7 +16,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoIsActiveMethodForExtension
 			new DacAnalyzersAggregator(
 				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
 											.WithSuppressionMechanismDisabled(),
-				new NoIsActiveMethodForDacExtensionAnalyzer());
+				new NoIsActiveMethodForExtensionAnalyzer());
 
 		[Theory]
 		[EmbeddedFileData("DacExtension_WithoutIsActive.cs")]
