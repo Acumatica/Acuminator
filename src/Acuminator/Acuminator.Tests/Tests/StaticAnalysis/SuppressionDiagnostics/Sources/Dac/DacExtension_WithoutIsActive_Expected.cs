@@ -7,7 +7,7 @@ using PX.Data;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.NoIsActiveMethodForExtension.Sources
 {
-	// Acuminator disable once PX1016 ExtensionDoesNotDeclareIsActiveMethod extension should be always available
+	// Acuminator disable once PX1016 ExtensionDoesNotDeclareIsActiveMethod extension should be constantly active
 	public sealed class SOOrderExt : PXCacheExtension<SOOrder>
 	{
 	}
