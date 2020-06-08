@@ -60,10 +60,10 @@ namespace Acuminator.Vsix.Utilities.Navigation
 		{
 			switch (symbol)
 			{
-				case ITypeSymbol typeSymbol:
-				case IMethodSymbol methodSymbol:
-				case IPropertySymbol propertySymbol:
-				case IEventSymbol eventSymbol:
+				case ITypeSymbol _:
+				case IMethodSymbol _:
+				case IPropertySymbol _:
+				case IEventSymbol _:
 					var typeMemberNode = await syntaxReference.GetSyntaxAsync(cToken) as MemberDeclarationSyntax;
 					return typeMemberNode?.GetIdentifiers()
 										  .FirstOrNullable()
@@ -135,7 +135,7 @@ namespace Acuminator.Vsix.Utilities.Navigation
 
 			if (wpfTextView == null)
 			{
-				var (window, textDocument) = await OpenCodeFileNotInSolutionWithDTEAsync(serviceProvider, filePath);
+				var (window, _) = await OpenCodeFileNotInSolutionWithDTEAsync(serviceProvider, filePath);
 
 				if (window == null)
 					return default;

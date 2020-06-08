@@ -96,8 +96,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			// ReSharper disable once ImpureMethodCallOnReadonlyValueField
 			var builder = ImmutableArray<ISymbol>.Empty.ToBuilder();
 
-			if (thisGraph != null) builder.Add(thisGraph);
-			if (parGraph != null) builder.Add(parGraph);
+			if (thisGraph != null) 
+				builder.Add(thisGraph);
+
+			if (parGraph != null) 
+				builder.Add(parGraph);
+
 			builder.AddRange(localVarGraphs);
 
 			return builder.ToImmutable();
@@ -119,24 +123,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries
 			}
 		}
 
-		private ImmutableDictionary<string, string> CreateDiagnosticProperties(IEnumerable<ISymbol> availableGraphs, 
-			PXContext pxContext)
+		private ImmutableDictionary<string, string> CreateDiagnosticProperties(IEnumerable<ISymbol> availableGraphs, PXContext pxContext)
 		{
 			var builder = ImmutableDictionary.CreateBuilder<string, string>();
-
 			int i = 0;
+
 			foreach (var graph in availableGraphs)
 			{
-				ITypeSymbol type = null;
-				switch (graph)
+				ITypeSymbol type = graph switch
 				{
-					case IParameterSymbol property:
-						type = property.Type;
-						break;
-					case ILocalSymbol local:
-						type = local.Type;
-						break;
-				}
+					IParameterSymbol property => property.Type,
+					ILocalSymbol local => local.Type,
+					_ => null
+				};
 
 				builder.Add(IdentifierNamePropertyPrefix + i, graph.Name);
 				

@@ -37,21 +37,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			yield return DacMemberCategory.FieldsWithoutProperty;
 		}
 
-		protected virtual DacMemberCategoryNodeViewModel CreateCategory(DacNodeViewModel dac, DacMemberCategory dacMemberCategory)
-		{
-			switch (dacMemberCategory)
+		protected virtual DacMemberCategoryNodeViewModel CreateCategory(DacNodeViewModel dac, DacMemberCategory dacMemberCategory) =>
+			dacMemberCategory switch
 			{
-				case DacMemberCategory.Keys:
-					return new DacKeysCategoryNodeViewModel(dac, ExpandCreatedNodes);
-
-				case DacMemberCategory.Property:
-					return new DacPropertiesCategoryNodeViewModel(dac, ExpandCreatedNodes);
-
-				case DacMemberCategory.FieldsWithoutProperty:
-				default:
-					return null;
-			}
-		}
+				DacMemberCategory.Keys => new DacKeysCategoryNodeViewModel(dac, ExpandCreatedNodes),
+				DacMemberCategory.Property => new DacPropertiesCategoryNodeViewModel(dac, ExpandCreatedNodes),
+				_ => null,
+			};
 
 		public override IEnumerable<TreeNodeViewModel> VisitNode(DacKeysCategoryNodeViewModel dacKeysCategory)
 		{

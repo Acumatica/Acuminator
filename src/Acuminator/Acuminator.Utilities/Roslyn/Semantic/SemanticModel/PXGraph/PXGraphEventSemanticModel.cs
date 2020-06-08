@@ -261,15 +261,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 			int underscoresCount = eventCandidate.Name.Count(c => c == underscore);
 
-			switch (eventCategory)
+			return eventCategory switch
 			{
-				case GraphEventCategory.Row:
-					return underscoresCount == 1; 
-				case GraphEventCategory.Field:
-					return underscoresCount == 2;
-				default:
-					return false;
-			}
+				GraphEventCategory.Row => underscoresCount == 1,
+				GraphEventCategory.Field => underscoresCount == 2,
+				_ => false,
+			};
 		}
 	}
 }

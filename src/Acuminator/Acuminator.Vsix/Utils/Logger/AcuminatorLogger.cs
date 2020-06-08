@@ -117,17 +117,16 @@ namespace Acuminator.Vsix.Logger
 		{
 			try
 			{
-				using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(timeoutSeconds)))
-				{
-					var joinableTask = ThreadHelper.JoinableTaskFactory.RunAsync(() => _package.GetWpfTextViewAsync());
-					var activeTextView = joinableTask.Join(cts.Token);
-					return activeTextView;
-				}
+				using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(timeoutSeconds));
+
+				var joinableTask = ThreadHelper.JoinableTaskFactory.RunAsync(() => _package.GetWpfTextViewAsync());
+				var activeTextView = joinableTask.Join(cts.Token);
+				return activeTextView;
 			}
-			catch 
+			catch
 			{
-				return null;			
-			}		
+				return null;
+			}
 		}
 
 		private string CreateLogMessageFromException(Exception exception, Document currentDocument, LogMode logMode, string reportedFrom)

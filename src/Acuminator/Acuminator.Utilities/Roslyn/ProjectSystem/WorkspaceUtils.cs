@@ -46,25 +46,19 @@ namespace Acuminator.Utilities.Roslyn.ProjectSystem
 			return workspace.Options.GetOption(FormattingOptions.IndentationSize, LanguageNames.CSharp);
 		}		
 
-		public static bool IsActiveDocumentCleared(this WorkspaceChangeEventArgs changeEventArgs, Document oldDocument)
-		{
-			changeEventArgs.ThrowOnNull(nameof(changeEventArgs));
-
-			switch (changeEventArgs.Kind)
+		public static bool IsActiveDocumentCleared(this WorkspaceChangeEventArgs changeEventArgs, Document oldDocument) =>
+			changeEventArgs.CheckIfNull(nameof(changeEventArgs)).Kind switch
 			{
-				case WorkspaceChangeKind.SolutionRemoved:					
-				case WorkspaceChangeKind.SolutionCleared:		
-				case WorkspaceChangeKind.SolutionReloaded:
-					return oldDocument?.Project.Solution.Id == changeEventArgs.NewSolution.Id;
-				case WorkspaceChangeKind.ProjectRemoved:
-				case WorkspaceChangeKind.ProjectReloaded:
-					return oldDocument?.Project.Id == changeEventArgs.ProjectId;
-				case WorkspaceChangeKind.DocumentRemoved:
-					return oldDocument?.Id == changeEventArgs.DocumentId;
-				default:
-					return false;
-			}
-		}
+				var kind when kind == WorkspaceChangeKind.SolutionRemoved ||
+							  kind == WorkspaceChangeKind.SolutionCleared ||
+							  kind == WorkspaceChangeKind.SolutionReloaded => oldDocument?.Project.Solution.Id == changeEventArgs.NewSolution.Id,
+
+				var kind when kind == WorkspaceChangeKind.ProjectRemoved ||
+							  kind == WorkspaceChangeKind.ProjectReloaded => oldDocument?.Project.Id == changeEventArgs.ProjectId,
+
+				WorkspaceChangeKind.DocumentRemoved => oldDocument?.Id == changeEventArgs.DocumentId,
+				_ => false
+			};
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsActiveDocumentChanged(this WorkspaceChangeEventArgs changeEventArgs, Document oldDocument)

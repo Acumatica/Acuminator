@@ -295,26 +295,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			syntaxContext.ReportDiagnosticWithSuppressionCheck(noXmlCommentDiagnostic, _codeAnalysisSettings);
 		}
 
-		private LocalizableString GetMemberCategory(MemberDeclarationSyntax memberDeclaration)
-		{
-			switch (memberDeclaration)
-			{
-				case ClassDeclarationSyntax _:
-					return nameof(Resources.PX1007Class).GetLocalized();
-				case PropertyDeclarationSyntax _:
-					return nameof(Resources.PX1007DacProperty).GetLocalized();
-				case StructDeclarationSyntax _:
-					return nameof(Resources.PX1007Struct).GetLocalized();
-				case InterfaceDeclarationSyntax _:
-					return nameof(Resources.PX1007Interface).GetLocalized();
-				case EnumDeclarationSyntax _:
-					return nameof(Resources.PX1007Enum).GetLocalized();
-				case DelegateDeclarationSyntax _:
-					return nameof(Resources.PX1007Delegate).GetLocalized();
-				default:
-					return nameof(Resources.PX1007DefaultEntity).GetLocalized();
-			}
-		}
+		private LocalizableString GetMemberCategory(MemberDeclarationSyntax memberDeclaration) =>
+			 memberDeclaration switch
+			 {
+				 ClassDeclarationSyntax _     => nameof(Resources.PX1007Class).GetLocalized(),
+				 PropertyDeclarationSyntax _  => nameof(Resources.PX1007DacProperty).GetLocalized(),
+				 StructDeclarationSyntax _    => nameof(Resources.PX1007Struct).GetLocalized(),
+				 InterfaceDeclarationSyntax _ => nameof(Resources.PX1007Interface).GetLocalized(),
+				 EnumDeclarationSyntax _      => nameof(Resources.PX1007Enum).GetLocalized(),
+				 DelegateDeclarationSyntax _  => nameof(Resources.PX1007Delegate).GetLocalized(),
+				 _                            => nameof(Resources.PX1007DefaultEntity).GetLocalized(),
+			 };
 
 		private bool CheckAttributeNames(IEnumerable<string> attributeNames)
 		{

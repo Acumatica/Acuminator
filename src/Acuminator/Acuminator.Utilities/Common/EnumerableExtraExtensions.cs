@@ -60,10 +60,8 @@ namespace Acuminator.Utilities.Common
 			if (list == null)
 				return false;
 
-			using (var enumerator = list.GetEnumerator())
-			{
-				return enumerator.MoveNext() && !enumerator.MoveNext();
-			}
+			using var enumerator = list.GetEnumerator();
+			return enumerator.MoveNext() && !enumerator.MoveNext();
 		}
 
 		public static bool All(this IEnumerable<bool> source)
@@ -121,27 +119,26 @@ namespace Acuminator.Utilities.Common
 
 		public static bool IsSorted<T>(this IEnumerable<T> enumerable, IComparer<T> comparer)
 		{
-			using (var e = enumerable.GetEnumerator())
+			using var e = enumerable.GetEnumerator();
+
+			if (!e.MoveNext())
 			{
-				if (!e.MoveNext())
-				{
-					return true;
-				}
-
-				var previous = e.Current;
-
-				while (e.MoveNext())
-				{
-					if (comparer.Compare(previous, e.Current) > 0)
-					{
-						return false;
-					}
-
-					previous = e.Current;
-				}
-
 				return true;
 			}
+
+			var previous = e.Current;
+
+			while (e.MoveNext())
+			{
+				if (comparer.Compare(previous, e.Current) > 0)
+				{
+					return false;
+				}
+
+				previous = e.Current;
+			}
+
+			return true;
 		}
 
 		public static bool SequenceEqual<T>(this IEnumerable<T> first, IEnumerable<T> second, Func<T, T, bool> comparer)

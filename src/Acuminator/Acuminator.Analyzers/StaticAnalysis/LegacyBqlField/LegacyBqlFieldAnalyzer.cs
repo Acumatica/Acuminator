@@ -69,22 +69,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlField
 				&& t.OriginalDefinition.Name == pxContext.IImplementType.Name
 				&& t.TypeArguments.First().AllInterfaces.Any(z => z.Name == pxContext.BqlTypes.BqlDataType.Name));
 
-		private static string GetPropertyTypeName(IPropertySymbol property, PXContext pxContext)
-		{
-			switch (property.Type)
+		private static string GetPropertyTypeName(IPropertySymbol property, PXContext pxContext) =>
+			property.Type switch
 			{
-				case IArrayTypeSymbol arrType:
-					return arrType.ElementType.Name + "[]";
-
-				case INamedTypeSymbol namedType when namedType.IsNullable(pxContext):
-					return namedType.GetUnderlyingTypeFromNullable(pxContext)?.Name;
-
-				case INamedTypeSymbol namedType:
-					return namedType.Name;
-
-				default:
-					return null;
-			}
-		}
+				IArrayTypeSymbol arrType                                        => arrType.ElementType.Name + "[]",
+				INamedTypeSymbol namedType when namedType.IsNullable(pxContext) => namedType.GetUnderlyingTypeFromNullable(pxContext)?.Name,
+				INamedTypeSymbol namedType                                      => namedType.Name,
+				_                                                               => null,
+			};
 	}
 }

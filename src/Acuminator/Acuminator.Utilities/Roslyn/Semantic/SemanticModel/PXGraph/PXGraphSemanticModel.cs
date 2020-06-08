@@ -70,19 +70,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			_cancellation = cancellation;
 			ModelCreationOptions = modelCreationOptions;
 
-			switch (Type)
+			GraphSymbol = Type switch
 			{
-				case GraphType.PXGraph:
-					GraphSymbol = Symbol;
-					break;
-				case GraphType.PXGraphExtension:
-					GraphSymbol = Symbol.GetGraphFromGraphExtension(_pxContext);
-					break;
-				case GraphType.None:
-				default:
-					GraphSymbol = null;
-					break;
-			}
+				GraphType.PXGraph => Symbol,
+				GraphType.PXGraphExtension => Symbol.GetGraphFromGraphExtension(_pxContext),
+				_ => null,
+			};
 
 			StaticConstructors = Symbol.GetStaticConstructors(_cancellation);
 			ViewsByNames = GetDataViews();

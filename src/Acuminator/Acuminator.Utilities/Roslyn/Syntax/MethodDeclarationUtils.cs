@@ -110,40 +110,40 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			if (statement == null)
 				return null;
 
-			using (var enumerator = statement.Parent.ChildNodes().OfType<StatementSyntax>().GetEnumerator())
+			using var enumerator = statement.Parent.ChildNodes()
+												   .OfType<StatementSyntax>()
+												   .GetEnumerator();
+			while (enumerator.MoveNext())
 			{
-				while (enumerator.MoveNext())
-				{
-					StatementSyntax curStatement = enumerator.Current;
+				StatementSyntax curStatement = enumerator.Current;
 
-					if (curStatement.Equals(statement))
+				if (curStatement.Equals(statement))
+				{
+					if (enumerator.MoveNext())
 					{
-						if (enumerator.MoveNext())
+						return enumerator.Current;
+					}
+					else
+					{
+						switch (curStatement.Parent.Parent.Kind())
 						{
-							return enumerator.Current;
-						}
-						else
-						{
-							switch (curStatement.Parent.Parent.Kind())
-							{
-								case SyntaxKind.MethodDeclaration:
-								case SyntaxKind.OperatorDeclaration:
-								case SyntaxKind.ConversionOperatorDeclaration:
-								case SyntaxKind.ConstructorDeclaration:
-								case SyntaxKind.DestructorDeclaration:
-								case SyntaxKind.PropertyDeclaration:
-								case SyntaxKind.EventDeclaration:
-								case SyntaxKind.IndexerDeclaration:
-								case SyntaxKind.GetAccessorDeclaration:
-								case SyntaxKind.SetAccessorDeclaration:
-								case SyntaxKind.AddAccessorDeclaration:
-								case SyntaxKind.RemoveAccessorDeclaration:
-								case SyntaxKind.UnknownAccessorDeclaration:
-									return null;
-								default:
-									var parentStatement = curStatement.Parent.GetStatementNode();
-									return parentStatement?.GetNextStatement();
-							}
+							case SyntaxKind.MethodDeclaration:
+							case SyntaxKind.OperatorDeclaration:
+							case SyntaxKind.ConversionOperatorDeclaration:
+							case SyntaxKind.ConstructorDeclaration:
+							case SyntaxKind.DestructorDeclaration:
+							case SyntaxKind.PropertyDeclaration:
+							case SyntaxKind.EventDeclaration:
+							case SyntaxKind.IndexerDeclaration:
+							case SyntaxKind.GetAccessorDeclaration:
+							case SyntaxKind.SetAccessorDeclaration:
+							case SyntaxKind.AddAccessorDeclaration:
+							case SyntaxKind.RemoveAccessorDeclaration:
+							case SyntaxKind.UnknownAccessorDeclaration:
+								return null;
+							default:
+								var parentStatement = curStatement.Parent.GetStatementNode();
+								return parentStatement?.GetNextStatement();
 						}
 					}
 				}
@@ -153,11 +153,9 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsStatic(this BaseMethodDeclarationSyntax node)
-        {
-            node.ThrowOnNull(nameof(node));
-
-            return node.Modifiers.Any(m => m.IsKind(SyntaxKind.StaticKeyword));
-        }
+        public static bool IsStatic(this BaseMethodDeclarationSyntax node) =>
+			node.CheckIfNull(nameof(node))
+				.Modifiers
+				.Any(m => m.IsKind(SyntaxKind.StaticKeyword));
 	}
 }
