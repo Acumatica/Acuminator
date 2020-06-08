@@ -164,6 +164,13 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Partial\WithComment.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Partial\WithExcludeComment.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\PublicClassXmlComment\Sources\Partial\WithBadComment.cs" />
+    <Compile Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\NoIsActiveMethodForDacExtensionTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DacExtension_WithIsActive.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DacExtension_WithoutIsActive.cs" />
+    <Compile Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\NoIsActiveMethodForGraphExtensionTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\GraphExtension_WithIsActive.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\GraphExtension_WithoutIsActive.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\NoIsActiveMethodForExtension\Sources\DAC_MappedCacheExtension.cs" />
     <Compile Include="Tests\StaticAnalysis\NonPublicExtensions\NonPublicGraphExtensionsTests.cs" />
     <Compile Include="Tests\StaticAnalysis\NonPublicExtensions\NonPublicDacExtensionsTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\NonPublicExtensions\Sources\NonPublicDacExtension_Expected.cs" />
@@ -174,7 +181,10 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\SuppressMuiltipleDiagnostics_One.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\DAC_Without_XML_Description.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\DAC_Without_XML_Description_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\DacExtension_WithoutIsActive.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\DacExtension_WithoutIsActive_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\SuppressDiagnosticTestCodeFix.cs" />
+    <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\SuppressionOnMissingIsActiveMethodCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\SuppressionOnMissingXmlCommentCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\SuppressionDiagnostics\SuppressionOnDacCodeFixTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacPropertyAttributes\DacFieldWithDBCalcedAttributeTests.cs" />

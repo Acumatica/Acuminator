@@ -336,4 +336,7 @@
   <data name="PX1022Graph" xml:space="preserve">
     <value>NonPublicGraphExtension</value>
   </data>
+  <data name="PX1016" xml:space="preserve">
+    <value>ExtensionDoesNotDeclareIsActiveMethod</value>
+  </data>
 </root>

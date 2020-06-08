@@ -17,6 +17,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 
 		public abstract void Analyze(SymbolAnalysisContext context, PXContext pxContext, PXGraphSemanticModel pxGraph);
 
-		public virtual bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) => true;
+		public virtual bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) => graph != null;
 	}
 }

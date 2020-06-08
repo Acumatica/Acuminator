@@ -430,6 +430,24 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The DAC extension must declare public static IsActive method with bool return type. Always-on extensions reduce performance. Suppress the error if you need always on DAC extension..
+        /// </summary>
+        public static string PX1016DacExtensionTitle {
+            get {
+                return ResourceManager.GetString("PX1016DacExtensionTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The graph extension must declare public static IsActive method with bool return type.  Always-on extensions reduce performance. Suppress the error if you need always on graph extension..
+        /// </summary>
+        public static string PX1016GraphExtensionTitle {
+            get {
+                return ResourceManager.GetString("PX1016GraphExtensionTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The graph with the specified primary DAC type does not contain a view of this type.
         /// </summary>
         public static string PX1018Title {

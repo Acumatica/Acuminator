@@ -6,6 +6,7 @@ using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
@@ -44,6 +45,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 		public IEnumerable<DacFieldInfo> DeclaredFields => Fields.Where(f => f.Symbol.ContainingType == Symbol);
 
+		/// <summary>
+		/// Gets the IsActive method symbol for DAC extension. Can be <c>null</c>. Always <c>null</c> for DACs.
+		/// <value>
+		/// The is active method symbol.
+		/// </value>
+		public IMethodSymbol IsActiveMethod { get; }
+
 		private DacSemanticModel(PXContext pxContext, DacType dacType, INamedTypeSymbol symbol, ClassDeclarationSyntax node,
 								 CancellationToken cancellation)
 		{
@@ -60,7 +68,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			IsMappedCacheExtension = Symbol.InheritsFromOrEquals(_pxContext.PXMappedCacheExtensionType);
 
 			FieldsByNames = GetDacFields();
-			PropertiesByNames = GetDacProperties();		
+			PropertiesByNames = GetDacProperties();
+			IsActiveMethod = GetIsActiveMethod();
 		}
 
 		/// <summary>
@@ -127,6 +136,23 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 				: dacExtInfosSelector();
 
 			return infos.ToImmutableDictionary(keyComparer: StringComparer.OrdinalIgnoreCase);
+		}
+
+		private IMethodSymbol GetIsActiveMethod()
+		{
+			if (DacType != DacType.DacExtension)
+				return null;
+
+			_cancellation.ThrowIfCancellationRequested();
+			ImmutableArray<ISymbol> isActiveCandidates = Symbol.GetMembers(DelegateNames.IsActive);
+
+			if (isActiveCandidates.IsDefaultOrEmpty)
+				return null;
+
+			return isActiveCandidates.OfType<IMethodSymbol>()
+									 .FirstOrDefault(method => method.IsStatic && method.DeclaredAccessibility == Accessibility.Public &&
+															   method.Parameters.IsDefaultOrEmpty && !method.IsGenericMethod &&
+															   method.ReturnType.SpecialType == SpecialType.System_Boolean);
 		}
 	}
 }

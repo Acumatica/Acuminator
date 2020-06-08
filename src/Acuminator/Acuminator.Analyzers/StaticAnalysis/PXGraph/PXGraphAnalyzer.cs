@@ -1,4 +1,6 @@
-﻿using Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes;
+﻿using System.Threading.Tasks;
+
+using Acuminator.Analyzers.StaticAnalysis.ActionHandlerAttributes;
 using Acuminator.Analyzers.StaticAnalysis.ActionHandlerReturnType;
 using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
 using Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler;
@@ -8,6 +10,8 @@ using Acuminator.Analyzers.StaticAnalysis.DatabaseQueries;
 using Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature;
 using Acuminator.Analyzers.StaticAnalysis.InvalidViewUsageInProcessingDelegate;
 using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
+using Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension;
+using Acuminator.Analyzers.StaticAnalysis.NonPublicExtensions;
 using Acuminator.Analyzers.StaticAnalysis.NoPrimaryViewForPrimaryDac;
 using Acuminator.Analyzers.StaticAnalysis.PXActionExecution;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationDuringInitialization;
@@ -16,13 +20,12 @@ using Acuminator.Analyzers.StaticAnalysis.ThrowingExceptions;
 using Acuminator.Analyzers.StaticAnalysis.TypoInViewDelegateName;
 using Acuminator.Analyzers.StaticAnalysis.UiPresentationLogic;
 using Acuminator.Analyzers.StaticAnalysis.ViewDeclarationOrder;
-using Acuminator.Analyzers.StaticAnalysis.NonPublicExtensions;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Threading.Tasks;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 {
@@ -50,7 +53,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 			new ActionHandlerAttributesAnalyzer(),
             new ActionHandlerReturnTypeAnalyzer(),
 			new NonPublicGraphAndDacExtensionAnalyzer(),
-            new InvalidPXActionSignatureAnalyzer(),
+			new NoIsActiveMethodForExtensionAnalyzer(),
+			new InvalidPXActionSignatureAnalyzer(),
 			new TypoInViewDelegateNameAnalyzer())
         {
         }

@@ -23,7 +23,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 			ImmutableArray.Create(Descriptors.PX1012_PXActionOnNonPrimaryView);
 
 		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) =>
-			graph.Type != GraphType.None && base.ShouldAnalyze(pxContext, graph); //-V3063
+			base.ShouldAnalyze(pxContext, graph) && graph.Type != GraphType.None; //-V3063
 
 		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphSemanticModel pxGraph)
 		{
