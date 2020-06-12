@@ -349,6 +349,24 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to MissingPrimaryKeyDeclaration.
+        /// </summary>
+        public static string PX1033 {
+            get {
+                return ResourceManager.GetString("PX1033", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MissingForeignKeyDeclaration.
+        /// </summary>
+        public static string PX1034 {
+            get {
+                return ResourceManager.GetString("PX1034", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ConstructorInGraphExtension.
         /// </summary>
         public static string PX1040 {

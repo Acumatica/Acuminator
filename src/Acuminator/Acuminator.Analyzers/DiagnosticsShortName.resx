@@ -339,4 +339,10 @@
   <data name="PX1016" xml:space="preserve">
     <value>ExtensionDoesNotDeclareIsActiveMethod</value>
   </data>
+  <data name="PX1033" xml:space="preserve">
+    <value>MissingPrimaryKeyDeclaration</value>
+  </data>
+  <data name="PX1034" xml:space="preserve">
+    <value>MissingForeignKeyDeclaration</value>
+  </data>
 </root>
