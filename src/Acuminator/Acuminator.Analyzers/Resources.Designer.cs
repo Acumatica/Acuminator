@@ -763,6 +763,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The DAC has multiple primary key declarations.
+        /// </summary>
+        public static string PX1035Title {
+            get {
+                return ResourceManager.GetString("PX1035Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Move the code to the Initialize() method.
         /// </summary>
         public static string PX1040Fix {

@@ -345,4 +345,7 @@
   <data name="PX1034" xml:space="preserve">
     <value>MissingForeignKeyDeclaration</value>
   </data>
+  <data name="PX1035" xml:space="preserve">
+    <value>MultiplePrimaryKeyDeclarations</value>
+  </data>
 </root>

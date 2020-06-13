@@ -367,6 +367,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to MultiplePrimaryKeyDeclarations.
+        /// </summary>
+        public static string PX1035 {
+            get {
+                return ResourceManager.GetString("PX1035", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ConstructorInGraphExtension.
         /// </summary>
         public static string PX1040 {

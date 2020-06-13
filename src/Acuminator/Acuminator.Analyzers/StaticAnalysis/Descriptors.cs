@@ -201,6 +201,10 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			Rule("PX1034", nameof(Resources.PX1034Title).GetLocalized(), Category.Default, DiagnosticSeverity.Info,
 				DiagnosticsShortName.PX1034);
 
+		public static DiagnosticDescriptor PX1035_MultiplePrimaryKeyDeclarationsInDac { get; } =
+			Rule("PX1035", nameof(Resources.PX1035Title).GetLocalized(), Category.Default, DiagnosticSeverity.Info,
+				DiagnosticsShortName.PX1035);
+
 		public static DiagnosticDescriptor PX1040_ConstructorInGraphExtension { get; } =
 			Rule("PX1040", nameof(Resources.PX1040Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, 
 				DiagnosticsShortName.PX1040);
