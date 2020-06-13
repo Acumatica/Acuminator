@@ -5,6 +5,16 @@ namespace Acuminator.Utilities.Roslyn.Constants
 {
 	public static class TypeNames
 	{
+		/// <summary>
+		/// The mandatory name of the primary key class in DAC.
+		/// </summary>
+		public static readonly string PrimaryKeyClassName = "PK";
+
+		/// <summary>
+		/// The mandatory name of the foreign key class in DAC.
+		/// </summary>
+		public static readonly string ForeignKeyClassName = "FK";
+
 		public static readonly string PXView = "PXView";
 
 		public static readonly string IBqlTable = "IBqlTable";

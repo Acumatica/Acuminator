@@ -173,5 +173,10 @@
 
 		public const string PXSelectBase_Acumatica2018R2 = "PX.Data.PXSelectBase`2";
 		public const string IViewConfig_Acumatica2018R2 = "PX.Data.PXSelectBase`2+IViewConfig";
+
+		#region PK/FK API
+		public const string IPrimaryKey = "PX.Data.ReferentialIntegrity.Attributes.IPrimaryKey";
+		public const string IForeignKey = "PX.Data.ReferentialIntegrity.Attributes.IForeignKey";
+		#endregion
 	}
 }
