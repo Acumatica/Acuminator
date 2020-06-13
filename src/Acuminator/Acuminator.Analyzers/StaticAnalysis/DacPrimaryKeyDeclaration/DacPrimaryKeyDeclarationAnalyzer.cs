@@ -10,7 +10,7 @@ using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.MissingDacPrimaryKeyDeclaration
 {
-	public class MissingDacPrimaryKeyDeclarationAnalyzer : DacAggregatedAnalyzerBase
+	public class DacPrimaryKeyDeclarationAnalyzer : DacAggregatedAnalyzerBase
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
