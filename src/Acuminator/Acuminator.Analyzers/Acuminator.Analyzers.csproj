@@ -75,7 +75,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="StaticAnalysis\DacForeignKeyDeclaration\" />
+    <Folder Include="StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\" />
   </ItemGroup>
   <Target Name="NugetTarget" AfterTargets="Build">
     <GetAssemblyIdentity AssemblyFiles="$(OutDir)\$(AssemblyName).dll">
