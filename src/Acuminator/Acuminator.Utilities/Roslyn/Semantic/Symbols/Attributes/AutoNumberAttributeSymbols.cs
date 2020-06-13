@@ -21,7 +21,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
         public int MinAutoNumberLength => _minAutoNumberLength;
 
-        public INamedTypeSymbol NumberingSequence => _compilation.GetTypeByMetadataName(TypeFullNames.NumberingSequence);
+        public INamedTypeSymbol NumberingSequence => Compilation.GetTypeByMetadataName(TypeFullNames.NumberingSequence);
 
         internal AutoNumberAttributeSymbols(Compilation compilation) : base(compilation, TypeFullNames.AutoNumberAttribute)
         {
@@ -54,7 +54,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
             if (startNbrProperty == null)
                 return DefaultMinAutoNumberLength;
 
-            var stringAttribute = _compilation.GetTypeByMetadataName(TypeFullNames.PXDBStringAttribute);
+            var stringAttribute = Compilation.GetTypeByMetadataName(TypeFullNames.PXDBStringAttribute);
 
             if (stringAttribute == null)
                 return DefaultMinAutoNumberLength;
