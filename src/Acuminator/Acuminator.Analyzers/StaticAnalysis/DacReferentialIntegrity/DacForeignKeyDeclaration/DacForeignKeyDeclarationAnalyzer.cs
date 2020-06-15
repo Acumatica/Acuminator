@@ -19,14 +19,13 @@ using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 {
-	public class DacPrimaryKeyDeclarationAnalyzer : DacKeyDeclarationAnalyzerBase
+	public class DacForeignKeyDeclarationAnalyzer : DacKeyDeclarationAnalyzerBase
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
 			(
-				Descriptors.PX1033_MissingDacPrimaryKeyDeclaration,
-				Descriptors.PX1035_MultiplePrimaryKeyDeclarationsInDac,
-				Descriptors.PX1036_WrongDacPrimaryKeyName
+				Descriptors.PX1034_MissingDacForeignKeyDeclaration,
+				Descriptors.PX1036_WrongDacForeignKeyName
 			);
 
 		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac)

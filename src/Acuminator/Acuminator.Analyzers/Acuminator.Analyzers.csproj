@@ -74,9 +74,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\" />
-  </ItemGroup>
   <Target Name="NugetTarget" AfterTargets="Build">
     <GetAssemblyIdentity AssemblyFiles="$(OutDir)\$(AssemblyName).dll">
       <Output TaskParameter="Assemblies" ItemName="AnalyzerAssemblyInfo" />
