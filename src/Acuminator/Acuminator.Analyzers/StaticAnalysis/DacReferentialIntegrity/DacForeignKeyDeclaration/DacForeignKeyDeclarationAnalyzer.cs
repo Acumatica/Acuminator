@@ -32,74 +32,29 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			var keyDeclarations = GetPrimaryKeyDeclarations(context, dac).ToList(capacity: 1);
+			var allForeignKeyDeclarationsByContainingType = dac.Symbol.GetFlattenedNestedTypes(symbolContext.CancellationToken)
+																	  .Where(type => type.ImplementsInterface(context.ReferentialIntegritySymbols.IForeignKey))
+																	  .ToLookup(type => type.ContainingType);
 
-			switch (keyDeclarations.Count)
+			if (allForeignKeyDeclarationsByContainingType.Count == 0)
 			{
-				case 0:
-					ReportNoPrimaryKeyDeclarationsInDac(symbolContext, context, dac);
-					return;
-				case 1:
-					AnalyzePrimaryKeyDeclaration(symbolContext, context, keyDeclarations[0]);
-					return;
-				default:
-					ReportMultiplePrimaryKeyDeclarationsInDac(symbolContext, context, dac, keyDeclarations);
-					return;
+				ReportNoForeignKeyDeclarationsInDac(symbolContext, context, dac);
+				return;
 			}
+			
+			//TODO extend logic to check foreign keys declarations
 		}
 
-		private IEnumerable<INamedTypeSymbol> GetPrimaryKeyDeclarations(PXContext context, DacSemanticModel dac)
-		{
-			var nestedTypes = dac.Symbol.GetTypeMembers();
-			return nestedTypes.IsDefaultOrEmpty
-				? Enumerable.Empty<INamedTypeSymbol>()
-				: nestedTypes.Where(type => type.ImplementsInterface(context.ReferentialIntegritySymbols.IPrimaryKey));
-		}
-
-		private void ReportNoPrimaryKeyDeclarationsInDac(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac)
+		private void ReportNoForeignKeyDeclarationsInDac(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac)
 		{
 			Location location = dac.Node.Identifier.GetLocation() ?? dac.Node.GetLocation();
 
 			if (location != null)
 			{
 				symbolContext.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(Descriptors.PX1033_MissingDacPrimaryKeyDeclaration, location),
+					Diagnostic.Create(Descriptors.PX1034_MissingDacForeignKeyDeclaration, location),
 					context.CodeAnalysisSettings);
 			} 
-		}
-
-		private void ReportMultiplePrimaryKeyDeclarationsInDac(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac, 
-															   List<INamedTypeSymbol> keyDeclarations)
-		{
-			symbolContext.CancellationToken.ThrowIfCancellationRequested();
-			var locations = keyDeclarations.Select(declaration => declaration.GetSyntax(symbolContext.CancellationToken))
-										   .OfType<ClassDeclarationSyntax>()
-										   .Select(keyClassDeclaration => keyClassDeclaration.Identifier.GetLocation() ??
-																		  keyClassDeclaration.GetLocation())
-										   .Where(location => location != null);
-
-			foreach (var location in locations)
-			{
-				symbolContext.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(Descriptors.PX1035_MultiplePrimaryKeyDeclarationsInDac, location),
-					context.CodeAnalysisSettings);
-			}
-		}
-
-		private void AnalyzePrimaryKeyDeclaration(SymbolAnalysisContext symbolContext, PXContext context, INamedTypeSymbol keyDeclaration)
-		{
-			if (keyDeclaration.Name == TypeNames.PrimaryKeyClassName)
-				return;
-
-			var keyDeclarationNode = keyDeclaration.GetSyntax(symbolContext.CancellationToken);
-			Location location = (keyDeclarationNode as ClassDeclarationSyntax)?.Identifier.GetLocation() ?? keyDeclarationNode?.GetLocation();
-
-			if (location == null)
-				return;
-
-			symbolContext.ReportDiagnosticWithSuppressionCheck(
-										Diagnostic.Create(Descriptors.PX1036_WrongDacPrimaryKeyName, location),
-										context.CodeAnalysisSettings);
 		}
 	}
 }
