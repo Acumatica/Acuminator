@@ -15,6 +15,7 @@ using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Acuminator.Utilities.Roslyn.Constants;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 {
@@ -45,7 +46,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 					ReportNoPrimaryKeyDeclarationsInDac(symbolContext, context, dac);
 					return;
 				case 1:
-					AnalyzePrimaryKeyDeclaration(symbolContext, context, dac, keyDeclarations[0]);
+					AnalyzePrimaryKeyDeclaration(symbolContext, context, keyDeclarations[0]);
 					return;
 				default:
 					ReportMultiplePrimaryKeyDeclarationsInDac(symbolContext, context, dac, keyDeclarations);
@@ -91,10 +92,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			}
 		}
 
-		private void AnalyzePrimaryKeyDeclaration(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
-												  INamedTypeSymbol keyDeclaration)
+		private void AnalyzePrimaryKeyDeclaration(SymbolAnalysisContext symbolContext, PXContext context, INamedTypeSymbol keyDeclaration)
 		{
+			if (keyDeclaration.Name == TypeNames.PrimaryKeyClassName)
+				return;
 
+			var keyDeclarationNode = keyDeclaration.GetSyntax(symbolContext.CancellationToken);
+			Location location = (keyDeclarationNode as ClassDeclarationSyntax)?.Identifier.GetLocation() ?? keyDeclarationNode?.GetLocation();
+
+			if (location == null)
+				return;
+
+			symbolContext.ReportDiagnosticWithSuppressionCheck(
+										Diagnostic.Create(Descriptors.PX1036_WrongDacPrimaryKeyName, location),
+										context.CodeAnalysisSettings);
 		}
 	}
 }
