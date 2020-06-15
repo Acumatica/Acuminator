@@ -82,6 +82,41 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			}
 		}
 
+		public static IEnumerable<INamedTypeSymbol> GetFlattenedNestedTypes(this ITypeSymbol type, CancellationToken cancellationToken)
+		{
+			type.ThrowOnNull(nameof(type));
+			cancellationToken.ThrowIfCancellationRequested();
+			return GetFlattenedNestedTypesImplementation();
+
+			//-----------------------------------------------------Local Function-------------------------------------------------------------
+			IEnumerable<INamedTypeSymbol> GetFlattenedNestedTypesImplementation()
+			{
+				var nestedTypes = type.GetTypeMembers();
+
+				if (nestedTypes.IsDefaultOrEmpty)
+					yield break;
+
+				var typesQueue = new Queue<INamedTypeSymbol>(nestedTypes);
+
+				while (typesQueue.Count > 0)
+				{
+					cancellationToken.ThrowIfCancellationRequested();
+					var currentType = typesQueue.Dequeue();
+					var declaredNestedTypes = currentType.GetTypeMembers();
+
+					if (!declaredNestedTypes.IsDefaultOrEmpty)
+					{
+						foreach (var nestedType in declaredNestedTypes)
+						{
+							typesQueue.Enqueue(nestedType);
+						}
+					}
+
+					yield return currentType;
+				}
+			}
+		}
+	
 		public static IEnumerable<ITypeSymbol> GetContainingTypesAndThis(this ITypeSymbol type)
 		{
 			var current = type;
