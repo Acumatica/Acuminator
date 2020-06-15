@@ -3,7 +3,7 @@ using PX.Data.ReferentialIntegrity.Attributes;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.Sources
 {
-	[PXHidden]
+	[PXPrimaryGraph(typeof(PX.Objects.SO.SOOrderEntry))]
 	public class SOOrder : IBqlTable
 	{
 		public class IncorrectPrimaryKeyName : PrimaryKeyOf<SOOrder>.By<orderType, orderNbr>

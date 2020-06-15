@@ -2,7 +2,7 @@
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.Sources
 {
-	[PXHidden]
+	[PXCacheName("SO Order")]
 	public class SOOrderUnbound : IBqlTable
 	{
 		[PXString(IsKey = true, InputMask = "")]

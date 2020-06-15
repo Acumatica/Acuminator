@@ -3,6 +3,7 @@ using PX.Data;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.Sources
 {
+    [PXCacheName("Adjust")]
     public class Adjust : PXMappedCacheExtension
     {
         #region AdjgBranchID

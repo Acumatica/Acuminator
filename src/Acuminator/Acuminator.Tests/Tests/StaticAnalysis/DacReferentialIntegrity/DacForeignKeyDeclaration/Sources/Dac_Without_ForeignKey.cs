@@ -2,7 +2,7 @@
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.Sources
 {
-	
+	[PXPrimaryGraph(typeof(PX.Objects.SO.SOOrderEntry))]
 	public class SOOrder : IBqlTable
 	{
 		[PXDBString(IsKey = true, InputMask = "")]

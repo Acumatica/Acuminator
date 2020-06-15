@@ -3,7 +3,7 @@ using PX.Data.ReferentialIntegrity.Attributes;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.Sources
 {
-	[PXHidden]
+	[PXCacheName("SO Order")]
 	public partial class SOLine : PX.Data.IBqlTable
 	{
 		public class PK : PrimaryKeyOf<SOLine>.By<orderType, orderNbr, lineNbr>
@@ -24,7 +24,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.Sources
 	}
 
 
-	[PXHidden]
+	[PXCacheName("SO Line")]
 	public class SOOrder : IBqlTable
 	{
 		public class PK : PrimaryKeyOf<SOLine>.By<orderType, orderNbr>
