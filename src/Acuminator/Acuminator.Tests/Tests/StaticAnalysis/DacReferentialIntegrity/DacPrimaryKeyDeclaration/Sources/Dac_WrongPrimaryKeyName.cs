@@ -1,12 +1,14 @@
 ﻿using PX.Data;
+using PX.Data.ReferentialIntegrity.Attributes;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.Sources
 {
+	[PXHidden]
 	public class SOOrder : IBqlTable
 	{
-		public class IncorrectPrimaryKeyName : PrimaryKeyOf<SOLine>.By<orderType, orderNbr, lineNbr>
+		public class IncorrectPrimaryKeyName : PrimaryKeyOf<SOOrder>.By<orderType, orderNbr>
 		{
-			public static SOLine Find(PXGraph graph, string orderType, string orderNbr, int? lineNbr) => FindBy(graph, orderType, orderNbr, lineNbr);
+			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
 		}
 
 		[PXDBString(IsKey = true, InputMask = "")]
