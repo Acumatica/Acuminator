@@ -24,6 +24,7 @@ using Acuminator.Utilities.Roslyn.Semantic.Dac;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity;
 
 namespace Acuminator.Analyzers.StaticAnalysis.Dac
 {
@@ -45,6 +46,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 			new LegacyBqlFieldAnalyzer(),
 			new MethodsUsageInDacAnalyzer(),
 			new KeyFieldDeclarationAnalyzer(),
+			new DacPrimaryKeyDeclarationAnalyzer(),
+			new DacForeignKeyDeclarationAnalyzer(),
 			new DacExtensionDefaultAttributeAnalyzer(),
 			new NonNullableTypeForBqlFieldAnalyzer(),
 			new MissingTypeListAttributeAnalyzer(),
