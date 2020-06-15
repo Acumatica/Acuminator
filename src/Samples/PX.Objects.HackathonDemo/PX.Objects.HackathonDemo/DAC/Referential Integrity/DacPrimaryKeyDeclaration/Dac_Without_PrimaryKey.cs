@@ -2,7 +2,7 @@
 
 namespace PX.Objects.HackathonDemo.ReferentialIntegrity.NoPrimaryKey
 {
-	[PXHidden]
+	[PXPrimaryGraph(typeof(SO.SOOrderEntry))]
 	public class SOOrder : IBqlTable
 	{
 		[PXDBString(IsKey = true, InputMask = "")]

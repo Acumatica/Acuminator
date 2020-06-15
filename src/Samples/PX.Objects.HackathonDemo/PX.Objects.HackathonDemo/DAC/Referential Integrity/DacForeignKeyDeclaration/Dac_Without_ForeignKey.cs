@@ -2,7 +2,7 @@
 
 namespace PX.Objects.HackathonDemo.ReferentialIntegrity
 {
-	[PXHidden]
+	[PXCacheName("SO Order")]
 	public class SOOrder : IBqlTable
 	{
 		[PXDBString(IsKey = true, InputMask = "")]
