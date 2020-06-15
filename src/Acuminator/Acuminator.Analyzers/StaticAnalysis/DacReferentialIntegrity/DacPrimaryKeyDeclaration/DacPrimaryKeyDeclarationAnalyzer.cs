@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -29,7 +28,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				Descriptors.PX1036_WrongDacPrimaryKeyName
 			);
 
-		protected override bool IsKeySymbolDefined(PXContext context) => context.ReferentialIntegritySymbols.IsPrimaryKeyDefined;
+		protected override bool IsKeySymbolDefined(PXContext context) => context.ReferentialIntegritySymbols.IPrimaryKey != null;
 
 		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac)
 		{

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
@@ -28,15 +27,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				Descriptors.PX1036_WrongDacForeignKeyName
 			);
 
-		protected override bool IsKeySymbolDefined(PXContext context) => context.ReferentialIntegritySymbols.IsForeignKeyDefined;
+		protected override bool IsKeySymbolDefined(PXContext context) =>
+			context.ReferentialIntegritySymbols.IForeignKey != null || 
+			context.ReferentialIntegritySymbols.KeysRelation != null;
 
 		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
-
-			var allForeignKeyDeclarationsByContainingType = dac.Symbol.GetFlattenedNestedTypes(symbolContext.CancellationToken)
-																	  .Where(type => type.ImplementsInterface(context.ReferentialIntegritySymbols.IForeignKey))
-																	  .ToLookup(type => type.ContainingType);
+			
+			var allForeignKeyDeclarationsByContainingType = GetForeignKeyDeclarations(context, dac, symbolContext.CancellationToken)
+															 .ToLookup(type => type.ContainingType);
 
 			if (allForeignKeyDeclarationsByContainingType.Count == 0)
 			{
@@ -45,6 +45,36 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			}
 			
 			//TODO extend logic to check foreign keys declarations
+		}
+
+		private IEnumerable<INamedTypeSymbol> GetForeignKeyDeclarations(PXContext context, DacSemanticModel dac, CancellationToken cancellationToken)
+		{
+			var allNestedTypes = dac.Symbol.GetFlattenedNestedTypes(cancellationToken);
+
+			if (context.ReferentialIntegritySymbols.IForeignKey != null)
+			{
+				return allNestedTypes.Where(type => type.ImplementsInterface(context.ReferentialIntegritySymbols.IForeignKey));
+			}
+
+			return from nestedType in allNestedTypes
+				   where nestedType.InheritsFromOrEqualsGeneric(context.ReferentialIntegritySymbols.KeysRelation) &&
+						 nestedType.GetBaseTypesAndThis().Any(IsDeclaredInsideForeignKeyOf)
+				   select nestedType;
+		}
+
+		private bool IsDeclaredInsideForeignKeyOf(ITypeSymbol type)
+		{
+			ITypeSymbol currentType = type.ContainingType;
+
+			while (currentType != null)
+			{
+				if (currentType.MetadataName == TypeNames.ForeignKeyOfMetadataName)
+					return true;
+
+				currentType = currentType.ContainingType;
+			}
+
+			return false;
 		}
 
 		private void ReportNoForeignKeyDeclarationsInDac(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac)
