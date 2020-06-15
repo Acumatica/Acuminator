@@ -23,7 +23,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create
 			(
-				Descriptors.PX1033_MissingDacPrimaryKeyDeclaration
+				Descriptors.PX1033_MissingDacPrimaryKeyDeclaration,
+				Descriptors.PX1035_MultiplePrimaryKeyDeclarationsInDac,
+				Descriptors.PX1036_WrongDacPrimaryKeyName
 			);
 
 		public override bool ShouldAnalyze(PXContext context, DacSemanticModel dac) =>
@@ -43,8 +45,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 					ReportNoPrimaryKeyDeclarationsInDac(symbolContext, context, dac);
 					return;
 				case 1:
+					AnalyzePrimaryKeyDeclaration(symbolContext, context, dac, keyDeclarations[0]);
 					return;
 				default:
+					ReportMultiplePrimaryKeyDeclarationsInDac(symbolContext, context, dac, keyDeclarations);
 					return;
 			}
 		}
@@ -72,6 +76,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		private void ReportMultiplePrimaryKeyDeclarationsInDac(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac, 
 															   List<INamedTypeSymbol> keyDeclarations)
 		{
+			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 			var locations = keyDeclarations.Select(declaration => declaration.GetSyntax(symbolContext.CancellationToken))
 										   .OfType<ClassDeclarationSyntax>()
 										   .Select(keyClassDeclaration => keyClassDeclaration.Identifier.GetLocation() ??
@@ -81,9 +86,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			foreach (var location in locations)
 			{
 				symbolContext.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(Descriptors.PX1033_MissingDacPrimaryKeyDeclaration, location),
+					Diagnostic.Create(Descriptors.PX1035_MultiplePrimaryKeyDeclarationsInDac, location),
 					context.CodeAnalysisSettings);
 			}
+		}
+
+		private void AnalyzePrimaryKeyDeclaration(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
+												  INamedTypeSymbol keyDeclaration)
+		{
+
 		}
 	}
 }
