@@ -745,6 +745,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add primary key declaration to the DAC.
+        /// </summary>
+        public static string PX1033Fix {
+            get {
+                return ResourceManager.GetString("PX1033Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The DAC does not have an explicit primary key declaration .
         /// </summary>
         public static string PX1033Title {

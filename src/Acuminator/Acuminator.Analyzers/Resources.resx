@@ -558,4 +558,7 @@
   <data name="PX1036FKTitle" xml:space="preserve">
     <value>The class containing DAC foreign keys should be named "FK"</value>
   </data>
+  <data name="PX1033Fix" xml:space="preserve">
+    <value>Add primary key declaration to the DAC</value>
+  </data>
 </root>
