@@ -348,4 +348,10 @@
   <data name="PX1035" xml:space="preserve">
     <value>MultiplePrimaryKeyDeclarations</value>
   </data>
+  <data name="PX1036PK" xml:space="preserve">
+    <value>IncorrectDacPrimaryKeyName</value>
+  </data>
+  <data name="PX1036FK" xml:space="preserve">
+    <value>IncorrectDacForeignKeyName</value>
+  </data>
 </root>

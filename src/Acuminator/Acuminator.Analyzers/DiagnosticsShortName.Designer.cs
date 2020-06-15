@@ -376,6 +376,24 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to IncorrectDacForeignKeyName.
+        /// </summary>
+        public static string PX1036FK {
+            get {
+                return ResourceManager.GetString("PX1036FK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IncorrectDacPrimaryKeyName.
+        /// </summary>
+        public static string PX1036PK {
+            get {
+                return ResourceManager.GetString("PX1036PK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ConstructorInGraphExtension.
         /// </summary>
         public static string PX1040 {

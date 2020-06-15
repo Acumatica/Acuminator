@@ -772,6 +772,24 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The class containing DAC foreign keys should be named &quot;FK&quot;.
+        /// </summary>
+        public static string PX1036FKTitle {
+            get {
+                return ResourceManager.GetString("PX1036FKTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DAC primary key should be named &quot;PK&quot;.
+        /// </summary>
+        public static string PX1036PKTitle {
+            get {
+                return ResourceManager.GetString("PX1036PKTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Move the code to the Initialize() method.
         /// </summary>
         public static string PX1040Fix {
