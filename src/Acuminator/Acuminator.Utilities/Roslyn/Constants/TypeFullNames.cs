@@ -178,6 +178,7 @@
 		#region PK/FK API
 		public const string IPrimaryKey = "PX.Data.ReferentialIntegrity.Attributes.IPrimaryKey";
 		public const string IForeignKey = "PX.Data.ReferentialIntegrity.Attributes.IForeignKey";
+		public const string KeysRelation = "PX.Data.ReferentialIntegrity.Attributes.KeysRelation`3";
 		#endregion
 	}
 }

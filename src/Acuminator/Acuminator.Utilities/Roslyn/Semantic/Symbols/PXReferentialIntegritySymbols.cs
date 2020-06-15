@@ -18,21 +18,20 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
         public INamedTypeSymbol IPrimaryKey { get; }
 
         /// <summary>
-        /// Gets the foreign key interface.
+        /// Gets the foreign key interface. For earlier versions of Acumatica (2019R1) is not defined so it can be null.
         /// </summary>
         /// <value>
         /// The foreign key interface.
         /// </value>
         public INamedTypeSymbol IForeignKey { get; }
 
-        public bool IsPrimaryKeyDefined => IPrimaryKey != null;
-
-        public bool IsForeignKeyDefined => IForeignKey != null;
+        public INamedTypeSymbol KeysRelation { get; }
 
         internal PXReferentialIntegritySymbols(Compilation compilation) : base(compilation)
         {
             IPrimaryKey = Compilation.GetTypeByMetadataName(TypeFullNames.IPrimaryKey);
             IForeignKey = Compilation.GetTypeByMetadataName(TypeFullNames.IForeignKey);
+            KeysRelation = Compilation.GetTypeByMetadataName(TypeFullNames.KeysRelation);
         }
     }
 }

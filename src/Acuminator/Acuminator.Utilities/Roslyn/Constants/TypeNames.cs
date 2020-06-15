@@ -15,6 +15,8 @@ namespace Acuminator.Utilities.Roslyn.Constants
 		/// </summary>
 		public static readonly string ForeignKeyClassName = "FK";
 
+		public static readonly string ForeignKeyOfMetadataName = "ForeignKeyOf`1";
+
 		public static readonly string PXView = "PXView";
 
 		public static readonly string IBqlTable = "IBqlTable";
