@@ -25,7 +25,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
         /// </value>
         public INamedTypeSymbol IForeignKey { get; }
 
-        public bool AreDefined => IPrimaryKey != null;
+        public bool IsPrimaryKeyDefined => IPrimaryKey != null;
+
+        public bool IsForeignKeyDefined => IForeignKey != null;
 
         internal PXReferentialIntegritySymbols(Compilation compilation) : base(compilation)
         {

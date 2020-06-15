@@ -19,7 +19,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		public override bool ShouldAnalyze(PXContext context, DacSemanticModel dac) =>
 			base.ShouldAnalyze(context, dac) &&
 			dac.DacType == DacType.Dac && !dac.IsMappedCacheExtension && !dac.Symbol.IsAbstract &&
-			context.ReferentialIntegritySymbols.AreDefined && ShouldAnalyzeDac(context, dac);
+			IsKeySymbolDefined(context) && ShouldAnalyzeDac(context, dac);
+
+		protected abstract bool IsKeySymbolDefined(PXContext context);
 
 		private bool ShouldAnalyzeDac(PXContext context, DacSemanticModel dac)
 		{

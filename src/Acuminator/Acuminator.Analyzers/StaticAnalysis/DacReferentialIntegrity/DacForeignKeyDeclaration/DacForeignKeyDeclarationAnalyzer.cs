@@ -28,6 +28,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				Descriptors.PX1036_WrongDacForeignKeyName
 			);
 
+		protected override bool IsKeySymbolDefined(PXContext context) => context.ReferentialIntegritySymbols.IsForeignKeyDefined;
+
 		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
@@ -55,6 +57,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 					Diagnostic.Create(Descriptors.PX1034_MissingDacForeignKeyDeclaration, location),
 					context.CodeAnalysisSettings);
 			} 
-		}
+		}	
 	}
 }
