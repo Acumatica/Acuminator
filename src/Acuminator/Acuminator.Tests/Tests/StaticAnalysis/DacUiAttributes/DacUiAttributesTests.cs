@@ -23,18 +23,18 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacUiAttributes
 
 		[Theory]
 		[EmbeddedFileData("Dac_Bad.cs")]
-		public async Task Graph_ReportsDiagnostic(string source) =>
+		public async Task Dac_ReportsDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1094_DacShouldHaveUiAttribute.CreateFor(6, 15));
 
 		[Theory]
 		[EmbeddedFileData("Dac_Good_Hidden.cs")]
-		public async Task GraphWithPXHiddenAttribute_DoesntReportDiagnostic(string source) =>
+		public async Task Dac_WithPXHiddenAttribute_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
 		[EmbeddedFileData("Dac_Good_CacheName.cs")]
-		public async Task GraphWithPXCacheNameAttribute_DoesntReportDiagnostic(string source) =>
+		public async Task Dac_WithPXCacheNameAttribute_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
