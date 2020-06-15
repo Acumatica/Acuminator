@@ -1,22 +1,24 @@
 ﻿using PX.Data;
+using PX.Data.ReferentialIntegrity.Attributes;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.Sources
 {
+	[PXHidden]
 	public class SOOrder : IBqlTable
 	{
-		public class PK : PrimaryKeyOf<SOLine>.By<orderType, orderNbr, lineNbr>
+		public class PK : PrimaryKeyOf<SOOrder>.By<orderType, orderNbr>
 		{
-			public static SOLine Find(PXGraph graph, string orderType, string orderNbr, int? lineNbr) => FindBy(graph, orderType, orderNbr, lineNbr);
+			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
 		}
 
-		public class PK1 : PrimaryKeyOf<SOLine>.By<orderType, orderNbr, lineNbr>
+		public class PK1 : PrimaryKeyOf<SOOrder>.By<orderType, orderNbr>
 		{
-			public static SOLine Find(PXGraph graph, string orderType, string orderNbr, int? lineNbr) => FindBy(graph, orderType, orderNbr, lineNbr);
+			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
 		}
 
-		public class PK2 : PrimaryKeyOf<SOLine>.By<orderType, orderNbr, lineNbr>
+		public class PK2 : PrimaryKeyOf<SOOrder>.By<orderType, orderNbr>
 		{
-			public static SOLine Find(PXGraph graph, string orderType, string orderNbr, int? lineNbr) => FindBy(graph, orderType, orderNbr, lineNbr);
+			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
 		}
 
 		[PXDBString(IsKey = true, InputMask = "")]
