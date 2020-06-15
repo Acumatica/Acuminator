@@ -30,6 +30,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		protected override bool IsKeySymbolDefined(PXContext context) => context.ReferentialIntegritySymbols.IPrimaryKey != null;
 
+		protected override bool ShouldAnalyzeDac(PXContext context, DacSemanticModel dac) =>
+			 base.ShouldAnalyzeDac(context, dac) && dac.DacProperties.Count(property => property.IsKey) > 0;
+
 		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();

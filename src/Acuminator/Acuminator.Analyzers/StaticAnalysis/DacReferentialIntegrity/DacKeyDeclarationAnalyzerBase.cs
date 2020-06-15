@@ -23,7 +23,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		protected abstract bool IsKeySymbolDefined(PXContext context);
 
-		private bool ShouldAnalyzeDac(PXContext context, DacSemanticModel dac)
+		protected virtual bool ShouldAnalyzeDac(PXContext context, DacSemanticModel dac)
 		{
 			if (dac.IsFullyUnbound())
 				return false;
