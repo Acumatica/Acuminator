@@ -26,9 +26,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 				Descriptors.PX1034_MissingDacForeignKeyDeclaration.CreateFor(6, 15));
 
 		[Theory]
-		[EmbeddedFileData("Dac_GoodForeignKey.cs")]
-		public async Task Dac_WithCorrectForeignKey_DoesntReportDiagnostic(string source) =>
-			await VerifyCSharpDiagnosticAsync(source);
+		[EmbeddedFileData(@"CorrectForeignKey\Dac_GoodForeignKey.cs", @"CorrectForeignKey\SOOrder.cs")]
+		public async Task Dac_WithCorrectForeignKey_DoesntReportDiagnostic(string testedSource, string soOrderSource) =>
+			await VerifyCSharpDiagnosticAsync(new[] { testedSource, soOrderSource });
 
 		[Theory]
 		[EmbeddedFileData("PXMappedCacheExtension.cs")]
