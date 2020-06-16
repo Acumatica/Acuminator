@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Roslyn.Constants;
 
@@ -9,6 +10,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
     /// </summary>
     public class PXReferentialIntegritySymbols : SymbolsSetBase
     {
+        /// <summary>
+        /// The maximum size of the DAC primary key.
+        /// </summary>
+        public const int MaxPrimaryKeySize = 8;
+
         /// <summary>
         /// Gets the primary key interface.
         /// </summary>
@@ -27,11 +33,22 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
         public INamedTypeSymbol KeysRelation { get; }
 
+        public INamedTypeSymbol PrimaryKeyOf => Compilation.GetTypeByMetadataName(TypeFullNames.PrimaryKeyOf);
+
         internal PXReferentialIntegritySymbols(Compilation compilation) : base(compilation)
         {
             IPrimaryKey = Compilation.GetTypeByMetadataName(TypeFullNames.IPrimaryKey);
             IForeignKey = Compilation.GetTypeByMetadataName(TypeFullNames.IForeignKey);
             KeysRelation = Compilation.GetTypeByMetadataName(TypeFullNames.KeysRelation);
+        }
+
+        public INamedTypeSymbol GetPrimaryKeyBy_TypeSymbol(int arity)
+        {
+            if (arity <= 0 || arity > MaxPrimaryKeySize)
+                throw new ArgumentOutOfRangeException(nameof(arity));
+
+            string primaryKeyByTypeName = $"{TypeFullNames.PrimaryKeyOfBy}`{arity}";
+            return Compilation.GetTypeByMetadataName(primaryKeyByTypeName);
         }
     }
 }
