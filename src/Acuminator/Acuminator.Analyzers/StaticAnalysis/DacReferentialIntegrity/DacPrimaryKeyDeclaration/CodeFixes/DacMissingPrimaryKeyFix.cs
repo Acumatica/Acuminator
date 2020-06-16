@@ -38,16 +38,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var codeAtionTitle = nameof(Resources.PX1033Fix).GetLocalized().ToString();
-			var codeAction = CodeAction.Create(codeAtionTitle,
-											   cancellation => AddPrimaryKeyDeclarationToDac(context.Document, context.Span, cancellation),
-											   equivalenceKey: codeAtionTitle);
+			var codeActionTitle = nameof(Resources.PX1033Fix).GetLocalized().ToString();
+			var codeAction = CodeAction.Create(codeActionTitle,
+											   cancellation => AddPrimaryKeyDeclarationToDacAsync(context.Document, context.Span, cancellation),
+											   equivalenceKey: codeActionTitle);
 
 			context.RegisterCodeFix(codeAction, context.Diagnostics);
 			return Task.CompletedTask;
 		}
 
-		private async Task<Document> AddPrimaryKeyDeclarationToDac(Document document, TextSpan span, CancellationToken cancellation)
+		private async Task<Document> AddPrimaryKeyDeclarationToDacAsync(Document document, TextSpan span, CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
 
