@@ -102,8 +102,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			if (location == null)
 				return;
 
+			var diagnosticProperties = new Dictionary<string, string>
+			{
+				{ nameof(RefIntegrityDacKeyType),  RefIntegrityDacKeyType.PrimaryKey.ToString() }
+			}
+			.ToImmutableDictionary();
+
 			symbolContext.ReportDiagnosticWithSuppressionCheck(
-										Diagnostic.Create(Descriptors.PX1036_WrongDacPrimaryKeyName, location),
+										Diagnostic.Create(Descriptors.PX1036_WrongDacPrimaryKeyName, location, diagnosticProperties),
 										context.CodeAnalysisSettings);
 		}
 	}
