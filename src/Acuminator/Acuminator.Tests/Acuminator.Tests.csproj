@@ -134,7 +134,10 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacKeyFieldDeclaration\Sources\BaseAndDerivedDac.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacUiAttributes\Sources\PXMappedCacheExtension.cs" />
     <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\DacForeignKeyDeclarationTests.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\Dac_Without_PrimaryKey.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\MissingPrimaryKey\SOLine_Without_PrimaryKey_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\MissingPrimaryKey\SOLine_Without_PrimaryKey.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\MissingPrimaryKey\SOOrder_Without_PrimaryKey_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\MissingPrimaryKey\SOOrder_Without_PrimaryKey.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\Dac_GoodPrimaryKey.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\PXMappedCacheExtension.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\CorrectForeignKey\Dac_GoodForeignKey.cs" />
@@ -142,6 +145,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\Fully_Unbound_Dac.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\PXMappedCacheExtension.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\CorrectForeignKey\SOOrder.cs" />
+    <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\DacMissingPrimaryKeyDeclarationTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\DacWrongPrimaryKeyNameTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\DacPrimaryKeyDeclarationTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\Fully_Unbound_Dac.cs" />
