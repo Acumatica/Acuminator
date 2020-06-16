@@ -20,12 +20,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 				new DacPrimaryKeyDeclarationAnalyzer());
 
 		[Theory]
-		[EmbeddedFileData("Dac_Without_PrimaryKey.cs")]
-		public async Task Dac_WithoutPrimaryKey(string source) =>
-			await VerifyCSharpDiagnosticAsync(source,
-				Descriptors.PX1033_MissingDacPrimaryKeyDeclaration.CreateFor(6, 15));
-
-		[Theory]
 		[EmbeddedFileData("Dac_MultiplePrimaryKeys.cs")]
 		public async Task Dac_MultiplePrimaryKeys(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,

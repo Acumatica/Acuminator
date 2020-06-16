@@ -30,7 +30,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 
 		[Theory]
 		[EmbeddedFileData("Dac_WrongPrimaryKeyName.cs", "Dac_WrongPrimaryKeyName_Expected.cs")]
-		public async Task AddPXHiddenAttribute_VerifyCodeFix(string actual, string expected) =>
+		public async Task ChangePrimaryKeyName_VerifyCodeFix(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected);
 	}
 }
