@@ -790,6 +790,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change the name of the primary key to &quot;PK&quot;.
+        /// </summary>
+        public static string PX1036PKFix {
+            get {
+                return ResourceManager.GetString("PX1036PKFix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The DAC primary key should be named &quot;PK&quot;.
         /// </summary>
         public static string PX1036PKTitle {

@@ -561,4 +561,7 @@
   <data name="PX1033Fix" xml:space="preserve">
     <value>Add primary key declaration to the DAC</value>
   </data>
+  <data name="PX1036PKFix" xml:space="preserve">
+    <value>Change the name of the primary key to "PK"</value>
+  </data>
 </root>
