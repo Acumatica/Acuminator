@@ -772,6 +772,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete other primary key declarations from the DAC.
+        /// </summary>
+        public static string PX1035Fix {
+            get {
+                return ResourceManager.GetString("PX1035Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The DAC has multiple primary key declarations.
         /// </summary>
         public static string PX1035Title {
