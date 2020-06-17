@@ -41,19 +41,5 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 		[EmbeddedFileData("Fully_Unbound_Dac.cs")]
 		public async Task FullyUnboundDac_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
-
-		//[Theory]
-		//[EmbeddedFileData(
-		//	"Dac_Bad.cs",
-		//	"Dac_Good_Hidden.cs")]
-		//public async Task AddPXHiddenAttribute_VerifyCodeFix(string actual, string expected) =>
-		//	await VerifyCSharpFixAsync(actual, expected, 0);
-
-		//[Theory]
-		//[EmbeddedFileData(
-		//	"Dac_Bad.cs",
-		//	"Dac_Good_CacheName.cs")]
-		//public async Task AddPXCacheNameAttribute_VerifyCodeFix(string actual, string expected) =>
-		//	await VerifyCSharpFixAsync(actual, expected, 1);
 	}
 }
