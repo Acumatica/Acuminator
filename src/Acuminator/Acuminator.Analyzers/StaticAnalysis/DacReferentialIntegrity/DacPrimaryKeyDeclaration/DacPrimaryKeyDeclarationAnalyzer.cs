@@ -81,12 +81,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 										   .OfType<ClassDeclarationSyntax>()
 										   .Select(keyClassDeclaration => keyClassDeclaration.Identifier.GetLocation() ??
 																		  keyClassDeclaration.GetLocation())
-										   .Where(location => location != null);
+										   .Where(location => location != null)
+										   .ToList(capacity: keyDeclarations.Count);
 
-			foreach (var location in locations)
+			for (int i = 0; i < locations.Count; i++)
 			{
+				Location location = locations[i];
+				var otherLocations = locations.Where((l, index) => index != i);
+
 				symbolContext.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(Descriptors.PX1035_MultiplePrimaryKeyDeclarationsInDac, location),
+					Diagnostic.Create(Descriptors.PX1035_MultiplePrimaryKeyDeclarationsInDac, location, locations),
 					context.CodeAnalysisSettings);
 			}
 		}
