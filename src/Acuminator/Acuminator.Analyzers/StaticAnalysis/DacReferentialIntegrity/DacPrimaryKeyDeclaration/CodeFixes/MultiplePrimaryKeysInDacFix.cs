@@ -34,21 +34,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
             if (diagnostic == null || diagnostic.AdditionalLocations.Count == 0)
                 return Task.CompletedTask;
 
-			var locationsToRemove = diagnostic.AdditionalLocations.Where(location => location != diagnostic.Location)
-																  .ToList(capacity: diagnostic.AdditionalLocations.Count - 1);
-			if (locationsToRemove.Count == 0)
-				return Task.CompletedTask;
-
 			var codeActionTitle = nameof(Resources.PX1035Fix).GetLocalized().ToString();
 			var codeAction = CodeAction.Create(codeActionTitle,
-											   cancellation => DeleteOtherPrimaryKeyDeclarationsFromDacAsync(context.Document, locationsToRemove, cancellation),
+											   cancellation => DeleteOtherPrimaryKeyDeclarationsFromDacAsync(context.Document, diagnostic.AdditionalLocations, cancellation),
 											   equivalenceKey: codeActionTitle);
 
 			context.RegisterCodeFix(codeAction, context.Diagnostics);
 			return Task.CompletedTask;
 		}
 
-		private async Task<Document> DeleteOtherPrimaryKeyDeclarationsFromDacAsync(Document document, List<Location> locationsToRemove,
+		private async Task<Document> DeleteOtherPrimaryKeyDeclarationsFromDacAsync(Document document, IReadOnlyList<Location> locationsToRemove,
 																				   CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
