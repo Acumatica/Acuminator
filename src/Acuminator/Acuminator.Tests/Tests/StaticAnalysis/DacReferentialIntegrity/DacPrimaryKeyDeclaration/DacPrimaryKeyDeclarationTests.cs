@@ -4,7 +4,6 @@ using Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
 using Acuminator.Utilities;
-using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Threading.Tasks;
 using Xunit;
@@ -18,14 +17,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
 											.WithSuppressionMechanismDisabled(),
 				new DacPrimaryKeyDeclarationAnalyzer());
-
-		[Theory]
-		[EmbeddedFileData("Dac_MultiplePrimaryKeys.cs")]
-		public async Task Dac_MultiplePrimaryKeys(string source) =>
-			await VerifyCSharpDiagnosticAsync(source,
-				Descriptors.PX1035_MultiplePrimaryKeyDeclarationsInDac.CreateFor(9, 16),
-				Descriptors.PX1035_MultiplePrimaryKeyDeclarationsInDac.CreateFor(14, 16),
-				Descriptors.PX1035_MultiplePrimaryKeyDeclarationsInDac.CreateFor(19, 16));
 
 		[Theory]
 		[EmbeddedFileData("Dac_GoodPrimaryKey.cs")]
