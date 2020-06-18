@@ -17,6 +17,7 @@ namespace Acuminator.Utilities.Roslyn.Constants
 
 		public const string ForeignKeyOfName = "ForeignKeyOf";
 		public const string ForeignKeyOfMetadataName = "ForeignKeyOf`1";
+		public const string By_TypeName = "By";
 
 		public const string PXView = "PXView";
 
