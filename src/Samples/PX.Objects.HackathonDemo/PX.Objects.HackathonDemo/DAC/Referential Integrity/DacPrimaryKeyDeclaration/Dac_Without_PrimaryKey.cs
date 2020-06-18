@@ -17,6 +17,20 @@ namespace PX.Objects.HackathonDemo.ReferentialIntegrity.NoPrimaryKey
 		public string OrderNbr { get; set; }
 		public abstract class orderNbr : IBqlField { }
 
+		[PXDBString(IsKey = true, InputMask = "")]
+		[PXDefault]
+		[PXUIField(DisplayName = "Extra key")]
+		public string ExtraKey { get; set; }
+
+		public abstract class extraKey : IBqlField { }
+
+		[PXDBString(IsKey = true, InputMask = "")]
+		[PXDefault]
+		[PXUIField(DisplayName = "Another Extra Key")]
+		public string AnotherExtraKey { get; set; }
+
+		public abstract class anotherExtraKey : IBqlField { }
+
 		[PXStringList(new[] { "N", "O" }, new[] { "New", "Open" })]
 		[PXDBString]
 		[PXUIField(DisplayName = "Status")]
