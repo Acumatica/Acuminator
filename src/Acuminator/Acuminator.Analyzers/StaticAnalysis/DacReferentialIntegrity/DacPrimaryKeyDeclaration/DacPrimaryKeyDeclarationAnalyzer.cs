@@ -90,7 +90,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				var otherLocations = locations.Where((_, index) => index != i);
 
 				symbolContext.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(Descriptors.PX1035_MultiplePrimaryKeyDeclarationsInDac, location, locations),
+					Diagnostic.Create(Descriptors.PX1035_MultiplePrimaryKeyDeclarationsInDac, location, otherLocations),
 					context.CodeAnalysisSettings);
 			}
 		}
