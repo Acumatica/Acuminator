@@ -85,10 +85,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			var primaryKeyNode = CreatePrimaryKeyNode(document, pxContext, dacSemanticModel, dacKeys);
 			var newDacNode = dacNode.WithMembers(
 										dacNode.Members.Insert(0, primaryKeyNode));
-			var newRoot = root.ReplaceNode(dacNode, newDacNode);
-			newRoot = AddUsingsForReferentialIntegrityNamespace(newRoot);
 
-			return document.WithSyntaxRoot(newRoot);
+			var changedRoot = root.ReplaceNode(dacNode, newDacNode);
+			changedRoot = AddUsingsForReferentialIntegrityNamespace(changedRoot);
+
+			return document.WithSyntaxRoot(changedRoot);
 		}
 
 		private ClassDeclarationSyntax CreatePrimaryKeyNode(Document document, PXContext pxContext, DacSemanticModel dacSemanticModel,
@@ -98,7 +99,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			var baseClassNode = MakeBaseClassNode(generator, pxContext, dacSemanticModel, dacKeys);
 			var findMethod = MakeFindMethodNode(generator, pxContext, dacSemanticModel, dacKeys);
 			var keyDeclaration = generator.ClassDeclaration(TypeNames.PrimaryKeyClassName, accessibility: Accessibility.Public,
-															baseType: baseClassNode, members: findMethod.ToEnumerable());
+															baseType: baseClassNode, members: findMethod.ToEnumerable())
+										  .WithTrailingTrivia(EndOfLine(Environment.NewLine), EndOfLine(Environment.NewLine));
+
 			return keyDeclaration as ClassDeclarationSyntax;
 		}
 
