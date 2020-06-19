@@ -6,9 +6,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.Sources
 	[PXCacheName("SO Line")]
 	public class SOLine : IBqlTable
 	{
-		public class PK : PrimaryKeyOf<SOLine>.By<orderType, lineNbr, orderNbr>
+		public class PK : PrimaryKeyOf<SOLine>.By<orderType, orderNbr, lineNbr>
 		{
-			public static SOLine Find(PXGraph graph, string orderType, int? lineNbr, string orderNbr) => FindBy(graph, orderType, lineNbr, orderNbr);
+			public static SOLine Find(PXGraph graph, string orderType, string orderNbr, int? lineNbr) => FindBy(graph, orderType, orderNbr, lineNbr);
 		}
 
 		public abstract class orderType : PX.Data.BQL.BqlString.Field<orderType> { }
