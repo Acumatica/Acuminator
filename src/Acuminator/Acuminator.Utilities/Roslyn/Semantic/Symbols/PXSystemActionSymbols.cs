@@ -9,15 +9,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		{
 		}
 
-		public INamedTypeSymbol PXSave => _compilation.GetTypeByMetadataName(DelegateNames.PXSave);
-		public INamedTypeSymbol PXCancel => _compilation.GetTypeByMetadataName(DelegateNames.PXCancel);
-		public INamedTypeSymbol PXInsert => _compilation.GetTypeByMetadataName(DelegateNames.PXInsert);
-		public INamedTypeSymbol PXDelete => _compilation.GetTypeByMetadataName(DelegateNames.PXDelete);
-		public INamedTypeSymbol PXCopyPasteAction => _compilation.GetTypeByMetadataName(DelegateNames.PXCopyPasteAction);
-		public INamedTypeSymbol PXFirst => _compilation.GetTypeByMetadataName(DelegateNames.PXFirst);
-		public INamedTypeSymbol PXPrevious => _compilation.GetTypeByMetadataName(DelegateNames.PXPrevious);
-		public INamedTypeSymbol PXNext => _compilation.GetTypeByMetadataName(DelegateNames.PXNext);
-		public INamedTypeSymbol PXLast => _compilation.GetTypeByMetadataName(DelegateNames.PXLast);
-		public INamedTypeSymbol PXChangeID => _compilation.GetTypeByMetadataName(DelegateNames.PXChangeID);
+		public INamedTypeSymbol PXSave => Compilation.GetTypeByMetadataName(DelegateNames.PXSave);
+		public INamedTypeSymbol PXCancel => Compilation.GetTypeByMetadataName(DelegateNames.PXCancel);
+		public INamedTypeSymbol PXInsert => Compilation.GetTypeByMetadataName(DelegateNames.PXInsert);
+		public INamedTypeSymbol PXDelete => Compilation.GetTypeByMetadataName(DelegateNames.PXDelete);
+		public INamedTypeSymbol PXCopyPasteAction => Compilation.GetTypeByMetadataName(DelegateNames.PXCopyPasteAction);
+		public INamedTypeSymbol PXFirst => Compilation.GetTypeByMetadataName(DelegateNames.PXFirst);
+		public INamedTypeSymbol PXPrevious => Compilation.GetTypeByMetadataName(DelegateNames.PXPrevious);
+		public INamedTypeSymbol PXNext => Compilation.GetTypeByMetadataName(DelegateNames.PXNext);
+		public INamedTypeSymbol PXLast => Compilation.GetTypeByMetadataName(DelegateNames.PXLast);
+		public INamedTypeSymbol PXChangeID => Compilation.GetTypeByMetadataName(DelegateNames.PXChangeID);
 	}
 }

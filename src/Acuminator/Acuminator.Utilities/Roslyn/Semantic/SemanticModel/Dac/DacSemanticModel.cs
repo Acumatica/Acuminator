@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
@@ -118,6 +119,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 					yield return memberNode;
 			}
 		}
+
+		public bool IsFullyUnbound() =>
+			DacProperties.All(p => p.EffectiveBoundType != BoundType.DbBound && p.EffectiveBoundType != BoundType.Unknown);
 
 		private ImmutableDictionary<string, DacPropertyInfo> GetDacProperties() =>
 			GetInfos(() => Symbol.GetDacPropertiesFromDac(_pxContext, FieldsByNames, cancellation: _cancellation),

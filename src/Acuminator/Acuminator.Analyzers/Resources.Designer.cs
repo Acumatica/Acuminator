@@ -430,7 +430,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The DAC extension must declare public static IsActive method with bool return type. Always-on extensions reduce performance. Suppress the error if you need always on DAC extension..
+        ///   Looks up a localized string similar to A DAC extension must include the public static IsActive method with the bool return type. Extensions which are constantly active reduce performance. Suppress the error if you need the DAC extension to be constantly active..
         /// </summary>
         public static string PX1016DacExtensionTitle {
             get {
@@ -439,7 +439,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The graph extension must declare public static IsActive method with bool return type.  Always-on extensions reduce performance. Suppress the error if you need always on graph extension..
+        ///   Looks up a localized string similar to A graph extension must include a public static IsActive method with the bool return type. Extensions which are constantly active reduce performance. Suppress the error if you need the graph extension to be constantly active..
         /// </summary>
         public static string PX1016GraphExtensionTitle {
             get {
@@ -741,6 +741,78 @@ namespace Acuminator.Analyzers {
         public static string PX1032Title {
             get {
                 return ResourceManager.GetString("PX1032Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add primary key declaration to the DAC.
+        /// </summary>
+        public static string PX1033Fix {
+            get {
+                return ResourceManager.GetString("PX1033Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DAC does not have an explicit primary key declaration .
+        /// </summary>
+        public static string PX1033Title {
+            get {
+                return ResourceManager.GetString("PX1033Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DAC does not have an explicit foreign key declaration.
+        /// </summary>
+        public static string PX1034Title {
+            get {
+                return ResourceManager.GetString("PX1034Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete other primary key declarations from the DAC.
+        /// </summary>
+        public static string PX1035Fix {
+            get {
+                return ResourceManager.GetString("PX1035Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DAC has multiple primary key declarations.
+        /// </summary>
+        public static string PX1035Title {
+            get {
+                return ResourceManager.GetString("PX1035Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The class containing DAC foreign keys should be named &quot;FK&quot;.
+        /// </summary>
+        public static string PX1036FKTitle {
+            get {
+                return ResourceManager.GetString("PX1036FKTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change the name of the primary key to &quot;PK&quot;.
+        /// </summary>
+        public static string PX1036PKFix {
+            get {
+                return ResourceManager.GetString("PX1036PKFix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DAC primary key should be named &quot;PK&quot;.
+        /// </summary>
+        public static string PX1036PKTitle {
+            get {
+                return ResourceManager.GetString("PX1036PKTitle", resourceCulture);
             }
         }
         

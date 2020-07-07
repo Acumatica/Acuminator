@@ -1,7 +1,4 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <suppressions>
-  <suppressMessage id="PX1040">
-    <target>PX.Objects.HackathonDemo.Suppression.SOOrderBalanced.SOOrderBalanced()</target>
-    <syntaxNode>SOOrderBalanced</syntaxNode>
-  </suppressMessage>
+  
 </suppressions>

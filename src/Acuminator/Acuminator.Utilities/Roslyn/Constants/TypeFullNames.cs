@@ -78,6 +78,7 @@
 		internal const string PXImportAttribute = "PX.Data.PXImportAttribute";
 		internal const string PXHiddenAttribute = "PX.Data.PXHiddenAttribute";
 		internal const string PXCacheNameAttribute = "PX.Data.PXCacheNameAttribute";
+		internal const string PXPrimaryGraphAttribute = "PX.Data.PXPrimaryGraphAttribute";
 		internal const string PXCopyPasteHiddenViewAttribute = "PX.Data.PXCopyPasteHiddenViewAttribute";
 		internal const string PXOverrideAttribute = "PX.Data.PXOverrideAttribute";
 		internal const string PXEventSubscriberAttribute = "PX.Data.PXEventSubscriberAttribute";
@@ -173,5 +174,13 @@
 
 		public const string PXSelectBase_Acumatica2018R2 = "PX.Data.PXSelectBase`2";
 		public const string IViewConfig_Acumatica2018R2 = "PX.Data.PXSelectBase`2+IViewConfig";
+
+		#region PK/FK API
+		public const string IPrimaryKey = "PX.Data.ReferentialIntegrity.Attributes.IPrimaryKey";
+		public const string IForeignKey = "PX.Data.ReferentialIntegrity.Attributes.IForeignKey";
+		public const string KeysRelation = "PX.Data.ReferentialIntegrity.Attributes.KeysRelation`3";
+		public const string PrimaryKeyOf = "PX.Data.ReferentialIntegrity.Attributes.PrimaryKeyOf`1";
+		public const string PrimaryKeyOfBy = "PX.Data.ReferentialIntegrity.Attributes.PrimaryKeyOf`1+By"; 
+		#endregion
 	}
 }

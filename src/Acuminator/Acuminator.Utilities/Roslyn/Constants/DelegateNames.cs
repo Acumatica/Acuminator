@@ -75,5 +75,8 @@ namespace Acuminator.Utilities.Roslyn.Constants
 		public static readonly string AddJoinConditions = "AddJoinConditions";
 		public static readonly string AppendJoin = "AppendJoin";
 		public static readonly string NewJoin = "NewJoin";
+
+		public static readonly string PrimaryKeyFindMethod = "Find";
+		public static readonly string PrimaryKeyFindByMethod = "FindBy";
 	}
 }

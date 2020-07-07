@@ -9,8 +9,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
         internal ExceptionSymbols(Compilation compilation) : base(compilation)
         { }
 
-	    public INamedTypeSymbol PXException => _compilation.GetTypeByMetadataName(TypeFullNames.PXException);
-	    public INamedTypeSymbol PXBaseRedirectException => _compilation.GetTypeByMetadataName(TypeFullNames.PXBaseRedirectException);
-	    public INamedTypeSymbol PXSetupNotEnteredException => _compilation.GetTypeByMetadataName(TypeFullNames.PXSetupNotEnteredException);
+	    public INamedTypeSymbol PXException => Compilation.GetTypeByMetadataName(TypeFullNames.PXException);
+	    public INamedTypeSymbol PXBaseRedirectException => Compilation.GetTypeByMetadataName(TypeFullNames.PXBaseRedirectException);
+	    public INamedTypeSymbol PXSetupNotEnteredException => Compilation.GetTypeByMetadataName(TypeFullNames.PXSetupNotEnteredException);
     }
 }
