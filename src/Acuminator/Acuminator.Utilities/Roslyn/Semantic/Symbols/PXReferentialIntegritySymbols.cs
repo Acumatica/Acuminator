@@ -11,7 +11,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
     /// </summary>
     public class PXReferentialIntegritySymbols : SymbolsSetBase
     {
-        public static ImmutableHashSet<string> ForeignKeyContainerNames =
+        public static ImmutableHashSet<string> ForeignKeyContainerNames { get; } =
             new HashSet<string>
             {
                 TypeNames.AsSimpleKeyName,
