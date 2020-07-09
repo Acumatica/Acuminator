@@ -567,4 +567,7 @@
   <data name="PX1035Fix" xml:space="preserve">
     <value>Remove other primary key declarations from the DAC</value>
   </data>
+  <data name="PX1034Fix" xml:space="preserve">
+    <value>Add a foreign key declaration template to the DAC</value>
+  </data>
 </root>

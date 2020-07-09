@@ -745,7 +745,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add primary key declaration to the DAC.
+        ///   Looks up a localized string similar to Add a primary key declaration to the DAC.
         /// </summary>
         public static string PX1033Fix {
             get {
@@ -754,11 +754,20 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The DAC does not have an explicit primary key declaration .
+        ///   Looks up a localized string similar to The DAC does not have an explicit primary key declaration.
         /// </summary>
         public static string PX1033Title {
             get {
                 return ResourceManager.GetString("PX1033Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add a foreign key declaration template to the DAC.
+        /// </summary>
+        public static string PX1034Fix {
+            get {
+                return ResourceManager.GetString("PX1034Fix", resourceCulture);
             }
         }
         
@@ -772,7 +781,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete other primary key declarations from the DAC.
+        ///   Looks up a localized string similar to Remove other primary key declarations from the DAC.
         /// </summary>
         public static string PX1035Fix {
             get {
