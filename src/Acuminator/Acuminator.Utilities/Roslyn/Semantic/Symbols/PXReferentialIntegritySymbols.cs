@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Acuminator.Utilities.Roslyn.Constants;
+using System.Collections.Generic;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 {
@@ -10,6 +11,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
     /// </summary>
     public class PXReferentialIntegritySymbols : SymbolsSetBase
     {
+        public static ImmutableHashSet<string> ForeignKeyContainerNames =
+            new HashSet<string>
+            {
+                TypeNames.AsSimpleKeyName,
+                TypeNames.ForeignKeyOfName,
+                TypeNames.CompositeKey
+            }
+            .ToImmutableHashSet();
+
         /// <summary>
         /// The maximum size of the DAC primary key.
         /// </summary>

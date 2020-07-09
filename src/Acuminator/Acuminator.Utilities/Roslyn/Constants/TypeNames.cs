@@ -5,6 +5,7 @@ namespace Acuminator.Utilities.Roslyn.Constants
 {
 	public static class TypeNames
 	{
+		#region Referential Integrity
 		/// <summary>
 		/// The mandatory name of the primary key class in DAC.
 		/// </summary>
@@ -16,8 +17,11 @@ namespace Acuminator.Utilities.Roslyn.Constants
 		public const string ForeignKeyClassName = "FK";
 
 		public const string ForeignKeyOfName = "ForeignKeyOf";
-		public const string ForeignKeyOfMetadataName = "ForeignKeyOf`1";
+		public const string AsSimpleKeyName = "AsSimpleKey";
+		public const string CompositeKey = "CompositeKey";
+
 		public const string By_TypeName = "By";
+		#endregion
 
 		public const string PXView = "PXView";
 
