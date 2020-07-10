@@ -33,43 +33,47 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-		public override Task RegisterCodeFixesAsync(CodeFixContext context)
+		public async override Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
-			var codeActionTitle = nameof(Resources.PX1033Fix).GetLocalized().ToString();
-			var codeAction = CodeAction.Create(codeActionTitle,
-											   cancellation => AddPrimaryKeyDeclarationToDacAsync(context.Document, context.Span, cancellation),
-											   equivalenceKey: codeActionTitle);
-
-			context.RegisterCodeFix(codeAction, context.Diagnostics);
-			return Task.CompletedTask;
-		}
-
-		private async Task<Document> AddPrimaryKeyDeclarationToDacAsync(Document document, TextSpan span, CancellationToken cancellation)
-		{
-			cancellation.ThrowIfCancellationRequested();
-
-			var rootTask = document.GetSyntaxRootAsync(cancellation);
-			var semanticModelTask = document.GetSemanticModelAsync(cancellation);
+			var rootTask = context.Document.GetSyntaxRootAsync(context.CancellationToken);
+			var semanticModelTask = context.Document.GetSemanticModelAsync(context.CancellationToken);
 
 			await Task.WhenAll(rootTask, semanticModelTask).ConfigureAwait(false);
 
-			var root = rootTask.Result;
+			SyntaxNode root = rootTask.Result;
 			SemanticModel semanticModel = semanticModelTask.Result;
 
-			if (!(root?.FindNode(span) is ClassDeclarationSyntax dacNode))
-				return document;
-
-			var dacTypeSymbol = semanticModel?.GetDeclaredSymbol(dacNode, cancellation);
-
-			if (dacTypeSymbol == null)
-				return document;
+			if (root == null || semanticModel == null)
+				return;
 
 			var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
 
-			if (pxContext.ReferentialIntegritySymbols.PrimaryKeyOf == null)
-				return document;
+			if (pxContext.ReferentialIntegritySymbols.CompositeKey2 == null)
+				return;
+
+			var codeActionTitle = nameof(Resources.PX1034Fix).GetLocalized().ToString();
+			var codeAction = CodeAction.Create(codeActionTitle,
+											   cancellation => AddForeignKeyDeclarationTemplateToDacAsync(context.Document, root, semanticModel, pxContext,
+																										  context.Span, cancellation),
+											   equivalenceKey: codeActionTitle);
+
+			context.RegisterCodeFix(codeAction, context.Diagnostics);
+		}
+
+		private Task<Document> AddForeignKeyDeclarationTemplateToDacAsync(Document document, SyntaxNode root, SemanticModel semanticModel, PXContext pxContext,
+																		  TextSpan span, CancellationToken cancellation)
+		{
+			cancellation.ThrowIfCancellationRequested();	
+
+			if (!(root.FindNode(span) is ClassDeclarationSyntax dacNode))
+				return Task.FromResult(document);
+
+			INamedTypeSymbol dacTypeSymbol = semanticModel.GetDeclaredSymbol(dacNode, cancellation);
+
+			if (dacTypeSymbol == null)
+				return Task.FromResult(document);
 
 			var dacSemanticModel = DacSemanticModel.InferModel(pxContext, dacTypeSymbol, cancellation);
 			List<DacPropertyInfo> dacKeys = dacSemanticModel?.DacProperties
@@ -78,7 +82,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 															 .ToList(capacity: 4);
 
 			if (dacKeys.IsNullOrEmpty() || dacKeys.Count > PXReferentialIntegritySymbols.MaxPrimaryKeySize)
-				return document;
+				return Task.FromResult(document);
 
 			var primaryKeyNode = CreatePrimaryKeyNode(document, pxContext, dacSemanticModel, dacKeys);
 			var newDacNode = dacNode.WithMembers(
@@ -86,8 +90,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			var changedRoot = root.ReplaceNode(dacNode, newDacNode);
 			changedRoot = AddUsingsForReferentialIntegrityNamespace(changedRoot);
-
-			return document.WithSyntaxRoot(changedRoot);
+			var modifiedDocument = document.WithSyntaxRoot(changedRoot);
+			return Task.FromResult(modifiedDocument);
 		}
 
 		private ClassDeclarationSyntax CreatePrimaryKeyNode(Document document, PXContext pxContext, DacSemanticModel dacSemanticModel,
