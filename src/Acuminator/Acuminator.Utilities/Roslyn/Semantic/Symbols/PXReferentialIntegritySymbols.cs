@@ -45,6 +45,8 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 
         public INamedTypeSymbol PrimaryKeyOf => Compilation.GetTypeByMetadataName(TypeFullNames.PrimaryKeyOf);
 
+        public INamedTypeSymbol CompositeKey2 => Compilation.GetTypeByMetadataName(TypeFullNames.CompositeKey2);
+
         internal PXReferentialIntegritySymbols(Compilation compilation) : base(compilation)
         {
             IPrimaryKey = Compilation.GetTypeByMetadataName(TypeFullNames.IPrimaryKey);

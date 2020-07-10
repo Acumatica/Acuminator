@@ -180,7 +180,9 @@
 		public const string IForeignKey = "PX.Data.ReferentialIntegrity.Attributes.IForeignKey";
 		public const string KeysRelation = "PX.Data.ReferentialIntegrity.Attributes.KeysRelation`3";
 		public const string PrimaryKeyOf = "PX.Data.ReferentialIntegrity.Attributes.PrimaryKeyOf`1";
-		public const string PrimaryKeyOfBy = "PX.Data.ReferentialIntegrity.Attributes.PrimaryKeyOf`1+By"; 
+		public const string PrimaryKeyOfBy = "PX.Data.ReferentialIntegrity.Attributes.PrimaryKeyOf`1+By";
+
+		public const string CompositeKey2 = "PX.Data.ReferentialIntegrity.Attributes.CompositeKey`2";
 		#endregion
 	}
 }
