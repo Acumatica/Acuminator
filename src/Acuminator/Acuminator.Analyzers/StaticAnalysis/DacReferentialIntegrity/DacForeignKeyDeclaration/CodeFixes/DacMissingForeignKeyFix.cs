@@ -45,7 +45,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			SyntaxNode root = rootTask.Result;
 			SemanticModel semanticModel = semanticModelTask.Result;
 
-			if (root == null || semanticModel == null)
+			if (!(root?.FindNode(context.Span) is ClassDeclarationSyntax dacNode))
+				return;
+
+			INamedTypeSymbol dacTypeSymbol = semanticModel.GetDeclaredSymbol(dacNode, context.CancellationToken);
+
+			if (dacTypeSymbol == null || dacTypeSymbol.MemberNames.Contains(TypeNames.ForeignKeyClassName))
 				return;
 
 			var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
@@ -56,37 +61,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			var codeActionTitle = nameof(Resources.PX1034Fix).GetLocalized().ToString();
 			var codeAction = CodeAction.Create(codeActionTitle,
 											   cancellation => AddForeignKeyDeclarationTemplateToDacAsync(context.Document, root, semanticModel, pxContext,
-																										  context.Span, cancellation),
+																										  dacNode, dacTypeSymbol, cancellation),
 											   equivalenceKey: codeActionTitle);
 
 			context.RegisterCodeFix(codeAction, context.Diagnostics);
 		}
 
-		private Task<Document> AddForeignKeyDeclarationTemplateToDacAsync(Document document, SyntaxNode root, SemanticModel semanticModel, PXContext pxContext,
-																		  TextSpan span, CancellationToken cancellation)
+		private Task<Document> AddForeignKeyDeclarationTemplateToDacAsync(Document document, SyntaxNode root, SemanticModel semanticModel, PXContext pxContext, 
+																		  ClassDeclarationSyntax dacNode, INamedTypeSymbol dacTypeSymbol, 
+																		  CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();	
 
-			if (!(root.FindNode(span) is ClassDeclarationSyntax dacNode))
-				return Task.FromResult(document);
-
-			INamedTypeSymbol dacTypeSymbol = semanticModel.GetDeclaredSymbol(dacNode, cancellation);
-
-			if (dacTypeSymbol == null)
-				return Task.FromResult(document);
-
+			int positionToInsertFK = GetPositionToInsertForeignKeysContainerClass(dacNode, semanticModel, pxContext, cancellation);
 			var dacSemanticModel = DacSemanticModel.InferModel(pxContext, dacTypeSymbol, cancellation);
-			List<DacPropertyInfo> dacKeys = dacSemanticModel?.DacProperties
-															 .Where(property => property.IsKey)
-															 .OrderBy(property => property.DeclarationOrder)
-															 .ToList(capacity: 4);
+			var foreignKeyContainerNode = CreateForeignKeysContainerClassNode(document, pxContext, dacSemanticModel);
 
-			if (dacKeys.IsNullOrEmpty() || dacKeys.Count > PXReferentialIntegritySymbols.MaxPrimaryKeySize)
-				return Task.FromResult(document);
-
-			var primaryKeyNode = CreatePrimaryKeyNode(document, pxContext, dacSemanticModel, dacKeys);
 			var newDacNode = dacNode.WithMembers(
-										dacNode.Members.Insert(0, primaryKeyNode));
+										dacNode.Members.Insert(positionToInsertFK, foreignKeyContainerNode));
 
 			var changedRoot = root.ReplaceNode(dacNode, newDacNode);
 			changedRoot = AddUsingsForReferentialIntegrityNamespace(changedRoot);
@@ -94,95 +86,78 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return Task.FromResult(modifiedDocument);
 		}
 
-		private ClassDeclarationSyntax CreatePrimaryKeyNode(Document document, PXContext pxContext, DacSemanticModel dacSemanticModel,
-															List<DacPropertyInfo> dacKeys)
+		private int GetPositionToInsertForeignKeysContainerClass(ClassDeclarationSyntax dacNode, SemanticModel semanticModel, PXContext pxContext,
+																 CancellationToken cancellation)
 		{
-			var generator = SyntaxGenerator.GetGenerator(document);
-			var baseClassNode = MakeBaseClassNode(generator, pxContext, dacSemanticModel, dacKeys);
-			var findMethod = MakeFindMethodNode(generator, pxContext, dacSemanticModel, dacKeys);
-			var keyDeclaration = generator.ClassDeclaration(TypeNames.PrimaryKeyClassName, accessibility: Accessibility.Public,
-															baseType: baseClassNode, members: findMethod.ToEnumerable())
-										  .WithTrailingTrivia(EndOfLine(Environment.NewLine), EndOfLine(Environment.NewLine));
+			var primaryKeySymbol = pxContext.ReferentialIntegritySymbols.IPrimaryKey;
 
-			return keyDeclaration as ClassDeclarationSyntax;
-		}
+			if (primaryKeySymbol == null)
+				return 0;
 
-		private SyntaxNode MakeBaseClassNode(SyntaxGenerator generator, PXContext pxContext, DacSemanticModel dacSemanticModel,
-												 List<DacPropertyInfo> dacKeys)
-		{
-			var primaryKeyOfTypeNode = generator.GenericName(pxContext.ReferentialIntegritySymbols.PrimaryKeyOf.Name,
-															 generator.TypeExpression(dacSemanticModel.Symbol));
-			var dacFieldTypeArgNodes = dacKeys.Select(keyProperty => dacSemanticModel.FieldsByNames[keyProperty.Name])
-											  .Select(keyField => generator.TypeExpression(keyField.Symbol));
-
-			return generator.QualifiedName(primaryKeyOfTypeNode, generator.GenericName(TypeNames.By_TypeName, dacFieldTypeArgNodes));
-		}
-
-		private MethodDeclarationSyntax MakeFindMethodNode(SyntaxGenerator generator, PXContext pxContext, DacSemanticModel dacSemanticModel,
-														   List<DacPropertyInfo> dacKeys)
-		{
-			var returnType = generator.TypeExpression(dacSemanticModel.Symbol);
-			var parameters = MakeParameterNodesForFindMethod(generator, pxContext, dacSemanticModel, dacKeys);
-			var findMethodNode = generator.MethodDeclaration(DelegateNames.PrimaryKeyFindMethod, parameters,
-															 typeParameters: null, returnType,
-															 Accessibility.Public, DeclarationModifiers.Static) as MethodDeclarationSyntax;
-			if (findMethodNode.Body != null)
-				findMethodNode = findMethodNode.RemoveNode(findMethodNode.Body, SyntaxRemoveOptions.KeepNoTrivia);
-
-			var findByCallArguments = parameters.OfType<ParameterSyntax>()
-												.Select(parameter => Argument(
-																			IdentifierName(parameter.Identifier)));
-			var findByInvocation =
-				generator.InvocationExpression(
-								IdentifierName(DelegateNames.PrimaryKeyFindByMethod), findByCallArguments) as InvocationExpressionSyntax;
-
-			bool statementTooLongForOneLine = dacKeys.Count > MaxNumberOfKeysForOneLineStatement;
-
-			if (statementTooLongForOneLine)		
+			for (int i = 0; i < dacNode.Members.Count; i++)
 			{
-				var trivia = dacSemanticModel.Node.GetLeadingTrivia()
-											  .Add(Whitespace("\t\t"))
-											  .Where(trivia => trivia.IsKind(SyntaxKind.WhitespaceTrivia));
+				if (!(dacNode.Members[i] is ClassDeclarationSyntax nestedType))
+					continue;
 
-				findByInvocation = findByInvocation.WithLeadingTrivia(trivia);
+				var nestedTypeSymbol = semanticModel.GetDeclaredSymbol(nestedType, cancellation);
+
+				if (nestedTypeSymbol != null && nestedTypeSymbol.ImplementsInterface(primaryKeySymbol))
+				{
+					return i + 1;
+				}
 			}
 
-			var arrowExpression = ArrowExpressionClause(findByInvocation);
-
-			if (statementTooLongForOneLine)
-			{
-				arrowExpression = arrowExpression.WithArrowToken(
-													Token(SyntaxKind.EqualsGreaterThanToken)
-														.WithTrailingTrivia(Whitespace(" "), EndOfLine(Environment.NewLine)));
-			}
-
-			return findMethodNode.WithExpressionBody(arrowExpression)
-								 .WithSemicolonToken(
-										Token(SyntaxKind.SemicolonToken));
+			return 0;
 		}
 
-		private List<SyntaxNode> MakeParameterNodesForFindMethod(SyntaxGenerator generator, PXContext pxContext,
-																 DacSemanticModel dacSemanticModel, List<DacPropertyInfo> dacKeys)
+		private ClassDeclarationSyntax CreateForeignKeysContainerClassNode(PXContext pxContext, INamedTypeSymbol dacTypeSymbol, DacSemanticModel dacSemanticModel)
 		{
-			const string graphParameterName = "graph";
-			var graphParameter = generator.ParameterDeclaration(graphParameterName,
-																generator.TypeExpression(pxContext.PXGraph.Type));
-			var parameters = new List<SyntaxNode>(capacity: dacKeys.Count + 1)
-			{
-				graphParameter
-			};
+			var referencedDACs = GetReferencedDACs(pxContext, dacSemanticModel);
+			var comments = GetComments(pxContext, dacTypeSymbol, referencedDACs);
 
-			foreach (DacPropertyInfo keyProperty in dacKeys)
-			{
-				DacFieldInfo keyField = dacSemanticModel.FieldsByNames[keyProperty.Name];
-				var parameterType = generator.TypeExpression(keyProperty.PropertyType);
-				var parameterNode = generator.ParameterDeclaration(keyField.Name, parameterType);
+			ClassDeclarationSyntax fkClassDeclaration =
+				ClassDeclaration(TypeNames.ForeignKeyClassName)
+					.WithModifiers(
+						TokenList(
+							new[]{
+								Token(SyntaxKind.PublicKeyword),
+								Token(SyntaxKind.StaticKeyword)}))
+					.WithCloseBraceToken(
+						Token
+						(
+							TriviaList(comments),
+							SyntaxKind.CloseBraceToken,
+							TriviaList())		
+						)
+					.WithTrailingTrivia(EndOfLine(Environment.NewLine), EndOfLine(Environment.NewLine));
 
-				parameters.Add(parameterNode);
-			}
-
-			return parameters;
+			return fkClassDeclaration;
 		}
+
+		private List<ITypeSymbol> GetReferencedDACs(PXContext pxContext, DacSemanticModel dacSemanticModel)
+		{
+			if (dacSemanticModel == null)
+				return new List<ITypeSymbol>();
+
+
+		}
+
+		private IEnumerable<SyntaxTrivia> GetComments(PXContext pxContext, INamedTypeSymbol dacTypeSymbol, List<ITypeSymbol> referencedDACs)
+		{
+			yield return Resources.PX1034FixTemplateLine1.ToSingleLineComment();
+			
+			string fkExampleWithUseOfReferencedDacPrimaryKey = string.Format(Resources.PX1034FixTemplateLine2, dacTypeSymbol.Name);
+			yield return fkExampleWithUseOfReferencedDacPrimaryKey.ToSingleLineComment();
+			yield return string.Empty.ToSingleLineComment();
+
+			if (referencedDACs.Count == 0)
+				yield break;
+		}
+
+		
+		
+
+		
 
 		private SyntaxNode AddUsingsForReferentialIntegrityNamespace(SyntaxNode root)
 		{

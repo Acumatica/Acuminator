@@ -570,4 +570,13 @@
   <data name="PX1034Fix" xml:space="preserve">
     <value>Add a foreign key declaration template to the DAC</value>
   </data>
+  <data name="PX1034FixTemplateLine1" xml:space="preserve">
+    <value>Add all DAC foreign keys here. For referenced DACs with PK you can use the following template:</value>
+  </data>
+  <data name="PX1034FixTemplateLine2" xml:space="preserve">
+    <value>public class ReferencedDacFK : ReferencedDAC.PK.ForeignKeyOf&lt;{0}&gt;.By&lt;joinField1, joinFields, ...&gt; { }</value>
+  </data>
+  <data name="PX1034FixTemplateLine3" xml:space="preserve">
+    <value>For referenced DACs without PK you can use the following template:</value>
+  </data>
 </root>

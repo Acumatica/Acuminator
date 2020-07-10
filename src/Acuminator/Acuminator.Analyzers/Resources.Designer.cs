@@ -772,6 +772,33 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add all DAC foreign keys here. For referenced DACs with PK you can use the following template:.
+        /// </summary>
+        public static string PX1034FixTemplateLine1 {
+            get {
+                return ResourceManager.GetString("PX1034FixTemplateLine1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to public class ReferencedDacFK : ReferencedDAC.PK.ForeignKeyOf&lt;{0}&gt;.By&lt;joinField1, joinFields, ...&gt; { }.
+        /// </summary>
+        public static string PX1034FixTemplateLine2 {
+            get {
+                return ResourceManager.GetString("PX1034FixTemplateLine2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For referenced DACs without PK you can use the following template:.
+        /// </summary>
+        public static string PX1034FixTemplateLine3 {
+            get {
+                return ResourceManager.GetString("PX1034FixTemplateLine3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The DAC does not have an explicit foreign key declaration.
         /// </summary>
         public static string PX1034Title {

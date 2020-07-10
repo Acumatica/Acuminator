@@ -266,7 +266,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		public static SyntaxTrivia ToSingleLineComment(this string commentContent)
 		{
 			const string commentPrefix = "//";
-			string comment = commentContent == null
+			string comment = commentContent.IsNullOrWhiteSpace()
 				? commentPrefix
 				: commentPrefix + " " + commentContent.Trim();
 
