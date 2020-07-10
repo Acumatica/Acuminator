@@ -31,6 +31,16 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 			await VerifyCSharpDiagnosticAsync(new[] { testedSource, soOrderSource });
 
 		[Theory]
+		[EmbeddedFileData(@"CorrectForeignKey\Dac_GoodForeignKey_AsSimpleKey.cs", @"CorrectForeignKey\SOOrder.cs")]
+		public async Task Dac_WithCorrectForeignKey_UsingAsSimpleKey_DoesntReportDiagnostic(string testedSource, string soOrderSource) =>
+			await VerifyCSharpDiagnosticAsync(new[] { testedSource, soOrderSource });
+
+		[Theory]
+		[EmbeddedFileData(@"CorrectForeignKey\Dac_GoodForeignKey_CompositeKey.cs", @"CorrectForeignKey\SOOrder.cs")]
+		public async Task Dac_WithCorrectForeignKey_UsingCompositeKey_DoesntReportDiagnostic(string testedSource, string soOrderSource) =>
+			await VerifyCSharpDiagnosticAsync(new[] { testedSource, soOrderSource });
+
+		[Theory]
 		[EmbeddedFileData("PXMappedCacheExtension.cs")]
 		public async Task PXMappedCacheExtension_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
