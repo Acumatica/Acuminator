@@ -52,7 +52,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			INamedTypeSymbol dacTypeSymbol = semanticModel?.GetDeclaredSymbol(dacNode, context.CancellationToken);
 
-			if (dacTypeSymbol == null)
+			if (dacTypeSymbol == null || dacTypeSymbol.MemberNames.Contains(TypeNames.PrimaryKeyClassName))
 				return;
 
 			var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
