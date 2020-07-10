@@ -262,5 +262,15 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 				ConstructorDeclarationSyntax constructorDeclaration => constructorDeclaration.AttributeLists,
 				_                                                   => new SyntaxList<AttributeListSyntax>()
 			};
+
+		public static SyntaxTrivia ToSingleLineComment(this string commentContent)
+		{
+			const string commentPrefix = "//";
+			string comment = commentContent == null
+				? commentPrefix
+				: commentPrefix + " " + commentContent.Trim();
+
+			return SyntaxFactory.Comment(comment);
+		}
 	}
 }
