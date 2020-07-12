@@ -137,19 +137,22 @@
 		public const string PXGraph2 = "PX.Data.PXGraph`2";
 		public const string PXGraph3 = "PX.Data.PXGraph`3";
 
-		internal const string PXIntListAttribute = "PX.Data.PXIntListAttribute";
+		public const string PXIntListAttribute = "PX.Data.PXIntListAttribute";
 
-		internal const string PXProcessingBase = "PX.Data.PXProcessingBase`1";
+		public const string PXProcessingBase = "PX.Data.PXProcessingBase`1";
 
-		internal const string PXSelectBase1 = "PX.Data.PXSelectBase`1";
+		public const string PXSelectBase1 = "PX.Data.PXSelectBase`1";
 
-		internal const string PXSelectExtension1 = "PX.Data.PXSelectExtension`1";
+		public const string PXSelectExtension1 = "PX.Data.PXSelectExtension`1";
 
-		internal const string PXSelectorAttribute = "PX.Data.PXSelectorAttribute";
+		public const string PXStringListAttribute = "PX.Data.PXStringListAttribute";
 
-		internal const string PXStringListAttribute = "PX.Data.PXStringListAttribute";
+		public const string PXSelectorAttribute = "PX.Data.PXSelectorAttribute";
+		public const string PXParentAttribute = "PX.Data.PXParentAttribute";
+		public const string PXForeignReferenceAttribute = "PX.Data.ReferentialIntegrity.Attributes.PXForeignReferenceAttribute";
+		public const string PXDBDefaultAttribute = "PX.Data.PXDBDefaultAttribute";
 
-		internal const string PXView = "PX.Data.PXView";
+		public const string PXView = "PX.Data.PXView";
 
 		public const string SelectBase5 = "PX.Data.SelectBase`5";
 		public const string SearchBase5 = "PX.Data.SearchBase`5";
