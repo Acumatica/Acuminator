@@ -574,9 +574,22 @@
     <value>Add all DAC foreign keys here. For referenced DACs with PK you can use the following template:</value>
   </data>
   <data name="PX1034FixTemplateLine2" xml:space="preserve">
-    <value>public class ReferencedDacFK : ReferencedDAC.PK.ForeignKeyOf&lt;{0}&gt;.By&lt;joinField1, joinFields, ...&gt; { }</value>
+    <value>public class ReferencedDFK : ReferencedDAC.PK.ForeignKeyOf&lt;{0}&gt;.By&lt;joinField1, joinFields, ...&gt; {{ }}</value>
   </data>
   <data name="PX1034FixTemplateLine3" xml:space="preserve">
-    <value>For referenced DACs without PK you can use the following template:</value>
+    <value>For referenced DACs without PK class and with a single field primary key you can use the following template:</value>
+  </data>
+  <data name="PX1034FixTemplateLine4" xml:space="preserve">
+    <value>public class ReferencedDacFK : Field&lt;joinField&gt;.IsRelatedTo&lt;ReferencedDAC.keyField&gt;.AsSimpleKey.WithTablesOf&lt;ReferencedDAC, {0}&gt; {{ }}</value>
+  </data>
+  <data name="PX1034FixTemplateLine5" xml:space="preserve">
+    <value>For referenced DACs without PK class and with a composite primary key you can use the following template:</value>
+  </data>
+  <data name="PX1034FixTemplateLine6" xml:space="preserve">
+    <value>public class ReferencedDacFK : CompositeKey&lt;
+											   Field&lt;joinField1&gt;.IsRelatedTo&lt;ReferencedDAC.keyField1&gt;,
+											   Field&lt;joinField2&gt;.IsRelatedTo&lt;ReferencedDAC.keyField2&gt;,
+											  ...
+											  &gt;.WithTablesOf&lt;SOOrder, SOOrder&gt; {{ }}</value>
   </data>
 </root>

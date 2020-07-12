@@ -74,8 +74,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			cancellation.ThrowIfCancellationRequested();	
 
 			int positionToInsertFK = GetPositionToInsertForeignKeysContainerClass(dacNode, semanticModel, pxContext, cancellation);
-			var dacSemanticModel = DacSemanticModel.InferModel(pxContext, dacTypeSymbol, cancellation);
-			var foreignKeyContainerNode = CreateForeignKeysContainerClassNode(document, pxContext, dacSemanticModel);
+			
+			var foreignKeyContainerNode = CreateForeignKeysContainerClassNode(pxContext, dacTypeSymbol, cancellation);
 
 			var newDacNode = dacNode.WithMembers(
 										dacNode.Members.Insert(positionToInsertFK, foreignKeyContainerNode));
@@ -110,10 +110,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return 0;
 		}
 
-		private ClassDeclarationSyntax CreateForeignKeysContainerClassNode(PXContext pxContext, INamedTypeSymbol dacTypeSymbol, DacSemanticModel dacSemanticModel)
-		{
-			var referencedDACs = GetReferencedDACs(pxContext, dacSemanticModel);
-			var comments = GetComments(pxContext, dacTypeSymbol, referencedDACs);
+		private ClassDeclarationSyntax CreateForeignKeysContainerClassNode(PXContext pxContext, INamedTypeSymbol dacTypeSymbol, CancellationToken cancellation)
+		{		
+			var referencedDACs = GetReferencedDACs(pxContext, dacTypeSymbol, cancellation);
+			var examplesTrivia = GetForeignKeyExampleTemplates(pxContext, dacTypeSymbol, referencedDACs);
 
 			ClassDeclarationSyntax fkClassDeclaration =
 				ClassDeclaration(TypeNames.ForeignKeyClassName)
@@ -125,7 +125,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 					.WithCloseBraceToken(
 						Token
 						(
-							TriviaList(comments),
+							TriviaList(examplesTrivia),
 							SyntaxKind.CloseBraceToken,
 							TriviaList())		
 						)
@@ -134,30 +134,61 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return fkClassDeclaration;
 		}
 
-		private List<ITypeSymbol> GetReferencedDACs(PXContext pxContext, DacSemanticModel dacSemanticModel)
+		private List<DacPropertyInfo> GetDacPropertiesWithForeignKeys(PXContext pxContext, INamedTypeSymbol dacTypeSymbol, CancellationToken cancellation)
 		{
-			if (dacSemanticModel == null)
-				return new List<ITypeSymbol>();
+			var dacSemanticModel = DacSemanticModel.InferModel(pxContext, dacTypeSymbol, cancellation);
+
+			if (dacSemanticModel == null || dacSemanticModel.DacType != DacType.Dac)
+				return new List<DacPropertyInfo>();
+			
+			var dacPropertiesWithForeignKeys = from dacProperty in dacSemanticModel.DacProperties
+											   where dacProperty.Attributes.Any()
 
 
+
+
+		
+
+			return new List<ITypeSymbol>();
 		}
 
-		private IEnumerable<SyntaxTrivia> GetComments(PXContext pxContext, INamedTypeSymbol dacTypeSymbol, List<ITypeSymbol> referencedDACs)
+		private static IEnumerable<INamedTypeSymbol> GetForeignKeyAttributes(PXContext pxContext)
 		{
+			var pxparentAttribute = pxContext.AttributeTypes.PxP
+		}
+
+		private IEnumerable<SyntaxTrivia> GetForeignKeyExampleTemplates(PXContext pxContext, INamedTypeSymbol dacTypeSymbol, List<ITypeSymbol> referencedDACs)
+		{
+			var emptyLineComment = string.Empty.ToSingleLineComment();
+
 			yield return Resources.PX1034FixTemplateLine1.ToSingleLineComment();
-			
+			yield return EndOfLine(Environment.NewLine);
+
 			string fkExampleWithUseOfReferencedDacPrimaryKey = string.Format(Resources.PX1034FixTemplateLine2, dacTypeSymbol.Name);
 			yield return fkExampleWithUseOfReferencedDacPrimaryKey.ToSingleLineComment();
-			yield return string.Empty.ToSingleLineComment();
+			yield return EndOfLine(Environment.NewLine);
 
-			if (referencedDACs.Count == 0)
-				yield break;
+			yield return emptyLineComment;
+			yield return EndOfLine(Environment.NewLine);
+
+			yield return Resources.PX1034FixTemplateLine3.ToSingleLineComment();
+			yield return EndOfLine(Environment.NewLine);
+
+			string fkExampleWithoutPK_WithSimplePrimaryKey = string.Format(Resources.PX1034FixTemplateLine4, dacTypeSymbol.Name);
+			yield return fkExampleWithoutPK_WithSimplePrimaryKey.ToSingleLineComment();
+			yield return EndOfLine(Environment.NewLine);
+
+			yield return emptyLineComment;
+			yield return EndOfLine(Environment.NewLine);
+
+			yield return Resources.PX1034FixTemplateLine5.ToSingleLineComment();
+			yield return EndOfLine(Environment.NewLine);
+
+			string fkExampleWithoutPK_WithCompositePrimaryKey = string.Format(Resources.PX1034FixTemplateLine6, dacTypeSymbol.Name);
+			string fkExampleWithoutPK_WithCompositePrimaryKeyComment = $"/* {fkExampleWithoutPK_WithCompositePrimaryKey} */";
+			yield return Comment(fkExampleWithoutPK_WithCompositePrimaryKeyComment);
+			yield return EndOfLine(Environment.NewLine);			
 		}
-
-		
-		
-
-		
 
 		private SyntaxNode AddUsingsForReferentialIntegrityNamespace(SyntaxNode root)
 		{
