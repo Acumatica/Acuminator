@@ -148,6 +148,7 @@
 		public const string PXStringListAttribute = "PX.Data.PXStringListAttribute";
 
 		public const string PXSelectorAttribute = "PX.Data.PXSelectorAttribute";
+		public const string PXDimensionSelectorAttribute = "PX.Data.PXDimensionSelectorAttribute";
 		public const string PXParentAttribute = "PX.Data.PXParentAttribute";
 		public const string PXForeignReferenceAttribute = "PX.Data.ReferentialIntegrity.Attributes.PXForeignReferenceAttribute";
 		public const string PXDBDefaultAttribute = "PX.Data.PXDBDefaultAttribute";
