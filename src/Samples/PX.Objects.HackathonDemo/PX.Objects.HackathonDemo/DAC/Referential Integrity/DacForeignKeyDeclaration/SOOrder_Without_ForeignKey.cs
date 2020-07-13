@@ -7,6 +7,7 @@ using PX.Objects.GL;
 using PX.Objects.CS;
 
 using CRLocation = PX.Objects.CR.Standalone.Location;
+using GLBranchAttribute = PX.Objects.GL.BranchAttribute;
 
 namespace PX.Objects.HackathonDemo.ReferentialIntegrity
 {
@@ -47,7 +48,7 @@ namespace PX.Objects.HackathonDemo.ReferentialIntegrity
 		#region BranchID
 		public abstract class branchID : PX.Data.BQL.BqlInt.Field<branchID> { }
 
-		[Branch(typeof(Coalesce<
+		[GLBranch(typeof(Coalesce<
 			Search<Location.cBranchID, Where<Location.bAccountID, Equal<Current<SOOrder.customerID>>, 
 				And<Location.locationID, Equal<Current<SOOrder.customerLocationID>>>>>,
 			Search<Branch.branchID, Where<Branch.branchID, Equal<Current<AccessInfo.branchID>>>>>))]
