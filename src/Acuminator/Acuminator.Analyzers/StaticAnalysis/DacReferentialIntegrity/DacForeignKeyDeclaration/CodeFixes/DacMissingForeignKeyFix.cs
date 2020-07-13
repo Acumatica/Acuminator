@@ -141,12 +141,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			if (foreignKeyAttributes.Count == 0)
 				return new List<DacPropertyInfo>();
-
+			
 			var dacSemanticModel = DacSemanticModel.InferModel(pxContext, dacTypeSymbol, cancellation);
 
 			if (dacSemanticModel == null || dacSemanticModel.DacType != DacType.Dac)
 				return new List<DacPropertyInfo>();
 
+			var selectorAttribute = pxContext.AttributeTypes.PXSelectorAttribute.Type;
+			var dimensionSelectorAttribute = pxContext.AttributeTypes.PXDimensionSelectorAttribute;
 			AttributeInformation attributeInformation = new AttributeInformation(pxContext);
 			var dacPropertiesWithForeignKeys = 
 				from dacProperty in dacSemanticModel.DacProperties
@@ -158,9 +160,36 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return dacPropertiesWithForeignKeys.ToList();
 
 			//----------------------------------------Local Function----------------------------------------------------------------
-			bool IsForeignKeyAttribute(AttributeInfo attribute) =>
-				foreignKeyAttributes.Exists(
-					foreignKeyAttribute => attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeType, foreignKeyAttribute));
+			bool IsForeignKeyAttribute(AttributeInfo attribute)
+			{
+				const string selectorAttributeProperty = "SelectorAttribute";
+
+				bool isDerivedFromOrAggregateForeignKeyAttribute =
+					foreignKeyAttributes.Exists(
+						foreignKeyAttribute => attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeType, foreignKeyAttribute));
+
+				if (isDerivedFromOrAggregateForeignKeyAttribute)
+					return true;
+
+				var selectorAttributeMembers = attribute.AttributeType.GetBaseTypesAndThis()
+																	  .SelectMany(type => type.GetMembers(selectorAttributeProperty));
+
+
+				var selectorAttributeCandidateMemberTypes = from type in attribute.AttributeType.GetBaseTypesAndThis()
+																								.TakeWhile(attrType => attrType != pxContext.AttributeTypes.PXEventSubscriberAttribute)
+															from member in type.GetMembers(selectorAttributeProperty)
+															select member switch
+															{
+																IPropertySymbol property => property.Type,
+																IFieldSymbol field => field.Type,
+																_ => null
+															};
+
+				return selectorAttributeCandidateMemberTypes
+						.Any(memberType => memberType != null &&
+										   (attributeInformation.IsAttributeDerivedFromClass(memberType, selectorAttribute) ||
+											attributeInformation.IsAttributeDerivedFromClass(memberType, dimensionSelectorAttribute)));												 
+			}
 		}
 
 		private static List<INamedTypeSymbol> GetForeignKeyAttributes(PXContext pxContext)
