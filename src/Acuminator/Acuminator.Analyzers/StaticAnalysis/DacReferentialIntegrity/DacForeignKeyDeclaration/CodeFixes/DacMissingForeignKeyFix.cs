@@ -152,6 +152,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				from dacProperty in dacSemanticModel.DacProperties
 				where !dacProperty.Attributes.IsDefaultOrEmpty &&
 					   dacProperty.Attributes.Any(attribute => IsForeignKeyAttribute(attribute))
+				orderby dacProperty.DeclarationOrder ascending
 				select dacProperty;
 
 			return dacPropertiesWithForeignKeys.ToList();
@@ -235,9 +236,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			yield return Resources.PX1034FixTemplateLine7.ToSingleLineComment();
 			yield return EndOfLine(Environment.NewLine);
 
-			foreach (DacPropertyInfo propertyWithForeignKey in dacPropertiesWithForeignKeys)
+			for (int i = 0; i < dacPropertiesWithForeignKeys.Count; i++)
 			{
-				yield return propertyWithForeignKey.Symbol.Name.ToSingleLineComment();
+				DacPropertyInfo propertyWithForeignKey = dacPropertiesWithForeignKeys[i];
+				string propertyName = propertyWithForeignKey.Symbol.Name;
+
+				if (i < dacPropertiesWithForeignKeys.Count - 1)
+					propertyName += ",";
+
+				yield return propertyName.ToSingleLineComment();
 				yield return EndOfLine(Environment.NewLine);
 			}
 		}
