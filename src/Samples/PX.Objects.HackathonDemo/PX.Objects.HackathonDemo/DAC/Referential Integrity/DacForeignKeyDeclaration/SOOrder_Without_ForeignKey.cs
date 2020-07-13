@@ -1,4 +1,5 @@
-﻿using PX.Data;
+﻿using System;
+using PX.Data;
 using PX.Data.ReferentialIntegrity.Attributes;
 using PX.Objects.AR;
 using PX.Objects.CR;
@@ -88,6 +89,15 @@ namespace PX.Objects.HackathonDemo.ReferentialIntegrity
 				Field<SOOrder.customerLocationID>.IsRelatedTo<Location.locationID>
 			>))]
 		public virtual int? CustomerLocationID { get; set; }
+		#endregion
+
+		#region OrderDate
+		public abstract class orderDate : PX.Data.BQL.BqlDateTime.Field<orderDate> { }
+
+		[PXDBDate]
+		[PXDefault(typeof(AccessInfo.businessDate))]
+		[PXUIField(DisplayName = "Date", Visibility = PXUIVisibility.SelectorVisible)]
+		public virtual DateTime? OrderDate { get; set; }
 		#endregion
 
 		#region Tstamp
