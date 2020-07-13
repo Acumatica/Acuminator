@@ -592,4 +592,7 @@
 											  ...
 											  &gt;.WithTablesOf&lt;SOOrder, SOOrder&gt; {{ }}</value>
   </data>
+  <data name="PX1034FixTemplateLine7" xml:space="preserve">
+    <value>You can start with the following properties:</value>
+  </data>
 </root>

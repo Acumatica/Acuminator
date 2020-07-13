@@ -830,6 +830,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You can start with the following properties:.
+        /// </summary>
+        public static string PX1034FixTemplateLine7 {
+            get {
+                return ResourceManager.GetString("PX1034FixTemplateLine7", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The DAC does not have an explicit foreign key declaration.
         /// </summary>
         public static string PX1034Title {

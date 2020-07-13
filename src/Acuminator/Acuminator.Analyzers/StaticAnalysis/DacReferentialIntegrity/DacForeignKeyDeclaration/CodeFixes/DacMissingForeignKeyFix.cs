@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
+using Acuminator.Utilities.Roslyn.Semantic.Attribute;
 using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
@@ -17,11 +19,10 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Text;
 
-using PXReferentialIntegritySymbols = Acuminator.Utilities.Roslyn.Semantic.Symbols.PXReferentialIntegritySymbols;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 {
@@ -112,8 +113,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		private ClassDeclarationSyntax CreateForeignKeysContainerClassNode(PXContext pxContext, INamedTypeSymbol dacTypeSymbol, CancellationToken cancellation)
 		{		
-			var referencedDACs = GetReferencedDACs(pxContext, dacTypeSymbol, cancellation);
-			var examplesTrivia = GetForeignKeyExampleTemplates(pxContext, dacTypeSymbol, referencedDACs);
+			var dacPropertiesWithForeignKeys = GetDacPropertiesWithForeignKeys(pxContext, dacTypeSymbol, cancellation);
+			var examplesTrivia = GetForeignKeyExampleTemplates(dacTypeSymbol, dacPropertiesWithForeignKeys);
 
 			ClassDeclarationSyntax fkClassDeclaration =
 				ClassDeclaration(TypeNames.ForeignKeyClassName)
@@ -136,28 +137,64 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		private List<DacPropertyInfo> GetDacPropertiesWithForeignKeys(PXContext pxContext, INamedTypeSymbol dacTypeSymbol, CancellationToken cancellation)
 		{
+			var foreignKeyAttributes = GetForeignKeyAttributes(pxContext);
+
+			if (foreignKeyAttributes.Count == 0)
+				return new List<DacPropertyInfo>();
+
 			var dacSemanticModel = DacSemanticModel.InferModel(pxContext, dacTypeSymbol, cancellation);
 
 			if (dacSemanticModel == null || dacSemanticModel.DacType != DacType.Dac)
 				return new List<DacPropertyInfo>();
-			
-			var dacPropertiesWithForeignKeys = from dacProperty in dacSemanticModel.DacProperties
-											   where dacProperty.Attributes.Any()
 
+			AttributeInformation attributeInformation = new AttributeInformation(pxContext);
+			var dacPropertiesWithForeignKeys = 
+				from dacProperty in dacSemanticModel.DacProperties
+				where !dacProperty.Attributes.IsDefaultOrEmpty &&
+					   dacProperty.Attributes.Any(attribute => IsForeignKeyAttribute(attribute))
+				select dacProperty;
 
+			return dacPropertiesWithForeignKeys.ToList();
 
-
-		
-
-			return new List<ITypeSymbol>();
+			//----------------------------------------Local Function----------------------------------------------------------------
+			bool IsForeignKeyAttribute(AttributeInfo attribute) =>
+				foreignKeyAttributes.Exists(
+					foreignKeyAttribute => attributeInformation.IsAttributeDerivedFromClass(attribute.AttributeType, foreignKeyAttribute));
 		}
 
-		private static IEnumerable<INamedTypeSymbol> GetForeignKeyAttributes(PXContext pxContext)
+		private static List<INamedTypeSymbol> GetForeignKeyAttributes(PXContext pxContext)
 		{
-			var pxparentAttribute = pxContext.AttributeTypes.PxP
+			var foreignKeyAttributes = new List<INamedTypeSymbol>(capacity: 5);
+
+			var parentAttribute = pxContext.AttributeTypes.PXParentAttribute;
+
+			if (parentAttribute != null)
+				foreignKeyAttributes.Add(parentAttribute);
+
+			var dbDefaultAttribute = pxContext.AttributeTypes.PXDBDefaultAttribute;
+
+			if (dbDefaultAttribute != null)
+				foreignKeyAttributes.Add(dbDefaultAttribute);
+
+			var foreignReferenceAttribute = pxContext.AttributeTypes.PXForeignReferenceAttribute;
+
+			if (foreignReferenceAttribute != null)
+				foreignKeyAttributes.Add(foreignReferenceAttribute);
+
+			var selectorAttribute = pxContext.AttributeTypes.PXSelectorAttribute.Type;
+
+			if (selectorAttribute != null)
+				foreignKeyAttributes.Add(selectorAttribute);
+
+			var dimensionSelectorAttribute = pxContext.AttributeTypes.PXDimensionSelectorAttribute;
+
+			if (dimensionSelectorAttribute != null)
+				foreignKeyAttributes.Add(dimensionSelectorAttribute);
+
+			return foreignKeyAttributes;
 		}
 
-		private IEnumerable<SyntaxTrivia> GetForeignKeyExampleTemplates(PXContext pxContext, INamedTypeSymbol dacTypeSymbol, List<ITypeSymbol> referencedDACs)
+		private IEnumerable<SyntaxTrivia> GetForeignKeyExampleTemplates(INamedTypeSymbol dacTypeSymbol, List<DacPropertyInfo> dacPropertiesWithForeignKeys)
 		{
 			var emptyLineComment = string.Empty.ToSingleLineComment();
 
@@ -187,7 +224,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			string fkExampleWithoutPK_WithCompositePrimaryKey = string.Format(Resources.PX1034FixTemplateLine6, dacTypeSymbol.Name);
 			string fkExampleWithoutPK_WithCompositePrimaryKeyComment = $"/* {fkExampleWithoutPK_WithCompositePrimaryKey} */";
 			yield return Comment(fkExampleWithoutPK_WithCompositePrimaryKeyComment);
-			yield return EndOfLine(Environment.NewLine);			
+			yield return EndOfLine(Environment.NewLine);
+
+			if (dacPropertiesWithForeignKeys.Count == 0)
+				yield break;
+
+			yield return emptyLineComment;
+			yield return EndOfLine(Environment.NewLine);
+
+			yield return Resources.PX1034FixTemplateLine7.ToSingleLineComment();
+			yield return EndOfLine(Environment.NewLine);
+
+			foreach (DacPropertyInfo propertyWithForeignKey in dacPropertiesWithForeignKeys)
+			{
+				yield return propertyWithForeignKey.Symbol.Name.ToSingleLineComment();
+				yield return EndOfLine(Environment.NewLine);
+			}
 		}
 
 		private SyntaxNode AddUsingsForReferentialIntegrityNamespace(SyntaxNode root)
