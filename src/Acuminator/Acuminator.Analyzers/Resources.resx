@@ -574,7 +574,7 @@
     <value>Add all DAC foreign keys here. For referenced DACs with PK you can use the following template:</value>
   </data>
   <data name="PX1034FixTemplateLine2" xml:space="preserve">
-    <value>public class ReferencedDFK : ReferencedDAC.PK.ForeignKeyOf&lt;{0}&gt;.By&lt;joinField1, joinFields, ...&gt; {{ }}</value>
+    <value>public class ReferencedDacFK : ReferencedDAC.PK.ForeignKeyOf&lt;{0}&gt;.By&lt;joinField1, joinFields, ...&gt; {{ }}</value>
   </data>
   <data name="PX1034FixTemplateLine3" xml:space="preserve">
     <value>For referenced DACs without PK class and with a single field primary key you can use the following template:</value>

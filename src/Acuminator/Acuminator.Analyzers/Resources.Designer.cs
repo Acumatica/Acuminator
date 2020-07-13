@@ -781,7 +781,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to public class ReferencedDFK : ReferencedDAC.PK.ForeignKeyOf&lt;{0}&gt;.By&lt;joinField1, joinFields, ...&gt; {{ }}.
+        ///   Looks up a localized string similar to public class ReferencedDacFK : ReferencedDAC.PK.ForeignKeyOf&lt;{0}&gt;.By&lt;joinField1, joinFields, ...&gt; {{ }}.
         /// </summary>
         public static string PX1034FixTemplateLine2 {
             get {
