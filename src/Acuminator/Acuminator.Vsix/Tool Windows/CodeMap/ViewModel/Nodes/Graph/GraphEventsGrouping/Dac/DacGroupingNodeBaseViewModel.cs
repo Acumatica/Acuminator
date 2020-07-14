@@ -78,11 +78,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			switch (GraphEventsCategoryVM)
 			{
-				case CacheAttachedCategoryNodeViewModel cacheAttachedCategory:
-				case RowEventCategoryNodeViewModel rowEventCategory:
+				case CacheAttachedCategoryNodeViewModel _:
+				case RowEventCategoryNodeViewModel _:
 					childToNavigateTo = this.GetChildToNavigateTo();
 					break;
-				case FieldEventCategoryNodeViewModel fieldEventCategory:
+				case FieldEventCategoryNodeViewModel _:
 					childToNavigateTo = GetChildToNavigateToFromFieldEvents();
 
 					if (!(childToNavigateTo is FieldEventNodeViewModel fieldEventNode))

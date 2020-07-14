@@ -19,12 +19,67 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override string Tooltip => GetTooltip();
 
-		public override Icon NodeIcon => Icon.View;
+		public override Icon NodeIcon { get; } 
+
+		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
 
 		public ViewNodeViewModel(ViewCategoryNodeViewModel viewCategoryVM, DataViewInfo viewInfo, bool isExpanded = false) :
 							base(viewCategoryVM, viewCategoryVM, viewInfo, isExpanded)
 		{
-		}	
+			NodeIcon = GetIcon();
+			var infos = GetExtraInfos();
+
+			if (infos.Any())
+			{
+				ExtraInfos = new ExtendedObservableCollection<ExtraInfoViewModel>(infos);
+			}
+		}
+
+		private Icon GetIcon()
+		{
+			if (ViewInfo.IsFilter)
+				return Icon.Filter;
+			else if (ViewInfo.IsSetup)
+				return Icon.Settings;
+			else if (ViewInfo.IsProcessing)
+				return Icon.Processing;
+			else
+				return Icon.View;
+		}
+
+		private IEnumerable<ExtraInfoViewModel> GetExtraInfos()
+		{
+			if (ViewInfo.IsFilter && NodeIcon != Icon.Filter)
+			{
+				yield return new IconViewModel(this, Icon.Filter);
+			}
+
+			if (ViewInfo.IsSetup && NodeIcon != Icon.Settings)
+			{
+				yield return new IconViewModel(this, Icon.Settings);
+			}
+
+			if (ViewInfo.IsProcessing && NodeIcon != Icon.Processing)
+			{
+				yield return new IconViewModel(this, Icon.Processing);
+			}
+
+			if (ViewInfo.IsCustomView)
+			{
+				yield return new TextViewModel(this, VSIXResource.CustomViewExtraInfoLabel)
+				{
+					Tooltip = VSIXResource.CustomViewInfoTooltip
+				};
+			}
+
+			if (ViewInfo.IsPXSelectReadOnly)
+			{
+				yield return new TextViewModel(this, VSIXResource.PXSelectReadOnlyViewExtraInfoLabel)
+				{
+					Tooltip = VSIXResource.PXSelectReadOnlyViewInfoTooltip
+				};
+			}
+		}
 
 		private string GetTooltip()
 		{

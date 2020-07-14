@@ -23,7 +23,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 			ImmutableArray.Create(Descriptors.PX1012_PXActionOnNonPrimaryView);
 
 		public override bool ShouldAnalyze(PXContext pxContext, PXGraphSemanticModel graph) =>
-			graph.Type != GraphType.None && base.ShouldAnalyze(pxContext, graph); //-V3063
+			base.ShouldAnalyze(pxContext, graph) && graph.Type != GraphType.None; //-V3063
 
 		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext pxContext, PXGraphSemanticModel pxGraph)
 		{
@@ -86,22 +86,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXActionOnNonPrimaryView
 								  actionSymbol.Name, primaryDacName), pxContext.CodeAnalysisSettings);
 		}
 
-		private static Location GetLocation(SyntaxNode symbolSyntax)
-		{
-			switch (symbolSyntax)
+		private static Location GetLocation(SyntaxNode symbolSyntax) =>
+			symbolSyntax switch
 			{
-				case PropertyDeclarationSyntax propertyDeclaration:
-					return propertyDeclaration.Type.GetLocation();
-				case FieldDeclarationSyntax fieldDeclaration:
-					return fieldDeclaration.Declaration.Type.GetLocation();
-				case VariableDeclarationSyntax variableDeclaration:
-					return variableDeclaration.Type.GetLocation();
-				case VariableDeclaratorSyntax variableDeclarator 
-				when variableDeclarator.Parent is VariableDeclarationSyntax variableDeclaration:
-					return variableDeclaration.Type.GetLocation();
-				default:
-					return symbolSyntax?.GetLocation();
-			}
-		}
+				PropertyDeclarationSyntax propertyDeclaration => propertyDeclaration.Type.GetLocation(),
+				FieldDeclarationSyntax fieldDeclaration => fieldDeclaration.Declaration.Type.GetLocation(),
+				VariableDeclarationSyntax variableDeclaration => variableDeclaration.Type.GetLocation(),
+				VariableDeclaratorSyntax variableDeclarator
+					when variableDeclarator.Parent is VariableDeclarationSyntax variableDeclaration => variableDeclaration.Type.GetLocation(),
+				_ => symbolSyntax?.GetLocation(),
+			};
 	}
 }

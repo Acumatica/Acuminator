@@ -5,64 +5,81 @@ namespace Acuminator.Utilities.Roslyn.Constants
 {
 	public static class TypeNames
 	{
-		public static readonly string PXView = "PXView";
+		#region Referential Integrity
+		/// <summary>
+		/// The mandatory name of the primary key class in DAC.
+		/// </summary>
+		public const string PrimaryKeyClassName = "PK";
 
-		public static readonly string IBqlTable = "IBqlTable";
+		/// <summary>
+		/// The mandatory name of the foreign key class in DAC.
+		/// </summary>
+		public const string ForeignKeyClassName = "FK";
 
-		public static readonly string BqlCommand = "BqlCommand";
-		public static readonly string FbqlCommand = "FbqlCommand";
-		public static readonly string IBqlField = "IBqlField";
-		public static readonly string IBqlParameter = "IBqlParameter";
-		public static readonly string IBqlJoin = "IBqlJoin";
-		public static readonly string IBqlOrderBy = "IBqlOrderBy";
-		public static readonly string IBqlAggregate = "IBqlAggregate";
-		public static readonly string IBqlFunction = "IBqlFunction";
-		public static readonly string IBqlSortColumn = "IBqlSortColumn";
-		public static readonly string IBqlComparison = "IBqlComparison";
-		public static readonly string IBqlCreator = "IBqlCreator";
-		public static readonly string IBqlOperand = "IBqlOperand";
-		public static readonly string IBqlPredicateChain = "IBqlPredicateChain";
-		public static readonly string IBqlOn = "IBqlOn";
-		public static readonly string IBqlSet = "IBqlSet";
+		public const string ForeignKeyOfName = "ForeignKeyOf";
+		public const string AsSimpleKeyName = "AsSimpleKey";
+		public const string CompositeKey = "CompositeKey";
 
-		public static readonly string PXSelectBaseType = "PXSelectBase";
+		public const string By_TypeName = "By";
+		#endregion
 
-		public static readonly string Constant = "Constant";
-		public static readonly string ConstantGeneric = "Constant`1";
+		public const string PXView = "PXView";
 
-		public static readonly string PXCacheExtension = "PXCacheExtension";
-		public static readonly string PXCacheExtensionGeneric = "PXCacheExtension`1";
+		public const string IBqlTable = "IBqlTable";
 
-		public static readonly string PXGraph = "PXGraph";
+		public const string BqlCommand = "BqlCommand";
+		public const string FbqlCommand = "FbqlCommand";
+		public const string IBqlField = "IBqlField";
+		public const string IBqlParameter = "IBqlParameter";
+		public const string IBqlJoin = "IBqlJoin";
+		public const string IBqlOrderBy = "IBqlOrderBy";
+		public const string IBqlAggregate = "IBqlAggregate";
+		public const string IBqlFunction = "IBqlFunction";
+		public const string IBqlSortColumn = "IBqlSortColumn";
+		public const string IBqlComparison = "IBqlComparison";
+		public const string IBqlCreator = "IBqlCreator";
+		public const string IBqlOperand = "IBqlOperand";
+		public const string IBqlPredicateChain = "IBqlPredicateChain";
+		public const string IBqlOn = "IBqlOn";
+		public const string IBqlSet = "IBqlSet";
 
-		public static readonly string PXGraphGeneric = "PXGraph`1";
-		public static readonly string PXGraphExtension = "PXGraphExtension";
+		public const string PXSelectBaseType = "PXSelectBase";
 
-		public static readonly string PXAction = "PXAction";
-		public static readonly string PXActionGeneric = "PXAction`1";
+		public const string Constant = "Constant";
+		public const string ConstantGeneric = "Constant`1";
 
-		public static readonly string PXUpdate = "PXUpdate";
-		public static readonly string PXUpdateJoin = "PXUpdateJoin";
-		public static readonly string PXUpdateGroupBy = "PXUpdateGroupBy";
-		public static readonly string PXUpdateJoinGroupBy = "PXUpdateJoinGroupBy";
+		public const string PXCacheExtension = "PXCacheExtension";
+		public const string PXCacheExtensionGeneric = "PXCacheExtension`1";
 
-		public static readonly string PXSelectReadonly = "PXSelectReadonly";
-		public static readonly string PXSelectReadonly2 = "PXSelectReadonly2";
-		public static readonly string PXSelectReadonly3 = "PXSelectReadonly3";
+		public const string PXGraph = "PXGraph";
 
-		public static readonly string FbqlSelect = "FbqlSelect";
+		public const string PXGraphGeneric = "PXGraph`1";
+		public const string PXGraphExtension = "PXGraphExtension";
 
-		public static readonly string FullJoin = "FullJoin";
-		public static readonly string RightJoin = "RightJoin";
-		public static readonly string LeftJoin = "LeftJoin";
-		public static readonly string InnerJoin = "InnerJoin";
+		public const string PXAction = "PXAction";
+		public const string PXActionGeneric = "PXAction`1";
 
-		public static readonly string PXUnboundDefault = "PXUnboundDefault";
-		public static readonly string PXPersistingCheck = "PXPersistingCheck";
-		public static readonly string PXDefault = "PXDefault";
-		public static readonly string PersistingCheck = "PersistingCheck";
-		public static readonly string PersistingCheckNothing = "Nothing";
+		public const string PXUpdate = "PXUpdate";
+		public const string PXUpdateJoin = "PXUpdateJoin";
+		public const string PXUpdateGroupBy = "PXUpdateGroupBy";
+		public const string PXUpdateJoinGroupBy = "PXUpdateJoinGroupBy";
 
+		public const string PXSelectReadonly = "PXSelectReadonly";
+		public const string PXSelectReadonly2 = "PXSelectReadonly2";
+		public const string PXSelectReadonly3 = "PXSelectReadonly3";
+
+		public const string FbqlSelect = "FbqlSelect";
+
+		public const string FullJoin = "FullJoin";
+		public const string RightJoin = "RightJoin";
+		public const string LeftJoin = "LeftJoin";
+		public const string InnerJoin = "InnerJoin";
+
+		public const string PXUnboundDefault = "PXUnboundDefault";
+		public const string PXPersistingCheck = "PXPersistingCheck";
+		public const string PXDefault = "PXDefault";
+		public const string PersistingCheck = "PersistingCheck";
+		public const string PersistingCheckNothing = "Nothing";
 
 
 		public static ImmutableDictionary<string, PXCodeType> TypeNamesToCodeTypesForIdentifier { get; } =
@@ -118,7 +135,7 @@ namespace Acuminator.Utilities.Roslyn.Constants
 				}
 				.ToImmutableDictionary();
 
-		public static ImmutableHashSet<string> PXUpdateBqlTypes = new string[]
+		public static ImmutableHashSet<string> PXUpdateBqlTypes { get; } = new string[]
 		{
 			PXUpdate,
 			PXUpdateJoin,
@@ -126,7 +143,7 @@ namespace Acuminator.Utilities.Roslyn.Constants
 			PXUpdateJoinGroupBy
 		}.ToImmutableHashSet();
 
-		public static ImmutableHashSet<string> NotColoredTypes = new string[]
+		public static ImmutableHashSet<string> NotColoredTypes { get; } = new string[]
 		{
 			BqlCommand,
 			FbqlCommand,
@@ -145,7 +162,7 @@ namespace Acuminator.Utilities.Roslyn.Constants
 			PXSelectReadonly3,
 		}.ToImmutableHashSet();
 
-		public static ImmutableHashSet<string> FBqlJoins = new string[]
+		public static ImmutableHashSet<string> FBqlJoins { get; } = new string[]
 		{
 			FullJoin,
 			RightJoin,

@@ -413,7 +413,7 @@ namespace Acuminator.Vsix.Coloriser
 
 			private void ColorIdentifierTypeSymbol(ITypeSymbol typeSymbol, TextSpan span, bool isTypeParameter)
 			{
-				PXCodeType? coloredCodeType = typeSymbol.GetColoringTypeFromIdentifier(skipValidation: isTypeParameter, 
+				PXCodeType? coloredCodeType = typeSymbol.GetCodeTypeFromIdentifier(skipValidation: isTypeParameter, 
 																							checkItself: isTypeParameter);
 				IClassificationType classificationType = coloredCodeType.HasValue
 					? _tagger.Provider[coloredCodeType.Value]

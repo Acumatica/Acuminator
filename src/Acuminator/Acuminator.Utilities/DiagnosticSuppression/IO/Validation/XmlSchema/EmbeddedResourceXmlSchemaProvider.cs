@@ -27,16 +27,13 @@ namespace Acuminator.Utilities.DiagnosticSuppression.IO
 				if (schemaResourceFullName.IsNullOrWhiteSpace())
 					return null;
 
-				using (Stream stream = utilsAssembly.GetManifestResourceStream(schemaResourceFullName))
-				{
-					if (stream == null)
-						return null;
+				using Stream stream = utilsAssembly.GetManifestResourceStream(schemaResourceFullName);
 
-					using (XmlReader schemaReader = XmlReader.Create(stream))
-					{
-						return XmlSchema.Read(schemaReader, null);
-					}
-				}
+				if (stream == null)
+					return null;
+
+				using XmlReader schemaReader = XmlReader.Create(stream);
+				return XmlSchema.Read(schemaReader, null);
 			}
 			catch (Exception)
 			{

@@ -41,18 +41,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 				throw new ArgumentOutOfRangeException(nameof(eventType), $"The {eventType.ToString()} is not a field event type.");
 		}
 
-		private string GetDacFieldName()
-		{
-			switch (SignatureType)
+		private string GetDacFieldName() =>
+			SignatureType switch
 			{
-				case EventHandlerSignatureType.Default:
-					return GetDacFieldNameForDefaultFieldEvent();
-				case EventHandlerSignatureType.Generic:
-					return GetDacFieldNameForGenericFieldEvent();
-				default:
-					return string.Empty;
-			}
-		}
+				EventHandlerSignatureType.Default => GetDacFieldNameForDefaultFieldEvent(),
+				EventHandlerSignatureType.Generic => GetDacFieldNameForGenericFieldEvent(),
+				_ => string.Empty,
+			};
 
 		private string GetDacFieldNameForDefaultFieldEvent()
 		{

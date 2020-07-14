@@ -79,26 +79,14 @@ namespace Acuminator.Vsix.ChangesClassification
 			while (!containingNode.IsKind(SyntaxKind.CompilationUnit))
 			{
 				ContainmentModeChange containingModeChange = GetContainingSpanNewContainmentModeForTextChange(textChange, containingNode.Span);
-				ChangeInfluenceScope? changesScope = null;
-
-				switch (containingNode)
+				ChangeInfluenceScope? changesScope = containingNode switch
 				{
-					case MemberDeclarationSyntax memberDeclaration:
-						changesScope = GetChangeScopeFromTypeMemberNode(memberDeclaration, textChange, containingModeChange);
-						break;
-
-					case BlockSyntax blockNode:
-						changesScope = GetChangeScopeFromBlockNode(blockNode, textChange, containingModeChange);
-						break;
-
-					case LocalFunctionStatementSyntax localFunctionDeclaration:
-						changesScope = GetChangeScopeFromLocalFunctionDeclaration(localFunctionDeclaration, textChange, containingModeChange);
-						break;
-					
-					case StatementSyntax statementNode:
-						changesScope = GetChangeScopeFromStatementNode(statementNode, textChange, containingModeChange);
-						break;							
-				}
+					MemberDeclarationSyntax memberDeclaration             => GetChangeScopeFromTypeMemberNode(memberDeclaration, textChange, containingModeChange),
+					BlockSyntax blockNode                                 => GetChangeScopeFromBlockNode(blockNode, textChange, containingModeChange),
+					LocalFunctionStatementSyntax localFunctionDeclaration => GetChangeScopeFromLocalFunctionDeclaration(localFunctionDeclaration, textChange, containingModeChange),
+					StatementSyntax statementNode                         => GetChangeScopeFromStatementNode(statementNode, textChange, containingModeChange),
+					_                                                     => null
+				};
 				
 				if (changesScope.HasValue)
 					return changesScope.Value;
@@ -145,17 +133,12 @@ namespace Acuminator.Vsix.ChangesClassification
 		protected virtual ChangeInfluenceScope? GetChangeScopeFromTypeMemberNode(MemberDeclarationSyntax memberDeclaration,
 																				 in TextChange textChange, ContainmentModeChange containingModeChange)
 		{
-			switch (memberDeclaration)
+			return memberDeclaration switch
 			{
-				case BaseMethodDeclarationSyntax baseMethodNode:
-					return GetChangeScopeFromMethodBaseSyntaxNode(baseMethodNode, textChange, containingModeChange);
-
-				case BasePropertyDeclarationSyntax basePropertyNode:
-					return GetChangeScopeFromPropertyBaseSyntaxNode(basePropertyNode, textChange, containingModeChange);
-
-				default:
-					return GetChangeScopeFromNodeTrivia(memberDeclaration, textChange) ?? ChangeInfluenceScope.Class;
-			}
+				BaseMethodDeclarationSyntax baseMethodNode => GetChangeScopeFromMethodBaseSyntaxNode(baseMethodNode, textChange, containingModeChange),
+				BasePropertyDeclarationSyntax basePropertyNode => GetChangeScopeFromPropertyBaseSyntaxNode(basePropertyNode, textChange, containingModeChange),
+				_ => GetChangeScopeFromNodeTrivia(memberDeclaration, textChange) ?? ChangeInfluenceScope.Class,
+			};
 		}
 
 		protected virtual ChangeInfluenceScope? GetChangeScopeFromMethodBaseSyntaxNode(BaseMethodDeclarationSyntax methodNodeBase,
@@ -196,21 +179,13 @@ namespace Acuminator.Vsix.ChangesClassification
 		protected virtual ChangeInfluenceScope? GetChangeScopeFromPropertyBaseSyntaxNode(BasePropertyDeclarationSyntax propertyNodeBase, 
 																						 in TextChange textChange, ContainmentModeChange containingModeChange)
 		{	
-			TextSpan spanToCheck = new TextSpan(textChange.Span.Start, textChange.NewText.Length);		
-			TextSpan? bodySpan = propertyNodeBase.AccessorList?.Span;       //First check body of the property because it is most common place for changes
-
-			if (bodySpan == null)
+			TextSpan spanToCheck = new TextSpan(textChange.Span.Start, textChange.NewText.Length);
+			TextSpan? bodySpan = propertyNodeBase.AccessorList?.Span ?? propertyNodeBase switch     //First check body of the property because it is most common place for changes
 			{
-				switch (propertyNodeBase)
-				{
-					case PropertyDeclarationSyntax property:
-						bodySpan = property.ExpressionBody?.Span;
-						break;
-					case IndexerDeclarationSyntax indexer:
-						bodySpan = indexer.ExpressionBody?.Span;
-						break;
-				}
-			}
+				PropertyDeclarationSyntax property => property.ExpressionBody?.Span,
+				IndexerDeclarationSyntax indexer => indexer.ExpressionBody?.Span,
+				_ => null
+			};     
 
 			ChangeInfluenceScope? changeScope = bodySpan == null
 				? ChangeInfluenceScope.Class

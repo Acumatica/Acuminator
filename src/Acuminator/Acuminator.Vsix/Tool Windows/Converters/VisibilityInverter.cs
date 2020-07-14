@@ -20,17 +20,12 @@ namespace Acuminator.Vsix.ToolWindows.Converters
 
 		public object ConvertBack(object value, Type targetTypes, object parameter, CultureInfo culture) => Invert(value);
 
-		private static object Invert(object value)
-		{
-			switch (value)
-			{
-				case Visibility visibility when visibility == Visibility.Visible:
-					return Visibility.Collapsed;
-				case Visibility visibility when visibility == Visibility.Collapsed:
-					return Visibility.Visible;
-				default:
-					return Binding.DoNothing;
-			}
-		}
+		private static object Invert(object value) =>
+			 value switch
+			 {
+				 Visibility visibility when visibility == Visibility.Visible => Visibility.Collapsed,
+				 Visibility visibility when visibility == Visibility.Collapsed => Visibility.Visible,
+				 _ => Binding.DoNothing,
+			 };
 	}
 }

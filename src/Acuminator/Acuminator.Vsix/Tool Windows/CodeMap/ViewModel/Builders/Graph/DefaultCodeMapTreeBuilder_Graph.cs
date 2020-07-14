@@ -46,28 +46,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			yield return GraphMemberType.NestedGraph;
 		}
 
-		protected virtual GraphMemberCategoryNodeViewModel CreateCategory(GraphNodeViewModel graph, GraphMemberType graphMemberType)
-		{
-			switch (graphMemberType)
+		protected virtual GraphMemberCategoryNodeViewModel CreateCategory(GraphNodeViewModel graph, GraphMemberType graphMemberType) =>
+			graphMemberType switch
 			{
-				case GraphMemberType.View:
-					return new ViewCategoryNodeViewModel(graph, ExpandCreatedNodes);
-				case GraphMemberType.Action:
-					return new ActionCategoryNodeViewModel(graph, ExpandCreatedNodes);
-				case GraphMemberType.CacheAttached:
-					return new CacheAttachedCategoryNodeViewModel(graph, ExpandCreatedNodes);
-				case GraphMemberType.RowEvent:
-					return new RowEventCategoryNodeViewModel(graph, ExpandCreatedNodes);
-				case GraphMemberType.FieldEvent:
-					return new FieldEventCategoryNodeViewModel(graph, ExpandCreatedNodes);
-				case GraphMemberType.PXOverride:
-					return new PXOverridesCategoryNodeViewModel(graph, ExpandCreatedNodes);
-				case GraphMemberType.NestedDAC:
-				case GraphMemberType.NestedGraph:
-				default:
-					return null;
-			}
-		}
+				GraphMemberType.View          => new ViewCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberType.Action        => new ActionCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberType.CacheAttached => new CacheAttachedCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberType.RowEvent      => new RowEventCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberType.FieldEvent    => new FieldEventCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberType.PXOverride    => new PXOverridesCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				_                             => null,
+			};
 
 		public override IEnumerable<TreeNodeViewModel> VisitNode(ActionCategoryNodeViewModel actionCategory)
 		{

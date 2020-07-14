@@ -34,24 +34,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// </summary>
 		internal abstract string GetEventGroupingKey();
 
-		private string GetDacName()
+		private string GetDacName() => SignatureType switch
 		{
-			switch (SignatureType)
-			{
-				case EventHandlerSignatureType.Default:
-					var underscoreIndex = Symbol.Name.IndexOf('_');
-					return underscoreIndex > 0
-						? Symbol.Name.Substring(0, underscoreIndex)
-						: string.Empty;
+			EventHandlerSignatureType.Default => Symbol.Name.IndexOf('_') is int underscoreIndex && underscoreIndex > 0
+													? Symbol.Name.Substring(0, underscoreIndex)
+													: string.Empty,				
 
-				case EventHandlerSignatureType.Generic:
-					return GetDacNameFromGenericEvent();
-
-				case EventHandlerSignatureType.None:
-				default:
-					return string.Empty;
-			}
-		}
+			EventHandlerSignatureType.Generic => GetDacNameFromGenericEvent(),
+			EventHandlerSignatureType.None    => string.Empty,
+			_                                 => string.Empty
+		};	
 
 		private string GetDacNameFromGenericEvent()
 		{

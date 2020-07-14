@@ -76,7 +76,10 @@ namespace Acuminator.Utilities.Roslyn.Semantic
         private readonly Lazy<PXProcessingBaseSymbols> _pxProcessingBase;
         public PXProcessingBaseSymbols PXProcessingBase => _pxProcessingBase.Value;
 
-        private readonly Lazy<ImmutableHashSet<IMethodSymbol>> _uiPresentationLogicMethods;
+		private readonly Lazy<PXReferentialIntegritySymbols> _referentialIntegritySymbols;
+		public PXReferentialIntegritySymbols ReferentialIntegritySymbols => _referentialIntegritySymbols.Value;
+
+		private readonly Lazy<ImmutableHashSet<IMethodSymbol>> _uiPresentationLogicMethods;
 		public ImmutableHashSet<IMethodSymbol> UiPresentationLogicMethods => _uiPresentationLogicMethods.Value;
 
 		public INamedTypeSymbol PXGraphExtensionType => Compilation.GetTypeByMetadataName(TypeFullNames.PXGraphExtension);
@@ -140,6 +143,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
             _pxSelectBase = new Lazy<PXSelectBaseSymbols>(() => new PXSelectBaseSymbols(Compilation));
 			_pxSelectExtensionSymbols = new Lazy<PXSelectExtensionSymbols>(() => new PXSelectExtensionSymbols(Compilation));
             _pxProcessingBase = new Lazy<PXProcessingBaseSymbols>(() => new PXProcessingBaseSymbols(Compilation));
+            _referentialIntegritySymbols = new Lazy<PXReferentialIntegritySymbols>(() => new PXReferentialIntegritySymbols(Compilation));
 
 			_uiPresentationLogicMethods = new Lazy<ImmutableHashSet<IMethodSymbol>>(GetUiPresentationLogicMethods);
 

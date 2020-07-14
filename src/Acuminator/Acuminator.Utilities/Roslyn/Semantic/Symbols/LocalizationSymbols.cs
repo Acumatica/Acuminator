@@ -40,9 +40,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
             InitMethods();
         }
 
-        private INamedTypeSymbol PXMessages => _compilation.GetTypeByMetadataName(_pxMessagesMetadataName);
-        private INamedTypeSymbol PXLocalizer => _compilation.GetTypeByMetadataName(_pxLocalizerMetadataName);
-        public INamedTypeSymbol PXLocalizableAttribute => _compilation.GetTypeByMetadataName(_pxLocalizableAttributeMetadataName);
+        private INamedTypeSymbol PXMessages => Compilation.GetTypeByMetadataName(_pxMessagesMetadataName);
+        private INamedTypeSymbol PXLocalizer => Compilation.GetTypeByMetadataName(_pxLocalizerMetadataName);
+        public INamedTypeSymbol PXLocalizableAttribute => Compilation.GetTypeByMetadataName(_pxLocalizableAttributeMetadataName);
 
         private void InitMethods()
         {

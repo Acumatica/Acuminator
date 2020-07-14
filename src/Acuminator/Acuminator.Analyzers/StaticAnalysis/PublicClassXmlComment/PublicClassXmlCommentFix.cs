@@ -87,17 +87,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			cancellation.ThrowIfCancellationRequested();
 
 			var description = GenerateDescriptionFromCamelCase(className);
-
-			switch (parseResult)
+			return parseResult switch
 			{
-				case XmlCommentParseResult.NoXmlComment:
-				case XmlCommentParseResult.NoSummaryTag:
-					return AddXmlCommentDescription(rootNode, memberDeclaration, description, cancellation);
-				case XmlCommentParseResult.EmptySummaryTag:
-					return AddDescription(rootNode, memberDeclaration, description, cancellation);
-				default:
-					return memberDeclaration;
-			}
+				XmlCommentParseResult.NoXmlComment    => AddXmlCommentDescription(rootNode, memberDeclaration, description, cancellation),
+				XmlCommentParseResult.NoSummaryTag    => AddXmlCommentDescription(rootNode, memberDeclaration, description, cancellation),
+				XmlCommentParseResult.EmptySummaryTag => AddDescription(rootNode, memberDeclaration, description, cancellation),
+				_ => memberDeclaration
+			};
 		}
 
 		private SyntaxNode AddDescription(SyntaxNode rootNode, MemberDeclarationSyntax memberDeclaration,

@@ -430,6 +430,24 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A DAC extension must include the public static IsActive method with the bool return type. Extensions which are constantly active reduce performance. Suppress the error if you need the DAC extension to be constantly active..
+        /// </summary>
+        public static string PX1016DacExtensionTitle {
+            get {
+                return ResourceManager.GetString("PX1016DacExtensionTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A graph extension must include a public static IsActive method with the bool return type. Extensions which are constantly active reduce performance. Suppress the error if you need the graph extension to be constantly active..
+        /// </summary>
+        public static string PX1016GraphExtensionTitle {
+            get {
+                return ResourceManager.GetString("PX1016GraphExtensionTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The graph with the specified primary DAC type does not contain a view of this type.
         /// </summary>
         public static string PX1018Title {
@@ -723,6 +741,154 @@ namespace Acuminator.Analyzers {
         public static string PX1032Title {
             get {
                 return ResourceManager.GetString("PX1032Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add a primary key declaration to the DAC.
+        /// </summary>
+        public static string PX1033Fix {
+            get {
+                return ResourceManager.GetString("PX1033Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DAC does not have an explicit primary key declaration.
+        /// </summary>
+        public static string PX1033Title {
+            get {
+                return ResourceManager.GetString("PX1033Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add a foreign key declaration template to the DAC.
+        /// </summary>
+        public static string PX1034Fix {
+            get {
+                return ResourceManager.GetString("PX1034Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add all DAC foreign keys here. For referenced DACs with PK you can use the following template:.
+        /// </summary>
+        public static string PX1034FixTemplateLine1 {
+            get {
+                return ResourceManager.GetString("PX1034FixTemplateLine1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to public class ReferencedDacFK : ReferencedDAC.PK.ForeignKeyOf&lt;{0}&gt;.By&lt;joinField1, joinFields, ...&gt; {{ }}.
+        /// </summary>
+        public static string PX1034FixTemplateLine2 {
+            get {
+                return ResourceManager.GetString("PX1034FixTemplateLine2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For referenced DACs without PK class and with a single field primary key you can use the following template:.
+        /// </summary>
+        public static string PX1034FixTemplateLine3 {
+            get {
+                return ResourceManager.GetString("PX1034FixTemplateLine3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to public class ReferencedDacFK : Field&lt;joinField&gt;.IsRelatedTo&lt;ReferencedDAC.keyField&gt;.AsSimpleKey.WithTablesOf&lt;ReferencedDAC, {0}&gt; {{ }}.
+        /// </summary>
+        public static string PX1034FixTemplateLine4 {
+            get {
+                return ResourceManager.GetString("PX1034FixTemplateLine4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For referenced DACs without PK class and with a composite primary key you can use the following template:.
+        /// </summary>
+        public static string PX1034FixTemplateLine5 {
+            get {
+                return ResourceManager.GetString("PX1034FixTemplateLine5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to public class ReferencedDacFK : CompositeKey&lt;
+        ///											   Field&lt;joinField1&gt;.IsRelatedTo&lt;ReferencedDAC.keyField1&gt;,
+        ///											   Field&lt;joinField2&gt;.IsRelatedTo&lt;ReferencedDAC.keyField2&gt;,
+        ///											  ...
+        ///											  &gt;.WithTablesOf&lt;SOOrder, SOOrder&gt; {{ }}.
+        /// </summary>
+        public static string PX1034FixTemplateLine6 {
+            get {
+                return ResourceManager.GetString("PX1034FixTemplateLine6", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can start with the following properties:.
+        /// </summary>
+        public static string PX1034FixTemplateLine7 {
+            get {
+                return ResourceManager.GetString("PX1034FixTemplateLine7", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DAC does not have an explicit foreign key declaration.
+        /// </summary>
+        public static string PX1034Title {
+            get {
+                return ResourceManager.GetString("PX1034Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove other primary key declarations from the DAC.
+        /// </summary>
+        public static string PX1035Fix {
+            get {
+                return ResourceManager.GetString("PX1035Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DAC has multiple primary key declarations.
+        /// </summary>
+        public static string PX1035Title {
+            get {
+                return ResourceManager.GetString("PX1035Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The class containing DAC foreign keys should be named &quot;FK&quot;.
+        /// </summary>
+        public static string PX1036FKTitle {
+            get {
+                return ResourceManager.GetString("PX1036FKTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change the name of the primary key to &quot;PK&quot;.
+        /// </summary>
+        public static string PX1036PKFix {
+            get {
+                return ResourceManager.GetString("PX1036PKFix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DAC primary key should be named &quot;PK&quot;.
+        /// </summary>
+        public static string PX1036PKTitle {
+            get {
+                return ResourceManager.GetString("PX1036PKTitle", resourceCulture);
             }
         }
         

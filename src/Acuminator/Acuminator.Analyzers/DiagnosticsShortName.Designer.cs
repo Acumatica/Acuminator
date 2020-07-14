@@ -205,6 +205,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ExtensionDoesNotDeclareIsActiveMethod.
+        /// </summary>
+        public static string PX1016 {
+            get {
+                return ResourceManager.GetString("PX1016", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to NoPrimaryViewForPrimaryDac.
         /// </summary>
         public static string PX1018 {
@@ -336,6 +345,51 @@ namespace Acuminator.Analyzers {
         public static string PX1032 {
             get {
                 return ResourceManager.GetString("PX1032", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MissingPrimaryKeyDeclaration.
+        /// </summary>
+        public static string PX1033 {
+            get {
+                return ResourceManager.GetString("PX1033", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MissingForeignKeyDeclaration.
+        /// </summary>
+        public static string PX1034 {
+            get {
+                return ResourceManager.GetString("PX1034", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MultiplePrimaryKeyDeclarations.
+        /// </summary>
+        public static string PX1035 {
+            get {
+                return ResourceManager.GetString("PX1035", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IncorrectDacForeignKeyName.
+        /// </summary>
+        public static string PX1036FK {
+            get {
+                return ResourceManager.GetString("PX1036FK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IncorrectDacPrimaryKeyName.
+        /// </summary>
+        public static string PX1036PK {
+            get {
+                return ResourceManager.GetString("PX1036PK", resourceCulture);
             }
         }
         

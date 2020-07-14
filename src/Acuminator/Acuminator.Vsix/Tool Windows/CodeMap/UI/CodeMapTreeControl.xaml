@@ -488,8 +488,8 @@
 						<Setter Property="BorderThickness" Value="0"/>
 						<Setter Property="BorderBrush" Value="Transparent"/>
 
-						<Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-						<Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+						<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+						<Setter Property="VerticalContentAlignment" Value="Stretch"/>
 
 						<Setter Property="Visibility"  Value="{Binding Path=AreDetailsVisible, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource boolToVisibilityConverter}}"/>
 
@@ -627,9 +627,10 @@
 
 								<ItemsControl.Resources>
 									<DataTemplate DataType="{x:Type codeMap:IconViewModel}">
-										<Image Margin="0,0,5,0" UseLayoutRounding="True"
-										   Source="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, 
-															Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource treeNodeToIconConverter}}">
+										<Image Margin="0,0,5,0" UseLayoutRounding="True" MaxHeight="14" MinHeight="14" MaxWidth="14" MinWidth="14"
+											   Source="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, Mode=OneWay, 
+																UpdateSourceTrigger=PropertyChanged, Converter={StaticResource treeNodeToIconConverter}}"
+											   ToolTip="{Binding Mode=OneWay, Converter={StaticResource iconTooltipConverter}}">
 											<Image.Style>
 												<Style TargetType="Image" BasedOn="{StaticResource vsImageStyle}">
 													<Style.Triggers>

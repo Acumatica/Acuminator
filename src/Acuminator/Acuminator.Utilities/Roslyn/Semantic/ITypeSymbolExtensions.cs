@@ -82,6 +82,41 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			}
 		}
 
+		public static IEnumerable<INamedTypeSymbol> GetFlattenedNestedTypes(this ITypeSymbol type, CancellationToken cancellationToken)
+		{
+			type.ThrowOnNull(nameof(type));
+			cancellationToken.ThrowIfCancellationRequested();
+			return GetFlattenedNestedTypesImplementation();
+
+			//-----------------------------------------------------Local Function-------------------------------------------------------------
+			IEnumerable<INamedTypeSymbol> GetFlattenedNestedTypesImplementation()
+			{
+				var nestedTypes = type.GetTypeMembers();
+
+				if (nestedTypes.IsDefaultOrEmpty)
+					yield break;
+
+				var typesQueue = new Queue<INamedTypeSymbol>(nestedTypes);
+
+				while (typesQueue.Count > 0)
+				{
+					cancellationToken.ThrowIfCancellationRequested();
+					var currentType = typesQueue.Dequeue();
+					var declaredNestedTypes = currentType.GetTypeMembers();
+
+					if (!declaredNestedTypes.IsDefaultOrEmpty)
+					{
+						foreach (var nestedType in declaredNestedTypes)
+						{
+							typesQueue.Enqueue(nestedType);
+						}
+					}
+
+					yield return currentType;
+				}
+			}
+		}
+	
 		public static IEnumerable<ITypeSymbol> GetContainingTypesAndThis(this ITypeSymbol type)
 		{
 			var current = type;
@@ -116,6 +151,16 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		}
 
 		/// <summary>
+		///  Determine if "type" inherits from "baseType", ignoring constructed types and interfaces, dealing only with original types.
+		/// </summary>
+		/// <param name="type">The type to act on.</param>
+		/// <param name="baseType">The base type.</param>
+		/// <returns/>    
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool InheritsFromOrEquals(this ITypeSymbol type, ITypeSymbol baseType) =>
+			InheritsFromOrEquals(type, baseType, includeInterfaces: false);
+
+		/// <summary>
 		/// Determine if "type" inherits from "baseType", ignoring constructed types, optionally including interfaces, dealing only with original types.
 		/// </summary>
 		/// <param name="type">The type to act on.</param>
@@ -137,19 +182,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			return typeList.Any(t => t.Equals(baseType));
 		}
 
-		/// <summary>
-		///  Determine if "type" inherits from "baseType", ignoring constructed types and interfaces, dealing only with original types.
-		/// </summary>
-		/// <param name="type">The type to act on.</param>
-		/// <param name="baseType">The base type.</param>
-		/// <returns/>    
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool InheritsFromOrEquals(this ITypeSymbol type, ITypeSymbol baseType) =>
-			type.GetBaseTypesAndThis().Any(t => t.Equals(baseType));
-
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool InheritsFromOrEqualsGeneric(this ITypeSymbol type, ITypeSymbol baseType) =>
-			InheritsFromOrEqualsGeneric(type, baseType, false);
+			InheritsFromOrEqualsGeneric(type, baseType, includeInterfaces: false);
 
 		public static bool InheritsFromOrEqualsGeneric(this ITypeSymbol type, ITypeSymbol baseType, bool includeInterfaces)
 		{

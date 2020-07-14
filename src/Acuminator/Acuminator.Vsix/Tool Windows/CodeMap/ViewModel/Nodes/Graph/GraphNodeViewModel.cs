@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
@@ -30,10 +30,28 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override bool DisplayNodeWithoutChildren => true;
 
+		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
+
 		public GraphNodeViewModel(GraphSemanticModelForCodeMap codeMapGraphModel, TreeViewModel tree, bool isExpanded) : 
 							 base(tree, parent: null, isExpanded)
 		{
 			CodeMapGraphModel = codeMapGraphModel;
+			ExtraInfos = new ExtendedObservableCollection<ExtraInfoViewModel>(GetGraphExtraInfos());
+		}
+
+		private IEnumerable<ExtraInfoViewModel> GetGraphExtraInfos()
+		{
+			if (GraphSemanticModel.IsProcessing)
+			{
+				yield return new IconViewModel(this, Icon.Processing);
+			}
+
+			if (GraphSemanticModel.Type == GraphType.None)
+				yield break;
+
+			Color color = Color.FromRgb(38, 155, 199);
+			string graphType = GraphSemanticModel.Type.ToString();
+			yield return new TextViewModel(this, graphType, darkThemeForeground: color, lightThemeForeground: color);
 		}
 
 		public override Task NavigateToItemAsync()

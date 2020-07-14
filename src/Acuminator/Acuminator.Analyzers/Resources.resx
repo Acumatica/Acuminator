@@ -537,4 +537,62 @@
   <data name="PX1022GraphTitle" xml:space="preserve">
     <value>Non-public graph extensions are not supported</value>
   </data>
+  <data name="PX1016DacExtensionTitle" xml:space="preserve">
+    <value>A DAC extension must include the public static IsActive method with the bool return type. Extensions which are constantly active reduce performance. Suppress the error if you need the DAC extension to be constantly active.</value>
+  </data>
+  <data name="PX1016GraphExtensionTitle" xml:space="preserve">
+    <value>A graph extension must include a public static IsActive method with the bool return type. Extensions which are constantly active reduce performance. Suppress the error if you need the graph extension to be constantly active.</value>
+  </data>
+  <data name="PX1033Title" xml:space="preserve">
+    <value>The DAC does not have an explicit primary key declaration</value>
+  </data>
+  <data name="PX1034Title" xml:space="preserve">
+    <value>The DAC does not have an explicit foreign key declaration</value>
+  </data>
+  <data name="PX1035Title" xml:space="preserve">
+    <value>The DAC has multiple primary key declarations</value>
+  </data>
+  <data name="PX1036PKTitle" xml:space="preserve">
+    <value>The DAC primary key should be named "PK"</value>
+  </data>
+  <data name="PX1036FKTitle" xml:space="preserve">
+    <value>The class containing DAC foreign keys should be named "FK"</value>
+  </data>
+  <data name="PX1033Fix" xml:space="preserve">
+    <value>Add a primary key declaration to the DAC</value>
+  </data>
+  <data name="PX1036PKFix" xml:space="preserve">
+    <value>Change the name of the primary key to "PK"</value>
+  </data>
+  <data name="PX1035Fix" xml:space="preserve">
+    <value>Remove the rest of primary key declarations from the DAC</value>
+  </data>
+  <data name="PX1034Fix" xml:space="preserve">
+    <value>Add a foreign key declaration template to the DAC</value>
+  </data>
+  <data name="PX1034FixTemplateLine1" xml:space="preserve">
+    <value>Add all foreign keys for the DAC here. For referenced DACs with a PK class, you can use the following template:</value>
+  </data>
+  <data name="PX1034FixTemplateLine2" xml:space="preserve">
+    <value>public class ReferencedDacFK : ReferencedDAC.PK.ForeignKeyOf&lt;{0}&gt;.By&lt;joinField1, joinFields, ...&gt; {{ }}</value>
+  </data>
+  <data name="PX1034FixTemplateLine3" xml:space="preserve">
+    <value>For referenced DACs without a PK class and with a single primary key field, you can use the following template:</value>
+  </data>
+  <data name="PX1034FixTemplateLine4" xml:space="preserve">
+    <value>public class ReferencedDacFK : Field&lt;joinField&gt;.IsRelatedTo&lt;ReferencedDAC.keyField&gt;.AsSimpleKey.WithTablesOf&lt;ReferencedDAC, {0}&gt; {{ }}</value>
+  </data>
+  <data name="PX1034FixTemplateLine5" xml:space="preserve">
+    <value>For referenced DACs without a PK class and with a composite primary key, you can use the following template:</value>
+  </data>
+  <data name="PX1034FixTemplateLine6" xml:space="preserve">
+    <value>public class ReferencedDacFK : CompositeKey&lt;
+											   Field&lt;joinField1&gt;.IsRelatedTo&lt;ReferencedDAC.keyField1&gt;,
+											   Field&lt;joinField2&gt;.IsRelatedTo&lt;ReferencedDAC.keyField2&gt;,
+											  ...
+											  &gt;.WithTablesOf&lt;SOOrder, SOOrder&gt; {{ }}</value>
+  </data>
+  <data name="PX1034FixTemplateLine7" xml:space="preserve">
+    <value>You can start with the following properties:</value>
+  </data>
 </root>

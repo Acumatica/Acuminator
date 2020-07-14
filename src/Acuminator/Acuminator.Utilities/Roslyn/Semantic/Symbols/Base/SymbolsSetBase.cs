@@ -11,11 +11,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 	/// </summary>
 	public abstract class SymbolsSetBase
 	{
-		protected readonly Compilation _compilation;
+		protected Compilation Compilation { get; }
 
 		internal SymbolsSetBase(Compilation compilation)
 		{
-			_compilation = compilation;
+			Compilation = compilation;
 		}
 	}
 }

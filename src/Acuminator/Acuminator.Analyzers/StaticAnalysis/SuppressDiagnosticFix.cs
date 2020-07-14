@@ -112,14 +112,14 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
 			return CodeAction.Create(commentCodeActionName,
 									 cToken => AddSuppressionCommentAsync(context, diagnostic, cToken),
-									 equivalenceKey: commentCodeActionName);
+									 equivalenceKey: commentCodeActionName + diagnostic.Id);
 		}
 
 		protected virtual CodeAction GetSuppressWithSuppressionFileCodeAction(Diagnostic diagnostic, CodeFixContext context, bool isNested)
 		{
 			string suppressionFileCodeActionName = nameof(Resources.SuppressDiagnosticInSuppressionFileCodeActionTitle).GetLocalized().ToString();
 			return new SuppressWithSuppressionFileCodeAction(context, diagnostic, suppressionFileCodeActionName,
-															 equivalenceKey: suppressionFileCodeActionName); 														 
+															 equivalenceKey: suppressionFileCodeActionName + diagnostic.Id); 														 
 		}
 
 		private async Task<Document> AddSuppressionCommentAsync(CodeFixContext context, Diagnostic diagnostic, CancellationToken cancellationToken)

@@ -78,6 +78,7 @@
 		internal const string PXImportAttribute = "PX.Data.PXImportAttribute";
 		internal const string PXHiddenAttribute = "PX.Data.PXHiddenAttribute";
 		internal const string PXCacheNameAttribute = "PX.Data.PXCacheNameAttribute";
+		internal const string PXPrimaryGraphAttribute = "PX.Data.PXPrimaryGraphAttribute";
 		internal const string PXCopyPasteHiddenViewAttribute = "PX.Data.PXCopyPasteHiddenViewAttribute";
 		internal const string PXOverrideAttribute = "PX.Data.PXOverrideAttribute";
 		internal const string PXEventSubscriberAttribute = "PX.Data.PXEventSubscriberAttribute";
@@ -110,6 +111,7 @@
 		internal const string Optional2 = "PX.Data.Optional2`1";
 		internal const string BqlCommand = "PX.Data.BqlCommand";
 		internal const string IBqlParameter = "PX.Data.IBqlParameter";
+		internal const string BqlParameter = "PX.Data.BQL.BqlParameter`2";
 		internal const string PXFilter1 = "PX.Data.PXFilter`1";
 		internal const string IPXNonUpdateable = "PX.Data.IPXNonUpdateable";
 		internal const string PXSetup1 = "PX.Data.PXSetup`1";
@@ -135,19 +137,23 @@
 		public const string PXGraph2 = "PX.Data.PXGraph`2";
 		public const string PXGraph3 = "PX.Data.PXGraph`3";
 
-		internal const string PXIntListAttribute = "PX.Data.PXIntListAttribute";
+		public const string PXIntListAttribute = "PX.Data.PXIntListAttribute";
 
-		internal const string PXProcessingBase = "PX.Data.PXProcessingBase`1";
+		public const string PXProcessingBase = "PX.Data.PXProcessingBase`1";
 
-		internal const string PXSelectBase1 = "PX.Data.PXSelectBase`1";
+		public const string PXSelectBase1 = "PX.Data.PXSelectBase`1";
 
-		internal const string PXSelectExtension1 = "PX.Data.PXSelectExtension`1";
+		public const string PXSelectExtension1 = "PX.Data.PXSelectExtension`1";
 
-		internal const string PXSelectorAttribute = "PX.Data.PXSelectorAttribute";
+		public const string PXStringListAttribute = "PX.Data.PXStringListAttribute";
 
-		internal const string PXStringListAttribute = "PX.Data.PXStringListAttribute";
+		public const string PXSelectorAttribute = "PX.Data.PXSelectorAttribute";
+		public const string PXDimensionSelectorAttribute = "PX.Data.PXDimensionSelectorAttribute";
+		public const string PXParentAttribute = "PX.Data.PXParentAttribute";
+		public const string PXForeignReferenceAttribute = "PX.Data.ReferentialIntegrity.Attributes.PXForeignReferenceAttribute";
+		public const string PXDBDefaultAttribute = "PX.Data.PXDBDefaultAttribute";
 
-		internal const string PXView = "PX.Data.PXView";
+		public const string PXView = "PX.Data.PXView";
 
 		public const string SelectBase5 = "PX.Data.SelectBase`5";
 		public const string SearchBase5 = "PX.Data.SearchBase`5";
@@ -172,5 +178,15 @@
 
 		public const string PXSelectBase_Acumatica2018R2 = "PX.Data.PXSelectBase`2";
 		public const string IViewConfig_Acumatica2018R2 = "PX.Data.PXSelectBase`2+IViewConfig";
+
+		#region PK/FK API
+		public const string IPrimaryKey = "PX.Data.ReferentialIntegrity.Attributes.IPrimaryKey";
+		public const string IForeignKey = "PX.Data.ReferentialIntegrity.Attributes.IForeignKey";
+		public const string KeysRelation = "PX.Data.ReferentialIntegrity.Attributes.KeysRelation`3";
+		public const string PrimaryKeyOf = "PX.Data.ReferentialIntegrity.Attributes.PrimaryKeyOf`1";
+		public const string PrimaryKeyOfBy = "PX.Data.ReferentialIntegrity.Attributes.PrimaryKeyOf`1+By";
+
+		public const string CompositeKey2 = "PX.Data.ReferentialIntegrity.Attributes.CompositeKey`2";
+		#endregion
 	}
 }

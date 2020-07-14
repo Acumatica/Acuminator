@@ -294,4 +294,37 @@
   <data name="Setting_CodeAnalysis_PX1007DiagnosticEnabled_Title" xml:space="preserve">
     <value>Enable PX1007 diagnostic</value>
   </data>
+  <data name="HasPXDBIdentityAttributeExtraInfoTooltip" xml:space="preserve">
+    <value>The PXDBIdentity attribute is specified for this field.</value>
+  </data>
+  <data name="PropertyHasAutoNumberingExtraInfoTooltip" xml:space="preserve">
+    <value>Autonumbering is enabled for this field.</value>
+  </data>
+  <data name="DacKeyIconTooltip" xml:space="preserve">
+    <value>Is part of a primary key</value>
+  </data>
+  <data name="PXFilterViewIconTooltip" xml:space="preserve">
+    <value>This view is PXFilter or it is derived from it</value>
+  </data>
+  <data name="PXSetupViewIconTooltip" xml:space="preserve">
+    <value>This view is PXSetup or derived from it</value>
+  </data>
+  <data name="ProcessingViewIconTooltip" xml:space="preserve">
+    <value>This is a procesing view</value>
+  </data>
+  <data name="CustomViewExtraInfoLabel" xml:space="preserve">
+    <value>Custom</value>
+  </data>
+  <data name="CustomViewInfoTooltip" xml:space="preserve">
+    <value>The view is a custom class derived from standard PXSelect-like classes</value>
+  </data>
+  <data name="PXSelectReadOnlyViewExtraInfoLabel" xml:space="preserve">
+    <value>Uncached</value>
+  </data>
+  <data name="PXSelectReadOnlyViewInfoTooltip" xml:space="preserve">
+    <value>The view type is PXSelectReadOnly or is derived from it. The data selected by this view from database will not be merged with cache.</value>
+  </data>
+  <data name="ProcessingGraphIconTooltip" xml:space="preserve">
+    <value>This is a processing graph</value>
+  </data>
 </root>

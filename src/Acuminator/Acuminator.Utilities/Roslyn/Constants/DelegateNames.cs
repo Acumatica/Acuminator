@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Acuminator.Utilities.Roslyn.Constants
 {
 	public static class DelegateNames
 	{
 		public static readonly string IsKey = "IsKey";
+		public static readonly string IsActive = "IsActive";
 
 		public static readonly string SetVisible = "SetVisible";
 		public static readonly string SetVisibility = "SetVisibility";
@@ -78,5 +75,8 @@ namespace Acuminator.Utilities.Roslyn.Constants
 		public static readonly string AddJoinConditions = "AddJoinConditions";
 		public static readonly string AppendJoin = "AppendJoin";
 		public static readonly string NewJoin = "NewJoin";
+
+		public static readonly string PrimaryKeyFindMethod = "Find";
+		public static readonly string PrimaryKeyFindByMethod = "FindBy";
 	}
 }

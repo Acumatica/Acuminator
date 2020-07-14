@@ -259,6 +259,24 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Custom.
+        /// </summary>
+        public static string CustomViewExtraInfoLabel {
+            get {
+                return ResourceManager.GetString("CustomViewExtraInfoLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The view is a custom class derived from standard PXSelect-like classes.
+        /// </summary>
+        public static string CustomViewInfoTooltip {
+            get {
+                return ResourceManager.GetString("CustomViewInfoTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Acuminator - DAC Extension Name.
         /// </summary>
         public static string DacExtensionFormatLabel {
@@ -286,6 +304,15 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Is part of a primary key.
+        /// </summary>
+        public static string DacKeyIconTooltip {
+            get {
+                return ResourceManager.GetString("DacKeyIconTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There are multiple Acuminator diagnostics in this code snippet. Acuminator can suppress only one diagnostic at a time..
         /// </summary>
         public static string DiagnosticSuppression_MultipleDiagnosticFound {
@@ -300,6 +327,15 @@ namespace Acuminator.Vsix {
         public static string DiagnosticSuppression_NoDiagnosticFound {
             get {
                 return ResourceManager.GetString("DiagnosticSuppression_NoDiagnosticFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The PXDBIdentity attribute is specified for this field..
+        /// </summary>
+        public static string HasPXDBIdentityAttributeExtraInfoTooltip {
+            get {
+                return ResourceManager.GetString("HasPXDBIdentityAttributeExtraInfoTooltip", resourceCulture);
             }
         }
         
@@ -358,6 +394,33 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This is a processing graph.
+        /// </summary>
+        public static string ProcessingGraphIconTooltip {
+            get {
+                return ResourceManager.GetString("ProcessingGraphIconTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This is a procesing view.
+        /// </summary>
+        public static string ProcessingViewIconTooltip {
+            get {
+                return ResourceManager.GetString("ProcessingViewIconTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Autonumbering is enabled for this field..
+        /// </summary>
+        public static string PropertyHasAutoNumberingExtraInfoTooltip {
+            get {
+                return ResourceManager.GetString("PropertyHasAutoNumberingExtraInfoTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Acuminator - PXAction.
         /// </summary>
         public static string PXActionFormatLabel {
@@ -367,11 +430,47 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This view is PXFilter or it is derived from it.
+        /// </summary>
+        public static string PXFilterViewIconTooltip {
+            get {
+                return ResourceManager.GetString("PXFilterViewIconTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Acuminator - PXGraph.
         /// </summary>
         public static string PXGraphFormatLabel {
             get {
                 return ResourceManager.GetString("PXGraphFormatLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uncached.
+        /// </summary>
+        public static string PXSelectReadOnlyViewExtraInfoLabel {
+            get {
+                return ResourceManager.GetString("PXSelectReadOnlyViewExtraInfoLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The view type is PXSelectReadOnly or is derived from it. The data selected by this view from database will not be merged with cache..
+        /// </summary>
+        public static string PXSelectReadOnlyViewInfoTooltip {
+            get {
+                return ResourceManager.GetString("PXSelectReadOnlyViewInfoTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This view is PXSetup or derived from it.
+        /// </summary>
+        public static string PXSetupViewIconTooltip {
+            get {
+                return ResourceManager.GetString("PXSetupViewIconTooltip", resourceCulture);
             }
         }
         

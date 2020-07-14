@@ -20,7 +20,7 @@ namespace Acuminator.Utilities.Roslyn.PrimaryDacFinder.PrimaryDacRules.ViewRules
 		{
 			context.ThrowOnNull(nameof(context));
 
-			_setupTypes = context.BQL.GetPXSetupTypes();
+			_setupTypes = context.BQL.PXSetupTypes;
 		}
 		
 		/// <summary>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -43,34 +44,22 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		public static int? TryGetSizeOfSingleDimensionalNonJaggedArray(ExpressionSyntax arrayCreationExpression, SemanticModel semanticModel = null,
 																	   CancellationToken cancellationToken = default)
 		{
-			switch (arrayCreationExpression)
+			return arrayCreationExpression switch
 			{
-				case ArrayCreationExpressionSyntax arrayCreation
-				when arrayCreation.Initializer != null:
-					{
-						return arrayCreation.Initializer.Expressions.Count;
-					}
-				case ArrayCreationExpressionSyntax arrayCreationWithouInitializer:
-					{
-						return TryGetSizeOfSingleDimensionalNonJaggedArray(arrayCreationWithouInitializer.Type, semanticModel, cancellationToken);
-					}
-				case ImplicitArrayCreationExpressionSyntax implicitArrayCreation:
-					{
-						return implicitArrayCreation.Initializer?.Expressions.Count;
-					}
-				case InitializerExpressionSyntax initializerExpression
-				when initializerExpression.IsKind(SyntaxKind.ArrayInitializerExpression):
-					{
-						return initializerExpression.Expressions.Count;
-					}
-				case StackAllocArrayCreationExpressionSyntax stackAllocArrayCreation
-				when stackAllocArrayCreation.Type is ArrayTypeSyntax arrayType:
-					{
-						return TryGetSizeOfSingleDimensionalNonJaggedArray(arrayType, semanticModel, cancellationToken);
-					}
-				default:
-					return null;
-			}
+				ArrayCreationExpressionSyntax arrayCreation
+					when arrayCreation.Initializer != null => arrayCreation.Initializer.Expressions.Count,
+
+				ArrayCreationExpressionSyntax arrayCreationWithouInitializer => TryGetSizeOfSingleDimensionalNonJaggedArray(arrayCreationWithouInitializer.Type, 
+																															semanticModel, cancellationToken),
+				ImplicitArrayCreationExpressionSyntax implicitArrayCreation  => implicitArrayCreation.Initializer?.Expressions.Count,
+				InitializerExpressionSyntax initializerExpression
+					when initializerExpression.IsKind(SyntaxKind.ArrayInitializerExpression) => initializerExpression.Expressions.Count,
+
+				StackAllocArrayCreationExpressionSyntax stackAllocArrayCreation
+					when stackAllocArrayCreation.Type is ArrayTypeSyntax arrayType => TryGetSizeOfSingleDimensionalNonJaggedArray(arrayType, semanticModel,
+																																  cancellationToken),
+				_ => null
+			};
 		}
 
 		/// <summary>
@@ -152,36 +141,22 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 					 ?.GetSyntax(cancellationToken)
 					 ?.GetLocation();
 
-		public static IEnumerable<SyntaxToken> GetIdentifiers(this MemberDeclarationSyntax member)
-		{
-			switch (member)
+		public static IEnumerable<SyntaxToken> GetIdentifiers(this MemberDeclarationSyntax member) =>
+			member switch
 			{
-				case PropertyDeclarationSyntax propertyDeclaration:
-					return propertyDeclaration.Identifier.ToEnumerable();
-				case FieldDeclarationSyntax fieldDeclaration:
-					return fieldDeclaration.Declaration.Variables.Select(variable => variable.Identifier);
-				case MethodDeclarationSyntax methodDeclaration:
-					return methodDeclaration.Identifier.ToEnumerable();
-				case EventDeclarationSyntax eventDeclaration:														//for explicit event declaration with "add" and "remove"
-					return eventDeclaration.Identifier.ToEnumerable();
-				case EventFieldDeclarationSyntax eventFieldDeclaration:
-					return eventFieldDeclaration.Declaration.Variables.Select(variable => variable.Identifier);     //for field event declaration
-				case DelegateDeclarationSyntax delegateDeclaration:
-					return delegateDeclaration.Identifier.ToEnumerable();
-				case ClassDeclarationSyntax nestedClassDeclaration:
-					return nestedClassDeclaration.Identifier.ToEnumerable();
-				case EnumDeclarationSyntax enumDeclaration:
-					return enumDeclaration.Identifier.ToEnumerable();
-				case StructDeclarationSyntax structDeclaration:
-					return structDeclaration.Identifier.ToEnumerable();
-				case InterfaceDeclarationSyntax interfaceDeclaration:
-					return interfaceDeclaration.Identifier.ToEnumerable();
-				case ConstructorDeclarationSyntax constructorDeclaration:
-					return constructorDeclaration.Identifier.ToEnumerable();
-				default:
-					return Enumerable.Empty<SyntaxToken>();
-			}
-		}
+				PropertyDeclarationSyntax propertyDeclaration       => propertyDeclaration.Identifier.ToEnumerable(),
+				FieldDeclarationSyntax fieldDeclaration             => fieldDeclaration.Declaration.Variables.Select(variable => variable.Identifier),
+				MethodDeclarationSyntax methodDeclaration           => methodDeclaration.Identifier.ToEnumerable(),
+				EventDeclarationSyntax eventDeclaration             => eventDeclaration.Identifier.ToEnumerable(),                                           //for explicit event declaration with "add" and "remove"
+				EventFieldDeclarationSyntax eventFieldDeclaration   => eventFieldDeclaration.Declaration.Variables.Select(variable => variable.Identifier),  //for field event declaration
+				DelegateDeclarationSyntax delegateDeclaration       => delegateDeclaration.Identifier.ToEnumerable(),
+				ClassDeclarationSyntax nestedClassDeclaration       => nestedClassDeclaration.Identifier.ToEnumerable(),
+				EnumDeclarationSyntax enumDeclaration               => enumDeclaration.Identifier.ToEnumerable(),
+				StructDeclarationSyntax structDeclaration           => structDeclaration.Identifier.ToEnumerable(),
+				InterfaceDeclarationSyntax interfaceDeclaration     => interfaceDeclaration.Identifier.ToEnumerable(),
+				ConstructorDeclarationSyntax constructorDeclaration => constructorDeclaration.Identifier.ToEnumerable(),
+				_                                                   => Enumerable.Empty<SyntaxToken>()
+			};
 
 		public static Accessibility? GetAccessibility(this MemberDeclarationSyntax member, SemanticModel semanticModel,
 													 CancellationToken cancellationToken = default)
@@ -225,26 +200,16 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			return modifiers.Any(SyntaxKind.InternalKeyword) && !modifiers.Any(SyntaxKind.PrivateKeyword);  
 		}
 
-		public static SyntaxTokenList GetModifiers(this MemberDeclarationSyntax member)
-		{
-			member.ThrowOnNull(nameof(member));
-
-			switch (member)
+		public static SyntaxTokenList GetModifiers(this MemberDeclarationSyntax member) =>
+			member.CheckIfNull(nameof(member)) switch
 			{
-				case BasePropertyDeclarationSyntax basePropertyDeclaration:
-					return basePropertyDeclaration.Modifiers;
-				case BaseMethodDeclarationSyntax baseMethodDeclaration:
-					return baseMethodDeclaration.Modifiers;
-				case BaseTypeDeclarationSyntax baseTypeDeclaration:
-					return baseTypeDeclaration.Modifiers;
-				case BaseFieldDeclarationSyntax baseFieldDeclaration:
-					return baseFieldDeclaration.Modifiers;
-				case DelegateDeclarationSyntax delegateDeclaration:
-					return delegateDeclaration.Modifiers;
-				default:
-					return SyntaxFactory.TokenList();
-			}
-		}
+				BasePropertyDeclarationSyntax basePropertyDeclaration => basePropertyDeclaration.Modifiers,
+				BaseMethodDeclarationSyntax baseMethodDeclaration     => baseMethodDeclaration.Modifiers,
+				BaseTypeDeclarationSyntax baseTypeDeclaration         => baseTypeDeclaration.Modifiers,
+				BaseFieldDeclarationSyntax baseFieldDeclaration       => baseFieldDeclaration.Modifiers,
+				DelegateDeclarationSyntax delegateDeclaration         => delegateDeclaration.Modifiers,
+				_                                                     => SyntaxFactory.TokenList()
+			};
 
 		/// <summary>
 		/// Returns the body of the <paramref name="node"/> that is passed as an argument, if it is available
@@ -252,20 +217,14 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		/// </summary>
 		/// <param name="node">Syntax node</param>
 		/// <returns>Syntax node for the body, if any</returns>
-		public static CSharpSyntaxNode GetBody(this SyntaxNode node)
-		{
-			switch (node)
+		public static CSharpSyntaxNode GetBody(this SyntaxNode node) =>
+			node switch
 			{
-				case AccessorDeclarationSyntax accessorSyntax:
-					return accessorSyntax.Body;
-				case MethodDeclarationSyntax methodSyntax:
-					return methodSyntax.Body ?? (CSharpSyntaxNode) methodSyntax.ExpressionBody?.Expression;
-				case ConstructorDeclarationSyntax constructorSyntax:
-					return constructorSyntax.Body;
-				default:
-					return null;
-			}
-		}
+				AccessorDeclarationSyntax accessorSyntax => accessorSyntax.Body,
+				MethodDeclarationSyntax methodSyntax => methodSyntax.Body ?? (CSharpSyntaxNode)methodSyntax.ExpressionBody?.Expression,
+				ConstructorDeclarationSyntax constructorSyntax => constructorSyntax.Body,
+				_ => null,
+			};
 
 		public static IEnumerable<AttributeSyntax> GetAttributes(this MemberDeclarationSyntax member)
 		{
@@ -288,46 +247,31 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			}
 		}
 
-		public static SyntaxList<AttributeListSyntax> GetAttributeLists(this MemberDeclarationSyntax member)
-		{
-			switch (member)
+		public static SyntaxList<AttributeListSyntax> GetAttributeLists(this MemberDeclarationSyntax member) =>
+			member switch
 			{
-				case PropertyDeclarationSyntax propertyDeclaration:
-					return propertyDeclaration.AttributeLists;
+				PropertyDeclarationSyntax propertyDeclaration       => propertyDeclaration.AttributeLists,
+				FieldDeclarationSyntax fieldDeclaration             => fieldDeclaration.AttributeLists,
+				MethodDeclarationSyntax methodDeclaration           => methodDeclaration.AttributeLists,
+				EventDeclarationSyntax eventDeclaration             => eventDeclaration.AttributeLists,
+				EventFieldDeclarationSyntax eventFieldDeclaration   => eventFieldDeclaration.AttributeLists,
+				DelegateDeclarationSyntax delegateDeclaration       => delegateDeclaration.AttributeLists,
+				ClassDeclarationSyntax nestedClassDeclaration       => nestedClassDeclaration.AttributeLists,
+				EnumDeclarationSyntax enumDeclaration               => enumDeclaration.AttributeLists,
+				StructDeclarationSyntax structDeclaration           => structDeclaration.AttributeLists,
+				InterfaceDeclarationSyntax interfaceDeclaration     => interfaceDeclaration.AttributeLists,
+				ConstructorDeclarationSyntax constructorDeclaration => constructorDeclaration.AttributeLists,
+				_                                                   => new SyntaxList<AttributeListSyntax>()
+			};
 
-				case FieldDeclarationSyntax fieldDeclaration:
-					return fieldDeclaration.AttributeLists;
+		public static SyntaxTrivia ToSingleLineComment(this string commentContent)
+		{
+			const string commentPrefix = "//";
+			string comment = commentContent.IsNullOrWhiteSpace()
+				? commentPrefix
+				: commentPrefix + " " + commentContent.Trim();
 
-				case MethodDeclarationSyntax methodDeclaration:          
-					return methodDeclaration.AttributeLists;
-
-				case EventDeclarationSyntax eventDeclaration:             
-					return eventDeclaration.AttributeLists;
-
-				case EventFieldDeclarationSyntax eventFieldDeclaration:   
-					return eventFieldDeclaration.AttributeLists;
-
-				case DelegateDeclarationSyntax delegateDeclaration:       
-					return delegateDeclaration.AttributeLists;
-
-				case ClassDeclarationSyntax nestedClassDeclaration:       
-					return nestedClassDeclaration.AttributeLists;
-
-				case EnumDeclarationSyntax enumDeclaration:               
-					return enumDeclaration.AttributeLists;
-
-				case StructDeclarationSyntax structDeclaration:           
-					return structDeclaration.AttributeLists;
-
-				case InterfaceDeclarationSyntax interfaceDeclaration:     
-					return interfaceDeclaration.AttributeLists;
-
-				case ConstructorDeclarationSyntax constructorDeclaration: 
-					return constructorDeclaration.AttributeLists;
-
-				default:
-					return new SyntaxList<AttributeListSyntax>();
-			}
+			return SyntaxFactory.Comment(comment);
 		}
 	}
 }
