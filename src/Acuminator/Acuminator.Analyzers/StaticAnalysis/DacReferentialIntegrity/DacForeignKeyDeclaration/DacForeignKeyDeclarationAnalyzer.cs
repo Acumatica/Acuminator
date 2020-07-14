@@ -8,6 +8,7 @@ using System.Linq;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.Symbols;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Syntax;
 
@@ -58,17 +59,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			return from nestedType in allNestedTypes
 				   where nestedType.InheritsFromOrEqualsGeneric(context.ReferentialIntegritySymbols.KeysRelation) &&
-						 nestedType.GetBaseTypesAndThis().Any(IsDeclaredInsideForeignKeyOf)
+						 nestedType.GetBaseTypesAndThis().Any(IsForeignKey)
 				   select nestedType;
 		}
 
-		private bool IsDeclaredInsideForeignKeyOf(ITypeSymbol type)
+		private bool IsForeignKey(ITypeSymbol type)
 		{
 			ITypeSymbol currentType = type.ContainingType;
 
 			while (currentType != null)
 			{
-				if (currentType.MetadataName == TypeNames.ForeignKeyOfMetadataName)
+				if (PXReferentialIntegritySymbols.ForeignKeyContainerNames.Contains(currentType.Name))
 					return true;
 
 				currentType = currentType.ContainingType;

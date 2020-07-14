@@ -17,13 +17,17 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		public INamedTypeSymbol PXCopyPasteHiddenViewAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXCopyPasteHiddenViewAttribute);
 		public INamedTypeSymbol PXOverrideAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXOverrideAttribute);
 
-		public INamedTypeSymbol PXEventSubscriberAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXEventSubscriberAttribute);
-		public INamedTypeSymbol PXAttributeFamily => Compilation.GetTypeByMetadataName(TypeFullNames.PXAttributeFamilyAttribute);
-		public INamedTypeSymbol PXAggregateAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXAggregateAttribute);
+		public INamedTypeSymbol PXEventSubscriberAttribute  => Compilation.GetTypeByMetadataName(TypeFullNames.PXEventSubscriberAttribute);
+		public INamedTypeSymbol PXAttributeFamily           => Compilation.GetTypeByMetadataName(TypeFullNames.PXAttributeFamilyAttribute);
+		public INamedTypeSymbol PXAggregateAttribute        => Compilation.GetTypeByMetadataName(TypeFullNames.PXAggregateAttribute);
 		public INamedTypeSymbol PXDynamicAggregateAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXDynamicAggregateAttribute);
-		public INamedTypeSymbol PXDefaultAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXDefaultAttribute);
-		public INamedTypeSymbol PXUnboundDefaultAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXUnboundDefaultAttribute);
-        public INamedTypeSymbol PXButtonAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXButtonAttribute);
+		public INamedTypeSymbol PXDefaultAttribute          => Compilation.GetTypeByMetadataName(TypeFullNames.PXDefaultAttribute);
+		public INamedTypeSymbol PXUnboundDefaultAttribute   => Compilation.GetTypeByMetadataName(TypeFullNames.PXUnboundDefaultAttribute);
+        public INamedTypeSymbol PXButtonAttribute           => Compilation.GetTypeByMetadataName(TypeFullNames.PXButtonAttribute);
+        public INamedTypeSymbol PXParentAttribute           => Compilation.GetTypeByMetadataName(TypeFullNames.PXParentAttribute);
+        public INamedTypeSymbol PXDBDefaultAttribute        => Compilation.GetTypeByMetadataName(TypeFullNames.PXDBDefaultAttribute);
+        public INamedTypeSymbol PXForeignReferenceAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXForeignReferenceAttribute);
+        public INamedTypeSymbol PXDimensionSelectorAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXDimensionSelectorAttribute);
 
 		private readonly Lazy<PXUIFieldAttributeSymbols> _pxUiFieldAttribute;
 		public PXUIFieldAttributeSymbols PXUIFieldAttribute => _pxUiFieldAttribute.Value;

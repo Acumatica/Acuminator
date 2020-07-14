@@ -68,7 +68,8 @@
     <Compile Include="DAC\Graph usage\SOShipmentExt.cs" />
     <Compile Include="DAC\Multiple Levels of inheritance\SOOrderWithTotal.cs" />
     <Compile Include="DAC\Multiple Levels of inheritance\SOOrderWithHold.cs" />
-    <Compile Include="DAC\Referential Integrity\DacForeignKeyDeclaration\Dac_Without_ForeignKey.cs" />
+    <Compile Include="DAC\Referential Integrity\DacForeignKeyDeclaration\SOLine_Without_ForeignKey.cs" />
+    <Compile Include="DAC\Referential Integrity\DacForeignKeyDeclaration\SOOrder_Without_ForeignKey.cs" />
     <Compile Include="DAC\Referential Integrity\DacPrimaryKeyDeclaration\Dac_GoodPrimaryKey.cs" />
     <Compile Include="DAC\Referential Integrity\DacPrimaryKeyDeclaration\Dac_MultiplePrimaryKeys.cs" />
     <Compile Include="DAC\Referential Integrity\DacPrimaryKeyDeclaration\Dac_Without_PrimaryKey.cs" />

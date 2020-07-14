@@ -745,7 +745,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add primary key declaration to the DAC.
+        ///   Looks up a localized string similar to Add a primary key declaration to the DAC.
         /// </summary>
         public static string PX1033Fix {
             get {
@@ -754,11 +754,87 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The DAC does not have an explicit primary key declaration .
+        ///   Looks up a localized string similar to The DAC does not have an explicit primary key declaration.
         /// </summary>
         public static string PX1033Title {
             get {
                 return ResourceManager.GetString("PX1033Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add a foreign key declaration template to the DAC.
+        /// </summary>
+        public static string PX1034Fix {
+            get {
+                return ResourceManager.GetString("PX1034Fix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add all DAC foreign keys here. For referenced DACs with PK you can use the following template:.
+        /// </summary>
+        public static string PX1034FixTemplateLine1 {
+            get {
+                return ResourceManager.GetString("PX1034FixTemplateLine1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to public class ReferencedDacFK : ReferencedDAC.PK.ForeignKeyOf&lt;{0}&gt;.By&lt;joinField1, joinFields, ...&gt; {{ }}.
+        /// </summary>
+        public static string PX1034FixTemplateLine2 {
+            get {
+                return ResourceManager.GetString("PX1034FixTemplateLine2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For referenced DACs without PK class and with a single field primary key you can use the following template:.
+        /// </summary>
+        public static string PX1034FixTemplateLine3 {
+            get {
+                return ResourceManager.GetString("PX1034FixTemplateLine3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to public class ReferencedDacFK : Field&lt;joinField&gt;.IsRelatedTo&lt;ReferencedDAC.keyField&gt;.AsSimpleKey.WithTablesOf&lt;ReferencedDAC, {0}&gt; {{ }}.
+        /// </summary>
+        public static string PX1034FixTemplateLine4 {
+            get {
+                return ResourceManager.GetString("PX1034FixTemplateLine4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For referenced DACs without PK class and with a composite primary key you can use the following template:.
+        /// </summary>
+        public static string PX1034FixTemplateLine5 {
+            get {
+                return ResourceManager.GetString("PX1034FixTemplateLine5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to public class ReferencedDacFK : CompositeKey&lt;
+        ///											   Field&lt;joinField1&gt;.IsRelatedTo&lt;ReferencedDAC.keyField1&gt;,
+        ///											   Field&lt;joinField2&gt;.IsRelatedTo&lt;ReferencedDAC.keyField2&gt;,
+        ///											  ...
+        ///											  &gt;.WithTablesOf&lt;SOOrder, SOOrder&gt; {{ }}.
+        /// </summary>
+        public static string PX1034FixTemplateLine6 {
+            get {
+                return ResourceManager.GetString("PX1034FixTemplateLine6", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can start with the following properties:.
+        /// </summary>
+        public static string PX1034FixTemplateLine7 {
+            get {
+                return ResourceManager.GetString("PX1034FixTemplateLine7", resourceCulture);
             }
         }
         
@@ -772,7 +848,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete other primary key declarations from the DAC.
+        ///   Looks up a localized string similar to Remove other primary key declarations from the DAC.
         /// </summary>
         public static string PX1035Fix {
             get {

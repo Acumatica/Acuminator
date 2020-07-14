@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -262,5 +263,15 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 				ConstructorDeclarationSyntax constructorDeclaration => constructorDeclaration.AttributeLists,
 				_                                                   => new SyntaxList<AttributeListSyntax>()
 			};
+
+		public static SyntaxTrivia ToSingleLineComment(this string commentContent)
+		{
+			const string commentPrefix = "//";
+			string comment = commentContent.IsNullOrWhiteSpace()
+				? commentPrefix
+				: commentPrefix + " " + commentContent.Trim();
+
+			return SyntaxFactory.Comment(comment);
+		}
 	}
 }

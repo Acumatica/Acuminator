@@ -565,6 +565,34 @@
     <value>Change the name of the primary key to "PK"</value>
   </data>
   <data name="PX1035Fix" xml:space="preserve">
-    <value>Remove other primary key declarations from the DAC</value>
+    <value>Remove the rest of primary key declarations from the DAC</value>
+  </data>
+  <data name="PX1034Fix" xml:space="preserve">
+    <value>Add a foreign key declaration template to the DAC</value>
+  </data>
+  <data name="PX1034FixTemplateLine1" xml:space="preserve">
+    <value>Add all foreign keys for the DAC here. For referenced DACs with a PK class, you can use the following template:</value>
+  </data>
+  <data name="PX1034FixTemplateLine2" xml:space="preserve">
+    <value>public class ReferencedDacFK : ReferencedDAC.PK.ForeignKeyOf&lt;{0}&gt;.By&lt;joinField1, joinFields, ...&gt; {{ }}</value>
+  </data>
+  <data name="PX1034FixTemplateLine3" xml:space="preserve">
+    <value>For referenced DACs without a PK class and with a single primary key field, you can use the following template:</value>
+  </data>
+  <data name="PX1034FixTemplateLine4" xml:space="preserve">
+    <value>public class ReferencedDacFK : Field&lt;joinField&gt;.IsRelatedTo&lt;ReferencedDAC.keyField&gt;.AsSimpleKey.WithTablesOf&lt;ReferencedDAC, {0}&gt; {{ }}</value>
+  </data>
+  <data name="PX1034FixTemplateLine5" xml:space="preserve">
+    <value>For referenced DACs without a PK class and with a composite primary key, you can use the following template:</value>
+  </data>
+  <data name="PX1034FixTemplateLine6" xml:space="preserve">
+    <value>public class ReferencedDacFK : CompositeKey&lt;
+											   Field&lt;joinField1&gt;.IsRelatedTo&lt;ReferencedDAC.keyField1&gt;,
+											   Field&lt;joinField2&gt;.IsRelatedTo&lt;ReferencedDAC.keyField2&gt;,
+											  ...
+											  &gt;.WithTablesOf&lt;SOOrder, SOOrder&gt; {{ }}</value>
+  </data>
+  <data name="PX1034FixTemplateLine7" xml:space="preserve">
+    <value>You can start with the following properties:</value>
   </data>
 </root>
