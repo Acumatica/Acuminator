@@ -150,6 +150,8 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\CorrectForeignKey\Dac_GoodForeignKey_CompositeKey.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\MissingForeignKeyFix\SOOrder_Without_ForeignKey_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\MissingForeignKeyFix\SOOrder_Without_ForeignKey.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\MissingForeignKeyFix\SOLine_Without_ForeignKey.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\MissingForeignKeyFix\SOLine_Without_ForeignKey_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\DacMissingPrimaryKeyDeclarationTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\MultiplePrimaryKeysInDacTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\DacWrongPrimaryKeyNameTests.cs" />

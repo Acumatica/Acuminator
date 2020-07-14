@@ -34,10 +34,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 		public async Task AddForeignKeyTemplateDeclaration_ToSOOrder_VerifyCodeFix(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected);
 
-		//[Theory]
-		//[EmbeddedFileData(@"MissingPrimaryKey\SOLine_Without_PrimaryKey.cs",
-		//				  @"MissingPrimaryKey\SOLine_Without_PrimaryKey_Expected.cs")]
-		//public async Task AddPrimaryKeyDeclaration_ToSOLine_VerifyCodeFix(string actual, string expected) =>
-		//	await VerifyCSharpFixAsync(actual, expected);
+		[Theory]
+		[EmbeddedFileData(@"MissingForeignKeyFix\SOLine_Without_ForeignKey.cs",
+						  @"MissingForeignKeyFix\SOLine_Without_ForeignKey_Expected.cs")]
+		public async Task AddPrimaryKeyDeclaration_ToSOLine_VerifyCodeFix(string actual, string expected) =>
+			await VerifyCSharpFixAsync(actual, expected);
 	}
 }
