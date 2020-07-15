@@ -1,6 +1,28 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
+## Acuminator 2.3
+Acuminator 2.3 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
+
+### Enhancements
+In Acuminator 2.3, the following enhancements have been implemented:
+ - The [PX1036](diagnostics/PX1036.md) diagnostic has been added to check the correct naming of key field declarations in PK or FK API.
+ - The [PX1035](diagnostics/PX1035.md) diagnostic has been added to check and warn of multiple primary key declarations.
+ - The [PX1033] (diagnostics/PX1033.md) and [PX1034] (diagnostics/PX1034.md) diagnostics has been added to suggest adding PK or FK definition to a DAC.
+ - The [PX1016](diagnostics/PX1016.md) diagnostic has been added to check whether a graph extension has the IsActive method implemented.
+ - The Code Map has been improved as follows:
+   - The Code Map now indicates whether a graph is for mass processing operations and whether a graph node corresponds to a graph or a graph extension.
+   - The Code Map now indicates whether a DAC field is auto-incremented (has the PXDBIdentityt attribute).
+   - The following complementary information is now displayed in the Code Map about a graph view member: Whether the view is for mass processing operations, for setup form, or for filtering, whether the view is derived fom the base PXSelect or PXSelectReadOnly types.
+   - The Code Map now provides a mode for the graph semantic model which disables collection of init delegates.
+
+
+### Fixed Bugs
+In this version of Acuminator, the following bugs have been fixed:
+ - The [PX1015](diagnostics/PX1015.md) diagnostic did not support counting of fluent BQL-like query parameters.
+ - The Code Map window frequently became out of sync with active document due to various reasons.
+ - The diagnostic suppression code fix was incorrectly displayed for multiple diagnostics on the same node.
+
 ## Acuminator 2.2
 Acuminator 2.2 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
