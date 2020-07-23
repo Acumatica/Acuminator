@@ -18,7 +18,7 @@ In Acuminator 2.3, the following enhancements have been implemented:
    - Views for mass processing operations
    - Setup views
    - Filter views
-   - Custom views derived fron the base `PXSelect` types
+   - Custom views derived from the base `PXSelect` types
    - Views derived from `PXSelectReadOnly` types   
 
 
