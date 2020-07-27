@@ -50,7 +50,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		private IEnumerable<INamedTypeSymbol> GetForeignKeyDeclarations(PXContext context, DacSemanticModel dac, CancellationToken cancellationToken)
 		{
-			var allNestedTypes = dac.Symbol.GetFlattenedNestedTypes(cancellationToken);
+			var allNestedTypes = dac.Symbol.GetFlattenedNestedTypes(shouldWalkThroughNestedTypesPredicate: nestedType => !nestedType.IsDacOrExtension(context),
+																	cancellationToken);
 
 			if (context.ReferentialIntegritySymbols.IForeignKey != null)
 			{
