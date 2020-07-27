@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
@@ -37,6 +38,19 @@ namespace Acuminator.Utilities.Common
 				? char.ToUpperInvariant(s[0]).ToString() + s.Substring(1)
 				: char.ToUpperInvariant(s[0]).ToString();
 		}
+
+		/// <summary>
+		/// Joins strings in <paramref name="strings"/> with a <paramref name="separator"/>. 
+		/// This extension method is just a shortcut for the call to <see cref="String.Join(string, IEnumerable{string})"/> which allows to use API in a fluent way. 
+		/// </summary>
+		/// <param name="strings">The strings to act on.</param>
+		/// <param name="separator">The separator.</param>
+		/// <returns>
+		/// A joined string.
+		/// </returns>
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static string Join(this IEnumerable<string> strings, string separator) => string.Join(separator, strings);
 
 		/// <summary>
 		/// Compute the distance between two strings.
