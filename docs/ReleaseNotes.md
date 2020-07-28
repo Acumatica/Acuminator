@@ -1,6 +1,33 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
+## Acuminator 2.3
+Acuminator 2.3 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
+
+### Enhancements
+In Acuminator 2.3, the following enhancements have been implemented:
+ - The [PX1036](diagnostics/PX1036.md) diagnostic has been added to verify the correct naming of key field declarations in the PK API.
+ - The [PX1035](diagnostics/PX1035.md) diagnostic has been added to check for and warn the developer of multiple primary key declarations.
+ - The [PX1033] (diagnostics/PX1033.md) and [PX1034] (diagnostics/PX1034.md) diagnostics have been added to suggest adding a PK or FK definition to a DAC.
+ - The [PX1016](diagnostics/PX1016.md) diagnostic has been added to check whether a graph or DAC extension has the `IsActive` method implemented.
+ - The Code Map has been improved as follows:
+   - The Code Map now indicates whether each graph is for mass processing operations and whether each graph node corresponds to a graph or a graph extension.
+   - The Code Map now indicates whether each DAC field is auto-incremented (has the `AutoNumberAttribute` attribute).
+   - The Code Map performance was greatly optimized. The time for the construction of the Code Map decreased from 3-5 minutes to 1-2 seconds on code files with ~12 000 lines of code
+ - The Code Map now displays complementary information about graph views. A developer can see indicators for the following:
+   - Views for mass processing operations
+   - Setup views
+   - Filter views
+   - Custom views derived from the base `PXSelect` types
+   - Views derived from `PXSelectReadOnly` types   
+
+
+### Fixed Bugs
+In this version of Acuminator, the following bugs have been fixed:
+ - The [PX1015](diagnostics/PX1015.md) diagnostic did not support counting of fluent BQL-like query parameters.
+ - The Code Map window frequently became out of sync with active document for various reasons.
+ - The error suppression code action was incorrectly displayed when multiple diagnostics reported error on the same syntax node.
+
 ## Acuminator 2.2
 Acuminator 2.2 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
