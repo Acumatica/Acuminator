@@ -772,7 +772,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add all DAC foreign keys here. For referenced DACs with PK you can use the following template:.
+        ///   Looks up a localized string similar to Add all foreign keys for the DAC here. For referenced DACs with a PK class, you can use the following template:.
         /// </summary>
         public static string PX1034FixTemplateLine1 {
             get {
@@ -790,7 +790,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to For referenced DACs without PK class and with a single field primary key you can use the following template:.
+        ///   Looks up a localized string similar to For referenced DACs without a PK class and with a single primary key field, you can use the following template:.
         /// </summary>
         public static string PX1034FixTemplateLine3 {
             get {
@@ -808,7 +808,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to For referenced DACs without PK class and with a composite primary key you can use the following template:.
+        ///   Looks up a localized string similar to For referenced DACs without a PK class and with a composite primary key, you can use the following template:.
         /// </summary>
         public static string PX1034FixTemplateLine5 {
             get {
@@ -848,7 +848,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove other primary key declarations from the DAC.
+        ///   Looks up a localized string similar to Remove other key declarations that use the same fields from the DAC.
         /// </summary>
         public static string PX1035Fix {
             get {
@@ -857,7 +857,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The DAC has multiple primary key declarations.
+        ///   Looks up a localized string similar to The DAC has multiple key declarations which use the same set of fields.
         /// </summary>
         public static string PX1035Title {
             get {
@@ -889,6 +889,24 @@ namespace Acuminator.Analyzers {
         public static string PX1036PKTitle {
             get {
                 return ResourceManager.GetString("PX1036PKTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change the name of the unique key to &quot;UK&quot;.
+        /// </summary>
+        public static string PX1036UKFix {
+            get {
+                return ResourceManager.GetString("PX1036UKFix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DAC unique key should be named &quot;UK&quot;.
+        /// </summary>
+        public static string PX1036UKTitle {
+            get {
+                return ResourceManager.GetString("PX1036UKTitle", resourceCulture);
             }
         }
         

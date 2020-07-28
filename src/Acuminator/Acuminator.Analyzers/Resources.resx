@@ -550,7 +550,7 @@
     <value>The DAC does not have an explicit foreign key declaration</value>
   </data>
   <data name="PX1035Title" xml:space="preserve">
-    <value>The DAC has multiple primary key declarations</value>
+    <value>The DAC has multiple key declarations which use the same set of fields</value>
   </data>
   <data name="PX1036PKTitle" xml:space="preserve">
     <value>The DAC primary key should be named "PK"</value>
@@ -565,7 +565,7 @@
     <value>Change the name of the primary key to "PK"</value>
   </data>
   <data name="PX1035Fix" xml:space="preserve">
-    <value>Remove the rest of primary key declarations from the DAC</value>
+    <value>Remove other key declarations that use the same fields from the DAC</value>
   </data>
   <data name="PX1034Fix" xml:space="preserve">
     <value>Add a foreign key declaration template to the DAC</value>
@@ -594,5 +594,11 @@
   </data>
   <data name="PX1034FixTemplateLine7" xml:space="preserve">
     <value>You can start with the following properties:</value>
+  </data>
+  <data name="PX1036UKTitle" xml:space="preserve">
+    <value>The DAC unique key should be named "UK"</value>
+  </data>
+  <data name="PX1036UKFix" xml:space="preserve">
+    <value>Change the name of the unique key to "UK"</value>
   </data>
 </root>
