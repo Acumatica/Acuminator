@@ -44,11 +44,21 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				case 0:
 					ReportNoPrimaryKeyDeclarationsInDac(symbolContext, context, dac);
 					return;
+
 				case 1:
 					AnalyzeSinglePrimaryKeyDeclaration(symbolContext, context, keyDeclarations[0]);
 					return;
+
+				case 2:
+					if (CheckThatAllPrimaryKeysHaveUniqueSetsOfFields(symbolContext, context, dac, keyDeclarations))
+						AnalyzeDeclarationOfTwoPrimaryKeys(symbolContext, context, dac, keyDeclarations[0], keyDeclarations[1]);
+					
+					return;
+
 				default:
-					AnalyzeMultiplePrimaryKeyDeclarations(symbolContext, context, dac, keyDeclarations);
+					if (CheckThatAllPrimaryKeysHaveUniqueSetsOfFields(symbolContext, context, dac, keyDeclarations))
+						CheckBigGroupOfKeysForPrimaryKeyAndUniqueKeysContainer(symbolContext, context, dac, keyDeclarations);
+
 					return;
 			}
 		}
@@ -92,53 +102,44 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 										context.CodeAnalysisSettings);
 		}
 
-		private void AnalyzeMultiplePrimaryKeyDeclarations(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac, 
-														   List<INamedTypeSymbol> keyDeclarations)
-		{
-			symbolContext.CancellationToken.ThrowIfCancellationRequested();
-
-			if (!CheckThatAllPrimaryKeysHaveUniqueSetsOfFields(symbolContext, context, dac, keyDeclarations))
-				return;
-
-
-
-
-			
-		}
-
 		private bool CheckThatAllPrimaryKeysHaveUniqueSetsOfFields(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
 																   List<INamedTypeSymbol> keyDeclarations)
 		{
-			var duplicateKeys = GetDuplicatePrimaryKeys(context, dac, keyDeclarations, symbolContext.CancellationToken);
+			var primaryKeysGroupedByFields = GetPrimaryKeysGroupedBySetOfFields(context, dac, keyDeclarations, symbolContext.CancellationToken);
+			var duplicateKeySets = primaryKeysGroupedByFields.Values.Where(keys => keys.Count > 1);
+			bool hasDuplicates = false;
 
-			if (duplicateKeys.Count == 0)
-				return true;
-
-			var locations = duplicateKeys.Select(declaration => declaration.GetSyntax(symbolContext.CancellationToken))
-										 .OfType<ClassDeclarationSyntax>()
-										 .Select(keyClassDeclaration => keyClassDeclaration.Identifier.GetLocation() ??
-																		keyClassDeclaration.GetLocation())
-										 .Where(location => location != null)
-										 .ToList(capacity: duplicateKeys.Count);
-		
-			for (int i = 0; i < locations.Count; i++)
+			// We group keys by sets of used fields and then report each set with duplicate keys separately,
+			// passing the locations of other duplicate fields in a set to code fix. 
+			// This way if there are two different sets of duplicate keys the code fix will affect only the set to which it was applied
+			foreach (List<INamedTypeSymbol> duplicateKeys in duplicateKeySets)
 			{
-				Location location = locations[i];
-				var otherLocations = locations.Where((_, index) => index != i);
+				hasDuplicates = true;
+				var locations = duplicateKeys.Select(declaration => declaration.GetSyntax(symbolContext.CancellationToken))
+											 .OfType<ClassDeclarationSyntax>()
+											 .Select(keyClassDeclaration => keyClassDeclaration.Identifier.GetLocation() ??
+																			keyClassDeclaration.GetLocation())
+											 .Where(location => location != null)
+											 .ToList(capacity: duplicateKeys.Count);
 
-				symbolContext.ReportDiagnosticWithSuppressionCheck(
-					Diagnostic.Create(Descriptors.PX1035_MultiplePrimaryKeyDeclarationsInDac, location, otherLocations),
-					context.CodeAnalysisSettings);
+				for (int i = 0; i < locations.Count; i++)
+				{
+					Location location = locations[i];
+					var otherLocations = locations.Where((_, index) => index != i);
+
+					symbolContext.ReportDiagnosticWithSuppressionCheck(
+									Diagnostic.Create(Descriptors.PX1035_MultiplePrimaryKeyDeclarationsInDac, location, otherLocations),
+									context.CodeAnalysisSettings);
+				}
 			}
 
-			return false;
+			return hasDuplicates;
 		}
 
-		private HashSet<INamedTypeSymbol> GetDuplicatePrimaryKeys(PXContext context, DacSemanticModel dac, List<INamedTypeSymbol> keyDeclarations,
-																  CancellationToken cancellationToken)
+		private Dictionary<string, List<INamedTypeSymbol>> GetPrimaryKeysGroupedBySetOfFields(PXContext context, DacSemanticModel dac, List<INamedTypeSymbol> keyDeclarations,
+																							  CancellationToken cancellationToken)
 		{
-			var processedPrimaryKeysByHash = new Dictionary<string, INamedTypeSymbol>(capacity: keyDeclarations.Count);
-			var duplicateKeys = new HashSet<INamedTypeSymbol>();
+			var processedPrimaryKeysByHash = new Dictionary<string, List<INamedTypeSymbol>>(capacity: keyDeclarations.Count);
 
 			foreach (var primaryKey in keyDeclarations)
 			{
@@ -158,21 +159,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 									   .OrderBy(metadataName => metadataName)
 									   .Join(separator: ",");
 
-				if (processedPrimaryKeysByHash.TryGetValue(stringHash, out var processedPrimaryKey))
+				if (processedPrimaryKeysByHash.TryGetValue(stringHash, out var processedKeysList))
 				{
-					duplicateKeys.Add(processedPrimaryKey);
-					duplicateKeys.Add(primaryKey);
+					processedKeysList.Add(primaryKey);
 				}
 				else
 				{
-					processedPrimaryKeysByHash.Add(stringHash, primaryKey);
+					processedKeysList = new List<INamedTypeSymbol>(capacity: 1) { primaryKey };
+					processedPrimaryKeysByHash.Add(stringHash, processedKeysList);
 				}
 			}
 
-			return duplicateKeys;
+			return processedPrimaryKeysByHash;
 		}
 
-		private void AnalyzeDeclarationOfTwoPrimaryKeys(SymbolAnalysisContext symbolContext, PXContext context, INamedTypeSymbol keyDeclaration)
+		private void AnalyzeDeclarationOfTwoPrimaryKeys(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
+														INamedTypeSymbol firstKeyDeclaration, INamedTypeSymbol secondKeyDeclaration)
 		{
 			if (keyDeclaration.Name == TypeNames.PrimaryKeyClassName)
 				return;
@@ -194,5 +196,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 										context.CodeAnalysisSettings);
 		}
 
+		private void CheckBigGroupOfKeysForPrimaryKeyAndUniqueKeysContainer(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
+																			List<INamedTypeSymbol> keyDeclarations)
+		{
+
+		}
 	}
 }
