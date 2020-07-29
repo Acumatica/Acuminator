@@ -553,7 +553,7 @@
     <value>The DAC has multiple key declarations which use the same set of fields</value>
   </data>
   <data name="PX1036PKTitle" xml:space="preserve">
-    <value>The DAC primary key should be named "PK"</value>
+    <value>The DAC must have one primary key which should be named "PK"</value>
   </data>
   <data name="PX1036FKTitle" xml:space="preserve">
     <value>The class containing DAC foreign keys should be named "FK"</value>

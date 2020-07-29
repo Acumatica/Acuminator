@@ -884,7 +884,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The DAC primary key should be named &quot;PK&quot;.
+        ///   Looks up a localized string similar to The DAC must have one primary key which should be named &quot;PK&quot;.
         /// </summary>
         public static string PX1036PKTitle {
             get {
