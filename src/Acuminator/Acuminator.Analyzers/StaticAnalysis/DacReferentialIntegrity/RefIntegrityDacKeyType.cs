@@ -9,6 +9,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 	{
 		PrimaryKey,
 
+		UniqueKey,
+
 		ForeignKey
 	}
 }

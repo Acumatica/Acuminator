@@ -82,24 +82,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		private void AnalyzeSinglePrimaryKeyDeclaration(SymbolAnalysisContext symbolContext, PXContext context, INamedTypeSymbol keyDeclaration)
 		{
-			if (keyDeclaration.Name == TypeNames.PrimaryKeyClassName)
-				return;
-
-			var keyDeclarationNode = keyDeclaration.GetSyntax(symbolContext.CancellationToken);
-			Location location = (keyDeclarationNode as ClassDeclarationSyntax)?.Identifier.GetLocation() ?? keyDeclarationNode?.GetLocation();
-
-			if (location == null)
-				return;
-
-			var diagnosticProperties = new Dictionary<string, string>
+			if (keyDeclaration.Name != TypeNames.PrimaryKeyClassName)
 			{
-				{ nameof(RefIntegrityDacKeyType),  RefIntegrityDacKeyType.PrimaryKey.ToString() }
-			}
-			.ToImmutableDictionary();
-
-			symbolContext.ReportDiagnosticWithSuppressionCheck(
-										Diagnostic.Create(Descriptors.PX1036_WrongDacPrimaryKeyName, location, diagnosticProperties),
-										context.CodeAnalysisSettings);
+				ReportKeyDeclarationWithWrongName(symbolContext, context, keyDeclaration, RefIntegrityDacKeyType.PrimaryKey);
+			}		
 		}
 
 		private bool CheckThatAllPrimaryKeysHaveUniqueSetsOfFields(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
@@ -176,8 +162,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		private void AnalyzeDeclarationOfTwoPrimaryKeys(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
 														INamedTypeSymbol firstKeyDeclaration, INamedTypeSymbol secondKeyDeclaration)
 		{
-			if (keyDeclaration.Name == TypeNames.PrimaryKeyClassName)
-				return;
+			var primaryKey = firstKeyDeclaration.Name == TypeNames.PrimaryKeyClassName
+				? firstKeyDeclaration
+				: secondKeyDeclaration.Name == TypeNames.PrimaryKeyClassName
+					? secondKeyDeclaration
+					: null;
+
+			if (primaryKey == null)
+			{
+
+			}
+			
 
 			var keyDeclarationNode = keyDeclaration.GetSyntax(symbolContext.CancellationToken);
 			Location location = (keyDeclarationNode as ClassDeclarationSyntax)?.Identifier.GetLocation() ?? keyDeclarationNode?.GetLocation();
@@ -201,5 +196,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		{
 
 		}
+
+		
 	}
 }
