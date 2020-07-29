@@ -16,7 +16,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp), Shared]
-	public class MultiplePrimaryKeysInDacFix : CodeFixProvider
+	public class MultipleKeysInDacFix : CodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } = 
 			ImmutableArray.Create(Descriptors.PX1035_MultiplePrimaryKeyDeclarationsInDac.Id);

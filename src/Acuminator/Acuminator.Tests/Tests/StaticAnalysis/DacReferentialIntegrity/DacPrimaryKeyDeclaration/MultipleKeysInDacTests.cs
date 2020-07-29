@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 {
-	public class MultiplePrimaryKeysInDacTests : CodeFixVerifier
+	public class MultipleKeysInDacTests : CodeFixVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new DacAnalyzersAggregator(
@@ -20,7 +20,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 				new DacPrimaryKeyDeclarationAnalyzer());
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() =>
-			new MultiplePrimaryKeysInDacFix();
+			new MultipleKeysInDacFix();
 
 		[Theory]
 		[EmbeddedFileData("Dac_MultiplePrimaryKeys.cs")]

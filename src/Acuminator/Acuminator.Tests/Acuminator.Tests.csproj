@@ -153,7 +153,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\MissingForeignKeyFix\SOLine_Without_ForeignKey.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\MissingForeignKeyFix\SOLine_Without_ForeignKey_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\DacMissingPrimaryKeyDeclarationTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\MultiplePrimaryKeysInDacTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\MultipleKeysInDacTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\DacWrongPrimaryKeyNameTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\DacPrimaryKeyDeclarationTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\Fully_Unbound_Dac.cs" />
