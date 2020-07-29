@@ -27,6 +27,7 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1013](diagnostics/PX1013.md) | The action handler that initiates a background operation or is executed by a background operation must return `IEnumerable`. | Error | Available   | 
 | [PX1014](diagnostics/PX1014.md) | A DAC field must have a nullable type. | Error   | Available |
 | [PX1015](diagnostics/PX1015.md) | For a BQL statement that contains parameters, the number of arguments of a `Select` method is different from the number of parameters. | Warning (ISV Level 1: Significant) | Unavailable |
+| [PX1016] | A DAC or graph extension must include the public static `IsActive` method with no parameters and the `bool` return type. Extensions that are constantly active reduce performance. Suppress the error if you need the DAC extension to be constantly active. | Error | Unavailable | 
 | [PX1018](diagnostics/PX1018.md) | The graph with the specified primary view type parameter doesn't contain the primary view of the specified type. | Error | Unavailable |
 | [PX1019](diagnostics/PX1019.md) | A DAC property field with the `AutoNumber` attribute must have the string type.                                  | Error | Available   |
 | [PX1020](diagnostics/PX1020.md) | For the DAC property with the `AutoNumber` attribute, the string length must be greater than or equal to PX.Objects.CS.NumberingSequence.StartNbr value.     | Error | Available   |
@@ -41,6 +42,10 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1030](diagnostics/PX1030.md) | The `PXDefault` attribute of the field is used incorrectly. | Warning (ISV Level 1: Significant) or Error | Available |
 | [PX1031](diagnostics/PX1031.md) | DACs cannot contain instance methods. | Error | Unavailable |
 | [PX1032](diagnostics/PX1032.md) | DAC properties cannot contain method invocations. | Error | Unavailable |
+| [PX1033] | The DAC does not have an explicit primary key declaration | Warning (ISV Level 3: Informational) | Available | 
+| [PX1034] | The DAC does not have an explicit foreign key declaration | Warning (ISV Level 3: Informational) | Available |
+| [PX1035] | The DAC has multiple primary key declarations | Warning (ISV Level 3: Informational) | Available |  
+| [PX1036] | The DAC primary key should be named `PK`. The class containing DAC foreign keys should be named `FK`.  | Warning (ISV Level 3: Informational) | Available | 
 | [PX1040](diagnostics/PX1040.md) | Instance constructors in BLC extensions are strictly prohibited. You should use the `Initialize()` method instead. | Error | Available |
 | [PX1042](diagnostics/PX1042.md) | In a `RowSelecting` handler, BQL statements and other database queries must be executed only inside a separate connection scope. | Error | Available |
 | [PX1043](diagnostics/PX1043.md) | Changes cannot be saved to the database from event handlers. | Error | Unavailable |

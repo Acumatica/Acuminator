@@ -8,7 +8,7 @@ Acuminator 2.3 includes the bug fixes and enhancements described in this section
 In Acuminator 2.3, the following enhancements have been implemented:
  - The [PX1036](diagnostics/PX1036.md) diagnostic has been added to verify the correct naming of key field declarations in the PK API.
  - The [PX1035](diagnostics/PX1035.md) diagnostic has been added to check for and warn the developer of multiple primary key declarations.
- - The [PX1033] (diagnostics/PX1033.md) and [PX1034] (diagnostics/PX1034.md) diagnostics have been added to suggest adding a PK or FK definition to a DAC.
+ - The [PX1033](diagnostics/PX1033.md) and [PX1034](diagnostics/PX1034.md) diagnostics have been added to suggest adding a PK or FK definition to a DAC.
  - The [PX1016](diagnostics/PX1016.md) diagnostic has been added to check whether a graph or DAC extension has the `IsActive` method implemented.
  - The Code Map has been improved as follows:
    - The Code Map now indicates whether each graph is for mass processing operations and whether each graph node corresponds to a graph or a graph extension.
