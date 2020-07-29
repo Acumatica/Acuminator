@@ -47,7 +47,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		}
 
 		protected virtual void ReportKeyDeclarationWithWrongName(SymbolAnalysisContext symbolContext, PXContext context, INamedTypeSymbol keyDeclaration,
-														RefIntegrityDacKeyType dacKeyType)
+														         RefIntegrityDacKeyType dacKeyType)
 		{
 			var keyDeclarationNode = keyDeclaration.GetSyntax(symbolContext.CancellationToken);
 			Location location = (keyDeclarationNode as ClassDeclarationSyntax)?.Identifier.GetLocation() ?? keyDeclarationNode?.GetLocation();

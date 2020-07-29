@@ -168,35 +168,31 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 					? secondKeyDeclaration
 					: null;
 
+			//If there is no primary key - suggest to rename one of the keys and quit
 			if (primaryKey == null)
 			{
-
-			}
-			
-
-			var keyDeclarationNode = keyDeclaration.GetSyntax(symbolContext.CancellationToken);
-			Location location = (keyDeclarationNode as ClassDeclarationSyntax)?.Identifier.GetLocation() ?? keyDeclarationNode?.GetLocation();
-
-			if (location == null)
+				ReportKeyDeclarationWithWrongName(symbolContext, context, firstKeyDeclaration, RefIntegrityDacKeyType.PrimaryKey);
+				ReportKeyDeclarationWithWrongName(symbolContext, context, secondKeyDeclaration, RefIntegrityDacKeyType.PrimaryKey);
 				return;
-
-			var diagnosticProperties = new Dictionary<string, string>
-			{
-				{ nameof(RefIntegrityDacKeyType),  RefIntegrityDacKeyType.PrimaryKey.ToString() }
 			}
-			.ToImmutableDictionary();
 
-			symbolContext.ReportDiagnosticWithSuppressionCheck(
-										Diagnostic.Create(Descriptors.PX1036_WrongDacPrimaryKeyName, location, diagnosticProperties),
-										context.CodeAnalysisSettings);
+			symbolContext.CancellationToken.ThrowIfCancellationRequested();
+
+			var uniqueKeyDeclaration = ReferenceEquals(primaryKey, firstKeyDeclaration)
+				? secondKeyDeclaration
+				: firstKeyDeclaration;
+
+			//The second key is a unique key. If it does not named "UK" we should rename it
+			if (uniqueKeyDeclaration.Name != TypeNames.UniqueKeyClassName)
+			{
+				ReportKeyDeclarationWithWrongName(symbolContext, context, uniqueKeyDeclaration, RefIntegrityDacKeyType.UniqueKey);
+			}			
 		}
 
 		private void CheckBigGroupOfKeysForPrimaryKeyAndUniqueKeysContainer(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
 																			List<INamedTypeSymbol> keyDeclarations)
 		{
 
-		}
-
-		
+		}	
 	}
 }

@@ -52,27 +52,38 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			{
 				case RefIntegrityDacKeyType.PrimaryKey 
 				when keyNode.Identifier.Text != TypeNames.PrimaryKeyClassName:
+					{
+						var codeActionTitle = nameof(Resources.PX1036PKFix).GetLocalized().ToString();
+						var codeAction = CodeAction.Create(codeActionTitle,
+														   cancellation => ChangeKeyNameAsync(context.Document, root, keyNode, TypeNames.PrimaryKeyClassName, cancellation),
+														   equivalenceKey: codeActionTitle);
 
-                    var codeActionTitle = nameof(Resources.PX1036PKFix).GetLocalized().ToString();
-                    var codeAction = CodeAction.Create(codeActionTitle,
-                                                       cancellation => ChangePrimaryKeyNameAsync(context.Document, root, keyNode, cancellation),
-                                                       equivalenceKey: codeActionTitle);
+						context.RegisterCodeFix(codeAction, context.Diagnostics);
+						return;
+					}
+				case RefIntegrityDacKeyType.UniqueKey
+				when keyNode.Identifier.Text != TypeNames.UniqueKeyClassName:
+					{
+						var codeActionTitle = nameof(Resources.PX1036UKFix).GetLocalized().ToString();
+						var codeAction = CodeAction.Create(codeActionTitle,
+														   cancellation => ChangeKeyNameAsync(context.Document, root, keyNode, TypeNames.UniqueKeyClassName, cancellation),
+														   equivalenceKey: codeActionTitle);
 
-                    context.RegisterCodeFix(codeAction, context.Diagnostics);
-                    return;
-
-                case RefIntegrityDacKeyType.ForeignKey:
+						context.RegisterCodeFix(codeAction, context.Diagnostics);
+						return;
+					}
+				case RefIntegrityDacKeyType.ForeignKey:
                     //TODO add fix for foreign key 
 					break;
 			}     
 		}
 
-		private Task<Document> ChangePrimaryKeyNameAsync(Document document, SyntaxNode root, ClassDeclarationSyntax primaryKeyNode,
-														 CancellationToken cancellation)
+		private Task<Document> ChangeKeyNameAsync(Document document, SyntaxNode root, ClassDeclarationSyntax primaryKeyNode, string newKeyName,
+												  CancellationToken cancellation)
 		{
 			cancellation.ThrowIfCancellationRequested();
 			var primaryKeyNodeWithNewName = primaryKeyNode.WithIdentifier(
-																SyntaxFactory.Identifier(TypeNames.PrimaryKeyClassName));
+																SyntaxFactory.Identifier(newKeyName));
 
 			var newRoot = root.ReplaceNode(primaryKeyNode, primaryKeyNodeWithNewName);
 			var newDocument = document.WithSyntaxRoot(newRoot);
