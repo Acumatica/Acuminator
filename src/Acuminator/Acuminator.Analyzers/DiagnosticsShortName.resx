@@ -354,7 +354,10 @@
   <data name="PX1036FK" xml:space="preserve">
     <value>IncorrectDacForeignKeyName</value>
   </data>
-  <data name="PX1036UK" xml:space="preserve">
+  <data name="PX1036SingleUK" xml:space="preserve">
     <value>IncorrectDacUniqueKeyName</value>
+  </data>
+  <data name="PX1036MultipleUK" xml:space="preserve">
+    <value>IncorrectDacUniqueKeyDeclaration</value>
   </data>
 </root>

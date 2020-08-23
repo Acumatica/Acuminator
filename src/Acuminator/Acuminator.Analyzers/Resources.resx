@@ -595,10 +595,16 @@
   <data name="PX1034FixTemplateLine7" xml:space="preserve">
     <value>You can start with the following properties:</value>
   </data>
-  <data name="PX1036UKTitle" xml:space="preserve">
-    <value>The DAC unique key should be named "UK"</value>
+  <data name="PX1036SingleUKTitle" xml:space="preserve">
+    <value>The single unique key in the DAC should be named "UK"</value>
   </data>
-  <data name="PX1036UKFix" xml:space="preserve">
-    <value>Change the name of the unique key to "UK"</value>
+  <data name="PX1036SingleUKFix" xml:space="preserve">
+    <value>Change the name of the single unique key to "UK"</value>
+  </data>
+  <data name="PX1036MultipleUKTitle" xml:space="preserve">
+    <value>All unique keys in the DAC should be declared in a public static class named "UK"</value>
+  </data>
+  <data name="PX1036MultipleUKFix" xml:space="preserve">
+    <value>Place all unique keys in a public static class named "UK"</value>
   </data>
 </root>

@@ -875,6 +875,24 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Place all unique keys in a public static class named &quot;UK&quot;.
+        /// </summary>
+        public static string PX1036MultipleUKFix {
+            get {
+                return ResourceManager.GetString("PX1036MultipleUKFix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All unique keys in the DAC should be declared in a public static class named &quot;UK&quot;.
+        /// </summary>
+        public static string PX1036MultipleUKTitle {
+            get {
+                return ResourceManager.GetString("PX1036MultipleUKTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Change the name of the primary key to &quot;PK&quot;.
         /// </summary>
         public static string PX1036PKFix {
@@ -893,20 +911,20 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change the name of the unique key to &quot;UK&quot;.
+        ///   Looks up a localized string similar to Change the name of the single unique key to &quot;UK&quot;.
         /// </summary>
-        public static string PX1036UKFix {
+        public static string PX1036SingleUKFix {
             get {
-                return ResourceManager.GetString("PX1036UKFix", resourceCulture);
+                return ResourceManager.GetString("PX1036SingleUKFix", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The DAC unique key should be named &quot;UK&quot;.
+        ///   Looks up a localized string similar to The single unique key in the DAC should be named &quot;UK&quot;.
         /// </summary>
-        public static string PX1036UKTitle {
+        public static string PX1036SingleUKTitle {
             get {
-                return ResourceManager.GetString("PX1036UKTitle", resourceCulture);
+                return ResourceManager.GetString("PX1036SingleUKTitle", resourceCulture);
             }
         }
         

@@ -209,9 +209,13 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			Rule("PX1036", nameof(Resources.PX1036PKTitle).GetLocalized(), Category.Default, DiagnosticSeverity.Warning,
 				DiagnosticsShortName.PX1036PK);
 
-		public static DiagnosticDescriptor PX1036_WrongDacUniqueKeyName { get; } =
-			Rule("PX1036", nameof(Resources.PX1036UKTitle).GetLocalized(), Category.Default, DiagnosticSeverity.Warning,
-				DiagnosticsShortName.PX1036UK);
+		public static DiagnosticDescriptor PX1036_WrongDacSingleUniqueKeyName { get; } =
+			Rule("PX1036", nameof(Resources.PX1036SingleUKTitle).GetLocalized(), Category.Default, DiagnosticSeverity.Warning,
+				DiagnosticsShortName.PX1036SingleUK);
+
+		public static DiagnosticDescriptor PX1036_WrongDacMultipleUniqueKeyName { get; } =
+			Rule("PX1036", nameof(Resources.PX1036MultipleUKTitle).GetLocalized(), Category.Default, DiagnosticSeverity.Warning,
+				DiagnosticsShortName.PX1036MultipleUK);
 
 		public static DiagnosticDescriptor PX1036_WrongDacForeignKeyName { get; } =
 			Rule("PX1036", nameof(Resources.PX1036FKTitle).GetLocalized(), Category.Default, DiagnosticSeverity.Warning,
