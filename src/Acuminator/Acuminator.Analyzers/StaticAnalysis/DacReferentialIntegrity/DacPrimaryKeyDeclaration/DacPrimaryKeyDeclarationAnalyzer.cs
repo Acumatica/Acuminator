@@ -15,6 +15,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Acuminator.Utilities.Roslyn.Constants;
+using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 {
@@ -25,13 +26,30 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			(
 				Descriptors.PX1033_MissingDacPrimaryKeyDeclaration,
 				Descriptors.PX1035_MultiplePrimaryKeyDeclarationsInDac,
-				Descriptors.PX1036_WrongDacPrimaryKeyName
+				Descriptors.PX1036_WrongDacPrimaryKeyName,
+				Descriptors.PX1036_WrongDacSingleUniqueKeyName,
+				Descriptors.PX1036_WrongDacMultipleUniqueKeyName
 			);
 
 		protected override bool IsKeySymbolDefined(PXContext context) => context.ReferentialIntegritySymbols.IPrimaryKey != null;
 
-		protected override bool ShouldAnalyzeDac(PXContext context, DacSemanticModel dac) =>
-			 base.ShouldAnalyzeDac(context, dac) && dac.DacProperties.Count(property => property.IsKey) > 0;
+		protected override bool ShouldAnalyzeDac(PXContext context, DacSemanticModel dac)
+		{
+			if (!base.ShouldAnalyzeDac(context, dac))
+				return false;
+
+			bool hasKeys = false;
+
+			foreach (var key in dac.DacProperties.Where(property => property.IsKey))
+			{
+				hasKeys = true;
+
+				if (key.BoundType == BoundType.Unbound)
+					return false;				
+			}
+
+			return hasKeys;
+		}
 
 		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac)
 		{
@@ -51,13 +69,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 				case 2:
 					if (CheckThatAllPrimaryKeysHaveUniqueSetsOfFields(symbolContext, context, dac, keyDeclarations))
+					{
 						AnalyzeDeclarationOfTwoPrimaryKeys(symbolContext, context, dac, keyDeclarations[0], keyDeclarations[1]);
-					
+					}
+
 					return;
 
 				default:
 					if (CheckThatAllPrimaryKeysHaveUniqueSetsOfFields(symbolContext, context, dac, keyDeclarations))
+					{
 						CheckBigGroupOfKeysForPrimaryKeyAndUniqueKeysContainer(symbolContext, context, dac, keyDeclarations);
+					}
 
 					return;
 			}
@@ -192,7 +214,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		private void CheckBigGroupOfKeysForPrimaryKeyAndUniqueKeysContainer(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
 																			List<INamedTypeSymbol> keyDeclarations)
 		{
+			var primaryKey = keyDeclarations.Find(key => key.Name == TypeNames.PrimaryKeyClassName);
 
+			//If there is no primary key - suggest to rename one of the keys and quit
+			if (primaryKey == null)
+			{
+				keyDeclarations.ForEach(key => ReportKeyDeclarationWithWrongName(symbolContext, context, key, RefIntegrityDacKeyType.PrimaryKey));
+				return;
+			}
+
+			var uniqueKeysContainer = dac.Symbol.GetTypeMembers(TypeNames.UniqueKeyClassName)
+												.FirstOrDefault();
+			
 		}	
 	}
 }
