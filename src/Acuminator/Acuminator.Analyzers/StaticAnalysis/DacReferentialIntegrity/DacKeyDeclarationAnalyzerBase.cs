@@ -71,7 +71,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			dacKeyType switch
 			{
 				RefIntegrityDacKeyType.PrimaryKey => Descriptors.PX1036_WrongDacPrimaryKeyName,
-				RefIntegrityDacKeyType.UniqueKey  => Descriptors.PX1036_WrongDacUniqueKeyName,
+				RefIntegrityDacKeyType.UniqueKey  => Descriptors.PX1036_WrongDacSingleUniqueKeyName,
 				RefIntegrityDacKeyType.ForeignKey => Descriptors.PX1036_WrongDacForeignKeyName,
 				_ => null
 			};

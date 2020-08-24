@@ -28,7 +28,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				Descriptors.PX1035_MultiplePrimaryKeyDeclarationsInDac,
 				Descriptors.PX1036_WrongDacPrimaryKeyName,
 				Descriptors.PX1036_WrongDacSingleUniqueKeyName,
-				Descriptors.PX1036_WrongDacMultipleUniqueKeyName
+				Descriptors.PX1036_WrongDacMultipleUniqueKeyDeclarations
 			);
 
 		protected override bool IsKeySymbolDefined(PXContext context) => context.ReferentialIntegritySymbols.IPrimaryKey != null;
@@ -115,14 +115,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		{
 			var primaryKeysGroupedByFields = GetPrimaryKeysGroupedBySetOfFields(context, dac, keyDeclarations, symbolContext.CancellationToken);
 			var duplicateKeySets = primaryKeysGroupedByFields.Values.Where(keys => keys.Count > 1);
-			bool hasDuplicates = false;
+			bool allFieldsUnique = true;
 
 			// We group keys by sets of used fields and then report each set with duplicate keys separately,
 			// passing the locations of other duplicate fields in a set to code fix. 
 			// This way if there are two different sets of duplicate keys the code fix will affect only the set to which it was applied
 			foreach (List<INamedTypeSymbol> duplicateKeys in duplicateKeySets)
 			{
-				hasDuplicates = true;
+				allFieldsUnique = false;
 				var locations = duplicateKeys.Select(declaration => declaration.GetSyntax(symbolContext.CancellationToken))
 											 .OfType<ClassDeclarationSyntax>()
 											 .Select(keyClassDeclaration => keyClassDeclaration.Identifier.GetLocation() ??
@@ -141,7 +141,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				}
 			}
 
-			return hasDuplicates;
+			return allFieldsUnique;
 		}
 
 		private Dictionary<string, List<INamedTypeSymbol>> GetPrimaryKeysGroupedBySetOfFields(PXContext context, DacSemanticModel dac, List<INamedTypeSymbol> keyDeclarations,
@@ -223,9 +223,36 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				return;
 			}
 
-			var uniqueKeysContainer = dac.Symbol.GetTypeMembers(TypeNames.UniqueKeyClassName)
-												.FirstOrDefault();
-			
-		}	
+			INamedTypeSymbol uniqueKeysContainer = dac.Symbol.GetTypeMembers(TypeNames.UniqueKeyClassName)
+															 .FirstOrDefault();
+
+			//We can register code fix only if there is no UK nested type in DAC or there is a public static UK class. Otherwise we will break the code.
+			bool registerCodeFix = uniqueKeysContainer == null || 
+								   (uniqueKeysContainer.DeclaredAccessibility == Accessibility.Public && uniqueKeysContainer.IsStatic);
+
+			var keyDeclarationsNotInContainer = uniqueKeysContainer == null
+				? keyDeclarations.Where(key => key != primaryKey)
+				: keyDeclarations.Where(key => key != primaryKey &&
+											   key.ContainingType != uniqueKeysContainer &&
+											   !key.GetContainingTypes().Contains(uniqueKeysContainer));
+
+			var diagnosticProperty = ImmutableDictionary.Create<string, string>()
+														.Add(DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString());
+			Location dacLocation = dac.Node.GetLocation();
+			Location[] additionalLocations = new[] { dacLocation };
+
+			foreach (var key in keyDeclarationsNotInContainer)
+			{
+				var keyClassDeclaration = key.GetSyntax(symbolContext.CancellationToken) as ClassDeclarationSyntax;
+				var location = keyClassDeclaration?.Identifier.GetLocation() ?? keyClassDeclaration?.GetLocation();
+
+				if (location == null)
+					continue;
+
+				symbolContext.ReportDiagnosticWithSuppressionCheck(
+									Diagnostic.Create(Descriptors.PX1036_WrongDacMultipleUniqueKeyDeclarations, location, additionalLocations, diagnosticProperty),
+									context.CodeAnalysisSettings);			
+			}
+		}		
 	}
 }
