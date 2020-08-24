@@ -26,7 +26,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 		[EmbeddedFileData("Dac_MultiplePrimaryKeys.cs")]
 		public async Task Dac_MultiplePrimaryKeys(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
-				Descriptors.PX1035_MultiplePrimaryKeyDeclarationsInDac.CreateFor(
+				Descriptors.PX1035_MultipleKeyDeclarationsInDacWithSameFields.CreateFor(
 					location: (Line: 9, Column: 16),
 					extraLocations: new (int Line, int Column)[]
 					{
@@ -34,7 +34,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 						(Line: 19, Column: 16)
 					}),
 
-				Descriptors.PX1035_MultiplePrimaryKeyDeclarationsInDac.CreateFor(
+				Descriptors.PX1035_MultipleKeyDeclarationsInDacWithSameFields.CreateFor(
 					location: (Line: 14, Column: 16),
 					extraLocations: new (int Line, int Column)[]
 					{
@@ -42,7 +42,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 						(Line: 19, Column: 16)
 					}),
 
-				Descriptors.PX1035_MultiplePrimaryKeyDeclarationsInDac.CreateFor(
+				Descriptors.PX1035_MultipleKeyDeclarationsInDacWithSameFields.CreateFor(
 					location: (Line: 19, Column: 16),
 					extraLocations: new (int Line, int Column)[]
 					{

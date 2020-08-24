@@ -19,7 +19,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 	public class MultipleKeysInDacFix : CodeFixProvider
 	{
 		public override ImmutableArray<string> FixableDiagnosticIds { get; } = 
-			ImmutableArray.Create(Descriptors.PX1035_MultiplePrimaryKeyDeclarationsInDac.Id);
+			ImmutableArray.Create(Descriptors.PX1035_MultipleKeyDeclarationsInDacWithSameFields.Id);
 
 		public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 

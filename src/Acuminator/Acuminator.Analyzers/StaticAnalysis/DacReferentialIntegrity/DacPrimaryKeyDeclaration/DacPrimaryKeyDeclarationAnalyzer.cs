@@ -25,7 +25,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			ImmutableArray.Create
 			(
 				Descriptors.PX1033_MissingDacPrimaryKeyDeclaration,
-				Descriptors.PX1035_MultiplePrimaryKeyDeclarationsInDac,
+				Descriptors.PX1035_MultipleKeyDeclarationsInDacWithSameFields,
 				Descriptors.PX1036_WrongDacPrimaryKeyName,
 				Descriptors.PX1036_WrongDacSingleUniqueKeyName,
 				Descriptors.PX1036_WrongDacMultipleUniqueKeyDeclarations
@@ -68,7 +68,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 					return;
 
 				case 2:
-					if (CheckThatAllPrimaryKeysHaveUniqueSetsOfFields(symbolContext, context, dac, keyDeclarations))
+					if (CheckThatAllKeysHaveUniqueSetsOfFields(symbolContext, context, dac, keyDeclarations))
 					{
 						AnalyzeDeclarationOfTwoPrimaryKeys(symbolContext, context, dac, keyDeclarations[0], keyDeclarations[1]);
 					}
@@ -76,7 +76,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 					return;
 
 				default:
-					if (CheckThatAllPrimaryKeysHaveUniqueSetsOfFields(symbolContext, context, dac, keyDeclarations))
+					if (CheckThatAllKeysHaveUniqueSetsOfFields(symbolContext, context, dac, keyDeclarations))
 					{
 						CheckBigGroupOfKeysForPrimaryKeyAndUniqueKeysContainer(symbolContext, context, dac, keyDeclarations);
 					}
@@ -110,11 +110,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			}		
 		}
 
-		private bool CheckThatAllPrimaryKeysHaveUniqueSetsOfFields(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
-																   List<INamedTypeSymbol> keyDeclarations)
+		private bool CheckThatAllKeysHaveUniqueSetsOfFields(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
+															List<INamedTypeSymbol> keyDeclarations)
 		{
-			var primaryKeysGroupedByFields = GetPrimaryKeysGroupedBySetOfFields(context, dac, keyDeclarations, symbolContext.CancellationToken);
-			var duplicateKeySets = primaryKeysGroupedByFields.Values.Where(keys => keys.Count > 1);
+			var keysGroupedByFields = GetKeysGroupedBySetOfFields(dac, keyDeclarations, symbolContext.CancellationToken);
+			var duplicateKeySets = keysGroupedByFields.Values.Where(keys => keys.Count > 1);
 			bool allFieldsUnique = true;
 
 			// We group keys by sets of used fields and then report each set with duplicate keys separately,
@@ -136,7 +136,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 					var otherLocations = locations.Where((_, index) => index != i);
 
 					symbolContext.ReportDiagnosticWithSuppressionCheck(
-									Diagnostic.Create(Descriptors.PX1035_MultiplePrimaryKeyDeclarationsInDac, location, otherLocations),
+									Diagnostic.Create(Descriptors.PX1035_MultipleKeyDeclarationsInDacWithSameFields, location, otherLocations),
 									context.CodeAnalysisSettings);
 				}
 			}
@@ -144,19 +144,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return allFieldsUnique;
 		}
 
-		private Dictionary<string, List<INamedTypeSymbol>> GetPrimaryKeysGroupedBySetOfFields(PXContext context, DacSemanticModel dac, List<INamedTypeSymbol> keyDeclarations,
-																							  CancellationToken cancellationToken)
+		private Dictionary<string, List<INamedTypeSymbol>> GetKeysGroupedBySetOfFields(DacSemanticModel dac, List<INamedTypeSymbol> keyDeclarations,
+																					   CancellationToken cancellationToken)
 		{
-			var processedPrimaryKeysByHash = new Dictionary<string, List<INamedTypeSymbol>>(capacity: keyDeclarations.Count);
+			var processedKeysByHash = new Dictionary<string, List<INamedTypeSymbol>>(capacity: keyDeclarations.Count);
 
-			foreach (var primaryKey in keyDeclarations)
+			foreach (var primaryOrUniqueKey in keyDeclarations)
 			{
 				// We don't check custom IPrimaryKey implementations since it will be impossible to deduce referenced set of DAC fields in a general case.
 				// Instead we only analyze primary keys made with generic class By<,...,> or derived from it. This should handle 99% of PK use cases
-				var byType = primaryKey.GetBaseTypesAndThis()
-									   .OfType<INamedTypeSymbol>()
-									   .FirstOrDefault(type => type.Name == TypeNames.By_TypeName && !type.TypeArguments.IsDefaultOrEmpty &&
-															   type.TypeArguments.All(dacFieldArg => dac.FieldsByNames.ContainsKey(dacFieldArg.Name)));
+				var byType = primaryOrUniqueKey.GetBaseTypesAndThis()
+											   .OfType<INamedTypeSymbol>()
+											   .FirstOrDefault(type => type.Name == TypeNames.By_TypeName && !type.TypeArguments.IsDefaultOrEmpty &&
+																	   type.TypeArguments.All(dacFieldArg => dac.FieldsByNames.ContainsKey(dacFieldArg.Name)));
 				if (byType == null)
 					continue;
 
@@ -167,18 +167,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 									   .OrderBy(metadataName => metadataName)
 									   .Join(separator: ",");
 
-				if (processedPrimaryKeysByHash.TryGetValue(stringHash, out var processedKeysList))
+				if (processedKeysByHash.TryGetValue(stringHash, out var processedKeysList))
 				{
-					processedKeysList.Add(primaryKey);
+					processedKeysList.Add(primaryOrUniqueKey);
 				}
 				else
 				{
-					processedKeysList = new List<INamedTypeSymbol>(capacity: 1) { primaryKey };
-					processedPrimaryKeysByHash.Add(stringHash, processedKeysList);
+					processedKeysList = new List<INamedTypeSymbol>(capacity: 1) { primaryOrUniqueKey };
+					processedKeysByHash.Add(stringHash, processedKeysList);
 				}
 			}
 
-			return processedPrimaryKeysByHash;
+			return processedKeysByHash;
 		}
 
 		private void AnalyzeDeclarationOfTwoPrimaryKeys(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
