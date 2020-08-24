@@ -44,7 +44,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			{
 				hasKeys = true;
 
-				if (key.BoundType == BoundType.Unbound)
+				if (key.BoundType != BoundType.DbBound)
 					return false;				
 			}
 
