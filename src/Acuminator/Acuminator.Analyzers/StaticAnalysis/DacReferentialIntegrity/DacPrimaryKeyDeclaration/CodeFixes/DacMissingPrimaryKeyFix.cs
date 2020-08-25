@@ -108,7 +108,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		}
 
 		private SyntaxNode MakeBaseClassNode(SyntaxGenerator generator, PXContext pxContext, DacSemanticModel dacSemanticModel,
-												 List<DacPropertyInfo> dacKeys)
+											 List<DacPropertyInfo> dacKeys)
 		{
 			var primaryKeyOfTypeNode = generator.GenericName(pxContext.ReferentialIntegritySymbols.PrimaryKeyOf.Name,
 															 generator.TypeExpression(dacSemanticModel.Symbol));
@@ -141,8 +141,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			if (statementTooLongForOneLine)		
 			{
 				var trivia = dacSemanticModel.Node.GetLeadingTrivia()
-											  .Add(Whitespace("\t\t"))
-											  .Where(trivia => trivia.IsKind(SyntaxKind.WhitespaceTrivia));
+												  .Add(Whitespace("\t\t"))
+												  .Where(trivia => trivia.IsKind(SyntaxKind.WhitespaceTrivia));
 
 				findByInvocation = findByInvocation.WithLeadingTrivia(trivia);
 			}

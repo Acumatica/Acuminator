@@ -15,6 +15,8 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Editing;
+using Microsoft.CodeAnalysis.Formatting;
 
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
@@ -123,20 +125,20 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return Task.FromResult(newDocument);			
 		}
 
-		private Task<Document> MultipleUniqueKeyDeclarationsFixAsync(Document document, SyntaxNode root, ClassDeclarationSyntax keyNode,
-																	 ClassDeclarationSyntax dacNode, CancellationToken cancellation)
+		private async Task<Document> MultipleUniqueKeyDeclarationsFixAsync(Document document, SyntaxNode root, ClassDeclarationSyntax keyNode,
+																		   ClassDeclarationSyntax dacNode, CancellationToken cancellation)
 		{
 			var uniqueKeysContainer = dacNode.Members.OfType<ClassDeclarationSyntax>()
 													 .FirstOrDefault(nestedType => nestedType.Identifier.Text == TypeNames.UniqueKeyClassName);
 
 			SyntaxNode changedRoot = uniqueKeysContainer != null
 				? PlaceUniqueKeyIntoExistingContainer(root, keyNode, uniqueKeysContainer, cancellation)
-				: PlaceUniqueKeyIntoNewUniqueKeysContainer(root, keyNode, dacNode, cancellation);
-		
-			cancellation.ThrowIfCancellationRequested();
+				: PlaceUniqueKeyIntoNewUniqueKeysContainer(document, root, keyNode, dacNode, cancellation);
 
 			var newDocument = document.WithSyntaxRoot(changedRoot);
-			return Task.FromResult(newDocument);
+			var formattedDocument = await Formatter.FormatAsync(newDocument, Formatter.Annotation, cancellationToken: cancellation)
+												   .ConfigureAwait(false);
+			return formattedDocument;
 		}
 
 		private SyntaxNode PlaceUniqueKeyIntoExistingContainer(SyntaxNode root, ClassDeclarationSyntax keyNode, ClassDeclarationSyntax uniqueKeysContainer,
@@ -156,15 +158,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			cancellation.ThrowIfCancellationRequested();
 
-			var uniqueKeysContainerWithUniqueKey =
-				uniqueKeysContainerInChangedTree.WithMembers(
-						uniqueKeysContainerInChangedTree.Members.Insert(uniqueKeysContainerInChangedTree.Members.Count, keyNode));
+			var newMembersList = uniqueKeysContainerInChangedTree.Members.Insert(index: uniqueKeysContainerInChangedTree.Members.Count, keyNode);
+			var uniqueKeysContainerWithUniqueKey = uniqueKeysContainerInChangedTree.WithMembers(newMembersList)
+																				   .WithAdditionalAnnotations(Formatter.Annotation);
 
 			return trackingRoot.ReplaceNode(uniqueKeysContainerInChangedTree, uniqueKeysContainerWithUniqueKey);
 		}
 
-		private SyntaxNode PlaceUniqueKeyIntoNewUniqueKeysContainer(SyntaxNode root, ClassDeclarationSyntax keyNode, ClassDeclarationSyntax dacNode, 
-																	CancellationToken cancellation)
+		private SyntaxNode PlaceUniqueKeyIntoNewUniqueKeysContainer(Document document, SyntaxNode root, ClassDeclarationSyntax keyNode, 
+																	ClassDeclarationSyntax dacNode, CancellationToken cancellation)
 		{
 			SyntaxNode trackingRoot = root.TrackNodes(dacNode, keyNode);
 			dacNode = trackingRoot.GetCurrentNode(dacNode);
@@ -173,9 +175,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				return root;
 
 			int positionToInsertUK = GetPositionToInsertUKContainer(dacNode);
-			var uniqueKeyContainerNode = CreateUniqueKeysContainerClassNode(keyNode);
-			var newDacNode = dacNode.WithMembers(
-										dacNode.Members.Insert(positionToInsertUK, uniqueKeyContainerNode));
+			var generator = SyntaxGenerator.GetGenerator(document);
+			var uniqueKeyContainerNode = CreateUniqueKeysContainerClassNode(generator, keyNode)
+											.WithAdditionalAnnotations(Formatter.Annotation);
+			var newDacNode = generator.InsertMembers(dacNode, positionToInsertUK, uniqueKeyContainerNode);
 
 			cancellation.ThrowIfCancellationRequested();
 
@@ -201,20 +204,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return position;
 		}
 
-		private ClassDeclarationSyntax CreateUniqueKeysContainerClassNode(ClassDeclarationSyntax keyNode)
+		private ClassDeclarationSyntax CreateUniqueKeysContainerClassNode(SyntaxGenerator generator, ClassDeclarationSyntax keyNode)
 		{
-			ClassDeclarationSyntax ukClassDeclaration =
-				ClassDeclaration(TypeNames.UniqueKeyClassName)
-					.WithModifiers(
-						TokenList(
-							new[]{
-								Token(SyntaxKind.PublicKeyword),
-								Token(SyntaxKind.StaticKeyword)}))
-					.WithMembers(
-						SingletonList<MemberDeclarationSyntax>(keyNode))
-					.WithTrailingTrivia(EndOfLine(Environment.NewLine), EndOfLine(Environment.NewLine));
+			ClassDeclarationSyntax ukClassDeclaration = 
+				generator.ClassDeclaration(TypeNames.UniqueKeyClassName, typeParameters: null, 
+										   Accessibility.Public, DeclarationModifiers.Static, 
+										   members: keyNode.ToEnumerable()) as ClassDeclarationSyntax;
 
-			return ukClassDeclaration;
+			return ukClassDeclaration.WithTrailingTrivia(EndOfLine(Environment.NewLine));
 		}
 	}
 }
