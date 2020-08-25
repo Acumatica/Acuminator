@@ -71,6 +71,7 @@
     <Compile Include="DAC\Referential Integrity\DacForeignKeyDeclaration\SOLine_Without_ForeignKey.cs" />
     <Compile Include="DAC\Referential Integrity\DacForeignKeyDeclaration\SOOrder_Without_ForeignKey.cs" />
     <Compile Include="DAC\Referential Integrity\DacPrimaryKeyDeclaration\Dac_GoodPrimaryKey.cs" />
+    <Compile Include="DAC\Referential Integrity\DACUniqueKeysDeclaration\Dac_MultipleUniqueKeys_WrongDeclaration.cs" />
     <Compile Include="DAC\Referential Integrity\DacPrimaryKeyDeclaration\Dac_MultiplePrimaryKeys.cs" />
     <Compile Include="DAC\Referential Integrity\DacPrimaryKeyDeclaration\Dac_Without_PrimaryKey.cs" />
     <Compile Include="DAC\Referential Integrity\DacPrimaryKeyDeclaration\Dac_WrongPrimaryKeyName.cs" />
