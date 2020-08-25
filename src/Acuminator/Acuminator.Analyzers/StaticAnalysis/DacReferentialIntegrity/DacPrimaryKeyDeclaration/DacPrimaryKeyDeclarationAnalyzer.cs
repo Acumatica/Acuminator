@@ -238,7 +238,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			var diagnosticProperties = new Dictionary<string, string>
 			{
-				{ nameof(RefIntegrityDacKeyType),	  RefIntegrityDacKeyType.UniqueKey.ToString() },
+				{ nameof(RefIntegrityDacKeyType), RefIntegrityDacKeyType.UniqueKey.ToString() },
+				{ nameof(UniqueKeyCodeFixType), UniqueKeyCodeFixType.MultipleUniqueKeys.ToString() },
 				{ DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString() }
 			}
 			.ToImmutableDictionary();

@@ -13,4 +13,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		ForeignKey
 	}
+
+	/// <summary>
+	/// Values that represent types of unique key code fixes.
+	/// </summary>
+	public enum UniqueKeyCodeFixType
+	{
+		SingleUniqueKey,
+
+		MultipleUniqueKeys
+	}
 }

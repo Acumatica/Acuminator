@@ -66,39 +66,46 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 						context.RegisterCodeFix(codeAction, context.Diagnostics);
 						return;
 					}
-				case RefIntegrityDacKeyType.UniqueKey
-				when diagnostic.Descriptor == Descriptors.PX1036_WrongDacSingleUniqueKeyName && 
-					 keyNode.Identifier.Text != TypeNames.UniqueKeyClassName:
-					{
-						var codeActionTitle = nameof(Resources.PX1036SingleUKFix).GetLocalized().ToString();
-						var codeAction = CodeAction.Create(codeActionTitle,
-														   cancellation => ChangeKeyNameAsync(context.Document, root, keyNode, TypeNames.UniqueKeyClassName, cancellation),
-														   equivalenceKey: codeActionTitle);
+				case RefIntegrityDacKeyType.UniqueKey:
+					RegisterCodeFixForUniqueKeys(context, root, keyNode, diagnostic);
+					return;
 
-						context.RegisterCodeFix(codeAction, context.Diagnostics);
-						return;
-					}
-				case RefIntegrityDacKeyType.UniqueKey
-				when diagnostic.Descriptor == Descriptors.PX1036_WrongDacMultipleUniqueKeyDeclarations:
-					{
-						if (diagnostic.AdditionalLocations.IsNullOrEmpty() || diagnostic.AdditionalLocations[0] == null)
-							return;
-
-						if (!(root.FindNode(diagnostic.AdditionalLocations[0].SourceSpan) is ClassDeclarationSyntax dacNode))
-							return;
-
-						var codeActionTitle = nameof(Resources.PX1036MultipleUKFix).GetLocalized().ToString();
-						var codeAction = CodeAction.Create(codeActionTitle,
-														   cancellation => MultipleUniqueKeyDeclarationsFixAsync(context.Document, root, keyNode, dacNode, cancellation),
-														   equivalenceKey: codeActionTitle);
-
-						context.RegisterCodeFix(codeAction, context.Diagnostics);
-						return;
-					}
 				case RefIntegrityDacKeyType.ForeignKey:
                     //TODO add fix for foreign key 
 					break;
 			}     
+		}
+
+		private void RegisterCodeFixForUniqueKeys(CodeFixContext context, SyntaxNode root, ClassDeclarationSyntax keyNode, Diagnostic diagnostic)
+		{
+			bool isMultipleUniqueKeysFix = diagnostic.Properties.TryGetValue(nameof(UniqueKeyCodeFixType), out string uniqueCodeFixTypeString) &&
+										   !uniqueCodeFixTypeString.IsNullOrWhiteSpace() &&
+										   Enum.TryParse(uniqueCodeFixTypeString, out UniqueKeyCodeFixType uniqueCodeFixType) &&
+										   uniqueCodeFixType == UniqueKeyCodeFixType.MultipleUniqueKeys;
+			if (isMultipleUniqueKeysFix)
+			{
+				if (diagnostic.AdditionalLocations.IsNullOrEmpty() || diagnostic.AdditionalLocations[0] == null)
+					return;
+
+				if (!(root.FindNode(diagnostic.AdditionalLocations[0].SourceSpan) is ClassDeclarationSyntax dacNode))
+					return;
+
+				var codeActionTitle = nameof(Resources.PX1036MultipleUKFix).GetLocalized().ToString();
+				var codeAction = CodeAction.Create(codeActionTitle,
+												   cancellation => MultipleUniqueKeyDeclarationsFixAsync(context.Document, root, keyNode, dacNode, cancellation),
+												   equivalenceKey: codeActionTitle);
+
+				context.RegisterCodeFix(codeAction, context.Diagnostics);
+			}
+			else if (keyNode.Identifier.Text != TypeNames.UniqueKeyClassName)
+			{
+				var codeActionTitle = nameof(Resources.PX1036SingleUKFix).GetLocalized().ToString();
+				var codeAction = CodeAction.Create(codeActionTitle,
+												   cancellation => ChangeKeyNameAsync(context.Document, root, keyNode, TypeNames.UniqueKeyClassName, cancellation),
+												   equivalenceKey: codeActionTitle);
+
+				context.RegisterCodeFix(codeAction, context.Diagnostics);
+			}
 		}
 
 		private Task<Document> ChangeKeyNameAsync(Document document, SyntaxNode root, ClassDeclarationSyntax keyNode, string newKeyName,
@@ -166,9 +173,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				return root;
 
 			int positionToInsertUK = GetPositionToInsertUKContainer(dacNode);
-			var uniqueKeyContainerNode = CreateUniqueKeysContainerClassNode(keyNode, cancellation);
+			var uniqueKeyContainerNode = CreateUniqueKeysContainerClassNode(keyNode);
 			var newDacNode = dacNode.WithMembers(
 										dacNode.Members.Insert(positionToInsertUK, uniqueKeyContainerNode));
+
+			cancellation.ThrowIfCancellationRequested();
 
 			trackingRoot = trackingRoot.ReplaceNode(dacNode, newDacNode);
 			var keyNodeInChangedTree = trackingRoot.GetCurrentNode(keyNode);
@@ -192,10 +201,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return position;
 		}
 
-		private ClassDeclarationSyntax CreateUniqueKeysContainerClassNode(ClassDeclarationSyntax keyNode, CancellationToken cancellation)
+		private ClassDeclarationSyntax CreateUniqueKeysContainerClassNode(ClassDeclarationSyntax keyNode)
 		{
 			ClassDeclarationSyntax ukClassDeclaration =
-				ClassDeclaration(TypeNames.ForeignKeyClassName)
+				ClassDeclaration(TypeNames.UniqueKeyClassName)
 					.WithModifiers(
 						TokenList(
 							new[]{
