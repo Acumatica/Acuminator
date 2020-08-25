@@ -236,8 +236,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 											   key.ContainingType != uniqueKeysContainer &&
 											   !key.GetContainingTypes().Contains(uniqueKeysContainer));
 
-			var diagnosticProperty = ImmutableDictionary.Create<string, string>()
-														.Add(DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString());
+			var diagnosticProperties = new Dictionary<string, string>
+			{
+				{ nameof(RefIntegrityDacKeyType),	  RefIntegrityDacKeyType.UniqueKey.ToString() },
+				{ DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString() }
+			}
+			.ToImmutableDictionary();
+
 			Location dacLocation = dac.Node.GetLocation();
 			Location[] additionalLocations = new[] { dacLocation };
 
@@ -250,7 +255,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 					continue;
 
 				symbolContext.ReportDiagnosticWithSuppressionCheck(
-									Diagnostic.Create(Descriptors.PX1036_WrongDacMultipleUniqueKeyDeclarations, location, additionalLocations, diagnosticProperty),
+									Diagnostic.Create(Descriptors.PX1036_WrongDacMultipleUniqueKeyDeclarations, location, additionalLocations, diagnosticProperties),
 									context.CodeAnalysisSettings);			
 			}
 		}		
