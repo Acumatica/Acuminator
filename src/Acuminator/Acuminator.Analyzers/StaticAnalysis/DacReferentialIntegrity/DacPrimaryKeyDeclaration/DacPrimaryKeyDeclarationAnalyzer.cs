@@ -264,7 +264,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																		 List<INamedTypeSymbol> keyDeclarations)
 		{
 			string dacKeysHash = GetHashForDacKeys(dac);
-			bool hasSuitableUniqueKey = false;
 
 			foreach (INamedTypeSymbol uniqueKey in keyDeclarations)
 			{
@@ -272,16 +271,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 				string uniqueKeyHash = GetHashForSetOfDacFieldsUsedByKey(dac, uniqueKey);
 				
-				if (dacKeysHash == uniqueKeyHash)	//Report suitable unique keys for renaming
+				if (dacKeysHash == uniqueKeyHash)	
 				{
-					hasSuitableUniqueKey = true;
+					// Report suitable unique keys for renaming. 
+					// All key declarations were already checked for duplicates, therefore we can return after we find unique key with a suitable set of fields
 					ReportKeyDeclarationWithWrongName(symbolContext, context, uniqueKey, RefIntegrityDacKeyType.PrimaryKey);
+					return;
 				}
 			}
 
 			//If no suitable unique key is found then show diagnostic for missing primary key
-			if (!hasSuitableUniqueKey)
-				ReportNoPrimaryKeyDeclarationsInDac(symbolContext, context, dac);
+			ReportNoPrimaryKeyDeclarationsInDac(symbolContext, context, dac);
 		}
 
 		private string GetHashForDacKeys(DacSemanticModel dac)
