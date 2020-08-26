@@ -81,5 +81,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				RefIntegrityDacKeyType.ForeignKey => Descriptors.PX1036_WrongDacForeignKeyName,
 				_ => null
 			};
+
+		protected string GetHashForSetOfDacFields(IEnumerable<ITypeSymbol> dacFields) =>
+			dacFields.Select(dacField => dacField.MetadataName)
+					 .OrderBy(metadataName => metadataName)
+					 .Join(separator: ",");
 	}
 }

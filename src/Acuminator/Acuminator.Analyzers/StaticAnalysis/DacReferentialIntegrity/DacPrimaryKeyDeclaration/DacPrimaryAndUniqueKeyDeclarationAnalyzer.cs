@@ -316,10 +316,5 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			dacFields.Select(dacField => dacField.MetadataName)
 					 .OrderBy(metadataName => metadataName)
 					 .Join(separator: ",");
-
-		private string GetHashForSetOfDacFields(IEnumerable<ITypeSymbol> dacFields) =>
-			dacFields.Select(dacField => dacField.MetadataName)
-					 .OrderBy(metadataName => metadataName)
-					 .Join(separator: ",");
 	}
 }
