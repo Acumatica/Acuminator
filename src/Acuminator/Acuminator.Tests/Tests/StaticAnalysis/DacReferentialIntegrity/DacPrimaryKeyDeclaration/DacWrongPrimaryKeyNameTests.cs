@@ -20,7 +20,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 				new DacPrimaryAndUniqueKeyDeclarationAnalyzer());
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() =>
-			new IncorrectNameOfDacKeyFix();
+			new IncorrectDeclarationOfDacKeyFix();
 
 		[Theory]
 		[EmbeddedFileData("Dac_WrongPrimaryKeyName.cs")]
