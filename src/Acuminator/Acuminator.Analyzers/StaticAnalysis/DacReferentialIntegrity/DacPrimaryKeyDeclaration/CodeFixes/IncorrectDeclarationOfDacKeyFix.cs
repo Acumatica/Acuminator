@@ -43,8 +43,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
             var diagnostic = context.Diagnostics.FirstOrDefault(d => FixableDiagnosticIds.Contains(d.Id));
 
-            if (diagnostic == null || !diagnostic.IsRegisteredForCodeFix() || 
-				!diagnostic.Properties.TryGetValue(nameof(RefIntegrityDacKeyType), out string dacKeyTypeString) ||
+            if (diagnostic == null || diagnostic.AdditionalLocations.IsNullOrEmpty() || diagnostic.AdditionalLocations[0] == null ||
+				!diagnostic.IsRegisteredForCodeFix() || !diagnostic.Properties.TryGetValue(nameof(RefIntegrityDacKeyType), out string dacKeyTypeString) ||
                 dacKeyTypeString.IsNullOrWhiteSpace() || !Enum.TryParse(dacKeyTypeString, out RefIntegrityDacKeyType dacKeyType))
             {
                 return;
@@ -55,21 +55,30 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			if (!(root?.FindNode(context.Span) is ClassDeclarationSyntax keyNode))
 				return;
 
+			if (!(root.FindNode(diagnostic.AdditionalLocations[0].SourceSpan) is ClassDeclarationSyntax dacNode))
+				return;
+
 			switch (dacKeyType)
 			{
 				case RefIntegrityDacKeyType.PrimaryKey 
 				when keyNode.Identifier.Text != TypeNames.PrimaryKeyClassName:
 					{
-						var codeActionTitle = nameof(Resources.PX1036PKFix).GetLocalized().ToString();
+						bool shouldChangeLocation = keyNode.Parent != dacNode;  //We need to change location for primary key
+						string codeActionResourceName = shouldChangeLocation
+							? nameof(Resources.PX1036PK_ChangeNameAndLocationFix)
+							: nameof(Resources.PX1036PK_ChangeNameFix);
+
+						var codeActionTitle = codeActionResourceName.GetLocalized().ToString();
 						var codeAction = CodeAction.Create(codeActionTitle,
-														   cancellation => ChangeKeyNameAsync(context.Document, root, keyNode, TypeNames.PrimaryKeyClassName, cancellation),
+														   cancellation => ChangeKeyNameAsync(context.Document, dacNode, root, keyNode, 
+																							  TypeNames.PrimaryKeyClassName, shouldChangeLocation, cancellation),
 														   equivalenceKey: codeActionTitle);
 
 						context.RegisterCodeFix(codeAction, context.Diagnostics);
 						return;
 					}
 				case RefIntegrityDacKeyType.UniqueKey:
-					RegisterCodeFixForUniqueKeys(context, root, keyNode, diagnostic);
+					RegisterCodeFixForUniqueKeys(context, dacNode, root, keyNode,  diagnostic);
 					return;
 
 				case RefIntegrityDacKeyType.ForeignKey:
@@ -78,7 +87,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			}     
 		}
 
-		private void RegisterCodeFixForUniqueKeys(CodeFixContext context, SyntaxNode root, ClassDeclarationSyntax keyNode, Diagnostic diagnostic)
+		private void RegisterCodeFixForUniqueKeys(CodeFixContext context, ClassDeclarationSyntax dacNode, SyntaxNode root, ClassDeclarationSyntax keyNode, 
+												  Diagnostic diagnostic)
 		{
 			bool isMultipleUniqueKeysFix = diagnostic.Properties.TryGetValue(nameof(UniqueKeyCodeFixType), out string uniqueCodeFixTypeString) &&
 										   !uniqueCodeFixTypeString.IsNullOrWhiteSpace() &&
@@ -86,11 +96,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 										   uniqueCodeFixType == UniqueKeyCodeFixType.MultipleUniqueKeys;
 			if (isMultipleUniqueKeysFix)
 			{
-				if (diagnostic.AdditionalLocations.IsNullOrEmpty() || diagnostic.AdditionalLocations[0] == null)
-					return;
-
-				if (!(root.FindNode(diagnostic.AdditionalLocations[0].SourceSpan) is ClassDeclarationSyntax dacNode))
-					return;
+				
 
 				var codeActionTitle = nameof(Resources.PX1036MultipleUKFix).GetLocalized().ToString();
 				var codeAction = CodeAction.Create(codeActionTitle,
@@ -103,26 +109,51 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			{
 				var codeActionTitle = nameof(Resources.PX1036SingleUKFix).GetLocalized().ToString();
 				var codeAction = CodeAction.Create(codeActionTitle,
-												   cancellation => ChangeKeyNameAsync(context.Document, root, keyNode, TypeNames.UniqueKeyClassName, cancellation),
+												   cancellation => ChangeKeyNameAsync(context.Document, dacNode, root, keyNode, TypeNames.UniqueKeyClassName,
+																					  shouldChangeLocation: false, cancellation),
 												   equivalenceKey: codeActionTitle);
 
 				context.RegisterCodeFix(codeAction, context.Diagnostics);
 			}
 		}
 
-		private Task<Document> ChangeKeyNameAsync(Document document, SyntaxNode root, ClassDeclarationSyntax keyNode, string newKeyName,
-												  CancellationToken cancellation)
+		private async Task<Document> ChangeKeyNameAsync(Document document, ClassDeclarationSyntax dacNode, SyntaxNode root, ClassDeclarationSyntax keyNode,
+														string newKeyName, bool shouldChangeLocation, CancellationToken cancellation)
 		{
+			cancellation.ThrowIfCancellationRequested();			
+			ClassDeclarationSyntax keyNodeWithNewName = keyNode.WithIdentifier(Identifier(newKeyName));
+
+			if (!shouldChangeLocation)
+			{
+				var newRoot = root.ReplaceNode(keyNode, keyNodeWithNewName);
+				return document.WithSyntaxRoot(newRoot);
+			}
+
+			SyntaxNode trackingRoot = root.TrackNodes(dacNode, keyNode);
+			keyNode = trackingRoot.GetCurrentNode(keyNode);
+
+			if (keyNode == null)
+				return document;
+
+			trackingRoot = trackingRoot.RemoveNode(keyNode, SyntaxRemoveOptions.KeepNoTrivia | SyntaxRemoveOptions.KeepUnbalancedDirectives);
 			cancellation.ThrowIfCancellationRequested();
-			var keyNodeWithNewName = keyNode.WithIdentifier(
-													SyntaxFactory.Identifier(newKeyName));
+			dacNode = trackingRoot.GetCurrentNode(dacNode);
 
-			var newRoot = root.ReplaceNode(keyNode, keyNodeWithNewName);
-			var newDocument = document.WithSyntaxRoot(newRoot);
+			if (dacNode == null)
+				return document;
 
-			cancellation.ThrowIfCancellationRequested();
+			var generator = SyntaxGenerator.GetGenerator(document);
+			keyNodeWithNewName = keyNodeWithNewName.WithoutLeadingTrivia()
+												   .WithTrailingTrivia(EndOfLine(Environment.NewLine), EndOfLine(Environment.NewLine))
+												   .WithAdditionalAnnotations(Formatter.Annotation);
 
-			return Task.FromResult(newDocument);			
+			var newDacNode = generator.InsertMembers(dacNode, 0, keyNodeWithNewName);
+			trackingRoot = trackingRoot.ReplaceNode(dacNode, newDacNode);
+
+			var newDocument = document.WithSyntaxRoot(trackingRoot);
+			var formattedDocument = await Formatter.FormatAsync(newDocument, Formatter.Annotation, cancellationToken: cancellation)
+												   .ConfigureAwait(false);
+			return formattedDocument;
 		}
 
 		private async Task<Document> MultipleUniqueKeyDeclarationsFixAsync(Document document, SyntaxNode root, ClassDeclarationSyntax keyNode,
