@@ -893,11 +893,20 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change this key into the DAC&apos;s primary key &quot;PK&quot;.
+        /// </summary>
+        public static string PX1036PK_ChangeNameAndLocationFix {
+            get {
+                return ResourceManager.GetString("PX1036PK_ChangeNameAndLocationFix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Change the name of the primary key to &quot;PK&quot;.
         /// </summary>
-        public static string PX1036PKFix {
+        public static string PX1036PK_ChangeNameFix {
             get {
-                return ResourceManager.GetString("PX1036PKFix", resourceCulture);
+                return ResourceManager.GetString("PX1036PK_ChangeNameFix", resourceCulture);
             }
         }
         

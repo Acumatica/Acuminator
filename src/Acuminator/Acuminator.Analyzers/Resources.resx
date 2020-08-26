@@ -561,7 +561,7 @@
   <data name="PX1033Fix" xml:space="preserve">
     <value>Add a primary key declaration to the DAC</value>
   </data>
-  <data name="PX1036PKFix" xml:space="preserve">
+  <data name="PX1036PK_ChangeNameFix" xml:space="preserve">
     <value>Change the name of the primary key to "PK"</value>
   </data>
   <data name="PX1035Fix" xml:space="preserve">
@@ -606,5 +606,8 @@
   </data>
   <data name="PX1036MultipleUKFix" xml:space="preserve">
     <value>Place all unique keys in a public static class named "UK"</value>
+  </data>
+  <data name="PX1036PK_ChangeNameAndLocationFix" xml:space="preserve">
+    <value>Change this key into the DAC's primary key "PK"</value>
   </data>
 </root>
