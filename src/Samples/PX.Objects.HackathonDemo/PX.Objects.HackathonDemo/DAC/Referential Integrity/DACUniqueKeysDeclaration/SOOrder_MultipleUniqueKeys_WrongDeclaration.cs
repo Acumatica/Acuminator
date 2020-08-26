@@ -11,12 +11,12 @@ namespace PX.Objects.HackathonDemo.ReferentialIntegrity.MultipleUniqueKeys
 			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
 		}
 
-		public class PK1 : PrimaryKeyOf<SOOrder>.By<orderType>
+		public class UniqueKey1 : PrimaryKeyOf<SOOrder>.By<orderType>
 		{
 			public static SOOrder Find(PXGraph graph, string orderType) => FindBy(graph, orderType);
 		}
 
-		public class PK2 : PrimaryKeyOf<SOOrder>.By<orderType, orderNbr, status>
+		public class UniqueKey2 : PrimaryKeyOf<SOOrder>.By<orderType, orderNbr, status>
 		{
 			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr, string status) => FindBy(graph, orderType, orderNbr, status);
 		}

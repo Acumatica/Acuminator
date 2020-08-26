@@ -6,36 +6,36 @@ using PX.Objects.IN;
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.Sources
 {
 	[PXCacheName("INUnit")]
-	public partial class INUnit : IBqlTable
+	public partial class INUnitMultipleUniqueKeysGood : IBqlTable
 	{
-		public class PK : PrimaryKeyOf<INUnit>.By<recordID>
+		public class PK : PrimaryKeyOf<INUnitMultipleUniqueKeysGood>.By<recordID>
 		{
-			public static INUnit Find(PXGraph graph, long? recordID) => FindBy(graph, recordID);
+			public static INUnitMultipleUniqueKeysGood Find(PXGraph graph, long? recordID) => FindBy(graph, recordID);
 		}
 
 		public static class UK
 		{
-			public class ByGlobal : PrimaryKeyOf<INUnit>.By<unitType, fromUnit, toUnit>
+			public class ByGlobal : PrimaryKeyOf<INUnitMultipleUniqueKeysGood>.By<unitType, fromUnit, toUnit>
 			{
-				public static INUnit Find(PXGraph graph, string fromUnit, string toUnit) => FindBy(graph, INUnitType.Global, fromUnit, toUnit);			
+				public static INUnitMultipleUniqueKeysGood Find(PXGraph graph, string fromUnit, string toUnit) => FindBy(graph, INUnitType.Global, fromUnit, toUnit);			
 			}
 
-			public class ByInventory : PrimaryKeyOf<INUnit>.By<unitType, inventoryID, fromUnit>
+			public class ByInventory : PrimaryKeyOf<INUnitMultipleUniqueKeysGood>.By<unitType, inventoryID, fromUnit>
 			{
-				public static INUnit Find(PXGraph graph, int? inventoryID, string fromUnit) => FindBy(graph, INUnitType.InventoryItem, inventoryID, fromUnit);		
+				public static INUnitMultipleUniqueKeysGood Find(PXGraph graph, int? inventoryID, string fromUnit) => FindBy(graph, INUnitType.InventoryItem, inventoryID, fromUnit);		
 			}
 
-			public class ByItemClass : PrimaryKeyOf<INUnit>.By<unitType, itemClassID, fromUnit>
+			public class ByItemClass : PrimaryKeyOf<INUnitMultipleUniqueKeysGood>.By<unitType, itemClassID, fromUnit>
 			{
-				public static INUnit Find(PXGraph graph, int? itemClassID, string fromUnit) => FindBy(graph, INUnitType.ItemClass, itemClassID, fromUnit);
+				public static INUnitMultipleUniqueKeysGood Find(PXGraph graph, int? itemClassID, string fromUnit) => FindBy(graph, INUnitType.ItemClass, itemClassID, fromUnit);
 			}
 		}
 
 		public static class FK
 		{
-			public class ItemClass : INItemClass.PK.ForeignKeyOf<INUnit>.By<itemClassID> { }
+			public class ItemClass : INItemClass.PK.ForeignKeyOf<INUnitMultipleUniqueKeysGood>.By<itemClassID> { }
 
-			public class Inventory : InventoryItem.PK.ForeignKeyOf<INUnit>.By<inventoryID> { }
+			public class Inventory : InventoryItem.PK.ForeignKeyOf<INUnitMultipleUniqueKeysGood>.By<inventoryID> { }
 		}
 
 		#region RecordID
