@@ -11,6 +11,21 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.Sources
 			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
 		}
 
+		public class UK1 : PrimaryKeyOf<SOOrder>.By<orderType, orderNbr>
+		{
+			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
+		}
+
+		public class UK2 : PrimaryKeyOf<SOOrder>.By<orderType, orderNbr>
+		{
+			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
+		}
+
+		public class UK3 : PrimaryKeyOf<SOOrder>.By<orderType>
+		{
+			public static SOOrder Find(PXGraph graph, string orderType) => FindBy(graph, orderType);
+		}
+
 		[PXDBString(IsKey = true, InputMask = "")]
 		[PXDefault]
 		[PXUIField(DisplayName = "Order Type")]
