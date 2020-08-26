@@ -19,7 +19,7 @@ using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 {
-	public class DacPrimaryKeyDeclarationAnalyzer : DacKeyDeclarationAnalyzerBase
+	public class DacPrimaryAndUniqueKeyDeclarationAnalyzer : DacKeyDeclarationAnalyzerBase
 	{
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create

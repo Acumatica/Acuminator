@@ -16,7 +16,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 			new DacAnalyzersAggregator(
 				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
 											.WithSuppressionMechanismDisabled(),
-				new DacPrimaryKeyDeclarationAnalyzer());
+				new DacPrimaryAndUniqueKeyDeclarationAnalyzer());
 
 		[Theory]
 		[EmbeddedFileData("Dac_GoodPrimaryKey.cs")]

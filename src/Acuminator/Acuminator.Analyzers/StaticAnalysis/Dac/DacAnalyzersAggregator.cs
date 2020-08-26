@@ -46,7 +46,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.Dac
 			new LegacyBqlFieldAnalyzer(),
 			new MethodsUsageInDacAnalyzer(),
 			new KeyFieldDeclarationAnalyzer(),
-			new DacPrimaryKeyDeclarationAnalyzer(),
+			new DacPrimaryAndUniqueKeyDeclarationAnalyzer(),
 			new DacForeignKeyDeclarationAnalyzer(),
 			new DacExtensionDefaultAttributeAnalyzer(),
 			new NonNullableTypeForBqlFieldAnalyzer(),

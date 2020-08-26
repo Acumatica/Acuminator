@@ -17,7 +17,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 			new DacAnalyzersAggregator(
 				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
 											.WithSuppressionMechanismDisabled(),
-				new DacPrimaryKeyDeclarationAnalyzer());
+				new DacPrimaryAndUniqueKeyDeclarationAnalyzer());
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() =>
 			new IncorrectNameOfDacKeyFix();
