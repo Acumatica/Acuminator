@@ -46,24 +46,30 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 												  attribute.AttributeClass.InheritsFromOrEquals(pxPrimaryGraphAttribute)));
 		}
 
-		protected virtual void ReportKeyDeclarationWithWrongName(SymbolAnalysisContext symbolContext, PXContext context, INamedTypeSymbol keyDeclaration,
-														         RefIntegrityDacKeyType dacKeyType)
+		protected virtual void ReportKeyDeclarationWithWrongName(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
+																 INamedTypeSymbol keyDeclaration, RefIntegrityDacKeyType dacKeyType)
 		{
 			var keyDeclarationNode = keyDeclaration.GetSyntax(symbolContext.CancellationToken);
 			Location location = (keyDeclarationNode as ClassDeclarationSyntax)?.Identifier.GetLocation() ?? keyDeclarationNode?.GetLocation();
+			Location dacLocation = dac.Node.GetLocation();
 			DiagnosticDescriptor px1036Descriptor = GetWrongKeyNameDiagnosticDescriptor(dacKeyType);
 
-			if (location == null || px1036Descriptor == null)
+			if (location == null || dacLocation == null || px1036Descriptor == null)
 				return;
 
+			var additionalLocations = new[] { dacLocation };
 			var diagnosticProperties = new Dictionary<string, string>
 			{
 				{ nameof(RefIntegrityDacKeyType),  dacKeyType.ToString() }
-			}
-			.ToImmutableDictionary();
+			};
 
+			if (dacKeyType == RefIntegrityDacKeyType.UniqueKey)
+			{
+				diagnosticProperties.Add(nameof(UniqueKeyCodeFixType), UniqueKeyCodeFixType.SingleUniqueKey.ToString());
+			}
+			
 			symbolContext.ReportDiagnosticWithSuppressionCheck(
-										Diagnostic.Create(px1036Descriptor, location, diagnosticProperties),
+										Diagnostic.Create(px1036Descriptor, location, additionalLocations, diagnosticProperties.ToImmutableDictionary()),
 										context.CodeAnalysisSettings);
 		}
 

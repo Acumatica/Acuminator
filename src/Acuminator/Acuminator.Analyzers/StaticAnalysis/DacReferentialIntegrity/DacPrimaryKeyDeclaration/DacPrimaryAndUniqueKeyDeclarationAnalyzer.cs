@@ -110,7 +110,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				string keysHash = GetHashForDacKeys(dac);
 
 				if (keysHash == GetHashForSetOfDacFieldsUsedByKey(dac, keyDeclaration))
-					ReportKeyDeclarationWithWrongName(symbolContext, context, keyDeclaration, RefIntegrityDacKeyType.PrimaryKey);
+					ReportKeyDeclarationWithWrongName(symbolContext, context, dac, keyDeclaration, RefIntegrityDacKeyType.PrimaryKey);
 				else
 					ReportNoPrimaryKeyDeclarationsInDac(symbolContext, context, dac);
 			}		
@@ -206,7 +206,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			//The second key is a unique key. If it does not named "UK" we should rename it
 			if (uniqueKeyDeclaration.Name != TypeNames.UniqueKeyClassName)
 			{
-				ReportKeyDeclarationWithWrongName(symbolContext, context, uniqueKeyDeclaration, RefIntegrityDacKeyType.UniqueKey);
+				ReportKeyDeclarationWithWrongName(symbolContext, context, dac, uniqueKeyDeclaration, RefIntegrityDacKeyType.UniqueKey);
 			}			
 		}
 
@@ -275,7 +275,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				{
 					// Report suitable unique keys for renaming. 
 					// All key declarations were already checked for duplicates, therefore we can return after we find unique key with a suitable set of fields
-					ReportKeyDeclarationWithWrongName(symbolContext, context, uniqueKey, RefIntegrityDacKeyType.PrimaryKey);
+					ReportKeyDeclarationWithWrongName(symbolContext, context, dac, uniqueKey, RefIntegrityDacKeyType.PrimaryKey);
 					return;
 				}
 			}
