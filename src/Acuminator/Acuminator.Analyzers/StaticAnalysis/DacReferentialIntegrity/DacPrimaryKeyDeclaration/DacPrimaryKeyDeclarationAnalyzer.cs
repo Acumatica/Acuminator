@@ -55,7 +55,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			var keyDeclarations = GetPrimaryKeyDeclarations(context, dac, symbolContext.CancellationToken).ToList(capacity: 1);
+			var keyDeclarations = GetPrimaryAndUniqueKeyDeclarations(context, dac, symbolContext.CancellationToken).ToList(capacity: 1);
 
 			switch (keyDeclarations.Count)
 			{
@@ -64,13 +64,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 					return;
 
 				case 1:
-					AnalyzeSinglePrimaryKeyDeclaration(symbolContext, context, keyDeclarations[0]);
+					AnalyzeSinglePrimaryKeyDeclaration(symbolContext, context, dac, keyDeclarations[0]);
 					return;
 
 				case 2:
 					if (CheckThatAllKeysHaveUniqueSetsOfFields(symbolContext, context, dac, keyDeclarations))
 					{
-						AnalyzeDeclarationOfTwoPrimaryKeys(symbolContext, context, dac, keyDeclarations[0], keyDeclarations[1]);
+						AnalyzeDeclarationOfTwoPrimaryKeys(symbolContext, context, dac, keyDeclarations);
 					}
 
 					return;
@@ -85,7 +85,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			}
 		}
 
-		private IEnumerable<INamedTypeSymbol> GetPrimaryKeyDeclarations(PXContext context, DacSemanticModel dac, CancellationToken cancellationToken) =>
+		private IEnumerable<INamedTypeSymbol> GetPrimaryAndUniqueKeyDeclarations(PXContext context, DacSemanticModel dac, CancellationToken cancellationToken) =>
 			 dac.Symbol.GetFlattenedNestedTypes(shouldWalkThroughNestedTypesPredicate: nestedType => !nestedType.IsDacOrExtension(context),
 												cancellationToken)
 					   .Where(nestedType => nestedType.ImplementsInterface(context.ReferentialIntegritySymbols.IPrimaryKey));
@@ -102,11 +102,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			} 
 		}
 
-		private void AnalyzeSinglePrimaryKeyDeclaration(SymbolAnalysisContext symbolContext, PXContext context, INamedTypeSymbol keyDeclaration)
+		private void AnalyzeSinglePrimaryKeyDeclaration(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac, 
+														INamedTypeSymbol keyDeclaration)
 		{
 			if (keyDeclaration.Name != TypeNames.PrimaryKeyClassName)
 			{
-				ReportKeyDeclarationWithWrongName(symbolContext, context, keyDeclaration, RefIntegrityDacKeyType.PrimaryKey);
+				string keysHash = GetHashForDacKeys(dac);
+
+				if (keysHash == GetHashForSetOfDacFieldsUsedByKey(dac, keyDeclaration))
+					ReportKeyDeclarationWithWrongName(symbolContext, context, keyDeclaration, RefIntegrityDacKeyType.PrimaryKey);
+				else
+					ReportNoPrimaryKeyDeclarationsInDac(symbolContext, context, dac);
 			}		
 		}
 
@@ -151,21 +157,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			foreach (var primaryOrUniqueKey in keyDeclarations)
 			{
-				// We don't check custom IPrimaryKey implementations since it will be impossible to deduce referenced set of DAC fields in a general case.
-				// Instead we only analyze primary keys made with generic class By<,...,> or derived from it. This should handle 99% of PK use cases
-				var byType = primaryOrUniqueKey.GetBaseTypesAndThis()
-											   .OfType<INamedTypeSymbol>()
-											   .FirstOrDefault(type => type.Name == TypeNames.By_TypeName && !type.TypeArguments.IsDefaultOrEmpty &&
-																	   type.TypeArguments.All(dacFieldArg => dac.FieldsByNames.ContainsKey(dacFieldArg.Name)));
-				if (byType == null)
-					continue;
-
 				cancellationToken.ThrowIfCancellationRequested();
 
-				var stringHash = byType.TypeArguments
-									   .Select(dacFieldUsedByKey => dacFieldUsedByKey.MetadataName)
-									   .OrderBy(metadataName => metadataName)
-									   .Join(separator: ",");
+				var stringHash = GetHashForSetOfDacFieldsUsedByKey(dac, primaryOrUniqueKey);
+
+				if (stringHash == null)
+					continue;
 
 				if (processedKeysByHash.TryGetValue(stringHash, out var processedKeysList))
 				{
@@ -181,20 +178,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return processedKeysByHash;
 		}
 
-		private void AnalyzeDeclarationOfTwoPrimaryKeys(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
-														INamedTypeSymbol firstKeyDeclaration, INamedTypeSymbol secondKeyDeclaration)
+		private void AnalyzeDeclarationOfTwoPrimaryKeys(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac, 
+														List<INamedTypeSymbol> keyDeclarations)
 		{
+			INamedTypeSymbol firstKeyDeclaration = keyDeclarations[0];
+			INamedTypeSymbol secondKeyDeclaration = keyDeclarations[1];
+
 			var primaryKey = firstKeyDeclaration.Name == TypeNames.PrimaryKeyClassName
 				? firstKeyDeclaration
 				: secondKeyDeclaration.Name == TypeNames.PrimaryKeyClassName
 					? secondKeyDeclaration
 					: null;
 
-			//If there is no primary key - suggest to rename one of the keys and quit
 			if (primaryKey == null)
 			{
-				ReportKeyDeclarationWithWrongName(symbolContext, context, firstKeyDeclaration, RefIntegrityDacKeyType.PrimaryKey);
-				ReportKeyDeclarationWithWrongName(symbolContext, context, secondKeyDeclaration, RefIntegrityDacKeyType.PrimaryKey);
+				//If there is no primary key - try to find suitable unique key and rename it. Otherwise report no primary key in DAC
+				ProcessDacWithoutPrimaryKeyAndWithSeveralUniqueKeys(symbolContext, context, dac, keyDeclarations);
 				return;
 			}
 
@@ -215,11 +214,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																			List<INamedTypeSymbol> keyDeclarations)
 		{
 			var primaryKey = keyDeclarations.Find(key => key.Name == TypeNames.PrimaryKeyClassName);
-
-			//If there is no primary key - suggest to rename one of the keys and quit
+	
 			if (primaryKey == null)
 			{
-				keyDeclarations.ForEach(key => ReportKeyDeclarationWithWrongName(symbolContext, context, key, RefIntegrityDacKeyType.PrimaryKey));
+				//If there is no primary key - try to find suitable unique key and rename it. Otherwise report no primary key in DAC
+				ProcessDacWithoutPrimaryKeyAndWithSeveralUniqueKeys(symbolContext, context, dac, keyDeclarations);
 				return;
 			}
 
@@ -259,6 +258,68 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 									Diagnostic.Create(Descriptors.PX1036_WrongDacMultipleUniqueKeyDeclarations, location, additionalLocations, diagnosticProperties),
 									context.CodeAnalysisSettings);			
 			}
-		}		
+		}
+
+		private void ProcessDacWithoutPrimaryKeyAndWithSeveralUniqueKeys(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
+																		 List<INamedTypeSymbol> keyDeclarations)
+		{
+			string dacKeysHash = GetHashForDacKeys(dac);
+			bool hasSuitableUniqueKey = false;
+
+			foreach (INamedTypeSymbol uniqueKey in keyDeclarations)
+			{
+				symbolContext.CancellationToken.ThrowIfCancellationRequested();
+
+				string uniqueKeyHash = GetHashForSetOfDacFieldsUsedByKey(dac, uniqueKey);
+				
+				if (dacKeysHash == uniqueKeyHash)	//Report suitable unique keys for renaming
+				{
+					hasSuitableUniqueKey = true;
+					ReportKeyDeclarationWithWrongName(symbolContext, context, uniqueKey, RefIntegrityDacKeyType.PrimaryKey);
+				}
+			}
+
+			//If no suitable unique key is found then show diagnostic for missing primary key
+			if (!hasSuitableUniqueKey)
+				ReportNoPrimaryKeyDeclarationsInDac(symbolContext, context, dac);
+		}
+
+		private string GetHashForDacKeys(DacSemanticModel dac)
+		{
+			var dacKeys = dac.DacProperties.Where(property => property.IsKey)
+										   .Select(property => dac.FieldsByNames[property.Name].Symbol);
+
+			return GetHashForSetOfDacFields(dacKeys);
+		}
+
+		private string GetHashForSetOfDacFieldsUsedByKey(DacSemanticModel dac, INamedTypeSymbol primaryOrUniqueKey)
+		{
+			// We don't support custom IPrimaryKey implementations since it will be impossible to deduce referenced set of DAC fields in a general case.
+			// Instead we only analyze primary keys made with generic class By<,...,> or derived from it. This should handle 99% of PK use cases
+			var byType = primaryOrUniqueKey.GetBaseTypesAndThis()
+										   .OfType<INamedTypeSymbol>()
+										   .FirstOrDefault(type => type.Name == TypeNames.By_TypeName && !type.TypeArguments.IsDefaultOrEmpty &&
+																   type.TypeArguments.All(dacFieldArg => dac.FieldsByNames.ContainsKey(dacFieldArg.Name)));
+			return byType != null
+				? GetHashForSetOfDacFields(byType.TypeArguments)
+				: null;
+		}
+
+		/// <summary>
+		/// Gets string hash for set of DAC fields. This method is an optimization for <see cref="ImmutableArray{T}"/> which avoids boxing.
+		/// </summary>
+		/// <param name="dacFields">The DAC fields.</param>
+		/// <returns>
+		/// The hash for set of DAC fields.
+		/// </returns>
+		private string GetHashForSetOfDacFields(ImmutableArray<ITypeSymbol> dacFields) =>
+			dacFields.Select(dacField => dacField.MetadataName)
+					 .OrderBy(metadataName => metadataName)
+					 .Join(separator: ",");
+
+		private string GetHashForSetOfDacFields(IEnumerable<ITypeSymbol> dacFields) =>
+			dacFields.Select(dacField => dacField.MetadataName)
+					 .OrderBy(metadataName => metadataName)
+					 .Join(separator: ",");
 	}
 }
