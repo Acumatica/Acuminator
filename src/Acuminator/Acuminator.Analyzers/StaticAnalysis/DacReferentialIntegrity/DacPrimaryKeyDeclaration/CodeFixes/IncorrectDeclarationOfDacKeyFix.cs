@@ -96,8 +96,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 										   uniqueCodeFixType == UniqueKeyCodeFixType.MultipleUniqueKeys;
 			if (isMultipleUniqueKeysFix)
 			{
-				
-
 				var codeActionTitle = nameof(Resources.PX1036MultipleUKFix).GetLocalized().ToString();
 				var codeAction = CodeAction.Create(codeActionTitle,
 												   cancellation => MultipleUniqueKeyDeclarationsFixAsync(context.Document, root, keyNode, dacNode, cancellation),
