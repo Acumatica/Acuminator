@@ -29,7 +29,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 
 		[Theory]
 		[EmbeddedFileData(@"MissingPrimaryKey\SOOrder_NoPK_And_SingleUK_NotSuitableToBePK.cs")]
-		public async Task SOLine_WithoutPrimaryKey(string source) =>
+		public async Task SingleUK_WithoutPrimaryKey_NoUniqueKeySuitableToBePK(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1033_MissingDacPrimaryKeyDeclaration.CreateFor(7, 15));
 
@@ -42,7 +42,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 		[Theory]
 		[EmbeddedFileData(@"MissingPrimaryKey\SOOrder_NoPK_And_SingleUK_NotSuitableToBePK.cs",
 						  @"MissingPrimaryKey\SOOrder_NoPK_And_SingleUK_NotSuitableToBePK_Expected.cs")]
-		public async Task AddPrimaryKeyDeclaration_ToSOLine_VerifyCodeFix(string actual, string expected) =>
+		public async Task AddPrimaryKeyDeclaration_SingleUK_VerifyCodeFix(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected);
 	}
 }
