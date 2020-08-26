@@ -15,7 +15,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 			new DacAnalyzersAggregator(
 				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
 											.WithSuppressionMechanismDisabled(),
-				new DacPrimaryKeyDeclarationAnalyzer());
+				new DacPrimaryAndUniqueKeyDeclarationAnalyzer());
 
 		[Theory]
 		[EmbeddedFileData("Dac_SingleUniqueKey_Good.cs")]
@@ -23,7 +23,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
-		[EmbeddedFileData("Dac_MultipleUniqueKey_Good.cs")]
+		[EmbeddedFileData("Dac_MultipleUniqueKeys_Good.cs")]
 		public async Task Dac_WithCorrectPrimaryAndMultipleUniqueKeys_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 	}
