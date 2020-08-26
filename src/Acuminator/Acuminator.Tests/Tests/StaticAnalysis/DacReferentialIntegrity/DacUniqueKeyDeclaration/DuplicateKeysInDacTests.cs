@@ -23,7 +23,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 
 		[Theory]
 		[EmbeddedFileData(@"DuplicateKeys\Dac_DuplicateKeys.cs")]
-		public async Task Dac_MultiplePrimaryKeys(string source) =>
+		public async Task Dac_DuplicateUniqueKeys(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1035_MultipleKeyDeclarationsInDacWithSameFields.CreateFor(
 					location: (Line: 9, Column: 16),
@@ -51,7 +51,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 
 		[Theory]
 		[EmbeddedFileData(@"DuplicateKeys\Dac_DuplicateKeys.cs", @"DuplicateKeys\Dac_DuplicateKeys_Expected.cs")]
-		public async Task DeleteOtherPrimaryKeyDeclarations_VerifyCodeFix(string actual, string expected) =>
+		public async Task DeleteOtherDuplicateKeys_VerifyCodeFix(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected);
 	}
 }
