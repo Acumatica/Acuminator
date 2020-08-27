@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 {
-	public class DacPrimaryKeyWithUniqueKeysDeclarationTests : DiagnosticVerifier
+	public class DacCorrectPrimaryKeyWithUniqueKeysDeclarationTests : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new DacAnalyzersAggregator(
@@ -24,7 +24,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 
 		[Theory]
 		[EmbeddedFileData("Dac_MultipleUniqueKeys_Good.cs")]
-		public async Task Dac_WithCorrectPrimaryAndMultipleUniqueKeys_DoesntReportDiagnostic(string source) =>
+		public async Task INUnit_WithCorrectPrimaryAndMultipleUniqueKeys_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 	}
 }
