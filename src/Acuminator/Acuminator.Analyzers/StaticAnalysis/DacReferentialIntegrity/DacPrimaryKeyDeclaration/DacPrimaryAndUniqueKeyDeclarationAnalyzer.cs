@@ -268,7 +268,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			}
 			.ToImmutableDictionary();	
 			
-
 			foreach (Location keyLocation in keysNotInContainerLocations)
 			{
 				var otherKeyLocations = keysNotInContainerLocations.Where(location => location != keyLocation);
