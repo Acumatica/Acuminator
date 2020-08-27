@@ -902,7 +902,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change the name of the primary key to &quot;PK&quot;.
+        ///   Looks up a localized string similar to Change the name of this key to &quot;PK&quot;.
         /// </summary>
         public static string PX1036PK_ChangeNameFix {
             get {
@@ -911,7 +911,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The DAC must have one primary key which should be named &quot;PK&quot;.
+        ///   Looks up a localized string similar to The DAC must have one primary key which should be named &quot;PK&quot;. This key could be turned into a primary key for this DAC..
         /// </summary>
         public static string PX1036PKTitle {
             get {
