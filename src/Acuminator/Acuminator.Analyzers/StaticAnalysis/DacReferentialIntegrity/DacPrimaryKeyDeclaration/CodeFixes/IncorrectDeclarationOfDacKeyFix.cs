@@ -206,7 +206,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			cancellation.ThrowIfCancellationRequested();
 
-			var newMembersList = uniqueKeysContainerInChangedTree.Members.InsertRange(index: uniqueKeysContainerInChangedTree.Members.Count, keyNodesNotInUK);
+			var newMembersList = uniqueKeysContainerInChangedTree.Members.InsertRange(index: uniqueKeysContainerInChangedTree.Members.Count, 
+																					  keyNodesNotInUK.Select(RemoveStructuredTriviaFromKeyNode));
 			var uniqueKeysContainerWithUniqueKey = uniqueKeysContainerInChangedTree.WithMembers(newMembersList)
 																				   .WithAdditionalAnnotations(Formatter.Annotation);
 
@@ -259,9 +260,23 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			ClassDeclarationSyntax ukClassDeclaration = 
 				generator.ClassDeclaration(TypeNames.UniqueKeyClassName, typeParameters: null, 
 										   Accessibility.Public, DeclarationModifiers.Static, 
-										   members: keyNodesNotInUK) as ClassDeclarationSyntax;
+										   members: keyNodesNotInUK.Select(RemoveStructuredTriviaFromKeyNode)) as ClassDeclarationSyntax;
 
 			return ukClassDeclaration.WithTrailingTrivia(EndOfLine(Environment.NewLine));
+		}
+
+		private ClassDeclarationSyntax RemoveStructuredTriviaFromKeyNode(ClassDeclarationSyntax keyNode)
+		{
+			if (!keyNode.HasStructuredTrivia)
+				return keyNode;
+
+			var nonStructuredLeadingTrivia = keyNode.GetLeadingTrivia()
+													.Where(trivia => !trivia.HasStructure);
+			var nonStructuredTrailingTrivia = keyNode.GetTrailingTrivia()
+													 .Where(trivia => !trivia.HasStructure);
+
+			return keyNode.WithLeadingTrivia(nonStructuredLeadingTrivia)
+						  .WithTrailingTrivia(nonStructuredTrailingTrivia);
 		}
 	}
 }
