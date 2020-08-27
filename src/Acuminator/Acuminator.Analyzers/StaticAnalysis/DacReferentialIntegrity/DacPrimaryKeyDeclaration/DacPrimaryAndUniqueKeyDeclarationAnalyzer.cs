@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.Linq;
 
 using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
@@ -229,33 +230,52 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			bool registerCodeFix = uniqueKeysContainer == null || 
 								   (uniqueKeysContainer.DeclaredAccessibility == Accessibility.Public && uniqueKeysContainer.IsStatic);
 
-			var keyDeclarationsNotInContainer = uniqueKeysContainer == null
-				? keyDeclarations.Where(key => key != primaryKey)
-				: keyDeclarations.Where(key => key != primaryKey &&
-											   key.ContainingType != uniqueKeysContainer &&
-											   !key.GetContainingTypes().Contains(uniqueKeysContainer));
+			List<INamedTypeSymbol> keysNotInContainer;
 
+			if (uniqueKeysContainer == null)
+			{
+				keysNotInContainer = keyDeclarations.Where(key => key != primaryKey).ToList(capacity: keyDeclarations.Count - 1);
+			}
+			else
+			{
+				keysNotInContainer = keyDeclarations.Where(key => key != primaryKey &&
+																  key.ContainingType != uniqueKeysContainer &&
+																  !key.GetContainingTypes().Contains(uniqueKeysContainer))
+													.ToList(capacity: keyDeclarations.Count - 1);
+			}
+
+			if (keysNotInContainer.Count == 0)
+				return;
+
+			symbolContext.CancellationToken.ThrowIfCancellationRequested();
+			Location dacLocation = dac.Node.GetLocation();
+			var keysNotInContainerLocations = keysNotInContainer.Select(key => key.GetSyntax(symbolContext.CancellationToken))
+																.OfType<ClassDeclarationSyntax>()
+																.Select(keyClassDeclaration => keyClassDeclaration.Identifier.GetLocation() ??
+																							   keyClassDeclaration.GetLocation())
+																.Where(location => location != null)
+																.ToList(capacity: keysNotInContainer.Count);
+
+			if (dacLocation == null || keysNotInContainerLocations.Count == 0)
+				return;
+
+			var dacLocationArray = new[] { dacLocation };
 			var diagnosticProperties = new Dictionary<string, string>
 			{
 				{ nameof(RefIntegrityDacKeyType), RefIntegrityDacKeyType.UniqueKey.ToString() },
 				{ nameof(UniqueKeyCodeFixType), UniqueKeyCodeFixType.MultipleUniqueKeys.ToString() },
 				{ DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString() }
 			}
-			.ToImmutableDictionary();
+			.ToImmutableDictionary();	
+			
 
-			Location dacLocation = dac.Node.GetLocation();
-			Location[] additionalLocations = new[] { dacLocation };
-
-			foreach (var key in keyDeclarationsNotInContainer)
+			foreach (Location keyLocation in keysNotInContainerLocations)
 			{
-				var keyClassDeclaration = key.GetSyntax(symbolContext.CancellationToken) as ClassDeclarationSyntax;
-				var location = keyClassDeclaration?.Identifier.GetLocation() ?? keyClassDeclaration?.GetLocation();
-
-				if (location == null)
-					continue;
+				var otherKeyLocations = keysNotInContainerLocations.Where(location => location != keyLocation);
+				var additionalLocations = dacLocationArray.Concat(otherKeyLocations);
 
 				symbolContext.ReportDiagnosticWithSuppressionCheck(
-									Diagnostic.Create(Descriptors.PX1036_WrongDacMultipleUniqueKeyDeclarations, location, additionalLocations, diagnosticProperties),
+									Diagnostic.Create(Descriptors.PX1036_WrongDacMultipleUniqueKeyDeclarations, keyLocation, additionalLocations, diagnosticProperties),
 									context.CodeAnalysisSettings);			
 			}
 		}
