@@ -26,7 +26,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 		[EmbeddedFileData("Dac_WrongPrimaryKeyName.cs")]
 		public async Task Dac_WrongPrimaryKeyName(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
-				Descriptors.PX1036_WrongDacPrimaryKeyName.CreateFor((9, 16), extraLocation: (7, 15)));
+				Descriptors.PX1036_WrongDacPrimaryKeyName.CreateFor((9, 16), extraLocation: (6, 2)));
 
 		[Theory]
 		[EmbeddedFileData("Dac_WrongPrimaryKeyName.cs", "Dac_WrongPrimaryKeyName_Expected.cs")]

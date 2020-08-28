@@ -25,19 +25,22 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 		[EmbeddedFileData(@"TurnUniqueKeyIntoPrimaryKey\SOOrder_NoPK_OneKey.cs")]
 		public async Task Dac_NoPK_SingleUniqueKey(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
-				Descriptors.PX1036_WrongDacPrimaryKeyName.CreateFor(9, 16));
+				Descriptors.PX1036_WrongDacPrimaryKeyName.CreateFor(
+					location: (Line: 9, Column: 16), extraLocation: (Line: 6, Column: 2)));
 
 		[Theory]
 		[EmbeddedFileData(@"TurnUniqueKeyIntoPrimaryKey\SOOrder_NoPK_TwoKeys.cs")]
 		public async Task Dac_NoPK_TwoUniqueKeys(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
-				Descriptors.PX1036_WrongDacPrimaryKeyName.CreateFor(9, 16));
+				Descriptors.PX1036_WrongDacPrimaryKeyName.CreateFor(
+					location: (Line: 9, Column: 16), extraLocation: (Line: 6, Column: 2)));
 
 		[Theory]
 		[EmbeddedFileData(@"TurnUniqueKeyIntoPrimaryKey\INUnit_MultipleUniqueKeys_NoPK.cs")]
 		public async Task Dac_NoPK_MultipleUniqueKeys(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
-				Descriptors.PX1036_WrongDacPrimaryKeyName.CreateFor(13, 17));
+				Descriptors.PX1036_WrongDacPrimaryKeyName.CreateFor(
+					location: (Line: 13, Column: 17), extraLocation: (Line: 8, Column: 2)));
 
 		[Theory]
 		[EmbeddedFileData(@"TurnUniqueKeyIntoPrimaryKey\SOOrder_NoPK_OneKey.cs", @"TurnUniqueKeyIntoPrimaryKey\SOOrder_NoPK_OneKey_Expected.cs")]
