@@ -253,6 +253,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																.Select(keyClassDeclaration => keyClassDeclaration.Identifier.GetLocation() ??
 																							   keyClassDeclaration.GetLocation())
 																.Where(location => location != null)
+																.OrderBy(location => location.SourceSpan.Start)
 																.ToList(capacity: keysNotInContainer.Count);
 
 			if (dacLocation == null || keysNotInContainerLocations.Count == 0)

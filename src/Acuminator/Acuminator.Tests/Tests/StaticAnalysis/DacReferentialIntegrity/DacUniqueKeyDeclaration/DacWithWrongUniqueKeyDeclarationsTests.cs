@@ -25,22 +25,57 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 		[EmbeddedFileData(@"WrongUniqueKeyDeclaration\SOOrder_SingleUniqueKey_WrongName.cs")]
 		public async Task Dac_SingleUniqueKey_WrongName(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
-				Descriptors.PX1036_WrongDacSingleUniqueKeyName.CreateFor(14, 16));
+				Descriptors.PX1036_WrongDacSingleUniqueKeyName.CreateFor(
+					location: (Line: 14, Column: 16),
+					extraLocation: (Line: 6, Column: 2)));
 
 		[Theory]
 		[EmbeddedFileData(@"WrongUniqueKeyDeclaration\INUnit_MultipleKeys_AllNotInUK.cs")]
 		public async Task Dac_MultipleUniqueKeys_AllNotInUK(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
-				Descriptors.PX1036_WrongDacMultipleUniqueKeyDeclarations.CreateFor(11, 16),
-				Descriptors.PX1036_WrongDacMultipleUniqueKeyDeclarations.CreateFor(27, 17),
-				Descriptors.PX1036_WrongDacMultipleUniqueKeyDeclarations.CreateFor(33, 16));
+				Descriptors.PX1036_WrongDacMultipleUniqueKeyDeclarations.CreateFor(
+					location: (Line: 11, Column: 16),
+					extraLocations: new (int Line, int Column)[]
+					{
+						(Line: 8,  Column: 2),
+						(Line: 27, Column: 17),
+						(Line: 33, Column: 16)
+					}),
+				Descriptors.PX1036_WrongDacMultipleUniqueKeyDeclarations.CreateFor(
+					location: (Line: 27, Column: 17),
+					extraLocations: new (int Line, int Column)[]
+					{
+						(Line: 8,  Column: 2),
+						(Line: 11, Column: 16),
+						(Line: 33, Column: 16)
+					}),
+				Descriptors.PX1036_WrongDacMultipleUniqueKeyDeclarations.CreateFor(
+					location: (Line: 33, Column: 16),
+					extraLocations: new (int Line, int Column)[]
+					{
+						(Line: 8,  Column: 2),
+						(Line: 11, Column: 16),
+						(Line: 27, Column: 17)
+					}));
 
 		[Theory]
 		[EmbeddedFileData(@"WrongUniqueKeyDeclaration\INUnit_MultipleKeys_SomeNotInUK.cs")]
 		public async Task Dac_MultipleUniqueKeys_SomeNotInUK(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
-				Descriptors.PX1036_WrongDacMultipleUniqueKeyDeclarations.CreateFor(30, 17),
-				Descriptors.PX1036_WrongDacMultipleUniqueKeyDeclarations.CreateFor(36, 16));
+				Descriptors.PX1036_WrongDacMultipleUniqueKeyDeclarations.CreateFor(
+					location: (Line: 30, Column: 17),
+					extraLocations: new (int Line, int Column)[]
+					{
+						(Line: 8,  Column: 2),
+						(Line: 36, Column: 16)
+					}),
+				Descriptors.PX1036_WrongDacMultipleUniqueKeyDeclarations.CreateFor(
+					location: (Line: 36, Column: 16),
+					extraLocations: new (int Line, int Column)[]
+					{
+						(Line: 8,  Column: 2),
+						(Line: 30, Column: 17)
+					}));
 
 		[Theory]
 		[EmbeddedFileData(@"WrongUniqueKeyDeclaration\SOOrder_SingleUniqueKey_WrongName.cs", 
