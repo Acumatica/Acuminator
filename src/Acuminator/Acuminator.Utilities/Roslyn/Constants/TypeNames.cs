@@ -12,6 +12,11 @@ namespace Acuminator.Utilities.Roslyn.Constants
 		public const string PrimaryKeyClassName = "PK";
 
 		/// <summary>
+		/// The mandatory name of the unique key class in DAC.
+		/// </summary>
+		public const string UniqueKeyClassName = "UK";
+
+		/// <summary>
 		/// The mandatory name of the foreign key class in DAC.
 		/// </summary>
 		public const string ForeignKeyClassName = "FK";

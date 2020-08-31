@@ -4,21 +4,16 @@ using PX.Data.ReferentialIntegrity.Attributes;
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.Sources
 {
 	[PXCacheName("SO Order")]
-	public class SOOrder : IBqlTable
+	public class SOOrderNoPKAndSingleUKNotSuitableToBePK : IBqlTable
 	{
-		public class PK : PrimaryKeyOf<SOOrder>.By<orderType, orderNbr>
+		public class PK : PrimaryKeyOf<SOOrderNoPKAndSingleUKNotSuitableToBePK>.By<orderType, orderNbr>
 		{
-			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
+			public static SOOrderNoPKAndSingleUKNotSuitableToBePK Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
 		}
 
-		public class PK1 : PrimaryKeyOf<SOOrder>.By<orderType, orderNbr>
+		public class UK : PrimaryKeyOf<SOOrderNoPKAndSingleUKNotSuitableToBePK>.By<orderType, status>
 		{
-			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
-		}
-
-		public class PK2 : PrimaryKeyOf<SOOrder>.By<orderType, orderNbr>
-		{
-			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
+			public static SOOrderNoPKAndSingleUKNotSuitableToBePK Find(PXGraph graph, string orderType, string status) => FindBy(graph, orderType, status);
 		}
 
 		[PXDBString(IsKey = true, InputMask = "")]

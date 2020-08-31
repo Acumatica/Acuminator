@@ -4,11 +4,11 @@ using PX.Data.ReferentialIntegrity.Attributes;
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.Sources
 {
 	[PXCacheName("SO Order")]
-	public class SOOrder : IBqlTable
+	public class SOOrderNoPKOneKey : IBqlTable
 	{
-		public class PK : PrimaryKeyOf<SOOrder>.By<orderType, orderNbr>
+		public class PK : PrimaryKeyOf<SOOrderNoPKOneKey>.By<orderType, orderNbr>
 		{
-			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
+			public static SOOrderNoPKOneKey Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
 		}
 
 		[PXDBString(IsKey = true, InputMask = "")]

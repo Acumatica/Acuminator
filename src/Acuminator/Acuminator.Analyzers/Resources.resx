@@ -550,10 +550,10 @@
     <value>The DAC does not have an explicit foreign key declaration</value>
   </data>
   <data name="PX1035Title" xml:space="preserve">
-    <value>The DAC has multiple primary key declarations</value>
+    <value>The DAC has multiple key declarations which use the same set of fields</value>
   </data>
   <data name="PX1036PKTitle" xml:space="preserve">
-    <value>The DAC primary key should be named "PK"</value>
+    <value>The DAC must have one primary key which should be named "PK". This key could be turned into a primary key for this DAC.</value>
   </data>
   <data name="PX1036FKTitle" xml:space="preserve">
     <value>The class containing DAC foreign keys should be named "FK"</value>
@@ -561,11 +561,11 @@
   <data name="PX1033Fix" xml:space="preserve">
     <value>Add a primary key declaration to the DAC</value>
   </data>
-  <data name="PX1036PKFix" xml:space="preserve">
-    <value>Change the name of the primary key to "PK"</value>
+  <data name="PX1036PK_ChangeNameFix" xml:space="preserve">
+    <value>Change the name of this key to "PK"</value>
   </data>
   <data name="PX1035Fix" xml:space="preserve">
-    <value>Remove the rest of primary key declarations from the DAC</value>
+    <value>Remove other key declarations that use the same fields from the DAC</value>
   </data>
   <data name="PX1034Fix" xml:space="preserve">
     <value>Add a foreign key declaration template to the DAC</value>
@@ -594,5 +594,20 @@
   </data>
   <data name="PX1034FixTemplateLine7" xml:space="preserve">
     <value>You can start with the following properties:</value>
+  </data>
+  <data name="PX1036SingleUKTitle" xml:space="preserve">
+    <value>The single unique key in the DAC should be named "UK"</value>
+  </data>
+  <data name="PX1036SingleUKFix" xml:space="preserve">
+    <value>Change the name of the single unique key to "UK"</value>
+  </data>
+  <data name="PX1036MultipleUKTitle" xml:space="preserve">
+    <value>All unique keys in the DAC should be declared in a public static class named "UK"</value>
+  </data>
+  <data name="PX1036MultipleUKFix" xml:space="preserve">
+    <value>Place all unique keys in a public static class named "UK"</value>
+  </data>
+  <data name="PX1036PK_ChangeNameAndLocationFix" xml:space="preserve">
+    <value>Change this key into the DAC's primary key "PK"</value>
   </data>
 </root>

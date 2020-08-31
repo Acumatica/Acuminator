@@ -367,7 +367,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MultiplePrimaryKeyDeclarations.
+        ///   Looks up a localized string similar to MultipleKeyDeclarationsWithSameFields.
         /// </summary>
         public static string PX1035 {
             get {
@@ -385,11 +385,29 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to IncorrectDacUniqueKeyDeclaration.
+        /// </summary>
+        public static string PX1036MultipleUK {
+            get {
+                return ResourceManager.GetString("PX1036MultipleUK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to IncorrectDacPrimaryKeyName.
         /// </summary>
         public static string PX1036PK {
             get {
                 return ResourceManager.GetString("PX1036PK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IncorrectDacUniqueKeyName.
+        /// </summary>
+        public static string PX1036SingleUK {
+            get {
+                return ResourceManager.GetString("PX1036SingleUK", resourceCulture);
             }
         }
         

@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 
+using Acuminator.Utilities.Common;
+
 namespace Acuminator.Tests.Verification
 {
 	public static class DiagnosticResultExtensions
@@ -25,15 +27,11 @@ namespace Acuminator.Tests.Verification
 
 		public static DiagnosticResult CreateFor(this DiagnosticDescriptor descriptor,
 			(int Line, int Column) location,
-			IEnumerable<(int Line, int Column)> extraLocations,
+			IReadOnlyList<(int Line, int Column)> extraLocations,
 			params object[] messageArgs)
 		{
-			var mergedLocations = new List<(int Line, int Column)>
-			{
-				location
-			};
-			mergedLocations.AddRange(extraLocations.ToList());
-			return CreateDiagnosticResult(descriptor, null, mergedLocations);
+			var mergedLocations = extraLocations.Prepend(location).ToList(capacity: extraLocations.Count + 1);
+			return CreateDiagnosticResult(descriptor, messageArgs, mergedLocations);
 		}
 
 		private static DiagnosticResult CreateDiagnosticResult(DiagnosticDescriptor descriptor,
@@ -47,6 +45,7 @@ namespace Acuminator.Tests.Verification
 				Message = messageArgs == null || messageArgs.Length == 0
 					? descriptor.Title.ToString()
 					: String.Format(descriptor.MessageFormat.ToString(), messageArgs),
+
 				Locations = locations.Select(l => new DiagnosticResultLocation("Test0.cs", l.Line, l.Column)).ToArray()
 			};
 		}

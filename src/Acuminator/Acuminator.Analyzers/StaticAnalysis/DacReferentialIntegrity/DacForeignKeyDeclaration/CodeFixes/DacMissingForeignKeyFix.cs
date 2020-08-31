@@ -91,9 +91,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																 CancellationToken cancellation)
 		{
 			var primaryKeySymbol = pxContext.ReferentialIntegritySymbols.IPrimaryKey;
-
-			if (primaryKeySymbol == null)
-				return 0;
+			int? lastPrimaryOrUniqueKeyIndex = null;
 
 			for (int i = 0; i < dacNode.Members.Count; i++)
 			{
@@ -102,13 +100,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 				var nestedTypeSymbol = semanticModel.GetDeclaredSymbol(nestedType, cancellation);
 
-				if (nestedTypeSymbol != null && nestedTypeSymbol.ImplementsInterface(primaryKeySymbol))
+				if (nestedTypeSymbol == null)
+					continue;
+
+				bool isUniqueKeysContainer = nestedTypeSymbol.Name == TypeNames.UniqueKeyClassName &&
+											 nestedTypeSymbol.DeclaredAccessibility == Accessibility.Public && nestedTypeSymbol.IsStatic;  
+				
+				if (isUniqueKeysContainer || (primaryKeySymbol != null && nestedTypeSymbol.ImplementsInterface(primaryKeySymbol)))
 				{
-					return i + 1;
+					lastPrimaryOrUniqueKeyIndex = i + 1;
 				}
 			}
 
-			return 0;
+			return lastPrimaryOrUniqueKeyIndex ?? 0;
 		}
 
 		private ClassDeclarationSyntax CreateForeignKeysContainerClassNode(PXContext pxContext, INamedTypeSymbol dacTypeSymbol, CancellationToken cancellation)
@@ -152,7 +156,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			AttributeInformation attributeInformation = new AttributeInformation(pxContext);
 			var dacPropertiesWithForeignKeys = 
 				from dacProperty in dacSemanticModel.DacProperties
-				where !dacProperty.Attributes.IsDefaultOrEmpty &&
+				where !dacProperty.Attributes.IsDefaultOrEmpty && 
+					   dacProperty.BoundType == BoundType.DbBound &&								//only Bound FKs should work correctly
 					   dacProperty.Attributes.Any(attribute => IsForeignKeyAttribute(attribute))
 				orderby dacProperty.DeclarationOrder ascending
 				select dacProperty;

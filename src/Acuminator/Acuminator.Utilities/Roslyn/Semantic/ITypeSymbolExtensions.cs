@@ -86,22 +86,38 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		{
 			type.ThrowOnNull(nameof(type));
 			cancellationToken.ThrowIfCancellationRequested();
-			return GetFlattenedNestedTypesImplementation();
+			return type.GetFlattenedNestedTypesImplementation(shouldWalkThroughNestedTypesPredicate: null, cancellationToken);			
+		}
 
-			//-----------------------------------------------------Local Function-------------------------------------------------------------
-			IEnumerable<INamedTypeSymbol> GetFlattenedNestedTypesImplementation()
+		public static IEnumerable<INamedTypeSymbol> GetFlattenedNestedTypes(this ITypeSymbol type, Func<ITypeSymbol, bool> shouldWalkThroughNestedTypesPredicate, 
+																			CancellationToken cancellationToken)
+		{
+			type.ThrowOnNull(nameof(type));
+			cancellationToken.ThrowIfCancellationRequested();
+			shouldWalkThroughNestedTypesPredicate.ThrowOnNull(nameof(shouldWalkThroughNestedTypesPredicate));
+
+			return type.GetFlattenedNestedTypesImplementation(shouldWalkThroughNestedTypesPredicate, cancellationToken);
+		}
+
+		private static IEnumerable<INamedTypeSymbol> GetFlattenedNestedTypesImplementation(this ITypeSymbol type, 
+																						   Func<ITypeSymbol, bool> shouldWalkThroughNestedTypesPredicate,
+																						   CancellationToken cancellationToken)
+		{
+			var nestedTypes = type.GetTypeMembers();
+
+			if (nestedTypes.IsDefaultOrEmpty)
+				yield break;
+
+			var typesQueue = new Queue<INamedTypeSymbol>(nestedTypes);
+
+			while (typesQueue.Count > 0)
 			{
-				var nestedTypes = type.GetTypeMembers();
+				cancellationToken.ThrowIfCancellationRequested();
+				var currentType = typesQueue.Dequeue();
+				bool shouldWalkThroughChildNestedTypes = shouldWalkThroughNestedTypesPredicate?.Invoke(currentType) ?? true;
 
-				if (nestedTypes.IsDefaultOrEmpty)
-					yield break;
-
-				var typesQueue = new Queue<INamedTypeSymbol>(nestedTypes);
-
-				while (typesQueue.Count > 0)
+				if (shouldWalkThroughChildNestedTypes)
 				{
-					cancellationToken.ThrowIfCancellationRequested();
-					var currentType = typesQueue.Dequeue();
 					var declaredNestedTypes = currentType.GetTypeMembers();
 
 					if (!declaredNestedTypes.IsDefaultOrEmpty)
@@ -111,12 +127,12 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 							typesQueue.Enqueue(nestedType);
 						}
 					}
-
-					yield return currentType;
 				}
+
+				yield return currentType;
 			}
 		}
-	
+
 		public static IEnumerable<ITypeSymbol> GetContainingTypesAndThis(this ITypeSymbol type)
 		{
 			var current = type;

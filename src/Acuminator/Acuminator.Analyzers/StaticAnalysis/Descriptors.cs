@@ -201,13 +201,21 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			Rule("PX1034", nameof(Resources.PX1034Title).GetLocalized(), Category.Default, DiagnosticSeverity.Info,
 				DiagnosticsShortName.PX1034);
 
-		public static DiagnosticDescriptor PX1035_MultiplePrimaryKeyDeclarationsInDac { get; } =
+		public static DiagnosticDescriptor PX1035_MultipleKeyDeclarationsInDacWithSameFields { get; } =
 			Rule("PX1035", nameof(Resources.PX1035Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning,
 				DiagnosticsShortName.PX1035);
 
 		public static DiagnosticDescriptor PX1036_WrongDacPrimaryKeyName { get; } =
 			Rule("PX1036", nameof(Resources.PX1036PKTitle).GetLocalized(), Category.Default, DiagnosticSeverity.Warning,
 				DiagnosticsShortName.PX1036PK);
+
+		public static DiagnosticDescriptor PX1036_WrongDacSingleUniqueKeyName { get; } =
+			Rule("PX1036", nameof(Resources.PX1036SingleUKTitle).GetLocalized(), Category.Default, DiagnosticSeverity.Warning,
+				DiagnosticsShortName.PX1036SingleUK);
+
+		public static DiagnosticDescriptor PX1036_WrongDacMultipleUniqueKeyDeclarations { get; } =
+			Rule("PX1036", nameof(Resources.PX1036MultipleUKTitle).GetLocalized(), Category.Default, DiagnosticSeverity.Warning,
+				DiagnosticsShortName.PX1036MultipleUK);
 
 		public static DiagnosticDescriptor PX1036_WrongDacForeignKeyName { get; } =
 			Rule("PX1036", nameof(Resources.PX1036FKTitle).GetLocalized(), Category.Default, DiagnosticSeverity.Warning,

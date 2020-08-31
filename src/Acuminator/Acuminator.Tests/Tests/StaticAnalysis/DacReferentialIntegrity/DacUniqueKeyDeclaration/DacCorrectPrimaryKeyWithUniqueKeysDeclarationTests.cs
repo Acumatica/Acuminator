@@ -1,5 +1,4 @@
-﻿using Acuminator.Analyzers.StaticAnalysis;
-using Acuminator.Analyzers.StaticAnalysis.Dac;
+﻿using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
@@ -10,7 +9,7 @@ using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 {
-	public class DacPrimaryKeyDeclarationTests : DiagnosticVerifier
+	public class DacCorrectPrimaryKeyWithUniqueKeysDeclarationTests : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
 			new DacAnalyzersAggregator(
@@ -19,18 +18,13 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 				new DacPrimaryAndUniqueKeyDeclarationAnalyzer());
 
 		[Theory]
-		[EmbeddedFileData("Dac_GoodPrimaryKey.cs")]
-		public async Task Dac_WithCorrectPrimaryKey_DoesntReportDiagnostic(string source) =>
+		[EmbeddedFileData("Dac_SingleUniqueKey_Good.cs")]
+		public async Task Dac_WithCorrectPrimaryAndSingleUniqueKeys_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
-		[EmbeddedFileData("PXMappedCacheExtension.cs")]
-		public async Task PXMappedCacheExtension_DoesntReportDiagnostic(string source) =>
-			await VerifyCSharpDiagnosticAsync(source);
-
-		[Theory]
-		[EmbeddedFileData("Fully_Unbound_Dac.cs")]
-		public async Task FullyUnboundDac_DoesntReportDiagnostic(string source) =>
+		[EmbeddedFileData("Dac_MultipleUniqueKeys_Good.cs")]
+		public async Task INUnit_WithCorrectPrimaryAndMultipleUniqueKeys_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 	}
 }

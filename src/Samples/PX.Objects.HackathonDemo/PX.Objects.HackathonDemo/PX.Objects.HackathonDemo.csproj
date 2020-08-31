@@ -71,9 +71,15 @@
     <Compile Include="DAC\Referential Integrity\DacForeignKeyDeclaration\SOLine_Without_ForeignKey.cs" />
     <Compile Include="DAC\Referential Integrity\DacForeignKeyDeclaration\SOOrder_Without_ForeignKey.cs" />
     <Compile Include="DAC\Referential Integrity\DacPrimaryKeyDeclaration\Dac_GoodPrimaryKey.cs" />
+    <Compile Include="DAC\Referential Integrity\DacUniqueKeysDeclaration\INUnit_MultipleUniqueKeys_NoPK_NoSuitableUK.cs" />
+    <Compile Include="DAC\Referential Integrity\DacUniqueKeysDeclaration\INUnit_MultipleUniqueKeys_NoPK.cs" />
+    <Compile Include="DAC\Referential Integrity\DacUniqueKeysDeclaration\INUnit_MultipleUniqueKeys_Good.cs" />
+    <Compile Include="DAC\Referential Integrity\DacUniqueKeysDeclaration\SOOrder_MultipleUniqueKeys_WrongDeclaration.cs" />
     <Compile Include="DAC\Referential Integrity\DacPrimaryKeyDeclaration\Dac_MultiplePrimaryKeys.cs" />
     <Compile Include="DAC\Referential Integrity\DacPrimaryKeyDeclaration\Dac_Without_PrimaryKey.cs" />
     <Compile Include="DAC\Referential Integrity\DacPrimaryKeyDeclaration\Dac_WrongPrimaryKeyName.cs" />
+    <Compile Include="DAC\Referential Integrity\DacUniqueKeysDeclaration\SOOrderWronglyNamedUniqueKey.cs" />
+    <Compile Include="DAC\Referential Integrity\DacUniqueKeysDeclaration\SOOrderWithoutPrimaryKey.cs" />
     <Compile Include="DAC\TaxTran.cs" />
     <Compile Include="Extensions\NonPublic and without IsActive\SOOrder.cs" />
     <Compile Include="Extensions\NonPublic and without IsActive\SOOrderEntryExt.cs" />
