@@ -938,7 +938,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unbound DAC fields such as {0} can not be used in {1} key declaration..
+        ///   Looks up a localized string similar to Unbound DAC fields such as {0} can not be used in {1} key declaration.
         /// </summary>
         public static string PX1037MessageFormat {
             get {
@@ -947,7 +947,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unbound DAC fields can not be used in declarations of primary, foreign or unique keys..
+        ///   Looks up a localized string similar to Unbound DAC fields can not be used in declarations of primary, foreign or unique keys.
         /// </summary>
         public static string PX1037Title {
             get {
@@ -965,7 +965,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Constructors in BLC extensions are strictly prohibited. Use the Initialize() method instead..
+        ///   Looks up a localized string similar to Constructors in BLC extensions are strictly prohibited. Use the Initialize() method instead.
         /// </summary>
         public static string PX1040Title {
             get {
