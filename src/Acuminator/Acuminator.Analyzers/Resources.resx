@@ -610,4 +610,10 @@
   <data name="PX1036PK_ChangeNameAndLocationFix" xml:space="preserve">
     <value>Change this key into the DAC's primary key "PK"</value>
   </data>
+  <data name="PX1037Title" xml:space="preserve">
+    <value>Unbound DAC fields can not be used in declarations of primary, foreign or unique keys.</value>
+  </data>
+  <data name="PX1037MessageFormat" xml:space="preserve">
+    <value>Unbound DAC fields such as {0} can not be used in {1} key declaration.</value>
+  </data>
 </root>

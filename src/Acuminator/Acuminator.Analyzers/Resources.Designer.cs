@@ -938,6 +938,24 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unbound DAC fields such as {0} can not be used in {1} key declaration..
+        /// </summary>
+        public static string PX1037MessageFormat {
+            get {
+                return ResourceManager.GetString("PX1037MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unbound DAC fields can not be used in declarations of primary, foreign or unique keys..
+        /// </summary>
+        public static string PX1037Title {
+            get {
+                return ResourceManager.GetString("PX1037Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Move the code to the Initialize() method.
         /// </summary>
         public static string PX1040Fix {

@@ -412,6 +412,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to UnboundDacFieldInKeyDeclaration.
+        /// </summary>
+        public static string PX1037 {
+            get {
+                return ResourceManager.GetString("PX1037", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ConstructorInGraphExtension.
         /// </summary>
         public static string PX1040 {
