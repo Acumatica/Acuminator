@@ -6,9 +6,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.Sources
 	[PXHidden]
 	public class SOOrder : IBqlTable
 	{
-		public class PK : PrimaryKeyOf<SOLine>.By<orderType, orderNbr>
+		public class PK : PrimaryKeyOf<SOOrder>.By<orderType, orderNbr>
 		{
-			public static SOLine Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
+			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
 		}
 
 		[PXDBString(IsKey = true, InputMask = "")]
