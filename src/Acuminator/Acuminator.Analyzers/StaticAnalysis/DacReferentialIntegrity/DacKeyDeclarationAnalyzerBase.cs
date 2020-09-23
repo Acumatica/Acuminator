@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-
+using System.Threading;
 using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
@@ -24,11 +24,54 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		public override bool ShouldAnalyze(PXContext context, DacSemanticModel dac) =>
 			base.ShouldAnalyze(context, dac) &&
 			dac.DacType == DacType.Dac && !dac.IsMappedCacheExtension && !dac.Symbol.IsAbstract &&
-			IsKeySymbolDefined(context) && ShouldAnalyzeDac(context, dac);
+			IsKeySymbolDefined(context);
 
 		protected abstract bool IsKeySymbolDefined(PXContext context);
 
-		protected virtual bool ShouldAnalyzeDac(PXContext context, DacSemanticModel dac)
+		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac)
+		{
+			symbolContext.CancellationToken.ThrowIfCancellationRequested();
+
+			var allDacKeys = GetDacKeysDeclarations(context, dac, symbolContext.CancellationToken);
+
+			// We place checks for key declarations for a wider scope of DACs here. 
+			// DACs without PXCacheName or PXPrimaryGraph attributes, fully-unbound DACs and DACs without key properties will all still be checked here
+			MakeCommonKeyDeclarationsChecks(symbolContext, context, dac, allDacKeys);
+
+			// Now we perform additional more specific and style-related checks.
+			// So, we filter out DACs without PXCacheName or PXPrimaryGraph attributes, fully-unbound DACs and some other DACs
+			if (ShouldMakeSpecificAnalysisForDacKeys(context, dac))
+			{
+				MakeSpecificDacKeysAnalysis(symbolContext, context, dac, allDacKeys);
+			}
+		}	
+
+		protected abstract List<INamedTypeSymbol> GetDacKeysDeclarations(PXContext context, DacSemanticModel dac, CancellationToken cancellationToken);
+
+		protected virtual void MakeCommonKeyDeclarationsChecks(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
+															   List<INamedTypeSymbol> allDacKeys)
+		{
+			//Place all common checks that should be applied to a wider scope of DACs here
+			CheckDacKeysForUnboundDacFields(symbolContext, context, dac, allDacKeys);
+		}
+
+		private void CheckDacKeysForUnboundDacFields(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
+													 List<INamedTypeSymbol> allDacKeys)
+		{
+			if (allDacKeys.IsNullOrEmpty())
+				return;
+
+			foreach (INamedTypeSymbol key in allDacKeys)
+			{
+				symbolContext.CancellationToken.ThrowIfCancellationRequested();
+
+				CheckKeyForUnboundDacFields(symbolContext, context, dac, key);
+			}
+		}
+
+		protected abstract bool CheckKeyForUnboundDacFields(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac, INamedTypeSymbol key);
+
+		protected virtual bool ShouldMakeSpecificAnalysisForDacKeys(PXContext context, DacSemanticModel dac)
 		{
 			if (dac.IsFullyUnbound())
 				return false;
@@ -45,6 +88,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 												 (attribute.AttributeClass.InheritsFromOrEquals(pxCacheNameAttribute) ||
 												  attribute.AttributeClass.InheritsFromOrEquals(pxPrimaryGraphAttribute)));
 		}
+
+		protected abstract void MakeSpecificDacKeysAnalysis(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac, 
+															List<INamedTypeSymbol> allDacKeys);
 
 		protected virtual void ReportKeyDeclarationWithWrongName(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
 																 INamedTypeSymbol keyDeclaration, RefIntegrityDacKeyType dacKeyType)
