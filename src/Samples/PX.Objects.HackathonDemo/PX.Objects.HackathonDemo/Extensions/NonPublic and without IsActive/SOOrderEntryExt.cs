@@ -30,7 +30,7 @@ namespace PX.Objects.HackathonDemo.Extensions.NonPublic
 		{
 			public sealed class SOOrderEntryExtPurchase : PXGraphExtension<SOOrderEntry>    //Non public graph extensions are not supported
 			{
-				public virtual void _(Events.RowSelected<SOOrder> e)
+				public void _(Events.RowSelected<SOOrder> e)
 				{
 
 				}
