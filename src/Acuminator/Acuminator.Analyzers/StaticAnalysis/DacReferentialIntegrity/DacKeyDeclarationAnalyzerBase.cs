@@ -17,7 +17,8 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 {
 	/// <summary>
-	/// Base class for DAC key declaration analyzers which provides filtering of the DACs for the diagnostics.
+	/// Base class for DAC key declaration analyzers which provides base checks for all types of DAC keys - check for unbound DAC fields in key declaration and check for the duplicate field sets.
+	/// This analyzer provides template method for analysis of DAC keys with two derived analyzers providing implementation specific details for foreign DAC keys and primary/unique DAC keys.
 	/// </summary>
 	public abstract class DacKeyDeclarationAnalyzerBase : DacAggregatedAnalyzerBase
 	{
@@ -28,48 +29,146 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		protected abstract bool IsKeySymbolDefined(PXContext context);
 
-		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac)
+		public sealed override void Analyze(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			var allDacKeys = GetDacKeysDeclarations(context, dac, symbolContext.CancellationToken);
+			var keys = GetDacKeysDeclarations(context, dac, symbolContext.CancellationToken);
+			var dacFieldsByKey = GetUsedDacFieldsByKey(dac, keys);
 
 			// We place checks for key declarations for a wider scope of DACs here. 
 			// DACs without PXCacheName or PXPrimaryGraph attributes, fully-unbound DACs and DACs without key properties will all still be checked here
-			MakeCommonKeyDeclarationsChecks(symbolContext, context, dac, allDacKeys);
+			if (!MakeCommonKeyDeclarationsChecks(symbolContext, context, dac, keys, dacFieldsByKey))
+				return;
 
-			// Now we perform additional more specific and style-related checks.
+			// Now we perform additional more specific and code style-related checks.
 			// So, we filter out DACs without PXCacheName or PXPrimaryGraph attributes, fully-unbound DACs and some other DACs
 			if (ShouldMakeSpecificAnalysisForDacKeys(context, dac))
 			{
-				MakeSpecificDacKeysAnalysis(symbolContext, context, dac, allDacKeys);
+				MakeSpecificDacKeysAnalysis(symbolContext, context, dac, keys);
 			}
 		}	
 
 		protected abstract List<INamedTypeSymbol> GetDacKeysDeclarations(PXContext context, DacSemanticModel dac, CancellationToken cancellationToken);
 
-		protected virtual void MakeCommonKeyDeclarationsChecks(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
-															   List<INamedTypeSymbol> allDacKeys)
+		private Dictionary<INamedTypeSymbol, List<ITypeSymbol>> GetUsedDacFieldsByKey(DacSemanticModel dac, List<INamedTypeSymbol> keys) =>
+			keys.Select(key => (Key: key, KeyFields: GetOrderedDacFieldsUsedByKey(dac, key)))
+				.ToDictionary(keyWithFields => keyWithFields.Key, 
+							  keyWithFields => keyWithFields.KeyFields);
+
+		protected abstract List<ITypeSymbol> GetOrderedDacFieldsUsedByKey(DacSemanticModel dac, INamedTypeSymbol key);
+
+		protected virtual bool MakeCommonKeyDeclarationsChecks(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
+															   List<INamedTypeSymbol> keys, Dictionary<INamedTypeSymbol, List<ITypeSymbol>> dacFieldsByKey)
 		{
+
+
 			//Place all common checks that should be applied to a wider scope of DACs here
-			CheckDacKeysForUnboundDacFields(symbolContext, context, dac, allDacKeys);
+			bool baseChecksPassed = CheckDacKeysForUnboundDacFields(symbolContext, context, dac, keys);
+			baseChecksPassed = CheckThatAllKeysHaveUniqueSetsOfFields(symbolContext, context, dac, keys) && baseChecksPassed;
+			return baseChecksPassed;
 		}
 
-		private void CheckDacKeysForUnboundDacFields(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
-													 List<INamedTypeSymbol> allDacKeys)
+		private bool CheckDacKeysForUnboundDacFields(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
+													 List<INamedTypeSymbol> keys)
 		{
-			if (allDacKeys.IsNullOrEmpty())
-				return;
+			if (keys.IsNullOrEmpty())
+				return true;
 
-			foreach (INamedTypeSymbol key in allDacKeys)
+			bool noUnboundFieldsInKeys = true;
+
+			foreach (INamedTypeSymbol key in keys)
 			{
 				symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-				CheckKeyForUnboundDacFields(symbolContext, context, dac, key);
+				noUnboundFieldsInKeys = CheckKeyForUnboundDacFields(symbolContext, context, dac, key) && noUnboundFieldsInKeys;
 			}
+
+			return noUnboundFieldsInKeys;
 		}
 
 		protected abstract bool CheckKeyForUnboundDacFields(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac, INamedTypeSymbol key);
+
+		private bool CheckThatAllKeysHaveUniqueSetsOfFields(SymbolAnalysisContext symbolContext, PXContext context,
+															List<INamedTypeSymbol> keyDeclarations, Dictionary<INamedTypeSymbol, List<ITypeSymbol>> dacFieldsByKey)
+		{
+			if (keyDeclarations.Count < 2 || dacFieldsByKey.Count == 0)
+				return true;
+
+			var keysGroupedByFields = GetKeysGroupedBySetOfFields(keyDeclarations, dacFieldsByKey, symbolContext.CancellationToken);
+			var duplicateKeySets = keysGroupedByFields.Values.Where(keys => keys.Count > 1);
+			bool allFieldsUnique = true;
+
+			// We group keys by sets of used fields and then report each set with duplicate keys separately,
+			// passing the locations of other duplicate fields in a set to code fix. 
+			// This way if there are two different sets of duplicate keys the code fix will affect only the set to which it was applied
+			foreach (List<INamedTypeSymbol> duplicateKeys in duplicateKeySets)
+			{
+				allFieldsUnique = false;
+				var locations = duplicateKeys.Select(declaration => declaration.GetSyntax(symbolContext.CancellationToken))
+											 .OfType<ClassDeclarationSyntax>()
+											 .Select(keyClassDeclaration => keyClassDeclaration.Identifier.GetLocation() ??
+																			keyClassDeclaration.GetLocation())
+											 .Where(location => location != null)
+											 .ToList(capacity: duplicateKeys.Count);
+
+				for (int i = 0; i < locations.Count; i++)
+				{
+					Location location = locations[i];
+					var otherLocations = locations.Where((_, index) => index != i);
+
+					symbolContext.ReportDiagnosticWithSuppressionCheck(
+									Diagnostic.Create(Descriptors.PX1035_MultipleKeyDeclarationsInDacWithSameFields, location, otherLocations),
+									context.CodeAnalysisSettings);
+				}
+			}
+
+			return allFieldsUnique;
+		}
+
+		private Dictionary<string, List<INamedTypeSymbol>> GetKeysGroupedBySetOfFields(List<INamedTypeSymbol> keyDeclarations,
+																					   Dictionary<INamedTypeSymbol, List<ITypeSymbol>> dacFieldsByKey, 
+																					   CancellationToken cancellationToken)
+		{
+			var processedKeysByHash = new Dictionary<string, List<INamedTypeSymbol>>(capacity: keyDeclarations.Count);
+
+			foreach (var key in keyDeclarations)
+			{
+				cancellationToken.ThrowIfCancellationRequested();
+
+				var stringHash = GetHashForSetOfDacFieldsUsedByKey(key, dacFieldsByKey);
+
+				if (stringHash == null)
+					continue;
+
+				if (processedKeysByHash.TryGetValue(stringHash, out var processedKeysList))
+				{
+					processedKeysList.Add(key);
+				}
+				else
+				{
+					processedKeysList = new List<INamedTypeSymbol>(capacity: 1) { key };
+					processedKeysByHash.Add(stringHash, processedKeysList);
+				}
+			}
+
+			return processedKeysByHash;
+		}
+
+		protected string GetHashForSetOfDacFieldsUsedByKey(INamedTypeSymbol key, Dictionary<INamedTypeSymbol, List<ITypeSymbol>> dacFieldsByKey) =>
+			dacFieldsByKey.TryGetValue(key, out List<ITypeSymbol> usedDacFields) && usedDacFields.Count > 0
+				? GetHashForSetOfDacFields(usedDacFields, areFieldsOrdered: true)
+				: null;
+
+		protected string GetHashForSetOfDacFields(IEnumerable<ITypeSymbol> dacFields, bool areFieldsOrdered)
+		{
+			var fieldNames = dacFields.Select(dacField => dacField.MetadataName);
+
+			if (!areFieldsOrdered)
+				fieldNames = fieldNames.OrderBy(metadataName => metadataName);
+
+			return fieldNames.Join(separator: ",");
+		}
 
 		protected virtual bool ShouldMakeSpecificAnalysisForDacKeys(PXContext context, DacSemanticModel dac)
 		{
@@ -90,7 +189,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		}
 
 		protected abstract void MakeSpecificDacKeysAnalysis(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac, 
-															List<INamedTypeSymbol> allDacKeys);
+															List<INamedTypeSymbol> allDacKeys, Dictionary<INamedTypeSymbol, List<ITypeSymbol>> dacFieldsByKey);
 
 		protected virtual void ReportKeyDeclarationWithWrongName(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
 																 INamedTypeSymbol keyDeclaration, RefIntegrityDacKeyType dacKeyType)
@@ -127,10 +226,5 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				RefIntegrityDacKeyType.ForeignKey => Descriptors.PX1036_WrongDacForeignKeyName,
 				_ => null
 			};
-
-		protected string GetHashForSetOfDacFields(IEnumerable<ITypeSymbol> dacFields) =>
-			dacFields.Select(dacField => dacField.MetadataName)
-					 .OrderBy(metadataName => metadataName)
-					 .Join(separator: ",");
 	}
 }
