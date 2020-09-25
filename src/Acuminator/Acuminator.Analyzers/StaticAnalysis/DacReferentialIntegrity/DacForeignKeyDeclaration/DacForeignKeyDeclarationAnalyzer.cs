@@ -36,8 +36,25 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		protected override RefIntegrityDacKeyType GetRefIntegrityDacKeyType(INamedTypeSymbol key) => RefIntegrityDacKeyType.ForeignKey;
 
-		protected override List<ITypeSymbol> GetOrderedDacFieldsUsedByKey(DacSemanticModel dac, INamedTypeSymbol key)
+		/// <summary>
+		/// Gets ordered DAC fields used by <paramref name="foreignKey"/>.
+		/// </summary>
+		/// <param name="dac">The DAC.</param>
+		/// <param name="foreignKey">The foreign key.</param>
+		/// <returns>
+		/// The ordered DAC fields used by <paramref name="foreignKey"/>.
+		/// </returns>
+		protected override List<ITypeSymbol> GetOrderedDacFieldsUsedByKey(DacSemanticModel dac, INamedTypeSymbol foreignKey)
 		{
+			//var baseTypes = foreignKey.GetBaseTypesAndThis()
+			//						  .OfType<INamedTypeSymbol>();
+
+
+			//// We don't support custom IPrimaryKey implementations since it will be impossible to deduce referenced set of DAC fields in a general case.
+			//// Instead we only analyze primary keys made with generic class By<,...,> or derived from it. This should handle 99% of PK use cases
+			//var byType = 
+			//							   .FirstOrDefault(type => type.Name == TypeNames.By_TypeName && !type.TypeArguments.IsDefaultOrEmpty &&
+			//													   type.TypeArguments.All(dacFieldArg => dac.FieldsByNames.ContainsKey(dacFieldArg.Name)));
 			throw new NotImplementedException();
 		}
 

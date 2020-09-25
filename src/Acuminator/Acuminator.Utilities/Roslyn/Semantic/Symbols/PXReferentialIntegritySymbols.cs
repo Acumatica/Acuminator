@@ -14,9 +14,9 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
         public static ImmutableHashSet<string> ForeignKeyContainerNames { get; } =
             new HashSet<string>
             {
-                TypeNames.AsSimpleKeyName,
-                TypeNames.ForeignKeyOfName,
-                TypeNames.CompositeKey
+                TypeNames.ReferentialIntegrity.AsSimpleKeyName,
+                TypeNames.ReferentialIntegrity.ForeignKeyOfName,
+                TypeNames.ReferentialIntegrity.CompositeKey
             }
             .ToImmutableHashSet();
 

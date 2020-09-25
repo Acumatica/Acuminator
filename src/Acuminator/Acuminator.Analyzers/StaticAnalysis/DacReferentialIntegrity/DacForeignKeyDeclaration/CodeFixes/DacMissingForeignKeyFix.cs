@@ -51,7 +51,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			INamedTypeSymbol dacTypeSymbol = semanticModel.GetDeclaredSymbol(dacNode, context.CancellationToken);
 
-			if (dacTypeSymbol == null || dacTypeSymbol.MemberNames.Contains(TypeNames.ForeignKeyClassName))
+			if (dacTypeSymbol == null || dacTypeSymbol.MemberNames.Contains(TypeNames.ReferentialIntegrity.ForeignKeyClassName))
 				return;
 
 			var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
@@ -103,7 +103,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				if (nestedTypeSymbol == null)
 					continue;
 
-				bool isUniqueKeysContainer = nestedTypeSymbol.Name == TypeNames.UniqueKeyClassName &&
+				bool isUniqueKeysContainer = nestedTypeSymbol.Name == TypeNames.ReferentialIntegrity.UniqueKeyClassName &&
 											 nestedTypeSymbol.DeclaredAccessibility == Accessibility.Public && nestedTypeSymbol.IsStatic;  
 				
 				if (isUniqueKeysContainer || (primaryKeySymbol != null && nestedTypeSymbol.ImplementsInterface(primaryKeySymbol)))
@@ -121,7 +121,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			var examplesTrivia = GetForeignKeyExampleTemplates(dacTypeSymbol, dacPropertiesWithForeignKeys);
 
 			ClassDeclarationSyntax fkClassDeclaration =
-				ClassDeclaration(TypeNames.ForeignKeyClassName)
+				ClassDeclaration(TypeNames.ReferentialIntegrity.ForeignKeyClassName)
 					.WithModifiers(
 						TokenList(
 							new[]{

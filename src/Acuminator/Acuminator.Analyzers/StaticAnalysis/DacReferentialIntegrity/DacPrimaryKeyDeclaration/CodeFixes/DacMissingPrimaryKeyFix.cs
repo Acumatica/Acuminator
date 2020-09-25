@@ -52,7 +52,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			INamedTypeSymbol dacTypeSymbol = semanticModel?.GetDeclaredSymbol(dacNode, context.CancellationToken);
 
-			if (dacTypeSymbol == null || dacTypeSymbol.MemberNames.Contains(TypeNames.PrimaryKeyClassName))
+			if (dacTypeSymbol == null || dacTypeSymbol.MemberNames.Contains(TypeNames.ReferentialIntegrity.PrimaryKeyClassName))
 				return;
 
 			var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
@@ -100,7 +100,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			var generator = SyntaxGenerator.GetGenerator(document);
 			var baseClassNode = MakeBaseClassNode(generator, pxContext, dacSemanticModel, dacKeys);
 			var findMethod = MakeFindMethodNode(generator, pxContext, dacSemanticModel, dacKeys);
-			var keyDeclaration = generator.ClassDeclaration(TypeNames.PrimaryKeyClassName, accessibility: Accessibility.Public,
+			var keyDeclaration = generator.ClassDeclaration(TypeNames.ReferentialIntegrity.PrimaryKeyClassName, accessibility: Accessibility.Public,
 															baseType: baseClassNode, members: findMethod.ToEnumerable())
 										  .WithTrailingTrivia(EndOfLine(Environment.NewLine), EndOfLine(Environment.NewLine));
 
@@ -115,7 +115,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			var dacFieldTypeArgNodes = dacKeys.Select(keyProperty => dacSemanticModel.FieldsByNames[keyProperty.Name])
 											  .Select(keyField => generator.TypeExpression(keyField.Symbol));
 
-			return generator.QualifiedName(primaryKeyOfTypeNode, generator.GenericName(TypeNames.By_TypeName, dacFieldTypeArgNodes));
+			return generator.QualifiedName(primaryKeyOfTypeNode, generator.GenericName(TypeNames.ReferentialIntegrity.By_TypeName, dacFieldTypeArgNodes));
 		}
 
 		private MethodDeclarationSyntax MakeFindMethodNode(SyntaxGenerator generator, PXContext pxContext, DacSemanticModel dacSemanticModel,

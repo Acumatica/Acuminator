@@ -5,28 +5,34 @@ namespace Acuminator.Utilities.Roslyn.Constants
 {
 	public static class TypeNames
 	{
-		#region Referential Integrity
 		/// <summary>
-		/// The mandatory name of the primary key class in DAC.
+		/// A DAC referential integrity related constants.
 		/// </summary>
-		public const string PrimaryKeyClassName = "PK";
+		public static class ReferentialIntegrity
+		{
+			/// <summary>
+			/// The mandatory name of the primary key class in DAC.
+			/// </summary>
+			public const string PrimaryKeyClassName = "PK";
 
-		/// <summary>
-		/// The mandatory name of the unique key class in DAC.
-		/// </summary>
-		public const string UniqueKeyClassName = "UK";
+			/// <summary>
+			/// The mandatory name of the unique key class in DAC.
+			/// </summary>
+			public const string UniqueKeyClassName = "UK";
 
-		/// <summary>
-		/// The mandatory name of the foreign key class in DAC.
-		/// </summary>
-		public const string ForeignKeyClassName = "FK";
+			/// <summary>
+			/// The mandatory name of the foreign key class in DAC.
+			/// </summary>
+			public const string ForeignKeyClassName = "FK";
 
-		public const string ForeignKeyOfName = "ForeignKeyOf";
-		public const string AsSimpleKeyName = "AsSimpleKey";
-		public const string CompositeKey = "CompositeKey";
+			public const string ForeignKeyOfName = "ForeignKeyOf";
+			public const string AsSimpleKeyName = "AsSimpleKey";
+			public const string CompositeKey = "CompositeKey";
 
-		public const string By_TypeName = "By";
-		#endregion
+			public const string By_TypeName = "By";
+			public const string WithTablesOf_TypeName = "WithTablesOf`2";
+			public const string IsRelatedTo = "IsRelatedTo`1";
+		}
 
 		public const string PXView = "PXView";
 
