@@ -36,10 +36,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		protected override bool IsKeySymbolDefined(PXContext context) => context.ReferentialIntegritySymbols.IPrimaryKey != null;
 
-		protected override bool CheckKeyForUnboundDacFields(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac, INamedTypeSymbol key)
-		{
-			throw new NotImplementedException();
-		}
+		protected override RefIntegrityDacKeyType GetRefIntegrityDacKeyType(INamedTypeSymbol key) =>
+			key.Name == TypeNames.PrimaryKeyClassName
+				? RefIntegrityDacKeyType.PrimaryKey
+				: RefIntegrityDacKeyType.UniqueKey;
 
 		protected override List<INamedTypeSymbol> GetDacKeysDeclarations(PXContext context, DacSemanticModel dac, CancellationToken cancellationToken) =>
 			 dac.Symbol.GetFlattenedNestedTypes(shouldWalkThroughNestedTypesPredicate: nestedType => !nestedType.IsDacOrExtension(context),
@@ -258,6 +258,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 										   .Select(property => dac.FieldsByNames[property.Name].Symbol);
 
 			return GetHashForSetOfDacFields(dacKeys, areFieldsOrdered: false);
-		}	
+		}
 	}
 }

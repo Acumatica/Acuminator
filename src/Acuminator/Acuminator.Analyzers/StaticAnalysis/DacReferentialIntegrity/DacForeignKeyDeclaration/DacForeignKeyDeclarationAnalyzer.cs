@@ -25,28 +25,38 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			ImmutableArray.Create
 			(
 				Descriptors.PX1034_MissingDacForeignKeyDeclaration,
-				Descriptors.PX1036_WrongDacForeignKeyName
+				Descriptors.PX1035_MultipleKeyDeclarationsInDacWithSameFields,
+				Descriptors.PX1036_WrongDacForeignKeyName,
+				Descriptors.PX1037_UnboundDacFieldInKeyDeclaration
 			);
 
 		protected override bool IsKeySymbolDefined(PXContext context) =>
 			context.ReferentialIntegritySymbols.IForeignKey != null || 
 			context.ReferentialIntegritySymbols.KeysRelation != null;
 
-		public override void Analyze(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac)
+		protected override RefIntegrityDacKeyType GetRefIntegrityDacKeyType(INamedTypeSymbol key) => RefIntegrityDacKeyType.ForeignKey;
+
+		protected override List<ITypeSymbol> GetOrderedDacFieldsUsedByKey(DacSemanticModel dac, INamedTypeSymbol key)
+		{
+			throw new NotImplementedException();
+		}
+
+		protected override void MakeSpecificDacKeysAnalysis(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
+															List<INamedTypeSymbol> dacForeignKeys, Dictionary<INamedTypeSymbol, List<ITypeSymbol>> dacFieldsByKey)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
-			
-			var allForeignKeyDeclarationsByContainingType = GetForeignKeyDeclarations(context, dac, symbolContext.CancellationToken)
-															 .ToLookup(type => type.ContainingType);
 
-			if (allForeignKeyDeclarationsByContainingType.Count == 0)
+			if (dacForeignKeys.Count == 0)
 			{
 				ReportNoForeignKeyDeclarationsInDac(symbolContext, context, dac);
 				return;
 			}
-			
+
 			//TODO extend logic to check foreign keys declarations
 		}
+
+		protected override List<INamedTypeSymbol> GetDacKeysDeclarations(PXContext context, DacSemanticModel dac, CancellationToken cancellationToken) =>
+			GetForeignKeyDeclarations(context, dac, cancellationToken).ToList();
 
 		private IEnumerable<INamedTypeSymbol> GetForeignKeyDeclarations(PXContext context, DacSemanticModel dac, CancellationToken cancellationToken)
 		{
