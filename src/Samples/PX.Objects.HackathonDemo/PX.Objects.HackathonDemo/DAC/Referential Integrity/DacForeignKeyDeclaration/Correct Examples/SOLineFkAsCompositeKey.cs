@@ -22,10 +22,33 @@ namespace PX.Objects.HackathonDemo.ReferentialIntegrity.ForeignKeyExamples
 			{ }
 		}
 
-		public abstract class orderType : IBqlField { }
+		#region OrderType
+		public abstract class orderType : PX.Data.BQL.BqlString.Field<orderType> { }
 
-		public abstract class orderNbr : IBqlField { }
+		[PXDBString(2, IsKey = true, IsFixed = true)]
+		[PXDefault(typeof(SOOrder.orderType))]
+		[PXUIField(DisplayName = "Order Type", Visible = false, Enabled = false)]
+		public virtual string OrderType { get; set; }
+		#endregion
 
-		public abstract class lineNbr : IBqlField { }
+		#region OrderNbr
+		public abstract class orderNbr : PX.Data.BQL.BqlString.Field<orderNbr> { }
+		protected string _OrderNbr;
+		[PXDBString(15, IsUnicode = true, IsKey = true, InputMask = "")]
+		[PXDBDefault(typeof(SOOrder.orderNbr), DefaultForUpdate = false)]
+		[PXParent(typeof(Select<SOOrder,
+							Where<SOOrder.orderType, Equal<Current<SOLine.orderType>>,
+							  And<SOOrder.orderNbr, Equal<Current<SOLine.orderNbr>>>>>))]
+		[PXUIField(DisplayName = "Order Nbr.", Visible = false, Enabled = false)]
+		public virtual string OrderNbr { get; set; }
+		#endregion
+
+		#region LineNbr
+		public abstract class lineNbr : PX.Data.BQL.BqlInt.Field<lineNbr> { }
+
+		[PXDBInt(IsKey = true)]
+		[PXUIField(DisplayName = "Line Nbr.", Visible = false)]
+		public virtual int? LineNbr { get; set; }
+		#endregion
 	}
 }
