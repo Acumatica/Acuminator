@@ -616,4 +616,13 @@
   <data name="PX1037MessageFormat" xml:space="preserve">
     <value>Unbound DAC fields such as {0} can not be used in {1} key declaration</value>
   </data>
+  <data name="KeyTypeForeign" xml:space="preserve">
+    <value>foreign</value>
+  </data>
+  <data name="KeyTypePrimary" xml:space="preserve">
+    <value>primary</value>
+  </data>
+  <data name="KeyTypeUnique" xml:space="preserve">
+    <value>unique</value>
+  </data>
 </root>

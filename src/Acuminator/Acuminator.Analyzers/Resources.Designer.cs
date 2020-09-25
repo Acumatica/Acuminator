@@ -70,6 +70,33 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to foreign.
+        /// </summary>
+        public static string KeyTypeForeign {
+            get {
+                return ResourceManager.GetString("KeyTypeForeign", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to primary.
+        /// </summary>
+        public static string KeyTypePrimary {
+            get {
+                return ResourceManager.GetString("KeyTypePrimary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to unique.
+        /// </summary>
+        public static string KeyTypeUnique {
+            get {
+                return ResourceManager.GetString("KeyTypeUnique", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fix PXAction handler signature.
         /// </summary>
         public static string PX1000Fix {
