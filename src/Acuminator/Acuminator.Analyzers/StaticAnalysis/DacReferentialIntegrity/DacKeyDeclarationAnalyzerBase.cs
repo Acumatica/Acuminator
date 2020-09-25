@@ -6,6 +6,7 @@ using System.Threading;
 using Acuminator.Analyzers.StaticAnalysis.Dac;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Syntax;
@@ -45,7 +46,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			// So, we filter out DACs without PXCacheName or PXPrimaryGraph attributes, fully-unbound DACs and some other DACs
 			if (ShouldMakeSpecificAnalysisForDacKeys(context, dac))
 			{
-				MakeSpecificDacKeysAnalysis(symbolContext, context, dac, keys);
+				MakeSpecificDacKeysAnalysis(symbolContext, context, dac, keys, dacFieldsByKey);
 			}
 		}	
 
@@ -61,33 +62,74 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		protected virtual bool MakeCommonKeyDeclarationsChecks(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
 															   List<INamedTypeSymbol> keys, Dictionary<INamedTypeSymbol, List<ITypeSymbol>> dacFieldsByKey)
 		{
-
-
 			//Place all common checks that should be applied to a wider scope of DACs here
-			bool baseChecksPassed = CheckDacKeysForUnboundDacFields(symbolContext, context, dac, keys);
-			baseChecksPassed = CheckThatAllKeysHaveUniqueSetsOfFields(symbolContext, context, dac, keys) && baseChecksPassed;
+			bool baseChecksPassed = CheckDacKeysForUnboundDacFields(symbolContext, context, dac, dacFieldsByKey);
+			baseChecksPassed = CheckThatAllKeysHaveUniqueSetsOfFields(symbolContext, context, keys, dacFieldsByKey) && baseChecksPassed;
 			return baseChecksPassed;
 		}
 
 		private bool CheckDacKeysForUnboundDacFields(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
-													 List<INamedTypeSymbol> keys)
+													 Dictionary<INamedTypeSymbol, List<ITypeSymbol>> dacFieldsByKey)
 		{
-			if (keys.IsNullOrEmpty())
+			if (dacFieldsByKey.Count == 0)
 				return true;
 
 			bool noUnboundFieldsInKeys = true;
 
-			foreach (INamedTypeSymbol key in keys)
+			foreach (var (key, usedDacFields) in dacFieldsByKey)
 			{
 				symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-				noUnboundFieldsInKeys = CheckKeyForUnboundDacFields(symbolContext, context, dac, key) && noUnboundFieldsInKeys;
+				if (usedDacFields.Count == 0)
+					continue;
+
+				ITypeSymbol unboundDacFieldInKey = 
+					usedDacFields.FirstOrDefault(dacField => dac.PropertiesByNames.TryGetValue(dacField.Name, out DacPropertyInfo dacProperty) &&
+															 dacProperty.BoundType == BoundType.Unbound);
+				if (unboundDacFieldInKey != null)
+				{
+					if (!ReportKeyWithUnboundDacField(symbolContext, context, key, unboundDacFieldInKey))
+						continue;
+
+					noUnboundFieldsInKeys = false;
+				}
 			}
 
 			return noUnboundFieldsInKeys;
 		}
 
-		protected abstract bool CheckKeyForUnboundDacFields(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac, INamedTypeSymbol key);
+		private bool ReportKeyWithUnboundDacField(SymbolAnalysisContext symbolContext, PXContext context, INamedTypeSymbol key, ITypeSymbol unboundDacFieldInKey)
+		{
+			var keyNode = key.GetSyntax(symbolContext.CancellationToken) as ClassDeclarationSyntax;
+			var location = keyNode?.Identifier.GetLocation() ?? keyNode?.GetLocation();
+
+			if (location == null)
+				return false;
+
+			string keyTypeName = GetKeyTypeName(key);
+
+			if (keyTypeName.IsNullOrWhiteSpace())
+				return false;
+
+			symbolContext.ReportDiagnosticWithSuppressionCheck(
+							Diagnostic.Create(Descriptors.PX1037_UnboundDacFieldInKeyDeclaration, location, unboundDacFieldInKey.Name, keyTypeName),
+							context.CodeAnalysisSettings);
+			return true;
+		}
+
+		private string GetKeyTypeName(INamedTypeSymbol key)
+		{
+			RefIntegrityDacKeyType keyType = GetRefIntegrityDacKeyType(key);
+			return keyType switch
+			{
+				RefIntegrityDacKeyType.PrimaryKey => Resources.KeyTypePrimary,
+				RefIntegrityDacKeyType.ForeignKey => Resources.KeyTypeForeign,
+				RefIntegrityDacKeyType.UniqueKey  => Resources.KeyTypeUnique,
+				_ => null
+			};
+		}
+
+		protected abstract RefIntegrityDacKeyType GetRefIntegrityDacKeyType(INamedTypeSymbol key);
 
 		private bool CheckThatAllKeysHaveUniqueSetsOfFields(SymbolAnalysisContext symbolContext, PXContext context,
 															List<INamedTypeSymbol> keyDeclarations, Dictionary<INamedTypeSymbol, List<ITypeSymbol>> dacFieldsByKey)
