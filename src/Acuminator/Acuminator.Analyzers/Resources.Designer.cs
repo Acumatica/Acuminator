@@ -70,33 +70,6 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to foreign.
-        /// </summary>
-        public static string KeyTypeForeign {
-            get {
-                return ResourceManager.GetString("KeyTypeForeign", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to primary.
-        /// </summary>
-        public static string KeyTypePrimary {
-            get {
-                return ResourceManager.GetString("KeyTypePrimary", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to unique.
-        /// </summary>
-        public static string KeyTypeUnique {
-            get {
-                return ResourceManager.GetString("KeyTypeUnique", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Fix PXAction handler signature.
         /// </summary>
         public static string PX1000Fix {
@@ -965,16 +938,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unbound DAC fields such as {0} can not be used in {1} key declaration.
-        /// </summary>
-        public static string PX1037MessageFormat {
-            get {
-                return ResourceManager.GetString("PX1037MessageFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unbound DAC fields can not be used in declarations of primary, foreign or unique keys.
+        ///   Looks up a localized string similar to Unbound DAC field can not be used in the key declaration.
         /// </summary>
         public static string PX1037Title {
             get {
