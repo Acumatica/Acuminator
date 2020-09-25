@@ -46,16 +46,84 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		/// </returns>
 		protected override List<ITypeSymbol> GetOrderedDacFieldsUsedByKey(DacSemanticModel dac, INamedTypeSymbol foreignKey)
 		{
-			//var baseTypes = foreignKey.GetBaseTypesAndThis()
-			//						  .OfType<INamedTypeSymbol>();
+			var baseKeyTypes = foreignKey.GetBaseTypes().OfType<INamedTypeSymbol>();
 
+			// We don't support custom foreign key implementations since it will be impossible to deduce referenced set of DAC fields in a general case.
+			// Instead we only analyze foreign keys for general three cases:
+			// 1. Keys declared via primary key of other DAC. This should handle 90% of FK use cases:
+			//    SOOrder.PK.ForeignKeyOf<SOLine>.By<orderType, orderNbr>. 
+			//  
+			// 2. Keys declared with explicit declaration of relationship between DACs:
+			//  a. For simple keys consisting of 1 field:  Field<inventoryID>.IsRelatedTo<InventoryItem.inventoryID>.AsSimpleKey.WithTablesOf<InventoryItem, SOLine>
+			//  b. For complex keys: 
+			//			CompositeKey<
+			//						 Field<orderType>.IsRelatedTo<SOOrder.orderType>,
+			//						 Field<orderNbr>.IsRelatedTo<SOOrder.orderNbr>
+			//						>
+			//						.WithTablesOf<SOOrder, SOLine>
+			foreach (INamedTypeSymbol baseType in baseKeyTypes)
+			{
+				switch (baseType.Name)
+				{
+					case TypeNames.ReferentialIntegrity.By_TypeName
+					when baseType.ContainingType?.Name == TypeNames.ReferentialIntegrity.ForeignKeyOfName:    //Case of foreign key declared via primary key
+						{
+							var usedFields = baseType.TypeArguments;
+							bool areValidFields = !usedFields.IsDefaultOrEmpty && usedFields.All(dacFieldArg => dac.FieldsByNames.ContainsKey(dacFieldArg.Name));
 
-			//// We don't support custom IPrimaryKey implementations since it will be impossible to deduce referenced set of DAC fields in a general case.
-			//// Instead we only analyze primary keys made with generic class By<,...,> or derived from it. This should handle 99% of PK use cases
-			//var byType = 
-			//							   .FirstOrDefault(type => type.Name == TypeNames.By_TypeName && !type.TypeArguments.IsDefaultOrEmpty &&
-			//													   type.TypeArguments.All(dacFieldArg => dac.FieldsByNames.ContainsKey(dacFieldArg.Name)));
-			throw new NotImplementedException();
+							return areValidFields
+								? usedFields.OrderBy(dacField => dacField.MetadataName).ToList(capacity: usedFields.Length)
+								: new List<ITypeSymbol>();
+						}
+
+					case TypeNames.ReferentialIntegrity.WithTablesOf_TypeName
+					when baseType.ContainingType?.Name == TypeNames.ReferentialIntegrity.AsSimpleKeyName:     //Case of simple 1-field foreign key with explicit declaration
+						{
+							var isRelatedTo_Type = baseType.ContainingType.ContainingType;
+							var usedDacField = GetDacFieldFromIsRelatedToType(dac, isRelatedTo_Type);
+
+							return usedDacField != null
+								? new List<ITypeSymbol>(capacity: 1) { usedDacField }
+								: new List<ITypeSymbol>();
+						}
+
+					case TypeNames.ReferentialIntegrity.WithTablesOf_TypeName
+					when baseType.ContainingType?.Name == TypeNames.ReferentialIntegrity.CompositeKey:       //Case of complex foreign key with explicit declaration
+						{
+							var compositeKey = baseType.ContainingType;
+
+							if (compositeKey.TypeArguments.IsDefaultOrEmpty)
+								return new List<ITypeSymbol>();
+
+							var usedDacFields = compositeKey.TypeArguments.Select(isRelatedTo_Type => GetDacFieldFromIsRelatedToType(dac, isRelatedTo_Type))
+																		  .Where(dacField => dacField != null)
+																		  .OrderBy(dacField => dacField.MetadataName)
+																		  .ToList(capacity: compositeKey.TypeArguments.Length);
+
+							return usedDacFields.Count == compositeKey.TypeArguments.Length
+								? usedDacFields
+								: new List<ITypeSymbol>();
+						}
+				}
+			}
+	
+			return new List<ITypeSymbol>();			
+		}
+
+		private ITypeSymbol GetDacFieldFromIsRelatedToType(DacSemanticModel dac, ITypeSymbol isRelatedTo_Type)
+		{
+			var field_Type = isRelatedTo_Type?.ContainingType;
+
+			if (isRelatedTo_Type?.Name != TypeNames.ReferentialIntegrity.IsRelatedTo || field_Type?.Name != TypeNames.ReferentialIntegrity.Field ||
+				field_Type.TypeArguments.Length != 1)
+			{
+				return null;
+			}
+
+			var usedDacField = field_Type.TypeArguments[0];
+			return dac.FieldsByNames.ContainsKey(usedDacField.Name)
+				? usedDacField
+				: null;
 		}
 
 		protected override void MakeSpecificDacKeysAnalysis(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,

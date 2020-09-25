@@ -30,8 +30,9 @@ namespace Acuminator.Utilities.Roslyn.Constants
 			public const string CompositeKey = "CompositeKey";
 
 			public const string By_TypeName = "By";
-			public const string WithTablesOf_TypeName = "WithTablesOf`2";
-			public const string IsRelatedTo = "IsRelatedTo`1";
+			public const string WithTablesOf_TypeName = "WithTablesOf";
+			public const string IsRelatedTo = "IsRelatedTo";
+			public const string Field = "Field";
 		}
 
 		public const string PXView = "PXView";
