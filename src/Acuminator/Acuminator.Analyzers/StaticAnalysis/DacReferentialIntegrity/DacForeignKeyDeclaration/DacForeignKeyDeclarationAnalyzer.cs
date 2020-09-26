@@ -15,7 +15,8 @@ using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Acuminator.Utilities.Roslyn.Constants;
+
+using static Acuminator.Utilities.Roslyn.Constants.TypeNames;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 {
@@ -31,10 +32,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			);
 
 		protected override bool IsKeySymbolDefined(PXContext context) =>
-			context.ReferentialIntegritySymbols.IForeignKey != null || 
+			context.ReferentialIntegritySymbols.IForeignKey != null ||
 			context.ReferentialIntegritySymbols.KeysRelation != null;
-
-		protected override RefIntegrityDacKeyType GetRefIntegrityDacKeyType(INamedTypeSymbol key) => RefIntegrityDacKeyType.ForeignKey;
 
 		/// <summary>
 		/// Gets ordered DAC fields used by <paramref name="foreignKey"/>.
@@ -65,8 +64,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			{
 				switch (baseType.Name)
 				{
-					case TypeNames.ReferentialIntegrity.By_TypeName
-					when baseType.ContainingType?.Name == TypeNames.ReferentialIntegrity.ForeignKeyOfName:    //Case of foreign key declared via primary key
+					case ReferentialIntegrity.By_TypeName
+					when baseType.ContainingType?.Name == ReferentialIntegrity.ForeignKeyOfName:    //Case of foreign key declared via primary key
 						{
 							var usedFields = baseType.TypeArguments;
 							bool areValidFields = !usedFields.IsDefaultOrEmpty && usedFields.All(dacFieldArg => dac.FieldsByNames.ContainsKey(dacFieldArg.Name));
@@ -76,8 +75,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 								: new List<ITypeSymbol>();
 						}
 
-					case TypeNames.ReferentialIntegrity.WithTablesOf_TypeName
-					when baseType.ContainingType?.Name == TypeNames.ReferentialIntegrity.AsSimpleKeyName:     //Case of simple 1-field foreign key with explicit declaration
+					case ReferentialIntegrity.WithTablesOf_TypeName
+					when baseType.ContainingType?.Name == ReferentialIntegrity.AsSimpleKeyName:     //Case of simple 1-field foreign key with explicit declaration
 						{
 							var isRelatedTo_Type = baseType.ContainingType.ContainingType;
 							var usedDacField = GetDacFieldFromIsRelatedToType(dac, isRelatedTo_Type);
@@ -87,8 +86,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 								: new List<ITypeSymbol>();
 						}
 
-					case TypeNames.ReferentialIntegrity.WithTablesOf_TypeName
-					when baseType.ContainingType?.Name == TypeNames.ReferentialIntegrity.CompositeKey:       //Case of complex foreign key with explicit declaration
+					case ReferentialIntegrity.WithTablesOf_TypeName
+					when baseType.ContainingType?.Name == ReferentialIntegrity.CompositeKey:       //Case of complex foreign key with explicit declaration
 						{
 							var compositeKey = baseType.ContainingType;
 
@@ -106,15 +105,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 						}
 				}
 			}
-	
-			return new List<ITypeSymbol>();			
+
+			return new List<ITypeSymbol>();
 		}
 
 		private ITypeSymbol GetDacFieldFromIsRelatedToType(DacSemanticModel dac, ITypeSymbol isRelatedTo_Type)
 		{
 			var field_Type = isRelatedTo_Type?.ContainingType;
 
-			if (isRelatedTo_Type?.Name != TypeNames.ReferentialIntegrity.IsRelatedTo || field_Type?.Name != TypeNames.ReferentialIntegrity.Field ||
+			if (isRelatedTo_Type?.Name != ReferentialIntegrity.IsRelatedTo || field_Type?.Name != ReferentialIntegrity.Field ||
 				field_Type.TypeArguments.Length != 1)
 			{
 				return null;
@@ -126,8 +125,85 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				: null;
 		}
 
-		protected override void MakeSpecificDacKeysAnalysis(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
-															List<INamedTypeSymbol> dacForeignKeys, Dictionary<INamedTypeSymbol, List<ITypeSymbol>> dacFieldsByKey)
+		protected override Location GetUnboundDacFieldLocation(ClassDeclarationSyntax keyNode, ITypeSymbol unboundDacFieldInKey)
+		{
+			if (keyNode.BaseList.Types.Count == 0)
+				return null;
+
+			BaseTypeSyntax baseTypeNode = keyNode.BaseList.Types[0];
+
+			if (!(baseTypeNode.Type is QualifiedNameSyntax fullBaseTypeQualifiedName) || !(fullBaseTypeQualifiedName.Right is GenericNameSyntax byOrWithTablesOfNode))
+				return null;
+
+			if (byOrWithTablesOfNode.Identifier.Text == ReferentialIntegrity.By_TypeName)
+			{
+				var byTypeNode = byOrWithTablesOfNode;
+				return GetUnboundDacFieldLocationFromTypeArguments(byTypeNode, unboundDacFieldInKey);
+			}
+			else if (byOrWithTablesOfNode.Identifier.Text == ReferentialIntegrity.WithTablesOf_TypeName)
+			{
+				switch (fullBaseTypeQualifiedName.Left)
+				{
+					//AsSimpleKey case
+					case QualifiedNameSyntax partialBaseTypeQualifiedName												  //Case of Field<>.IsRelatedTo<> AsSimpleKey.WithTablesOf<,>
+					when partialBaseTypeQualifiedName.Right is IdentifierNameSyntax { Identifier: { Text: ReferentialIntegrity.AsSimpleKeyName } } asSimpleKeyNode:
+
+						return GetUnboundDacFieldLocationFromAsSimpleKeyNode(partialBaseTypeQualifiedName.Left as QualifiedNameSyntax, unboundDacFieldInKey);
+
+					//CompositeKey cases
+					case GenericNameSyntax { Identifier: { Text: ReferentialIntegrity.CompositeKey } } compositeKeyNode:   //Case of CompositeKey<,...,>.WithTablesOf<,>
+						return GetUnboundDacFieldLocationFromCompositeKeyNode(compositeKeyNode, unboundDacFieldInKey);
+
+					case QualifiedNameSyntax compositeKeyNodeWithNamespace												   //Case of Namespace.CompositeKey<,...,> and Alias::Namespace.CompositeKey<,...,>
+					when compositeKeyNodeWithNamespace.Right is GenericNameSyntax { Identifier: { Text: ReferentialIntegrity.CompositeKey } } compositeKeyNode:
+
+						return GetUnboundDacFieldLocationFromCompositeKeyNode(compositeKeyNode, unboundDacFieldInKey);
+
+					case AliasQualifiedNameSyntax compositeKeyNodeWithAlias
+					when compositeKeyNodeWithAlias.Name is GenericNameSyntax { Identifier: { Text: ReferentialIntegrity.CompositeKey } } compositeKeyNode:
+
+						return GetUnboundDacFieldLocationFromCompositeKeyNode(compositeKeyNode, unboundDacFieldInKey);
+				}
+			}
+
+			return null;
+		}
+
+		private Location GetUnboundDacFieldLocationFromAsSimpleKeyNode(QualifiedNameSyntax asSimpleKeyLeftPartOfNameNode, ITypeSymbol unboundDacFieldInKey)
+		{
+			if (asSimpleKeyLeftPartOfNameNode?.Right?.Identifier.Text != ReferentialIntegrity.IsRelatedTo)
+				return null;
+
+			GenericNameSyntax fieldNode = GetFieldNodeWithPrefixConsideration(asSimpleKeyLeftPartOfNameNode.Left);
+			return fieldNode != null
+				? GetUnboundDacFieldLocationFromTypeArguments(fieldNode, unboundDacFieldInKey)
+				: null;
+		}
+
+		private Location GetUnboundDacFieldLocationFromCompositeKeyNode(GenericNameSyntax compositeKeyNode, ITypeSymbol unboundDacFieldInKey)
+		{
+			var fieldLocations = 
+				compositeKeyNode.TypeArgumentList.Arguments
+												 .OfType<QualifiedNameSyntax>()
+												 .Select(fieldWithRelatedToNode => 
+															GetFieldNodeWithPrefixConsideration(fieldWithRelatedToNode.Left) is GenericNameSyntax fieldNode
+																 ? GetUnboundDacFieldLocationFromTypeArguments(fieldNode, unboundDacFieldInKey)
+																 : null);
+
+			return fieldLocations.FirstOrDefault(location => location != null);
+		}
+
+		private GenericNameSyntax GetFieldNodeWithPrefixConsideration(NameSyntax fieldNodeWithPossibleNamespaceAndAlias) =>
+			fieldNodeWithPossibleNamespaceAndAlias switch
+			{
+				GenericNameSyntax fieldNode when fieldNode.Identifier.Text == ReferentialIntegrity.Field							   => fieldNode,  //case Field<> without prefix
+				QualifiedNameSyntax		 { Right: GenericNameSyntax { Identifier: { Text: ReferentialIntegrity.Field } } fieldNode } _ => fieldNode,  //cases Namespace.Field<> and Alias::Namespace.Field<>
+				AliasQualifiedNameSyntax { Name: GenericNameSyntax  { Identifier: { Text: ReferentialIntegrity.Field } } fieldNode } _ => fieldNode,  //case Alias::Field<>
+				_ => null
+			};
+
+	protected override void MakeSpecificDacKeysAnalysis(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
+														List<INamedTypeSymbol> dacForeignKeys, Dictionary<INamedTypeSymbol, List<ITypeSymbol>> dacFieldsByKey)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
