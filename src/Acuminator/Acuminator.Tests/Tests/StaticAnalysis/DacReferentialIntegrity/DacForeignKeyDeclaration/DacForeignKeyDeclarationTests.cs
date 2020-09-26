@@ -35,6 +35,21 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 			await VerifyCSharpDiagnosticAsync(new[] { testedSource, soOrderSource });
 
 		[Theory]
+		[EmbeddedFileData(@"UnboundFieldInKey\SOLineWithUnboundFieldInCompositeFK.cs", @"UnboundFieldInKey\SOOrder.cs")]
+		public async Task SOLine_UsingCompositeKey_WithUnboundDacField(string testedSource, string soOrderSource) =>
+			await VerifyCSharpDiagnosticAsync(new[] { testedSource, soOrderSource },
+					Descriptors.PX1037_UnboundDacFieldInKeyDeclaration.CreateFor(10, 76),
+					Descriptors.PX1037_UnboundDacFieldInKeyDeclaration.CreateFor(17, 100),
+					Descriptors.PX1037_UnboundDacFieldInKeyDeclaration.CreateFor(19, 43));
+
+		[Theory]
+		[EmbeddedFileData(@"UnboundFieldInKey\SOLineWithUnboundFieldInFK.cs", @"UnboundFieldInKey\SOOrder.cs")]
+		public async Task SOLine_WithUnboundDacField(string testedSource, string soOrderSource) =>
+			await VerifyCSharpDiagnosticAsync(new[] { testedSource, soOrderSource },
+					Descriptors.PX1037_UnboundDacFieldInKeyDeclaration.CreateFor(9, 85),
+					Descriptors.PX1037_UnboundDacFieldInKeyDeclaration.CreateFor(17, 23));
+
+		[Theory]
 		[EmbeddedFileData("PXMappedCacheExtension.cs")]
 		public async Task PXMappedCacheExtension_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
