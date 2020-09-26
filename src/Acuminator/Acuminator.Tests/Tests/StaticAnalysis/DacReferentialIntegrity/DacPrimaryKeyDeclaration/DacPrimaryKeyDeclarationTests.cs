@@ -19,6 +19,12 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 				new DacPrimaryAndUniqueKeyDeclarationAnalyzer());
 
 		[Theory]
+		[EmbeddedFileData(@"Dac_UnboundField_PrimaryKey.cs")]
+		public async Task SOLine_WithUnboundDacField(string source) =>
+			await VerifyCSharpDiagnosticAsync(source,
+					Descriptors.PX1037_UnboundDacFieldInKeyDeclaration.CreateFor(9, 46));
+
+		[Theory]
 		[EmbeddedFileData("Dac_GoodPrimaryKey.cs")]
 		public async Task Dac_WithCorrectPrimaryKey_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
