@@ -43,10 +43,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.DacForei
 			// OrderDate,
 			// InventoryID,
 			// SubItemID,
-			// SiteID,
-			// VendorID
+			// SiteID
 		}
-
 
 		#region BranchID
 		public abstract class branchID : PX.Data.BQL.BqlInt.Field<branchID> { }
@@ -67,7 +65,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.DacForei
 
 		#region OrderNbr
 		public abstract class orderNbr : PX.Data.BQL.BqlString.Field<orderNbr> { }
-		protected String _OrderNbr;
+		
 		[PXDBString(15, IsUnicode = true, IsKey = true, InputMask = "")]
 		[PXDBDefault(typeof(SOOrder.orderNbr), DefaultForUpdate = false)]
 		[PXParent(typeof(Select<SOOrder,

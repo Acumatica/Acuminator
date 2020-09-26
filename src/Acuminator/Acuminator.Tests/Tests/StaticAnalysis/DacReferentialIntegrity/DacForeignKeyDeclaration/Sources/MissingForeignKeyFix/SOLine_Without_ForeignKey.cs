@@ -40,7 +40,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.DacForei
 
 		#region OrderNbr
 		public abstract class orderNbr : PX.Data.BQL.BqlString.Field<orderNbr> { }
-		protected String _OrderNbr;
+		
 		[PXDBString(15, IsUnicode = true, IsKey = true, InputMask = "")]
 		[PXDBDefault(typeof(SOOrder.orderNbr), DefaultForUpdate = false)]
 		[PXParent(typeof(Select<SOOrder,
