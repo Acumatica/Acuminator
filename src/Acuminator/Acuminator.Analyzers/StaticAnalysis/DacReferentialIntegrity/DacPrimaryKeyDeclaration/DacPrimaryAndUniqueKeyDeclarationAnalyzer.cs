@@ -14,8 +14,8 @@ using Acuminator.Utilities.Roslyn.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Acuminator.Utilities.Roslyn.Constants;
-using Acuminator.Utilities.Roslyn.PXFieldAttributes;
+
+using static Acuminator.Utilities.Roslyn.Constants.TypeNames;
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 {
@@ -35,11 +35,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			);
 
 		protected override bool IsKeySymbolDefined(PXContext context) => context.ReferentialIntegritySymbols.IPrimaryKey != null;
-
-		protected override RefIntegrityDacKeyType GetRefIntegrityDacKeyType(INamedTypeSymbol key) =>
-			key.Name == TypeNames.ReferentialIntegrity.PrimaryKeyClassName
-				? RefIntegrityDacKeyType.PrimaryKey
-				: RefIntegrityDacKeyType.UniqueKey;
 
 		protected override List<INamedTypeSymbol> GetDacKeysDeclarations(PXContext context, DacSemanticModel dac, CancellationToken cancellationToken) =>
 			 dac.Symbol.GetFlattenedNestedTypes(shouldWalkThroughNestedTypesPredicate: nestedType => !nestedType.IsDacOrExtension(context),
@@ -61,12 +56,25 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			// Instead we only analyze primary keys made with generic class By<,...,> or derived from it. This should handle 99% of PK use cases
 			var byType = primaryOrUniqueKey.GetBaseTypesAndThis()
 										   .OfType<INamedTypeSymbol>()
-										   .FirstOrDefault(type => type.Name == TypeNames.ReferentialIntegrity.By_TypeName && !type.TypeArguments.IsDefaultOrEmpty &&
+										   .FirstOrDefault(type => type.Name == ReferentialIntegrity.By_TypeName && !type.TypeArguments.IsDefaultOrEmpty &&
 																   type.TypeArguments.All(dacFieldArg => dac.FieldsByNames.ContainsKey(dacFieldArg.Name)));
 
 			return byType?.TypeArguments.OrderBy(dacField => dacField.MetadataName)
 										.ToList(capacity: byType.TypeArguments.Length) 
 						 ?? new List<ITypeSymbol>();
+		}
+
+		protected override Location GetUnboundDacFieldLocation(ClassDeclarationSyntax keyNode, ITypeSymbol unboundDacFieldInKey)
+		{
+			if (keyNode.BaseList.Types.Count == 0)
+				return null;
+
+			BaseTypeSyntax baseTypeNode = keyNode.BaseList.Types[0];
+
+			if (!(baseTypeNode.Type is QualifiedNameSyntax qualifiedName) || !(qualifiedName.Right is GenericNameSyntax byTypeNode))
+				return null;
+
+			return GetUnboundDacFieldLocationFromTypeArguments(byTypeNode, unboundDacFieldInKey);
 		}
 
 		protected override bool ShouldMakeSpecificAnalysisForDacKeys(PXContext context, DacSemanticModel dac) =>
@@ -114,7 +122,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		private void AnalyzeSinglePrimaryKeyDeclaration(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac, 
 														INamedTypeSymbol keyDeclaration, Dictionary<INamedTypeSymbol, List<ITypeSymbol>> dacFieldsByKey)
 		{
-			if (keyDeclaration.Name != TypeNames.ReferentialIntegrity.PrimaryKeyClassName)
+			if (keyDeclaration.Name != ReferentialIntegrity.PrimaryKeyClassName)
 			{
 				string keysHash = GetHashForDacKeys(dac);
 
@@ -131,9 +139,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			INamedTypeSymbol firstKeyDeclaration = keyDeclarations[0];
 			INamedTypeSymbol secondKeyDeclaration = keyDeclarations[1];
 
-			var primaryKey = firstKeyDeclaration.Name == TypeNames.ReferentialIntegrity.PrimaryKeyClassName
+			var primaryKey = firstKeyDeclaration.Name == ReferentialIntegrity.PrimaryKeyClassName
 				? firstKeyDeclaration
-				: secondKeyDeclaration.Name == TypeNames.ReferentialIntegrity.PrimaryKeyClassName
+				: secondKeyDeclaration.Name == ReferentialIntegrity.PrimaryKeyClassName
 					? secondKeyDeclaration
 					: null;
 
@@ -151,7 +159,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				: firstKeyDeclaration;
 
 			//The second key is a unique key. If it does not named "UK" we should rename it
-			if (uniqueKeyDeclaration.Name != TypeNames.ReferentialIntegrity.UniqueKeyClassName)
+			if (uniqueKeyDeclaration.Name != ReferentialIntegrity.UniqueKeyClassName)
 			{
 				ReportKeyDeclarationWithWrongName(symbolContext, context, dac, uniqueKeyDeclaration, RefIntegrityDacKeyType.UniqueKey);
 			}			
@@ -161,7 +169,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 																			List<INamedTypeSymbol> keyDeclarations, 
 																			Dictionary<INamedTypeSymbol, List<ITypeSymbol>> dacFieldsByKey)
 		{
-			var primaryKey = keyDeclarations.Find(key => key.Name == TypeNames.ReferentialIntegrity.PrimaryKeyClassName);
+			var primaryKey = keyDeclarations.Find(key => key.Name == ReferentialIntegrity.PrimaryKeyClassName);
 	
 			if (primaryKey == null)
 			{
@@ -170,7 +178,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				return;
 			}
 
-			INamedTypeSymbol uniqueKeysContainer = dac.Symbol.GetTypeMembers(TypeNames.ReferentialIntegrity.UniqueKeyClassName)
+			INamedTypeSymbol uniqueKeysContainer = dac.Symbol.GetTypeMembers(ReferentialIntegrity.UniqueKeyClassName)
 															 .FirstOrDefault();
 
 			//We can register code fix only if there is no UK nested type in DAC or there is a public static UK class. Otherwise we will break the code.
