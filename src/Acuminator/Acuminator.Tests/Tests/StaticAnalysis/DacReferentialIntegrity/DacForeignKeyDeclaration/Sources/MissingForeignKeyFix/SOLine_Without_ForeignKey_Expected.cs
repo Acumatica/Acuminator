@@ -11,7 +11,7 @@ using PX.Objects.SO;
 using GLBranchAttribute = PX.Objects.GL.BranchAttribute;
 
 
-namespace PX.Objects.HackathonDemo.ReferentialIntegrity
+namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.Sources.MissingForeignKeyFix
 {
 	[PXCacheName("SO Line")]
 	public partial class SOLine : PX.Data.IBqlTable
