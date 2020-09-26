@@ -1,6 +1,6 @@
 ﻿using PX.Data;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.Sources
+namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.DacForeignKeyDeclaration.Sources
 {
 	[PXCacheName("SO Order")]
 	public class SOOrderUnbound : IBqlTable

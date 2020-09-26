@@ -1,6 +1,6 @@
 ﻿using PX.Data;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.Sources
+namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.DacForeignKeyDeclaration.Sources
 {
 	[PXPrimaryGraph(typeof(PX.Objects.SO.SOOrderEntry))]
 	public class SOOrder : IBqlTable

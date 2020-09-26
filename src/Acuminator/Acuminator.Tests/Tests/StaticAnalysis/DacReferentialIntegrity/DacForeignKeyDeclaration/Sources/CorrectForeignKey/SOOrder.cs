@@ -1,7 +1,7 @@
 ﻿using PX.Data;
 using PX.Data.ReferentialIntegrity.Attributes;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.Sources
+namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.DacForeignKeyDeclaration.Sources.CorrectForeignKey
 {
 	[PXHidden]
 	public class SOOrder : IBqlTable

@@ -10,7 +10,7 @@ using PX.Objects.CS;
 using CRLocation = PX.Objects.CR.Standalone.Location;
 using GLBranchAttribute = PX.Objects.GL.BranchAttribute;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.Sources.MissingForeignKeyFix
+namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.DacForeignKeyDeclaration.Sources.MissingForeignKeyFix
 {
 	[PXCacheName("SO Order")]
 	public class SOOrder : IBqlTable

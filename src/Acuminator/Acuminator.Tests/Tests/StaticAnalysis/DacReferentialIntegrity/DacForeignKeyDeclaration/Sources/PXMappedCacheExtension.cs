@@ -1,7 +1,7 @@
 ﻿using System;
 using PX.Data;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.Sources
+namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.DacForeignKeyDeclaration.Sources
 {
     [PXCacheName("Adjust")]
     public class Adjust : PXMappedCacheExtension
