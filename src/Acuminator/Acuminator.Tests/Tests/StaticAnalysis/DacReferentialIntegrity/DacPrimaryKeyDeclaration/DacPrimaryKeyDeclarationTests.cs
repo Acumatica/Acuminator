@@ -20,7 +20,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 
 		[Theory]
 		[EmbeddedFileData(@"Dac_UnboundField_PrimaryKey.cs")]
-		public async Task SOLine_WithUnboundDacField(string source) =>
+		public async Task UnboundDacFieldInPrimaryKey(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
 					Descriptors.PX1037_UnboundDacFieldInKeyDeclaration.CreateFor(9, 46));
 

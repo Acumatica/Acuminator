@@ -36,7 +36,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 
 		[Theory]
 		[EmbeddedFileData(@"UnboundFieldInKey\SOLineWithUnboundFieldInCompositeFK.cs", @"UnboundFieldInKey\SOOrder.cs")]
-		public async Task SOLine_UsingCompositeKey_WithUnboundDacField(string testedSource, string soOrderSource) =>
+		public async Task UnboundDacField_InCompositeKey(string testedSource, string soOrderSource) =>
 			await VerifyCSharpDiagnosticAsync(new[] { testedSource, soOrderSource },
 					Descriptors.PX1037_UnboundDacFieldInKeyDeclaration.CreateFor(10, 76),
 					Descriptors.PX1037_UnboundDacFieldInKeyDeclaration.CreateFor(17, 100),
@@ -44,7 +44,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 
 		[Theory]
 		[EmbeddedFileData(@"UnboundFieldInKey\SOLineWithUnboundFieldInFK.cs", @"UnboundFieldInKey\SOOrder.cs")]
-		public async Task SOLine_WithUnboundDacField(string testedSource, string soOrderSource) =>
+		public async Task UnboundDacField_SimpleFK_And_FKViaPK(string testedSource, string soOrderSource) =>
 			await VerifyCSharpDiagnosticAsync(new[] { testedSource, soOrderSource },
 					Descriptors.PX1037_UnboundDacFieldInKeyDeclaration.CreateFor(9, 85),
 					Descriptors.PX1037_UnboundDacFieldInKeyDeclaration.CreateFor(17, 23));
