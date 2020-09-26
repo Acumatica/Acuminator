@@ -9,14 +9,14 @@ namespace PX.Objects.HackathonDemo.ReferentialIntegrity.ForeignKeyExamples
 	[PXCacheName("SO Line")]
 	public partial class SOLineFkAsSimpleKey : IBqlTable
 	{
-		public class PK : PrimaryKeyOf<SOLine>.By<orderType, orderNbr, lineNbr>
+		public class PK : PrimaryKeyOf<SOLineFkAsSimpleKey>.By<orderType, orderNbr, lineNbr>
 		{
-			public static SOLine Find(PXGraph graph, string orderType, string orderNbr, int? lineNbr) => FindBy(graph, orderType, orderNbr, lineNbr);
+			public static SOLineFkAsSimpleKey Find(PXGraph graph, string orderType, string orderNbr, int? lineNbr) => FindBy(graph, orderType, orderNbr, lineNbr);
 		}
 
 		public static class FK
 		{
-			public class Inventory : Field<inventoryID>.IsRelatedTo<InventoryItem.inventoryID>.AsSimpleKey.WithTablesOf<InventoryItem, SOLine> { }
+			public class Inventory : Field<inventoryID>.IsRelatedTo<InventoryItem.inventoryID>.AsSimpleKey.WithTablesOf<InventoryItem, SOLineFkAsSimpleKey> { }
 		}
 
 		#region OrderType

@@ -7,9 +7,9 @@ namespace PX.Objects.HackathonDemo.ReferentialIntegrity.ForeignKeyExamples
 	[PXCacheName("SO Line")]
 	public partial class SOLineFkAsCompositeKey : PX.Data.IBqlTable
 	{
-		public class PK : PrimaryKeyOf<SOLine>.By<orderType, orderNbr, lineNbr>
+		public class PK : PrimaryKeyOf<SOLineFkAsCompositeKey>.By<orderType, orderNbr, lineNbr>
 		{
-			public static SOLine Find(PXGraph graph, string orderType, string orderNbr, int? lineNbr) => FindBy(graph, orderType, orderNbr, lineNbr);
+			public static SOLineFkAsCompositeKey Find(PXGraph graph, string orderType, string orderNbr, int? lineNbr) => FindBy(graph, orderType, orderNbr, lineNbr);
 		}
 
 		public static class FK
@@ -18,7 +18,7 @@ namespace PX.Objects.HackathonDemo.ReferentialIntegrity.ForeignKeyExamples
 												  Field<orderType>.IsRelatedTo<SOOrder.orderType>,
 												  Field<orderNbr>.IsRelatedTo<SOOrder.orderNbr>
 											     >
-											     .WithTablesOf<SOOrder, SOLine>
+											     .WithTablesOf<SOOrder, SOLineFkAsCompositeKey>
 			{ }
 		}
 
