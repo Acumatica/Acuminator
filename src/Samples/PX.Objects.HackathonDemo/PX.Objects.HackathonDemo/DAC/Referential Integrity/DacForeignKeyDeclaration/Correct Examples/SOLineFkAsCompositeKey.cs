@@ -37,8 +37,8 @@ namespace PX.Objects.HackathonDemo.ReferentialIntegrity.ForeignKeyExamples
 		[PXDBString(15, IsUnicode = true, IsKey = true, InputMask = "")]
 		[PXDBDefault(typeof(SOOrder.orderNbr), DefaultForUpdate = false)]
 		[PXParent(typeof(Select<SOOrder,
-							Where<SOOrder.orderType, Equal<Current<SOLine.orderType>>,
-							  And<SOOrder.orderNbr, Equal<Current<SOLine.orderNbr>>>>>))]
+							Where<SOOrder.orderType, Equal<Current<orderType>>,
+							  And<SOOrder.orderNbr, Equal<Current<orderNbr>>>>>))]
 		[PXUIField(DisplayName = "Order Nbr.", Visible = false, Enabled = false)]
 		public virtual string OrderNbr { get; set; }
 		#endregion

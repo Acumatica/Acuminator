@@ -37,8 +37,8 @@ namespace PX.Objects.HackathonDemo.ReferentialIntegrity.ForeignKeyExamples
 		[PXString(15, IsUnicode = true, IsKey = true, InputMask = "")]
 		[PXDBDefault(typeof(SOOrder.orderNbr), DefaultForUpdate = false)]
 		[PXParent(typeof(Select<SOOrder,
-							Where<SOOrder.orderType, Equal<Current<SOLine.orderType>>,
-							  And<SOOrder.orderNbr, Equal<Current<SOLine.orderNbr>>>>>))]
+							Where<SOOrder.orderType, Equal<Current<orderType>>,
+							  And<SOOrder.orderNbr, Equal<Current<orderNbr>>>>>))]
 		[PXUIField(DisplayName = "Order Nbr.", Visible = false, Enabled = false)]
 		public virtual string OrderNbr { get; set; }
 		#endregion
@@ -56,7 +56,7 @@ namespace PX.Objects.HackathonDemo.ReferentialIntegrity.ForeignKeyExamples
 
 		[SO.SOLineInventoryItem(Filterable = true)]
 		[PXDefault]
-		[PXForeignReference(typeof(IN.InventoryItem.PK.ForeignKeyOf<SOLine>.By<inventoryID>))]
+		[PXForeignReference(typeof(IN.InventoryItem.PK.ForeignKeyOf<SOLineWithUnboundFieldInCompositeFK>.By<inventoryID>))]
 		public virtual int? InventoryID { get; set; }
 		#endregion
 	}
