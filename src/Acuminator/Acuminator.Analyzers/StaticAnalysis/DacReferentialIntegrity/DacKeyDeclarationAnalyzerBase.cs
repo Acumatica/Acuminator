@@ -83,12 +83,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				if (usedDacFields.Count == 0)
 					continue;
 
-				ITypeSymbol unboundDacFieldInKey = 
-					usedDacFields.FirstOrDefault(dacField => dac.PropertiesByNames.TryGetValue(dacField.Name, out DacPropertyInfo dacProperty) &&
-															 dacProperty.BoundType == BoundType.Unbound);
-				if (unboundDacFieldInKey != null)
+				var unboundDacFieldsInKey = usedDacFields.Where(dacField => dac.PropertiesByNames.TryGetValue(dacField.Name, out DacPropertyInfo dacProperty) &&
+																			dacProperty.BoundType == BoundType.Unbound);
+				ClassDeclarationSyntax keyNode = null;
+
+				foreach (ITypeSymbol unboundDacFieldInKey in unboundDacFieldsInKey)
 				{
-					if (!ReportKeyWithUnboundDacField(symbolContext, context, key, unboundDacFieldInKey))
+					keyNode ??= (key.GetSyntax(symbolContext.CancellationToken) as ClassDeclarationSyntax);
+
+					if (keyNode == null)
+						break;
+					else if (!ReportKeyWithUnboundDacField(symbolContext, context, key, keyNode, unboundDacFieldInKey))
 						continue;
 
 					noUnboundFieldsInKeys = false;
@@ -98,38 +103,55 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return noUnboundFieldsInKeys;
 		}
 
-		private bool ReportKeyWithUnboundDacField(SymbolAnalysisContext symbolContext, PXContext context, INamedTypeSymbol key, ITypeSymbol unboundDacFieldInKey)
+		private bool ReportKeyWithUnboundDacField(SymbolAnalysisContext symbolContext, PXContext context, INamedTypeSymbol key, ClassDeclarationSyntax keyNode,
+												  ITypeSymbol unboundDacFieldInKey)
 		{
-			var keyNode = key.GetSyntax(symbolContext.CancellationToken) as ClassDeclarationSyntax;
-			var location = keyNode?.Identifier.GetLocation() ?? keyNode?.GetLocation();
+			var location = GetUnboundDacFieldLocation(keyNode, unboundDacFieldInKey) ?? keyNode.Identifier.GetLocation() ?? keyNode.GetLocation();
 
 			if (location == null)
 				return false;
 
-			string keyTypeName = GetKeyTypeName(key);
-
-			if (keyTypeName.IsNullOrWhiteSpace())
-				return false;
-
 			symbolContext.ReportDiagnosticWithSuppressionCheck(
-							Diagnostic.Create(Descriptors.PX1037_UnboundDacFieldInKeyDeclaration, location, unboundDacFieldInKey.Name, keyTypeName),
+							Diagnostic.Create(Descriptors.PX1037_UnboundDacFieldInKeyDeclaration, location),
 							context.CodeAnalysisSettings);
 			return true;
 		}
 
-		private string GetKeyTypeName(INamedTypeSymbol key)
-		{
-			RefIntegrityDacKeyType keyType = GetRefIntegrityDacKeyType(key);
-			return keyType switch
-			{
-				RefIntegrityDacKeyType.PrimaryKey => Resources.KeyTypePrimary,
-				RefIntegrityDacKeyType.ForeignKey => Resources.KeyTypeForeign,
-				RefIntegrityDacKeyType.UniqueKey  => Resources.KeyTypeUnique,
-				_ => null
-			};
-		}
+		protected abstract Location GetUnboundDacFieldLocation(ClassDeclarationSyntax keyNode, ITypeSymbol unboundDacFieldInKey);
 
-		protected abstract RefIntegrityDacKeyType GetRefIntegrityDacKeyType(INamedTypeSymbol key);
+		protected Location GetUnboundDacFieldLocationFromTypeArguments(GenericNameSyntax genericNodeWithFieldTypeArguments, ITypeSymbol unboundDacFieldInKey)
+		{
+			foreach (TypeSyntax genericArgNode in genericNodeWithFieldTypeArguments.TypeArgumentList.Arguments)
+			{				
+				switch (genericArgNode)
+				{
+					case SimpleNameSyntax fieldNode when fieldNode.Identifier.Text == unboundDacFieldInKey.Name:   //Case when type argument is just a name of a field: Field<SOLineFkAsSimpleKey.inventoryID>
+						return fieldNode.GetLocation();
+
+					case QualifiedNameSyntax complexFieldName when complexFieldName.Right.Identifier.Text == unboundDacFieldInKey.Name:  //Case when type argument is a complex name: Field<{optional PX.Objects.SO.}SOLine.inventoryID>
+
+						SimpleNameSyntax dacNameNode = complexFieldName.Left switch
+						{
+							SimpleNameSyntax dacNameNodeWithoutNamespaces => dacNameNodeWithoutNamespaces,       //case Dac.field
+							QualifiedNameSyntax dacNameNodeWithNamespaces => dacNameNodeWithNamespaces.Right,    //cases Namespace.Dac.field and Alias::Namespace.Dac.field
+							AliasQualifiedNameSyntax dacNameNodeWithAlias => dacNameNodeWithAlias.Name,          //case  Alias::Dac.field
+							_ => null
+						};
+
+						return dacNameNode?.Identifier.Text == unboundDacFieldInKey.ContainingType.Name
+							? complexFieldName.GetLocation()
+							: null;
+
+						// Type argument node can also be an alias (like Alias::Type). However, in most cases it is still QualifiedNameSyntax which may contain alias node in subtree as the leftmost node
+						// The only case when type argument node is directly AliasQualifiedNameSyntax is when it has a simple structure Alias::Type. 
+						// However, a DAC field is a nested type and you can declare nested type via alias only like this: Alias::Dac.field. And this is QualifiedNameSyntax.
+						// Therefore there is no need to consider AliasQualifiedNameSyntax. 
+						// Also we don't need to consider array and pointer type arguments as there is no way DAC field is used in such way. 
+				}
+			}
+
+			return null;
+		}
 
 		private bool CheckThatAllKeysHaveUniqueSetsOfFields(SymbolAnalysisContext symbolContext, PXContext context,
 															List<INamedTypeSymbol> keyDeclarations, Dictionary<INamedTypeSymbol, List<ITypeSymbol>> dacFieldsByKey)
