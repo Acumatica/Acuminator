@@ -31,13 +31,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.Sources
 			}
 		}
 
-		public static class FK
-		{
-			public class ItemClass : INItemClass.PK.ForeignKeyOf<INUnitMultipleUniqueKeysUnboundField>.By<itemClassID> { }
-
-			public class Inventory : InventoryItem.PK.ForeignKeyOf<INUnitMultipleUniqueKeysUnboundField>.By<inventoryID> { }
-		}
-
 		#region RecordID
 		public abstract class recordID : PX.Data.BQL.BqlLong.Field<recordID> { }
 

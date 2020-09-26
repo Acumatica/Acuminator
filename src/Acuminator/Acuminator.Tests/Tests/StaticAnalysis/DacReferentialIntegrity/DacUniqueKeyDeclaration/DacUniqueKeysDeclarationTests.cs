@@ -23,9 +23,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 		public async Task UnboundDacField_InUniqueKey(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1037_UnboundDacFieldInKeyDeclaration.CreateFor(23, 95),
-				Descriptors.PX1037_UnboundDacFieldInKeyDeclaration.CreateFor(28, 95),
-				Descriptors.PX1037_UnboundDacFieldInKeyDeclaration.CreateFor(36, 98),
-				Descriptors.PX1037_UnboundDacFieldInKeyDeclaration.CreateFor(38, 100));
+				Descriptors.PX1037_UnboundDacFieldInKeyDeclaration.CreateFor(28, 95));
 
 		[Theory]
 		[EmbeddedFileData("Dac_SingleUniqueKey_Good.cs")]
