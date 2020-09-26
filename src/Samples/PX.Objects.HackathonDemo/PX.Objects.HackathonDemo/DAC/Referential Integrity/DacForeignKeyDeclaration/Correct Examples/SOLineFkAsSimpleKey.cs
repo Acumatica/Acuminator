@@ -1,6 +1,8 @@
-﻿using PX.Data;
+﻿using System;
+using PX.Data;
 using PX.Data.ReferentialIntegrity.Attributes;
 using PX.Objects.IN;
+using PX.Objects.SO;
 
 namespace PX.Objects.HackathonDemo.ReferentialIntegrity.ForeignKeyExamples
 {
@@ -23,7 +25,6 @@ namespace PX.Objects.HackathonDemo.ReferentialIntegrity.ForeignKeyExamples
 		[PXDBString(2, IsKey = true, IsFixed = true)]
 		[PXDefault(typeof(SOOrder.orderType))]
 		[PXUIField(DisplayName = "Order Type", Visible = false, Enabled = false)]
-		[PXSelector(typeof(Search<SOOrderType.orderType>), CacheGlobal = true)]
 		public virtual string OrderType { get; set; }
 		#endregion
 
@@ -45,14 +46,6 @@ namespace PX.Objects.HackathonDemo.ReferentialIntegrity.ForeignKeyExamples
 		[PXDBInt(IsKey = true)]
 		[PXUIField(DisplayName = "Line Nbr.", Visible = false)]
 		public virtual int? LineNbr { get; set; }
-		#endregion
-
-		#region OrderDate
-		public abstract class orderDate : PX.Data.BQL.BqlDateTime.Field<orderDate> { }
-
-		[PXDBDate]
-		[PXDBDefault(typeof(SOOrder.orderDate))]
-		public virtual DateTime? OrderDate { get; set; }
 		#endregion
 
 		#region InventoryID
