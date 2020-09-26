@@ -29,7 +29,7 @@ namespace PX.Objects.HackathonDemo.ReferentialIntegrity.ForeignKeyExamples
 
 		#region OrderNbr
 		public abstract class orderNbr : PX.Data.BQL.BqlString.Field<orderNbr> { }
-		protected string _OrderNbr;
+
 		[PXDBString(15, IsUnicode = true, IsKey = true, InputMask = "")]
 		[PXDBDefault(typeof(SOOrder.orderNbr), DefaultForUpdate = false)]
 		[PXParent(typeof(Select<SOOrder,
