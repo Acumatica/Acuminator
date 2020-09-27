@@ -29,7 +29,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			ImmutableHashSet.Create
             (      
                 Descriptors.PX1036_WrongDacPrimaryKeyName.Id,
-                Descriptors.PX1036_WrongDacForeignKeyName.Id,
+                Descriptors.PX1036_WrongDacForeignKeyDeclaration.Id,
 				Descriptors.PX1036_WrongDacSingleUniqueKeyName.Id,
 				Descriptors.PX1036_WrongDacMultipleUniqueKeyDeclarations.Id
             )
