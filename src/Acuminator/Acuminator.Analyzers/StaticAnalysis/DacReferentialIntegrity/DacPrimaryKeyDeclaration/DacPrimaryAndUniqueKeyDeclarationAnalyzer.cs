@@ -180,24 +180,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			INamedTypeSymbol uniqueKeysContainer = dac.Symbol.GetTypeMembers(ReferentialIntegrity.UniqueKeyClassName)
 															 .FirstOrDefault();
-
+			
 			//We can register code fix only if there is no UK nested type in DAC or there is a public static UK class. Otherwise we will break the code.
 			bool registerCodeFix = uniqueKeysContainer == null || 
 								   (uniqueKeysContainer.DeclaredAccessibility == Accessibility.Public && uniqueKeysContainer.IsStatic);
 
-			List<INamedTypeSymbol> keysNotInContainer;
-
-			if (uniqueKeysContainer == null)
-			{
-				keysNotInContainer = keyDeclarations.Where(key => key != primaryKey).ToList(capacity: keyDeclarations.Count - 1);
-			}
-			else
-			{
-				keysNotInContainer = keyDeclarations.Where(key => key != primaryKey &&
-																  key.ContainingType != uniqueKeysContainer &&
-																  !key.GetContainingTypes().Contains(uniqueKeysContainer))
-													.ToList(capacity: keyDeclarations.Count - 1);
-			}
+			List<INamedTypeSymbol> keysNotInContainer = GetKeysNotInContainer(keyDeclarations, uniqueKeysContainer, primaryKey);
 
 			if (keysNotInContainer.Count == 0)
 				return;
@@ -232,6 +220,22 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				symbolContext.ReportDiagnosticWithSuppressionCheck(
 									Diagnostic.Create(Descriptors.PX1036_WrongDacMultipleUniqueKeyDeclarations, keyLocation, additionalLocations, diagnosticProperties),
 									context.CodeAnalysisSettings);			
+			}
+		}
+
+		private List<INamedTypeSymbol> GetKeysNotInContainer(List<INamedTypeSymbol> keyDeclarations, INamedTypeSymbol uniqueKeysContainer, INamedTypeSymbol primaryKey)
+		{
+			bool containerDeclaredIncorrectly = uniqueKeysContainer?.DeclaredAccessibility != Accessibility.Public || !uniqueKeysContainer.IsStatic;
+
+			if (containerDeclaredIncorrectly)
+			{
+				return keyDeclarations.Where(key => key != primaryKey).ToList(capacity: keyDeclarations.Count - 1);
+			}
+			else
+			{
+				return keyDeclarations.Where(key => key != primaryKey && key.ContainingType != uniqueKeysContainer && 
+													!key.GetContainingTypes().Contains(uniqueKeysContainer))
+									  .ToList(capacity: keyDeclarations.Count - 1);
 			}
 		}
 
