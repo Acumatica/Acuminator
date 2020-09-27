@@ -27,13 +27,47 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			(
 				Descriptors.PX1034_MissingDacForeignKeyDeclaration,
 				Descriptors.PX1035_MultipleKeyDeclarationsInDacWithSameFields,
-				Descriptors.PX1036_WrongDacForeignKeyName,
+				Descriptors.PX1036_WrongDacForeignKeyDeclaration,
 				Descriptors.PX1037_UnboundDacFieldInKeyDeclaration
 			);
 
 		protected override bool IsKeySymbolDefined(PXContext context) =>
 			context.ReferentialIntegritySymbols.IForeignKey != null ||
 			context.ReferentialIntegritySymbols.KeysRelation != null;
+
+		protected override List<INamedTypeSymbol> GetDacKeysDeclarations(PXContext context, DacSemanticModel dac, CancellationToken cancellationToken) =>
+			GetForeignKeyDeclarations(context, dac, cancellationToken).ToList();
+
+		private IEnumerable<INamedTypeSymbol> GetForeignKeyDeclarations(PXContext context, DacSemanticModel dac, CancellationToken cancellationToken)
+		{
+			var allNestedTypes = dac.Symbol.GetFlattenedNestedTypes(shouldWalkThroughNestedTypesPredicate: nestedType => !nestedType.IsDacOrExtension(context),
+																	cancellationToken);
+
+			if (context.ReferentialIntegritySymbols.IForeignKey != null)
+			{
+				return allNestedTypes.Where(type => type.ImplementsInterface(context.ReferentialIntegritySymbols.IForeignKey));
+			}
+
+			return from nestedType in allNestedTypes
+				   where nestedType.InheritsFromOrEqualsGeneric(context.ReferentialIntegritySymbols.KeysRelation) &&
+						 nestedType.GetBaseTypesAndThis().Any(IsForeignKey)
+				   select nestedType;
+		}
+
+		private bool IsForeignKey(ITypeSymbol type)
+		{
+			ITypeSymbol currentType = type.ContainingType;
+
+			while (currentType != null)
+			{
+				if (PXReferentialIntegritySymbols.ForeignKeyContainerNames.Contains(currentType.Name))
+					return true;
+
+				currentType = currentType.ContainingType;
+			}
+
+			return false;
+		}
 
 		/// <summary>
 		/// Gets ordered DAC fields used by <paramref name="foreignKey"/>.
@@ -202,8 +236,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				_ => null
 			};
 
-	protected override void MakeSpecificDacKeysAnalysis(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
-														List<INamedTypeSymbol> dacForeignKeys, Dictionary<INamedTypeSymbol, List<ITypeSymbol>> dacFieldsByKey)
+		protected override void MakeSpecificDacKeysAnalysis(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac,
+															List<INamedTypeSymbol> dacForeignKeys, Dictionary<INamedTypeSymbol, List<ITypeSymbol>> dacFieldsByKey)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
@@ -213,41 +247,43 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				return;
 			}
 
-			//TODO extend logic to check foreign keys declarations
-		}
+			INamedTypeSymbol foreignKeysContainer = dac.Symbol.GetTypeMembers(ReferentialIntegrity.ForeignKeyClassName)
+															  .FirstOrDefault();
 
-		protected override List<INamedTypeSymbol> GetDacKeysDeclarations(PXContext context, DacSemanticModel dac, CancellationToken cancellationToken) =>
-			GetForeignKeyDeclarations(context, dac, cancellationToken).ToList();
+			//We can register code fix only if there is no FK nested type in DAC or there is a public static FK class. Otherwise we will break the code.
+			bool registerCodeFix = foreignKeysContainer == null ||
+								   (foreignKeysContainer.DeclaredAccessibility == Accessibility.Public && foreignKeysContainer.IsStatic);
 
-		private IEnumerable<INamedTypeSymbol> GetForeignKeyDeclarations(PXContext context, DacSemanticModel dac, CancellationToken cancellationToken)
-		{
-			var allNestedTypes = dac.Symbol.GetFlattenedNestedTypes(shouldWalkThroughNestedTypesPredicate: nestedType => !nestedType.IsDacOrExtension(context),
-																	cancellationToken);
+			List<INamedTypeSymbol> keysNotInContainer = GetKeysNotInContainer(dacForeignKeys, foreignKeysContainer);
 
-			if (context.ReferentialIntegritySymbols.IForeignKey != null)
+			if (keysNotInContainer.Count == 0)
+				return;
+
+			symbolContext.CancellationToken.ThrowIfCancellationRequested();
+
+			Location dacLocation = dac.Node.GetLocation();
+			var keysNotInContainerLocations = GetKeysLocations(keysNotInContainer, symbolContext.CancellationToken).ToList(capacity: keysNotInContainer.Count);
+
+			if (dacLocation == null || keysNotInContainerLocations.Count == 0)
+				return;
+
+			var dacLocationArray = new[] { dacLocation };
+			var diagnosticProperties = new Dictionary<string, string>
 			{
-				return allNestedTypes.Where(type => type.ImplementsInterface(context.ReferentialIntegritySymbols.IForeignKey));
+				{ nameof(RefIntegrityDacKeyType), RefIntegrityDacKeyType.ForeignKey.ToString() },
+				{ DiagnosticProperty.RegisterCodeFix, registerCodeFix.ToString() }
 			}
+			.ToImmutableDictionary();
 
-			return from nestedType in allNestedTypes
-				   where nestedType.InheritsFromOrEqualsGeneric(context.ReferentialIntegritySymbols.KeysRelation) &&
-						 nestedType.GetBaseTypesAndThis().Any(IsForeignKey)
-				   select nestedType;
-		}
-
-		private bool IsForeignKey(ITypeSymbol type)
-		{
-			ITypeSymbol currentType = type.ContainingType;
-
-			while (currentType != null)
+			foreach (Location keyLocation in keysNotInContainerLocations)
 			{
-				if (PXReferentialIntegritySymbols.ForeignKeyContainerNames.Contains(currentType.Name))
-					return true;
+				var otherKeyLocations = keysNotInContainerLocations.Where(location => location != keyLocation);
+				var additionalLocations = dacLocationArray.Concat(otherKeyLocations);
 
-				currentType = currentType.ContainingType;
+				symbolContext.ReportDiagnosticWithSuppressionCheck(
+									Diagnostic.Create(Descriptors.PX1036_WrongDacForeignKeyDeclaration, keyLocation, additionalLocations, diagnosticProperties),
+									context.CodeAnalysisSettings);
 			}
-
-			return false;
 		}
 
 		private void ReportNoForeignKeyDeclarationsInDac(SymbolAnalysisContext symbolContext, PXContext context, DacSemanticModel dac)
@@ -260,6 +296,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 					Diagnostic.Create(Descriptors.PX1034_MissingDacForeignKeyDeclaration, location),
 					context.CodeAnalysisSettings);
 			} 
-		}	
+		}
+
+		private List<INamedTypeSymbol> GetKeysNotInContainer(List<INamedTypeSymbol> keyDeclarations, INamedTypeSymbol foreignKeysContainer)
+		{
+			bool containerDeclaredIncorrectly = foreignKeysContainer?.DeclaredAccessibility != Accessibility.Public || !foreignKeysContainer.IsStatic;
+
+			return containerDeclaredIncorrectly
+				? keyDeclarations
+				: keyDeclarations.Where(key => key.ContainingType != foreignKeysContainer && !key.GetContainingTypes().Contains(foreignKeysContainer))
+								 .ToList(capacity: keyDeclarations.Count);
+		}
 	}
 }

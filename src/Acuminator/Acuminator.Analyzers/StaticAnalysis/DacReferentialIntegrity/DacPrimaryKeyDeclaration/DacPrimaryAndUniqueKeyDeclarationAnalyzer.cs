@@ -191,14 +191,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				return;
 
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
+
 			Location dacLocation = dac.Node.GetLocation();
-			var keysNotInContainerLocations = keysNotInContainer.Select(key => key.GetSyntax(symbolContext.CancellationToken))
-																.OfType<ClassDeclarationSyntax>()
-																.Select(keyClassDeclaration => keyClassDeclaration.Identifier.GetLocation() ??
-																							   keyClassDeclaration.GetLocation())
-																.Where(location => location != null)
-																.OrderBy(location => location.SourceSpan.Start)
-																.ToList(capacity: keysNotInContainer.Count);
+			var keysNotInContainerLocations = GetKeysLocations(keysNotInContainer, symbolContext.CancellationToken).ToList(capacity: keysNotInContainer.Count);
 
 			if (dacLocation == null || keysNotInContainerLocations.Count == 0)
 				return;
