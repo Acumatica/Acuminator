@@ -613,4 +613,7 @@
   <data name="PX1037Title" xml:space="preserve">
     <value>Unbound DAC field can not be used in the key declaration</value>
   </data>
+  <data name="PX1036FKFix" xml:space="preserve">
+    <value>Place all foreign keys in a public static class named "FK"</value>
+  </data>
 </root>
