@@ -34,15 +34,9 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		public AttributeInformation(PXContext pxContext)
 		{
-			pxContext.ThrowOnNull(nameof(pxContext));
-
-			Context = pxContext;
-
-			var boundBaseTypes = GetBoundBaseTypes(Context);
-			Dictionary<ITypeSymbol, bool> typesContainingIsDBField = GetTypesContainingIsDBField(Context);
-
-			BoundBaseTypes = boundBaseTypes.ToImmutableHashSet();
-			TypesContainingIsDBField = typesContainingIsDBField.ToImmutableDictionary();
+			Context = pxContext.CheckIfNull(nameof(pxContext));
+			BoundBaseTypes = GetBoundBaseTypes(Context).ToImmutableHashSet();
+			TypesContainingIsDBField = GetTypesContainingIsDBField(Context).ToImmutableDictionary();
 
 			_eventSubscriberAttribute = Context.AttributeTypes.PXEventSubscriberAttribute;
 			_dynamicAggregateAttribute = Context.AttributeTypes.PXDynamicAggregateAttribute;
@@ -189,10 +183,11 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			if (BoundBaseTypes.Any(boundBaseType => IsAttributeDerivedFromClassInternal(attribute.AttributeClass, boundBaseType)))
 				return BoundType.DbBound;
 
-			bool containsIsDbFieldproperty =
-					attribute.AttributeClass.GetMembers().OfType<IPropertySymbol>()  //only properties considered
-														 .Any(property => IsDBField.Equals(property.Name, StringComparison.OrdinalIgnoreCase));
-			
+			bool containsIsDbFieldproperty = attribute.AttributeClass.GetBaseTypesAndThis()
+																	 .TakeWhile(attributeType => attributeType != _eventSubscriberAttribute)
+																	 .SelectMany(attributeType => attributeType.GetMembers())
+																	 .OfType<IPropertySymbol>()                                 //only properties are considered
+																	 .Any(property => IsDBField.Equals(property.Name, StringComparison.OrdinalIgnoreCase));	
 			if (containsIsDbFieldproperty)
 			{
 				var isDbPropertyAttributeArgs = attribute.NamedArguments.Where(arg => IsDBField.Equals(arg.Key, StringComparison.OrdinalIgnoreCase)).ToList();
@@ -220,8 +215,8 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 					if (isDbFieldFromBase.HasValue)
 					{
 						return isDbFieldFromBase.Value
-							? BoundType.DbBound// "IsDBField = true" property defined in base Acumatica class 
-							: BoundType.Unbound;// "IsDBField = false" property defined in base Acumatica class
+							? BoundType.DbBound				// "IsDBField = true" property defined in base Acumatica class 
+							: BoundType.Unbound;			// "IsDBField = false" property defined in base Acumatica class
 					}
 				}
 			}
