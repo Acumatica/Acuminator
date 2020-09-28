@@ -25,7 +25,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 		[EmbeddedFileData(@"WrongForeignKeyDeclaration\SOLineWithoutKeysContainer.cs")]
 		public async Task OneKeyInDac_OneKeyInWrongContainer_NoFKClass(string source)
 		{
-			var dacLocation = (Line: 8, Column: 23);
+			var dacLocation = (Line: 7, Column: 23);
 			var firstKeyLocation = (Line: 17, Column: 17);
 			var secondKeyLocation = (Line: 25, Column: 16);
 
@@ -40,7 +40,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 		[EmbeddedFileData(@"WrongForeignKeyDeclaration\SOLineWrongDeclarationAndFkClass.cs")]
 		public async Task Dac_MultipleUniqueKeys_SomeNotInUK(string source)
 		{
-			var dacLocation = (Line: 8, Column: 23);
+			var dacLocation = (Line: 7, Column: 23);
 			var keyLocation = (Line: 25, Column: 16);
 
 			await VerifyCSharpDiagnosticAsync(source,
