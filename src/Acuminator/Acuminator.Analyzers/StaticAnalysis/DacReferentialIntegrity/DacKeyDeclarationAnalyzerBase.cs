@@ -295,6 +295,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			keys.Select(key => key.GetSyntax(cancellationToken))
 				.OfType<ClassDeclarationSyntax>()
 				.Select(keyClassDeclaration => keyClassDeclaration.Identifier.GetLocation() ?? keyClassDeclaration.GetLocation())
-				.Where(location => location != null);
+				.Where(location => location != null)
+				.OrderBy(location => location.SourceSpan.Start);
 	}
 }
