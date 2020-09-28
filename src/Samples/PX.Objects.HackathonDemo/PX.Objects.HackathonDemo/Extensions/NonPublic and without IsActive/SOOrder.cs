@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PX.Data;
+using PX.Objects.GL;
 
 namespace PX.Objects.HackathonDemo.Extensions.NonPublic
 {
@@ -24,6 +25,15 @@ namespace PX.Objects.HackathonDemo.Extensions.NonPublic
 		[PXDefault]
 		[PXUIField(DisplayName = "Order Nbr.")]
 		public string OrderNbr { get; set; }
+		#endregion
+
+		#region FinPeriodID
+		public abstract class finPeriodID : IBqlField { }
+
+		[FinPeriodSelector]
+		[PXDefault]
+		[PXUIField(DisplayName = "Fin. Period")]
+		public string FinPeriodID { get; set; }
 		#endregion
 
 		#region Status
