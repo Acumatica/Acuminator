@@ -72,6 +72,7 @@
     <Compile Include="DAC\Referential Integrity\DacForeignKeyDeclaration\Correct Examples\SOLineFkAsSimpleKey.cs" />
     <Compile Include="DAC\Referential Integrity\DacForeignKeyDeclaration\Correct Examples\SOLineFkAsCompositeKey.cs" />
     <Compile Include="DAC\Referential Integrity\DacForeignKeyDeclaration\Correct Examples\SOOrder.cs" />
+    <Compile Include="DAC\Referential Integrity\DacForeignKeyDeclaration\SOLineWithWrongDeclarationFKs.cs" />
     <Compile Include="DAC\Referential Integrity\DacForeignKeyDeclaration\SOLineWithUnboundFieldInCompositeFK.cs" />
     <Compile Include="DAC\Referential Integrity\DacForeignKeyDeclaration\SOLineWithUnboundFieldInFK.cs" />
     <Compile Include="DAC\Referential Integrity\DacForeignKeyDeclaration\SOLineWithDuplicateFKs.cs" />
