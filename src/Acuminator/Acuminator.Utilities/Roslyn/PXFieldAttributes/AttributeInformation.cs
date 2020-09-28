@@ -24,6 +24,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		private readonly INamedTypeSymbol _dynamicAggregateAttribute;
 		private readonly INamedTypeSymbol _aggregateAttribute;
 		private readonly INamedTypeSymbol _defaultAttribute;
+		private readonly INamedTypeSymbol _pxDBLocalizableStringAttribute;
 
 		public PXContext Context { get; }
 
@@ -31,6 +32,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		public ImmutableDictionary<ITypeSymbol,bool> TypesContainingIsDBField { get; }
 
 		private const string IsDBField = "IsDBField";
+		private const string NonDB = "NonDB";
 
 		public AttributeInformation(PXContext pxContext)
 		{
@@ -42,6 +44,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			_dynamicAggregateAttribute = Context.AttributeTypes.PXDynamicAggregateAttribute;
 			_aggregateAttribute = Context.AttributeTypes.PXAggregateAttribute;
 			_defaultAttribute = Context.AttributeTypes.PXDefaultAttribute;
+			_pxDBLocalizableStringAttribute = Context.FieldAttributes.PXDBLocalizableStringAttribute;
 		}
 
 		private static HashSet<ITypeSymbol> GetBoundBaseTypes(PXContext context)
@@ -179,9 +182,14 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			{
 			    return BoundType.NotDefined;
 			}
-
+		
 			if (BoundBaseTypes.Any(boundBaseType => IsAttributeDerivedFromClassInternal(attribute.AttributeClass, boundBaseType)))
+			{
+				if (_pxDBLocalizableStringAttribute != null && IsAttributeDerivedFromClassInternal(attribute.AttributeClass, _pxDBLocalizableStringAttribute))
+					return GetBoundTypeFromLocalizableStringDerivedAttribute(attribute);
+
 				return BoundType.DbBound;
+			}
 
 			bool containsIsDbFieldproperty = attribute.AttributeClass.GetBaseTypesAndThis()
 																	 .TakeWhile(attributeType => attributeType != _eventSubscriberAttribute)
@@ -219,6 +227,22 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			}
 
 			return BoundType.Unbound;
+		}
+
+		private BoundType GetBoundTypeFromLocalizableStringDerivedAttribute(AttributeData attribute)
+		{
+			var (nonDbArgKey, nonDbArgValue) = attribute.NamedArguments.FirstOrDefault(arg => arg.Key == NonDB);
+
+			if (nonDbArgKey == null)
+				return BoundType.DbBound;
+			else if (nonDbArgValue.Value is bool nonDbArgValueBool)
+			{
+				return nonDbArgValueBool
+					? BoundType.Unbound
+					: BoundType.DbBound;
+			}
+			else
+				return BoundType.Unknown;
 		}
 
 		/// <summary>
@@ -275,6 +299,5 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		private bool IsAggregatorAttribute(ITypeSymbol attributeType) =>
 			attributeType.InheritsFromOrEquals(_aggregateAttribute) || attributeType.InheritsFromOrEquals(_dynamicAggregateAttribute);
-
 	}
 }
