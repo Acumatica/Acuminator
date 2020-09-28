@@ -186,38 +186,35 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			bool containsIsDbFieldproperty = attribute.AttributeClass.GetBaseTypesAndThis()
 																	 .TakeWhile(attributeType => attributeType != _eventSubscriberAttribute)
 																	 .SelectMany(attributeType => attributeType.GetMembers())
-																	 .OfType<IPropertySymbol>()                                 //only properties are considered
-																	 .Any(property => IsDBField.Equals(property.Name, StringComparison.OrdinalIgnoreCase));	
+																	 .OfType<IPropertySymbol>()																		//only properties are considered
+																	 .Any(property => String.Equals(property.Name, IsDBField, StringComparison.OrdinalIgnoreCase));	
 			if (containsIsDbFieldproperty)
 			{
-				var isDbPropertyAttributeArgs = attribute.NamedArguments.Where(arg => IsDBField.Equals(arg.Key, StringComparison.OrdinalIgnoreCase)).ToList();
-
-				if (isDbPropertyAttributeArgs.Count > 0)
+				var isDbPropertyAttributeArgs = attribute.NamedArguments.Where(arg => String.Equals(arg.Key, IsDBField, StringComparison.OrdinalIgnoreCase))
+																		.ToList(capacity: 1);
+				switch (isDbPropertyAttributeArgs.Count)
 				{
-					if (isDbPropertyAttributeArgs.Count != 1)  //rare case when there are multiple different "IsDBField" considered
-						return BoundType.Unknown;
+					case 0:		//Case when there is IsDBField property but it isn't set explicitly in attribute's declaration
+						ITypeSymbol typeFromRegister = TypesContainingIsDBField.Keys.FirstOrDefault(t => IsAttributeDerivedFromClass(attribute.AttributeClass, t));
 
-					if (!(isDbPropertyAttributeArgs[0].Value.Value is bool isDbPropertyAttributeArgument))
-						return BoundType.Unknown;  //if there is null or values of type other than bool then we don't know if attribute is bound
+						// Query hard-coded register with attributes which has IsDBField property with some initial assigned value
+						bool? isDbFieldFromBase = typeFromRegister != null
+							? TypesContainingIsDBField[typeFromRegister]
+							: (bool?)null;
 
-					return isDbPropertyAttributeArgument
-						? BoundType.DbBound
-						: BoundType.Unbound;
+						bool isDbBoundAttribute = isDbFieldFromBase ?? false;
+						return isDbBoundAttribute
+							? BoundType.DbBound
+							: BoundType.Unbound;
 
-				}
-				else
-				{
-					ITypeSymbol typeFromRegister = TypesContainingIsDBField.Keys.FirstOrDefault(t => IsAttributeDerivedFromClass(attribute.AttributeClass, t));
-					bool? isDbFieldFromBase = typeFromRegister != null
-						? TypesContainingIsDBField[typeFromRegister]
-						: (bool?)null;
+					case 1 when isDbPropertyAttributeArgs[0].Value.Value is bool isDbPropertyAttributeArgument:     //Case when IsDBField property is set explicitly with correct bool value
+						return isDbPropertyAttributeArgument
+							? BoundType.DbBound
+							: BoundType.Unbound;
 
-					if (isDbFieldFromBase.HasValue)
-					{
-						return isDbFieldFromBase.Value
-							? BoundType.DbBound				// "IsDBField = true" property defined in base Acumatica class 
-							: BoundType.Unbound;			// "IsDBField = false" property defined in base Acumatica class
-					}
+					case 1:                        //Strange rare case when IsDBField property is set explicitly with value of type other than bool. In this case we don't know if attribute is bound
+					default:                       //Strange case when there are multiple different "IsDBField" properties set in attribute constructor (with different letters register case)
+						return BoundType.Unknown;  
 				}
 			}
 
