@@ -1,4 +1,7 @@
 ﻿using PX.Data;
+using PX.Objects.CA;
+using PX.Objects.AR;
+
 using System;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.DacFieldWithDBCalcedAttribute.Sources
@@ -27,5 +30,18 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacFieldWithDBCalcedAttribute.So
 		[PXDBDate]
 		public virtual DateTime? LastOutgoingActivityDate { get; set; }
 		public abstract class lastOutgoingActivityDate : IBqlField { }
+
+		#region Descr
+		public abstract class descr : PX.Data.BQL.BqlString.Field<descr> { }
+
+		[PXDBLocalizableString(255, IsUnicode = true, NonDB = true)]
+		[PXDefault("", PersistingCheck = PXPersistingCheck.NullOrBlank)]
+		[PXUIField(DisplayName = "Description", Visibility = PXUIVisibility.SelectorVisible, Enabled = false)]
+		[PXDBCalced(
+			typeof(Switch<Case<Where<PaymentMethod.descr, IsNotNull>, PaymentMethod.descr>, CustomerPaymentMethod.descr>),
+			typeof(string))]
+		public virtual string Descr { get; set; }
+
+		#endregion
 	}
 }
