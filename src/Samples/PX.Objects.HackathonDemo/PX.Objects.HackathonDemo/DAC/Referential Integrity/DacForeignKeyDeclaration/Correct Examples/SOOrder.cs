@@ -1,10 +1,16 @@
 ﻿using PX.Data;
+using PX.Data.ReferentialIntegrity.Attributes;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.DacForeignKeyDeclaration.Sources
+namespace PX.Objects.HackathonDemo.ReferentialIntegrity.ForeignKeyExamples
 {
-	[PXPrimaryGraph(typeof(PX.Objects.SO.SOOrderEntry))]
+	[PXHidden]
 	public class SOOrder : IBqlTable
 	{
+		public class PK : PrimaryKeyOf<SOOrder>.By<orderType, orderNbr>
+		{
+			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
+		}
+
 		[PXDBString(IsKey = true, InputMask = "")]
 		[PXDefault]
 		[PXUIField(DisplayName = "Order Type")]

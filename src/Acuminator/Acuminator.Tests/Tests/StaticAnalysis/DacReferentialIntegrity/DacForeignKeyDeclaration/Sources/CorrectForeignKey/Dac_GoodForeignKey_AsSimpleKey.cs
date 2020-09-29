@@ -2,7 +2,7 @@
 using PX.Data.ReferentialIntegrity.Attributes;
 using PX.Objects.IN;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.Sources
+namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.DacForeignKeyDeclaration.Sources.CorrectForeignKey
 {
 	[PXCacheName("SO Line")]
 	public partial class SOLine : PX.Data.IBqlTable

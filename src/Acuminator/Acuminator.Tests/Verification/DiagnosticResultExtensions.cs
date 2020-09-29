@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 
@@ -9,6 +9,7 @@ using Acuminator.Utilities.Common;
 
 namespace Acuminator.Tests.Verification
 {
+	[DebuggerStepThrough]
 	public static class DiagnosticResultExtensions
 	{
 		public static DiagnosticResult CreateFor(this DiagnosticDescriptor descriptor, int line, int column,

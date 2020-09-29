@@ -11,7 +11,7 @@ using PX.Objects.SO;
 using GLBranchAttribute = PX.Objects.GL.BranchAttribute;
 
 
-namespace PX.Objects.HackathonDemo.ReferentialIntegrity
+namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.DacForeignKeyDeclaration.Sources.MissingForeignKeyFix
 {
 	[PXCacheName("SO Line")]
 	public partial class SOLine : PX.Data.IBqlTable
@@ -40,7 +40,7 @@ namespace PX.Objects.HackathonDemo.ReferentialIntegrity
 
 		#region OrderNbr
 		public abstract class orderNbr : PX.Data.BQL.BqlString.Field<orderNbr> { }
-		protected String _OrderNbr;
+		
 		[PXDBString(15, IsUnicode = true, IsKey = true, InputMask = "")]
 		[PXDBDefault(typeof(SOOrder.orderNbr), DefaultForUpdate = false)]
 		[PXParent(typeof(Select<SOOrder,

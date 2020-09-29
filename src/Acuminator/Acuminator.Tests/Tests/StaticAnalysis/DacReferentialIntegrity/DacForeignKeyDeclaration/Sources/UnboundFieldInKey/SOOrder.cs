@@ -1,10 +1,20 @@
 ﻿using PX.Data;
+using PX.Data.ReferentialIntegrity.Attributes;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.DacForeignKeyDeclaration.Sources
+namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.DacForeignKeyDeclaration.Sources.UnboundFieldInKey
 {
-	[PXPrimaryGraph(typeof(PX.Objects.SO.SOOrderEntry))]
+
+	/// <summary>
+	/// A DAC used to provide PK to compile SOLine sources with foreign keys which refer to SOOrder PK
+	/// </summary>
+	[PXHidden]
 	public class SOOrder : IBqlTable
 	{
+		public class PK : PrimaryKeyOf<SOOrder>.By<orderType, orderNbr>
+		{
+			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
+		}
+
 		[PXDBString(IsKey = true, InputMask = "")]
 		[PXDefault]
 		[PXUIField(DisplayName = "Order Type")]

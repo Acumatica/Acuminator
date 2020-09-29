@@ -1,26 +1,35 @@
 ﻿using PX.Data;
+using PX.Data.ReferentialIntegrity.Attributes;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.DacForeignKeyDeclaration.Sources
+namespace PX.Objects.HackathonDemo.ReferentialIntegrity.UnboundFieldInKey
 {
 	[PXCacheName("SO Order")]
-	public class SOOrderUnbound : IBqlTable
+	public class SOOrder : IBqlTable
 	{
+		public class PK : PrimaryKeyOf<SOOrder>.By<orderType, orderNbr>
+		{
+			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
+		}
+
 		[PXString(IsKey = true, InputMask = "")]
-		[PXDefault]
 		[PXUIField(DisplayName = "Order Type")]
 		public string OrderType { get; set; }
 		public abstract class orderType : IBqlField { }
 
-		[PXString(IsKey = true, InputMask = "")]
+		[PXDBString(IsKey = true, InputMask = "")]
 		[PXDefault]
 		[PXUIField(DisplayName = "Order Nbr.")]
 		public string OrderNbr { get; set; }
 		public abstract class orderNbr : IBqlField { }
 
 		[PXStringList(new[] { "N", "O" }, new[] { "New", "Open" })]
-		[PXString]
+		[PXDBString]
 		[PXUIField(DisplayName = "Status")]
 		public string Status { get; set; }
 		public abstract class status : IBqlField { }
+
+		[PXDBTimestamp]
+		public virtual byte[] tstamp { get; set; }
+		public abstract class Tstamp : IBqlField { }
 	}
 }

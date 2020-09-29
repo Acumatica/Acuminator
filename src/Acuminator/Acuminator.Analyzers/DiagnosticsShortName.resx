@@ -360,4 +360,7 @@
   <data name="PX1036MultipleUK" xml:space="preserve">
     <value>IncorrectDacUniqueKeyDeclaration</value>
   </data>
+  <data name="PX1037" xml:space="preserve">
+    <value>UnboundDacFieldInKeyDeclaration</value>
+  </data>
 </root>

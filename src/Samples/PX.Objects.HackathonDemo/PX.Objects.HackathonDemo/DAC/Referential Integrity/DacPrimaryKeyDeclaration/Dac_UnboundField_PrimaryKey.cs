@@ -1,7 +1,7 @@
 ﻿using PX.Data;
 using PX.Data.ReferentialIntegrity.Attributes;
 
-namespace PX.Objects.HackathonDemo.ReferentialIntegrity.MultiplePrimaryKeys
+namespace PX.Objects.HackathonDemo.ReferentialIntegrity.UnboundFieldInKey
 {
 	[PXCacheName("SO Order")]
 	public class SOOrder : IBqlTable
@@ -11,18 +11,7 @@ namespace PX.Objects.HackathonDemo.ReferentialIntegrity.MultiplePrimaryKeys
 			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
 		}
 
-		public class PK1 : PrimaryKeyOf<SOOrder>.By<orderType, orderNbr>
-		{
-			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
-		}
-
-		public class PK2 : PrimaryKeyOf<SOOrder>.By<orderType, orderNbr>
-		{
-			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
-		}
-
-		[PXDBString(IsKey = true, InputMask = "")]
-		[PXDefault]
+		[PXString(IsKey = true, InputMask = "")]
 		[PXUIField(DisplayName = "Order Type")]
 		public string OrderType { get; set; }
 		public abstract class orderType : IBqlField { }

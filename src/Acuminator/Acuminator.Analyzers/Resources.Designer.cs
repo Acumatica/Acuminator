@@ -938,6 +938,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unbound DAC field can not be used in the key declaration.
+        /// </summary>
+        public static string PX1037Title {
+            get {
+                return ResourceManager.GetString("PX1037Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Move the code to the Initialize() method.
         /// </summary>
         public static string PX1040Fix {
@@ -947,7 +956,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Constructors in BLC extensions are strictly prohibited. Use the Initialize() method instead..
+        ///   Looks up a localized string similar to Constructors in BLC extensions are strictly prohibited. Use the Initialize() method instead.
         /// </summary>
         public static string PX1040Title {
             get {

@@ -51,7 +51,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			INamedTypeSymbol dacTypeSymbol = semanticModel.GetDeclaredSymbol(dacNode, context.CancellationToken);
 
-			if (dacTypeSymbol == null || dacTypeSymbol.MemberNames.Contains(TypeNames.ForeignKeyClassName))
+			if (dacTypeSymbol == null || dacTypeSymbol.MemberNames.Contains(TypeNames.ReferentialIntegrity.ForeignKeyClassName))
 				return;
 
 			var pxContext = new PXContext(semanticModel.Compilation, codeAnalysisSettings: null);
@@ -74,9 +74,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 		{
 			cancellation.ThrowIfCancellationRequested();	
 
-			int positionToInsertFK = GetPositionToInsertForeignKeysContainerClass(dacNode, semanticModel, pxContext, cancellation);
-			
-			var foreignKeyContainerNode = CreateForeignKeysContainerClassNode(pxContext, dacTypeSymbol, cancellation);
+			int positionToInsertFK = GetPositionToInsertForeignKeysContainerClass(dacNode, semanticModel, pxContext, cancellation);		
+
+			var foreignKeyContainerNode = CreateForeignKeysContainerClassNode(pxContext, dacTypeSymbol, isInsertedFirst: positionToInsertFK == 0, cancellation);
 
 			var newDacNode = dacNode.WithMembers(
 										dacNode.Members.Insert(positionToInsertFK, foreignKeyContainerNode));
@@ -103,7 +103,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				if (nestedTypeSymbol == null)
 					continue;
 
-				bool isUniqueKeysContainer = nestedTypeSymbol.Name == TypeNames.UniqueKeyClassName &&
+				bool isUniqueKeysContainer = nestedTypeSymbol.Name == TypeNames.ReferentialIntegrity.UniqueKeyClassName &&
 											 nestedTypeSymbol.DeclaredAccessibility == Accessibility.Public && nestedTypeSymbol.IsStatic;  
 				
 				if (isUniqueKeysContainer || (primaryKeySymbol != null && nestedTypeSymbol.ImplementsInterface(primaryKeySymbol)))
@@ -115,13 +115,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return lastPrimaryOrUniqueKeyIndex ?? 0;
 		}
 
-		private ClassDeclarationSyntax CreateForeignKeysContainerClassNode(PXContext pxContext, INamedTypeSymbol dacTypeSymbol, CancellationToken cancellation)
+		private ClassDeclarationSyntax CreateForeignKeysContainerClassNode(PXContext pxContext, INamedTypeSymbol dacTypeSymbol, bool isInsertedFirst,
+																		   CancellationToken cancellation)
 		{		
 			var dacPropertiesWithForeignKeys = GetDacPropertiesWithForeignKeys(pxContext, dacTypeSymbol, cancellation);
 			var examplesTrivia = GetForeignKeyExampleTemplates(dacTypeSymbol, dacPropertiesWithForeignKeys);
 
 			ClassDeclarationSyntax fkClassDeclaration =
-				ClassDeclaration(TypeNames.ForeignKeyClassName)
+				ClassDeclaration(TypeNames.ReferentialIntegrity.ForeignKeyClassName)
 					.WithModifiers(
 						TokenList(
 							new[]{
@@ -133,8 +134,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 							TriviaList(examplesTrivia),
 							SyntaxKind.CloseBraceToken,
 							TriviaList())		
-						)
-					.WithTrailingTrivia(EndOfLine(Environment.NewLine), EndOfLine(Environment.NewLine));
+						);
+
+			fkClassDeclaration = isInsertedFirst
+				? fkClassDeclaration.WithTrailingTrivia(EndOfLine(Environment.NewLine), EndOfLine(Environment.NewLine))
+				: fkClassDeclaration.WithTrailingTrivia(EndOfLine(Environment.NewLine));
 
 			return fkClassDeclaration;
 		}

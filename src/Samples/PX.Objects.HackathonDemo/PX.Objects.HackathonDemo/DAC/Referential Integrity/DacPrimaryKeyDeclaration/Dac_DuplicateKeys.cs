@@ -1,10 +1,26 @@
 ﻿using PX.Data;
+using PX.Data.ReferentialIntegrity.Attributes;
 
-namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity.DacForeignKeyDeclaration.Sources
+namespace PX.Objects.HackathonDemo.ReferentialIntegrity.DuplicateKeys
 {
-	[PXPrimaryGraph(typeof(PX.Objects.SO.SOOrderEntry))]
+	[PXCacheName("SO Order")]
 	public class SOOrder : IBqlTable
 	{
+		public class PK : PrimaryKeyOf<SOOrder>.By<orderType, orderNbr>
+		{
+			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
+		}
+
+		public class PK1 : PrimaryKeyOf<SOOrder>.By<orderType, orderNbr>
+		{
+			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
+		}
+
+		public class PK2 : PrimaryKeyOf<SOOrder>.By<orderType, orderNbr>
+		{
+			public static SOOrder Find(PXGraph graph, string orderType, string orderNbr) => FindBy(graph, orderType, orderNbr);
+		}
+
 		[PXDBString(IsKey = true, InputMask = "")]
 		[PXDefault]
 		[PXUIField(DisplayName = "Order Type")]

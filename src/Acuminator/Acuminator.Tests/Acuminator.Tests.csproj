@@ -151,6 +151,14 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\MissingForeignKeyFix\SOOrder_Without_ForeignKey_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\MissingForeignKeyFix\SOOrder_Without_ForeignKey.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\MissingForeignKeyFix\SOLine_Without_ForeignKey.cs" />
+    <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\DuplicateForeignKeysInDacTests.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\DuplicateKeys\SOLineWithDuplicateInventoryFK_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\DuplicateKeys\SOLineWithDuplicateInventoryFK.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\DuplicateKeys\SOLineWithDuplicateSOOrderFK_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\DuplicateKeys\SOLineWithDuplicateSOOrderFK.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\UnboundFieldInKey\SOLineWithUnboundFieldInCompositeFK.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\UnboundFieldInKey\SOLineWithUnboundFieldInFK.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\UnboundFieldInKey\SOOrder.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacForeignKeyDeclaration\Sources\MissingForeignKeyFix\SOLine_Without_ForeignKey_Expected.cs" />
     <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\DacMissingPrimaryKeyDeclarationTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\DacWrongPrimaryKeyNameTests.cs" />
@@ -158,8 +166,9 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\Fully_Unbound_Dac.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\Dac_WrongPrimaryKeyName.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\Dac_WrongPrimaryKeyName_Expected.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacPrimaryKeyDeclaration\Sources\Dac_UnboundField_PrimaryKey.cs" />
     <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\DacNoPKWithNoSuitableUniqueKeyTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\DacCorrectPrimaryKeyWithUniqueKeysDeclarationTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\DacUniqueKeysDeclarationTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\DacWithWrongUniqueKeyDeclarationsTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\DacWithNoPrimaryKeyAndSuitableUniqueKeysTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\DuplicateKeysInDacTests.cs" />
@@ -183,6 +192,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\WrongUniqueKeyDeclaration\INUnit_MultipleKeys_AllNotInUK_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\WrongUniqueKeyDeclaration\INUnit_MultipleKeys_SomeNotInUK_Expected.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\WrongUniqueKeyDeclaration\INUnit_MultipleKeys_SomeNotInUK.cs" />
+    <EmbeddedResource Include="Tests\StaticAnalysis\DacReferentialIntegrity\DacUniqueKeyDeclaration\Sources\INUnit_MultipleUniqueKeys_UnboundField.cs" />
     <Compile Include="Tests\StaticAnalysis\ForbiddenFieldsInDac\DacForbiddenFieldsNonISVTests.cs" />
     <Compile Include="Tests\StaticAnalysis\DacNonAbstractFieldType\DacFieldNotAbstractTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\SuppressionDiagnostics\Sources\Dac\ForbiddenFieldsSuppressComment_Expected.cs" />

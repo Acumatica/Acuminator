@@ -225,12 +225,16 @@ namespace Acuminator.Tests.Verification
 			CSharpCompilation compilation = CSharpCompilation.Create(
 					assemblyName,
 					syntaxTrees: sourceCodes.Select(code => CSharpSyntaxTree.ParseText(text: code)),
-					references: new MetadataReference[] { CorlibReference,
-														  SystemCoreReference,
-														  CSharpSymbolsReference,
-														  CodeAnalysisReference,
-														  PXDataReference,
-														  PXCommonReference },
+					references: new MetadataReference[] 
+					{ 
+						CorlibReference,
+						SystemCoreReference,
+						CSharpSymbolsReference,
+						CodeAnalysisReference,
+						PXDataReference,
+						PXCommonReference,
+						PXObjectsReference
+					},
 					options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
 			// Emit the image of this assembly 
