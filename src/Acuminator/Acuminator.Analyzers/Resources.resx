@@ -611,6 +611,6 @@
     <value>Change this key into the DAC's primary key "PK"</value>
   </data>
   <data name="PX1037Title" xml:space="preserve">
-    <value>Unbound DAC field can not be used in the key declaration</value>
+    <value>Unbound DAC field cannot be used in the declaration of a key</value>
   </data>
 </root>
