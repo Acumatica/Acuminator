@@ -64,6 +64,7 @@
     <Compile Include="Attributes\PXDBBaseCuryAttribute.cs" />
     <Compile Include="Attributes\FinPeriodIDAttribute.cs" />
     <Compile Include="Attributes\PXDBCurrencyAttribute.cs" />
+    <Compile Include="DAC\Multiple field attributes, invalid aggregators and DAC field must be abstract\FeatureSet.cs" />
     <Compile Include="DAC\Property and attribute types mismatch and nullable types\SOOrder.cs" />
     <Compile Include="DAC\Graph usage\SOShipmentExt.cs" />
     <Compile Include="DAC\Multiple Levels of inheritance\SOOrderWithTotal.cs" />
