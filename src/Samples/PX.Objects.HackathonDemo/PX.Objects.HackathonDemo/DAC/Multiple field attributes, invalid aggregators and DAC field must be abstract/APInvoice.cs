@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PX.Data;
+using PX.Objects.AP;
+using PX.Objects.GL;
 
 namespace PX.Objects.HackathonDemo
 {
+	[PXHidden]
 	public class APInvoice : IBqlTable
 	{
 		#region BranchID
@@ -17,6 +20,24 @@ namespace PX.Objects.HackathonDemo
 		[PXDBInt]
 		[APBranch]                  //Here the APBranch Attribute has PXDBString and PXDBInt on aggregators which is not correct. Moreover, there is another PXDBInt type attributes on the property
 		public virtual int? BranchID { get; set; }
+		#endregion
+
+		#region APAccountID
+		public abstract class aPAccountID : PX.Data.BQL.BqlInt.Field<aPAccountID> { }
+
+		/// <summary>
+		/// Identifier of the AP account, to which the document belongs.
+		/// </summary>
+		/// <value>
+		/// Corresponds to the <see cref="Account.AccountID"/> field.
+		/// </value>
+		[PXDefault]
+		[Account(typeof(APRegister.branchID), typeof(Search<Account.accountID,
+					Where2<Match<Current<AccessInfo.userName>>,
+						 And<Account.active, Equal<True>,
+						 And<Where<Current<GLSetup.ytdNetIncAccountID>, IsNull,
+						  Or<Account.accountID, NotEqual<Current<GLSetup.ytdNetIncAccountID>>>>>>>>), DisplayName = "AP Account", IsDBField = false)]
+		public virtual int? APAccountID { get; set; }
 		#endregion
 
 		#region RefNbr
