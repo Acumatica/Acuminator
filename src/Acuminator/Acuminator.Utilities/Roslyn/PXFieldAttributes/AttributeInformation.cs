@@ -24,6 +24,7 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		private readonly INamedTypeSymbol _dynamicAggregateAttribute;
 		private readonly INamedTypeSymbol _aggregateAttribute;
 		private readonly INamedTypeSymbol _defaultAttribute;
+		private readonly INamedTypeSymbol _pxDBLocalizableStringAttribute;
 
 		public PXContext Context { get; }
 
@@ -31,23 +32,19 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 		public ImmutableDictionary<ITypeSymbol,bool> TypesContainingIsDBField { get; }
 
 		private const string IsDBField = "IsDBField";
+		private const string NonDB = "NonDB";
 
 		public AttributeInformation(PXContext pxContext)
 		{
-			pxContext.ThrowOnNull(nameof(pxContext));
-
-			Context = pxContext;
-
-			var boundBaseTypes = GetBoundBaseTypes(Context);
-			Dictionary<ITypeSymbol, bool> typesContainingIsDBField = GetTypesContainingIsDBField(Context);
-
-			BoundBaseTypes = boundBaseTypes.ToImmutableHashSet();
-			TypesContainingIsDBField = typesContainingIsDBField.ToImmutableDictionary();
+			Context = pxContext.CheckIfNull(nameof(pxContext));
+			BoundBaseTypes = GetBoundBaseTypes(Context).ToImmutableHashSet();
+			TypesContainingIsDBField = GetTypesContainingIsDBField(Context).ToImmutableDictionary();
 
 			_eventSubscriberAttribute = Context.AttributeTypes.PXEventSubscriberAttribute;
 			_dynamicAggregateAttribute = Context.AttributeTypes.PXDynamicAggregateAttribute;
 			_aggregateAttribute = Context.AttributeTypes.PXAggregateAttribute;
 			_defaultAttribute = Context.AttributeTypes.PXDefaultAttribute;
+			_pxDBLocalizableStringAttribute = Context.FieldAttributes.PXDBLocalizableStringAttribute;
 		}
 
 		private static HashSet<ITypeSymbol> GetBoundBaseTypes(PXContext context)
@@ -181,52 +178,76 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 			attribute.ThrowOnNull(nameof(attribute));
 
 			if (!attribute.AttributeClass.InheritsFromOrEquals(_eventSubscriberAttribute) ||
-			    attribute.AttributeClass.InheritsFromOrEquals(_defaultAttribute))
+				attribute.AttributeClass.InheritsFromOrEquals(_defaultAttribute))
 			{
-			    return BoundType.NotDefined;
+				return BoundType.NotDefined;
 			}
 
-			if (BoundBaseTypes.Any(boundBaseType => IsAttributeDerivedFromClassInternal(attribute.AttributeClass, boundBaseType)))
-				return BoundType.DbBound;
+			//First check attribute for IsDBField property, it takes highest priority in attribute's boundability and can appear in all kinds of attributes like Account/Sub attributes
+			bool containsIsDbFieldproperty = attribute.AttributeClass.GetBaseTypesAndThis()
+																	 .TakeWhile(attributeType => attributeType != _eventSubscriberAttribute)
+																	 .SelectMany(attributeType => attributeType.GetMembers())
+																	 .OfType<IPropertySymbol>()                                                                     //only properties are considered
+																	 .Any(property => String.Equals(property.Name, IsDBField, StringComparison.OrdinalIgnoreCase));
+			if (!containsIsDbFieldproperty)
+				return GetBoundTypeFromStandardBoundTypeAttributes(attribute);
 
-			bool containsIsDbFieldproperty =
-					attribute.AttributeClass.GetMembers().OfType<IPropertySymbol>()  //only properties considered
-														 .Any(property => IsDBField.Equals(property.Name, StringComparison.OrdinalIgnoreCase));
-			
-			if (containsIsDbFieldproperty)
+			var isDbPropertyAttributeArgs = attribute.NamedArguments.Where(arg => String.Equals(arg.Key, IsDBField, StringComparison.OrdinalIgnoreCase))
+																	.ToList(capacity: 1);
+			switch (isDbPropertyAttributeArgs.Count)
 			{
-				var isDbPropertyAttributeArgs = attribute.NamedArguments.Where(arg => IsDBField.Equals(arg.Key, StringComparison.OrdinalIgnoreCase)).ToList();
+				case 0:     //Case when there is IsDBField property but it isn't set explicitly in attribute's declaration
+					ITypeSymbol typeFromRegister = TypesContainingIsDBField.Keys.FirstOrDefault(t => IsAttributeDerivedFromClass(attribute.AttributeClass, t));
 
-				if (isDbPropertyAttributeArgs.Count > 0)
-				{
-					if (isDbPropertyAttributeArgs.Count != 1)  //rare case when there are multiple different "IsDBField" considered
-						return BoundType.Unknown;
+					// Query hard-coded register with attributes which has IsDBField property with some initial assigned value
+					bool? dbFieldPreInitializedValue = typeFromRegister != null
+						? TypesContainingIsDBField[typeFromRegister]
+						: (bool?)null;
 
-					if (!(isDbPropertyAttributeArgs[0].Value.Value is bool isDbPropertyAttributeArgument))
-						return BoundType.Unknown;  //if there is null or values of type other than bool then we don't know if attribute is bound
-
+					return dbFieldPreInitializedValue == null
+						? GetBoundTypeFromStandardBoundTypeAttributes(attribute)
+						: dbFieldPreInitializedValue.Value 
+							? BoundType.DbBound 
+							: BoundType.Unbound;
+						
+				case 1 when isDbPropertyAttributeArgs[0].Value.Value is bool isDbPropertyAttributeArgument:     //Case when IsDBField property is set explicitly with correct bool value
 					return isDbPropertyAttributeArgument
 						? BoundType.DbBound
 						: BoundType.Unbound;
 
-				}
-				else
-				{
-					ITypeSymbol typeFromRegister = TypesContainingIsDBField.Keys.FirstOrDefault(t => IsAttributeDerivedFromClass(attribute.AttributeClass, t));
-					bool? isDbFieldFromBase = typeFromRegister != null
-						? TypesContainingIsDBField[typeFromRegister]
-						: (bool?)null;
+				case 1:                        //Strange rare case when IsDBField property is set explicitly with value of type other than bool. In this case we don't know if attribute is bound
+				default:                       //Strange case when there are multiple different "IsDBField" properties set in attribute constructor (with different letters register case)
+					return BoundType.Unknown;
+			}
+		}
 
-					if (isDbFieldFromBase.HasValue)
-					{
-						return isDbFieldFromBase.Value
-							? BoundType.DbBound// "IsDBField = true" property defined in base Acumatica class 
-							: BoundType.Unbound;// "IsDBField = false" property defined in base Acumatica class
-					}
-				}
+		private BoundType GetBoundTypeFromStandardBoundTypeAttributes(AttributeData attribute)
+		{
+			if (BoundBaseTypes.Any(boundBaseType => IsAttributeDerivedFromClassInternal(attribute.AttributeClass, boundBaseType)))
+			{
+				if (_pxDBLocalizableStringAttribute != null && IsAttributeDerivedFromClassInternal(attribute.AttributeClass, _pxDBLocalizableStringAttribute))
+					return GetBoundTypeFromLocalizableStringDerivedAttribute(attribute);
+
+				return BoundType.DbBound;
 			}
 
 			return BoundType.Unbound;
+		}
+
+		private BoundType GetBoundTypeFromLocalizableStringDerivedAttribute(AttributeData attribute)
+		{
+			var (nonDbArgKey, nonDbArgValue) = attribute.NamedArguments.FirstOrDefault(arg => arg.Key == NonDB);
+
+			if (nonDbArgKey == null)
+				return BoundType.DbBound;
+			else if (nonDbArgValue.Value is bool nonDbArgValueBool)
+			{
+				return nonDbArgValueBool
+					? BoundType.Unbound
+					: BoundType.DbBound;
+			}
+			else
+				return BoundType.Unknown;
 		}
 
 		/// <summary>
@@ -283,6 +304,5 @@ namespace Acuminator.Utilities.Roslyn.PXFieldAttributes
 
 		private bool IsAggregatorAttribute(ITypeSymbol attributeType) =>
 			attributeType.InheritsFromOrEquals(_aggregateAttribute) || attributeType.InheritsFromOrEquals(_dynamicAggregateAttribute);
-
 	}
 }

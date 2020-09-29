@@ -43,12 +43,13 @@
 		internal const string PXBoolAttribute = "PX.Data.PXBoolAttribute";
 		internal const string PXDBFieldAttribute = "PX.Data.PXDBFieldAttribute";
 
-		internal const string PXDBLongAttribute = "PX.Data.PXDBLongAttribute";
-		internal const string PXDBIntAttribute = "PX.Data.PXDBIntAttribute";
-		internal const string PXDBShortAttribute = "PX.Data.PXDBShortAttribute";
-		internal const string PXDBStringAttribute = "PX.Data.PXDBStringAttribute";
-		internal const string PXDBByteAttribute = "PX.Data.PXDBByteAttribute";
-		internal const string PXDBDecimalAttribute = "PX.Data.PXDBDecimalAttribute";
+		internal const string PXDBLongAttribute              = "PX.Data.PXDBLongAttribute";
+		internal const string PXDBIntAttribute               = "PX.Data.PXDBIntAttribute";
+		internal const string PXDBShortAttribute             = "PX.Data.PXDBShortAttribute";
+		internal const string PXDBStringAttribute            = "PX.Data.PXDBStringAttribute";
+		internal const string PXDBLocalizableStringAttribute = "PX.Data.PXDBLocalizableStringAttribute";
+		internal const string PXDBByteAttribute              = "PX.Data.PXDBByteAttribute";
+		internal const string PXDBDecimalAttribute           = "PX.Data.PXDBDecimalAttribute";
 
 	
 		internal const string PXUIFieldAttribute = "PX.Data.PXUIFieldAttribute";

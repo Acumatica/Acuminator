@@ -30,6 +30,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
 		public INamedTypeSymbol PXDBIntAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXDBIntAttribute);
 		public INamedTypeSymbol PXDBShortAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXDBShortAttribute);
 		public INamedTypeSymbol PXDBStringAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXDBStringAttribute);
+		public INamedTypeSymbol PXDBLocalizableStringAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXDBLocalizableStringAttribute);
 		public INamedTypeSymbol PXDBByteAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXDBByteAttribute);
 		public INamedTypeSymbol PXDBDecimalAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXDBDecimalAttribute);
 		public INamedTypeSymbol PXDBDoubleAttribute => Compilation.GetTypeByMetadataName(TypeFullNames.PXDBDoubleAttribute);

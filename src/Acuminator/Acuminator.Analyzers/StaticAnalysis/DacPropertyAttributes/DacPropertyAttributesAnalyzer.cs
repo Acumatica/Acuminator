@@ -152,22 +152,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			}
 		}
 
-		private static void CheckForPXDBCalcedAndUnboundTypeAttributes(SymbolAnalysisContext symbolContext, 
-																	   PXContext pxContext, IPropertySymbol propertySymbol,
+		private static void CheckForPXDBCalcedAndUnboundTypeAttributes(SymbolAnalysisContext symbolContext, PXContext pxContext, IPropertySymbol propertySymbol,
 																	   List<(AttributeInfo Attribute, List<FieldTypeAttributeInfo> Infos)> attributesWithInfos)
 		{
 			symbolContext.CancellationToken.ThrowIfCancellationRequested();
 
-			var hasUnboundTypeAttribute = false;
-			var hasPXDBCalcedAttribute = false;
+			var (pxDBCalcedAttribute, _) = attributesWithInfos.FirstOrDefault(attrWithInfos => 
+																				attrWithInfos.Infos.Any(i => i.Kind == FieldTypeAttributeKind.PXDBCalcedAttribute));
+			if (pxDBCalcedAttribute == null)
+				return;
 
-			foreach (var (_, infos) in attributesWithInfos)
-			{
-				hasPXDBCalcedAttribute |= infos.Any(i => i.Kind == FieldTypeAttributeKind.PXDBCalcedAttribute);
-				hasUnboundTypeAttribute |= infos.Any(i => i.Kind == FieldTypeAttributeKind.UnboundTypeAttribute);
-			}
-
-			if (!hasPXDBCalcedAttribute || hasUnboundTypeAttribute)
+			bool hasUnboundTypeAttribute = attributesWithInfos.Any(attrWithInfos => !ReferenceEquals(attrWithInfos.Attribute, pxDBCalcedAttribute) &&
+																					attrWithInfos.Attribute.BoundType == BoundType.Unbound);
+			if (hasUnboundTypeAttribute)
 				return;
 
 			if (!(propertySymbol.GetSyntax(symbolContext.CancellationToken) is PropertyDeclarationSyntax propertyNode))
@@ -176,7 +173,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacPropertyAttributes
 			var diagnostic = Diagnostic.Create(Descriptors.PX1095_PXDBCalcedMustBeAccompaniedNonDBTypeAttribute, propertyNode.Identifier.GetLocation());
 			symbolContext.ReportDiagnosticWithSuppressionCheck(diagnostic, pxContext.CodeAnalysisSettings);
 		}
-
 
 		private static void CheckForFieldTypeAttributes(DacPropertyInfo property, SymbolAnalysisContext symbolContext, PXContext pxContext,
 														List<(AttributeInfo Attribute, List<FieldTypeAttributeInfo> Infos)> attributesWithInfos)

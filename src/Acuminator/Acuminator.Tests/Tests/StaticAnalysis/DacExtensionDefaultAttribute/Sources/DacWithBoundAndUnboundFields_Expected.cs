@@ -37,6 +37,15 @@ namespace PX.Objects.HackathonDemo
 		public virtual decimal? Cost { get; set; }
 		#endregion
 
+		#region FinPeriodID
+		public abstract class finPeriodID : IBqlField { }
+
+		[GL.FinPeriodSelector]
+		[PXDefault]
+		[PXUIField(DisplayName = "Fin. Period")]
+		public string FinPeriodID { get; set; }
+		#endregion
+
 		#region UnboundField1
 		public abstract class selected : PX.Data.IBqlField { }
 		protected bool? _UnboundField1;
