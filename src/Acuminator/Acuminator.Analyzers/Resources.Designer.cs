@@ -866,7 +866,16 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The class containing DAC foreign keys should be named &quot;FK&quot;.
+        ///   Looks up a localized string similar to Place all foreign keys in a public static class named &quot;FK&quot;.
+        /// </summary>
+        public static string PX1036FKFix {
+            get {
+                return ResourceManager.GetString("PX1036FKFix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Foreign keys should be declared in a public static class named &quot;FK&quot;.
         /// </summary>
         public static string PX1036FKTitle {
             get {

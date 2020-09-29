@@ -556,7 +556,7 @@
     <value>The DAC must have one primary key which should be named "PK". This key could be turned into a primary key for this DAC.</value>
   </data>
   <data name="PX1036FKTitle" xml:space="preserve">
-    <value>The class containing DAC foreign keys should be named "FK"</value>
+    <value>Foreign keys should be declared in a public static class named "FK"</value>
   </data>
   <data name="PX1033Fix" xml:space="preserve">
     <value>Add a primary key declaration to the DAC</value>
@@ -608,9 +608,12 @@
     <value>Place all unique keys in a public static class named "UK"</value>
   </data>
   <data name="PX1036PK_ChangeNameAndLocationFix" xml:space="preserve">
-    <value>Change this key into the DAC's primary key "PK"</value>
+    <value>Change this key's name to "PK" which is the name for the DAC's primary key</value>
   </data>
   <data name="PX1037Title" xml:space="preserve">
     <value>Unbound DAC field cannot be used in the declaration of a key</value>
+  </data>
+  <data name="PX1036FKFix" xml:space="preserve">
+    <value>Place all foreign keys in a public static class named "FK"</value>
   </data>
 </root>

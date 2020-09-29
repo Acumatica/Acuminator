@@ -287,8 +287,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			{
 				RefIntegrityDacKeyType.PrimaryKey => Descriptors.PX1036_WrongDacPrimaryKeyName,
 				RefIntegrityDacKeyType.UniqueKey  => Descriptors.PX1036_WrongDacSingleUniqueKeyName,
-				RefIntegrityDacKeyType.ForeignKey => Descriptors.PX1036_WrongDacForeignKeyName,
+				RefIntegrityDacKeyType.ForeignKey => Descriptors.PX1036_WrongDacForeignKeyDeclaration,
 				_ => null
 			};
+
+		protected IEnumerable<Location> GetKeysLocations(IEnumerable<INamedTypeSymbol> keys, CancellationToken cancellationToken) =>
+			keys.Select(key => key.GetSyntax(cancellationToken))
+				.OfType<ClassDeclarationSyntax>()
+				.Select(keyClassDeclaration => keyClassDeclaration.Identifier.GetLocation() ?? keyClassDeclaration.GetLocation())
+				.Where(location => location != null)
+				.OrderBy(location => location.SourceSpan.Start);
 	}
 }
