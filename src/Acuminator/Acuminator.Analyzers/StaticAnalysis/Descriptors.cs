@@ -337,6 +337,9 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			Rule("PX1075", nameof(Resources.PX1075Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1075,
 				nameof(Resources.PX1075MessageFormat).GetLocalized());
 
+		public static DiagnosticDescriptor PX1076_CallToPXInternalUseOnlyAPI_OnlyISV { get; } =
+			Rule("PX1076", nameof(Resources.PX1076Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1076);
+
 		public static DiagnosticDescriptor PX1080_DataViewDelegateLongOperationStart { get; } =
             Rule("PX1080", nameof(Resources.PX1080Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1080);
 

@@ -902,7 +902,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change this key into the DAC&apos;s primary key &quot;PK&quot;.
+        ///   Looks up a localized string similar to Change this key&apos;s name to &quot;PK&quot; which is the name for the DAC&apos;s primary key.
         /// </summary>
         public static string PX1036PK_ChangeNameAndLocationFix {
             get {
@@ -947,7 +947,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unbound DAC field can not be used in the key declaration.
+        ///   Looks up a localized string similar to Unbound DAC field cannot be used in the declaration of a key.
         /// </summary>
         public static string PX1037Title {
             get {
@@ -1321,6 +1321,15 @@ namespace Acuminator.Analyzers {
         public static string PX1075Title {
             get {
                 return ResourceManager.GetString("PX1075Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Calls to Acumatica internal API marked with PXInternalUseOnlyAttribute are forbidden.
+        /// </summary>
+        public static string PX1076Title {
+            get {
+                return ResourceManager.GetString("PX1076Title", resourceCulture);
             }
         }
         

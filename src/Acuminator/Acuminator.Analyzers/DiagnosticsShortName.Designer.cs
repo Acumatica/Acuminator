@@ -655,6 +655,15 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CallToApiMarkedWithPXInternalUseOnly.
+        /// </summary>
+        public static string PX1076 {
+            get {
+                return ResourceManager.GetString("PX1076", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to LongRunOperationInDataViewDelegate.
         /// </summary>
         public static string PX1080 {
