@@ -1,7 +1,10 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
@@ -20,267 +23,45 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 {
 	internal class InternalApiCallsWalker : CSharpSyntaxWalker
 	{
-		private static readonly string[] _xmlCommentSummarySeparators = { SyntaxFactory.DocumentationComment().ToFullString() };
+		private static readonly Dictionary<ITypeSymbol, bool> _markedTypes = new Dictionary<ITypeSymbol, bool>();
+		private static readonly Dictionary<ISymbol, bool> _markedNonTypes = new Dictionary<ISymbol, bool>();
 
 		private readonly PXContext _pxContext;
 		private readonly SyntaxNodeAnalysisContext _syntaxContext;
-		private readonly CodeAnalysisSettings _codeAnalysisSettings;
-		private readonly Stack<bool> _isInsideDacContextStack = new Stack<bool>(2);
+		private readonly INamedTypeSymbol _pxInternalUseOnlyAttribute;
+		private readonly SemanticModel _semanticModel;
 
-		public XmlCommentsWalker(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext,
-								 CodeAnalysisSettings codeAnalysisSettings)
+		private CancellationToken CancellationToken => _syntaxContext.CancellationToken;
+
+		public InternalApiCallsWalker(SyntaxNodeAnalysisContext syntaxContext, PXContext pxContext, SemanticModel semanticModel)
 		{
 			_syntaxContext = syntaxContext;
 			_pxContext = pxContext;
-			_codeAnalysisSettings = codeAnalysisSettings;
+			_pxInternalUseOnlyAttribute = _pxContext.AttributeTypes.PXInternalUseOnlyAttribute;
+			_semanticModel = semanticModel;
 		}
 
-		public override void VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
+		public override void VisitGenericName(GenericNameSyntax node)
 		{
-			// stop visitor for going into methods to improve performance
+			CancellationToken.ThrowIfCancellationRequested();
+
+			base.VisitGenericName(node);
 		}
 
-		public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
+		public override void VisitIdentifierName(IdentifierNameSyntax node)
 		{
-			// stop visitor for going into methods to improve performance
+			CancellationToken.ThrowIfCancellationRequested();
+
+			base.VisitIdentifierName(node);
 		}
 
-		public override void VisitClassDeclaration(ClassDeclarationSyntax classDeclaration)
+		public override void VisitInvocationExpression(InvocationExpressionSyntax node)
 		{
-			INamedTypeSymbol typeSymbol = _syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration, _syntaxContext.CancellationToken);
-			bool isDacField = typeSymbol?.IsDacField(_pxContext) ?? false;
+			CancellationToken.ThrowIfCancellationRequested();
 
-			if (!CheckXmlCommentAndTheNeedToGoToChildrenNodesForType(classDeclaration, skipDiagnosticReporting: isDacField, typeSymbol))
-				return;
-			
-			try
-			{
-				bool isInsideDacOrDacExt = typeSymbol?.IsDacOrExtension(_pxContext) ?? false;
-				_isInsideDacContextStack.Push(isInsideDacOrDacExt);
-				base.VisitClassDeclaration(classDeclaration);
-			}
-			finally
-			{
-				_isInsideDacContextStack.Pop();
-			}
+			base.VisitInvocationExpression(node);
 		}
 
-		public override void VisitPropertyDeclaration(PropertyDeclarationSyntax propertyDeclaration)
-		{
-			bool isInsideDacOrDacExt = _isInsideDacContextStack.Count > 0
-				? _isInsideDacContextStack.Peek()
-				: false;
-
-			if (!isInsideDacOrDacExt || SystemDacFieldsNames.All.Contains(propertyDeclaration.Identifier.Text))
-				return;
-
-			CheckXmlCommentAndTheNeedToGoToChildrenNodes(propertyDeclaration, propertyDeclaration.Modifiers, 
-														 propertyDeclaration.Identifier, skipDiagnosticReporting: false);
-		}
-
-		public override void VisitStructDeclaration(StructDeclarationSyntax structDeclaration)
-		{
-			if (CheckXmlCommentAndTheNeedToGoToChildrenNodesForType(structDeclaration, skipDiagnosticReporting: false))
-			{
-				base.VisitStructDeclaration(structDeclaration);
-			}
-		}
-
-		public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax interfaceDeclaration)
-		{
-			if (CheckXmlCommentAndTheNeedToGoToChildrenNodesForType(interfaceDeclaration, skipDiagnosticReporting: false))
-			{
-				base.VisitInterfaceDeclaration(interfaceDeclaration);
-			}
-		}
-
-		public override void VisitDelegateDeclaration(DelegateDeclarationSyntax delegateDeclaration)
-		{
-			if (CheckXmlCommentAndTheNeedToGoToChildrenNodes(delegateDeclaration, delegateDeclaration.Modifiers,
-															 delegateDeclaration.Identifier, skipDiagnosticReporting: false))
-			{
-				base.VisitDelegateDeclaration(delegateDeclaration);
-			}
-		}
-
-		public override void VisitEnumDeclaration(EnumDeclarationSyntax enumDeclaration)
-		{
-			if (CheckXmlCommentAndTheNeedToGoToChildrenNodes(enumDeclaration, enumDeclaration.Modifiers, 
-															 enumDeclaration.Identifier, skipDiagnosticReporting: false))
-			{
-				base.VisitEnumDeclaration(enumDeclaration);
-			}
-		}
-
-		private bool CheckXmlCommentAndTheNeedToGoToChildrenNodesForType(TypeDeclarationSyntax typeDeclaration, bool skipDiagnosticReporting,
-																		 INamedTypeSymbol typeSymbol = null)
-		{
-			_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
-
-			if (!typeDeclaration.IsPartial())
-			{
-				return CheckXmlCommentAndTheNeedToGoToChildrenNodes(typeDeclaration, typeDeclaration.Modifiers, 
-																	typeDeclaration.Identifier, skipDiagnosticReporting);
-			}
-
-			typeSymbol = typeSymbol ?? _syntaxContext.SemanticModel.GetDeclaredSymbol(typeDeclaration, _syntaxContext.CancellationToken);
-
-			if (typeSymbol == null || typeSymbol.DeclaringSyntaxReferences.Length < 2)      //Case when type marked as partial but has only one declaration
-			{
-				return CheckXmlCommentAndTheNeedToGoToChildrenNodes(typeDeclaration, typeDeclaration.Modifiers, 
-																	typeDeclaration.Identifier, skipDiagnosticReporting);
-			}
-			else if (typeSymbol.DeclaredAccessibility != Accessibility.Public || CheckIfTypeAttributesDisableDiagnostic(typeSymbol))
-				return false;
-
-			XmlCommentParseResult thisDeclarationParseResult = AnalyzeDeclarationXmlComments(typeDeclaration);
-
-			if (thisDeclarationParseResult == XmlCommentParseResult.HasExcludeTag)
-				return false;
-			else if (thisDeclarationParseResult == XmlCommentParseResult.HasNonEmptySummaryTag)
-				return true;
-			
-			foreach (SyntaxReference reference in typeSymbol.DeclaringSyntaxReferences)
-			{
-				if (reference.SyntaxTree == typeDeclaration.SyntaxTree ||
-					!(reference.GetSyntax(_syntaxContext.CancellationToken) is TypeDeclarationSyntax partialTypeDeclaration))
-				{
-					continue;
-				}
-
-				XmlCommentParseResult parseResult = AnalyzeDeclarationXmlComments(partialTypeDeclaration);
-
-				if (parseResult == XmlCommentParseResult.HasExcludeTag)
-					return false;
-				else if (parseResult == XmlCommentParseResult.HasNonEmptySummaryTag)
-					return true;
-			}
-
-			if (!skipDiagnosticReporting)
-			{
-				ReportDiagnostic(_syntaxContext, typeDeclaration, typeDeclaration.Identifier.GetLocation(), thisDeclarationParseResult);
-			}
-
-			return true;
-		}
-
-		private bool CheckIfTypeAttributesDisableDiagnostic(INamedTypeSymbol typeSymbol)
-		{
-			var shortAttributeNames = typeSymbol.GetAttributes()
-												.Select(attr => GetAttributeShortName(attr.AttributeClass.Name));
-
-			return CheckAttributeNames(shortAttributeNames);
-		}
-
-		private bool CheckXmlCommentAndTheNeedToGoToChildrenNodes(MemberDeclarationSyntax memberDeclaration, SyntaxTokenList modifiers,
-																  SyntaxToken identifier, bool skipDiagnosticReporting)
-		{
-			_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
-
-			if (!modifiers.Any(SyntaxKind.PublicKeyword) || CheckIfMemberAttributesDisableDiagnostic(memberDeclaration))
-				return false;
-
-			XmlCommentParseResult thisDeclarationParseResult = AnalyzeDeclarationXmlComments(memberDeclaration);
-
-			if (thisDeclarationParseResult == XmlCommentParseResult.HasExcludeTag)
-				return false;
-			else if (thisDeclarationParseResult == XmlCommentParseResult.HasNonEmptySummaryTag)
-				return true;
-
-			if (!skipDiagnosticReporting)
-			{
-				ReportDiagnostic(_syntaxContext, memberDeclaration, identifier.GetLocation(), thisDeclarationParseResult);
-			}
-
-			return true;
-		}
-
-		private XmlCommentParseResult AnalyzeDeclarationXmlComments(MemberDeclarationSyntax memberDeclaration)
-		{
-			if (!memberDeclaration.HasStructuredTrivia)
-				return XmlCommentParseResult.NoXmlComment;
-
-			IEnumerable<DocumentationCommentTriviaSyntax> xmlComments = GetXmlComments(memberDeclaration);
-			bool hasXmlComment = false, hasSummaryTag = false, nonEmptySummaryTag = false;
-
-			foreach (DocumentationCommentTriviaSyntax xmlComment in xmlComments)
-			{
-				hasXmlComment = true;
-				var excludeTag = GetXmlExcludeTag(xmlComment);
-
-				if (excludeTag != null)
-					return XmlCommentParseResult.HasExcludeTag;
-				else if (hasSummaryTag)
-					continue;
-
-				XmlElementSyntax summaryTag = GetSummaryTag(xmlComment);
-
-				if (summaryTag == null)
-					continue;
-
-				hasSummaryTag = true;
-				nonEmptySummaryTag = IsNonEmptySummaryTag(summaryTag);
-			}
-
-			if (!hasXmlComment)
-				return XmlCommentParseResult.NoXmlComment;
-			else if (!hasSummaryTag)
-				return XmlCommentParseResult.NoSummaryTag;
-			else if (!nonEmptySummaryTag)
-				return XmlCommentParseResult.EmptySummaryTag;
-			else
-				return XmlCommentParseResult.HasNonEmptySummaryTag;
-
-			//-------------------------------------------------Local function--------------------------------------------------------
-			bool IsNonEmptySummaryTag(XmlElementSyntax summaryTag)
-			{
-				var summaryContent = summaryTag.Content;
-
-				if (summaryContent.Count == 0)
-					return false;
-
-				foreach (XmlNodeSyntax contentNode in summaryContent)
-				{
-					var contentString = contentNode.ToFullString();
-					if (contentString.IsNullOrWhiteSpace())
-						continue;
-
-					var contentHasText = contentString.Split(_xmlCommentSummarySeparators, StringSplitOptions.RemoveEmptyEntries)
-													  .Any(CommentContentIsNotEmpty);
-					if (contentHasText)
-						return true;
-				}
-
-				return false;
-			}
-		}
-
-		private bool CheckIfMemberAttributesDisableDiagnostic(MemberDeclarationSyntax member)
-		{
-			var shortAttributeNames = member.GetAttributes()
-											.Select(attr => GetAttributeShortName(attr));
-
-			return CheckAttributeNames(shortAttributeNames);
-		}
-
-		private IEnumerable<DocumentationCommentTriviaSyntax> GetXmlComments(MemberDeclarationSyntax member) =>
-			member.GetLeadingTrivia()
-				  .Select(t => t.GetStructure())
-				  .OfType<DocumentationCommentTriviaSyntax>();
-
-		private XmlEmptyElementSyntax GetXmlExcludeTag(DocumentationCommentTriviaSyntax xmlComment) =>
-			xmlComment.ChildNodes()
-					  .OfType<XmlEmptyElementSyntax>()
-					  .FirstOrDefault(s => XmlAnalyzerConstants.XmlCommentExcludeTag.Equals(s.Name?.ToString(), StringComparison.Ordinal));
-
-		private XmlElementSyntax GetSummaryTag(DocumentationCommentTriviaSyntax xmlComment) =>
-			xmlComment.ChildNodes()
-					  .OfType<XmlElementSyntax>()
-					  .FirstOrDefault(n => XmlAnalyzerConstants.XmlCommentSummaryTag.Equals(n.StartTag?.Name?.ToString(), StringComparison.Ordinal));
-
-		private bool CommentContentIsNotEmpty(string content) =>
-			!content.IsNullOrEmpty() &&
-			 content.Any(char.IsLetterOrDigit);
 
 		private void ReportDiagnostic(SyntaxNodeAnalysisContext syntaxContext, MemberDeclarationSyntax memberDeclaration,
 									  Location location, XmlCommentParseResult parseResult)
@@ -292,55 +73,94 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 																.Add(XmlAnalyzerConstants.XmlCommentParseResultKey, parseResult.ToString());
 			var noXmlCommentDiagnostic = Diagnostic.Create(Descriptors.PX1007_PublicClassXmlComment, location, properties, memberCategory);
 
-			syntaxContext.ReportDiagnosticWithSuppressionCheck(noXmlCommentDiagnostic, _codeAnalysisSettings);
+			syntaxContext.ReportDiagnosticWithSuppressionCheck(noXmlCommentDiagnostic, _pxContext.CodeAnalysisSettings);
 		}
 
-		private LocalizableString GetMemberCategory(MemberDeclarationSyntax memberDeclaration) =>
-			 memberDeclaration switch
-			 {
-				 ClassDeclarationSyntax _     => nameof(Resources.PX1007Class).GetLocalized(),
-				 PropertyDeclarationSyntax _  => nameof(Resources.PX1007DacProperty).GetLocalized(),
-				 StructDeclarationSyntax _    => nameof(Resources.PX1007Struct).GetLocalized(),
-				 InterfaceDeclarationSyntax _ => nameof(Resources.PX1007Interface).GetLocalized(),
-				 EnumDeclarationSyntax _      => nameof(Resources.PX1007Enum).GetLocalized(),
-				 DelegateDeclarationSyntax _  => nameof(Resources.PX1007Delegate).GetLocalized(),
-				 _                            => nameof(Resources.PX1007DefaultEntity).GetLocalized(),
-			 };
+		
 
-		private bool CheckAttributeNames(IEnumerable<string> attributeNames)
+
+		private bool IsInternalApi(ITypeSymbol typeSymbol)
 		{
-			const string ObsoleteAttributeShortName = "Obsolete";
-			const string PXHiddenAttributeShortName = "PXHidden";
-			const string PXInternalUseOnlyAttributeShortName = "PXInternalUseOnly";
+			if (typeSymbol.IsNamespace || typeSymbol.IsTupleType || typeSymbol.IsAnonymousType || !CheckSpecialType(typeSymbol))
+				return false;
 
-			return attributeNames.Any(attrName => attrName == ObsoleteAttributeShortName ||
-												  attrName == PXHiddenAttributeShortName ||
-												  attrName == PXInternalUseOnlyAttributeShortName);
-		}
+			bool? isInternal = CheckTypeAttributesForInternal(typeSymbol);
 
-		private static string GetAttributeShortName(AttributeSyntax attribute)
-		{
-			string shortName = attribute.Name is QualifiedNameSyntax qualifiedName
-				? qualifiedName.Right.ToString()
-				: attribute.Name.ToString();
+			if (isInternal.HasValue)
+				return isInternal.Value;
 
-			return GetAttributeShortName(shortName);
-		}
+			var stack = new Stack<INamedTypeSymbol>();
 
-		private static string GetAttributeShortName(string attributeName)
-		{
-			const string AttributeSuffix = "Attribute";
-			const int minLengthWithSuffix = 17;
+			if (typeSymbol.IsReferenceType && typeSymbol.BaseType != null && typeSymbol.BaseType.SpecialType != SpecialType.System_Object)
+				stack.Push(typeSymbol.BaseType);
 
-			// perfomance optimization to avoid checking the suffix of attribute names 
-			// which are definitely shorter than any of the attributes we search with "Attribute" suffix
-			if (attributeName.Length >= minLengthWithSuffix && attributeName.EndsWith(AttributeSuffix))
+			if (typeSymbol.ContainingType != null)
+				stack.Push(typeSymbol.ContainingType);
+			
+			while (stack.Count > 0)
 			{
-				const int suffixLength = 9;
-				return attributeName.Substring(0, attributeName.Length - suffixLength);
+				INamedTypeSymbol curType = stack.Pop()!;
+				isInternal = CheckTypeAttributesForInternal(curType);
+
+				if (isInternal == true)
+				{
+					_markedTypes[typeSymbol] = true;
+					return true;
+				}
+				else if (isInternal == false)
+					continue;
+
+				if (curType.IsReferenceType && curType.BaseType != null && curType.BaseType.SpecialType != SpecialType.System_Object)
+					stack.Push(curType.BaseType);
+
+				if (curType.ContainingType != null)
+					stack.Push(curType.ContainingType);
 			}
 
-			return attributeName;
+			_markedTypes[typeSymbol] = false;
+			return false;
+
+			//-------------------------------------------------Local Function--------------------------------------------------------
+			bool? CheckTypeAttributesForInternal(ITypeSymbol type)
+			{
+				if (_markedTypes.TryGetValue(type, out bool isInternalApi))
+					return isInternalApi;
+
+				bool isInternal = type.GetAttributes().Any(a => a.AttributeClass == _pxInternalUseOnlyAttribute);
+
+				if (isInternal)
+				{
+					_markedTypes[type] = true;
+					return true;
+				}
+
+				return null;
+			}
 		}
+
+		private bool CheckSpecialType(ITypeSymbol typeSymbol) =>
+			typeSymbol.SpecialType switch
+			{
+				SpecialType.System_Object   => false,
+				SpecialType.System_Void     => false,
+				SpecialType.System_Boolean  => false,
+				SpecialType.System_Char     => false,
+				SpecialType.System_SByte    => false,
+				SpecialType.System_Byte     => false,
+				SpecialType.System_Int16    => false,
+				SpecialType.System_UInt16   => false,
+				SpecialType.System_Int32    => false,
+				SpecialType.System_UInt32   => false,
+				SpecialType.System_Int64    => false,
+				SpecialType.System_UInt64   => false,
+				SpecialType.System_Decimal  => false,
+				SpecialType.System_Single   => false,
+				SpecialType.System_Double   => false,
+				SpecialType.System_String   => false,
+				SpecialType.System_IntPtr   => false,
+				SpecialType.System_UIntPtr  => false,
+				SpecialType.System_DateTime => false,
+				_                           => true,
+			};
 	}
 }
