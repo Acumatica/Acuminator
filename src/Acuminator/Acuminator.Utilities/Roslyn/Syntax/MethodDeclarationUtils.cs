@@ -30,6 +30,29 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			return null;
 		}
 
+		/// <summary>
+		/// Get method name location from invocation node.
+		/// </summary>
+		/// <param name="invocation">The invocation node to act on.</param>
+		/// <returns>
+		/// The method name's location.
+		/// </returns>
+		public static Location GetMethodNameLocation(this InvocationExpressionSyntax invocation)
+		{
+			invocation.ThrowOnNull(nameof(invocation));
+
+			if (invocation.Expression is MemberAccessExpressionSyntax memberAccessNode)
+			{
+				return memberAccessNode.Name?.GetLocation() ?? invocation.GetLocation();
+			}
+			else if (invocation.Expression is MemberBindingExpressionSyntax memberBindingNode)
+			{
+				return memberBindingNode.Name?.GetLocation() ?? invocation.GetLocation();
+			}
+
+			return invocation.GetLocation();
+		}
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool DoesArgumentsContainIdentifier(this InvocationExpressionSyntax invocation, string identifier)
 		{

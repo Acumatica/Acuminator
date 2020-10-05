@@ -314,7 +314,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 
 			if (argsCount < minCount || argsCount > maxCount)
 			{
-				Location location = GetLocation(invocation);
+				Location location = invocation.GetMethodNameLocation();
 
 				if (parametersCounter.OptionalParametersCount == 0)
 				{
@@ -331,18 +331,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 			}
 		}
 
-		private static Location GetLocation(InvocationExpressionSyntax invocation)
-		{
-			if (invocation.Expression is MemberAccessExpressionSyntax memberAccessNode)
-			{
-				return memberAccessNode.Name?.GetLocation() ?? invocation.GetLocation();
-			}
-			else if (invocation.Expression is MemberBindingExpressionSyntax memberBindingNode)
-			{
-				return memberBindingNode.Name?.GetLocation() ?? invocation.GetLocation();
-			}
-
-			return invocation.GetLocation();
-		}
+		
 	}
 }
