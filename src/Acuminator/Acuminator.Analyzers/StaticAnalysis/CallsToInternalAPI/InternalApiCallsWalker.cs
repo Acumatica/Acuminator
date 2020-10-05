@@ -72,24 +72,42 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 			}
 		}
 
-		public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
+		public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax memberAccess)
 		{
 			CancellationToken.ThrowIfCancellationRequested();
 
-			var symbolInfo = _semanticModel.GetSymbolInfo(invocation, CancellationToken);
+			SymbolInfo symbolInfo = _semanticModel.GetSymbolInfo(memberAccess, CancellationToken);
 
-			if (!(symbolInfo.Symbol is IMethodSymbol methodSymbol))
+			AnalyzeNonTypeSymbol(symbolInfo, memberAccess);
+			base.VisitMemberAccessExpression(memberAccess);
+		}
+
+		public override void VisitMemberBindingExpression(MemberBindingExpressionSyntax memberBinding)
+		{
+			CancellationToken.ThrowIfCancellationRequested();
+
+			SymbolInfo symbolInfo = _semanticModel.GetSymbolInfo(memberBinding, CancellationToken);
+
+			AnalyzeNonTypeSymbol(symbolInfo, memberBinding);
+			base.VisitMemberBindingExpression(memberBinding);
+		}
+
+		private void AnalyzeNonTypeSymbol(SymbolInfo symbolInfo, ExpressionSyntax accessExpressionNode)
+		{
+			switch (symbolInfo.Symbol)
 			{
-				base.VisitInvocationExpression(invocation);
-				return;
-			}
+				case IMethodSymbol methodSymbol when IsInternalApiMethod(methodSymbol):
+				case IPropertySymbol propertySymbol when IsInternalApiProperty(propertySymbol):
+				case IFieldSymbol fieldSymbol when IsInternalApiField(fieldSymbol):
+				case IEventSymbol eventSymbol :
 
-			if (IsInternalApiMethod(methodSymbol))
-			{
-				ReportInternalApiDiagnostic(invocation.GetMethodNameLocation());
-			}
+					Location? location = GetLocationFromAccessExpresionNode(accessExpressionNode);
+					ReportInternalApiDiagnostic(location);
+					return;
 
-			base.VisitInvocationExpression(invocation);
+				default:
+					return;
+			}
 		}
 
 		private bool IsInternalApiType(ITypeSymbol typeSymbol)
@@ -168,6 +186,88 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 				_                           => true,
 			};
 
+		private bool IsInternalApiProperty(IPropertySymbol propertySymbol)
+		{
+			if (!propertySymbol.IsAccessibleOutsideOfAssembly())
+				return false;
+
+			if (_markedInternalApi.TryGetValue(propertySymbol, out bool isInternalProperty))
+				return isInternalProperty;
+
+			if (propertySymbol.ContainingType != null && IsInternalApiType(propertySymbol.ContainingType))
+			{
+				_markedInternalApi[propertySymbol] = true;
+				return true;
+			}
+
+			IPropertySymbol? curProperty = propertySymbol;
+
+			while (curProperty != null)
+			{
+				bool? isInternal = CheckAttributesAndCacheForInternal(curProperty);
+
+				if (isInternal.HasValue)
+					return isInternal.Value;
+
+				curProperty = curProperty.IsOverride
+					? curProperty.OverriddenProperty
+					: null;
+			}
+
+			_markedInternalApi[propertySymbol] = false;
+			return false;
+		}
+
+		private bool IsInternalApiField(IFieldSymbol fieldSymbol)
+		{
+			if (!fieldSymbol.CanBeReferencedByName || !fieldSymbol.IsAccessibleOutsideOfAssembly())
+				return false;
+
+			if (_markedInternalApi.TryGetValue(fieldSymbol, out bool isInternalField))
+				return isInternalField;
+
+			if (fieldSymbol.ContainingType != null && IsInternalApiType(fieldSymbol.ContainingType))
+			{
+				_markedInternalApi[fieldSymbol] = true;
+				return true;
+			}
+
+			_markedInternalApi[fieldSymbol] = false;
+			return false;
+		}
+
+		private bool IsInternalApiEvent(IEventSymbol eventSymbol)
+		{
+			if (!eventSymbol.IsAccessibleOutsideOfAssembly())
+				return false;
+
+			if (_markedInternalApi.TryGetValue(eventSymbol, out bool isInternalEvent))
+				return isInternalEvent;
+
+			if (eventSymbol.ContainingType != null && IsInternalApiType(eventSymbol.ContainingType))
+			{
+				_markedInternalApi[eventSymbol] = true;
+				return true;
+			}
+
+			IEventSymbol? curEvent = eventSymbol;
+
+			while (curEvent != null)
+			{
+				bool? isInternal = CheckAttributesAndCacheForInternal(curEvent);
+
+				if (isInternal.HasValue)
+					return isInternal.Value;
+
+				curEvent = curEvent.IsOverride
+					? curEvent.OverriddenEvent
+					: null;
+			}
+
+			_markedInternalApi[eventSymbol] = false;
+			return false;
+		}
+
 		private bool IsInternalApiMethod(IMethodSymbol methodSymbol)
 		{
 			if (!CheckMethodKind(methodSymbol) || !methodSymbol.IsAccessibleOutsideOfAssembly())
@@ -234,7 +334,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 			return null;
 		}
 
-		private void ReportInternalApiDiagnostic(Location location)
+		private void ReportInternalApiDiagnostic(Location? location)
 		{
 			CancellationToken.ThrowIfCancellationRequested();
 
@@ -244,5 +344,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 				_syntaxContext.ReportDiagnosticWithSuppressionCheck(internalApiDiagnostic, _pxContext.CodeAnalysisSettings);
 			}
 		}
+
+		private Location? GetLocationFromAccessExpresionNode(ExpressionSyntax accessExpressionNode) =>
+			accessExpressionNode switch
+			{
+				MemberAccessExpressionSyntax memberAccess   => memberAccess.Name?.GetLocation()  ?? memberAccess.GetLocation(),
+				MemberBindingExpressionSyntax memberBinding => memberBinding.Name?.GetLocation() ?? memberBinding.GetLocation(),
+				_                                           => null
+			};
 	}
 }
