@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+using System.Runtime.CompilerServices;
 
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
@@ -23,8 +24,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 {
 	internal class InternalApiCallsWalker : CSharpSyntaxWalker
 	{
-		private static readonly Dictionary<ITypeSymbol, bool> _markedTypes = new Dictionary<ITypeSymbol, bool>();
-		private static readonly Dictionary<ISymbol, bool> _markedNonTypes = new Dictionary<ISymbol, bool>();
+		private static readonly Dictionary<ISymbol, bool> _markedInternalApi = new Dictionary<ISymbol, bool>();
 
 		private readonly PXContext _pxContext;
 		private readonly SyntaxNodeAnalysisContext _syntaxContext;
@@ -45,6 +45,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 		{
 			CancellationToken.ThrowIfCancellationRequested();
 
+			if (!(_semanticModel.GetSymbolInfo(node, CancellationToken).Symbol is ITypeSymbol typeSymbol))
+				return;
+
+			if (IsInternalApiType(typeSymbol))
+			{
+				ReportInternalApiDiagnostic(node.Identifier.GetLocation());
+			}
+
 			base.VisitGenericName(node);
 		}
 
@@ -52,7 +60,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 		{
 			CancellationToken.ThrowIfCancellationRequested();
 
-			base.VisitIdentifierName(node);
+			if (!(_semanticModel.GetSymbolInfo(node, CancellationToken).Symbol is ITypeSymbol typeSymbol))
+				return;
+
+			if (IsInternalApiType(typeSymbol))
+			{
+				ReportInternalApiDiagnostic(node.Identifier.GetLocation());
+			}
 		}
 
 		public override void VisitInvocationExpression(InvocationExpressionSyntax node)
@@ -62,29 +76,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 			base.VisitInvocationExpression(node);
 		}
 
-
-		private void ReportDiagnostic(SyntaxNodeAnalysisContext syntaxContext, MemberDeclarationSyntax memberDeclaration,
-									  Location location, XmlCommentParseResult parseResult)
+		private bool IsInternalApiType(ITypeSymbol typeSymbol)
 		{
-			syntaxContext.CancellationToken.ThrowIfCancellationRequested();
-
-			var memberCategory = GetMemberCategory(memberDeclaration);
-			var properties = ImmutableDictionary<string, string>.Empty
-																.Add(XmlAnalyzerConstants.XmlCommentParseResultKey, parseResult.ToString());
-			var noXmlCommentDiagnostic = Diagnostic.Create(Descriptors.PX1007_PublicClassXmlComment, location, properties, memberCategory);
-
-			syntaxContext.ReportDiagnosticWithSuppressionCheck(noXmlCommentDiagnostic, _pxContext.CodeAnalysisSettings);
-		}
-
-		
-
-
-		private bool IsInternalApi(ITypeSymbol typeSymbol)
-		{
-			if (typeSymbol.IsNamespace || typeSymbol.IsTupleType || typeSymbol.IsAnonymousType || !CheckSpecialType(typeSymbol))
+			if (typeSymbol.IsNamespace || typeSymbol.IsTupleType || typeSymbol.IsAnonymousType || !typeSymbol.IsAccessibleOutsideOfAssembly() || 
+				!CheckSpecialType(typeSymbol))
+			{
 				return false;
+			}
 
-			bool? isInternal = CheckTypeAttributesAndCacheForInternal(typeSymbol);
+			bool? isInternal = CheckAttributesAndCacheForInternal(typeSymbol);
 
 			if (isInternal.HasValue)
 				return isInternal.Value;
@@ -99,47 +99,35 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 				if (recursionDepth > maxRecursionDepth)
 					return false;
 
-				bool? isInternalApiType = CheckTypeAttributesAndCacheForInternal(type);
+				bool? isInternalApiType = CheckAttributesAndCacheForInternal(type);
 
 				if (isInternalApiType.HasValue)
 					return isInternalApiType.Value;
 
-				if (type.IsReferenceType && type.BaseType != null && type.BaseType.SpecialType != SpecialType.System_Object && 
+				CancellationToken.ThrowIfCancellationRequested();
+
+				if (type.IsReferenceType && type.BaseType != null && type.BaseType.SpecialType != SpecialType.System_Object &&
 					IsInternalApiImpl(type.BaseType, recursionDepth + 1))
 				{
-					_markedTypes[type] = true;
+					_markedInternalApi[type] = true;
 					return true;
 				}
+
+				CancellationToken.ThrowIfCancellationRequested();
 
 				if (type.ContainingType != null && IsInternalApiImpl(type.ContainingType, recursionDepth + 1))
 				{
-					_markedTypes[type] = true;
+					_markedInternalApi[type] = true;
 					return true;
 				}
 
-				_markedTypes[type] = false;
+				_markedInternalApi[type] = false;
 				return false;
-			}
-
-
-			bool? CheckTypeAttributesAndCacheForInternal(ITypeSymbol type)
-			{
-				if (_markedTypes.TryGetValue(type, out bool isInternalApi))
-					return isInternalApi;
-
-				bool isInternal = type.GetAttributes().Any(a => a.AttributeClass == _pxInternalUseOnlyAttribute);
-
-				if (isInternal)
-				{
-					_markedTypes[type] = true;
-					return true;
-				}
-
-				return null;
 			}
 		}
 
-		private bool CheckSpecialType(ITypeSymbol typeSymbol) =>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static bool CheckSpecialType(ITypeSymbol typeSymbol) =>
 			typeSymbol.SpecialType switch
 			{
 				SpecialType.System_Object   => false,
@@ -163,5 +151,82 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 				SpecialType.System_DateTime => false,
 				_                           => true,
 			};
+
+		private bool IsInternalApiMethod(IMethodSymbol methodSymbol)
+		{
+			if (!CheckMethodKind(methodSymbol) || !methodSymbol.IsAccessibleOutsideOfAssembly())
+				return false;
+
+			if (_markedInternalApi.TryGetValue(methodSymbol, out bool isInternalMethod))
+				return isInternalMethod;
+
+			if (methodSymbol.ContainingType != null && IsInternalApiType(methodSymbol.ContainingType))
+			{
+				_markedInternalApi[methodSymbol] = true;
+				return true;
+			}
+
+			IMethodSymbol? curMethod = methodSymbol;
+
+			while (curMethod != null)
+			{
+				bool? isInternal = CheckAttributesAndCacheForInternal(curMethod);
+
+				if (isInternal.HasValue)
+					return isInternal.Value;
+
+				curMethod = curMethod.IsOverride
+					? curMethod.OverriddenMethod
+					: null;
+			}
+
+			_markedInternalApi[methodSymbol] = false;
+			return false;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static bool CheckMethodKind(IMethodSymbol methodSymbol) =>
+			methodSymbol.MethodKind switch
+			{
+				MethodKind.LambdaMethod      => false,
+				MethodKind.Constructor       => false,
+				MethodKind.Conversion        => false,
+				MethodKind.Destructor        => false,
+				MethodKind.EventAdd          => false,
+				MethodKind.EventRaise        => false,
+				MethodKind.EventRemove       => false,
+				MethodKind.StaticConstructor => false,
+				MethodKind.BuiltinOperator   => false,
+				MethodKind.DeclareMethod     => false,
+				MethodKind.LocalFunction     => false,
+				_                            => true
+			};
+
+		private bool? CheckAttributesAndCacheForInternal(ISymbol symbol)
+		{
+			if (_markedInternalApi.TryGetValue(symbol, out bool isInternalApi))
+				return isInternalApi;
+
+			bool isInternal = symbol.GetAttributes().Any(a => a.AttributeClass == _pxInternalUseOnlyAttribute);
+
+			if (isInternal)
+			{
+				_markedInternalApi[symbol] = true;
+				return true;
+			}
+
+			return null;
+		}
+
+		private void ReportInternalApiDiagnostic(Location location)
+		{
+			CancellationToken.ThrowIfCancellationRequested();
+
+			if (location != null)
+			{
+				var internalApiDiagnostic = Diagnostic.Create(Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV, location);
+				_syntaxContext.ReportDiagnosticWithSuppressionCheck(internalApiDiagnostic, _pxContext.CodeAnalysisSettings);
+			}
+		}
 	}
 }

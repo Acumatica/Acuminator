@@ -21,6 +21,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		/// <returns>
 		/// True if <paramref name="symbol"/> is accessible outside of assembly, false if not.
 		/// </returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsAccessibleOutsideOfAssembly(this ISymbol symbol) =>
 			symbol.CheckIfNull(nameof(symbol)).DeclaredAccessibility switch
 			{
