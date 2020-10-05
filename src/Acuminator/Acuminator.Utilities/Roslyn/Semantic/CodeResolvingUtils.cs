@@ -15,6 +15,25 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 	public static class CodeResolvingUtils
 	{
 		/// <summary>
+		/// Is <paramref name="symbol"/> is accessible outside of its declaring assembly.
+		/// </summary>
+		/// <param name="symbol">Symbol to check</param>
+		/// <returns>
+		/// True if <paramref name="symbol"/> is accessible outside of assembly, false if not.
+		/// </returns>
+		public static bool IsAccessibleOutsideOfAssembly(this ISymbol symbol) =>
+			symbol.CheckIfNull(nameof(symbol)).DeclaredAccessibility switch
+			{
+				Accessibility.Private => false,
+				Accessibility.Internal => false,
+				Accessibility.ProtectedAndInternal => false,
+				Accessibility.Protected => true,
+				Accessibility.ProtectedOrInternal => true,
+				Accessibility.Public => true,
+				_ => true,
+			};
+
+		/// <summary>
 		/// An ITypeSymbol extension method that gets <see cref="PXCodeType"/> from identifier type symbol.
 		/// </summary>
 		/// <param name="identifierType">The identifierType to act on.</param>
