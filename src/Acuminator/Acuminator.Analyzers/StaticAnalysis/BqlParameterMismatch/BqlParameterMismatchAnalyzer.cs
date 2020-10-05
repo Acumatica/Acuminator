@@ -329,8 +329,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.BqlParameterMismatch
 						location, methodSymbol.Name, minCount, maxCount), pxContext.CodeAnalysisSettings);
 				}
 			}
-		}
-
-		
+		}	
 	}
 }

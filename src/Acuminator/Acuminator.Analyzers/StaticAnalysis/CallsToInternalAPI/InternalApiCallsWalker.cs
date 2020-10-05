@@ -41,39 +41,55 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 			_semanticModel = semanticModel;
 		}
 
-		public override void VisitGenericName(GenericNameSyntax node)
+		public override void VisitGenericName(GenericNameSyntax genericName)
 		{
 			CancellationToken.ThrowIfCancellationRequested();
 
-			if (!(_semanticModel.GetSymbolInfo(node, CancellationToken).Symbol is ITypeSymbol typeSymbol))
+			if (!(_semanticModel.GetSymbolInfo(genericName, CancellationToken).Symbol is ITypeSymbol typeSymbol))
+			{
+				base.VisitGenericName(genericName);
+				return;
+			}
+
+			if (IsInternalApiType(typeSymbol))
+			{
+				ReportInternalApiDiagnostic(genericName.Identifier.GetLocation());
+			}
+
+			base.VisitGenericName(genericName);
+		}
+
+		public override void VisitIdentifierName(IdentifierNameSyntax identifierName)
+		{
+			CancellationToken.ThrowIfCancellationRequested();
+
+			if (!(_semanticModel.GetSymbolInfo(identifierName, CancellationToken).Symbol is ITypeSymbol typeSymbol))
 				return;
 
 			if (IsInternalApiType(typeSymbol))
 			{
-				ReportInternalApiDiagnostic(node.Identifier.GetLocation());
+				ReportInternalApiDiagnostic(identifierName.Identifier.GetLocation());
 			}
-
-			base.VisitGenericName(node);
 		}
 
-		public override void VisitIdentifierName(IdentifierNameSyntax node)
+		public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
 		{
 			CancellationToken.ThrowIfCancellationRequested();
 
-			if (!(_semanticModel.GetSymbolInfo(node, CancellationToken).Symbol is ITypeSymbol typeSymbol))
-				return;
+			var symbolInfo = _semanticModel.GetSymbolInfo(invocation, CancellationToken);
 
-			if (IsInternalApiType(typeSymbol))
+			if (!(symbolInfo.Symbol is IMethodSymbol methodSymbol))
 			{
-				ReportInternalApiDiagnostic(node.Identifier.GetLocation());
+				base.VisitInvocationExpression(invocation);
+				return;
 			}
-		}
 
-		public override void VisitInvocationExpression(InvocationExpressionSyntax node)
-		{
-			CancellationToken.ThrowIfCancellationRequested();
+			if (IsInternalApiMethod(methodSymbol))
+			{
+				ReportInternalApiDiagnostic(invocation.GetMethodNameLocation());
+			}
 
-			base.VisitInvocationExpression(node);
+			base.VisitInvocationExpression(invocation);
 		}
 
 		private bool IsInternalApiType(ITypeSymbol typeSymbol)
