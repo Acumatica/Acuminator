@@ -84,44 +84,45 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 			if (typeSymbol.IsNamespace || typeSymbol.IsTupleType || typeSymbol.IsAnonymousType || !CheckSpecialType(typeSymbol))
 				return false;
 
-			bool? isInternal = CheckTypeAttributesForInternal(typeSymbol);
+			bool? isInternal = CheckTypeAttributesAndCacheForInternal(typeSymbol);
 
 			if (isInternal.HasValue)
 				return isInternal.Value;
 
-			var stack = new Stack<INamedTypeSymbol>();
-
-			if (typeSymbol.IsReferenceType && typeSymbol.BaseType != null && typeSymbol.BaseType.SpecialType != SpecialType.System_Object)
-				stack.Push(typeSymbol.BaseType);
-
-			if (typeSymbol.ContainingType != null)
-				stack.Push(typeSymbol.ContainingType);
-			
-			while (stack.Count > 0)
-			{
-				INamedTypeSymbol curType = stack.Pop()!;
-				isInternal = CheckTypeAttributesForInternal(curType);
-
-				if (isInternal == true)
-				{
-					_markedTypes[typeSymbol] = true;
-					return true;
-				}
-				else if (isInternal == false)
-					continue;
-
-				if (curType.IsReferenceType && curType.BaseType != null && curType.BaseType.SpecialType != SpecialType.System_Object)
-					stack.Push(curType.BaseType);
-
-				if (curType.ContainingType != null)
-					stack.Push(curType.ContainingType);
-			}
-
-			_markedTypes[typeSymbol] = false;
-			return false;
+			return IsInternalApiImpl(typeSymbol, recursionDepth: 0);
 
 			//-------------------------------------------------Local Function--------------------------------------------------------
-			bool? CheckTypeAttributesForInternal(ITypeSymbol type)
+			bool IsInternalApiImpl(ITypeSymbol type, int recursionDepth)
+			{
+				const int maxRecursionDepth = 100;
+
+				if (recursionDepth > maxRecursionDepth)
+					return false;
+
+				bool? isInternalApiType = CheckTypeAttributesAndCacheForInternal(type);
+
+				if (isInternalApiType.HasValue)
+					return isInternalApiType.Value;
+
+				if (type.IsReferenceType && type.BaseType != null && type.BaseType.SpecialType != SpecialType.System_Object && 
+					IsInternalApiImpl(type.BaseType, recursionDepth + 1))
+				{
+					_markedTypes[type] = true;
+					return true;
+				}
+
+				if (type.ContainingType != null && IsInternalApiImpl(type.ContainingType, recursionDepth + 1))
+				{
+					_markedTypes[type] = true;
+					return true;
+				}
+
+				_markedTypes[type] = false;
+				return false;
+			}
+
+
+			bool? CheckTypeAttributesAndCacheForInternal(ITypeSymbol type)
 			{
 				if (_markedTypes.TryGetValue(type, out bool isInternalApi))
 					return isInternalApi;
