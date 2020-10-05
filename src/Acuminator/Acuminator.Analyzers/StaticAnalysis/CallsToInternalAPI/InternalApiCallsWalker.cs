@@ -96,10 +96,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 		{
 			switch (symbolInfo.Symbol)
 			{
-				case IMethodSymbol methodSymbol when IsInternalApiMethod(methodSymbol):
+				case IMethodSymbol methodSymbol		when IsInternalApiMethod(methodSymbol):
 				case IPropertySymbol propertySymbol when IsInternalApiProperty(propertySymbol):
-				case IFieldSymbol fieldSymbol when IsInternalApiField(fieldSymbol):
-				case IEventSymbol eventSymbol :
+				case IFieldSymbol fieldSymbol		when IsInternalApiField(fieldSymbol):
+				case IEventSymbol eventSymbol		when IsInternalApiEvent(eventSymbol):
 
 					Location? location = GetLocationFromAccessExpresionNode(accessExpressionNode);
 					ReportInternalApiDiagnostic(location);
