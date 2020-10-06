@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -24,7 +25,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 {
 	internal class InternalApiCallsWalker : CSharpSyntaxWalker
 	{
-		private static readonly Dictionary<ISymbol, bool> _markedInternalApi = new Dictionary<ISymbol, bool>();
+		private static readonly ConcurrentDictionary<ISymbol, bool> _markedInternalApi = new ConcurrentDictionary<ISymbol, bool>();
 
 		private readonly PXContext _pxContext;
 		private readonly SyntaxNodeAnalysisContext _syntaxContext;
@@ -39,6 +40,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 			_pxContext = pxContext;
 			_pxInternalUseOnlyAttribute = _pxContext.AttributeTypes.PXInternalUseOnlyAttribute;
 			_semanticModel = semanticModel;
+		}
+
+		public override void VisitUsingDirective(UsingDirectiveSyntax usingDirective)
+		{
+			// Optimization - analyze only non standard using directives to avoid checking namespace identifier nodes
+			if (usingDirective.Alias != null || usingDirective.StaticKeyword.IsKind(SyntaxKind.StaticKeyword))	
+				base.VisitUsingDirective(usingDirective);
 		}
 
 		public override void VisitGenericName(GenericNameSyntax genericName)
@@ -223,8 +231,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 			if (!fieldSymbol.CanBeReferencedByName || !fieldSymbol.IsAccessibleOutsideOfAssembly())
 				return false;
 
-			if (_markedInternalApi.TryGetValue(fieldSymbol, out bool isInternalField))
-				return isInternalField;
+			bool? isInternal = CheckAttributesAndCacheForInternal(fieldSymbol);
+
+			if (isInternal.HasValue)
+				return isInternal.Value;
 
 			if (fieldSymbol.ContainingType != null && IsInternalApiType(fieldSymbol.ContainingType))
 			{
