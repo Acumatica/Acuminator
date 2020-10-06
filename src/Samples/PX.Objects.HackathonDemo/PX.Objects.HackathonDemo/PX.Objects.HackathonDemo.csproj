@@ -37,6 +37,9 @@
     <Reference Include="PX.Common">
       <HintPath>..\..\..\..\lib\PX.Common.dll</HintPath>
     </Reference>
+    <Reference Include="PX.Common">
+      <HintPath>..\..\..\..\lib\PX.Common.Std.dll</HintPath>
+    </Reference>
     <Reference Include="PX.Data">
       <HintPath>..\..\..\..\lib\PX.Data.dll</HintPath>
     </Reference>
