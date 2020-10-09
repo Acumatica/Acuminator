@@ -1,6 +1,20 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
+## Acuminator 2.3.1
+Acuminator 2.3.1 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
+
+### Enhancements
+In Acuminator 2.3.1, the following enhancements have been implemented:
+ - The [PX1037](diagnostics/PX1037.md) diagnostic has been added to check that a primary or foreign key declaration does not include an unbound DAC field.
+ - The [PX1036](diagnostics/PX1036.md) diagnostic has been updated to check the correct naming of foreign key declarations.
+ - The [PX1035](diagnostics/PX1035.md) diagnostic has been updated to support unique keys and check foreign key declarations.
+ 
+### Fixed Bugs
+In this version of Acuminator, the following bugs have been fixed:
+ - The Code Map displayed incorrect information about whether a DAC field is bound to database table column or not.
+
+
 ## Acuminator 2.3
 Acuminator 2.3 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
