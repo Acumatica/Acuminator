@@ -45,8 +45,8 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1033](diagnostics/PX1033.md) | The DAC does not have an explicit primary key declaration | Warning (ISV Level 3: Informational) | Available | 
 | [PX1034](diagnostics/PX1034.md) | The DAC does not have an explicit foreign key declaration | Warning (ISV Level 3: Informational) | Available |
 | [PX1035](diagnostics/PX1035.md) | The DAC has multiple primary key declarations | Warning (ISV Level 3: Informational) | Available |  
-| [PX1036](diagnostics/PX1036.md) | The DAC primary key should be named `PK`. The class containing DAC foreign keys should be named `FK`.  | Warning (ISV Level 3: Informational) | Available | 
-| [PX1037](diagnostics/PX1037.md) | Unbound DAC field cannot be used in a key declaration. | Warning (ISV Level 3: Informational) | Unavailable | 
+| [PX1036](diagnostics/PX1036.md) | The DAC must have one primary key which should be named `PK`. The class containing DAC foreign keys should be named `FK`. The single unique key in the DAC should be named `UK`. All unique keys in the DAC should be declared in a public static class named `UK`.  | Warning (ISV Level 3: Informational) | Available | 
+| [PX1037](diagnostics/PX1037.md) | Unbound DAC field cannot be used in a key declaration. | Error (ISV Level 3: Informational) | Unavailable | 
 | [PX1040](diagnostics/PX1040.md) | Instance constructors in BLC extensions are strictly prohibited. You should use the `Initialize()` method instead. | Error | Available |
 | [PX1042](diagnostics/PX1042.md) | In a `RowSelecting` handler, BQL statements and other database queries must be executed only inside a separate connection scope. | Error | Available |
 | [PX1043](diagnostics/PX1043.md) | Changes cannot be saved to the database from event handlers. | Error | Unavailable |

@@ -13,7 +13,7 @@ In Acuminator 2.3.1, the following enhancements have been implemented:
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
  - The Code Map displayed incorrect information about whether a DAC field is bound to database table column or not.
- - The setting of the `IsDBField` parameter in the `Account` and `Sub` attributes and their inheritors was ignored by Acumitor analysis.
+ - The setting of the `IsDBField` parameter in the `Account` and `Sub` attributes and their inheritors was ignored by Acuminator analysis.
  - The calculation of an attribute's bound type was performed incorrectly and did not account for the following things:
    - Whether the IsDBField property is declared in the attribute's base type
    - The value of the NonDB property of the PXDBLocalizableString attribute
