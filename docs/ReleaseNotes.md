@@ -1,6 +1,26 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
+## Acuminator 2.3.1
+Acuminator 2.3.1 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
+
+### Enhancements
+In Acuminator 2.3.1, the following enhancements have been implemented:
+ - The [PX1037](diagnostics/PX1037.md) diagnostic has been added to verify that a primary, unique, or foreign key declaration does not include an unbound DAC field.
+ - The [PX1036](diagnostics/PX1036.md) diagnostic has been updated to check the correct naming of foreign key declarations.
+ - The [PX1035](diagnostics/PX1035.md) diagnostic has been updated to support unique keys and check foreign key declarations.
+ 
+### Fixed Bugs
+In this version of Acuminator, the following bugs have been fixed:
+ - The Code Map displayed incorrect information about whether a DAC field is bound to database table column or not.
+ - The setting of the `IsDBField` parameter in the `Account` and `Sub` attributes and their inheritors was ignored by Acuminator analysis.
+ - The calculation of an attribute's bound type was performed incorrectly and did not account for the following factors:
+   - Whether the IsDBField property was declared in the attribute's base type
+   - What the value of the `NonDB` property of the PXDBLocalizableString attribute was
+   - Whether the IsDBField property of the attribute was derived from a standard field type attribute such as PXDBString, PXString, or PXDBCalced.
+ - When checking for an unbound attribute used along with `PXDBCalced`, the [PX1095](diagnostics/PX1095.md) diagnostic did not correctly use the attribute's bound type.
+
+
 ## Acuminator 2.3
 Acuminator 2.3 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
