@@ -8,7 +8,7 @@ Acuminator 2.3.1 includes the bug fixes and enhancements described in this secti
 In Acuminator 2.3.1, the following enhancements have been implemented:
  - The [PX1037](diagnostics/PX1037.md) diagnostic has been added to verify that a primary, unique, or foreign key declaration does not include an unbound DAC field.
  - The [PX1036](diagnostics/PX1036.md) diagnostic has been updated to check the correct naming of foreign key declarations.
- - The [PX1035](diagnostics/PX1035.md) diagnostic has been changed to check for unique keys and foreign keys duplicates with the same sets of fields.
+ - The [PX1035](diagnostics/PX1035.md) diagnostic has been changed to check for duplicates with the same sets of fields among unique and foreign keys.
  
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
