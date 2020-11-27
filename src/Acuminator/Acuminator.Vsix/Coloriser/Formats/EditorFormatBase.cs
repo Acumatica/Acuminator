@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using System.Windows.Media;
-using Acuminator.Vsix;
+using System.ComponentModel.Composition;
+
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.PlatformUI;
@@ -21,8 +22,14 @@ namespace Acuminator.Vsix.Coloriser
     internal abstract class EditorFormatBase : ClassificationFormatDefinition, IDisposable
     {
         private const string TextCategory = "text";
-        private readonly string _classificationTypeName; 
-        
+        private readonly string _classificationTypeName;
+
+        [Import]
+        internal IClassificationFormatMapService _classificationFormatMapService = null;  //Set via MEF
+
+        [Import]
+        internal IClassificationTypeRegistryService _classificationRegistry = null; // Set via MEF
+
         protected EditorFormatBase()
         {          
             VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
@@ -40,17 +47,11 @@ namespace Acuminator.Vsix.Coloriser
         {
 			ThreadHelper.ThrowIfNotOnUIThread();
 
-			if (AcuminatorVSPackage.Instance?.ClassificationFormatMapService == null ||
-                AcuminatorVSPackage.Instance.ClassificationRegistry == null ||
-                _classificationTypeName == null)
-            {
+			if (_classificationFormatMapService == null || _classificationRegistry == null ||  _classificationTypeName == null)
                 return;
-            }
 
-            var fontAndColorStorage = 
-                ServiceProvider.GlobalProvider.GetService(typeof(SVsFontAndColorStorage)) as IVsFontAndColorStorage;
-            var fontAndColorCacheManager = 
-                ServiceProvider.GlobalProvider.GetService(typeof(SVsFontAndColorCacheManager)) as IVsFontAndColorCacheManager;
+            var fontAndColorStorage = ServiceProvider.GlobalProvider.GetService<SVsFontAndColorStorage, IVsFontAndColorStorage>();
+            var fontAndColorCacheManager = ServiceProvider.GlobalProvider.GetService<SVsFontAndColorCacheManager, IVsFontAndColorCacheManager>();
 
             if (fontAndColorStorage == null || fontAndColorCacheManager == null)
                 return;
@@ -68,8 +69,8 @@ namespace Acuminator.Vsix.Coloriser
             if (foregroundColorForTheme == null)
                 return;
                     
-            IClassificationFormatMap formatMap = AcuminatorVSPackage.Instance.ClassificationFormatMapService
-                                                                             .GetClassificationFormatMap(category: TextCategory);
+            IClassificationFormatMap formatMap = _classificationFormatMapService.GetClassificationFormatMap(category: TextCategory);
+
             if (formatMap == null)
                 return;
 
@@ -77,8 +78,7 @@ namespace Acuminator.Vsix.Coloriser
             {
                 formatMap.BeginBatchUpdate();
                 ForegroundColor = foregroundColorForTheme;
-                var bqlOperatorClasType = AcuminatorVSPackage.Instance.ClassificationRegistry
-                                                                      .GetClassificationType(_classificationTypeName);
+                var bqlOperatorClasType = _classificationRegistry.GetClassificationType(_classificationTypeName);
 
                 if (bqlOperatorClasType == null)
                     return;
