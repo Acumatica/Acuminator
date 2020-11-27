@@ -80,16 +80,6 @@ namespace Acuminator.Vsix
 
 		private Microsoft.VisualStudio.LanguageServices.VisualStudioWorkspace _vsWorkspace;
 
-		[Import]
-        internal IClassificationFormatMapService _classificationFormatMapService = null;  //Set via MEF
-
-        public IClassificationFormatMapService ClassificationFormatMapService => _classificationFormatMapService;
-
-        [Import]
-        internal IClassificationTypeRegistryService _classificationRegistry = null; // Set via MEF
-
-        public IClassificationTypeRegistryService ClassificationRegistry => _classificationRegistry;
-
         private const int INSTANCE_UNINITIALIZED = 0;
         private const int INSTANCE_INITIALIZED = 1;
         private static int _instanceInitialized;
