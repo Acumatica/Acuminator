@@ -6,6 +6,8 @@ namespace PX.Objects.HackathonDemo.Graph.InternalApiUsage
 {
     public class SOOrderMaintSync : PXGraph<SOOrderMaintSync> 
     {
+        private readonly ServiceProvider serviceProvider = new ServiceProvider();
+
         public int CountSyncReadyFiles(int filesNbr = 0)
         {
             if (WebConfig.IsClusterEnabled)
@@ -14,6 +16,23 @@ namespace PX.Objects.HackathonDemo.Graph.InternalApiUsage
 			}
 
             return filesNbr;
+        }
+
+        public void InvalidateCache()
+        {
+			if (serviceProvider.AccessChecker != null && !serviceProvider.AccessChecker.SomeFlag)
+			{
+                serviceProvider.AccessChecker.CheckAccess();
+			}  
+
+            if (serviceProvider.Service != null && serviceProvider.Service.SomeFlag)
+			{
+                serviceProvider.Service.ProvideService();
+			}
+
+
+            PX.Api.Mobile.Legacy.Provider.InvalidateCache();
+
         }
     }
 }
