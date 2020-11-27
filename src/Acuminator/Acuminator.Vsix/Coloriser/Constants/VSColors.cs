@@ -14,21 +14,21 @@ using SuppressMessageAttribute = System.Diagnostics.CodeAnalysis.SuppressMessage
 
 namespace Acuminator.Vsix.Coloriser
 {
-	[SuppressMessage("Style", 
-		"VSTHRD010: Accessing \"Acuminator.Vsix.Coloriser.VSColors.IsDarkTheme\" should only be done on the main thread.Call Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread() first.",
-		Justification = "Already called inside", Scope = "type")]
+    [SuppressMessage("Style",
+        "VSTHRD010: Accessing \"Acuminator.Vsix.Coloriser.VSColors.IsDarkTheme\" should only be done on the main thread.Call Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread() first.",
+        Justification = "Already called inside", Scope = "type")]
     public static class VSColors
     {
-		private const int NOT_INITIALIZED = 0, INITIALIZED = 1;
+        private const int NOT_INITIALIZED = 0, INITIALIZED = 1;
 
-		private const byte RedCriteria = 128;
+        private const byte RedCriteria = 128;
         private const byte GreenCriteria = 128;
         private const byte BlueCriteria = 128;
 
         private static IVsUIShell5 _vsUIShell5;
-		private static int _serviceInitialized = NOT_INITIALIZED;
+        private static int _serviceInitialized = NOT_INITIALIZED;
 
-		private static readonly Dictionary<string,  Func<Color>> _acuminatorColors = new Dictionary<string,  Func<Color>>()
+        private static readonly Dictionary<string, Func<Color>> _acuminatorColors = new Dictionary<string, Func<Color>>()
         {
             { ColoringConstants.BQLOperatorFormat, () => BQLOperatorFormatColor },
             { ColoringConstants.BQLParameterFormat, () => BQLParameterFormatColor },
@@ -69,12 +69,12 @@ namespace Acuminator.Vsix.Coloriser
 
         public static bool IsDarkTheme()
         {
-			ThreadHelper.ThrowIfNotOnUIThread();
+            ThreadHelper.ThrowIfNotOnUIThread();
 
-			if (Interlocked.Exchange(ref _serviceInitialized, INITIALIZED) == NOT_INITIALIZED)
-			{
-				_vsUIShell5 = ServiceProvider.GlobalProvider.GetService(typeof(SVsUIShell)) as IVsUIShell5;
-			}
+            if (Interlocked.Exchange(ref _serviceInitialized, INITIALIZED) == NOT_INITIALIZED)
+            {
+                _vsUIShell5 = ServiceProvider.GlobalProvider.GetService(typeof(SVsUIShell)) as IVsUIShell5;
+            }
 
             if (_vsUIShell5 == null)
                 return true;
@@ -118,8 +118,8 @@ namespace Acuminator.Vsix.Coloriser
         #endregion
 
         #region DacExtension
-        public static Color DacExtensionFormatColorDark => Color.FromRgb(r: 202, g: 153, b: 102);  
-        public static Color DacExtensionFormatColorLight => Color.FromRgb(r: 202, g: 153, b: 102);  
+        public static Color DacExtensionFormatColorDark => Color.FromRgb(r: 202, g: 153, b: 102);
+        public static Color DacExtensionFormatColorLight => Color.FromRgb(r: 202, g: 153, b: 102);
 
         public static Color DacExtensionFormatColor => IsDarkTheme()
             ? DacExtensionFormatColorDark
@@ -163,7 +163,7 @@ namespace Acuminator.Vsix.Coloriser
         #endregion
 
         #region PXGraph
-        public static Color PXGraphFormatColorDark => Color.FromRgb(r: 38, g: 155, b: 199);  
+        public static Color PXGraphFormatColorDark => Color.FromRgb(r: 38, g: 155, b: 199);
         public static Color PXGraphFormatColorLight => Color.FromRgb(r: 38, g: 155, b: 199);
 
         public static Color PXGraphFormatColor => IsDarkTheme()
@@ -181,8 +181,8 @@ namespace Acuminator.Vsix.Coloriser
         #endregion
 
         #region BraceLevel_2_
-        public static Color BraceLevel_2_FormatColorDark => Color.FromRgb(r: 172, g: 165, b: 133);  
-        public static Color BraceLevel_2_FormatColorLight => Color.FromRgb(r: 124, g: 124, b: 124);  
+        public static Color BraceLevel_2_FormatColorDark => Color.FromRgb(r: 172, g: 165, b: 133);
+        public static Color BraceLevel_2_FormatColorLight => Color.FromRgb(r: 124, g: 124, b: 124);
 
         public static Color BraceLevel_2_FormatColor => IsDarkTheme()
             ? BraceLevel_2_FormatColorDark

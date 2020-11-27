@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Reflection;
 using System.Windows.Media;
 using System.ComponentModel.Composition;
@@ -13,7 +11,6 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Acuminator.Vsix.Utilities;
 
-using DefGuidList = Microsoft.VisualStudio.Editor.DefGuidList;
 using VSConstants =  Microsoft.VisualStudio.VSConstants;
 
 
@@ -23,6 +20,9 @@ namespace Acuminator.Vsix.Coloriser
     {
         private const string TextCategory = "text";
         private readonly string _classificationTypeName;
+
+        private const string MefItemsGuidString = "75A05685-00A8-4DED-BAE5-E7A50BFA929A";
+        private Guid _mefItemsGuid = new Guid(MefItemsGuidString);
 
         [Import]
         internal IClassificationFormatMapService _classificationFormatMapService = null;  //Set via MEF
@@ -42,12 +42,12 @@ namespace Acuminator.Vsix.Coloriser
                 ForegroundColor = VSColors.GetThemedColor(_classificationTypeName);
             }
         }
-      
+
         private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e)
         {
-			ThreadHelper.ThrowIfNotOnUIThread();
+            ThreadHelper.ThrowIfNotOnUIThread();
 
-			if (_classificationFormatMapService == null || _classificationRegistry == null ||  _classificationTypeName == null)
+            if (_classificationFormatMapService == null || _classificationRegistry == null || _classificationTypeName == null)
                 return;
 
             var fontAndColorStorage = ServiceProvider.GlobalProvider.GetService<SVsFontAndColorStorage, IVsFontAndColorStorage>();
@@ -56,19 +56,18 @@ namespace Acuminator.Vsix.Coloriser
             if (fontAndColorStorage == null || fontAndColorCacheManager == null)
                 return;
 
-            Guid guidTextEditorFontCategory = DefGuidList.guidTextEditorFontCategory;
-            fontAndColorCacheManager.CheckCache(ref guidTextEditorFontCategory, out int _);
+            fontAndColorCacheManager.CheckCache(ref _mefItemsGuid, out int _);
 
-            if (fontAndColorStorage.OpenCategory(ref guidTextEditorFontCategory, (uint) __FCSTORAGEFLAGS.FCSF_READONLY) != VSConstants.S_OK)
+            if (fontAndColorStorage.OpenCategory(ref _mefItemsGuid, (uint)__FCSTORAGEFLAGS.FCSF_READONLY) != VSConstants.S_OK)
             {
                 //TODO Log error              
             }
 
-            Color? foregroundColorForTheme =  VSColors.GetThemedColor(_classificationTypeName);
+            Color? foregroundColorForTheme = VSColors.GetThemedColor(_classificationTypeName);
 
             if (foregroundColorForTheme == null)
                 return;
-                    
+
             IClassificationFormatMap formatMap = _classificationFormatMapService.GetClassificationFormatMap(category: TextCategory);
 
             if (formatMap == null)
@@ -78,20 +77,20 @@ namespace Acuminator.Vsix.Coloriser
             {
                 formatMap.BeginBatchUpdate();
                 ForegroundColor = foregroundColorForTheme;
-                var bqlOperatorClasType = _classificationRegistry.GetClassificationType(_classificationTypeName);
+                var classificationType = _classificationRegistry.GetClassificationType(_classificationTypeName);
 
-                if (bqlOperatorClasType == null)
+                if (classificationType == null)
                     return;
 
                 ColorableItemInfo[] colorInfo = new ColorableItemInfo[1];
 
                 if (fontAndColorStorage.GetItem(_classificationTypeName, colorInfo) != VSConstants.S_OK)    //comment from F# repo: "we don't touch the changes made by the user"
                 {
-                    var properties = formatMap.GetTextProperties(bqlOperatorClasType);
+                    var properties = formatMap.GetTextProperties(classificationType);
                     var newProperties = properties.SetForeground(ForegroundColor.Value);
 
-                    formatMap.SetTextProperties(bqlOperatorClasType, newProperties);
-                }                                                                           
+                    formatMap.SetTextProperties(classificationType, newProperties);
+                }      
             }
             catch (Exception)
             {
@@ -100,7 +99,14 @@ namespace Acuminator.Vsix.Coloriser
             finally
             {
                 formatMap.EndBatchUpdate();
-            }          
+                
+				if (fontAndColorCacheManager.RefreshCache(ref _mefItemsGuid) != VSConstants.S_OK)
+				{
+					fontAndColorCacheManager.ClearCache(ref _mefItemsGuid);
+				}
+
+                fontAndColorStorage.CloseCategory();
+            }
         }
 
         void IDisposable.Dispose()
