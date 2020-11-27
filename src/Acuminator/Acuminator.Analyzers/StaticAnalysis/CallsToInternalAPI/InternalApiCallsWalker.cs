@@ -86,8 +86,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 
 			SymbolInfo symbolInfo = _semanticModel.GetSymbolInfo(memberAccess, CancellationToken);
 
-			AnalyzeNonTypeSymbol(symbolInfo, memberAccess);
-			base.VisitMemberAccessExpression(memberAccess);
+			if (CheckNonTypeSymbol(symbolInfo, memberAccess))
+			{
+				base.VisitMemberAccessExpression(memberAccess);
+			}
 		}
 
 		public override void VisitMemberBindingExpression(MemberBindingExpressionSyntax memberBinding)
@@ -96,11 +98,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 
 			SymbolInfo symbolInfo = _semanticModel.GetSymbolInfo(memberBinding, CancellationToken);
 
-			AnalyzeNonTypeSymbol(symbolInfo, memberBinding);
+			CheckNonTypeSymbol(symbolInfo, memberBinding);
 			base.VisitMemberBindingExpression(memberBinding);
 		}
 
-		private void AnalyzeNonTypeSymbol(SymbolInfo symbolInfo, ExpressionSyntax accessExpressionNode)
+		private bool CheckNonTypeSymbol(SymbolInfo symbolInfo, ExpressionSyntax accessExpressionNode)
 		{
 			switch (symbolInfo.Symbol)
 			{
@@ -111,10 +113,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 
 					Location? location = GetLocationFromAccessExpresionNode(accessExpressionNode);
 					ReportInternalApiDiagnostic(location);
-					return;
+					return false;
 
 				default:
-					return;
+					return true;
 			}
 		}
 
@@ -202,12 +204,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 			if (_markedInternalApi.TryGetValue(propertySymbol, out bool isInternalProperty))
 				return isInternalProperty;
 
-			if (propertySymbol.ContainingType != null && IsInternalApiType(propertySymbol.ContainingType))
+			if ((propertySymbol.ContainingType != null && IsInternalApiType(propertySymbol.ContainingType)) || IsInternalApiType(propertySymbol.Type))
 			{
 				_markedInternalApi[propertySymbol] = true;
 				return true;
 			}
-
+			
 			IPropertySymbol? curProperty = propertySymbol;
 
 			while (curProperty != null)
@@ -236,7 +238,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 			if (isInternal.HasValue)
 				return isInternal.Value;
 
-			if (fieldSymbol.ContainingType != null && IsInternalApiType(fieldSymbol.ContainingType))
+			if ((fieldSymbol.ContainingType != null && IsInternalApiType(fieldSymbol.ContainingType)) || IsInternalApiType(fieldSymbol.Type))
 			{
 				_markedInternalApi[fieldSymbol] = true;
 				return true;
@@ -254,7 +256,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 			if (_markedInternalApi.TryGetValue(eventSymbol, out bool isInternalEvent))
 				return isInternalEvent;
 
-			if (eventSymbol.ContainingType != null && IsInternalApiType(eventSymbol.ContainingType))
+			if ((eventSymbol.ContainingType != null && IsInternalApiType(eventSymbol.ContainingType)) || IsInternalApiType(eventSymbol.Type))
 			{
 				_markedInternalApi[eventSymbol] = true;
 				return true;
@@ -286,7 +288,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 			if (_markedInternalApi.TryGetValue(methodSymbol, out bool isInternalMethod))
 				return isInternalMethod;
 
-			if (methodSymbol.ContainingType != null && IsInternalApiType(methodSymbol.ContainingType))
+			if ((methodSymbol.ContainingType != null && IsInternalApiType(methodSymbol.ContainingType)) ||
+				(!methodSymbol.ReturnsVoid && methodSymbol.ReturnType != null && IsInternalApiType(methodSymbol.ReturnType)))
 			{
 				_markedInternalApi[methodSymbol] = true;
 				return true;
