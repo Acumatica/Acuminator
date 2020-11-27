@@ -40,6 +40,13 @@ namespace Acuminator.Vsix.Utilities
 			return serviceProvider?.GetService(typeof(TService)) as TService;
 		}
 
+		public static TActual GetService<TRequested, TActual>(this IServiceProvider serviceProvider)
+		where TRequested : class
+		where TActual : class
+		{	
+			return serviceProvider?.GetService(typeof(TRequested)) as TActual;
+		}
+
 		public static async Task<TService> GetServiceAsync<TService>(this Shell.IAsyncServiceProvider serviceProvider)
 		where TService : class
 		{
