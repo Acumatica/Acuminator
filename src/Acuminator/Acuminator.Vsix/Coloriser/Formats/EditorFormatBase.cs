@@ -50,6 +50,7 @@ namespace Acuminator.Vsix.Coloriser
             if (_classificationFormatMapService == null || _classificationRegistry == null || _classificationTypeName == null)
                 return;
 
+            var logger = AcuminatorVSPackage.Instance?.AcuminatorLogger;
             var fontAndColorStorage = ServiceProvider.GlobalProvider.GetService<SVsFontAndColorStorage, IVsFontAndColorStorage>();
             var fontAndColorCacheManager = ServiceProvider.GlobalProvider.GetService<SVsFontAndColorCacheManager, IVsFontAndColorCacheManager>();
 
@@ -57,10 +58,11 @@ namespace Acuminator.Vsix.Coloriser
                 return;
 
             fontAndColorCacheManager.CheckCache(ref _mefItemsGuid, out int _);
+            int openCategoryResult = fontAndColorStorage.OpenCategory(ref _mefItemsGuid, (uint)__FCSTORAGEFLAGS.FCSF_READONLY);
 
-            if (fontAndColorStorage.OpenCategory(ref _mefItemsGuid, (uint)__FCSTORAGEFLAGS.FCSF_READONLY) != VSConstants.S_OK)
+            if (openCategoryResult != VSConstants.S_OK)
             {
-                //TODO Log error              
+                logger?.LogMessage($"Error on opening category in the registry during the theme change. The error code is {openCategoryResult}", Logger.LogMode.Error);             
             }
 
             Color? foregroundColorForTheme = VSColors.GetThemedColor(_classificationTypeName);
@@ -92,18 +94,19 @@ namespace Acuminator.Vsix.Coloriser
                     formatMap.SetTextProperties(classificationType, newProperties);
                 }      
             }
-            catch (Exception)
+            catch (Exception exception)
             {
-                //TODO Log error here               
+                logger?.LogException(exception, logOnlyFromAcuminatorAssemblies: false, Logger.LogMode.Error);
             }
             finally
             {
                 formatMap.EndBatchUpdate();
-                
-				if (fontAndColorCacheManager.RefreshCache(ref _mefItemsGuid) != VSConstants.S_OK)
+                int clearCacheResult = fontAndColorCacheManager.ClearCache(ref _mefItemsGuid);
+
+                if (clearCacheResult != VSConstants.S_OK)
 				{
-					fontAndColorCacheManager.ClearCache(ref _mefItemsGuid);
-				}
+                    logger?.LogMessage($"Error on clearing MEF cache in the registry during the theme change. The error code is {openCategoryResult}", Logger.LogMode.Error);
+                }
 
                 fontAndColorStorage.CloseCategory();
             }
