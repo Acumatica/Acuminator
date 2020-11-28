@@ -9,7 +9,6 @@ using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Acuminator.Vsix.Utilities;
 
 using VSConstants =  Microsoft.VisualStudio.VSConstants;
 
@@ -18,22 +17,10 @@ namespace Acuminator.Vsix.Coloriser
 {
     internal abstract class EditorFormatBase : ClassificationFormatDefinition, IDisposable
     {
-        private const string TextCategory = "text";
         private readonly string _classificationTypeName;
 
-        private const string MefItemsGuidString = "75A05685-00A8-4DED-BAE5-E7A50BFA929A";
-        private Guid _mefItemsGuid = new Guid(MefItemsGuidString);
-
-        [Import]
-        internal IClassificationFormatMapService _classificationFormatMapService = null;  //Set via MEF
-
-        [Import]
-        internal IClassificationTypeRegistryService _classificationRegistry = null; // Set via MEF
-
         protected EditorFormatBase()
-        {          
-            VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
-
+        {
             Type type = this.GetType();
             _classificationTypeName = type.GetCustomAttribute<NameAttribute>()?.Name;
             
@@ -41,80 +28,51 @@ namespace Acuminator.Vsix.Coloriser
             {
                 ForegroundColor = VSColors.GetThemedColor(_classificationTypeName);
             }
+
+            ThemeUpdater.Instance.AcuminatorThemeChanged += AcuminatorThemeChangedHandler;
         }
 
-        private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e)
-        {
+		private void AcuminatorThemeChangedHandler(object sender, AcuminatorThemeChangedEventArgs e)
+		{
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            if (_classificationFormatMapService == null || _classificationRegistry == null || _classificationTypeName == null)
+            if (_classificationTypeName == null)
                 return;
 
-            var logger = AcuminatorVSPackage.Instance?.AcuminatorLogger;
-            var fontAndColorStorage = ServiceProvider.GlobalProvider.GetService<SVsFontAndColorStorage, IVsFontAndColorStorage>();
-            var fontAndColorCacheManager = ServiceProvider.GlobalProvider.GetService<SVsFontAndColorCacheManager, IVsFontAndColorCacheManager>();
+			try
+			{
+                Color? foregroundColorForTheme = VSColors.GetThemedColor(_classificationTypeName);
 
-            if (fontAndColorStorage == null || fontAndColorCacheManager == null)
-                return;
+                if (foregroundColorForTheme == null)
+                    return;
 
-            fontAndColorCacheManager.CheckCache(ref _mefItemsGuid, out int _);
-            int openCategoryResult = fontAndColorStorage.OpenCategory(ref _mefItemsGuid, (uint)__FCSTORAGEFLAGS.FCSF_READONLY);
-
-            if (openCategoryResult != VSConstants.S_OK)
-            {
-                logger?.LogMessage($"Error on opening category in the registry during the theme change. The error code is {openCategoryResult}", Logger.LogMode.Error);             
-            }
-
-            Color? foregroundColorForTheme = VSColors.GetThemedColor(_classificationTypeName);
-
-            if (foregroundColorForTheme == null)
-                return;
-
-            IClassificationFormatMap formatMap = _classificationFormatMapService.GetClassificationFormatMap(category: TextCategory);
-
-            if (formatMap == null)
-                return;
-
-            try
-            {
-                formatMap.BeginBatchUpdate();
                 ForegroundColor = foregroundColorForTheme;
-                var classificationType = _classificationRegistry.GetClassificationType(_classificationTypeName);
+
+                var classificationType = e.ClassificationTypeRegistry.GetClassificationType(_classificationTypeName);
 
                 if (classificationType == null)
                     return;
 
                 ColorableItemInfo[] colorInfo = new ColorableItemInfo[1];
 
-                if (fontAndColorStorage.GetItem(_classificationTypeName, colorInfo) != VSConstants.S_OK)    //comment from F# repo: "we don't touch the changes made by the user"
+                if (e.FontAndColorStorage.GetItem(_classificationTypeName, colorInfo) != VSConstants.S_OK)    //comment from F# repo: "we don't touch the changes made by the user"
                 {
-                    var properties = formatMap.GetTextProperties(classificationType);
+                    var properties = e.FormatMap.GetTextProperties(classificationType);
                     var newProperties = properties.SetForeground(ForegroundColor.Value);
 
-                    formatMap.SetTextProperties(classificationType, newProperties);
-                }      
-            }
-            catch (Exception exception)
-            {
-                logger?.LogException(exception, logOnlyFromAcuminatorAssemblies: false, Logger.LogMode.Error);
-            }
-            finally
-            {
-                formatMap.EndBatchUpdate();
-                int clearCacheResult = fontAndColorCacheManager.ClearCache(ref _mefItemsGuid);
-
-                if (clearCacheResult != VSConstants.S_OK)
-				{
-                    logger?.LogMessage($"Error on clearing MEF cache in the registry during the theme change. The error code is {openCategoryResult}", Logger.LogMode.Error);
+                    e.FormatMap.SetTextProperties(classificationType, newProperties);
                 }
-
-                fontAndColorStorage.CloseCategory();
             }
+			catch (Exception exception)
+			{
+                AcuminatorVSPackage.Instance?.AcuminatorLogger
+                                            ?.LogException(exception, logOnlyFromAcuminatorAssemblies: false, Logger.LogMode.Error);
+            }       
         }
 
         void IDisposable.Dispose()
         {
-            VSColorTheme.ThemeChanged -= VSColorTheme_ThemeChanged;
+            ThemeUpdater.Instance.AcuminatorThemeChanged -= AcuminatorThemeChangedHandler;
         }
     }
 }
