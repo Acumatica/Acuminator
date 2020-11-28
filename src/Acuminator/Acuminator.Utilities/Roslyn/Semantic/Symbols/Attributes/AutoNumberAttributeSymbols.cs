@@ -37,6 +37,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
                     if (!_isMinAutoNumberLengthInitialized)
                     {
                         _minAutoNumberLength = ReadMinAutoNumberLengthFromNumberingSequence();
+                        _isMinAutoNumberLengthInitialized = true;
                     }
                 }
             }
