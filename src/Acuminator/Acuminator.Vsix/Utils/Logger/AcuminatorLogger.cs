@@ -79,6 +79,8 @@ namespace Acuminator.Vsix.Logger
 			if (message.IsNullOrWhiteSpace() || logMode == LogMode.None)
 				return;
 
+			message = $"{AcuminatorVSPackage.PackageName.ToUpper()}: {message}";
+
 			if (reportedFrom != null)
 			{
 				message += Environment.NewLine + $"REPORTED FROM: { reportedFrom }";
@@ -137,7 +139,7 @@ namespace Acuminator.Vsix.Logger
 
 			if (logMode == LogMode.Error)
 			{
-				messageBuilder.AppendLine($"{AcuminatorVSPackage.PackageName.ToUpper()} CAUSED CRITICAL ERROR|");
+				messageBuilder.AppendLine($"{AcuminatorVSPackage.PackageName.ToUpper()} CAUSED ERROR|");
 			}
 
 			messageBuilder.AppendLine($"EXCEPTION TYPE: {exception.GetType().Name}")
