@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>2.3.0</Version>
+    <Version>2.3.1</Version>
     <Copyright>Copyright © 2017-2019 Acumatica Ltd.</Copyright>
     <NeutralLanguage>en</NeutralLanguage>
     <Description>Acuminator.Utilities lib</Description>
