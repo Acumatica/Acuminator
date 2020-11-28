@@ -86,11 +86,11 @@ namespace Acuminator.Vsix.Coloriser
             finally
             {
                 formatMap.EndBatchUpdate();
-                int clearCacheResult = _fontAndColorCacheManager.ClearCache(ref _mefItemsGuid);
+                int refreshCacheResult = _fontAndColorCacheManager.RefreshCache(ref _mefItemsGuid);
 
-                if (clearCacheResult != VSConstants.S_OK)
+                if (refreshCacheResult != VSConstants.S_OK)
 				{
-                    logger?.LogMessage($"Error on clearing MEF cache in the registry during the theme change. The error code is {openCategoryResult}", Logger.LogMode.Error);
+                    logger?.LogMessage($"Error on the refresh of MEF Items cache in the registry during the theme change. The error code is {openCategoryResult}", Logger.LogMode.Error);
                 }
 
                 _fontAndColorStorage.CloseCategory();
