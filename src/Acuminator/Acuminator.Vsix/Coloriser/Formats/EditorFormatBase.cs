@@ -10,6 +10,8 @@ using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
+using Acuminator.Utilities.Common;
+
 using VSConstants =  Microsoft.VisualStudio.VSConstants;
 
 
@@ -29,7 +31,8 @@ namespace Acuminator.Vsix.Coloriser
                 ForegroundColor = VSColors.GetThemedColor(_classificationTypeName);
             }
 
-            ThemeUpdater.Instance.AcuminatorThemeChanged += AcuminatorThemeChangedHandler;
+            AcuminatorVSPackage.Instance.CheckIfNull(nameof(AcuminatorVSPackage))
+                               .ThemeUpdater.AcuminatorThemeChanged += AcuminatorThemeChangedHandler;
         }
 
 		private void AcuminatorThemeChangedHandler(object sender, AcuminatorThemeChangedEventArgs e)
@@ -72,7 +75,10 @@ namespace Acuminator.Vsix.Coloriser
 
         void IDisposable.Dispose()
         {
-            ThemeUpdater.Instance.AcuminatorThemeChanged -= AcuminatorThemeChangedHandler;
+            if (AcuminatorVSPackage.Instance.ThemeUpdater != null)
+            {
+                AcuminatorVSPackage.Instance.ThemeUpdater.AcuminatorThemeChanged -= AcuminatorThemeChangedHandler;
+            }
         }
     }
 }

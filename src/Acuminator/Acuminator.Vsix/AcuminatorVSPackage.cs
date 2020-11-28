@@ -16,6 +16,8 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Threading;
 using EnvDTE80;
 using System.ComponentModel.Design;
+
+using Acuminator.Vsix.Coloriser;
 using Acuminator.Vsix.GoToDeclaration;
 using Acuminator.Vsix.Settings;
 using Acuminator.Vsix.Logger;
@@ -97,6 +99,8 @@ namespace Acuminator.Vsix
 			private set;
 		}
 
+		internal ThemeUpdater ThemeUpdater { get; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AcuminatorVSPackage"/> class.
         /// </summary>
@@ -108,6 +112,8 @@ namespace Acuminator.Vsix
             // initialization is the Initialize method.
         
             SetupSingleton(this);
+
+			ThemeUpdater = new ThemeUpdater(this);
 		}
         
 		/// <summary>
@@ -253,6 +259,7 @@ namespace Acuminator.Vsix
 		{
 			base.Dispose(disposing);
 			AcuminatorLogger?.Dispose();
+			ThemeUpdater.Dispose();
 
 			SolutionEvents.OnAfterBackgroundSolutionLoadComplete -= SolutionEvents_OnAfterBackgroundSolutionLoadComplete;
 

@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.ComponentModelHost;
+using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
 
 using VSConstants =  Microsoft.VisualStudio.VSConstants;
@@ -19,8 +20,6 @@ namespace Acuminator.Vsix.Coloriser
 {
     internal class ThemeUpdater : IDisposable
     {
-        public static readonly ThemeUpdater Instance = new ThemeUpdater();
-
         private const string TextCategory = "text";
         private const string MefItemsGuidString = "75A05685-00A8-4DED-BAE5-E7A50BFA929A";
         private Guid _mefItemsGuid = new Guid(MefItemsGuidString);
@@ -28,13 +27,17 @@ namespace Acuminator.Vsix.Coloriser
         private IClassificationFormatMapService _classificationFormatMapService;  
         private IClassificationTypeRegistryService _classificationRegistry; 
         private IVsFontAndColorStorage _fontAndColorStorage; 
-        private IVsFontAndColorCacheManager _fontAndColorCacheManager; 
+        private IVsFontAndColorCacheManager _fontAndColorCacheManager;
+
+        private readonly IServiceProvider _serviceProvider;
 
         public event EventHandler<AcuminatorThemeChangedEventArgs> AcuminatorThemeChanged;
 
 
-        internal ThemeUpdater()
+        public ThemeUpdater(IServiceProvider serviceProvider)
         {
+            _serviceProvider = serviceProvider.CheckIfNull(nameof(serviceProvider));
+
             VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;         
         }
 
@@ -42,12 +45,9 @@ namespace Acuminator.Vsix.Coloriser
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            if (AcuminatorVSPackage.Instance == null)
-                return;
-
             if (_classificationFormatMapService == null || _classificationRegistry == null)
 			{
-                var componentModel = AcuminatorVSPackage.Instance.GetService<SComponentModel, IComponentModel>();
+                var componentModel = _serviceProvider.GetService<SComponentModel, IComponentModel>();
 
                 _classificationFormatMapService ??= componentModel?.GetService<IClassificationFormatMapService>();
                 _classificationRegistry ??= componentModel?.GetService<IClassificationTypeRegistryService>();
@@ -56,9 +56,9 @@ namespace Acuminator.Vsix.Coloriser
             if (_classificationFormatMapService == null || _classificationRegistry == null)
                 return;
 
-            var logger = AcuminatorVSPackage.Instance.AcuminatorLogger;
-             _fontAndColorStorage ??= AcuminatorVSPackage.Instance.GetService<SVsFontAndColorStorage, IVsFontAndColorStorage>();
-             _fontAndColorCacheManager ??= AcuminatorVSPackage.Instance.GetService<SVsFontAndColorCacheManager, IVsFontAndColorCacheManager>();
+            var logger = AcuminatorVSPackage.Instance?.AcuminatorLogger;
+             _fontAndColorStorage ??= _serviceProvider.GetService<SVsFontAndColorStorage, IVsFontAndColorStorage>();
+             _fontAndColorCacheManager ??= _serviceProvider.GetService<SVsFontAndColorCacheManager, IVsFontAndColorCacheManager>();
             IClassificationFormatMap formatMap = _classificationFormatMapService.GetClassificationFormatMap(category: TextCategory);
 
             if (_fontAndColorStorage == null || _fontAndColorCacheManager == null || formatMap == null)
@@ -97,7 +97,7 @@ namespace Acuminator.Vsix.Coloriser
             }
         }
 
-        void IDisposable.Dispose()
+        public void Dispose()
         {
             VSColorTheme.ThemeChanged -= VSColorTheme_ThemeChanged;
         }
