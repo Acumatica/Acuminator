@@ -46,7 +46,6 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
             return types;
         }
 
-
 		/// <summary>
 		/// Gets the DAC type with its base types up to the <see cref="System.Object"/>.
 		/// </summary>
@@ -62,28 +61,17 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// </summary>
 		/// <param name="extensionType">The DAC extension type to act on.</param>
 		/// <returns/>
-		public static IEnumerable<ITypeSymbol> GetDacExtensionWithBaseTypes(this ITypeSymbol extensionType) => 
+		public static IEnumerable<ITypeSymbol> GetDacExtensionWithBaseTypes(this ITypeSymbol extensionType) =>
 			extensionType.CheckIfNull(nameof(extensionType))
 						 .GetBaseTypesAndThis()
 						 .TakeWhile(type => !type.IsDacExtensionBaseType());
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static bool IsGraphOrGraphExtensionBaseType(this ITypeSymbol type)
-		{
-			string typeNameWithoutGenericArgsCount = type?.Name.Split('`')[0];
-			return typeNameWithoutGenericArgsCount == TypeNames.PXGraph ||
-				   typeNameWithoutGenericArgsCount == TypeNames.PXGraphExtension;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsDacBaseType(this ITypeSymbol type) => type?.SpecialType == SpecialType.System_Object;
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsDacExtensionBaseType(this ITypeSymbol type)
-		{
-			string typeNameWithoutGenericArgsCount = type?.Name.Split('`')[0];
-			return typeNameWithoutGenericArgsCount == TypeNames.PXCacheExtension;
-		}
+		public static bool IsDacExtensionBaseType(this ITypeSymbol type) => 
+			type?.Name == TypeNames.PXCacheExtension;
 
 		/// <summary>
 		/// Gets the DAC extension with base DAC extensions from DAC extension type.
