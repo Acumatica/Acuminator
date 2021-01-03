@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Reflection;
 using System.Windows.Media;
-using Acuminator.Vsix;
+using System.ComponentModel.Composition;
+
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Acuminator.Vsix.Utilities;
 
-using DefGuidList = Microsoft.VisualStudio.Editor.DefGuidList;
+using Acuminator.Utilities.Common;
+
 using VSConstants =  Microsoft.VisualStudio.VSConstants;
 
 
@@ -20,13 +19,10 @@ namespace Acuminator.Vsix.Coloriser
 {
     internal abstract class EditorFormatBase : ClassificationFormatDefinition, IDisposable
     {
-        private const string TextCategory = "text";
-        private readonly string _classificationTypeName; 
-        
-        protected EditorFormatBase()
-        {          
-            VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
+        private readonly string _classificationTypeName;
 
+        protected EditorFormatBase()
+        {
             Type type = this.GetType();
             _classificationTypeName = type.GetCustomAttribute<NameAttribute>()?.Name;
             
@@ -34,78 +30,55 @@ namespace Acuminator.Vsix.Coloriser
             {
                 ForegroundColor = VSColors.GetThemedColor(_classificationTypeName);
             }
+
+            AcuminatorVSPackage.Instance.CheckIfNull(nameof(AcuminatorVSPackage))
+                               .ThemeUpdater.AcuminatorThemeChanged += AcuminatorThemeChangedHandler;
         }
-      
-        private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e)
-        {
-			ThreadHelper.ThrowIfNotOnUIThread();
 
-			if (AcuminatorVSPackage.Instance?.ClassificationFormatMapService == null ||
-                AcuminatorVSPackage.Instance.ClassificationRegistry == null ||
-                _classificationTypeName == null)
-            {
-                return;
-            }
+		private void AcuminatorThemeChangedHandler(object sender, AcuminatorThemeChangedEventArgs e)
+		{
+            ThreadHelper.ThrowIfNotOnUIThread();
 
-            var fontAndColorStorage = 
-                ServiceProvider.GlobalProvider.GetService(typeof(SVsFontAndColorStorage)) as IVsFontAndColorStorage;
-            var fontAndColorCacheManager = 
-                ServiceProvider.GlobalProvider.GetService(typeof(SVsFontAndColorCacheManager)) as IVsFontAndColorCacheManager;
-
-            if (fontAndColorStorage == null || fontAndColorCacheManager == null)
+            if (_classificationTypeName == null)
                 return;
 
-            Guid guidTextEditorFontCategory = DefGuidList.guidTextEditorFontCategory;
-            fontAndColorCacheManager.CheckCache(ref guidTextEditorFontCategory, out int _);
+			try
+			{
+                Color? foregroundColorForTheme = VSColors.GetThemedColor(_classificationTypeName);
 
-            if (fontAndColorStorage.OpenCategory(ref guidTextEditorFontCategory, (uint) __FCSTORAGEFLAGS.FCSF_READONLY) != VSConstants.S_OK)
-            {
-                //TODO Log error              
-            }
+                if (foregroundColorForTheme == null)
+                    return;
 
-            Color? foregroundColorForTheme =  VSColors.GetThemedColor(_classificationTypeName);
-
-            if (foregroundColorForTheme == null)
-                return;
-                    
-            IClassificationFormatMap formatMap = AcuminatorVSPackage.Instance.ClassificationFormatMapService
-                                                                             .GetClassificationFormatMap(category: TextCategory);
-            if (formatMap == null)
-                return;
-
-            try
-            {
-                formatMap.BeginBatchUpdate();
                 ForegroundColor = foregroundColorForTheme;
-                var bqlOperatorClasType = AcuminatorVSPackage.Instance.ClassificationRegistry
-                                                                      .GetClassificationType(_classificationTypeName);
 
-                if (bqlOperatorClasType == null)
+                var classificationType = e.ClassificationTypeRegistry.GetClassificationType(_classificationTypeName);
+
+                if (classificationType == null)
                     return;
 
                 ColorableItemInfo[] colorInfo = new ColorableItemInfo[1];
 
-                if (fontAndColorStorage.GetItem(_classificationTypeName, colorInfo) != VSConstants.S_OK)    //comment from F# repo: "we don't touch the changes made by the user"
+                if (e.FontAndColorStorage.GetItem(_classificationTypeName, colorInfo) != VSConstants.S_OK)    //comment from F# repo: "we don't touch the changes made by the user"
                 {
-                    var properties = formatMap.GetTextProperties(bqlOperatorClasType);
+                    var properties = e.FormatMap.GetTextProperties(classificationType);
                     var newProperties = properties.SetForeground(ForegroundColor.Value);
 
-                    formatMap.SetTextProperties(bqlOperatorClasType, newProperties);
-                }                                                                           
+                    e.FormatMap.SetTextProperties(classificationType, newProperties);
+                }
             }
-            catch (Exception)
-            {
-                //TODO Log error here               
-            }
-            finally
-            {
-                formatMap.EndBatchUpdate();
-            }          
+			catch (Exception exception)
+			{
+                AcuminatorVSPackage.Instance?.AcuminatorLogger
+                                            ?.LogException(exception, logOnlyFromAcuminatorAssemblies: false, Logger.LogMode.Error);
+            }       
         }
 
         void IDisposable.Dispose()
         {
-            VSColorTheme.ThemeChanged -= VSColorTheme_ThemeChanged;
+            if (AcuminatorVSPackage.Instance.ThemeUpdater != null)
+            {
+                AcuminatorVSPackage.Instance.ThemeUpdater.AcuminatorThemeChanged -= AcuminatorThemeChangedHandler;
+            }
         }
     }
 }

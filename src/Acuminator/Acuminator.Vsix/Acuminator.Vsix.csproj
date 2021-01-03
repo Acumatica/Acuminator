@@ -225,6 +225,8 @@
     <Compile Include="Coloriser\Constants\ColoringConstants.cs" />
     <Compile Include="Coloriser\Constants\VSColors.cs" />
     <Compile Include="Coloriser\Formats\BracesFormats.cs" />
+    <Compile Include="Coloriser\Formats\Theme\AcuminatorThemeChangedEventArgs.cs" />
+    <Compile Include="Coloriser\Formats\Theme\ThemeUpdater.cs" />
     <Compile Include="Coloriser\Formats\EditorFormatBase.cs" />
     <Compile Include="Coloriser\Formats\EditorFormats.cs" />
     <Compile Include="Coloriser\PXColorizerTaggerBase.cs" />

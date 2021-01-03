@@ -74,6 +74,21 @@ namespace Acuminator.Vsix.Logger
 			} 
 		}
 
+		public void LogMessage(string message, LogMode logMode, [CallerMemberName] string reportedFrom = null)
+		{
+			if (message.IsNullOrWhiteSpace() || logMode == LogMode.None)
+				return;
+
+			message = $"{AcuminatorVSPackage.PackageName.ToUpper()}: {message}";
+
+			if (reportedFrom != null)
+			{
+				message += Environment.NewLine + $"REPORTED FROM: { reportedFrom }";
+			}
+
+			LogMessageToActivityLog(message, logMode);
+		}
+
 		public void LogException(Exception exception, bool logOnlyFromAcuminatorAssemblies, LogMode logMode, 
 								 [CallerMemberName]string reportedFrom = null)
 		{
@@ -98,19 +113,7 @@ namespace Acuminator.Vsix.Logger
 				return;
 
 			string logMessage = CreateLogMessageFromException(exception, currentDocument, logMode, reportedFrom);
-
-			switch (logMode)
-			{
-				case LogMode.Information:
-					ActivityLog.TryLogInformation(AcuminatorVSPackage.PackageName, logMessage);
-					break;
-				case LogMode.Warning:
-					ActivityLog.TryLogWarning(AcuminatorVSPackage.PackageName, logMessage);
-					break;
-				case LogMode.Error:
-					ActivityLog.TryLogError(AcuminatorVSPackage.PackageName, logMessage);
-					break;
-			}		
+			LogMessageToActivityLog(logMessage, logMode);
 		}
 
 		private IWpfTextView GetActiveTextViewWithTimeout(double timeoutSeconds)
@@ -136,7 +139,7 @@ namespace Acuminator.Vsix.Logger
 
 			if (logMode == LogMode.Error)
 			{
-				messageBuilder.AppendLine($"{AcuminatorVSPackage.PackageName.ToUpper()} CAUSED CRITICAL ERROR|");
+				messageBuilder.AppendLine($"{AcuminatorVSPackage.PackageName.ToUpper()} CAUSED ERROR|");
 			}
 
 			messageBuilder.AppendLine($"EXCEPTION TYPE: {exception.GetType().Name}")
@@ -148,6 +151,22 @@ namespace Acuminator.Vsix.Logger
 						  .AppendLine($"|REPORTED FROM: {reportedFrom}");
 
 			return messageBuilder.ToString();
+		}
+
+		private void LogMessageToActivityLog(string logMessage, LogMode logMode)
+		{
+			switch (logMode)
+			{
+				case LogMode.Information:
+					ActivityLog.TryLogInformation(AcuminatorVSPackage.PackageName, logMessage);
+					break;
+				case LogMode.Warning:
+					ActivityLog.TryLogWarning(AcuminatorVSPackage.PackageName, logMessage);
+					break;
+				case LogMode.Error:
+					ActivityLog.TryLogError(AcuminatorVSPackage.PackageName, logMessage);
+					break;
+			}
 		}
 
 		public void Dispose()
