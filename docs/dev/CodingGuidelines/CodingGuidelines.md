@@ -346,3 +346,11 @@ public Task<(bool IsSuccess, TResult Result)> TryAwait<TResult>(this Task<TResul
 
 If you call it from Acuminator.Vsix then in Visual Studio 2017 the `MissingMethod` exception will be thrown. However, everything will be ok in Visual Studio 2019.
 Therefore, until we drop the support for Visual Studio 2017, do not declare public API containing value tuples. Either declare it as internal API or create custom structs for it.
+
+### Debugging Hints
+
+There is an unobvious issue with debug observed on the latest versions of Visual Studio 2019 (starting from 16.8.0). The breakpoints set inside Roslyn analyzers are not hit
+for no obvious reason. The root of this problem lies in a new VS perfomance optimization which moves all Roslyn analyzers execution out of VS process into 
+a separate 64-bit process. This is regulated by the VS setting: *Tools -> Options -> Text Editor -> C# -> Advanced -> Use 64-bit process for code analysis*
+You need to either disable this option in the experimental instance of Visual Studio or do a multiprocess debugging by attaching your debugger to a second process 
+with loaded Roslyn analyzers. The name of the process should be something like *ServiceHub.RoslynCodeAnalysisService.exe*. The first option is much simpler.
