@@ -20,12 +20,12 @@ namespace PX.Objects.HackathonDemo.Graph.InternalApiUsage
 
         public void InvalidateCache()
         {
-			if (serviceProvider.AccessChecker != null && !serviceProvider.AccessChecker.SomeFlag)
+			if (serviceProvider.AccessChecker != null && serviceProvider.AccessChecker.IsActive && serviceProvider.AccessChecker.ShouldCheck)
 			{
                 serviceProvider.AccessChecker.CheckAccess();
 			}  
 
-            if (serviceProvider.Service != null && serviceProvider.Service.SomeFlag)
+            if (serviceProvider.Service != null && serviceProvider.Service.SomeFlag && serviceProvider.Service.IsActive)
 			{
                 serviceProvider.Service.ProvideService();
 			}

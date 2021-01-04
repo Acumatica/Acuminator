@@ -7,6 +7,8 @@ namespace PX.Objects.HackathonDemo.Graph.InternalApiUsage
     [PXInternalUseOnly]
     public class InternalService 
     {
+		public bool IsActive;
+
 		public bool SomeFlag { get; }
 
         public void ProvideService()
@@ -16,11 +18,15 @@ namespace PX.Objects.HackathonDemo.Graph.InternalApiUsage
     }
 
 
-	[PXInternalUseOnly]
 	public class AccessChecker
 	{
-		public bool SomeFlag;
+		[PXInternalUseOnly]
+		public bool IsActive;
 
+		[PXInternalUseOnly]
+		public bool ShouldCheck { get; }
+
+		[PXInternalUseOnly]
 		public void CheckAccess()
 		{
 
@@ -30,7 +36,7 @@ namespace PX.Objects.HackathonDemo.Graph.InternalApiUsage
 
 	public class ServiceProvider
 	{
-		public InternalService Service = new InternalService();
+		public InternalService Service = new InternalService();   
 
 		public AccessChecker AccessChecker = new AccessChecker();
 	}
