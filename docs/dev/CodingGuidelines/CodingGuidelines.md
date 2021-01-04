@@ -22,6 +22,7 @@
     * [Test Methods](#test-methods)
     * [Async Anonymous Delegates](#async-anonymous-delegates)
     * [Value Tuples](#value-tuples)
+    * [Debugging Hints](#debugging-hints)
 
 ## Code Style
 
