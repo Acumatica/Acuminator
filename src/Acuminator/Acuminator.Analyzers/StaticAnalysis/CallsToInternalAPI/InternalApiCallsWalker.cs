@@ -27,6 +27,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 	{
 		private static readonly ConcurrentDictionary<ISymbol, bool> _markedInternalApi = new ConcurrentDictionary<ISymbol, bool>();
 
+		private static readonly object _locker = new object();
+		private static readonly HashSet<Location> _reportedLocations = new HashSet<Location>();
+
 		private readonly PXContext _pxContext;
 		private readonly SyntaxNodeAnalysisContext _syntaxContext;
 		private readonly INamedTypeSymbol _pxInternalUseOnlyAttribute;
@@ -351,10 +354,17 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 		{
 			CancellationToken.ThrowIfCancellationRequested();
 
-			if (location != null)
+			if (location == null || _reportedLocations.Contains(location))
+				return;
+
+			lock (_locker)
 			{
-				var internalApiDiagnostic = Diagnostic.Create(Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV, location);
-				_syntaxContext.ReportDiagnosticWithSuppressionCheck(internalApiDiagnostic, _pxContext.CodeAnalysisSettings);
+				if (!_reportedLocations.Contains(location))
+				{
+					var internalApiDiagnostic = Diagnostic.Create(Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV, location);
+					_syntaxContext.ReportDiagnosticWithSuppressionCheck(internalApiDiagnostic, _pxContext.CodeAnalysisSettings);
+					_reportedLocations.Add(location);
+				}
 			}
 		}
 
