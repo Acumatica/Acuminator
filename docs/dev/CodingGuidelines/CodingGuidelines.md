@@ -354,4 +354,5 @@ There is an unobvious issue with debug observed on the latest versions of Visual
 for no obvious reason. The root of this problem lies in a new VS perfomance optimization which moves all Roslyn analyzers execution out of VS process into 
 a separate 64-bit process. This is regulated by the VS setting: *Tools -> Options -> Text Editor -> C# -> Advanced -> Use 64-bit process for code analysis*
 You need to either disable this option in the experimental instance of Visual Studio or do a multiprocess debugging by attaching your debugger to a second process 
-with loaded Roslyn analyzers. The name of the process should be something like *ServiceHub.RoslynCodeAnalysisService.exe*. The first option is much simpler.
+with loaded Roslyn analyzers. The name of the process should be something like *ServiceHub.RoslynCodeAnalysisService.exe*. The first option is much simpler 
+but you have to check that your diagnostic works correctly when out of process analysis is enabled for Visual Studio.
