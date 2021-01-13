@@ -123,6 +123,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseDataViewDelegate\Sources\BaseViewInvocation_ThroughSelectBase.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\CallingBaseDataViewDelegate\Sources\BaseViewInvocation_ExternalMethod.cs" />
     <Compile Include="Tests\StaticAnalysis\CallsToInternalAPI\CallsToInternalAPITests.cs" />
+    <Compile Include="Tests\StaticAnalysis\CallsToInternalAPI\Sources\SOShipmentExt.cs" />
     <Compile Include="Tests\StaticAnalysis\CallsToInternalAPI\Sources\InternalAPI.cs" />
     <Compile Include="Tests\StaticAnalysis\ChangesInPXCache\ChangesInPXCacheInEventHandlersIsvSpecificTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphCreation\Sources\ViewDelegateWithParameter.cs" />
