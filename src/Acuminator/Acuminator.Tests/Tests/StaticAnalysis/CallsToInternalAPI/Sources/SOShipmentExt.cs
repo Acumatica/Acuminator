@@ -4,7 +4,7 @@ using PX.Common;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.CallsToInternalAPI.Sources
 {
-    public class SOOrderMaintSync : PXGraph<SOOrderMaintSync>
+    public class SOOrderMaintSync : PXGraph<SOOrderMaintSync> 
     {
         private readonly ServiceProvider serviceProvider = new ServiceProvider();
 

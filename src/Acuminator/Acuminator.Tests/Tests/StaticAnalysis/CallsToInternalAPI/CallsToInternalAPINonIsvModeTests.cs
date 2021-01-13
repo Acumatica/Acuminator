@@ -25,6 +25,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.CallsToInternalAPI
 
 		[Theory]
 		[EmbeddedFileData("SOShipmentExt.cs", "InternalAPI.cs")]
-		public async Task CallsToInternal_Properties_Methods_Fields(string source) => await VerifyCSharpDiagnosticAsync(source);
+		public async Task CallsToInternal_Properties_Methods_Fields(string source, string internalApiDeclaration) => 
+			await VerifyCSharpDiagnosticAsync(source, internalApiDeclaration);
 	}
 }

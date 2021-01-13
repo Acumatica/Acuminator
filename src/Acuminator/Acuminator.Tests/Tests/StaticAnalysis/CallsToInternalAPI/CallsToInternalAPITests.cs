@@ -29,10 +29,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.CallsToInternalAPI
 
 		[Theory]
 		[EmbeddedFileData("SOShipmentExt.cs", "InternalAPI.cs")]
-		public async Task CallsToInternal_Properties_Methods_Fields(string source) =>
+		public async Task CallsToInternal_Properties_Methods_Fields(string source, string internalApiDeclaration) =>
 			await VerifyCSharpDiagnosticAsync(
-				source,
+				source, internalApiDeclaration,
 				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(13, 27),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(23, 88),
 				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(23, 130),
 				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(25, 47),
 				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(28, 33),
