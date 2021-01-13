@@ -8,7 +8,7 @@
 		internal const string PXDBPackedIntegerArrayAttributeFullName_Acumatica2018R2 = "PX.Data.PXDBPackedIntegerArrayAttribute";
 
 		internal const string ObsoleteAttribute = "System.ObsoleteAttribute";
-		internal const string PXInternalUseOnlyAttribute = "PX.Common.PXInternalUseOnlyAttribute";
+		public const string PXInternalUseOnlyAttribute = "PX.Common.PXInternalUseOnlyAttribute";
 
 		internal const string AutoNumberAttribute = "PX.Objects.CS.AutoNumberAttribute";
 		internal const string NumberingSequence = "PX.Objects.CS.NumberingSequence";

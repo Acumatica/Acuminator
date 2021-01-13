@@ -13,7 +13,6 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
@@ -32,7 +31,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 
 		private readonly PXContext _pxContext;
 		private readonly SyntaxNodeAnalysisContext _syntaxContext;
-		private readonly INamedTypeSymbol _pxInternalUseOnlyAttribute;
 		private readonly SemanticModel _semanticModel;
 
 		private CancellationToken CancellationToken => _syntaxContext.CancellationToken;
@@ -41,7 +39,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 		{
 			_syntaxContext = syntaxContext;
 			_pxContext = pxContext;
-			_pxInternalUseOnlyAttribute = _pxContext.AttributeTypes.PXInternalUseOnlyAttribute;
 			_semanticModel = semanticModel;
 		}
 
@@ -339,7 +336,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 			if (_markedInternalApi.TryGetValue(symbol, out bool isInternalApi))
 				return isInternalApi;
 
-			bool isInternal = symbol.GetAttributes().Any(a => a.AttributeClass == _pxInternalUseOnlyAttribute);
+			bool isInternal = symbol.GetAttributes().Any(a => a.AttributeClass?.ToString() == TypeFullNames.PXInternalUseOnlyAttribute);
 
 			if (isInternal)
 			{
