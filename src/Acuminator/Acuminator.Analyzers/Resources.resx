@@ -617,6 +617,6 @@
     <value>Place all foreign keys in a public static class named "FK"</value>
   </data>
   <data name="PX1076Title" xml:space="preserve">
-    <value>Calls to Acumatica internal API marked with PXInternalUseOnlyAttribute are forbidden</value>
+    <value>This code calls Acumatica internal API marked with PXInternalUseOnlyAttribute which is not intended for public use</value>
   </data>
 </root>
