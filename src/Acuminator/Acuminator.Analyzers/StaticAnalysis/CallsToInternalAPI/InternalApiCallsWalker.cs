@@ -2,18 +2,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Runtime.CompilerServices;
 
-using Acuminator.Utilities;
-using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Syntax;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -22,12 +18,11 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 {
-	internal class InternalApiCallsWalker : CSharpSyntaxWalker
+	internal partial class InternalApiCallsWalker : CSharpSyntaxWalker
 	{
-		private static readonly ConcurrentDictionary<ISymbol, bool> _markedInternalApi = new ConcurrentDictionary<ISymbol, bool>();
+		private static readonly ConditionalWeakTable<ISymbol, IsInternal> _markedInternalApi = new ConditionalWeakTable<ISymbol, IsInternal>();
 
-		private static readonly object _locker = new object();
-		private static readonly HashSet<Location> _reportedLocations = new HashSet<Location>();
+		private readonly HashSet<Location> _reportedLocations = new HashSet<Location>();
 
 		private readonly PXContext _pxContext;
 		private readonly SyntaxNodeAnalysisContext _syntaxContext;
@@ -153,7 +148,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 				if (type.IsReferenceType && type.BaseType != null && type.BaseType.SpecialType != SpecialType.System_Object &&
 					IsInternalApiImpl(type.BaseType, recursionDepth + 1))
 				{
-					_markedInternalApi[type] = true;
+					SetIsInternalPropertyForSymbol(type, true);
 					return true;
 				}
 
@@ -161,11 +156,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 
 				if (type.ContainingType != null && IsInternalApiImpl(type.ContainingType, recursionDepth + 1))
 				{
-					_markedInternalApi[type] = true;
+					SetIsInternalPropertyForSymbol(type, true);
 					return true;
 				}
 
-				_markedInternalApi[type] = false;
+				SetIsInternalPropertyForSymbol(type, false);
 				return false;
 			}
 		}
@@ -201,12 +196,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 			if (!propertySymbol.IsAccessibleOutsideOfAssembly())
 				return false;
 
-			if (_markedInternalApi.TryGetValue(propertySymbol, out bool isInternalProperty))
-				return isInternalProperty;
+			if (_markedInternalApi.TryGetValue(propertySymbol, out IsInternal isInternalProperty))
+				return isInternalProperty.Value;
 
 			if ((propertySymbol.ContainingType != null && IsInternalApiType(propertySymbol.ContainingType)) || IsInternalApiType(propertySymbol.Type))
 			{
-				_markedInternalApi[propertySymbol] = true;
+				SetIsInternalPropertyForSymbol(propertySymbol, true);
 				return true;
 			}
 			
@@ -224,7 +219,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 					: null;
 			}
 
-			_markedInternalApi[propertySymbol] = false;
+			SetIsInternalPropertyForSymbol(propertySymbol, false);
 			return false;
 		}
 
@@ -240,11 +235,11 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 
 			if ((fieldSymbol.ContainingType != null && IsInternalApiType(fieldSymbol.ContainingType)) || IsInternalApiType(fieldSymbol.Type))
 			{
-				_markedInternalApi[fieldSymbol] = true;
+				SetIsInternalPropertyForSymbol(fieldSymbol, true);
 				return true;
 			}
 
-			_markedInternalApi[fieldSymbol] = false;
+			SetIsInternalPropertyForSymbol(fieldSymbol, false);
 			return false;
 		}
 
@@ -253,12 +248,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 			if (!eventSymbol.IsAccessibleOutsideOfAssembly())
 				return false;
 
-			if (_markedInternalApi.TryGetValue(eventSymbol, out bool isInternalEvent))
-				return isInternalEvent;
+			if (_markedInternalApi.TryGetValue(eventSymbol, out IsInternal isInternalEvent))
+				return isInternalEvent.Value;
 
 			if ((eventSymbol.ContainingType != null && IsInternalApiType(eventSymbol.ContainingType)) || IsInternalApiType(eventSymbol.Type))
 			{
-				_markedInternalApi[eventSymbol] = true;
+				SetIsInternalPropertyForSymbol(eventSymbol, true);
 				return true;
 			}
 
@@ -276,7 +271,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 					: null;
 			}
 
-			_markedInternalApi[eventSymbol] = false;
+			SetIsInternalPropertyForSymbol(eventSymbol, false);
 			return false;
 		}
 
@@ -285,13 +280,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 			if (!CheckMethodKind(methodSymbol) || !methodSymbol.IsAccessibleOutsideOfAssembly())
 				return false;
 
-			if (_markedInternalApi.TryGetValue(methodSymbol, out bool isInternalMethod))
-				return isInternalMethod;
+			if (_markedInternalApi.TryGetValue(methodSymbol, out IsInternal isInternalMethod))
+				return isInternalMethod.Value;
 
 			if ((methodSymbol.ContainingType != null && IsInternalApiType(methodSymbol.ContainingType)) ||
 				(!methodSymbol.ReturnsVoid && methodSymbol.ReturnType != null && IsInternalApiType(methodSymbol.ReturnType)))
 			{
-				_markedInternalApi[methodSymbol] = true;
+				SetIsInternalPropertyForSymbol(methodSymbol, true);
 				return true;
 			}
 
@@ -309,7 +304,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 					: null;
 			}
 
-			_markedInternalApi[methodSymbol] = false;
+			SetIsInternalPropertyForSymbol(methodSymbol, false);
 			return false;
 		}
 
@@ -333,18 +328,24 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 
 		private bool? CheckAttributesAndCacheForInternal(ISymbol symbol)
 		{
-			if (_markedInternalApi.TryGetValue(symbol, out bool isInternalApi))
-				return isInternalApi;
+			if (_markedInternalApi.TryGetValue(symbol, out IsInternal isInternalProperty))
+				return isInternalProperty.Value;
 
 			bool isInternal = symbol.GetAttributes().Any(a => a.AttributeClass?.ToString() == TypeFullNames.PXInternalUseOnlyAttribute);
 
 			if (isInternal)
 			{
-				_markedInternalApi[symbol] = true;
+				SetIsInternalPropertyForSymbol(symbol, true);
 				return true;
 			}
 
 			return null;
+		}
+
+		private void SetIsInternalPropertyForSymbol(ISymbol symbol, bool value)
+		{
+			IsInternal isInternalProperty = _markedInternalApi.GetOrCreateValue(symbol);
+			isInternalProperty.Value = value;
 		}
 
 		private void ReportInternalApiDiagnostic(Location? location)
@@ -354,15 +355,9 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 			if (location == null || _reportedLocations.Contains(location))
 				return;
 
-			lock (_locker)
-			{
-				if (!_reportedLocations.Contains(location))
-				{
-					var internalApiDiagnostic = Diagnostic.Create(Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV, location);
-					_syntaxContext.ReportDiagnosticWithSuppressionCheck(internalApiDiagnostic, _pxContext.CodeAnalysisSettings);
-					_reportedLocations.Add(location);
-				}
-			}
+			var internalApiDiagnostic = Diagnostic.Create(Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV, location);
+			_syntaxContext.ReportDiagnosticWithSuppressionCheck(internalApiDiagnostic, _pxContext.CodeAnalysisSettings);
+			_reportedLocations.Add(location);
 		}
 
 		private Location? GetLocationFromAccessExpresionNode(ExpressionSyntax accessExpressionNode) =>
