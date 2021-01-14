@@ -24,7 +24,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.CallsToInternalAPI
 		public async Task Field_WithInitializer(string source) => await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
-		[EmbeddedFileData("SOShipmentExt.cs", "InternalAPI.cs")]
+		[EmbeddedFileData("GraphUsingInternalApi.cs", "InternalAPI.cs")]
 		public async Task CallsToInternal_Properties_Methods_Fields(string source, string internalApiDeclaration) => 
 			await VerifyCSharpDiagnosticAsync(source, internalApiDeclaration);
 	}
