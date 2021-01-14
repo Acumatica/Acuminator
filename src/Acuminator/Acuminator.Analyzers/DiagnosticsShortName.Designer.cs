@@ -655,7 +655,7 @@ namespace Acuminator.Analyzers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CallToApiMarkedWithPXInternalUseOnly.
+        ///   Looks up a localized string similar to CallToInternalApi.
         /// </summary>
         public static string PX1076 {
             get {

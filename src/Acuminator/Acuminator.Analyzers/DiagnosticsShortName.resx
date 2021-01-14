@@ -364,6 +364,6 @@
     <value>UnboundDacFieldInKeyDeclaration</value>
   </data>
   <data name="PX1076" xml:space="preserve">
-    <value>CallToApiMarkedWithPXInternalUseOnly</value>
+    <value>CallToInternalApi</value>
   </data>
 </root>
