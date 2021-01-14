@@ -4,18 +4,18 @@ using System;
 
 namespace PX.Objects.HackathonDemo.Graph.InternalApiUsage
 {
-    [PXInternalUseOnly]
-    public class InternalService 
-    {
+	[PXInternalUseOnly]
+	public class InternalService
+	{
 		public bool IsActive;
 
 		public bool SomeFlag { get; }
 
-        public void ProvideService()
+		public void ProvideService()
 		{
 
 		}
-    }
+	}
 
 
 	public class AccessChecker
@@ -36,7 +36,7 @@ namespace PX.Objects.HackathonDemo.Graph.InternalApiUsage
 
 	public class ServiceProvider
 	{
-		public InternalService Service = new InternalService();   
+		public InternalService Service = new InternalService();
 
 		public AccessChecker AccessChecker = new AccessChecker();
 	}
