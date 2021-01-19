@@ -37,26 +37,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal static bool IsGraphOrGraphExtensionBaseType(this ITypeSymbol type)
-		{
-			string typeNameWithoutGenericArgsCount = type?.Name.Split('`')[0];
-			return typeNameWithoutGenericArgsCount == TypeNames.PXGraph ||
-				   typeNameWithoutGenericArgsCount == TypeNames.PXGraphExtension;
-		}
+		internal static bool IsGraphOrGraphExtensionBaseType(this ITypeSymbol type) =>
+			type?.Name == TypeNames.PXGraph || type.Name == TypeNames.PXGraphExtension;
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool IsGraphBaseType(this ITypeSymbol type) => type?.Name == TypeNames.PXGraph;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsGraphBaseType(this ITypeSymbol type)
-		{
-			string typeNameWithoutGenericArgsCount = type?.Name.Split('`')[0];
-			return typeNameWithoutGenericArgsCount == TypeNames.PXGraph;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsGraphExtensionBaseType(this ITypeSymbol type)
-		{
-			string typeNameWithoutGenericArgsCount = type?.Name.Split('`')[0];
-			return typeNameWithoutGenericArgsCount == TypeNames.PXGraphExtension;
-		}
+		public static bool IsGraphExtensionBaseType(this ITypeSymbol type) => 
+			type?.Name == TypeNames.PXGraphExtension;
 
 		/// <summary>
 		/// Gets the graph extension with base graph extensions from graph extension type.

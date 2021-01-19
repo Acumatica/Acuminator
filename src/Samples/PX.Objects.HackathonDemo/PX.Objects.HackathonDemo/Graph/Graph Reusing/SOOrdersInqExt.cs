@@ -7,7 +7,7 @@ using PX.Data;
 
 namespace PX.Objects.HackathonDemo
 {
-    public class SOOrdersInqExt : PXGraphExtension<SOOrdersInq>
+    public class SOOrdersInqExt : PXGraphExtension<SOOrdersInq> 
     {
         public SOOrder GetOrder(PXGraph graph, string orderNbr)
         {

@@ -14,6 +14,8 @@ using Microsoft.CodeAnalysis.Simplification;
 using Microsoft.CodeAnalysis.Text;
 using PX.Data;
 
+using Acuminator.Utilities.Common;
+
 using FbqlCommand = PX.Data.BQL.Fluent.FbqlCommand;
 
 
@@ -28,8 +30,22 @@ namespace Acuminator.Tests.Verification
 		private static readonly MetadataReference PXDataReference = MetadataReference.CreateFromFile(typeof(PXGraph).Assembly.Location);
 		private static readonly MetadataReference FluentBqlReference = MetadataReference.CreateFromFile(typeof(FbqlCommand).Assembly.Location);
 		private static readonly MetadataReference PXCommonReference = MetadataReference.CreateFromFile(typeof(PX.Common.PXContext).Assembly.Location);
+		private static readonly MetadataReference PXCommonStdReference = MetadataReference.CreateFromFile(typeof(PX.Common.PXInternalUseOnlyAttribute).Assembly.Location);
 		private static readonly MetadataReference PXObjectsReference =
 			MetadataReference.CreateFromFile(typeof(PX.Objects.GL.PeriodIDAttribute).Assembly.Location);
+
+		private static readonly MetadataReference[] _metadataReferences =
+		{
+			CorlibReference,
+			SystemCoreReference,
+			CSharpSymbolsReference,
+			CodeAnalysisReference,
+			PXDataReference,
+			PXCommonReference,
+			PXCommonStdReference,
+			PXObjectsReference,
+			FluentBqlReference
+		};
 
 		private const string GeneratedFileNameSeed = "Test";
 		private const string CSharpDefaultFileExt = "cs";
@@ -102,15 +118,8 @@ namespace Acuminator.Tests.Verification
 
 			var solution = workspace.CurrentSolution
 									.AddProject(projectId, GeneratedProjectName, GeneratedProjectName, language)
-									.AddMetadataReference(projectId, CorlibReference)
-									.AddMetadataReference(projectId, SystemCoreReference)
-									.AddMetadataReference(projectId, CSharpSymbolsReference)
-									.AddMetadataReference(projectId, CodeAnalysisReference)
-									.AddMetadataReference(projectId, PXDataReference)
-									.AddMetadataReference(projectId, FluentBqlReference)
-									.AddMetadataReference(projectId, PXCommonReference)
-									.AddMetadataReference(projectId, PXObjectsReference);
-
+									.AddMetadataReferences(projectId, _metadataReferences);
+									
 			if (externalCode != null && externalCode.Length > 0)
 			{
 				IEnumerable<byte> dynamicAssembly = BuildAssemblyFromSources(externalCode);
@@ -120,7 +129,8 @@ namespace Acuminator.Tests.Verification
 
 			var project = solution.GetProject(projectId);
 			var parseOptions = project.ParseOptions.WithFeatures(
-				project.ParseOptions.Features.Union(new[] { new KeyValuePair<string, string>("IOperation", "true") }));
+														project.ParseOptions.Features.Union(new[] { KeyValuePair.Create("IOperation", "true") }));
+
 			solution = solution.WithProjectParseOptions(projectId, parseOptions);
 
 			int count = 0;
@@ -225,16 +235,7 @@ namespace Acuminator.Tests.Verification
 			CSharpCompilation compilation = CSharpCompilation.Create(
 					assemblyName,
 					syntaxTrees: sourceCodes.Select(code => CSharpSyntaxTree.ParseText(text: code)),
-					references: new MetadataReference[] 
-					{ 
-						CorlibReference,
-						SystemCoreReference,
-						CSharpSymbolsReference,
-						CodeAnalysisReference,
-						PXDataReference,
-						PXCommonReference,
-						PXObjectsReference
-					},
+					references: _metadataReferences,
 					options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
 			// Emit the image of this assembly 

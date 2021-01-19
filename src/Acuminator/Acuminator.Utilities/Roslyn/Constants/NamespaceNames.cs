@@ -4,6 +4,7 @@
     {
         public const string AcumaticaRootNamespace = "PX";
         public const string AcumaticaRootNamespaceWithDot = "PX.";
+        internal const string PXCommonStd = "PX.Common.Std";
 
         public const string ReferentialIntegrityAttributes = "PX.Data.ReferentialIntegrity.Attributes";
     }
