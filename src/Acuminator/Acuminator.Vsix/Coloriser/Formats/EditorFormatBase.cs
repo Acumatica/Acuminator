@@ -31,8 +31,7 @@ namespace Acuminator.Vsix.Coloriser
                 ForegroundColor = VSColors.GetThemedColor(_classificationTypeName);
             }
 
-            AcuminatorVSPackage.Instance.CheckIfNull(nameof(AcuminatorVSPackage))
-                               .ThemeUpdater.AcuminatorThemeChanged += AcuminatorThemeChangedHandler;
+            ThemeUpdater.Instance.AcuminatorThemeChanged += AcuminatorThemeChangedHandler;
         }
 
 		private void AcuminatorThemeChangedHandler(object sender, AcuminatorThemeChangedEventArgs e)
@@ -75,10 +74,7 @@ namespace Acuminator.Vsix.Coloriser
 
         void IDisposable.Dispose()
         {
-            if (AcuminatorVSPackage.Instance.ThemeUpdater != null)
-            {
-                AcuminatorVSPackage.Instance.ThemeUpdater.AcuminatorThemeChanged -= AcuminatorThemeChangedHandler;
-            }
+            ThemeUpdater.Instance.AcuminatorThemeChanged -= AcuminatorThemeChangedHandler;
         }
     }
 }

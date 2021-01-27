@@ -18,7 +18,7 @@ using VSConstants =  Microsoft.VisualStudio.VSConstants;
 
 namespace Acuminator.Vsix.Coloriser
 {
-    internal class ThemeUpdater : IDisposable
+    internal class ThemeUpdater
     {
         private const string TextCategory = "text";
         private const string MefItemsGuidString = "75A05685-00A8-4DED-BAE5-E7A50BFA929A";
@@ -33,10 +33,14 @@ namespace Acuminator.Vsix.Coloriser
 
         public event EventHandler<AcuminatorThemeChangedEventArgs> AcuminatorThemeChanged;
 
+        public static ThemeUpdater Instance { get; } = new ThemeUpdater();
 
-        public ThemeUpdater(IServiceProvider serviceProvider)
+        private ThemeUpdater()
         {
-            _serviceProvider = serviceProvider.CheckIfNull(nameof(serviceProvider));
+			ThreadHelper.ThrowIfNotOnUIThread();
+
+            _serviceProvider = (AcuminatorVSPackage.Instance as IServiceProvider) ?? ServiceProvider.GlobalProvider;
+            _serviceProvider.ThrowOnNull(nameof(_serviceProvider));
 
             VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;         
         }
@@ -95,11 +99,6 @@ namespace Acuminator.Vsix.Coloriser
 
                 _fontAndColorStorage.CloseCategory();
             }
-        }
-
-        public void Dispose()
-        {
-            VSColorTheme.ThemeChanged -= VSColorTheme_ThemeChanged;
         }
     }
 }
