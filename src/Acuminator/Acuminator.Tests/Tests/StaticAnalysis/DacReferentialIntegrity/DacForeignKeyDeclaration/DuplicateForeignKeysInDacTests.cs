@@ -22,6 +22,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new DuplicateKeysInDacFix();
 
 		[Theory]
+		[EmbeddedFileData(@"DuplicateKeys\PivotFieldNoDuplicateFK.cs")]
+		public async Task Dac_WithFKsForTheSameDacField_ButDifferentForeignDacs_NoDuplicates(string source) =>
+			await VerifyCSharpDiagnosticAsync(source);
+
+		[Theory]
 		[EmbeddedFileData(@"DuplicateKeys\SOLineWithDuplicateInventoryFK.cs")]
 		public async Task Dac_WithFkViaPk_AndSimpleFK_DuplicateUniqueKeys(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
