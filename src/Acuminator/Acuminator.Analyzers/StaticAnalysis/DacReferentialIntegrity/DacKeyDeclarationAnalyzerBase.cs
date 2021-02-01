@@ -226,11 +226,32 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return processedKeysByHash;
 		}
 
-		private IEnumerable<IEnumerable<INamedTypeSymbol>> GetDuplicateKeysGroupsForSameTargetDAC(List<INamedTypeSymbol> keysWithSameDacFields)
+		private IEnumerable<List<INamedTypeSymbol>> GetDuplicateKeysGroupsForSameTargetDAC(List<INamedTypeSymbol> keysWithSameDacFields)
 		{
-			if (keysWithSameDacFields.Count < 2)
-				yield break;
+			var duplicateKeysByTargetDac = new Dictionary<string, List<INamedTypeSymbol>>();
+
+			foreach (INamedTypeSymbol key in keysWithSameDacFields)
+			{
+				string targetDacName = GetTargetDacFromKey(key)?.MetadataName;
+
+				if (targetDacName.IsNullOrWhiteSpace())
+					continue;
+
+				if (duplicateKeysByTargetDac.TryGetValue(targetDacName, out List<INamedTypeSymbol> processedKeysList))
+				{
+					processedKeysList.Add(key);
+				}
+				else
+				{
+					processedKeysList = new List<INamedTypeSymbol>(capacity: 1) { key };
+					duplicateKeysByTargetDac.Add(targetDacName, processedKeysList);
+				}
+			}
+
+			return duplicateKeysByTargetDac.Values.Where(keys => keys.Count > 1);
 		}
+
+		protected abstract INamedTypeSymbol GetTargetDacFromKey(INamedTypeSymbol key);
 
 		protected string GetHashForSetOfDacFieldsUsedByKey(INamedTypeSymbol key, Dictionary<INamedTypeSymbol, List<ITypeSymbol>> dacFieldsByKey) =>
 			dacFieldsByKey.TryGetValue(key, out List<ITypeSymbol> usedDacFields) && usedDacFields.Count > 0
