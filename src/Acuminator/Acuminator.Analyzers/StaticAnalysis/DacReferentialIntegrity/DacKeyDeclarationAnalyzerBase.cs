@@ -159,8 +159,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			if (keyDeclarations.Count < 2 || dacFieldsByKey.Count == 0)
 				return true;
 
+			// First obtain groups of keys which use same DAC fields.
 			var keysGroupedByFields = GetKeysGroupedBySetOfFields(keyDeclarations, dacFieldsByKey, symbolContext.CancellationToken);
-			var duplicateKeySets = keysGroupedByFields.Values.Where(keys => keys.Count > 1);
+
+			// Get the groups of more than one key which use the same DAC fields set. Split these groups by their target DAC.
+			// We don't do this for all keys at the previous step as a optimization for the most frequent case. 
+			// To split the key groups by their target DACs we need to extract the target DAC from them. Most of the keys use a unique set of DAC fields anyway, 
+			// so we don't need to make this redundant extraction for them.
+			var duplicateKeySets = keysGroupedByFields.Values.Where(keys => keys.Count > 1)
+															 .SelectMany(keys => GetDuplicateKeysGroupsForSameTargetDAC(keys));
 			bool allFieldsUnique = true;
 
 			// We group keys by sets of used fields and then report each set with duplicate keys separately,
@@ -217,6 +224,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			}
 
 			return processedKeysByHash;
+		}
+
+		private IEnumerable<IEnumerable<INamedTypeSymbol>> GetDuplicateKeysGroupsForSameTargetDAC(List<INamedTypeSymbol> keysWithSameDacFields)
+		{
+			if (keysWithSameDacFields.Count < 2)
+				yield break;
 		}
 
 		protected string GetHashForSetOfDacFieldsUsedByKey(INamedTypeSymbol key, Dictionary<INamedTypeSymbol, List<ITypeSymbol>> dacFieldsByKey) =>
