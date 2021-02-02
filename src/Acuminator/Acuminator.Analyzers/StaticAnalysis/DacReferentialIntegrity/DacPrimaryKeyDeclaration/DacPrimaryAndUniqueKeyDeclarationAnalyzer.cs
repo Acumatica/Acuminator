@@ -7,6 +7,7 @@ using System.Linq;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Syntax;
@@ -16,6 +17,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 using static Acuminator.Utilities.Roslyn.Constants.TypeNames;
+
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 {
@@ -62,6 +64,18 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return byType?.TypeArguments.OrderBy(dacField => dacField.MetadataName)
 										.ToList(capacity: byType.TypeArguments.Length) 
 						 ?? new List<ITypeSymbol>();
+		}
+
+		protected override ITypeSymbol GetTargetDacFromKey(PXContext context, INamedTypeSymbol primaryOrUniqueKey)
+		{
+			// We support only the most frequent case - the primary and unique keys which implement generic IPrimaryKey<TDAC> interface
+			INamedTypeSymbol primaryKeyInterface = primaryOrUniqueKey.AllInterfaces
+																	 .FirstOrDefault(i => i.MetadataName == TypeFullNames.IPrimaryKey1);
+
+			if (primaryKeyInterface == null || primaryKeyInterface.TypeArguments.Length != 1)
+				return null;
+
+			return primaryKeyInterface.TypeArguments[0];
 		}
 
 		protected override Location GetUnboundDacFieldLocation(ClassDeclarationSyntax keyNode, ITypeSymbol unboundDacFieldInKey)

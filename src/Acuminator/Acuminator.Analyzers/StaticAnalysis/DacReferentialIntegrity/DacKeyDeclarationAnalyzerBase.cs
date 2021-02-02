@@ -167,7 +167,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			// To split the key groups by their target DACs we need to extract the target DAC from them. Most of the keys use a unique set of DAC fields anyway, 
 			// so we don't need to make this redundant extraction for them.
 			var duplicateKeySets = keysGroupedByFields.Values.Where(keys => keys.Count > 1)
-															 .SelectMany(keys => GetDuplicateKeysGroupsForSameTargetDAC(keys));
+															 .SelectMany(keys => GetDuplicateKeysGroupsForSameTargetDAC(context, keys));
 			bool allFieldsUnique = true;
 
 			// We group keys by sets of used fields and then report each set with duplicate keys separately,
@@ -226,13 +226,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return processedKeysByHash;
 		}
 
-		private IEnumerable<List<INamedTypeSymbol>> GetDuplicateKeysGroupsForSameTargetDAC(List<INamedTypeSymbol> keysWithSameDacFields)
+		private IEnumerable<List<INamedTypeSymbol>> GetDuplicateKeysGroupsForSameTargetDAC(PXContext context, List<INamedTypeSymbol> keysWithSameDacFields)
 		{
 			var duplicateKeysByTargetDac = new Dictionary<string, List<INamedTypeSymbol>>();
 
 			foreach (INamedTypeSymbol key in keysWithSameDacFields)
 			{
-				string targetDacName = GetTargetDacFromKey(key)?.MetadataName;
+				string targetDacName = GetTargetDacFromKey(context, key)?.MetadataName;
 
 				if (targetDacName.IsNullOrWhiteSpace())
 					continue;
@@ -251,7 +251,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return duplicateKeysByTargetDac.Values.Where(keys => keys.Count > 1);
 		}
 
-		protected abstract INamedTypeSymbol GetTargetDacFromKey(INamedTypeSymbol key);
+		protected abstract ITypeSymbol GetTargetDacFromKey(PXContext context, INamedTypeSymbol key);
 
 		protected string GetHashForSetOfDacFieldsUsedByKey(INamedTypeSymbol key, Dictionary<INamedTypeSymbol, List<ITypeSymbol>> dacFieldsByKey) =>
 			dacFieldsByKey.TryGetValue(key, out List<ITypeSymbol> usedDacFields) && usedDacFields.Count > 0
