@@ -232,26 +232,26 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 			foreach (INamedTypeSymbol key in keysWithSameDacFields)
 			{
-				string targetDacName = GetTargetDacFromKey(context, key)?.MetadataName;
+				string parentDacName = GetParentDacFromKey(context, key)?.MetadataName;
 
-				if (targetDacName.IsNullOrWhiteSpace())
+				if (parentDacName.IsNullOrWhiteSpace())
 					continue;
 
-				if (duplicateKeysByTargetDac.TryGetValue(targetDacName, out List<INamedTypeSymbol> processedKeysList))
+				if (duplicateKeysByTargetDac.TryGetValue(parentDacName, out List<INamedTypeSymbol> processedKeysList))
 				{
 					processedKeysList.Add(key);
 				}
 				else
 				{
 					processedKeysList = new List<INamedTypeSymbol>(capacity: 1) { key };
-					duplicateKeysByTargetDac.Add(targetDacName, processedKeysList);
+					duplicateKeysByTargetDac.Add(parentDacName, processedKeysList);
 				}
 			}
 
 			return duplicateKeysByTargetDac.Values.Where(keys => keys.Count > 1);
 		}
 
-		protected abstract ITypeSymbol GetTargetDacFromKey(PXContext context, INamedTypeSymbol key);
+		protected abstract ITypeSymbol GetParentDacFromKey(PXContext context, INamedTypeSymbol key);
 
 		protected string GetHashForSetOfDacFieldsUsedByKey(INamedTypeSymbol key, Dictionary<INamedTypeSymbol, List<ITypeSymbol>> dacFieldsByKey) =>
 			dacFieldsByKey.TryGetValue(key, out List<ITypeSymbol> usedDacFields) && usedDacFields.Count > 0

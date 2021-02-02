@@ -66,7 +66,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 						 ?? new List<ITypeSymbol>();
 		}
 
-		protected override ITypeSymbol GetTargetDacFromKey(PXContext context, INamedTypeSymbol primaryOrUniqueKey)
+		protected override ITypeSymbol GetParentDacFromKey(PXContext context, INamedTypeSymbol primaryOrUniqueKey)
 		{
 			// We support only the most frequent case - the primary and unique keys which implement generic IPrimaryKey<TDAC> interface
 			INamedTypeSymbol primaryKeyInterface = primaryOrUniqueKey.AllInterfaces
