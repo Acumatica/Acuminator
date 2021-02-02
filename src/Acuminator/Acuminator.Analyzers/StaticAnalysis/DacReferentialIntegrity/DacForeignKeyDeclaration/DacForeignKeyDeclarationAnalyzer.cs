@@ -7,6 +7,7 @@ using System.Linq;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Symbols;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
@@ -69,6 +70,73 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return false;
 		}
 
+		protected override ITypeSymbol GetParentDacFromKey(PXContext context, INamedTypeSymbol foreignKey)
+		{
+			ITypeSymbol parentDAC = GetParentDacFromForeighKeyToInterface(context, foreignKey); // effective implementation via interface for Acumatica 2019R2 and later
+
+			if (parentDAC != null)
+				return parentDAC;
+
+			var baseKeyTypes = foreignKey.GetBaseTypes().OfType<INamedTypeSymbol>();
+
+			// We don't support custom foreign key implementations since it will be impossible to deduce target DAC in a general case.
+			// Instead we only analyze foreign keys for general three cases:
+			// 1. Keys declared via primary key of other DAC. This should handle 90% of FK use cases:
+			//    SOOrder.PK.ForeignKeyOf<SOLine>.By<orderType, orderNbr>. 
+			//  
+			// 2. Keys declared with explicit declaration of relationship between DACs:
+			//  a. For simple keys consisting of 1 field:  Field<inventoryID>.IsRelatedTo<InventoryItem.inventoryID>.AsSimpleKey.WithTablesOf<InventoryItem, SOLine>
+			//  b. For complex keys: 
+			//			CompositeKey<
+			//						 Field<orderType>.IsRelatedTo<SOOrder.orderType>,
+			//						 Field<orderNbr>.IsRelatedTo<SOOrder.orderNbr>
+			//						>
+			//						.WithTablesOf<SOOrder, SOLine>
+			foreach (INamedTypeSymbol baseType in baseKeyTypes)
+			{
+				switch (baseType.Name)
+				{
+					case ReferentialIntegrity.By_TypeName
+					when baseType.ContainingType?.Name == ReferentialIntegrity.ForeignKeyOfName:    //Case of foreign key declared via primary or unique key
+						{
+							INamedTypeSymbol topMostContainingType = baseType.TopMostContainingType();
+
+							if (topMostContainingType?.Name == ReferentialIntegrity.PrimaryKeyOfName && topMostContainingType.TypeArguments.Length == 1)
+							{
+								parentDAC = topMostContainingType.TypeArguments[0];
+								return parentDAC.IsDAC() ? parentDAC : null;
+							}
+
+							return null;
+						}
+
+					case ReferentialIntegrity.WithTablesOf_TypeName:								//Case of foreign key with explicit declaration
+						{
+							var typeArguments = baseType.TypeArguments;
+
+							if (typeArguments.Length != 2)
+								return null;
+
+							parentDAC = typeArguments[0];
+							return parentDAC.IsDAC() ? parentDAC : null;
+						}
+				}
+			}
+
+			return null;
+		}
+
+		private ITypeSymbol GetParentDacFromForeighKeyToInterface(PXContext context, INamedTypeSymbol foreignKey)
+		{
+			if (context.ReferentialIntegritySymbols.IForeignKeyTo1 == null)
+				return null;
+
+			INamedTypeSymbol foreignKeyInterface = foreignKey.AllInterfaces.FirstOrDefault(i => i.MetadataName == TypeFullNames.IForeignKeyTo1);
+			return foreignKeyInterface?.TypeArguments.Length == 1
+				? foreignKeyInterface.TypeArguments[0]
+				: null;
+		}
+
 		/// <summary>
 		/// Gets ordered DAC fields used by <paramref name="foreignKey"/>.
 		/// </summary>
@@ -99,7 +167,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 				switch (baseType.Name)
 				{
 					case ReferentialIntegrity.By_TypeName
-					when baseType.ContainingType?.Name == ReferentialIntegrity.ForeignKeyOfName:    //Case of foreign key declared via primary key
+					when baseType.ContainingType?.Name == ReferentialIntegrity.ForeignKeyOfName:    //Case of foreign key declared via primary or unique key
 						{
 							var usedFields = baseType.TypeArguments;
 							bool areValidFields = !usedFields.IsDefaultOrEmpty && usedFields.All(dacFieldArg => dac.FieldsByNames.ContainsKey(dacFieldArg.Name));
@@ -141,7 +209,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			}
 
 			return new List<ITypeSymbol>();
-		}
+		}	
 
 		private ITypeSymbol GetDacFieldFromIsRelatedToType(DacSemanticModel dac, ITypeSymbol isRelatedTo_Type)
 		{
