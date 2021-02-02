@@ -41,6 +41,15 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
         /// </value>
         public INamedTypeSymbol IForeignKey { get; }
 
+        /// <summary>
+        /// Gets the generic foreign key to the parent DAC interface derived from <see cref="IForeignKey"/>. Contains information about parent DAC referenced by the foreign key.
+        /// For earlier versions of Acumatica (2019R1) the interface is not defined so the symbol can be null.
+        /// </summary>
+        /// <value>
+        /// The generic foreign key to the parent DAC interface
+        /// </value>
+        public INamedTypeSymbol IForeignKeyTo1 { get; }
+
         public INamedTypeSymbol KeysRelation { get; }
 
         public INamedTypeSymbol PrimaryKeyOf => Compilation.GetTypeByMetadataName(TypeFullNames.PrimaryKeyOf);
@@ -51,6 +60,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
         {
             IPrimaryKey = Compilation.GetTypeByMetadataName(TypeFullNames.IPrimaryKey);
             IForeignKey = Compilation.GetTypeByMetadataName(TypeFullNames.IForeignKey);
+            IForeignKeyTo1 = Compilation.GetTypeByMetadataName(TypeFullNames.IForeignKeyTo1);
             KeysRelation = Compilation.GetTypeByMetadataName(TypeFullNames.KeysRelation);
         }
 
