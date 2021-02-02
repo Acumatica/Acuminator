@@ -23,12 +23,12 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 
 		[Theory]
 		[EmbeddedFileData(@"DuplicateKeys\PivotFieldNoDuplicateFK.cs")]
-		public async Task Dac_WithFKsForTheSameDacField_ButDifferentForeignDacs_NoDuplicates(string source) =>
+		public async Task Dac_WithFKsForTheSameDacField_ButDifferentForeignDacs_NoForeignKeyDuplicates(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
 		[EmbeddedFileData(@"DuplicateKeys\SOLineWithDuplicateInventoryFK.cs")]
-		public async Task Dac_WithFkViaPk_AndSimpleFK_DuplicateUniqueKeys(string source) =>
+		public async Task Dac_WithFkViaPk_AndSimpleFK_DuplicateForeignKeys(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1035_MultipleKeyDeclarationsInDacWithSameFields.CreateFor(
 					location:	   (Line: 17, Column: 17), 
@@ -40,12 +40,12 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 
 		[Theory]
 		[EmbeddedFileData(@"DuplicateKeys\SOLineWithDuplicateInventoryFK.cs", @"DuplicateKeys\SOLineWithDuplicateInventoryFK_Expected.cs")]
-		public async Task Dac_WithFkViaPk_AndSimpleFK_DeleteDuplicateKeys_VerifyCodeFix(string actual, string expected) =>
+		public async Task Dac_WithFkViaPk_AndSimpleFK_DeleteDuplicateForeignKeys_VerifyCodeFix(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected);
 
 		[Theory]
 		[EmbeddedFileData(@"DuplicateKeys\SOLineWithDuplicateSOOrderFK.cs")]
-		public async Task Dac_WithCompositeFK_DuplicateUniqueKeys(string source) =>
+		public async Task Dac_WithCompositeFK_DuplicateForeignKeys(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1035_MultipleKeyDeclarationsInDacWithSameFields.CreateFor(
 					location:	   (Line: 17, Column: 17),
@@ -57,7 +57,7 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.DacReferentialIntegrity
 
 		[Theory]
 		[EmbeddedFileData(@"DuplicateKeys\SOLineWithDuplicateSOOrderFK.cs", @"DuplicateKeys\SOLineWithDuplicateSOOrderFK_Expected.cs")]
-		public async Task Dac_WithCompositeFK_DeleteDuplicateKeys_VerifyCodeFix(string actual, string expected) =>
+		public async Task Dac_WithCompositeFK_DeleteDuplicateForeignKeys_VerifyCodeFix(string actual, string expected) =>
 			await VerifyCSharpFixAsync(actual, expected);
 	}
 }
