@@ -25,6 +25,9 @@ namespace Acuminator.Utilities.Roslyn.Constants
 			/// </summary>
 			public const string ForeignKeyClassName = "FK";
 
+			public const string IPrimaryKeyOfName = "IPrimaryKeyOf";
+			public const string IForeignKeyToName = "IForeignKeyTo";
+
 			public const string PrimaryKeyOfName = "PrimaryKeyOf";
 			public const string ForeignKeyOfName = "ForeignKeyOf";
 			public const string AsSimpleKeyName = "AsSimpleKey";

@@ -68,27 +68,31 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		protected override ITypeSymbol GetParentDacFromKey(PXContext context, INamedTypeSymbol primaryOrUniqueKey)
 		{
+			ITypeSymbol parentDAC = null;
+
 			if (context.ReferentialIntegritySymbols.IPrimaryKeyOf1 != null)
 			{
 				// For Acumatica 2019R2 and later we use IPrimaryKeyOf<TDAC> interface
-				INamedTypeSymbol primaryKeyInterface = primaryOrUniqueKey.AllInterfaces.FirstOrDefault(i => i.MetadataName == TypeFullNames.IPrimaryKeyOf1);
-				return primaryKeyInterface?.TypeArguments.Length == 1
-					? primaryKeyInterface.TypeArguments[0]
-					: null;
+				INamedTypeSymbol primaryKeyInterface = primaryOrUniqueKey.AllInterfaces
+																		 .FirstOrDefault(i => i.TypeArguments.Length == 1 && 
+																							  i.Name == ReferentialIntegrity.IPrimaryKeyOfName);
+				parentDAC = primaryKeyInterface.TypeArguments[0];
 			}
-
-			var by_Type = primaryOrUniqueKey.GetBaseTypes()
-										    .OfType<INamedTypeSymbol>()
-										    .FirstOrDefault(type => type.Name == ReferentialIntegrity.By_TypeName);
-			
-			if (!(by_Type?.TopMostContainingType() is INamedTypeSymbol primaryKeyOf_Type) || primaryKeyOf_Type.Name != ReferentialIntegrity.PrimaryKeyOfName ||
-				primaryKeyOf_Type.TypeArguments.Length != 1)
+			else
 			{
-				return null;
+				var by_Type = primaryOrUniqueKey.GetBaseTypes()
+											.OfType<INamedTypeSymbol>()
+											.FirstOrDefault(type => type.Name == ReferentialIntegrity.By_TypeName);
+
+				if (by_Type?.TopMostContainingType() is INamedTypeSymbol primaryKeyOf_Type && primaryKeyOf_Type.Name == ReferentialIntegrity.PrimaryKeyOfName &&
+					primaryKeyOf_Type.TypeArguments.Length == 1)
+				{
+					parentDAC = primaryKeyOf_Type.TypeArguments[0];
+				}		
 			}
 
-			return primaryKeyOf_Type.TypeArguments[0].IsDAC(context)
-				? primaryKeyOf_Type.TypeArguments[0]
+			return parentDAC != null && parentDAC.IsDAC(context) 
+				? parentDAC
 				: null;
 		}
 

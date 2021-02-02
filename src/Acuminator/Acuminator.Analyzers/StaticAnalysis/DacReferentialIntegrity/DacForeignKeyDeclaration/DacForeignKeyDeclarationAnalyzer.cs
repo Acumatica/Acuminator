@@ -75,7 +75,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			ITypeSymbol parentDAC = GetParentDacFromForeighKeyToInterface(context, foreignKey); // effective implementation via interface for Acumatica 2019R2 and later
 
 			if (parentDAC != null)
-				return parentDAC;
+				return parentDAC.IsDAC() ? parentDAC : null;
 
 			var baseKeyTypes = foreignKey.GetBaseTypes().OfType<INamedTypeSymbol>();
 
@@ -131,10 +131,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			if (context.ReferentialIntegritySymbols.IForeignKeyTo1 == null)
 				return null;
 
-			INamedTypeSymbol foreignKeyInterface = foreignKey.AllInterfaces.FirstOrDefault(i => i.MetadataName == TypeFullNames.IForeignKeyTo1);
-			return foreignKeyInterface?.TypeArguments.Length == 1
-				? foreignKeyInterface.TypeArguments[0]
-				: null;
+			INamedTypeSymbol foreignKeyInterface = foreignKey.AllInterfaces
+															 .FirstOrDefault(i => i.TypeArguments.Length == 1 && 
+																				  i.Name == ReferentialIntegrity.IForeignKeyToName);
+			return foreignKeyInterface.TypeArguments[0];
 		}
 
 		/// <summary>
