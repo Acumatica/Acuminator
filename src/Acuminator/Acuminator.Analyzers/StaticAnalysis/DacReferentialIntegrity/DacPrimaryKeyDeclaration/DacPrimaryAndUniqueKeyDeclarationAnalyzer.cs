@@ -68,14 +68,28 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 
 		protected override ITypeSymbol GetParentDacFromKey(PXContext context, INamedTypeSymbol primaryOrUniqueKey)
 		{
-			// We support only the most frequent case - the primary and unique keys which implement generic IPrimaryKey<TDAC> interface
-			INamedTypeSymbol primaryKeyInterface = primaryOrUniqueKey.AllInterfaces
-																	 .FirstOrDefault(i => i.MetadataName == TypeFullNames.IPrimaryKey1);
+			if (context.ReferentialIntegritySymbols.IPrimaryKeyOf1 != null)
+			{
+				// For Acumatica 2019R2 and later we use IPrimaryKeyOf<TDAC> interface
+				INamedTypeSymbol primaryKeyInterface = primaryOrUniqueKey.AllInterfaces.FirstOrDefault(i => i.MetadataName == TypeFullNames.IPrimaryKeyOf1);
+				return primaryKeyInterface?.TypeArguments.Length == 1
+					? primaryKeyInterface.TypeArguments[0]
+					: null;
+			}
 
-			if (primaryKeyInterface == null || primaryKeyInterface.TypeArguments.Length != 1)
+			var by_Type = primaryOrUniqueKey.GetBaseTypes()
+										    .OfType<INamedTypeSymbol>()
+										    .FirstOrDefault(type => type.Name == ReferentialIntegrity.By_TypeName);
+			
+			if (!(by_Type?.TopMostContainingType() is INamedTypeSymbol primaryKeyOf_Type) || primaryKeyOf_Type.Name != ReferentialIntegrity.PrimaryKeyOfName ||
+				primaryKeyOf_Type.TypeArguments.Length != 1)
+			{
 				return null;
+			}
 
-			return primaryKeyInterface.TypeArguments[0];
+			return primaryKeyOf_Type.TypeArguments[0].IsDAC(context)
+				? primaryKeyOf_Type.TypeArguments[0]
+				: null;
 		}
 
 		protected override Location GetUnboundDacFieldLocation(ClassDeclarationSyntax keyNode, ITypeSymbol unboundDacFieldInKey)
