@@ -155,6 +155,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 			}
 		}
 
+		public static INamedTypeSymbol TopMostContainingType(this ITypeSymbol type)
+		{
+			INamedTypeSymbol current = type.CheckIfNull(nameof(type)).ContainingType;
+
+			while (current != null)
+			{
+				if (current.ContainingType == null)
+					return current;
+
+				current = current.ContainingType;
+			}
+
+			return null;
+		}
+
 		public static IEnumerable<INamespaceSymbol> GetContainingNamespaces(this ITypeSymbol type)
 		{
 			var currentNamespace = type?.ContainingNamespace;
