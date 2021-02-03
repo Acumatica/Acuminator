@@ -182,8 +182,13 @@
 
 		#region PK/FK API
 		public const string IPrimaryKey = "PX.Data.ReferentialIntegrity.Attributes.IPrimaryKey";
+		public const string IPrimaryKeyOf1 = "PX.Data.ReferentialIntegrity.Attributes.IPrimaryKeyOf`1";
+
 		public const string IForeignKey = "PX.Data.ReferentialIntegrity.Attributes.IForeignKey";
+		public const string IForeignKeyTo1 = "PX.Data.ReferentialIntegrity.Attributes.IForeignKeyTo`1";
+
 		public const string KeysRelation = "PX.Data.ReferentialIntegrity.Attributes.KeysRelation`3";
+
 		public const string PrimaryKeyOf = "PX.Data.ReferentialIntegrity.Attributes.PrimaryKeyOf`1";
 		public const string PrimaryKeyOfBy = "PX.Data.ReferentialIntegrity.Attributes.PrimaryKeyOf`1+By";
 

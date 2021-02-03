@@ -34,12 +34,29 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
         public INamedTypeSymbol IPrimaryKey { get; }
 
         /// <summary>
+        /// Gets the generic IPrimaryKeyOf<TDAC> interface.
+        /// </summary>
+        /// <value>
+        /// The generic IPrimaryKeyOf<TDAC> interface.
+        /// </value>
+        public INamedTypeSymbol IPrimaryKeyOf1 { get; }
+
+        /// <summary>
         /// Gets the foreign key interface. For earlier versions of Acumatica (2019R1) is not defined so it can be null.
         /// </summary>
         /// <value>
         /// The foreign key interface.
         /// </value>
         public INamedTypeSymbol IForeignKey { get; }
+
+        /// <summary>
+        /// Gets the generic foreign key to the parent DAC interface derived from <see cref="IForeignKey"/>. Contains information about parent DAC referenced by the foreign key.
+        /// For earlier versions of Acumatica (2019R1) the interface is not defined so the symbol can be null.
+        /// </summary>
+        /// <value>
+        /// The generic foreign key to the parent DAC interface
+        /// </value>
+        public INamedTypeSymbol IForeignKeyTo1 { get; }
 
         public INamedTypeSymbol KeysRelation { get; }
 
@@ -50,7 +67,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Symbols
         internal PXReferentialIntegritySymbols(Compilation compilation) : base(compilation)
         {
             IPrimaryKey = Compilation.GetTypeByMetadataName(TypeFullNames.IPrimaryKey);
+            IPrimaryKeyOf1 = Compilation.GetTypeByMetadataName(TypeFullNames.IPrimaryKeyOf1);
+
             IForeignKey = Compilation.GetTypeByMetadataName(TypeFullNames.IForeignKey);
+            IForeignKeyTo1 = Compilation.GetTypeByMetadataName(TypeFullNames.IForeignKeyTo1);
+
             KeysRelation = Compilation.GetTypeByMetadataName(TypeFullNames.KeysRelation);
         }
 

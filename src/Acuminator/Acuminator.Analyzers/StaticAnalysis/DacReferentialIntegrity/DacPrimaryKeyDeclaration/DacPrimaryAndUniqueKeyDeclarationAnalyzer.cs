@@ -7,6 +7,7 @@ using System.Linq;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.DiagnosticSuppression;
+using Acuminator.Utilities.Roslyn.Constants;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
 using Acuminator.Utilities.Roslyn.Syntax;
@@ -16,6 +17,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 using static Acuminator.Utilities.Roslyn.Constants.TypeNames;
+
 
 namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 {
@@ -62,6 +64,36 @@ namespace Acuminator.Analyzers.StaticAnalysis.DacReferentialIntegrity
 			return byType?.TypeArguments.OrderBy(dacField => dacField.MetadataName)
 										.ToList(capacity: byType.TypeArguments.Length) 
 						 ?? new List<ITypeSymbol>();
+		}
+
+		protected override ITypeSymbol GetParentDacFromKey(PXContext context, INamedTypeSymbol primaryOrUniqueKey)
+		{
+			ITypeSymbol parentDAC = null;
+
+			if (context.ReferentialIntegritySymbols.IPrimaryKeyOf1 != null)
+			{
+				// For Acumatica 2019R2 and later we use IPrimaryKeyOf<TDAC> interface
+				INamedTypeSymbol primaryKeyInterface = primaryOrUniqueKey.AllInterfaces
+																		 .FirstOrDefault(i => i.TypeArguments.Length == 1 && 
+																							  i.Name == ReferentialIntegrity.IPrimaryKeyOfName);
+				parentDAC = primaryKeyInterface.TypeArguments[0];
+			}
+			else
+			{
+				var by_Type = primaryOrUniqueKey.GetBaseTypes()
+											.OfType<INamedTypeSymbol>()
+											.FirstOrDefault(type => type.Name == ReferentialIntegrity.By_TypeName);
+
+				if (by_Type?.TopMostContainingType() is INamedTypeSymbol primaryKeyOf_Type && primaryKeyOf_Type.Name == ReferentialIntegrity.PrimaryKeyOfName &&
+					primaryKeyOf_Type.TypeArguments.Length == 1)
+				{
+					parentDAC = primaryKeyOf_Type.TypeArguments[0];
+				}		
+			}
+
+			return parentDAC != null && parentDAC.IsDAC(context) 
+				? parentDAC
+				: null;
 		}
 
 		protected override Location GetUnboundDacFieldLocation(ClassDeclarationSyntax keyNode, ITypeSymbol unboundDacFieldInKey)
