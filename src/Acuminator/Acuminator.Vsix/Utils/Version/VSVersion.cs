@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -16,6 +17,9 @@ using Microsoft.VisualStudio.Text.Outlining;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.Shell;
+
+using Microsoft.VisualStudio.ProjectSystem.VS.Interop;
+
 using EnvDTE80;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
@@ -52,7 +56,41 @@ namespace Acuminator.Vsix.Utilities
 			var res = shell?.GetProperty((int)Microsoft.VisualStudio.Shell.Interop.__VSSPROPID5.VSSPROPID_ReleaseVersion, out version);
 			string? shellVersion = version?.ToString();
 
-			return new VSVersion(dte?.Version);
+            var fileVersion = GetFileVersion();
+
+
+            var vsAppId = await serviceProvider.GetServiceAsync<SVsAppId, IVsAppId>();
+            var res2 = vsAppId.GetProperty((int)VSAPropID.VSAPROPID_ProductDisplayVersion, out object? semanticVersionObj);
+
+            string? vsAppIdVersion = semanticVersionObj?.ToString();
+
+
+            return new VSVersion(dte?.Version);
 		}
-	}
+
+        public static Version GetFileVersion()
+        {
+
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "devenv.exe");
+
+            if (File.Exists(path))
+            {
+                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(path);
+
+                string verName = fvi.ProductVersion;
+
+                for (int i = 0; i < verName.Length; i++)
+                {
+                    if (!char.IsDigit(verName, i) && verName[i] != '.')
+                    {
+                        verName = verName.Substring(0, i);
+                        break;
+                    }
+                }
+                return new Version(verName);
+            }
+            else
+                return new Version(0, 0); // Not running inside Visual Studio!
+        }
+    }
 }
