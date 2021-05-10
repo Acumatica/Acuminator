@@ -7,6 +7,18 @@ namespace Acuminator.Utilities.Common
 {
 	public static class StringExtensions
 	{
+		/// <summary>
+		/// A string extension method that returns null if passed string <paramref name="str"/> is null, empty or contains only whitespaces.
+		/// </summary>
+		/// <param name="str">The string to act on.</param>
+		/// <returns/>
+		[DebuggerStepThrough]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static string NullIfWhiteSpace(this string str) =>
+			string.IsNullOrWhiteSpace(str)
+				? null
+				: str;
+
 		[DebuggerStepThrough]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool IsNullOrWhiteSpace(this string str) => string.IsNullOrWhiteSpace(str);
