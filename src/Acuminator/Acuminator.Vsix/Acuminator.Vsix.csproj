@@ -386,7 +386,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Utils\Version\IVsAppId.cs" />
-    <Compile Include="Utils\Version\VSVersion.cs" />
+    <Compile Include="Utils\Version\VSVersionProvider.cs" />
     <Compile Include="Utils\WPF\Collection\ExtendedObservableCollection.cs" />
     <Compile Include="Utils\Navigation\VSDocumentNavigation.cs" />
     <Compile Include="Utils\VSServicesExtensions.cs" />

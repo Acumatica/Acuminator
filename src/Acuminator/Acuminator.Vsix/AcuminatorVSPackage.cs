@@ -153,7 +153,7 @@ namespace Acuminator.Vsix
 													   currentStep: 1, TotalLoadSteps);
 			progress?.Report(progressData);
 
-			InitializeCodeAnalysisSettings();
+			await InitializeCodeAnalysisSettingsAsync();
 
 			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitLogger,
 												   currentStep: 2, TotalLoadSteps);
@@ -329,10 +329,18 @@ namespace Acuminator.Vsix
 										   buildActionSetterFabric: () => new VsixBuildActionSetter());
         }
 
-        private void InitializeCodeAnalysisSettings()
+        private async System.Threading.Tasks.Task InitializeCodeAnalysisSettingsAsync()
 		{
 			var codeAnalysisSettings = new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage);
 			GlobalCodeAnalysisSettings.InitializeGlobalSettingsOnce(codeAnalysisSettings);
+			
+			var vsVersion = await VSVersionProvider.GetVersionAsync(this);
+			SharedVsSettings.VSVersion = vsVersion;
+		}
+
+		private void PrepareOutOfProcessSettings(VSVersion vsVersion)
+		{
+			
 		}
 
 		#region Package Settings         
