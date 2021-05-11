@@ -7,8 +7,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Events;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -97,6 +95,12 @@ namespace Acuminator.Vsix
 			private set;
 		}
 
+		internal VSVersion VSVersion
+		{
+			get;
+			private set;
+		}
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AcuminatorVSPackage"/> class.
         /// </summary>
@@ -153,6 +157,7 @@ namespace Acuminator.Vsix
 													   currentStep: 1, TotalLoadSteps);
 			progress?.Report(progressData);
 
+			_vsWorkspace = await this.GetVSWorkspaceAsync();
 			await InitializeCodeAnalysisSettingsAsync();
 
 			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitLogger,
@@ -168,7 +173,7 @@ namespace Acuminator.Vsix
 												   currentStep: 3, TotalLoadSteps);
 			progress?.Report(progressData);
 
-			await SubscribeOnEventsAsync();
+			SubscribeOnEvents();
 
 			cancellationToken.ThrowIfCancellationRequested();
 
@@ -184,16 +189,14 @@ namespace Acuminator.Vsix
 			progress?.Report(progressData);
 		}
 
-		private async System.Threading.Tasks.Task SubscribeOnEventsAsync()
+		private void SubscribeOnEvents()
 		{
-			await SubscribeOnWorkspaceEventsAsync();
+			SubscribeOnWorkspaceEvents();
 			SolutionEvents.OnAfterBackgroundSolutionLoadComplete += SolutionEvents_OnAfterBackgroundSolutionLoadComplete;
 		}
 
-		private async System.Threading.Tasks.Task SubscribeOnWorkspaceEventsAsync()
+		private void SubscribeOnWorkspaceEvents()
 		{
-			_vsWorkspace = await this.GetVSWorkspaceAsync();
-
 			if (_vsWorkspace != null)
 			{
 				_vsWorkspace.WorkspaceChanged += Workspace_WorkspaceChanged;
@@ -272,7 +275,9 @@ namespace Acuminator.Vsix
 				JoinableTaskFactory.Run(async () =>
 				{
 					await JoinableTaskFactory.SwitchToMainThreadAsync();
-					await SubscribeOnWorkspaceEventsAsync();
+
+					_vsWorkspace = await this.GetVSWorkspaceAsync();
+					SubscribeOnWorkspaceEvents();
 				});
 			}
 		}
@@ -333,14 +338,14 @@ namespace Acuminator.Vsix
 		{
 			var codeAnalysisSettings = new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage);
 			GlobalCodeAnalysisSettings.InitializeGlobalSettingsOnce(codeAnalysisSettings);
-			
-			var vsVersion = await VSVersionProvider.GetVersionAsync(this);
-			SharedVsSettings.VSVersion = vsVersion;
-		}
 
-		private void PrepareOutOfProcessSettings(VSVersion vsVersion)
-		{
-			
+			VSVersion = await VSVersionProvider.GetVersionAsync(this);
+			SharedVsSettings.VSVersion = VSVersion;
+
+			if (!this.IsOutOfProcessEnabled(_vsWorkspace))
+				return;
+
+
 		}
 
 		#region Package Settings         
