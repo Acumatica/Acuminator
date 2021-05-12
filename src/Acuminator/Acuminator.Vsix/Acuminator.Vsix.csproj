@@ -260,6 +260,8 @@
       <DependentUpon>VSIXResource.resx</DependentUpon>
     </Compile>
     <Compile Include="Settings\CodeAnalysisSettingsFromOptionsPage.cs" />
+    <Compile Include="Settings\OutOfProcessSettingsUpdater.cs" />
+    <Compile Include="Settings\ISettingsEvents.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\Icon.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\TreeNodeToImageSourceConverter.cs" />
     <Compile Include="Tool Windows\CodeMap\Tooltips\TreeIconTooltipConverter.cs" />
