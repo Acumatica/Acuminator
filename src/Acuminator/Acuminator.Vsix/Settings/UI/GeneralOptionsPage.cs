@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Acuminator.Utilities;
+using Acuminator.Vsix.Settings;
+
 using Microsoft.VisualStudio.Shell;
 
 namespace Acuminator.Vsix
 {
-	public class GeneralOptionsPage : DialogPage
+	public class GeneralOptionsPage : DialogPage, ISettingsEvents
 	{
 		public const string PageTitle = "General";
 
