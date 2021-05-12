@@ -6,8 +6,11 @@ namespace Acuminator.Utilities
 {
 	public static class SharedVsSettings
 	{
+		public const string AcuminatorSharedMemorySlotName = "AcuminatorMemorySlot";
+
 		public static VSVersion VSVersion { get; set; }
 
-		public static bool IsOutOfProcessAnalysis => VSVersion == null; 
+		public static bool IsInsideVsProcess => VSVersion != null; 
+
 	}
 }
