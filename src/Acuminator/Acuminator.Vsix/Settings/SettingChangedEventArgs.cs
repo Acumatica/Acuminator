@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 
-namespace Acuminator.Vsix
+namespace Acuminator.Vsix.Settings
 {
     public class SettingChangedEventArgs : EventArgs
     {
@@ -14,9 +12,7 @@ namespace Acuminator.Vsix
 
         public SettingChangedEventArgs(string settingName) 
         {
-            settingName.ThrowOnNullOrWhiteSpace(nameof(settingName));
-
-            SettingName = settingName;
+            SettingName = settingName.CheckIfNullOrWhiteSpace(nameof(settingName));
         }
     }
 }
