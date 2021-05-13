@@ -82,6 +82,8 @@ namespace Acuminator.Vsix
         private const int INSTANCE_INITIALIZED = 1;
         private static int _instanceInitialized;
 
+		private OutOfProcessSettingsUpdater _outOfProcessSettingsUpdater;
+
         public static AcuminatorVSPackage Instance { get; private set; }
 
 		private Lazy<GeneralOptionsPage> _generalOptionsPage = 
@@ -256,6 +258,7 @@ namespace Acuminator.Vsix
 		{
 			base.Dispose(disposing);
 			AcuminatorLogger?.Dispose();
+			_outOfProcessSettingsUpdater?.Dispose();
 
 			SolutionEvents.OnAfterBackgroundSolutionLoadComplete -= SolutionEvents_OnAfterBackgroundSolutionLoadComplete;
 
@@ -278,6 +281,7 @@ namespace Acuminator.Vsix
 
 					_vsWorkspace = await this.GetVSWorkspaceAsync();
 					SubscribeOnWorkspaceEvents();
+					InitializeOutOfProcessSettingsSharing();
 				});
 			}
 		}
@@ -342,10 +346,15 @@ namespace Acuminator.Vsix
 			VSVersion = await VSVersionProvider.GetVersionAsync(this);
 			SharedVsSettings.VSVersion = VSVersion;
 
-			if (!this.IsOutOfProcessEnabled(_vsWorkspace))
+			InitializeOutOfProcessSettingsSharing();
+		}
+
+		private void InitializeOutOfProcessSettingsSharing()
+		{
+			if (_outOfProcessSettingsUpdater != null || !this.IsOutOfProcessEnabled(_vsWorkspace))
 				return;
 
-
+			_outOfProcessSettingsUpdater = new OutOfProcessSettingsUpdater(GeneralOptionsPage, GlobalCodeAnalysisSettings.Instance);
 		}
 
 		#region Package Settings         
