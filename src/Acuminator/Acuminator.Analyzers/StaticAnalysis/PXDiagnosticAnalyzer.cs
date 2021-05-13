@@ -1,15 +1,19 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+
+using Acuminator.Analyzers.Settings.OutOfProcess;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Reflection;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+
 
 namespace Acuminator.Analyzers.StaticAnalysis
 {
@@ -22,6 +26,8 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		private static object _acuminatorVsixPackageLoaderLock = new object();
 
 		private const string AcuminatorTestsName = "Acuminator.Tests";
+
+		private bool _settingsProvidedExternally;
 
 		protected CodeAnalysisSettings CodeAnalysisSettings 
 		{ 
@@ -44,12 +50,15 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		protected PXDiagnosticAnalyzer(CodeAnalysisSettings codeAnalysisSettings = null)
 		{
 			CodeAnalysisSettings = codeAnalysisSettings;
+			_settingsProvidedExternally = codeAnalysisSettings != null;
 		}
 		
 		public override void Initialize(AnalysisContext context)
 		{
 			EnsurePackageLoaded();
-			CodeAnalysisSettings = CodeAnalysisSettings ?? GlobalCodeAnalysisSettings.Instance;  //Initialize settings form global values after potential package load
+
+			if (!_settingsProvidedExternally)
+				CodeAnalysisSettings = AnalyzersOutOfProcessSettingsProvider.GetCodeAnalysisSettings(); //Initialize settings form global values after potential package load
 
 			if (!CodeAnalysisSettings.StaticAnalysisEnabled)
 				return;
