@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Text;
@@ -18,22 +19,18 @@ namespace Acuminator.Vsix.Settings
 		private int _isDisposed = NotDisposed;
 		
 		private readonly ISettingsEvents _settingsEvents;
-		private readonly ISettingsWriter _settingsWriter;
+		private readonly MemoryMappedFile _memoryMappedFile;
 
-		public OutOfProcessSettingsUpdater(ISettingsEvents settingsEvents, ISettingsWriter settingsWriter, CodeAnalysisSettings initialSettings)
+		public OutOfProcessSettingsUpdater(ISettingsEvents settingsEvents, CodeAnalysisSettings initialSettings)
 		{
 			initialSettings.ThrowOnNull(nameof(initialSettings));
 
 			_settingsEvents = settingsEvents.CheckIfNull(nameof(settingsEvents));
-			_settingsWriter = settingsWriter.CheckIfNull(nameof(settingsWriter));
+			_memoryMappedFile = CreateOrOpenMemoryMappedFile();
+
+			WriteSettingsToSharedMemory(initialSettings);
 
 			_settingsEvents.CodeAnalysisSettingChanged += SettingsEvents_CodeAnalysisSettingChanged;
-
-		}
-
-		private void SettingsEvents_CodeAnalysisSettingChanged(object sender, SettingChangedEventArgs e)
-		{
-			var currentSettings = GlobalCodeAnalysisSettings.Instance;
 		}
 
 		public void Dispose()
@@ -43,11 +40,28 @@ namespace Acuminator.Vsix.Settings
 				if (_settingsEvents != null)
 					_settingsEvents.CodeAnalysisSettingChanged -= SettingsEvents_CodeAnalysisSettingChanged;
 
-				if (_settingsWriter is IDisposable disposableWriter)
-					disposableWriter.Dispose();
-
-				GC.SuppressFinalize(this);
+				_memoryMappedFile?.Dispose();
 			}
+		}
+
+		private void SettingsEvents_CodeAnalysisSettingChanged(object sender, SettingChangedEventArgs e)
+		{
+			var currentSettings = GlobalCodeAnalysisSettings.Instance;
+			WriteSettingsToSharedMemory(currentSettings);
+		}
+
+		private MemoryMappedFile CreateOrOpenMemoryMappedFile()
+		{
+			const int estimatedMemorySizeInBytes = sizeof(bool) * 5 + 20; //Size of 5 flags + some additional memory just in case
+			return MemoryMappedFile.CreateOrOpen(SharedVsSettings.AcuminatorSharedMemorySlotName, estimatedMemorySizeInBytes);
+		}
+
+		private void WriteSettingsToSharedMemory(CodeAnalysisSettings codeAnalysisSettings)
+		{
+			using MemoryMappedViewStream stream = _memoryMappedFile.CreateViewStream();
+			using CodeAnalysisSettingsBinaryWriter writer = new CodeAnalysisSettingsBinaryWriter(stream);
+
+			writer.WriteCodeAnalysisSettings(codeAnalysisSettings);
 		}
 	}
 }
