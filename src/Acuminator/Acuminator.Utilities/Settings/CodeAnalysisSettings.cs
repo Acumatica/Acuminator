@@ -7,7 +7,7 @@ using System.Text;
 namespace Acuminator.Utilities
 {
 	[Export]
-	public class CodeAnalysisSettings
+	public class CodeAnalysisSettings : IEquatable<CodeAnalysisSettings>
 	{
 		public const bool DefaultRecursiveAnalysisEnabled = true;
 		public const bool DefaultISVSpecificAnalyzersEnabled = false;
@@ -37,8 +37,8 @@ namespace Acuminator.Utilities
 		{
 		}
 
-		internal CodeAnalysisSettings(bool recursiveAnalysisEnabled, bool isvSpecificAnalyzersEnabled, bool staticAnalysisEnabled, 
-									  bool suppressionMechanismEnabled, bool px1007DocumentationDiagnosticEnabled)
+		public CodeAnalysisSettings(bool recursiveAnalysisEnabled, bool isvSpecificAnalyzersEnabled, bool staticAnalysisEnabled, 
+									bool suppressionMechanismEnabled, bool px1007DocumentationDiagnosticEnabled)
 		{
 			RecursiveAnalysisEnabled = recursiveAnalysisEnabled;
 			IsvSpecificAnalyzersEnabled = isvSpecificAnalyzersEnabled;
@@ -119,5 +119,31 @@ namespace Acuminator.Utilities
 		protected virtual CodeAnalysisSettings WithPX1007DocumentationDiagnosticEnabledValue(bool value) =>
 			new CodeAnalysisSettings(RecursiveAnalysisEnabled, IsvSpecificAnalyzersEnabled, StaticAnalysisEnabled, SuppressionMechanismEnabled,
 									 value);
+
+		public override bool Equals(object obj) =>
+			obj is CodeAnalysisSettings other && Equals(other);
+
+		public bool Equals(CodeAnalysisSettings other) =>
+			RecursiveAnalysisEnabled             == other?.RecursiveAnalysisEnabled &&
+			IsvSpecificAnalyzersEnabled          == other.IsvSpecificAnalyzersEnabled &&
+			StaticAnalysisEnabled                == other.StaticAnalysisEnabled &&
+			SuppressionMechanismEnabled          == other.SuppressionMechanismEnabled &&
+			PX1007DocumentationDiagnosticEnabled == other.PX1007DocumentationDiagnosticEnabled;
+
+		public override int GetHashCode()
+		{
+			int hash = 17;
+
+			unchecked
+			{
+				hash = 23 * hash + RecursiveAnalysisEnabled.GetHashCode();
+				hash = 23 * hash + IsvSpecificAnalyzersEnabled.GetHashCode();
+				hash = 23 * hash + StaticAnalysisEnabled.GetHashCode();
+				hash = 23 * hash + SuppressionMechanismEnabled.GetHashCode();
+				hash = 23 * hash + PX1007DocumentationDiagnosticEnabled.GetHashCode();
+			}
+
+			return hash;
+		}
 	}
 }
