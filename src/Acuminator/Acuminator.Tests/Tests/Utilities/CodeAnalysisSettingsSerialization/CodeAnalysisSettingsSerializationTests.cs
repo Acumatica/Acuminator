@@ -2,11 +2,9 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Acuminator.Tests.Helpers;
+
 using Acuminator.Utilities;
 using Acuminator.Utilities.Settings.OutOfProcess;
-using Acuminator.Utilities.Common;
 using Xunit;
 using FluentAssertions;
 
