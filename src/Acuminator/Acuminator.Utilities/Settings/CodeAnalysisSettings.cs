@@ -37,8 +37,8 @@ namespace Acuminator.Utilities
 		{
 		}
 
-		private CodeAnalysisSettings(bool recursiveAnalysisEnabled, bool isvSpecificAnalyzersEnabled, bool staticAnalysisEnabled, 
-									 bool suppressionMechanismEnabled, bool px1007DocumentationDiagnosticEnabled)
+		internal CodeAnalysisSettings(bool recursiveAnalysisEnabled, bool isvSpecificAnalyzersEnabled, bool staticAnalysisEnabled, 
+									  bool suppressionMechanismEnabled, bool px1007DocumentationDiagnosticEnabled)
 		{
 			RecursiveAnalysisEnabled = recursiveAnalysisEnabled;
 			IsvSpecificAnalyzersEnabled = isvSpecificAnalyzersEnabled;
