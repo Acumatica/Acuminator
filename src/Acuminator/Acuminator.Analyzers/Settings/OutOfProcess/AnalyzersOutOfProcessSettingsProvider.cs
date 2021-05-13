@@ -15,20 +15,43 @@ namespace Acuminator.Analyzers.Settings.OutOfProcess
 {
 	internal static class AnalyzersOutOfProcessSettingsProvider
 	{
+		private static readonly object _lock = new object();
+		private static volatile bool _isSharedMemoryOpened;
+
+		private static MemoryMappedFile _memoryMappedFile;
+
 		public static CodeAnalysisSettings GetCodeAnalysisSettings()
 		{
 			if (SharedVsSettings.IsInsideVsProcess)
 				return GlobalCodeAnalysisSettings.Instance;
 
-			var memoryMappedFile = OpenExistingMemoryMappedFile();
+			if (!_isSharedMemoryOpened)
+			{
+				lock (_lock)
+				{
+					if (!_isSharedMemoryOpened)
+					{
+						_memoryMappedFile = OpenExistingMemoryMappedFile();
+						_isSharedMemoryOpened = _memoryMappedFile != null;
+					}
+				}
+			}
 			
-			if (memoryMappedFile == null)
+			if (_memoryMappedFile == null)
 				return GlobalCodeAnalysisSettings.Instance;
 
-			using MemoryMappedViewStream stream = memoryMappedFile.CreateViewStream();
-			using var reader = new CodeAnalysisSettingsBinaryReader(stream);
-			CodeAnalysisSettings codeAnalysisSettings =	reader.ReadCodeAnalysisSettings();
-			return codeAnalysisSettings;
+			try
+			{
+				using MemoryMappedViewStream stream = _memoryMappedFile.CreateViewStream();
+				using var reader = new CodeAnalysisSettingsBinaryReader(stream);
+				CodeAnalysisSettings codeAnalysisSettings = reader.ReadCodeAnalysisSettings();
+
+				return codeAnalysisSettings;
+			}
+			catch (Exception)
+			{
+				return GlobalCodeAnalysisSettings.Instance;
+			}		
 		}
 
 		private static MemoryMappedFile OpenExistingMemoryMappedFile()
