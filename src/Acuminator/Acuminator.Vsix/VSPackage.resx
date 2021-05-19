@@ -118,10 +118,13 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="110" xml:space="preserve">
-    <value>Acuminator Code Analysis and Colorizer Tool</value>
+    <value>Acuminator Code Analysis and Developer Productivity Tool</value>
   </data>
   <data name="112" xml:space="preserve">
-    <value>Provides diagnostics and code fixes for common developer pitfalls related to Acumatica Framework; colorizes and formats BQL statements</value>
+    <value>Acuminator provides diagnostics and code fixes for common developer pitfalls related to Acumatica Framework. It also enhances developer productivity with: 
+	- Syntax highlighting of Acumatica code;
+	- Quick overview of Acumatica code structure and navigation between code parts with Code Map;  
+	- Format of BQL statements;</value>
   </data>
   <data name="201" xml:space="preserve">
     <value>Acuminator</value>

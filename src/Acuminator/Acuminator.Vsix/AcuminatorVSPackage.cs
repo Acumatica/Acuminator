@@ -7,8 +7,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Events;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -49,7 +47,7 @@ namespace Acuminator.Vsix
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-	[InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
+	[InstalledProductRegistration(productName: "#110", productDetails: "#112", productId: "2.3.1", IconResourceID = 400)] // Info on this package for Help/About
 	[ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
 	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.BackgroundLoad)]
 	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasSingleProject_string, PackageAutoLoadFlags.BackgroundLoad)]
@@ -57,8 +55,6 @@ namespace Acuminator.Vsix
 	[ProvideAutoLoad(VSConstants.UICONTEXT.Debugging_string, PackageAutoLoadFlags.BackgroundLoad)]
 	[ProvideMenuResource("Menus.ctmenu", 1)]
 	[Guid(AcuminatorVSPackage.PackageGuidString)]
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", 
-                     Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
 	[ProvideOptionPage(typeof(GeneralOptionsPage), SettingsCategoryName, GeneralOptionsPage.PageTitle,
 					   categoryResourceID: 201, pageNameResourceID: 202, supportsAutomation: true, SupportsProfiles = true)]
 	[ProvideToolWindow(typeof(CodeMapWindow), MultiInstances = false, Transient = true, Orientation = ToolWindowOrientation.Left,
@@ -86,6 +82,8 @@ namespace Acuminator.Vsix
         private const int INSTANCE_INITIALIZED = 1;
         private static int _instanceInitialized;
 
+		private OutOfProcessSettingsUpdater _outOfProcessSettingsUpdater;
+
         public static AcuminatorVSPackage Instance { get; private set; }
 
 		private Lazy<GeneralOptionsPage> _generalOptionsPage = 
@@ -94,6 +92,12 @@ namespace Acuminator.Vsix
 		public GeneralOptionsPage GeneralOptionsPage => _generalOptionsPage.Value;
 
 		internal AcuminatorLogger AcuminatorLogger
+		{
+			get;
+			private set;
+		}
+
+		internal VSVersion VSVersion
 		{
 			get;
 			private set;
@@ -155,7 +159,8 @@ namespace Acuminator.Vsix
 													   currentStep: 1, TotalLoadSteps);
 			progress?.Report(progressData);
 
-			InitializeCodeAnalysisSettings();
+			_vsWorkspace = await this.GetVSWorkspaceAsync();
+			await InitializeCodeAnalysisSettingsAsync();
 
 			progressData = new ServiceProgressData(VSIXResource.PackageLoad_WaitMessage, VSIXResource.PackageLoad_InitLogger,
 												   currentStep: 2, TotalLoadSteps);
@@ -170,7 +175,7 @@ namespace Acuminator.Vsix
 												   currentStep: 3, TotalLoadSteps);
 			progress?.Report(progressData);
 
-			await SubscribeOnEventsAsync();
+			SubscribeOnEvents();
 
 			cancellationToken.ThrowIfCancellationRequested();
 
@@ -186,16 +191,14 @@ namespace Acuminator.Vsix
 			progress?.Report(progressData);
 		}
 
-		private async System.Threading.Tasks.Task SubscribeOnEventsAsync()
+		private void SubscribeOnEvents()
 		{
-			await SubscribeOnWorkspaceEventsAsync();
+			SubscribeOnWorkspaceEvents();
 			SolutionEvents.OnAfterBackgroundSolutionLoadComplete += SolutionEvents_OnAfterBackgroundSolutionLoadComplete;
 		}
 
-		private async System.Threading.Tasks.Task SubscribeOnWorkspaceEventsAsync()
+		private void SubscribeOnWorkspaceEvents()
 		{
-			_vsWorkspace = await this.GetVSWorkspaceAsync();
-
 			if (_vsWorkspace != null)
 			{
 				_vsWorkspace.WorkspaceChanged += Workspace_WorkspaceChanged;
@@ -255,6 +258,7 @@ namespace Acuminator.Vsix
 		{
 			base.Dispose(disposing);
 			AcuminatorLogger?.Dispose();
+			_outOfProcessSettingsUpdater?.Dispose();
 
 			SolutionEvents.OnAfterBackgroundSolutionLoadComplete -= SolutionEvents_OnAfterBackgroundSolutionLoadComplete;
 
@@ -274,7 +278,10 @@ namespace Acuminator.Vsix
 				JoinableTaskFactory.Run(async () =>
 				{
 					await JoinableTaskFactory.SwitchToMainThreadAsync();
-					await SubscribeOnWorkspaceEventsAsync();
+
+					_vsWorkspace = await this.GetVSWorkspaceAsync();
+					SubscribeOnWorkspaceEvents();
+					InitializeOutOfProcessSettingsSharing();
 				});
 			}
 		}
@@ -331,10 +338,23 @@ namespace Acuminator.Vsix
 										   buildActionSetterFabric: () => new VsixBuildActionSetter());
         }
 
-        private void InitializeCodeAnalysisSettings()
+        private async System.Threading.Tasks.Task InitializeCodeAnalysisSettingsAsync()
 		{
 			var codeAnalysisSettings = new CodeAnalysisSettingsFromOptionsPage(GeneralOptionsPage);
 			GlobalCodeAnalysisSettings.InitializeGlobalSettingsOnce(codeAnalysisSettings);
+
+			VSVersion = await VSVersionProvider.GetVersionAsync(this);
+			SharedVsSettings.VSVersion = VSVersion;
+
+			InitializeOutOfProcessSettingsSharing();
+		}
+
+		private void InitializeOutOfProcessSettingsSharing()
+		{
+			if (_outOfProcessSettingsUpdater != null || !this.IsOutOfProcessEnabled(_vsWorkspace))
+				return;
+
+			_outOfProcessSettingsUpdater = new OutOfProcessSettingsUpdater(GeneralOptionsPage, GlobalCodeAnalysisSettings.Instance);
 		}
 
 		#region Package Settings         

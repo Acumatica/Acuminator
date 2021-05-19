@@ -94,7 +94,7 @@ namespace Acuminator.Vsix.Coloriser
 
                 if (refreshCacheResult != VSConstants.S_OK)
 				{
-                    logger?.LogMessage($"Error on the refresh of MEF Items cache in the registry during the theme change. The error code is {openCategoryResult}", Logger.LogMode.Error);
+                    logger?.LogMessage($"Error on the refresh of MEF Items cache in the registry during the theme change. The error code is {refreshCacheResult}", Logger.LogMode.Error);
                 }
 
                 _fontAndColorStorage.CloseCategory();

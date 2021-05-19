@@ -486,6 +486,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\ViewDeclarationOrder\Sources\ViewDeclarationOrderWithGraphInheritance_OneCache.cs" />
     <EmbeddedResource Include="Tests\Utilities\AttributeInformation\Sources\PropertyIsDBBoundFieldInheritedFromPXObjects.cs" />
     <Compile Include="Tests\StaticAnalysis\ViewDeclarationOrder\ViewDeclarationOrder_CheckForVersionTests.cs" />
+    <Compile Include="Tests\Utilities\CodeAnalysisSettingsSerialization\CodeAnalysisSettingsSerializationTests.cs" />
     <Compile Include="Verification\CodeRefactoringVerifier.cs" />
     <Compile Include="Verification\VerificationHelper.cs" />
     <EmbeddedResource Include="Tests\Utilities\NestedInvocationWalker\Sources\StaticMethod.cs" />

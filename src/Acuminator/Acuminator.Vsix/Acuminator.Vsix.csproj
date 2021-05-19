@@ -260,6 +260,9 @@
       <DependentUpon>VSIXResource.resx</DependentUpon>
     </Compile>
     <Compile Include="Settings\CodeAnalysisSettingsFromOptionsPage.cs" />
+    <Compile Include="Settings\OutOfProcess\OutOfProcessSettingValueProvider.cs" />
+    <Compile Include="Settings\OutOfProcess\OutOfProcessSettingsUpdater.cs" />
+    <Compile Include="Settings\ISettingsEvents.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\Icon.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\TreeNodeToImageSourceConverter.cs" />
     <Compile Include="Tool Windows\CodeMap\Tooltips\TreeIconTooltipConverter.cs" />
@@ -385,6 +388,8 @@
     <Compile Include="Settings\UI\GeneralOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Utils\Version\IVsAppId.cs" />
+    <Compile Include="Utils\Version\VSVersionProvider.cs" />
     <Compile Include="Utils\WPF\Collection\ExtendedObservableCollection.cs" />
     <Compile Include="Utils\Navigation\VSDocumentNavigation.cs" />
     <Compile Include="Utils\VSServicesExtensions.cs" />

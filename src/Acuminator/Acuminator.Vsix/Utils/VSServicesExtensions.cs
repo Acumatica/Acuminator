@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
+using System.Reflection;
 using System.Threading.Tasks;
+
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -14,12 +16,14 @@ using Microsoft.VisualStudio.Text.Outlining;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Shell.Settings;
+using Microsoft.VisualStudio.Settings;
+
 using EnvDTE80;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 
 using Shell = Microsoft.VisualStudio.Shell;
-
 
 namespace Acuminator.Vsix.Utilities
 {
