@@ -11,8 +11,8 @@ In Acuminator 2.3.2, the following enhancements have been implemented:
  
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
- - Due to the changes in the theme updataing mechanism, an error was thrown by Visual Studio in the Acuminator colorizer, and the Acuminator coloring became corrupted.
- - Due to the changes in the lastest Visual Studio updates, Acuminator custom settings were not enabled, and the Acuminator analyzers used default values.
+ - Due to the changes in the theme updating mechanism, an error was thrown by Visual Studio in the Acuminator colorizer, and the Acuminator coloring became corrupted.
+ - Due to the changes in the latest Visual Studio updates, Acuminator custom settings were not enabled, and the Acuminator analyzers used default values.
  - In the [PX1036](diagnostics/PX1036.md) diagnostic, foreign keys for different DACs that use the same set of DAC fields were incorrectly considered as duplicates.
  - Due to the changes in the latest Visual Studio updates, switching between themes was impossible. 
 
