@@ -73,6 +73,7 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1073](diagnostics/PX1073.md) | Exceptions cannot be thrown in the `RowPersisted` event handlers. | Error | Unavailable |
 | [PX1074](diagnostics/PX1074.md) | `PXSetupNotEnteredException` cannot be thrown in any event handlers except for the `RowSelected` event handlers. | Warning (ISV Level 1: Significant) | Unavailable |
 | [PX1075](diagnostics/PX1075.md) | `PXCache.RaiseExceptionHandling` cannot be invoked from the `FieldDefaulting`, `FieldSelecting`, `RowSelecting`, and `RowPersisted` event handlers. | Error | Unavailable |
+| [PX1076](diagnostics/PX1076.md) | This code calls Acumatica internal API marked with PXInternalUseOnlyAttribute which is not intended for public use | Warning | Unavailable |
 | [PX1080](diagnostics/PX1080.md) | Data view delegates should not start long-running operations. | Error | Unavailable |
 | [PX1081](diagnostics/PX1081.md) | Actions cannot be executed during the `PXGraph` initialization. | Error | Unavailable |
 | [PX1082](diagnostics/PX1082.md) | Actions cannot be executed within data view delegates. | Error | Unavailable |

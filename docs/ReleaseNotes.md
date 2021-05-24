@@ -1,6 +1,22 @@
 # Acuminator Release Notes
 This document provides information about fixes, enhancements, and key features that are available in Acuminator.
 
+## Acuminator 2.3.2
+Acuminator 2.3.2 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
+
+### Enhancements
+In Acuminator 2.3.2, the following enhancements have been implemented:
+ - The [PX1076](diagnostics/PX1076.md) diagnostic has been added to check for and warn a developer that their code uses Acumatica APIs marked with the PXInternalUseOnly attribute.
+ - The documentation for the [PX1046](diagnostics/PX1046.md) diagnostic was extended, the reasoning for the diagnostic is now provided.
+ 
+### Fixed Bugs
+In this version of Acuminator, the following bugs have been fixed:
+ - Due to the changes in Visual Studio 2019 (version 16.8.0), Acuminator custom settings were not enabled, and the Acuminator analyzers used default values. Acuminator custom code analysis settings specified by the user did not work with a new 64-bit out of process static code analysis introduced by Visual Studio 2019. When the out of process feature was enabled, only default settings were used.
+ - In the [PX1036](diagnostics/PX1036.md) diagnostic, foreign keys for different DACs that use the same set of DAC fields were incorrectly considered as duplicates.
+ - Due to the changes in Visual Studio 2019 (version 16.8.2), switching between themes was impossible. 
+ - Stability of Acuminator syntax highlighting has been improved.
+
+
 ## Acuminator 2.3.1
 Acuminator 2.3.1 includes the bug fixes and enhancements described in this section, as well as the features that have been implemented in previous versions.
 
