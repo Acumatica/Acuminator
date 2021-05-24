@@ -6,15 +6,15 @@ Acuminator 2.3.2 includes the bug fixes and enhancements described in this secti
 
 ### Enhancements
 In Acuminator 2.3.2, the following enhancements have been implemented:
- - The [PX1076](diagnostics/PX1076.md) diagnostic has been added to check for and warn a developer that the PXInternalUseOnly attribute is used in the customization code.
+ - The [PX1076](diagnostics/PX1076.md) diagnostic has been added to check for and warn a developer that that their code uses Acumatica APIs marked with the PXInternalUseOnly attribute.
  - The documentation for the [PX1046](diagnostics/PX1046.md) diagnostic was extended, the reasoning for the diagnostic is now provided.
  
 ### Fixed Bugs
 In this version of Acuminator, the following bugs have been fixed:
- - Due to the changes in the theme updating mechanism, an error was thrown by Visual Studio in the Acuminator colorizer, and the Acuminator coloring became corrupted.
- - Due to the changes in the latest Visual Studio updates, Acuminator custom settings were not enabled, and the Acuminator analyzers used default values.
+ - Due to the changes in the latest Visual Studio updates, Acuminator custom settings were not enabled, and the Acuminator analyzers used default values. Acuminator custom code analysis settings specified by the user did not work with a new 64-bit out of process static code analysis introduced by Visual Studio 2019. When the out of process feature was enabled, only default settings were used.
  - In the [PX1036](diagnostics/PX1036.md) diagnostic, foreign keys for different DACs that use the same set of DAC fields were incorrectly considered as duplicates.
  - Due to the changes in the latest Visual Studio updates, switching between themes was impossible. 
+ - Stability of Acuminator syntax highlighting has been improved.
 
 
 ## Acuminator 2.3.1
