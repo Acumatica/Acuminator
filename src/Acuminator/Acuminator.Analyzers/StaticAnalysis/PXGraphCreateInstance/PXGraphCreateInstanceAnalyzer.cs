@@ -1,10 +1,13 @@
-﻿using Acuminator.Utilities.DiagnosticSuppression;
+﻿using System.Collections.Immutable;
+
+using Acuminator.Utilities;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 {
@@ -61,6 +64,13 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance
 				return null;
 			}
 		}
+
+        public PXGraphCreateInstanceAnalyzer() : this(null)
+        { }
+
+        public PXGraphCreateInstanceAnalyzer(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings)
+        { }
+
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
 				Descriptors.PX1001_PXGraphCreateInstance,
