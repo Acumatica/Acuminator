@@ -1,11 +1,14 @@
-﻿using Acuminator.Utilities.DiagnosticSuppression;
+﻿using System.Collections.Immutable;
+using System.Linq;
+
+using Acuminator.Utilities;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
-using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
 {
@@ -14,9 +17,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.LongOperationDelegateClosures
     {
 		private const string SetProcessDelegateMethodName = "SetProcessDelegate";
 
-
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(Descriptors.PX1008_LongOperationDelegateClosures);
+
+		public LongOperationDelegateClosuresAnalyzer() : this(null)
+		{ }
+
+		public LongOperationDelegateClosuresAnalyzer(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings)
+		{ }
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
