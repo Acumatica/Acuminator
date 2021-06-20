@@ -1,11 +1,14 @@
-﻿using Acuminator.Utilities.DiagnosticSuppression;
+﻿using System.Collections.Immutable;
+using System.Linq;
+
+using Acuminator.Utilities;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
-using System.Linq;
 
 namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 {
@@ -65,7 +68,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 		}
 
 		private TypeSyntax GetBaseGraphTypeNode(SyntaxNodeAnalysisContext context, PXContext pxContext,
-			SeparatedSyntaxList<BaseTypeSyntax> baseTypes)
+												SeparatedSyntaxList<BaseTypeSyntax> baseTypes)
 		{
 			foreach (var typeSyntax in baseTypes)
 			{
@@ -82,19 +85,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 				}
 
 				var isGraphBaseType = baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraph) ||
-					baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraphDac) ||
-					baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraphDacField);
+									  baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraphDac) ||
+									  baseTypeSymbol.ConstructedFrom.Equals(pxContext.PXGraph.GenericTypeGraphDacField);
+
 				if (!isGraphBaseType)
 				{
 					continue;
 				}
 
-				return typeSyntax
-					.DescendantNodes()
-					.OfType<TypeArgumentListSyntax>()
-					.FirstOrDefault()
-					?.Arguments
-					.FirstOrDefault();
+				var typeArgumentsListNode = typeSyntax.DescendantNodes()
+													  .OfType<TypeArgumentListSyntax>()
+													  .FirstOrDefault();
+
+				return typeArgumentsListNode?.Arguments.FirstOrDefault();
 			}
 
 			return null;
