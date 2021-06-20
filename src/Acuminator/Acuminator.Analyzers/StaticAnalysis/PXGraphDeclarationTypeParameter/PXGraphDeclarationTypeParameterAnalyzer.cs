@@ -18,6 +18,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Descriptors.PX1093_GraphDeclarationViolation);
 
+		public PXGraphDeclarationTypeParameterAnalyzer() : this(null)
+		{ }
+
+		public PXGraphDeclarationTypeParameterAnalyzer(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings)
+		{ }
+
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{
 			compilationStartContext.RegisterSyntaxNodeAction(syntaxContext => AnalyzeGraphDeclarationTypeParameter(syntaxContext, pxContext), SyntaxKind.ClassDeclaration);
