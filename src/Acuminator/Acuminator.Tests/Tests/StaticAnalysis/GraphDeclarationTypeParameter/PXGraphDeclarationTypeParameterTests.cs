@@ -1,5 +1,4 @@
 ﻿using Acuminator.Analyzers.StaticAnalysis;
-using Acuminator.Analyzers.StaticAnalysis.DacUiAttributes;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
@@ -12,7 +11,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphDeclarationTypeParameter
 {
 	public class PXGraphDeclarationTypeParameterTests : CodeFixVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new PXGraphDeclarationTypeParameterAnalyzer();
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => 
+			new PXGraphDeclarationTypeParameterAnalyzer();
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new PXGraphDeclarationTypeParameterFix();
 
