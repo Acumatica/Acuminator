@@ -19,12 +19,6 @@ namespace Acuminator.Analyzers.StaticAnalysis
 {
 	public abstract class PXDiagnosticAnalyzer : DiagnosticAnalyzer
 	{
-		private const string VsixPackageType = "AcuminatorVSPackage";
-		private const string ForceLoadPackageAsync = "ForceLoadPackageAsync";
-
-		private static volatile bool _vsixPackageLoadWasDone;
-		private static object _acuminatorVsixPackageLoaderLock = new object();
-
 		private const string AcuminatorTestsName = "Acuminator.Tests";
 
 		private bool _settingsProvidedExternally;
@@ -55,7 +49,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		
 		public override void Initialize(AnalysisContext context)
 		{
-			EnsurePackageLoaded();
+			AcuminatorVsixPackageLoader.EnsurePackageLoaded();
 
 			if (!_settingsProvidedExternally)
 				CodeAnalysisSettings = AnalyzersOutOfProcessSettingsProvider.GetCodeAnalysisSettings(); //Initialize settings form global values after potential package load
@@ -107,62 +101,5 @@ namespace Acuminator.Analyzers.StaticAnalysis
 		}
 
 		internal abstract void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext);
-
-		/// <summary>
-		/// Ensures that package loaded. A hack - the only known way to force the package load due to completely random default loading of packages by Visual Studio 
-		/// </summary>
-		private static void EnsurePackageLoaded()
-		{
-			if (!_vsixPackageLoadWasDone)
-			{
-				lock (_acuminatorVsixPackageLoaderLock)
-				{
-					if (!_vsixPackageLoadWasDone)
-					{
-						_vsixPackageLoadWasDone = true;
-						SearchForVsixAndEnsureItIsLoadedPackageLoaded();
-					}
-				}
-			}
-		}
-
-		/// <summary>
-		/// Searches for the Visual Studio vsix package and if found (case when working via VSIX in Visual Studio IDE) ensures that package is loaded.
-		/// Calls special method <see cref="ForceLoadPackageAsync"/> to load package provided by AcuminatorVSPackage type.
-		/// </summary>
-		private static void SearchForVsixAndEnsureItIsLoadedPackageLoaded()
-		{	
-			var vsixAssembly = AppDomain.CurrentDomain.GetAssemblies()
-													  .FirstOrDefault(a => a.GetName().Name == SharedConstants.PackageName);
-			if (vsixAssembly == null)
-				return;
-
-			var acuminatorPackageType = vsixAssembly.GetExportedTypes().FirstOrDefault(t => t.Name == VsixPackageType);
-
-			if (acuminatorPackageType == null)
-				return;
-
-			var dummyServiceCaller = acuminatorPackageType.GetMethod(ForceLoadPackageAsync, BindingFlags.Static | BindingFlags.Public);
-
-			if (dummyServiceCaller == null)
-				return;
-
-			object loadTask = null;
-
-			try
-			{
-				loadTask = dummyServiceCaller.Invoke(null, Array.Empty<object>());
-			}
-			catch
-			{
-				return;
-			}
-			
-			if (loadTask is Task task)
-			{
-				const int defaultTimeoutSeconds = 20;
-				task.Wait(TimeSpan.FromSeconds(defaultTimeoutSeconds));
-			}
-		}
 	}
 }
