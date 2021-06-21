@@ -1,18 +1,24 @@
-﻿using Acuminator.Analyzers.StaticAnalysis;
-using Acuminator.Analyzers.StaticAnalysis.DacUiAttributes;
+﻿using System.Threading.Tasks;
+
+using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphDeclarationTypeParameter;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
+using Acuminator.Utilities;
+
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Threading.Tasks;
+
 using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphDeclarationTypeParameter
 {
 	public class PXGraphDeclarationTypeParameterTests : CodeFixVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new PXGraphDeclarationTypeParameterAnalyzer();
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => 
+			new PXGraphDeclarationTypeParameterAnalyzer(
+				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
+											.WithSuppressionMechanismDisabled());
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new PXGraphDeclarationTypeParameterFix();
 

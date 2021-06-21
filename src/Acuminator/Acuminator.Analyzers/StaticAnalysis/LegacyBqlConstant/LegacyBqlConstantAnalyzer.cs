@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
+
 using Acuminator.Analyzers.StaticAnalysis.LegacyBqlField;
+using Acuminator.Utilities;
+using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities.Roslyn.Semantic;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Acuminator.Utilities.DiagnosticSuppression;
 
 namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 {
@@ -17,6 +20,12 @@ namespace Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(Descriptors.PX1061_LegacyBqlConstant);
 
 		protected override bool ShouldAnalyze(PXContext pxContext) => pxContext.IsAcumatica2019R1;
+
+		public LegacyBqlConstantAnalyzer() : this(null)
+		{ }
+
+		public LegacyBqlConstantAnalyzer(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings)
+		{ }
 
 		internal override void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)
 		{

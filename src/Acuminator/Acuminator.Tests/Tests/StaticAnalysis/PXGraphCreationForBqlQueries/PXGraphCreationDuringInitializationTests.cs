@@ -1,17 +1,24 @@
 ﻿using System.Threading.Tasks;
+
 using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.PXGraphCreationForBqlQueries;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
+using Acuminator.Utilities;
+
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
+
 using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphCreationForBqlQueries
 {
     public class PXGraphCreationForBqlQueriesTests : CodeFixVerifier
     {
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new PXGraphCreationForBqlQueriesAnalyzer();
+        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => 
+			new PXGraphCreationForBqlQueriesAnalyzer(
+				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
+											.WithSuppressionMechanismDisabled());
 
 	    protected override CodeFixProvider GetCSharpCodeFixProvider() => new PXGraphCreationForBqlQueriesFix();
 

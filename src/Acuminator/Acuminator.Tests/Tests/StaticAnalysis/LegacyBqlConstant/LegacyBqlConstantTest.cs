@@ -1,10 +1,14 @@
-﻿using Acuminator.Analyzers.StaticAnalysis;
+﻿using System.Threading.Tasks;
+
+using Acuminator.Analyzers.StaticAnalysis;
 using Acuminator.Analyzers.StaticAnalysis.LegacyBqlConstant;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
-using Microsoft.CodeAnalysis;
+using Acuminator.Utilities;
+
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
+
 using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.LegacyBqlConstant
@@ -13,11 +17,11 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LegacyBqlConstant
 	{
 		[Theory]
 		[EmbeddedFileData("LegacyBqlConstantGood.cs")]
-		public void TestDiagnostic_Good(string actual) => VerifyCSharpDiagnostic(actual);
+		public Task TestDiagnostic_Good(string actual) => VerifyCSharpDiagnosticAsync(actual);
 
 		[Theory]
 		[EmbeddedFileData("LegacyBqlConstantBad.cs")]
-		public void TestDiagnostic_Bad(string actual) => VerifyCSharpDiagnostic(actual,
+		public Task TestDiagnostic_Bad(string actual) => VerifyCSharpDiagnosticAsync(actual,
 			Descriptors.PX1061_LegacyBqlConstant.CreateFor(10, 15, "LegacyBoolConst"),
 			Descriptors.PX1061_LegacyBqlConstant.CreateFor(15, 15, "LegacyByteConst"),
 			Descriptors.PX1061_LegacyBqlConstant.CreateFor(20, 15, "LegacyShortConst"),
@@ -32,9 +36,12 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.LegacyBqlConstant
 
 		[Theory]
 		[EmbeddedFileData("LegacyBqlConstantBad.cs", "LegacyBqlConstantBad_Expected.cs")]
-		public void TestCodeFix(string actual, string expected) => VerifyCSharpFix(actual, expected);
+		public Task TestCodeFix(string actual, string expected) => VerifyCSharpFixAsync(actual, expected);
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new LegacyBqlConstantAnalyzer();
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => 
+			new LegacyBqlConstantAnalyzer(
+				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
+											.WithSuppressionMechanismDisabled());
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new LegacyBqlConstantFix();
 	}

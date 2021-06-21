@@ -2,9 +2,12 @@
 using Acuminator.Analyzers.StaticAnalysis.PXGraphCreateInstance;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
+using Acuminator.Utilities;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
+
 using Xunit;
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphCreateInstance
@@ -13,8 +16,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PXGraphCreateInstance
     {
 	    protected override CodeFixProvider GetCSharpCodeFixProvider() => new PXGraphCreateInstanceFix();
 
-	    protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new PXGraphCreateInstanceAnalyzer();
-
+	    protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => 
+			new PXGraphCreateInstanceAnalyzer(CodeAnalysisSettings.Default
+																  .WithStaticAnalysisEnabled()
+																  .WithSuppressionMechanismDisabled());
 
 		[Theory]
         [EmbeddedFileData("Method.cs")] 

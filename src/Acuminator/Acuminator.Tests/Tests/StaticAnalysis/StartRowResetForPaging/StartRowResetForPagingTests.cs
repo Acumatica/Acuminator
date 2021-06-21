@@ -2,7 +2,7 @@
 using Acuminator.Analyzers.StaticAnalysis.StartRowResetForPaging;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
-using Microsoft.CodeAnalysis;
+using Acuminator.Utilities;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
@@ -11,7 +11,10 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.StartRowResetForPaging
 {
 	public class StartRowResetForPagingTests : CodeFixVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new StartRowResetForPagingAnalyzer();
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => 
+			new StartRowResetForPagingAnalyzer(
+				CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
+											.WithSuppressionMechanismDisabled());
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider() => new StartRowResetForPagingFix();
 

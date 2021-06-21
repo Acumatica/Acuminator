@@ -6,6 +6,7 @@ using Acuminator.Analyzers.StaticAnalysis.AnalyzersAggregator;
 using Acuminator.Analyzers.StaticAnalysis.CallingBaseActionHandler;
 using Acuminator.Analyzers.StaticAnalysis.CallingBaseDataViewDelegate;
 using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
+using Acuminator.Analyzers.StaticAnalysis.ConstructorInGraphExtension;
 using Acuminator.Analyzers.StaticAnalysis.DatabaseQueries;
 using Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature;
 using Acuminator.Analyzers.StaticAnalysis.InvalidViewUsageInProcessingDelegate;
@@ -36,6 +37,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
 
         public PXGraphAnalyzer() : this(null,
             new PXGraphCreationInGraphSemanticModelAnalyzer(),
+            new ConstructorInGraphExtensionAnalyzer(),
             new SavingChangesInGraphSemanticModelAnalyzer(),
             new ChangesInPXCacheDuringPXGraphInitializationAnalyzer(),
             new LongOperationInPXGraphDuringInitializationAnalyzer(),

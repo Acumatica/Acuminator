@@ -13,7 +13,9 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.NoPrimaryViewForPrimaryDac
 	public class NoPrimaryViewForPrimaryDacTests : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-			 new PXGraphAnalyzer(CodeAnalysisSettings.Default, 
+			 new PXGraphAnalyzer(CodeAnalysisSettings.Default
+													 .WithStaticAnalysisEnabled()
+													 .WithSuppressionMechanismDisabled(), 
 								 new NoPrimaryViewForPrimaryDacAnalyzer());
 			
 		[Theory]

@@ -281,7 +281,7 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphDeclarationTypeParameter\Sources\Graph_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphDeclarationTypeParameter\Sources\Graph_Good.cs" />
     <Compile Include="Tests\StaticAnalysis\GraphCreation\PXGraphCreationInGraphSemanticModelNonISVTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\GraphDeclarationTypeParameter\PXGraphTypeParameterTests.cs" />
+    <Compile Include="Tests\StaticAnalysis\GraphDeclarationTypeParameter\PXGraphDeclarationTypeParameterTests.cs" />
     <Compile Include="Tests\StaticAnalysis\InvalidViewUsageInProcessingDelegate\InvalidViewUsageInProcessingDelegateTests.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\InvalidViewUsageInProcessingDelegate\Sources\ParametersDelegate_Bad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\InvalidViewUsageInProcessingDelegate\Sources\ProcessDelegate_Bad.cs" />
