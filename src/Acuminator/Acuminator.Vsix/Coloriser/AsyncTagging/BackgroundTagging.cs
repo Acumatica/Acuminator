@@ -14,11 +14,11 @@ namespace Acuminator.Vsix.Coloriser
 {
     public class BackgroundTagging : IDisposable
     {
+        private static TaskScheduler _vsTaskScheduler;
+
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         public CancellationToken CancellationToken => _cancellationTokenSource.Token;
-
-        public bool IsCancellationRequested => _cancellationTokenSource.IsCancellationRequested;
 
         public Task TaggingTask { get; private set; }
 
@@ -39,17 +39,21 @@ namespace Acuminator.Vsix.Coloriser
             if (taggingTask == null)
                 return backgroundTagging;
 
-            backgroundTagging.TaggingTask = taggingTask.ContinueWith(task => AfterTaggingActionAsync(task, tagger),
+            // Use VS task scheduler from the VS synchronization context to schedule task continuation immediately to main thread
+            // No need for synchronziation because FromCurrentSynchronizationContext creates schedulers which wrap around the same synchronization context
+            // Therefore all schedulers should be identical and nothing wrong will happen if multiple threads create will create a scheduler
+            _vsTaskScheduler = _vsTaskScheduler ?? TaskScheduler.FromCurrentSynchronizationContext();
+            backgroundTagging.TaggingTask = taggingTask.ContinueWith(task => AfterTaggingActionAsync(tagger, backgroundTagging.CancellationToken),  //continuation should be on the UI thread
                                                                      backgroundTagging.CancellationToken,
                                                                      TaskContinuationOptions.OnlyOnRanToCompletion,
-                                                                     TaskScheduler.Default);
+                                                                     _vsTaskScheduler);
             return backgroundTagging;
         }
 
 
         public void CancelTagging()
         {
-            if (!IsTaskRunning() || IsCancellationRequested)
+            if (!IsTaskRunning() || CancellationToken.IsCancellationRequested)
                 return;
 
             _cancellationTokenSource.Cancel();
@@ -67,10 +71,13 @@ namespace Acuminator.Vsix.Coloriser
             _cancellationTokenSource.Dispose();
         }
 
-        private static async Task AfterTaggingActionAsync(Task taggingTask, PXColorizerTaggerBase tagger)
+        private static Task AfterTaggingActionAsync(PXColorizerTaggerBase tagger, CancellationToken cancellationToken)
         {
-            await Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            Shell.ThreadHelper.JoinableTaskFactory.Run(tagger.RaiseTagsChangedAsync);
-        }
+            if (cancellationToken.IsCancellationRequested)
+                return Task.FromCanceled(cancellationToken);
+
+            // We should be on UI thread here but the tagger.RaiseTagsChangedAsync switches to UI thread from non UI threads internally if needed         
+            return Shell.ThreadHelper.JoinableTaskFactory.RunAsync(tagger.RaiseTagsChangedAsync).Task;
+		}
     }
 }

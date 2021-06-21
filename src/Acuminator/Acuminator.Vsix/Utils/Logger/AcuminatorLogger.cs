@@ -139,7 +139,7 @@ namespace Acuminator.Vsix.Logger
 
 			if (logMode == LogMode.Error)
 			{
-				messageBuilder.AppendLine($"{AcuminatorVSPackage.PackageName.ToUpper()} CAUSED ERROR|");
+				messageBuilder.AppendLine($"{AcuminatorVSPackage.PackageName.ToUpper()} OBSERVED AN UNHANDLED VISUAL STUDIO ERROR|");
 			}
 
 			messageBuilder.AppendLine($"EXCEPTION TYPE: {exception.GetType().Name}")
