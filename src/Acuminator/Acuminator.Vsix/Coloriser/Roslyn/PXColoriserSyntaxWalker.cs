@@ -493,7 +493,7 @@ namespace Acuminator.Vsix.Coloriser
                     return;
 
                 _visitedNodesCounter = 0;
-				Shell.ThreadHelper.JoinableTaskFactory.Run(_tagger.RaiseTagsChangedAsync);
+				Shell.ThreadHelper.JoinableTaskFactory.RunAsync(_tagger.RaiseTagsChangedAsync);
             }
 
             /// <summary>
