@@ -261,9 +261,8 @@ The tests should be independent of default code analysis settings values. For al
   public class ThrowingExceptionsInEventHandlersTests : DiagnosticVerifier
   {
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-			new EventHandlerAnalyzer(CodeAnalysisSettings.Default
-										.WithStaticAnalysisEnabled()
-										.WithSuppressionMechanismDisabled(),
+			new EventHandlerAnalyzer(CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
+									     .WithSuppressionMechanismDisabled(),
 				new ThrowingExceptionsInEventHandlersAnalyzer());
 
 	//The rest of the code
