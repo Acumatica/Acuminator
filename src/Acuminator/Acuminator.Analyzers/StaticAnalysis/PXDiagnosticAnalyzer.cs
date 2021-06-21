@@ -14,7 +14,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 {
 	public abstract class PXDiagnosticAnalyzer : DiagnosticAnalyzer
 	{
-		private bool _settingsProvidedExternally;
+		private readonly bool _settingsProvidedExternally;
 
 		protected CodeAnalysisSettings CodeAnalysisSettings 
 		{ 
@@ -37,7 +37,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 			AcuminatorVsixPackageLoader.EnsurePackageLoaded();
 
 			if (!_settingsProvidedExternally)
-				CodeAnalysisSettings = AnalyzersOutOfProcessSettingsProvider.GetCodeAnalysisSettings(); //Initialize settings form global values after potential package load
+				CodeAnalysisSettings = AnalyzersOutOfProcessSettingsProvider.GetCodeAnalysisSettings(); //Initialize settings from global values after potential package load
 
 			if (!CodeAnalysisSettings.StaticAnalysisEnabled)
 				return;
