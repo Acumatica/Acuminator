@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Analyzers.Settings.OutOfProcess;
+using Acuminator.Analyzers.Utils;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;

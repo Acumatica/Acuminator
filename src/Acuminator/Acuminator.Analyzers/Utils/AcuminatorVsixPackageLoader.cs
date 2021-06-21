@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Acuminator.Analyzers
+namespace Acuminator.Analyzers.Utils
 {
 	/// <summary>
 	/// Acuminator VSIX package loader. Used by analyzers and refactorings to ensure that package will be loaded
