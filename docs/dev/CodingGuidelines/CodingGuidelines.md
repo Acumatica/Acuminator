@@ -185,90 +185,85 @@ Overall Acuminator analyzers can be divided into two categories:
 
 #### Independent Analyzers
 
-Independent analyzers are analyzers which can't be easily grouped together because the checks they perform apply to code elements which have little in common. This makes any usefull code or data sharing impossible. 
-For example, one independent analyzer checks everywhere in code that the number of arguments passed to a BQL query corresponds to the number of parameters declared by the query. Another independent analyzer checks that everywhere in code 
-graphs are not instantiated with constructor. These two analyzers have nothing to share with each other.
+Independent analyzers are analyzers which cannot be easily grouped together. This happens because the checks performed by independant analyzers are applied to code elements that have little in common. This feature makes any usefull code or data sharing impossible. 
+For example, one independent analyzer checks everywhere in code that the number of arguments passed to a BQL query corresponds to the number of parameters declared by the query. Another independent analyzer checks everywhere in code that graphs are not instantiated with a constructor. These two analyzers have nothing to share with each other.
 
-Independent analyzers should be derived form a `PXDiagnosticAnalyzer` class. This class provides base support for Acuminator infrastructure, unit tests and some general checks. It also intializes and supplies to derived analyzers following data:
-* Acuminator code analysis settings. It is a collection of flags: is code analysis enabled, is ISV mode enabled and etc. See `CodeAnalysisSettings` class declaration for more details.
-* `PXContext` object. It is a wrapper over Roslyn `Compilation` which contains Roslyn `ISymbol` symbols specific to Acumatica. If you need to add a new symbol you should add it to `PXContext` or to one of its collection of symbols.  
+Independent analyzers should be derived form the `PXDiagnosticAnalyzer` class. This class provides base support for the Acuminator infrastructure, unit tests, and some general checks. It also intializes derived analyzers and supplies them with the following data:
+* Acuminator code analysis settings. It is a collection of flags which indicates such features as whether the code analysis is enabled, or whether the ISV mode is enabled. See the `CodeAnalysisSettings` class declaration for more details.
+* The `PXContext` object. It is a wrapper over Roslyn `Compilation` which contains the Roslyn `ISymbol` symbols specific to Acumatica ERP. If you need to add a new symbol you should add it to `PXContext` or to one of its collection of symbols.  
 
-The `PXDiagnosticAnalyzer` class also provides several extensibility points. Here are the most useful ones:
-* `bool ShouldAnalyze(PXContext pxContext)` method is responsible for a general check if analyzer should run diagnostic. For example, if some check requires some Acumatica class or method to be defined you can make a check that a corresponding 
-Roslyn symbol is not null here. Never forget to call the base method in your overrides because it performs several very important general checks.
-* `void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)` abstract method is the place where you should put your analyzer's logic.
+The `PXDiagnosticAnalyzer` class also provides several extensibility points. The most usedfful extensibility points are the following:
+* The `bool ShouldAnalyze(PXContext pxContext)` method which is responsible for a general check if the analyzer should run a diagnostic. For example, if some check requires an Acumatica ERP class or method to be defined, you can make a check that a corresponding Roslyn symbol is not null in this method. Do not forget to call the base method in your overrides because the method performs several very important general checks.
+* The `void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)` abstract method. In this method, you should put your analyzer's logic.
 
-To support Acuminator unit tests infrastructure all independent analyzers must declare two constructors:
-* Constructor accepting `CodeAnalysisSettings` parameter
-* Default constructor which is chained to the constructor with `CodeAnalysisSettings` parameter.
+To support Acuminator unit tests infrastructure, all independent analyzers must declare the following two constructors:
+* A constructor which accepts the `CodeAnalysisSettings` parameter
+* A default constructor which is chained to the constructor with the `CodeAnalysisSettings` parameter
 
-Below is an example of correct constructor declaration:
+An example of correct constructor declaration is shown in the following code.
 ```C#
 public BqlParameterMismatchAnalyzer() : this(null){ }
 
 public BqlParameterMismatchAnalyzer(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings){ }
 ```
-The default constructor is required by the Roslyn infrastructure and the other constructor is a constructor for unit tests to allow them to specify custom code analysis settings.
+The default constructor is required by the Roslyn infrastructure. The other constructor is a constructor for unit tests whivh allows them to specify custom code analysis settings.
 
 #### Aggregated analyzers
 
-Usually new Acuminator diagnostic should be applied only to one of the following types of objects: 
+Usually, a new Acuminator diagnostic should be applied only to one of the following types of objects: 
 * Graphs and their extensions
 * DACs and their extensions
-* Event handlers in graphs, graph extensions, attributes and some specialized helper classes.
+* Event handlers in graphs, graph extensions, attributes, and some specialized helper classes
 
-In this case you don't need to implement an independent analyzer. You can create a more simple aggregated analyzer. Aggregated analyzers are Acuminator-specific analyzers which have one thing in common - a type of object they analyze. 
-This allows to reuse a lot of information by sharing it between such analyzers. Acuminator has 3 groups of aggregated analyzers:
+When a diagnostic can be applied to one of these objects, you do not need to implement an independent analyzer. You can create an aggregated analyzer which is simpler. Aggregated analyzers are Acuminator-specific analyzers which have one thing in common, that is, a type of object they analyze. 
+This allows aggregated analyzers from the same aggregation group to share and reuse a lot of common information about the analyzed object. Acuminator has the following groups of aggregated analyzers:
 * Graph analyzers
 * DAC analyzers
 * Event handler analyzers
 
-Aggregated analyzers are no different from a normal C# class from the Roslyn point of view. Acuminator is responsible for their execution and sharing of data between them. For each group of aggregated analyzers there is one "aggregator" analyzer:
-* `PXGraphAnalyzer` for the analysis of graphs and graph extensions. It tries to obtain a graph semantic model `PXGraphSemanticModel` for a graph/graph extension type. In case of success all aggregated graph analyzers are run and each analyzer
-receives the calculated graph semantic model.
-* `DacAnalyzersAggregator` for the analysis of DACs and DAC extensions. It tries to obtain a DAC semantic model `DacSemanticModel` for a DAC/DAC extension type. In case of success all aggregated DAC analyzers are run and each analyzer
-receives the calculated DAC semantic model.
-* `EventHandlerAnalyzer` for the analysis of event handlers. It works on methods and tries to obtain a type of graph event they represent. If the method represent some graph event then all aggregated event handler analyzers are run on the method
-and each analyzer receives the calculated type of graph event.
+From the Roslyn point of view, aggregated analyzers are not different from a normal C# class. Acuminator is responsible for their execution and sharing of data between them. For each group of aggregated analyzers there is one "aggregator" analyzer:
+* `PXGraphAnalyzer` for the analysis of graphs and graph extensions. It tries to obtain a graph semantic model (the `PXGraphSemanticModel` object) for a graph or graph extension type. In case of success, all aggregated graph analyzers are executed and each analyzer receives the calculated graph semantic model.
+* `DacAnalyzersAggregator` for the analysis of DACs and DAC extensions. It tries to obtain a DAC semantic model (the `DacSemanticModel` object) for a DAC or DAC extension type. In case of success, all aggregated DAC analyzers are executed and each analyzer receives the calculated DAC semantic model.
+* `EventHandlerAnalyzer` for the analysis of event handlers. It works with methods and tries to obtain a type of graph event a method represents. If the method represents some graph event, then all aggregated event handler analyzers are executed on the method and each analyzer receives the calculated type of graph event.
 
-Aggregator analyzers can be considered as independent analyzers. They are derived from `PXDiagnosticAnalyzer` and are normal Roslyn analyzers with a collection of aggregated analyzers responsible for independent subchecks.
-Their logic is very simple - aggregator collects from the code all information shared between aggregated analyzers, performs some shared checks on it and then concurrently calls all aggregated analyzers passing them the collected data.
+Aggregator analyzers can be considered to be independent analyzers. They are derived from `PXDiagnosticAnalyzer` and are normal Roslyn analyzers with a collection of aggregated analyzers responsible for independent subchecks.
+Their logic is very simple: An aggregator collects all information shared between aggregated analyzers from the code, performs some shared checks on the code, and then concurrently calls all aggregated analyzers passing them the collected data.
 Each aggregator stores a list of aggregated analyzers. All new aggregated analyzers must be added to the list of aggregated analyzers of the corresponding aggregator.
 
 The aggregated analyzers should be either derived from one of the following base types or implement a corresponding interface:
-* For graph analyzers the base type is `PXGraphAggregatedAnalyzerBase` and interface is `IPXGraphAnalyzer`
-* For DAC analyzers the base type is `DacAggregatedAnalyzerBase` and interface is `IDacAnalyzer`
-* For event handler analyzers the base type is `EventHandlerAggregatedAnalyzerBase` and interface is `IEventHandlerAnalyzer`
+* For graph analyzers, the base type is `PXGraphAggregatedAnalyzerBase`, and the interface is `IPXGraphAnalyzer`
+* For DAC analyzers, the base type is `DacAggregatedAnalyzerBase`, and the interface is `IDacAnalyzer`
+* For event handler analyzers, the base type is `EventHandlerAggregatedAnalyzerBase`, and the interface is `IEventHandlerAnalyzer`
 
-The base classes provide a default implementation for the corresponding interfaces. Usually this is enough but sometimes you may need to implement an analyzer which can be attributed to more than one group. In this case you can implement
-corresponding interfaces directly.
+The base classes provide a default implementation for the corresponding interfaces. Usually this is enough but sometimes you may need to implement an analyzer which can be attributed to more than one group. In this case you can implement corresponding interfaces directly.
 
-There are several extensibility points for aggregated analyzers:
-* `ShouldAnalyze` method which determines if the analyzer shoud be executed on the input object. This method accepts shared information passed to the analyzer as parameter which allows it to make more specialized checks.
-* `Analyze` method which accepts shared information passed to the analyzer. You should place your analyzer's logic here.
+Acuminator includes the following extensibility points for aggregated analyzers:
+* The `ShouldAnalyze` method which determines whether the analyzer shoud be executed on the input object. This method accepts shared information passed to the analyzer as parameter which allows it to make more specialized checks.
+* The `Analyze` method which accepts shared information passed to the analyzer. You should place your analyzer's logic in this method.
 
-Note that unlike independent analyzers aggregated analyzers don't need to declare any constructors.
+Note that unlike independent analyzers, aggregated analyzers do not need any constructors to be declared.
 
 ### Unit Tests
 
-Each analyzer, code fix, or refactoring should be covered with unit tests. To support Acuminator unit tests infrastructure all independent Acuminator analyzers and code refactorings must have two constructors:
-* Constructor accepting `CodeAnalysisSettings` parameter
-* Default constructor which is chained to the constructor with `CodeAnalysisSettings` parameter.
+Each analyzer, code fix, or refactoring should be covered with unit tests. To support Acuminator unit tests infrastructure, all independent Acuminator analyzers and code refactorings must have the following two constructors:
+* A constructor accepting the `CodeAnalysisSettings` parameter
+* A default constructor which is chained to the constructor with the `CodeAnalysisSettings` parameter
 
-All unit tests must use the constructor which accepts code analysis settings to create an analyzer or refactoring provider. Each unit test must specify explicitly all code analysis settings that could affect its result. 
-The tests should be independent of default code analysis settings values. For all unit tests you should specify that static code analysis is enabled and suppression mechanism is disabled. For example:
-  ```C#
-  public class ThrowingExceptionsInEventHandlersTests : DiagnosticVerifier
-  {
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-			new EventHandlerAnalyzer(CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
-									     .WithSuppressionMechanismDisabled(),
-				new ThrowingExceptionsInEventHandlersAnalyzer());
+All unit tests must use the constructor which accepts code analysis settings, to create an analyzer or refactoring provider. Each unit test must specify explicitly all code analysis settings that could affect its result. 
+The tests should be independent of default code analysis settings values. For all unit tests, you should specify that the static code analysis is enabled and suppression mechanism is disabled. Example of a unit test is shown in the following code.
 
-	//The rest of the code
-  }
-  ```
-  Specifying other settings is not required if they don't affect the test execution.
+```C#
+public class ThrowingExceptionsInEventHandlersTests : DiagnosticVerifier
+{
+	protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
+		new EventHandlerAnalyzer(CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
+									 .WithSuppressionMechanismDisabled(),
+			new ThrowingExceptionsInEventHandlersAnalyzer());
+
+//The rest of the code
+}
+```
+You do not need to specify other settings if they do not affect the test execution.
 
 ### Cancellation Support
 
