@@ -188,11 +188,11 @@ Overall Acuminator analyzers can be divided into two categories:
 Independent analyzers are analyzers which cannot be easily grouped together. This happens because the checks performed by independant analyzers are applied to code elements that have little in common. This feature makes any usefull code or data sharing impossible. 
 For example, one independent analyzer checks everywhere in code that the number of arguments passed to a BQL query corresponds to the number of parameters declared by the query. Another independent analyzer checks everywhere in code that graphs are not instantiated with a constructor. These two analyzers have nothing to share with each other.
 
-Independent analyzers should be derived form the `PXDiagnosticAnalyzer` class. This class provides base support for the Acuminator infrastructure, unit tests, and some general checks. It also intializes derived analyzers and supplies them with the following data:
+Independent analyzers should be derived from the `PXDiagnosticAnalyzer` class. This class provides base support for the Acuminator infrastructure, unit tests, and some general checks. It also intializes derived analyzers and supplies them with the following data:
 * Acuminator code analysis settings. It is a collection of flags which indicates such features as whether the code analysis is enabled, or whether the ISV mode is enabled. See the `CodeAnalysisSettings` class declaration for more details.
 * The `PXContext` object. It is a wrapper over Roslyn `Compilation` which contains the Roslyn `ISymbol` symbols specific to Acumatica ERP. If you need to add a new symbol you should add it to `PXContext` or to one of its collection of symbols.  
 
-The `PXDiagnosticAnalyzer` class also provides several extensibility points. The most usedfful extensibility points are the following:
+The `PXDiagnosticAnalyzer` class also provides several extensibility points. The most useful extensibility points are the following:
 * The `bool ShouldAnalyze(PXContext pxContext)` method which is responsible for a general check if the analyzer should run a diagnostic. For example, if some check requires an Acumatica ERP class or method to be defined, you can make a check that a corresponding Roslyn symbol is not null in this method. Do not forget to call the base method in your overrides because the method performs several very important general checks.
 * The `void AnalyzeCompilation(CompilationStartAnalysisContext compilationStartContext, PXContext pxContext)` abstract method. In this method, you should put your analyzer's logic.
 
@@ -206,7 +206,7 @@ public BqlParameterMismatchAnalyzer() : this(null){ }
 
 public BqlParameterMismatchAnalyzer(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings){ }
 ```
-The default constructor is required by the Roslyn infrastructure. The other constructor is a constructor for unit tests whivh allows them to specify custom code analysis settings.
+The default constructor is required by the Roslyn infrastructure. The other constructor is a constructor for unit tests which allows them to specify custom code analysis settings.
 
 #### Aggregated analyzers
 
