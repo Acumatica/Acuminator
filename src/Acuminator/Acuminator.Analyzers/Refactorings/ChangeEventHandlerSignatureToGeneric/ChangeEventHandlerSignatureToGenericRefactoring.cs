@@ -32,6 +32,12 @@ namespace Acuminator.Analyzers.Refactorings.ChangeEventHandlerSignatureToGeneric
 		private const string EventHandlerMethodName = "_";
 		private const string EventArgsCachePropertyName = "Cache"; // Events.[EventType]<T>.Cache
 
+		public ChangeEventHandlerSignatureToGenericRefactoring() : this(null)
+		{ }
+
+		public ChangeEventHandlerSignatureToGenericRefactoring(CodeAnalysisSettings codeAnalysisSettings) : base(codeAnalysisSettings)
+		{ }
+
 		protected override async Task ComputeRefactoringsAsync(CodeRefactoringContext context, SemanticModel semanticModel, PXContext pxContext)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
