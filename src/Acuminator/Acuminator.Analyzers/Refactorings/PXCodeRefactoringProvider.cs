@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Composition;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 using Acuminator.Analyzers.Settings.OutOfProcess;
@@ -13,9 +11,8 @@ using Acuminator.Utilities.Roslyn.Semantic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeRefactorings;
 
-namespace Acuminator.Analyzers.Refactorings.ChangeEventHandlerSignatureToGeneric
+namespace Acuminator.Analyzers.Refactorings
 {
-	[ExportCodeRefactoringProvider(LanguageNames.CSharp), Shared]
 	public abstract class PXCodeRefactoringProvider : CodeRefactoringProvider
 	{
 		private readonly bool _settingsProvidedExternally;
@@ -36,7 +33,7 @@ namespace Acuminator.Analyzers.Refactorings.ChangeEventHandlerSignatureToGeneric
 			_settingsProvidedExternally = codeAnalysisSettings != null;
 		}
 
-		public override async Task ComputeRefactoringsAsync(CodeRefactoringContext context)
+		public sealed override async Task ComputeRefactoringsAsync(CodeRefactoringContext context)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -48,19 +45,23 @@ namespace Acuminator.Analyzers.Refactorings.ChangeEventHandlerSignatureToGeneric
 			if (!CodeAnalysisSettings.StaticAnalysisEnabled)
 				return;
 
-			var semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
+			SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
+
+			if (semanticModel?.Compilation == null)
+				return;
+
 			var pxContext = new PXContext(semanticModel.Compilation, CodeAnalysisSettings);
 
-			if (ShouldAnalyze(pxContext))
+			if (ShouldAnalyze(semanticModel, pxContext))
 			{
-				Analyze(context, pxContext);
+				await ComputeRefactoringsAsync(context, semanticModel, pxContext).ConfigureAwait(false);
 			}
 		}
 
-		protected virtual bool ShouldAnalyze(PXContext pxContext) => pxContext.IsPlatformReferenced &&
-																	 pxContext.CodeAnalysisSettings.StaticAnalysisEnabled &&
-																	 !pxContext.Compilation.IsUnitTestAssembly();
+		protected virtual bool ShouldAnalyze(SemanticModel semanticModel, PXContext pxContext) => pxContext.IsPlatformReferenced &&
+																								  pxContext.CodeAnalysisSettings.StaticAnalysisEnabled &&
+																								 !pxContext.Compilation.IsUnitTestAssembly();
 
-		protected abstract void Analyze(CodeRefactoringContext context, PXContext pxContext);
+		protected abstract Task ComputeRefactoringsAsync(CodeRefactoringContext context, SemanticModel semanticModel, PXContext pxContext);
 	}
 }
