@@ -6,62 +6,61 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Acuminator.Utilities;
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn;
+using Acuminator.Utilities.Roslyn.Semantic;
+using Acuminator.Utilities.Roslyn.Semantic.Symbols;
+using Acuminator.Utilities.Roslyn.Syntax;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeRefactorings;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
-using Acuminator.Utilities;
-using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn;
-using Acuminator.Utilities.Roslyn.Semantic;
-using Acuminator.Utilities.Roslyn.Syntax;
+
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using Acuminator.Utilities.Roslyn.Semantic.Symbols;
 
 namespace Acuminator.Analyzers.Refactorings.ChangeEventHandlerSignatureToGeneric
 {
 	[ExportCodeRefactoringProvider(LanguageNames.CSharp), Shared]
-	public class ChangeEventHandlerSignatureToGenericRefactoring : CodeRefactoringProvider
+	public class ChangeEventHandlerSignatureToGenericRefactoring : PXCodeRefactoringProvider
 	{
 		private const string ArgsParameterName = "e";
 		private const string EventHandlerMethodName = "_";
 		private const string EventArgsCachePropertyName = "Cache"; // Events.[EventType]<T>.Cache
 
-		public override async Task ComputeRefactoringsAsync(CodeRefactoringContext context)
+		protected override async Task ComputeRefactoringsAsync(CodeRefactoringContext context, SemanticModel semanticModel, PXContext pxContext)
 		{
 			context.CancellationToken.ThrowIfCancellationRequested();
-
-			var semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
-			var pxContext = new PXContext(semanticModel.Compilation, GlobalCodeAnalysisSettings.Instance);
-
-			if (!pxContext.CodeAnalysisSettings.StaticAnalysisEnabled || !pxContext.IsPlatformReferenced)
-				return;
 
 			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			var methodNode = root?.FindNode(context.Span)?.GetDeclaringMethodNode();
 
-			if (methodNode != null)
+			if (methodNode == null)
+				return;
+
+			IMethodSymbol methodSymbol = semanticModel.GetDeclaredSymbol(methodNode, context.CancellationToken);
+
+			if (IsSuitableForRefactoring(methodSymbol, pxContext))
 			{
-				IMethodSymbol methodSymbol = semanticModel.GetDeclaredSymbol(methodNode, context.CancellationToken);
+				var eventHandlerInfo = methodSymbol.GetEventHandlerInfo(pxContext);
 
-				if (IsSuitableForRefactoring(methodSymbol, pxContext))
+				if (eventHandlerInfo.SignatureType == EventHandlerSignatureType.Default
+					&& methodSymbol.Name.EndsWith("_" + eventHandlerInfo.Type, StringComparison.Ordinal)
+					&& pxContext.Events.EventHandlerSignatureTypeMap.TryGetValue( // check that there is a corresponding generic event args symbol
+						new EventInfo(eventHandlerInfo.Type, EventHandlerSignatureType.Generic), out var genericArgsSymbol))
 				{
-					var eventHandlerInfo = methodSymbol.GetEventHandlerInfo(pxContext);
+					(string dacName, string fieldName) = ParseMethodName(methodSymbol.Name, eventHandlerInfo.Type);
 
-					if (eventHandlerInfo.SignatureType == EventHandlerSignatureType.Default
-					    && methodSymbol.Name.EndsWith("_" + eventHandlerInfo.Type, StringComparison.Ordinal)
-						&& pxContext.Events.EventHandlerSignatureTypeMap.TryGetValue( // check that there is a corresponding generic event args symbol
-							new EventInfo(eventHandlerInfo.Type, EventHandlerSignatureType.Generic), out var genericArgsSymbol))
-					{
-						(string dacName, string fieldName) = ParseMethodName(methodSymbol.Name, eventHandlerInfo.Type);
-
-						string title = nameof (Resources.EventHandlerSignatureCodeActionTitle).GetLocalized().ToString();
-						context.RegisterRefactoring(CodeAction.Create(title,
-							ct => ChangeSignatureAsync(context.Document, root, semanticModel, methodNode, methodSymbol,
-								eventHandlerInfo.Type, genericArgsSymbol, dacName, fieldName, ct), title));
-					}
+					string title = nameof(Resources.EventHandlerSignatureCodeActionTitle).GetLocalized().ToString();
+					CodeAction codeAction = 
+						CodeAction.Create(title, ct => ChangeSignatureAsync(context.Document, root, semanticModel, methodNode, methodSymbol,
+																			eventHandlerInfo.Type, genericArgsSymbol, dacName, fieldName, ct),
+										  title);
+					context.RegisterRefactoring(codeAction);
 				}
 			}
 		}
@@ -159,8 +158,10 @@ namespace Acuminator.Analyzers.Refactorings.ChangeEventHandlerSignatureToGeneric
 			{
 				string dacName = match.Groups[1].Value;
 				string fieldName = match.Groups[2].Success ? match.Groups[2].Value.TrimEnd('_') : null;
+
 				if (!String.IsNullOrEmpty(fieldName))
 					fieldName = Char.ToLowerInvariant(fieldName[0]) + fieldName.Substring(1, fieldName.Length - 1);
+
 				return (dacName, fieldName);
 			}
 
