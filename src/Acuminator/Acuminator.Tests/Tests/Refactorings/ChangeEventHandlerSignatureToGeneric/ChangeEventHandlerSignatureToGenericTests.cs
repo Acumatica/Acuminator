@@ -3,19 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using Acuminator.Analyzers.Refactorings.ChangeEventHandlerSignatureToGeneric;
 using Acuminator.Tests.Helpers;
 using Acuminator.Tests.Verification;
+using Acuminator.Utilities;
+
 using Microsoft.CodeAnalysis.CodeRefactorings;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
+
 using Xunit;
 
 namespace Acuminator.Tests.Tests.Refactorings.ChangeEventHandlerSignatureToGeneric
 {
 	public class ChangeEventHandlerSignatureToGenericTests : CodeRefactoringVerifier
 	{
-		protected override CodeRefactoringProvider GetCSharpCodeRefactoringProvider() => new ChangeEventHandlerSignatureToGenericRefactoring();
+		protected override CodeRefactoringProvider GetCSharpCodeRefactoringProvider() => 
+			new ChangeEventHandlerSignatureToGenericRefactoring(CodeAnalysisSettings.Default.WithStaticAnalysisEnabled()
+																							.WithSuppressionMechanismDisabled());
 
 		[Theory]
 		[EmbeddedFileData("CacheAttached.cs", "CacheAttached_Expected.cs")]
