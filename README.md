@@ -81,7 +81,7 @@ To build the solution, do the following:
 
 ## Documentation
 * [Diagnostics](docs/Summary.md#diagnostics)
-* [Code Refactoring](docs/Summary.md#refactorings)
+* [Code Refactoring](docs/Summary.md#code-refactoring)
 
 ## Developer Documentation
 * [Coding Guidelines](docs/dev/CodingGuidelines/CodingGuidelines.md)
