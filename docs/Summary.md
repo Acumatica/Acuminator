@@ -93,5 +93,5 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 
 ## Code Refactoring
 Acuminator suggest the following code refactoring:
- - [Replacement of the Standard Event Handler Signature with the Generic Signature](refactoring/GenericEventHandlerSignature.md) |
+ - [Replacement of the Standard Event Handler Signature with the Generic Signature](refactoring/GenericEventHandlerSignature.md)
 
