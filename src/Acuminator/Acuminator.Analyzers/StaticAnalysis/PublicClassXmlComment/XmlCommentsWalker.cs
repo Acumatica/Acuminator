@@ -45,6 +45,26 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			// stop visitor for going into methods to improve performance
 		}
 
+		public override void VisitStructDeclaration(StructDeclarationSyntax structDeclaration)
+		{
+			// stop visitor for going into structs to improve performance
+		}
+
+		public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax interfaceDeclaration)
+		{
+			// stop visitor for going into interfaces to improve performance
+		}
+
+		public override void VisitDelegateDeclaration(DelegateDeclarationSyntax delegateDeclaration)
+		{
+			// stop visitor for going into delegates to improve performance
+		}
+
+		public override void VisitEnumDeclaration(EnumDeclarationSyntax enumDeclaration)
+		{
+			// stop visitor for going into enums to improve performance
+		}
+
 		public override void VisitClassDeclaration(ClassDeclarationSyntax classDeclaration)
 		{
 			INamedTypeSymbol typeSymbol = _syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration, _syntaxContext.CancellationToken);
@@ -76,40 +96,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			CheckXmlCommentAndTheNeedToGoToChildrenNodes(propertyDeclaration, propertyDeclaration.Modifiers, 
 														 propertyDeclaration.Identifier, skipDiagnosticReporting: false);
-		}
-
-		public override void VisitStructDeclaration(StructDeclarationSyntax structDeclaration)
-		{
-			if (CheckXmlCommentAndTheNeedToGoToChildrenNodesForType(structDeclaration, skipDiagnosticReporting: false))
-			{
-				base.VisitStructDeclaration(structDeclaration);
-			}
-		}
-
-		public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax interfaceDeclaration)
-		{
-			if (CheckXmlCommentAndTheNeedToGoToChildrenNodesForType(interfaceDeclaration, skipDiagnosticReporting: false))
-			{
-				base.VisitInterfaceDeclaration(interfaceDeclaration);
-			}
-		}
-
-		public override void VisitDelegateDeclaration(DelegateDeclarationSyntax delegateDeclaration)
-		{
-			if (CheckXmlCommentAndTheNeedToGoToChildrenNodes(delegateDeclaration, delegateDeclaration.Modifiers,
-															 delegateDeclaration.Identifier, skipDiagnosticReporting: false))
-			{
-				base.VisitDelegateDeclaration(delegateDeclaration);
-			}
-		}
-
-		public override void VisitEnumDeclaration(EnumDeclarationSyntax enumDeclaration)
-		{
-			if (CheckXmlCommentAndTheNeedToGoToChildrenNodes(enumDeclaration, enumDeclaration.Modifiers, 
-															 enumDeclaration.Identifier, skipDiagnosticReporting: false))
-			{
-				base.VisitEnumDeclaration(enumDeclaration);
-			}
 		}
 
 		private bool CheckXmlCommentAndTheNeedToGoToChildrenNodesForType(TypeDeclarationSyntax typeDeclaration, bool skipDiagnosticReporting,
