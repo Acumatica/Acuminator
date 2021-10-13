@@ -95,8 +95,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (!isInsideDacOrDacExt || SystemDacFieldsNames.All.Contains(propertyDeclaration.Identifier.Text))
 				return;
 
-			CheckXmlCommentAndTheNeedToGoToChildrenNodes(propertyDeclaration, propertyDeclaration.Modifiers, 
-														 propertyDeclaration.Identifier, skipDiagnosticReporting: false);
+			ReportMissingXmlCommentsForTypeMemberDeclaration(propertyDeclaration, propertyDeclaration.Modifiers, 
+															 propertyDeclaration.Identifier, doNotReportDiagnostic: false, out _);
 		}
 
 		private void ReportMissingXmlCommentsForTypeDeclaration(TypeDeclarationSyntax typeDeclaration, bool doNotReportDiagnostic, out bool checkChildNodes, 
