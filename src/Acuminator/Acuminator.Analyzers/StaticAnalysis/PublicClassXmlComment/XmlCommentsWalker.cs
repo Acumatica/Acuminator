@@ -68,16 +68,15 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 		public override void VisitClassDeclaration(ClassDeclarationSyntax classDeclaration)
 		{
 			INamedTypeSymbol typeSymbol = _syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration, _syntaxContext.CancellationToken);
-			bool isDacField = typeSymbol?.IsDacField(_pxContext) ?? false;
-			ReportMissingXmlCommentsForTypeDeclaration(classDeclaration, doNotReportDiagnostic: isDacField, out bool checkChildNodes, typeSymbol);
+			bool isDacOrDacExtension = typeSymbol?.IsDacOrExtension(_pxContext) ?? false;
+			AnalyzeTypeDeclarationForMissingXmlComments(classDeclaration, reportDiagnostic: isDacOrDacExtension, out bool checkChildNodes, typeSymbol);
 
 			if (!checkChildNodes)
 				return;
 			
 			try
 			{
-				bool isInsideDacOrDacExt = typeSymbol?.IsDacOrExtension(_pxContext) ?? false;
-				_isInsideDacContextStack.Push(isInsideDacOrDacExt);
+				_isInsideDacContextStack.Push(isDacOrDacExtension);
 				base.VisitClassDeclaration(classDeclaration);
 			}
 			finally
@@ -95,19 +94,19 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (!isInsideDacOrDacExt || SystemDacFieldsNames.All.Contains(propertyDeclaration.Identifier.Text))
 				return;
 
-			ReportMissingXmlCommentsForTypeMemberDeclaration(propertyDeclaration, propertyDeclaration.Modifiers, 
-															 propertyDeclaration.Identifier, doNotReportDiagnostic: false, out _);
+			AnalyzeTypeMemberDeclarationForMissingXmlComments(propertyDeclaration, propertyDeclaration.Modifiers, 
+															 propertyDeclaration.Identifier, reportDiagnostic: true, out _);
 		}
 
-		private void ReportMissingXmlCommentsForTypeDeclaration(TypeDeclarationSyntax typeDeclaration, bool doNotReportDiagnostic, out bool checkChildNodes, 
-																INamedTypeSymbol typeSymbol = null)
+		private void AnalyzeTypeDeclarationForMissingXmlComments(TypeDeclarationSyntax typeDeclaration, bool reportDiagnostic, out bool checkChildNodes, 
+																 INamedTypeSymbol typeSymbol = null)
 		{
 			_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
 			if (!typeDeclaration.IsPartial())
 			{
-				ReportMissingXmlCommentsForTypeMemberDeclaration(typeDeclaration, typeDeclaration.Modifiers, typeDeclaration.Identifier, 
-																 doNotReportDiagnostic, out checkChildNodes);
+				AnalyzeTypeMemberDeclarationForMissingXmlComments(typeDeclaration, typeDeclaration.Modifiers, typeDeclaration.Identifier,
+																 reportDiagnostic, out checkChildNodes);
 				return;
 			}
 
@@ -115,8 +114,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 
 			if (typeSymbol == null || typeSymbol.DeclaringSyntaxReferences.Length < 2)      //Case when type marked as partial but has only one declaration
 			{
-				ReportMissingXmlCommentsForTypeMemberDeclaration(typeDeclaration, typeDeclaration.Modifiers, typeDeclaration.Identifier,
-																 doNotReportDiagnostic, out checkChildNodes);
+				AnalyzeTypeMemberDeclarationForMissingXmlComments(typeDeclaration, typeDeclaration.Modifiers, typeDeclaration.Identifier,
+																  reportDiagnostic, out checkChildNodes);
 				return;
 			}
 			else if (typeSymbol.DeclaredAccessibility != Accessibility.Public || CheckIfTypeAttributesDisableDiagnostic(typeSymbol))
@@ -147,7 +146,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 					return;
 			}
 
-			if (!doNotReportDiagnostic)
+			if (reportDiagnostic)
 			{
 				ReportDiagnostic(_syntaxContext, typeDeclaration, typeDeclaration.Identifier.GetLocation(), thisDeclarationParseResult);
 			}
@@ -161,8 +160,8 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			return CheckAttributeNames(shortAttributeNames);
 		}
 
-		private void ReportMissingXmlCommentsForTypeMemberDeclaration(MemberDeclarationSyntax memberDeclaration, SyntaxTokenList modifiers,
-																	  SyntaxToken identifier, bool doNotReportDiagnostic, out bool checkChildNodes)
+		private void AnalyzeTypeMemberDeclarationForMissingXmlComments(MemberDeclarationSyntax memberDeclaration, SyntaxTokenList modifiers,
+																	   SyntaxToken identifier, bool reportDiagnostic, out bool checkChildNodes)
 		{
 			_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
@@ -179,7 +178,7 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (commentsAreValid)
 				return;
 
-			if (!doNotReportDiagnostic)
+			if (reportDiagnostic)
 			{
 				ReportDiagnostic(_syntaxContext, memberDeclaration, identifier.GetLocation(), thisDeclarationParseResult);
 			}
