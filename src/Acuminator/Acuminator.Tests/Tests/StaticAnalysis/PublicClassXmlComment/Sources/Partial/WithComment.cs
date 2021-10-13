@@ -10,7 +10,7 @@ namespace PX.Objects
 	/// <summary>
 	/// A helper.
 	/// </summary>
-	public partial class Helper
+	public partial class Helper : IBqlTable
 	{
 		
 	}
