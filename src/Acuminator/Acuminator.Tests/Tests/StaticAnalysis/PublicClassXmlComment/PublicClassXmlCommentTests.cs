@@ -63,20 +63,16 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
-		[EmbeddedFileData("Excluded.cs")]
+		[EmbeddedFileData("DAC_Excluded.cs")]
 		public async Task Excluded_PublicClass_WithoutDescription_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source);
 
 		[Theory]
-		[EmbeddedFileData("ExcludedWithNested.cs")]
+		[EmbeddedFileData("DAC_ExcludedWithNested.cs")]
 		public async Task ExcludedWithNested_PublicClasses_WithoutDescription_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(27, 15, messageArgs: nameof(Resources.PX1007Class).GetLocalized()),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(35, 16, messageArgs: nameof(Resources.PX1007Class).GetLocalized()),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(37, 20, messageArgs: nameof(Resources.PX1007Interface).GetLocalized()),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(42, 17, messageArgs: nameof(Resources.PX1007Struct).GetLocalized()),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(45, 15, messageArgs: nameof(Resources.PX1007Enum).GetLocalized()),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(47, 24, messageArgs: nameof(Resources.PX1007Delegate).GetLocalized()));
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(18, 15, messageArgs: nameof(Resources.PX1007Class).GetLocalized()),
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(27, 16, messageArgs: nameof(Resources.PX1007Class).GetLocalized()));
 
 		[Theory]
 		[EmbeddedFileData("WithoutDescription.cs", "WithoutDescription_AddDescription.cs")]
