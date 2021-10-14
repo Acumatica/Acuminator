@@ -65,7 +65,8 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		public async Task ExcludedWithNested_PublicClasses_WithoutDescription_DoesntReportDiagnostic(string source) =>
 			await VerifyCSharpDiagnosticAsync(source,
 				Descriptors.PX1007_PublicClassXmlComment.CreateFor(18, 15, messageArgs: nameof(Resources.PX1007Class).GetLocalized()),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(27, 16, messageArgs: nameof(Resources.PX1007Class).GetLocalized()));
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(27, 16, messageArgs: nameof(Resources.PX1007Class).GetLocalized()),
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(39, 16, messageArgs: nameof(Resources.PX1007Class).GetLocalized()));
 
 		[Theory]
 		[EmbeddedFileData("WithoutDescription.cs", "WithoutDescription_AddDescription.cs")]

@@ -15,7 +15,19 @@ namespace PX.Objects
 		{ } 
 	}
 
-	public class Public : IBqlTable  //Should show
+	public class PublicDac : IBqlTable  //Should show
+	{
+		/// <exclude/>
+		public class ExcludedNested : IBqlTable
+		{
+			public class NestedNested : IBqlTable  //Should not show
+			{ }
+		}
+
+		public class Nested : IBqlTable { } //Should  show
+	}
+
+	public class PublicGraph : PXGraph<PublicGraph>  //Should not show
 	{
 		/// <exclude/>
 		public class ExcludedNested : IBqlTable
