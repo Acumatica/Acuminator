@@ -4,24 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using PX.Data;
+
 namespace PX.Objects
 {
 	/// <exclude/>
-	public class WithoutDescription
-	{
-	}
-
-	/// <exclude/>
-	public delegate void ActionWithoutDescription();
-
-	/// <exclude/>
-	public struct StructWithoutDescription { }
-
-	/// <exclude/>
-	public interface InterfaceWithoutDescription { }
-
-	/// <exclude/>
-	public enum EnumWithoutDescription
+	public class WithoutDescription : IBqlTable
 	{
 	}
 }
