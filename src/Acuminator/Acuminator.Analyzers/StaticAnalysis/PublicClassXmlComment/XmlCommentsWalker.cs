@@ -45,18 +45,38 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			// stop visitor for going into methods to improve performance
 		}
 
+		public override void VisitStructDeclaration(StructDeclarationSyntax structDeclaration)
+		{
+			// stop visitor for going into structs to improve performance
+		}
+
+		public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax interfaceDeclaration)
+		{
+			// stop visitor for going into interfaces to improve performance
+		}
+
+		public override void VisitDelegateDeclaration(DelegateDeclarationSyntax delegateDeclaration)
+		{
+			// stop visitor for going into delegates to improve performance
+		}
+
+		public override void VisitEnumDeclaration(EnumDeclarationSyntax enumDeclaration)
+		{
+			// stop visitor for going into enums to improve performance
+		}
+
 		public override void VisitClassDeclaration(ClassDeclarationSyntax classDeclaration)
 		{
 			INamedTypeSymbol typeSymbol = _syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration, _syntaxContext.CancellationToken);
-			bool isDacField = typeSymbol?.IsDacField(_pxContext) ?? false;
+			bool isDacOrDacExtension = typeSymbol?.IsDacOrExtension(_pxContext) ?? false;
+			AnalyzeTypeDeclarationForMissingXmlComments(classDeclaration, reportDiagnostic: isDacOrDacExtension, out bool checkChildNodes, typeSymbol);
 
-			if (!CheckXmlCommentAndTheNeedToGoToChildrenNodesForType(classDeclaration, skipDiagnosticReporting: isDacField, typeSymbol))
+			if (!checkChildNodes)
 				return;
 			
 			try
 			{
-				bool isInsideDacOrDacExt = typeSymbol?.IsDacOrExtension(_pxContext) ?? false;
-				_isInsideDacContextStack.Push(isInsideDacOrDacExt);
+				_isInsideDacContextStack.Push(isDacOrDacExtension);
 				base.VisitClassDeclaration(classDeclaration);
 			}
 			finally
@@ -74,72 +94,43 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			if (!isInsideDacOrDacExt || SystemDacFieldsNames.All.Contains(propertyDeclaration.Identifier.Text))
 				return;
 
-			CheckXmlCommentAndTheNeedToGoToChildrenNodes(propertyDeclaration, propertyDeclaration.Modifiers, 
-														 propertyDeclaration.Identifier, skipDiagnosticReporting: false);
+			AnalyzeTypeMemberDeclarationForMissingXmlComments(propertyDeclaration, propertyDeclaration.Modifiers, 
+															 propertyDeclaration.Identifier, reportDiagnostic: true, out _);
 		}
 
-		public override void VisitStructDeclaration(StructDeclarationSyntax structDeclaration)
-		{
-			if (CheckXmlCommentAndTheNeedToGoToChildrenNodesForType(structDeclaration, skipDiagnosticReporting: false))
-			{
-				base.VisitStructDeclaration(structDeclaration);
-			}
-		}
-
-		public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax interfaceDeclaration)
-		{
-			if (CheckXmlCommentAndTheNeedToGoToChildrenNodesForType(interfaceDeclaration, skipDiagnosticReporting: false))
-			{
-				base.VisitInterfaceDeclaration(interfaceDeclaration);
-			}
-		}
-
-		public override void VisitDelegateDeclaration(DelegateDeclarationSyntax delegateDeclaration)
-		{
-			if (CheckXmlCommentAndTheNeedToGoToChildrenNodes(delegateDeclaration, delegateDeclaration.Modifiers,
-															 delegateDeclaration.Identifier, skipDiagnosticReporting: false))
-			{
-				base.VisitDelegateDeclaration(delegateDeclaration);
-			}
-		}
-
-		public override void VisitEnumDeclaration(EnumDeclarationSyntax enumDeclaration)
-		{
-			if (CheckXmlCommentAndTheNeedToGoToChildrenNodes(enumDeclaration, enumDeclaration.Modifiers, 
-															 enumDeclaration.Identifier, skipDiagnosticReporting: false))
-			{
-				base.VisitEnumDeclaration(enumDeclaration);
-			}
-		}
-
-		private bool CheckXmlCommentAndTheNeedToGoToChildrenNodesForType(TypeDeclarationSyntax typeDeclaration, bool skipDiagnosticReporting,
-																		 INamedTypeSymbol typeSymbol = null)
+		private void AnalyzeTypeDeclarationForMissingXmlComments(TypeDeclarationSyntax typeDeclaration, bool reportDiagnostic, out bool checkChildNodes, 
+																 INamedTypeSymbol typeSymbol = null)
 		{
 			_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
 			if (!typeDeclaration.IsPartial())
 			{
-				return CheckXmlCommentAndTheNeedToGoToChildrenNodes(typeDeclaration, typeDeclaration.Modifiers, 
-																	typeDeclaration.Identifier, skipDiagnosticReporting);
+				AnalyzeTypeMemberDeclarationForMissingXmlComments(typeDeclaration, typeDeclaration.Modifiers, typeDeclaration.Identifier,
+																 reportDiagnostic, out checkChildNodes);
+				return;
 			}
 
 			typeSymbol = typeSymbol ?? _syntaxContext.SemanticModel.GetDeclaredSymbol(typeDeclaration, _syntaxContext.CancellationToken);
 
 			if (typeSymbol == null || typeSymbol.DeclaringSyntaxReferences.Length < 2)      //Case when type marked as partial but has only one declaration
 			{
-				return CheckXmlCommentAndTheNeedToGoToChildrenNodes(typeDeclaration, typeDeclaration.Modifiers, 
-																	typeDeclaration.Identifier, skipDiagnosticReporting);
+				AnalyzeTypeMemberDeclarationForMissingXmlComments(typeDeclaration, typeDeclaration.Modifiers, typeDeclaration.Identifier,
+																  reportDiagnostic, out checkChildNodes);
+				return;
 			}
 			else if (typeSymbol.DeclaredAccessibility != Accessibility.Public || CheckIfTypeAttributesDisableDiagnostic(typeSymbol))
-				return false;
+			{
+				checkChildNodes = false;
+				return;
+			}
 
 			XmlCommentParseResult thisDeclarationParseResult = AnalyzeDeclarationXmlComments(typeDeclaration);
+			bool commentsAreValid;
+			(commentsAreValid, checkChildNodes) = AnalyzeCommentParseResult(thisDeclarationParseResult);
 
-			if (thisDeclarationParseResult == XmlCommentParseResult.HasExcludeTag)
-				return false;
-			else if (thisDeclarationParseResult == XmlCommentParseResult.HasNonEmptySummaryTag)
-				return true;
-			
+			if (commentsAreValid)
+				return;
+
 			foreach (SyntaxReference reference in typeSymbol.DeclaringSyntaxReferences)
 			{
 				if (reference.SyntaxTree == typeDeclaration.SyntaxTree ||
@@ -149,19 +140,16 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				}
 
 				XmlCommentParseResult parseResult = AnalyzeDeclarationXmlComments(partialTypeDeclaration);
+				(commentsAreValid, checkChildNodes) = AnalyzeCommentParseResult(parseResult);
 
-				if (parseResult == XmlCommentParseResult.HasExcludeTag)
-					return false;
-				else if (parseResult == XmlCommentParseResult.HasNonEmptySummaryTag)
-					return true;
+				if (commentsAreValid)
+					return;
 			}
 
-			if (!skipDiagnosticReporting)
+			if (reportDiagnostic)
 			{
 				ReportDiagnostic(_syntaxContext, typeDeclaration, typeDeclaration.Identifier.GetLocation(), thisDeclarationParseResult);
 			}
-
-			return true;
 		}
 
 		private bool CheckIfTypeAttributesDisableDiagnostic(INamedTypeSymbol typeSymbol)
@@ -172,27 +160,28 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 			return CheckAttributeNames(shortAttributeNames);
 		}
 
-		private bool CheckXmlCommentAndTheNeedToGoToChildrenNodes(MemberDeclarationSyntax memberDeclaration, SyntaxTokenList modifiers,
-																  SyntaxToken identifier, bool skipDiagnosticReporting)
+		private void AnalyzeTypeMemberDeclarationForMissingXmlComments(MemberDeclarationSyntax memberDeclaration, SyntaxTokenList modifiers,
+																	   SyntaxToken identifier, bool reportDiagnostic, out bool checkChildNodes)
 		{
 			_syntaxContext.CancellationToken.ThrowIfCancellationRequested();
 
 			if (!modifiers.Any(SyntaxKind.PublicKeyword) || CheckIfMemberAttributesDisableDiagnostic(memberDeclaration))
-				return false;
+			{
+				checkChildNodes = false;
+				return;
+			}
 
 			XmlCommentParseResult thisDeclarationParseResult = AnalyzeDeclarationXmlComments(memberDeclaration);
+			bool commentsAreValid;
+			(commentsAreValid, checkChildNodes) = AnalyzeCommentParseResult(thisDeclarationParseResult);
 
-			if (thisDeclarationParseResult == XmlCommentParseResult.HasExcludeTag)
-				return false;
-			else if (thisDeclarationParseResult == XmlCommentParseResult.HasNonEmptySummaryTag)
-				return true;
+			if (commentsAreValid)
+				return;
 
-			if (!skipDiagnosticReporting)
+			if (reportDiagnostic)
 			{
 				ReportDiagnostic(_syntaxContext, memberDeclaration, identifier.GetLocation(), thisDeclarationParseResult);
 			}
-
-			return true;
 		}
 
 		private XmlCommentParseResult AnalyzeDeclarationXmlComments(MemberDeclarationSyntax memberDeclaration)
@@ -254,6 +243,14 @@ namespace Acuminator.Analyzers.StaticAnalysis.PublicClassXmlComment
 				return false;
 			}
 		}
+
+		private (bool CommentsAreValid, bool CheckChildNodes) AnalyzeCommentParseResult(XmlCommentParseResult parseResult) =>
+			parseResult switch
+			{
+				XmlCommentParseResult.HasExcludeTag => (CommentsAreValid: true, CheckChildNodes: false),
+				XmlCommentParseResult.HasNonEmptySummaryTag => (CommentsAreValid: true, CheckChildNodes: true),
+				_ => (CommentsAreValid: false, CheckChildNodes: true),
+			};
 
 		private bool CheckIfMemberAttributesDisableDiagnostic(MemberDeclarationSyntax member)
 		{

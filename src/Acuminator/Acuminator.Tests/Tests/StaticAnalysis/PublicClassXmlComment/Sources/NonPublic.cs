@@ -4,23 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using PX.Data;
+
 namespace PX.Objects
 {
-	internal class NonPublic
-	{
-	}
-
-	internal interface INonPublic
-	{
-	}
-
-	internal struct NonPublicStruct
-	{
-	}
-
-	internal delegate void NonPublicAtion();
-
-	internal enum NonPublicEnum
+	internal class NonPublic : IBqlTable
 	{
 	}
 }
