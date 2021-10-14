@@ -29,33 +29,21 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.PublicClassXmlComment
 		public async Task PublicClass_WithoutDescription(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(9, 15, messageArgs: nameof(Resources.PX1007Class).GetLocalized()),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(13, 23, messageArgs: nameof(Resources.PX1007Delegate).GetLocalized()),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(15, 16, messageArgs: nameof(Resources.PX1007Struct).GetLocalized()),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(17, 19, messageArgs: nameof(Resources.PX1007Interface).GetLocalized()),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(19, 14, messageArgs: nameof(Resources.PX1007Enum).GetLocalized()));
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(11, 15, messageArgs: nameof(Resources.PX1007Class).GetLocalized()));
 
 		[Theory]
 		[EmbeddedFileData("WithoutSummary.cs")]
 		public async Task PublicClass_WithoutSummary(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(10, 15, messageArgs: nameof(Resources.PX1007Class).GetLocalized()),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(15, 23, messageArgs: nameof(Resources.PX1007Delegate).GetLocalized()),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(18, 16, messageArgs: nameof(Resources.PX1007Struct).GetLocalized()),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(21, 19, messageArgs: nameof(Resources.PX1007Interface).GetLocalized()),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(24, 14, messageArgs: nameof(Resources.PX1007Enum).GetLocalized()));
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(12, 15, messageArgs: nameof(Resources.PX1007Class).GetLocalized()));
 
 		[Theory]
 		[EmbeddedFileData("WithEmptySummary.cs")]
 		public async Task PublicClass_WithEmptySummary(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(12, 15, messageArgs: nameof(Resources.PX1007Class).GetLocalized()),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(19, 23, messageArgs: nameof(Resources.PX1007Delegate).GetLocalized()),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(24, 16, messageArgs: nameof(Resources.PX1007Struct).GetLocalized()),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(29, 19, messageArgs: nameof(Resources.PX1007Interface).GetLocalized()),
-				Descriptors.PX1007_PublicClassXmlComment.CreateFor(34, 14, messageArgs: nameof(Resources.PX1007Enum).GetLocalized()));
+				Descriptors.PX1007_PublicClassXmlComment.CreateFor(14, 15, messageArgs: nameof(Resources.PX1007Class).GetLocalized()));
 
 		[Theory]
 		[EmbeddedFileData("NonPublic.cs")]
