@@ -7,7 +7,7 @@ using PX.Data;
 
 namespace PX.Objects.HackathonDemo
 {
-	public class SOOrderWithTotal : PXCacheExtension<SOOrder>
+	public class SOOrder_With_Total : PXCacheExtension<SOOrder>
 	{
 		#region Total_Amount
 		public abstract class totalAmount : IBqlField { }
