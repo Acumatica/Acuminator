@@ -25,7 +25,10 @@ namespace Acuminator.Analyzers.StaticAnalysis.UnderscoresInDac
 			context.CancellationToken.ThrowIfCancellationRequested();
 
 			SyntaxToken dacIdentifier = dacOrDacExt.Node.Identifier;
-			CheckIdentifierForUnderscores(dacIdentifier, context, pxContext);
+			
+			//DAC Extensions can have underscores in the class namespace
+			if (dacOrDacExt.DacType == DacType.Dac)
+				CheckIdentifierForUnderscores(dacIdentifier, context, pxContext);
 
 			var fieldsIdentifiers = dacOrDacExt.DeclaredFields.Where(field => CheckDacMemberAccessibility(field.Symbol) && 
 																			  dacOrDacExt.PropertiesByNames.ContainsKey(field.Name))

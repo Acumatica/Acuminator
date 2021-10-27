@@ -36,7 +36,6 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.UnderscoresInDac
 		[EmbeddedFileData("DacExtensionWithUnderscores.cs")]
 		public virtual void DacExtensionWithUnderscoresInDeclaration(string source) =>
 			VerifyCSharpDiagnostic(source,
-				Descriptors.PX1026_UnderscoresInDacDeclaration.CreateFor(line: 10, column: 15),
 				Descriptors.PX1026_UnderscoresInDacDeclaration.CreateFor(line: 13, column: 25),
 				Descriptors.PX1026_UnderscoresInDacDeclaration.CreateFor(line: 17, column: 18),
 				Descriptors.PX1026_UnderscoresInDacDeclaration.CreateFor(line: 21, column: 25),
