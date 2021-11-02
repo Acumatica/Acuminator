@@ -99,6 +99,7 @@
     <Compile Include="Extensions\NonPublic and without IsActive\SOOrderEntryExt.cs" />
     <Compile Include="Extensions\NonPublic and without IsActive\SOOrderExt.cs" />
     <Compile Include="Graph\BQL Parameters Count Mismatch Test\SOOrderByTypeAndStatusSelect.cs" />
+    <Compile Include="Graph\BQL Parameters Count Mismatch Test\APInvoiceEntryExt.cs" />
     <Compile Include="Graph\BQL Parameters Count Mismatch Test\SOOrdersInq.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DAC\Constructors In DAC\POLineExt.cs" />
