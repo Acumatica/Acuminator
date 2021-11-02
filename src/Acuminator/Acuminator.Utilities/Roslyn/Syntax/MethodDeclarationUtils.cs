@@ -184,6 +184,15 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 				.Modifiers
 				.Any(m => m.IsKind(SyntaxKind.StaticKeyword));
 
+		public static bool IsCycle(this SyntaxNode node) => node switch
+		{
+			WhileStatementSyntax _         => true,
+			DoStatementSyntax _            => true,
+			ForStatementSyntax _           => true,
+			CommonForEachStatementSyntax _ => true,
+			_                              => false
+		};
+
 		public static bool CanHaveNestedStatements(this StatementSyntax statement) => statement switch
 		{		
 			IfStatementSyntax _            => true,
