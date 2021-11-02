@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Acuminator.Utilities.Common;
@@ -10,7 +12,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 {
 	public static class MethodDeclarationUtils
 	{
-		public static ExpressionSyntax GetAccessNodeFromInvocationNode(this InvocationExpressionSyntax invocationNode)
+		public static ExpressionSyntax? GetAccessNodeFromInvocationNode(this InvocationExpressionSyntax? invocationNode)
 		{
 			if (invocationNode == null)
 				return null;
@@ -54,7 +56,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool DoesArgumentsContainIdentifier(this InvocationExpressionSyntax invocation, string identifier)
+		public static bool DoesArgumentsContainIdentifier(this InvocationExpressionSyntax invocation, string? identifier)
 		{
 			invocation.ThrowOnNull(nameof(invocation));
 
@@ -71,7 +73,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 							.Any(arg => arg.Identifier.ValueText == identifier);
 		}
 
-		public static IEnumerable<ArgumentSyntax> GetArgumentsContainingIdentifier(this InvocationExpressionSyntax invocation, string identifier)
+		public static IEnumerable<ArgumentSyntax> GetArgumentsContainingIdentifier(this InvocationExpressionSyntax invocation, string? identifier)
 		{
 			invocation.ThrowOnNull(nameof(invocation));
 
@@ -93,7 +95,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static StatementSyntax GetStatementNode(this SyntaxNode node)
+		public static StatementSyntax? GetStatementNode(this SyntaxNode? node)
 		{
 			if (node == null)
 				return null;
@@ -116,7 +118,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 		/// The declaring method node.
 		/// </returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static MethodDeclarationSyntax GetDeclaringMethodNode(this SyntaxNode node)
+		public static MethodDeclarationSyntax? GetDeclaringMethodNode(this SyntaxNode? node)
 		{
 			var current = node;
 
@@ -128,7 +130,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			return current as MethodDeclarationSyntax;
 		}
 
-		public static StatementSyntax GetNextStatement(this StatementSyntax statement)
+		public static StatementSyntax? GetNextStatement(this StatementSyntax? statement)
 		{
 			if (statement == null)
 				return null;
@@ -180,5 +182,7 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 			node.CheckIfNull(nameof(node))
 				.Modifiers
 				.Any(m => m.IsKind(SyntaxKind.StaticKeyword));
+
+		
 	}
 }
