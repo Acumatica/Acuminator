@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Acuminator.Utilities.Common;
@@ -183,6 +184,93 @@ namespace Acuminator.Utilities.Roslyn.Syntax
 				.Modifiers
 				.Any(m => m.IsKind(SyntaxKind.StaticKeyword));
 
-		
+		public static bool CanHaveNestedStatements(this StatementSyntax statement) => statement switch
+		{		
+			IfStatementSyntax _            => true,
+			CommonForEachStatementSyntax _ => true,
+			ForStatementSyntax _           => true,
+			SwitchStatementSyntax _        => true,
+			UsingStatementSyntax _         => true,
+			WhileStatementSyntax _         => true,
+			DoStatementSyntax _            => true,
+			TryStatementSyntax _           => true,
+			BlockSyntax _                  => true,
+			LockStatementSyntax _          => true,
+			CheckedStatementSyntax _       => true,
+			UnsafeStatementSyntax _        => true,
+			FixedStatementSyntax _         => true,
+			_                              => false
+		};
+
+		public static IEnumerable<StatementSyntax> GetNestedStatements(this StatementSyntax statement)
+		{
+			switch (statement)
+			{	
+				case IfStatementSyntax @if:
+					var ifStatements = @if.Statement.UnwrapIfBlock().ToList(); 
+
+					if (@if.Else?.Statement != null)
+						ifStatements.AddRange(@if.Else.Statement.UnwrapIfBlock());
+
+					return ifStatements;
+
+				case CommonForEachStatementSyntax @foreach:
+					return @foreach.Statement.UnwrapIfBlock();
+
+				case ForStatementSyntax @for:
+					return @for.Statement.UnwrapIfBlock();
+
+				case SwitchStatementSyntax @switch:
+					return @switch.Sections.SelectMany(section => section.Statements);
+
+				case UsingStatementSyntax @using:
+					return @using.Statement.UnwrapIfBlock();
+
+				case WhileStatementSyntax @while:
+					return @while.Statement.UnwrapIfBlock();
+
+				case DoStatementSyntax doWhile:
+					return doWhile.Statement.UnwrapIfBlock();
+
+				case TryStatementSyntax @try:
+					var tryStatements = @try.Block.Statements.ToList();
+
+					foreach (var @catch in @try.Catches)
+					{
+						tryStatements.AddRange(@catch.Block.Statements);
+					}
+
+					if (@try.Finally?.Block != null)
+						tryStatements.AddRange(@try.Finally.Block.Statements);
+
+					return tryStatements;
+
+				case BlockSyntax block:
+					return block.Statements;
+
+				case LockStatementSyntax @lock:
+					return @lock.Statement.UnwrapIfBlock();
+
+				case CheckedStatementSyntax checkedBlock:
+					return checkedBlock.Block?.Statements ?? Enumerable.Empty<StatementSyntax>();
+
+				case UnsafeStatementSyntax @unsafe:
+					return @unsafe.Block?.Statements ?? Enumerable.Empty<StatementSyntax>();
+
+				case FixedStatementSyntax @fixed:
+					return @fixed.Statement.UnwrapIfBlock();
+
+				default:
+					return Enumerable.Empty<StatementSyntax>(); 
+			}
+		}
+
+		private static IEnumerable<StatementSyntax> UnwrapIfBlock(this StatementSyntax statement)
+		{
+			if (statement is BlockSyntax block)
+				return block.Statements;
+			else
+				return new[] { statement };
+		}
 	}
 }
