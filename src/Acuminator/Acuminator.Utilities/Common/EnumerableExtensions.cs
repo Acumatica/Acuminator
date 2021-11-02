@@ -195,6 +195,26 @@ namespace Acuminator.Utilities.Common
 		}
 
 		/// <summary>
+		/// ToList method for <see cref="SyntaxList{TNode}"/>. This is an optimization method which allows to avoid boxing.
+		/// </summary>
+		/// <typeparam name="TNode">Type of the syntax node.</typeparam>
+		/// <param name="source">The source to act on.</param>
+		/// <returns/>
+		[DebuggerStepThrough]
+		public static List<TNode> ToList<TNode>(this SyntaxList<TNode> source)
+		where TNode : SyntaxNode
+		{
+			source.ThrowOnNull(nameof(source));
+
+			List<TNode> list = new List<TNode>(source.Count);
+
+			foreach (var item in source)
+				list.Add(item);
+
+			return list;
+		}		
+
+		/// <summary>
 		/// Select method for <see cref="SyntaxTriviaList"/>. This is an optimization method which allows to avoid boxing.
 		/// </summary>
 		/// <typeparam name="TResult">Type of the result.</typeparam>
