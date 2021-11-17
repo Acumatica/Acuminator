@@ -295,14 +295,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool ImplementsInterface(this ITypeSymbol type, string interfaceName)
+		internal static bool ImplementsInterfaceShortName(this ITypeSymbol type, string interfaceShortName)
 		{
 			if (type == null)
 				return false;
-			else if (type.TypeKind == TypeKind.Interface && type.Name == interfaceName)
+			else if (type.TypeKind == TypeKind.Interface && type.Name == interfaceShortName)
 				return true;
 			else
-				return type.AllInterfaces.Any(interfaceType => interfaceType.Name == interfaceName);
+				return type.AllInterfaces.Any(interfaceType => interfaceType.Name == interfaceShortName);
 		}
 			
 

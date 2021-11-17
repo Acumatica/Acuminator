@@ -442,7 +442,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 				return typeParamsListSyntax.Span;
 
 			var typeArgs = namedTypeSymbol.TypeArguments;
-			bool shouldOutlineTwoArgs = typeArgs[0].ImplementsInterface(TypeNames.IBqlCreator) && 
+			bool shouldOutlineTwoArgs = typeArgs[0].ImplementsInterfaceShortName(TypeNames.IBqlCreator) && 
 										!typeArgs[0].IsUnaryBqlFunction();
 			if (shouldOutlineTwoArgs)
 			{
@@ -458,13 +458,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic
 		private static bool IsUnaryBqlFunction(this ITypeSymbol typeSymbol)
 		{
 			if (!(typeSymbol is INamedTypeSymbol namedTypeSymbol) || namedTypeSymbol.TypeArguments.Length > 1 ||
-				!namedTypeSymbol.ImplementsInterface(TypeNames.IBqlOperand))
+				!namedTypeSymbol.ImplementsInterfaceShortName(TypeNames.IBqlOperand))
 			{
 				return false;
 			}
 
 			return namedTypeSymbol.TypeArguments.IsDefaultOrEmpty || 
-				   namedTypeSymbol.TypeArguments[0].ImplementsInterface(TypeNames.IBqlOperand);
+				   namedTypeSymbol.TypeArguments[0].ImplementsInterfaceShortName(TypeNames.IBqlOperand);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
