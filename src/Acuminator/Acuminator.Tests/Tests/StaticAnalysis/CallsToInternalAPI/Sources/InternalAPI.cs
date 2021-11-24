@@ -17,6 +17,27 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.CallsToInternalAPI.Sources
 		}
 	}
 
+	public class DerivedService : InternalService
+	{
+		public bool IsDerived;
+	}
+
+	[PXInternalUseOnly]
+	public class InternalHelpers
+	{
+		public static event EventHandler OnInitializing;
+	}
+
+	public class CommonHelpers : InternalHelpers
+	{
+		public static class Helper
+		{
+			public static bool IsActive { get; }
+
+			public static void DoSomething() { }
+		}
+	}
+
 
 	public class AccessChecker
 	{
@@ -36,8 +57,14 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.CallsToInternalAPI.Sources
 
 	public class ServiceProvider
 	{
-		public InternalService Service = new InternalService();
+		public readonly InternalService Service = new InternalService();
+		public readonly DerivedService DerivedService;
 
 		public AccessChecker AccessChecker = new AccessChecker();
+
+		public ServiceProvider()
+		{
+			DerivedService = new DerivedService();
+		}
 	}
 }

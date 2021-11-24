@@ -2,6 +2,8 @@
 using PX.Data;
 using PX.Common;
 
+using static Acuminator.Tests.Tests.StaticAnalysis.CallsToInternalAPI.Sources.CommonHelpers;
+
 namespace Acuminator.Tests.Tests.StaticAnalysis.CallsToInternalAPI.Sources
 {
     public class SOOrderMaintSync : PXGraph<SOOrderMaintSync>
@@ -12,13 +14,13 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.CallsToInternalAPI.Sources
         {
             if (WebConfig.IsClusterEnabled)
             {
-
+				CommonHelpers.OnInitializing += (sender, e) => InvalidateCache();
             }
 
             return filesNbr;
         }
 
-        public void InvalidateCache()
+		public void InvalidateCache()
         {
             if (serviceProvider.AccessChecker != null && serviceProvider.AccessChecker.IsActive && serviceProvider.AccessChecker.ShouldCheck)
             {
@@ -29,6 +31,14 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.CallsToInternalAPI.Sources
             {
                 serviceProvider.Service.ProvideService();
             }
+
+            if (serviceProvider.DerivedService.IsDerived)
+			{
+                serviceProvider.DerivedService.ProvideService();
+            }
+
+            if (Helper.IsActive)
+                Helper.DoSomething();
 
             PX.Api.Mobile.Legacy.Provider.InvalidateCache();
         }
