@@ -21,25 +21,35 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.CallsToInternalAPI
 
 		[Theory]
 		[EmbeddedFileData("InternalAPI.cs")]
-		public async Task Field_WithInitializer(string source) =>
+		public async Task FieldInitializers_Constructors_BaseTypes(string source) =>
 			await VerifyCSharpDiagnosticAsync(
 				source,
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(39, 10),
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(39, 40));
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(20, 32),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(31, 31),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(60, 19),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(60, 49),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(61, 19),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(67, 25));
 
 		[Theory]
 		[EmbeddedFileData("GraphUsingInternalApi.cs", "InternalAPI.cs")]
-		public async Task CallsToInternal_Properties_Methods_Fields(string source, string internalApiDeclaration) =>
+		public async Task InsideGraph_Properties_Methods_Fields_Events(string source, string internalApiDeclaration) =>
 			await VerifyCSharpDiagnosticAsync(
 				source, internalApiDeclaration,
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(13, 27),
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(23, 88),
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(23, 130),
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(25, 47),
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(28, 33),
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(28, 76),
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(28, 112),
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(30, 41),
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(33, 43));
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(5, 79),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(15, 27),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(17, 19),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(25, 88),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(25, 130),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(27, 47),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(30, 33),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(30, 76),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(30, 112),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(32, 41),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(35, 48),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(37, 48),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(40, 24),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(41, 24),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(43, 43));
 	}
 }
