@@ -123,11 +123,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.CallsToInternalAPI
 				return false;
 			}
 
-			bool? isInternal = CheckAttributesAndCacheForInternal(typeSymbol);
-
-			if (isInternal.HasValue)
-				return isInternal.Value;
-
 			return IsInternalApiImpl(typeSymbol, recursionDepth: 0);
 
 			//-------------------------------------------------Local Function--------------------------------------------------------
