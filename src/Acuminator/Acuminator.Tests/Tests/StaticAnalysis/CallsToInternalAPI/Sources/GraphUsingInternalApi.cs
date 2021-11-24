@@ -6,41 +6,41 @@ using static Acuminator.Tests.Tests.StaticAnalysis.CallsToInternalAPI.Sources.Co
 
 namespace Acuminator.Tests.Tests.StaticAnalysis.CallsToInternalAPI.Sources
 {
-    public class SOOrderMaintSync : PXGraph<SOOrderMaintSync>
-    {
-        private readonly ServiceProvider serviceProvider = new ServiceProvider();
+	public class SOOrderMaintSync : PXGraph<SOOrderMaintSync>
+	{
+		private readonly ServiceProvider serviceProvider = new ServiceProvider();
 
-        public int CountSyncReadyFiles(int filesNbr = 0)
-        {
-            if (WebConfig.IsClusterEnabled)
-            {
+		public int CountSyncReadyFiles(int filesNbr = 0)
+		{
+			if (WebConfig.IsClusterEnabled)
+			{
 				CommonHelpers.OnInitializing += (sender, e) => InvalidateCache();
-            }
+			}
 
-            return filesNbr;
-        }
+			return filesNbr;
+		}
 
 		public void InvalidateCache()
-        {
-            if (serviceProvider.AccessChecker != null && serviceProvider.AccessChecker.IsActive && serviceProvider.AccessChecker.ShouldCheck)
-            {
-                serviceProvider.AccessChecker.CheckAccess();
-            }
-
-            if (serviceProvider.Service != null && serviceProvider.Service.SomeFlag && serviceProvider.Service.IsActive)
-            {
-                serviceProvider.Service.ProvideService();
-            }
-
-            if (serviceProvider.DerivedService.IsDerived)
+		{
+			if (serviceProvider.AccessChecker != null && serviceProvider.AccessChecker.IsActive && serviceProvider.AccessChecker.ShouldCheck)
 			{
-                serviceProvider.DerivedService.ProvideService();
-            }
+				serviceProvider.AccessChecker.CheckAccess();
+			}
 
-            if (Helper.IsActive)
-                Helper.DoSomething();
+			if (serviceProvider.Service != null && serviceProvider.Service.SomeFlag && serviceProvider.Service.IsActive)
+			{
+				serviceProvider.Service.ProvideService();
+			}
 
-            PX.Api.Mobile.Legacy.Provider.InvalidateCache();
-        }
-    }
+			if (serviceProvider.DerivedService.IsDerived)
+			{
+				serviceProvider.DerivedService.ProvideService();
+			}
+
+			if (Helper.IsActive)
+				Helper.DoSomething();
+
+			PX.Api.Mobile.Legacy.Provider.InvalidateCache();
+		}
+	}
 }
