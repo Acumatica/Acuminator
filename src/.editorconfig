@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# CS1747: Cannot embed interop types from assembly 'Microsoft.VisualStudio.Shell.Interop.11.0, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' because it is missing the 'System.Runtime.InteropServices.GuidAttribute' attribute.
+dotnet_diagnostic.CS1747.severity = suggestion

@@ -27,6 +27,7 @@ using Acuminator.Utilities.Roslyn.ProjectSystem;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities;
 
+
 namespace Acuminator.Vsix
 {
     /// <summary>
@@ -224,7 +225,7 @@ namespace Acuminator.Vsix
 			if (Zombied)
 				return;
 
-			OleMenuCommandService oleCommandService = await this.GetServiceAsync<IMenuCommandService, OleMenuCommandService>();
+			OleMenuCommandService oleCommandService = await this.GetServiceAsync<IMenuCommandService, OleMenuCommandService>(true);
 
 			if (oleCommandService == null)
 			{
@@ -243,7 +244,7 @@ namespace Acuminator.Vsix
 		private async System.Threading.Tasks.Task<bool> IsSolutionLoadedAsync()
 		{
 			await JoinableTaskFactory.SwitchToMainThreadAsync();
-			var solutionService = await this.GetServiceAsync<SVsSolution, IVsSolution>();
+			var solutionService = await this.GetServiceAsync<SVsSolution, IVsSolution>(true);
 
 			if (solutionService == null)
 				return false;

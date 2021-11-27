@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Acuminator.Utilities.Common;
-using Acuminator.Vsix.Utilities;
+//using Acuminator.Vsix.Utilities;
 
 using VSConstants =  Microsoft.VisualStudio.VSConstants;
 

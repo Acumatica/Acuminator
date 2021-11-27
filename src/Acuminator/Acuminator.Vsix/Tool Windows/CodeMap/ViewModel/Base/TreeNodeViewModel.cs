@@ -136,7 +136,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			_isExpanded = isExpanded;
 		}
 
-		public virtual Task NavigateToItemAsync() => Microsoft.VisualStudio.Threading.TplExtensions.CompletedTask;
+		public virtual Task NavigateToItemAsync() => Task.CompletedTask;
 
 		public abstract TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input);
 
