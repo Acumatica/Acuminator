@@ -82,7 +82,6 @@ Acuminator does not perform static analysis of projects whose names contain `Tes
 | [PX1085](diagnostics/PX1085.md) | BQL statements and other database queries should not be executed during the `PXGraph` initialization. | Warning (ISV Level 1: Significant) | Unavailable |
 | [PX1086](diagnostics/PX1086.md) | `PXSetupNotEnteredException` cannot be thrown in long-running operations. | Warning (ISV Level 1: Significant) | Unavailable |
 | [PX1087](diagnostics/PX1087.md) | This invocation of the base data view delegate can cause a `StackOverflowException`. | Warning (ISV Level 1: Significant) | Unavailable |
-| [PX1088](diagnostics/PX1088.md) | Processing delegates cannot use the data views from processing graphs, except for the data views of the `PXFilter`, `PXProcessingBase`, and `PXSetup` types. | Warning (ISV Level 2: Production Quality) | Unavailable |
 | [PX1089](diagnostics/PX1089.md) | The state of fields and actions cannot be configured in the action delegates. | Error | Unavailable |
 | [PX1090](diagnostics/PX1090.md) | `PXSetupNotEnteredException` cannot be thrown in action handlers. | Warning (ISV Level 1: Significant) | Unavailable |
 | [PX1091](diagnostics/PX1091.md) | This invocation of the base action handler can cause a `StackOverflowException`. | Warning (ISV Level 1: Significant) | Unavailable |
