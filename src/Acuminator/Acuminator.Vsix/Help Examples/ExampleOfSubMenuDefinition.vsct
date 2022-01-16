@@ -9,6 +9,9 @@ For more examples see also http://www.visualstudioextensibility.com/2016/10/18/s
 
 	<Extern href="stdidcmd.h" />
 	<Extern href="vsshlids.h" />
+	<Include href="KnownImageIds.vsct"/>
+	<Include href="VSGlobals.vsct"/>
+
 	<Commands package="guidVSPackageCommandSubmenu">
 
 		<Groups>

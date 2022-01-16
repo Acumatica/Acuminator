@@ -7,6 +7,9 @@
   <!--This header contains the command ids for the menus provided by the shell. -->
   <Extern href="vsshlids.h" />
 
+  <Include href="KnownImageIds.vsct"/>
+  <Include href="VSGlobals.vsct"/>
+	
   <Commands package="guidAcuminatorVSPackage">
     <Groups>
       <Group guid="guidAcuminatorCmdSet" id="AcuminatorContextMenuGroup" />
@@ -34,6 +37,7 @@
         <Strings>
           <CommandName>cmdidFormatBQLCommand</CommandName>
           <ButtonText>Format BQL Statements</ButtonText>
+		  <LocCanonicalName>.Acuminator.FormatBQL</LocCanonicalName>
         </Strings>
       </Button>
 
@@ -44,6 +48,7 @@
         <Strings>
           <CommandName>cmdidGoToDeclarationOrHandlerCommand</CommandName>
           <ButtonText>Go To Action/View Declaration/Handler</ButtonText>
+		  <LocCanonicalName>.Acuminator.GoToDeclarationOrHandler</LocCanonicalName>
         </Strings>
       </Button>
 
@@ -69,6 +74,7 @@
         <Strings>
           <CommandName>cmdidOpenCodeMapWindowCommand</CommandName>
           <ButtonText>Code Map</ButtonText>
+		  <LocCanonicalName>.Acuminator.CodeMap</LocCanonicalName>
         </Strings>
       </Button>
     </Buttons>
