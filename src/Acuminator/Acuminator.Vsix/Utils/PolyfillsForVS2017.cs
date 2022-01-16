@@ -1,18 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Acuminator.Utilities.Common;
 
+using Microsoft.VisualStudio.Threading;
+
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
 namespace Acuminator.Vsix.Utilities
 {
-	public static class TaskExtensions
+	/// <summary>
+	/// The polyfills with missing funcitonality in VS SDK 15 for VS 2017. 
+	/// TODO: Delete after dropping support of VS 2017.
+	/// </summary>
+	internal static class PolyfillsForVS2017
 	{
 		/// <summary>
 		/// Records error information when the given <see cref="T:System.Threading.Tasks.Task" /> faults.
@@ -35,8 +39,8 @@ namespace Acuminator.Vsix.Utilities
 		/// <param name="fileOnlyIf">
 		/// An optional exception filter that must return <c>true</c> for the exception to be reported to the VS activity log.
 		/// </param>
-		internal static void FileAndForget(this Task task, string faultEventName, string faultDescription = null,
-										   Func<Exception, bool> fileOnlyIf = null)
+		public static void FileAndForget(this Task task, string faultEventName, string faultDescription = null,
+										 Func<Exception, bool> fileOnlyIf = null)
 		{
 			task.ThrowOnNull(nameof(task));
 			faultEventName.ThrowOnNullOrEmpty(nameof(faultEventName));
