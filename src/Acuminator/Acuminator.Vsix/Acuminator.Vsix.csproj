@@ -389,7 +389,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Utils\PolyfillsForVS2017.cs" />
-    <Compile Include="Utils\Version\IVsAppId.cs" />
     <Compile Include="Utils\Version\VSVersionProvider.cs" />
     <Compile Include="Utils\WPF\Collection\ExtendedObservableCollection.cs" />
     <Compile Include="Utils\Navigation\VSDocumentNavigation.cs" />
