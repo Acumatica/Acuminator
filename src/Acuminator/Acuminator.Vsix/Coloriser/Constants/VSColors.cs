@@ -10,7 +10,10 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Acuminator.Utilities;
 using Acuminator.Utilities.Common;
 
+using Community.VisualStudio.Toolkit;
+
 using SuppressMessageAttribute = System.Diagnostics.CodeAnalysis.SuppressMessageAttribute;
+
 
 namespace Acuminator.Vsix.Coloriser
 {
@@ -19,14 +22,9 @@ namespace Acuminator.Vsix.Coloriser
         Justification = "Already called inside", Scope = "type")]
     public static class VSColors
     {
-        private const int NOT_INITIALIZED = 0, INITIALIZED = 1;
-
         private const byte RedCriteria = 128;
         private const byte GreenCriteria = 128;
         private const byte BlueCriteria = 128;
-
-        private static IVsUIShell5 _vsUIShell5;
-        private static int _serviceInitialized = NOT_INITIALIZED;
 
         private static readonly Dictionary<string, Func<Color>> _acuminatorColors = new Dictionary<string, Func<Color>>()
         {
@@ -69,25 +67,14 @@ namespace Acuminator.Vsix.Coloriser
 
         public static bool IsDarkTheme()
         {
-            ThreadHelper.ThrowIfNotOnUIThread();
+			ThreadHelper.ThrowIfNotOnUIThread();
 
-            if (Interlocked.Exchange(ref _serviceInitialized, INITIALIZED) == NOT_INITIALIZED)
-            {
-                _vsUIShell5 = ServiceProvider.GlobalProvider.GetService(typeof(SVsUIShell)) as IVsUIShell5;
-            }
-
-            if (_vsUIShell5 == null)
-                return true;
-
-            Color editorBackgroundColor = _vsUIShell5.GetThemedWPFColor(EnvironmentColors.DarkColorKey);
-
-            if (editorBackgroundColor == null)
-                return true;
-
-            return editorBackgroundColor.R < RedCriteria ||
-                   editorBackgroundColor.G < GreenCriteria ||
-                   editorBackgroundColor.B < BlueCriteria;
-        }
+			var editorBackgroundColor = VSColorTheme.GetThemedColor(EnvironmentColors.DarkColorKey);
+			bool isDarkTheme = editorBackgroundColor.R < RedCriteria ||
+							   editorBackgroundColor.G < GreenCriteria ||
+							   editorBackgroundColor.B < BlueCriteria;
+			return isDarkTheme;
+		}
 
         #region Colors    
         #region BQLOperator
