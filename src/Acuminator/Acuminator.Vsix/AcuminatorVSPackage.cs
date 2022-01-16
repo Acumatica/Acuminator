@@ -12,7 +12,9 @@ using Microsoft.VisualStudio.Shell.Events;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Threading;
-using EnvDTE80;
+
+using Community.VisualStudio.Toolkit;
+
 using System.ComponentModel.Design;
 
 using Acuminator.Vsix.Coloriser;
@@ -26,6 +28,7 @@ using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.Roslyn.ProjectSystem;
 using Acuminator.Utilities.DiagnosticSuppression;
 using Acuminator.Utilities;
+
 
 namespace Acuminator.Vsix
 {
@@ -125,8 +128,10 @@ namespace Acuminator.Vsix
 		{
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-			if (!(ServiceProvider.GlobalProvider?.GetService(typeof(SVsShell)) is IVsShell shell))
-				return;
+			IVsShell shell = await VS.GetServiceAsync<SVsShell, IVsShell>();
+
+			if (shell == null)
+				return;			
 
 			var packageToBeLoadedGuid = new Guid(PackageGuidString);
 			shell.LoadPackage(ref packageToBeLoadedGuid, out var _);
@@ -194,7 +199,8 @@ namespace Acuminator.Vsix
 		private void SubscribeOnEvents()
 		{
 			SubscribeOnWorkspaceEvents();
-			SolutionEvents.OnAfterBackgroundSolutionLoadComplete += SolutionEvents_OnAfterBackgroundSolutionLoadComplete;
+
+			VS.Events.SolutionEvents.OnAfterBackgroundSolutionLoadComplete += SolutionEvents_OnAfterBackgroundSolutionLoadComplete;
 		}
 
 		private void SubscribeOnWorkspaceEvents()
@@ -260,7 +266,7 @@ namespace Acuminator.Vsix
 			AcuminatorLogger?.Dispose();
 			_outOfProcessSettingsUpdater?.Dispose();
 
-			SolutionEvents.OnAfterBackgroundSolutionLoadComplete -= SolutionEvents_OnAfterBackgroundSolutionLoadComplete;
+			VS.Events.SolutionEvents.OnAfterBackgroundSolutionLoadComplete -= SolutionEvents_OnAfterBackgroundSolutionLoadComplete;
 
 			if (_vsWorkspace != null)
 			{
@@ -269,7 +275,7 @@ namespace Acuminator.Vsix
 			}
 		}
 
-		private void SolutionEvents_OnAfterBackgroundSolutionLoadComplete(object sender, EventArgs e)
+		private void SolutionEvents_OnAfterBackgroundSolutionLoadComplete()
 		{
 			SetupSuppressionManager();
 
@@ -325,7 +331,7 @@ namespace Acuminator.Vsix
 			return missingOldDocument || addedNewDocument;
 
 			//---------------------------------Local function--------------------------------------------------------
-			HashSet<DocumentId> GetSuppressionFileIDs(Project project) =>
+			HashSet<DocumentId> GetSuppressionFileIDs(Microsoft.CodeAnalysis.Project project) =>
 				project?.GetSuppressionFiles()
 						.Select(file => file.Id)
 						.ToHashSet() ?? new HashSet<DocumentId>();
