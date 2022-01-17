@@ -65,7 +65,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
         public static DiagnosticDescriptor PX1008_LongOperationDelegateClosures { get; } = 
             Rule("PX1008", nameof(Resources.PX1008Title).GetLocalized(), Category.Default, 
-	            DiagnosticSeverity.Warning, DiagnosticsShortName.PX1008);
+	            DiagnosticSeverity.Error, DiagnosticsShortName.PX1008);
 
 		public static DiagnosticDescriptor PX1009_InheritanceFromPXCacheExtension { get; } =
 			Rule("PX1009", nameof(Resources.PX1009Title).GetLocalized(), Category.Default,
