@@ -22,6 +22,7 @@ namespace Acuminator.Utilities
         public const int VS2015 = 14;
         public const int VS2017 = 15;
         public const int VS2019 = 16;
+        public const int VS2022 = 17;
 
 		public Version FullVersion { get; }
 
@@ -33,7 +34,9 @@ namespace Acuminator.Utilities
 
         public bool VS2019OrNewer => FullVersion.Major >= VS2019;
 
-        public bool IsUnknownVersion => FullVersion.Major == UnknownVersion;
+		public bool VS2022OrNewer => FullVersion.Major >= VS2022;
+
+		public bool IsUnknownVersion => FullVersion.Major == UnknownVersion;
 
         public bool IsVs2005 => FullVersion.Major == VS2005; 
         
@@ -51,7 +54,9 @@ namespace Acuminator.Utilities
 
         public bool IsVS2019 => FullVersion.Major == VS2019;
 
-        public VSVersion(Version version)
+		public bool IsVS2022 => FullVersion.Major == VS2022;
+
+		public VSVersion(Version version)
 		{
             FullVersion = version.CheckIfNull(nameof(version));
 		}   
