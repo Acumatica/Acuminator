@@ -9,7 +9,6 @@ using Acuminator.Analyzers.StaticAnalysis.ChangesInPXCache;
 using Acuminator.Analyzers.StaticAnalysis.ConstructorInGraphExtension;
 using Acuminator.Analyzers.StaticAnalysis.DatabaseQueries;
 using Acuminator.Analyzers.StaticAnalysis.InvalidPXActionSignature;
-using Acuminator.Analyzers.StaticAnalysis.InvalidViewUsageInProcessingDelegate;
 using Acuminator.Analyzers.StaticAnalysis.LongOperationStart;
 using Acuminator.Analyzers.StaticAnalysis.NoIsActiveMethodForExtension;
 using Acuminator.Analyzers.StaticAnalysis.NonPublicExtensions;
@@ -48,7 +47,6 @@ namespace Acuminator.Analyzers.StaticAnalysis.PXGraph
             new ThrowingExceptionsInActionHandlersAnalyzer(),
             new CallingBaseDataViewDelegateFromOverrideDelegateAnalyzer(),
             new CallingBaseActionHandlerFromOverrideHandlerAnalyzer(),
-            new InvalidViewUsageInProcessingDelegateAnalyzer(),
             new UiPresentationLogicInActionHandlersAnalyzer(),
 			new ViewDeclarationOrderAnalyzer(),
 			new NoPrimaryViewForPrimaryDacAnalyzer(),
