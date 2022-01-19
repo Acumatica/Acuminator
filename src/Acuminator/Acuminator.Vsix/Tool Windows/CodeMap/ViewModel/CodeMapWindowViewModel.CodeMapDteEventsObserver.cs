@@ -4,14 +4,18 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis;
+
+using Acuminator.Utilities;
+using Acuminator.Vsix.Logger;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.Common;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 using SuppressMessageAttribute = System.Diagnostics.CodeAnalysis.SuppressMessageAttribute;
-using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
+
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -19,6 +23,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		private class CodeMapDteEventsObserver
 		{
+			public bool SubscribedOnVsEventsSuccessfully { get; } 
+
 			private readonly EnvDTE.SolutionEvents _solutionEvents;
 			private readonly EnvDTE.WindowEvents _windowEvents;
 			private readonly EnvDTE.DocumentEvents _documentEvents;
@@ -28,49 +34,93 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			public CodeMapDteEventsObserver(CodeMapWindowViewModel codeMapViewModel)
 			{
-				_codeMapViewModel = codeMapViewModel;
+				ThreadHelper.ThrowIfNotOnUIThread();
 
-				if (ThreadHelper.CheckAccess())
+				_codeMapViewModel = codeMapViewModel;
+				bool subscribedOnAll = true;
+
+				try
 				{
-					EnvDTE.DTE dte = AcuminatorVSPackage.Instance.GetService<EnvDTE.DTE>();
+					var dte2 = GetDTE2();
 
 					//Store reference to DTE SolutionEvents and WindowEvents to prevent them from being GC-ed
-					if (dte?.Events != null)
+					if (dte2?.Events != null)
 					{
-						#pragma warning disable VSTHRD010			// ThreadHelper.CheckAccess() was called already
-						_solutionEvents = dte.Events.SolutionEvents;
-						_windowEvents = dte.Events.WindowEvents;
-						_documentEvents = dte.Events.DocumentEvents;
-						_visibilityEvents = (dte.Events as EnvDTE80.Events2)?.WindowVisibilityEvents;
-						#pragma warning restore VSTHRD010
+						_solutionEvents = dte2.Events.SolutionEvents;
+						_windowEvents = dte2.Events.WindowEvents;
+						_documentEvents = dte2.Events.DocumentEvents;
+						_visibilityEvents = GetWindowVisibilityEvents(dte2);
+					}
+					else
+					{
+						subscribedOnAll = false;
 					}
 
-					SubscribeOnVisualStudioEvents();
+					if (subscribedOnAll)
+						subscribedOnAll = TrySubscribeOnVisualStudioEvents();
+
+					SubscribedOnVsEventsSuccessfully = subscribedOnAll;
+				}
+				catch (Exception e)	//Handling exceptions in VS events subscription
+				{
+					SubscribedOnVsEventsSuccessfully = false;
+					AcuminatorVSPackage.Instance.AcuminatorLogger.LogException(e, logOnlyFromAcuminatorAssemblies: true, LogMode.Error);
 				}
 			}
 
-			private void SubscribeOnVisualStudioEvents()
+			private EnvDTE80.DTE2 GetDTE2()
 			{
-				if (_solutionEvents != null)
+				// Extra variables exist for the ease of debugging
+				var dte = AcuminatorVSPackage.Instance.GetService<EnvDTE.DTE>();
+				EnvDTE80.DTE2 dte2 = dte as EnvDTE80.DTE2;
+				return dte2;
+			}
+
+			private EnvDTE80.WindowVisibilityEvents GetWindowVisibilityEvents(EnvDTE80.DTE2 dte2)
+			{
+				if (SharedVsSettings.VSVersion.VS2022OrNewer)
 				{
-					_solutionEvents.AfterClosing += SolutionEvents_AfterClosing;
+					// In VS 2022 there are changes in VS events interfaces implemented by DTE.Events service. 
+					// However, COM interop works fine via dynamic (its one of the well-known use cases of dynamic)
+					dynamic events = dte2.Events;
+					dynamic windowVisibilityEvents = events.WindowVisibilityEvents;
+					return windowVisibilityEvents;
 				}
+				else
+				{
+					var events2 = dte2.Events as EnvDTE80.Events2;
+					return events2?.WindowVisibilityEvents;
+				}
+			}
+
+			private bool TrySubscribeOnVisualStudioEvents()
+			{
+				bool subscribedOnAll = true;
+
+				if (_solutionEvents != null)
+					_solutionEvents.AfterClosing += SolutionEvents_AfterClosing;
+				else
+					subscribedOnAll = false;
 
 				if (_windowEvents != null)
-				{
 					_windowEvents.WindowActivated += WindowEvents_WindowActivated;
-				}
+				else
+					subscribedOnAll = false;
 
 				if (_documentEvents != null)
-				{
 					_documentEvents.DocumentClosing += DocumentEvents_DocumentClosing;
-				}
+				else
+					subscribedOnAll = false;
 
 				if (_visibilityEvents != null)
 				{
 					_visibilityEvents.WindowShowing += VisibilityEvents_WindowShowing;
 					_visibilityEvents.WindowHiding += VisibilityEvents_WindowHiding;
 				}
+				else
+					subscribedOnAll = false;
+
+				return subscribedOnAll;
 			}
 
 			public void UnsubscribeEvents()

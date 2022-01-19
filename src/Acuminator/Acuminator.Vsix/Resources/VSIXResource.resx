@@ -327,4 +327,10 @@
   <data name="ProcessingGraphIconTooltip" xml:space="preserve">
     <value>This is a processing graph</value>
   </data>
+  <data name="CodeMap_FailedToSubscribeOnVsEvents_ErrorMessage" xml:space="preserve">
+    <value>Code Map failed to subscribe to Visual Studio events. Code Map will not synchronize correctly with the currently active file</value>
+  </data>
+  <data name="CreateIssue_Message" xml:space="preserve">
+    <value>Please create an issue in Acuminator Github: https://github.com/Acumatica/Acuminator/issues</value>
+  </data>
 </root>

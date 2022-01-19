@@ -19,7 +19,7 @@ namespace Acuminator.Vsix {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class VSIXResource {
@@ -250,11 +250,29 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Code Map failed to subscribe to Visual Studio events. Code Map will not synchronize correctly with the currently active file.
+        /// </summary>
+        public static string CodeMap_FailedToSubscribeOnVsEvents_ErrorMessage {
+            get {
+                return ResourceManager.GetString("CodeMap_FailedToSubscribeOnVsEvents_ErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Code Map.
         /// </summary>
         public static string CodeMapWindowTitle {
             get {
                 return ResourceManager.GetString("CodeMapWindowTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please create an issue in Acuminator Github: https://github.com/Acumatica/Acuminator/issues.
+        /// </summary>
+        public static string CreateIssue_Message {
+            get {
+                return ResourceManager.GetString("CreateIssue_Message", resourceCulture);
             }
         }
         

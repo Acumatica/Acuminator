@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Community.VisualStudio.Toolkit;
+
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Threading;
+
 using Acuminator.Utilities.Roslyn.ProjectSystem;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.Common;
@@ -176,6 +180,12 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return null;
 
 			var codeMapViewModel = new CodeMapWindowViewModel(wpfTextView, document);
+
+			if (!codeMapViewModel._dteEventsObserver.SubscribedOnVsEventsSuccessfully)
+			{
+				VS.MessageBox.ShowWarning(VSIXResource.CodeMap_FailedToSubscribeOnVsEvents_ErrorMessage, VSIXResource.CreateIssue_Message);
+			}
+
 			codeMapViewModel.BuildCodeMapAsync().Forget();
 			return codeMapViewModel;
 		}
