@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Community.VisualStudio.Toolkit;
 
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Shell.Interop;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Threading;
@@ -183,7 +185,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (!codeMapViewModel._dteEventsObserver.SubscribedOnVsEventsSuccessfully)
 			{
-				VS.MessageBox.ShowWarning(VSIXResource.CodeMap_FailedToSubscribeOnVsEvents_ErrorMessage, VSIXResource.CreateIssue_Message);
+				VS.MessageBox.Show(line1: VSIXResource.CodeMap_FailedToSubscribeOnVsEvents_ErrorMessage, 
+								   line2: VSIXResource.CreateIssue_Message, icon: OLEMSGICON.OLEMSGICON_WARNING,
+								   buttons: OLEMSGBUTTON.OLEMSGBUTTON_OK);
 			}
 
 			codeMapViewModel.BuildCodeMapAsync().Forget();
