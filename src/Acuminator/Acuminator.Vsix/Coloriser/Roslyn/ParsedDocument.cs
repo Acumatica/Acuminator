@@ -17,7 +17,7 @@ namespace Acuminator.Vsix.Coloriser
     {
         private static readonly HashSet<string> allowedExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            ".cs"
+		   CommonConstants.CSharpFileExtension
         };
 
         public Workspace Workspace { get; }
