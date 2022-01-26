@@ -47,59 +47,31 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			protected override bool TrySubscribeAdapterOnVSEvents()
 			{
-				bool subscribeAll = true;
+				_solutionEvents.AfterClosing += RaiseAfterSolutionClosingEvent;
 
-				if (_solutionEvents != null)
-					_solutionEvents.AfterClosing += RaiseAfterSolutionClosingEvent;
-				else 
-					subscribeAll = false;
+				_documentEvents.DocumentClosing += RaiseDocumentClosingEvent;
+
+				_windowEvents.WindowActivated += RaiseWindowActivatedEvent;
+							
+				_visibilityEvents.WindowShowing += RaiseWindowShowingEvent;
+				_visibilityEvents.WindowHiding += RaiseWindowHidingEvent;
 				
-				if (_windowEvents != null)
-					_windowEvents.WindowActivated += RaiseWindowActivatedEvent;
-				else
-					subscribeAll = false;
-
-				if (_documentEvents != null)
-					_documentEvents.DocumentClosing += RaiseDocumentClosingEvent;
-				else
-					subscribeAll = false;
-
-				if (_visibilityEvents != null)
-				{
-					_visibilityEvents.WindowShowing += RaiseWindowShowingEvent;
-					_visibilityEvents.WindowHiding += RaiseWindowHidingEvent;
-				}
-				else
-					subscribeAll = false;
-
-				return subscribeAll;
+				return true;
 			}
 
 			public override bool TryUnsubscribeAdapterFromVSEvents()
 			{
-				if (_solutionEvents != null)
-				{
-					_solutionEvents.AfterClosing -= RaiseAfterSolutionClosingEvent;
-				}
+				_solutionEvents.AfterClosing -= RaiseAfterSolutionClosingEvent;
 
-				if (_documentEvents != null)
-				{
-					_documentEvents.DocumentClosing -= RaiseDocumentClosingEvent;
-				}
+				_documentEvents.DocumentClosing -= RaiseDocumentClosingEvent;
 
-				if (_windowEvents != null)
-				{
-					_windowEvents.WindowActivated -= RaiseWindowActivatedEvent;
-				}
+				_windowEvents.WindowActivated -= RaiseWindowActivatedEvent;
 
-				if (_visibilityEvents != null)
-				{
-					_visibilityEvents.WindowShowing -= RaiseWindowShowingEvent;
-					_visibilityEvents.WindowHiding -= RaiseWindowHidingEvent;					
-				}
+				_visibilityEvents.WindowShowing -= RaiseWindowShowingEvent;
+				_visibilityEvents.WindowHiding -= RaiseWindowHidingEvent;
 
 				return true;
-			}		
+			}	
 		}
 	}
 }

@@ -70,9 +70,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public void UnsubscribeAdapterFromVSEvents()
 		{
-			if (!TryUnsubscribeAdapterFromVSEvents())
+			if (SubscribedOnVsEventsSuccessfully && !TryUnsubscribeAdapterFromVSEvents())
 			{
-				AcuminatorVSPackage.Instance.AcuminatorLogger.LogMessage("", LogMode.Warning);
+				string errorMsg = VSIXResource.CodeMap_FailedToUnsubscribeFromVsEvents_ErrorMessage + Environment.NewLine +
+								  VSIXResource.CreateIssue_Message;
+				AcuminatorVSPackage.Instance.AcuminatorLogger.LogMessage(errorMsg, LogMode.Error);
 			}
 		}
 
