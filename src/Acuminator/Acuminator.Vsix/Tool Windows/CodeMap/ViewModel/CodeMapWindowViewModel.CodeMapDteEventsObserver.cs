@@ -23,128 +23,47 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		private class CodeMapDteEventsObserver
 		{
-			public bool SubscribedOnVsEventsSuccessfully { get; } 
-
-			private readonly EnvDTE.SolutionEvents _solutionEvents;
-			private readonly EnvDTE.WindowEvents _windowEvents;
-			private readonly EnvDTE.DocumentEvents _documentEvents;
-			private readonly EnvDTE80.WindowVisibilityEvents _visibilityEvents;
+			private readonly VSEventsAdapter _vsEventsAdapter;
 
 			private readonly CodeMapWindowViewModel _codeMapViewModel;
+
+			public bool SubscribedOnVsEventsSuccessfully => _vsEventsAdapter.SubscribedOnVsEventsSuccessfully;
 
 			public CodeMapDteEventsObserver(CodeMapWindowViewModel codeMapViewModel)
 			{
 				ThreadHelper.ThrowIfNotOnUIThread();
 
 				_codeMapViewModel = codeMapViewModel;
-				bool subscribedOnAll = true;
+				_vsEventsAdapter = VSEventsAdapter.CreateAndSubscribe();
 
-				try
-				{
-					var dte2 = GetDTE2();
-
-					//Store reference to DTE SolutionEvents and WindowEvents to prevent them from being GC-ed
-					if (dte2?.Events != null)
-					{
-						_solutionEvents = dte2.Events.SolutionEvents;
-						_windowEvents = dte2.Events.WindowEvents;
-						_documentEvents = dte2.Events.DocumentEvents;
-						_visibilityEvents = GetWindowVisibilityEvents(dte2);
-					}
-					else
-					{
-						subscribedOnAll = false;
-					}
-
-					if (subscribedOnAll)
-						subscribedOnAll = TrySubscribeOnVisualStudioEvents();
-
-					SubscribedOnVsEventsSuccessfully = subscribedOnAll;
-				}
-				catch (Exception e)	//Handling exceptions in VS events subscription
-				{
-					SubscribedOnVsEventsSuccessfully = false;
-					AcuminatorVSPackage.Instance.AcuminatorLogger.LogException(e, logOnlyFromAcuminatorAssemblies: true, LogMode.Error);
-				}
+				SubscribeCodeMapOnVisualStudioEvents();
 			}
 
-			private EnvDTE80.DTE2 GetDTE2()
+			private void SubscribeCodeMapOnVisualStudioEvents()
 			{
-				// Extra variables exist for the ease of debugging
-				var dte = AcuminatorVSPackage.Instance.GetService<EnvDTE.DTE>();
-				EnvDTE80.DTE2 dte2 = dte as EnvDTE80.DTE2;
-				return dte2;
-			}
+				if (!SubscribedOnVsEventsSuccessfully)
+					return;
 
-			private EnvDTE80.WindowVisibilityEvents GetWindowVisibilityEvents(EnvDTE80.DTE2 dte2)
-			{
-				if (SharedVsSettings.VSVersion.VS2022OrNewer)
-				{
-					// In VS 2022 there are changes in VS events interfaces implemented by DTE.Events service. 
-					// However, COM interop works fine via dynamic (its one of the well-known use cases of dynamic)
-					dynamic events = dte2.Events;
-					dynamic windowVisibilityEvents = events.WindowVisibilityEvents;
-					return windowVisibilityEvents;
-				}
-				else
-				{
-					var events2 = dte2.Events as EnvDTE80.Events2;
-					return events2?.WindowVisibilityEvents;
-				}
-			}
+				_vsEventsAdapter.AfterSolutionClosing += SolutionEvents_AfterClosing;
+				_vsEventsAdapter.DocumentClosing += DocumentEvents_DocumentClosing;
 
-			private bool TrySubscribeOnVisualStudioEvents()
-			{
-				bool subscribedOnAll = true;
-
-				if (_solutionEvents != null)
-					_solutionEvents.AfterClosing += SolutionEvents_AfterClosing;
-				else
-					subscribedOnAll = false;
-
-				if (_windowEvents != null)
-					_windowEvents.WindowActivated += WindowEvents_WindowActivated;
-				else
-					subscribedOnAll = false;
-
-				if (_documentEvents != null)
-					_documentEvents.DocumentClosing += DocumentEvents_DocumentClosing;
-				else
-					subscribedOnAll = false;
-
-				if (_visibilityEvents != null)
-				{
-					_visibilityEvents.WindowShowing += VisibilityEvents_WindowShowing;
-					_visibilityEvents.WindowHiding += VisibilityEvents_WindowHiding;
-				}
-				else
-					subscribedOnAll = false;
-
-				return subscribedOnAll;
+				_vsEventsAdapter.WindowActivated += WindowEvents_WindowActivated;
+				
+				_vsEventsAdapter.WindowShowing += VisibilityEvents_WindowShowing;
+				_vsEventsAdapter.WindowHiding += VisibilityEvents_WindowHiding;
 			}
 
 			public void UnsubscribeEvents()
 			{
-				if (_solutionEvents != null)
-				{
-					_solutionEvents.AfterClosing -= SolutionEvents_AfterClosing;
-				}
+				_vsEventsAdapter.AfterSolutionClosing -= SolutionEvents_AfterClosing;
+				_vsEventsAdapter.DocumentClosing -= DocumentEvents_DocumentClosing;
 
-				if (_documentEvents != null)
-				{
-					_documentEvents.DocumentClosing -= DocumentEvents_DocumentClosing;
-				}
+				_vsEventsAdapter.WindowActivated -= WindowEvents_WindowActivated;
 
-				if (_windowEvents != null)
-				{
-					_windowEvents.WindowActivated -= WindowEvents_WindowActivated;
-				}
+				_vsEventsAdapter.WindowShowing -= VisibilityEvents_WindowShowing;
+				_vsEventsAdapter.WindowHiding -= VisibilityEvents_WindowHiding;
 
-				if (_visibilityEvents != null)
-				{
-					_visibilityEvents.WindowHiding -= VisibilityEvents_WindowHiding;
-					_visibilityEvents.WindowShowing -= VisibilityEvents_WindowShowing;
-				}
+				_vsEventsAdapter.UnsubscribeAdapterFromVSEvents();
 			}
 
 			[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Already checked with CheckAccess()")]
