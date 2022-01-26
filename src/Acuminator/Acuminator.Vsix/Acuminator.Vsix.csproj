@@ -281,7 +281,6 @@
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\WithInput\CodeMapTreeVisitor_DacVisitMethods.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\WithInput\CodeMapTreeVisitor_GraphVisitMethods.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\INodeWithSymbolItem.cs" />
-    <Compile Include="Tool Windows\CodeMap\VSEventsAdapter\DispatchUtility.cs" />
     <Compile Include="Tool Windows\CodeMap\VSEventsAdapter\VSEventsAdapter.cs" />
     <Compile Include="Tool Windows\CodeMap\VSEventsAdapter\VSEventsAdapterVS2022.cs" />
     <Compile Include="Tool Windows\CodeMap\VSEventsAdapter\VSEventsAdapterVS2019.cs" />
