@@ -259,6 +259,15 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Code Map failed to unsubscribe from Visual Studio events.
+        /// </summary>
+        public static string CodeMap_FailedToUnsubscribeFromVsEvents_ErrorMessage {
+            get {
+                return ResourceManager.GetString("CodeMap_FailedToUnsubscribeFromVsEvents_ErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Code Map.
         /// </summary>
         public static string CodeMapWindowTitle {

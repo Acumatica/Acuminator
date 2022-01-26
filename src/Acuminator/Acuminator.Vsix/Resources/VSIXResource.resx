@@ -333,4 +333,7 @@
   <data name="CreateIssue_Message" xml:space="preserve">
     <value>Please create an issue in Acuminator Github: https://github.com/Acumatica/Acuminator/issues</value>
   </data>
+  <data name="CodeMap_FailedToUnsubscribeFromVsEvents_ErrorMessage" xml:space="preserve">
+    <value>Code Map failed to unsubscribe from Visual Studio events</value>
+  </data>
 </root>
