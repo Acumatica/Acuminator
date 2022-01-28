@@ -35,7 +35,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			private static readonly EventsMappingInfoVS2022 _mappingInfo = new EventsMappingInfoVS2022();			
 			private static readonly Dictionary<string, EventInfo> _vsEventInfos = new Dictionary<string, EventInfo>();
 
-			private static dynamic _dte;
+			private static dynamic _dte;	// DTE must be dynamic for proper runtime binding to different DTE types in different VS
 
 			private Dictionary<string, object> _eventObjectsByEventTypeName;
 			private readonly Dictionary<string, Delegate> _eventHandlers = new Dictionary<string, Delegate>();
