@@ -67,8 +67,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 
 			[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Already checked with CheckAccess()")]
-			private void DocumentEvents_DocumentClosing(EnvDTE.Document document)
+			private void DocumentEvents_DocumentClosing(object documentObj)
 			{
+				EnvDTE.Document document = (EnvDTE.Document)documentObj;
+
 				if (!ThreadHelper.CheckAccess() || document == null || _codeMapViewModel.Document == null)
 					return;
 
@@ -100,9 +102,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				_codeMapViewModel.DocumentModel = null;
 			}
 
-			private void VisibilityEvents_WindowHiding(EnvDTE.Window window) => SetVisibilityForCodeMapWindow(window, windowIsVisible: false);
+			private void VisibilityEvents_WindowHiding(object window) => SetVisibilityForCodeMapWindow(window as EnvDTE.Window, windowIsVisible: false);
 
-			private void VisibilityEvents_WindowShowing(EnvDTE.Window window) => SetVisibilityForCodeMapWindow(window, windowIsVisible: true);
+			private void VisibilityEvents_WindowShowing(object window) => SetVisibilityForCodeMapWindow(window as EnvDTE.Window, windowIsVisible: true);
 
 			[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Already checked with CheckAccess()")]
 			private void SetVisibilityForCodeMapWindow(EnvDTE.Window window, bool windowIsVisible)
@@ -160,8 +162,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				_codeMapViewModel.DocumentModel = null;
 			}
 
-			private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus) =>
-				WindowEventsWindowActivatedAsync(gotFocus, lostFocus)
+			private void WindowEvents_WindowActivated(object gotFocus, object lostFocus) =>
+				WindowEventsWindowActivatedAsync(gotFocus as EnvDTE.Window, lostFocus as EnvDTE.Window)
 					.FileAndForget($"vs/{AcuminatorVSPackage.PackageName}/{nameof(CodeMapWindowViewModel)}/{nameof(WindowEvents_WindowActivated)}");
 
 			private async Task WindowEventsWindowActivatedAsync(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
