@@ -37,19 +37,19 @@ namespace Acuminator.Tests.Tests.StaticAnalysis.CallsToInternalAPI
 			await VerifyCSharpDiagnosticAsync(
 				source, internalApiDeclaration,
 				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(5, 79),
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(15, 27),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(15, 18),
 				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(17, 19),
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(25, 88),
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(25, 130),
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(27, 47),
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(30, 33),
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(30, 76),
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(30, 112),
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(32, 41),
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(35, 48),
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(37, 48),
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(40, 24),
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(41, 24),
-				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(43, 43));
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(25, 79),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(25, 121),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(27, 35),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(30, 24),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(30, 67),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(30, 103),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(32, 29),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(35, 39),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(37, 36),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(40, 15),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(41, 12),
+				Descriptors.PX1076_CallToPXInternalUseOnlyAPI_OnlyISV.CreateFor(43, 34));
 	}
 }

@@ -65,7 +65,7 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
         public static DiagnosticDescriptor PX1008_LongOperationDelegateClosures { get; } = 
             Rule("PX1008", nameof(Resources.PX1008Title).GetLocalized(), Category.Default, 
-	            DiagnosticSeverity.Warning, DiagnosticsShortName.PX1008);
+	            DiagnosticSeverity.Error, DiagnosticsShortName.PX1008);
 
 		public static DiagnosticDescriptor PX1009_InheritanceFromPXCacheExtension { get; } =
 			Rule("PX1009", nameof(Resources.PX1009Title).GetLocalized(), Category.Default,
@@ -363,9 +363,6 @@ namespace Acuminator.Analyzers.StaticAnalysis
 
         public static DiagnosticDescriptor PX1087_CausingStackOverflowExceptionInBaseViewDelegateInvocation { get; } =
             Rule("PX1087", nameof(Resources.PX1087Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1087);
-
-        public static DiagnosticDescriptor PX1088_InvalidViewUsageInProcessingDelegate { get; } =
-            Rule("PX1088", nameof(Resources.PX1088Title).GetLocalized(), Category.Default, DiagnosticSeverity.Warning, DiagnosticsShortName.PX1088);
 
         public static DiagnosticDescriptor PX1089_UiPresentationLogicInActionDelegates { get; } =
             Rule("PX1089", nameof(Resources.PX1089Title).GetLocalized(), Category.Default, DiagnosticSeverity.Error, DiagnosticsShortName.PX1089);

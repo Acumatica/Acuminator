@@ -283,13 +283,6 @@
     <EmbeddedResource Include="Tests\StaticAnalysis\GraphDeclarationTypeParameter\Sources\Graph_Good.cs" />
     <Compile Include="Tests\StaticAnalysis\GraphCreation\PXGraphCreationInGraphSemanticModelNonISVTests.cs" />
     <Compile Include="Tests\StaticAnalysis\GraphDeclarationTypeParameter\PXGraphDeclarationTypeParameterTests.cs" />
-    <Compile Include="Tests\StaticAnalysis\InvalidViewUsageInProcessingDelegate\InvalidViewUsageInProcessingDelegateTests.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\InvalidViewUsageInProcessingDelegate\Sources\ParametersDelegate_Bad.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\InvalidViewUsageInProcessingDelegate\Sources\ProcessDelegate_Bad.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\InvalidViewUsageInProcessingDelegate\Sources\FinallyProcessDelegate_Bad.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\InvalidViewUsageInProcessingDelegate\Sources\ParametersDelegate_Good.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\InvalidViewUsageInProcessingDelegate\Sources\ProcessDelegate_Good.cs" />
-    <EmbeddedResource Include="Tests\StaticAnalysis\InvalidViewUsageInProcessingDelegate\Sources\FinallyProcessDelegate_Good.cs" />
     <Compile Include="Tests\StaticAnalysis\LegacyBqlConstant\LegacyBqlConstantTest.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LegacyBqlConstant\Sources\LegacyBqlConstantBad.cs" />
     <EmbeddedResource Include="Tests\StaticAnalysis\LegacyBqlConstant\Sources\LegacyBqlConstantBad_Expected.cs" />
