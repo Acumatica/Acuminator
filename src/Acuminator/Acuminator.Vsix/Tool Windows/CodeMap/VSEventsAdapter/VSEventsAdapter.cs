@@ -12,9 +12,9 @@ using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	internal delegate void WindowActivatedDelegate(object gotFocus, object lostFocus);
-	internal delegate void WindowShowingOrHidingDelegate(object window);
-	internal delegate void DocumentClosingDelegate(object document);
+	internal delegate void WindowActivatedDelegate(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus);
+	internal delegate void WindowShowingOrHidingDelegate(EnvDTE.Window window);
+	internal delegate void DocumentClosingDelegate(EnvDTE.Document document);
 
 
     /// <summary>
@@ -84,13 +84,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		protected void RaiseAfterSolutionClosingEvent() => AfterSolutionClosing?.Invoke();
 
-		protected void RaiseDocumentClosingEvent(object document) => DocumentClosing?.Invoke(document);
+		protected void RaiseDocumentClosingEvent(EnvDTE.Document document) => DocumentClosing?.Invoke(document);
 
-		protected void RaiseWindowActivatedEvent(object gotFocus, object lostFocus) => 
+		protected void RaiseWindowActivatedEvent(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus) => 
 			WindowActivated?.Invoke(gotFocus, lostFocus);
 		
-		protected void RaiseWindowShowingEvent(object window) => WindowShowing?.Invoke(window);
-		protected void RaiseWindowHidingEvent(object window) => WindowHiding?.Invoke(window);
+		protected void RaiseWindowShowingEvent(EnvDTE.Window window) => WindowShowing?.Invoke(window);
+		protected void RaiseWindowHidingEvent(EnvDTE.Window window) => WindowHiding?.Invoke(window);
 
 		public void Dispose() => TryUnsubscribeAdapterFromVSEvents();
 	}
