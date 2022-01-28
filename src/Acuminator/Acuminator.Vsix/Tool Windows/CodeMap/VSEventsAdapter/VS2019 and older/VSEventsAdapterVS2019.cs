@@ -22,10 +22,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			private EnvDTE.DocumentEvents _documentEvents;
 			private EnvDTE80.WindowVisibilityEvents _visibilityEvents;
 
-			public VSEventsAdapterVS2019()
-			{
-			}
-
 			protected override bool TryInitialize()
 			{
 				ThreadHelper.ThrowIfNotOnUIThread();
