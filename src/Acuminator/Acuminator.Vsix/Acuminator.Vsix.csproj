@@ -281,6 +281,8 @@
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\WithInput\CodeMapTreeVisitor_DacVisitMethods.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\WithInput\CodeMapTreeVisitor_GraphVisitMethods.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\INodeWithSymbolItem.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\SpecialGraphMembersCategoryNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\SpecialMembers\IsActiveMethodNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\VSEventsAdapter\VS2022\EventsMappingInfoVS2022.cs" />
     <Compile Include="Tool Windows\CodeMap\VSEventsAdapter\VSEventsAdapter.cs" />
     <Compile Include="Tool Windows\CodeMap\VSEventsAdapter\VS2022\VSEventsAdapterVS2022.cs" />
