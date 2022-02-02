@@ -13,11 +13,9 @@ using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class ViewNodeViewModel : GraphMemberNodeViewModel
+	public class ViewNodeViewModel : GraphMemberNodeViewModel, INodeWithCacheableTooltip
 	{
 		public DataViewInfo ViewInfo => MemberInfo as DataViewInfo;
-
-		public override string Tooltip => GetTooltip();
 
 		public override Icon NodeIcon { get; } 
 
@@ -81,7 +79,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		private string GetTooltip()
+		string INodeWithCacheableTooltip.CalculateTooltip()
 		{
 			if (ViewInfo.Symbol?.Locations.Length != 1 || ViewInfo.Symbol.Locations[0].IsInMetadata || Tree.CodeMapViewModel.Workspace == null)
 			{
@@ -103,7 +101,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 						int prependLength = GetPrependLength((variableDeclaration.Parent as FieldDeclarationSyntax)?.Modifiers);
 						return variableDeclaration.Type.GetSyntaxNodeStringWithRemovedIndent(tabSize, prependLength);
 					}
-				case VariableDeclaratorSyntax variableDeclarator 
+				case VariableDeclaratorSyntax variableDeclarator
 				when variableDeclarator.Parent is VariableDeclarationSyntax variableDeclaration:
 					{
 						int prependLength = GetPrependLength((variableDeclaration.Parent as FieldDeclarationSyntax)?.Modifiers);

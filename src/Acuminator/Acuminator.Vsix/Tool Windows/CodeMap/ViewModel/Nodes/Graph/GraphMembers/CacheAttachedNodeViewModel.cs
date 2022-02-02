@@ -11,20 +11,11 @@ using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class CacheAttachedNodeViewModel : GraphMemberNodeViewModel
+	public class CacheAttachedNodeViewModel : GraphMemberNodeViewModel, INodeWithCacheableTooltip
 	{
 		public override Icon NodeIcon => Icon.CacheAttached;
 
 		public DacGroupingNodeBaseViewModel DacVM { get; }
-
-		public override string Tooltip
-		{
-			get
-			{
-				var attributeStrings = Children.OfType<AttributeNodeViewModel>().Select(attribute => attribute.Tooltip);
-				return string.Join(Environment.NewLine, attributeStrings);
-			}
-		}
 
 		public override string Name
 		{
@@ -36,7 +27,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 									 base(dacVM?.GraphEventsCategoryVM, dacVM, eventInfo, isExpanded)
 		{
 			DacVM = dacVM;
-			Name = eventInfo.DacFieldName;			
+			Name = eventInfo.DacFieldName;
+		}
+
+		string INodeWithCacheableTooltip.CalculateTooltip()
+		{
+			var attributeStrings = Children.OfType<AttributeNodeViewModel>().Select(attribute => attribute.Tooltip);
+			return string.Join(Environment.NewLine, attributeStrings);
 		}
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);

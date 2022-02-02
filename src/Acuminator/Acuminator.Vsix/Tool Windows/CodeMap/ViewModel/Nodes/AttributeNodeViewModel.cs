@@ -15,7 +15,7 @@ using System.Threading;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class AttributeNodeViewModel : TreeNodeViewModel
+	public class AttributeNodeViewModel : TreeNodeViewModel, INodeWithCacheableTooltip
 	{
 		private const string AttributeSuffix = nameof(System.Attribute);
 		public AttributeData Attribute { get; }
@@ -25,8 +25,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			get;
 			protected set;
 		}
-
-		public override string Tooltip => GetAttributeTooltip();
 
 		public override bool DisplayNodeWithoutChildren => true;
 
@@ -75,7 +73,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override void AcceptVisitor(CodeMapTreeVisitor treeVisitor) => treeVisitor.VisitNode(this);
 
-		private string GetAttributeTooltip()
+		string INodeWithCacheableTooltip.CalculateTooltip()
 		{
 			var cancellationToken = Tree.CodeMapViewModel.CancellationToken.GetValueOrDefault();
 			var attributeListNode = Attribute.ApplicationSyntaxReference?.GetSyntax(cancellationToken)?.Parent as AttributeListSyntax;

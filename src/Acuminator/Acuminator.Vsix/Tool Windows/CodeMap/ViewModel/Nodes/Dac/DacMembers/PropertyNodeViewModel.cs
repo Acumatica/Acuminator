@@ -12,22 +12,13 @@ using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class PropertyNodeViewModel : DacMemberNodeViewModel
+	public class PropertyNodeViewModel : DacMemberNodeViewModel, INodeWithCacheableTooltip
 	{
 		public override Icon NodeIcon => IsKey
 				? Icon.DacKeyProperty
 				: Icon.DacProperty;
 
 		public override ExtendedObservableCollection<ExtraInfoViewModel> ExtraInfos { get; }
-
-		public override string Tooltip
-		{
-			get
-			{
-				var attributeStrings = Children.OfType<AttributeNodeViewModel>().Select(attribute => attribute.Tooltip);
-				return string.Join(Environment.NewLine, attributeStrings);
-			}
-		}
 
 		public DacPropertyInfo PropertyInfo => MemberInfo as DacPropertyInfo;
 
@@ -85,5 +76,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) => treeVisitor.VisitNode(this);
 
 		public override void AcceptVisitor(CodeMapTreeVisitor treeVisitor) => treeVisitor.VisitNode(this);
+
+		string INodeWithCacheableTooltip.CalculateTooltip()
+		{
+			var attributeStrings = Children.OfType<AttributeNodeViewModel>().Select(attribute => attribute.Tooltip);
+			return string.Join(Environment.NewLine, attributeStrings);
+		}
 	}
 }

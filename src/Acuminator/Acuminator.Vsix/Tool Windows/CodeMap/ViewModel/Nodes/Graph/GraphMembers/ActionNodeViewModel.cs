@@ -9,13 +9,11 @@ using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class ActionNodeViewModel : GraphMemberNodeViewModel
+	public class ActionNodeViewModel : GraphMemberNodeViewModel, INodeWithCacheableTooltip
 	{
 		public override Icon NodeIcon => Icon.Action;
 
 		public ActionInfo ActionInfo => MemberInfo as ActionInfo;
-
-		public override string Tooltip => ActionInfo.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
 
 		public ActionNodeViewModel(ActionCategoryNodeViewModel actionCategoryVM, ActionInfo actionInfo, bool isExpanded = false) :
 							  base(actionCategoryVM, actionCategoryVM, actionInfo, isExpanded)
@@ -27,5 +25,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override TResult AcceptVisitor<TResult>(CodeMapTreeVisitor<TResult> treeVisitor) => treeVisitor.VisitNode(this);
 
 		public override void AcceptVisitor(CodeMapTreeVisitor treeVisitor) => treeVisitor.VisitNode(this);
+
+		string INodeWithCacheableTooltip.CalculateTooltip() => ActionInfo.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
 	}
 }
