@@ -53,6 +53,14 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 
 		public ImmutableDictionary<string, ActionHandlerInfo> ActionHandlersByNames => BaseGraphModel.ActionHandlersByNames;
 		public IEnumerable<ActionHandlerInfo> ActionHandlers => BaseGraphModel.ActionHandlers;
+
+		/// <summary>
+		/// Gets the info about IsActive method for graph extensions. Can be <c>null</c>. Always <c>null</c> for graphs.
+		/// </summary>
+		/// <value>
+		/// The info about IsActive method.
+		/// </value>
+		public IsActiveInfo IsActiveMethod => BaseGraphModel.IsActiveMethodInfo;
 		#endregion
 
 		#region Events

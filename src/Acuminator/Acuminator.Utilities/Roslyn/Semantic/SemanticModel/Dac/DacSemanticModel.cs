@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.PXFieldAttributes;
+using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Constants;
-using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 
 namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 {
@@ -47,11 +49,11 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		public IEnumerable<DacFieldInfo> DeclaredFields => Fields.Where(f => f.Symbol.ContainingType == Symbol);
 
 		/// <summary>
-		/// Gets the IsActive method symbol for DAC extension. Can be <c>null</c>. Always <c>null</c> for DACs.
+		/// Gets the info about IsActive method for DAC extensions. Can be <c>null</c>. Always <c>null</c> for DACs.
 		/// <value>
-		/// The is active method symbol.
+		/// The info about IsActive method.
 		/// </value>
-		public IMethodSymbol IsActiveMethod { get; }
+		public IsActiveInfo IsActiveMethodInfo { get; }
 
 		private DacSemanticModel(PXContext pxContext, DacType dacType, INamedTypeSymbol symbol, ClassDeclarationSyntax node,
 								 CancellationToken cancellation)
@@ -70,7 +72,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 
 			FieldsByNames = GetDacFields();
 			PropertiesByNames = GetDacProperties();
-			IsActiveMethod = GetIsActiveMethod();
+			IsActiveMethodInfo = GetIsActiveMethodInfo();
 		}
 
 		/// <summary>
@@ -142,21 +144,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			return infos.ToImmutableDictionary(keyComparer: StringComparer.OrdinalIgnoreCase);
 		}
 
-		private IMethodSymbol GetIsActiveMethod()
+		private IsActiveInfo GetIsActiveMethodInfo()
 		{
 			if (DacType != DacType.DacExtension)
 				return null;
 
 			_cancellation.ThrowIfCancellationRequested();
-			ImmutableArray<ISymbol> isActiveCandidates = Symbol.GetMembers(DelegateNames.IsActive);
-
-			if (isActiveCandidates.IsDefaultOrEmpty)
-				return null;
-
-			return isActiveCandidates.OfType<IMethodSymbol>()
-									 .FirstOrDefault(method => method.IsStatic && method.DeclaredAccessibility == Accessibility.Public &&
-															   method.Parameters.IsDefaultOrEmpty && !method.IsGenericMethod &&
-															   method.ReturnType.SpecialType == SpecialType.System_Boolean);
+			return IsActiveInfo.GetIsActiveInfo(Symbol);
 		}
 	}
 }
