@@ -67,7 +67,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <value>
 		/// The info about IsActive method.
 		/// </value>
-		public IsActiveInfo IsActiveMethodInfo { get; }
+		public IsActiveMethodInfo IsActiveMethodInfo { get; }
 
 
 		private PXGraphSemanticModel(PXContext pxContext, GraphType type, INamedTypeSymbol symbol, GraphSemanticModelCreationOptions modelCreationOptions,
@@ -306,13 +306,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 			return walker.GraphInitDelegates;
 		}
 
-		private IsActiveInfo GetIsActiveMethodInfo()
+		private IsActiveMethodInfo GetIsActiveMethodInfo()
 		{
 			if (Type != GraphType.PXGraphExtension)
 				return null;
 
 			_cancellation.ThrowIfCancellationRequested();
-			return IsActiveInfo.GetIsActiveInfo(Symbol);
+			return IsActiveMethodInfo.GetIsActiveMethodInfo(Symbol);
 		}
 	}
 }

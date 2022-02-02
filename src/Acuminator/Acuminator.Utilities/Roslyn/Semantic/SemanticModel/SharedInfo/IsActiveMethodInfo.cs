@@ -13,21 +13,21 @@ namespace Acuminator.Utilities.Roslyn.Semantic.SharedInfo
 	/// <summary>
 	/// Information about the IsActive special method in graph and DAC extensions.
 	/// </summary>
-	public class IsActiveInfo : SymbolItem<IMethodSymbol>
+	public class IsActiveMethodInfo : SymbolItem<IMethodSymbol>
 	{
-		public IsActiveInfo(IMethodSymbol isActiveMethod) :
-					   base(isActiveMethod, declarationOrder: 0)
+		public IsActiveMethodInfo(IMethodSymbol isActiveMethod) :
+							 base(isActiveMethod, declarationOrder: 0)
 		{
 		}
 
 		/// <summary>
-		/// Collects info about IsActive method from DAC or graph extension symbol and creates <see cref="IsActiveInfo"/> DTO.
+		/// Collects info about IsActive method from DAC or graph extension symbol and creates <see cref="IsActiveMethodInfo"/> DTO.
 		/// </summary>
 		/// <param name="dacOrGraphExtension">The DAC or graph extension.</param>
 		/// <returns>
-		/// The <see cref="IsActiveInfo"/> DTO if extension contains IsActive method, otherwise <see langword="null"/>.
+		/// The <see cref="IsActiveMethodInfo"/> DTO if extension contains IsActive method, otherwise <see langword="null"/>.
 		/// </returns>
-		internal static IsActiveInfo? GetIsActiveInfo(INamedTypeSymbol dacOrGraphExtension)
+		internal static IsActiveMethodInfo? GetIsActiveMethodInfo(INamedTypeSymbol dacOrGraphExtension)
 		{
 			ImmutableArray<ISymbol> isActiveCandidates = dacOrGraphExtension.GetMembers(DelegateNames.IsActive);
 
@@ -40,7 +40,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.SharedInfo
 															method.Parameters.IsDefaultOrEmpty && !method.IsGenericMethod &&
 															method.ReturnType.SpecialType == SpecialType.System_Boolean);
 			return isActiveMethod != null
-				? new IsActiveInfo(isActiveMethod)
+				? new IsActiveMethodInfo(isActiveMethod)
 				: null;
 		}
 	}

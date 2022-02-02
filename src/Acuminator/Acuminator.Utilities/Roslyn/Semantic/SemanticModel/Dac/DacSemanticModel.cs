@@ -53,7 +53,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 		/// <value>
 		/// The info about IsActive method.
 		/// </value>
-		public IsActiveInfo IsActiveMethodInfo { get; }
+		public IsActiveMethodInfo IsActiveMethodInfo { get; }
 
 		private DacSemanticModel(PXContext pxContext, DacType dacType, INamedTypeSymbol symbol, ClassDeclarationSyntax node,
 								 CancellationToken cancellation)
@@ -144,13 +144,13 @@ namespace Acuminator.Utilities.Roslyn.Semantic.Dac
 			return infos.ToImmutableDictionary(keyComparer: StringComparer.OrdinalIgnoreCase);
 		}
 
-		private IsActiveInfo GetIsActiveMethodInfo()
+		private IsActiveMethodInfo GetIsActiveMethodInfo()
 		{
 			if (DacType != DacType.DacExtension)
 				return null;
 
 			_cancellation.ThrowIfCancellationRequested();
-			return IsActiveInfo.GetIsActiveInfo(Symbol);
+			return IsActiveMethodInfo.GetIsActiveMethodInfo(Symbol);
 		}
 	}
 }
