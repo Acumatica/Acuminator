@@ -19,6 +19,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		DacKeysCategory,
 
 		Category,
+
 		GroupingDac,
 		GroupingDacField,
 
@@ -37,5 +38,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		Settings,
 		Filter,
 		Processing,
+
+		SpecialMemberCategory,
+		IsActiveMethod
 	}
 }
