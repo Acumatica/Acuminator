@@ -93,28 +93,24 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				case PropertyDeclarationSyntax propertyDeclaration:
 					{
-						int prependLength = GetPrependLength(propertyDeclaration.Modifiers);
+						int prependLength = IndentUtils.GetPrependLength(propertyDeclaration.Modifiers);
 						return propertyDeclaration.Type.GetSyntaxNodeStringWithRemovedIndent(tabSize, prependLength);
 					}
 				case VariableDeclarationSyntax variableDeclaration:
 					{
-						int prependLength = GetPrependLength((variableDeclaration.Parent as FieldDeclarationSyntax)?.Modifiers);
+						int prependLength = IndentUtils.GetPrependLength((variableDeclaration.Parent as FieldDeclarationSyntax)?.Modifiers);
 						return variableDeclaration.Type.GetSyntaxNodeStringWithRemovedIndent(tabSize, prependLength);
 					}
 				case VariableDeclaratorSyntax variableDeclarator
 				when variableDeclarator.Parent is VariableDeclarationSyntax variableDeclaration:
 					{
-						int prependLength = GetPrependLength((variableDeclaration.Parent as FieldDeclarationSyntax)?.Modifiers);
+						int prependLength = IndentUtils.GetPrependLength((variableDeclaration.Parent as FieldDeclarationSyntax)?.Modifiers);
 						return variableDeclaration.Type.GetSyntaxNodeStringWithRemovedIndent(tabSize, prependLength);
 					}
 				default:
 					return ViewInfo.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
 			}
 		}
-
-		private static int GetPrependLength(SyntaxTokenList? modifiers) => modifiers != null
-			? modifiers.Value.FullSpan.End - modifiers.Value.Span.Start
-			: 0;
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);
 

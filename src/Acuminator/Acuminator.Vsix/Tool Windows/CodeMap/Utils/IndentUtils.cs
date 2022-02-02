@@ -18,6 +18,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private const string PxDataNamespacePrefix = "PX.Data.";
 		private const string PxObjectsNamespacePrefix = "PX.Objects.";
 
+		public static int GetPrependLength(SyntaxTokenList? modifiers) => modifiers != null
+			? modifiers.Value.FullSpan.End - modifiers.Value.Span.Start
+			: 0;
+
 		public static string GetSyntaxNodeStringWithRemovedIndent(this SyntaxNode syntaxNode, int tabSize, int prependLength = 0)
 		{
 			if (tabSize <= 0)
