@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
+using Acuminator.Vsix.Utilities;
+
 
 namespace Acuminator.Vsix.ToolWindows
 {
@@ -36,8 +38,8 @@ namespace Acuminator.Vsix.ToolWindows
 			// Get the instance number 0 of this tool window. This window is single instance so this instance
 			// is actually the only one.
 			// The last flag is set to true so that if the tool window does not exists it will be created.
-			ToolWindowPane window = await Package.FindToolWindowAsync(typeof(TWindow), id: 0, create: true, Package.DisposalToken);
-
+			ToolWindowPane window = Package.FindToolWindow(typeof(TWindow), id: 0, create: true);
+			
 			if (window?.Frame == null)
 			{
 				throw new NotSupportedException("Cannot create tool window");

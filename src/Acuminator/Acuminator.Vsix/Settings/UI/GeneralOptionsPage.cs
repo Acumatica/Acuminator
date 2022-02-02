@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using Acuminator.Utilities;
 using Acuminator.Vsix.Settings;
@@ -10,6 +11,7 @@ using Microsoft.VisualStudio.Shell;
 
 namespace Acuminator.Vsix
 {
+	[ComVisible(true)]
 	public class GeneralOptionsPage : DialogPage, ISettingsEvents
 	{
 		public const string PageTitle = "General";

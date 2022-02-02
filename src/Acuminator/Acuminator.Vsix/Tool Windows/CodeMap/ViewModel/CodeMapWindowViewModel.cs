@@ -3,10 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Community.VisualStudio.Toolkit;
+
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Shell.Interop;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Threading;
+
 using Acuminator.Utilities.Roslyn.ProjectSystem;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.Common;
@@ -176,6 +182,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return null;
 
 			var codeMapViewModel = new CodeMapWindowViewModel(wpfTextView, document);
+
+			if (!codeMapViewModel._dteEventsObserver.SubscribedOnVsEventsSuccessfully)
+			{
+				VS.MessageBox.Show(line1: VSIXResource.CodeMap_FailedToSubscribeOnVsEvents_ErrorMessage, 
+								   line2: VSIXResource.CreateIssue_Message, icon: OLEMSGICON.OLEMSGICON_WARNING,
+								   buttons: OLEMSGBUTTON.OLEMSGBUTTON_OK);
+			}
+
 			codeMapViewModel.BuildCodeMapAsync().Forget();
 			return codeMapViewModel;
 		}

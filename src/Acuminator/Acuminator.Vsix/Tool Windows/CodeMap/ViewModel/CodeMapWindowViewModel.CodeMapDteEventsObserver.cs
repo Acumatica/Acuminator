@@ -4,14 +4,18 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CodeAnalysis;
+
+using Acuminator.Utilities;
+using Acuminator.Vsix.Logger;
 using Acuminator.Vsix.Utilities;
 using Acuminator.Utilities.Common;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 using SuppressMessageAttribute = System.Diagnostics.CodeAnalysis.SuppressMessageAttribute;
-using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
+
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -19,82 +23,47 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		private class CodeMapDteEventsObserver
 		{
-			private readonly EnvDTE.SolutionEvents _solutionEvents;
-			private readonly EnvDTE.WindowEvents _windowEvents;
-			private readonly EnvDTE.DocumentEvents _documentEvents;
-			private readonly EnvDTE80.WindowVisibilityEvents _visibilityEvents;
+			private readonly VSEventsAdapter _vsEventsAdapter;
 
 			private readonly CodeMapWindowViewModel _codeMapViewModel;
 
+			public bool SubscribedOnVsEventsSuccessfully => _vsEventsAdapter.SubscribedOnVsEventsSuccessfully;
+
 			public CodeMapDteEventsObserver(CodeMapWindowViewModel codeMapViewModel)
 			{
+				ThreadHelper.ThrowIfNotOnUIThread();
+
 				_codeMapViewModel = codeMapViewModel;
+				_vsEventsAdapter = VSEventsAdapter.CreateAndSubscribe();
 
-				if (ThreadHelper.CheckAccess())
-				{
-					EnvDTE.DTE dte = AcuminatorVSPackage.Instance.GetService<EnvDTE.DTE>();
-
-					//Store reference to DTE SolutionEvents and WindowEvents to prevent them from being GC-ed
-					if (dte?.Events != null)
-					{
-						#pragma warning disable VSTHRD010			// ThreadHelper.CheckAccess() was called already
-						_solutionEvents = dte.Events.SolutionEvents;
-						_windowEvents = dte.Events.WindowEvents;
-						_documentEvents = dte.Events.DocumentEvents;
-						_visibilityEvents = (dte.Events as EnvDTE80.Events2)?.WindowVisibilityEvents;
-						#pragma warning restore VSTHRD010
-					}
-
-					SubscribeOnVisualStudioEvents();
-				}
+				SubscribeCodeMapOnVisualStudioEvents();
 			}
 
-			private void SubscribeOnVisualStudioEvents()
+			private void SubscribeCodeMapOnVisualStudioEvents()
 			{
-				if (_solutionEvents != null)
-				{
-					_solutionEvents.AfterClosing += SolutionEvents_AfterClosing;
-				}
+				if (!SubscribedOnVsEventsSuccessfully)
+					return;
 
-				if (_windowEvents != null)
-				{
-					_windowEvents.WindowActivated += WindowEvents_WindowActivated;
-				}
+				_vsEventsAdapter.AfterSolutionClosing += SolutionEvents_AfterClosing;
+				_vsEventsAdapter.DocumentClosing += DocumentEvents_DocumentClosing;
 
-				if (_documentEvents != null)
-				{
-					_documentEvents.DocumentClosing += DocumentEvents_DocumentClosing;
-				}
-
-				if (_visibilityEvents != null)
-				{
-					_visibilityEvents.WindowShowing += VisibilityEvents_WindowShowing;
-					_visibilityEvents.WindowHiding += VisibilityEvents_WindowHiding;
-				}
+				_vsEventsAdapter.WindowActivated += WindowEvents_WindowActivated;
+				
+				_vsEventsAdapter.WindowShowing += VisibilityEvents_WindowShowing;
+				_vsEventsAdapter.WindowHiding += VisibilityEvents_WindowHiding;
 			}
 
 			public void UnsubscribeEvents()
 			{
-				if (_solutionEvents != null)
-				{
-					_solutionEvents.AfterClosing -= SolutionEvents_AfterClosing;
-				}
+				_vsEventsAdapter.AfterSolutionClosing -= SolutionEvents_AfterClosing;
+				_vsEventsAdapter.DocumentClosing -= DocumentEvents_DocumentClosing;
 
-				if (_documentEvents != null)
-				{
-					_documentEvents.DocumentClosing -= DocumentEvents_DocumentClosing;
-				}
+				_vsEventsAdapter.WindowActivated -= WindowEvents_WindowActivated;
 
-				if (_windowEvents != null)
-				{
-					_windowEvents.WindowActivated -= WindowEvents_WindowActivated;
-				}
+				_vsEventsAdapter.WindowShowing -= VisibilityEvents_WindowShowing;
+				_vsEventsAdapter.WindowHiding -= VisibilityEvents_WindowHiding;
 
-				if (_visibilityEvents != null)
-				{
-					_visibilityEvents.WindowHiding -= VisibilityEvents_WindowHiding;
-					_visibilityEvents.WindowShowing -= VisibilityEvents_WindowShowing;
-				}
+				_vsEventsAdapter.UnsubscribeAdapterFromVSEvents();
 			}
 
 			[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Already checked with CheckAccess()")]
