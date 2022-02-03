@@ -36,9 +36,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 										bool isExpanded = false) :
 								   base(graphMemberCategoryVM?.Tree, parent, isExpanded)
 		{
-			memberInfo.ThrowOnNull(nameof(memberInfo));
-
-			MemberInfo = memberInfo;
+			MemberInfo = memberInfo.CheckIfNull(nameof(memberInfo));
 			MemberCategory = graphMemberCategoryVM;		
 		}
 
