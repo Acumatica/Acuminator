@@ -56,10 +56,16 @@
 	<BitmapImage x:Key="Category" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Category.ico"/>
 
-	<BitmapImage x:Key="Settings" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+    <BitmapImage x:Key="SpecialMemberCategory" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/SpecialMemberCategory.ico"/>
+
+    <BitmapImage x:Key="Settings" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Settings.ico"/>
 
-	<BitmapImage x:Key="Filter" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+    <BitmapImage x:Key="IsActiveMethod" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/IsActiveMethod.ico"/>
+
+    <BitmapImage x:Key="Filter" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Filter.png"/>
 
 	<BitmapImage x:Key="Processing" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
