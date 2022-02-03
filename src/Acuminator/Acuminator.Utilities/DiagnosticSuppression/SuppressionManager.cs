@@ -285,13 +285,20 @@ namespace Acuminator.Utilities.DiagnosticSuppression
 			cancellation.ThrowIfCancellationRequested();
 			reportDiagnostic.ThrowOnNull(nameof(reportDiagnostic));
 
-			// Always check suppression with a comment first. The suppression by comment doesn't depend on the SuppressionMechanismEnabled setting
+			if (!settings.SuppressionMechanismEnabled)
+			{
+				reportDiagnostic(diagnostic);
+				return;
+			}
+
+			// Always check suppression with a comment first.
 			// Also we need to avoid modification of the suppression file when Requirement Validation tool runs the Acuminator in a special mode, 
 			// in which every found diagnostic is recorded in the suppression file.
-			if (CheckSuppressedComment(diagnostic, cancellation))
+			if (CheckSuppressedComment(diagnostic, cancellation) ||
+				Instance?.IsSuppressedInSuppressionFile(semanticModel, diagnostic, cancellation) == true)
+			{
 				return;
-			else if (settings.SuppressionMechanismEnabled && Instance?.IsSuppressedInSuppressionFile(semanticModel, diagnostic, cancellation) == true)
-				return;
+			}
 
 			reportDiagnostic(diagnostic);
 		}

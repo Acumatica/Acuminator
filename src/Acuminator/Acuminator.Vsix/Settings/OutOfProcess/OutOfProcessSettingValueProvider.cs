@@ -23,7 +23,7 @@ namespace Acuminator.Vsix.Settings
 			package.ThrowOnNull(nameof(package));
 			package.VSVersion.ThrowOnNull($"{nameof(AcuminatorVSPackage)}.{nameof(AcuminatorVSPackage.VSVersion)}");
 
-			if (!package.VSVersion.IsVS2019)
+			if (!package.VSVersion.VS2019OrNewer)
 				return false;
 
 			// Faster version gets setting OOP64Bit from the VS session store. If it is true then the OOP is enabled
