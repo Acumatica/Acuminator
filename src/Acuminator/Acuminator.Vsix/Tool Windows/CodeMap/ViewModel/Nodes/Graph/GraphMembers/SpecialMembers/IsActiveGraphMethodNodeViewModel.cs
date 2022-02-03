@@ -41,8 +41,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (isActiveMethodSyntaxNode == null) 
 				return null;
 
-			int prependLength = IndentUtils.GetPrependLength(isActiveMethodSyntaxNode.Modifiers);
-			return isActiveMethodSyntaxNode.GetSyntaxNodeStringWithRemovedIndent(tabSize, prependLength);
+			return isActiveMethodSyntaxNode.GetSyntaxNodeStringWithRemovedIndent(tabSize);
 		}
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);
