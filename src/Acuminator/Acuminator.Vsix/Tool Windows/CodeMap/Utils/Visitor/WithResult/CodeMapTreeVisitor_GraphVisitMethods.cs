@@ -27,6 +27,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public virtual TResult VisitNode(FieldEventCategoryNodeViewModel rowEventCategory) => DefaultVisit(rowEventCategory);
 
 		public virtual TResult VisitNode(PXOverridesCategoryNodeViewModel pxOverridesCategory) => DefaultVisit(pxOverridesCategory);
+
+		public virtual TResult VisitNode(SpecialGraphMembersCategoryNodeViewModel specialGraphMembersCategory) => 
+			DefaultVisit(specialGraphMembersCategory);
 		#endregion
 
 		#region DAC Grouping
@@ -53,6 +56,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public virtual TResult VisitNode(FieldEventNodeViewModel fieldEventNode) => DefaultVisit(fieldEventNode);
 
 		public virtual TResult VisitNode(GraphMemberInfoNodeViewModel graphMemberInfo) => DefaultVisit(graphMemberInfo);
+
+		public virtual TResult VisitNode(IsActiveGraphMethodNodeViewModel isActiveGraphMethodNode) => 
+			DefaultVisit(isActiveGraphMethodNode);
 		#endregion
 	}
 }
