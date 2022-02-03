@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
@@ -8,6 +10,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// </summary>
 	public interface INodeWithCacheableTooltip
 	{
-		string CalculateTooltip();
+		string? CalculateTooltip();
 	}
 }
