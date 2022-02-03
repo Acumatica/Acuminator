@@ -7,6 +7,11 @@ namespace PX.Objects.HackathonDemo
 {
 	public partial class APInvoiceEntryExt : PXGraphExtension<APInvoiceEntry>
 	{
+		public static bool IsActive()
+		{
+			return true;
+		}
+
 		#region Views
 		public PXSelect<ListEntryPoint> ItemsExtended;
 
