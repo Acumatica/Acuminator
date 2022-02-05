@@ -39,7 +39,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		Filter,
 		Processing,
 
-		SpecialMemberCategory,
-		IsActiveMethod
+		BaseMemberOverrideGraphCategory,
+
+		InitializationAndActivationGraphCategory,
+		IsActiveMethodGraph
 	}
 }
