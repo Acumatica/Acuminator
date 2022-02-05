@@ -21,7 +21,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public IsActiveMethodInfo IsActiveMethodInfo => (IsActiveMethodInfo)MemberInfo;
 
-		public IsActiveGraphMethodNodeViewModel(SpecialGraphMembersCategoryNodeViewModel specialGraphMembersCategoryVM,
+		public IsActiveGraphMethodNodeViewModel(GraphInitializationAndActivationCategoryNodeViewModel specialGraphMembersCategoryVM,
 												IsActiveMethodInfo isActiveMethodInfo, bool isExpanded = false) :
 										   base(specialGraphMembersCategoryVM, specialGraphMembersCategoryVM, isActiveMethodInfo, isExpanded)
 		{
