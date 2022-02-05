@@ -17,13 +17,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class IsActiveGraphMethodNodeViewModel : GraphMemberNodeViewModel, INodeWithCacheableTooltip
 	{
-		public override Icon NodeIcon => Icon.IsActiveMethod;
+		public override Icon NodeIcon => Icon.IsActiveMethodGraph;
 
 		public IsActiveMethodInfo IsActiveMethodInfo => (IsActiveMethodInfo)MemberInfo;
 
-		public IsActiveGraphMethodNodeViewModel(GraphInitializationAndActivationCategoryNodeViewModel specialGraphMembersCategoryVM,
+		public IsActiveGraphMethodNodeViewModel(GraphInitializationAndActivationCategoryNodeViewModel graphInitializationAndActivationCategoryVM,
 												IsActiveMethodInfo isActiveMethodInfo, bool isExpanded = false) :
-										   base(specialGraphMembersCategoryVM, specialGraphMembersCategoryVM, isActiveMethodInfo, isExpanded)
+										   base(graphInitializationAndActivationCategoryVM, graphInitializationAndActivationCategoryVM, 
+												isActiveMethodInfo, isExpanded)
 		{
 
 		}
