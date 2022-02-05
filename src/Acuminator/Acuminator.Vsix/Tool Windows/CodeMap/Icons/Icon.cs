@@ -42,6 +42,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		BaseMemberOverrideGraphCategory,
 
 		InitializationAndActivationGraphCategory,
-		IsActiveMethodGraph
+		IsActiveMethodGraph,
+
+		InitializationAndActivationDacCategory,
+		IsActiveMethodDac
 	}
 }
