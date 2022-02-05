@@ -17,7 +17,7 @@ using Acuminator.Utilities.Roslyn;
 
 namespace Acuminator.Vsix.Coloriser
 {
-    [ContentType(LegacyLanguageNames.CSharp)]
+    [ContentType(Constants.CSharp.LegacyLanguageName)]
     [TagType(typeof(IClassificationTag))]
     [TextViewRole(PredefinedTextViewRoles.Document)]
     [Export(typeof(IViewTaggerProvider))]

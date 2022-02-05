@@ -88,7 +88,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 				const string emptyObjectKind = "{00000000-0000-0000-0000-000000000000}";
 
-				if (documentKind == null || documentKind == emptyObjectKind || documentLanguage != LegacyLanguageNames.CSharp ||
+				if (documentKind == null || documentKind == emptyObjectKind || documentLanguage != Constants.CSharp.LegacyLanguageName ||
 					!string.Equals(documentPath, _codeMapViewModel.Document.FilePath, StringComparison.OrdinalIgnoreCase))
 				{
 					return;
@@ -148,7 +148,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				//-------------------------------------------Local Function----------------------------------------------------------------------------------------
 				bool IsSwitchingToAnotherDocumentWhileCodeMapIsEmpty() =>
 					_codeMapViewModel.IsVisible && _codeMapViewModel.Document == null && windowIsVisible && windowKind == "Document" && windowId != default &&
-					documentLanguage == LegacyLanguageNames.CSharp && !windowDocumentPath.IsNullOrWhiteSpace();
+					documentLanguage == Constants.CSharp.LegacyLanguageName && !windowDocumentPath.IsNullOrWhiteSpace();
 			}
 
 			/// <summary>
@@ -173,7 +173,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 				if (!_codeMapViewModel.IsVisible || Equals(gotFocus, lostFocus) || gotFocus.Document == null)
 					return;
-				else if (gotFocus.Document.Language != LegacyLanguageNames.CSharp)
+				else if (gotFocus.Document.Language != Constants.CSharp.LegacyLanguageName)
 				{
 					_codeMapViewModel.ClearCodeMap();
 					return;
