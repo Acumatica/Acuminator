@@ -4,13 +4,29 @@
 namespace Acuminator.Vsix.Utilities
 {
     /// <summary>
-    /// Common constants for VSIX project
+    /// Constants for VSIX project
     /// </summary>
-    internal static class CommonConstants
+    internal static class Constants
 	{
-		/// <summary>
-		/// C# file extension.
-		/// </summary>
-		public const string CSharpFileExtension = ".cs";
+		public static class CSharp
+		{
+			/// <summary>
+			/// The Visual Studio legacy C# language name used by the <see cref="EnvDTE.Document.Language"/> library.
+			/// </summary>
+			public const string LegacyLanguageName = "CSharp";
+
+			/// <summary>
+			/// C# file extension.
+			/// </summary>
+			public const string FileExtension = ".cs";
+		}
+
+
+		public static class UI
+		{
+			public const int MaxTooltipLength = 1000;
+
+			public const string TooBigTooltipSuffix = "...";
+		}
 	}
 }
