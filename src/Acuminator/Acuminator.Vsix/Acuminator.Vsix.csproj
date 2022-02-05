@@ -200,7 +200,7 @@
     <Resource Include="Resources\CodeMap\IsActiveMethod.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Resources\CodeMap\SpecialMemberCategory.ico">
+    <Resource Include="Resources\CodeMap\InitializationAndActivationCategory.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Content Include="Resources\DacExplorer.ico">
@@ -288,7 +288,7 @@
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\WithInput\CodeMapTreeVisitor_GraphVisitMethods.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\INodeWithCacheableTooltip.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\INodeWithSymbolItem.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\SpecialGraphMembersCategoryNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\GraphInitializationAndActivationCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\SpecialMembers\IsActiveGraphMethodNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\VSEventsAdapter\VS2022\EventsMappingInfoVS2022.cs" />
     <Compile Include="Tool Windows\CodeMap\VSEventsAdapter\VSEventsAdapter.cs" />

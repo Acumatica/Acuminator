@@ -12,14 +12,14 @@ using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class SpecialGraphMembersCategoryNodeViewModel : GraphMemberCategoryNodeViewModel
+	public class GraphInitializationAndActivationCategoryNodeViewModel : GraphMemberCategoryNodeViewModel
 	{
 		protected override bool AllowNavigation => true;
 
 		public override Icon NodeIcon => Icon.SpecialMemberCategory;
 
-		public SpecialGraphMembersCategoryNodeViewModel(GraphNodeViewModel graphViewModel, bool isExpanded) : 
-												   base(graphViewModel, GraphMemberType.SpecialMember, isExpanded)
+		public GraphInitializationAndActivationCategoryNodeViewModel(GraphNodeViewModel graphViewModel, bool isExpanded) : 
+																	 base(graphViewModel, GraphMemberType.InitializationAndActivation, isExpanded)
 		{		
 		}
 
