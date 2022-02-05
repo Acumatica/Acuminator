@@ -62,7 +62,7 @@ namespace Acuminator.Utilities.Roslyn.Semantic.PXGraph
 		/// <value>
 		/// The info about IsActive method.
 		/// </value>
-		public IsActiveMethodInfo IsActiveMethod => BaseGraphModel.IsActiveMethodInfo;
+		public IsActiveMethodInfo IsActiveMethodInfo => BaseGraphModel.IsActiveMethodInfo;
 		#endregion
 
 		#region Events
