@@ -8,7 +8,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	/// <summary>
 	/// Interface for code map node with cacheable tooltip.
 	/// </summary>
-	public interface INodeWithCacheableTooltip
+	public interface INodeWithTooltip
 	{
 		string? CalculateTooltip();
 	}
