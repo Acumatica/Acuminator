@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Windows;
 using System.Windows.Data;
-using Microsoft.CodeAnalysis;
+
 using Acuminator.Utilities.Common;
+using Acuminator.Vsix.Utilities;
 
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
@@ -19,9 +18,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			return value is TreeNodeViewModel treeNode && !treeNode.Tooltip.IsNullOrWhiteSpace()
-				? treeNode.Tooltip
-				: Binding.DoNothing;
+			if (!(value is TreeNodeViewModel treeNode))
+				return Binding.DoNothing;
+
+			string tooltip = treeNode.Tooltip;
+
+			if (tooltip.IsNullOrWhiteSpace())
+				return Binding.DoNothing;
+
+			return tooltip.TrimExcess();
 		}
 
 		public object ConvertBack(object value, Type targetTypes, object parameter, CultureInfo culture)
