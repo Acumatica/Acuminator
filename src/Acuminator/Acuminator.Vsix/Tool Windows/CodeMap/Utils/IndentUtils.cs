@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
-using Acuminator.Vsix.Utilities.Navigation;
-
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
