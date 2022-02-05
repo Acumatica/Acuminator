@@ -3,13 +3,15 @@
 using System;
 using System.Collections.Generic;
 
+using Acuminator.Vsix.ToolWindows.Common;
+
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	/// <summary>
-	/// Interface for code map node with cacheable tooltip.
+	/// Interface for code map tree node with a tooltip.
 	/// </summary>
 	public interface INodeWithTooltip
 	{
-		string? CalculateTooltip();
+		TooltipInfo? CalculateTooltip();
 	}
 }

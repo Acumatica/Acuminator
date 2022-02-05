@@ -21,13 +21,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		/// </summary>
 		public abstract bool DisplayNodeWithoutChildren { get; }
 
-		private readonly Lazy<string> _tooltipLazy;
-
-		/// <summary>
-		/// The tooltip displayed for node.
-		/// </summary>
-		public virtual string Tooltip => _tooltipLazy?.Value;
-
 		/// <summary>
 		/// The main icon for a node.
 		/// </summary>
@@ -136,11 +129,6 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Tree = tree;
 			Parent = parent;
 			_isExpanded = isExpanded;
-
-			if (this is INodeWithCacheableTooltip nodeWithCacheableTooltip)
-			{
-				_tooltipLazy = new Lazy<string>(() => nodeWithCacheableTooltip.CalculateTooltip());
-			}
 		}
 
 		public virtual Task NavigateToItemAsync() => Microsoft.VisualStudio.Threading.TplExtensions.CompletedTask;
