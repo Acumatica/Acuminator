@@ -17,7 +17,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		NestedDAC,
 		NestedGraph,
 		PXOverride,
-		SpecialMember
+		InitializationAndActivation,
+		BaseMemberOverride
 	}
 
 	internal static class GraphMemberTypeUtils
@@ -32,7 +33,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{ GraphMemberType.FieldEvent, "Field Events" },
 			{ GraphMemberType.NestedDAC, "Nested DACs" },
 			{ GraphMemberType.NestedGraph, "Nested Graphs" },
-			{ GraphMemberType.SpecialMember, "Special Members" }	
+			{ GraphMemberType.InitializationAndActivation, "Initialization & Activation" },	
+			{ GraphMemberType.BaseMemberOverride, "Base Overrides" }	
 		};
 
 		public static string Description(this GraphMemberType graphMemberType) =>
