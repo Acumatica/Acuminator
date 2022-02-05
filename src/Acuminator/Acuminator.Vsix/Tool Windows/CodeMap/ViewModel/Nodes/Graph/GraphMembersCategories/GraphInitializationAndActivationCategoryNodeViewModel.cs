@@ -16,7 +16,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		protected override bool AllowNavigation => true;
 
-		public override Icon NodeIcon => Icon.SpecialMemberCategory;
+		public override Icon NodeIcon => Icon.InitializationAndActivationGraphCategory;
 
 		public GraphInitializationAndActivationCategoryNodeViewModel(GraphNodeViewModel graphViewModel, bool isExpanded) : 
 																	 base(graphViewModel, GraphMemberType.InitializationAndActivation, isExpanded)
