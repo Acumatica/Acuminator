@@ -6,27 +6,31 @@ using System.Windows.Data;
 
 using Acuminator.Utilities.Common;
 using Acuminator.Vsix.Utilities;
+using Acuminator.Vsix.ToolWindows.Common;
 
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	/// <summary>
-	/// Converter which converts <see cref="TreeNodeViewModel"/> node to the tooltip.
+	/// Converter which converts <see cref="IElementWithTooltip"/> UI element to tooltip.
 	/// </summary>
-	[ValueConversion(sourceType: typeof(TreeNodeViewModel), targetType: typeof(string))]
-	public class TreeNodeToTooltipConverter : IValueConverter
+	[ValueConversion(sourceType: typeof(IElementWithTooltip), targetType: typeof(string))]
+	public class ElementWithTooltipToTooltipConverter : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			if (!(value is TreeNodeViewModel treeNode))
+			if (!(value is IElementWithTooltip elementWithTooltip))
 				return Binding.DoNothing;
 
-			string tooltip = treeNode.Tooltip;
+			TooltipInfo tooltipInfo = elementWithTooltip.CalculateTooltip();
 
-			if (tooltip.IsNullOrWhiteSpace())
+			if (tooltipInfo == null)
 				return Binding.DoNothing;
 
-			return tooltip.TrimExcess();
+			if (tooltipInfo.TrimExcess)
+				return tooltipInfo.Tooltip.TrimExcess(tooltipInfo.MaxLength, tooltipInfo.OverflowSuffix);		
+			else
+				return tooltipInfo.Tooltip;
 		}
 
 		public object ConvertBack(object value, Type targetTypes, object parameter, CultureInfo culture)
