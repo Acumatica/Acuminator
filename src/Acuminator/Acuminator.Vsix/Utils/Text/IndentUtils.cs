@@ -6,9 +6,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
 using Acuminator.Utilities.Common;
-using Acuminator.Vsix.Utilities;
 
-namespace Acuminator.Vsix.ToolWindows.CodeMap
+namespace Acuminator.Vsix.Utilities
 {
 	public static class IndentUtils
 	{
