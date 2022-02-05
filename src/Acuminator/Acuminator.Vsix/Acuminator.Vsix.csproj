@@ -303,7 +303,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\CodeMapSortContext.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\Visitors\CodeMapTreeInitialSorter.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Sorting\SortType.cs" />
-    <Compile Include="Tool Windows\CodeMap\Tooltips\TreeNodeToTooltipConverter.cs" />
+    <Compile Include="Tool Windows\CodeMap\Tooltips\ElementWithTooltipToTooltipConverter.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\DacMemberCategory.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphSemanticModelForCodeMap.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphMemberInfoType.cs" />
