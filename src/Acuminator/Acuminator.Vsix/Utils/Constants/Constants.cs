@@ -20,13 +20,5 @@ namespace Acuminator.Vsix.Utilities
 			/// </summary>
 			public const string FileExtension = ".cs";
 		}
-
-
-		public static class UI
-		{
-			public const int MaxTooltipLength = 1000;
-
-			public const string TooBigTooltipSuffix = "...";
-		}
 	}
 }

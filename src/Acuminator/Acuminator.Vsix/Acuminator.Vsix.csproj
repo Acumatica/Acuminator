@@ -275,6 +275,7 @@
     <Compile Include="Tool Windows\CodeMap\UI\CodeMapTreeControl.xaml.cs">
       <DependentUpon>CodeMapTreeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utils\Text\StringUtils.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeWalker.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\StackGuard.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeVisitor.cs" />
@@ -359,7 +360,7 @@
     <Compile Include="Tool Windows\CodeMap\ViewModel\TreeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\TreeNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\CodeMapRefreshMode.cs" />
-    <Compile Include="Tool Windows\CodeMap\Utils\IndentUtils.cs" />
+    <Compile Include="Utils\Text\IndentUtils.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\CodeMapDocChangesClassifier.cs" />
     <Compile Include="Tool Windows\CodeMap\UI\Converters\TreeViewLineConverter .cs" />
     <Compile Include="Tool Windows\Converters\ColorToBrushConverter.cs" />
