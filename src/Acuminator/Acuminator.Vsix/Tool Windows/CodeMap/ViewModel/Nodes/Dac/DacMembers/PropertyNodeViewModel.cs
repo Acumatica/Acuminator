@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
-using Microsoft.CodeAnalysis;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic;
 using Acuminator.Utilities.Roslyn.Semantic.Dac;
-using System.Threading;
 using Acuminator.Utilities.Roslyn.PXFieldAttributes;
 using Acuminator.Vsix.Utilities;
+using Acuminator.Vsix.ToolWindows.Common;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class PropertyNodeViewModel : DacMemberNodeViewModel, INodeWithCacheableTooltip
+	public class PropertyNodeViewModel : DacMemberNodeViewModel, IElementWithTooltip
 	{
 		public override Icon NodeIcon => IsKey
 				? Icon.DacKeyProperty
@@ -77,10 +77,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override void AcceptVisitor(CodeMapTreeVisitor treeVisitor) => treeVisitor.VisitNode(this);
 
-		string INodeWithCacheableTooltip.CalculateTooltip()
+		TooltipInfo IElementWithTooltip.CalculateTooltip()
 		{
-			var attributeStrings = Children.OfType<AttributeNodeViewModel>().Select(attribute => attribute.Tooltip);
-			return string.Join(Environment.NewLine, attributeStrings);
+			var attributeStrings = Children.OfType<AttributeNodeViewModel>()
+										   .Select(attribute => attribute.CalculateTooltip().Tooltip);
+			string aggregatedTooltip = string.Join(Environment.NewLine, attributeStrings);
+			return aggregatedTooltip.IsNullOrWhiteSpace()
+				? null
+				: new TooltipInfo(aggregatedTooltip);
 		}
 	}
 }

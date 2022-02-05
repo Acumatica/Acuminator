@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Immutable;
 using System.Linq;
-using Microsoft.CodeAnalysis;
+
 using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using System.Threading;
+using Acuminator.Vsix.ToolWindows.Common;
 using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class CacheAttachedNodeViewModel : GraphMemberNodeViewModel, INodeWithCacheableTooltip
+	public class CacheAttachedNodeViewModel : GraphMemberNodeViewModel, IElementWithTooltip
 	{
 		public override Icon NodeIcon => Icon.CacheAttached;
 
@@ -30,10 +28,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			Name = eventInfo.DacFieldName;
 		}
 
-		string INodeWithCacheableTooltip.CalculateTooltip()
+		TooltipInfo IElementWithTooltip.CalculateTooltip()
 		{
-			var attributeStrings = Children.OfType<AttributeNodeViewModel>().Select(attribute => attribute.Tooltip);
-			return string.Join(Environment.NewLine, attributeStrings);
+			var attributeStrings = Children.OfType<AttributeNodeViewModel>()
+										   .Select(attribute => attribute.CalculateTooltip().Tooltip);
+			string aggregatedTooltip = string.Join(Environment.NewLine, attributeStrings);
+			return aggregatedTooltip.IsNullOrWhiteSpace()
+				? null
+				: new TooltipInfo(aggregatedTooltip);
 		}
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);

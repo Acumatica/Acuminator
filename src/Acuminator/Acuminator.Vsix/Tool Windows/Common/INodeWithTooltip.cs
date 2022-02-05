@@ -3,12 +3,10 @@
 using System;
 using System.Collections.Generic;
 
-using Acuminator.Vsix.ToolWindows.Common;
-
-namespace Acuminator.Vsix.ToolWindows.CodeMap
+namespace Acuminator.Vsix.ToolWindows.Common
 {
 	/// <summary>
-	/// Interface for UI elements with a tooltip.
+	/// Interface for UI element with a tooltip.
 	/// </summary>
 	public interface IElementWithTooltip
 	{

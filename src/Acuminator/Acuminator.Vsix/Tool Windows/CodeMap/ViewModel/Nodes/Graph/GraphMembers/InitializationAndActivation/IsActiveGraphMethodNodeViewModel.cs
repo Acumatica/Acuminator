@@ -8,6 +8,7 @@ using Acuminator.Utilities.Common;
 using Acuminator.Utilities.Roslyn.ProjectSystem;
 using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
 using Acuminator.Utilities.Roslyn.Syntax;
+using Acuminator.Vsix.ToolWindows.Common;
 using Acuminator.Vsix.Utilities;
 
 using Microsoft.CodeAnalysis;
@@ -15,7 +16,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class IsActiveGraphMethodNodeViewModel : GraphMemberNodeViewModel, INodeWithCacheableTooltip
+	public class IsActiveGraphMethodNodeViewModel : GraphMemberNodeViewModel, IElementWithTooltip
 	{
 		public override Icon NodeIcon => Icon.IsActiveMethodGraph;
 
@@ -29,7 +30,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		}
 
-		string? INodeWithCacheableTooltip.CalculateTooltip()
+		TooltipInfo? IElementWithTooltip.CalculateTooltip()
 		{
 			IMethodSymbol isActiveMethod = IsActiveMethodInfo.Symbol;
 
@@ -42,7 +43,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			if (isActiveMethodSyntaxNode == null) 
 				return null;
 
-			return isActiveMethodSyntaxNode.GetSyntaxNodeStringWithRemovedIndent(tabSize);
+			string tooltip = isActiveMethodSyntaxNode.GetSyntaxNodeStringWithRemovedIndent(tabSize);
+			return new TooltipInfo(tooltip) { TrimExcess = true };
 		}
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);

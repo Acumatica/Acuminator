@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
+
+using Acuminator.Utilities.Common;
+using Acuminator.Utilities.Roslyn.ProjectSystem;
+using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
+using Acuminator.Utilities.Roslyn.Syntax;
+using Acuminator.Vsix.ToolWindows.Common;
+using Acuminator.Vsix.Utilities;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.Syntax;
-using Acuminator.Utilities.Roslyn.Semantic.PXGraph;
-using Acuminator.Utilities.Roslyn.ProjectSystem;
-using System.Threading;
-using Acuminator.Vsix.Utilities;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class ViewNodeViewModel : GraphMemberNodeViewModel, INodeWithCacheableTooltip
+	public class ViewNodeViewModel : GraphMemberNodeViewModel, IElementWithTooltip
 	{
 		public DataViewInfo ViewInfo => MemberInfo as DataViewInfo;
 
@@ -79,7 +80,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		string INodeWithCacheableTooltip.CalculateTooltip()
+		TooltipInfo IElementWithTooltip.CalculateTooltip()
+		{
+			string tooltip = GetTooltip();
+			return tooltip.IsNullOrWhiteSpace()
+				? null
+				: new TooltipInfo(tooltip) { TrimExcess = true };
+		}
+
+		private string GetTooltip()
 		{
 			if (ViewInfo.Symbol?.Locations.Length != 1 || ViewInfo.Symbol.Locations[0].IsInMetadata || Tree.CodeMapViewModel.Workspace == null)
 			{

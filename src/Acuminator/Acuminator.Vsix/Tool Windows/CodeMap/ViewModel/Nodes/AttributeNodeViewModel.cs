@@ -16,7 +16,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
-	public class AttributeNodeViewModel : TreeNodeViewModel, INodeWithTooltip
+	public class AttributeNodeViewModel : TreeNodeViewModel, IElementWithTooltip
 	{
 		private const string AttributeSuffix = nameof(System.Attribute);
 		public AttributeData Attribute { get; }
