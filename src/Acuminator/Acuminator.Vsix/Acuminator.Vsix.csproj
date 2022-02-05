@@ -288,7 +288,7 @@
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\WithInput\CodeMapTreeVisitor.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\WithInput\CodeMapTreeVisitor_DacVisitMethods.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\WithResult\WithInput\CodeMapTreeVisitor_GraphVisitMethods.cs" />
-    <Compile Include="Tool Windows\CodeMap\ViewModel\Base\INodeWithTooltip.cs" />
+    <Compile Include="Tool Windows\Common\INodeWithTooltip.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Base\INodeWithSymbolItem.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\GraphInitializationAndActivationCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\IsActiveGraphMethodNodeViewModel.cs" />

@@ -8,9 +8,9 @@ using Acuminator.Vsix.ToolWindows.Common;
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	/// <summary>
-	/// Interface for code map tree node with a tooltip.
+	/// Interface for UI elements with a tooltip.
 	/// </summary>
-	public interface INodeWithTooltip
+	public interface IElementWithTooltip
 	{
 		TooltipInfo? CalculateTooltip();
 	}
