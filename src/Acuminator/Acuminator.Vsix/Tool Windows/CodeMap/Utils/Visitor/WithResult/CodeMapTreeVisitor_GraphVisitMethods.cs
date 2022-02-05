@@ -28,8 +28,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual TResult VisitNode(PXOverridesCategoryNodeViewModel pxOverridesCategory) => DefaultVisit(pxOverridesCategory);
 
-		public virtual TResult VisitNode(SpecialGraphMembersCategoryNodeViewModel specialGraphMembersCategory) => 
-			DefaultVisit(specialGraphMembersCategory);
+		public virtual TResult VisitNode(GraphInitializationAndActivationCategoryNodeViewModel graphInitializationAndActivationCategory) => 
+			DefaultVisit(graphInitializationAndActivationCategory);
 		#endregion
 
 		#region DAC Grouping

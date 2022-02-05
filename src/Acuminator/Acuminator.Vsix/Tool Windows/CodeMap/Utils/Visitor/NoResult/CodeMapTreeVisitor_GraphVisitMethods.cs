@@ -28,8 +28,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual void VisitNode(PXOverridesCategoryNodeViewModel pxOverridesCategory) => DefaultVisit(pxOverridesCategory);
 
-		public virtual void VisitNode(SpecialGraphMembersCategoryNodeViewModel specialGraphMembersCategory) =>
-			DefaultVisit(specialGraphMembersCategory);
+		public virtual void VisitNode(GraphInitializationAndActivationCategoryNodeViewModel graphInitializationAndActivationCategory) =>
+			DefaultVisit(graphInitializationAndActivationCategory);
 		#endregion
 
 		#region DAC Grouping
