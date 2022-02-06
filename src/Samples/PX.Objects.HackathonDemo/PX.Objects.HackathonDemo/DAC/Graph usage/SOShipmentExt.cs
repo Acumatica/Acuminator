@@ -6,7 +6,12 @@ namespace PX.Objects.HackathonDemo
     [Serializable]
     public class SOShipmentExt : PXCacheExtension<SOOrder>
     {
-        public abstract class shipmentNbrExt : IBqlField { }
+		public static bool IsActive()
+		{
+			return true;
+		}
+
+		public abstract class shipmentNbrExt : IBqlField { }
         [PXInt]
         [PXUIField(DisplayName = "Shipment Number")]
         public virtual int? ShipmentNbrExt
