@@ -30,7 +30,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			foreach (StaticConstructorInfo staticConstructor in GraphSemanticModel.StaticConstructors)
 			{
-				yield return staticConstructor;
+				if (!staticConstructor.Symbol.IsImplicitlyDeclared)
+					yield return staticConstructor;
 			}
 
 			foreach (InstanceConstructorInfoForCodeMap constructor in CodeMapGraphModel.InstanceConstructors)
