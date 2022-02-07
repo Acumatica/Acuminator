@@ -65,7 +65,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				yield break;
 
 			var declaredConstructors = graphOrExtension.InstanceConstructors
-													   .Where(constructor => constructor.ContainingType.Equals(graphOrExtension));
+													   .Where(constructor => constructor.ContainingType.Equals(graphOrExtension) &&
+																			!constructor.IsImplicitlyDeclared);
 			int declarationOrder = 0;
 
 			foreach (IMethodSymbol constructor in declaredConstructors)
