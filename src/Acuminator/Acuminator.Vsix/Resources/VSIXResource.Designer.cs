@@ -250,6 +250,141 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Custom.
+        /// </summary>
+        public static string CodeMap_ExtraInfo_CustomViewLabel {
+            get {
+                return ResourceManager.GetString("CodeMap_ExtraInfo_CustomViewLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The view is a custom class derived from standard PXSelect-like classes.
+        /// </summary>
+        public static string CodeMap_ExtraInfo_CustomViewTooltip {
+            get {
+                return ResourceManager.GetString("CodeMap_ExtraInfo_CustomViewTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is part of a primary key.
+        /// </summary>
+        public static string CodeMap_ExtraInfo_DacKeyIconTooltip {
+            get {
+                return ResourceManager.GetString("CodeMap_ExtraInfo_DacKeyIconTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The PXDBIdentity attribute is specified for this field..
+        /// </summary>
+        public static string CodeMap_ExtraInfo_HasPXDBIdentityAttributeTooltip {
+            get {
+                return ResourceManager.GetString("CodeMap_ExtraInfo_HasPXDBIdentityAttributeTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DAC.
+        /// </summary>
+        public static string CodeMap_ExtraInfo_IsDac {
+            get {
+                return ResourceManager.GetString("CodeMap_ExtraInfo_IsDac", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DAC Extension.
+        /// </summary>
+        public static string CodeMap_ExtraInfo_IsDacExtension {
+            get {
+                return ResourceManager.GetString("CodeMap_ExtraInfo_IsDacExtension", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Graph.
+        /// </summary>
+        public static string CodeMap_ExtraInfo_IsGraph {
+            get {
+                return ResourceManager.GetString("CodeMap_ExtraInfo_IsGraph", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Graph Extension.
+        /// </summary>
+        public static string CodeMap_ExtraInfo_IsGraphExtension {
+            get {
+                return ResourceManager.GetString("CodeMap_ExtraInfo_IsGraphExtension", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This is a processing graph.
+        /// </summary>
+        public static string CodeMap_ExtraInfo_ProcessingGraphIconTooltip {
+            get {
+                return ResourceManager.GetString("CodeMap_ExtraInfo_ProcessingGraphIconTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This is a procesing view.
+        /// </summary>
+        public static string CodeMap_ExtraInfo_ProcessingViewIconTooltip {
+            get {
+                return ResourceManager.GetString("CodeMap_ExtraInfo_ProcessingViewIconTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Autonumbering is enabled for this field..
+        /// </summary>
+        public static string CodeMap_ExtraInfo_PropertyHasAutoNumberingTooltip {
+            get {
+                return ResourceManager.GetString("CodeMap_ExtraInfo_PropertyHasAutoNumberingTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This view is PXFilter or it is derived from it.
+        /// </summary>
+        public static string CodeMap_ExtraInfo_PXFilterViewIconTooltip {
+            get {
+                return ResourceManager.GetString("CodeMap_ExtraInfo_PXFilterViewIconTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uncached.
+        /// </summary>
+        public static string CodeMap_ExtraInfo_PXSelectReadOnlyViewLabel {
+            get {
+                return ResourceManager.GetString("CodeMap_ExtraInfo_PXSelectReadOnlyViewLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The view type is PXSelectReadOnly or is derived from it. The data selected by this view from database will not be merged with cache..
+        /// </summary>
+        public static string CodeMap_ExtraInfo_PXSelectReadOnlyViewTooltip {
+            get {
+                return ResourceManager.GetString("CodeMap_ExtraInfo_PXSelectReadOnlyViewTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This view is PXSetup or derived from it.
+        /// </summary>
+        public static string CodeMap_ExtraInfo_PXSetupViewIconTooltip {
+            get {
+                return ResourceManager.GetString("CodeMap_ExtraInfo_PXSetupViewIconTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Code Map failed to subscribe to Visual Studio events. Code Map will not synchronize correctly with the currently active file.
         /// </summary>
         public static string CodeMap_FailedToSubscribeOnVsEvents_ErrorMessage {
@@ -270,9 +405,9 @@ namespace Acuminator.Vsix {
         /// <summary>
         ///   Looks up a localized string similar to Code Map.
         /// </summary>
-        public static string CodeMapWindowTitle {
+        public static string CodeMap_WindowTitle {
             get {
-                return ResourceManager.GetString("CodeMapWindowTitle", resourceCulture);
+                return ResourceManager.GetString("CodeMap_WindowTitle", resourceCulture);
             }
         }
         
@@ -282,24 +417,6 @@ namespace Acuminator.Vsix {
         public static string CreateIssue_Message {
             get {
                 return ResourceManager.GetString("CreateIssue_Message", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Custom.
-        /// </summary>
-        public static string CustomViewExtraInfoLabel {
-            get {
-                return ResourceManager.GetString("CustomViewExtraInfoLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The view is a custom class derived from standard PXSelect-like classes.
-        /// </summary>
-        public static string CustomViewInfoTooltip {
-            get {
-                return ResourceManager.GetString("CustomViewInfoTooltip", resourceCulture);
             }
         }
         
@@ -331,15 +448,6 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Is part of a primary key.
-        /// </summary>
-        public static string DacKeyIconTooltip {
-            get {
-                return ResourceManager.GetString("DacKeyIconTooltip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to There are multiple Acuminator diagnostics in this code snippet. Acuminator can suppress only one diagnostic at a time..
         /// </summary>
         public static string DiagnosticSuppression_MultipleDiagnosticFound {
@@ -354,33 +462,6 @@ namespace Acuminator.Vsix {
         public static string DiagnosticSuppression_NoDiagnosticFound {
             get {
                 return ResourceManager.GetString("DiagnosticSuppression_NoDiagnosticFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The PXDBIdentity attribute is specified for this field..
-        /// </summary>
-        public static string HasPXDBIdentityAttributeExtraInfoTooltip {
-            get {
-                return ResourceManager.GetString("HasPXDBIdentityAttributeExtraInfoTooltip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to DAC.
-        /// </summary>
-        public static string IsDac_CodeMap_CodeMap_ExtraInfo {
-            get {
-                return ResourceManager.GetString("IsDac_CodeMap_CodeMap_ExtraInfo", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to DAC Extension.
-        /// </summary>
-        public static string IsDacExtension_CodeMap_ExtraInfo {
-            get {
-                return ResourceManager.GetString("IsDacExtension_CodeMap_ExtraInfo", resourceCulture);
             }
         }
         
@@ -439,33 +520,6 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This is a processing graph.
-        /// </summary>
-        public static string ProcessingGraphIconTooltip {
-            get {
-                return ResourceManager.GetString("ProcessingGraphIconTooltip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This is a procesing view.
-        /// </summary>
-        public static string ProcessingViewIconTooltip {
-            get {
-                return ResourceManager.GetString("ProcessingViewIconTooltip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Autonumbering is enabled for this field..
-        /// </summary>
-        public static string PropertyHasAutoNumberingExtraInfoTooltip {
-            get {
-                return ResourceManager.GetString("PropertyHasAutoNumberingExtraInfoTooltip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Acuminator - PXAction.
         /// </summary>
         public static string PXActionFormatLabel {
@@ -475,47 +529,11 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This view is PXFilter or it is derived from it.
-        /// </summary>
-        public static string PXFilterViewIconTooltip {
-            get {
-                return ResourceManager.GetString("PXFilterViewIconTooltip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Acuminator - PXGraph.
         /// </summary>
         public static string PXGraphFormatLabel {
             get {
                 return ResourceManager.GetString("PXGraphFormatLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Uncached.
-        /// </summary>
-        public static string PXSelectReadOnlyViewExtraInfoLabel {
-            get {
-                return ResourceManager.GetString("PXSelectReadOnlyViewExtraInfoLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The view type is PXSelectReadOnly or is derived from it. The data selected by this view from database will not be merged with cache..
-        /// </summary>
-        public static string PXSelectReadOnlyViewInfoTooltip {
-            get {
-                return ResourceManager.GetString("PXSelectReadOnlyViewInfoTooltip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This view is PXSetup or derived from it.
-        /// </summary>
-        public static string PXSetupViewIconTooltip {
-            get {
-                return ResourceManager.GetString("PXSetupViewIconTooltip", resourceCulture);
             }
         }
         
