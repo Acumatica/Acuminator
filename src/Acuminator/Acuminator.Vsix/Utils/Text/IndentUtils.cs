@@ -38,7 +38,6 @@ namespace Acuminator.Vsix.Utilities
 
 			var sb = new System.Text.StringBuilder(string.Empty, capacity: syntaxNodeString.Length);
 			int counter = 0;
-			bool isInsideString = false;
 			bool codeStarted = false;
 			char prevChar = default;
 
@@ -56,46 +55,32 @@ namespace Acuminator.Vsix.Utilities
 			{
 				switch (c)
 				{
-					case '"':
-						ProcessQuotationCharacter(prevCharacter);
-						sb.Append(c);
-						return;
-
 					case '\n':
 						counter = 0;
 						codeStarted = false;
 						sb.Append(c);
 						return;
 
-					case ' ' when counter < indentLength && !isInsideString && !codeStarted: //-V3063
+					case ' ' when counter < indentLength && !codeStarted: //-V3063
 						counter++;
 						return;
 
-					case '\t' when counter < indentLength && !isInsideString && !codeStarted: //-V3063
+					case '\t' when counter < indentLength && !codeStarted: //-V3063
 						counter += tabSize;
 						return;
 
-					case ' ' when counter >= indentLength || isInsideString || codeStarted:
-					case '\t' when counter >= indentLength || isInsideString || codeStarted:
+					case '\r':
+					case ' ' when counter >= indentLength || codeStarted:
 						sb.Append(c);
+						return;
+					case '\t' when counter >= indentLength || codeStarted:
+						// WPF renders tab indent as too big and space indent as too small, so we use double amount of spaces to replace a tab
+						sb.Append(' ', 2 * tabSize);
 						return;
 
 					default:
 						codeStarted = true;
 						sb.Append(c);
-						return;
-				}
-			}
-
-			void ProcessQuotationCharacter(char prevCharacter)
-			{
-				switch (prevCharacter)
-				{
-					case '\\':
-						return;
-
-					default:
-						isInsideString = !isInsideString;
 						return;
 				}
 			}
