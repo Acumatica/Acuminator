@@ -44,7 +44,10 @@
 	<BitmapImage x:Key="IsActiveMethodGraph" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/IsActiveMethod.ico"/>
 
-	<BitmapImage x:Key="GraphConstructor" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+	<BitmapImage x:Key="InstanceGraphConstructor" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+                 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Constructor.png"/>
+
+	<BitmapImage x:Key="StaticGraphConstructor" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
                  UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Constructor.png"/>
 
 	<BitmapImage x:Key="Dac" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
