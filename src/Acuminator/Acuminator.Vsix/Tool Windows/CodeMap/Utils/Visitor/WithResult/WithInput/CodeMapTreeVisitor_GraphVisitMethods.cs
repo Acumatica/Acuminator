@@ -59,6 +59,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual TResult VisitNode(IsActiveGraphMethodNodeViewModel isActiveGraphMethodNode, TInput input) =>
 			DefaultVisit(isActiveGraphMethodNode, input);
+
+		public virtual TResult VisitNode(GraphInstanceConstructorNodeViewModel graphInstanceConstructorNode, TInput input) =>
+			DefaultVisit(graphInstanceConstructorNode, input);
 		#endregion
 	}
 }
