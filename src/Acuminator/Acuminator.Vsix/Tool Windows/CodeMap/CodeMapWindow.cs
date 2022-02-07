@@ -46,7 +46,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			// Set the text that will appear in the title bar of the tool window. Note that because we need access to the package for localization,
 			// we have to wait to do this here. If we used a constant string, we could do this in the constructor.
-			this.Caption = VSIXResource.CodeMapWindowTitle;
+			this.Caption = VSIXResource.CodeMap_WindowTitle;
 		}
 
 		protected override void OnClose()

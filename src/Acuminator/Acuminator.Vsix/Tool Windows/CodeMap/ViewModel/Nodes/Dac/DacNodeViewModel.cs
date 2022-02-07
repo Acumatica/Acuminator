@@ -41,8 +41,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		{
 			Color color = Color.FromRgb(38, 155, 199);
 			string dacType = DacModel.DacType == DacType.Dac
-				? VSIXResource.IsDac_CodeMap_CodeMap_ExtraInfo
-				: VSIXResource.IsDacExtension_CodeMap_ExtraInfo;
+				? VSIXResource.CodeMap_ExtraInfo_IsDac
+				: VSIXResource.CodeMap_ExtraInfo_IsDacExtension;
 			yield return new TextViewModel(this, dacType, darkThemeForeground: color, lightThemeForeground: color);
 		}
 
