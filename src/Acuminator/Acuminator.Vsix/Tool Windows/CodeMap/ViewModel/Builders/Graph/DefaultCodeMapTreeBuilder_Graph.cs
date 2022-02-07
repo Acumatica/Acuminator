@@ -71,8 +71,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				IsActiveMethodInfo isActiveMethodInfo => new IsActiveGraphMethodNodeViewModel(graphInitializationAndActivationCategory,
 																							  isActiveMethodInfo, ExpandCreatedNodes),
+				StaticConstructorInfo staticConstructorInfo => new GraphStaticConstructorNodeViewModel(graphInitializationAndActivationCategory,
+																									   staticConstructorInfo, ExpandCreatedNodes),
 				InstanceConstructorInfoForCodeMap instanceConstructorInfo => new GraphInstanceConstructorNodeViewModel(graphInitializationAndActivationCategory,
-																							  instanceConstructorInfo, ExpandCreatedNodes),
+																													   instanceConstructorInfo, ExpandCreatedNodes),
 				_ => null
 			};
 		}
