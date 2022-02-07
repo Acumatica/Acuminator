@@ -50,7 +50,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				yield break;
 
 			Color color = Color.FromRgb(38, 155, 199);
-			string graphType = GraphSemanticModel.Type.ToString();
+			string graphType = GraphSemanticModel.Type == GraphType.PXGraph
+				? VSIXResource.CodeMap_ExtraInfo_IsGraph
+				: VSIXResource.CodeMap_ExtraInfo_IsGraphExtension;
 			yield return new TextViewModel(this, graphType, darkThemeForeground: color, lightThemeForeground: color);
 		}
 
