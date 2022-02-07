@@ -17,7 +17,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override Icon NodeIcon => Icon.InitializationAndActivationDacCategory;
 
 		public DacInitializationAndActivationCategoryNodeViewModel(DacNodeViewModel dacViewModel, bool isExpanded) : 
-															  base(dacViewModel, DacMemberCategory.Property, isExpanded)
+															  base(dacViewModel, DacMemberCategory.InitializationAndActivation, isExpanded)
 		{		
 		}
 
