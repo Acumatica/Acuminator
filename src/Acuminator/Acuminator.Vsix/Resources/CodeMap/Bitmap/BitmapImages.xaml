@@ -1,10 +1,21 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-
+	<!--#region Graph Images-->
 	<BitmapImage x:Key="Graph" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
 				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Graph.ico"/>
 
+	<!--#region Graph Category Images-->
+	<BitmapImage x:Key="GraphEventCategory" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/GraphEventCategory.ico"/>
+
+	<BitmapImage x:Key="InitializationAndActivationGraphCategory" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/InitializationAndActivationCategory.ico"/>
+
+	<BitmapImage x:Key="BaseMemberOverrideGraphCategory" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/BaseMemberOverrideCategory.png"/>
+	<!--#endregion-->
+	
 	<BitmapImage x:Key="View" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
 				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/View.ico"/>
 
@@ -19,12 +30,6 @@
 
 	<BitmapImage x:Key="PXOverride" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
 				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/PXOverride.ico"/>
-
-	<BitmapImage x:Key="GraphEventCategory" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
-				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/GraphEventCategory.ico"/>
-
-	<BitmapImage x:Key="InitializationAndActivationGraphCategory" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
-				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/InitializationAndActivationCategory.ico"/>
 
 	<BitmapImage x:Key="RowEvent" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
 				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/RowEvent.ico"/>
@@ -50,9 +55,16 @@
 	<BitmapImage x:Key="StaticGraphConstructor" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
 				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Constructor.png"/>
 
+	<BitmapImage x:Key="BaseMemberOverrideGraph" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/BaseMemberOverride.png"/>
+
+	<BitmapImage x:Key="PersistMethodOverride" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/PersistMethodOverride.png"/>
+	<!--#endregion-->
+	<!--#region DAC Images-->
 	<BitmapImage x:Key="Dac" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
 				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DAC.ico"/>
-
+	
 	<BitmapImage x:Key="DacProperty" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
 				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/DacField.ico"/>
 
@@ -71,6 +83,8 @@
 	<BitmapImage x:Key="InitializationAndActivationDacCategory" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
 				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/InitializationAndActivationCategory.ico"/>
 
+	<!--#endregion-->
+	
 	<BitmapImage x:Key="Category" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
 				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Category.ico"/>
 

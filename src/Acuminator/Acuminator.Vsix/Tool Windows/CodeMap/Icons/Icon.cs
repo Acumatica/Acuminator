@@ -40,6 +40,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		Processing,
 
 		BaseMemberOverrideGraphCategory,
+		BaseMemberOverrideGraph,
+		PersistMethodOverride,
 
 		InitializationAndActivationGraphCategory,
 		IsActiveMethodGraph,
