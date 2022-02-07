@@ -5,14 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Acuminator.Utilities.Common;
-using Acuminator.Utilities.Roslyn.ProjectSystem;
-using Acuminator.Utilities.Roslyn.Semantic.SharedInfo;
-using Acuminator.Utilities.Roslyn.Syntax;
-using Acuminator.Vsix.ToolWindows.Common;
 using Acuminator.Vsix.Utilities;
 
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -22,12 +16,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public InstanceConstructorInfoForCodeMap InstanceConstructorInfo => (InstanceConstructorInfoForCodeMap)MemberInfo;
 
+		public override string Name
+		{
+			get => VSIXResource.CodeMap_ConstructorNodeName;
+			protected set { }
+		}
+
 		public GraphInstanceConstructorNodeViewModel(GraphInitializationAndActivationCategoryNodeViewModel graphInitializationAndActivationCategoryVM,
 													 InstanceConstructorInfoForCodeMap instanceConstructorInfo, bool isExpanded = false) :
 												base(graphInitializationAndActivationCategoryVM, graphInitializationAndActivationCategoryVM,
 													 instanceConstructorInfo, isExpanded)
-		{
-
+		{		
 		}
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);

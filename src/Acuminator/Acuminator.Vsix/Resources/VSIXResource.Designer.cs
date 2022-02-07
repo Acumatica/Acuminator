@@ -250,6 +250,15 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Constructor.
+        /// </summary>
+        public static string CodeMap_ConstructorNodeName {
+            get {
+                return ResourceManager.GetString("CodeMap_ConstructorNodeName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Custom.
         /// </summary>
         public static string CodeMap_ExtraInfo_CustomViewLabel {

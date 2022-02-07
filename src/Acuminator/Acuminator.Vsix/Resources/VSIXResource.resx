@@ -348,4 +348,7 @@
   <data name="CodeMap_ExtraInfo_IsGraphExtension" xml:space="preserve">
     <value>Graph Extension</value>
   </data>
+  <data name="CodeMap_ConstructorNodeName" xml:space="preserve">
+    <value>Constructor</value>
+  </data>
 </root>
