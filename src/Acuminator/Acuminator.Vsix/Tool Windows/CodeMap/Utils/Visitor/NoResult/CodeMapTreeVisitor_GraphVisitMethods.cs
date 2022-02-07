@@ -62,6 +62,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual void VisitNode(GraphInstanceConstructorNodeViewModel graphInstanceConstructorNode) =>
 			DefaultVisit(graphInstanceConstructorNode);
+
+		public virtual void VisitNode(GraphStaticConstructorNodeViewModel graphInstanceConstructorNode) =>
+			DefaultVisit(graphInstanceConstructorNode);
 		#endregion
 	}
 }
