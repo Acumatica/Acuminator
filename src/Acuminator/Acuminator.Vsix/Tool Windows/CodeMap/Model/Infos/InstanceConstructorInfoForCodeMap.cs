@@ -1,11 +1,9 @@
-﻿using System.Diagnostics;
+﻿#nullable enable
+
+using System;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Acuminator.Utilities.Common;
+
 using Acuminator.Utilities.Roslyn.Semantic;
-
-
-
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
