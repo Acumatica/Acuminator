@@ -65,17 +65,17 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			if (ViewInfo.IsCustomView)
 			{
-				yield return new TextViewModel(this, VSIXResource.CustomViewExtraInfoLabel)
+				yield return new TextViewModel(this, VSIXResource.CodeMap_ExtraInfo_CustomViewLabel)
 				{
-					Tooltip = VSIXResource.CustomViewInfoTooltip
+					Tooltip = VSIXResource.CodeMap_ExtraInfo_CustomViewTooltip
 				};
 			}
 
 			if (ViewInfo.IsPXSelectReadOnly)
 			{
-				yield return new TextViewModel(this, VSIXResource.PXSelectReadOnlyViewExtraInfoLabel)
+				yield return new TextViewModel(this, VSIXResource.CodeMap_ExtraInfo_PXSelectReadOnlyViewLabel)
 				{
-					Tooltip = VSIXResource.PXSelectReadOnlyViewInfoTooltip
+					Tooltip = VSIXResource.CodeMap_ExtraInfo_PXSelectReadOnlyViewTooltip
 				};
 			}
 		}

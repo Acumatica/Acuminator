@@ -48,7 +48,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 											   darkThemeForeground: Coloriser.VSColors.DacFieldFormatColorDark,
 											   lightThemeForeground: Coloriser.VSColors.DacFieldFormatColorLight)
 											  {
-												  Tooltip = VSIXResource.HasPXDBIdentityAttributeExtraInfoTooltip
+												  Tooltip = VSIXResource.CodeMap_ExtraInfo_HasPXDBIdentityAttributeTooltip
 											  };
 			}
 
@@ -66,7 +66,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			{
 				yield return new TextViewModel(this, "Auto")
 				{
-					Tooltip = VSIXResource.PropertyHasAutoNumberingExtraInfoTooltip
+					Tooltip = VSIXResource.CodeMap_ExtraInfo_PropertyHasAutoNumberingTooltip
 				};
 			}
 		}
