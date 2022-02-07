@@ -73,7 +73,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 																							  isActiveMethodInfo, ExpandCreatedNodes),
 				StaticConstructorInfo staticConstructorInfo => new GraphStaticConstructorNodeViewModel(graphInitializationAndActivationCategory,
 																									   staticConstructorInfo, ExpandCreatedNodes),
-				InstanceConstructorInfoForCodeMap instanceConstructorInfo => new GraphInstanceConstructorNodeViewModel(graphInitializationAndActivationCategory,
+				InstanceConstructorInfo instanceConstructorInfo => new GraphInstanceConstructorNodeViewModel(graphInitializationAndActivationCategory,
 																													   instanceConstructorInfo, ExpandCreatedNodes),
 				_ => null
 			};
@@ -93,7 +93,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public override IEnumerable<TreeNodeViewModel> VisitNode(PXOverridesCategoryNodeViewModel pxOverridesCategory)
 		{
-			return CreateGraphCategoryChildren<PXOverrideInfoForCodeMap>(pxOverridesCategory,
+			return CreateGraphCategoryChildren<PXOverrideInfo>(pxOverridesCategory,
 						constructor: pxOverrideInfo => new PXOverrideNodeViewModel(pxOverridesCategory, pxOverrideInfo, ExpandCreatedNodes));
 		}
 

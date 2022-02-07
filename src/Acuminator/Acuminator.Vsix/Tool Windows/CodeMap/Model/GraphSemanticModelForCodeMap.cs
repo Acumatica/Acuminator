@@ -19,9 +19,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public PXGraphEventSemanticModel GraphModel { get; }
 
-		public ImmutableArray<PXOverrideInfoForCodeMap> PXOverrides { get; }
+		public ImmutableArray<PXOverrideInfo> PXOverrides { get; }
 
-		public ImmutableArray<InstanceConstructorInfoForCodeMap> InstanceConstructors { get; }
+		public ImmutableArray<InstanceConstructorInfo> InstanceConstructors { get; }
 
 		public INamedTypeSymbol Symbol => GraphModel.Symbol;
 
@@ -35,7 +35,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			InstanceConstructors = GetInstanceConstructors(graphEventSemanticModel.Symbol, context).ToImmutableArray();
 		}
 
-		protected virtual IEnumerable<PXOverrideInfoForCodeMap> GetPXOverrides(INamedTypeSymbol graphOrExtension, PXContext context)
+		protected virtual IEnumerable<PXOverrideInfo> GetPXOverrides(INamedTypeSymbol graphOrExtension, PXContext context)
 		{
 			var pxOverrideAttribute = context.AttributeTypes.PXOverrideAttribute;
 
@@ -53,13 +53,13 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 				if (!attributes.IsEmpty && attributes.Any(a => a.AttributeClass.Equals(pxOverrideAttribute)))
 				{
-					yield return new PXOverrideInfoForCodeMap(method, declarationOrder);
+					yield return new PXOverrideInfo(method, declarationOrder);
 					declarationOrder++;
 				}
 			}
 		}
 
-		protected virtual IEnumerable<InstanceConstructorInfoForCodeMap> GetInstanceConstructors(INamedTypeSymbol graphOrExtension, PXContext context)
+		protected virtual IEnumerable<InstanceConstructorInfo> GetInstanceConstructors(INamedTypeSymbol graphOrExtension, PXContext context)
 		{
 			if (graphOrExtension.InstanceConstructors.IsDefaultOrEmpty)
 				yield break;
@@ -71,7 +71,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			foreach (IMethodSymbol constructor in declaredConstructors)
 			{
-				yield return new InstanceConstructorInfoForCodeMap(constructor, declarationOrder);
+				yield return new InstanceConstructorInfo(constructor, declarationOrder);
 				declarationOrder++;
 			}
 		}

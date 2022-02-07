@@ -206,6 +206,15 @@
     <Resource Include="Resources\CodeMap\Constructor.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\CodeMap\BaseMemberOverride.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\CodeMap\BaseMemberOverrideCategory.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\CodeMap\PersistMethodOverride.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Content Include="Resources\DacExplorer.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -274,13 +283,14 @@
     <Compile Include="Settings\ISettingsEvents.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\Icon.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\TreeNodeToImageSourceConverter.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\Infos\InstanceConstructorInfoForCodeMap.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\Infos\InstanceConstructorInfo.cs" />
     <Compile Include="Tool Windows\CodeMap\Tooltips\TreeIconTooltipConverter.cs" />
     <Compile Include="Tool Windows\CodeMap\UI\CodeMapTreeControl.xaml.cs">
       <DependentUpon>CodeMapTreeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacCategories\DacInitializationAndActivationCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacMembers\InitializationAndActivation\IsActiveDacMethodNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembersCategories\GraphBaseMemberOverridesCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\GraphStaticConstructorNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\GraphInstanceConstructorNodeViewModel.cs" />
     <Compile Include="Tool Windows\Common\TooltipInfo.cs" />
@@ -316,7 +326,7 @@
     <Compile Include="Tool Windows\CodeMap\Model\GraphSemanticModelForCodeMap.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphMemberInfoType.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphMemberType.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\Infos\PXOverrideInfoForCodeMap.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\Infos\PXOverrideInfo.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\Base\IRootCandidateSymbolsRetriever.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\Base\ISemanticModelFactory.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\RootCandidateSymbolsRetrieverDefault.cs" />

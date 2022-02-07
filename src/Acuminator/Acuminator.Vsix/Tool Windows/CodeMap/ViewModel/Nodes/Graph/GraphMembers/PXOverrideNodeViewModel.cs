@@ -9,10 +9,10 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	{
 		public override Icon NodeIcon => Icon.PXOverride;
 
-		public PXOverrideInfoForCodeMap PXOverrideInfo => MemberInfo as PXOverrideInfoForCodeMap;
+		public PXOverrideInfo PXOverrideInfo => MemberInfo as PXOverrideInfo;
 
 		public PXOverrideNodeViewModel(PXOverridesCategoryNodeViewModel pxOverridesCategoryVM, 
-									   PXOverrideInfoForCodeMap pxOverrideInfo, bool isExpanded = false) :
+									   PXOverrideInfo pxOverrideInfo, bool isExpanded = false) :
 								  base(pxOverridesCategoryVM, pxOverridesCategoryVM, pxOverrideInfo, isExpanded)
 		{		
 		}
