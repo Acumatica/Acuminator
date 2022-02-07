@@ -277,6 +277,7 @@
     </Compile>
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacCategories\DacInitializationAndActivationCategoryNodeViewModel.cs" />
     <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Dac\DacMembers\InitializationAndActivation\IsActiveDacMethodNodeViewModel.cs" />
+    <Compile Include="Tool Windows\CodeMap\ViewModel\Nodes\Graph\GraphMembers\InitializationAndActivation\GraphConstructorNodeViewModel.cs" />
     <Compile Include="Tool Windows\Common\TooltipInfo.cs" />
     <Compile Include="Utils\Text\StringUtils.cs" />
     <Compile Include="Tool Windows\CodeMap\Utils\Visitor\NoResult\CodeMapTreeWalker.cs" />
@@ -310,7 +311,7 @@
     <Compile Include="Tool Windows\CodeMap\Model\GraphSemanticModelForCodeMap.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphMemberInfoType.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\GraphMemberType.cs" />
-    <Compile Include="Tool Windows\CodeMap\Model\PXOverrideInfoForCodeMap.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\Infos\PXOverrideInfoForCodeMap.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\Base\IRootCandidateSymbolsRetriever.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\Base\ISemanticModelFactory.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\SemanticModelCreation\RootCandidateSymbolsRetrieverDefault.cs" />
