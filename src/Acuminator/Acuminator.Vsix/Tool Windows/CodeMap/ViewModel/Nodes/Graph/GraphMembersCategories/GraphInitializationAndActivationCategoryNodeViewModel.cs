@@ -19,12 +19,20 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public override Icon NodeIcon => Icon.InitializationAndActivationGraphCategory;
 
 		public GraphInitializationAndActivationCategoryNodeViewModel(GraphNodeViewModel graphViewModel, bool isExpanded) : 
-																	 base(graphViewModel, GraphMemberType.InitializationAndActivation, isExpanded)
+																base(graphViewModel, GraphMemberType.InitializationAndActivation, isExpanded)
 		{		
 		}
 
-		public override IEnumerable<SymbolItem> GetCategoryGraphNodeSymbols() =>
-			GraphSemanticModel.IsActiveMethodInfo?.ToEnumerable() ?? Enumerable.Empty<SymbolItem>();
+		public override IEnumerable<SymbolItem> GetCategoryGraphNodeSymbols()
+		{
+			if (GraphSemanticModel.IsActiveMethodInfo != null)
+				yield return GraphSemanticModel.IsActiveMethodInfo;
+
+			foreach (InstanceConstructorInfoForCodeMap constructor in CodeMapGraphModel.InstanceConstructors)
+			{
+				yield return constructor;
+			}
+		}
 
 		public override TResult AcceptVisitor<TInput, TResult>(CodeMapTreeVisitor<TInput, TResult> treeVisitor, TInput input) => treeVisitor.VisitNode(this, input);
 
