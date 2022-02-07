@@ -367,6 +367,24 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to DAC.
+        /// </summary>
+        public static string IsDac_CodeMap_CodeMap_ExtraInfo {
+            get {
+                return ResourceManager.GetString("IsDac_CodeMap_CodeMap_ExtraInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DAC Extension.
+        /// </summary>
+        public static string IsDacExtension_CodeMap_ExtraInfo {
+            get {
+                return ResourceManager.GetString("IsDacExtension_CodeMap_ExtraInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Acuminator package loaded.
         /// </summary>
         public static string PackageLoad_Done {

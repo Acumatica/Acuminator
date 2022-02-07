@@ -336,4 +336,10 @@
   <data name="CodeMap_FailedToUnsubscribeFromVsEvents_ErrorMessage" xml:space="preserve">
     <value>Code Map failed to unsubscribe from Visual Studio events</value>
   </data>
+  <data name="IsDacExtension_CodeMap_ExtraInfo" xml:space="preserve">
+    <value>DAC Extension</value>
+  </data>
+  <data name="IsDac_CodeMap_CodeMap_ExtraInfo" xml:space="preserve">
+    <value>DAC</value>
+  </data>
 </root>
