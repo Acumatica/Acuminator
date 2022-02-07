@@ -283,6 +283,7 @@
     <Compile Include="Settings\ISettingsEvents.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\Icon.cs" />
     <Compile Include="Tool Windows\CodeMap\Icons\TreeNodeToImageSourceConverter.cs" />
+    <Compile Include="Tool Windows\CodeMap\Model\Infos\BaseMemberOverrideInfo.cs" />
     <Compile Include="Tool Windows\CodeMap\Model\Infos\InstanceConstructorInfo.cs" />
     <Compile Include="Tool Windows\CodeMap\Tooltips\TreeIconTooltipConverter.cs" />
     <Compile Include="Tool Windows\CodeMap\UI\CodeMapTreeControl.xaml.cs">
