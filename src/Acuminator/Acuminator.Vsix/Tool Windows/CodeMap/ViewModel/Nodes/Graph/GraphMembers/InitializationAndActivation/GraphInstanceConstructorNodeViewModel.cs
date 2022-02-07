@@ -12,7 +12,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
 	public class GraphInstanceConstructorNodeViewModel : GraphMemberNodeViewModel
 	{
-		public override Icon NodeIcon => Icon.GraphConstructor;
+		public override Icon NodeIcon => Icon.InstanceGraphConstructor;
 
 		public InstanceConstructorInfoForCodeMap InstanceConstructorInfo => (InstanceConstructorInfoForCodeMap)MemberInfo;
 

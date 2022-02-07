@@ -412,6 +412,15 @@ namespace Acuminator.Vsix {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Static Constructor.
+        /// </summary>
+        public static string CodeMap_StaticConstructorNodeName {
+            get {
+                return ResourceManager.GetString("CodeMap_StaticConstructorNodeName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Code Map.
         /// </summary>
         public static string CodeMap_WindowTitle {
