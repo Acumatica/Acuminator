@@ -83,7 +83,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected virtual IEnumerable<BaseMemberOverrideInfo> GetBaseMemberOverrides(INamedTypeSymbol graphOrExtension, PXContext context)
 		{
 			var baseMemberOverrides = from member in graphOrExtension.GetMembers()
-									  where !member.IsImplicitlyDeclared && member.IsOverride &&
+									  where !member.IsImplicitlyDeclared && member.IsOverride && 
+											 member.CanBeReferencedByName &&
 											 member.ContainingType.Equals(graphOrExtension)
 									  select member;
 			int declarationOrder = 0;
