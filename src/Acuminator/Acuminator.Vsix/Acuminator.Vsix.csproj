@@ -206,13 +206,19 @@
     <Resource Include="Resources\CodeMap\Constructor.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Resources\CodeMap\BaseMemberOverride.png">
+    <Resource Include="Resources\CodeMap\Overrides\MethodOverride.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Resources\CodeMap\BaseMemberOverrideCategory.png">
+    <Resource Include="Resources\CodeMap\Overrides\BaseMemberOverrideCategory.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Resources\CodeMap\PersistMethodOverride.png">
+    <Resource Include="Resources\CodeMap\Overrides\PersistMethodOverride.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\CodeMap\Overrides\EventOverride.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\CodeMap\Overrides\PropertyOverride.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Content Include="Resources\DacExplorer.ico">
