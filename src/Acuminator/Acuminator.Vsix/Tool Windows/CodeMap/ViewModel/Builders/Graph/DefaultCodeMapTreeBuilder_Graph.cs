@@ -59,6 +59,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				GraphMemberType.RowEvent                    => new RowEventCategoryNodeViewModel(graph, ExpandCreatedNodes),
 				GraphMemberType.FieldEvent                  => new FieldEventCategoryNodeViewModel(graph, ExpandCreatedNodes),
 				GraphMemberType.PXOverride                  => new PXOverridesCategoryNodeViewModel(graph, ExpandCreatedNodes),
+				GraphMemberType.BaseMemberOverride          => new GraphBaseMemberOverridesCategoryNodeViewModel(graph, ExpandCreatedNodes),
 				_                                           => null,
 			};
 
@@ -78,6 +79,11 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				_ => null
 			};
 		}
+
+		public override IEnumerable<TreeNodeViewModel> VisitNode(GraphBaseMemberOverridesCategoryNodeViewModel graphBaseMemberOverridesCategory) =>
+			CreateGraphCategoryChildren<BaseMemberOverrideInfo>(graphBaseMemberOverridesCategory,
+						constructor: baseMemberOverrideInfo => new GraphBaseMembeOverrideNodeViewModel(graphBaseMemberOverridesCategory,
+																										baseMemberOverrideInfo, ExpandCreatedNodes));
 
 		public override IEnumerable<TreeNodeViewModel> VisitNode(ActionCategoryNodeViewModel actionCategory)
 		{
