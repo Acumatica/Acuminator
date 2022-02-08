@@ -13,7 +13,7 @@
 				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/InitializationAndActivationCategory.ico"/>
 
 	<BitmapImage x:Key="BaseMemberOverrideGraphCategory" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
-				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/BaseMemberOverrideCategory.png"/>
+				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Overrides/BaseMemberOverrideCategory.png"/>
 	<!--#endregion-->
 	
 	<BitmapImage x:Key="View" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
@@ -55,11 +55,17 @@
 	<BitmapImage x:Key="StaticGraphConstructor" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
 				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Constructor.png"/>
 
-	<BitmapImage x:Key="BaseMemberOverrideGraph" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
-				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/BaseMemberOverride.png"/>
+	<BitmapImage x:Key="PropertyOverrideGraph" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Overrides/PropertyOverride.png"/>
+
+	<BitmapImage x:Key="EventOverrideGraph" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Overrides/EventOverride.png"/>
+
+	<BitmapImage x:Key="MethodOverrideGraph" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
+				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Overrides/MethodOverride.png"/>
 
 	<BitmapImage x:Key="PersistMethodOverride" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
-				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/PersistMethodOverride.png"/>
+				 UriSource="pack://application:,,,/Acuminator;component/Resources/CodeMap/Overrides/PersistMethodOverride.png"/>
 	<!--#endregion-->
 	<!--#region DAC Images-->
 	<BitmapImage x:Key="Dac" DecodePixelHeight="16" DecodePixelWidth="16" CacheOption="OnLoad"
