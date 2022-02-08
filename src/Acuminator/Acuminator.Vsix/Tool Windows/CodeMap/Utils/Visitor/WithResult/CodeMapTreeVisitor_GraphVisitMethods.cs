@@ -30,6 +30,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual TResult VisitNode(GraphInitializationAndActivationCategoryNodeViewModel graphInitializationAndActivationCategory) => 
 			DefaultVisit(graphInitializationAndActivationCategory);
+
+		public virtual TResult VisitNode(GraphBaseMemberOverridesCategoryNodeViewModel graphBaseMemberOverridesCategory) =>
+			DefaultVisit(graphBaseMemberOverridesCategory);
 		#endregion
 
 		#region DAC Grouping
@@ -65,6 +68,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual TResult VisitNode(GraphStaticConstructorNodeViewModel graphInstanceConstructorNode) =>
 			DefaultVisit(graphInstanceConstructorNode);
+
+		public virtual TResult VisitNode(GraphBaseMembeOverrideNodeViewModel graphBaseMembeOverrideNode) =>
+			DefaultVisit(graphBaseMembeOverrideNode);
 		#endregion
 	}
 }
