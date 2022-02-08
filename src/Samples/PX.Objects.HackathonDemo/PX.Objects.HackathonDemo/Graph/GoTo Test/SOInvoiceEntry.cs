@@ -30,5 +30,7 @@ namespace PX.Objects.HackathonDemo.DerivedGraph
 			return PXSelect<TaxTran>.Select(this);
 		}
 		#endregion
+
+		public override void Persist() => base.Persist();
 	}
 }
