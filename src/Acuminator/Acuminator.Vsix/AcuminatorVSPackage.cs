@@ -60,7 +60,7 @@ namespace Acuminator.Vsix
 	[Guid(AcuminatorVSPackage.PackageGuidString)]
 	[ProvideOptionPage(typeof(GeneralOptionsPage), SettingsCategoryName, GeneralOptionsPage.PageTitle,
 					   categoryResourceID: 201, pageNameResourceID: 202, supportsAutomation: true, SupportsProfiles = true)]
-	[ProvideToolWindow(typeof(CodeMapWindow), MultiInstances = false, Transient = true, Orientation = ToolWindowOrientation.Left,
+	[ProvideToolWindow(typeof(CodeMapWindow), MultiInstances = false, Transient = false, Orientation = ToolWindowOrientation.Left,
 					   Style = VsDockStyle.Linked)]
 	public sealed class AcuminatorVSPackage : AsyncPackage
 	{
