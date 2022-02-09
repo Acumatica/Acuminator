@@ -19,6 +19,7 @@ using Acuminator.Utilities.Common;
 
 using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 using static Microsoft.VisualStudio.Shell.VsTaskLibraryHelper;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Acuminator.Vsix.ToolWindows.CodeMap
 {
@@ -138,34 +139,41 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		public Command SortNodeDescendantsByDeclarationOrderDescendingCommand { get; }
 		#endregion
 
-		private CodeMapWindowViewModel(IWpfTextView wpfTextView, Document document)
+		private CodeMapWindowViewModel(IWpfTextView wpfTextView, Document document) : this()
 		{
-			DocumentModel = new DocumentModel(wpfTextView, document);
+			DocumentModel = new DocumentModel(wpfTextView, document);	
+		}
 
+		/// <summary>
+		/// Empty constructor to create Code Map view model if no suitable active document is available, for example on solution opening
+		/// </summary>
+		private CodeMapWindowViewModel()
+		{
 			RootSymbolsRetriever = new RootCandidateSymbolsRetrieverDefault();
 			SemanticModelFactory = new SemanticModelFactoryDefault();
 			TreeBuilder = new DefaultCodeMapTreeBuilder();
 			DocChangesClassifier = new CodeMapDocChangesClassifier(this);
+
 			IsVisible = true;
 			Tree = TreeBuilder.CreateEmptyCodeMapTree(this);
-			
+
 			RefreshCodeMapCommand = new Command(p => RefreshCodeMapAsync().Forget());
 			ExpandOrCollapseAllCommand = new Command(p => ExpandOrCollapseNodeDescendants(p as TreeNodeViewModel));
 
-			SortNodeChildrenByNameAscendingCommand = 
+			SortNodeChildrenByNameAscendingCommand =
 				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, SortDirection.Ascending, sortDescendants: false));
 			SortNodeChildrenByNameDescendingCommand =
 				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, SortDirection.Descending, sortDescendants: false));
-			SortNodeChildrenByDeclarationOrderAscendingCommand = 
+			SortNodeChildrenByDeclarationOrderAscendingCommand =
 				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, SortDirection.Ascending, sortDescendants: false));
 			SortNodeChildrenByDeclarationOrderDescendingCommand =
 				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, SortDirection.Descending, sortDescendants: false));
 
-			SortNodeDescendantsByNameAscendingCommand = 
+			SortNodeDescendantsByNameAscendingCommand =
 				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, SortDirection.Ascending, sortDescendants: true));
 			SortNodeDescendantsByNameDescendingCommand =
 				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Alphabet, SortDirection.Descending, sortDescendants: true));
-			SortNodeDescendantsByDeclarationOrderAscendingCommand = 
+			SortNodeDescendantsByDeclarationOrderAscendingCommand =
 				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, SortDirection.Ascending, sortDescendants: true));
 			SortNodeDescendantsByDeclarationOrderDescendingCommand =
 				new Command(p => SortNodes(p as TreeNodeViewModel, SortType.Declaration, SortDirection.Descending, sortDescendants: true));
@@ -178,10 +186,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public static CodeMapWindowViewModel InitCodeMap(IWpfTextView wpfTextView, Document document)
 		{
-			if (wpfTextView == null || document == null)
-				return null;
-
-			var codeMapViewModel = new CodeMapWindowViewModel(wpfTextView, document);
+			var codeMapViewModel = wpfTextView == null || document == null
+				? new CodeMapWindowViewModel(wpfTextView, document)
+				: new CodeMapWindowViewModel();
 
 			if (!codeMapViewModel._dteEventsObserver.SubscribedOnVsEventsSuccessfully)
 			{
@@ -190,7 +197,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 								   buttons: OLEMSGBUTTON.OLEMSGBUTTON_OK);
 			}
 
-			codeMapViewModel.BuildCodeMapAsync().Forget();
+			if (codeMapViewModel.DocumentModel != null)
+				codeMapViewModel.BuildCodeMapAsync().Forget();
+
 			return codeMapViewModel;
 		}
 
@@ -273,6 +282,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			await BuildCodeMapAsync();
 		}
 
+		[SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Method is event handler")]
 		private async void OnWorkspaceChanged(object sender, WorkspaceChangeEventArgs e)
 		{
 			if (e == null || !(sender is Workspace newWorkspace) || Document == null)
