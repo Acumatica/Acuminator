@@ -237,7 +237,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			_dteEventsObserver.UnsubscribeEvents();
 		}
 
-		internal async Task RefreshCodeMapOnWindowOpeningAsync(IWpfTextView activeWpfTextView = null, Document activeDocument = null)
+		internal async Task RefreshCodeMapOnWindowOpeningAsync(IWpfTextView? activeWpfTextView = null, Document? activeDocument = null)
 		{
 			if (!ThreadHelper.CheckAccess())
 			{
@@ -248,7 +248,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			await RefreshCodeMapAsync(activeWpfTextView, activeDocument);
 		}
 
-		private async Task RefreshCodeMapAsync(IWpfTextView activeWpfTextView = null, Document activeDocument = null)
+		private async Task RefreshCodeMapAsync(IWpfTextView? activeWpfTextView = null, Document? activeDocument = null)
 		{
 			if (IsCalculating)
 				return;
@@ -265,7 +265,8 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			await RefreshCodeMapInternalAsync(activeWpfTextViewTask, activeDocument);
 		}
 
-		private async Task RefreshCodeMapInternalAsync(Task<IWpfTextView> activeWpfTextViewTask, Document activeDocument = null)
+		[SuppressMessage("Usage", "VSTHRD003:Avoid awaiting foreign Tasks", Justification = "Task is part of implementation")]
+		private async Task RefreshCodeMapInternalAsync(Task<IWpfTextView>? activeWpfTextViewTask, Document? activeDocument = null)
 		{
 			ClearCodeMap();
 			var currentWorkspace = await AcuminatorVSPackage.Instance.GetVSWorkspaceAsync();
@@ -274,10 +275,14 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 				return;
 
 			Workspace = currentWorkspace;
-			IWpfTextView activeWpfTextView = activeWpfTextViewTask != null
+			IWpfTextView? activeWpfTextView = activeWpfTextViewTask != null
 				? await activeWpfTextViewTask
 				: null;
-			activeDocument = activeDocument ?? activeWpfTextView?.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
+
+			if (activeWpfTextView == null)
+				return;
+
+			activeDocument = activeDocument ?? activeWpfTextView.TextSnapshot.GetOpenDocumentInCurrentContextWithChanges();
 
 			if (activeDocument == null)
 				return;
@@ -315,9 +320,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		private async Task HandleDocumentTextChangesAsync(Workspace newWorkspace, WorkspaceChangeEventArgs e)
 		{
 			Workspace = newWorkspace;
-			Document changedDocument = e.NewSolution.GetDocument(e.DocumentId);
-			Document oldDocument = Document;
-			SyntaxNode oldRoot = DocumentModel?.Root;
+			Document? changedDocument = e.NewSolution.GetDocument(e.DocumentId);
+			Document? oldDocument = Document;
+			SyntaxNode? oldRoot = DocumentModel?.Root;
 
 			if (changedDocument == null || oldDocument == null || oldRoot == null)
 			{
@@ -341,7 +346,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 			ClearCodeMap();
 
-			if (recalculateCodeMap == CodeMapRefreshMode.Recalculate)
+			if (recalculateCodeMap == CodeMapRefreshMode.Recalculate && DocumentModel?.WpfTextView != null)
 			{
 				DocumentModel = new DocumentModel(DocumentModel.WpfTextView, changedDocument);
 				BuildCodeMapAsync().Forget();
@@ -357,6 +362,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		private async Task BuildCodeMapAsync()
 		{
+			if (DocumentModel == null)
+				return;
+
 			try
 			{
 				using (_cancellationTokenSource = new CancellationTokenSource())
@@ -377,7 +385,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 					if (!isSuccess || cancellationToken.IsCancellationRequested || !DocumentModel.IsCodeFileDataLoaded)
 						return;
 
-					TreeViewModel newTreeVM = TreeBuilder?.BuildCodeMapTree(this, expandRoots: true, expandChildren: false, cancellationToken);
+					TreeViewModel? newTreeVM = TreeBuilder.BuildCodeMapTree(this, expandRoots: true, expandChildren: false, cancellationToken);
 
 					if (newTreeVM == null)
 						return;
