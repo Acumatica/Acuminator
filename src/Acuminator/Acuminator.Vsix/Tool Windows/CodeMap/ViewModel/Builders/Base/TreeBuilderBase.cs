@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -30,7 +32,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 
 		public virtual TreeViewModel CreateEmptyCodeMapTree(CodeMapWindowViewModel windowViewModel) => new TreeViewModel(windowViewModel);
 
-		public TreeViewModel BuildCodeMapTree(CodeMapWindowViewModel windowViewModel, bool expandRoots, bool expandChildren, CancellationToken cancellation)
+		public TreeViewModel? BuildCodeMapTree(CodeMapWindowViewModel windowViewModel, bool expandRoots, bool expandChildren, CancellationToken cancellation)
 		{
 			windowViewModel.ThrowOnNull(nameof(windowViewModel));
 
@@ -45,7 +47,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}		
 		}
 
-		protected TreeViewModel BuildCodeMapTree(CodeMapWindowViewModel windowViewModel, bool expandRoots, bool expandChildren)
+		protected TreeViewModel? BuildCodeMapTree(CodeMapWindowViewModel windowViewModel, bool expandRoots, bool expandChildren)
 		{
 			Cancellation.ThrowIfCancellationRequested();
 
@@ -60,7 +62,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			try
 			{
 				ExpandCreatedNodes = expandRoots;
-				roots = CreateRoots(codeMapTree)?.Where(root => root != null).ToList();
+				roots = CreateRoots(codeMapTree).Where(root => root != null).ToList();
 			}
 			finally
 			{
@@ -114,14 +116,15 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 		protected virtual void BuildSubTree(TreeNodeViewModel subtreeRoot)
 		{
 			var generatedChildrenSeq = VisitNode(subtreeRoot);
-			var children = (generatedChildrenSeq as List<TreeNodeViewModel>) ?? generatedChildrenSeq?.ToList();
+			List<TreeNodeViewModel>? children = (generatedChildrenSeq as List<TreeNodeViewModel>) ?? generatedChildrenSeq?.ToList();
 
 			if (children.IsNullOrEmpty())
 				return;
 
-			foreach (var child in children)
+			foreach (TreeNodeViewModel? child in children!)
 			{
-				BuildSubTree(child);
+				if (child != null)
+					BuildSubTree(child);
 			}
 
 			var childrenToAdd = children.Where(c => c != null && (c.Children.Count > 0 || c.DisplayNodeWithoutChildren));
