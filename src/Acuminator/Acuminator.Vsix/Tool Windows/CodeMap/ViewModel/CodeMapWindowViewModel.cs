@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -26,7 +28,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 	public partial class CodeMapWindowViewModel : ToolWindowViewModelBase
 	{
 		private readonly CodeMapDteEventsObserver _dteEventsObserver;
-		private CancellationTokenSource _cancellationTokenSource;
+		private CancellationTokenSource? _cancellationTokenSource;
 
 		public TreeBuilderBase TreeBuilder
 		{
@@ -48,9 +50,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			internal set;
 		}
 
-		private DocumentModel _documentModel;
+		private DocumentModel? _documentModel;
 
-		public DocumentModel DocumentModel
+		public DocumentModel? DocumentModel
 		{
 			get => _documentModel;
 			private set
@@ -64,7 +66,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		public Document Document => DocumentModel?.Document;
+		public Document? Document => DocumentModel?.Document;
 
 		public Workspace Workspace
 		{
@@ -83,9 +85,9 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			set;
 		}
 
-		private TreeViewModel _tree;
+		private TreeViewModel? _tree;
 
-		public TreeViewModel Tree
+		public TreeViewModel? Tree
 		{
 			get => _tree;
 			private set
@@ -203,7 +205,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			return codeMapViewModel;
 		}
 
-		public void SortNodes(TreeNodeViewModel node, SortType sortType, SortDirection sortDirection, bool sortDescendants)
+		public void SortNodes(TreeNodeViewModel? node, SortType sortType, SortDirection sortDirection, bool sortDescendants)
 		{
 			if (node == null)
 				return;
@@ -394,7 +396,7 @@ namespace Acuminator.Vsix.ToolWindows.CodeMap
 			}
 		}
 
-		private void ExpandOrCollapseNodeDescendants(TreeNodeViewModel node)
+		private void ExpandOrCollapseNodeDescendants(TreeNodeViewModel? node)
 		{
 			if (node != null)
 			{
